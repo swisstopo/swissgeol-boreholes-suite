@@ -58,6 +58,91 @@ public class BdmsContext : DbContext
 
     public DbSet<Models.File> Files { get; set; }
 
+    public DbSet<Lithology> Lithologies { get; set; }
+
+    /// <summary>
+    /// Extends the provided <see cref="IQueryable"/> of type <see cref="Lithology"/> with all includes.
+    /// </summary>
+    public IQueryable<Lithology> LithologiesWithIncludes
+        => Lithologies
+        .Include(l => l.AlterationDegree)
+        .Include(l => l.Compactness)
+        .Include(l => l.Cohesion)
+        .Include(l => l.Humidity)
+        .Include(l => l.Consistency)
+        .Include(l => l.Plasticity)
+        .Include(l => l.LithologyUscsTypeCodes)
+        .Include(l => l.UscsTypeCodelists)
+        .Include(l => l.UscsDetermination)
+        .Include(l => l.LithologyRockConditionCodes)
+        .Include(l => l.RockConditionCodelists)
+        .Include(l => l.LithologyTextureMataCodes)
+        .Include(l => l.TextureMataCodelists)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.ColorPrimary)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.ColorSecondary)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyUnconMain)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyUncon2)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyUncon3)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyUncon4)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyUncon5)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyUncon6)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionComponentUnconOrganicCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.ComponentUnconOrganicCodelists)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionComponentUnconDebrisCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.ComponentUnconDebrisCodelists)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionGrainShapeCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.GrainShapeCodelists)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionGrainAngularityCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.GrainAngularityCodelists)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionLithologyUnconDebrisCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyUnconDebrisCodelists)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyCon)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionComponentConParticleCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.ComponentConParticleCodelists)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionComponentConMineralCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.ComponentConMineralCodelists)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.GrainSize)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.GrainAngularity)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.Gradation)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.Cementation)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionStructureSynGenCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.StructureSynGenCodelists)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.LithologyDescriptionStructurePostGenCodes)
+        .Include(l => l.LithologyDescriptions)
+        .ThenInclude(ld => ld.StructurePostGenCodelists);
+
+    public DbSet<LithologyDescription> LithologyDescriptions { get; set; }
+
     public DbSet<Layer> Layers { get; set; }
 
     /// <summary>
@@ -130,6 +215,8 @@ public class BdmsContext : DbContext
     public DbSet<LithologicalDescription> LithologicalDescriptions { get; set; }
 
     public DbSet<FaciesDescription> FaciesDescriptions { get; set; }
+
+    public IQueryable<FaciesDescription> FaciesDescriptionsWithIncludes => FaciesDescriptions.Include(fd => fd.Facies);
 
     public DbSet<ChronostratigraphyLayer> ChronostratigraphyLayers { get; set; }
 
@@ -499,5 +586,185 @@ public class BdmsContext : DbContext
             .WithMany()
             .HasForeignKey(h => h.ParameterId)
             .OnDelete(DeleteBehavior.NoAction);
+
+        // Join table for lithology description and codelists with schema name 'component_con_particle'
+        modelBuilder.Entity<LithologyDescription>()
+            .HasMany(l => l.ComponentConParticleCodelists)
+            .WithMany()
+            .UsingEntity<LithologyDescriptionComponentConParticleCodes>(
+                j => j
+                    .HasOne(lc => lc.Codelist)
+                    .WithMany(c => c.LithologyDescriptionComponentConParticleCodes)
+                    .HasForeignKey(lc => lc.CodelistId),
+                j => j
+                    .HasOne(lc => lc.LithologyDescription)
+                    .WithMany(b => b.LithologyDescriptionComponentConParticleCodes)
+                    .HasForeignKey(l => l.LithologyDescriptionId),
+                j => j.HasKey(lc => new { lc.LithologyDescriptionId, lc.CodelistId }));
+
+        // Join table for lithology description and codelists with schema name 'component_con_mineral'
+        modelBuilder.Entity<LithologyDescription>()
+            .HasMany(l => l.ComponentConMineralCodelists)
+            .WithMany()
+            .UsingEntity<LithologyDescriptionComponentConMineralCodes>(
+                j => j
+                    .HasOne(lc => lc.Codelist)
+                    .WithMany(c => c.LithologyDescriptionComponentConMineralCodes)
+                    .HasForeignKey(lc => lc.CodelistId),
+                j => j
+                    .HasOne(lc => lc.LithologyDescription)
+                    .WithMany(b => b.LithologyDescriptionComponentConMineralCodes)
+                    .HasForeignKey(l => l.LithologyDescriptionId),
+                j => j.HasKey(lc => new { lc.LithologyDescriptionId, lc.CodelistId }));
+
+        // Join table for lithology description and codelists with schema name 'organic_components'
+        modelBuilder.Entity<LithologyDescription>()
+            .HasMany(l => l.ComponentUnconOrganicCodelists)
+            .WithMany()
+            .UsingEntity<LithologyDescriptionComponentUnconOrganicCodes>(
+                j => j
+                    .HasOne(lc => lc.Codelist)
+                    .WithMany(c => c.LithologyDescriptionComponentUnconOrganicCodes)
+                    .HasForeignKey(lc => lc.CodelistId),
+                j => j
+                    .HasOne(lc => lc.LithologyDescription)
+                    .WithMany(b => b.LithologyDescriptionComponentUnconOrganicCodes)
+                    .HasForeignKey(l => l.LithologyDescriptionId),
+                j => j.HasKey(lc => new { lc.LithologyDescriptionId, lc.CodelistId }));
+
+        // Join table for lithology description and codelists with schema name 'debris'
+        modelBuilder.Entity<LithologyDescription>()
+            .HasMany(l => l.ComponentUnconDebrisCodelists)
+            .WithMany()
+            .UsingEntity<LithologyDescriptionComponentUnconDebrisCodes>(
+                j => j
+                    .HasOne(lc => lc.Codelist)
+                    .WithMany(c => c.LithologyDescriptionComponentUnconDebrisCodes)
+                    .HasForeignKey(lc => lc.CodelistId),
+                j => j
+                    .HasOne(lc => lc.LithologyDescription)
+                    .WithMany(b => b.LithologyDescriptionComponentUnconDebrisCodes)
+                    .HasForeignKey(l => l.LithologyDescriptionId),
+                j => j.HasKey(lc => new { lc.LithologyDescriptionId, lc.CodelistId }));
+
+        // Join table for lithology description and codelists with schema name 'grain_shape'
+        modelBuilder.Entity<LithologyDescription>()
+            .HasMany(l => l.GrainShapeCodelists)
+            .WithMany()
+            .UsingEntity<LithologyDescriptionGrainShapeCodes>(
+                j => j
+                    .HasOne(lc => lc.Codelist)
+                    .WithMany(c => c.LithologyDescriptionGrainShapeCodes)
+                    .HasForeignKey(lc => lc.CodelistId),
+                j => j
+                    .HasOne(lc => lc.LithologyDescription)
+                    .WithMany(b => b.LithologyDescriptionGrainShapeCodes)
+                    .HasForeignKey(l => l.LithologyDescriptionId),
+                j => j.HasKey(lc => new { lc.LithologyDescriptionId, lc.CodelistId }));
+
+        // Join table for lithology description and codelists with schema name 'grain_angularity'
+        modelBuilder.Entity<LithologyDescription>()
+            .HasMany(l => l.GrainAngularityCodelists)
+            .WithMany()
+            .UsingEntity<LithologyDescriptionGrainAngularityCodes>(
+                j => j
+                    .HasOne(lc => lc.Codelist)
+                    .WithMany(c => c.LithologyDescriptionGrainAngularityCodes)
+                    .HasForeignKey(lc => lc.CodelistId),
+                j => j
+                    .HasOne(lc => lc.LithologyDescription)
+                    .WithMany(b => b.LithologyDescriptionGrainAngularityCodes)
+                    .HasForeignKey(l => l.LithologyDescriptionId),
+                j => j.HasKey(lc => new { lc.LithologyDescriptionId, lc.CodelistId }));
+
+        // Join table for lithology description and codelists with schema name 'lithology_uncon_coarse'
+        modelBuilder.Entity<LithologyDescription>()
+            .HasMany(l => l.LithologyUnconDebrisCodelists)
+            .WithMany()
+            .UsingEntity<LithologyDescriptionLithologyUnconDebrisCodes>(
+                j => j
+                    .HasOne(lc => lc.Codelist)
+                    .WithMany(c => c.LithologyDescriptionLithologyUnconDebrisCodes)
+                    .HasForeignKey(lc => lc.CodelistId),
+                j => j
+                    .HasOne(lc => lc.LithologyDescription)
+                    .WithMany(b => b.LithologyDescriptionLithologyUnconDebrisCodes)
+                    .HasForeignKey(l => l.LithologyDescriptionId),
+                j => j.HasKey(lc => new { lc.LithologyDescriptionId, lc.CodelistId }));
+
+        // Join table for lithology description and codelists with schema name 'structure_syn_gen'
+        modelBuilder.Entity<LithologyDescription>()
+            .HasMany(l => l.StructureSynGenCodelists)
+            .WithMany()
+            .UsingEntity<LithologyDescriptionStructureSynGenCodes>(
+                j => j
+                    .HasOne(lc => lc.Codelist)
+                    .WithMany(c => c.LithologyDescriptionStructureSynGenCodes)
+                    .HasForeignKey(lc => lc.CodelistId),
+                j => j
+                    .HasOne(lc => lc.LithologyDescription)
+                    .WithMany(b => b.LithologyDescriptionStructureSynGenCodes)
+                    .HasForeignKey(l => l.LithologyDescriptionId),
+                j => j.HasKey(lc => new { lc.LithologyDescriptionId, lc.CodelistId }));
+
+        // Join table for lithology description and codelists with schema name 'structure_post_gen'
+        modelBuilder.Entity<LithologyDescription>()
+            .HasMany(l => l.StructurePostGenCodelists)
+            .WithMany()
+            .UsingEntity<LithologyDescriptionStructurePostGenCodes>(
+                j => j
+                    .HasOne(lc => lc.Codelist)
+                    .WithMany(c => c.LithologyDescriptionStructurePostGenCodes)
+                    .HasForeignKey(lc => lc.CodelistId),
+                j => j
+                    .HasOne(lc => lc.LithologyDescription)
+                    .WithMany(b => b.LithologyDescriptionStructurePostGenCodes)
+                    .HasForeignKey(l => l.LithologyDescriptionId),
+                j => j.HasKey(lc => new { lc.LithologyDescriptionId, lc.CodelistId }));
+
+        // Join table for lithology and codelists with schema name 'rock_condition'
+        modelBuilder.Entity<Lithology>()
+            .HasMany(l => l.RockConditionCodelists)
+            .WithMany()
+            .UsingEntity<LithologyRockConditionCodes>(
+                j => j
+                    .HasOne(lc => lc.Codelist)
+                    .WithMany(c => c.LithologyRockConditionCodes)
+                    .HasForeignKey(lc => lc.CodelistId),
+                j => j
+                    .HasOne(lc => lc.Lithology)
+                    .WithMany(b => b.LithologyRockConditionCodes)
+                    .HasForeignKey(l => l.LithologyId),
+                j => j.HasKey(lc => new { lc.LithologyId, lc.CodelistId }));
+
+        // Join table for lithology and codelists with schema name 'lithology_uscs_type'
+        modelBuilder.Entity<Lithology>()
+            .HasMany(l => l.UscsTypeCodelists)
+            .WithMany()
+            .UsingEntity<LithologyUscsTypeCodes>(
+                j => j
+                    .HasOne(lc => lc.Codelist)
+                    .WithMany(c => c.LithologyUscsTypeCodes)
+                    .HasForeignKey(lc => lc.CodelistId),
+                j => j
+                    .HasOne(lc => lc.Lithology)
+                    .WithMany(b => b.LithologyUscsTypeCodes)
+                    .HasForeignKey(l => l.LithologyId),
+                j => j.HasKey(lc => new { lc.LithologyId, lc.CodelistId }));
+
+        // Join table for lithology and codelists with schema name 'lithology_texture_meta'
+        modelBuilder.Entity<Lithology>()
+            .HasMany(l => l.TextureMataCodelists)
+            .WithMany()
+            .UsingEntity<LithologyTextureMataCodes>(
+                j => j
+                    .HasOne(lc => lc.Codelist)
+                    .WithMany(c => c.LithologyTextureMataCodes)
+                    .HasForeignKey(lc => lc.CodelistId),
+                j => j
+                    .HasOne(lc => lc.Lithology)
+                    .WithMany(b => b.LithologyTextureMataCodes)
+                    .HasForeignKey(l => l.LithologyId),
+                j => j.HasKey(lc => new { lc.LithologyId, lc.CodelistId }));
     }
 }
