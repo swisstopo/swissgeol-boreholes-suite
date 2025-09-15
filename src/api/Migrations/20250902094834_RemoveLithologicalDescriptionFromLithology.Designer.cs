@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20250902094834_RemoveLithologicalDescriptionFromLithology")]
+    partial class RemoveLithologicalDescriptionFromLithology
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -845,10 +848,6 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("description");
 
-                    b.Property<int?>("FaciesId")
-                        .HasColumnType("integer")
-                        .HasColumnName("facies_id");
-
                     b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
@@ -872,8 +871,6 @@ namespace BDMS.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("CreatedById");
-
-                    b.HasIndex("FaciesId");
 
                     b.HasIndex("StratigraphyId");
 
@@ -3208,10 +3205,6 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.Codelist", "Facies")
-                        .WithMany()
-                        .HasForeignKey("FaciesId");
-
                     b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("FaciesDescriptions")
                         .HasForeignKey("StratigraphyId")
@@ -3223,8 +3216,6 @@ namespace BDMS.Migrations
                         .HasForeignKey("UpdatedById");
 
                     b.Navigation("CreatedBy");
-
-                    b.Navigation("Facies");
 
                     b.Navigation("Stratigraphy");
 
