@@ -3,12 +3,23 @@
 ## [Unreleased]
 
 ### Changed
+- Filters for registration are now hidden on the view instance.
+- The _show all_ switch in the filters is now hidden on the view instance and all fields are shown by default.
+
+### Fixed
+- _view-sync_ did not sync *Water ingresses*, *Groundwater measurements* and *Field measurements* correctly.
+
+## v2.1.1325 - 2025-09-08
+
+### Changed
 - Upgraded swissgeol OCR service to version 1.1.0.
 - Added new workflow UI and backend to manage the borehole's publication status. Removed legacy workflow UI and backend.
 - Filters for workgroup and status are now hidden on the view instance.
 - Attachments can now be exported without editor privileges.
+- _view-sync_ now also syncs published public attachments.
 - Adding or importing boreholes is now explicitly disabled when no workgroup is selected.
 - Moved geometry format names to localization files to support translations.
+- _extern-sync_ now syncs all boreholes once they reach the `Reviewed` status.
 
 ### Fixed
 - Boreholes that were locked by any user could not be edited by others, including administrators, even after lock timeout expiration.
