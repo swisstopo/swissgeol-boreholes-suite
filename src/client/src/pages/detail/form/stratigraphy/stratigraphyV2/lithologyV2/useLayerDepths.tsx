@@ -82,13 +82,13 @@ const handleNextOverlap = (description: BaseLayer, layerDepth: LayerDepth, i: nu
 };
 
 export function useLayerDepths(
-  lithologies: Lithology[] | undefined,
-  lithologicalDescriptions: LithologicalDescription[] | undefined,
-  faciesDescriptions: FaciesDescription[] | undefined,
+  lithologies: Lithology[],
+  lithologicalDescriptions: LithologicalDescription[],
+  faciesDescriptions: FaciesDescription[],
 ) {
   const depths = useMemo(() => {
     const layerDepths: LayerDepth[] = [];
-    lithologies?.forEach(l => {
+    lithologies.forEach(l => {
       layerDepths.push({ fromDepth: l.fromDepth, toDepth: l.toDepth, lithologyId: l.id });
     });
     layerDepths.sort((a, b) => a.fromDepth - b.fromDepth);
@@ -107,10 +107,10 @@ export function useLayerDepths(
       layerDepths.push({ fromDepth: description.fromDepth, toDepth: description.toDepth, lithologyId: 0 });
     };
 
-    lithologicalDescriptions?.forEach(l => {
+    lithologicalDescriptions.forEach(l => {
       insertDescription(l);
     });
-    faciesDescriptions?.forEach(f => {
+    faciesDescriptions.forEach(f => {
       insertDescription(f);
     });
 
