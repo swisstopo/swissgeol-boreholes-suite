@@ -27,9 +27,9 @@ import { useLithologyLabels } from "./useLithologyLabels.tsx";
 
 interface LithologyContentEditProps {
   stratigraphyId: number;
-  lithologies?: Lithology[];
-  lithologicalDescriptions?: LithologicalDescription[];
-  faciesDescriptions?: FaciesDescription[];
+  lithologies: Lithology[];
+  lithologicalDescriptions: LithologicalDescription[];
+  faciesDescriptions: FaciesDescription[];
 }
 
 export const LithologyContentEdit: FC<LithologyContentEditProps> = ({

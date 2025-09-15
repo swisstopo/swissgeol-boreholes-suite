@@ -29,9 +29,9 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
     return (
       <LithologyContentEdit
         stratigraphyId={stratigraphyId}
-        lithologies={lithologies}
-        lithologicalDescriptions={lithologicalDescriptions}
-        faciesDescriptions={faciesDescriptions}
+        lithologies={lithologies ?? []}
+        lithologicalDescriptions={lithologicalDescriptions ?? []}
+        faciesDescriptions={faciesDescriptions ?? []}
       />
     );
   }
