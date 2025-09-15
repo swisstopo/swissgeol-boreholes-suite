@@ -12,7 +12,7 @@ namespace BDMS.Controllers;
 [TestClass]
 public class StratigraphyV2ControllerTest
 {
-    private const int StratigraphyId = 6_003_002;
+    private const int StratigraphyId = 21_000_099;
 
     private BdmsContext context;
     private StratigraphyV2Controller controller;
@@ -47,16 +47,16 @@ public class StratigraphyV2ControllerTest
     [TestMethod]
     public async Task GetStratigraphyByBoreholeId()
     {
-        var stratigraphies = await controller.GetAsync(1002641).ConfigureAwait(false);
+        var stratigraphies = await controller.GetAsync(1000972).ConfigureAwait(false);
         Assert.IsNotNull(stratigraphies);
-        Assert.AreEqual(1, stratigraphies.Count());
-        var stratigraphy = stratigraphies.Single();
+        Assert.AreEqual(2, stratigraphies.Count());
+        var stratigraphy = stratigraphies.First();
 
-        Assert.AreEqual(1002641, stratigraphy.BoreholeId);
-        Assert.AreEqual("Eliezer Douglas", stratigraphy.Name);
-        Assert.AreEqual(1, stratigraphy.CreatedById);
-        Assert.AreEqual(2, stratigraphy.UpdatedById);
-        Assert.AreEqual(false, stratigraphy.IsPrimary);
+        Assert.AreEqual(1000972, stratigraphy.BoreholeId);
+        Assert.AreEqual("Pamela Mante", stratigraphy.Name);
+        Assert.AreEqual(4, stratigraphy.CreatedById);
+        Assert.AreEqual(5, stratigraphy.UpdatedById);
+        Assert.AreEqual(true, stratigraphy.IsPrimary);
     }
 
     [TestMethod]
@@ -71,9 +71,9 @@ public class StratigraphyV2ControllerTest
         Assert.IsInstanceOfType(copiedStratigraphyId, typeof(int));
         var copiedStratigraphy = GetStratigraphy((int)copiedStratigraphyId);
 
-        Assert.AreEqual("Hazle Braun (Clone)", copiedStratigraphy.Name);
-        Assert.AreEqual("sub_validator", copiedStratigraphy.CreatedBy.SubjectId);
-        Assert.AreEqual("sub_publisher", copiedStratigraphy.UpdatedBy.SubjectId);
+        Assert.AreEqual("Robin Runte (Clone)", copiedStratigraphy.Name);
+        Assert.AreEqual("sub_publisher", copiedStratigraphy.CreatedBy.SubjectId);
+        Assert.AreEqual("sub_admin", copiedStratigraphy.UpdatedBy.SubjectId);
         Assert.AreEqual(false, copiedStratigraphy.IsPrimary);
         Assert.AreNotEqual(originalStratigraphy.Id, copiedStratigraphy.Id);
     }
