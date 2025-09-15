@@ -1,4 +1,4 @@
-import { FC, ReactNode, useCallback, useContext, useMemo } from "react";
+import { FC, ReactNode, useCallback, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { Trash2 } from "lucide-react";
@@ -10,7 +10,7 @@ import {
   useLithologicalDescriptionMutations,
 } from "../../../../../../api/stratigraphy.ts";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
-import { LayerDepth, Lithology, useLithologyMutations } from "../../lithology.ts";
+import { Lithology, useLithologyMutations } from "../../lithology.ts";
 import {
   AddRowButton,
   StratigraphyTableActionCell,
@@ -22,6 +22,7 @@ import {
   StratigraphyTableHeaderCell,
 } from "../stratigraphyTableComponents.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";
+import { useLayerDepths } from "./useLayerDepths.tsx";
 import { useLithologyLabels } from "./useLithologyLabels.tsx";
 
 interface LithologyContentEditProps {
@@ -49,108 +50,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     delete: { mutateAsync: deleteFaciesDescription },
   } = useFaciesDescriptionMutations();
   const { buildLithologyLabels } = useLithologyLabels();
-
-  const depths = useMemo(() => {
-    const layers: LayerDepth[] = [];
-    lithologies?.forEach(l => {
-      layers.push({ fromDepth: l.fromDepth, toDepth: l.toDepth, lithologyId: l.id });
-    });
-    layers.sort((a, b) => a.fromDepth - b.fromDepth);
-
-    const isExactMatch = (desc: { fromDepth: number; toDepth: number }, layer: LayerDepth) =>
-      desc.fromDepth === layer.fromDepth && desc.toDepth === layer.toDepth;
-
-    const isWithinLayer = (desc: { fromDepth: number; toDepth: number }, layer: LayerDepth) =>
-      desc.fromDepth > layer.fromDepth && desc.toDepth < layer.toDepth;
-
-    const isPreviousOverlap = (desc: { fromDepth: number; toDepth: number }, layer: LayerDepth) =>
-      desc.fromDepth <= layer.fromDepth && desc.toDepth < layer.toDepth && desc.toDepth > layer.fromDepth;
-
-    const isNextOverlap = (desc: { fromDepth: number; toDepth: number }, layer: LayerDepth) =>
-      desc.fromDepth > layer.fromDepth && desc.fromDepth < layer.toDepth && desc.toDepth >= layer.toDepth;
-
-    // TODO: Check this again when rules are finalized
-    const insertDescription = (desc: { fromDepth: number; toDepth: number }) => {
-      let i = 0;
-      while (i < layers.length) {
-        const layer = layers[i];
-
-        if (desc.toDepth <= layer.fromDepth) {
-          layers.splice(i, 0, { fromDepth: desc.fromDepth, toDepth: desc.toDepth, lithologyId: 0 });
-          return;
-        }
-
-        if (desc.fromDepth >= layer.toDepth) {
-          i++;
-          continue;
-        }
-
-        if (layer.lithologyId !== 0 && desc.fromDepth >= layer.fromDepth && desc.toDepth <= layer.toDepth) {
-          return;
-        }
-
-        if (layer.lithologyId === 0) {
-          if (isExactMatch(desc, layer)) return;
-
-          if (isWithinLayer(desc, layer)) {
-            layers.splice(
-              i,
-              1,
-              { fromDepth: layer.fromDepth, toDepth: desc.fromDepth, lithologyId: 0 },
-              { fromDepth: desc.fromDepth, toDepth: desc.toDepth, lithologyId: 0 },
-              { fromDepth: desc.toDepth, toDepth: layer.toDepth, lithologyId: 0 },
-            );
-            return;
-          }
-
-          if (isPreviousOverlap(desc, layer)) {
-            layers.splice(
-              i,
-              1,
-              { fromDepth: desc.fromDepth, toDepth: desc.toDepth, lithologyId: 0 },
-              { fromDepth: desc.toDepth, toDepth: layer.toDepth, lithologyId: 0 },
-            );
-            return;
-          }
-
-          if (isNextOverlap(desc, layer)) {
-            layers.splice(
-              i,
-              1,
-              { fromDepth: layer.fromDepth, toDepth: desc.fromDepth, lithologyId: 0 },
-              { fromDepth: desc.fromDepth, toDepth: desc.toDepth, lithologyId: 0 },
-            );
-            return;
-          }
-        }
-        i++;
-      }
-      layers.push({ fromDepth: desc.fromDepth, toDepth: desc.toDepth, lithologyId: 0 });
-    };
-
-    // Insert descriptions
-    lithologicalDescriptions?.forEach(l => {
-      insertDescription({ fromDepth: l.fromDepth, toDepth: l.toDepth });
-    });
-    faciesDescriptions?.forEach(f => {
-      insertDescription({ fromDepth: f.fromDepth, toDepth: f.toDepth });
-    });
-
-    // Fill gaps between layers
-    layers.sort((a, b) => a.fromDepth - b.fromDepth);
-    const filledLayers: LayerDepth[] = [];
-    for (let i = 0; i < layers.length; i++) {
-      filledLayers.push(layers[i]);
-      if (i < layers.length - 1) {
-        const current = layers[i];
-        const next = layers[i + 1];
-        if (current.toDepth < next.fromDepth) {
-          filledLayers.push({ fromDepth: current.toDepth, toDepth: next.fromDepth, lithologyId: 0 });
-        }
-      }
-    }
-    return filledLayers;
-  }, [lithologies, lithologicalDescriptions, faciesDescriptions]);
+  const { depths } = useLayerDepths(lithologies, lithologicalDescriptions, faciesDescriptions);
 
   const { completedLayers: completedLithologies } = useCompletedLayers(
     lithologies?.filter((_, i) => i !== 1),
