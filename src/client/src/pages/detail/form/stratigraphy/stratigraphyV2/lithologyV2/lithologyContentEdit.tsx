@@ -52,18 +52,9 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   const { buildLithologyLabels } = useLithologyLabels();
   const { depths } = useLayerDepths(lithologies, lithologicalDescriptions, faciesDescriptions);
 
-  const { completedLayers: completedLithologies } = useCompletedLayers(
-    lithologies?.filter((_, i) => i !== 1),
-    depths,
-  );
-  const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(
-    lithologicalDescriptions?.filter((_, i) => i !== 2).map((d, i) => ({ ...d, toDepth: i == 1 ? 30 : d.toDepth })),
-    depths,
-  );
-  const { completedLayers: completedFaciesDescriptions } = useCompletedLayers(
-    faciesDescriptions?.filter((_, i) => i !== 3 && i !== 4),
-    depths,
-  );
+  const { completedLayers: completedLithologies } = useCompletedLayers(lithologies, depths);
+  const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(lithologicalDescriptions, depths);
+  const { completedLayers: completedFaciesDescriptions } = useCompletedLayers(faciesDescriptions, depths);
 
   const defaultRowHeight = 240;
 
