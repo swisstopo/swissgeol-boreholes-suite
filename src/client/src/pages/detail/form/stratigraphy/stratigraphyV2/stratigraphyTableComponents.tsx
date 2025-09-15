@@ -54,11 +54,10 @@ interface StratigraphyTableCellRowProps {
   height?: string;
 }
 
-export const StratigraphyTableCellRow = styled(Stack)<StratigraphyTableCellRowProps>(({ height = "36px" }) => ({
+export const StratigraphyTableCellRow = styled(Stack)<StratigraphyTableCellRowProps>(() => ({
   flexDirection: "row",
   justifyContent: "space-between",
   alignItems: "center",
-  height: height,
 }));
 
 interface StratigraphyTableLayerCellProps {
@@ -114,7 +113,6 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
       {onHoverClick && (
         <StratigraphyTableCellRow
           className="hover-content"
-          height={`${36 / scaleY}px`}
           sx={{
             justifyContent: layer?.fromDepth !== null && layer?.fromDepth !== undefined ? "space-between" : "flex-end",
           }}>
@@ -151,7 +149,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
         {children}
       </Stack>
       {onHoverClick && (
-        <StratigraphyTableCellRow className="hover-content" height={`${36 / scaleY}px`}>
+        <StratigraphyTableCellRow className="hover-content">
           {layer?.toDepth !== null && layer?.toDepth !== undefined && (
             <Typography sx={{ transform: `scaleY(${1 / scaleY})` }} variant="body1">
               {layer?.toDepth} m MD
@@ -175,7 +173,8 @@ export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ layer, onC
   return (
     <StratigraphyTableCell
       sx={{
-        padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
+        py: 1 / scaleY,
+        px: 2,
         backgroundColor: theme.palette.error.background,
 
         ...(onClick && {
@@ -191,18 +190,20 @@ export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ layer, onC
           onClick(layer);
         }
       }}>
-      <StratigraphyTableCellRow color={theme.palette.error.main} mt={3 / scaleY}>
-        <Chip color="error" label={t("gap")} sx={{ transform: `scaleY(${1 / scaleY})` }} />
-        <Box sx={{ transform: `scaleY(${1 / scaleY})` }}>
-          <TriangleAlert />
-        </Box>
-      </StratigraphyTableCellRow>
-      {onClick && (
-        <Stack direction="row" justifyContent="center" alignItems="center">
-          <LayerAddButton />
-        </Stack>
-      )}
-      <StratigraphyTableCellRow />
+      <>
+        <StratigraphyTableCellRow color={theme.palette.error.main}>
+          <Chip color="error" label={t("gap")} sx={{ transform: `scaleY(${1 / scaleY})` }} />
+          <Box sx={{ transform: `scaleY(${1 / scaleY})` }}>
+            <TriangleAlert />
+          </Box>
+        </StratigraphyTableCellRow>
+        {onClick && (
+          <Stack direction="row" justifyContent="center" alignItems="center">
+            <LayerAddButton />
+          </Stack>
+        )}
+        <StratigraphyTableCellRow />
+      </>
     </StratigraphyTableCell>
   );
 };
@@ -246,6 +247,28 @@ export const AddRowButton = () => {
         },
       }}>
       <LayerAddButton />
+    </Stack>
+  );
+};
+
+interface StratigraphyViewTableCellProps {
+  children: ReactNode;
+  onHoverClick?: (layer: BaseLayer) => void;
+  sx?: SxProps;
+  scaleY?: number;
+}
+
+export const StratigraphyViewTableCell: FC<StratigraphyViewTableCellProps> = ({ children, sx, scaleY = 1 }) => {
+  return (
+    <Stack
+      alignItems={"flex-start"}
+      sx={{
+        py: 2 / scaleY,
+        px: 2,
+        borderBottom: `1px solid ${theme.palette.border.darker}`,
+        ...sx,
+      }}>
+      {children}
     </Stack>
   );
 };

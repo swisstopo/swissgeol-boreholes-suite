@@ -42,7 +42,7 @@ export const AddStratigraphyButton: FC<AddStratigraphyButtonProps> = ({
       }}
       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       transformOrigin={{ vertical: "top", horizontal: "right" }}
-      sx={{ position: "absolute", top: 0, right: 0, mx: 2, my: 1 }}
+      sx={{ height: "36px" }}
     />
   );
 };

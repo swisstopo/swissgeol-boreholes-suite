@@ -43,7 +43,7 @@ export const StratigraphyLabelingDialog: FC<StratigraphyLabelingProps> = ({ file
   return (
     <Dialog open={open} onClose={handleClose} fullScreen>
       <DialogHeaderContainer>
-        <Stack direction="row">
+        <Stack direction="row" pt={0.5}>
           <Typography variant="h4" sx={{ flexGrow: 1 }}>
             {t("extractStratigraphyFromProfile")}
           </Typography>
@@ -56,9 +56,10 @@ export const StratigraphyLabelingDialog: FC<StratigraphyLabelingProps> = ({ file
         <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={0.75}>
           <CancelButton onClick={closeDialog} />
           <BoreholesButton
+            disabled={true}
             variant="contained"
             color="primary"
-            label={t("extractStratigraphy", { count: 1 })}
+            label={t("addStratigraphy", { count: 1 })}
             onClick={addStratigraphies}
           />
         </Stack>

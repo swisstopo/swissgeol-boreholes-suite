@@ -12,6 +12,7 @@ import { processFileWithOCR } from "../ocr.ts";
 import { BaseLayer, LithologicalDescription } from "../stratigraphy.ts";
 import { BoreholeFile, DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
 
+
 export async function uploadFile(boreholeId: number, file: File) {
   if (file && file.size <= maxFileSizeKB) {
     const formData = new FormData();
