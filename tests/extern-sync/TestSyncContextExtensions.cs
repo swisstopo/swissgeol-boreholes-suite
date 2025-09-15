@@ -59,7 +59,7 @@ internal static class TestSyncContextExtensions
     /// <summary>
     /// Sets the workflow <paramref name="status"/> for this <paramref name="borehole"/>.
     /// </summary>
-    /// <param name="borehole">The <see cref="Borehole"/> to set the publication status on.</param>
+    /// <param name="borehole">The <see cref="Borehole"/> to set the workflow status on.</param>
     /// <param name="status">The <see cref="WorkflowStatus"/> to be set.</param>
     internal static Borehole SetBoreholeWorkflowStatus(this Borehole borehole, WorkflowStatus status)
     {
@@ -71,10 +71,10 @@ internal static class TestSyncContextExtensions
     }
 
     /// <summary>
-    /// Sets the publication <paramref name="status"/> for the specified <paramref name="boreholeId"/>.
+    /// Sets the workflow <paramref name="status"/> for the specified <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="context">The database context to be used.</param>
-    /// <param name="boreholeId">The <see cref="Borehole.Id"/> to set the publication state on.</param>
+    /// <param name="boreholeId">The <see cref="Borehole.Id"/> to set the workflow status on.</param>
     /// <param name="status">The <see cref="WorkflowStatus"/> to be set.</param>
     /// <param name="cancellationToken">The <see cref="CancellationToken"/>.</param>
     /// <returns>The updated <see cref="Borehole"/> entity.</returns>
@@ -173,11 +173,11 @@ internal static class TestSyncContextExtensions
     /// <see cref="Casing"/>s in <see cref="Instrumentation"/>s, <see cref="Backfill"/>s and <see cref="Observation"/>s
     /// are expected to be also available in <see cref="Completion"/>s. Our test data seeded with
     /// <see cref="BdmsContextExtensions.SeedData(BdmsContext)"/> does not meet these requirements atm. This method fixes
-    /// <see cref="Borehole"/>s with publication status 'published' only and can be executed multiple times.
+    /// <see cref="Borehole"/>s with workflow status 'reviewed' or 'published' only and can be executed multiple times.
     /// </summary>
     internal static async Task FixCasingReferencesAsync(this BdmsContext context, CancellationToken cancellationToken)
     {
-        var boreholes = context.BoreholesWithIncludes.WithStatusPublished();
+        var boreholes = context.BoreholesWithIncludes.WithStatusReviewedOrPublished();
 
         foreach (var borehole in boreholes)
         {
