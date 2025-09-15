@@ -199,6 +199,54 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     [deleteFaciesDescription],
   );
 
+  const renderGapCell = (
+    layer: BaseLayer,
+    keyPrefix: string,
+    defaultRowHeight: number,
+    computeCellHeight: ((fromDepth: number, toDepth: number) => number) | null,
+    onEdit: (layer: BaseLayer) => void,
+  ) => (
+    <StratigraphyTableGap
+      key={`${keyPrefix}-${layer.id}`}
+      sx={{
+        height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
+      }}
+      layer={layer}
+      onClick={onEdit}
+    />
+  );
+
+  const renderActionCell = (
+    layer: BaseLayer,
+    keyPrefix: string,
+    defaultRowHeight: number,
+    computeCellHeight: ((fromDepth: number, toDepth: number) => number) | null,
+    onEdit: (layer: BaseLayer) => void,
+    onDelete: (layer: BaseLayer) => void,
+    buildContent: (layer: BaseLayer) => ReactNode,
+  ) => (
+    <StratigraphyTableActionCell
+      key={`${keyPrefix}-${layer.id}`}
+      sx={{
+        height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
+      }}
+      layer={layer}
+      onClick={onEdit}
+      onHoverClick={layer => {
+        showPrompt("deleteMessage", [
+          { label: "cancel" },
+          {
+            label: "delete",
+            icon: <Trash2 />,
+            variant: "contained",
+            action: () => onDelete(layer),
+          },
+        ]);
+      }}>
+      {buildContent(layer)}
+    </StratigraphyTableActionCell>
+  );
+
   const renderTableCells = (
     layers: BaseLayer[],
     defaultRowHeight: number,
@@ -219,41 +267,11 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       );
     }
 
-    const renderGap = (layer: BaseLayer) => (
-      <StratigraphyTableGap
-        key={`${keyPrefix}-${layer.id}`}
-        sx={{
-          height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
-        }}
-        layer={layer}
-        onClick={onEdit}
-      />
+    return layers.map(layer =>
+      layer.isGap
+        ? renderGapCell(layer, keyPrefix, defaultRowHeight, computeCellHeight, onEdit)
+        : renderActionCell(layer, keyPrefix, defaultRowHeight, computeCellHeight, onEdit, onDelete, buildContent),
     );
-
-    const renderActionCell = (layer: BaseLayer) => (
-      <StratigraphyTableActionCell
-        key={`${keyPrefix}-${layer.id}`}
-        sx={{
-          height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
-        }}
-        layer={layer}
-        onClick={onEdit}
-        onHoverClick={layer => {
-          showPrompt("deleteMessage", [
-            { label: "cancel" },
-            {
-              label: "delete",
-              icon: <Trash2 />,
-              variant: "contained",
-              action: () => onDelete(layer),
-            },
-          ]);
-        }}>
-        {buildContent(layer)}
-      </StratigraphyTableActionCell>
-    );
-
-    return layers.map(layer => (layer.isGap ? renderGap(layer) : renderActionCell(layer)));
   };
 
   return (
