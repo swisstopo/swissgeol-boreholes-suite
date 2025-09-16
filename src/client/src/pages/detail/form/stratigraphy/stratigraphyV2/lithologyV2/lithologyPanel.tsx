@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress } from "@mui/material";
 import { useFaciesDescription, useLithoDescription } from "../../../../../../api/stratigraphy.ts";
@@ -15,6 +15,14 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
     useLithoDescription(stratigraphyId);
   const { data: faciesDescriptions, isLoading: isLoadingFaciesDescription } = useFaciesDescription(stratigraphyId);
 
+  // TODO: Remove defaults after migrating backend data
+  const lithologyArray = useMemo(() => (lithologies ? lithologies : []), [lithologies]);
+  const lithologicalDescriptionsArray = useMemo(
+    () => (lithologicalDescriptions ? lithologicalDescriptions : []),
+    [lithologicalDescriptions],
+  );
+  const faciesDescriptionsArray = useMemo(() => (faciesDescriptions ? faciesDescriptions : []), [faciesDescriptions]);
+
   // Loading state
   if (isLoadingLithologies || isLoadingLithologicalDescriptions || isLoadingFaciesDescription) {
     return (
@@ -24,23 +32,24 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
     );
   }
 
-  if (!lithologies || !lithologicalDescriptions || !faciesDescriptions) return null;
-
   // Edit mode
   if (editingEnabled) {
-    // TODO: Remove defaults after migrating backend data
     return (
       <LithologyContentEdit
         stratigraphyId={stratigraphyId}
-        lithologies={lithologies}
-        lithologicalDescriptions={[]}
-        faciesDescriptions={[]}
+        lithologies={lithologyArray}
+        lithologicalDescriptions={lithologicalDescriptionsArray}
+        faciesDescriptions={faciesDescriptionsArray}
       />
     );
   }
 
   // View mode
-  if (lithologies.length === 0 && lithologicalDescriptions.length === 0 && faciesDescriptions.length === 0) {
+  if (
+    lithologyArray.length === 0 &&
+    lithologicalDescriptionsArray.length === 0 &&
+    faciesDescriptionsArray.length === 0
+  ) {
     return <Box>{t("msgLithologyEmpty")}</Box>;
   } else {
     return <div>view</div>;
