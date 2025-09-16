@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress } from "@mui/material";
-import { useFaciesDescription, useLithoDescription } from "../../../../../../api/stratigraphy.ts";
+import { useFaciesDescription, useLithologicalDescription } from "../../../../../../api/stratigraphy.ts";
 import { FullPageCentered } from "../../../../../../components/styledComponents.ts";
 import { EditStateContext } from "../../../../editStateContext.tsx";
 import { useLithologies } from "../../lithology.ts";
@@ -11,7 +11,7 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
   const { data: lithologies, isLoading: isLoadingLithologies } = useLithologies(stratigraphyId);
-  const { data: lithologicalDescriptions, isLoading: isLoadingLithologicalDescriptions } = useLithoDescription(
+  const { data: lithologicalDescriptions, isLoading: isLoadingLithologicalDescriptions } = useLithologicalDescription(
     stratigraphyId - 15000000,
   ); // TODO: Remove "- 15000000" workaround after migrating backend data
   const { data: faciesDescriptions, isLoading: isLoadingFaciesDescription } = useFaciesDescription(
