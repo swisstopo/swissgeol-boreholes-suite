@@ -49,10 +49,9 @@ export const AttachmentContent = <T extends GridValidRowModel>({
       {editingEnabled &&
         (requireFileOnAdd ? (
           <AddAttachmentButton
-            label={t(addAttachmentButtonLabel)}
+            label={addAttachmentButtonLabel}
             onFileSelect={addAttachment}
             acceptedFileTypes={acceptedFileTypes}
-            dataCy={`${addAttachmentButtonLabel}-button`}
           />
         ) : (
           <Button

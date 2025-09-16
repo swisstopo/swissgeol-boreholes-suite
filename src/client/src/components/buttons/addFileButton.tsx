@@ -7,11 +7,10 @@ interface AddFileButtonProps {
   label: string;
   onFileSelect: (file: File) => Promise<void>;
   acceptedFileTypes?: string;
-  dataCy?: string;
   sx?: SxProps;
 }
 
-export const AddFileButton: FC<AddFileButtonProps> = ({ label, onFileSelect, acceptedFileTypes, dataCy, sx }) => {
+export const AddFileButton: FC<AddFileButtonProps> = ({ label, onFileSelect, acceptedFileTypes, sx }) => {
   const { t } = useTranslation();
   const formRef = useRef<HTMLFormElement>(null);
 
@@ -31,7 +30,7 @@ export const AddFileButton: FC<AddFileButtonProps> = ({ label, onFileSelect, acc
         variant="contained"
         endIcon={<Plus />}
         sx={{ height: "36px", ...sx }}
-        data-cy={dataCy}>
+        data-cy={`${label}-button`}>
         {t(label)}
         <input type="file" onChange={handleFileChange} style={{ display: "none" }} accept={acceptedFileTypes} />
       </Button>
