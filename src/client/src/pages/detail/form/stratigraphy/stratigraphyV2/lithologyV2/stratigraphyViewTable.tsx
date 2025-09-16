@@ -15,9 +15,6 @@ import { LensColumn } from "./LensColumn.tsx";
 import { useScaleContext } from "./scaleContext.tsx";
 import { VerticalZoomPanWrapper } from "./VerticalZoomPanWrapper.tsx";
 
-const defaultCellHeight = 36;
-/*Todo: Set table height based on available space*/
-const tableHeight = 600;
 const scrollStep = 100;
 const minTranslateY = 12;
 const overviewColumnWidth = 45;
@@ -46,12 +43,11 @@ export const StratigraphyViewTable: FC<StratigraphyViewTableProps> = ({
   overviewLayers,
 }) => {
   const { t } = useTranslation();
-  const { scaleY, setTranslateY } = useScaleContext();
-
+  const { scaleY, setTranslateY, tableHeight } = useScaleContext();
   const renderDepthColumnLayer = useCallback(
     (lithology: BaseLayer) => (
       <>
-        <StratigraphyTableCellRow height={`${defaultCellHeight / scaleY}px`}>
+        <StratigraphyTableCellRow>
           <Typography
             variant="body1"
             sx={{
@@ -62,7 +58,7 @@ export const StratigraphyViewTable: FC<StratigraphyViewTableProps> = ({
           </Typography>
         </StratigraphyTableCellRow>
         <StratigraphyTableCellRow sx={{ flex: 1 }} />
-        <StratigraphyTableCellRow height={`${defaultCellHeight / scaleY}px`}>
+        <StratigraphyTableCellRow>
           <Typography
             variant="body1"
             sx={{
@@ -84,7 +80,7 @@ export const StratigraphyViewTable: FC<StratigraphyViewTableProps> = ({
         <Stack direction="column" sx={{ position: "relative", width: "45px", height: "100%" }}>
           <Box>
             <Button
-              sx={{ height: `${defaultCellHeight}px`, mb: "2px" }}
+              sx={{ height: "36px", mb: "2px" }}
               onClick={() => setTranslateY((prev: number) => Math.min(prev + scrollStep * scaleY, minTranslateY))}
               variant="outlined"
               aria-label={t("scroll_up")}>
@@ -97,12 +93,11 @@ export const StratigraphyViewTable: FC<StratigraphyViewTableProps> = ({
               renderLayer={() => null}
               sx={{ flex: `0 0 ${overviewColumnWidth}px` }}
               colorAttribute={"lithologyCon"}
-              tableHeight={tableHeight}
             />
           </Stack>
           <Box sx={{ width: `${overviewColumnWidth}px` }}>
             <Button
-              sx={{ height: `${defaultCellHeight}px`, mt: "2px" }}
+              sx={{ height: "36px", mt: "2px" }}
               onClick={() => setTranslateY((prev: number) => prev + scrollStep * scaleY)}
               variant="outlined"
               aria-label={t("scroll_down")}>

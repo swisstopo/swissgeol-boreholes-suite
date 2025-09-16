@@ -1,5 +1,6 @@
-import { FC, ReactNode } from "react";
-import { SxProps } from "@mui/material";
+import { FC, ReactNode, useRef, useState } from "react";
+import Draggable from "react-draggable";
+import { Box, SxProps } from "@mui/material";
 import { BaseLayer } from "../../../../../../api/stratigraphy.ts";
 import { theme } from "../../../../../../AppTheme.ts";
 import { Codelist } from "../../../../../../components/codelist.ts";
@@ -10,18 +11,20 @@ import {
   StratigraphyTableColumn,
   StratigraphyViewTableCell,
 } from "../stratigraphyTableComponents.tsx";
+import { useScaleContext } from "./scaleContext.tsx";
 
 interface LensColumnProps {
   layers: BaseLayer[];
   renderLayer: (layer: BaseLayer) => ReactNode;
-  colorAttribute: keyof LithologyDescription | null;
-  tableHeight: number;
+  colorAttribute: keyof LithologyDescription;
   sx?: SxProps;
 }
 
-export const LensColumn: FC<LensColumnProps> = ({ layers, renderLayer, colorAttribute, tableHeight, sx }) => {
-  const maxDepth = layers.length > 0 ? Math.max(...layers.map(l => l.toDepth || 0)) : 0;
-  const pxPerMeter = tableHeight / maxDepth;
+export const LensColumn: FC<LensColumnProps> = ({ layers, renderLayer, colorAttribute, sx }) => {
+  const [cursor, setCursor] = useState<"grab" | "grabbing">("grab");
+  const { visibleStart, visibleEnd, maxDepth, tableHeight } = useScaleContext();
+  const depthPxPerMeter = tableHeight / maxDepth;
+  const lensRef = useRef(null);
 
   const getColor = (lithology: Lithology) => {
     const colorCodelist: Codelist = lithology?.lithologyDescriptions?.find(
@@ -33,50 +36,89 @@ export const LensColumn: FC<LensColumnProps> = ({ layers, renderLayer, colorAttr
       : theme.palette.background.lightgrey;
   };
 
-  return (
-    <StratigraphyTableColumn sx={{ position: "relative", height: "100%", ...sx }}>
-      {layers.map((layer: BaseLayer, index: number) => {
-        const { id, fromDepth, toDepth, isGap } = layer;
-        const top = fromDepth * pxPerMeter;
-        const height = (toDepth - fromDepth) * pxPerMeter;
-        // Todo: Account for scale in border width
-        // Todo: Fix bug where border length does not scale
-        const viewCellStyles = {
-          borderLeft: `1px solid ${theme.palette.border.darker}`,
-          borderRight: `1px solid ${theme.palette.border.darker}`,
-          borderTop: index === 0 ? `1px solid ${theme.palette.border.darker}` : "",
-          borderBottom: index === 0 ? `1px solid ${theme.palette.border.darker}` : "",
-          position: "absolute",
-          width: "100%",
-          top: `${top}px`,
-          height: `${height}px`,
-        };
+  const handleDrag = () => {
+    // Intentionally empty
+  };
 
-        if (isGap) {
+  const lensHeight = Math.min((visibleEnd - visibleStart) * depthPxPerMeter, tableHeight);
+  const lensStart = visibleStart * depthPxPerMeter + 36; // offset for scroll buttons
+
+  return (
+    <>
+      <StratigraphyTableColumn sx={{ position: "relative", height: "100%", ...sx }}>
+        {layers.map((layer: BaseLayer, index: number) => {
+          const { id, fromDepth, toDepth, isGap } = layer;
+          const top = fromDepth * depthPxPerMeter;
+          const height = (toDepth - fromDepth) * depthPxPerMeter;
+          // Todo: Account for scale in border width
+          // Todo: Fix bug where border length does not scale
+          const viewCellStyles = {
+            borderLeft: `1px solid ${theme.palette.border.darker}`,
+            borderRight: `1px solid ${theme.palette.border.darker}`,
+            borderTop: index === 0 ? `1px solid ${theme.palette.border.darker}` : "",
+            borderBottom: index === 0 ? `1px solid ${theme.palette.border.darker}` : "",
+            position: "absolute",
+            width: "100%",
+            top: `${top}px`,
+            height: `${height}px`,
+          };
+
+          if (isGap) {
+            return (
+              <StratigraphyViewTableCell
+                key={`gap-${id}-${index}`}
+                sx={{
+                  backgroundColor: theme.palette.error.background,
+                  ...viewCellStyles,
+                }}>
+                <StratigraphyTableCellRow color={theme.palette.error.main} mt={3} />
+              </StratigraphyViewTableCell>
+            );
+          }
+
           return (
-            <StratigraphyViewTableCell
-              key={`gap-${id}-${index}`}
+            <StratigraphyTableActionCell
+              layer={layer}
+              key={id}
               sx={{
-                backgroundColor: theme.palette.error.background,
+                backgroundColor: getColor(layer as Lithology),
                 ...viewCellStyles,
               }}>
-              <StratigraphyTableCellRow color={theme.palette.error.main} mt={3} />
-            </StratigraphyViewTableCell>
+              {renderLayer(layer)}
+            </StratigraphyTableActionCell>
           );
-        }
+        })}
+      </StratigraphyTableColumn>
 
-        return (
-          <StratigraphyTableActionCell
-            layer={layer}
-            key={id}
-            sx={{
-              backgroundColor: getColor(layer as Lithology),
-              ...viewCellStyles,
-            }}>
-            {renderLayer(layer)}
-          </StratigraphyTableActionCell>
-        );
-      })}
-    </StratigraphyTableColumn>
+      <Draggable
+        axis="y"
+        bounds="parent"
+        nodeRef={lensRef}
+        position={{
+          y: lensStart,
+          x: 0,
+        }}
+        onDrag={handleDrag}
+        onStart={() => setCursor("grabbing")}
+        onStop={() => setCursor("grab")}>
+        <Box
+          ref={lensRef}
+          sx={{
+            cursor: cursor,
+            height: lensHeight + "px",
+            position: "absolute",
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            borderStyle: "solid",
+            borderWidth: "2px",
+            borderColor: "red",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}></Box>
+      </Draggable>
+    </>
   );
 };

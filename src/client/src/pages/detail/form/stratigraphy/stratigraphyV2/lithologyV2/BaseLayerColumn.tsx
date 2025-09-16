@@ -19,9 +19,6 @@ interface BaseLayerColumnProps {
   isFirstColumn?: boolean;
 }
 
-const pxPerMeter = 20;
-const defaultRowHeight = 500;
-
 export const BaseLayerColumn: FC<BaseLayerColumnProps> = ({
   layers,
   renderLayer,
@@ -29,7 +26,7 @@ export const BaseLayerColumn: FC<BaseLayerColumnProps> = ({
   onCopyAction,
   isFirstColumn = false,
 }) => {
-  const { scaleY } = useScaleContext();
+  const { scaleY, pxPerMeter } = useScaleContext();
 
   const stratigraphyId = useMemo(() => (layers.length > 0 ? layers[0].stratigraphyId : 0), [layers]);
 
@@ -39,7 +36,7 @@ export const BaseLayerColumn: FC<BaseLayerColumnProps> = ({
         <StratigraphyTableGap
           key="none"
           scaleY={scaleY}
-          sx={{ height: `${defaultRowHeight}px` }}
+          sx={{ height: `500px` }}
           layer={{ id: 0, stratigraphyId, isGap: true, fromDepth: -1, toDepth: -1 }}
         />
       </StratigraphyTableColumn>

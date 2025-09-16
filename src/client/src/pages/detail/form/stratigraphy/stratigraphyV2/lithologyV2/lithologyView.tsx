@@ -1,4 +1,4 @@
-import { FC, useCallback } from "react";
+import { FC, useCallback, useEffect } from "react";
 import { Box, Typography } from "@mui/material";
 import { Language } from "@swissgeol/ui-core";
 import i18n from "i18next";
@@ -25,7 +25,7 @@ interface LithologyViewProps {
 
 export const LithologyView: FC<LithologyViewProps> = ({ lithologies, stratigraphyId }) => {
   const { data: lithologicalDescriptions } = useLithoDescription(stratigraphyId - 15000000); // workaround until there is seed data for stratigraphyV2
-  const { data: faciesDescriptions } = useFaciesDescription(stratigraphyId);
+  const { data: faciesDescriptions } = useFaciesDescription(stratigraphyId - 15000000); // workaround until there is seed data for stratigraphyV2
   const { completedLayers: completedLithologies } = useCompletedLayers(lithologies);
   const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(
     (lithologicalDescriptions ?? []) as BaseLayer[],
@@ -33,7 +33,7 @@ export const LithologyView: FC<LithologyViewProps> = ({ lithologies, stratigraph
   const { completedLayers: completedFaciesDescriptions } = useCompletedLayers(
     (faciesDescriptions ?? []) as BaseLayer[],
   );
-  const { scaleY } = useScaleContext();
+  const { scaleY, setTableHeight, setMaxDepth } = useScaleContext();
 
   const getMaxLinesToDisplay = useCallback(
     (desc: BaseLayer): number => {
@@ -92,6 +92,12 @@ export const LithologyView: FC<LithologyViewProps> = ({ lithologies, stratigraph
     },
     [getMaxLinesToDisplay, scaleY],
   );
+
+  useEffect(() => {
+    /*Todo: Set table height based on available space*/
+    setTableHeight(600);
+    setMaxDepth(completedLithologies.length > 0 ? Math.max(...completedLithologies.map(l => l.toDepth || 0)) : 0);
+  }, [completedLithologies, setMaxDepth, setTableHeight]);
 
   return (
     <StratigraphyViewTable
