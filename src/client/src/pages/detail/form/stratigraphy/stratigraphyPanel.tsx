@@ -17,7 +17,7 @@ import { ensureDatetime } from "../../../../components/form/formUtils";
 import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges";
 import { PromptContext } from "../../../../components/prompt/promptContext";
 import { FullPageCentered } from "../../../../components/styledComponents";
-import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents";
+import { BoreholeTab, BoreholeTabContent, BoreholeTabs } from "../../../../components/styledTabComponents";
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams";
@@ -332,7 +332,7 @@ export const StratigraphyPanel: FC = () => {
               )}
             </>
           )}
-          <BoreholeTabContentBox
+          <BoreholeTabContent
             data-cy="stratigraphy-content"
             p={3}
             pt={2.25}
@@ -410,7 +410,7 @@ export const StratigraphyPanel: FC = () => {
                 </Stack>
               )}
             </Box>
-          </BoreholeTabContentBox>
+          </BoreholeTabContent>
         </Box>
       </Box>
     );
