@@ -12,11 +12,11 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
   const { editingEnabled } = useContext(EditStateContext);
   const { data: lithologies, isLoading: isLoadingLithologies } = useLithologies(stratigraphyId);
   const { data: lithologicalDescriptions, isLoading: isLoadingLithologicalDescriptions } = useLithologicalDescription(
-    stratigraphyId - 15000000,
-  ); // TODO: Remove "- 15000000" workaround after migrating backend data
+    6000010,
+  ); // TODO: Replace 6000010 with stratigraphyId after migrating backend data
   const { data: faciesDescriptions, isLoading: isLoadingFaciesDescription } = useFaciesDescription(
-    stratigraphyId - 15000000,
-  ); // TODO: Remove "- 15000000" workaround after migrating backend data
+    6000010,
+  ); // TODO: Replace 6000010 with stratigraphyId after migrating backend data
 
   // Loading state
   if (isLoadingLithologies || isLoadingLithologicalDescriptions || isLoadingFaciesDescription) {
