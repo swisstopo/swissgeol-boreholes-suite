@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress } from "@mui/material";
-import { useFaciesDescription, useLithoDescription } from "../../../../../../api/stratigraphy.ts";
+import { useFaciesDescription, useLithologicalDescription } from "../../../../../../api/stratigraphy.ts";
 import { FullPageCentered } from "../../../../../../components/styledComponents.ts";
 import { EditStateContext } from "../../../../editStateContext.tsx";
 import { useLithologies } from "../../lithology.ts";
@@ -11,7 +11,8 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
   const { data: lithologies, isLoading: isLoadingLithologies } = useLithologies(stratigraphyId);
-  const { data: lithologicalDescriptions, isLoading: isLoadingLithologicalDescriptions } = useLithoDescription(6000010); // TODO: Replace 6000010 with stratigraphyId after migrating backend data
+  const { data: lithologicalDescriptions, isLoading: isLoadingLithologicalDescriptions } =
+    useLithologicalDescription(6000010); // TODO: Replace 6000010 with stratigraphyId after migrating backend data
   const { data: faciesDescriptions, isLoading: isLoadingFaciesDescription } = useFaciesDescription(6000010); // TODO: Replace 6000010 with stratigraphyId after migrating backend data
 
   // Loading state
