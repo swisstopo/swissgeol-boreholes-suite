@@ -28,12 +28,13 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
 
   // Edit mode
   if (editingEnabled) {
+    // TODO: Remove defaults after migrating backend data
     return (
       <LithologyContentEdit
         stratigraphyId={stratigraphyId}
         lithologies={lithologies}
-        lithologicalDescriptions={lithologicalDescriptions}
-        faciesDescriptions={faciesDescriptions}
+        lithologicalDescriptions={[]}
+        faciesDescriptions={[]}
       />
     );
   }

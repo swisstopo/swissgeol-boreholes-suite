@@ -335,12 +335,7 @@ export const useLithoDescription = (stratigraphyId?: number) =>
   useQuery({
     queryKey: [lithologicalDescriptionQueryKey, stratigraphyId],
     queryFn: async () => {
-      try {
-        const result = await fetchLithologicalDescriptionsByProfileId(stratigraphyId!);
-        return Array.isArray(result) ? result : [];
-      } catch {
-        return [];
-      }
+      return await fetchLithologicalDescriptionsByProfileId(stratigraphyId!);
     },
     enabled: !!stratigraphyId,
   });
@@ -396,12 +391,7 @@ export const useFaciesDescription = (stratigraphyId?: number) =>
   useQuery({
     queryKey: [faciesDescriptionQueryKey, stratigraphyId],
     queryFn: async () => {
-      try {
-        const result = await fetchFaciesDescriptionsByProfileId(stratigraphyId!);
-        return Array.isArray(result) ? result : [];
-      } catch {
-        return [];
-      }
+      return await fetchFaciesDescriptionsByProfileId(stratigraphyId!);
     },
     enabled: !!stratigraphyId,
   });
