@@ -173,6 +173,7 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
     editingEnabled,
     setActivePage,
     setFileInfo,
+    setPageCount,
   ]);
 
   return (

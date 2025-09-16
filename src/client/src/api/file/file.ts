@@ -133,7 +133,10 @@ export async function extractText(request: ExtractionRequest, abortSignal: Abort
   return fetchAndHandleExtractionResponse(request, abortSignal, "noTextFound");
 }
 
-export async function extractStratigraphies(fileName: string, abortSignal: AbortSignal): Promise<any> {
+export async function extractStratigraphies(
+  fileName: string,
+  abortSignal: AbortSignal,
+): Promise<StratigraphyExtractionResponse> {
   const response = await fetchExtractStratigraphy(fileName, abortSignal);
   if (response.ok) {
     const responseObject = await response.json();
