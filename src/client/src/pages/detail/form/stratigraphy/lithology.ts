@@ -90,6 +90,10 @@ export interface LayerDepth {
   lithologyId: number;
 }
 
+export interface LithologyEditForm {
+  lithology: Lithology;
+}
+
 const lithologyController = "lithology";
 
 export const fetchLithologiesByStratigraphyId = async (stratigraphyId: number): Promise<Lithology[]> =>
