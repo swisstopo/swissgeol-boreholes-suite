@@ -155,6 +155,7 @@ declare module "@mui/material/styles" {
     MuiTab: object;
     MuiTabs: object;
     MuiBadge: object;
+    MuiDialog: object;
     MuiDialogTitle: object;
     MuiDialogActions: object;
     MuiDialogContentText: object;
@@ -182,6 +183,7 @@ declare module "@mui/material/styles" {
     MuiTab: object;
     MuiTabs: object;
     MuiBadge: object;
+    MuiDialog: object;
     MuiDialogTitle: object;
     MuiDialogActions: object;
     MuiDialogContentText: object;

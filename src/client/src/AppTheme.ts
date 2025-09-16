@@ -586,7 +586,18 @@ export const theme = createTheme({
         },
       },
     },
+    MuiDialog: {
+      styleOverrides: {
+        paper: {
+          borderRadius: themeSpacing(0.5),
+          margin: themeSpacing(2),
 
+          "&.MuiDialog-paperFullScreen": {
+            height: `calc(100% - ${themeSpacing(4)}) !important`,
+          },
+        },
+      },
+    },
     MuiDialogTitle: {
       styleOverrides: {
         root: {

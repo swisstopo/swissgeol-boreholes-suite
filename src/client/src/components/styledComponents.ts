@@ -58,16 +58,18 @@ export const DialogHeaderContainer = styled(Box)({
   paddingRight: theme.spacing(3),
   paddingLeft: theme.spacing(3),
   paddingBottom: theme.spacing(2),
+  flex: 0,
 });
 
 export const DialogMainContent = styled(Box)({
   padding: theme.spacing(3),
-  flexGrow: 1,
+  flex: 1,
 });
 
 export const DialogFooterContainer = styled(Box)({
   borderTop: "1px solid " + theme.palette.border.light,
   padding: theme.spacing(3),
+  flex: 0,
 });
 
 export const DetailHeaderStack = styled(Stack)({
