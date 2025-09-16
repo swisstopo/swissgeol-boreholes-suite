@@ -36,7 +36,7 @@ export const ScaleContextProvider: FC<PropsWithChildren> = ({ children }) => {
   const [maxDepth, setMaxDepth] = useState<number>(100);
   const [tableHeight, setTableHeight] = useState<number>(600);
   const pxPerMeter = 10;
-  const visibleStart = (-translateY / (maxDepth * pxPerMeter * scaleY)) * maxDepth;
+  const visibleStart = Math.max((-translateY / (maxDepth * pxPerMeter * scaleY)) * maxDepth, 0);
   const visibleEnd = ((-translateY + tableHeight) / (maxDepth * pxPerMeter * scaleY)) * maxDepth;
 
   const contextValue = useMemo(

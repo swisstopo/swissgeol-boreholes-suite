@@ -22,7 +22,7 @@ interface LensColumnProps {
 
 export const LensColumn: FC<LensColumnProps> = ({ layers, renderLayer, colorAttribute, sx }) => {
   const [cursor, setCursor] = useState<"grab" | "grabbing">("grab");
-  const { visibleStart, visibleEnd, maxDepth, tableHeight } = useScaleContext();
+  const { visibleStart, visibleEnd, maxDepth, tableHeight, translateY } = useScaleContext();
   const depthPxPerMeter = tableHeight / maxDepth;
   const lensRef = useRef(null);
 
@@ -36,12 +36,21 @@ export const LensColumn: FC<LensColumnProps> = ({ layers, renderLayer, colorAttr
       : theme.palette.background.lightgrey;
   };
 
-  const handleDrag = () => {
-    // Intentionally empty
-  };
+  const visibleHeight = (visibleEnd - visibleStart) * depthPxPerMeter;
+  const lensStart = visibleStart * depthPxPerMeter;
+  const lensHeight = Math.min(visibleHeight, tableHeight, tableHeight - lensStart);
 
-  const lensHeight = Math.min((visibleEnd - visibleStart) * depthPxPerMeter, tableHeight);
-  const lensStart = visibleStart * depthPxPerMeter + 36; // offset for scroll buttons
+  const handleDrag = (e, data) => {
+    const newValue = data.y / depthPxPerMeter;
+
+    console.log(data.y, newValue);
+    console.log(translateY);
+
+    // if (!isNaN(newValue) && newValue !== lensStart) {
+    //   const ty = -newValue * pxPerMeter * scaleY * maxDepth;
+    //   setTranslateY(prev => prev + ty);
+    // }
+  };
 
   return (
     <>
@@ -104,6 +113,7 @@ export const LensColumn: FC<LensColumnProps> = ({ layers, renderLayer, colorAttr
         <Box
           ref={lensRef}
           sx={{
+            mt: "38px", // offset for scroll button
             cursor: cursor,
             height: lensHeight + "px",
             position: "absolute",
@@ -117,7 +127,8 @@ export const LensColumn: FC<LensColumnProps> = ({ layers, renderLayer, colorAttr
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between",
-          }}></Box>
+          }}
+        />
       </Draggable>
     </>
   );
