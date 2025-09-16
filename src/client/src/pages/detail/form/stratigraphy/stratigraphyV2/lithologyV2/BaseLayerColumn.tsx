@@ -2,8 +2,6 @@ import { FC, ReactNode, useMemo } from "react";
 import { SxProps } from "@mui/material";
 import { BaseLayer } from "../../../../../../api/stratigraphy.ts";
 import { theme } from "../../../../../../AppTheme.ts";
-import { Codelist } from "../../../../../../components/codelist.ts";
-import { Lithology, LithologyDescription } from "../../lithology.ts";
 import {
   StratigraphyTableActionCell,
   StratigraphyTableCellRow,
@@ -18,32 +16,17 @@ interface BaseLayerColumnProps {
   renderLayer: (layer: BaseLayer) => ReactNode;
   sx?: SxProps;
   onCopyAction?: () => void;
-  colorAttribute?: keyof LithologyDescription | null;
   isFirstColumn?: boolean;
 }
 
 const pxPerMeter = 20;
 const defaultRowHeight = 500;
 
-const getColor = (lithology: Lithology, colorAttribute: keyof LithologyDescription | null) => {
-  if (colorAttribute) {
-    const colorCodelist: Codelist = lithology?.lithologyDescriptions?.find(
-      (desc: LithologyDescription) => desc.isFirst,
-    )?.[colorAttribute] as Codelist;
-    const colorArray = (colorAttribute && JSON.parse(colorCodelist?.conf ?? null)?.color) || null;
-    return colorArray
-      ? `rgb(${colorArray[0]}, ${colorArray[1]}, ${colorArray[2]})`
-      : theme.palette.background.lightgrey;
-  }
-  return theme.palette.background.lightgrey;
-};
-
 export const BaseLayerColumn: FC<BaseLayerColumnProps> = ({
   layers,
   renderLayer,
   sx,
   onCopyAction,
-  colorAttribute = null,
   isFirstColumn = false,
 }) => {
   const { scaleY } = useScaleContext();
@@ -114,7 +97,7 @@ export const BaseLayerColumn: FC<BaseLayerColumnProps> = ({
             scaleY={scaleY}
             onHoverClick={onCopyAction}
             sx={{
-              backgroundColor: getColor(layer as Lithology, colorAttribute),
+              backgroundColor: theme.palette.background.lightgrey,
               ...viewCellStyles,
             }}>
             {hasSpaceForText && renderLayer(layer)}

@@ -11,6 +11,7 @@ import {
   StratigraphyTableHeaderCell,
 } from "../stratigraphyTableComponents.tsx";
 import { BaseLayerColumn } from "./BaseLayerColumn.tsx";
+import { LensColumn } from "./LensColumn.tsx";
 import { useScaleContext } from "./scaleContext.tsx";
 import { VerticalZoomPanWrapper } from "./VerticalZoomPanWrapper.tsx";
 
@@ -90,17 +91,15 @@ export const StratigraphyViewTable: FC<StratigraphyViewTableProps> = ({
               <ChevronUp />
             </Button>
           </Box>
-          <VerticalZoomPanWrapper>
-            <Stack sx={{ height: `${tableHeight}px` }}>
-              <BaseLayerColumn
-                isFirstColumn={true}
-                layers={overviewLayers || depthLayers}
-                renderLayer={() => null}
-                sx={{ flex: `0 0 ${overviewColumnWidth}px` }}
-                colorAttribute={"lithologyCon"}
-              />
-            </Stack>
-          </VerticalZoomPanWrapper>
+          <Stack sx={{ height: `${tableHeight}px` }}>
+            <LensColumn
+              layers={overviewLayers || depthLayers}
+              renderLayer={() => null}
+              sx={{ flex: `0 0 ${overviewColumnWidth}px` }}
+              colorAttribute={"lithologyCon"}
+              tableHeight={tableHeight}
+            />
+          </Stack>
           <Box sx={{ width: `${overviewColumnWidth}px` }}>
             <Button
               sx={{ height: `${defaultCellHeight}px`, mt: "2px" }}
