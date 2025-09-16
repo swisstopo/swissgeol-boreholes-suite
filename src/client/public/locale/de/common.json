@@ -392,7 +392,7 @@
   "msgIdentifierAlreadyUsed": "ID Typ bereits vergeben",
   "msgIdentifierDeletionAlreadyUsed": "Dieser ID Typ wird verwendet und kann daher nicht gelöscht werden",
   "msgInstrumentsEmpty": "Kein Instrument verfügbar",
-  "msgLithologyEmpty": "Kein Lithologien verfügbar",
+  "msgLithologyEmpty": "Keine Lithologie verfügbar",
   "msgLithostratigraphyEmpty": "Kein Lithostratigraphieprofil verfügbar",
   "msgLithostratigraphyEmptyEditing": "Sie müssen zuerst eine Stratigraphie erstellen, bevor Sie ein Lithostratigraphieprofil erstellen können",
   "msgNoBoreholesInSelection": "Es sind keine Bohrungen in der Selektion enthalten",
