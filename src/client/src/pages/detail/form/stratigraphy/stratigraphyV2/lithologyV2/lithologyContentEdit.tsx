@@ -76,7 +76,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   const handleDeleteLithology = useCallback(
     (layer: BaseLayer) => {
       const lithology = layer as Lithology;
-      void deleteLithology(lithology);
+      deleteLithology(lithology);
     },
     [deleteLithology],
   );
@@ -89,7 +89,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   const handleDeleteLithologicalDescription = useCallback(
     (layer: BaseLayer) => {
       const lithologicalDescription = layer as LithologicalDescription;
-      void deleteLithologicalDescription(lithologicalDescription);
+      deleteLithologicalDescription(lithologicalDescription);
     },
     [deleteLithologicalDescription],
   );
@@ -102,7 +102,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   const handleDeleteFaciesDescription = useCallback(
     (layer: BaseLayer) => {
       const faciesDescription = layer as FaciesDescription;
-      void deleteFaciesDescription(faciesDescription);
+      deleteFaciesDescription(faciesDescription);
     },
     [deleteFaciesDescription],
   );
