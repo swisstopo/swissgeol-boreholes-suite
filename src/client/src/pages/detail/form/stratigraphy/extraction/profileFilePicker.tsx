@@ -91,7 +91,7 @@ export const ProfileFilePicker: FC<ProfileFilePickerProps> = ({ boreholeId, open
             )}
           </Stack>
           <AddFileButton
-            label={"addProfile"}
+            label={"addProfile-button"}
             onFileSelect={addFile}
             sx={{ width: "100%" }}
             acceptedFileTypes={labelingFileFormat.profile}
