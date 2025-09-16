@@ -44,8 +44,10 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
   if (lithologies.length === 0 && lithologicalDescriptions.length === 0 && faciesDescriptions.length === 0) {
     return <Box>{t("msgLithologyEmpty")}</Box>;
   } else {
-    <ScaleContextProvider>
-      <LithologyView lithologies={lithologies} stratigraphyId={stratigraphyId} />
-    </ScaleContextProvider>
+    return (
+      <ScaleContextProvider>
+        <LithologyView lithologies={lithologies} stratigraphyId={stratigraphyId} />
+      </ScaleContextProvider>
+    );
   }
 };

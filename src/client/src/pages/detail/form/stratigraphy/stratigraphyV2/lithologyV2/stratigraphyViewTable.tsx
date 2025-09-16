@@ -16,7 +16,7 @@ import { VerticalZoomPanWrapper } from "./VerticalZoomPanWrapper.tsx";
 
 const defaultCellHeight = 36;
 /*Todo: Set table height based on available space*/
-const tableHeight = 500;
+const tableHeight = 600;
 const scrollStep = 100;
 const minTranslateY = 12;
 const overviewColumnWidth = 45;
