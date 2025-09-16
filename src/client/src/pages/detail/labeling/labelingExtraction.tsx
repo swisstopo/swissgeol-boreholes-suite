@@ -9,7 +9,6 @@ import {
   getDataExtractionFileInfo,
 } from "../../../api/file/file.ts";
 import { theme } from "../../../AppTheme.ts";
-import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { TextExtractionButton } from "../../../components/buttons/labelingButtons.tsx";
 import { EditStateContext } from "../editStateContext.tsx";
 import { useLabelingContext } from "./labelingContext.tsx";
@@ -20,6 +19,8 @@ interface LabelingExtractionProps {
   selectedFile: BoreholeAttachment | undefined;
   activePage: number;
   setActivePage: (page: number) => void;
+  showAlert: (text: string, severity?: AlertColor, allowAutoHide?: boolean) => void;
+  closeAlert: () => void;
   isReadonly?: boolean;
   setPageCount?: (count: number) => void;
 }
@@ -28,6 +29,8 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
   selectedFile,
   activePage,
   setActivePage,
+  showAlert,
+  closeAlert,
   isReadonly = false,
   setPageCount,
 }) => {
@@ -41,7 +44,6 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
     setFileInfo,
     setAbortController,
   } = useLabelingContext();
-  const { showAlert, closeAlert } = useAlertManager();
   const [pageBoundingBoxes, setPageBoundingBoxes] = useState<ExtractionBoundingBox[]>([]);
   const [extractionExtent, setExtractionExtent] = useState<number[]>([]);
   const [drawTooltipLabel, setDrawTooltipLabel] = useState<string>();

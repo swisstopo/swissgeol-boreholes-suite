@@ -1,8 +1,9 @@
-import { FC, useState } from "react";
+import { FC, useContext, useState } from "react";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
 import { useExtractStratigraphiesQuery } from "../../../../../api/file/file.ts";
 import { theme } from "../../../../../AppTheme.ts";
+import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
 import { LabelingExtraction } from "../../../labeling/labelingExtraction.tsx";
 import { PageSelection } from "../../../labeling/pageSelection.tsx";
 import { useCompletedLayers } from "../stratigraphyV2/lithologyV2/useCompletedLayers.tsx";
@@ -15,6 +16,7 @@ interface StratigraphyExtractionViewProps {
 export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = ({ file }) => {
   const { data: lithologicalDescriptions = [], isLoading, isFetching } = useExtractStratigraphiesQuery(file);
   const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(lithologicalDescriptions);
+  const { showAlert, closeAlert } = useContext(AlertContext);
   const [activePage, setActivePage] = useState<number>(1);
   const [pageCount, setPageCount] = useState<number>();
 
@@ -52,6 +54,8 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
             setActivePage={setActivePage}
             setPageCount={setPageCount}
             isReadonly={true}
+            showAlert={showAlert}
+            closeAlert={closeAlert}
           />
           <Box p={2} sx={{ zIndex: 500 }}>
             <PageSelection pageCount={pageCount} activePage={activePage} setActivePage={setActivePage} />

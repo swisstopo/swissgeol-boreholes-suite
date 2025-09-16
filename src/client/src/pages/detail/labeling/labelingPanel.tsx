@@ -226,7 +226,13 @@ const LabelingPanel: FC = () => {
             alertIsOpen={alertIsOpen}
           />
           {panelTab === PanelTab.profile ? (
-            <LabelingExtraction selectedFile={selectedFile} activePage={activePage} setActivePage={setActivePage} />
+            <LabelingExtraction
+              selectedFile={selectedFile}
+              activePage={activePage}
+              setActivePage={setActivePage}
+              showAlert={showAlert}
+              closeAlert={closeAlert}
+            />
           ) : (
             <LabelingView fileName={selectedPhoto?.nameUuid} loadImage={loadSelectedPhoto} />
           )}
