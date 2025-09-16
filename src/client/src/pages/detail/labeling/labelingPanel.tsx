@@ -5,11 +5,12 @@ import { styled } from "@mui/system";
 import { PanelBottom, PanelRight } from "lucide-react";
 import { BoreholeAttachment, Photo } from "../../../api/apiInterfaces.ts";
 import { getPhotoImageData, getPhotosByBoreholeId, uploadPhoto } from "../../../api/fetchApiV2.ts";
-import { getFiles, uploadFile } from "../../../api/file/file.ts";
-import { BoreholeFile, File as FileInterface, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
+import { uploadFile } from "../../../api/file/file.ts";
+import { File as FileInterface, maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
+import { useBoreholeFiles } from "../attachments/useBoreholeFiles.tsx";
 import { FloatingExtractionFeedback } from "./floatingExtractionFeedback.tsx";
 import { useLabelingContext } from "./labelingContext.tsx";
 import { LabelingExtraction } from "./labelingExtraction.tsx";
@@ -63,6 +64,7 @@ const LabelingPanel: FC = () => {
   const [activePage, setActivePage] = useState<number>(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { alertIsOpen, text, severity, autoHideDuration, showAlert, closeAlert } = useAlertManager();
+  const { data: boreholeFiles } = useBoreholeFiles(boreholeId);
 
   const expectedFileFormat = labelingFileFormat[panelTab];
   const isPhotoSelected = selectedAttachment && "fromDepth" in selectedAttachment;
@@ -80,17 +82,6 @@ const LabelingPanel: FC = () => {
     return () => clearTimeout(timer);
   }, [alertIsOpen, autoHideDuration, closeAlert]);
 
-  const loadProfiles = useCallback(async () => {
-    const response = await getFiles<BoreholeFile>(Number(boreholeId));
-    const profiles = response
-      .filter((fileResponse: BoreholeFile) => matchesFileFormat(expectedFileFormat, fileResponse.file.type))
-      .map((fileResponse: BoreholeFile) => fileResponse.file);
-    if (profiles.length === 1) {
-      setSelectedAttachment(selected => selected ?? profiles[0]);
-    }
-    return profiles;
-  }, [boreholeId, expectedFileFormat]);
-
   const loadPhotos = useCallback(async () => {
     const photos = await getPhotosByBoreholeId(Number(boreholeId));
     if (photos.length > 0) {
@@ -103,13 +94,13 @@ const LabelingPanel: FC = () => {
     if (boreholeId) {
       setIsLoadingFiles(true);
       try {
-        const files = panelTab === PanelTab.profile ? await loadProfiles() : await loadPhotos();
+        const files = panelTab === PanelTab.profile ? boreholeFiles : await loadPhotos();
         setFiles(files);
       } finally {
         setIsLoadingFiles(false);
       }
     }
-  }, [boreholeId, loadPhotos, loadProfiles, panelTab]);
+  }, [boreholeFiles, boreholeId, loadPhotos, panelTab]);
 
   const addFile = useCallback(
     async (file: File) => {
@@ -235,13 +226,7 @@ const LabelingPanel: FC = () => {
             alertIsOpen={alertIsOpen}
           />
           {panelTab === PanelTab.profile ? (
-            <LabelingExtraction
-              selectedFile={selectedFile}
-              activePage={activePage}
-              setActivePage={setActivePage}
-              showAlert={showAlert}
-              closeAlert={closeAlert}
-            />
+            <LabelingExtraction selectedFile={selectedFile} activePage={activePage} setActivePage={setActivePage} />
           ) : (
             <LabelingView fileName={selectedPhoto?.nameUuid} loadImage={loadSelectedPhoto} />
           )}

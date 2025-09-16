@@ -1,6 +1,5 @@
 import { FC, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import CloseIcon from "@mui/icons-material/Close";
 import { Box, Button, IconButton } from "@mui/material";
 import { ArrowDownToLine, Check, ChevronLeft, Pencil, Plus, Save, Trash2 } from "lucide-react";
 import CopyIcon from "../../assets/icons/copy.svg?react";
@@ -85,7 +84,6 @@ export const CancelButton: FC<ButtonProps> = props => {
       label="cancel"
       variant={props.variant ?? "outlined"}
       color={props.color ?? "secondary"}
-      icon={<CloseIcon />}
     />
   );
 };

@@ -1,6 +1,6 @@
 import { FC, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertColor, Box } from "@mui/material";
+import { Box } from "@mui/material";
 import { ApiError, BoreholeAttachment } from "../../../api/apiInterfaces.ts";
 import {
   extractCoordinates,
@@ -9,6 +9,7 @@ import {
   getDataExtractionFileInfo,
 } from "../../../api/file/file.ts";
 import { theme } from "../../../AppTheme.ts";
+import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { TextExtractionButton } from "../../../components/buttons/labelingButtons.tsx";
 import { EditStateContext } from "../editStateContext.tsx";
 import { useLabelingContext } from "./labelingContext.tsx";
@@ -19,16 +20,16 @@ interface LabelingExtractionProps {
   selectedFile: BoreholeAttachment | undefined;
   activePage: number;
   setActivePage: (page: number) => void;
-  showAlert: (text: string, severity?: AlertColor, allowAutoHide?: boolean) => void;
-  closeAlert: () => void;
+  isReadonly?: boolean;
+  setPageCount?: (count: number) => void;
 }
 
 export const LabelingExtraction: FC<LabelingExtractionProps> = ({
   selectedFile,
   activePage,
   setActivePage,
-  showAlert,
-  closeAlert,
+  isReadonly = false,
+  setPageCount,
 }) => {
   const { t } = useTranslation();
   const {
@@ -40,6 +41,7 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
     setFileInfo,
     setAbortController,
   } = useLabelingContext();
+  const { showAlert, closeAlert } = useAlertManager();
   const [pageBoundingBoxes, setPageBoundingBoxes] = useState<ExtractionBoundingBox[]>([]);
   const [extractionExtent, setExtractionExtent] = useState<number[]>([]);
   const [drawTooltipLabel, setDrawTooltipLabel] = useState<string>();
@@ -140,6 +142,7 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
       const fileInfoResponse = await getDataExtractionFileInfo(selectedFile.id, activePage);
       const { fileName, count } = fileInfoResponse;
       let newActivePage = activePage;
+      if (setPageCount != undefined) setPageCount(count);
       if (fileInfo?.count !== count) {
         newActivePage = 1;
         setActivePage(newActivePage);
@@ -159,7 +162,7 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
       }
     };
 
-    fetchExtractionData();
+    void fetchExtractionData();
   }, [
     activePage,
     selectedFile,
@@ -181,7 +184,7 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
           left: theme.spacing(2),
           zIndex: "500",
         }}>
-        {editingEnabled && (
+        {editingEnabled && !isReadonly && (
           <TextExtractionButton
             disabled={extractionObject?.type == "text" && extractionState === ExtractionState.drawing}
             onClick={() => {
