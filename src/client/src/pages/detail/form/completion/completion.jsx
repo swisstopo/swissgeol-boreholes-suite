@@ -15,7 +15,7 @@ import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPage } from "../../../../components/styledComponents.ts";
-import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
+import { BoreholeTab, BoreholeTabContent, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.js";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
@@ -357,7 +357,7 @@ const Completion = () => {
           </Stack>
           {state.selected != null && (
             <>
-              <BoreholeTabContentBox sx={{ padding: "18px" }} data-cy="completion-header">
+              <BoreholeTabContent sx={{ padding: "18px" }} data-cy="completion-header">
                 {state.editing ? (
                   <CompletionHeaderInput
                     completion={state.selected}
@@ -377,7 +377,7 @@ const Completion = () => {
                     deleteCompletion={deleteSelectedCompletion}
                   />
                 )}
-              </BoreholeTabContentBox>
+              </BoreholeTabContent>
             </>
           )}
         </Stack>

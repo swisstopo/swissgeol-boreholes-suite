@@ -6,7 +6,7 @@ import { Stack } from "@mui/system";
 import { useLegacyStratigraphiesByBoreholeId, useLegacyStratigraphyMutations } from "../../../../api/stratigraphy.ts";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
-import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
+import { BoreholeTab, BoreholeTabContent, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
@@ -107,7 +107,7 @@ export const LegacyStratigraphyPanel: FC = () => {
             sx={{ position: "absolute", top: 0, right: 0, mx: 2, my: 1 }}
           />
         )}
-        <BoreholeTabContentBox sx={{ mb: 2 }}>
+        <BoreholeTabContent sx={{ mb: 2 }}>
           {selectedStratigraphy && (
             <>
               <StratigraphyForm stratigraphy={selectedStratigraphy} />
@@ -135,7 +135,7 @@ export const LegacyStratigraphyPanel: FC = () => {
               </Box>
             </>
           )}
-        </BoreholeTabContentBox>
+        </BoreholeTabContent>
       </Box>
     </Box>
   );

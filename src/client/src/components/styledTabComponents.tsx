@@ -1,13 +1,15 @@
-import { Box, Tab, Tabs } from "@mui/material";
+import { Stack, Tab, Tabs } from "@mui/material";
 import { styled } from "@mui/system";
 import { theme } from "../AppTheme";
 
-export const BoreholeTabContentBox = styled(Box)(() => ({
+export const BoreholeTabContent = styled(Stack)(() => ({
   backgroundColor: theme.palette.background.default,
   border: `1px solid ${theme.palette.border.light}`,
   padding: `${theme.spacing(3)}`,
-  display: "flex",
-  flexDirection: "column",
+}));
+
+export const BoreholeListTabContent = styled(Stack)(() => ({
+  paddingTop: `${theme.spacing(3)}`,
 }));
 
 export const BoreholeTabs = styled(Tabs)({

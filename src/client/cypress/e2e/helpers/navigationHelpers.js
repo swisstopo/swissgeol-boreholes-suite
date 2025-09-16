@@ -37,10 +37,14 @@ const noContentColor = "rgb(130, 142, 154)";
 const contentColor = "rgb(28, 40, 52)";
 const activeColor = "rgb(166, 84, 98)";
 
-export const checkTabsByTitles = (tabs, parent) => {
+export const checkTabsByTitles = (tabs, parent, datacy) => {
   const selector = createBaseSelector(parent) + `.MuiTabs-list`;
+  let tabSelector = ".MuiTab-root";
+  if (datacy) {
+    tabSelector = `.MuiTab-root[data-cy*="${datacy}"]`;
+  }
   cy.get(selector)
-    .find(".MuiTab-root")
+    .find(tabSelector)
     .should($tabs => {
       expect($tabs).to.have.length(tabs.length);
       $tabs.each((i, tab) => {

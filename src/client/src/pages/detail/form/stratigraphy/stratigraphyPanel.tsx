@@ -17,7 +17,8 @@ import { ensureDatetime } from "../../../../components/form/formUtils";
 import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges";
 import { PromptContext } from "../../../../components/prompt/promptContext";
 import { FullPageCentered } from "../../../../components/styledComponents";
-import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents";
+import { BoreholeTab, BoreholeTabContent, BoreholeTabs } from "../../../../components/styledTabComponents";
+import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
@@ -25,6 +26,7 @@ import { formatDate } from "../../../../utils";
 import { EditStateContext } from "../../editStateContext";
 import { SaveContext, SaveContextProps } from "../../saveContext";
 import { AddStratigraphyButton } from "./addStratigraphyButton";
+import { LithologyPanel } from "./stratigraphyV2/lithologyV2/lithologyPanel.tsx";
 
 export const StratigraphyPanel: FC = () => {
   const justCopiedRef = useRef(false);
@@ -330,7 +332,7 @@ export const StratigraphyPanel: FC = () => {
               )}
             </>
           )}
-          <BoreholeTabContentBox
+          <BoreholeTabContent
             data-cy="stratigraphy-content"
             p={3}
             pt={2.25}
@@ -387,6 +389,16 @@ export const StratigraphyPanel: FC = () => {
               </FormProvider>
             )}
             <Box sx={{ position: "relative" }}>
+              <TabPanel
+                variant="list"
+                tabs={[
+                  {
+                    label: t("lithology"),
+                    hash: "#lithology",
+                    component: <LithologyPanel stratigraphyId={selectedStratigraphy.id} />,
+                  },
+                ]}
+              />
               {sortedStratigraphies.length > 1 && !editingEnabled && (
                 <Stack
                   direction="row"
@@ -398,7 +410,7 @@ export const StratigraphyPanel: FC = () => {
                 </Stack>
               )}
             </Box>
-          </BoreholeTabContentBox>
+          </BoreholeTabContent>
         </Box>
       </Box>
     );

@@ -6,6 +6,7 @@ import { BreakpointsOptions } from "@mui/system/createTheme/createBreakpoints";
 
 declare module "@mui/material/IconButton" {
   interface IconButtonPropsColorOverrides {
+    primaryInverse: true;
     ai: true;
   }
 }
@@ -48,6 +49,7 @@ declare module "@mui/material/styles" {
       light: string;
       contrastText: string;
       background: string;
+      backgroundHover: string;
     };
     neutral: {
       main: string;

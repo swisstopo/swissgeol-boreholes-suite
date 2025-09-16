@@ -5,14 +5,14 @@ import { Stack } from "@mui/material";
 import PropTypes from "prop-types";
 import { getBackfills, getCasings, getInstrumentation } from "../../../../api/fetchApiV2.ts";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.tsx";
-import { BoreholeTab, BoreholeTabContentBox, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
+import { BoreholeTab, BoreholeTabContent, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.js";
 import Backfill from "./backfill.jsx";
 import Casing from "./casing.jsx";
 import Instrumentation from "./instrumentation.jsx";
 
 const CompletionContentTabBox = props => {
-  return <BoreholeTabContentBox flex="1 0 0">{props.children()}</BoreholeTabContentBox>;
+  return <BoreholeTabContent flex="1 0 0">{props.children()}</BoreholeTabContent>;
 };
 CompletionContentTabBox.propTypes = { children: PropTypes.func.isRequired };
 export const MemoizedCompletionContentTabBox = React.memo(CompletionContentTabBox);
