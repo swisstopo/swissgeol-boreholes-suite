@@ -3,6 +3,7 @@ import {
   BoundingBoxResponse,
   ExtractionRequest,
   ExtractionResponse,
+  StratigraphyExtractionResponse,
 } from "../../pages/detail/labeling/labelingInterfaces.tsx";
 import { ApiError, BoreholeAttachment } from "../apiInterfaces.ts";
 import { fetchCreatePngs, fetchExtractData, fetchExtractStratigraphy, fetchPageBoundingBoxes } from "../dataextraction";
