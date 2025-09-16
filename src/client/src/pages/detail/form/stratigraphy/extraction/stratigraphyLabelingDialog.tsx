@@ -9,7 +9,7 @@ import {
   DialogHeaderContainer,
   DialogMainContent,
 } from "../../../../../components/styledComponents.ts";
-import { ExtractedStratigraphy } from "./extractedStratigraphy.tsx";
+import { StratigraphyExtractionView } from "./stratigraphyExtractionView.tsx";
 
 interface StratigraphyLabelingProps {
   file: BoreholeAttachment;
@@ -50,7 +50,7 @@ export const StratigraphyLabelingDialog: FC<StratigraphyLabelingProps> = ({ file
         </Stack>
       </DialogHeaderContainer>
       <DialogMainContent>
-        <ExtractedStratigraphy file={file} />
+        <StratigraphyExtractionView file={file} />
       </DialogMainContent>
       <DialogFooterContainer>
         <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={0.75}>

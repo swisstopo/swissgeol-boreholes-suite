@@ -71,6 +71,7 @@ const LabelingPanel: FC = () => {
   const isPhotoSelected = selectedAttachment && "fromDepth" in selectedAttachment;
   const selectedFile: FileInterface | undefined = isPhotoSelected ? undefined : selectedAttachment;
   const selectedPhoto: Photo | undefined = isPhotoSelected ? selectedAttachment : undefined;
+
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (alertIsOpen && autoHideDuration !== null) {
@@ -115,8 +116,8 @@ const LabelingPanel: FC = () => {
         } else {
           const photoResponse = await uploadPhoto(Number(boreholeId), file);
           setSelectedAttachment(photoResponse);
-          loadFiles();
         }
+        void loadFiles();
       } catch (error) {
         showAlert(t((error as Error).message), "error");
       }
@@ -132,7 +133,7 @@ const LabelingPanel: FC = () => {
   }, [selectedPhoto]);
 
   useEffect(() => {
-    loadFiles();
+    void loadFiles();
   }, [loadFiles]);
 
   const isExtractionLoading = extractionState === ExtractionState.loading;
