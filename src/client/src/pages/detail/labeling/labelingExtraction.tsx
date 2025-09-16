@@ -1,6 +1,6 @@
 import { FC, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Box } from "@mui/material";
+import { AlertColor, Box } from "@mui/material";
 import { ApiError, BoreholeAttachment } from "../../../api/apiInterfaces.ts";
 import {
   extractCoordinates,
