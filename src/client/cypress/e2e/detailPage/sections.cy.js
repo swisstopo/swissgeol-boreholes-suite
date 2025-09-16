@@ -170,7 +170,7 @@ describe("Section crud tests", () => {
     navigateInBorehole(BoreholeTab.sections);
 
     // section was not saved
-    cy.contains("No sections available");
+    cy.contains("No section available");
 
     addItem("addSection");
     setInput("name", "AA_CAPYBARA");

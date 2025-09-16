@@ -67,7 +67,7 @@ describe("Viewer tests", () => {
     navigateInSidebar(SidebarMenuItem.borehole);
     evaluateInput("total_depth_tvd", "1'913.61");
     navigateInBorehole(BoreholeTab.sections);
-    cy.contains("No sections available").should("exist");
+    cy.contains("No section available").should("exist");
     navigateInBorehole(BoreholeTab.geometry);
     cy.contains("Top view").should("exist");
     navigateInSidebar(SidebarMenuItem.stratigraphy);
