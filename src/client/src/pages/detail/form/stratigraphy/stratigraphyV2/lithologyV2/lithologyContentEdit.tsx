@@ -69,40 +69,40 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   );
 
   const handleEditLithology = useCallback((layer: BaseLayer) => {
-    const lithology = layer as unknown as Lithology;
+    const lithology = layer as Lithology;
     console.log("edit lithology", lithology.id);
   }, []);
 
   const handleDeleteLithology = useCallback(
     (layer: BaseLayer) => {
-      const lithology = layer as unknown as Lithology;
-      deleteLithology(lithology);
+      const lithology = layer as Lithology;
+      void deleteLithology(lithology);
     },
     [deleteLithology],
   );
 
   const handleEditLithologicalDescription = useCallback((layer: BaseLayer) => {
-    const lithologicalDescription = layer as unknown as LithologicalDescription;
+    const lithologicalDescription = layer as LithologicalDescription;
     console.log("edit lithologicalDescription", lithologicalDescription.id);
   }, []);
 
   const handleDeleteLithologicalDescription = useCallback(
     (layer: BaseLayer) => {
-      const lithologicalDescription = layer as unknown as LithologicalDescription;
-      deleteLithologicalDescription(lithologicalDescription);
+      const lithologicalDescription = layer as LithologicalDescription;
+      void deleteLithologicalDescription(lithologicalDescription);
     },
     [deleteLithologicalDescription],
   );
 
   const handleEditFaciesDescription = useCallback((layer: BaseLayer) => {
-    const faciesDescription = layer as unknown as FaciesDescription;
+    const faciesDescription = layer as FaciesDescription;
     console.log("edit faciesDescription", faciesDescription.id);
   }, []);
 
   const handleDeleteFaciesDescription = useCallback(
     (layer: BaseLayer) => {
-      const faciesDescription = layer as unknown as FaciesDescription;
-      deleteFaciesDescription(faciesDescription);
+      const faciesDescription = layer as FaciesDescription;
+      void deleteFaciesDescription(faciesDescription);
     },
     [deleteFaciesDescription],
   );
