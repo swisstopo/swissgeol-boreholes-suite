@@ -52,6 +52,16 @@ export const ProfileFilePicker: FC<ProfileFilePickerProps> = ({ boreholeId, open
     [boreholeId, invalidateBoreholeFiles, selectFile],
   );
 
+  const getFilesButtons = () => {
+    return files && files?.length > 0 ? (
+      files.map(file => (
+        <FileButton key={file.name} label={file.name} icon={<FileTextIcon />} onClick={() => selectFile(file)} />
+      ))
+    ) : (
+      <Typography variant="body1">{t("noProfilesUploaded")}</Typography>
+    );
+  };
+
   return (
     <Dialog
       open={open}
@@ -77,17 +87,8 @@ export const ProfileFilePicker: FC<ProfileFilePickerProps> = ({ boreholeId, open
               <Stack direction="row" sx={{ justifyContent: "center", color: "text.primary" }}>
                 <CircularProgress />
               </Stack>
-            ) : files && files.length > 0 ? (
-              files.map(file => (
-                <FileButton
-                  key={file.name}
-                  label={file.name}
-                  icon={<FileTextIcon />}
-                  onClick={() => selectFile(file)}
-                />
-              ))
             ) : (
-              <Typography variant="body1">{t("noProfilesUploaded")}</Typography>
+              getFilesButtons()
             )}
           </Stack>
           <AddFileButton

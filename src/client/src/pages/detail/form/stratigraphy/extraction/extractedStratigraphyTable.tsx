@@ -69,8 +69,8 @@ export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = (
               {!lithologicalDescriptions || lithologicalDescriptions.length === 0 ? (
                 <StratigraphyTableCell>empty</StratigraphyTableCell>
               ) : (
-                lithologicalDescriptions.map((desc, index) => (
-                  <StratigraphyTableCell key={`depth-${index}`} sx={{ height: `${defaultRowHeight}px` }}>
+                lithologicalDescriptions.map(desc => (
+                  <StratigraphyTableCell key={`depth-${desc.id}`} sx={{ height: `${defaultRowHeight}px` }}>
                     <Typography>{`${desc.fromDepth} m MD`}</Typography>
                     <Typography>{`${desc.toDepth} m MD`}</Typography>
                   </StratigraphyTableCell>
