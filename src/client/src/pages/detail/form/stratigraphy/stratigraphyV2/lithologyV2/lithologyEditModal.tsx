@@ -33,18 +33,10 @@ export const LithologyEditModal: FC<LithologyEditModalProps> = ({ lithology, upd
     }
   }, [lithology, formMethods]);
 
-  useEffect(() => {
-    const subscription = formMethods.watch(values => {
-      console.log("Form changed:", values);
-    });
-    return () => subscription.unsubscribe();
-  }, [formMethods]);
-
   const isUnconsolidated = formMethods.watch("isUnconsolidated");
 
   const closeDialog = () => {
     const values = getValues();
-    console.log("values", values);
     updateLithology({ ...lithology, ...values } as Lithology);
   };
 

@@ -162,7 +162,6 @@ export const LithologyUnconsolidatedForm: FC<LithologyEditForm> = ({ lithologyId
       let enCode = "";
       const descriptions: LithologyDescription[] | undefined = values.lithologyDescriptions;
       if (descriptions && descriptions.length > 0) {
-        console.log("descriptions", descriptions);
         enCode = descriptions
           ?.map(description => {
             const codes = [];
