@@ -44,10 +44,10 @@ const buildUnconsolidatedPrimaryString = (
     codes.push(description.lithologyUncon6.code);
     primaryValues.push(description.lithologyUncon6[language]);
   }
-  if (description.componentUnconOrganicCodelists.length > 0) {
+  if (description.componentUnconOrganicCodelists && description.componentUnconOrganicCodelists.length > 0) {
     primaryValues.push(...description.componentUnconOrganicCodelists.map(c => c[language]));
   }
-  if (description.componentUnconDebrisCodelists.length > 0) {
+  if (description.componentUnconDebrisCodelists && description.componentUnconDebrisCodelists.length > 0) {
     primaryValues.push(...description.componentUnconDebrisCodelists.map(c => c[language]));
   }
   if (description.colorPrimary) {
@@ -74,13 +74,13 @@ const buildUnconsolidatedPrimaryString = (
 
 const buildUnconsolidatedSecondaryString = (t: TFunction, language: string, description: LithologyDescription) => {
   const secondaryValues = [];
-  if (description.lithologyUnconDebrisCodelists.length > 0) {
+  if (description.lithologyUnconDebrisCodelists && description.lithologyUnconDebrisCodelists.length > 0) {
     secondaryValues.push(...description.lithologyUnconDebrisCodelists.map(c => c[language]));
   }
-  if (description.grainShapeCodelists.length > 0) {
+  if (description.grainShapeCodelists && description.grainShapeCodelists.length > 0) {
     secondaryValues.push(...description.grainShapeCodelists.map(c => c[language]));
   }
-  if (description.grainAngularityCodelists.length > 0) {
+  if (description.grainAngularityCodelists && description.grainAngularityCodelists.length > 0) {
     secondaryValues.push(...description.grainAngularityCodelists.map(c => c[language]));
   }
   secondaryValues.push(t(description.hasStriae ? "striae" : "noStriae"));
@@ -94,7 +94,7 @@ const buildUnconsolidatedDetails1String = (t: TFunction, language: string, litho
   if (lithology.cohesion) details.push(lithology.cohesion[language]);
   if (lithology.plasticity) details.push(lithology.plasticity[language]);
   if (lithology.humidity) details.push(lithology.humidity[language]);
-  if (lithology.uscsTypeCodelists.length > 0) {
+  if (lithology.uscsTypeCodelists && lithology.uscsTypeCodelists.length > 0) {
     let uscsString = `${t("uscsClass", { count: lithology.uscsTypeCodelists.length })}: ${lithology.uscsTypeCodelists.map(c => c[language]).join(", ")}`;
     if (lithology.uscsDetermination) {
       uscsString += ` (${lithology.uscsDetermination[language]})`;
@@ -107,7 +107,7 @@ const buildUnconsolidatedDetails1String = (t: TFunction, language: string, litho
 
 const buildUnconsolidatedDetails2String = (language: string, lithology: Lithology) => {
   const details = [];
-  if (lithology.rockConditionCodelists.length > 0) {
+  if (lithology.rockConditionCodelists && lithology.rockConditionCodelists.length > 0) {
     details.push(...lithology.rockConditionCodelists.map(c => c[language]));
   }
   if (lithology.alterationDegree) details.push(lithology.alterationDegree[language]);
@@ -125,10 +125,10 @@ const buildConsolidatedPrimaryString = (
   if (description.lithologyCon) {
     primaryValues.push(description.lithologyCon[language]);
   }
-  if (description.componentConParticleCodelists.length > 0) {
+  if (description.componentConParticleCodelists && description.componentConParticleCodelists.length > 0) {
     primaryValues.push(...description.componentConParticleCodelists.map(c => c[language]));
   }
-  if (description.componentConMineralCodelists.length > 0) {
+  if (description.componentConMineralCodelists && description.componentConMineralCodelists.length > 0) {
     primaryValues.push(...description.componentConMineralCodelists.map(c => c[language]));
   }
   if (description.colorPrimary) {
@@ -163,10 +163,10 @@ const buildConsolidatedSecondaryString = (t: TFunction, language: string, descri
   if (description.cementation) {
     secondaryValues.push(description.cementation[language]);
   }
-  if (description.structureSynGenCodelists.length > 0) {
+  if (description.structureSynGenCodelists && description.structureSynGenCodelists.length > 0) {
     secondaryValues.push(...description.structureSynGenCodelists.map(c => c[language]));
   }
-  if (description.structurePostGenCodelists.length > 0) {
+  if (description.structurePostGenCodelists && description.structurePostGenCodelists.length > 0) {
     secondaryValues.push(...description.structurePostGenCodelists.map(c => c[language]));
   }
 
@@ -175,7 +175,7 @@ const buildConsolidatedSecondaryString = (t: TFunction, language: string, descri
 
 const buildConsolidatedDetailsString = (language: string, lithology: Lithology) => {
   const details = [];
-  if (lithology.textureMataCodelists.length > 0) {
+  if (lithology.textureMataCodelists && lithology.textureMataCodelists.length > 0) {
     details.push(...lithology.textureMataCodelists.map(c => c[language]));
   }
   if (lithology.alterationDegree) details.push(lithology.alterationDegree[language]);
@@ -248,11 +248,12 @@ export const useLithologyLabels = () => {
       const details2 = buildUnconsolidatedDetails2String(language, lithology);
       return (
         <>
-          {lithology.lithologyDescriptions.map((description, index) => (
-            <div key={`lithologyDescriptions-${description.id}`}>
-              {buildUnconsolidatedLithologyDescription(t, language, description, getBeddingShare(lithology, index))}
-            </div>
-          ))}
+          {lithology.lithologyDescriptions &&
+            lithology.lithologyDescriptions.map((description, index) => (
+              <div key={`lithologyDescriptions-${description.id}`}>
+                {buildUnconsolidatedLithologyDescription(t, language, description, getBeddingShare(lithology, index))}
+              </div>
+            ))}
           {details1.length > 0 && <Typography variant="body2">{details1}</Typography>}
           {details2.length > 0 && <Typography variant="body2">{details2}</Typography>}
           {lithology.notes && <Typography variant="body2">{lithology.notes}</Typography>}
@@ -262,11 +263,12 @@ export const useLithologyLabels = () => {
       const details = buildConsolidatedDetailsString(language, lithology);
       return (
         <>
-          {lithology.lithologyDescriptions.map((description, index) => (
-            <div key={`lithologyDescriptions-${description.id}`}>
-              {buildConsolidatedLithologyDescription(t, language, description, getBeddingShare(lithology, index))}
-            </div>
-          ))}
+          {lithology.lithologyDescriptions &&
+            lithology.lithologyDescriptions.map((description, index) => (
+              <div key={`lithologyDescriptions-${description.id}`}>
+                {buildConsolidatedLithologyDescription(t, language, description, getBeddingShare(lithology, index))}
+              </div>
+            ))}
           {details.length > 0 && <Typography variant="body2">{details}</Typography>}
           {lithology.notes && <Typography variant="body2">{lithology.notes}</Typography>}
         </>

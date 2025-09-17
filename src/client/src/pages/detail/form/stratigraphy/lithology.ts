@@ -1,3 +1,4 @@
+import { UseFormReturn } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { fetchApiV2, fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
 import { BaseLayer } from "../../../../api/stratigraphy.ts";
@@ -9,79 +10,80 @@ export interface LithologyDescription {
   lithologyId: number;
   lithology: Lithology;
   isFirst: boolean;
-  colorPrimaryId: number | null;
-  colorPrimary: Codelist | null;
-  colorSecondaryId: number | null;
-  colorSecondary: Codelist | null;
-  lithologyUnconMainId: number | null;
-  lithologyUnconMain: Codelist | null;
-  lithologyUncon2Id: number | null;
-  lithologyUncon2: Codelist | null;
-  lithologyUncon3Id: number | null;
-  lithologyUncon3: Codelist | null;
-  lithologyUncon4Id: number | null;
-  lithologyUncon4: Codelist | null;
-  lithologyUncon5Id: number | null;
-  lithologyUncon5: Codelist | null;
-  lithologyUncon6Id: number | null;
-  lithologyUncon6: Codelist | null;
-  componentUnconOrganicCodelistIds: number[];
-  componentUnconOrganicCodelists: Codelist[];
-  componentUnconDebrisCodelistIds: number[];
-  componentUnconDebrisCodelists: Codelist[];
-  grainShapeCodelistIds: Codelist[];
-  grainShapeCodelists: Codelist[];
-  grainAngularityCodelistIds: number[];
-  grainAngularityCodelists: Codelist[];
-  hasStriae: boolean;
-  lithologyUnconDebrisCodelistIds: number[];
-  lithologyUnconDebrisCodelists: Codelist[];
-  lithologyConId: number | null;
-  lithologyCon: Codelist | null;
-  componentConParticleCodelistIds: number[];
-  componentConParticleCodelists: Codelist[];
-  componentConMineralCodelistIds: number[];
-  componentConMineralCodelists: Codelist[];
-  grainSizeId: number | null;
-  grainSize: Codelist | null;
-  grainAngularityId: number | null;
-  grainAngularity: Codelist | null;
-  gradationId: number | null;
-  gradation: Codelist | null;
-  cementationId: number | null;
-  cementation: Codelist | null;
-  structureSynGenCodelistIds: number[];
-  structureSynGenCodelists: Codelist[];
-  structurePostGenCodelistIds: number[];
-  structurePostGenCodelists: Codelist[];
+  colorPrimaryId?: number;
+  colorPrimary?: Codelist;
+  colorSecondaryId?: number;
+  colorSecondary?: Codelist;
+  lithologyUnconMainId?: number;
+  lithologyUnconMain?: Codelist;
+  lithologyUncon2Id?: number;
+  lithologyUncon2?: Codelist;
+  lithologyUncon3Id?: number;
+  lithologyUncon3?: Codelist;
+  lithologyUncon4Id?: number;
+  lithologyUncon4?: Codelist;
+  lithologyUncon5Id?: number;
+  lithologyUncon5?: Codelist;
+  lithologyUncon6Id?: number;
+  lithologyUncon6?: Codelist;
+  componentUnconOrganicCodelistIds?: number[];
+  componentUnconOrganicCodelists?: Codelist[];
+  componentUnconDebrisCodelistIds?: number[];
+  componentUnconDebrisCodelists?: Codelist[];
+  grainShapeCodelistIds?: number[];
+  grainShapeCodelists?: Codelist[];
+  grainAngularityCodelistIds?: number[];
+  grainAngularityCodelists?: Codelist[];
+  hasStriae?: boolean;
+  lithologyUnconDebrisCodelistIds?: number[];
+  lithologyUnconDebrisCodelists?: Codelist[];
+  lithologyConId?: number;
+  lithologyCon?: Codelist;
+  componentConParticleCodelistIds?: number[];
+  componentConParticleCodelists?: Codelist[];
+  componentConMineralCodelistIds?: number[];
+  componentConMineralCodelists?: Codelist[];
+  grainSizeId?: number;
+  grainSize?: Codelist;
+  grainAngularityId?: number;
+  grainAngularity?: Codelist;
+  gradationId?: number;
+  gradation?: Codelist;
+  cementationId?: number;
+  cementation?: Codelist;
+  structureSynGenCodelistIds?: number[];
+  structureSynGenCodelists?: Codelist[];
+  structurePostGenCodelistIds?: number[];
+  structurePostGenCodelists?: Codelist[];
 }
 
 export interface Lithology extends BaseLayer {
   isUnconsolidated: boolean;
   hasBedding: boolean;
-  share: number | null;
-  lithologyDescriptions: LithologyDescription[];
-  alterationDegreeId: number | null;
-  alterationDegree: Codelist | null;
-  notes: string | null;
-  compactnessId: number | null;
-  compactness: Codelist | null;
-  cohesionId: number | null;
-  cohesion: Codelist | null;
-  humidityId: number | null;
-  humidity: Codelist | null;
-  consistencyId: number | null;
-  consistency: Codelist | null;
-  plasticityId: number | null;
-  plasticity: Codelist | null;
-  uscsTypeCodelistIds: number[];
-  uscsTypeCodelists: Codelist[];
-  uscsDeterminationId: number | null;
-  uscsDetermination: Codelist | null;
-  rockConditionCodelistIds: number[];
-  rockConditionCodelists: Codelist[];
-  textureMataCodelistIds: number[];
-  textureMataCodelists: Codelist[];
+  share?: number;
+  shareInverse?: number;
+  lithologyDescriptions?: LithologyDescription[];
+  alterationDegreeId?: number;
+  alterationDegree?: Codelist;
+  notes?: string;
+  compactnessId?: number;
+  compactness?: Codelist;
+  cohesionId?: number;
+  cohesion?: Codelist;
+  humidityId?: number;
+  humidity?: Codelist;
+  consistencyId?: number;
+  consistency?: Codelist;
+  plasticityId?: number;
+  plasticity?: Codelist;
+  uscsTypeCodelistIds?: number[];
+  uscsTypeCodelists?: Codelist[];
+  uscsDeterminationId?: number;
+  uscsDetermination?: Codelist;
+  rockConditionCodelistIds?: number[];
+  rockConditionCodelists?: Codelist[];
+  textureMataCodelistIds?: number[];
+  textureMataCodelists?: Codelist[];
 }
 
 export interface LayerDepth {
@@ -91,7 +93,13 @@ export interface LayerDepth {
 }
 
 export interface LithologyEditForm {
-  lithology: Lithology;
+  lithologyId: number;
+  formMethods: UseFormReturn<Lithology>;
+}
+
+export interface LithologyDescriptionEditForm extends LithologyEditForm {
+  isFirst: boolean;
+  hasBedding?: boolean;
 }
 
 const lithologyController = "lithology";
@@ -105,12 +113,7 @@ export const useLithologies = (stratigraphyId?: number): UseQueryResult<Litholog
   useQuery({
     queryKey: [lithologyQueryKey, stratigraphyId],
     queryFn: async () => {
-      try {
-        const result = await fetchLithologiesByStratigraphyId(stratigraphyId!);
-        return Array.isArray(result) ? result : [];
-      } catch {
-        return [];
-      }
+      return await fetchLithologiesByStratigraphyId(stratigraphyId!);
     },
     enabled: !!stratigraphyId,
   });
