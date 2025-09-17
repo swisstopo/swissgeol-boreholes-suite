@@ -21,7 +21,7 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
   const [pageCount, setPageCount] = useState<number>();
 
   if (isFetching) {
-    console.log("Background fetching in progess...");
+    console.log("Background fetching in progress...");
   }
 
   return (
