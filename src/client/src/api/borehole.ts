@@ -1,7 +1,6 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Codelist } from "../components/codelist.ts";
-import { useShowAlertOnError } from "../hooks/useShowAlertOnError.tsx";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
@@ -138,46 +137,37 @@ export const canUserUpdateBoreholeStatus = async (id: number) =>
 export const boreholeQueryKey = "boreholes";
 
 export const useBorehole = (id: number) => {
-  const query = useQuery({
+  return useQuery({
     queryKey: [boreholeQueryKey, id],
     queryFn: async () => {
       return await fetchBoreholeById(id);
     },
     enabled: !!id,
   });
-
-  useShowAlertOnError(query.isError, query.error);
-  return query;
 };
 
 export const canEditQueryKey = "canEditBorehole";
 export const useBoreholeEditable = (id: number) => {
   const { data: currentUser } = useCurrentUser();
-  const query = useQuery({
+  return useQuery({
     queryKey: [canEditQueryKey, currentUser?.id, id],
     queryFn: async () => {
       return await canUserEditBorehole(id);
     },
     enabled: !!id,
   });
-
-  useShowAlertOnError(query.isError, query.error);
-  return query;
 };
 
 export const canUpdateStatusQueryKey = "canUpdateBoreholeStatus";
 export const useBoreholeStatusEditable = (id: number) => {
   const { data: currentUser } = useCurrentUser();
-  const query = useQuery({
+  return useQuery({
     queryKey: [canUpdateStatusQueryKey, currentUser?.id, id],
     queryFn: async () => {
       return await canUserUpdateBoreholeStatus(id);
     },
     enabled: !!id,
   });
-
-  useShowAlertOnError(query.isError, query.error);
-  return query;
 };
 
 export const useBoreholeMutations = () => {
@@ -215,10 +205,6 @@ export const useBoreholeMutations = () => {
       });
     },
   });
-
-  useShowAlertOnError(useAddBorehole.isError, useAddBorehole.error);
-  useShowAlertOnError(useUpdateBorehole.isError, useUpdateBorehole.error);
-  useShowAlertOnError(useDeleteBorehole.isError, useDeleteBorehole.error);
   return {
     add: useAddBorehole,
     update: useUpdateBorehole,

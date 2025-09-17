@@ -1,6 +1,5 @@
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { fetchApiV2WithApiError } from "../api/fetchApiV2.ts";
-import { useShowAlertOnError } from "../hooks/useShowAlertOnError.tsx";
 
 export interface Codelist {
   order: number;
@@ -62,7 +61,6 @@ export const useCodelistMutations = () => {
       queryClient.invalidateQueries({ queryKey: [codelistQueryKey] });
     },
   });
-  useShowAlertOnError(useUpdateCodelist.isError, useUpdateCodelist.error);
 
   return {
     update: useUpdateCodelist,

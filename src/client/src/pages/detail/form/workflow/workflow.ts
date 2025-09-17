@@ -8,7 +8,6 @@ import {
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { boreholeQueryKey, canEditQueryKey, canUpdateStatusQueryKey } from "../../../../api/borehole.ts";
 import { fetchApiV2 } from "../../../../api/fetchApiV2.ts";
-import { useShowAlertOnError } from "../../../../hooks/useShowAlertOnError.tsx";
 
 export { WorkflowStatus };
 
@@ -81,16 +80,13 @@ export const sendTabStatusChangeRequest = async (tabStatusChangeRequest: TabStat
 export const workflowQueryKey = "workflows";
 
 export const useWorkflow = (boreholeId: number): UseQueryResult<Workflow> => {
-  const query = useQuery({
+  return useQuery({
     queryKey: [workflowQueryKey, boreholeId],
     queryFn: () => {
       return fetchWorkflowByBoreholeId(boreholeId);
     },
     enabled: !!boreholeId,
   });
-
-  useShowAlertOnError(query.isError, query.error);
-  return query;
 };
 
 export const useWorkflowMutation = () => {
@@ -116,9 +112,6 @@ export const useWorkflowMutation = () => {
       invalidateBoreholeAndWorkflowQueries(variables.boreholeId);
     },
   });
-
-  useShowAlertOnError(updateWorkflow.isError, updateWorkflow.error);
-  useShowAlertOnError(updateTabStatus.isError, updateTabStatus.error);
 
   return {
     updateWorkflow,

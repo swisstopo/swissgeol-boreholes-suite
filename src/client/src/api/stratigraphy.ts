@@ -1,7 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Codelist } from "../components/codelist.ts";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
-import { useShowAlertOnError } from "../hooks/useShowAlertOnError.tsx";
 import { User } from "./apiInterfaces.ts";
 import { boreholeQueryKey, BoreholeV2 } from "./borehole.ts";
 import { fetchApiV2, fetchApiV2WithApiError } from "./fetchApiV2.ts";
@@ -252,9 +251,6 @@ export const useStratigraphyMutations = () => {
     },
   });
 
-  useShowAlertOnError(useCopyStratigraphy.isError, useCopyStratigraphy.error);
-  useShowAlertOnError(useDeleteStratigraphy.isError, useDeleteStratigraphy.error);
-
   return {
     add: useAddStratigraphy,
     copy: useCopyStratigraphy,
@@ -306,11 +302,6 @@ export const useLegacyStratigraphyMutations = () => {
       invalidateStratigraphyQueries(queryClient, stratigraphy.boreholeId, true);
     },
   });
-
-  useShowAlertOnError(useAddStratigraphy.isError, useAddStratigraphy.error);
-  useShowAlertOnError(useCopyStratigraphy.isError, useCopyStratigraphy.error);
-  useShowAlertOnError(useUpdateStratigraphy.isError, useUpdateStratigraphy.error);
-  useShowAlertOnError(useDeleteStratigraphy.isError, useDeleteStratigraphy.error);
 
   return {
     add: useAddStratigraphy,

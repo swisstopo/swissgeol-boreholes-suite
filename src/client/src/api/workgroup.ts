@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useShowAlertOnError } from "../hooks/useShowAlertOnError.tsx";
 import { Role, Workgroup, WorkgroupRole } from "./apiInterfaces.ts";
 import { fetchApiV2, fetchApiV2WithApiError } from "./fetchApiV2.ts";
 import { usersQueryKey } from "./user.ts";
@@ -54,27 +53,20 @@ export const removeAllWorkgroupRolesForUser = async (
 export const workgroupQueryKey = "workgroups";
 
 export const useWorkgroups = () => {
-  const query = useQuery({
+  return useQuery({
     queryKey: [workgroupQueryKey],
     queryFn: fetchWorkgroups,
   });
-
-  // integrate error alert into query
-  useShowAlertOnError(query.isError, query.error);
-  return query;
 };
 
 export const useSelectedWorkgroup = (id: number) => {
-  const query = useQuery({
+  return useQuery({
     queryKey: [workgroupQueryKey, id],
     queryFn: async () => {
       return await fetchWorkgroupById(id);
     },
     enabled: !!id,
   });
-
-  useShowAlertOnError(query.isError, query.error);
-  return query;
 };
 
 export const useWorkgroupMutations = () => {
@@ -144,12 +136,6 @@ export const useWorkgroupMutations = () => {
       });
     },
   });
-
-  useShowAlertOnError(useAddWorkgroup.isError, useAddWorkgroup.error);
-  useShowAlertOnError(useUpdateWorkgroup.isError, useUpdateWorkgroup.error);
-  useShowAlertOnError(useRemoveAllWorkgroupRoles.isError, useRemoveAllWorkgroupRoles.error);
-  useShowAlertOnError(useSetWorkgroupRole.isError, useSetWorkgroupRole.error);
-  useShowAlertOnError(useDeleteWorkgroup.isError, useDeleteWorkgroup.error);
 
   return {
     add: useAddWorkgroup,
