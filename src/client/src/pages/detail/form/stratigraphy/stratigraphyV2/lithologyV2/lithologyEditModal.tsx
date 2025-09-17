@@ -24,7 +24,7 @@ interface LithologyEditModalProps {
 
 export const LithologyEditModal: FC<LithologyEditModalProps> = ({ lithology, updateLithology }) => {
   const { t } = useTranslation();
-  const formMethods = useForm<Stratigraphy>({ mode: "all" });
+  const formMethods = useForm<Lithology>({ mode: "all" });
   const { formState, getValues, setValue } = formMethods;
   useFormDirtyChanges({ formState });
 
