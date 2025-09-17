@@ -8,7 +8,7 @@ import { Workflow } from "../pages/detail/form/workflow/workflow.ts";
 import { Document, Photo, User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
-import { download, fetchApiV2, upload } from "./fetchApiV2.ts";
+import { download, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
 import { BoreholeFile } from "./file/fileInterfaces.ts";
 import { Section } from "./section.ts";
 import { Stratigraphy, StratigraphyLegacy } from "./stratigraphy.ts";
@@ -90,7 +90,7 @@ export interface BoreholeV2 {
 const getIdQuery = (ids: number[] | GridRowSelectionModel) => ids.map(id => `ids=${id}`).join("&");
 
 export const exportJsonBoreholes = async (boreholeIds: number[] | GridRowSelectionModel) => {
-  return await fetchApiV2(`export/json?${getIdQuery(boreholeIds)}`, "GET");
+  return await fetchApiV2Legacy(`export/json?${getIdQuery(boreholeIds)}`, "GET");
 };
 
 export const importBoreholesCsv = async (workgroupId: number | null, combinedFormData: FormData) => {
@@ -106,33 +106,36 @@ export const importBoreholesZip = async (workgroupId: number | null, combinedFor
 };
 
 export const createBorehole = async (workgroupId: number): Promise<BoreholeV2> => {
-  return await fetchApiV2(`borehole`, "POST", { workgroupId, originalReferenceSystem: referenceSystems.LV95.code });
+  return await fetchApiV2WithApiError(`borehole`, "POST", {
+    workgroupId,
+    originalReferenceSystem: referenceSystems.LV95.code,
+  });
 };
 
 export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: number | null) => {
-  return await fetchApiV2(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
+  return await fetchApiV2Legacy(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
 };
 
 export const exportCSVBorehole = async (boreholeIds: GridRowSelectionModel) => {
-  return await fetchApiV2(`export/csv?${getIdQuery(boreholeIds)}`, "GET");
+  return await fetchApiV2Legacy(`export/csv?${getIdQuery(boreholeIds)}`, "GET");
 };
 
 export const exportJsonWithAttachmentsBorehole = async (boreholeIds: number[] | GridRowSelectionModel) => {
   return await download(`export/zip?${getIdQuery(boreholeIds)}`);
 };
 
-export const fetchBoreholeById = async (id: number) => await fetchApiV2(`borehole/${id}`, "GET");
+export const fetchBoreholeById = async (id: number) => await fetchApiV2WithApiError(`borehole/${id}`, "GET");
 
 export const updateBorehole = async (borehole: BoreholeV2) => {
-  return await fetchApiV2("borehole", "PUT", borehole);
+  return await fetchApiV2WithApiError("borehole", "PUT", borehole);
 };
-export const deleteBorehole = async (id: number) => await fetchApiV2(`borehole?id=${id}`, "DELETE");
+export const deleteBorehole = async (id: number) => await fetchApiV2WithApiError(`borehole?id=${id}`, "DELETE");
 
 export const canUserEditBorehole = async (id: number) =>
-  await fetchApiV2(`permissions/canedit?boreholeId=${id}`, "GET");
+  await fetchApiV2WithApiError(`permissions/canedit?boreholeId=${id}`, "GET");
 
 export const canUserUpdateBoreholeStatus = async (id: number) =>
-  await fetchApiV2(`permissions/canchangestatus?boreholeId=${id}`, "GET");
+  await fetchApiV2WithApiError(`permissions/canchangestatus?boreholeId=${id}`, "GET");
 
 export const boreholeQueryKey = "boreholes";
 

@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Codelist } from "../components/codelist.ts";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
 import store from "../reducers";
 import {
@@ -55,13 +54,16 @@ async function readApiResponse(response: Response): Promise<any> {
 
 /**
  * Fetch data from the C# Api.
+ * In this method any errors that occur will be displayed in a standard browser alert.
+ *The error is not accessible and cannot be handled individually.
+ * Do not use this method in any new code.
  * @param url The resource url.
  * @param method The HTTP request method to apply (e.g. GET, PUT, POST...).
  * @param payload The payload of the HTTP request (optional).
  * @returns The HTTP response as JSON.
  */
 /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
-export async function fetchApiV2(url: string, method: string, payload: object | null = null): Promise<any> {
+export async function fetchApiV2Legacy(url: string, method: string, payload: object | null = null): Promise<any> {
   const response = await fetchApiV2Base(url, method, payload ? JSON.stringify(payload) : null, "application/json");
   if (response.ok) {
     return await readApiResponse(response);
@@ -72,33 +74,29 @@ export async function fetchApiV2(url: string, method: string, payload: object | 
 
 /**
  * Fetch data from the C# Api and return an Api error if the fetch was not successfull.
- * This method should only be used in a try-catch block, handling the error.
+ * This method should only be used in useQuery where the error state is handled by the query or in a try-catch block, handling the error.
  * @param url The resource url.
  * @param method The HTTP request method to apply (e.g. GET, PUT, POST...).
  * @param payload The payload of the HTTP request (optional).
  * @returns The HTTP response as JSON.
  */
-export async function fetchApiV2WithApiError(
-  url: string,
-  method: string,
-  payload: FormData | object | null = null,
-  /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
-): Promise<any> {
+export async function fetchApiV2WithApiError(url: string, method: string, payload: FormData | object | null = null) {
   const response = await fetchApiV2Base(url, method, payload ? JSON.stringify(payload) : null, "application/json");
   if (response.ok) {
     return await readApiResponse(response);
   }
+  let errorMsg = "errorWhileFetchingData";
   try {
-    // handle throwing alert with error details
     const responseContent = await readApiResponse(response);
-    const responseDetail = JSON.parse(responseContent).detail;
-    throw new ApiError(responseDetail || "errorWhileFetchingData", response.status);
-  } catch (e) {
-    if (e instanceof ApiError) {
-      throw e;
+    if (typeof responseContent === "object" && responseContent !== null) {
+      errorMsg = responseContent.detail || responseContent.message || errorMsg;
+    } else if (typeof responseContent === "string") {
+      errorMsg = responseContent;
     }
-    throw new ApiError("errorWhileFetchingData", response.status);
+  } catch {
+    // keep default errorMsg
   }
+  throw new ApiError(errorMsg, response.status);
 }
 
 export async function upload(url: string, method: string, payload: FormData): Promise<Response> {
@@ -135,12 +133,6 @@ export async function download(url: string): Promise<Response> {
   return response;
 }
 
-// codelists
-export const fetchAllCodeLists = async (): Promise<Codelist[]> => await fetchApiV2("codelist", "GET");
-
-export const updateCodeLists = async (codelist: Codelist): Promise<Codelist> =>
-  await fetchApiV2("codelist", "PUT", codelist);
-
 // Enable using react-query outputs across the application.
 
 const staleTime10Min = 10 * 60 * 1000;
@@ -150,7 +142,7 @@ export const useCantons = () =>
   useQuery({
     queryKey: ["cantons"],
     queryFn: () => {
-      return fetchApiV2("canton", "GET");
+      return fetchApiV2WithApiError("canton", "GET");
     },
     staleTime: staleTime10Min,
     gcTime: garbageCollectionTime15Min,
@@ -162,13 +154,13 @@ export const useBoreholeGeometry = (boreholeId?: number) =>
   useQuery({
     queryKey: [geometryQueryKey, boreholeId],
     queryFn: async () => {
-      return await fetchApiV2(`boreholegeometry?boreholeId=${boreholeId}`, "GET");
+      return await fetchApiV2WithApiError(`boreholegeometry?boreholeId=${boreholeId}`, "GET");
     },
     enabled: !!boreholeId,
   });
 
 export const getBoreholeGeometryFormats = async (): Promise<GeometryFormat[]> => {
-  return await fetchApiV2("boreholegeometry/geometryformats", "GET");
+  return await fetchApiV2Legacy("boreholegeometry/geometryformats", "GET");
 };
 
 export const useBoreholeGeometryMutations = () => {
@@ -188,7 +180,7 @@ export const useBoreholeGeometryMutations = () => {
   });
   const useDeleteBoreholeGeometry = useMutation({
     mutationFn: async (boreholeId: number) => {
-      return await fetchApiV2(`boreholegeometry?boreholeId=${boreholeId}`, "DELETE");
+      return await fetchApiV2WithApiError(`boreholegeometry?boreholeId=${boreholeId}`, "DELETE");
     },
     onSuccess: () => {
       resetTabStatus();
@@ -205,103 +197,106 @@ export const useBoreholeGeometryMutations = () => {
 };
 
 export const getBoreholeGeometryDepthTVD = async (boreholeId: number, depthMD: number): Promise<number> => {
-  return await fetchApiV2(`boreholegeometry/getDepthTVD?boreholeId=${boreholeId}&depthMD=${depthMD}`, "GET");
+  return await fetchApiV2Legacy(`boreholegeometry/getDepthTVD?boreholeId=${boreholeId}&depthMD=${depthMD}`, "GET");
 };
 
 export const getBoreholeGeometryDepthMasl = async (boreholeId: number, depthMD: number): Promise<number> => {
-  return await fetchApiV2(`boreholegeometry/getDepthInMasl?boreholeId=${boreholeId}&depthMD=${depthMD}`, "GET");
+  return await fetchApiV2Legacy(`boreholegeometry/getDepthInMasl?boreholeId=${boreholeId}&depthMD=${depthMD}`, "GET");
 };
 
 export const getBoreholeGeometryDepthMDFromMasl = async (boreholeId: number, depthMasl: number): Promise<number> => {
-  return await fetchApiV2(`boreholegeometry/getDepthMDFromMasl?boreholeId=${boreholeId}&depthMasl=${depthMasl}`, "GET");
+  return await fetchApiV2Legacy(
+    `boreholegeometry/getDepthMDFromMasl?boreholeId=${boreholeId}&depthMasl=${depthMasl}`,
+    "GET",
+  );
 };
 
 export const getCompletions = async (boreholeId: number): Promise<Completion[]> => {
-  return await fetchApiV2(`completion?boreholeId=${boreholeId}`, "GET");
+  return await fetchApiV2Legacy(`completion?boreholeId=${boreholeId}`, "GET");
 };
 
 export const addCompletion = async (completion: Completion): Promise<Completion> => {
-  return await fetchApiV2("completion", "POST", completion);
+  return await fetchApiV2Legacy("completion", "POST", completion);
 };
 
 export const updateCompletion = async (completion: Completion): Promise<Completion> => {
-  return await fetchApiV2("completion", "PUT", completion);
+  return await fetchApiV2Legacy("completion", "PUT", completion);
 };
 
 export const copyCompletion = async (completionId: number): Promise<Completion> => {
-  return await fetchApiV2(`completion/copy?id=${completionId}`, "POST");
+  return await fetchApiV2Legacy(`completion/copy?id=${completionId}`, "POST");
 };
 
 export const deleteCompletion = async (id: number): Promise<void> => {
-  return await fetchApiV2(`completion?id=${id}`, "DELETE");
+  return await fetchApiV2Legacy(`completion?id=${id}`, "DELETE");
 };
 
 export const getInstrumentation = async (completionId: number): Promise<Instrumentation[]> => {
-  return await fetchApiV2(`instrumentation?completionId=${completionId}`, "GET");
+  return await fetchApiV2Legacy(`instrumentation?completionId=${completionId}`, "GET");
 };
 
 export const addInstrumentation = async (instrumentation: Instrumentation): Promise<Instrumentation> => {
-  return await fetchApiV2("instrumentation", "POST", instrumentation);
+  return await fetchApiV2Legacy("instrumentation", "POST", instrumentation);
 };
 
 export const updateInstrumentation = async (instrumentation: Instrumentation): Promise<Instrumentation> => {
-  return await fetchApiV2("instrumentation", "PUT", instrumentation);
+  return await fetchApiV2Legacy("instrumentation", "PUT", instrumentation);
 };
 
 export const deleteInstrumentation = async (id: number): Promise<void> => {
-  return await fetchApiV2(`instrumentation?id=${id}`, "DELETE");
+  return await fetchApiV2Legacy(`instrumentation?id=${id}`, "DELETE");
 };
 
 export const getBackfills = async (completionId: number): Promise<Backfill[]> => {
-  return await fetchApiV2(`backfill?completionId=${completionId}`, "GET");
+  return await fetchApiV2Legacy(`backfill?completionId=${completionId}`, "GET");
 };
 
 export const addBackfill = async (backfill: Backfill): Promise<Backfill> => {
-  return await fetchApiV2("backfill", "POST", backfill);
+  return await fetchApiV2Legacy("backfill", "POST", backfill);
 };
 
 export const updateBackfill = async (backfill: Backfill): Promise<Backfill> => {
-  return await fetchApiV2("backfill", "PUT", backfill);
+  return await fetchApiV2Legacy("backfill", "PUT", backfill);
 };
 
 export const deleteBackfill = async (id: number): Promise<void> => {
-  return await fetchApiV2(`backfill?id=${id}`, "DELETE");
+  return await fetchApiV2Legacy(`backfill?id=${id}`, "DELETE");
 };
 
 export const getCasings = async (completionId: number): Promise<Casing[]> => {
-  return await fetchApiV2(`casing?completionId=${completionId}`, "GET");
+  return await fetchApiV2Legacy(`casing?completionId=${completionId}`, "GET");
 };
 
 export const getCasingsByBoreholeId = async (boreholeId: number): Promise<Casing[]> => {
-  return await fetchApiV2(`casing?boreholeId=${boreholeId}`, "GET");
+  return await fetchApiV2Legacy(`casing?boreholeId=${boreholeId}`, "GET");
 };
 
 export const addCasing = async (casing: Casing): Promise<Casing> => {
-  return await fetchApiV2("casing", "POST", casing);
+  return await fetchApiV2Legacy("casing", "POST", casing);
 };
 
 export const updateCasing = async (casing: Casing): Promise<Casing> => {
-  return await fetchApiV2("casing", "PUT", casing);
+  return await fetchApiV2Legacy("casing", "PUT", casing);
 };
 
 export const deleteCasing = async (id: number): Promise<void> => {
-  return await fetchApiV2(`casing?id=${id}`, "DELETE");
+  return await fetchApiV2Legacy(`casing?id=${id}`, "DELETE");
 };
 
 export const getSectionsByBoreholeId = async (boreholeId: number): Promise<Section[]> => {
-  return await fetchApiV2(`section?boreholeId=${boreholeId}`, "GET");
+  return await fetchApiV2Legacy(`section?boreholeId=${boreholeId}`, "GET");
 };
 
 export const addSection = async (section: Section): Promise<Section> => {
-  return await fetchApiV2("section", "POST", section);
+  return await fetchApiV2Legacy("section", "POST", section);
 };
 
 export const updateSection = async (section: Section): Promise<Section> => {
-  return await fetchApiV2("section", "PUT", section);
+  return await fetchApiV2Legacy("section", "PUT", section);
 };
 
 export const deleteSection = async (id: number): Promise<void> => {
-  return await fetchApiV2(`section?id=${id}`, "DELETE");
+  return await fetchApiV2Legacy(`section?id=${id}`, "DELETE");
 };
 
 export const downloadCodelistCsv = (): Promise<Response> => download(`codelist/csv`);
@@ -322,7 +317,7 @@ export const uploadPhoto = async (boreholeId: number, file: File): Promise<Photo
 };
 
 export const getPhotosByBoreholeId = async (boreholeId: number): Promise<Photo[]> => {
-  return await fetchApiV2(`photo/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
+  return await fetchApiV2Legacy(`photo/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
 };
 
 export const exportPhotos = async (photoIds: number[]): Promise<Response> => {
@@ -330,7 +325,7 @@ export const exportPhotos = async (photoIds: number[]): Promise<Response> => {
 };
 
 export const deletePhotos = async (photoIds: number[]): Promise<Response> => {
-  return await fetchApiV2(`photo?${photoIds.map(id => `photoIds=${id}`).join("&")}`, "DELETE");
+  return await fetchApiV2Legacy(`photo?${photoIds.map(id => `photoIds=${id}`).join("&")}`, "DELETE");
 };
 
 export const updatePhotos = async (data: { id: number; public: boolean }[]): Promise<Response> => {
@@ -346,11 +341,11 @@ export const getPhotoImageData = async (photoId: number): Promise<Blob> => {
 };
 
 export const getDocumentsByBoreholeId = async (boreholeId: number): Promise<Document[]> => {
-  return await fetchApiV2(`document/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
+  return await fetchApiV2Legacy(`document/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
 };
 
 export const createDocument = async (document: Document): Promise<Document> => {
-  return await fetchApiV2("document", "POST", document);
+  return await fetchApiV2Legacy("document", "POST", document);
 };
 
 export const updateDocuments = async (documents: DocumentUpdate[]): Promise<Document> => {
@@ -358,5 +353,5 @@ export const updateDocuments = async (documents: DocumentUpdate[]): Promise<Docu
 };
 
 export const deleteDocuments = async (documentIds: number[]): Promise<Response> => {
-  return await fetchApiV2(`document?${documentIds.map(id => `documentIds=${id}`).join("&")}`, "DELETE");
+  return await fetchApiV2Legacy(`document?${documentIds.map(id => `documentIds=${id}`).join("&")}`, "DELETE");
 };

@@ -5,7 +5,7 @@ import {
 } from "../../pages/detail/labeling/labelingInterfaces.tsx";
 import { ApiError } from "../apiInterfaces.ts";
 import { fetchCreatePngs, fetchExtractData, fetchPageBoundingBoxes } from "../dataextraction";
-import { download, fetchApiV2, fetchApiV2Base, fetchApiV2WithApiError, upload } from "../fetchApiV2.ts";
+import { download, fetchApiV2Base, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../fetchApiV2.ts";
 import { processFileWithOCR } from "../ocr.ts";
 import { BoreholeFile, DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
 
@@ -31,11 +31,11 @@ export async function uploadFile(boreholeId: number, file: File) {
 }
 
 export const detachFile = async (boreholeFileId: number) => {
-  return await fetchApiV2(`boreholefile/detachFile?boreholeFileId=${boreholeFileId}`, "POST");
+  return await fetchApiV2Legacy(`boreholefile/detachFile?boreholeFileId=${boreholeFileId}`, "POST");
 };
 
 export async function getFiles<FileResponse>(boreholeId: number): Promise<FileResponse[]> {
-  const response = await fetchApiV2(`boreholefile/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
+  const response = await fetchApiV2Legacy(`boreholefile/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
   if (response) {
     return response as FileResponse[];
   } else {
@@ -67,7 +67,7 @@ export async function getDataExtractionFileInfo(
   boreholeFileId: number,
   index: number,
 ): Promise<DataExtractionResponse> {
-  let response = await fetchApiV2(
+  let response = await fetchApiV2Legacy(
     `boreholefile/getDataExtractionFileInfo?boreholeFileId=${boreholeFileId}&index=${index}`,
     "GET",
   );

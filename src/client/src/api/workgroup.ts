@@ -1,11 +1,12 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Role, Workgroup, WorkgroupRole } from "./apiInterfaces.ts";
-import { fetchApiV2, fetchApiV2WithApiError } from "./fetchApiV2.ts";
+import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 import { usersQueryKey } from "./user.ts";
 
-export const fetchWorkgroups = async (): Promise<Workgroup[]> => await fetchApiV2("workgroup", "GET");
+export const fetchWorkgroups = async (): Promise<Workgroup[]> => await fetchApiV2WithApiError("workgroup", "GET");
 
-export const fetchWorkgroupById = async (id: number): Promise<Workgroup> => await fetchApiV2(`workgroup/${id}`, "GET");
+export const fetchWorkgroupById = async (id: number): Promise<Workgroup> =>
+  await fetchApiV2WithApiError(`workgroup/${id}`, "GET");
 
 export const createWorkgroup = async (workgroup: Workgroup) =>
   await fetchApiV2WithApiError("workgroup", "POST", workgroup);
@@ -16,10 +17,10 @@ export const updateWorkgroup = async (workgroup: Workgroup) => {
   }
   workgroup.isDisabled = undefined;
 
-  return await fetchApiV2("workgroup", "PUT", workgroup);
+  return await fetchApiV2WithApiError("workgroup", "PUT", workgroup);
 };
 
-export const deleteWorkgroup = async (id: number) => await fetchApiV2(`workgroup/${id}`, "DELETE");
+export const deleteWorkgroup = async (id: number) => await fetchApiV2WithApiError(`workgroup/${id}`, "DELETE");
 
 export const setWorkgroupRole = async (userId: number, workgroupId: number, role: Role, isActive: boolean) => {
   const workgroupRole: WorkgroupRole[] = [
@@ -30,7 +31,7 @@ export const setWorkgroupRole = async (userId: number, workgroupId: number, role
       isActive: isActive,
     },
   ];
-  return await fetchApiV2("workgroup/setRoles", "POST", workgroupRole);
+  return await fetchApiV2WithApiError("workgroup/setRoles", "POST", workgroupRole);
 };
 
 export const removeAllWorkgroupRolesForUser = async (
@@ -47,7 +48,7 @@ export const removeAllWorkgroupRolesForUser = async (
       isActive: false,
     });
   }
-  return await fetchApiV2("workgroup/setRoles", "POST", workgroupRoles);
+  return await fetchApiV2WithApiError("workgroup/setRoles", "POST", workgroupRoles);
 };
 
 export const workgroupQueryKey = "workgroups";

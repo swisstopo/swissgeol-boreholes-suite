@@ -92,5 +92,18 @@ Die Applikation kann auch im anonymen Modus betrieben werden, um die Bohrdaten �
 #### API
 
 - Neue Endpoints werden immer im .NET API erstellt. Das Python Legacy API wird nicht erweitert.
-- Redux wird nicht mehr erweitert. Datenabfragen werden mit dem Javascript [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) (siehe [fetchApiV2.ts](src/client/src/api/fetchApiV2.ts)) oder wo sinnvoll mit `useQuery` von `react-query` gemacht.
+- Redux wird nicht mehr erweitert. Datenabfragen werden mit dem Javascript [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) (siehe [fetchApiV2.ts](src/client/src/api/fetchApiV2.ts)) oder wo sinnvoll mit `useQuery` von `tanstack-query` gemacht.
 - Wenn Abfragen aus dem Redux Store in neuen Komponenten gebraucht werden, sollten die React hooks `useSelector` und `useDispatch` verwendet werden.
+
+#### Error Handling
+- **Unerwartete Fehler** (Internal Server Error, Render-Fehler etc.) werden durch Error Boundaries abgefangen. Diese werden je nach Anwendungsbereich angezeigt (z.\ B. global, Übersichtsseite, Detailseite). Bei Bedarf können zusätzliche Error Boundaries ergänzt werden. Sie dienen als Fallback und sollten im normalen Ablauf der Anwendung nicht sichtbar sein.
+
+- **Fetch-Requests mit TanStack Query:**
+  -  Die Funktion `fetchApiV2WithApiError` verwenden.
+    - **Daten im Cache vorhanden:** Es werden veraltete Daten angezeigt und der Nutzer erhält einen Hinweis (Alert), dass die Daten nicht aktuell sein könnten.
+    - **Keine Daten im Cache:** Die nächste Error Boundary wird gerendert (siehe `queryClient`-Konfiguration in `App.tsx`).
+    - **Individuelle Reaktion auf Fehler:** Der `isError`-state der Query kann verwendet werden, um eine Fallback-Komponente zu rendern oder einen Alert anzuzeigen.
+
+- **Fetch-Requests, die nicht von TanStack Query gemanagt werden (legacy):**
+  - Wird `fetchApiV2WithApiError` verwendet muss der Fetch-Requests in einem `try-catch`-Block ausgeführt und Fehler explizit behandelt werden.
+  - Wird `fetchApiV2Legacy` wird ein Standard-Browser-Alert angezeigt.
