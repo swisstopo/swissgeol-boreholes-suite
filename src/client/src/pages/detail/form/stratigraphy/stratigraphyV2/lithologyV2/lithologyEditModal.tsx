@@ -41,12 +41,8 @@ export const LithologyEditModal: FC<LithologyEditModalProps> = ({ lithology, upd
     updateLithology({ ...lithology, ...values } as Lithology);
   };
 
-  const handleClose: DialogProps["onClose"] = () => {
-    closeDialog();
-  };
-
   return (
-    <Dialog open={lithology !== undefined} onClose={handleClose} fullScreen>
+    <Dialog open={lithology !== undefined} fullScreen>
       <DialogHeaderContainer>
         <Stack direction="row">
           <Typography variant="h4" sx={{ flexGrow: 1 }}>
