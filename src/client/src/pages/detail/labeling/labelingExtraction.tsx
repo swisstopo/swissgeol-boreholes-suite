@@ -144,7 +144,7 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
       const fileInfoResponse = await getDataExtractionFileInfo(selectedFile.id, activePage);
       const { fileName, count } = fileInfoResponse;
       let newActivePage = activePage;
-      if (setPageCount != undefined) setPageCount(count);
+      if (setPageCount !== undefined) setPageCount(count);
       if (fileInfo?.count !== count) {
         newActivePage = 1;
         setActivePage(newActivePage);
