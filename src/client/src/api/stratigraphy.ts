@@ -331,7 +331,7 @@ export const useLayers = (profileId?: number) =>
 
 export const lithologicalDescriptionQueryKey = "lithoDesc";
 
-export const useLithoDescription = (stratigraphyId?: number) =>
+export const useLithologicalDescription = (stratigraphyId?: number) =>
   useQuery({
     queryKey: [lithologicalDescriptionQueryKey, stratigraphyId],
     queryFn: async () => {

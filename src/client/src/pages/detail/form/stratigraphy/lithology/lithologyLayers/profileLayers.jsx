@@ -26,7 +26,7 @@ import {
   updateLithologicalDescription,
   useFaciesDescription,
   useLayers,
-  useLithoDescription,
+  useLithologicalDescription,
 } from "../../../../../../api/stratigraphy.ts";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 import { useResetTabStatus } from "../../../../../../hooks/useResetTabStatus.ts";
@@ -49,7 +49,7 @@ const ProfileLayers = props => {
 
   // React-query mutations and queries.
   const queryClient = useQueryClient();
-  const lithoDescQuery = useLithoDescription(selectedStratigraphyID);
+  const lithoDescQuery = useLithologicalDescription(selectedStratigraphyID);
   const faciesDescQuery = useFaciesDescription(selectedStratigraphyID);
   const resetTabStatus = useResetTabStatus(["lithology"]);
 
