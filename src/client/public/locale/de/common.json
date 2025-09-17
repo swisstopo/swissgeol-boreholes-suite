@@ -398,7 +398,7 @@
   "msgLithostratigraphyEmpty": "Kein Lithostratigraphieprofil verfügbar",
   "msgLithostratigraphyEmptyEditing": "Sie müssen zuerst eine Stratigraphie erstellen, bevor Sie ein Lithostratigraphieprofil erstellen können",
   "msgNoBoreholesInSelection": "Es sind keine Bohrungen in der Selektion enthalten",
-  "msgNoStratigraphyExtracted": "Es konnte keine gülitge Stratigraphy aus dem Bohrprofil extrahiert werden",
+  "msgNoStratigraphyExtracted": "Es konnte keine gültige Stratigraphie aus dem Bohrprofil extrahiert werden",
   "msgReenablingUserTip": "Sie können den Benutzer deaktivieren und jederzeit wieder aktivieren",
   "msgReenablingWorkgroupTip": "Sie können die Arbeitsgruppe deaktivieren und jederzeit wieder aktivieren",
   "msgSectionsEmpty": "Keine Sektionen verfügbar",
