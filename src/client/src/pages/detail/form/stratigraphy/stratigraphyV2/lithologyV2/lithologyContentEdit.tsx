@@ -21,7 +21,9 @@ import {
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "../stratigraphyTableComponents.tsx";
-import { LithologyEditModal } from "./lithologyEditModal.tsx";
+import { FaciesDescriptionModal } from "./faciesDescriptionModal.tsx";
+import { LithologicalDescriptionModal } from "./lithologicalDescriptionModal.tsx";
+import { LithologyModal } from "./lithologyModal.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";
 import { useLayerDepths } from "./useLayerDepths.tsx";
 import { useLithologyLabels } from "./useLithologyLabels.tsx";
@@ -58,6 +60,8 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   const { completedLayers: completedFaciesDescriptions } = useCompletedLayers(faciesDescriptions, depths);
 
   const [selectedLithology, setSelectedLithology] = useState<Lithology>();
+  const [selectedLithologicalDescription, setSelectedLithologicalDescription] = useState<LithologicalDescription>();
+  const [selectedFaciesDescription, setSelectedFaciesDescription] = useState<FaciesDescription>();
 
   const defaultRowHeight = 240;
 
@@ -89,9 +93,14 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     [deleteLithology],
   );
 
+  const updateLithologicalDescription = useCallback((description: LithologicalDescription) => {
+    // TODO: Set lithologicalDescription for later save and mark as changed
+    console.log("update lithologicalDescription", description);
+    setSelectedLithologicalDescription(undefined);
+  }, []);
+
   const handleEditLithologicalDescription = useCallback((layer: BaseLayer) => {
-    const lithologicalDescription = layer as LithologicalDescription;
-    console.log("edit lithologicalDescription", lithologicalDescription.id);
+    setSelectedLithologicalDescription(layer as LithologicalDescription);
   }, []);
 
   const handleDeleteLithologicalDescription = useCallback(
@@ -102,9 +111,14 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     [deleteLithologicalDescription],
   );
 
+  const updateFaciesDescription = useCallback((description: FaciesDescription) => {
+    // TODO: Set faciesDescription for later save and mark as changed
+    console.log("update faciesDescription", description);
+    setSelectedFaciesDescription(undefined);
+  }, []);
+
   const handleEditFaciesDescription = useCallback((layer: BaseLayer) => {
-    const faciesDescription = layer as FaciesDescription;
-    console.log("edit faciesDescription", faciesDescription.id);
+    setSelectedFaciesDescription(layer as FaciesDescription);
   }, []);
 
   const handleDeleteFaciesDescription = useCallback(
@@ -258,7 +272,15 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
         </Stack>
         <AddRowButton />
       </Stack>
-      <LithologyEditModal lithology={selectedLithology} updateLithology={updateLithology} />
+      <LithologyModal lithology={selectedLithology} updateLithology={updateLithology} />
+      <LithologicalDescriptionModal
+        description={selectedLithologicalDescription}
+        updateLithologicalDescription={updateLithologicalDescription}
+      />
+      <FaciesDescriptionModal
+        description={selectedFaciesDescription}
+        updateFaciesDescription={updateFaciesDescription}
+      />
     </>
   );
 };
