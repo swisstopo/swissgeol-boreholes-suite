@@ -3,6 +3,7 @@ import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogProps, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { Stratigraphy } from "../../../../../../api/stratigraphy.ts";
+import { theme } from "../../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
 import { BoreholesButton } from "../../../../../../components/buttons/buttons.tsx";
 import { FormContainer, FormInput } from "../../../../../../components/form/form.ts";
@@ -65,7 +66,11 @@ export const LithologyEditModal: FC<LithologyEditModalProps> = ({ lithology, upd
                   onChange={(event: MouseEvent<HTMLElement>, isUnconsolidated: boolean) => {
                     setValue("isUnconsolidated", isUnconsolidated);
                   }}
-                  exclusive>
+                  exclusive
+                  sx={{
+                    boxShadow: "none",
+                    border: `1px solid ${theme.palette.border.light}`,
+                  }}>
                   <ToggleButton value={true}>
                     <Typography>{t("unconsolidated")}</Typography>
                   </ToggleButton>

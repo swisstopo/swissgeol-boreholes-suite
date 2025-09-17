@@ -14,7 +14,12 @@ export const BoreholesCard: FC<BoreholesCardProps> = ({ "data-cy": dataCy, title
   return (
     <Card data-cy={dataCy} sx={{ borderColor: theme.palette.border.darker, ...sx }}>
       {(title || action) && (
-        <CardHeader title={title ?? ""} sx={{ p: 4, pb: 3 }} slotProps={{ title: { variant: "h5" } }} action={action} />
+        <CardHeader
+          title={title ?? ""}
+          sx={{ p: 4, pb: 3, height: "84px" }}
+          slotProps={{ title: { variant: "h5" } }}
+          action={action}
+        />
       )}
       <CardContent sx={{ pt: 4, px: 3 }}>{children}</CardContent>
     </Card>
