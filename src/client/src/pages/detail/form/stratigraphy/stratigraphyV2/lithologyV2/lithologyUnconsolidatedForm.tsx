@@ -1,7 +1,9 @@
-import { FC, useEffect } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, Divider, Stack } from "@mui/material";
+import { Divider, Stack, TextField, Typography } from "@mui/material";
+import { theme } from "../../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
+import { useCodelistSchema } from "../../../../../../components/codelist.ts";
 import {
   FormCheckbox,
   FormContainer,
@@ -9,7 +11,7 @@ import {
   FormDomainSelect,
   FormInput,
 } from "../../../../../../components/form/form.ts";
-import { LithologyDescription, LithologyDescriptionEditForm, LithologyEditForm } from "../../lithology.ts";
+import { Lithology, LithologyDescription, LithologyDescriptionEditForm, LithologyEditForm } from "../../lithology.ts";
 
 const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> = ({
   lithologyId,
@@ -139,6 +141,10 @@ const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> =
 
 export const LithologyUnconsolidatedForm: FC<LithologyEditForm> = ({ lithologyId, formMethods }) => {
   const { t } = useTranslation();
+  const { data: lithologyUnconMain } = useCodelistSchema("lithology_uncon_main");
+  const { data: lithologyUnconSecondary } = useCodelistSchema("lithology_uncon_secondary");
+
+  const [enCode, setEnCode] = useState("");
 
   const { setValue, watch } = formMethods;
   const hasBedding = watch("hasBedding");
@@ -151,9 +157,116 @@ export const LithologyUnconsolidatedForm: FC<LithologyEditForm> = ({ lithologyId
     }
   }, [hasBedding, setValue, share]);
 
+  const buildLithologyUnconEnCode = useCallback(
+    (values: Lithology) => {
+      let enCode = "";
+      const descriptions: LithologyDescription[] | undefined = values.lithologyDescriptions;
+      if (descriptions && descriptions.length > 0) {
+        console.log("descriptions", descriptions);
+        enCode = descriptions
+          ?.map(description => {
+            const codes = [];
+
+            if (description.lithologyUnconMain) {
+              codes.push(description.lithologyUnconMain.code);
+            } else if (description.lithologyUnconMainId) {
+              const main = lithologyUnconMain?.find(l => l.id === description.lithologyUnconMainId);
+              if (main) {
+                codes.push(main.code);
+              }
+            }
+            if (description.lithologyUncon2) {
+              codes.push(description.lithologyUncon2.code);
+            } else if (description.lithologyUncon2Id) {
+              const secondary = lithologyUnconSecondary?.find(l => l.id === description.lithologyUncon2Id);
+              if (secondary) {
+                codes.push(secondary.code);
+              }
+            }
+            if (description.lithologyUncon3) {
+              codes.push(description.lithologyUncon3.code);
+            } else if (description.lithologyUncon3Id) {
+              const secondary = lithologyUnconSecondary?.find(l => l.id === description.lithologyUncon3Id);
+              if (secondary) {
+                codes.push(secondary.code);
+              }
+            }
+            if (description.lithologyUncon4) {
+              codes.push(description.lithologyUncon4.code);
+            } else if (description.lithologyUncon4Id) {
+              const secondary = lithologyUnconSecondary?.find(l => l.id === description.lithologyUncon4Id);
+              if (secondary) {
+                codes.push(secondary.code);
+              }
+            }
+            if (description.lithologyUncon5) {
+              codes.push(description.lithologyUncon5.code);
+            } else if (description.lithologyUncon5Id) {
+              const secondary = lithologyUnconSecondary?.find(l => l.id === description.lithologyUncon5Id);
+              if (secondary) {
+                codes.push(secondary.code);
+              }
+            }
+            if (description.lithologyUncon6) {
+              codes.push(description.lithologyUncon6.code);
+            } else if (description.lithologyUncon6Id) {
+              const secondary = lithologyUnconSecondary?.find(l => l.id === description.lithologyUncon6Id);
+              if (secondary) {
+                codes.push(secondary.code);
+              }
+            }
+
+            return codes.join("-");
+          })
+          .filter(c => c.length > 0)
+          .join(" / ");
+      }
+      setEnCode(enCode);
+    },
+    [lithologyUnconMain, lithologyUnconSecondary],
+  );
+
+  useEffect(() => {
+    const values = formMethods.getValues();
+    buildLithologyUnconEnCode(values);
+
+    const subscription = formMethods.watch(buildLithologyUnconEnCode);
+    return () => subscription.unsubscribe();
+  }, [buildLithologyUnconEnCode, formMethods]);
+
   return (
     <>
-      <BoreholesCard data-cy="lithology-lithology-uncon" title={t("lithologyUncon")} action={<Box></Box>}>
+      <BoreholesCard
+        data-cy="lithology-lithology-uncon"
+        title={t("lithologyUncon")}
+        action={
+          <>
+            <Typography variant={"body2"} color={theme.palette.action.disabled}>
+              {t("lithologyUnconType")}
+            </Typography>
+            <TextField disabled fullWidth value={enCode} sx={{ margin: "0 !important" }} />
+          </>
+        }
+        sx={{
+          "& .MuiCardHeader-root": {
+            width: "100%",
+            justifyContent: "space-between",
+            "& .MuiCardHeader-content": {
+              flex: "0 0 auto",
+            },
+            "& .MuiCardHeader-action": {
+              flex: "0 1 auto",
+              display: "flex",
+              flexDirection: "row",
+              alignItems: "center",
+              gap: 1.5,
+
+              "& .MuiTypography-root": {
+                flex: "0 0 auto",
+              },
+            },
+          },
+        }}>
         <FormContainer>
           <LithologyDescriptionUnconsolidatedForm
             key={"lithologyDescriptions.0"}
