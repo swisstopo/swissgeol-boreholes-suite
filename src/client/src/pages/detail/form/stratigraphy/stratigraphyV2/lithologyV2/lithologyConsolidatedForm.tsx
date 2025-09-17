@@ -17,7 +17,7 @@ const LithologyDescriptionConsolidatedForm: FC<LithologyDescriptionEditForm> = (
   isFirst,
   hasBedding,
 }) => {
-  const { setValue } = formMethods;
+  const { getValues, setValue } = formMethods;
   const index = isFirst ? 0 : 1;
   return (
     <>
@@ -30,15 +30,18 @@ const LithologyDescriptionConsolidatedForm: FC<LithologyDescriptionEditForm> = (
               onChange={hasBedding => {
                 if (!hasBedding) {
                   setValue("share", undefined);
-                  setValue("lithologyDescriptions.1", null as unknown as LithologyDescription);
+                  const currentDescriptions = getValues("lithologyDescriptions");
+                  const filtered = Array.isArray(currentDescriptions)
+                    ? currentDescriptions.filter(d => d.isFirst === true)
+                    : [];
+                  const result = [filtered[0]];
+                  setValue("lithologyDescriptions", result);
                 } else {
-                  setTimeout(() => {
-                    setValue("lithologyDescriptions.1", {
-                      id: 0,
-                      lithologyId: lithologyId,
-                      isFirst: false,
-                    } as LithologyDescription);
-                  }, 0); // Defer to next event loop tick
+                  setValue("lithologyDescriptions.1", {
+                    id: 0,
+                    lithologyId: lithologyId,
+                    isFirst: false,
+                  } as LithologyDescription);
                 }
               }}
             />
@@ -123,7 +126,7 @@ export const LithologyConsolidatedForm: FC<LithologyEditForm> = ({ lithologyId, 
   const hasBedding = watch("hasBedding");
   const share = watch("share");
   useEffect(() => {
-    if (hasBedding && !isNaN(Number(share))) {
+    if (hasBedding && share !== "" && !isNaN(Number(share))) {
       setValue("shareInverse", 100 - Number(share));
     } else {
       setValue("shareInverse", undefined);
