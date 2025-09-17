@@ -10,7 +10,7 @@ import { File as FileInterface, maxFileSizeKB } from "../../../api/file/fileInte
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
-import { useBoreholeFiles } from "../attachments/useBoreholeFiles.tsx";
+import { useBoreholeFiles, useInvalidateBoreholeFiles } from "../attachments/useBoreholeFiles.tsx";
 import { FloatingExtractionFeedback } from "./floatingExtractionFeedback.tsx";
 import { useLabelingContext } from "./labelingContext.tsx";
 import { LabelingExtraction } from "./labelingExtraction.tsx";
@@ -65,12 +65,12 @@ const LabelingPanel: FC = () => {
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { alertIsOpen, text, severity, autoHideDuration, showAlert, closeAlert } = useAlertManager();
   const { data: boreholeFiles } = useBoreholeFiles(boreholeId);
+  const invalidateBoreholeFiles = useInvalidateBoreholeFiles();
 
   const expectedFileFormat = labelingFileFormat[panelTab];
   const isPhotoSelected = selectedAttachment && "fromDepth" in selectedAttachment;
   const selectedFile: FileInterface | undefined = isPhotoSelected ? undefined : selectedAttachment;
   const selectedPhoto: Photo | undefined = isPhotoSelected ? selectedAttachment : undefined;
-
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (alertIsOpen && autoHideDuration !== null) {
@@ -84,9 +84,6 @@ const LabelingPanel: FC = () => {
 
   const loadPhotos = useCallback(async () => {
     const photos = await getPhotosByBoreholeId(Number(boreholeId));
-    if (photos.length > 0) {
-      setSelectedAttachment(selected => selected ?? photos[0]);
-    }
     return photos;
   }, [boreholeId]);
 
@@ -96,6 +93,12 @@ const LabelingPanel: FC = () => {
       try {
         const files = panelTab === PanelTab.profile ? boreholeFiles : await loadPhotos();
         setFiles(files);
+        if (files?.length === 1) {
+          setSelectedAttachment(selected => selected ?? files[0]);
+        } else if (!files || files.length === 0) {
+          setSelectedAttachment(undefined);
+          setActivePage(1);
+        }
       } finally {
         setIsLoadingFiles(false);
       }
@@ -108,16 +111,17 @@ const LabelingPanel: FC = () => {
         if (panelTab === PanelTab.profile) {
           const fileResponse = await uploadFile(Number(boreholeId), file);
           setSelectedAttachment(fileResponse.file);
+          invalidateBoreholeFiles();
         } else {
           const photoResponse = await uploadPhoto(Number(boreholeId), file);
           setSelectedAttachment(photoResponse);
+          loadFiles();
         }
-        loadFiles();
       } catch (error) {
         showAlert(t((error as Error).message), "error");
       }
     },
-    [boreholeId, loadFiles, panelTab, showAlert, t],
+    [boreholeId, invalidateBoreholeFiles, loadFiles, panelTab, showAlert, t],
   );
 
   const loadSelectedPhoto = useCallback(async () => {
@@ -130,11 +134,6 @@ const LabelingPanel: FC = () => {
   useEffect(() => {
     loadFiles();
   }, [loadFiles]);
-
-  useEffect(() => {
-    setSelectedAttachment(undefined);
-    setActivePage(1);
-  }, [panelTab]);
 
   const isExtractionLoading = extractionState === ExtractionState.loading;
   return (
