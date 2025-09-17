@@ -37,7 +37,7 @@ export const StratigraphyPanel: FC = () => {
   const {
     add: { mutateAsync: addStratigraphy },
     copy: { mutateAsync: copyStratigraphy },
-    update: { mutateAsync: updateStratigraphy },
+    update: { mutateAsync: updateStratigraphy, isError: isUpdateError, error: updateError },
     delete: { mutateAsync: deleteStratigraphy },
   } = useStratigraphyMutations();
   const { editingEnabled } = useContext(EditStateContext);
@@ -158,36 +158,20 @@ export const StratigraphyPanel: FC = () => {
     }
   }, [navigateToStratigraphy, resetForm, selectedStratigraphy]);
 
-  const handleSaveError = useCallback(
-    (error: Error) => {
-      if (error.message.includes("Name must be unique")) {
-        formMethods.setError("name", { type: "manual", message: t("mustBeUnique") });
-      } else {
-        showApiErrorAlert(error);
-      }
-    },
-    [formMethods, showApiErrorAlert, t],
-  );
-
   const onSave = useCallback(async () => {
     if (!selectedStratigraphy) return false;
 
     const values = getValues();
     values.date = values.date ? ensureDatetime(values.date.toString()) : null;
-
-    try {
-      if (values.id === 0) {
-        const newStratigraphy: Stratigraphy = await addStratigraphy(values);
-        navigateToStratigraphy(newStratigraphy.id, true);
-      } else {
-        await updateStratigraphy({ ...selectedStratigraphy, ...values });
-      }
+    if (values.id === 0) {
+      const newStratigraphy: Stratigraphy = await addStratigraphy(values);
+      navigateToStratigraphy(newStratigraphy.id, true);
       return true;
-    } catch (error) {
-      handleSaveError(error as Error);
-      return false;
+    } else {
+      await updateStratigraphy({ ...selectedStratigraphy, ...values });
+      return true;
     }
-  }, [addStratigraphy, getValues, handleSaveError, navigateToStratigraphy, selectedStratigraphy, updateStratigraphy]);
+  }, [addStratigraphy, getValues, navigateToStratigraphy, selectedStratigraphy, updateStratigraphy]);
 
   const showDeletePrompt = useCallback(() => {
     if (!selectedStratigraphy) return;
@@ -223,6 +207,16 @@ export const StratigraphyPanel: FC = () => {
       navigateToStratigraphy(undefined, true);
     }
   }, [boreholeId, stratigraphyId, sortedStratigraphies, navigateToStratigraphy]);
+
+  useEffect(() => {
+    if (isUpdateError) {
+      if (updateError.message.includes("Name must be unique")) {
+        formMethods.setError("name", { type: "manual", message: t("mustBeUnique") });
+      } else {
+        showApiErrorAlert(updateError);
+      }
+    }
+  }, [formMethods, isUpdateError, showApiErrorAlert, t, updateError]);
 
   useEffect(() => {
     registerSaveHandler(onSave);
