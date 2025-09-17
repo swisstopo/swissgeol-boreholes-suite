@@ -10,6 +10,7 @@ import {
   FormDomainMultiSelect,
   FormDomainSelect,
   FormInput,
+  FormValueType,
 } from "../../../../../../components/form/form.ts";
 import { Lithology, LithologyDescription, LithologyDescriptionEditForm, LithologyEditForm } from "../../lithology.ts";
 
@@ -52,6 +53,7 @@ const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> =
           <FormInput
             fieldName={isFirst ? "share" : "shareInverse"}
             label={"share"}
+            type={FormValueType.Number}
             sx={{ flex: "0 0 87px" }}
             disabled={hasBedding === false || !isFirst}
           />
@@ -150,7 +152,7 @@ export const LithologyUnconsolidatedForm: FC<LithologyEditForm> = ({ lithologyId
   const hasBedding = watch("hasBedding");
   const share = watch("share");
   useEffect(() => {
-    if (hasBedding && share !== "" && !isNaN(Number(share))) {
+    if (hasBedding && String(share) !== "" && !isNaN(Number(share))) {
       setValue("shareInverse", 100 - Number(share));
     } else {
       setValue("shareInverse", undefined);
@@ -229,8 +231,9 @@ export const LithologyUnconsolidatedForm: FC<LithologyEditForm> = ({ lithologyId
     const values = formMethods.getValues();
     buildLithologyUnconEnCode(values);
 
-    const subscription = formMethods.watch(buildLithologyUnconEnCode);
-    return () => subscription.unsubscribe();
+    formMethods.watch(values => {
+      buildLithologyUnconEnCode(values as Lithology);
+    });
   }, [buildLithologyUnconEnCode, formMethods]);
 
   return (

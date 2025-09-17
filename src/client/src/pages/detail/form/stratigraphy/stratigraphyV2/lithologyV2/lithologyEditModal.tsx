@@ -1,8 +1,7 @@
 import { FC, MouseEvent, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Dialog, DialogProps, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
-import { Stratigraphy } from "../../../../../../api/stratigraphy.ts";
+import { Dialog, Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { theme } from "../../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
 import { BoreholesButton } from "../../../../../../components/buttons/buttons.tsx";

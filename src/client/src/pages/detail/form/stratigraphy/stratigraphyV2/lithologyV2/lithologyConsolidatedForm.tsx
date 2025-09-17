@@ -8,6 +8,7 @@ import {
   FormDomainMultiSelect,
   FormDomainSelect,
   FormInput,
+  FormValueType,
 } from "../../../../../../components/form/form.ts";
 import { LithologyDescription, LithologyDescriptionEditForm, LithologyEditForm } from "../../lithology.ts";
 
@@ -49,6 +50,7 @@ const LithologyDescriptionConsolidatedForm: FC<LithologyDescriptionEditForm> = (
           <FormInput
             fieldName={isFirst ? "share" : "shareInverse"}
             label={"share"}
+            type={FormValueType.Number}
             sx={{ flex: "0 0 87px" }}
             disabled={hasBedding === false || !isFirst}
           />
@@ -126,7 +128,7 @@ export const LithologyConsolidatedForm: FC<LithologyEditForm> = ({ lithologyId, 
   const hasBedding = watch("hasBedding");
   const share = watch("share");
   useEffect(() => {
-    if (hasBedding && share !== "" && !isNaN(Number(share))) {
+    if (hasBedding && String(share) !== "" && !isNaN(Number(share))) {
       setValue("shareInverse", 100 - Number(share));
     } else {
       setValue("shareInverse", undefined);
