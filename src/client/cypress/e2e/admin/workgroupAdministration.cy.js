@@ -139,6 +139,7 @@ describe("User administration settings tests", () => {
     cy.contains("Coconut");
 
     setInput("workgroup", "Coconut Updated");
+    cy.wait("@update-workgroup");
     getElementByDataCy("settings-header").contains("Coconut Updated");
 
     getElementByDataCy("deleteworkgroup-button").click();
