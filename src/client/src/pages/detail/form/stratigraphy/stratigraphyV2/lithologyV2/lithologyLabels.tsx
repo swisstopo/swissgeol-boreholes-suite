@@ -2,6 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
 import type { TFunction } from "i18next";
 import { Lithology, LithologyDescription } from "../../lithology";
+import { FC } from "react";
 
 const getBeddingShare = (lithology: Lithology, index: number) => {
   let beddingShare: number | undefined;
@@ -238,43 +239,43 @@ const buildConsolidatedLithologyDescription = (
     buildConsolidatedSecondaryString,
   );
 
-export const useLithologyLabels = () => {
+interface LithologyLabelsProps {
+  lithology: Lithology;
+}
+
+export const LithologyLabels: FC<LithologyLabelsProps> = ({ lithology }) => {
   const { t, i18n } = useTranslation();
+  const language = i18n.language;
 
-  const buildLithologyLabels = (lithology: Lithology) => {
-    const language = i18n.language;
-    if (lithology.isUnconsolidated) {
-      const details1 = buildUnconsolidatedDetails1String(t, language, lithology);
-      const details2 = buildUnconsolidatedDetails2String(language, lithology);
-      return (
-        <>
-          {lithology.lithologyDescriptions &&
-            lithology.lithologyDescriptions.map((description, index) => (
-              <div key={`lithologyDescriptions-${description.id}`}>
-                {buildUnconsolidatedLithologyDescription(t, language, description, getBeddingShare(lithology, index))}
-              </div>
-            ))}
-          {details1.length > 0 && <Typography variant="body2">{details1}</Typography>}
-          {details2.length > 0 && <Typography variant="body2">{details2}</Typography>}
-          {lithology.notes && <Typography variant="body2">{lithology.notes}</Typography>}
-        </>
-      );
-    } else {
-      const details = buildConsolidatedDetailsString(language, lithology);
-      return (
-        <>
-          {lithology.lithologyDescriptions &&
-            lithology.lithologyDescriptions.map((description, index) => (
-              <div key={`lithologyDescriptions-${description.id}`}>
-                {buildConsolidatedLithologyDescription(t, language, description, getBeddingShare(lithology, index))}
-              </div>
-            ))}
-          {details.length > 0 && <Typography variant="body2">{details}</Typography>}
-          {lithology.notes && <Typography variant="body2">{lithology.notes}</Typography>}
-        </>
-      );
-    }
-  };
-
-  return { buildLithologyLabels };
+  if (lithology.isUnconsolidated) {
+    const details1 = buildUnconsolidatedDetails1String(t, language, lithology);
+    const details2 = buildUnconsolidatedDetails2String(language, lithology);
+    return (
+      <>
+        {lithology.lithologyDescriptions &&
+          lithology.lithologyDescriptions.map((description, index) => (
+            <div key={`lithologyDescriptions-${description.id}`}>
+              {buildUnconsolidatedLithologyDescription(t, language, description, getBeddingShare(lithology, index))}
+            </div>
+          ))}
+        {details1.length > 0 && <Typography variant="body2">{details1}</Typography>}
+        {details2.length > 0 && <Typography variant="body2">{details2}</Typography>}
+        {lithology.notes && <Typography variant="body2">{lithology.notes}</Typography>}
+      </>
+    );
+  } else {
+    const details = buildConsolidatedDetailsString(language, lithology);
+    return (
+      <>
+        {lithology.lithologyDescriptions &&
+          lithology.lithologyDescriptions.map((description, index) => (
+            <div key={`lithologyDescriptions-${description.id}`}>
+              {buildConsolidatedLithologyDescription(t, language, description, getBeddingShare(lithology, index))}
+            </div>
+          ))}
+        {details.length > 0 && <Typography variant="body2">{details}</Typography>}
+        {lithology.notes && <Typography variant="body2">{lithology.notes}</Typography>}
+      </>
+    );
+  }
 };

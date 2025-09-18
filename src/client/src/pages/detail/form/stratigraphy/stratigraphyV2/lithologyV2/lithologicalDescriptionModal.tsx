@@ -15,7 +15,7 @@ import {
 
 interface LithologicalDescriptionModalProps {
   description: LithologicalDescription | undefined;
-  updateLithologicalDescription: (description: LithologicalDescription) => void;
+  updateLithologicalDescription: (description: LithologicalDescription, hasChanges: boolean) => void;
 }
 
 export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps> = ({
@@ -27,6 +27,8 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
   const { formState, getValues } = formMethods;
   useFormDirtyChanges({ formState });
 
+  // TODO: Load allowed depth ranges from lithologies. Limit possible values based on previous and next descriptions
+
   useEffect(() => {
     if (description) {
       formMethods.reset(description);
@@ -35,7 +37,7 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
 
   const closeDialog = () => {
     const values = getValues();
-    updateLithologicalDescription({ ...description, ...values } as LithologicalDescription);
+    updateLithologicalDescription({ ...description, ...values } as LithologicalDescription, formState.isDirty);
   };
 
   return (

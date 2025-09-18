@@ -1,129 +1,111 @@
-import { FC, useContext, useEffect } from "react";
-import { Controller, FormProvider, useForm } from "react-hook-form";
+import { FC, useCallback, useContext, useEffect } from "react";
+import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Box, FormControlLabel, Stack, Switch } from "@mui/material";
-import { Trash2 } from "lucide-react";
-import { DevTool } from "../../../../../hookformDevtools.ts";
-import { StratigraphyLegacy, useLegacyStratigraphyMutations } from "../../../../api/stratigraphy.ts";
-import { CancelButton, CopyButton, DeleteButton, SaveButton } from "../../../../components/buttons/buttons.tsx";
-import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.tsx";
-import { FormContainer, FormDomainSelect, FormInput, FormValueType } from "../../../../components/form/form.ts";
+import { Stratigraphy, useStratigraphyMutations } from "../../../../api/stratigraphy.ts";
+import { FormValueType } from "../../../../components/form/form.ts";
+import { FormCheckbox } from "../../../../components/form/formCheckbox.tsx";
+import { FormContainer } from "../../../../components/form/formContainer.tsx";
+import { FormInput } from "../../../../components/form/formInput.tsx";
 import { ensureDatetime } from "../../../../components/form/formUtils.ts";
-import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
-import { EditStateContext } from "../../editStateContext.tsx";
+import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges.tsx";
+import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
+import { StratigraphyContext, StratigraphyContextProps } from "./stratigraphyContext.tsx";
 
 interface StratigraphyFormProps {
-  stratigraphy: StratigraphyLegacy;
+  selectedStratigraphy: Stratigraphy;
+  stratigraphyCount: number;
+  navigateToStratigraphy: (stratigraphyId: number | undefined, replace?: boolean) => void;
 }
 
-export const StratigraphyForm: FC<StratigraphyFormProps> = ({ stratigraphy }) => {
+export const StratigraphyForm: FC<StratigraphyFormProps> = ({
+  selectedStratigraphy,
+  stratigraphyCount,
+  navigateToStratigraphy,
+}) => {
   const { t } = useTranslation();
-  const formMethods = useForm<StratigraphyLegacy>({ mode: "all" });
-  const { showPrompt } = useContext(PromptContext);
-  const { editingEnabled } = useContext(EditStateContext);
   const {
-    copy: { mutate: copyStratigraphy },
-    update: { mutate: updateStratigraphy },
-    delete: { mutate: deleteStratigraphy },
-  } = useLegacyStratigraphyMutations();
+    add: { mutateAsync: addStratigraphy },
+    update: { mutateAsync: updateStratigraphy },
+  } = useStratigraphyMutations();
+  const formMethods = useForm<Stratigraphy>({ mode: "all" });
+  const { formState, getValues } = formMethods;
+  useFormDirtyChanges({ formState });
+  const { registerSaveHandler, registerResetHandler } = useContext<StratigraphyContextProps>(StratigraphyContext);
+  const showApiErrorAlert = useApiErrorAlert();
 
-  useEffect(() => {
+  const resetForm = useCallback(() => {
     formMethods.reset({
-      ...stratigraphy,
-      date: stratigraphy.date?.toString().slice(0, 10) ?? "",
+      ...selectedStratigraphy,
+      date: selectedStratigraphy.date?.toString().slice(0, 10) ?? "",
     });
-  }, [formMethods, stratigraphy]);
+  }, [formMethods, selectedStratigraphy]);
 
-  const submitForm = (data: StratigraphyLegacy) => {
-    data.date = data.date ? ensureDatetime(data.date.toString()) : "";
-    updateStratigraphy(data);
-  };
+  const resetWithoutSave = useCallback(() => {
+    if (selectedStratigraphy.id === 0) {
+      navigateToStratigraphy(undefined, true);
+    } else {
+      resetForm();
+    }
+  }, [navigateToStratigraphy, resetForm, selectedStratigraphy]);
+
+  const handleSaveError = useCallback(
+    (error: Error) => {
+      if (error.message.includes("Name must be unique")) {
+        formMethods.setError("name", { type: "manual", message: t("mustBeUnique") });
+      } else {
+        showApiErrorAlert(error);
+      }
+    },
+    [formMethods, showApiErrorAlert, t],
+  );
+
+  const onSave = useCallback(async () => {
+    const values = getValues();
+    values.date = values.date ? ensureDatetime(values.date.toString()) : null;
+
+    try {
+      if (values.id === 0) {
+        const newStratigraphy: Stratigraphy = await addStratigraphy(values);
+        navigateToStratigraphy(newStratigraphy.id, true);
+      } else {
+        await updateStratigraphy({ ...selectedStratigraphy, ...values });
+      }
+      return true;
+    } catch (error) {
+      handleSaveError(error as Error);
+      return false;
+    }
+  }, [addStratigraphy, getValues, handleSaveError, navigateToStratigraphy, selectedStratigraphy, updateStratigraphy]);
 
   useEffect(() => {
-    formMethods.setValue("date", stratigraphy.date?.toString().slice(0, 10) ?? "");
-  }, [formMethods, stratigraphy.date]);
+    registerSaveHandler(onSave);
+    registerResetHandler(resetWithoutSave);
+  }, [onSave, registerResetHandler, registerSaveHandler, resetWithoutSave]);
+
+  useEffect(() => {
+    resetForm();
+  }, [resetForm]);
 
   return (
     <FormProvider {...formMethods}>
-      <DevTool control={formMethods.control} placement="top-left" />
-      <FormContainer>
-        <FormContainer direction={"row"}>
-          <FormInput
-            fieldName={"name"}
-            label={"stratigraphy_name"}
-            value={stratigraphy.name}
-            readonly={!editingEnabled}
-            type={FormValueType.Text}
-          />
-          <FormControlLabel
-            control={
-              <Controller
-                name="isPrimary"
-                control={formMethods.control}
-                defaultValue={stratigraphy.isPrimary}
-                render={({ field }) => (
-                  <Switch
-                    {...field}
-                    data-cy={"isprimary-switch"}
-                    checked={field.value}
-                    color="secondary"
-                    disabled={!editingEnabled || stratigraphy.isPrimary}
-                  />
-                )}
-              />
-            }
-            label={t("mainStratigraphy")}
-          />
-        </FormContainer>
-        <FormContainer direction={"row"}>
-          <FormInput
-            fieldName={"date"}
-            label="date"
-            readonly={!editingEnabled}
-            value={stratigraphy.date}
-            type={FormValueType.Date}
-          />
-          <FormDomainSelect
-            fieldName={"qualityId"}
-            label={"stratigraphy_quality"}
-            selected={stratigraphy.qualityId}
-            readonly={!editingEnabled}
-            schemaName={"description_quality"}
-          />
-        </FormContainer>
-        <Stack direction={"row"} gap={1}>
-          <Box sx={{ flexGrow: 1 }} />
-          {editingEnabled && (
-            <>
-              <DataCardButtonContainer>
-                <CopyButton onClick={() => copyStratigraphy(stratigraphy)} />
-                <DeleteButton
-                  onClick={() => {
-                    showPrompt("deleteMessage", [
-                      {
-                        label: "cancel",
-                      },
-                      {
-                        label: "delete",
-                        icon: <Trash2 />,
-                        variant: "contained",
-                        action: () => deleteStratigraphy(stratigraphy),
-                      },
-                    ]);
-                  }}
-                />
-              </DataCardButtonContainer>
-              <DataCardButtonContainer>
-                <CancelButton dataCy={"stratigraphy-cancel-button"} onClick={() => formMethods.reset()} />
-                <SaveButton
-                  dataCy={"stratigraphy-save-button"}
-                  disabled={!formMethods.formState.isValid}
-                  onClick={() => formMethods.handleSubmit(submitForm)()}
-                />
-              </DataCardButtonContainer>
-            </>
-          )}
-        </Stack>
+      <FormContainer direction={"row"}>
+        <FormInput
+          fieldName={"name"}
+          label={"stratigraphy_name"}
+          value={selectedStratigraphy.name}
+          type={FormValueType.Text}
+          required={true}
+          onUpdate={() => formMethods.clearErrors("name")}
+        />
+        <FormInput
+          fieldName={"date"}
+          label="date"
+          value={selectedStratigraphy.date?.toString().slice(0, 10) ?? ""}
+          type={FormValueType.Date}
+        />
+        {stratigraphyCount > 1 && (
+          <FormCheckbox fieldName={"isPrimary"} label={"mainStratigraphy"} disabled={selectedStratigraphy.isPrimary} />
+        )}
       </FormContainer>
     </FormProvider>
   );
