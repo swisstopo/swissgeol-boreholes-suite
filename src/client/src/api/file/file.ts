@@ -163,7 +163,7 @@ const cleanUpExtractionData = (baseLayers: LithologicalDescription[]): BaseLayer
     }, []);
 };
 
-export function useExtractStratigraphiesQuery(file: BoreholeAttachment) {
+export function useExtractStratigraphies(file: BoreholeAttachment) {
   return useQuery({
     queryKey: ["extractStratigraphies", file],
     enabled: !!file,
@@ -178,6 +178,7 @@ export function useExtractStratigraphiesQuery(file: BoreholeAttachment) {
               fromDepth: start?.depth,
               toDepth: end?.depth,
               description: material_description.text,
+              stratigraphyId: 0,
             })) || []
           : [];
       return cleanUpExtractionData(lithologicalDescriptions);

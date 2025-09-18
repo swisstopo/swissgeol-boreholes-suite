@@ -1,7 +1,7 @@
 import { FC, useContext, useState } from "react";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
-import { useExtractStratigraphiesQuery } from "../../../../../api/file/file.ts";
+import { useExtractStratigraphies } from "../../../../../api/file/file.ts";
 import { theme } from "../../../../../AppTheme.ts";
 import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
 import { LabelingExtraction } from "../../../labeling/labelingExtraction.tsx";
@@ -14,7 +14,7 @@ interface StratigraphyExtractionViewProps {
 }
 
 export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = ({ file }) => {
-  const { data: lithologicalDescriptions = [], isLoading, isFetching } = useExtractStratigraphiesQuery(file);
+  const { data: lithologicalDescriptions = [], isLoading, isFetching } = useExtractStratigraphies(file);
   const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(lithologicalDescriptions);
   const { showAlert, closeAlert } = useContext(AlertContext);
   const [activePage, setActivePage] = useState<number>(1);

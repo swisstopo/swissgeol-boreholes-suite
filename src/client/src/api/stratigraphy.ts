@@ -48,7 +48,7 @@ export interface BaseLayer {
   id: number;
   fromDepth: number;
   toDepth: number;
-  stratigraphyId?: number;
+  stratigraphyId: number;
   stratigraphy?: Stratigraphy;
   created?: Date | string | null;
   createdById?: number | null;
