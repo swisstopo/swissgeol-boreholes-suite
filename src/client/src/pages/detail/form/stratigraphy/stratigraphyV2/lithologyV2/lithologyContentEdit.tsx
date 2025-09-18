@@ -128,6 +128,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   const handleDeleteLithology = useCallback(
     (layer: BaseLayer) => {
       const lithology = layer as Lithology;
+      // TODO: How is this handled in tmpLithologies?
       deleteLithology(lithology);
     },
     [deleteLithology],
@@ -154,6 +155,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   const handleDeleteLithologicalDescription = useCallback(
     (layer: BaseLayer) => {
       const lithologicalDescription = layer as LithologicalDescription;
+      // TODO: How is this handled in tmpLithologicalDescriptions?
       deleteLithologicalDescription(lithologicalDescription);
     },
     [deleteLithologicalDescription],
@@ -180,6 +182,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   const handleDeleteFaciesDescription = useCallback(
     (layer: BaseLayer) => {
       const faciesDescription = layer as FaciesDescription;
+      // TODO: How is this handled in tmpFaciesDescriptions?
       deleteFaciesDescription(faciesDescription);
     },
     [deleteFaciesDescription],
@@ -188,9 +191,10 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   const getDepthOptions = useCallback(
     (layer: BaseLayer | undefined, options: BaseLayer[], getForToDepths: boolean = false) => {
       // TODO: Load allowed depth ranges from lithologies.
-      //  Limit possible values based on previous and next descriptions
+      // Limit possible values based on previous and next descriptions
+      // This is called way too often, need to optimize
       console.log("getDepthOptions", { layer, options, getForToDepths });
-      return [];
+      return [0, 10, 20];
     },
     [],
   );
@@ -242,6 +246,21 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     registerSaveHandler(onSave);
     registerResetHandler(onReset);
   }, [onReset, onSave, registerResetHandler, registerSaveHandler]);
+
+  useEffect(() => {
+    // TODO: Update tmpLithologies but keep hasChanges where id matches
+    console.log("lithologies changed", lithologies);
+  }, [lithologies]);
+
+  useEffect(() => {
+    // TODO: Update tmpLithologicalDescriptions but keep hasChanges where id matches
+    console.log("lithologicalDescriptions changed", lithologicalDescriptions);
+  }, [lithologicalDescriptions]);
+
+  useEffect(() => {
+    // TODO: Update tmpFaciesDescriptions but keep hasChanges where id matches
+    console.log("faciesDescriptions changed", faciesDescriptions);
+  }, [faciesDescriptions]);
 
   const renderGapCell = (
     layer: BaseLayer,
@@ -330,6 +349,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
           </StratigraphyTableHeader>
           <StratigraphyTableContent>
             <StratigraphyTableColumn sx={{ flex: "0 0 90px" }}>
+              {/* TODO: Add FormInput for depths and update lithology if depth changes. Add overlap validation check */}
               {!depths || depths.length === 0 ? (
                 <StratigraphyTableCell>empty</StratigraphyTableCell>
               ) : (
