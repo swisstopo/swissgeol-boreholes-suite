@@ -37,7 +37,11 @@ import { AnalyticsProvider } from "./term/analyticsContext";
 const router = createBrowserRouter([
   {
     path: "/setting/*",
-    element: <SettingsPage />,
+    element: (
+      <ErrorBoundary FallbackComponent={SettingsError}>
+        <SettingsPage />
+      </ErrorBoundary>
+    ),
   },
   {
     path: "/:id/*",
