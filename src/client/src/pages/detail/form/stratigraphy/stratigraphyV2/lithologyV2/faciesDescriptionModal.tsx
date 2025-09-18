@@ -5,7 +5,7 @@ import { Dialog, Stack, Typography } from "@mui/material";
 import { FaciesDescription } from "../../../../../../api/stratigraphy.ts";
 import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
 import { BoreholesButton } from "../../../../../../components/buttons/buttons.tsx";
-import { FormContainer, FormDomainSelect, FormInput } from "../../../../../../components/form/form.ts";
+import { FormContainer, FormDomainSelect, FormInput, FormSelect } from "../../../../../../components/form/form.ts";
 import { useFormDirtyChanges } from "../../../../../../components/form/useFormDirtyChanges.tsx";
 import {
   DialogFooterContainer,
@@ -15,16 +15,21 @@ import {
 
 interface FaciesDescriptionModalProps {
   description: FaciesDescription | undefined;
+  fromDepths: number[];
+  toDepths: number[];
   updateFaciesDescription: (description: FaciesDescription, hasChanges: boolean) => void;
 }
 
-export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({ description, updateFaciesDescription }) => {
+export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
+  description,
+  fromDepths,
+  toDepths,
+  updateFaciesDescription,
+}) => {
   const { t } = useTranslation();
   const formMethods = useForm<FaciesDescription>({ mode: "all" });
   const { formState, getValues } = formMethods;
   useFormDirtyChanges({ formState });
-
-  // TODO: Load allowed depth ranges from lithologies. Limit possible values based on previous and next descriptions
 
   useEffect(() => {
     if (description) {
@@ -52,8 +57,18 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({ descri
             <BoreholesCard data-cy="facies-description-basic-data" title={t("basicData")}>
               <FormContainer>
                 <FormContainer direction={"row"}>
-                  <FormInput fieldName={"fromDepth"} label={"fromdepth"} required={true} />
-                  <FormInput fieldName={"toDepth"} label={"todepth"} required={true} />
+                  <FormSelect
+                    fieldName={"fromDepth"}
+                    label={"fromdepth"}
+                    values={fromDepths.map(d => ({ key: d, name: d.toString() }))}
+                    required={true}
+                  />
+                  <FormSelect
+                    fieldName={"toDepth"}
+                    label={"todepth"}
+                    values={toDepths.map(d => ({ key: d, name: d.toString() }))}
+                    required={true}
+                  />
                 </FormContainer>
                 <FormContainer direction={"row"}>
                   <FormDomainSelect fieldName={"facies"} label={"facies"} schemaName={"facies"} />

@@ -185,6 +185,16 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     [deleteFaciesDescription],
   );
 
+  const getDepthOptions = useCallback(
+    (layer: BaseLayer | undefined, options: BaseLayer[], getForToDepths: boolean = false) => {
+      // TODO: Load allowed depth ranges from lithologies.
+      //  Limit possible values based on previous and next descriptions
+      console.log("getDepthOptions", { layer, options, getForToDepths });
+      return [];
+    },
+    [],
+  );
+
   const onReset = useCallback(async () => {
     setTmpLithologies(lithologies.map(item => ({ item, hasChanges: false })));
     setTmpLithologicalDescriptions(lithologicalDescriptions.map(item => ({ item, hasChanges: false })));
@@ -381,10 +391,14 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       <LithologyModal lithology={selectedLithology} updateLithology={updateTmpLithology} />
       <LithologicalDescriptionModal
         description={selectedLithologicalDescription}
+        fromDepths={getDepthOptions(selectedLithologicalDescription, tmpLithologicalDescriptionsFlat)}
+        toDepths={getDepthOptions(selectedLithologicalDescription, tmpLithologicalDescriptionsFlat, true)}
         updateLithologicalDescription={updateTmpLithologicalDescription}
       />
       <FaciesDescriptionModal
         description={selectedFaciesDescription}
+        fromDepths={getDepthOptions(selectedFaciesDescription, tmpFaciesDescriptionsFlat)}
+        toDepths={getDepthOptions(selectedFaciesDescription, tmpFaciesDescriptionsFlat, true)}
         updateFaciesDescription={updateTmpFaciesDescription}
       />
     </>

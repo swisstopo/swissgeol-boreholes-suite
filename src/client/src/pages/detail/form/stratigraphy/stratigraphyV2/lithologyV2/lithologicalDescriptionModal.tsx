@@ -5,7 +5,7 @@ import { Dialog, Stack, Typography } from "@mui/material";
 import { LithologicalDescription } from "../../../../../../api/stratigraphy.ts";
 import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
 import { BoreholesButton } from "../../../../../../components/buttons/buttons.tsx";
-import { FormContainer, FormInput } from "../../../../../../components/form/form.ts";
+import { FormContainer, FormInput, FormSelect } from "../../../../../../components/form/form.ts";
 import { useFormDirtyChanges } from "../../../../../../components/form/useFormDirtyChanges.tsx";
 import {
   DialogFooterContainer,
@@ -15,19 +15,21 @@ import {
 
 interface LithologicalDescriptionModalProps {
   description: LithologicalDescription | undefined;
+  fromDepths: number[];
+  toDepths: number[];
   updateLithologicalDescription: (description: LithologicalDescription, hasChanges: boolean) => void;
 }
 
 export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps> = ({
   description,
+  fromDepths,
+  toDepths,
   updateLithologicalDescription,
 }) => {
   const { t } = useTranslation();
   const formMethods = useForm<LithologicalDescription>({ mode: "all" });
   const { formState, getValues } = formMethods;
   useFormDirtyChanges({ formState });
-
-  // TODO: Load allowed depth ranges from lithologies. Limit possible values based on previous and next descriptions
 
   useEffect(() => {
     if (description) {
@@ -55,8 +57,18 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
             <BoreholesCard data-cy="lithological-description-basic-data" title={t("basicData")}>
               <FormContainer>
                 <FormContainer direction={"row"}>
-                  <FormInput fieldName={"fromDepth"} label={"fromdepth"} required={true} />
-                  <FormInput fieldName={"toDepth"} label={"todepth"} required={true} />
+                  <FormSelect
+                    fieldName={"fromDepth"}
+                    label={"fromdepth"}
+                    values={fromDepths.map(d => ({ key: d, name: d.toString() }))}
+                    required={true}
+                  />
+                  <FormSelect
+                    fieldName={"toDepth"}
+                    label={"todepth"}
+                    values={toDepths.map(d => ({ key: d, name: d.toString() }))}
+                    required={true}
+                  />
                 </FormContainer>
                 <FormContainer direction={"row"}>
                   <FormInput fieldName={"description"} label={"remarks"} multiline={true} rows={3} />
