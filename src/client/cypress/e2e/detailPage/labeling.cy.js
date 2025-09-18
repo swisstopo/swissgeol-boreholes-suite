@@ -226,10 +226,11 @@ describe("Test labeling tool", () => {
     getElementByDataCy("labeling-file-dropzone").attachFile("import/borehole_attachment_1.pdf", {
       subjectType: "drag-n-drop",
     });
-    cy.wait("@getAllAttachments");
+    cy.wait(["@getAllAttachments", "@upload-files", "@borehole_by_id"]);
     getElementByDataCy("labeling-file-button-select").contains("borehole_attachment_1.pdf");
 
     reloadPanel();
+    cy.wait(["@getAllAttachments"]);
     getElementByDataCy("labeling-file-selector").should("not.exist");
     getElementByDataCy("labeling-file-button-select").contains("borehole_attachment_1.pdf");
 

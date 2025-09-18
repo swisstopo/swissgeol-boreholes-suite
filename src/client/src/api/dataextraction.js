@@ -35,3 +35,16 @@ export async function fetchExtractData(request, abortSignal) {
     signal: abortSignal,
   });
 }
+
+export async function fetchExtractStratigraphy(fileName, abortSignal) {
+  return await fetch("/dataextraction/api/V1/extract_stratigraphy", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      Authorization: getAuthorizationHeader(store.getState().core_user.authentication),
+    },
+    body: JSON.stringify({ filename: fileName }),
+    signal: abortSignal,
+  });
+}
