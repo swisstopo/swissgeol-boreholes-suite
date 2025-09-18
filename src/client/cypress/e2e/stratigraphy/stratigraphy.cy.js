@@ -42,7 +42,7 @@ describe("Tests for stratigraphy", () => {
     cy.contains("No stratigraphies available...");
     startBoreholeEditing();
     cy.contains("button", "Create empty stratigraphy").should("be.visible").and("be.enabled");
-    cy.contains("button", "Extract stratigraphy from profile").should("be.visible").and("be.disabled");
+    cy.contains("button", "Extract stratigraphy from profile").should("be.visible").and("be.enabled");
   });
 
   it("adds and updates stratigraphies, and sorts them based on isPrimary state and alphabetic order", () => {
@@ -285,7 +285,7 @@ describe("Tests for stratigraphy", () => {
           });
           cy.contains("No stratigraphies available...");
           cy.contains("button", "Create empty stratigraphy").should("be.visible").and("be.enabled");
-          cy.contains("button", "Extract stratigraphy from profile").should("be.visible").and("be.disabled");
+          cy.contains("button", "Extract stratigraphy from profile").should("be.visible").and("be.enabled");
         });
       });
     });

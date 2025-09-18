@@ -9,6 +9,7 @@ import { formatDate } from "../../../../utils.ts";
 import { EditStateContext } from "../../editStateContext";
 import { AttachmentContent } from "../attachmentsContent";
 import { useAttachments } from "../useAttachments.tsx";
+import { useInvalidateBoreholeFiles } from "../useBoreholeFiles.tsx";
 
 interface ProfilesProps {
   boreholeId: number;
@@ -19,6 +20,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const { editingEnabled } = useContext(EditStateContext);
   const apiRef = useGridApiRef();
   const showApiErrorAlert = useApiErrorAlert();
+  const invalidateBoreholeFiles = useInvalidateBoreholeFiles();
 
   const loadAttachments = useCallback(async () => {
     const files = await getFiles<BoreholeFile>(boreholeId);
@@ -31,12 +33,14 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const addAttachment = async (file?: File) => {
     if (file) {
       await uploadFile(boreholeId, file);
+      invalidateBoreholeFiles();
     }
   };
 
   const deleteAttachments = async (ids: number[]) => {
     const detachPromises = ids.map(id => detachFile(id));
     await Promise.all(detachPromises);
+    invalidateBoreholeFiles();
   };
 
   const exportAttachments = async (ids: number[]) => {
@@ -59,6 +63,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         return Promise.resolve();
       });
       const results = await Promise.allSettled(updatePromises);
+      invalidateBoreholeFiles();
       const errors = results.filter(r => r.status === "rejected").map(r => r.reason);
       if (errors.length > 0) {
         showApiErrorAlert(errors.map(e => e.message).join(", "));
@@ -66,7 +71,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
       }
       return true;
     },
-    [apiRef, boreholeId, showApiErrorAlert],
+    [apiRef, boreholeId, invalidateBoreholeFiles, showApiErrorAlert],
   );
 
   const {

@@ -12,13 +12,13 @@ const PageSelectionButton = styled(Button)(({ theme }) => ({
 }));
 
 interface PageSelectionProps {
-  pageCount: number;
+  pageCount: number | undefined;
   activePage: number;
   setActivePage: (page: number) => void;
 }
 
 export const PageSelection: FC<PageSelectionProps> = ({ pageCount, activePage, setActivePage }) => {
-  const showPages = pageCount > 1;
+  const showPages = pageCount && pageCount > 1;
 
   return (
     <ButtonGroup variant="contained" sx={{ px: 0.25, ...labelingButtonStyles }}>

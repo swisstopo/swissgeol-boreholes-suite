@@ -43,6 +43,17 @@ export type ExtractionResponse = {
   [key in ExtractionType]: string | number | Coordinate;
 };
 
+export interface StratigraphyExtractionResponse {
+  boreholes: {
+    id: string;
+    layers: {
+      start: { depth: number };
+      end: { depth: number };
+      material_description: { text: string };
+    }[];
+  }[];
+}
+
 export type PanelPosition = "right" | "bottom";
 
 export enum PanelTab {

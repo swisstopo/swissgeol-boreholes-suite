@@ -21,6 +21,8 @@ interface LabelingExtractionProps {
   setActivePage: (page: number) => void;
   showAlert: (text: string, severity?: AlertColor, allowAutoHide?: boolean) => void;
   closeAlert: () => void;
+  isReadonly?: boolean;
+  setPageCount?: (count: number) => void;
 }
 
 export const LabelingExtraction: FC<LabelingExtractionProps> = ({
@@ -29,6 +31,8 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
   setActivePage,
   showAlert,
   closeAlert,
+  isReadonly = false,
+  setPageCount,
 }) => {
   const { t } = useTranslation();
   const {
@@ -140,6 +144,7 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
       const fileInfoResponse = await getDataExtractionFileInfo(selectedFile.id, activePage);
       const { fileName, count } = fileInfoResponse;
       let newActivePage = activePage;
+      if (setPageCount !== undefined) setPageCount(count);
       if (fileInfo?.count !== count) {
         newActivePage = 1;
         setActivePage(newActivePage);
@@ -159,7 +164,7 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
       }
     };
 
-    fetchExtractionData();
+    void fetchExtractionData();
   }, [
     activePage,
     selectedFile,
@@ -170,6 +175,7 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
     editingEnabled,
     setActivePage,
     setFileInfo,
+    setPageCount,
   ]);
 
   return (
@@ -181,7 +187,7 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
           left: theme.spacing(2),
           zIndex: "500",
         }}>
-        {editingEnabled && (
+        {editingEnabled && !isReadonly && (
           <TextExtractionButton
             disabled={extractionObject?.type == "text" && extractionState === ExtractionState.drawing}
             onClick={() => {
