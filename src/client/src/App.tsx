@@ -5,7 +5,7 @@ import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 import { GlobalStyles } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { Language, SwissgeolCoreI18n } from "@swissgeol/ui-core";
-import { QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { theme } from "./AppTheme";
 import { BdmsAuthProvider } from "./auth/BdmsAuthProvider.tsx";
@@ -17,9 +17,7 @@ import HeaderComponent from "./components/header/headerComponent";
 import { Prompt } from "./components/prompt/prompt";
 import { PromptProvider } from "./components/prompt/promptContext";
 import { AppBox } from "./components/styledComponents";
-import { DetailError } from "./error/errorboundaries/DetailError.tsx";
-import { GlobalError } from "./error/errorboundaries/GlobalError.tsx";
-import { OverviewError } from "./error/errorboundaries/OverviewError.tsx";
+import { DetailError, GlobalError, OverviewError, SettingsError } from "./error/Errorboundaries.tsx";
 import i18n from "./i18n";
 import { DetailPage } from "./pages/detail/detailPage";
 import { EditStateProvider } from "./pages/detail/editStateContext.tsx";
@@ -77,9 +75,13 @@ const QueryClientInitializer: FC<PropsWithChildren> = ({ children }) => {
 
   // If there is no cached data for a query, we want to throw an error that will be caught by the error boundary.
   // The closest error boundary's FallbackComponent will be displayed.
+
+  const isCypress = !!window.Cypress;
+
   const queryClient = new QueryClient({
     defaultOptions: {
       queries: {
+        retry: isCypress ? false : 3,
         throwOnError: (error, query) => {
           return typeof query.state.data === "undefined";
         },
@@ -92,6 +94,11 @@ const QueryClientInitializer: FC<PropsWithChildren> = ({ children }) => {
           // An alert will be shown to inform the user that the data is not up-to-date.
           showAlert(t("dataNotUpToDateError"), "error");
         }
+      },
+    }),
+    mutationCache: new MutationCache({
+      onError: () => {
+        showAlert(t("errorMutationNotSuccessfull"), "error");
       },
     }),
   });
@@ -133,13 +140,13 @@ const App = () => {
         }}
       />
       <AlertProvider>
+        <AlertBanner />
         <ErrorBoundary FallbackComponent={GlobalError}>
           <QueryClientInitializer>
             <BdmsAuthProvider router={router}>
               <DataLoader>
                 <AnalyticsProvider>
                   <AcceptTerms>
-                    <AlertBanner />
                     <UserWorkgroupsProvider>
                       <PromptProvider>
                         <Prompt />

@@ -197,21 +197,22 @@ describe("User administration settings tests", () => {
     verifyTableLength(0);
   });
 
-  const errorWhileFetchingMessage = "An error occurred while fetching or updating data";
+  const errorBoundaryMessage = "Something went wrong while accessing the settings page on Swissgeol Boreholes";
+  const errorWhileFetchingMessage = "Unexpected error. The action you triggered was not successful.";
 
-  it("displays error message when fetching workgroup table data fails.", () => {
+  it("displays error boundary when fetching workgroup table data fails.", () => {
     cy.intercept("GET", "api/v2/workgroup*", req => req.destroy());
     goToRouteAndAcceptTerms("/setting#workgroups");
-    cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
+    cy.contains(errorBoundaryMessage);
   });
 
-  it("displays error message when fetching workgroup detail data fails.", () => {
+  it("displays error boundary when fetching workgroup detail data fails.", () => {
     cy.intercept("GET", "api/v2/workgroup/2", req => req.destroy());
     goToRouteAndAcceptTerms("/setting/workgroup/2");
-    cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
+    cy.contains(errorBoundaryMessage);
   });
 
-  it("displays error message when updating workgroup fails.", () => {
+  it("displays error alert when updating workgroup fails.", () => {
     cy.intercept("PUT", "api/v2/workgroup", req => req.destroy());
     goToRouteAndAcceptTerms("/setting/workgroup/2");
     getElementByDataCy("activate-button").click();
@@ -223,7 +224,7 @@ describe("User administration settings tests", () => {
     getElementByDataCy("activate-button").should("not.have.class", "Mui-selected");
   });
 
-  it("displays error message when deleting workgroup fails.", () => {
+  it("displays error alert when deleting workgroup fails.", () => {
     cy.intercept("DELETE", "api/v2/workgroup/2", req => req.destroy());
     goToRouteAndAcceptTerms("/setting/workgroup/2"); // workgroup "Reggae"
     cy.contains("Reggae");
