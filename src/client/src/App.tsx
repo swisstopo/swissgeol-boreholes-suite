@@ -7,6 +7,7 @@ import { ThemeProvider } from "@mui/material/styles";
 import { Language, SwissgeolCoreI18n } from "@swissgeol/ui-core";
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { ApiError } from "./api/apiInterfaces.ts";
 import { theme } from "./AppTheme";
 import { BdmsAuthProvider } from "./auth/BdmsAuthProvider.tsx";
 import { AlertBanner } from "./components/alert/alertBanner";
@@ -72,10 +73,6 @@ const router = createBrowserRouter([
 const QueryClientInitializer: FC<PropsWithChildren> = ({ children }) => {
   const { showAlert } = useContext(AlertContext);
   const { t } = useTranslation();
-
-  // If there is no cached data for a query, we want to throw an error that will be caught by the error boundary.
-  // The closest error boundary's FallbackComponent will be displayed.
-
   const isCypress = !!window.Cypress;
 
   const queryClient = new QueryClient({
@@ -83,13 +80,15 @@ const QueryClientInitializer: FC<PropsWithChildren> = ({ children }) => {
       queries: {
         retry: isCypress ? false : 3,
         throwOnError: (error, query) => {
+          // If there is no cached data for a query, we want to throw an error that will be caught by the error boundary.
+          // The closest error boundary's FallbackComponent will be displayed.
           return typeof query.state.data === "undefined";
         },
       },
     },
     queryCache: new QueryCache({
       onError: (error, query) => {
-        if (typeof query.state.data !== "undefined") {
+        if (typeof query.state.data !== "undefined" && !(error instanceof ApiError)) {
           // If there is cached data available for a query, we want to show the cached data to the user.
           // An alert will be shown to inform the user that the data is not up-to-date.
           showAlert(t("dataNotUpToDateError"), "error");
@@ -97,8 +96,11 @@ const QueryClientInitializer: FC<PropsWithChildren> = ({ children }) => {
       },
     }),
     mutationCache: new MutationCache({
-      onError: () => {
-        showAlert(t("errorMutationNotSuccessfull"), "error");
+      onError: error => {
+        if (!(error instanceof ApiError)) {
+          // On an alert will be shown to inform the user that the action was not successful.
+          showAlert(t("errorMutationNotSuccessfull"), "error");
+        }
       },
     }),
   });

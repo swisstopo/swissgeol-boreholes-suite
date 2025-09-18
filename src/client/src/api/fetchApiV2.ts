@@ -39,7 +39,7 @@ export async function fetchApiV2Base(
 /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
 async function readApiResponse(response: Response): Promise<any> {
   const contentType = response.headers.get("content-type");
-  if (contentType && contentType.indexOf("application/json") !== -1) {
+  if (contentType?.includes("application/json") || contentType?.includes("application/problem+json")) {
     return await response.json();
   } else if (
     contentType &&
@@ -84,19 +84,18 @@ export async function fetchApiV2WithApiError(url: string, method: string, payloa
   const response = await fetchApiV2Base(url, method, payload ? JSON.stringify(payload) : null, "application/json");
   if (response.ok) {
     return await readApiResponse(response);
-  }
-  let errorMsg = "errorWhileFetchingData";
-  try {
+  } else {
     const responseContent = await readApiResponse(response);
     if (typeof responseContent === "object" && responseContent !== null) {
-      errorMsg = responseContent.detail || responseContent.message || errorMsg;
-    } else if (typeof responseContent === "string") {
-      errorMsg = responseContent;
+      // Throw API Error if problem details or message is provided
+      // This error type is ignored by the default mutation error handler in QueryClientInitializer in App.tsx and allows to handle the error individually
+      if (responseContent.detail || responseContent.message) {
+        throw new ApiError(responseContent.detail || responseContent.message, response.status);
+      } else {
+        throw new Error(responseContent);
+      }
     }
-  } catch {
-    // keep default errorMsg
   }
-  throw new ApiError(errorMsg, response.status);
 }
 
 export async function upload(url: string, method: string, payload: FormData): Promise<Response> {
