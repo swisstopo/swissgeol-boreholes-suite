@@ -37,9 +37,12 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
     }
   }, [description, formMethods]);
 
-  const closeDialog = () => {
-    const values = getValues();
-    updateLithologicalDescription({ ...description, ...values } as LithologicalDescription, formState.isDirty);
+  const closeDialog = async () => {
+    const isValid = await formMethods.trigger();
+    if (!formState.isDirty || isValid) {
+      const values = getValues();
+      updateLithologicalDescription({ ...description, ...values } as LithologicalDescription, formState.isDirty);
+    }
   };
 
   return (
@@ -80,7 +83,13 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
       </DialogMainContent>
       <DialogFooterContainer>
         <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={0.75}>
-          <BoreholesButton variant="contained" color="primary" label={t("close")} onClick={closeDialog} />
+          <BoreholesButton
+            variant="contained"
+            color="primary"
+            label={t("close")}
+            onClick={closeDialog}
+            disabled={!formState.isValid && Object.keys(formState.errors).length > 0}
+          />
         </Stack>
       </DialogFooterContainer>
     </Dialog>

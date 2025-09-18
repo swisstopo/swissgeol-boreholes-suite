@@ -37,9 +37,12 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
     }
   }, [description, formMethods]);
 
-  const closeDialog = () => {
-    const values = getValues();
-    updateFaciesDescription({ ...description, ...values } as FaciesDescription, formState.isDirty);
+  const closeDialog = async () => {
+    const isValid = await formMethods.trigger();
+    if (!formState.isDirty || isValid) {
+      const values = getValues();
+      updateFaciesDescription({ ...description, ...values } as FaciesDescription, formState.isDirty);
+    }
   };
 
   return (
@@ -83,7 +86,13 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
       </DialogMainContent>
       <DialogFooterContainer>
         <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={0.75}>
-          <BoreholesButton variant="contained" color="primary" label={t("close")} onClick={closeDialog} />
+          <BoreholesButton
+            variant="contained"
+            color="primary"
+            label={t("close")}
+            onClick={closeDialog}
+            disabled={!formState.isValid && Object.keys(formState.errors).length > 0}
+          />
         </Stack>
       </DialogFooterContainer>
     </Dialog>
