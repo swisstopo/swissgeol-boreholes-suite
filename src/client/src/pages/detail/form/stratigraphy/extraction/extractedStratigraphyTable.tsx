@@ -52,11 +52,10 @@ export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = (
       ),
     );
   };
-  const nothingToDisplay = !lithologicalDescriptions || lithologicalDescriptions.length === 0;
 
   return (
     <>
-      {nothingToDisplay ? (
+      {!lithologicalDescriptions || lithologicalDescriptions.length === 0 ? (
         <Typography variant="body1">{t("msgNoStratigraphyExtracted")}</Typography>
       ) : (
         <Box sx={{ height: "100%" }}>
@@ -66,16 +65,12 @@ export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = (
           </StratigraphyTableHeader>
           <StratigraphyTableContent>
             <StratigraphyTableColumn sx={{ flex: "0 0 90px" }}>
-              {!lithologicalDescriptions || lithologicalDescriptions.length === 0 ? (
-                <StratigraphyTableCell>empty</StratigraphyTableCell>
-              ) : (
-                lithologicalDescriptions.map(desc => (
-                  <StratigraphyTableCell key={`depth-${desc.id}`} sx={{ height: `${defaultRowHeight}px` }}>
-                    <Typography>{`${desc.fromDepth} m MD`}</Typography>
-                    <Typography>{`${desc.toDepth} m MD`}</Typography>
-                  </StratigraphyTableCell>
-                ))
-              )}
+              {lithologicalDescriptions.map(desc => (
+                <StratigraphyTableCell key={`depth-${desc.id}`} sx={{ height: `${defaultRowHeight}px` }}>
+                  <Typography>{`${desc.fromDepth} m MD`}</Typography>
+                  <Typography>{`${desc.toDepth} m MD`}</Typography>
+                </StratigraphyTableCell>
+              ))}
             </StratigraphyTableColumn>
             <StratigraphyTableColumn>
               {renderTableCells(
