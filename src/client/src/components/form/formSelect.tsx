@@ -8,7 +8,7 @@ import { getFieldBorderColor } from "./formUtils.ts";
 
 export interface FormSelectProps {
   fieldName: string;
-  label: string;
+  label?: string;
   required?: boolean;
   disabled?: boolean;
   readonly?: boolean;
@@ -85,7 +85,7 @@ export const FormSelect: FC<FormSelectProps> = ({
           return (
             <TextField
               value={selectedLabel}
-              label={t(label)}
+              label={label ? t(label) : undefined}
               InputProps={{ readOnly: isReadOnly, disabled: disabled }}
               sx={{ ...sx, ...getFieldBorderColor(isReadOnly) }}
               className={`readonly ${className ?? ""}`}
@@ -122,7 +122,7 @@ export const FormSelect: FC<FormSelectProps> = ({
               return (
                 <TextField
                   {...params}
-                  label={t(label)}
+                  label={label ? t(label) : undefined}
                   required={required}
                   error={!!formFieldError}
                   helperText={formFieldError?.message ? t(formFieldError.message) : ""}

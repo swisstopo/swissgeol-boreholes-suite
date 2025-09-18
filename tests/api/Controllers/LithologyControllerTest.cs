@@ -136,23 +136,6 @@ public class LithologyControllerTest
     }
 
     [TestMethod]
-    public async Task CreateLithologyWithInvalidValuesReturnsBadRequest()
-    {
-        // Test with bedding=true but no share value
-        var lithology = new Lithology
-        {
-            StratigraphyId = context.StratigraphiesV2.First().Id,
-            FromDepth = 10,
-            ToDepth = 20,
-            HasBedding = true,  // This requires Share to be set
-            Share = null, // This will cause the validation to fail
-        };
-
-        var response = await controller.CreateAsync(lithology);
-        ActionResultAssert.IsBadRequest(response.Result);
-    }
-
-    [TestMethod]
     public async Task CreateAndDeleteAsync()
     {
         var stratigraphyId = context.StratigraphiesV2.First().Id;

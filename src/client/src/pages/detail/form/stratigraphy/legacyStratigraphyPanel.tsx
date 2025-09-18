@@ -13,9 +13,9 @@ import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { AddStratigraphyButton } from "./addStratigraphyButton.tsx";
 import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel.jsx";
+import { LegacyStratigraphyForm } from "./legacyStratigraphyForm.tsx";
 import { Lithology } from "./lithology/lithology.tsx";
 import LithostratigraphyPanel from "./lithostratigraphy/lithostratigraphyPanel.jsx";
-import { StratigraphyForm } from "./stratigraphyForm.tsx";
 
 export const LegacyStratigraphyPanel: FC = () => {
   const { id: boreholeId, stratigraphyId } = useRequiredParams();
@@ -110,7 +110,7 @@ export const LegacyStratigraphyPanel: FC = () => {
         <BoreholeTabContent sx={{ mb: 2 }}>
           {selectedStratigraphy && (
             <>
-              <StratigraphyForm stratigraphy={selectedStratigraphy} />
+              <LegacyStratigraphyForm stratigraphy={selectedStratigraphy} />
               <Box sx={{ position: "relative", mt: 2 }}>
                 <TabPanel
                   variant="list"

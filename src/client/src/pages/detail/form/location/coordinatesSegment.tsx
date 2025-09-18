@@ -262,7 +262,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
             <CardHeader
               title={t("coordinates")}
               sx={{ p: 4, pb: 3 }}
-              titleTypographyProps={{ variant: "h5" }}
+              slotProps={{ title: { variant: "h5" } }}
               action={
                 <Box sx={{ visibility: editingEnabled ? "visible" : "hidden" }}>
                   <CoordinateExtractionButton
