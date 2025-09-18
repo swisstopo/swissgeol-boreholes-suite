@@ -35,7 +35,7 @@ export const StratigraphyPanel: FC = () => {
   const location = useLocation();
   const { data: stratigraphies } = useStratigraphiesByBoreholeId(Number(boreholeId));
   const {
-    add: { mutateAsync: addStratigraphy },
+    add: { mutateAsync: addStratigraphy, isError: isAddError, error: addError },
     copy: { mutateAsync: copyStratigraphy },
     update: { mutateAsync: updateStratigraphy, isError: isUpdateError, error: updateError },
     delete: { mutateAsync: deleteStratigraphy },
@@ -208,15 +208,17 @@ export const StratigraphyPanel: FC = () => {
     }
   }, [boreholeId, stratigraphyId, sortedStratigraphies, navigateToStratigraphy]);
 
+  const mutationError = isAddError ? addError : isUpdateError ? updateError : null;
+
   useEffect(() => {
-    if (isUpdateError) {
-      if (updateError.message.includes("Name must be unique")) {
+    if (mutationError) {
+      if (mutationError.message.includes("Name must be unique")) {
         formMethods.setError("name", { type: "manual", message: t("mustBeUnique") });
       } else {
-        showApiErrorAlert(updateError);
+        showApiErrorAlert(mutationError);
       }
     }
-  }, [formMethods, isUpdateError, showApiErrorAlert, t, updateError]);
+  }, [formMethods, mutationError, showApiErrorAlert, t]);
 
   useEffect(() => {
     registerSaveHandler(onSave);
