@@ -450,9 +450,9 @@ public class LithologyControllerTest
                     new LithologyDescription
                     {
                         IsFirst = true,
-                        ColorPrimaryId = 100000077
-                    }
-                }
+                        ColorPrimaryId = 100000077,
+                    },
+                },
             },
             new Lithology
             {
@@ -467,9 +467,9 @@ public class LithologyControllerTest
                     new LithologyDescription
                     {
                         IsFirst = true,
-                        ColorPrimaryId = 100000077
-                    }
-                }
+                        ColorPrimaryId = 100000077,
+                    },
+                },
             },
             new Lithology
             {
@@ -484,14 +484,14 @@ public class LithologyControllerTest
                     new LithologyDescription
                     {
                         IsFirst = true,
-                        ColorPrimaryId = 100000077
+                        ColorPrimaryId = 100000077,
                     },
-                }
+                },
             },
         };
 
         var response = await controller.BulkCreateAsync(lithologies);
-        
+
         ActionResultAssert.IsOk(response.Result);
         var okResult = response.Result as OkObjectResult;
         var createdLithologies = okResult.Value as IEnumerable<Lithology>;
@@ -533,7 +533,7 @@ public class LithologyControllerTest
                 LithologyDescriptions = new List<LithologyDescription>
                 {
                     new LithologyDescription { IsFirst = true },
-                }
+                },
             },
             new Lithology
             {
@@ -543,8 +543,8 @@ public class LithologyControllerTest
                 Notes = "Different stratigraphy 2",
                 LithologyDescriptions = new List<LithologyDescription>
                 {
-                    new LithologyDescription { IsFirst = true }
-                }
+                    new LithologyDescription { IsFirst = true },
+                },
             },
         };
 
@@ -565,9 +565,9 @@ public class LithologyControllerTest
                 Notes = "Non-existent stratigraphy",
                 LithologyDescriptions = new List<LithologyDescription>
                 {
-                    new LithologyDescription { IsFirst = true }
-                }
-            }
+                    new LithologyDescription { IsFirst = true },
+                },
+            },
         };
 
         var response = await controller.BulkCreateAsync(lithologies);
@@ -589,9 +589,9 @@ public class LithologyControllerTest
                 Share = null,      // This will cause validation to fail
                 LithologyDescriptions = new List<LithologyDescription>
                 {
-                    new LithologyDescription { IsFirst = true }
-                }
-            }
+                    new LithologyDescription { IsFirst = true },
+                },
+            },
         };
 
         var response = await controller.BulkCreateAsync(lithologies);
@@ -616,9 +616,9 @@ public class LithologyControllerTest
                 Notes = "No permission",
                 LithologyDescriptions = new List<LithologyDescription>
                 {
-                    new LithologyDescription { IsFirst = true }
+                    new LithologyDescription { IsFirst = true },
                 },
-            }
+            },
         };
 
         var unauthorizedResponse = await controller.BulkCreateAsync(lithologies);

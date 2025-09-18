@@ -136,10 +136,8 @@ public class LithologyController : BoreholeControllerBase<Lithology>
                 await PrepareLithologyForSaveAsync(entity).ConfigureAwait(false);
             }
 
-            // Add all entities to the context
             await Context.Lithologies.AddRangeAsync(entities).ConfigureAwait(false);
 
-            // Save changes
             try
             {
                 await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
