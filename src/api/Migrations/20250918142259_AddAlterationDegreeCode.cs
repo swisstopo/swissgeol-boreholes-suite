@@ -3,6 +3,7 @@
 #nullable disable
 
 namespace BDMS.Migrations;
+#pragma warning disable CA1505
 
 /// <inheritdoc />
 public partial class AddAlterationDegreeCode : Migration
@@ -17,9 +18,5 @@ public partial class AddAlterationDegreeCode : Migration
                 ('alteration_degree', '', 'weathered', 'verwittert', 'altére', 'alterato', 11);
         ");
     }
-
-    /// <inheritdoc />
-    protected override void Down(MigrationBuilder migrationBuilder)
-    {
-    }
 }
+#pragma warning restore CA1505
