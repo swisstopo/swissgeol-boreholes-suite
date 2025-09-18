@@ -94,6 +94,76 @@ public class LithologyController : BoreholeControllerBase<Lithology>
         }
     }
 
+    /// <summary>
+    /// Asynchronously creates multiple <see cref="Lithology"/> entities in a single operation.
+    /// </summary>
+    /// <param name="entities">The collection of lithologies to create.</param>
+    /// <returns>The created lithologies.</returns>
+    [HttpPost("bulk")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult<IEnumerable<Lithology>>> BulkCreateAsync(IEnumerable<Lithology> entities)
+    {
+        try
+        {
+            if (entities == null || !entities.Any())
+            {
+                return BadRequest("No lithologies provided");
+            }
+
+            // Verify all entities share the same stratigraphyId
+            var stratigraphyIds = entities.Select(e => e.StratigraphyId).Distinct().ToList();
+            if (stratigraphyIds.Count != 1)
+            {
+                return BadRequest("All lithologies must belong to the same stratigraphy");
+            }
+
+            var stratigraphyId = stratigraphyIds.Single();
+            var stratigraphy = await Context.StratigraphiesV2
+                .AsNoTracking()
+                .SingleOrDefaultAsync(x => x.Id == stratigraphyId)
+                .ConfigureAwait(false);
+
+            if (stratigraphy == null)
+            {
+                return NotFound("Stratigraphy not found");
+            }
+
+            if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+
+            // Prepare each lithology for saving
+            foreach (var entity in entities)
+            {
+                await PrepareLithologyForSaveAsync(entity).ConfigureAwait(false);
+            }
+
+            // Add all entities to the context
+            await Context.Lithologies.AddRangeAsync(entities).ConfigureAwait(false);
+
+            // Save changes
+            try
+            {
+                await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+                return Ok(entities);
+            }
+            catch (Exception ex)
+            {
+                var errorMessage = "An error occurred while saving the lithologies.";
+                Logger?.LogError(ex, errorMessage);
+                return Problem(errorMessage);
+            }
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            var message = "An error occurred while processing the lithologies.";
+            Logger.LogError(ex, message);
+            return Problem(message);
+        }
+    }
+
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
     public async override Task<ActionResult<Lithology>> EditAsync(Lithology entity)

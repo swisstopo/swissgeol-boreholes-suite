@@ -82,6 +82,55 @@ public class LithologicalDescriptionController : BoreholeControllerBase<Litholog
     public override Task<ActionResult<LithologicalDescription>> CreateAsync(LithologicalDescription entity)
         => base.CreateAsync(entity);
 
+    /// <summary>
+    /// Asynchronously creates multiple <see cref="LithologicalDescription"/> entities in a single operation.
+    /// </summary>
+    /// <param name="entities">The collection of lithological descriptions to create.</param>
+    /// <returns>The created lithological descriptions.</returns>
+    [HttpPost("bulk")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult<IEnumerable<LithologicalDescription>>> BulkCreateAsync(IEnumerable<LithologicalDescription> entities)
+    {
+        if (entities == null || !entities.Any())
+        {
+            return BadRequest("No lithological descriptions provided");
+        }
+
+        // Verify all entities share the same stratigraphyId
+        var stratigraphyIds = entities.Select(e => e.StratigraphyId).Distinct().ToList();
+        if (stratigraphyIds.Count != 1)
+        {
+            return BadRequest("All lithological descriptions must belong to the same stratigraphy");
+        }
+
+        var stratigraphyId = stratigraphyIds.Single();
+        var stratigraphy = await Context.Stratigraphies
+            .AsNoTracking()
+            .SingleOrDefaultAsync(x => x.Id == stratigraphyId)
+            .ConfigureAwait(false);
+
+        if (stratigraphy == null)
+        {
+            return NotFound("Stratigraphy not found");
+        }
+
+        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        await Context.LithologicalDescriptions.AddRangeAsync(entities).ConfigureAwait(false);
+
+        try
+        {
+            await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+            return Ok(entities);
+        }
+        catch (Exception ex)
+        {
+            var errorMessage = "An error occurred while saving the lithological descriptions.";
+            Logger?.LogError(ex, errorMessage);
+            return Problem(errorMessage);
+        }
+    }
+
     /// <inheritdoc />
     protected override async Task<int?> GetBoreholeId(LithologicalDescription entity)
     {
