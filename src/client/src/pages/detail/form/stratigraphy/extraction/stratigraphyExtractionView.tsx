@@ -21,6 +21,7 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
   const [pageCount, setPageCount] = useState<number>();
 
   if (isFetching) {
+    //Todo decide whether to inform the user about background updates, or if they should even be triggered.
     console.log("Background fetching in progress...");
   }
 
