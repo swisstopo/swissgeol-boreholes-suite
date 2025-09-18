@@ -17,9 +17,9 @@ import { useRequiredParams } from "../../../../hooks/useRequiredParams";
 import { formatDate } from "../../../../utils";
 import { EditStateContext } from "../../editStateContext";
 import { AddStratigraphyButton } from "./addStratigraphyButton";
+import { StratigraphyExtraction } from "./extraction/stratigraphyExtraction.tsx";
 import { StratigraphyProvider } from "./stratigraphyContext.tsx";
 import { StratigraphyForm } from "./stratigraphyForm.tsx";
-import { StratigraphyExtraction } from "./extraction/stratigraphyExtraction.tsx";
 import { LithologyPanel } from "./stratigraphyV2/lithologyV2/lithologyPanel.tsx";
 
 export const StratigraphyPanel: FC = () => {
