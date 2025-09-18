@@ -172,12 +172,14 @@ export function useExtractStratigraphiesQuery(file: BoreholeAttachment) {
       const response = await extractStratigraphies(file.nameUuid, signal);
       const lithologicalDescriptions =
         // Todo: The extraction currently only supports a single borehole per file
-        response.boreholes[0]?.layers?.map(({ start, end, material_description }, idx) => ({
-          id: idx,
-          fromDepth: start?.depth,
-          toDepth: end?.depth,
-          description: material_description.text,
-        })) || [];
+        Array.isArray(response.boreholes) && response.boreholes.length > 0
+          ? response.boreholes[0]?.layers?.map(({ start, end, material_description }, idx) => ({
+              id: idx,
+              fromDepth: start?.depth,
+              toDepth: end?.depth,
+              description: material_description.text,
+            })) || []
+          : [];
       return cleanUpExtractionData(lithologicalDescriptions);
     },
   });
