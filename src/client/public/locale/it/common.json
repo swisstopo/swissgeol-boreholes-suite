@@ -361,6 +361,7 @@
   "lithologyUncon": "Tipo di suolo principale / Frazioni granulometriche",
   "lithologyUnconCoarse": "Litologia dei componenti grossolani",
   "lithologyUnconMain": "Tipo di suolo principale / frazione",
+  "lithologyUnconPreviousRequired": "Voce necessaria, poiché sono registrati elementi accessori successivi",
   "lithologyUnconSecondary": "Componente secondaria",
   "lithologyUnconType": "Codice litologico composito",
   "lithology_top_bedrock": "Top substrato Litologia",

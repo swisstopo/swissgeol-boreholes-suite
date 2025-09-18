@@ -361,6 +361,7 @@
   "lithologyUncon": "Main soil type / Grain size fractions",
   "lithologyUnconCoarse": "Lithology of coarse components",
   "lithologyUnconMain": "Major component",
+  "lithologyUnconPreviousRequired": "Entry required, as subsequent ancillary components are recorded",
   "lithologyUnconSecondary": "Minor component",
   "lithologyUnconType": "Composite lithology code",
   "lithology_top_bedrock": "Lithology top bedrock",

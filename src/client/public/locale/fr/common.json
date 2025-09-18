@@ -361,6 +361,7 @@
   "lithologyUncon": "Type principal de sol / Fractions de taille des grains",
   "lithologyUnconCoarse": "Lithologie des composants grossiers",
   "lithologyUnconMain": "Type / fraction principal(e) de sol",
+  "lithologyUnconPreviousRequired": "Entrée obligatoire, car les éléments accessoires ultérieurs sont enregistrés",
   "lithologyUnconSecondary": "Composant mineur",
   "lithologyUnconType": "Zusammengesetzter Litho-Code",
   "lithology_top_bedrock": "Lithologie du toit du rocher",

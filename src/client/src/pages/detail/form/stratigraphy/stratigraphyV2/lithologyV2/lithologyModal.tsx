@@ -12,9 +12,12 @@ import {
   DialogHeaderContainer,
   DialogMainContent,
 } from "../../../../../../components/styledComponents.ts";
-import { Lithology } from "../../lithology.ts";
+import { Lithology, LithologyDescription } from "../../lithology.ts";
 import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
 import { LithologyUnconsolidatedForm } from "./lithologyUnconsolidatedForm.tsx";
+
+type FormError = { type: string; message: string };
+type FormErrors = { [key: string]: FormError | FormErrors };
 
 interface LithologyEditModalProps {
   lithology: Lithology | undefined;
@@ -23,7 +26,59 @@ interface LithologyEditModalProps {
 
 export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateLithology }) => {
   const { t } = useTranslation();
-  const formMethods = useForm<Lithology>({ mode: "all" });
+
+  const lithologyDescriptionsValidate = (descriptions: LithologyDescription[] | undefined) => {
+    if (!descriptions || descriptions.length === 0) return true;
+
+    const index = descriptions?.[0].isFirst ? 0 : 1;
+    const errors: Record<string, string> = {};
+    const fields = [
+      "lithologyUnconMainId",
+      "lithologyUncon2Id",
+      "lithologyUncon3Id",
+      "lithologyUncon4Id",
+      "lithologyUncon5Id",
+      "lithologyUncon6Id",
+    ];
+    fields.forEach((field, i) => {
+      const value = descriptions?.[index]?.[field as keyof LithologyDescription] as number;
+      if (value && i > 0) {
+        for (let j = 0; j < i; j++) {
+          const prevValue = descriptions?.[index]?.[fields[j] as keyof LithologyDescription] as number;
+          if (!prevValue) {
+            errors[`lithologyDescriptions.${index}.${fields[j]}`] = "lithologyUnconPreviousRequired";
+          }
+        }
+      }
+    });
+    return Object.keys(errors).length === 0 || errors;
+  };
+
+  const formMethods = useForm<Lithology>({
+    mode: "all",
+    resolver: async values => {
+      const errors: FormErrors = {};
+      const result = lithologyDescriptionsValidate(values.lithologyDescriptions);
+      if (result !== true) {
+        Object.entries(result).forEach(([path, message]) => {
+          const keys = path.split(".");
+          let curr = errors;
+          for (let i = 0; i < keys.length; i++) {
+            const key = keys[i];
+            if (i === keys.length - 1) {
+              curr[key] = { type: "manual", message };
+            } else {
+              if (typeof curr[key] !== "object" || curr[key] === null || "type" in curr[key]) {
+                curr[key] = {};
+              }
+              curr = curr[key] as FormErrors;
+            }
+          }
+        });
+      }
+      return { values, errors };
+    },
+  });
   const { formState, getValues, setValue } = formMethods;
   useFormDirtyChanges({ formState });
 
@@ -35,9 +90,12 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
 
   const isUnconsolidated = formMethods.watch("isUnconsolidated");
 
-  const closeDialog = () => {
-    const values = getValues();
-    updateLithology({ ...lithology, ...values } as Lithology);
+  const closeDialog = async () => {
+    const isValid = await formMethods.trigger();
+    if (!formState.isDirty || isValid) {
+      const values = getValues();
+      updateLithology({ ...lithology, ...values } as Lithology);
+    }
   };
 
   return (
@@ -107,7 +165,13 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
       </DialogMainContent>
       <DialogFooterContainer>
         <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={0.75}>
-          <BoreholesButton variant="contained" color="primary" label={t("close")} onClick={closeDialog} />
+          <BoreholesButton
+            variant="contained"
+            color="primary"
+            label={t("close")}
+            onClick={closeDialog}
+            disabled={!formState.isValid && Object.keys(formState.errors).length > 0}
+          />
         </Stack>
       </DialogFooterContainer>
     </Dialog>

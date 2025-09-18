@@ -361,6 +361,7 @@
   "lithologyUncon": "Haupt-Bodentyp / Korngrössen-Fraktionen",
   "lithologyUnconCoarse": "Lithologie der Grobkomponenten",
   "lithologyUnconMain": "Haupt-Bodentyp / -fraktion",
+  "lithologyUnconPreviousRequired": "Eintrag erforderlich, da spätere Nebenbestandteile erfasst sind",
   "lithologyUnconSecondary": "Nebenbestandteil",
   "lithologyUnconType": "Zusammengesetzter Litho-Code",
   "lithology_top_bedrock": "Lithologie Top Fels",
