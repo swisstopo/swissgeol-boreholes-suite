@@ -2,6 +2,11 @@
 
 ## [Unreleased]
 
+## v2.1.1335 - 2025-09-17
+
+### Added
+- Added new lithology table
+
 ## v2.1.1328 - 2025-09-11
 
 ### Changed
