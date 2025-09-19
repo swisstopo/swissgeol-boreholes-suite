@@ -39,7 +39,8 @@ export async function fetchApiV2Base(
 /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
 async function readApiResponse(response: Response): Promise<any> {
   const contentType = response.headers.get("content-type");
-  if (contentType?.includes("application/json") || contentType?.includes("application/problem+json")) {
+  const JSONContentTypes = ["application/json", "application/problem+json"];
+  if (JSONContentTypes.some(type => contentType?.includes(type))) {
     return await response.json();
   } else if (
     contentType &&
