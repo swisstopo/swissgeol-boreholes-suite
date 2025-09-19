@@ -24,7 +24,7 @@ const Geometry = ({ measuredDepth }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
   const { id: boreholeId } = useRequiredParams();
-  const { data } = useBoreholeGeometry(parseInt(boreholeId));
+  const { data } = useBoreholeGeometry(Number(boreholeId));
   const resetTabStatus = useResetTabStatus(["geometry"]);
 
   const {
