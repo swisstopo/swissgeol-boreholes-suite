@@ -52,6 +52,19 @@ async function readApiResponse(response: Response): Promise<any> {
   }
 }
 
+async function handleFetchError(response: Response) {
+  const responseContent = await readApiResponse(response);
+  if (typeof responseContent === "object" && responseContent !== null) {
+    // Throw API Error if problem details or message is provided
+    // This error type is ignored by the default mutation error handler in QueryClientInitializer in App.tsx and allows to handle the error individually
+    if (responseContent.detail || responseContent.message) {
+      throw new ApiError(responseContent.detail || responseContent.message, response.status);
+    } else {
+      throw new Error(responseContent);
+    }
+  }
+}
+
 /**
  * Fetch data from the C# Api.
  * In this method any errors that occur will be displayed in a standard browser alert.
@@ -85,16 +98,16 @@ export async function fetchApiV2WithApiError(url: string, method: string, payloa
   if (response.ok) {
     return await readApiResponse(response);
   } else {
-    const responseContent = await readApiResponse(response);
-    if (typeof responseContent === "object" && responseContent !== null) {
-      // Throw API Error if problem details or message is provided
-      // This error type is ignored by the default mutation error handler in QueryClientInitializer in App.tsx and allows to handle the error individually
-      if (responseContent.detail || responseContent.message) {
-        throw new ApiError(responseContent.detail || responseContent.message, response.status);
-      } else {
-        throw new Error(responseContent);
-      }
-    }
+    await handleFetchError(response);
+  }
+}
+
+export async function uploadWithApiError(url: string, method: string, payload: FormData) {
+  const response = await fetchApiV2Base(url, method, payload);
+  if (response.ok) {
+    return await readApiResponse(response);
+  } else {
+    await handleFetchError(response);
   }
 }
 
@@ -168,7 +181,7 @@ export const useBoreholeGeometryMutations = () => {
 
   const useSetBoreholeGeometry = useMutation({
     mutationFn: async ({ boreholeId, formData }: { boreholeId: number; formData: FormData }) => {
-      return await upload(`boreholegeometry?boreholeId=${boreholeId}`, "POST", formData);
+      return await uploadWithApiError(`boreholegeometry?boreholeId=${boreholeId}`, "POST", formData);
     },
     onSuccess: () => {
       resetTabStatus();

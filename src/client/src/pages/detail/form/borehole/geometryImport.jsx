@@ -32,7 +32,7 @@ const GeometryImport = ({ boreholeId }) => {
   const { showAlert } = useContext(AlertContext);
 
   const {
-    set: { mutate: setBoreholeGeometry, isLoading: isUpdatingBoreholeGeometry },
+    set: { mutate: setBoreholeGeometry, isLoading: isUpdatingBoreholeGeometry, isError, error },
   } = useBoreholeGeometryMutations();
   const resetTabStatus = useResetTabStatus(["geometry"]);
 
@@ -51,23 +51,18 @@ const GeometryImport = ({ boreholeId }) => {
     formMethods.setValue("geometryFormat", geometryFormats?.at(0)?.key);
   }, [geometryFormats, formMethods]);
 
+  useEffect(() => {
+    if (isError) {
+      showAlert(error.message ?? t("errorDuringBoreholeFileUpload"), "error");
+    }
+  }, [isError, error, t, showAlert]);
+
   const uploadGeometryCSV = data => {
     resetTabStatus();
     let formData = new FormData();
     formData.append("geometryFile", data.geometryFile[0]);
     formData.append("geometryFormat", data.geometryFormat);
-    setBoreholeGeometry(
-      { boreholeId, formData },
-      {
-        onSuccess: async data => {
-          // fetch does not fail promises on 4xx or 5xx responses
-          // ¯\_(ツ)_/¯
-          if (!data.ok) {
-            data.json().then(msg => showAlert(msg.detail ?? t("errorDuringBoreholeFileUpload"), "error"));
-          }
-        },
-      },
-    );
+    setBoreholeGeometry({ boreholeId, formData });
   };
 
   const watch = useWatch({ control: formMethods.control });
