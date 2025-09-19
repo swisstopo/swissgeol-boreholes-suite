@@ -6,6 +6,7 @@ import { Box, Card, Chip, CircularProgress, Stack, Tooltip, Typography } from "@
 import { Trash2 } from "lucide-react";
 import CopyIcon from "../../../../assets/icons/copy.svg?react";
 import ExtractAiIcon from "../../../../assets/icons/extractAi.svg?react";
+import { ApiError } from "../../../../api/apiInterfaces.ts";
 import { Stratigraphy, useStratigraphiesByBoreholeId, useStratigraphyMutations } from "../../../../api/stratigraphy";
 import { theme } from "../../../../AppTheme";
 import { AddButton, BoreholesButton, DeleteButton } from "../../../../components/buttons/buttons";
@@ -35,9 +36,9 @@ export const StratigraphyPanel: FC = () => {
   const location = useLocation();
   const { data: stratigraphies } = useStratigraphiesByBoreholeId(Number(boreholeId));
   const {
-    add: { mutateAsync: addStratigraphy, isError: isAddError, error: addError },
+    add: { mutateAsync: addStratigraphy },
     copy: { mutateAsync: copyStratigraphy },
-    update: { mutateAsync: updateStratigraphy, isError: isUpdateError, error: updateError },
+    update: { mutateAsync: updateStratigraphy },
     delete: { mutateAsync: deleteStratigraphy },
   } = useStratigraphyMutations();
   const { editingEnabled } = useContext(EditStateContext);
@@ -159,19 +160,47 @@ export const StratigraphyPanel: FC = () => {
   }, [navigateToStratigraphy, resetForm, selectedStratigraphy]);
 
   const onSave = useCallback(async () => {
+    const handleMutationError = (error: ApiError) => {
+      if (error.message.includes("Name must be unique")) {
+        formMethods.setError("name", { type: "manual", message: t("mustBeUnique") });
+      } else {
+        showApiErrorAlert(error);
+      }
+    };
+
     if (!selectedStratigraphy) return false;
 
     const values = getValues();
     values.date = values.date ? ensureDatetime(values.date.toString()) : null;
     if (values.id === 0) {
-      const newStratigraphy: Stratigraphy = await addStratigraphy(values);
+      const newStratigraphy: Stratigraphy = await addStratigraphy(values, {
+        onError: error => {
+          handleMutationError(error);
+        },
+      });
       navigateToStratigraphy(newStratigraphy.id, true);
       return true;
     } else {
-      await updateStratigraphy({ ...selectedStratigraphy, ...values });
+      await updateStratigraphy(
+        { ...selectedStratigraphy, ...values },
+        {
+          onError: error => {
+            handleMutationError(error);
+          },
+        },
+      );
       return true;
     }
-  }, [addStratigraphy, getValues, navigateToStratigraphy, selectedStratigraphy, updateStratigraphy]);
+  }, [
+    addStratigraphy,
+    formMethods,
+    getValues,
+    navigateToStratigraphy,
+    selectedStratigraphy,
+    showApiErrorAlert,
+    t,
+    updateStratigraphy,
+  ]);
 
   const showDeletePrompt = useCallback(() => {
     if (!selectedStratigraphy) return;
@@ -207,18 +236,6 @@ export const StratigraphyPanel: FC = () => {
       navigateToStratigraphy(undefined, true);
     }
   }, [boreholeId, stratigraphyId, sortedStratigraphies, navigateToStratigraphy]);
-
-  const mutationError = isAddError ? addError : isUpdateError ? updateError : null;
-
-  useEffect(() => {
-    if (mutationError) {
-      if (mutationError.message.includes("Name must be unique")) {
-        formMethods.setError("name", { type: "manual", message: t("mustBeUnique") });
-      } else {
-        showApiErrorAlert(mutationError);
-      }
-    }
-  }, [formMethods, mutationError, showApiErrorAlert, t]);
 
   useEffect(() => {
     registerSaveHandler(onSave);
