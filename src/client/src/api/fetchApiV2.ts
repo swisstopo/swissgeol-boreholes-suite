@@ -79,7 +79,7 @@ async function handleFetchError(response: Response) {
  * Fetches data from the API and displays errors in a browser alert.
  * The error is not accessible and cannot be handled individually.
  * Do not use this method in any new code.
- * * @param {string} url - The endpoint URL relative to the base API path.
+ * @param {string} url - The endpoint URL relative to the base API path.
  * @param {string} method - The HTTP method (e.g., GET, POST, PUT, DELETE).
  * @param {object|null} [payload=null] - The request payload, if applicable.
  * @returns {Promise<any>} - The parsed response content.
