@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useContext, useEffect } from "react";
+import { FC, PropsWithChildren, useContext, useEffect, useMemo } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useTranslation } from "react-i18next";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
@@ -75,35 +75,39 @@ const QueryClientInitializer: FC<PropsWithChildren> = ({ children }) => {
   const { t } = useTranslation();
   const isCypress = !!window.Cypress;
 
-  const queryClient = new QueryClient({
-    defaultOptions: {
-      queries: {
-        retry: isCypress ? false : 3,
-        throwOnError: (error, query) => {
-          // If there is no cached data for a query, we want to throw an error that will be caught by the error boundary.
-          // The closest error boundary's FallbackComponent will be displayed.
-          return typeof query.state.data === "undefined";
+  const queryClient = useMemo(
+    () =>
+      new QueryClient({
+        defaultOptions: {
+          queries: {
+            retry: isCypress ? false : 3,
+            throwOnError: (error, query) => {
+              // If there is no cached data for a query, we want to throw an error that will be caught by the error boundary.
+              // The closest error boundary's FallbackComponent will be displayed.
+              return typeof query.state.data === "undefined";
+            },
+          },
         },
-      },
-    },
-    queryCache: new QueryCache({
-      onError: (error, query) => {
-        if (typeof query.state.data !== "undefined" && !(error instanceof ApiError)) {
-          // If there is cached data available for a query, we want to show the cached data to the user.
-          // An alert will be shown to inform the user that the data is not up-to-date.
-          showAlert(t("dataNotUpToDateError"), "error");
-        }
-      },
-    }),
-    mutationCache: new MutationCache({
-      onError: error => {
-        if (!(error instanceof ApiError)) {
-          // An alert will be shown to inform the user that the action was not successful.
-          showAlert(t("errorMutationNotSuccessfull"), "error");
-        }
-      },
-    }),
-  });
+        queryCache: new QueryCache({
+          onError: (error, query) => {
+            if (typeof query.state.data !== "undefined" && !(error instanceof ApiError)) {
+              // If there is cached data available for a query, we want to show the cached data to the user.
+              // An alert will be shown to inform the user that the data is not up-to-date.
+              showAlert(t("dataNotUpToDateError"), "error");
+            }
+          },
+        }),
+        mutationCache: new MutationCache({
+          onError: error => {
+            if (!(error instanceof ApiError)) {
+              // An alert will be shown to inform the user that the action was not successful.
+              showAlert(t("errorMutationNotSuccessfull"), "error");
+            }
+          },
+        }),
+      }),
+    [showAlert, t, isCypress],
+  );
 
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
 };
@@ -141,10 +145,10 @@ const App = () => {
           },
         }}
       />
-      <QueryClientInitializer>
-        <AlertProvider>
-          <AlertBanner />
-          <ErrorBoundary FallbackComponent={GlobalError}>
+      <AlertProvider>
+        <AlertBanner />
+        <ErrorBoundary FallbackComponent={GlobalError}>
+          <QueryClientInitializer>
             <BdmsAuthProvider router={router}>
               <DataLoader>
                 <AnalyticsProvider>
@@ -171,9 +175,9 @@ const App = () => {
                 </AnalyticsProvider>
               </DataLoader>
             </BdmsAuthProvider>
-          </ErrorBoundary>
-        </AlertProvider>
-      </QueryClientInitializer>
+          </QueryClientInitializer>
+        </ErrorBoundary>
+      </AlertProvider>
     </ThemeProvider>
   );
 };
