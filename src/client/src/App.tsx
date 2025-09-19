@@ -141,10 +141,10 @@ const App = () => {
           },
         }}
       />
-      <AlertProvider>
-        <AlertBanner />
-        <ErrorBoundary FallbackComponent={GlobalError}>
-          <QueryClientInitializer>
+      <QueryClientInitializer>
+        <AlertProvider>
+          <AlertBanner />
+          <ErrorBoundary FallbackComponent={GlobalError}>
             <BdmsAuthProvider router={router}>
               <DataLoader>
                 <AnalyticsProvider>
@@ -171,9 +171,9 @@ const App = () => {
                 </AnalyticsProvider>
               </DataLoader>
             </BdmsAuthProvider>
-          </QueryClientInitializer>
-        </ErrorBoundary>
-      </AlertProvider>
+          </ErrorBoundary>
+        </AlertProvider>
+      </QueryClientInitializer>
     </ThemeProvider>
   );
 };
