@@ -1,20 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
 import store from "../reducers";
-import {
-  ApiError,
-  Backfill,
-  Casing,
-  Completion,
-  Document,
-  DocumentUpdate,
-  GeometryFormat,
-  Instrumentation,
-  Photo,
-} from "./apiInterfaces";
+import { ApiError, Backfill, Casing, Completion, Document, DocumentUpdate, GeometryFormat, Instrumentation, Photo } from "./apiInterfaces";
 import { getAuthorizationHeader } from "./authentication";
 import { Section } from "./section.ts";
 
+
+/**
+ * Base function to make API calls to the v2 API.
+ * @param {string} url - The endpoint URL relative to the base API path.
+ * @param {string} method - The HTTP method (e.g., GET, POST, PUT, DELETE).
+ * @param {FormData|string|null} [body=null] - The request payload, if applicable.
+ * @param {string|null} [contentType=null] - The content type of the request, if applicable.
+ * @returns {Promise<Response>} - The raw HTTP response.
+ */
 export async function fetchApiV2Base(
   url: string,
   method: string,
@@ -36,6 +35,12 @@ export async function fetchApiV2Base(
     body: body,
   });
 }
+
+/**
+ * Reads the response from an API call and parses it based on the content type.
+ * @param {Response} response - The HTTP response object.
+ * @returns {Promise<any>} - The parsed response content.
+ */
 /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
 async function readApiResponse(response: Response): Promise<any> {
   const contentType = response.headers.get("content-type");
@@ -53,12 +58,16 @@ async function readApiResponse(response: Response): Promise<any> {
   }
 }
 
+/**
+ * Handles errors from an API call by reading the response and throwing an appropriate error.
+ * @param {Response} response - The HTTP response object.
+ * @throws {ApiError|Error} - Throws an `ApiError` or a generic `Error` based on the response content.
+ */
 async function handleFetchError(response: Response) {
   const responseContent = await readApiResponse(response);
   if (typeof responseContent === "object" && responseContent !== null) {
-    // Throw API Error if problem details or message is provided
-    // This error type is ignored by the default mutation and query error handler in QueryClientInitializer in App.tsx and allows to handle the error individually
     if (responseContent.detail || responseContent.message) {
+      // This error type is ignored by the default mutation and query error handler in QueryClientInitializer in App.tsx and allows to handle the error individually
       throw new ApiError(responseContent.detail || responseContent.message, response.status);
     } else {
       throw new Error(responseContent);
@@ -67,14 +76,13 @@ async function handleFetchError(response: Response) {
 }
 
 /**
- * Fetch data from the C# Api.
- * In this method any errors that occur will be displayed in a standard browser alert.
- *The error is not accessible and cannot be handled individually.
+ * Fetches data from the API and displays errors in a browser alert.
+ * The error is not accessible and cannot be handled individually.
  * Do not use this method in any new code.
- * @param url The resource url.
- * @param method The HTTP request method to apply (e.g. GET, PUT, POST...).
- * @param payload The payload of the HTTP request (optional).
- * @returns The HTTP response as JSON.
+ * * @param {string} url - The endpoint URL relative to the base API path.
+ * @param {string} method - The HTTP method (e.g., GET, POST, PUT, DELETE).
+ * @param {object|null} [payload=null] - The request payload, if applicable.
+ * @returns {Promise<any>} - The parsed response content.
  */
 /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
 export async function fetchApiV2Legacy(url: string, method: string, payload: object | null = null): Promise<any> {
@@ -93,6 +101,7 @@ export async function fetchApiV2Legacy(url: string, method: string, payload: obj
  * @param method The HTTP request method to apply (e.g. GET, PUT, POST...).
  * @param payload The payload of the HTTP request (optional).
  * @returns The HTTP response as JSON.
+ * @throws {ApiError|Error} - Throws an `ApiError` or a generic `Error` based on the response content.
  */
 export async function fetchApiV2WithApiError(url: string, method: string, payload: FormData | object | null = null) {
   const response = await fetchApiV2Base(url, method, payload ? JSON.stringify(payload) : null, "application/json");
@@ -103,6 +112,13 @@ export async function fetchApiV2WithApiError(url: string, method: string, payloa
   }
 }
 
+/**
+ * Uploads a file to the API and throws an `ApiError` if the request fails.
+ * @param {string} url - The endpoint URL relative to the base API path.
+ * @param {string} method - The HTTP method (e.g., POST, PUT).
+ * @param {FormData} payload - The file data to upload.
+ * @returns {Promise<any>} - The parsed response content.
+ * @throws {ApiError|Error} - Throws an `ApiError` or a generic `Error` based on the response content. */
 export async function uploadWithApiError(url: string, method: string, payload: FormData) {
   const response = await fetchApiV2Base(url, method, payload);
   if (response.ok) {
