@@ -282,7 +282,7 @@ public class LithologicalDescriptionControllerTest
                 FromDepth = 20,
                 ToDepth = 30,
                 Description = "Different stratigraphy 2",
-            }
+            },
         };
 
         var response = await controller.BulkCreateAsync(lithologicalDescriptions);
@@ -300,7 +300,7 @@ public class LithologicalDescriptionControllerTest
                 FromDepth = 10,
                 ToDepth = 20,
                 Description = "Non-existent stratigraphy",
-            }
+            },
         };
 
         var response = await controller.BulkCreateAsync(lithologicalDescriptions);

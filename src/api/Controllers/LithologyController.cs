@@ -105,13 +105,14 @@ public class LithologyController : BoreholeControllerBase<Lithology>
     {
         try
         {
-            if (entities == null || !entities.Any())
+            var entityList = entities?.ToList();
+            if (entities == null || entityList.Count == 0)
             {
                 return BadRequest("No lithologies provided");
             }
 
             // Verify all entities share the same stratigraphyId
-            var stratigraphyIds = entities.Select(e => e.StratigraphyId).Distinct().ToList();
+            var stratigraphyIds = entityList.Select(e => e.StratigraphyId).Distinct().ToList();
             if (stratigraphyIds.Count != 1)
             {
                 return BadRequest("All lithologies must belong to the same stratigraphy");
@@ -131,7 +132,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
             if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
             // Prepare each lithology for saving
-            foreach (var entity in entities)
+            foreach (var entity in entityList)
             {
                 await PrepareLithologyForSaveAsync(entity).ConfigureAwait(false);
             }

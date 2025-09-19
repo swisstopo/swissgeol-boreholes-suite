@@ -91,13 +91,14 @@ public class LithologicalDescriptionController : BoreholeControllerBase<Litholog
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<IEnumerable<LithologicalDescription>>> BulkCreateAsync(IEnumerable<LithologicalDescription> entities)
     {
-        if (entities == null || !entities.Any())
+        var entityList = entities?.ToList();
+        if (entities == null || entityList.Count == 0)
         {
             return BadRequest("No lithological descriptions provided");
         }
 
         // Verify all entities share the same stratigraphyId
-        var stratigraphyIds = entities.Select(e => e.StratigraphyId).Distinct().ToList();
+        var stratigraphyIds = entityList.Select(e => e.StratigraphyId).Distinct().ToList();
         if (stratigraphyIds.Count != 1)
         {
             return BadRequest("All lithological descriptions must belong to the same stratigraphy");
@@ -116,12 +117,12 @@ public class LithologicalDescriptionController : BoreholeControllerBase<Litholog
 
         if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        await Context.LithologicalDescriptions.AddRangeAsync(entities).ConfigureAwait(false);
+        await Context.LithologicalDescriptions.AddRangeAsync(entityList).ConfigureAwait(false);
 
         try
         {
             await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
-            return Ok(entities);
+            return Ok(entityList);
         }
         catch (Exception ex)
         {
