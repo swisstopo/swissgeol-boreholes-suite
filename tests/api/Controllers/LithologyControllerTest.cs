@@ -433,7 +433,6 @@ public class LithologyControllerTest
     [TestMethod]
     public async Task BulkCreateAsyncCreatesMultipleLithologies()
     {
-        // Setup - create a list of lithologies
         var stratigraphyId = context.StratigraphiesV2.First().Id;
         var lithologies = new List<Lithology>
         {
