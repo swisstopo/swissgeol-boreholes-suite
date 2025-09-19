@@ -98,7 +98,7 @@ const QueryClientInitializer: FC<PropsWithChildren> = ({ children }) => {
     mutationCache: new MutationCache({
       onError: error => {
         if (!(error instanceof ApiError)) {
-          // On an alert will be shown to inform the user that the action was not successful.
+          // An alert will be shown to inform the user that the action was not successful.
           showAlert(t("errorMutationNotSuccessfull"), "error");
         }
       },

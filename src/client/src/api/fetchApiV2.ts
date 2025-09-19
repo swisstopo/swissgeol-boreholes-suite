@@ -56,7 +56,7 @@ async function handleFetchError(response: Response) {
   const responseContent = await readApiResponse(response);
   if (typeof responseContent === "object" && responseContent !== null) {
     // Throw API Error if problem details or message is provided
-    // This error type is ignored by the default mutation error handler in QueryClientInitializer in App.tsx and allows to handle the error individually
+    // This error type is ignored by the default mutation and query error handler in QueryClientInitializer in App.tsx and allows to handle the error individually
     if (responseContent.detail || responseContent.message) {
       throw new ApiError(responseContent.detail || responseContent.message, response.status);
     } else {

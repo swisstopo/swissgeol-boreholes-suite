@@ -105,13 +105,13 @@ Wichtig: Error Boundaries im korrekten Scope platzieren (z.B. global, Übersicht
 Bei Bedarf können zusätzliche freingranularere Error Boundaries ergänzt werden. 
 
 ##### Error Handling in Fetch-Requests
-Für neue fetch Funktion sollte immer`fetchApiV2WithApiError` verwendet werden.
+Für neue fetch Funktionen sollte immer`fetchApiV2WithApiError` (bzw.`uploadWithApiError`) verwendet werden.
 
 - **Fetch-Requests mit TanStack Query (siehe `queryClient`-Konfiguration in `App.tsx`).:**
     - **GET-Requests Keine Daten im Cache:** Die nächste Error Boundary wird gerendert.
     - **GET-Requests Daten im Cache vorhanden:** Es werden veraltete Daten angezeigt und der Nutzer erhält einen Hinweis (Alert), dass die Daten nicht aktuell sein könnten.
     - **ADD/UPDATE/DELETE-Requests:** Die bisherigen Daten werden weiterhin angezeigt, Nutzer erhält einen Hinweis (Alert), dass die die Aktion nicht erfolgreich war.
-    - **Individuelle Reaktion auf Fehler:** Der `isError`-state der Query kann verwendet werden, um eine Fallback-Komponente zu rendern oder einen Alert anzuzeigen.
+    - **Individuelle Reaktion auf Fehler:** Kommt vom Api ein Fehler mit error.message bzw. error.details zurück, wird ein Fehler vom typ `ApiError` geworfen (siehe `handleFetchError` in `fetchApiV2.ts`). In diesem Fall wird kein Standardalert angezeigt (siehe `queryClient`-Konfiguration in `App.tsx`). Der `isError`-state bzw. der onError handler der Query/Mutation kann verwendet werden, um  je nach Bedarf eine Fallback-Komponente zu rendern oder einen Alert anzuzeigen.
 
 - **Fetch-Requests, die nicht von TanStack Query gemanagt werden (legacy):**
   - Wird `fetchApiV2WithApiError` verwendet muss der Fetch-Requests in einem `try-catch`-Block ausgeführt und Fehler explizit behandelt werden.
