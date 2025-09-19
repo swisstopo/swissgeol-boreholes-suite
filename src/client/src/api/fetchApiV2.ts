@@ -1,10 +1,19 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
 import store from "../reducers";
-import { ApiError, Backfill, Casing, Completion, Document, DocumentUpdate, GeometryFormat, Instrumentation, Photo } from "./apiInterfaces";
+import {
+  ApiError,
+  Backfill,
+  Casing,
+  Completion,
+  Document,
+  DocumentUpdate,
+  GeometryFormat,
+  Instrumentation,
+  Photo,
+} from "./apiInterfaces";
 import { getAuthorizationHeader } from "./authentication";
 import { Section } from "./section.ts";
-
 
 /**
  * Base function to make API calls to the v2 API.
