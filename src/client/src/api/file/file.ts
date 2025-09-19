@@ -1,12 +1,15 @@
+import { useQuery } from "@tanstack/react-query";
 import {
   BoundingBoxResponse,
   ExtractionRequest,
   ExtractionResponse,
+  StratigraphyExtractionResponse,
 } from "../../pages/detail/labeling/labelingInterfaces.tsx";
-import { ApiError } from "../apiInterfaces.ts";
-import { fetchCreatePngs, fetchExtractData, fetchPageBoundingBoxes } from "../dataextraction";
+import { ApiError, BoreholeAttachment } from "../apiInterfaces.ts";
+import { fetchCreatePngs, fetchExtractData, fetchExtractStratigraphy, fetchPageBoundingBoxes } from "../dataextraction";
 import { download, fetchApiV2Base, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../fetchApiV2.ts";
 import { processFileWithOCR } from "../ocr.ts";
+import { BaseLayer, LithologicalDescription } from "../stratigraphy.ts";
 import { BoreholeFile, DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
 
 export async function uploadFile(boreholeId: number, file: File) {
@@ -63,10 +66,7 @@ export const updateFile = async (
   );
 };
 
-export async function getDataExtractionFileInfo(
-  boreholeFileId: number,
-  index: number,
-): Promise<DataExtractionResponse> {
+export async function getDataExtractionFileInfo(boreholeFileId: number, index = 1): Promise<DataExtractionResponse> {
   let response = await fetchApiV2Legacy(
     `boreholefile/getDataExtractionFileInfo?boreholeFileId=${boreholeFileId}&index=${index}`,
     "GET",
@@ -136,4 +136,56 @@ export async function extractCoordinates(
 
 export async function extractText(request: ExtractionRequest, abortSignal: AbortSignal): Promise<ExtractionResponse> {
   return fetchAndHandleExtractionResponse(request, abortSignal, "noTextFound");
+}
+
+export async function extractStratigraphies(
+  fileName: string,
+  abortSignal: AbortSignal,
+): Promise<StratigraphyExtractionResponse> {
+  const response = await fetchExtractStratigraphy(fileName, abortSignal);
+  if (response.ok) {
+    const responseObject = await response.json();
+    if (responseObject.detail) {
+      throw new ApiError(responseObject.detail, 500);
+    }
+    return responseObject;
+  } else {
+    throw new ApiError("errorDataExtraction", response.status);
+  }
+}
+
+const cleanUpExtractionData = (baseLayers: LithologicalDescription[]): BaseLayer[] => {
+  return baseLayers
+    .filter(l => l.fromDepth != null && l.toDepth != null && l.description && l.fromDepth < l.toDepth)
+    .sort((a, b) => (a.fromDepth ?? 0) - (b.fromDepth ?? 0))
+    .reduce<BaseLayer[]>((acc, layer) => {
+      // Only use layer if it does not overlap with the previous one
+      if (acc.length === 0 || layer.fromDepth > acc[acc.length - 1].toDepth) {
+        acc.push(layer);
+      }
+      return acc;
+    }, []);
+};
+
+export function useExtractStratigraphies(file: BoreholeAttachment) {
+  return useQuery({
+    queryKey: ["extractStratigraphies", file],
+    enabled: !!file,
+    queryFn: async ({ signal }) => {
+      await getDataExtractionFileInfo(file.id);
+      const response = await extractStratigraphies(file.nameUuid, signal);
+      const lithologicalDescriptions =
+        // Todo: The extraction currently only supports a single borehole per file
+        Array.isArray(response.boreholes) && response.boreholes.length > 0
+          ? response.boreholes[0]?.layers?.map(({ start, end, material_description }, idx) => ({
+              id: idx,
+              fromDepth: start?.depth,
+              toDepth: end?.depth,
+              description: material_description.text,
+              stratigraphyId: 0,
+            })) || []
+          : [];
+      return cleanUpExtractionData(lithologicalDescriptions);
+    },
+  });
 }

@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useEffect, useMemo, useRef } from "react";
+import { FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
@@ -27,9 +27,11 @@ import { formatDate } from "../../../../utils";
 import { EditStateContext } from "../../editStateContext";
 import { SaveContext, SaveContextProps } from "../../saveContext";
 import { AddStratigraphyButton } from "./addStratigraphyButton";
+import { StratigraphyExtraction } from "./extraction/stratigraphyExtraction.tsx";
 import { LithologyPanel } from "./stratigraphyV2/lithologyV2/lithologyPanel.tsx";
 
 export const StratigraphyPanel: FC = () => {
+  const [filePickerOpen, setFilePickerOpen] = useState(false);
   const justCopiedRef = useRef(false);
   const { id: boreholeId, stratigraphyId } = useRequiredParams();
   const { navigateTo } = useBoreholesNavigate();
@@ -120,7 +122,9 @@ export const StratigraphyPanel: FC = () => {
     [sortedStratigraphies, navigateToStratigraphy],
   );
 
-  const extractStratigraphyFromProfile = useCallback(() => {}, []);
+  const extractStratigraphyFromProfile = useCallback(() => {
+    setFilePickerOpen(true);
+  }, []);
 
   const addEmptyStratigraphy = useCallback(async () => {
     navigateToStratigraphy(0);
@@ -258,21 +262,27 @@ export const StratigraphyPanel: FC = () => {
     );
   } else if (sortedStratigraphies.length === 0) {
     return (
-      <Card sx={{ p: 4 }}>
-        <Typography>{t("noStratigraphy")}</Typography>
-        {editingEnabled && (
-          <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-            <AddButton label="addEmptyStratigraphy" variant="contained" onClick={addEmptyStratigraphy} />
-            <BoreholesButton
-              label="extractStratigraphyFromProfile"
-              variant="contained"
-              disabled
-              icon={<ExtractAiIcon />}
-              onClick={extractStratigraphyFromProfile}
-            />
-          </Stack>
-        )}
-      </Card>
+      <>
+        <Card sx={{ p: 4 }}>
+          <Typography>{t("noStratigraphy")}</Typography>
+          {editingEnabled && (
+            <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+              <AddButton label="addEmptyStratigraphy" variant="contained" onClick={addEmptyStratigraphy} />
+              <BoreholesButton
+                label="extractStratigraphyFromProfile"
+                variant="contained"
+                icon={<ExtractAiIcon />}
+                onClick={extractStratigraphyFromProfile}
+              />
+            </Stack>
+          )}
+        </Card>
+        <StratigraphyExtraction
+          boreholeId={boreholeId}
+          filePickerOpen={filePickerOpen}
+          setFilePickerOpen={setFilePickerOpen}
+        />
+      </>
     );
   }
 
@@ -425,6 +435,11 @@ export const StratigraphyPanel: FC = () => {
             </Box>
           </BoreholeTabContent>
         </Box>
+        <StratigraphyExtraction
+          boreholeId={boreholeId}
+          filePickerOpen={filePickerOpen}
+          setFilePickerOpen={setFilePickerOpen}
+        />
       </Box>
     );
   }

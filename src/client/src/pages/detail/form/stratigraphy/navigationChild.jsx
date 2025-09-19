@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import useResizeObserver from "@react-hook/resize-observer";
 
 /**
- * Positions its children accoring to the lensStart and lensSize properties of navState.
+ * Positions its children according to the lensStart and lensSize properties of navState.
  * Handles the resizing of the header.
  */
 const NavigationChild = ({ navState, setNavState, header, children, sx, moveChildren = true }) => {
