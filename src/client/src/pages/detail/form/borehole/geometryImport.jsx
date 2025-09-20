@@ -36,7 +36,7 @@ const GeometryImport = ({ boreholeId }) => {
   } = useBoreholeGeometryMutations();
   const resetTabStatus = useResetTabStatus(["geometry"]);
 
-  const { data } = useBoreholeGeometry(parseInt(boreholeId));
+  const { data } = useBoreholeGeometry(Number(boreholeId));
   const [geometryFormats, setGeometryFormats] = useState([]);
 
   useEffect(() => {
