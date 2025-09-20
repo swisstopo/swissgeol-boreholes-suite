@@ -92,5 +92,27 @@ Die Applikation kann auch im anonymen Modus betrieben werden, um die Bohrdaten �
 #### API
 
 - Neue Endpoints werden immer im .NET API erstellt. Das Python Legacy API wird nicht erweitert.
-- Redux wird nicht mehr erweitert. Datenabfragen werden mit dem Javascript [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) (siehe [fetchApiV2.ts](src/client/src/api/fetchApiV2.ts)) oder wo sinnvoll mit `useQuery` von `react-query` gemacht.
+- Redux wird nicht mehr erweitert. Datenabfragen werden mit dem Javascript [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) (siehe [fetchApiV2.ts](src/client/src/api/fetchApiV2.ts)) oder wo sinnvoll mit `useQuery` von `tanstack-query` gemacht.
 - Wenn Abfragen aus dem Redux Store in neuen Komponenten gebraucht werden, sollten die React hooks `useSelector` und `useDispatch` verwendet werden.
+
+#### Error Handling
+##### Erwartebare Fehler
+Inkorrektes Userinput, Formvalidation etc. werden direkt in der Komponente abgefangen und dem User als Inline-Message oder Alert angezeigt.
+
+##### Unerwartete Fehler
+Server Error, Render-Fehler etc. werden durch Error Boundaries abgefangen. Sie dienen als Fallback und sollten im normalen Ablauf der Anwendung nicht sichtbar sein.
+Wichtig: Error Boundaries im korrekten Scope platzieren (z.B. global, Übersichtsseite, Detailseite, Settings), damit möglichst viel der Applikation weiter funktioniert, wenn ein Fehler auftritt.
+Bei Bedarf können zusätzliche freingranularere Error Boundaries ergänzt werden. 
+
+##### Error Handling in Fetch-Requests
+Für neue fetch Funktionen sollte immer`fetchApiV2WithApiError` (bzw.`uploadWithApiError`) verwendet werden.
+
+- **Fetch-Requests mit TanStack Query (siehe `queryClient`-Konfiguration in `App.tsx`).:**
+    - **GET-Requests Keine Daten im Cache:** Die nächste Error Boundary wird gerendert.
+    - **GET-Requests Daten im Cache vorhanden:** Es werden veraltete Daten angezeigt und der Nutzer erhält einen Hinweis (Alert), dass die Daten nicht aktuell sein könnten.
+    - **ADD/UPDATE/DELETE-Requests:** Die bisherigen Daten werden weiterhin angezeigt, Nutzer erhält einen Hinweis (Alert), dass die die Aktion nicht erfolgreich war.
+    - **Individuelle Reaktion auf Fehler:** Kommt vom Api ein Fehler mit error.message bzw. error.details zurück, wird ein Fehler vom typ `ApiError` geworfen (siehe `handleFetchError` in `fetchApiV2.ts`). In diesem Fall wird kein Standardalert angezeigt (siehe `queryClient`-Konfiguration in `App.tsx`). Der `isError`-state bzw. der onError handler der Query/Mutation kann verwendet werden, um  je nach Bedarf eine Fallback-Komponente zu rendern oder einen Alert anzuzeigen.
+
+- **Fetch-Requests, die nicht von TanStack Query gemanagt werden (legacy):**
+  - Wird `fetchApiV2WithApiError` verwendet muss der Fetch-Requests in einem `try-catch`-Block ausgeführt und Fehler explizit behandelt werden.
+  - Wird `fetchApiV2Legacy` verwendet erscheint ein Standard-Browser-Alert im Fehlerfall.

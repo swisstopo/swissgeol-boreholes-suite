@@ -229,21 +229,22 @@ describe("User administration settings tests", () => {
     verifyTableLength(1);
   });
 
-  const errorWhileFetchingMessage = "An error occurred while fetching or updating data";
+  const errorBoundaryMessage = "Something went wrong while accessing the settings page on Swissgeol Boreholes";
+  const errorWhileFetchingMessage = "Unexpected error. The action you triggered was not successful.";
 
-  it("displays error message when fetching user table data fails.", () => {
+  it("displays error boundary when fetching user table data fails.", () => {
     cy.intercept("GET", "api/v2/user*", req => req.destroy());
     goToRouteAndAcceptTerms("/setting#users");
-    cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
+    cy.contains(errorBoundaryMessage);
   });
 
-  it("displays error message when fetching user detail data fails.", () => {
+  it("displays error boundary when fetching user detail data fails.", () => {
     cy.intercept("GET", "api/v2/user/2", req => req.destroy());
     goToRouteAndAcceptTerms("/setting/user/2");
-    cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
+    cy.contains(errorBoundaryMessage);
   });
 
-  it("displays error message when updating user fails.", () => {
+  it("displays error alert when updating user fails.", () => {
     cy.intercept("PUT", "api/v2/user", req => req.destroy());
     goToRouteAndAcceptTerms("/setting/user/2");
     getElementByDataCy("inactivate-button").click();
@@ -261,7 +262,7 @@ describe("User administration settings tests", () => {
     getElementByDataCy("is-user-admin-checkbox").should("not.be.checked");
   });
 
-  it("displays error message when deleting user fails.", () => {
+  it("displays error alert when deleting user fails.", () => {
     cy.intercept("DELETE", "api/v2/user/7", req => req.destroy());
     goToRouteAndAcceptTerms("/setting/user/7"); // deletable user
     cy.contains("U. be_deleted");

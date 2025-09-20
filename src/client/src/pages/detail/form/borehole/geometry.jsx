@@ -24,7 +24,7 @@ const Geometry = ({ measuredDepth }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
   const { id: boreholeId } = useRequiredParams();
-  const { data } = useBoreholeGeometry(boreholeId);
+  const { data } = useBoreholeGeometry(Number(boreholeId));
   const resetTabStatus = useResetTabStatus(["geometry"]);
 
   const {
@@ -54,7 +54,7 @@ const Geometry = ({ measuredDepth }) => {
           {editingEnabled && (
             <>
               <Grid item xs={12}>
-                <GeometryImport boreholeId={boreholeId} hasData={data?.length > 0} />
+                <GeometryImport boreholeId={boreholeId} />
               </Grid>
             </>
           )}

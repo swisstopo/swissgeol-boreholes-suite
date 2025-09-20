@@ -1,4 +1,4 @@
-import { fetchApiV2 } from "../../../../../api/fetchApiV2.ts";
+import { fetchApiV2Legacy } from "../../../../../api/fetchApiV2.ts";
 import { Observation } from "../Observation.ts";
 
 export interface FieldMeasurement extends Observation {
@@ -18,17 +18,17 @@ export interface FieldMeasurementInputProps {
 }
 
 export const getFieldMeasurements = async (boreholeId: number) => {
-  return await fetchApiV2(`fieldmeasurement?boreholeId=${boreholeId}`, "GET");
+  return await fetchApiV2Legacy(`fieldmeasurement?boreholeId=${boreholeId}`, "GET");
 };
 
 export const addFieldMeasurement = async (fieldmeasurement: FieldMeasurement) => {
-  return await fetchApiV2("fieldmeasurement", "POST", fieldmeasurement);
+  return await fetchApiV2Legacy("fieldmeasurement", "POST", fieldmeasurement);
 };
 
 export const updateFieldMeasurement = async (fieldmeasurement: FieldMeasurement) => {
-  return await fetchApiV2("fieldmeasurement", "PUT", fieldmeasurement);
+  return await fetchApiV2Legacy("fieldmeasurement", "PUT", fieldmeasurement);
 };
 
 export const deleteFieldMeasurement = async (id: number) => {
-  return await fetchApiV2(`fieldmeasurement?id=${id}`, "DELETE");
+  return await fetchApiV2Legacy(`fieldmeasurement?id=${id}`, "DELETE");
 };

@@ -1,5 +1,4 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useShowAlertOnError } from "../hooks/useShowAlertOnError.tsx";
 import { User } from "./apiInterfaces.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 
@@ -25,48 +24,35 @@ export const usersQueryKey = "users";
 const currentUserQueryKey = "currentUser";
 
 export const useUsers = () => {
-  const query = useQuery({
+  return useQuery({
     queryKey: [usersQueryKey],
     queryFn: fetchUsers,
   });
-
-  // integrate error alert into query
-  useShowAlertOnError(query.isError, query.error);
-  return query;
 };
 
 export const useEditorUsersOnWorkgroup = (workgroupId: number) => {
-  const query = useQuery({
+  return useQuery({
     queryKey: [usersQueryKey, "editors", workgroupId],
     queryFn: () => fetchEditorUsersOnWorkgroup(workgroupId),
     enabled: !!workgroupId,
   });
-
-  useShowAlertOnError(query.isError, query.error);
-  return query;
 };
 
 export const useCurrentUser = () => {
-  const query = useQuery({
+  return useQuery({
     queryKey: [currentUserQueryKey],
     queryFn: fetchCurrentUser,
   });
-
-  useShowAlertOnError(query.isError, query.error);
-  return query;
 };
 
 export const useSelectedUser = (id: number) => {
-  const query = useQuery({
+  return useQuery({
     queryKey: [usersQueryKey, id],
     queryFn: async () => {
       return await fetchUser(id);
     },
     enabled: !!id,
   });
-
-  useShowAlertOnError(query.isError, query.error);
-  return query;
 };
 
 export const useUserMutations = () => {
@@ -108,9 +94,6 @@ export const useUserMutations = () => {
       queryClient.invalidateQueries({ queryKey: [usersQueryKey] });
     },
   });
-
-  useShowAlertOnError(useUpdateUser.isError, useUpdateUser.error);
-  useShowAlertOnError(useDeleteUser.isError, useDeleteUser.error);
 
   return {
     update: useUpdateUser,

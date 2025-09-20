@@ -1,7 +1,7 @@
 import { useCallback, useContext, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card, Grid, Stack } from "@mui/material";
-import { fetchApiV2 } from "../../../../api/fetchApiV2.ts";
+import { fetchApiV2Legacy } from "../../../../api/fetchApiV2.ts";
 import PointComponent from "../../../../components/map/pointComponent";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 import { EditStateContext } from "../../editStateContext.tsx";
@@ -83,7 +83,7 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
       setCurrentLV95X(XLV95);
       setCurrentLV95Y(YLV95);
 
-      const location = await fetchApiV2(`location/identify?east=${XLV95}&north=${YLV95}`, "GET");
+      const location = await fetchApiV2Legacy(`location/identify?east=${XLV95}&north=${YLV95}`, "GET");
       setValuesForCountryCantonMunicipality(location);
       setValuesForReferenceSystem(targetSystem, transformedX.toFixed(maxPrecision), transformedY.toFixed(maxPrecision));
     },
