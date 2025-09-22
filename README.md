@@ -102,7 +102,7 @@ Inkorrekte User-Inputs, Formvalidation etc. werden direkt in der Komponente abge
 ##### Unerwartete Fehler
 Server Error, Render-Fehler etc. werden durch Error Boundaries abgefangen. Sie dienen als Fallback und sollten im normalen Ablauf der Anwendung nicht sichtbar sein.
 Wichtig: Error Boundaries im korrekten Scope platzieren (z.B. global, Übersichtsseite, Detailseite, Settings), damit möglichst viel der Applikation weiter funktioniert, wenn ein Fehler auftritt.
-Bei Bedarf können zusätzliche freingranularere Error Boundaries ergänzt werden. 
+Bei Bedarf können zusätzliche feingranularere Error Boundaries ergänzt werden. 
 
 ##### Error Handling in Fetch-Requests
 Für neue Fetch-Requests sollte immer `fetchApiV2WithApiError` (bzw. `uploadWithApiError`) verwendet werden.
