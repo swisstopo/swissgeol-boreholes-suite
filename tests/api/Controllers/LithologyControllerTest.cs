@@ -467,6 +467,9 @@ public class LithologyControllerTest
                     {
                         IsFirst = true,
                         ColorPrimaryId = 100000077,
+                        ComponentConParticleCodelistIds = new List<int> { 100000186, 100000181 },
+                        ComponentConMineralCodelistIds = new List<int> { 100000260 },
+                        ComponentUnconDebrisCodelistIds = new List<int> { 9102 },
                     },
                 },
             },
@@ -475,8 +478,11 @@ public class LithologyControllerTest
                 StratigraphyId = stratigraphyId,
                 FromDepth = 30,
                 ToDepth = 40,
-                IsUnconsolidated = true,
+                IsUnconsolidated = false,
                 HasBedding = false,
+                AlterationDegreeId = 100000176,
+                CompactnessId = 21102002,
+                CohesionId = 21116001,
                 Notes = "Bulk created lithology 3",
                 LithologyDescriptions = new List<LithologyDescription>
                 {
@@ -484,6 +490,9 @@ public class LithologyControllerTest
                     {
                         IsFirst = true,
                         ColorPrimaryId = 100000077,
+                        ComponentConParticleCodelistIds = new List<int> { 100000186, 100000181 },
+                        ComponentConMineralCodelistIds = new List<int> { 100000260 },
+                        ComponentUnconDebrisCodelistIds = new List<int> { 9102 },
                     },
                 },
             },
@@ -504,6 +513,17 @@ public class LithologyControllerTest
             l.Notes == "Bulk created lithology 3");
 
         Assert.AreEqual(3, retrievedLithologies.Count());
+
+        // Assert unconsolidated or consolidated values are saved.
+        var consolidatedLithologyLithologicalDescription = retrievedLithologies.Single(l => l.Notes == "Bulk created lithology 2").LithologyDescriptions.Single();
+        Assert.AreEqual(0, consolidatedLithologyLithologicalDescription.ComponentConParticleCodelists.Count());
+        Assert.AreEqual(0, consolidatedLithologyLithologicalDescription.ComponentConMineralCodelists.Count());
+        Assert.AreEqual(1, consolidatedLithologyLithologicalDescription.ComponentUnconDebrisCodelists.Count());
+
+        var unConsolidatedLithologyLithologicalDescription = retrievedLithologies.Single(l => l.Notes == "Bulk created lithology 3").LithologyDescriptions.Single();
+        Assert.AreEqual(2, unConsolidatedLithologyLithologicalDescription.ComponentConParticleCodelists.Count());
+        Assert.AreEqual(1, unConsolidatedLithologyLithologicalDescription.ComponentConMineralCodelists.Count());
+        Assert.AreEqual(0, unConsolidatedLithologyLithologicalDescription.ComponentUnconDebrisCodelists.Count());
 
         foreach (var lithology in retrievedLithologies)
         {
