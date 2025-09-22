@@ -65,6 +65,7 @@ public class Lithology : ILithology, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets whether the <see cref="Lithology"/> is unconsolidated or consolidated.
     /// </summary>
+    [JsonRequired]
     [Column("unconsolidated")]
     public bool IsUnconsolidated { get; set; }
 
