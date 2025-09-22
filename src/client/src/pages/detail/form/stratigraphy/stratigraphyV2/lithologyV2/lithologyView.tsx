@@ -7,7 +7,7 @@ import {
   FaciesDescription,
   LithologicalDescription,
   useFaciesDescription,
-  useLithoDescription,
+  useLithologicalDescription,
 } from "../../../../../../api/stratigraphy.ts";
 import { Lithology } from "../../lithology.ts";
 import { useScaleContext } from "./scaleContext.tsx";
@@ -24,7 +24,7 @@ interface LithologyViewProps {
 }
 
 export const LithologyView: FC<LithologyViewProps> = ({ lithologies, stratigraphyId }) => {
-  const { data: lithologicalDescriptions } = useLithoDescription(stratigraphyId - 15000000); // workaround until there is seed data for stratigraphyV2
+  const { data: lithologicalDescriptions } = useLithologicalDescription(stratigraphyId - 15000000); // workaround until there is seed data for stratigraphyV2
   const { data: faciesDescriptions } = useFaciesDescription(stratigraphyId - 15000000); // workaround until there is seed data for stratigraphyV2
   const { completedLayers: completedLithologies } = useCompletedLayers(lithologies);
   const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(
@@ -59,7 +59,7 @@ export const LithologyView: FC<LithologyViewProps> = ({ lithologies, stratigraph
             sx={{
               overflow: "hidden",
               display: "-webkit-box",
-              WebkitLineClamp: getMaxLinesToDisplay(description),
+              // WebkitLineClamp: getMaxLinesToDisplay(description),
               WebkitBoxOrient: "vertical",
               transform: `scaleY(${1 / scaleY})`,
               transformOrigin: "center",
@@ -69,7 +69,7 @@ export const LithologyView: FC<LithologyViewProps> = ({ lithologies, stratigraph
         </Box>
       );
     },
-    [getMaxLinesToDisplay, scaleY],
+    [scaleY],
   );
 
   const renderLithology = useCallback(
@@ -81,7 +81,7 @@ export const LithologyView: FC<LithologyViewProps> = ({ lithologies, stratigraph
           sx={{
             overflow: "hidden",
             display: "-webkit-box",
-            WebkitLineClamp: getMaxLinesToDisplay(layer),
+            // WebkitLineClamp: getMaxLinesToDisplay(layer),
             WebkitBoxOrient: "vertical",
             transform: `scaleY(${1 / scaleY})`,
             transformOrigin: "center",
@@ -90,7 +90,7 @@ export const LithologyView: FC<LithologyViewProps> = ({ lithologies, stratigraph
         </Typography>
       );
     },
-    [getMaxLinesToDisplay, scaleY],
+    [scaleY],
   );
 
   useEffect(() => {
