@@ -115,4 +115,4 @@ Für neue Fetch-Requests sollte immer `fetchApiV2WithApiError` (bzw. `uploadWith
 
 - **Fetch-Requests, die nicht von TanStack Query gemanagt werden (legacy):**
   - Wird `fetchApiV2WithApiError` verwendet muss der Fetch-Requests in einem `try-catch`-Block ausgeführt und Fehler explizit behandelt werden.
-  - Wird `fetchApiV2Legacy` verwendet erscheint ein Standard-Browser-Alert im Fehlerfall.
+  - Wird `fetchApiV2Legacy` verwendet, erscheint im Fehlerfall ein Standard-Browser-Alert.
