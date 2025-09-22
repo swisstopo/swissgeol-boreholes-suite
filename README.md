@@ -114,5 +114,5 @@ Für neue Fetch-Requests sollte immer `fetchApiV2WithApiError` (bzw. `uploadWith
     - **Individuelle Reaktion auf Fehler:** Kommt vom API ein Fehler mit `error.message` bzw. `error.details` zurück, wird ein Fehler vom Typ `ApiError` geworfen (siehe `handleFetchError` in `fetchApiV2.ts`). In diesem Fall wird kein Standardalert angezeigt (siehe `queryClient`-Konfiguration in `App.tsx`). Der `isError`-State bzw. der `onError`-Handler der Query/Mutation kann verwendet werden, um je nach Bedarf eine Fallback-Komponente zu rendern oder einen Alert anzuzeigen.
 
 - **Fetch-Requests, die nicht von TanStack Query gemanagt werden (legacy):**
-  - Wird `fetchApiV2WithApiError` verwendet muss der Fetch-Requests in einem `try-catch`-Block ausgeführt und Fehler explizit behandelt werden.
+  - Wird `fetchApiV2WithApiError` verwendet, muss der Fetch-Request in einem `try-catch`-Block ausgeführt und Fehler explizit behandelt werden.
   - Wird `fetchApiV2Legacy` verwendet, erscheint im Fehlerfall ein Standard-Browser-Alert.
