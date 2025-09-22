@@ -105,7 +105,7 @@ Wichtig: Error Boundaries im korrekten Scope platzieren (z.B. global, Übersicht
 Bei Bedarf können zusätzliche freingranularere Error Boundaries ergänzt werden. 
 
 ##### Error Handling in Fetch-Requests
-Für neue fetch Funktionen sollte immer`fetchApiV2WithApiError` (bzw.`uploadWithApiError`) verwendet werden.
+Für neue Fetch-Requests sollte immer `fetchApiV2WithApiError` (bzw. `uploadWithApiError`) verwendet werden.
 
 - **Fetch-Requests mit TanStack Query (siehe `queryClient`-Konfiguration in `App.tsx`).:**
     - **GET-Requests Keine Daten im Cache:** Die nächste Error Boundary wird gerendert.
