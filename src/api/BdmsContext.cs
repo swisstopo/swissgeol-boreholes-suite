@@ -587,6 +587,10 @@ public class BdmsContext : DbContext
             .HasForeignKey(h => h.ParameterId)
             .OnDelete(DeleteBehavior.NoAction);
 
+        modelBuilder.Entity<Lithology>().Property(ts => ts.HasBedding).HasDefaultValue(false);
+        modelBuilder.Entity<LithologyDescription>().Property(ts => ts.IsFirst).HasDefaultValue(true);
+        modelBuilder.Entity<LithologyDescription>().Property(ts => ts.HasStriae).HasDefaultValue(false);
+
         // Join table for lithology description and codelists with schema name 'component_con_particle'
         modelBuilder.Entity<LithologyDescription>()
             .HasMany(l => l.ComponentConParticleCodelists)
