@@ -97,7 +97,7 @@ Die Applikation kann auch im anonymen Modus betrieben werden, um die Bohrdaten Ã
 
 #### Error Handling
 ##### Erwartbare Fehler
-Inkorrektes Userinput, Formvalidation etc. werden direkt in der Komponente abgefangen und dem User als Inline-Message oder Alert angezeigt.
+Inkorrekte User-Inputs, Formvalidation etc. werden direkt in der Komponente abgefangen und dem User als Inline-Message oder Alert angezeigt.
 
 ##### Unerwartete Fehler
 Server Error, Render-Fehler etc. werden durch Error Boundaries abgefangen. Sie dienen als Fallback und sollten im normalen Ablauf der Anwendung nicht sichtbar sein.
