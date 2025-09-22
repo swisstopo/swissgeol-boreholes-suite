@@ -45,6 +45,22 @@ describe("Tests for stratigraphy", () => {
     cy.contains("button", "Extract stratigraphy from profile").should("be.visible").and("be.enabled");
   });
 
+  it("starts stratigraphy extraction", () => {
+    createBorehole({ originalName: "SCHOOLDIONYSUS" }).as("borehole_id");
+    cy.get("@borehole_id").then(boreholeId => {
+      goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy?dev=true`);
+      cy.wait("@stratigraphyV2_by_borehole_GET");
+      startBoreholeEditing();
+      getElementByDataCy("extractstratigraphyfromprofile-button").click();
+      getElementByDataCy("addProfile-button").click();
+
+      cy.get('input[type="file"]').attachFile("labeling_attachment.pdf");
+      cy.wait("@extract-stratigraphy").then(interception => {
+        expect(interception.response.statusCode).to.eq(200);
+      });
+    });
+  });
+
   it("adds and updates stratigraphies, and sorts them based on isPrimary state and alphabetic order", () => {
     createBorehole({ originalName: "SCHOOLDIONYSUS" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
