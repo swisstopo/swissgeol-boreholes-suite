@@ -96,7 +96,7 @@ Die Applikation kann auch im anonymen Modus betrieben werden, um die Bohrdaten Ã
 - Wenn Abfragen aus dem Redux Store in neuen Komponenten gebraucht werden, sollten die React hooks `useSelector` und `useDispatch` verwendet werden.
 
 #### Error Handling
-##### Erwartebare Fehler
+##### Erwartbare Fehler
 Inkorrektes Userinput, Formvalidation etc. werden direkt in der Komponente abgefangen und dem User als Inline-Message oder Alert angezeigt.
 
 ##### Unerwartete Fehler
