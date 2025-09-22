@@ -57,6 +57,7 @@ describe("Tests for stratigraphy", () => {
       cy.get('input[type="file"]').attachFile("labeling_attachment.pdf");
       cy.wait("@extract-stratigraphy", { timeout: 60000 }).then(interception => {
         expect(interception.response.statusCode).to.eq(200);
+        cy.contains("No valid stratigraphy could be extracted from the profile");
       });
     });
   });
