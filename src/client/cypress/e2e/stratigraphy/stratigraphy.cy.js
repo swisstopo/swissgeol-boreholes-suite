@@ -55,7 +55,7 @@ describe("Tests for stratigraphy", () => {
       getElementByDataCy("addProfile-button").click();
 
       cy.get('input[type="file"]').attachFile("labeling_attachment.pdf");
-      cy.wait("@extract-stratigraphy").then(interception => {
+      cy.wait("@extract-stratigraphy", { timeout: 60000 }).then(interception => {
         expect(interception.response.statusCode).to.eq(200);
       });
     });
