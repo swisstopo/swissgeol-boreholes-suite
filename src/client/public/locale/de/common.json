@@ -117,7 +117,7 @@
   "cuttings": "Bohrgut (Bohrklein, Kern)",
   "dataCollectionConsent": "Einwilligung zur Datenerfassung (optional)",
   "dataImport": "Datenimport",
-  "dataNotUpToDateError": "Es ist ein unerwarteter Fehler aufgetreten, die angezeigten Daten sind möglicherweise nicht aktuell...",
+  "dataNotUpToDateError": "Es ist ein unerwarteter Fehler aufgetreten. Die angezeigten Daten sind möglicherweise nicht aktuell...",
   "date": "Datum",
   "dateAbandonmentCompletion": "Datum Stilllegung",
   "dateFinishCasing": "Datum Ausbau Ende",
