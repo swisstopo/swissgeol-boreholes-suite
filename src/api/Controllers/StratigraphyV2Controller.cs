@@ -210,6 +210,11 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
 
     private async Task<bool> IsNameUnique(StratigraphyV2 entity)
     {
+        if (string.IsNullOrEmpty(entity.Name))
+        {
+            return true;
+        }
+
         var hasBoreholeStratigraphiesWithSameName = await Context.StratigraphiesV2
                 .AnyAsync(s => s.BoreholeId == entity.BoreholeId && s.Id != entity.Id && s.Name == entity.Name)
                 .ConfigureAwait(false);

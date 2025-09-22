@@ -2385,7 +2385,6 @@ namespace BDMS.Migrations
                         .HasColumnName("is_primary");
 
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("name");
 
