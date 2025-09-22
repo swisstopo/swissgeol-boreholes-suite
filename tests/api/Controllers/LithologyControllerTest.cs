@@ -516,14 +516,14 @@ public class LithologyControllerTest
 
         // Assert unconsolidated or consolidated values are saved.
         var consolidatedLithologyLithologicalDescription = retrievedLithologies.Single(l => l.Notes == "Bulk created lithology 2").LithologyDescriptions.Single();
-        Assert.AreEqual(0, consolidatedLithologyLithologicalDescription.ComponentConParticleCodelists.Count());
-        Assert.AreEqual(0, consolidatedLithologyLithologicalDescription.ComponentConMineralCodelists.Count());
-        Assert.AreEqual(1, consolidatedLithologyLithologicalDescription.ComponentUnconDebrisCodelists.Count());
+        Assert.AreEqual(0, consolidatedLithologyLithologicalDescription.ComponentConParticleCodelists.Count);
+        Assert.AreEqual(0, consolidatedLithologyLithologicalDescription.ComponentConMineralCodelists.Count);
+        Assert.AreEqual(1, consolidatedLithologyLithologicalDescription.ComponentUnconDebrisCodelists.Count);
 
         var unConsolidatedLithologyLithologicalDescription = retrievedLithologies.Single(l => l.Notes == "Bulk created lithology 3").LithologyDescriptions.Single();
-        Assert.AreEqual(2, unConsolidatedLithologyLithologicalDescription.ComponentConParticleCodelists.Count());
-        Assert.AreEqual(1, unConsolidatedLithologyLithologicalDescription.ComponentConMineralCodelists.Count());
-        Assert.AreEqual(0, unConsolidatedLithologyLithologicalDescription.ComponentUnconDebrisCodelists.Count());
+        Assert.AreEqual(2, unConsolidatedLithologyLithologicalDescription.ComponentConParticleCodelists.Count);
+        Assert.AreEqual(1, unConsolidatedLithologyLithologicalDescription.ComponentConMineralCodelists.Count);
+        Assert.AreEqual(0, unConsolidatedLithologyLithologicalDescription.ComponentUnconDebrisCodelists.Count);
 
         foreach (var lithology in retrievedLithologies)
         {
