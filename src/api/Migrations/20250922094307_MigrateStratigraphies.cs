@@ -11,6 +11,15 @@ public partial class MigrateStratigraphies : Migration
     /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
     {
+        migrationBuilder.AlterColumn<string>(
+                name: "name",
+                schema: "bdms",
+                table: "stratigraphy_v2",
+                type: "text",
+                nullable: true,
+                oldClrType: typeof(string),
+                oldType: "text");
+
         migrationBuilder.Sql(@"
             INSERT INTO bdms.stratigraphy_v2(
                 id, borehole_id, name, date, is_primary, update, updater, creation, creator
@@ -18,7 +27,7 @@ public partial class MigrateStratigraphies : Migration
             SELECT
                 id_sty,
                 id_bho_fk,
-                COALESCE(name_sty, 'Stratigraphie'),
+                name_sty,
                 date_sty,
                 COALESCE(primary_sty, FALSE),
                 update_sty,
