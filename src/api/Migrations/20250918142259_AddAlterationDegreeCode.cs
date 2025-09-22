@@ -12,10 +12,11 @@ public partial class AddAlterationDegreeCode : Migration
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.Sql(@"
+            SELECT setval('bdms.codelist_id_cli_seq', (SELECT MAX(id_cli) FROM bdms.codelist));
             INSERT INTO bdms.codelist(
                 schema_cli, code_cli, text_cli_en, text_cli_de, text_cli_fr, text_cli_it, order_cli
             ) VALUES
-                ('alteration_degree', '', 'weathered', 'verwittert', 'altére', 'alterato', 11);
+                ('alteration_degree', '', 'weathered', 'verwittert', 'altéré', 'alterato', 11);
         ");
     }
 }
