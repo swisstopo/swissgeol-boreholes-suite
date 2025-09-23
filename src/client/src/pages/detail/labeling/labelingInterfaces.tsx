@@ -21,6 +21,7 @@ export interface ExtractionBoundingBox {
   y0: number;
   x1: number;
   y1: number;
+  page_number?: number;
 }
 
 export interface ExtractionRequest {
@@ -47,9 +48,9 @@ export interface StratigraphyExtractionResponse {
   boreholes: {
     id: string;
     layers: {
-      start: { depth: number };
-      end: { depth: number };
-      material_description: { text: string };
+      start: { depth: number; bounding_boxes: ExtractionBoundingBox[] };
+      end: { depth: number; bounding_boxes: ExtractionBoundingBox[] };
+      material_description: { text: string; bounding_boxes: ExtractionBoundingBox[] };
     }[];
   }[];
 }

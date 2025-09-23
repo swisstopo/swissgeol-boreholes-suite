@@ -9,7 +9,7 @@ import { ApiError, BoreholeAttachment } from "../apiInterfaces.ts";
 import { fetchCreatePngs, fetchExtractData, fetchExtractStratigraphy, fetchPageBoundingBoxes } from "../dataextraction";
 import { download, fetchApiV2Base, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../fetchApiV2.ts";
 import { processFileWithOCR } from "../ocr.ts";
-import { BaseLayer, LithologicalDescription } from "../stratigraphy.ts";
+import { ExtractedLithologicalDescription } from "../stratigraphy.ts";
 import { BoreholeFile, DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
 
 export async function uploadFile(boreholeId: number, file: File) {
@@ -154,11 +154,13 @@ export async function extractStratigraphies(
   }
 }
 
-const cleanUpExtractionData = (baseLayers: LithologicalDescription[]): BaseLayer[] => {
-  return baseLayers
+const cleanUpExtractionData = (
+  lithologicalDescriptions: ExtractedLithologicalDescription[],
+): ExtractedLithologicalDescription[] => {
+  return lithologicalDescriptions
     .filter(l => l.fromDepth != null && l.toDepth != null && l.description && l.fromDepth < l.toDepth)
     .sort((a, b) => (a.fromDepth ?? 0) - (b.fromDepth ?? 0))
-    .reduce<BaseLayer[]>((acc, layer) => {
+    .reduce<ExtractedLithologicalDescription[]>((acc, layer) => {
       // Only use layer if it does not overlap with the previous one
       if (acc.length === 0 || layer.fromDepth > acc[acc.length - 1].toDepth) {
         acc.push(layer);
@@ -171,17 +173,21 @@ export function useExtractStratigraphies(file: BoreholeAttachment) {
   return useQuery({
     queryKey: ["extractStratigraphies", file],
     enabled: !!file,
+    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes => Extraction for the same file doesn't need to be refetched.
     queryFn: async ({ signal }) => {
       await getDataExtractionFileInfo(file.id);
       const response = await extractStratigraphies(file.nameUuid, signal);
-      const lithologicalDescriptions =
+      const lithologicalDescriptions: ExtractedLithologicalDescription[] =
         // Todo: The extraction currently only supports a single borehole per file
         Array.isArray(response.boreholes) && response.boreholes.length > 0
           ? response.boreholes[0]?.layers?.map(({ start, end, material_description }, idx) => ({
               id: idx,
               fromDepth: start?.depth,
               toDepth: end?.depth,
+              startDepthBoundingBoxes: start?.bounding_boxes,
+              endDepthBoundingBoxes: end?.bounding_boxes,
               description: material_description.text,
+              descriptionBoundingBoxes: material_description.bounding_boxes,
               stratigraphyId: 0,
             })) || []
           : [];
