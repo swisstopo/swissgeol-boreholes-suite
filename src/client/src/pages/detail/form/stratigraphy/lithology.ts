@@ -1,6 +1,6 @@
 import { UseFormReturn } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
-import { fetchApiV2, fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
+import { fetchApiV2Legacy, fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
 import { BaseLayer } from "../../../../api/stratigraphy.ts";
 import { Codelist } from "../../../../components/codelist.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
@@ -105,7 +105,7 @@ export interface LithologyDescriptionEditForm extends LithologyEditForm {
 const lithologyController = "lithology";
 
 export const fetchLithologiesByStratigraphyId = async (stratigraphyId: number): Promise<Lithology[]> =>
-  await fetchApiV2(`lithology?stratigraphyId=${stratigraphyId}`, "GET");
+  await fetchApiV2Legacy(`lithology?stratigraphyId=${stratigraphyId}`, "GET");
 
 export const lithologyQueryKey = "lithologies";
 
