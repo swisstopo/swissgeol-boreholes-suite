@@ -30,10 +30,9 @@ public class StratigraphyV2 : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="StratigraphyV2"/>'s name.
     /// </summary>
-    [JsonRequired]
     [IncludeInExport]
     [Column("name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="StratigraphyV2"/>'s date.
