@@ -198,4 +198,135 @@ public class LithologicalDescriptionControllerTest
         var response = await controller.CreateAsync(lithologicalDescription);
         ActionResultAssert.IsInternalServerError(response.Result);
     }
+
+    [TestMethod]
+    public async Task BulkCreateAsyncCreatesMultipleLithologicalDescriptions()
+    {
+        var stratigraphyId = context.Stratigraphies.First().Id;
+        var lithologicalDescriptions = new List<LithologicalDescription>
+        {
+            new LithologicalDescription
+            {
+                CreatedById = 1,
+                UpdatedById = 1,
+                StratigraphyId = stratigraphyId,
+                FromDepth = 10,
+                ToDepth = 20,
+                Description = "Bulk created description 1",
+            },
+            new LithologicalDescription
+            {
+                CreatedById = 1,
+                UpdatedById = 1,
+                StratigraphyId = stratigraphyId,
+                FromDepth = 20,
+                ToDepth = 30,
+                Description = "Bulk created description 2",
+            },
+            new LithologicalDescription
+            {
+                CreatedById = 1,
+                UpdatedById = 1,
+                StratigraphyId = stratigraphyId,
+                FromDepth = 30,
+                ToDepth = 40,
+                Description = "Bulk created description 3",
+            },
+        };
+
+        var response = await controller.BulkCreateAsync(lithologicalDescriptions);
+
+        ActionResultAssert.IsOk(response.Result);
+        var okResult = response.Result as OkObjectResult;
+        var createdDescriptions = okResult.Value as IEnumerable<LithologicalDescription>;
+        Assert.IsNotNull(createdDescriptions);
+        Assert.AreEqual(3, createdDescriptions.Count());
+
+        var getResponse = await controller.GetAsync(stratigraphyId);
+        var retrievedDescriptions = getResponse.Value.Where(d =>
+            d.Description == "Bulk created description 1" ||
+            d.Description == "Bulk created description 2" ||
+            d.Description == "Bulk created description 3");
+
+        Assert.AreEqual(3, retrievedDescriptions.Count());
+
+        // Delete the created descriptions
+        foreach (var description in retrievedDescriptions)
+        {
+            await controller.DeleteAsync(description.Id);
+        }
+    }
+
+    [TestMethod]
+    public async Task BulkCreateAsyncWithEmptyListReturnsBadRequest()
+    {
+        var response = await controller.BulkCreateAsync(new List<LithologicalDescription>());
+        ActionResultAssert.IsBadRequest(response.Result);
+    }
+
+    [TestMethod]
+    public async Task BulkCreateAsyncWithDifferentStratigraphyIdsReturnsBadRequest()
+    {
+        var lithologicalDescriptions = new List<LithologicalDescription>
+        {
+            new LithologicalDescription
+            {
+                StratigraphyId = 6_000_001,
+                FromDepth = 10,
+                ToDepth = 20,
+                Description = "Different stratigraphy 1",
+            },
+            new LithologicalDescription
+            {
+                StratigraphyId = 6_000_002,
+                FromDepth = 20,
+                ToDepth = 30,
+                Description = "Different stratigraphy 2",
+            },
+        };
+
+        var response = await controller.BulkCreateAsync(lithologicalDescriptions);
+        ActionResultAssert.IsBadRequest(response.Result);
+    }
+
+    [TestMethod]
+    public async Task BulkCreateAsyncWithNonExistentStratigraphyIdReturnsNotFound()
+    {
+        var lithologicalDescriptions = new List<LithologicalDescription>
+        {
+            new LithologicalDescription
+            {
+                StratigraphyId = 9999999,
+                FromDepth = 10,
+                ToDepth = 20,
+                Description = "Non-existent stratigraphy",
+            },
+        };
+
+        var response = await controller.BulkCreateAsync(lithologicalDescriptions);
+        ActionResultAssert.IsNotFound(response.Result);
+    }
+
+    [TestMethod]
+    public async Task BulkCreateAsyncReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var stratigraphyId = context.Stratigraphies.First().Id;
+        var lithologicalDescriptions = new List<LithologicalDescription>
+        {
+            new LithologicalDescription
+            {
+                StratigraphyId = stratigraphyId,
+                FromDepth = 10,
+                ToDepth = 20,
+                Description = "No permission",
+            },
+        };
+
+        var unauthorizedResponse = await controller.BulkCreateAsync(lithologicalDescriptions);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
+    }
 }
