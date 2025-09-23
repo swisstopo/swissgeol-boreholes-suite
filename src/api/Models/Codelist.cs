@@ -233,8 +233,8 @@ public class Codelist : IIdentifyable
     public ICollection<LithologyUscsTypeCodes>? LithologyUscsTypeCodes { get; set; }
 
     /// <summary>
-    /// Gets the <see cref="LithologyTextureMataCodes"/> join table entities.
+    /// Gets the <see cref="LithologyTextureMetaCodes"/> join table entities.
     /// </summary>
     [JsonIgnore]
-    public ICollection<LithologyTextureMataCodes>? LithologyTextureMataCodes { get; set; }
+    public ICollection<LithologyTextureMetaCodes>? LithologyTextureMetaCodes { get; set; }
 }

@@ -4,6 +4,7 @@
 
 ### Changed
 - Migrated stratigraphies and layers to new lithology tables.
+- Renamed codelist schema `texture_mata` to `texture_meta`.
 
 ## v2.1.1335 - 2025-09-17
 

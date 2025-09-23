@@ -80,8 +80,8 @@ export interface Lithology extends BaseLayer {
   uscsDetermination: Codelist | null;
   rockConditionCodelistIds: number[];
   rockConditionCodelists: Codelist[];
-  textureMataCodelistIds: number[];
-  textureMataCodelists: Codelist[];
+  textureMetaCodelistIds: number[];
+  textureMetaCodelists: Codelist[];
 }
 
 export interface LayerDepth {
