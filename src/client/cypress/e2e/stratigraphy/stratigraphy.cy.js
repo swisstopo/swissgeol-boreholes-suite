@@ -376,7 +376,7 @@ describe("Tests for stratigraphy", () => {
         navigateToTabWithTitle("JOLLYBOUNCE");
         getElementByDataCy("stratigraphy-content")
           .find(".MuiChip-root")
-          .should("have.length", 2)
+          .should("have.length", 3) // 2 chips in header + 1 chip for layer gap
           .and("contain", "Main stratigraphy")
           .and("contain", "20.03.2024");
       });
