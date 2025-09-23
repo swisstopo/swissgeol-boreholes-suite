@@ -327,9 +327,9 @@ describe("Test for the borehole form.", () => {
       evaluateSelect("typeId", "borehole"); //20101001
       evaluateSelect("depthPrecisionId", "2"); //22108001
       evaluateSelect("statusId", "open, no completion"); //22104001
-      evaluateSelect("lithologyTopBedrockId", "amphibolite"); //15104449
-      evaluateSelect("lithostratigraphyTopBedrockId", "Bodensee-Nagelfluh"); //15300583
-      evaluateSelect("chronostratigraphyTopBedrockId", "Phanerozoic"); //15001001;
+      evaluateSelect("lithologyTopBedrockId", "rock"); //15111001
+      evaluateSelect("lithostratigraphyTopBedrockId", "Bodensee-Nagelfluh"); //100001297
+      evaluateSelect("chronostratigraphyTopBedrockId", "Phanerozoic"); //100002856;
       evaluateTextarea("remarks", "New remark");
 
       // update values
@@ -352,9 +352,9 @@ describe("Test for the borehole form.", () => {
       evaluateSelect("typeId", "virtual borehole"); //30000307
       evaluateSelect("depthPrecisionId", "1"); //22108002
       evaluateSelect("statusId", "filled"); //22104002
-      evaluateSelect("lithologyTopBedrockId", "amphibolite, banded"); //15104450
-      evaluateSelect("lithostratigraphyTopBedrockId", "Tannenwald-Schichten"); //15300495
-      evaluateSelect("chronostratigraphyTopBedrockId", "Cenozoic"); //15001002
+      evaluateSelect("lithologyTopBedrockId", "rock: sedimentary"); //15111002
+      evaluateSelect("lithostratigraphyTopBedrockId", "Tannenwald-Schichten"); //100001298
+      evaluateSelect("chronostratigraphyTopBedrockId", "Cenozoic"); //100002857
       evaluateTextarea("remarks", "Updated remark");
 
       discardChanges();
@@ -366,9 +366,9 @@ describe("Test for the borehole form.", () => {
       evaluateSelect("typeId", "borehole"); //20101001
       evaluateSelect("depthPrecisionId", "2"); //22108001
       evaluateSelect("statusId", "open, no completion"); //22104001
-      evaluateSelect("lithologyTopBedrockId", "amphibolite"); //15104449
-      evaluateSelect("lithostratigraphyTopBedrockId", "Bodensee-Nagelfluh"); //15300583
-      evaluateSelect("chronostratigraphyTopBedrockId", "Phanerozoic"); //15001001
+      evaluateSelect("lithologyTopBedrockId", "rock"); //15111001
+      evaluateSelect("lithostratigraphyTopBedrockId", "Bodensee-Nagelfluh"); //100001297
+      evaluateSelect("chronostratigraphyTopBedrockId", "Phanerozoic"); //100002856
       evaluateTextarea("remarks", "New remark");
     });
   });
