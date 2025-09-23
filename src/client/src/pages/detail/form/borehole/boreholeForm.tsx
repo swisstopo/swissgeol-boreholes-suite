@@ -208,13 +208,13 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
               <FormDomainSelect
                 fieldName={"lithologyTopBedrockId"}
                 label={"lithology_top_bedrock"}
-                schemaName={"custom.lithology_top_bedrock"}
+                schemaName={"lithology_con"}
                 selected={borehole.lithologyTopBedrockId}
               />
               <FormDomainSelect
                 fieldName={"lithostratigraphyTopBedrockId"}
                 label={"lithostratigraphy_top_bedrock"}
-                schemaName={"custom.lithostratigraphy_top_bedrock"}
+                schemaName={"lithostratigraphy"}
                 selected={borehole.lithostratigraphyTopBedrockId}
               />
             </FormContainer>
@@ -222,7 +222,7 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
               <FormDomainSelect
                 fieldName={"chronostratigraphyTopBedrockId"}
                 label={"chronostratigraphy_top_bedrock"}
-                schemaName={"custom.chronostratigraphy_top_bedrock"}
+                schemaName={"chronostratigraphy"}
                 selected={borehole.chronostratigraphyTopBedrockId}
               />
               <FormBooleanSelect
