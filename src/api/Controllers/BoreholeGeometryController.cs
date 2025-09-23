@@ -112,7 +112,7 @@ public class BoreholeGeometryController : ControllerBase
         catch (Exception ex) when (ex is HeaderValidationException || ex is ReaderException || ex is TypeConverterException)
         {
             logger?.LogError(ex, "BoreholeGeometry upload failed because of a CsvHelper exception");
-            return Problem(ex.Message, statusCode: (int)HttpStatusCode.BadRequest, type: "userError");
+            return Problem(ex.Message, statusCode: (int)HttpStatusCode.BadRequest, type: ProblemType.UserError);
         }
 
         // Delete existing geometry data of borehole
