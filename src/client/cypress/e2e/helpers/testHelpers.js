@@ -139,6 +139,8 @@ export const interceptApiCalls = () => {
   }).as("load-extraction-file");
 
   cy.intercept("dataextraction/api/V1/extract_data").as("extract-data");
+  cy.intercept("dataextraction/api/V1/extract_stratigraphy").as("extract-stratigraphy");
+
   cy.intercept("https://api3.geo.admin.ch/rest/services/height*").as("height");
   cy.intercept("https://geodesy.geo.admin.ch/reframe/lv95tolv03*").as("geodesy");
   cy.intercept("/api/v2/import/*").as("borehole-upload");
