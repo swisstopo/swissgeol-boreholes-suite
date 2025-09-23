@@ -430,6 +430,220 @@ public class LithologyControllerTest
         ActionResultAssert.IsBadRequest(response.Result);
     }
 
+    [TestMethod]
+    public async Task BulkCreateAsyncCreatesMultipleLithologies()
+    {
+        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var lithologies = new List<Lithology>
+        {
+            new Lithology
+            {
+                StratigraphyId = stratigraphyId,
+                FromDepth = 10,
+                ToDepth = 20,
+                IsUnconsolidated = true,
+                HasBedding = false,
+                Notes = "Bulk created lithology 1",
+                LithologyDescriptions = new List<LithologyDescription>
+                {
+                    new LithologyDescription
+                    {
+                        IsFirst = true,
+                        ColorPrimaryId = 100000077,
+                    },
+                },
+            },
+            new Lithology
+            {
+                StratigraphyId = stratigraphyId,
+                FromDepth = 20,
+                ToDepth = 30,
+                IsUnconsolidated = true,
+                HasBedding = false,
+                Notes = "Bulk created lithology 2",
+                LithologyDescriptions = new List<LithologyDescription>
+                {
+                    new LithologyDescription
+                    {
+                        IsFirst = true,
+                        ColorPrimaryId = 100000077,
+                        ComponentConParticleCodelistIds = new List<int> { 100000186, 100000181 },
+                        ComponentConMineralCodelistIds = new List<int> { 100000260 },
+                        ComponentUnconDebrisCodelistIds = new List<int> { 9102 },
+                    },
+                },
+            },
+            new Lithology
+            {
+                StratigraphyId = stratigraphyId,
+                FromDepth = 30,
+                ToDepth = 40,
+                IsUnconsolidated = false,
+                HasBedding = false,
+                AlterationDegreeId = 100000176,
+                CompactnessId = 21102002,
+                CohesionId = 21116001,
+                Notes = "Bulk created lithology 3",
+                LithologyDescriptions = new List<LithologyDescription>
+                {
+                    new LithologyDescription
+                    {
+                        IsFirst = true,
+                        ColorPrimaryId = 100000077,
+                        ComponentConParticleCodelistIds = new List<int> { 100000186, 100000181 },
+                        ComponentConMineralCodelistIds = new List<int> { 100000260 },
+                        ComponentUnconDebrisCodelistIds = new List<int> { 9102 },
+                    },
+                },
+            },
+        };
+
+        var response = await controller.BulkCreateAsync(lithologies);
+
+        ActionResultAssert.IsOk(response.Result);
+        var okResult = response.Result as OkObjectResult;
+        var createdLithologies = okResult.Value as IEnumerable<Lithology>;
+        Assert.IsNotNull(createdLithologies);
+        Assert.AreEqual(3, createdLithologies.Count());
+
+        var getResponse = await controller.GetAsync(stratigraphyId);
+        var retrievedLithologies = getResponse.Value.Where(l =>
+            l.Notes == "Bulk created lithology 1" ||
+            l.Notes == "Bulk created lithology 2" ||
+            l.Notes == "Bulk created lithology 3");
+
+        Assert.AreEqual(3, retrievedLithologies.Count());
+
+        // Assert unconsolidated or consolidated values are saved.
+        var consolidatedLithologyLithologicalDescription = retrievedLithologies.Single(l => l.Notes == "Bulk created lithology 2").LithologyDescriptions.Single();
+        Assert.AreEqual(0, consolidatedLithologyLithologicalDescription.ComponentConParticleCodelists.Count);
+        Assert.AreEqual(0, consolidatedLithologyLithologicalDescription.ComponentConMineralCodelists.Count);
+        Assert.AreEqual(1, consolidatedLithologyLithologicalDescription.ComponentUnconDebrisCodelists.Count);
+
+        var unConsolidatedLithologyLithologicalDescription = retrievedLithologies.Single(l => l.Notes == "Bulk created lithology 3").LithologyDescriptions.Single();
+        Assert.AreEqual(2, unConsolidatedLithologyLithologicalDescription.ComponentConParticleCodelists.Count);
+        Assert.AreEqual(1, unConsolidatedLithologyLithologicalDescription.ComponentConMineralCodelists.Count);
+        Assert.AreEqual(0, unConsolidatedLithologyLithologicalDescription.ComponentUnconDebrisCodelists.Count);
+
+        foreach (var lithology in retrievedLithologies)
+        {
+            await controller.DeleteAsync(lithology.Id);
+        }
+    }
+
+    [TestMethod]
+    public async Task BulkCreateAsyncWithEmptyListReturnsBadRequest()
+    {
+        var response = await controller.BulkCreateAsync(new List<Lithology>());
+        ActionResultAssert.IsBadRequest(response.Result);
+    }
+
+    [TestMethod]
+    public async Task BulkCreateAsyncWithDifferentStratigraphyIdsReturnsBadRequest()
+    {
+        var lithologies = new List<Lithology>
+        {
+            new Lithology
+            {
+                StratigraphyId = context.StratigraphiesV2.First().Id,
+                FromDepth = 10,
+                ToDepth = 20,
+                Notes = "Different stratigraphy 1",
+                LithologyDescriptions = new List<LithologyDescription>
+                {
+                    new LithologyDescription { IsFirst = true },
+                },
+            },
+            new Lithology
+            {
+                StratigraphyId = context.StratigraphiesV2.Skip(1).First().Id,
+                FromDepth = 20,
+                ToDepth = 30,
+                Notes = "Different stratigraphy 2",
+                LithologyDescriptions = new List<LithologyDescription>
+                {
+                    new LithologyDescription { IsFirst = true },
+                },
+            },
+        };
+
+        var response = await controller.BulkCreateAsync(lithologies);
+        ActionResultAssert.IsBadRequest(response.Result);
+    }
+
+    [TestMethod]
+    public async Task BulkCreateAsyncWithNonExistentStratigraphyIdReturnsNotFound()
+    {
+        var lithologies = new List<Lithology>
+        {
+            new Lithology
+            {
+                StratigraphyId = 9999999,
+                FromDepth = 10,
+                ToDepth = 20,
+                Notes = "Non-existent stratigraphy",
+                LithologyDescriptions = new List<LithologyDescription>
+                {
+                    new LithologyDescription { IsFirst = true },
+                },
+            },
+        };
+
+        var response = await controller.BulkCreateAsync(lithologies);
+        ActionResultAssert.IsNotFound(response.Result);
+    }
+
+    [TestMethod]
+    public async Task BulkCreateAsyncWithInvalidLithologyReturnsBadRequest()
+    {
+        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var lithologies = new List<Lithology>
+        {
+            new Lithology
+            {
+                StratigraphyId = stratigraphyId,
+                FromDepth = 10,
+                ToDepth = 20,
+                HasBedding = true, // This requires Share to be set
+                Share = null,      // This will cause validation to fail
+                LithologyDescriptions = new List<LithologyDescription>
+                {
+                    new LithologyDescription { IsFirst = true },
+                },
+            },
+        };
+
+        var response = await controller.BulkCreateAsync(lithologies);
+        ActionResultAssert.IsBadRequest(response.Result);
+    }
+
+    [TestMethod]
+    public async Task BulkCreateAsyncReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var lithologies = new List<Lithology>
+        {
+            new Lithology
+            {
+                StratigraphyId = stratigraphyId,
+                FromDepth = 10,
+                ToDepth = 20,
+                Notes = "No permission",
+                LithologyDescriptions = new List<LithologyDescription>
+                {
+                    new LithologyDescription { IsFirst = true },
+                },
+            },
+        };
+
+        var unauthorizedResponse = await controller.BulkCreateAsync(lithologies);
+        ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
+    }
+
     private static Lithology GetCompleteLithology(int stratigraphyId)
         => new Lithology
         {
