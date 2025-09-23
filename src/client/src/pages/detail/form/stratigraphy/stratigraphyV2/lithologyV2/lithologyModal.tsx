@@ -138,6 +138,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
               </FormContainer>
             </BoreholesCard>
             <BoreholesCard data-cy="lithology-lithological-description" title={t("lithologyLayerDescription")}>
+              {/* // TODO: Load description from lithological descriptions based on depths */}
               <FormContainer>
                 <FormInput
                   fieldName={"description"}

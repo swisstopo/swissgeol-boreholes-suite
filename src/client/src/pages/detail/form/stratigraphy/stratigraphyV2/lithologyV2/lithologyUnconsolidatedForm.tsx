@@ -23,6 +23,9 @@ const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> =
   const { getValues, setValue } = formMethods;
   const index = isFirst ? 0 : 1;
 
+  // TODO: Update DomainSelect so that is shows name and code if property set.
+  //  Should be applied to lithology_uncon_main and lithology_uncon_secondary
+
   return (
     <>
       <FormContainer>
