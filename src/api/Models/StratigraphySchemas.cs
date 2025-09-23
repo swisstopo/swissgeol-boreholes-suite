@@ -1,9 +1,9 @@
 ﻿namespace BDMS.Models;
 
 /// <summary>
-/// Constants containing the names of the code list schemas used in the <see cref="Lithology"/> module.
+/// Constants containing the names of the code list schemas used in the <see cref="Stratigraphy"/> module.
 /// </summary>
-public static class LithologySchemas
+public static class StratigraphySchemas
 {
     public const string AlterationDegreeSchema = "alteration_degree";
     public const string CementationSchema = "cementation";
@@ -31,4 +31,6 @@ public static class LithologySchemas
     public const string UscsDeterminationSchema = "uscs_determination";
     public const string UscsTypeSchema = "uscs_type";
     public const string FaciesConSchema = "facies_con";
+    public const string ChronostratigraphySchema = "chronostratigraphy";
+    public const string LithostratigraphySchema = "lithostratigraphy";
 }
