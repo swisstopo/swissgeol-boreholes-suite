@@ -73,7 +73,7 @@ const router = createBrowserRouter([
 const QueryClientInitializer: FC<PropsWithChildren> = ({ children }) => {
   const { showAlert } = useContext(AlertContext);
   const { t } = useTranslation();
-  const isCypress = !!window.Cypress;
+  const isCypress = !!globalThis.Cypress;
 
   const queryClient = useMemo(
     () =>
