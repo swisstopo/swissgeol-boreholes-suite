@@ -16,7 +16,7 @@ public class LithologyDescriptionStructureSynGenCodes : ILithologyDescriptionCod
     public LithologyDescription? LithologyDescription { get; set; }
 
     /// <inheritdoc/>
-    [Column("lithology_structure_syn_gen_id")]
+    [Column("structure_syn_gen_id")]
     public int CodelistId { get; set; }
 
     /// <inheritdoc/>

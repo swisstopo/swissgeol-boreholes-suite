@@ -16,7 +16,7 @@ public class LithologyTextureMataCodes : ILithologyCode
     public Lithology? Lithology { get; set; }
 
     /// <inheritdoc/>
-    [Column("lithology_texture_mata_id")]
+    [Column("texture_mata_id")]
     public int CodelistId { get; set; }
 
     /// <inheritdoc/>
