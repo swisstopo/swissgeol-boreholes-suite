@@ -94,7 +94,6 @@ export const StratigraphyForm: FC<StratigraphyFormProps> = ({
           label={"stratigraphy_name"}
           value={selectedStratigraphy.name}
           type={FormValueType.Text}
-          required={true}
           onUpdate={() => formMethods.clearErrors("name")}
         />
         <FormInput
