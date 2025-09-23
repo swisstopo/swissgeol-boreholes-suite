@@ -58,7 +58,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
 
             // Set ids of copied entities to zero. Entities with an id of zero are added as new entities to the DB.
             stratigraphy.Id = 0;
-            stratigraphy.Name += " (Clone)";
+            stratigraphy.Name = string.IsNullOrEmpty(stratigraphy.Name) ? "(Clone)" : $"{stratigraphy.Name} (Clone)";
             stratigraphy.IsPrimary = false;
 
             var entityEntry = await Context.AddAsync(stratigraphy).ConfigureAwait(false);
@@ -210,6 +210,11 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
 
     private async Task<bool> IsNameUnique(StratigraphyV2 entity)
     {
+        if (string.IsNullOrEmpty(entity.Name))
+        {
+            return true;
+        }
+
         var hasBoreholeStratigraphiesWithSameName = await Context.StratigraphiesV2
                 .AnyAsync(s => s.BoreholeId == entity.BoreholeId && s.Id != entity.Id && s.Name == entity.Name)
                 .ConfigureAwait(false);
