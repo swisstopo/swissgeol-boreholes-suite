@@ -102,6 +102,7 @@ internal static class TestSyncContextExtensions
             stratigraphy.ChronostratigraphyLayers = stratigraphy.ChronostratigraphyLayers?.OrderBy(c => c.FromDepth).ToList();
             stratigraphy.LithostratigraphyLayers = stratigraphy.LithostratigraphyLayers?.OrderBy(l => l.FromDepth).ToList();
 
+            /*
             foreach (var layer in stratigraphy.Layers)
             {
                 layer.LayerColorCodes = layer.LayerColorCodes.OrderBy(l => l.CodelistId).ToList();
@@ -111,6 +112,7 @@ internal static class TestSyncContextExtensions
                 layer.LayerOrganicComponentCodes = layer.LayerOrganicComponentCodes.OrderBy(l => l.CodelistId).ToList();
                 layer.LayerUscs3Codes = layer.LayerUscs3Codes.OrderBy(l => l.CodelistId).ToList();
             }
+            */
         }
 
         foreach (var completion in borehole.Completions)

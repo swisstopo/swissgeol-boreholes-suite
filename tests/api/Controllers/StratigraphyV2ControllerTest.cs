@@ -76,6 +76,8 @@ public class StratigraphyV2ControllerTest
         Assert.AreEqual("sub_admin", copiedStratigraphy.UpdatedBy.SubjectId);
         Assert.AreEqual(false, copiedStratigraphy.IsPrimary);
         Assert.AreNotEqual(originalStratigraphy.Id, copiedStratigraphy.Id);
+
+        // TODO: Check that all related entities are also copied
     }
 
     [TestMethod]
@@ -165,7 +167,7 @@ public class StratigraphyV2ControllerTest
     [TestMethod]
     public async Task Create()
     {
-        var boreholeWithoutStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => !b.StratigraphiesV2.Any());
+        var boreholeWithoutStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => !b.Stratigraphies.Any());
 
         var stratigraphyToAdd = new StratigraphyV2
         {
@@ -188,7 +190,7 @@ public class StratigraphyV2ControllerTest
     [TestMethod]
     public async Task CreateAdditionalStratigraphyForExistingBorehole()
     {
-        var boreholeWithExistingStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => b.StratigraphiesV2.Any());
+        var boreholeWithExistingStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => b.Stratigraphies.Any());
 
         var stratigraphyToAdd = new StratigraphyV2
         {
@@ -211,7 +213,7 @@ public class StratigraphyV2ControllerTest
     [TestMethod]
     public async Task CreateAdditionalStratigraphyWithIsPrimary()
     {
-        var boreholeWithoutStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => !b.StratigraphiesV2.Any());
+        var boreholeWithoutStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => !b.Stratigraphies.Any());
 
         var stratigraphy1 = new StratigraphyV2
         {
@@ -347,7 +349,7 @@ public class StratigraphyV2ControllerTest
     [TestMethod]
     public async Task EditWithExistingName()
     {
-        var boreholeWithoutStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => !b.StratigraphiesV2.Any());
+        var boreholeWithoutStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => !b.Stratigraphies.Any());
 
         var stratigraphy1 = new StratigraphyV2
         {

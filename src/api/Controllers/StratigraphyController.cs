@@ -95,10 +95,6 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
             .Include(s => s.Layers).ThenInclude(l => l.LayerGrainShapeCodes)
             .Include(s => s.Layers).ThenInclude(l => l.LayerOrganicComponentCodes)
             .Include(s => s.Layers).ThenInclude(l => l.LayerUscs3Codes)
-            .Include(s => s.LithologicalDescriptions)
-            .Include(s => s.FaciesDescriptions)
-            .Include(s => s.ChronostratigraphyLayers)
-            .Include(s => s.LithostratigraphyLayers)
             .AsNoTracking()
             .SingleOrDefaultAsync(b => b.Id == id)
             .ConfigureAwait(false);
@@ -127,11 +123,6 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
             layer.LayerOrganicComponentCodes?.ResetLayerIds();
             layer.LayerUscs3Codes?.ResetLayerIds();
         }
-
-        stratigraphy.LithologicalDescriptions?.MarkAsNew();
-        stratigraphy.FaciesDescriptions?.MarkAsNew();
-        stratigraphy.ChronostratigraphyLayers?.MarkAsNew();
-        stratigraphy.LithostratigraphyLayers?.MarkAsNew();
 
         stratigraphy.Name += " (Clone)";
         stratigraphy.IsPrimary = false;

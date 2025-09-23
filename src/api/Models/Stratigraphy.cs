@@ -91,28 +91,4 @@ public class Stratigraphy : IChangeTracking, IIdentifyable
     /// </summary>
     [IncludeInExport]
     public ICollection<Layer>? Layers { get; set; }
-
-    /// <summary>
-    /// Gets the <see cref="LithologicalDescription"/>s associated with the <see cref="Stratigraphy"/>.
-    /// </summary>
-    [IncludeInExport]
-    public ICollection<LithologicalDescription>? LithologicalDescriptions { get; set; }
-
-    /// <summary>
-    /// Gets the <see cref="FaciesDescription"/>s associated with the <see cref="Stratigraphy"/>.
-    /// </summary>
-    [IncludeInExport]
-    public ICollection<FaciesDescription>? FaciesDescriptions { get; set; }
-
-    /// <summary>
-    /// Gets the <see cref="ChronostratigraphyLayer"/>s associated with the <see cref="Stratigraphy"/>.
-    /// </summary>
-    [IncludeInExport]
-    public ICollection<ChronostratigraphyLayer>? ChronostratigraphyLayers { get; set; }
-
-    /// <summary>
-    /// Gets the <see cref="LithostratigraphyLayer"/>s associated with the <see cref="Stratigraphy"/>.
-    /// </summary>
-    [IncludeInExport]
-    public ICollection<LithostratigraphyLayer>? LithostratigraphyLayers { get; set; }
 }

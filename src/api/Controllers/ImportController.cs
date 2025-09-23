@@ -291,7 +291,7 @@ public class ImportController : ControllerBase
             borehole.MarkBoreholeContentAsNew(user, workgroupId);
 
             MapHydrotestCodelists(borehole, hydrotestCodelists);
-            MapLayerCodelists(borehole);
+            MapLithologyCodelists(borehole);
         }
     }
 
@@ -404,18 +404,28 @@ public class ImportController : ControllerBase
         }
     }
 
-    private static void MapLayerCodelists(BoreholeImport borehole)
+    private static void MapLithologyCodelists(BoreholeImport borehole)
     {
         foreach (var stratigraphy in borehole.Stratigraphies)
         {
-            foreach (var layer in stratigraphy.Layers)
+            foreach (var lithology in stratigraphy.Lithologies)
             {
-                layer.LayerColorCodes = layer.ColorCodelistIds?.Select(id => new LayerColorCode { CodelistId = id }).ToList();
-                layer.LayerDebrisCodes = layer.DebrisCodelistIds?.Select(id => new LayerDebrisCode { CodelistId = id }).ToList();
-                layer.LayerGrainAngularityCodes = layer.GrainAngularityCodelistIds?.Select(id => new LayerGrainAngularityCode { CodelistId = id }).ToList();
-                layer.LayerGrainShapeCodes = layer.GrainShapeCodelistIds?.Select(id => new LayerGrainShapeCode { CodelistId = id }).ToList();
-                layer.LayerOrganicComponentCodes = layer.OrganicComponentCodelistIds?.Select(id => new LayerOrganicComponentCode { CodelistId = id }).ToList();
-                layer.LayerUscs3Codes = layer.Uscs3CodelistIds?.Select(id => new LayerUscs3Code { CodelistId = id }).ToList();
+                lithology.LithologyRockConditionCodes = lithology.RockConditionCodelistIds?.Select(id => new LithologyRockConditionCodes { CodelistId = id }).ToList();
+                lithology.LithologyUscsTypeCodes = lithology.UscsTypeCodelistIds?.Select(id => new LithologyUscsTypeCodes { CodelistId = id }).ToList();
+                lithology.LithologyTextureMetaCodes = lithology.TextureMetaCodelistIds?.Select(id => new LithologyTextureMetaCodes { CodelistId = id }).ToList();
+
+                foreach (var description in lithology.LithologyDescriptions)
+                {
+                    description.LithologyDescriptionComponentUnconOrganicCodes = description.ComponentUnconOrganicCodelistIds?.Select(id => new LithologyDescriptionComponentUnconOrganicCodes { CodelistId = id }).ToList();
+                    description.LithologyDescriptionComponentUnconDebrisCodes = description.ComponentUnconDebrisCodelistIds?.Select(id => new LithologyDescriptionComponentUnconDebrisCodes { CodelistId = id }).ToList();
+                    description.LithologyDescriptionGrainShapeCodes = description.GrainShapeCodelistIds?.Select(id => new LithologyDescriptionGrainShapeCodes { CodelistId = id }).ToList();
+                    description.LithologyDescriptionGrainAngularityCodes = description.GrainAngularityCodelistIds?.Select(id => new LithologyDescriptionGrainAngularityCodes { CodelistId = id }).ToList();
+                    description.LithologyDescriptionLithologyUnconDebrisCodes = description.LithologyUnconDebrisCodelistIds?.Select(id => new LithologyDescriptionLithologyUnconDebrisCodes { CodelistId = id }).ToList();
+                    description.LithologyDescriptionComponentConParticleCodes = description.ComponentConParticleCodelistIds?.Select(id => new LithologyDescriptionComponentConParticleCodes { CodelistId = id }).ToList();
+                    description.LithologyDescriptionComponentConMineralCodes = description.ComponentConMineralCodelistIds?.Select(id => new LithologyDescriptionComponentConMineralCodes { CodelistId = id }).ToList();
+                    description.LithologyDescriptionStructureSynGenCodes = description.StructureSynGenCodelistIds?.Select(id => new LithologyDescriptionStructureSynGenCodes { CodelistId = id }).ToList();
+                    description.LithologyDescriptionStructurePostGenCodes = description.StructurePostGenCodelistIds?.Select(id => new LithologyDescriptionStructurePostGenCodes { CodelistId = id }).ToList();
+                }
             }
         }
     }

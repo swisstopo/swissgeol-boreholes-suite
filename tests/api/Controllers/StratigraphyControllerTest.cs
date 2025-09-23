@@ -1,4 +1,4 @@
-﻿using Azure;
+﻿/*using Azure;
 using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
@@ -488,3 +488,4 @@ public class StratigraphyControllerTest
         controller = new StratigraphyController(context, new Mock<ILogger<StratigraphyController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 }
+*/

@@ -8,7 +8,7 @@ namespace BDMS.Models;
 /// Represents a lithostratigraphy entity in the database.
 /// </summary>
 [Table("lithostratigraphy")]
-public class LithostratigraphyLayer : ILayerDescription, IChangeTracking, IIdentifyable
+public class LithostratigraphyLayer : ILithology, IChangeTracking, IIdentifyable
 {
     /// <inheritdoc />
     [Key]
@@ -20,7 +20,7 @@ public class LithostratigraphyLayer : ILayerDescription, IChangeTracking, IIdent
     public int StratigraphyId { get; set; }
 
     /// <inheritdoc />
-    public Stratigraphy? Stratigraphy { get; set; }
+    public StratigraphyV2? Stratigraphy { get; set; }
 
     /// <inheritdoc />
     [Column("creator")]
@@ -47,12 +47,12 @@ public class LithostratigraphyLayer : ILayerDescription, IChangeTracking, IIdent
     /// <inheritdoc />
     [IncludeInExport]
     [Column("depth_from")]
-    public double? FromDepth { get; set; }
+    public double FromDepth { get; set; }
 
     /// <inheritdoc />
     [IncludeInExport]
     [Column("depth_to")]
-    public double? ToDepth { get; set; }
+    public double ToDepth { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/> id of the lithostratigraphy.

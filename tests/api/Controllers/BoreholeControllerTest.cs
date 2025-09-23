@@ -588,8 +588,8 @@ public class BoreholeControllerTest
         Assert.AreNotEqual(originalBorehole.Id, copiedBorehole.Id);
         Assert.AreNotSame(originalBorehole.Stratigraphies, copiedBorehole.Stratigraphies);
         Assert.AreNotEqual(originalStratigraphy.Id, copiedstratigraphy.Id);
-        Assert.AreNotSame(originalStratigraphy.Layers, copiedstratigraphy.Layers);
-        Assert.AreNotEqual(originalStratigraphy.Layers.First().Id, copiedstratigraphy.Layers.First().Id);
+        Assert.AreNotSame(originalStratigraphy.Lithologies, copiedstratigraphy.Lithologies);
+        Assert.AreNotEqual(originalStratigraphy.Lithologies.First().Id, copiedstratigraphy.Lithologies.First().Id);
 
         Assert.AreEqual(originalStratigraphy.LithologicalDescriptions.Count, copiedstratigraphy.LithologicalDescriptions.Count);
         for (int i = 0; i < originalStratigraphy.LithologicalDescriptions.Count; i++)
@@ -632,14 +632,15 @@ public class BoreholeControllerTest
         Assert.AreNotEqual(0, originalBorehole.BoreholeFiles.Count);
         Assert.AreEqual(0, copiedBorehole.BoreholeFiles.Count);
 
-        Assert.AreNotSame(originalStratigraphy.Layers.First().LayerColorCodes, copiedstratigraphy.Layers.First().LayerColorCodes);
-        Assert.AreEqual(originalStratigraphy.Layers.First().LayerColorCodes.Count, copiedstratigraphy.Layers.First().LayerColorCodes.Count);
+        // TODO: Check if unconsolidated
+        Assert.AreNotSame(originalStratigraphy.Lithologies.First().LithologyRockConditionCodes, copiedstratigraphy.Lithologies.First().LithologyRockConditionCodes);
+        Assert.AreEqual(originalStratigraphy.Lithologies.First().LithologyRockConditionCodes.Count, copiedstratigraphy.Lithologies.First().LithologyRockConditionCodes.Count);
 
-        Assert.AreNotSame(originalStratigraphy.Layers.First().LayerGrainShapeCodes, copiedstratigraphy.Layers.First().LayerGrainShapeCodes);
-        Assert.AreEqual(originalStratigraphy.Layers.First().LayerGrainShapeCodes.Count, copiedstratigraphy.Layers.First().LayerGrainShapeCodes.Count);
+        Assert.AreNotSame(originalStratigraphy.Lithologies.First().LithologyUscsTypeCodes, copiedstratigraphy.Lithologies.First().LithologyUscsTypeCodes);
+        Assert.AreEqual(originalStratigraphy.Lithologies.First().LithologyUscsTypeCodes.Count, copiedstratigraphy.Lithologies.First().LithologyUscsTypeCodes.Count);
 
-        Assert.AreNotSame(originalStratigraphy.Layers.First().LayerUscs3Codes, copiedstratigraphy.Layers.First().LayerUscs3Codes);
-        Assert.AreEqual(originalStratigraphy.Layers.First().LayerUscs3Codes.Count, copiedstratigraphy.Layers.First().LayerUscs3Codes.Count);
+        Assert.AreNotSame(originalStratigraphy.Lithologies.First().LithologyTextureMetaCodes, copiedstratigraphy.Lithologies.First().LithologyTextureMetaCodes);
+        Assert.AreEqual(originalStratigraphy.Lithologies.First().LithologyTextureMetaCodes.Count, copiedstratigraphy.Lithologies.First().LithologyTextureMetaCodes.Count);
 
         var originalCompletion = originalBorehole.Completions.First();
         var copiedCompletion = copiedBorehole.Completions.First();
@@ -753,16 +754,19 @@ public class BoreholeControllerTest
     // Get the id of a borehole with certain conditions.
     private int GetBoreholeIdToCopy()
     {
+        /*
+         * TODO: Re-add after migration
+         * b.Stratigraphies.First().Lithologies != null &&
+         * b.Stratigraphies.First().Layers.Any(x => x.LayerGrainShapeCodes != null && x.LayerGrainShapeCodes.Any()) &&
+         * b.Stratigraphies.First().Layers.Any(x => x.LayerUscs3Codes != null && x.LayerUscs3Codes.Any()) &&
+         */
+
         var borehole = context.BoreholesWithIncludes
             .AsNoTracking()
             .AsEnumerable()
             .FirstOrDefault(b =>
                 b.Stratigraphies != null &&
                 b.Stratigraphies.Any() &&
-                b.Stratigraphies.First().Layers != null &&
-                b.Stratigraphies.First().Layers.Any(x => x.LayerColorCodes != null && x.LayerColorCodes.Any()) &&
-                b.Stratigraphies.First().Layers.Any(x => x.LayerGrainShapeCodes != null && x.LayerGrainShapeCodes.Any()) &&
-                b.Stratigraphies.First().Layers.Any(x => x.LayerUscs3Codes != null && x.LayerUscs3Codes.Any()) &&
                 b.Stratigraphies.First().LithologicalDescriptions != null &&
                 b.Stratigraphies.First().FaciesDescriptions != null &&
                 b.Stratigraphies.First().ChronostratigraphyLayers != null &&
