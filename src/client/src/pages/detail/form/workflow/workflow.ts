@@ -7,8 +7,7 @@ import {
 } from "@swissgeol/ui-core";
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { boreholeQueryKey, canEditQueryKey, canUpdateStatusQueryKey } from "../../../../api/borehole.ts";
-import { fetchApiV2 } from "../../../../api/fetchApiV2.ts";
-import { useShowAlertOnError } from "../../../../hooks/useShowAlertOnError.tsx";
+import { fetchApiV2Legacy } from "../../../../api/fetchApiV2.ts";
 
 export { WorkflowStatus };
 
@@ -68,29 +67,26 @@ export enum TabType {
 }
 
 export const fetchWorkflowByBoreholeId = async (boreholeId: number): Promise<Workflow> =>
-  await fetchApiV2(`workflow/${boreholeId}`, "GET");
+  await fetchApiV2Legacy(`workflow/${boreholeId}`, "GET");
 
 export const sendWorkflowChangeRequest = async (workflowChangeRequest: WorkflowChangeRequest) => {
-  await fetchApiV2(`workflow/change`, "POST", workflowChangeRequest);
+  await fetchApiV2Legacy(`workflow/change`, "POST", workflowChangeRequest);
 };
 
 export const sendTabStatusChangeRequest = async (tabStatusChangeRequest: TabStatusChangeRequest) => {
-  await fetchApiV2(`workflow/tabstatuschange`, "POST", tabStatusChangeRequest);
+  await fetchApiV2Legacy(`workflow/tabstatuschange`, "POST", tabStatusChangeRequest);
 };
 
 export const workflowQueryKey = "workflows";
 
 export const useWorkflow = (boreholeId: number): UseQueryResult<Workflow> => {
-  const query = useQuery({
+  return useQuery({
     queryKey: [workflowQueryKey, boreholeId],
     queryFn: () => {
       return fetchWorkflowByBoreholeId(boreholeId);
     },
     enabled: !!boreholeId,
   });
-
-  useShowAlertOnError(query.isError, query.error);
-  return query;
 };
 
 export const useWorkflowMutation = () => {
@@ -116,9 +112,6 @@ export const useWorkflowMutation = () => {
       invalidateBoreholeAndWorkflowQueries(variables.boreholeId);
     },
   });
-
-  useShowAlertOnError(updateWorkflow.isError, updateWorkflow.error);
-  useShowAlertOnError(updateTabStatus.isError, updateTabStatus.error);
 
   return {
     updateWorkflow,
