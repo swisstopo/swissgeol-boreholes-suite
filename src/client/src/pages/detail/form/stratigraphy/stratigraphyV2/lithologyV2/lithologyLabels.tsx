@@ -1,8 +1,8 @@
+import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
 import type { TFunction } from "i18next";
 import { Lithology, LithologyDescription } from "../../lithology";
-import { FC } from "react";
 
 const getBeddingShare = (lithology: Lithology, index: number) => {
   let beddingShare: number | undefined;

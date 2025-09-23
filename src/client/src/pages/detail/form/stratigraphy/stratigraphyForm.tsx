@@ -1,6 +1,7 @@
 import { FC, useCallback, useContext, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
+import { ApiError } from "../../../../api/apiInterfaces.ts";
 import { Stratigraphy, useStratigraphyMutations } from "../../../../api/stratigraphy.ts";
 import { FormValueType } from "../../../../components/form/form.ts";
 import { FormCheckbox } from "../../../../components/form/formCheckbox.tsx";
@@ -34,48 +35,66 @@ export const StratigraphyForm: FC<StratigraphyFormProps> = ({
   const showApiErrorAlert = useApiErrorAlert();
 
   const resetForm = useCallback(() => {
-    formMethods.reset({
-      ...selectedStratigraphy,
-      date: selectedStratigraphy.date?.toString().slice(0, 10) ?? "",
-    });
+    if (selectedStratigraphy) {
+      formMethods.reset({
+        ...selectedStratigraphy,
+        date: selectedStratigraphy.date?.toString().slice(0, 10) ?? "",
+      });
+    }
   }, [formMethods, selectedStratigraphy]);
 
   const resetWithoutSave = useCallback(() => {
-    if (selectedStratigraphy.id === 0) {
-      navigateToStratigraphy(undefined, true);
-    } else {
-      resetForm();
+    if (selectedStratigraphy) {
+      if (selectedStratigraphy.id === 0) {
+        navigateToStratigraphy(undefined, true);
+      } else {
+        resetForm();
+      }
     }
   }, [navigateToStratigraphy, resetForm, selectedStratigraphy]);
 
-  const handleSaveError = useCallback(
-    (error: Error) => {
+  const onSave = useCallback(async () => {
+    const handleMutationError = (error: ApiError) => {
       if (error.message.includes("Name must be unique")) {
         formMethods.setError("name", { type: "manual", message: t("mustBeUnique") });
       } else {
         showApiErrorAlert(error);
       }
-    },
-    [formMethods, showApiErrorAlert, t],
-  );
+    };
 
-  const onSave = useCallback(async () => {
+    if (!selectedStratigraphy) return false;
+
     const values = getValues();
     values.date = values.date ? ensureDatetime(values.date.toString()) : null;
-
-    try {
-      if (values.id === 0) {
-        const newStratigraphy: Stratigraphy = await addStratigraphy(values);
-        navigateToStratigraphy(newStratigraphy.id, true);
-      } else {
-        await updateStratigraphy({ ...selectedStratigraphy, ...values });
-      }
+    if (values.id === 0) {
+      const newStratigraphy: Stratigraphy = await addStratigraphy(values, {
+        onError: error => {
+          handleMutationError(error);
+        },
+      });
+      navigateToStratigraphy(newStratigraphy.id, true);
       return true;
-    } catch (error) {
-      handleSaveError(error as Error);
-      return false;
+    } else {
+      await updateStratigraphy(
+        { ...selectedStratigraphy, ...values },
+        {
+          onError: error => {
+            handleMutationError(error);
+          },
+        },
+      );
+      return true;
     }
-  }, [addStratigraphy, getValues, handleSaveError, navigateToStratigraphy, selectedStratigraphy, updateStratigraphy]);
+  }, [
+    addStratigraphy,
+    formMethods,
+    getValues,
+    navigateToStratigraphy,
+    selectedStratigraphy,
+    showApiErrorAlert,
+    t,
+    updateStratigraphy,
+  ]);
 
   useEffect(() => {
     registerSaveHandler(onSave);
