@@ -40,7 +40,7 @@ describe("Test the borehole bulk edit feature.", () => {
     showTableAndWaitForData();
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
-    cy.get("[data-cy='bulk-edit-accordion']").should("have.length", 19);
+    cy.get("[data-cy='bulk-edit-accordion']").should("have.length", 17);
 
     giveAdminUser2workgroups();
     goToRouteAndAcceptTerms(`/`);
@@ -48,7 +48,7 @@ describe("Test the borehole bulk edit feature.", () => {
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
 
-    cy.get('[data-cy="bulk-edit-accordion"]').should("have.length", 20);
+    cy.get('[data-cy="bulk-edit-accordion"]').should("have.length", 17);
     cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
 
     cy.get('[data-cy="workgroup-formSelect"]').should("have.length", 1);
@@ -126,7 +126,7 @@ describe("Test the borehole bulk edit feature.", () => {
       cy.wrap($input).should("have.value", "");
     });
 
-    cy.get('[data-cy$="-formSelect"] input[type=text]').should("have.length", 14);
+    cy.get('[data-cy$="-formSelect"] input[type=text]').should("have.length", 11);
     cy.get('[data-cy$="-formSelect"] input[type=text]').each($input => {
       cy.wrap($input).scrollIntoView();
       cy.wrap($input).should("have.value", "");
