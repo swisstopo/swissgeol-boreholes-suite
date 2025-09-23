@@ -75,13 +75,12 @@ async function readApiResponse(response: Response): Promise<any> {
 async function handleFetchError(response: Response) {
   const responseContent = await readApiResponse(response);
   if (typeof responseContent === "object" && responseContent !== null) {
-    if (responseContent.detail || responseContent.message) {
+    if (responseContent.type === "userError") {
       // This error type is ignored by the default mutation and query error handler in QueryClientInitializer in App.tsx and allows to handle the error individually
       throw new ApiError(responseContent.detail || responseContent.message, response.status);
-    } else {
-      throw new Error(responseContent);
     }
   }
+  throw new Error(responseContent);
 }
 
 /**

@@ -122,7 +122,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
 
             if (!await IsNameUnique(entity).ConfigureAwait(false))
             {
-                return Problem("Name must be unique");
+                return Problem(detail: "Name must be unique", type: "userError");
             }
 
             // If the stratigraphy to create is the first stratigraphy of a borehole,
@@ -162,7 +162,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
 
             if (!await IsNameUnique(entity).ConfigureAwait(false))
             {
-                return Problem("Name must be unique");
+                return Problem(detail: "Name must be unique", type: "userError");
             }
 
             entity.Date = entity.Date != null ? DateTime.SpecifyKind(entity.Date.Value, DateTimeKind.Utc) : null;
