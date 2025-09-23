@@ -48,7 +48,7 @@ describe("Test the borehole bulk edit feature.", () => {
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
 
-    cy.get('[data-cy="bulk-edit-accordion"]').should("have.length", 20);
+    cy.get('[data-cy="bulk-edit-accordion"]').should("have.length", 17);
     cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
 
     cy.get('[data-cy="workgroup-formSelect"]').should("have.length", 1);
