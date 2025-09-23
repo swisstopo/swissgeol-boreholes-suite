@@ -6,6 +6,7 @@ import { Box, Card, Chip, CircularProgress, Stack, Tooltip, Typography } from "@
 import { Trash2 } from "lucide-react";
 import CopyIcon from "../../../../assets/icons/copy.svg?react";
 import ExtractAiIcon from "../../../../assets/icons/extractAi.svg?react";
+import { ApiError } from "../../../../api/apiInterfaces.ts";
 import { Stratigraphy, useStratigraphiesByBoreholeId, useStratigraphyMutations } from "../../../../api/stratigraphy";
 import { theme } from "../../../../AppTheme";
 import { AddButton, BoreholesButton, DeleteButton } from "../../../../components/buttons/buttons";
@@ -162,36 +163,48 @@ export const StratigraphyPanel: FC = () => {
     }
   }, [navigateToStratigraphy, resetForm, selectedStratigraphy]);
 
-  const handleSaveError = useCallback(
-    (error: Error) => {
+  const onSave = useCallback(async () => {
+    const handleMutationError = (error: ApiError) => {
       if (error.message.includes("Name must be unique")) {
         formMethods.setError("name", { type: "manual", message: t("mustBeUnique") });
       } else {
         showApiErrorAlert(error);
       }
-    },
-    [formMethods, showApiErrorAlert, t],
-  );
+    };
 
-  const onSave = useCallback(async () => {
     if (!selectedStratigraphy) return false;
 
     const values = getValues();
     values.date = values.date ? ensureDatetime(values.date.toString()) : null;
-
-    try {
-      if (values.id === 0) {
-        const newStratigraphy: Stratigraphy = await addStratigraphy(values);
-        navigateToStratigraphy(newStratigraphy.id, true);
-      } else {
-        await updateStratigraphy({ ...selectedStratigraphy, ...values });
-      }
+    if (values.id === 0) {
+      const newStratigraphy: Stratigraphy = await addStratigraphy(values, {
+        onError: error => {
+          handleMutationError(error);
+        },
+      });
+      navigateToStratigraphy(newStratigraphy.id, true);
       return true;
-    } catch (error) {
-      handleSaveError(error as Error);
-      return false;
+    } else {
+      await updateStratigraphy(
+        { ...selectedStratigraphy, ...values },
+        {
+          onError: error => {
+            handleMutationError(error);
+          },
+        },
+      );
+      return true;
     }
-  }, [addStratigraphy, getValues, handleSaveError, navigateToStratigraphy, selectedStratigraphy, updateStratigraphy]);
+  }, [
+    addStratigraphy,
+    formMethods,
+    getValues,
+    navigateToStratigraphy,
+    selectedStratigraphy,
+    showApiErrorAlert,
+    t,
+    updateStratigraphy,
+  ]);
 
   const showDeletePrompt = useCallback(() => {
     if (!selectedStratigraphy) return;
