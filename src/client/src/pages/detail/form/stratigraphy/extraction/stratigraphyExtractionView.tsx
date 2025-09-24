@@ -1,10 +1,9 @@
-import { FC, useContext, useState } from "react";
+import { FC, useState } from "react";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
 import { useExtractStratigraphies } from "../../../../../api/file/file.ts";
 import { theme } from "../../../../../AppTheme.ts";
-import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
-import { LabelingExtraction } from "../../../labeling/labelingExtraction.tsx";
+import { ExtractionImageContainer } from "../../../labeling/extractionImageContainer.tsx";
 import { PageSelection } from "../../../labeling/pageSelection.tsx";
 import { useCompletedLayers } from "../stratigraphyV2/lithologyV2/useCompletedLayers.tsx";
 import { ExtractedStratigraphyTable } from "./extractedStratigraphyTable.tsx";
@@ -14,16 +13,10 @@ interface StratigraphyExtractionViewProps {
 }
 
 export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = ({ file }) => {
-  const { data: lithologicalDescriptions = [], isLoading, isFetching } = useExtractStratigraphies(file);
+  const { data: lithologicalDescriptions = [], isLoading } = useExtractStratigraphies(file);
   const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(lithologicalDescriptions);
-  const { showAlert, closeAlert } = useContext(AlertContext);
   const [activePage, setActivePage] = useState<number>(1);
   const [pageCount, setPageCount] = useState<number>();
-
-  if (isFetching) {
-    //Todo decide whether to inform the user about background updates, or if they should even be triggered.
-    console.log("Background fetching in progress...");
-  }
 
   return (
     <Box sx={{ height: "calc(100vh - 156px - 84px)", overflow: "auto" }}>
@@ -49,14 +42,13 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
             top: theme.spacing(11),
             bottom: theme.spacing(12.5),
           }}>
-          <LabelingExtraction
+          <ExtractionImageContainer
+            extractedDescriptions={lithologicalDescriptions}
+            currentPageNumber={activePage}
             selectedFile={file}
             activePage={activePage}
             setActivePage={setActivePage}
             setPageCount={setPageCount}
-            isReadonly={true}
-            showAlert={showAlert}
-            closeAlert={closeAlert}
           />
           <Box p={2} sx={{ zIndex: 500 }}>
             <PageSelection pageCount={pageCount} activePage={activePage} setActivePage={setActivePage} />
