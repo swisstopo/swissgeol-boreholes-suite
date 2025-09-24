@@ -7,10 +7,11 @@ import { FormMultiSelectProps } from "./formMultiSelect.tsx";
 export interface FormDomainMultiSelectProps extends FormMultiSelectProps {
   schemaName: string;
   prefilteredDomains?: Codelist[];
+  showCode?: boolean;
 }
 
 export const FormDomainMultiSelect: FC<FormDomainMultiSelectProps> = props => {
-  const { label, selected, schemaName, prefilteredDomains } = props;
+  const { label, selected, schemaName, prefilteredDomains, showCode } = props;
   const { data: codelists } = useCodelists();
   const { i18n } = useTranslation();
 
@@ -19,10 +20,15 @@ export const FormDomainMultiSelect: FC<FormDomainMultiSelectProps> = props => {
       {...props}
       label={label}
       selected={selected}
-      values={(prefilteredDomains ?? codelists)
-        ?.filter((d: Codelist) => d.schema === schemaName)
-        .sort((a: Codelist, b: Codelist) => a.order - b.order)
-        .map((d: Codelist) => ({ key: d.id, name: String(d[i18n.language]) }))}
+      values={
+        (prefilteredDomains ?? codelists)
+          ?.filter((d: Codelist) => d.schema === schemaName)
+          .sort((a: Codelist, b: Codelist) => a.order - b.order)
+          .map((d: Codelist) => ({
+            key: d.id,
+            name: showCode ? `${String(d[i18n.language])} (${String(d.code)})` : String(d[i18n.language]),
+          })) ?? []
+      }
     />
   );
 };
