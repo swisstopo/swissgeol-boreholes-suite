@@ -48,13 +48,12 @@ public class StratigraphyV2ControllerTest
         var stratigraphies = ((OkObjectResult?)result.Result)?.Value as List<StratigraphyV2>;
         Assert.IsNotNull(stratigraphies);
         Assert.AreEqual(2, stratigraphies.Count);
-        var stratigraphy = stratigraphies.First();
 
-        Assert.AreEqual(1000972, stratigraphy.BoreholeId);
-        Assert.AreEqual("Sarah Ziemann", stratigraphy.Name);
-        Assert.AreEqual(3, stratigraphy.CreatedById);
-        Assert.AreEqual(3, stratigraphy.UpdatedById);
-        Assert.AreEqual(true, stratigraphy.IsPrimary);
+        Assert.AreEqual(1000972, stratigraphies[0].BoreholeId);
+        Assert.AreEqual("Sarah Ziemann", stratigraphies[0].Name);
+        Assert.AreEqual(3, stratigraphies[0].CreatedById);
+        Assert.AreEqual(3, stratigraphies[0].UpdatedById);
+        Assert.AreEqual(true, stratigraphies[0].IsPrimary);
     }
 
     [TestMethod]
