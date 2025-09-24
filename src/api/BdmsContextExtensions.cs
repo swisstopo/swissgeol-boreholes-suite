@@ -1112,7 +1112,7 @@ public static class BdmsContextExtensions
         context.SaveChanges();
 
         // Seed stratigraphyV2
-        var stratigraphyV2_ids = 21_000_000;
+        var stratigraphyV2_ids = 6_000_000;
         var stratigraphyV2Range = Enumerable.Range(stratigraphyV2_ids, boreholeRange.Count).ToList();
         var fakeStratigraphiesV2 = new Faker<StratigraphyV2>()
             .StrictMode(true)
@@ -1138,7 +1138,7 @@ public static class BdmsContextExtensions
         // Each ten layers should be associated with the one stratigraphy.
         int GetStratigraphyV2Id(int currentLayerId, int startId)
         {
-            return 21_000_000 + (int)Math.Floor((double)((currentLayerId - startId) / 10));
+            return 6_000_000 + (int)Math.Floor((double)((currentLayerId - startId) / 10));
         }
 
         // Seed a mix of consolidated and unconsolidated lithologies
