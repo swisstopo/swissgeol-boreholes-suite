@@ -4,7 +4,7 @@ import { Typography } from "@mui/material";
 import type { TFunction } from "i18next";
 import { Lithology, LithologyDescription } from "../../lithology";
 
-const uselessStrings = ["keine Angabe", "sans indication", "senza indicazioni", "not specified"];
+const uselessStrings = new Set(["keine Angabe", "sans indication", "senza indicazioni", "not specified"]);
 
 const getBeddingShare = (lithology: Lithology, index: number) => {
   let beddingShare: number | undefined;
@@ -60,7 +60,7 @@ const buildUnconsolidatedPrimaryString = (
     primaryValues.push(description.colorSecondary[language] as string);
   }
 
-  primaryValues = primaryValues.filter(v => !uselessStrings.includes(v));
+  primaryValues = primaryValues.filter(v => !uselessStrings.has(v));
 
   const lithologyEnCode = codes.join("-");
   let primaryString = "";
@@ -92,7 +92,7 @@ const buildUnconsolidatedSecondaryString = (t: TFunction, language: string, desc
     secondaryValues.push(t("striae"));
   }
 
-  secondaryValues = secondaryValues.filter(v => !uselessStrings.includes(v));
+  secondaryValues = secondaryValues.filter(v => !uselessStrings.has(v));
   return `${t("coarseComponent", { count: secondaryValues.length })}: ${secondaryValues.join(", ")}`;
 };
 
@@ -106,15 +106,15 @@ const buildUnconsolidatedDetails1String = (t: TFunction, language: string, litho
   if (lithology.uscsTypeCodelists && lithology.uscsTypeCodelists.length > 0) {
     let uscsString = `${t("uscsClass", { count: lithology.uscsTypeCodelists.length })}: ${lithology.uscsTypeCodelists
       .map(c => c[language] as string)
-      .filter(s => !uselessStrings.includes(s))
+      .filter(s => !uselessStrings.has(s))
       .join(", ")}`;
-    if (lithology.uscsDetermination && !uselessStrings.includes(lithology.uscsDetermination[language] as string)) {
+    if (lithology.uscsDetermination && !uselessStrings.has(lithology.uscsDetermination[language] as string)) {
       uscsString += ` (${lithology.uscsDetermination[language]})`;
     }
     details.push(uscsString);
   }
 
-  return details.filter(d => !uselessStrings.includes(d)).join(", ");
+  return details.filter(d => !uselessStrings.has(d)).join(", ");
 };
 
 const buildUnconsolidatedDetails2String = (language: string, lithology: Lithology) => {
@@ -124,7 +124,7 @@ const buildUnconsolidatedDetails2String = (language: string, lithology: Litholog
   }
   if (lithology.alterationDegree) details.push(lithology.alterationDegree[language] as string);
 
-  return details.filter(d => !uselessStrings.includes(d)).join(", ");
+  return details.filter(d => !uselessStrings.has(d)).join(", ");
 };
 
 const buildConsolidatedPrimaryString = (
@@ -149,7 +149,7 @@ const buildConsolidatedPrimaryString = (
   if (description.colorSecondary) {
     primaryValues.push(description.colorSecondary[language] as string);
   }
-  primaryValues = primaryValues.filter(v => !uselessStrings.includes(v));
+  primaryValues = primaryValues.filter(v => !uselessStrings.has(v));
 
   let primaryString = "";
   if (share) {
@@ -183,7 +183,7 @@ const buildConsolidatedSecondaryString = (t: TFunction, language: string, descri
     secondaryValues.push(...description.structurePostGenCodelists.map(c => c[language] as string));
   }
 
-  return secondaryValues.filter(v => !uselessStrings.includes(v)).join(", ");
+  return secondaryValues.filter(v => !uselessStrings.has(v)).join(", ");
 };
 
 const buildConsolidatedDetailsString = (language: string, lithology: Lithology) => {
@@ -193,7 +193,7 @@ const buildConsolidatedDetailsString = (language: string, lithology: Lithology) 
   }
   if (lithology.alterationDegree) details.push(lithology.alterationDegree[language] as string);
 
-  return details.filter(d => !uselessStrings.includes(d)).join(", ");
+  return details.filter(d => !uselessStrings.has(d)).join(", ");
 };
 
 const buildLithologyDescription = (
