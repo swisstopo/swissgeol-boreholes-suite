@@ -155,11 +155,11 @@ public class StratigraphyControllerTest
 
         Assert.AreNotSame(originalStratigraphy.ChronostratigraphyLayers, copiedStratigraphy.ChronostratigraphyLayers);
         Assert.AreNotEqual(originalStratigraphy.ChronostratigraphyLayers.First().Id, copiedStratigraphy.ChronostratigraphyLayers.First().Id);
-        Assert.AreEqual(15001144, copiedStratigraphy.ChronostratigraphyLayers.First().ChronostratigraphyId);
+        Assert.AreEqual(100002984, copiedStratigraphy.ChronostratigraphyLayers.First().ChronostratigraphyId);
 
         Assert.AreNotSame(originalStratigraphy.LithostratigraphyLayers, copiedStratigraphy.LithostratigraphyLayers);
         Assert.AreNotEqual(originalStratigraphy.LithostratigraphyLayers.First().Id, copiedStratigraphy.LithostratigraphyLayers.First().Id);
-        Assert.AreEqual(15304109, copiedStratigraphy.LithostratigraphyLayers.First().LithostratigraphyId);
+        Assert.AreEqual(100002733, copiedStratigraphy.LithostratigraphyLayers.First().LithostratigraphyId);
 
         Assert.AreNotSame(originalStratigraphy.Layers.First().LayerGrainAngularityCodes, copiedStratigraphy.Layers.First().LayerGrainAngularityCodes);
         Assert.AreEqual(originalStratigraphy.Layers.First().LayerGrainAngularityCodes.Count, copiedStratigraphy.Layers.First().LayerGrainAngularityCodes.Count);
