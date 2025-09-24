@@ -100,32 +100,34 @@ public static class BdmsContextExtensions
         List<int> grainSize1Ids = codelists.Where(c => c.Schema == "grain_size").Select(s => s.Id).ToList();
         List<int> grainSize2Ids = codelists.Where(c => c.Schema == "uscs_type").Select(s => s.Id).ToList(); // unclear which codelist
 
-        List<int> plasticityIds = codelists.Where(c => c.Schema == LithologySchemas.PlasticitySchema).Select(s => s.Id).ToList();
-        List<int> compactnessIds = codelists.Where(c => c.Schema == LithologySchemas.CompactnessSchema).Select(s => s.Id).ToList();
-        List<int> consistencyIds = codelists.Where(c => c.Schema == LithologySchemas.ConsistencySchema).Select(s => s.Id).ToList();
-        List<int> humidityIds = codelists.Where(c => c.Schema == LithologySchemas.HumiditySchema).Select(s => s.Id).ToList();
-        List<int> cohesionIds = codelists.Where(c => c.Schema == LithologySchemas.CohesionSchema).Select(s => s.Id).ToList();
-        List<int> grainShapeIds = codelists.Where(c => c.Schema == LithologySchemas.GrainShapeSchema).Select(s => s.Id).ToList();
-        List<int> grainAngularityIds = codelists.Where(c => c.Schema == LithologySchemas.GrainAngularitySchema).Select(s => s.Id).ToList();
-        List<int> uscsDeterminationIds = codelists.Where(c => c.Schema == LithologySchemas.UscsDeterminationSchema).Select(s => s.Id).ToList();
-        List<int> gradationIds = codelists.Where(c => c.Schema == LithologySchemas.GradationSchema).Select(s => s.Id).ToList();
-        List<int> uscsTypeIds = codelists.Where(c => c.Schema == LithologySchemas.UscsTypeSchema).Select(s => s.Id).ToList();
-        List<int> grainSizeIds = codelists.Where(c => c.Schema == LithologySchemas.GrainSizeSchema).Select(s => s.Id).ToList();
-        List<int> lithologyUnconMainIds = codelists.Where(c => c.Schema == LithologySchemas.LithologyUnconMainSchema).Select(s => s.Id).ToList();
-        List<int> lithologyUnconSecondaryIds = codelists.Where(c => c.Schema == LithologySchemas.LithologyUnconSecondarySchema).Select(s => s.Id).ToList();
-        List<int> componentUnconOrganicIds = codelists.Where(c => c.Schema == LithologySchemas.ComponentUnconOrganicSchema).Select(s => s.Id).ToList();
-        List<int> componentUnconDebrisIds = codelists.Where(c => c.Schema == LithologySchemas.ComponentUnconDebrisSchema).Select(s => s.Id).ToList();
-        List<int> colorIds = codelists.Where(c => c.Schema == LithologySchemas.ColorSchema).Select(s => s.Id).ToList();
-        List<int> rockConditionIds = codelists.Where(c => c.Schema == LithologySchemas.RockConditionSchema).Select(s => s.Id).ToList();
-        List<int> alterationDegreeIds = codelists.Where(c => c.Schema == LithologySchemas.AlterationDegreeSchema).Select(s => s.Id).ToList();
-        List<int> componentConParticleIds = codelists.Where(c => c.Schema == LithologySchemas.ComponentConParticleSchema).Select(s => s.Id).ToList();
-        List<int> componentConMineralIds = codelists.Where(c => c.Schema == LithologySchemas.ComponentConMineralSchema).Select(s => s.Id).ToList();
-        List<int> cementationIds = codelists.Where(c => c.Schema == LithologySchemas.CementationSchema).Select(s => s.Id).ToList();
-        List<int> structureSynGenIds = codelists.Where(c => c.Schema == LithologySchemas.StructureSynGenSchema).Select(s => s.Id).ToList();
-        List<int> structurePostGenIds = codelists.Where(c => c.Schema == LithologySchemas.StructurePostGenSchema).Select(s => s.Id).ToList();
-        List<int> textureMataIds = codelists.Where(c => c.Schema == LithologySchemas.TextureMataSchema).Select(s => s.Id).ToList();
-        List<int> lithologyConIds = codelists.Where(c => c.Schema == LithologySchemas.LithologyConSchema).Select(s => s.Id).ToList();
-        List<int> faciesConIds = codelists.Where(c => c.Schema == LithologySchemas.FaciesConSchema).Select(s => s.Id).ToList();
+        List<int> plasticityIds = codelists.Where(c => c.Schema == StratigraphySchemas.PlasticitySchema).Select(s => s.Id).ToList();
+        List<int> compactnessIds = codelists.Where(c => c.Schema == StratigraphySchemas.CompactnessSchema).Select(s => s.Id).ToList();
+        List<int> consistencyIds = codelists.Where(c => c.Schema == StratigraphySchemas.ConsistencySchema).Select(s => s.Id).ToList();
+        List<int> humidityIds = codelists.Where(c => c.Schema == StratigraphySchemas.HumiditySchema).Select(s => s.Id).ToList();
+        List<int> cohesionIds = codelists.Where(c => c.Schema == StratigraphySchemas.CohesionSchema).Select(s => s.Id).ToList();
+        List<int> grainShapeIds = codelists.Where(c => c.Schema == StratigraphySchemas.GrainShapeSchema).Select(s => s.Id).ToList();
+        List<int> grainAngularityIds = codelists.Where(c => c.Schema == StratigraphySchemas.GrainAngularitySchema).Select(s => s.Id).ToList();
+        List<int> uscsDeterminationIds = codelists.Where(c => c.Schema == StratigraphySchemas.UscsDeterminationSchema).Select(s => s.Id).ToList();
+        List<int> gradationIds = codelists.Where(c => c.Schema == StratigraphySchemas.GradationSchema).Select(s => s.Id).ToList();
+        List<int> uscsTypeIds = codelists.Where(c => c.Schema == StratigraphySchemas.UscsTypeSchema).Select(s => s.Id).ToList();
+        List<int> grainSizeIds = codelists.Where(c => c.Schema == StratigraphySchemas.GrainSizeSchema).Select(s => s.Id).ToList();
+        List<int> lithologyUnconMainIds = codelists.Where(c => c.Schema == StratigraphySchemas.LithologyUnconMainSchema).Select(s => s.Id).ToList();
+        List<int> lithologyUnconSecondaryIds = codelists.Where(c => c.Schema == StratigraphySchemas.LithologyUnconSecondarySchema).Select(s => s.Id).ToList();
+        List<int> componentUnconOrganicIds = codelists.Where(c => c.Schema == StratigraphySchemas.ComponentUnconOrganicSchema).Select(s => s.Id).ToList();
+        List<int> componentUnconDebrisIds = codelists.Where(c => c.Schema == StratigraphySchemas.ComponentUnconDebrisSchema).Select(s => s.Id).ToList();
+        List<int> colorIds = codelists.Where(c => c.Schema == StratigraphySchemas.ColorSchema).Select(s => s.Id).ToList();
+        List<int> rockConditionIds = codelists.Where(c => c.Schema == StratigraphySchemas.RockConditionSchema).Select(s => s.Id).ToList();
+        List<int> alterationDegreeIds = codelists.Where(c => c.Schema == StratigraphySchemas.AlterationDegreeSchema).Select(s => s.Id).ToList();
+        List<int> componentConParticleIds = codelists.Where(c => c.Schema == StratigraphySchemas.ComponentConParticleSchema).Select(s => s.Id).ToList();
+        List<int> componentConMineralIds = codelists.Where(c => c.Schema == StratigraphySchemas.ComponentConMineralSchema).Select(s => s.Id).ToList();
+        List<int> cementationIds = codelists.Where(c => c.Schema == StratigraphySchemas.CementationSchema).Select(s => s.Id).ToList();
+        List<int> structureSynGenIds = codelists.Where(c => c.Schema == StratigraphySchemas.StructureSynGenSchema).Select(s => s.Id).ToList();
+        List<int> structurePostGenIds = codelists.Where(c => c.Schema == StratigraphySchemas.StructurePostGenSchema).Select(s => s.Id).ToList();
+        List<int> textureMataIds = codelists.Where(c => c.Schema == StratigraphySchemas.TextureMataSchema).Select(s => s.Id).ToList();
+        List<int> lithologyConIds = codelists.Where(c => c.Schema == StratigraphySchemas.LithologyConSchema).Select(s => s.Id).ToList();
+        List<int> faciesConIds = codelists.Where(c => c.Schema == StratigraphySchemas.FaciesConSchema).Select(s => s.Id).ToList();
+        List<int> chronostratigraphyIds = codelists.Where(c => c.Schema == StratigraphySchemas.ChronostratigraphySchema).Select(s => s.Id).ToList();
+        List<int> lithostratigraphyIds = codelists.Where(c => c.Schema == StratigraphySchemas.LithostratigraphySchema).Select(s => s.Id).ToList();
 
         // Completion codelists
         List<int> completionKindIds = codelists.Where(c => c.Schema == CompletionSchemas.CompletionKindSchema).Select(s => s.Id).ToList();
@@ -204,11 +206,11 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.TopBedrockWeatheredMd, f => f.Random.Double(0, 2).OrNull(f, .05f))
            .RuleFor(o => o.HasGroundwater, f => f.Random.Bool().OrNull(f, .2f))
            .RuleFor(o => o.Remarks, f => f.Rant.Review().OrNull(f, .05f))
-           .RuleFor(o => o.LithologyTopBedrockId, f => f.PickRandom(lithologyTopBedrockIds).OrNull(f, .05f))
+           .RuleFor(o => o.LithologyTopBedrockId, f => f.PickRandom(lithologyConIds).OrNull(f, .05f))
            .RuleFor(o => o.LithologyTopBedrock, _ => default!)
-           .RuleFor(o => o.LithostratigraphyTopBedrockId, f => f.PickRandom(lithostratigraphyTopBedrockIds).OrNull(f, .05f))
+           .RuleFor(o => o.LithostratigraphyTopBedrockId, f => f.PickRandom(lithostratigraphyIds).OrNull(f, .05f))
            .RuleFor(o => o.LithostratigraphyTopBedrock, _ => default!)
-           .RuleFor(o => o.ChronostratigraphyTopBedrockId, f => f.PickRandom(chronostratigraphyTopBedrockIds).OrNull(f, .05f))
+           .RuleFor(o => o.ChronostratigraphyTopBedrockId, f => f.PickRandom(chronostratigraphyIds).OrNull(f, .05f))
            .RuleFor(o => o.ChronostratigraphyTopBedrock, _ => default!)
            .RuleFor(o => o.ReferenceElevation, f => f.Random.Double(0, 4500).OrNull(f, .05f))
            .RuleFor(o => o.ReferenceElevationPrecisionId, f => f.PickRandom(elevationPrecisionIds).OrNull(f, .05f))
