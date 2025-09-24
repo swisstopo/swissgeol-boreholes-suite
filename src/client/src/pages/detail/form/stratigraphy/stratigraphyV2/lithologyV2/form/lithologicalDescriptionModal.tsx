@@ -50,7 +50,7 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
       isCloseDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
       <FormProvider {...formMethods}>
         <Stack gap={3} flex={"0 1 1040px"} m={7.5}>
-          <BoreholesCard data-cy="facies-description-basic-data" title={t("basicData")}>
+          <BoreholesCard data-cy="lithological-description-basic-data" title={t("basicData")}>
             <FormContainer>
               <BasicDataFormSection fromDepths={fromDepths} toDepths={toDepths} />
               <RemarksFormSection fieldName="description" label="remarks" />
