@@ -23,9 +23,6 @@ const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> =
   const { getValues, setValue } = formMethods;
   const index = isFirst ? 0 : 1;
 
-  // TODO: Update DomainSelect so that is shows name and code if property set.
-  //  Should be applied to lithology_uncon_main and lithology_uncon_secondary
-
   return (
     <>
       <FormContainer>
@@ -64,11 +61,13 @@ const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> =
             fieldName={`lithologyDescriptions.${index}.lithologyUnconMainId`}
             label={"lithologyUnconMain"}
             schemaName={"lithology_uncon_main"}
+            showCode={true}
           />
           <FormDomainSelect
             fieldName={`lithologyDescriptions.${index}.lithologyUncon2Id`}
             label={"lithologyUnconSecondary"}
             schemaName={"lithology_uncon_secondary"}
+            showCode={true}
           />
         </FormContainer>
         <FormContainer direction={"row"}>
@@ -76,6 +75,7 @@ const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> =
             fieldName={`lithologyDescriptions.${index}.lithologyUncon3Id`}
             label={"componentUncon"}
             schemaName={"lithology_uncon_secondary"}
+            showCode={true}
             sx={{
               "& .MuiInputLabel-root": {
                 overflow: "visible",
@@ -85,14 +85,17 @@ const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> =
           <FormDomainSelect
             fieldName={`lithologyDescriptions.${index}.lithologyUncon4Id`}
             schemaName={"lithology_uncon_secondary"}
+            showCode={true}
           />
           <FormDomainSelect
             fieldName={`lithologyDescriptions.${index}.lithologyUncon5Id`}
             schemaName={"lithology_uncon_secondary"}
+            showCode={true}
           />
           <FormDomainSelect
             fieldName={`lithologyDescriptions.${index}.lithologyUncon6Id`}
             schemaName={"lithology_uncon_secondary"}
+            showCode={true}
           />
         </FormContainer>
         <FormContainer direction={"row"}>
