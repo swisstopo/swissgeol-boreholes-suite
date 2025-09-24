@@ -175,8 +175,8 @@ const buildConsolidatedSecondaryString = (t: TFunction, language: string, descri
 
 const buildConsolidatedDetailsString = (language: string, lithology: Lithology) => {
   const details = [];
-  if (lithology.textureMataCodelists.length > 0) {
-    details.push(...lithology.textureMataCodelists.map(c => c[language]));
+  if (lithology.textureMetaCodelists.length > 0) {
+    details.push(...lithology.textureMetaCodelists.map(c => c[language]));
   }
   if (lithology.alterationDegree) details.push(lithology.alterationDegree[language]);
 

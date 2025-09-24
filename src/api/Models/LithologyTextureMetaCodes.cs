@@ -3,10 +3,10 @@
 namespace BDMS.Models;
 
 /// <summary>
-/// Join table entity for a <see cref="Models.Codelist"/> with the schemaName 'texture_mata' attached to a <see cref="Models.Lithology"/>.
+/// Join table entity for a <see cref="Models.Codelist"/> with the schemaName 'texture_meta' attached to a <see cref="Models.Lithology"/>.
 /// </summary>
-[Table("lithology_texture_mata_codelist")]
-public class LithologyTextureMataCodes : ILithologyCode
+[Table("lithology_texture_meta_codelist")]
+public class LithologyTextureMetaCodes : ILithologyCode
 {
     /// <inheritdoc/>
     [Column("lithology_id")]
@@ -16,7 +16,7 @@ public class LithologyTextureMataCodes : ILithologyCode
     public Lithology? Lithology { get; set; }
 
     /// <inheritdoc/>
-    [Column("texture_mata_id")]
+    [Column("texture_meta_id")]
     public int CodelistId { get; set; }
 
     /// <inheritdoc/>
