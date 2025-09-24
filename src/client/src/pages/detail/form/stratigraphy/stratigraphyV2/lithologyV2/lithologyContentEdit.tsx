@@ -22,10 +22,10 @@ import {
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "../stratigraphyTableComponents.tsx";
-import { FaciesDescriptionModal } from "./faciesDescriptionModal.tsx";
-import { LithologicalDescriptionModal } from "./lithologicalDescriptionModal.tsx";
+import { FaciesDescriptionModal } from "./form/faciesDescriptionModal.tsx";
+import { LithologicalDescriptionModal } from "./form/lithologicalDescriptionModal.tsx";
+import { LithologyModal } from "./form/lithologyModal.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";
-import { LithologyModal } from "./lithologyModal.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";
 import { useLayerDepths } from "./useLayerDepths.tsx";
 

@@ -1,7 +1,7 @@
 import { FC, ReactNode } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { FormCheckbox, FormContainer, FormInput, FormValueType } from "../../../../../../components/form/form.ts";
-import { Lithology } from "../../lithology.ts";
+import { FormCheckbox, FormContainer, FormInput, FormValueType } from "../../../../../../../components/form/form.ts";
+import { Lithology } from "../../../lithology.ts";
 
 interface LithologyDescriptionFormProps {
   lithologyId: number;

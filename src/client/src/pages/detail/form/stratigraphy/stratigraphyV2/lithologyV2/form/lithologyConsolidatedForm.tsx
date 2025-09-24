@@ -1,11 +1,11 @@
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Divider } from "@mui/material";
-import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
-import { FormContainer, FormDomainMultiSelect, FormDomainSelect } from "../../../../../../components/form/form.ts";
-import { LithologyDescriptionEditForm, LithologyEditForm } from "../../lithology.ts";
+import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
+import { FormContainer, FormDomainMultiSelect, FormDomainSelect } from "../../../../../../../components/form/form.ts";
+import { LithologyDescriptionEditForm, LithologyEditForm } from "../../../lithology.ts";
+import { useLithologyDescriptionShareSync } from "../useLithologyDescriptionShareSync.ts";
 import { LithologyDescriptionForm } from "./lithologyDescriptionForm.tsx";
-import { useLithologyDescriptionShareSync } from "./useLithologyDescriptionShareSync.ts";
 
 const LithologyDescriptionConsolidatedForm: FC<LithologyDescriptionEditForm> = ({
   lithologyId,

@@ -1,18 +1,23 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Divider, Stack, TextField, Typography } from "@mui/material";
-import { theme } from "../../../../../../AppTheme.ts";
-import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
-import { useCodelistSchema } from "../../../../../../components/codelist.ts";
+import { theme } from "../../../../../../../AppTheme.ts";
+import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
+import { useCodelistSchema } from "../../../../../../../components/codelist.ts";
 import {
   FormCheckbox,
   FormContainer,
   FormDomainMultiSelect,
   FormDomainSelect,
-} from "../../../../../../components/form/form.ts";
-import { Lithology, LithologyDescription, LithologyDescriptionEditForm, LithologyEditForm } from "../../lithology.ts";
+} from "../../../../../../../components/form/form.ts";
+import {
+  Lithology,
+  LithologyDescription,
+  LithologyDescriptionEditForm,
+  LithologyEditForm,
+} from "../../../lithology.ts";
+import { useLithologyDescriptionShareSync } from "../useLithologyDescriptionShareSync.ts";
 import { LithologyDescriptionForm } from "./lithologyDescriptionForm.tsx";
-import { useLithologyDescriptionShareSync } from "./useLithologyDescriptionShareSync.ts";
 
 const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> = ({
   lithologyId,
