@@ -188,6 +188,27 @@ public class BdmsContext : DbContext
 
     public DbSet<StratigraphyV2> StratigraphiesV2 { get; set; }
 
+    public IQueryable<StratigraphyV2> StratigraphiesV2WithIncludes
+        => StratigraphiesV2
+        .Include(s => s.CreatedBy)
+        .Include(s => s.UpdatedBy)
+        .Include(s => s.Lithologies).ThenInclude(l => l.LithologyRockConditionCodes)
+        .Include(s => s.Lithologies).ThenInclude(l => l.LithologyUscsTypeCodes)
+        .Include(s => s.Lithologies).ThenInclude(l => l.LithologyTextureMetaCodes)
+        .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionComponentUnconOrganicCodes)
+        .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionComponentUnconDebrisCodes)
+        .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionGrainShapeCodes)
+        .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionGrainAngularityCodes)
+        .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionLithologyUnconDebrisCodes)
+        .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionComponentConParticleCodes)
+        .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionComponentConMineralCodes)
+        .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionStructureSynGenCodes)
+        .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionStructurePostGenCodes)
+        .Include(s => s.LithologicalDescriptions)
+        .Include(s => s.FaciesDescriptions)
+        .Include(s => s.ChronostratigraphyLayers)
+        .Include(s => s.LithostratigraphyLayers);
+
     public DbSet<Term> Terms { get; set; }
 
     public DbSet<User> Users { get; set; }

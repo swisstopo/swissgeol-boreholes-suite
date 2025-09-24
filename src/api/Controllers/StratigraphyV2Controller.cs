@@ -58,6 +58,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
         {
             var stratigraphy = await Context.StratigraphiesV2
                 .Include(s => s.Lithologies).ThenInclude(l => l.LithologyRockConditionCodes)
+                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyUscsTypeCodes)
                 .Include(s => s.Lithologies).ThenInclude(l => l.LithologyTextureMetaCodes)
                 .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionComponentUnconOrganicCodes)
                 .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionComponentUnconDebrisCodes)

@@ -73,8 +73,14 @@ public class StratigraphyV2ControllerTest
         Assert.AreEqual("sub_controller", copiedStratigraphy.UpdatedBy.SubjectId);
         Assert.AreEqual(false, copiedStratigraphy.IsPrimary);
         Assert.AreNotEqual(originalStratigraphy.Id, copiedStratigraphy.Id);
-
-        // TODO: Check that all related entities are also copied
+        Assert.AreEqual(originalStratigraphy.Date, copiedStratigraphy.Date);
+        Assert.AreEqual(originalStratigraphy.Lithologies.Count, copiedStratigraphy.Lithologies.Count);
+        Assert.AreNotEqual(originalStratigraphy.Lithologies.First().Id, copiedStratigraphy.Lithologies.First().Id);
+        Assert.AreEqual(originalStratigraphy.Lithologies.First().IsUnconsolidated, copiedStratigraphy.Lithologies.First().IsUnconsolidated);
+        Assert.AreEqual(originalStratigraphy.Lithologies.First().AlterationDegreeId, copiedStratigraphy.Lithologies.First().AlterationDegreeId);
+        Assert.AreEqual(originalStratigraphy.Lithologies.First().LithologyDescriptions.Count, copiedStratigraphy.Lithologies.First().LithologyDescriptions.Count);
+        Assert.AreNotEqual(originalStratigraphy.Lithologies.First().LithologyDescriptions.First().Id, copiedStratigraphy.Lithologies.First().LithologyDescriptions.First().Id);
+        Assert.AreEqual(originalStratigraphy.Lithologies.First().LithologyDescriptions.First().ColorPrimaryId, copiedStratigraphy.Lithologies.First().LithologyDescriptions.First().ColorPrimaryId);
     }
 
     [TestMethod]
@@ -393,10 +399,7 @@ public class StratigraphyV2ControllerTest
 
     private StratigraphyV2? GetStratigraphy(int id)
     {
-        return context.StratigraphiesV2
-            .Include(s => s.CreatedBy)
-            .Include(s => s.UpdatedBy)
-            .SingleOrDefault(s => s.Id == id);
+        return context.StratigraphiesV2WithIncludes.SingleOrDefault(s => s.Id == id);
     }
 
     private void SetupControllerWithAlwaysLockedBorehole()
