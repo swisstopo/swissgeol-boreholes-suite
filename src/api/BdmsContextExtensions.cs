@@ -26,6 +26,7 @@ public static class BdmsContextExtensions
         options.UseQuerySplittingBehavior(QuerySplittingBehavior.SplitQuery);
         options.UseNetTopologySuite();
         options.MigrationsHistoryTable("__EFMigrationsHistory", BoreholesDatabaseName);
+        options.CommandTimeout(420);
     }
 
     /// <summary>
