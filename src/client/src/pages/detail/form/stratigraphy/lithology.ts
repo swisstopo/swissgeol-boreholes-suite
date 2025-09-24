@@ -8,7 +8,7 @@ import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 export interface LithologyDescription {
   id: number;
   lithologyId: number;
-  lithology: Lithology;
+  lithology?: Lithology;
   isFirst: boolean;
   colorPrimaryId?: number;
   colorPrimary?: Codelist;

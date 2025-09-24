@@ -1,16 +1,11 @@
-import { FC, useEffect } from "react";
+import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Divider } from "@mui/material";
 import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
-import {
-  FormCheckbox,
-  FormContainer,
-  FormDomainMultiSelect,
-  FormDomainSelect,
-  FormInput,
-  FormValueType,
-} from "../../../../../../components/form/form.ts";
-import { LithologyDescription, LithologyDescriptionEditForm, LithologyEditForm } from "../../lithology.ts";
+import { FormContainer, FormDomainMultiSelect, FormDomainSelect } from "../../../../../../components/form/form.ts";
+import { LithologyDescriptionEditForm, LithologyEditForm } from "../../lithology.ts";
+import { LithologyDescriptionForm } from "./lithologyDescriptionForm.tsx";
+import { useLithologyDescriptionShareSync } from "./useLithologyDescriptionShareSync.ts";
 
 const LithologyDescriptionConsolidatedForm: FC<LithologyDescriptionEditForm> = ({
   lithologyId,
@@ -18,122 +13,98 @@ const LithologyDescriptionConsolidatedForm: FC<LithologyDescriptionEditForm> = (
   isFirst,
   hasBedding,
 }) => {
-  const { getValues, setValue } = formMethods;
   const index = isFirst ? 0 : 1;
   return (
-    <>
-      <FormContainer>
-        <FormContainer direction={"row"}>
-          {isFirst && hasBedding !== undefined && (
-            <FormCheckbox
-              fieldName={"hasBedding"}
-              label={"bedding"}
-              onChange={hasBedding => {
-                if (!hasBedding) {
-                  setValue("share", undefined);
-                  const currentDescriptions = getValues("lithologyDescriptions");
-                  const filtered = Array.isArray(currentDescriptions)
-                    ? currentDescriptions.filter(d => d.isFirst === true)
-                    : [];
-                  const result = [filtered[0]];
-                  setValue("lithologyDescriptions", result);
-                } else {
-                  setValue("lithologyDescriptions.1", {
-                    id: 0,
-                    lithologyId: lithologyId,
-                    isFirst: false,
-                  } as LithologyDescription);
-                }
-              }}
-            />
-          )}
-          <FormInput
-            fieldName={isFirst ? "share" : "shareInverse"}
-            label={"share"}
-            type={FormValueType.Number}
-            sx={{ flex: "0 0 87px" }}
-            disabled={hasBedding === false || !isFirst}
-          />
+    <LithologyDescriptionForm
+      lithologyId={lithologyId}
+      formMethods={formMethods}
+      isFirst={isFirst}
+      hasBedding={hasBedding}
+      fields={[
+        [
           <FormDomainSelect
+            key={`lithologyDescriptions.${index}.lithologyConId`}
             fieldName={`lithologyDescriptions.${index}.lithologyConId`}
             label={"lithologyCon"}
             schemaName={"lithology_con"}
-          />
+          />,
           <FormDomainSelect
+            key={`lithologyDescriptions.${index}.colorPrimary`}
             fieldName={`lithologyDescriptions.${index}.colorPrimary`}
             label={"colorPrimary"}
             schemaName={"color"}
-          />
+          />,
           <FormDomainSelect
+            key={`lithologyDescriptions.${index}.colorSecondary`}
             fieldName={`lithologyDescriptions.${index}.colorSecondary`}
             label={"colorSecondary"}
             schemaName={"color"}
-          />
-        </FormContainer>
-        <FormContainer direction={"row"}>
+          />,
+        ],
+        [
           <FormDomainMultiSelect
+            key={`lithologyDescriptions.${index}.componentConParticleCodelistIds`}
             fieldName={`lithologyDescriptions.${index}.componentConParticleCodelistIds`}
             label={"componentConParticle"}
             schemaName={"component_con_particle"}
-          />
+          />,
           <FormDomainMultiSelect
+            key={`lithologyDescriptions.${index}.componentConMineralCodelistIds`}
             fieldName={`lithologyDescriptions.${index}.componentConMineralCodelistIds`}
             label={"componentConMineral"}
             schemaName={"component_con_mineral"}
-          />
-        </FormContainer>
-        <FormContainer direction={"row"}>
+          />,
+        ],
+        [
           <FormDomainSelect
+            key={`lithologyDescriptions.${index}.grainSize`}
             fieldName={`lithologyDescriptions.${index}.grainSize`}
             label={"grainSize"}
             schemaName={"grain_size"}
-          />
+          />,
           <FormDomainSelect
+            key={`lithologyDescriptions.${index}.grainAngularity`}
             fieldName={`lithologyDescriptions.${index}.grainAngularity`}
             label={"grainAngularity"}
             schemaName={"grain_angularity"}
-          />
+          />,
           <FormDomainSelect
+            key={`lithologyDescriptions.${index}.gradation`}
             fieldName={`lithologyDescriptions.${index}.gradation`}
             label={"gradation"}
             schemaName={"gradation"}
-          />
+          />,
           <FormDomainSelect
+            key={`lithologyDescriptions.${index}.cementation`}
             fieldName={`lithologyDescriptions.${index}.cementation`}
             label={"cementation"}
             schemaName={"cementation"}
-          />
-        </FormContainer>
-        <FormContainer direction={"row"}>
+          />,
+        ],
+        [
           <FormDomainMultiSelect
+            key={`lithologyDescriptions.${index}.structureSynGenCodelistIds`}
             fieldName={`lithologyDescriptions.${index}.structureSynGenCodelistIds`}
             label={"structureSynGen"}
             schemaName={"structure_syn_gen"}
-          />
+          />,
           <FormDomainMultiSelect
+            key={`lithologyDescriptions.${index}.structurePostGenCodelistIds`}
             fieldName={`lithologyDescriptions.${index}.structurePostGenCodelistIds`}
             label={"structurePostGen"}
             schemaName={"structure_post_gen"}
-          />
-        </FormContainer>
-      </FormContainer>
-    </>
+          />,
+        ],
+      ]}
+    />
   );
 };
 
 export const LithologyConsolidatedForm: FC<LithologyEditForm> = ({ lithologyId, formMethods }) => {
   const { t } = useTranslation();
-
-  const { setValue, watch } = formMethods;
+  const { watch } = formMethods;
   const hasBedding = watch("hasBedding");
-  const share = watch("share");
-  useEffect(() => {
-    if (hasBedding && String(share) !== "" && !isNaN(Number(share))) {
-      setValue("shareInverse", 100 - Number(share));
-    } else {
-      setValue("shareInverse", undefined);
-    }
-  }, [hasBedding, setValue, share]);
+  useLithologyDescriptionShareSync(formMethods);
 
   return (
     <>
