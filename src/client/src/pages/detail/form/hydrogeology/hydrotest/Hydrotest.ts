@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import { fetchApiV2 } from "../../../../../api/fetchApiV2.ts";
+import { fetchApiV2Legacy } from "../../../../../api/fetchApiV2.ts";
 import { Codelist } from "../../../../../components/codelist.ts";
 import { Observation, ObservationType } from "../Observation.ts";
 
@@ -33,19 +33,19 @@ export interface HydrotestInputProps {
 }
 
 export const getHydrotests = async (boreholeId: number): Promise<Hydrotest[]> => {
-  return await fetchApiV2(`hydrotest?boreholeId=${boreholeId}`, "GET");
+  return await fetchApiV2Legacy(`hydrotest?boreholeId=${boreholeId}`, "GET");
 };
 
 export const addHydrotest = async (hydrotest: Hydrotest): Promise<void> => {
-  return await fetchApiV2("hydrotest", "POST", hydrotest);
+  return await fetchApiV2Legacy("hydrotest", "POST", hydrotest);
 };
 
 export const updateHydrotest = async (hydrotest: Hydrotest): Promise<void> => {
-  return await fetchApiV2("hydrotest", "PUT", hydrotest);
+  return await fetchApiV2Legacy("hydrotest", "PUT", hydrotest);
 };
 
 export const deleteHydrotest = async (id: number): Promise<void> => {
-  return await fetchApiV2(`hydrotest?id=${id}`, "DELETE");
+  return await fetchApiV2Legacy(`hydrotest?id=${id}`, "DELETE");
 };
 
 export const useHydrotestDomains = (testKindIds: number[]) => {
@@ -57,7 +57,7 @@ export const useHydrotestDomains = (testKindIds: number[]) => {
   return useQuery({
     queryKey: ["codelists", queryString],
     queryFn: async () => {
-      return await fetchApiV2(`codelist?${queryString}`, "GET");
+      return await fetchApiV2Legacy(`codelist?${queryString}`, "GET");
     },
     staleTime: 10 * (60 * 1000), // 10 mins
     gcTime: 15 * (60 * 1000), // 15 mins

@@ -36,7 +36,7 @@ const GeometryImport = ({ boreholeId }) => {
   } = useBoreholeGeometryMutations();
   const resetTabStatus = useResetTabStatus(["geometry"]);
 
-  const { data } = useBoreholeGeometry(boreholeId);
+  const { data } = useBoreholeGeometry(Number(boreholeId));
   const [geometryFormats, setGeometryFormats] = useState([]);
 
   useEffect(() => {
@@ -59,12 +59,8 @@ const GeometryImport = ({ boreholeId }) => {
     setBoreholeGeometry(
       { boreholeId, formData },
       {
-        onSuccess: async data => {
-          // fetch does not fail promises on 4xx or 5xx responses
-          // ¯\_(ツ)_/¯
-          if (!data.ok) {
-            data.json().then(msg => showAlert(msg.detail ?? t("errorDuringBoreholeFileUpload"), "error"));
-          }
+        onError: error => {
+          showAlert(error.message ?? t("errorDuringBoreholeFileUpload"), "error");
         },
       },
     );

@@ -68,17 +68,18 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
         api: "custom.top_bedrock_weathered_md",
       },
       { fieldName: "groundwater", type: FormValueType.Boolean, api: "extended.groundwater" },
-      { fieldName: "lithology_top_bedrock", type: FormValueType.Domain, api: "custom.lithology_top_bedrock" }, /// ?
-      {
-        fieldName: "lithostratigraphy_top_bedrock",
-        type: FormValueType.Domain,
-        api: "custom.lithostratigraphy_top_bedrock",
-      },
-      {
-        fieldName: "chronostratigraphy_top_bedrock",
-        type: FormValueType.Domain,
-        api: "custom.chronostratigraphy_top_bedrock",
-      },
+      // Todo: Reactivate when bulk edit is migrated to new API
+      // { fieldName: "lithology_top_bedrock", type: FormValueType.Domain, api: "custom.lithology_top_bedrock" },
+      // {
+      //   fieldName: "lithostratigraphy_top_bedrock",
+      //   type: FormValueType.Domain,
+      //   api: "custom.lithostratigraphy_top_bedrock",
+      // },
+      // {
+      //   fieldName: "chronostratigraphy_top_bedrock",
+      //   type: FormValueType.Domain,
+      //   api: "custom.chronostratigraphy_top_bedrock",
+      // },
     ],
     [],
   );
