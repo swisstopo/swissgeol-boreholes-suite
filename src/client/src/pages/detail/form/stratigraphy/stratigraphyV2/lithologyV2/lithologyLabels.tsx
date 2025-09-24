@@ -2,6 +2,7 @@ import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
 import type { TFunction } from "i18next";
+import { Codelist } from "../../../../../../components/codelist.ts";
 import { Lithology, LithologyDescription } from "../../lithology";
 
 const uselessStrings = new Set(["keine Angabe", "sans indication", "senza indicazioni", "not specified"]);
@@ -20,39 +21,32 @@ const buildUnconsolidatedPrimaryString = (
   description: LithologyDescription,
   share?: number,
 ) => {
-  const codes = [];
+  const codes: string[] = [];
   let primaryValues: string[] = [];
 
-  if (description.lithologyUnconMain) {
-    codes.push(description.lithologyUnconMain.code);
-    primaryValues.push(description.lithologyUnconMain[language] as string);
-  }
-  if (description.lithologyUncon2) {
-    codes.push(description.lithologyUncon2.code);
-    primaryValues.push(description.lithologyUncon2[language] as string);
-  }
-  if (description.lithologyUncon3) {
-    codes.push(description.lithologyUncon3.code);
-    primaryValues.push(description.lithologyUncon3[language] as string);
-  }
-  if (description.lithologyUncon4) {
-    codes.push(description.lithologyUncon4.code);
-    primaryValues.push(description.lithologyUncon4[language] as string);
-  }
-  if (description.lithologyUncon5) {
-    codes.push(description.lithologyUncon5.code);
-    primaryValues.push(description.lithologyUncon5[language] as string);
-  }
-  if (description.lithologyUncon6) {
-    codes.push(description.lithologyUncon6.code);
-    primaryValues.push(description.lithologyUncon6[language] as string);
-  }
-  if (description.componentUnconOrganicCodelists && description.componentUnconOrganicCodelists.length > 0) {
-    primaryValues.push(...description.componentUnconOrganicCodelists.map(c => c[language] as string));
-  }
-  if (description.componentUnconDebrisCodelists && description.componentUnconDebrisCodelists.length > 0) {
-    primaryValues.push(...description.componentUnconDebrisCodelists.map(c => c[language] as string));
-  }
+  const pushCodeAndValue = (prop: Codelist | undefined) => {
+    if (prop) {
+      codes.push(prop.code);
+      primaryValues.push(prop[language] as string);
+    }
+  };
+
+  const pushCodelistValues = (list?: Codelist[]) => {
+    if (list && list.length > 0) {
+      primaryValues.push(...list.map(c => c[language] as string));
+    }
+  };
+
+  pushCodeAndValue(description.lithologyUnconMain);
+  pushCodeAndValue(description.lithologyUncon2);
+  pushCodeAndValue(description.lithologyUncon3);
+  pushCodeAndValue(description.lithologyUncon4);
+  pushCodeAndValue(description.lithologyUncon5);
+  pushCodeAndValue(description.lithologyUncon6);
+
+  pushCodelistValues(description.componentUnconOrganicCodelists);
+  pushCodelistValues(description.componentUnconDebrisCodelists);
+
   if (description.colorPrimary) {
     primaryValues.push(description.colorPrimary[language] as string);
   }
