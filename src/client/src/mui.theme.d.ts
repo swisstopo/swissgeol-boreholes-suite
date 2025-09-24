@@ -72,6 +72,8 @@ declare module "@mui/material/styles" {
       active: string;
       activeEnd: string;
       contrastText: string;
+      secondary: string;
+      secondaryTextHighlights: string;
     };
     border: {
       light: string;

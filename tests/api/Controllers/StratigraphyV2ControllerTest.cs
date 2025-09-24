@@ -12,7 +12,7 @@ namespace BDMS.Controllers;
 [TestClass]
 public class StratigraphyV2ControllerTest
 {
-    private const int StratigraphyId = 21_000_099;
+    private const int StratigraphyId = 6_000_003;
 
     private BdmsContext context;
     private StratigraphyV2Controller controller;
@@ -51,9 +51,9 @@ public class StratigraphyV2ControllerTest
         var stratigraphy = stratigraphies.First();
 
         Assert.AreEqual(1000972, stratigraphy.BoreholeId);
-        Assert.AreEqual("Pamela Mante", stratigraphy.Name);
-        Assert.AreEqual(4, stratigraphy.CreatedById);
-        Assert.AreEqual(5, stratigraphy.UpdatedById);
+        Assert.AreEqual("Sarah Ziemann", stratigraphy.Name);
+        Assert.AreEqual(3, stratigraphy.CreatedById);
+        Assert.AreEqual(3, stratigraphy.UpdatedById);
         Assert.AreEqual(true, stratigraphy.IsPrimary);
     }
 
@@ -69,9 +69,9 @@ public class StratigraphyV2ControllerTest
         Assert.IsInstanceOfType(copiedStratigraphyId, typeof(int));
         var copiedStratigraphy = GetStratigraphy((int)copiedStratigraphyId);
 
-        Assert.AreEqual("Robin Runte (Clone)", copiedStratigraphy.Name);
-        Assert.AreEqual("sub_publisher", copiedStratigraphy.CreatedBy.SubjectId);
-        Assert.AreEqual("sub_admin", copiedStratigraphy.UpdatedBy.SubjectId);
+        Assert.AreEqual("Guadalupe Schowalter (Clone)", copiedStratigraphy.Name);
+        Assert.AreEqual("sub_controller", copiedStratigraphy.CreatedBy.SubjectId);
+        Assert.AreEqual("sub_controller", copiedStratigraphy.UpdatedBy.SubjectId);
         Assert.AreEqual(false, copiedStratigraphy.IsPrimary);
         Assert.AreNotEqual(originalStratigraphy.Id, copiedStratigraphy.Id);
 
