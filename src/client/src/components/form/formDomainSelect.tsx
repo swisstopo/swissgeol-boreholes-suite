@@ -12,7 +12,7 @@ export interface FormDomainSelectProps extends FormSelectProps {
 }
 
 export const FormDomainSelect: FC<FormDomainSelectProps> = props => {
-  const { label, selected, schemaName, prefilteredDomains, additionalValues } = props;
+  const { label, selected, schemaName, prefilteredDomains, additionalValues, showCode } = props;
   const { data: domains } = useCodelists();
   const { t, i18n } = useTranslation();
 
@@ -31,7 +31,7 @@ export const FormDomainSelect: FC<FormDomainSelectProps> = props => {
           .sort((a: Codelist, b: Codelist) => a.order - b.order)
           .map((d: Codelist) => ({
             key: d.id,
-            name: props.showCode ? `${String(d[i18n.language])} (${String(d.code)})` : String(d[i18n.language]),
+            name: showCode ? `${String(d[i18n.language])} (${String(d.code)})` : String(d[i18n.language]),
           })) ?? []),
       ]}
     />
