@@ -180,7 +180,7 @@ public class WorkflowControllerTest
     public async Task WorkflowChangeRequestToPublishWithoutPublisherRights()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .Setup(x => x.CanChangeBoreholeStatusAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
 
         // User does not have publisher rights
@@ -202,7 +202,7 @@ public class WorkflowControllerTest
     }
 
     [TestMethod]
-    public async Task WorkflowChangeRequestWithoutStatsChange()
+    public async Task WorkflowChangeRequestWithoutStatusChange()
     {
         var existingWorkflow = await context.Workflows.FirstAsync(w => w.BoreholeId == boreholeTestId);
         var originalStatus = existingWorkflow.Status;
