@@ -39,7 +39,9 @@ const dropFileIntoImportDropzone = boreholeFile => {
     });
   });
 };
-describe("Test for importing boreholes.", () => {
+
+// Todo reactivate tests when import functionality is reactivated
+describe.skip("Test for importing boreholes.", () => {
   it("Successfully imports multiple boreholes.", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("import-borehole-button").click();
