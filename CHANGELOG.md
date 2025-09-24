@@ -3,6 +3,11 @@
 ## [Unreleased]
 
 ### Changed
+- Use new codelists for stratigraphy properties in borehole.
+
+## v2.1.1346 - 2025-09-23
+
+### Changed
 - Migrated stratigraphies and layers to new lithology tables.
 
 ## v2.1.1335 - 2025-09-17
