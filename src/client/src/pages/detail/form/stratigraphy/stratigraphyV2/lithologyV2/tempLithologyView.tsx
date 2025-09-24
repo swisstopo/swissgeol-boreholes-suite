@@ -12,9 +12,9 @@ import {
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "../stratigraphyTableComponents.tsx";
+import { LithologyLabels } from "./lithologyLabels.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";
 import { useLayerDepths } from "./useLayerDepths.tsx";
-import { useLithologyLabels } from "./useLithologyLabels.tsx";
 
 interface LithologyContentEditProps {
   stratigraphyId: number;
@@ -32,7 +32,6 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const { buildLithologyLabels } = useLithologyLabels();
   const { depths } = useLayerDepths(lithologies, lithologicalDescriptions, faciesDescriptions);
 
   const { completedLayers: completedLithologies } = useCompletedLayers(lithologies, depths);
@@ -137,7 +136,9 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
               completedLithologies,
               defaultRowHeight,
               computeCellHeight,
-              layer => buildLithologyLabels(layer as Lithology),
+              layer => (
+                <LithologyLabels lithology={layer as Lithology} />
+              ),
               "lithology",
             )}
           </StratigraphyTableColumn>
