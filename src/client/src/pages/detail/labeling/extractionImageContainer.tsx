@@ -63,20 +63,18 @@ export const ExtractionImageContainer: FC<ExtractionImageContainerProps> = ({
     return imageLoaded;
   }, [fileInfo]);
 
-  const getSourceFromLayerName = useCallback((layers: BaseLayer[], layerName: string): VectorSource | undefined => {
-    const drawingLayer = layers.find(
-      layer => layer instanceof VectorLayer && layer.get("name") === layerName,
-    ) as VectorLayer<Feature<Geometry>>;
-    return drawingLayer?.getSource() as VectorSource | undefined;
+  const getSourceFromLayerName = useCallback((layers: BaseLayer[], layerName: string) => {
+    const layer = layers.find(l => l instanceof VectorLayer && l.get("name") === layerName) as VectorLayer<
+      Feature<Geometry>
+    >;
+    return layer?.getSource();
   }, []);
 
   const addBoundingBoxesToSource = (boxes: ExtractionBoundingBox[], source: VectorSource, page: number) => {
-    boxes
-      .filter(box => box.page_number === page)
-      .forEach(box => {
-        const bboxExtent = [box.x0, -box.y1, box.x1, -box.y0];
-        source.addFeature(new Feature({ geometry: fromExtent(bboxExtent) }));
-      });
+    for (const box of boxes.filter(box => box.page_number === page)) {
+      const bboxExtent = [box.x0, -box.y1, box.x1, -box.y0];
+      source.addFeature(new Feature({ geometry: fromExtent(bboxExtent) }));
+    }
   };
 
   useEffect(() => {
@@ -91,12 +89,12 @@ export const ExtractionImageContainer: FC<ExtractionImageContainerProps> = ({
     highlightDepthSource.clear();
 
     setTimeout(() => {
-      extractedDescriptions.forEach(description => {
+      for (const description of extractedDescriptions) {
         addBoundingBoxesToSource(description.descriptionBoundingBoxes, highlightDescriptionsSource, currentPageNumber);
         addBoundingBoxesToSource(description.startDepthBoundingBoxes, highlightDepthSource, currentPageNumber);
         addBoundingBoxesToSource(description.endDepthBoundingBoxes, highlightDepthSource, currentPageNumber);
-      });
-    }, 1000); // Adds small timeout to ensure the image is fully rendered before adding bounding boxes
+      }
+    }, 1000); // Add small timeout to ensure the image is fully rendered before adding bounding boxes
 
     setHasImageLoaded(false);
   }, [currentPageNumber, extractedDescriptions, mapInstance, hasImageLoaded, getSourceFromLayerName]);
