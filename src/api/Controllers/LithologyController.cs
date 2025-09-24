@@ -224,8 +224,6 @@ public class LithologyController : BoreholeControllerBase<Lithology>
 
     private void PrepareLithologyDescriptions(Lithology entity, Lithology? existingLithology = null)
     {
-        if (entity.HasBedding && entity.Share == null) throw new InvalidOperationException("Share must be set when bedding is true.");
-
         // Order LithologyDescriptions so that the one with IsFirst = true is first in order
         entity.LithologyDescriptions = entity.LithologyDescriptions?
             .OrderByDescending(ld => ld.IsFirst)
