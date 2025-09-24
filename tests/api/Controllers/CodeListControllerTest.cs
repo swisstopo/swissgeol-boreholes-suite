@@ -46,14 +46,14 @@ public class CodeListControllerTest
     [TestMethod]
     public async Task GetEntriesBySchema()
     {
-        var codeLists = await controller.GetAsync("custom.chronostratigraphy_top_bedrock");
+        var codeLists = await controller.GetAsync("chronostratigraphy");
         Assert.AreEqual(137, codeLists.Count());
         var codeListToTest = codeLists.Single(c => c.Id == 15001070);
         Assert.AreEqual(15001070, codeListToTest.Id);
         Assert.AreEqual(15001070, codeListToTest.Geolcode);
         Assert.AreEqual("{\"color\":[128,207,216]}", codeListToTest.Conf);
         Assert.AreEqual(false, codeListToTest.IsDefault);
-        Assert.AreEqual("custom.chronostratigraphy_top_bedrock", codeListToTest.Schema);
+        Assert.AreEqual("chronostratigraphy", codeListToTest.Schema);
         Assert.AreEqual("Mittlerer Jura", codeListToTest.De);
         Assert.AreEqual("Middle Jurassic", codeListToTest.En);
         Assert.AreEqual("Jurassique moyen", codeListToTest.Fr);
