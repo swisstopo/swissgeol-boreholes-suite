@@ -24,11 +24,19 @@ export const StratigraphyProvider: FC<PropsWithChildren> = ({ children }) => {
   const resetHandlersRef = useRef<ResetHandler[]>([]);
 
   const registerSaveHandler = useCallback((handler: SaveHandler) => {
-    saveHandlersRef.current.push(handler);
+    // only register one saveHandler of the same type
+    const idx = saveHandlersRef.current.findIndex(h => h === handler);
+    if (idx === -1) {
+      saveHandlersRef.current.push(handler);
+    }
   }, []);
 
   const registerResetHandler = useCallback((handler: ResetHandler) => {
-    resetHandlersRef.current.push(handler);
+    // only register one resetHandler of the same type
+    const idx = resetHandlersRef.current.findIndex(h => h === handler);
+    if (idx === -1) {
+      resetHandlersRef.current.push(handler);
+    }
   }, []);
 
   const onReset = useCallback(() => {

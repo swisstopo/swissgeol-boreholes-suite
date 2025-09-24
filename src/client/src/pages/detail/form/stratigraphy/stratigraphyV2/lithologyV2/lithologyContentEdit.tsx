@@ -350,64 +350,62 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
             <StratigraphyTableHeaderCell label={t("lithological_description")} />
             <StratigraphyTableHeaderCell label={t("facies_description")} />
           </StratigraphyTableHeader>
-          <StratigraphyTableContent>
-            <StratigraphyTableColumn sx={{ flex: "0 0 90px" }}>
-              {/* TODO: Add FormInput for depths and update lithology if depth changes. Add overlap validation check */}
-              {!depths || depths.length === 0 ? (
-                <StratigraphyTableCell>empty</StratigraphyTableCell>
-              ) : (
-                depths.map((depth, index) => (
+          {depths?.length > 0 && (
+            <StratigraphyTableContent>
+              <StratigraphyTableColumn sx={{ flex: "0 0 90px" }}>
+                {/* TODO: Add FormInput for depths and update lithology if depth changes. Add overlap validation check */}
+                {depths.map((depth, index) => (
                   <StratigraphyTableCell key={`depth-${index}`} sx={{ height: `${defaultRowHeight}px` }}>
                     <Typography>{`${depth.fromDepth} m MD`}</Typography>
                     <Typography>{`${depth.toDepth} m MD`}</Typography>
                   </StratigraphyTableCell>
-                ))
-              )}
-            </StratigraphyTableColumn>
-            <StratigraphyTableColumn>
-              {renderTableCells(
-                completedLithologies,
-                defaultRowHeight,
-                computeCellHeight,
-                handleEditLithology,
-                handleDeleteLithology,
-                layer => (
-                  <LithologyLabels lithology={layer as Lithology} />
-                ),
-                "lithology",
-              )}
-            </StratigraphyTableColumn>
-            <StratigraphyTableColumn>
-              {renderTableCells(
-                completedLithologicalDescriptions,
-                defaultRowHeight,
-                computeCellHeight,
-                handleEditLithologicalDescription,
-                handleDeleteLithologicalDescription,
-                layer => (
-                  <Typography variant="body1" fontWeight={700}>
-                    {(layer as LithologicalDescription).description}
-                  </Typography>
-                ),
-                "lithologicalDescription",
-              )}
-            </StratigraphyTableColumn>
-            <StratigraphyTableColumn>
-              {renderTableCells(
-                completedFaciesDescriptions,
-                defaultRowHeight,
-                computeCellHeight,
-                handleEditFaciesDescription,
-                handleDeleteFaciesDescription,
-                layer => (
-                  <Typography variant="body1" fontWeight={700}>
-                    {(layer as FaciesDescription).description}
-                  </Typography>
-                ),
-                "faciesDescription",
-              )}
-            </StratigraphyTableColumn>
-          </StratigraphyTableContent>
+                ))}
+              </StratigraphyTableColumn>
+              <StratigraphyTableColumn>
+                {renderTableCells(
+                  completedLithologies,
+                  defaultRowHeight,
+                  computeCellHeight,
+                  handleEditLithology,
+                  handleDeleteLithology,
+                  layer => (
+                    <LithologyLabels lithology={layer as Lithology} />
+                  ),
+                  "lithology",
+                )}
+              </StratigraphyTableColumn>
+              <StratigraphyTableColumn>
+                {renderTableCells(
+                  completedLithologicalDescriptions,
+                  defaultRowHeight,
+                  computeCellHeight,
+                  handleEditLithologicalDescription,
+                  handleDeleteLithologicalDescription,
+                  layer => (
+                    <Typography variant="body1" fontWeight={700}>
+                      {(layer as LithologicalDescription).description}
+                    </Typography>
+                  ),
+                  "lithologicalDescription",
+                )}
+              </StratigraphyTableColumn>
+              <StratigraphyTableColumn>
+                {renderTableCells(
+                  completedFaciesDescriptions,
+                  defaultRowHeight,
+                  computeCellHeight,
+                  handleEditFaciesDescription,
+                  handleDeleteFaciesDescription,
+                  layer => (
+                    <Typography variant="body1" fontWeight={700}>
+                      {(layer as FaciesDescription).description}
+                    </Typography>
+                  ),
+                  "faciesDescription",
+                )}
+              </StratigraphyTableColumn>
+            </StratigraphyTableContent>
+          )}
         </Stack>
         <AddRowButton />
       </Stack>
