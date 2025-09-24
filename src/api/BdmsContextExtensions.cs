@@ -89,7 +89,6 @@ public static class BdmsContextExtensions
 
         // Lithology codelists (schema without LithologySchemas static class belong to legacy schemas)
         List<int> lithologyTopBedrockIds = codelists.Where(c => c.Schema == "custom.lithology_top_bedrock").Select(s => s.Id).ToList();
-        List<int> chronostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.chronostratigraphy_top_bedrock").Select(s => s.Id).ToList();
         List<int> lithostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.lithostratigraphy_top_bedrock").Select(s => s.Id).ToList();
         List<int> alterationIds = codelists.Where(c => c.Schema == "alteration").Select(s => s.Id).ToList();
         List<int> colourIds = codelists.Where(c => c.Schema == "colour").Select(s => s.Id).ToList();
