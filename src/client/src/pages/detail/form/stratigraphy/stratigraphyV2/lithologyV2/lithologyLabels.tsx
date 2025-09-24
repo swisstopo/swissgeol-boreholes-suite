@@ -264,12 +264,11 @@ export const LithologyLabels: FC<LithologyLabelsProps> = ({ lithology }) => {
     const details2 = buildUnconsolidatedDetails2String(language, lithology);
     return (
       <>
-        {lithology.lithologyDescriptions &&
-          lithology.lithologyDescriptions.map((description, index) => (
-            <div key={`lithologyDescriptions-${description.id}`}>
-              {buildUnconsolidatedLithologyDescription(t, language, description, getBeddingShare(lithology, index))}
-            </div>
-          ))}
+        {lithology.lithologyDescriptions?.map((description, index) => (
+          <div key={`lithologyDescriptions-${description.id}`}>
+            {buildUnconsolidatedLithologyDescription(t, language, description, getBeddingShare(lithology, index))}
+          </div>
+        ))}
         {details1.length > 0 && <Typography variant="body2">{details1}</Typography>}
         {details2.length > 0 && <Typography variant="body2">{details2}</Typography>}
         {lithology.notes && <Typography variant="body2">{lithology.notes}</Typography>}
@@ -279,12 +278,11 @@ export const LithologyLabels: FC<LithologyLabelsProps> = ({ lithology }) => {
     const details = buildConsolidatedDetailsString(language, lithology);
     return (
       <>
-        {lithology.lithologyDescriptions &&
-          lithology.lithologyDescriptions.map((description, index) => (
-            <div key={`lithologyDescriptions-${description.id}`}>
-              {buildConsolidatedLithologyDescription(t, language, description, getBeddingShare(lithology, index))}
-            </div>
-          ))}
+        {lithology.lithologyDescriptions?.map((description, index) => (
+          <div key={`lithologyDescriptions-${description.id}`}>
+            {buildConsolidatedLithologyDescription(t, language, description, getBeddingShare(lithology, index))}
+          </div>
+        ))}
         {details.length > 0 && <Typography variant="body2">{details}</Typography>}
         {lithology.notes && <Typography variant="body2">{lithology.notes}</Typography>}
       </>

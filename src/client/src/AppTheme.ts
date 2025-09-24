@@ -58,6 +58,8 @@ const themePalette: AppThemePalette = {
     active: "#4F46E5",
     activeEnd: "#E53940",
     contrastText: "#ffffff",
+    secondary: "#FFD600",
+    secondaryTextHighlights: "rgba(255, 214, 0, 0.15)",
   },
   border: {
     light: "#DFE4E9",
