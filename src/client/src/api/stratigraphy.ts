@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Codelist } from "../components/codelist.ts";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
+import { ExtractionBoundingBox } from "../pages/detail/labeling/labelingInterfaces.tsx";
 import { User } from "./apiInterfaces.ts";
 import { boreholeQueryKey, BoreholeV2 } from "./borehole.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError } from "./fetchApiV2.ts";
@@ -88,6 +89,12 @@ export interface FaciesDescription extends BaseLayer {
   description: string;
   faciesId: number | null;
   facies: Codelist | null;
+}
+
+export interface ExtractedLithologicalDescription extends LithologicalDescription {
+  startDepthBoundingBoxes: ExtractionBoundingBox[];
+  endDepthBoundingBoxes: ExtractionBoundingBox[];
+  descriptionBoundingBoxes: ExtractionBoundingBox[];
 }
 
 // layers
