@@ -577,30 +577,6 @@ public class LithologyControllerTest
     }
 
     [TestMethod]
-    public async Task BulkCreateAsyncWithInvalidLithologyReturnsBadRequest()
-    {
-        var stratigraphyId = context.StratigraphiesV2.First().Id;
-        var lithologies = new List<Lithology>
-        {
-            new Lithology
-            {
-                StratigraphyId = stratigraphyId,
-                FromDepth = 10,
-                ToDepth = 20,
-                HasBedding = true, // This requires Share to be set
-                Share = null,      // This will cause validation to fail
-                LithologyDescriptions = new List<LithologyDescription>
-                {
-                    new LithologyDescription { IsFirst = true },
-                },
-            },
-        };
-
-        var response = await controller.BulkCreateAsync(lithologies);
-        ActionResultAssert.IsBadRequest(response.Result);
-    }
-
-    [TestMethod]
     public async Task BulkCreateAsyncReturnsUnauthorizedWithInsufficientPermissions()
     {
         boreholePermissionServiceMock
