@@ -123,7 +123,7 @@ public static class BdmsContextExtensions
         List<int> cementationIds = codelists.Where(c => c.Schema == StratigraphySchemas.CementationSchema).Select(s => s.Id).ToList();
         List<int> structureSynGenIds = codelists.Where(c => c.Schema == StratigraphySchemas.StructureSynGenSchema).Select(s => s.Id).ToList();
         List<int> structurePostGenIds = codelists.Where(c => c.Schema == StratigraphySchemas.StructurePostGenSchema).Select(s => s.Id).ToList();
-        List<int> textureMataIds = codelists.Where(c => c.Schema == StratigraphySchemas.TextureMataSchema).Select(s => s.Id).ToList();
+        List<int> textureMetaIds = codelists.Where(c => c.Schema == StratigraphySchemas.TextureMetaSchema).Select(s => s.Id).ToList();
         List<int> lithologyConIds = codelists.Where(c => c.Schema == StratigraphySchemas.LithologyConSchema).Select(s => s.Id).ToList();
         List<int> faciesConIds = codelists.Where(c => c.Schema == StratigraphySchemas.FaciesConSchema).Select(s => s.Id).ToList();
         List<int> chronostratigraphyIds = codelists.Where(c => c.Schema == StratigraphySchemas.ChronostratigraphySchema).Select(s => s.Id).ToList();
@@ -1112,7 +1112,7 @@ public static class BdmsContextExtensions
         context.SaveChanges();
 
         // Seed stratigraphyV2
-        var stratigraphyV2_ids = 21_000_000;
+        var stratigraphyV2_ids = 6_000_000;
         var stratigraphyV2Range = Enumerable.Range(stratigraphyV2_ids, boreholeRange.Count).ToList();
         var fakeStratigraphiesV2 = new Faker<StratigraphyV2>()
             .StrictMode(true)
@@ -1138,7 +1138,7 @@ public static class BdmsContextExtensions
         // Each ten layers should be associated with the one stratigraphy.
         int GetStratigraphyV2Id(int currentLayerId, int startId)
         {
-            return 21_000_000 + (int)Math.Floor((double)((currentLayerId - startId) / 10));
+            return 6_000_000 + (int)Math.Floor((double)((currentLayerId - startId) / 10));
         }
 
         // Seed a mix of consolidated and unconsolidated lithologies
@@ -1178,11 +1178,11 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.UscsTypeCodelists, _ => new Collection<Codelist>())
             .RuleFor(o => o.RockConditionCodelistIds, (f, l) => l.IsUnconsolidated ? f.PickRandom(rockConditionIds, f.Random.Int(0, 2)).ToList() : new List<int>())
             .RuleFor(o => o.RockConditionCodelists, _ => new Collection<Codelist>())
-            .RuleFor(o => o.TextureMataCodelistIds, (f, l) => !l.IsUnconsolidated ? f.PickRandom(textureMataIds, f.Random.Int(0, 3)).ToList() : new List<int>()) // Consolidated properties
-            .RuleFor(o => o.TextureMataCodelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.TextureMetaCodelistIds, (f, l) => !l.IsUnconsolidated ? f.PickRandom(textureMetaIds, f.Random.Int(0, 3)).ToList() : new List<int>()) // Consolidated properties
+            .RuleFor(o => o.TextureMetaCodelists, _ => new Collection<Codelist>())
             .RuleFor(o => o.LithologyUscsTypeCodes, _ => new List<LithologyUscsTypeCodes>())
             .RuleFor(o => o.LithologyRockConditionCodes, _ => new List<LithologyRockConditionCodes>())
-            .RuleFor(o => o.LithologyTextureMataCodes, _ => new List<LithologyTextureMataCodes>());
+            .RuleFor(o => o.LithologyTextureMetaCodes, _ => new List<LithologyTextureMetaCodes>());
 
         Lithology SeededLithologies(int seed) => fakeLithologies.UseSeed(seed).Generate();
 

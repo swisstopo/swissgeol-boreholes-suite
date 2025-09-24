@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20250923115417_RenameLithologyJoinTableKeys")]
+    partial class RenameLithologyJoinTableKeys
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1903,7 +1906,7 @@ namespace BDMS.Migrations
                     b.ToTable("lithology_rock_condition_codelist", "bdms");
                 });
 
-            modelBuilder.Entity("BDMS.Models.LithologyTextureMetaCodes", b =>
+            modelBuilder.Entity("BDMS.Models.LithologyTextureMataCodes", b =>
                 {
                     b.Property<int>("LithologyId")
                         .HasColumnType("integer")
@@ -1911,13 +1914,13 @@ namespace BDMS.Migrations
 
                     b.Property<int>("CodelistId")
                         .HasColumnType("integer")
-                        .HasColumnName("texture_meta_id");
+                        .HasColumnName("texture_mata_id");
 
                     b.HasKey("LithologyId", "CodelistId");
 
                     b.HasIndex("CodelistId");
 
-                    b.ToTable("lithology_texture_meta_codelist", "bdms");
+                    b.ToTable("lithology_texture_mata_codelist", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.LithologyUscsTypeCodes", b =>
@@ -4031,16 +4034,16 @@ namespace BDMS.Migrations
                     b.Navigation("Lithology");
                 });
 
-            modelBuilder.Entity("BDMS.Models.LithologyTextureMetaCodes", b =>
+            modelBuilder.Entity("BDMS.Models.LithologyTextureMataCodes", b =>
                 {
                     b.HasOne("BDMS.Models.Codelist", "Codelist")
-                        .WithMany("LithologyTextureMetaCodes")
+                        .WithMany("LithologyTextureMataCodes")
                         .HasForeignKey("CodelistId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.HasOne("BDMS.Models.Lithology", "Lithology")
-                        .WithMany("LithologyTextureMetaCodes")
+                        .WithMany("LithologyTextureMataCodes")
                         .HasForeignKey("LithologyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -4507,7 +4510,7 @@ namespace BDMS.Migrations
 
                     b.Navigation("LithologyRockConditionCodes");
 
-                    b.Navigation("LithologyTextureMetaCodes");
+                    b.Navigation("LithologyTextureMataCodes");
 
                     b.Navigation("LithologyUscsTypeCodes");
                 });
@@ -4547,7 +4550,7 @@ namespace BDMS.Migrations
 
                     b.Navigation("LithologyRockConditionCodes");
 
-                    b.Navigation("LithologyTextureMetaCodes");
+                    b.Navigation("LithologyTextureMataCodes");
 
                     b.Navigation("LithologyUscsTypeCodes");
                 });

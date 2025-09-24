@@ -16,7 +16,7 @@ public class LithologyDescriptionComponentConParticleCodes : ILithologyDescripti
     public LithologyDescription? LithologyDescription { get; set; }
 
     /// <inheritdoc/>
-    [Column("lithology_component_con_particle_id")]
+    [Column("component_con_particle_id")]
     public int CodelistId { get; set; }
 
     /// <inheritdoc/>
