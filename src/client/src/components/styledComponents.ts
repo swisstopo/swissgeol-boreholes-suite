@@ -63,7 +63,8 @@ export const DialogHeaderContainer = styled(Box)({
 
 export const DialogMainContent = styled(Box)({
   padding: theme.spacing(3),
-  flex: 1,
+  flex: "1 1 0%",
+  overflow: "auto",
 });
 
 export const DialogFooterContainer = styled(Box)({
