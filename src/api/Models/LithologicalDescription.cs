@@ -1,6 +1,7 @@
 ﻿using BDMS.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -53,11 +54,13 @@ public class LithologicalDescription : ILithology, IChangeTracking, IIdentifyabl
 
     /// <inheritdoc />
     [IncludeInExport]
+    [JsonRequired]
     [Column("depth_from")]
     public double FromDepth { get; set; }
 
     /// <inheritdoc />
     [IncludeInExport]
+    [JsonRequired]
     [Column("depth_to")]
     public double ToDepth { get; set; }
 }
