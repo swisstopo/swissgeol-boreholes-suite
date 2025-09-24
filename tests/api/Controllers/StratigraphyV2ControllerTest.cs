@@ -29,27 +29,25 @@ public class StratigraphyV2ControllerTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    public async Task GetAsyncReturnsAllEntities()
-    {
-        var stratigraphies = await controller.GetAsync();
-        Assert.IsNotNull(stratigraphies);
-        Assert.AreEqual(3000, stratigraphies.Count());
-    }
-
-    [TestMethod]
     public async Task GetEntriesByBoreholeIdForInexistentId()
     {
-        var stratigraphies = await controller.GetAsync(81294572).ConfigureAwait(false);
+        var result = await controller.GetAsync(81294572).ConfigureAwait(false);
+        ActionResultAssert.IsOk(result.Result);
+
+        var stratigraphies = ((OkObjectResult?)result.Result)?.Value as List<StratigraphyV2>;
         Assert.IsNotNull(stratigraphies);
-        Assert.AreEqual(0, stratigraphies.Count());
+        Assert.AreEqual(0, stratigraphies.Count);
     }
 
     [TestMethod]
     public async Task GetStratigraphyByBoreholeId()
     {
-        var stratigraphies = await controller.GetAsync(1000972).ConfigureAwait(false);
+        var result = await controller.GetAsync(1000972).ConfigureAwait(false);
+        ActionResultAssert.IsOk(result.Result);
+
+        var stratigraphies = ((OkObjectResult?)result.Result)?.Value as List<StratigraphyV2>;
         Assert.IsNotNull(stratigraphies);
-        Assert.AreEqual(2, stratigraphies.Count());
+        Assert.AreEqual(2, stratigraphies.Count);
         var stratigraphy = stratigraphies.First();
 
         Assert.AreEqual(1000972, stratigraphy.BoreholeId);
@@ -130,7 +128,7 @@ public class StratigraphyV2ControllerTest
     public async Task DeleteMainStratigraphyNotAllowedIfOthersExist()
     {
         // Precondition: Find a group of three stratigraphies with one main stratigraphy
-        var stratigraphies = await controller.GetAsync();
+        var stratigraphies = context.StratigraphiesV2;
         var stratigraphyTestCandidates = stratigraphies
             .GroupBy(x => x.BoreholeId)
             .Where(g => !g.Any(s => s.IsPrimary))
