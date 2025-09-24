@@ -142,7 +142,8 @@ describe("Search filter tests", () => {
     cy.wait("@edit_list");
     verifyPaginationText("1–100 of 2703");
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
-    //
+
+    // TODO: Reactivate when lithology filter is fixed
     // cy.contains("Lithology").click();
     // getElementByDataCy("show-all-fields-switch").click();
     // setYesNoSelect("striae", "Yes");
@@ -215,6 +216,7 @@ describe("Search filter tests", () => {
     cy.get('[data-cy="filter-chip-boreholestatus"]').contains("Borehole status");
   });
 
+  // TODO: Reactivate when lithology filter is fixed
   it.skip("filters boreholes by color and uscs3", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
@@ -232,6 +234,7 @@ describe("Search filter tests", () => {
     cy.get(".MuiDataGrid-row").contains("Aisha Thiel").should("exist");
   });
 
+  // TODO: Reactivate when lithology filter is fixed
   it.skip("filters boreholes by original lithology in editor mode", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
