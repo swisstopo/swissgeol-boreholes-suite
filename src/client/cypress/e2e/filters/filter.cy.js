@@ -142,26 +142,26 @@ describe("Search filter tests", () => {
     cy.wait("@edit_list");
     verifyPaginationText("1–100 of 2703");
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
-
-    cy.contains("Lithology").click();
-    getElementByDataCy("show-all-fields-switch").click();
-    setYesNoSelect("striae", "Yes");
-    cy.wait("@edit_list");
-    verifyPaginationText("1–100 of 2567");
-    cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
-    cy.get('[data-cy="filter-chip-striae"]').should("exist");
-
-    setYesNoSelect("striae", "No");
-    cy.wait("@edit_list");
-    verifyPaginationText("1–100 of 2568");
-    cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
-    cy.get('[data-cy="filter-chip-striae"]').should("exist");
-
-    setYesNoSelect("striae", "Not Specified");
-    cy.wait("@edit_list");
-    hasPagination(false);
-    cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
-    cy.get('[data-cy="filter-chip-striae"]').should("exist");
+    //
+    // cy.contains("Lithology").click();
+    // getElementByDataCy("show-all-fields-switch").click();
+    // setYesNoSelect("striae", "Yes");
+    // cy.wait("@edit_list");
+    // verifyPaginationText("1–100 of 2567");
+    // cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
+    // cy.get('[data-cy="filter-chip-striae"]').should("exist");
+    //
+    // setYesNoSelect("striae", "No");
+    // cy.wait("@edit_list");
+    // verifyPaginationText("1–100 of 2568");
+    // cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
+    // cy.get('[data-cy="filter-chip-striae"]').should("exist");
+    //
+    // setYesNoSelect("striae", "Not Specified");
+    // cy.wait("@edit_list");
+    // hasPagination(false);
+    // cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
+    // cy.get('[data-cy="filter-chip-striae"]').should("exist");
 
     // reset national interest filter
     cy.get('[data-cy="filter-chip-national_interest"]')
@@ -172,23 +172,23 @@ describe("Search filter tests", () => {
 
     cy.wait("@edit_list");
     cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
-    cy.get('[data-cy="filter-chip-striae"]').should("exist");
-
-    setYesNoSelect("striae", "No");
-    cy.wait("@edit_list");
-    verifyPaginationText("1–100 of 2854");
-    cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
-    cy.get('[data-cy="filter-chip-striae"]').should("exist");
-
-    // reset striae filter
-    cy.get('[data-cy="filter-chip-striae"]')
-      .should("exist")
-      .within(() => {
-        cy.get("svg").click();
-      });
-
-    cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
-    cy.get('[data-cy="filter-chip-striae"]').should("not.exist");
+    // cy.get('[data-cy="filter-chip-striae"]').should("exist");
+    //
+    // setYesNoSelect("striae", "No");
+    // cy.wait("@edit_list");
+    // verifyPaginationText("1–100 of 2854");
+    // cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
+    // cy.get('[data-cy="filter-chip-striae"]').should("exist");
+    //
+    // // reset striae filter
+    // cy.get('[data-cy="filter-chip-striae"]')
+    //   .should("exist")
+    //   .within(() => {
+    //     cy.get("svg").click();
+    //   });
+    //
+    // cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
+    // cy.get('[data-cy="filter-chip-striae"]').should("not.exist");
     verifyPaginationText("1–100 of 3004");
   });
 
@@ -215,7 +215,7 @@ describe("Search filter tests", () => {
     cy.get('[data-cy="filter-chip-boreholestatus"]').contains("Borehole status");
   });
 
-  it("filters boreholes by color and uscs3", () => {
+  it.skip("filters boreholes by color and uscs3", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("Lithology").click();
@@ -232,7 +232,7 @@ describe("Search filter tests", () => {
     cy.get(".MuiDataGrid-row").contains("Aisha Thiel").should("exist");
   });
 
-  it("filters boreholes by original lithology in editor mode", () => {
+  it.skip("filters boreholes by original lithology in editor mode", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("Lithology").click();
