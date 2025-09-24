@@ -246,8 +246,8 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   ]);
 
   useEffect(() => {
-    registerSaveHandler(onSave);
-    registerResetHandler(onReset);
+    registerSaveHandler(onSave, "lithology");
+    registerResetHandler(onReset, "lithology");
   }, [onReset, onSave, registerResetHandler, registerSaveHandler]);
 
   useEffect(() => {
