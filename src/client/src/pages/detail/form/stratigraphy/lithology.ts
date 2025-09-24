@@ -1,4 +1,3 @@
-import { UseFormReturn } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { fetchApiV2Legacy, fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
 import { BaseLayer } from "../../../../api/stratigraphy.ts";
@@ -82,8 +81,8 @@ export interface Lithology extends BaseLayer {
   uscsDetermination?: Codelist;
   rockConditionCodelistIds?: number[];
   rockConditionCodelists?: Codelist[];
-  textureMataCodelistIds?: number[];
-  textureMataCodelists?: Codelist[];
+  textureMetaCodelistIds?: number[];
+  textureMetaCodelists?: Codelist[];
 }
 
 export interface LayerDepth {

@@ -220,19 +220,19 @@ public class Lithology : ILithology, IChangeTracking, IIdentifyable
      */
 
     /// <summary>
-    /// Gets or sets the <see cref="Models.LithologyTextureMataCodes"/> join table entities.
+    /// Gets or sets the <see cref="Models.LithologyTextureMetaCodes"/> join table entities.
     /// </summary>
-    public IList<LithologyTextureMataCodes>? LithologyTextureMataCodes { get; set; }
+    public IList<LithologyTextureMetaCodes>? LithologyTextureMetaCodes { get; set; }
 
     /// <summary>
-    /// Gets or sets the code list ids with schema name 'texture_mata' of the <see cref="Lithology"/>'s many to many code list relations.
+    /// Gets or sets the code list ids with schema name 'texture_meta' of the <see cref="Lithology"/>'s many to many code list relations.
     /// </summary>
     [NotMapped]
     [IncludeInExport]
-    public ICollection<int>? TextureMataCodelistIds { get; set; } = new List<int>();
+    public ICollection<int>? TextureMetaCodelistIds { get; set; } = new List<int>();
 
     /// <summary>
-    /// Gets the <see cref="Codelist"/>s with schema name 'texture_mata' used by the <see cref="Lithology"/>.
+    /// Gets the <see cref="Codelist"/>s with schema name 'texture_meta' used by the <see cref="Lithology"/>.
     /// </summary>
-    public ICollection<Codelist>? TextureMataCodelists { get; set; }
+    public ICollection<Codelist>? TextureMetaCodelists { get; set; }
 }

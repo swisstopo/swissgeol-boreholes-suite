@@ -351,11 +351,11 @@ public class LithologyController : BoreholeControllerBase<Lithology>
 
         if (existingLithology == null)
         {
-            entity.LithologyTextureMataCodes = [];
+            entity.LithologyTextureMetaCodes = [];
         }
         else
         {
-            await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyTextureMataCodes!, []).ConfigureAwait(false);
+            await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyTextureMetaCodes!, []).ConfigureAwait(false);
         }
     }
 
@@ -462,12 +462,12 @@ public class LithologyController : BoreholeControllerBase<Lithology>
 
         if (existingLithology == null)
         {
-            var textureMataCodes = await Context.Codelists.Where(c => entity.TextureMataCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-            entity.LithologyTextureMataCodes = textureMataCodes.Select(c => new LithologyTextureMataCodes { Codelist = c, CodelistId = c.Id }).ToList();
+            var textureMetaCodes = await Context.Codelists.Where(c => entity.TextureMetaCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+            entity.LithologyTextureMetaCodes = textureMetaCodes.Select(c => new LithologyTextureMetaCodes { Codelist = c, CodelistId = c.Id }).ToList();
         }
         else
         {
-            await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyTextureMataCodes!, entity.TextureMataCodelistIds!).ConfigureAwait(false);
+            await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyTextureMetaCodes!, entity.TextureMetaCodelistIds!).ConfigureAwait(false);
         }
     }
 

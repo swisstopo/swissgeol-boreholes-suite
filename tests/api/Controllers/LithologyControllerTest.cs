@@ -165,7 +165,7 @@ public class LithologyControllerTest
         Assert.AreEqual(100000493, createdLithology.UscsDeterminationId);
         CollectionAssert.AreEquivalent(new List<int> { 100000167 }, createdLithology.LithologyRockConditionCodes.Select(c => c.CodelistId).ToList());
         CollectionAssert.AreEquivalent(new List<int> { 100000167 }, createdLithology.RockConditionCodelists.Select(c => c.Id).ToList());
-        Assert.AreEqual(0, createdLithology.LithologyTextureMataCodes.Count);
+        Assert.AreEqual(0, createdLithology.LithologyTextureMetaCodes.Count);
         Assert.AreEqual(1, createdLithology.LithologyDescriptions.Count); // Only one description should be saved since HasBedding is false
         var lithologyDescription = createdLithology.LithologyDescriptions.First();
         Assert.IsTrue(lithologyDescription.IsFirst);
@@ -235,7 +235,7 @@ public class LithologyControllerTest
         Assert.AreEqual(0, createdLithology.LithologyUscsTypeCodes.Count);
         Assert.IsNull(createdLithology.UscsDeterminationId);
         Assert.AreEqual(0, createdLithology.LithologyRockConditionCodes.Count);
-        CollectionAssert.AreEquivalent(new List<int> { 100000470, 100000477 }, createdLithology.LithologyTextureMataCodes.Select(c => c.CodelistId).ToList());
+        CollectionAssert.AreEquivalent(new List<int> { 100000470, 100000477 }, createdLithology.LithologyTextureMetaCodes.Select(c => c.CodelistId).ToList());
         Assert.AreEqual(2, createdLithology.LithologyDescriptions.Count);
         var firstLithologyDescription = createdLithology.LithologyDescriptions.First();
         Assert.IsTrue(firstLithologyDescription.IsFirst);
@@ -338,7 +338,7 @@ public class LithologyControllerTest
             CompactnessId = 21102002,
             CohesionId = 21116001,
             RockConditionCodelistIds = new List<int> { 100000167 },
-            TextureMataCodelistIds = new List<int> { 100000469, 100000482 },
+            TextureMetaCodelistIds = new List<int> { 100000469, 100000482 },
             LithologyDescriptions = existingUnconsolidatedLithology.LithologyDescriptions.Where(ld => ld.IsFirst).ToList(),
         };
 
@@ -365,7 +365,7 @@ public class LithologyControllerTest
         Assert.AreEqual(0, updatedLithology.LithologyUscsTypeCodes.Count);
         Assert.IsNull(updatedLithology.UscsDeterminationId);
         Assert.AreEqual(0, updatedLithology.LithologyRockConditionCodes.Count);
-        CollectionAssert.AreEquivalent(new List<int> { 100000469, 100000482 }, updatedLithology.LithologyTextureMataCodes.Select(c => c.CodelistId).ToList());
+        CollectionAssert.AreEquivalent(new List<int> { 100000469, 100000482 }, updatedLithology.LithologyTextureMetaCodes.Select(c => c.CodelistId).ToList());
         Assert.AreEqual(1, updatedLithology.LithologyDescriptions.Count);
         var lithologyDescription = updatedLithology.LithologyDescriptions.First();
         Assert.IsTrue(lithologyDescription.IsFirst);
@@ -649,7 +649,7 @@ public class LithologyControllerTest
             UscsTypeCodelistIds = new List<int> { 23101004, 23101015 },
             UscsDeterminationId = 100000493,
             RockConditionCodelistIds = new List<int> { 100000167 },
-            TextureMataCodelistIds = new List<int> { 100000470, 100000477 },
+            TextureMetaCodelistIds = new List<int> { 100000470, 100000477 },
             LithologyDescriptions = new List<LithologyDescription>
             {
                 new LithologyDescription
