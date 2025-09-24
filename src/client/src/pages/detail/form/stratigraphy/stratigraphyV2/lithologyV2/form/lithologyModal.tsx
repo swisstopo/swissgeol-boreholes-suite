@@ -52,27 +52,31 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
     return Object.keys(errors).length === 0 || errors;
   };
 
+  const buildErrorStructure = (result: boolean | Record<string, string>, errors: FormErrors) => {
+    for (const [path, message] of Object.entries(result)) {
+      const keys = path.split(".");
+      let curr = errors;
+      for (let i = 0; i < keys.length; i++) {
+        const key = keys[i];
+        if (i === keys.length - 1) {
+          curr[key] = { type: "manual", message };
+        } else {
+          if (typeof curr[key] !== "object" || curr[key] === null || "type" in curr[key]) {
+            curr[key] = {};
+          }
+          curr = curr[key];
+        }
+      }
+    }
+  };
+
   const formMethods = useForm<Lithology>({
     mode: "all",
     resolver: async values => {
       const errors: FormErrors = {};
       const result = lithologyDescriptionsValidate(values.lithologyDescriptions);
       if (result !== true) {
-        for (const [path, message] of Object.entries(result)) {
-          const keys = path.split(".");
-          let curr = errors;
-          for (let i = 0; i < keys.length; i++) {
-            const key = keys[i];
-            if (i === keys.length - 1) {
-              curr[key] = { type: "manual", message };
-            } else {
-              if (typeof curr[key] !== "object" || curr[key] === null || "type" in curr[key]) {
-                curr[key] = {};
-              }
-              curr = curr[key];
-            }
-          }
-        }
+        buildErrorStructure(result, errors);
       }
       return { values, errors };
     },
