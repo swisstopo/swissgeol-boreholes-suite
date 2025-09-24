@@ -77,10 +77,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
       sx={{
         height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
       }}
-      layer={layer}
-      onHoverClick={layer => {
-        console.log("copy layer content", layer);
-      }}>
+      layer={layer}>
       {buildContent(layer)}
     </StratigraphyTableActionCell>
   );
