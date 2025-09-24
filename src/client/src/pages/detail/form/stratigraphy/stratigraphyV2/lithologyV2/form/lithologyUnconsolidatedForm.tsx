@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Divider, Stack, TextField, Typography } from "@mui/material";
 import { theme } from "../../../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
-import { useCodelistSchema } from "../../../../../../../components/codelist.ts";
+import { Codelist, useCodelistSchema } from "../../../../../../../components/codelist.ts";
 import {
   FormCheckbox,
   FormContainer,
@@ -150,6 +150,24 @@ export const LithologyUnconsolidatedForm: FC<LithologyEditForm> = ({ lithologyId
   const hasBedding = watch("hasBedding");
   useLithologyDescriptionShareSync(formMethods);
 
+  const getCode = (
+    description: LithologyDescription,
+    field: string,
+    idField: string,
+    codelist: { id: number | string; code: string }[],
+  ): string | undefined => {
+    if (description[field as keyof LithologyDescription]) {
+      return (description[field as keyof LithologyDescription] as Codelist)?.code;
+    } else if (description[idField as keyof LithologyDescription]) {
+      const id = description[idField as keyof LithologyDescription];
+      const found = codelist?.find(l => l.id === id);
+      if (found) {
+        return found.code;
+      }
+    }
+    return undefined;
+  };
+
   const buildLithologyUnconEnCode = useCallback(
     (values: Lithology) => {
       let enCode = "";
@@ -158,56 +176,24 @@ export const LithologyUnconsolidatedForm: FC<LithologyEditForm> = ({ lithologyId
         enCode = descriptions
           ?.map(description => {
             const codes = [];
-
-            if (description.lithologyUnconMain) {
-              codes.push(description.lithologyUnconMain.code);
-            } else if (description.lithologyUnconMainId) {
-              const main = lithologyUnconMain?.find(l => l.id === description.lithologyUnconMainId);
-              if (main) {
-                codes.push(main.code);
-              }
+            // Main
+            const mainCode = getCode(
+              description,
+              "lithologyUnconMain",
+              "lithologyUnconMainId",
+              lithologyUnconMain ?? [],
+            );
+            if (mainCode) codes.push(mainCode);
+            // 2-6
+            for (let i = 2; i <= 6; i++) {
+              const code = getCode(
+                description,
+                `lithologyUncon${i}`,
+                `lithologyUncon${i}Id`,
+                lithologyUnconSecondary ?? [],
+              );
+              if (code) codes.push(code);
             }
-            if (description.lithologyUncon2) {
-              codes.push(description.lithologyUncon2.code);
-            } else if (description.lithologyUncon2Id) {
-              const secondary = lithologyUnconSecondary?.find(l => l.id === description.lithologyUncon2Id);
-              if (secondary) {
-                codes.push(secondary.code);
-              }
-            }
-            if (description.lithologyUncon3) {
-              codes.push(description.lithologyUncon3.code);
-            } else if (description.lithologyUncon3Id) {
-              const secondary = lithologyUnconSecondary?.find(l => l.id === description.lithologyUncon3Id);
-              if (secondary) {
-                codes.push(secondary.code);
-              }
-            }
-            if (description.lithologyUncon4) {
-              codes.push(description.lithologyUncon4.code);
-            } else if (description.lithologyUncon4Id) {
-              const secondary = lithologyUnconSecondary?.find(l => l.id === description.lithologyUncon4Id);
-              if (secondary) {
-                codes.push(secondary.code);
-              }
-            }
-            if (description.lithologyUncon5) {
-              codes.push(description.lithologyUncon5.code);
-            } else if (description.lithologyUncon5Id) {
-              const secondary = lithologyUnconSecondary?.find(l => l.id === description.lithologyUncon5Id);
-              if (secondary) {
-                codes.push(secondary.code);
-              }
-            }
-            if (description.lithologyUncon6) {
-              codes.push(description.lithologyUncon6.code);
-            } else if (description.lithologyUncon6Id) {
-              const secondary = lithologyUnconSecondary?.find(l => l.id === description.lithologyUncon6Id);
-              if (secondary) {
-                codes.push(secondary.code);
-              }
-            }
-
             return codes.join("-");
           })
           .filter(c => c.length > 0)
