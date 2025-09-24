@@ -834,7 +834,12 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.CreatedBy, _ => default!)
             .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
             .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
-            .RuleFor(o => o.UpdatedBy, _ => default!);
+            .RuleFor(o => o.UpdatedBy, _ => default!)
+            .RuleFor(o => o.Lithologies, _ => new Collection<Lithology>())
+            .RuleFor(o => o.LithologicalDescriptions, _ => new Collection<LithologicalDescription>())
+            .RuleFor(o => o.FaciesDescriptions, _ => new Collection<FaciesDescription>())
+            .RuleFor(o => o.LithostratigraphyLayers, _ => new Collection<LithostratigraphyLayer>())
+            .RuleFor(o => o.ChronostratigraphyLayers, _ => new Collection<ChronostratigraphyLayer>());
 
         StratigraphyV2 SeededStratigraphysV2(int seed) => fakeStratigraphiesV2.UseSeed(seed).Generate();
         context.BulkInsert(stratigraphyV2Range.Select(SeededStratigraphysV2).ToList(), bulkConfig);
