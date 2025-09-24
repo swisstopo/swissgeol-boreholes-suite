@@ -65,7 +65,9 @@ public class WorkflowController : ControllerBase
             return Problem(errorMessage);
         }
 
-        if (workflowChangeRequest.NewStatus == WorkflowStatus.Published && !await boreholePermissionService.HasUserRoleOnWorkgroupAsync(subjectId, workflowChangeRequest.BoreholeId, requiredRole.Value).ConfigureAwait(false))
+        var borehole = await context.BoreholesWithIncludes.SingleOrDefaultAsync(b => b.Id == workflowChangeRequest.BoreholeId).ConfigureAwait(false);
+
+        if (workflowChangeRequest.NewStatus == WorkflowStatus.Published && !await boreholePermissionService.HasUserRoleOnWorkgroupAsync(subjectId, borehole.WorkgroupId, requiredRole.Value).ConfigureAwait(false))
         {
             return Unauthorized();
         }
