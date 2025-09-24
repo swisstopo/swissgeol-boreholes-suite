@@ -29,7 +29,13 @@ export const LithologyDescriptionForm: FC<LithologyDescriptionFormProps> = ({
               fieldName={"hasBedding"}
               label={"bedding"}
               onChange={hasBedding => {
-                if (!hasBedding) {
+                if (hasBedding) {
+                  setValue(`lithologyDescriptions.1`, {
+                    id: 0,
+                    lithologyId: lithologyId,
+                    isFirst: false,
+                  });
+                } else {
                   setValue("share", undefined);
                   const currentDescriptions = getValues("lithologyDescriptions");
                   const filtered = Array.isArray(currentDescriptions)
@@ -37,12 +43,6 @@ export const LithologyDescriptionForm: FC<LithologyDescriptionFormProps> = ({
                     : [];
                   const result = [filtered[0]];
                   setValue("lithologyDescriptions", result);
-                } else {
-                  setValue(`lithologyDescriptions.1`, {
-                    id: 0,
-                    lithologyId: lithologyId,
-                    isFirst: false,
-                  });
                 }
               }}
             />

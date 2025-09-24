@@ -32,6 +32,9 @@ export const StratigraphyProvider: FC<PropsWithChildren> = ({ children }) => {
   }, []);
 
   const onReset = useCallback(() => {
+    for (const handler of resetHandlersRef.current) {
+      handler();
+    }
     resetHandlersRef.current.forEach(handler => handler());
   }, []);
 

@@ -37,7 +37,8 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
       "lithologyUncon5Id",
       "lithologyUncon6Id",
     ];
-    fields.forEach((field, i) => {
+    for (let i = 0; i < fields.length; i++) {
+      const field = fields[i];
       const value = descriptions?.[index]?.[field as keyof LithologyDescription] as number;
       if (value && i > 0) {
         for (let j = 0; j < i; j++) {
@@ -47,7 +48,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
           }
         }
       }
-    });
+    }
     return Object.keys(errors).length === 0 || errors;
   };
 
@@ -57,7 +58,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
       const errors: FormErrors = {};
       const result = lithologyDescriptionsValidate(values.lithologyDescriptions);
       if (result !== true) {
-        Object.entries(result).forEach(([path, message]) => {
+        for (const [path, message] of Object.entries(result)) {
           const keys = path.split(".");
           let curr = errors;
           for (let i = 0; i < keys.length; i++) {
@@ -68,10 +69,10 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
               if (typeof curr[key] !== "object" || curr[key] === null || "type" in curr[key]) {
                 curr[key] = {};
               }
-              curr = curr[key] as FormErrors;
+              curr = curr[key];
             }
           }
-        });
+        }
       }
       return { values, errors };
     },

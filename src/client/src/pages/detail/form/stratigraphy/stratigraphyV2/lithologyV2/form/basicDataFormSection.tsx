@@ -6,11 +6,6 @@ interface BasicDataFormSectionProps {
   toDepths?: number[];
   fromDepthField?: string;
   toDepthField?: string;
-  faciesField?: string;
-  lithologyField?: string;
-  schemaName?: string;
-  showFacies?: boolean;
-  showLithology?: boolean;
 }
 
 export const BasicDataFormSection: FC<BasicDataFormSectionProps> = ({

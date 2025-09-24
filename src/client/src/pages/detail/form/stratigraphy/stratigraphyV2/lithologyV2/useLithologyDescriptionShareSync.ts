@@ -8,7 +8,7 @@ export function useLithologyDescriptionShareSync(formMethods: UseFormReturn<Lith
   const share = watch("share");
 
   useEffect(() => {
-    if (hasBedding && share && String(share) !== "" && !isNaN(Number(share))) {
+    if (hasBedding && share && String(share) !== "" && !Number.isNaN(Number(share))) {
       setValue("shareInverse", 100 - Number(share));
     } else {
       setValue("shareInverse", undefined);
