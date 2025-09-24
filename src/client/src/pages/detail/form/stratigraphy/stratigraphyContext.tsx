@@ -25,7 +25,7 @@ export const StratigraphyProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const registerSaveHandler = useCallback((handler: SaveHandler) => {
     // only register one saveHandler of the same type
-    const idx = saveHandlersRef.current.findIndex(h => h === handler);
+    const idx = saveHandlersRef.current.indexOf(handler);
     if (idx === -1) {
       saveHandlersRef.current.push(handler);
     }
@@ -33,7 +33,7 @@ export const StratigraphyProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const registerResetHandler = useCallback((handler: ResetHandler) => {
     // only register one resetHandler of the same type
-    const idx = resetHandlersRef.current.findIndex(h => h === handler);
+    const idx = resetHandlersRef.current.indexOf(handler);
     if (idx === -1) {
       resetHandlersRef.current.push(handler);
     }
