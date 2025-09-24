@@ -149,6 +149,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
           <BoreholesCard data-cy="lithology-notes" title={t("remarks")}>
             <RemarksFormSection fieldName="notes" label="remarks" />
           </BoreholesCard>
+          <Stack pb={4.5} />
         </Stack>
       </FormProvider>
     </FormDialog>
