@@ -4,6 +4,8 @@ import { Typography } from "@mui/material";
 import type { TFunction } from "i18next";
 import { Lithology, LithologyDescription } from "../../lithology";
 
+const uselessStrings = ["keine Angabe", "sans indication", "senza indicazioni", "not specified"];
+
 const getBeddingShare = (lithology: Lithology, index: number) => {
   let beddingShare: number | undefined;
   if (lithology.hasBedding && lithology.share) {
@@ -19,44 +21,46 @@ const buildUnconsolidatedPrimaryString = (
   share?: number,
 ) => {
   const codes = [];
-  const primaryValues = [];
+  let primaryValues: string[] = [];
 
   if (description.lithologyUnconMain) {
     codes.push(description.lithologyUnconMain.code);
-    primaryValues.push(description.lithologyUnconMain[language]);
+    primaryValues.push(description.lithologyUnconMain[language] as string);
   }
   if (description.lithologyUncon2) {
     codes.push(description.lithologyUncon2.code);
-    primaryValues.push(description.lithologyUncon2[language]);
+    primaryValues.push(description.lithologyUncon2[language] as string);
   }
   if (description.lithologyUncon3) {
     codes.push(description.lithologyUncon3.code);
-    primaryValues.push(description.lithologyUncon3[language]);
+    primaryValues.push(description.lithologyUncon3[language] as string);
   }
   if (description.lithologyUncon4) {
     codes.push(description.lithologyUncon4.code);
-    primaryValues.push(description.lithologyUncon4[language]);
+    primaryValues.push(description.lithologyUncon4[language] as string);
   }
   if (description.lithologyUncon5) {
     codes.push(description.lithologyUncon5.code);
-    primaryValues.push(description.lithologyUncon5[language]);
+    primaryValues.push(description.lithologyUncon5[language] as string);
   }
   if (description.lithologyUncon6) {
     codes.push(description.lithologyUncon6.code);
-    primaryValues.push(description.lithologyUncon6[language]);
+    primaryValues.push(description.lithologyUncon6[language] as string);
   }
   if (description.componentUnconOrganicCodelists && description.componentUnconOrganicCodelists.length > 0) {
-    primaryValues.push(...description.componentUnconOrganicCodelists.map(c => c[language]));
+    primaryValues.push(...description.componentUnconOrganicCodelists.map(c => c[language] as string));
   }
   if (description.componentUnconDebrisCodelists && description.componentUnconDebrisCodelists.length > 0) {
-    primaryValues.push(...description.componentUnconDebrisCodelists.map(c => c[language]));
+    primaryValues.push(...description.componentUnconDebrisCodelists.map(c => c[language] as string));
   }
   if (description.colorPrimary) {
-    primaryValues.push(description.colorPrimary[language]);
+    primaryValues.push(description.colorPrimary[language] as string);
   }
   if (description.colorSecondary) {
-    primaryValues.push(description.colorSecondary[language]);
+    primaryValues.push(description.colorSecondary[language] as string);
   }
+
+  primaryValues = primaryValues.filter(v => !uselessStrings.includes(v));
 
   const lithologyEnCode = codes.join("-");
   let primaryString = "";
@@ -74,46 +78,53 @@ const buildUnconsolidatedPrimaryString = (
 };
 
 const buildUnconsolidatedSecondaryString = (t: TFunction, language: string, description: LithologyDescription) => {
-  const secondaryValues = [];
+  let secondaryValues: string[] = [];
   if (description.lithologyUnconDebrisCodelists && description.lithologyUnconDebrisCodelists.length > 0) {
-    secondaryValues.push(...description.lithologyUnconDebrisCodelists.map(c => c[language]));
+    secondaryValues.push(...description.lithologyUnconDebrisCodelists.map(c => c[language] as string));
   }
   if (description.grainShapeCodelists && description.grainShapeCodelists.length > 0) {
-    secondaryValues.push(...description.grainShapeCodelists.map(c => c[language]));
+    secondaryValues.push(...description.grainShapeCodelists.map(c => c[language] as string));
   }
   if (description.grainAngularityCodelists && description.grainAngularityCodelists.length > 0) {
-    secondaryValues.push(...description.grainAngularityCodelists.map(c => c[language]));
+    secondaryValues.push(...description.grainAngularityCodelists.map(c => c[language] as string));
   }
-  secondaryValues.push(t(description.hasStriae ? "striae" : "noStriae"));
+  if (description.hasStriae) {
+    secondaryValues.push(t("striae"));
+  }
+
+  secondaryValues = secondaryValues.filter(v => !uselessStrings.includes(v));
   return `${t("coarseComponent", { count: secondaryValues.length })}: ${secondaryValues.join(", ")}`;
 };
 
 const buildUnconsolidatedDetails1String = (t: TFunction, language: string, lithology: Lithology) => {
-  const details = [];
-  if (lithology.compactness) details.push(lithology.compactness[language]);
-  if (lithology.consistency) details.push(lithology.consistency[language]);
-  if (lithology.cohesion) details.push(lithology.cohesion[language]);
-  if (lithology.plasticity) details.push(lithology.plasticity[language]);
-  if (lithology.humidity) details.push(lithology.humidity[language]);
+  const details: string[] = [];
+  if (lithology.compactness) details.push(lithology.compactness[language] as string);
+  if (lithology.consistency) details.push(lithology.consistency[language] as string);
+  if (lithology.cohesion) details.push(lithology.cohesion[language] as string);
+  if (lithology.plasticity) details.push(lithology.plasticity[language] as string);
+  if (lithology.humidity) details.push(lithology.humidity[language] as string);
   if (lithology.uscsTypeCodelists && lithology.uscsTypeCodelists.length > 0) {
-    let uscsString = `${t("uscsClass", { count: lithology.uscsTypeCodelists.length })}: ${lithology.uscsTypeCodelists.map(c => c[language]).join(", ")}`;
-    if (lithology.uscsDetermination) {
+    let uscsString = `${t("uscsClass", { count: lithology.uscsTypeCodelists.length })}: ${lithology.uscsTypeCodelists
+      .map(c => c[language] as string)
+      .filter(s => !uselessStrings.includes(s))
+      .join(", ")}`;
+    if (lithology.uscsDetermination && !uselessStrings.includes(lithology.uscsDetermination[language] as string)) {
       uscsString += ` (${lithology.uscsDetermination[language]})`;
     }
     details.push(uscsString);
   }
 
-  return details.join(", ");
+  return details.filter(d => !uselessStrings.includes(d)).join(", ");
 };
 
 const buildUnconsolidatedDetails2String = (language: string, lithology: Lithology) => {
-  const details = [];
+  const details: string[] = [];
   if (lithology.rockConditionCodelists && lithology.rockConditionCodelists.length > 0) {
-    details.push(...lithology.rockConditionCodelists.map(c => c[language]));
+    details.push(...lithology.rockConditionCodelists.map(c => c[language] as string));
   }
-  if (lithology.alterationDegree) details.push(lithology.alterationDegree[language]);
+  if (lithology.alterationDegree) details.push(lithology.alterationDegree[language] as string);
 
-  return details.join(", ");
+  return details.filter(d => !uselessStrings.includes(d)).join(", ");
 };
 
 const buildConsolidatedPrimaryString = (
@@ -122,22 +133,23 @@ const buildConsolidatedPrimaryString = (
   description: LithologyDescription,
   share?: number,
 ) => {
-  const primaryValues = [];
+  let primaryValues = [];
   if (description.lithologyCon) {
-    primaryValues.push(description.lithologyCon[language]);
+    primaryValues.push(description.lithologyCon[language] as string);
   }
   if (description.componentConParticleCodelists && description.componentConParticleCodelists.length > 0) {
-    primaryValues.push(...description.componentConParticleCodelists.map(c => c[language]));
+    primaryValues.push(...description.componentConParticleCodelists.map(c => c[language] as string));
   }
   if (description.componentConMineralCodelists && description.componentConMineralCodelists.length > 0) {
-    primaryValues.push(...description.componentConMineralCodelists.map(c => c[language]));
+    primaryValues.push(...description.componentConMineralCodelists.map(c => c[language] as string));
   }
   if (description.colorPrimary) {
-    primaryValues.push(description.colorPrimary[language]);
+    primaryValues.push(description.colorPrimary[language] as string);
   }
   if (description.colorSecondary) {
-    primaryValues.push(description.colorSecondary[language]);
+    primaryValues.push(description.colorSecondary[language] as string);
   }
+  primaryValues = primaryValues.filter(v => !uselessStrings.includes(v));
 
   let primaryString = "";
   if (share) {
@@ -151,37 +163,37 @@ const buildConsolidatedPrimaryString = (
 };
 
 const buildConsolidatedSecondaryString = (t: TFunction, language: string, description: LithologyDescription) => {
-  const secondaryValues = [];
+  const secondaryValues: string[] = [];
   if (description.grainSize) {
-    secondaryValues.push(description.grainSize[language]);
+    secondaryValues.push(description.grainSize[language] as string);
   }
   if (description.grainAngularity) {
-    secondaryValues.push(description.grainAngularity[language]);
+    secondaryValues.push(description.grainAngularity[language] as string);
   }
   if (description.gradation) {
-    secondaryValues.push(description.gradation[language]);
+    secondaryValues.push(description.gradation[language] as string);
   }
   if (description.cementation) {
-    secondaryValues.push(description.cementation[language]);
+    secondaryValues.push(description.cementation[language] as string);
   }
   if (description.structureSynGenCodelists && description.structureSynGenCodelists.length > 0) {
-    secondaryValues.push(...description.structureSynGenCodelists.map(c => c[language]));
+    secondaryValues.push(...description.structureSynGenCodelists.map(c => c[language] as string));
   }
   if (description.structurePostGenCodelists && description.structurePostGenCodelists.length > 0) {
-    secondaryValues.push(...description.structurePostGenCodelists.map(c => c[language]));
+    secondaryValues.push(...description.structurePostGenCodelists.map(c => c[language] as string));
   }
 
-  return secondaryValues.join(", ");
+  return secondaryValues.filter(v => !uselessStrings.includes(v)).join(", ");
 };
 
 const buildConsolidatedDetailsString = (language: string, lithology: Lithology) => {
-  const details = [];
+  const details: string[] = [];
   if (lithology.textureMetaCodelists && lithology.textureMetaCodelists.length > 0) {
-    details.push(...lithology.textureMetaCodelists.map(c => c[language]));
+    details.push(...lithology.textureMetaCodelists.map(c => c[language] as string));
   }
-  if (lithology.alterationDegree) details.push(lithology.alterationDegree[language]);
+  if (lithology.alterationDegree) details.push(lithology.alterationDegree[language] as string);
 
-  return details.join(", ");
+  return details.filter(d => !uselessStrings.includes(d)).join(", ");
 };
 
 const buildLithologyDescription = (
