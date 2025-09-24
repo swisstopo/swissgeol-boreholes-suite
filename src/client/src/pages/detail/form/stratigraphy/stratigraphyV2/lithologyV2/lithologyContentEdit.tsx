@@ -214,20 +214,21 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
         await updateLithology(lithology);
       }
     }
-    for (const lithologicalDescription of tmpLithologicalDescriptions.filter(l => l.hasChanges).map(l => l.item)) {
-      if (lithologicalDescription.id === 0) {
-        await addLithologicalDescription({ ...lithologicalDescription, stratigraphyId });
-      } else {
-        await updateLithologicalDescription(lithologicalDescription);
-      }
-    }
-    for (const faciesDescription of tmpFaciesDescriptions.filter(l => l.hasChanges).map(l => l.item)) {
-      if (faciesDescription.id === 0) {
-        await addFaciesDescription({ ...faciesDescription, stratigraphyId });
-      } else {
-        await updateFaciesDescription(faciesDescription);
-      }
-    }
+    // TODO: Re-add once migrated to new stratigraphies
+    // for (const lithologicalDescription of tmpLithologicalDescriptions.filter(l => l.hasChanges).map(l => l.item)) {
+    //   if (lithologicalDescription.id === 0) {
+    //     await addLithologicalDescription({ ...lithologicalDescription, stratigraphyId });
+    //   } else {
+    //     await updateLithologicalDescription(lithologicalDescription);
+    //   }
+    // }
+    // for (const faciesDescription of tmpFaciesDescriptions.filter(l => l.hasChanges).map(l => l.item)) {
+    //   if (faciesDescription.id === 0) {
+    //     await addFaciesDescription({ ...faciesDescription, stratigraphyId });
+    //   } else {
+    //     await updateFaciesDescription(faciesDescription);
+    //   }
+    // }
     return true;
   }, [
     addFaciesDescription,
