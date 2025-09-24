@@ -2,12 +2,18 @@ import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffec
 import { SaveContext, SaveContextProps } from "../../saveContext.tsx";
 
 export interface StratigraphyContextProps {
-  registerSaveHandler: (handler: SaveHandler) => void;
-  registerResetHandler: (handler: ResetHandler) => void;
+  registerSaveHandler: (handler: SaveHandler, registeringComponent: RegisteringComponentType) => void;
+  registerResetHandler: (handler: ResetHandler, registeringComponent: RegisteringComponentType) => void;
 }
 
 type SaveHandler = () => Promise<boolean>;
 type ResetHandler = () => void;
+type RegisteringComponentType = "stratigraphy" | "lithology";
+
+interface HandlerItem<T> {
+  handler: T;
+  registeringComponent: RegisteringComponentType;
+}
 
 export const StratigraphyContext = createContext<StratigraphyContextProps>({
   registerSaveHandler: () => {},
@@ -20,34 +26,32 @@ export const StratigraphyProvider: FC<PropsWithChildren> = ({ children }) => {
     registerResetHandler: registerOnReset,
     unMount,
   } = useContext<SaveContextProps>(SaveContext);
-  const saveHandlersRef = useRef<SaveHandler[]>([]);
-  const resetHandlersRef = useRef<ResetHandler[]>([]);
+  const saveHandlersRef = useRef<HandlerItem<SaveHandler>[]>([]);
+  const resetHandlersRef = useRef<HandlerItem<ResetHandler>[]>([]);
 
-  const registerSaveHandler = useCallback((handler: SaveHandler) => {
-    // only register one saveHandler of the same type
-    const idx = saveHandlersRef.current.indexOf(handler);
-    if (idx === -1) {
-      saveHandlersRef.current.push(handler);
+  const registerSaveHandler = useCallback((handler: SaveHandler, registeringComponent: RegisteringComponentType) => {
+    const exists = saveHandlersRef.current.some(h => h.registeringComponent === registeringComponent);
+    if (!exists) {
+      saveHandlersRef.current.push({ handler, registeringComponent });
     }
   }, []);
 
-  const registerResetHandler = useCallback((handler: ResetHandler) => {
-    // only register one resetHandler of the same type
-    const idx = resetHandlersRef.current.indexOf(handler);
-    if (idx === -1) {
-      resetHandlersRef.current.push(handler);
+  const registerResetHandler = useCallback((handler: ResetHandler, registeringComponent: RegisteringComponentType) => {
+    const exists = resetHandlersRef.current.some(h => h.registeringComponent === registeringComponent);
+    if (!exists) {
+      resetHandlersRef.current.push({ handler, registeringComponent });
     }
   }, []);
 
   const onReset = useCallback(() => {
-    for (const handler of resetHandlersRef.current) {
-      handler();
+    for (const handlerItem of resetHandlersRef.current) {
+      handlerItem.handler();
     }
   }, []);
 
   const onSave = useCallback(async () => {
-    for (const handler of saveHandlersRef.current) {
-      const result = await handler();
+    for (const handlerItem of saveHandlersRef.current) {
+      const result = await handlerItem.handler();
       if (!result) return false;
     }
     return true;

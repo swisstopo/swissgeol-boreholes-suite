@@ -97,8 +97,8 @@ export const StratigraphyForm: FC<StratigraphyFormProps> = ({
   ]);
 
   useEffect(() => {
-    registerSaveHandler(onSave);
-    registerResetHandler(resetWithoutSave);
+    registerSaveHandler(onSave, "stratigraphy");
+    registerResetHandler(resetWithoutSave, "stratigraphy");
   }, [onSave, registerResetHandler, registerSaveHandler, resetWithoutSave]);
 
   useEffect(() => {
