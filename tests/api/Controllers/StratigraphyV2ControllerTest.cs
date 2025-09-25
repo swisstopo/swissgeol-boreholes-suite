@@ -33,11 +33,7 @@ public class StratigraphyV2ControllerTest
     public async Task GetEntriesByBoreholeIdForInexistentId()
     {
         var result = await controller.GetAsync(81294572).ConfigureAwait(false);
-        ActionResultAssert.IsOk(result.Result);
-
-        var stratigraphies = ((OkObjectResult?)result.Result)?.Value as List<StratigraphyV2>;
-        Assert.IsNotNull(stratigraphies);
-        Assert.AreEqual(0, stratigraphies.Count);
+        ActionResultAssert.IsNotFound(result.Result);
     }
 
     [TestMethod]
@@ -51,7 +47,7 @@ public class StratigraphyV2ControllerTest
         Assert.AreEqual(2, stratigraphies.Count);
 
         Assert.AreEqual(1002601, stratigraphies[0].BoreholeId);
-        Assert.AreEqual("Velva STeuber", stratigraphies[0].Name);
+        Assert.AreEqual("Velva Steuber", stratigraphies[0].Name);
         Assert.AreEqual(5, stratigraphies[0].CreatedById);
         Assert.AreEqual(4, stratigraphies[0].UpdatedById);
         Assert.AreEqual(true, stratigraphies[0].IsPrimary);
