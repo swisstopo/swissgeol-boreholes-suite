@@ -208,7 +208,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   }, [faciesDescriptions, lithologicalDescriptions, lithologies]);
 
   const onSave = useCallback(async () => {
-    if (depths.filter(c => c.hasFromDepthError || c.hasToDepthError).length > 0) {
+    if (depths.some(c => c.hasFromDepthError || c.hasToDepthError)) {
       showAlert(t(t("gapOrOverlayErrorCannotSave")), "error");
       return false;
     }
