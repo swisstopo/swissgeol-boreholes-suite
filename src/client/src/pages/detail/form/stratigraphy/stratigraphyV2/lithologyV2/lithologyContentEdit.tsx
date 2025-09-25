@@ -9,6 +9,7 @@ import {
   useFaciesDescriptionMutations,
   useLithologicalDescriptionMutations,
 } from "../../../../../../api/stratigraphy.ts";
+import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
 import { Lithology, useLithologyMutations } from "../../lithology.ts";
 import { StratigraphyContext, StratigraphyContextProps } from "../../stratigraphyContext.tsx";
@@ -48,6 +49,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
 }) => {
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
+  const { showAlert } = useContext(AlertContext);
   const { registerSaveHandler, registerResetHandler } = useContext<StratigraphyContextProps>(StratigraphyContext);
   const {
     add: { mutateAsync: addLithology },
@@ -108,7 +110,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
 
   const updateTmpLithology = useCallback((lithology: Lithology, hasChanges: boolean) => {
     if (hasChanges) {
-      // TODO: For all Codelist-properties load codelist object from useCodelistSchema and set it to the lithology. We need this to build the labels in LithologyLabels
       setTmpLithologies(prev =>
         prev.map(l =>
           (l.item.id !== 0 && l.item.id === lithology.id) ||
@@ -206,7 +207,11 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   }, [faciesDescriptions, lithologicalDescriptions, lithologies]);
 
   const onSave = useCallback(async () => {
-    // TODO: Only allow saving if no gaps exist
+    if (depths.some(c => c.hasFromDepthError || c.hasToDepthError)) {
+      showAlert(t(t("gapOrOverlayErrorCannotSave")), "error");
+      return false;
+    }
+
     for (const lithology of tmpLithologies.filter(l => l.hasChanges).map(l => l.item)) {
       if (lithology.id === 0) {
         await addLithology({ ...lithology, stratigraphyId });
@@ -234,6 +239,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     addFaciesDescription,
+    depths,
     addLithologicalDescription,
     addLithology,
     stratigraphyId,
@@ -356,8 +362,10 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
                 {/* TODO: Add FormInput for depths and update lithology if depth changes. Add overlap validation check */}
                 {depths.map((depth, index) => (
                   <StratigraphyTableCell key={`depth-${index}`} sx={{ height: `${defaultRowHeight}px` }}>
-                    <Typography>{`${depth.fromDepth} m MD`}</Typography>
-                    <Typography>{`${depth.toDepth} m MD`}</Typography>
+                    <Typography
+                      color={depth.hasFromDepthError ? "error" : "default"}>{`${depth.fromDepth} m MD`}</Typography>
+                    <Typography
+                      color={depth.hasToDepthError ? "error" : "default"}>{`${depth.toDepth} m MD`}</Typography>
                   </StratigraphyTableCell>
                 ))}
               </StratigraphyTableColumn>

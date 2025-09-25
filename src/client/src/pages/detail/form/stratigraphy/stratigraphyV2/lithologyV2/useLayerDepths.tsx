@@ -117,12 +117,28 @@ export function useLayerDepths(
     layerDepths.sort((a, b) => a.fromDepth - b.fromDepth);
     const filledLayerDepths: LayerDepth[] = [];
     for (let i = 0; i < layerDepths.length; i++) {
-      filledLayerDepths.push(layerDepths[i]);
+      const previous = layerDepths[i - 1];
+      const current = layerDepths[i];
+      const next = layerDepths[i + 1];
+
+      const hasFromDepthOverlap = previous ? current.fromDepth < previous.toDepth : false;
+      const hasToDepthOverlap = next ? current.toDepth > next.fromDepth : false;
+
+      filledLayerDepths.push({
+        ...layerDepths[i],
+        hasFromDepthError: hasFromDepthOverlap,
+        hasToDepthError: hasToDepthOverlap,
+      });
+      // add gap layer
       if (i < layerDepths.length - 1) {
-        const current = layerDepths[i];
-        const next = layerDepths[i + 1];
         if (current.toDepth < next.fromDepth) {
-          filledLayerDepths.push({ fromDepth: current.toDepth, toDepth: next.fromDepth, lithologyId: 0 });
+          filledLayerDepths.push({
+            fromDepth: current.toDepth,
+            toDepth: next.fromDepth,
+            lithologyId: 0,
+            hasFromDepthError: true,
+            hasToDepthError: true,
+          });
         }
       }
     }
