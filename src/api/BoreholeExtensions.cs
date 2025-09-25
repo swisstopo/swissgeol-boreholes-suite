@@ -159,6 +159,7 @@ public static class BoreholeExtensions
                 file.File.MarkAsNew();
             }
         }
+
         /*
          * TODO: Re-add after import for stratigraphy is fixed
         foreach (var stratigraphy in borehole.Stratigraphies)

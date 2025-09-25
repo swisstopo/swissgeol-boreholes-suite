@@ -9,7 +9,7 @@ namespace BDMS.Models;
 /// Represents a chronostratigraphy entity in the database.
 /// </summary>
 [Table("chronostratigraphy")]
-public class ChronostratigraphyLayer : ILithology, IChangeTracking, IIdentifyable
+public class ChronostratigraphyLayer : ILithologyLegacy, IChangeTracking, IIdentifyable
 {
     /// <inheritdoc />
     [Column("id")]
@@ -47,15 +47,13 @@ public class ChronostratigraphyLayer : ILithology, IChangeTracking, IIdentifyabl
 
     /// <inheritdoc />
     [IncludeInExport]
-    [JsonRequired]
     [Column("depth_from")]
-    public double FromDepth { get; set; }
+    public double? FromDepth { get; set; }
 
     /// <inheritdoc />
     [IncludeInExport]
-    [JsonRequired]
     [Column("depth_to")]
-    public double ToDepth { get; set; }
+    public double? ToDepth { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/> id of the chronostratigraphy.
