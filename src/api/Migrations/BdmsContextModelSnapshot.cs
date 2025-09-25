@@ -597,7 +597,7 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("creator");
 
-                    b.Property<double>("FromDepth")
+                    b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
 
@@ -605,7 +605,7 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("stratigraphy_id");
 
-                    b.Property<double>("ToDepth")
+                    b.Property<double?>("ToDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_to");
 
@@ -1954,7 +1954,7 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("creator");
 
-                    b.Property<double>("FromDepth")
+                    b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
 
@@ -1966,7 +1966,7 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("stratigraphy_id");
 
-                    b.Property<double>("ToDepth")
+                    b.Property<double?>("ToDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_to");
 
