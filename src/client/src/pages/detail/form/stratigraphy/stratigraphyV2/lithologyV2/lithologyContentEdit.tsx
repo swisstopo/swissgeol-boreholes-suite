@@ -6,6 +6,7 @@ import {
   BaseLayer,
   FaciesDescription,
   LithologicalDescription,
+  MinimalLayer,
   useFaciesDescriptionMutations,
   useLithologicalDescriptionMutations,
 } from "../../../../../../api/stratigraphy.ts";
@@ -153,7 +154,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     setSelectedFaciesDescription(undefined);
   }, []);
 
-  const handleEditLithology = useCallback((layer: BaseLayer) => {
+  const handleEditLithology = useCallback((layer: MinimalLayer) => {
     setSelectedLithology(layer as Lithology);
   }, []);
 
@@ -470,7 +471,18 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
             </StratigraphyTableContent>
           )}
         </Stack>
-        <AddRowButton />
+        {/* TODO: Adding new layer and then deleting it again does not yet clear the "hasChanges" of the save context */}
+        <AddRowButton
+          onClick={() =>
+            handleEditLithology({
+              fromDepth: depths[depths.length - 1].toDepth,
+              toDepth: undefined,
+              id: 0,
+              isGap: false,
+              stratigraphyId: 0,
+            })
+          }
+        />
       </Stack>
       <LithologyModal lithology={selectedLithology} updateLithology={updateTmpLithology} />
       <LithologicalDescriptionModal
