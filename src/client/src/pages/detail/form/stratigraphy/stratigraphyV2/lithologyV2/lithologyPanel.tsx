@@ -1,7 +1,7 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress } from "@mui/material";
-import { FaciesDescription, LithologicalDescription } from "../../../../../../api/stratigraphy.ts";
+import { useFaciesDescription, useLithologicalDescription } from "../../../../../../api/stratigraphy.ts";
 import { FullPageCentered } from "../../../../../../components/styledComponents.ts";
 import { EditStateContext } from "../../../../editStateContext.tsx";
 import { useLithologies } from "../../lithology.ts";
@@ -11,15 +11,9 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
   const { data: lithologies, isLoading: isLoadingLithologies } = useLithologies(stratigraphyId);
-  // const { data: lithologicalDescriptions, isLoading: isLoadingLithologicalDescriptions } =
-  //   useLithologicalDescription(stratigraphyId);
-  // const { data: faciesDescriptions, isLoading: isLoadingFaciesDescription } = useFaciesDescription(stratigraphyId);
-
-  // TODO: Remove mock data when API is ready
-  const isLoadingLithologicalDescriptions = false;
-  const lithologicalDescriptions: LithologicalDescription[] = [];
-  const isLoadingFaciesDescription = false;
-  const faciesDescriptions: FaciesDescription[] = [];
+  const { data: lithologicalDescriptions, isLoading: isLoadingLithologicalDescriptions } =
+    useLithologicalDescription(stratigraphyId);
+  const { data: faciesDescriptions, isLoading: isLoadingFaciesDescription } = useFaciesDescription(stratigraphyId);
 
   // Loading state
   if (isLoadingLithologies || isLoadingLithologicalDescriptions || isLoadingFaciesDescription) {

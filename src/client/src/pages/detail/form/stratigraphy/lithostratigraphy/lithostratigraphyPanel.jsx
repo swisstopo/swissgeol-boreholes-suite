@@ -37,12 +37,12 @@ const LithostratigraphyPanel = ({ stratigraphyId }) => {
                       setNavState={setLensNavState}
                       stratigraphyId={stratigraphyId}
                     />
-                    <LithologyViewProfile
-                      navState={lensNavState}
-                      setNavState={setLensNavState}
-                      stratigraphyId={stratigraphyId}
-                      minPixelHeightForDepthLabel={Number.MAX_VALUE}
-                    />
+                    {/*<LithologyViewProfile*/}
+                    {/*  navState={lensNavState}*/}
+                    {/*  setNavState={setLensNavState}*/}
+                    {/*  stratigraphyId={stratigraphyId}*/}
+                    {/*  minPixelHeightForDepthLabel={Number.MAX_VALUE}*/}
+                    {/*/>*/}
                   </>
                 )}
               />
@@ -57,7 +57,7 @@ const LithostratigraphyPanel = ({ stratigraphyId }) => {
                 navState={navState}
                 setNavState={setNavState}
               />
-              <LithologyViewProfile stratigraphyId={stratigraphyId} navState={navState} setNavState={setNavState} />
+              {/*<LithologyViewProfile stratigraphyId={stratigraphyId} navState={navState} setNavState={setNavState} />*/}
             </NavigationChild>
             <NavigationChild
               sx={{ flex: "0 0 4em" }}
