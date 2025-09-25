@@ -31,14 +31,22 @@ export const StratigraphyProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const registerSaveHandler = useCallback((handler: SaveHandler, registeringComponent: RegisteringComponentType) => {
     const exists = saveHandlersRef.current.some(h => h.registeringComponent === registeringComponent);
-    if (!exists) {
+    if (exists) {
+      saveHandlersRef.current = saveHandlersRef.current.map(h =>
+        h.registeringComponent === registeringComponent ? { handler, registeringComponent } : h,
+      );
+    } else {
       saveHandlersRef.current.push({ handler, registeringComponent });
     }
   }, []);
 
   const registerResetHandler = useCallback((handler: ResetHandler, registeringComponent: RegisteringComponentType) => {
     const exists = resetHandlersRef.current.some(h => h.registeringComponent === registeringComponent);
-    if (!exists) {
+    if (exists) {
+      resetHandlersRef.current = resetHandlersRef.current.map(h =>
+        h.registeringComponent === registeringComponent ? { handler, registeringComponent } : h,
+      );
+    } else {
       resetHandlersRef.current.push({ handler, registeringComponent });
     }
   }, []);

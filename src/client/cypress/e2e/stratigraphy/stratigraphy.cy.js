@@ -361,8 +361,7 @@ describe("Tests for stratigraphy", () => {
     });
   });
 
-  // TODO: Reactivate when save is fixed
-  it.skip("shows chips for stratigraphy in view mode", () => {
+  it("shows chips for stratigraphy in view mode", () => {
     createBorehole({ originalName: "HEART" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
       createStratigraphyV2(boreholeId, "JOLLYBOUNCE").as("stratigraphy_id");

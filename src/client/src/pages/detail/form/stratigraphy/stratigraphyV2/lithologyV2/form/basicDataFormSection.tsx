@@ -16,6 +16,7 @@ export const BasicDataFormSection: FC<BasicDataFormSectionProps> = ({
 }) => (
   <FormContainer>
     <FormContainer direction={"row"}>
+      {/* TODO: Warn or forward error if change will produce an overlap or gap in the layer stack */}
       {fromDepths ? (
         <FormSelect
           fieldName={fromDepthField}
