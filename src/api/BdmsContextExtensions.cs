@@ -991,17 +991,17 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.ColorPrimary, _ => default!)
             .RuleFor(o => o.ColorSecondaryId, f => f.PickRandom(colorIds).OrNull(f, .3f))
             .RuleFor(o => o.ColorSecondary, _ => default!)
-            .RuleFor(o => o.LithologyUnconMainId, (f, ld) => ld.Lithology.IsUnconsolidated ? f.PickRandom(lithologyUnconMainIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.LithologyUnconMainId, _ => null)
             .RuleFor(o => o.LithologyUnconMain, _ => default!)
-            .RuleFor(o => o.LithologyUncon2Id, (f, ld) => ld.Lithology.IsUnconsolidated ? f.PickRandom(lithologyUnconSecondaryIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.LithologyUncon2Id, _ => null)
             .RuleFor(o => o.LithologyUncon2, _ => default!)
-            .RuleFor(o => o.LithologyUncon3Id, (f, ld) => ld.Lithology.IsUnconsolidated ? f.PickRandom(lithologyUnconSecondaryIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.LithologyUncon3Id, _ => null)
             .RuleFor(o => o.LithologyUncon3, _ => default!)
-            .RuleFor(o => o.LithologyUncon4Id, (f, ld) => ld.Lithology.IsUnconsolidated ? f.PickRandom(lithologyUnconSecondaryIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.LithologyUncon4Id, _ => null)
             .RuleFor(o => o.LithologyUncon4, _ => default!)
-            .RuleFor(o => o.LithologyUncon5Id, (f, ld) => ld.Lithology.IsUnconsolidated ? f.PickRandom(lithologyUnconSecondaryIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.LithologyUncon5Id, _ => null)
             .RuleFor(o => o.LithologyUncon5, _ => default!)
-            .RuleFor(o => o.LithologyUncon6Id, (f, ld) => ld.Lithology.IsUnconsolidated ? f.PickRandom(lithologyUnconSecondaryIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.LithologyUncon6Id, _ => null)
             .RuleFor(o => o.LithologyUncon6, _ => default!)
             .RuleFor(o => o.HasStriae, f => f.Random.Bool())
             .RuleFor(o => o.ComponentUnconOrganicCodelistIds, _ => new List<int>())
@@ -1042,6 +1042,45 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.LithologyDescriptionGrainAngularityCodes, _ => new List<LithologyDescriptionGrainAngularityCodes>())
             .RuleFor(o => o.LithologyDescriptionLithologyUnconDebrisCodes, _ => new List<LithologyDescriptionLithologyUnconDebrisCodes>());
 
+        void SetUnconsolidatedIds(
+            int i,
+            dynamic description,
+            int seedOffset = 0)
+        {
+            int maxFractions = 6;
+            int numSet = 1 + new Random(i + seedOffset + 12345).Next(maxFractions); // 1 to 6
+
+            int? mainId = null;
+            int?[] secondaryIds = new int?[5];
+
+            if (lithologyUnconMainIds.Count > 0)
+            {
+                mainId = lithologyUnconMainIds[new Random(i + seedOffset + 1).Next(lithologyUnconMainIds.Count)];
+            }
+
+            for (int j = 0; j < 5; j++)
+            {
+                if (lithologyUnconSecondaryIds.Count > 0)
+                {
+                    secondaryIds[j] = lithologyUnconSecondaryIds[new Random(i + seedOffset + 100 + j).Next(lithologyUnconSecondaryIds.Count)];
+                }
+            }
+
+            description.LithologyUnconMainId = mainId; // Now can be null
+            description.LithologyUncon2Id = numSet >= 2 ? secondaryIds[0] : null;
+            description.LithologyUncon3Id = numSet >= 3 ? secondaryIds[1] : null;
+            description.LithologyUncon4Id = numSet >= 4 ? secondaryIds[2] : null;
+            description.LithologyUncon5Id = numSet >= 5 ? secondaryIds[3] : null;
+            description.LithologyUncon6Id = numSet >= 6 ? secondaryIds[4] : null;
+
+            var rand = new Random(i + seedOffset + 9999);
+            if (numSet == 6 && rand.NextDouble() < 0.2) description.LithologyUncon6Id = null;
+            if (numSet >= 5 && numSet <= 6 && rand.NextDouble() < 0.2) description.LithologyUncon5Id = null;
+            if (numSet >= 4 && numSet <= 5 && rand.NextDouble() < 0.2) description.LithologyUncon4Id = null;
+            if (numSet >= 3 && numSet <= 4 && rand.NextDouble() < 0.2) description.LithologyUncon3Id = null;
+            if (numSet >= 2 && numSet <= 3 && rand.NextDouble() < 0.2) description.LithologyUncon2Id = null;
+        }
+
         // Generate lithology descriptions
         // First create one description for each lithology
         for (int i = 0; i < lithologiesToInsert.Count; i++)
@@ -1050,14 +1089,25 @@ public static class BdmsContextExtensions
             var description = fakeLithologyDescriptions.UseSeed(i).Generate();
             description.LithologyId = lithology.Id;
             description.IsFirst = true;
+
+            if (lithology.IsUnconsolidated)
+            {
+                SetUnconsolidatedIds(i, description);
+            }
+
             lithologyDescriptionsToInsert.Add(description);
 
-            // Only add a second description if HasBedding is true
             if (lithology.HasBedding)
             {
                 var secondDescription = fakeLithologyDescriptions.UseSeed(i + 10000).Generate();
                 secondDescription.LithologyId = lithology.Id;
                 secondDescription.IsFirst = false;
+
+                if (lithology.IsUnconsolidated)
+                {
+                    SetUnconsolidatedIds(i, secondDescription, 10000);
+                }
+
                 lithologyDescriptionsToInsert.Add(secondDescription);
             }
         }
