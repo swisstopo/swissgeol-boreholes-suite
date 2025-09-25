@@ -391,7 +391,7 @@ describe("Tests for stratigraphy", () => {
         saveWithSaveBar();
         cy.wait(["@stratigraphyV2_POST", "@stratigraphyV2_by_borehole_GET"]);
         stopBoreholeEditing();
-        getElementByDataCy("stratigraphy-content").find(".MuiChip-root").should("have.length", 0);
+        getElementByDataCy("stratigraphy-header").should("not.exist");
         navigateToTabWithTitle("JOLLYBOUNCE");
         getElementByDataCy("stratigraphy-content")
           .find(".MuiChip-root")
