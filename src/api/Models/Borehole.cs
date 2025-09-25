@@ -430,13 +430,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets the <see cref="Borehole"/>'s stratigraphies.
     /// </summary>
     [IncludeInExport]
-    public ICollection<Stratigraphy>? Stratigraphies { get; set; }
-
-    /// <summary>
-    /// Gets the <see cref="Borehole"/>'s stratigraphies.
-    /// </summary>
-    [IncludeInExport]
-    public ICollection<StratigraphyV2>? StratigraphiesV2 { get; set; }
+    public ICollection<StratigraphyV2>? Stratigraphies { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s completions.

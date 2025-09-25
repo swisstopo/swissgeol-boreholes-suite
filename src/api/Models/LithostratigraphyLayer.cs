@@ -1,6 +1,7 @@
 ﻿using BDMS.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -8,7 +9,7 @@ namespace BDMS.Models;
 /// Represents a lithostratigraphy entity in the database.
 /// </summary>
 [Table("lithostratigraphy")]
-public class LithostratigraphyLayer : ILayerDescription, IChangeTracking, IIdentifyable
+public class LithostratigraphyLayer : ILithologyLegacy, IChangeTracking, IIdentifyable
 {
     /// <inheritdoc />
     [Key]
@@ -20,7 +21,7 @@ public class LithostratigraphyLayer : ILayerDescription, IChangeTracking, IIdent
     public int StratigraphyId { get; set; }
 
     /// <inheritdoc />
-    public Stratigraphy? Stratigraphy { get; set; }
+    public StratigraphyV2? Stratigraphy { get; set; }
 
     /// <inheritdoc />
     [Column("creator")]

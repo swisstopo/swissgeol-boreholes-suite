@@ -17,7 +17,9 @@ import { useRequiredParams } from "../../../../hooks/useRequiredParams";
 import { formatDate } from "../../../../utils";
 import { EditStateContext } from "../../editStateContext";
 import { AddStratigraphyButton } from "./addStratigraphyButton";
+import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel";
 import { StratigraphyExtraction } from "./extraction/stratigraphyExtraction.tsx";
+import LithostratigraphyPanel from "./lithostratigraphy/lithostratigraphyPanel";
 import { StratigraphyProvider } from "./stratigraphyContext.tsx";
 import { StratigraphyForm } from "./stratigraphyForm.tsx";
 import { LithologyPanel } from "./stratigraphyV2/lithologyV2/lithologyPanel.tsx";
@@ -310,6 +312,16 @@ export const StratigraphyPanel: FC = () => {
                       label: t("lithology"),
                       hash: "#lithology",
                       component: <LithologyPanel stratigraphyId={selectedStratigraphy.id} />,
+                    },
+                    {
+                      label: t("chronostratigraphy"),
+                      hash: "#chronostratigraphy",
+                      component: <ChronostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
+                    },
+                    {
+                      label: t("lithostratigraphy"),
+                      hash: "#lithostratigraphy",
+                      component: <LithostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
                     },
                   ]}
                 />

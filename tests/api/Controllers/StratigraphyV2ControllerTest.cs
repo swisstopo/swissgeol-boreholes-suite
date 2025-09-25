@@ -1,5 +1,6 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -29,34 +30,27 @@ public class StratigraphyV2ControllerTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    public async Task GetAsyncReturnsAllEntities()
-    {
-        var stratigraphies = await controller.GetAsync();
-        Assert.IsNotNull(stratigraphies);
-        Assert.AreEqual(3000, stratigraphies.Count());
-    }
-
-    [TestMethod]
     public async Task GetEntriesByBoreholeIdForInexistentId()
     {
-        var stratigraphies = await controller.GetAsync(81294572).ConfigureAwait(false);
-        Assert.IsNotNull(stratigraphies);
-        Assert.AreEqual(0, stratigraphies.Count());
+        var result = await controller.GetAsync(81294572).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(result.Result);
     }
 
     [TestMethod]
     public async Task GetStratigraphyByBoreholeId()
     {
-        var stratigraphies = await controller.GetAsync(1000972).ConfigureAwait(false);
-        Assert.IsNotNull(stratigraphies);
-        Assert.AreEqual(2, stratigraphies.Count());
-        var stratigraphy = stratigraphies.First();
+        var result = await controller.GetAsync(1002601).ConfigureAwait(false);
+        ActionResultAssert.IsOk(result.Result);
 
-        Assert.AreEqual(1000972, stratigraphy.BoreholeId);
-        Assert.AreEqual("Sarah Ziemann", stratigraphy.Name);
-        Assert.AreEqual(4, stratigraphy.CreatedById);
-        Assert.AreEqual(2, stratigraphy.UpdatedById);
-        Assert.AreEqual(true, stratigraphy.IsPrimary);
+        var stratigraphies = ((OkObjectResult?)result.Result)?.Value as List<StratigraphyV2>;
+        Assert.IsNotNull(stratigraphies);
+        Assert.AreEqual(2, stratigraphies.Count);
+
+        Assert.AreEqual(1002601, stratigraphies[0].BoreholeId);
+        Assert.AreEqual("Velva Steuber", stratigraphies[0].Name);
+        Assert.AreEqual(5, stratigraphies[0].CreatedById);
+        Assert.AreEqual(4, stratigraphies[0].UpdatedById);
+        Assert.AreEqual(true, stratigraphies[0].IsPrimary);
     }
 
     [TestMethod]
@@ -77,6 +71,13 @@ public class StratigraphyV2ControllerTest
         Assert.AreEqual(false, copiedStratigraphy.IsPrimary);
         Assert.AreNotEqual(originalStratigraphy.Id, copiedStratigraphy.Id);
         Assert.AreEqual(originalStratigraphy.Date, copiedStratigraphy.Date);
+        Assert.AreEqual(originalStratigraphy.Lithologies.Count, copiedStratigraphy.Lithologies.Count);
+        Assert.AreNotEqual(originalStratigraphy.Lithologies.First().Id, copiedStratigraphy.Lithologies.First().Id);
+        Assert.AreEqual(originalStratigraphy.Lithologies.First().IsUnconsolidated, copiedStratigraphy.Lithologies.First().IsUnconsolidated);
+        Assert.AreEqual(originalStratigraphy.Lithologies.First().AlterationDegreeId, copiedStratigraphy.Lithologies.First().AlterationDegreeId);
+        Assert.AreEqual(originalStratigraphy.Lithologies.First().LithologyDescriptions.Count, copiedStratigraphy.Lithologies.First().LithologyDescriptions.Count);
+        Assert.AreNotEqual(originalStratigraphy.Lithologies.First().LithologyDescriptions.First().Id, copiedStratigraphy.Lithologies.First().LithologyDescriptions.First().Id);
+        Assert.AreEqual(originalStratigraphy.Lithologies.First().LithologyDescriptions.First().ColorPrimaryId, copiedStratigraphy.Lithologies.First().LithologyDescriptions.First().ColorPrimaryId);
     }
 
     [TestMethod]
@@ -129,7 +130,9 @@ public class StratigraphyV2ControllerTest
     public async Task DeleteMainStratigraphyNotAllowedIfOthersExist()
     {
         // Precondition: Find a group of three stratigraphies with one main stratigraphy
-        var stratigraphies = await controller.GetAsync(1000005);
+        var getResult = await controller.GetAsync(1000005);
+        ActionResultAssert.IsOk(getResult.Result);
+        var stratigraphies = ((OkObjectResult?)getResult.Result)?.Value as List<StratigraphyV2>;
         var primaryStratigraphy = stratigraphies.SingleOrDefault(s => s.IsPrimary);
         Assert.IsNotNull(primaryStratigraphy);
 
@@ -150,7 +153,7 @@ public class StratigraphyV2ControllerTest
     [TestMethod]
     public async Task Create()
     {
-        var boreholeWithoutStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => !b.StratigraphiesV2.Any());
+        var boreholeWithoutStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => !b.Stratigraphies.Any());
 
         var stratigraphyToAdd = new StratigraphyV2
         {
@@ -173,7 +176,7 @@ public class StratigraphyV2ControllerTest
     [TestMethod]
     public async Task CreateAdditionalStratigraphyForExistingBorehole()
     {
-        var boreholeWithExistingStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => b.StratigraphiesV2.Any());
+        var boreholeWithExistingStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => b.Stratigraphies.Any());
 
         var stratigraphyToAdd = new StratigraphyV2
         {
@@ -196,7 +199,7 @@ public class StratigraphyV2ControllerTest
     [TestMethod]
     public async Task CreateAdditionalStratigraphyWithIsPrimary()
     {
-        var boreholeWithoutStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => !b.StratigraphiesV2.Any());
+        var boreholeWithoutStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => !b.Stratigraphies.Any());
 
         var stratigraphy1 = new StratigraphyV2
         {
@@ -332,7 +335,7 @@ public class StratigraphyV2ControllerTest
     [TestMethod]
     public async Task EditWithExistingName()
     {
-        var boreholeWithoutStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => !b.StratigraphiesV2.Any());
+        var boreholeWithoutStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => !b.Stratigraphies.Any());
 
         var stratigraphy1 = new StratigraphyV2
         {
@@ -379,10 +382,7 @@ public class StratigraphyV2ControllerTest
 
     private StratigraphyV2? GetStratigraphy(int id)
     {
-        return context.StratigraphiesV2
-            .Include(s => s.CreatedBy)
-            .Include(s => s.UpdatedBy)
-            .SingleOrDefault(s => s.Id == id);
+        return context.StratigraphiesV2WithIncludes.SingleOrDefault(s => s.Id == id);
     }
 
     private void SetupControllerWithAlwaysLockedBorehole()

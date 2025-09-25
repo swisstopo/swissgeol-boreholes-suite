@@ -17,20 +17,32 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="StratigraphyV2"/>s, optionally filtered by <paramref name="boreholeId"/>.
+    /// Asynchronously gets the <see cref="StratigraphyV2"/>s, filtered by <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="boreholeId">The id of the borehole containing the stratigraphies to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IEnumerable<StratigraphyV2>> GetAsync([FromQuery] int? boreholeId = null)
+    public async Task<ActionResult<IEnumerable<StratigraphyV2>>> GetAsync([FromQuery] int boreholeId)
     {
-        var stratigraphies = Context.StratigraphiesV2.AsNoTracking();
-        if (boreholeId != null)
+        var borehole = await Context.Boreholes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(b => b.Id == boreholeId)
+            .ConfigureAwait(false);
+
+        if (borehole == null)
         {
-            stratigraphies = stratigraphies.Where(l => l.BoreholeId == boreholeId);
+            return NotFound();
         }
 
-        return await stratigraphies.ToListAsync().ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        var stratigraphies = await Context.StratigraphiesV2
+            .AsNoTracking()
+            .Where(x => x.BoreholeId == boreholeId)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return Ok(stratigraphies);
     }
 
     /// <summary>
@@ -45,6 +57,18 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
         try
         {
             var stratigraphy = await Context.StratigraphiesV2
+                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyRockConditionCodes)
+                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyUscsTypeCodes)
+                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyTextureMetaCodes)
+                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionComponentUnconOrganicCodes)
+                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionComponentUnconDebrisCodes)
+                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionGrainShapeCodes)
+                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionGrainAngularityCodes)
+                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionLithologyUnconDebrisCodes)
+                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionComponentConParticleCodes)
+                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionComponentConMineralCodes)
+                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionStructureSynGenCodes)
+                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionStructurePostGenCodes)
                 .AsNoTracking()
                 .SingleOrDefaultAsync(b => b.Id == id)
                 .ConfigureAwait(false);
@@ -60,6 +84,33 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
             stratigraphy.Id = 0;
             stratigraphy.Name = string.IsNullOrEmpty(stratigraphy.Name) ? "(Clone)" : $"{stratigraphy.Name} (Clone)";
             stratigraphy.IsPrimary = false;
+
+            foreach (var lithology in stratigraphy.Lithologies)
+            {
+                lithology.Id = 0;
+                lithology.LithologyRockConditionCodes?.ResetLithologyIds();
+                lithology.LithologyUscsTypeCodes?.ResetLithologyIds();
+                lithology.LithologyTextureMetaCodes?.ResetLithologyIds();
+
+                foreach (var description in lithology.LithologyDescriptions)
+                {
+                    description.Id = 0;
+                    description.LithologyDescriptionComponentUnconOrganicCodes?.ResetLithologyDescriptionIds();
+                    description.LithologyDescriptionComponentUnconDebrisCodes?.ResetLithologyDescriptionIds();
+                    description.LithologyDescriptionGrainShapeCodes?.ResetLithologyDescriptionIds();
+                    description.LithologyDescriptionGrainAngularityCodes?.ResetLithologyDescriptionIds();
+                    description.LithologyDescriptionLithologyUnconDebrisCodes?.ResetLithologyDescriptionIds();
+                    description.LithologyDescriptionComponentConParticleCodes?.ResetLithologyDescriptionIds();
+                    description.LithologyDescriptionComponentConMineralCodes?.ResetLithologyDescriptionIds();
+                    description.LithologyDescriptionStructureSynGenCodes?.ResetLithologyDescriptionIds();
+                    description.LithologyDescriptionStructurePostGenCodes?.ResetLithologyDescriptionIds();
+                }
+            }
+
+            stratigraphy.LithologicalDescriptions?.MarkAsNew();
+            stratigraphy.FaciesDescriptions?.MarkAsNew();
+            stratigraphy.ChronostratigraphyLayers?.MarkAsNew();
+            stratigraphy.LithostratigraphyLayers?.MarkAsNew();
 
             var entityEntry = await Context.AddAsync(stratigraphy).ConfigureAwait(false);
             await Context.SaveChangesAsync().ConfigureAwait(false);

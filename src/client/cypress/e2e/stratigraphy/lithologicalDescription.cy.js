@@ -10,7 +10,8 @@ import {
 } from "../helpers/testHelpers";
 
 describe("Tests for the lithological description column.", () => {
-  it("Creates, updates and deletes lithological descriptions ", () => {
+  // TODO: Re-add with new lithology tests
+  it.skip("Creates, updates and deletes lithological descriptions ", () => {
     goToRouteAndAcceptTerms(`/`);
     // create boreholes
     newEditableBorehole().as("borehole_id");
