@@ -1,3 +1,5 @@
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
 import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
 import { fetchApiV2WithApiError } from "../api/fetchApiV2.ts";
 
@@ -65,4 +67,17 @@ export const useCodelistMutations = () => {
   return {
     update: useUpdateCodelist,
   };
+};
+
+export const useCodelistDisplayValues = () => {
+  const { data: codelists } = useCodelists();
+  const { i18n } = useTranslation();
+
+  return useCallback(
+    (id: number) => {
+      const codelist = codelists?.find(item => item.id === id);
+      return codelist ? { text: codelist[i18n.language] as string, code: codelist.code } : { text: "", code: "" };
+    },
+    [codelists, i18n.language],
+  );
 };
