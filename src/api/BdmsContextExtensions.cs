@@ -826,7 +826,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Borehole, _ => default!)
             .RuleFor(o => o.Name, f => f.Name.FullName())
             .RuleFor(o => o.Date, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
-            .RuleFor(o => o.IsPrimary, f => f.Random.Bool())
+            .RuleFor(o => o.IsPrimary, _ => false)
             .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
             .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange).OrNull(f, .05f))
             .RuleFor(o => o.CreatedBy, _ => default!)
@@ -840,10 +840,20 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.ChronostratigraphyLayers, _ => new Collection<ChronostratigraphyLayer>());
 
         StratigraphyV2 SeededStratigraphysV2(int seed) => fakeStratigraphiesV2.UseSeed(seed).Generate();
-        context.BulkInsert(stratigraphyV2Range.Select(SeededStratigraphysV2).ToList(), bulkConfig);
+        var stratigraphiesV2 = stratigraphyV2Range.Select(SeededStratigraphysV2).ToList();
 
-        // Seed Lithologies
-        var lithology_ids = 23_000_000;
+        // Group by BoreholeId and set exactly one IsPrimary = true per borehole
+        var stratigraphiesByBorehole = stratigraphiesV2.GroupBy(s => s.BoreholeId);
+        foreach (var group in stratigraphiesByBorehole)
+        {
+            var toSetPrimary = group.FirstOrDefault();
+            if (toSetPrimary != null)
+            {
+                toSetPrimary.IsPrimary = true;
+            }
+        }
+
+        context.BulkInsert(stratigraphiesByBorehole.SelectMany(g => g), bulkConfig);
 
         // Each ten layers should be associated with the one stratigraphy.
         int GetStratigraphyV2Id(int currentLayerId, int startId)
@@ -852,6 +862,7 @@ public static class BdmsContextExtensions
         }
 
         // Seed a mix of consolidated and unconsolidated lithologies
+        var lithology_ids = 23_000_000;
         var fakeLithologies = new Faker<Lithology>()
             .StrictMode(true)
             .RuleFor(o => o.Id, f => lithology_ids++)
@@ -872,40 +883,94 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.AlterationDegreeId, f => f.PickRandom(alterationDegreeIds).OrNull(f, .3f))
             .RuleFor(o => o.AlterationDegree, _ => default!)
             .RuleFor(o => o.LithologyDescriptions, _ => new List<LithologyDescription>())
-            .RuleFor(o => o.CompactnessId, (f, l) => l.IsUnconsolidated ? f.PickRandom(compactnessIds).OrNull(f, .2f) : null) // Unconsolidated properties
+            .RuleFor(o => o.CompactnessId, _ => null)
             .RuleFor(o => o.Compactness, _ => default!)
-            .RuleFor(o => o.CohesionId, (f, l) => l.IsUnconsolidated ? f.PickRandom(cohesionIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.CohesionId, _ => null)
             .RuleFor(o => o.Cohesion, _ => default!)
-            .RuleFor(o => o.HumidityId, (f, l) => l.IsUnconsolidated ? f.PickRandom(humidityIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.HumidityId, _ => null)
             .RuleFor(o => o.Humidity, _ => default!)
-            .RuleFor(o => o.ConsistencyId, (f, l) => l.IsUnconsolidated ? f.PickRandom(consistencyIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.ConsistencyId, _ => null)
             .RuleFor(o => o.Consistency, _ => default!)
-            .RuleFor(o => o.PlasticityId, (f, l) => l.IsUnconsolidated ? f.PickRandom(plasticityIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.PlasticityId, _ => null)
             .RuleFor(o => o.Plasticity, _ => default!)
-            .RuleFor(o => o.UscsDeterminationId, (f, l) => l.IsUnconsolidated ? f.PickRandom(uscsDeterminationIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.UscsDeterminationId, _ => null)
             .RuleFor(o => o.UscsDetermination, _ => default!)
-            .RuleFor(o => o.UscsTypeCodelistIds, (f, l) => l.IsUnconsolidated ? f.PickRandom(uscsTypeIds, f.Random.Int(0, 3)).ToList() : new List<int>())
+            .RuleFor(o => o.UscsTypeCodelistIds, _ => new List<int>())
             .RuleFor(o => o.UscsTypeCodelists, _ => new Collection<Codelist>())
-            .RuleFor(o => o.RockConditionCodelistIds, (f, l) => l.IsUnconsolidated ? f.PickRandom(rockConditionIds, f.Random.Int(0, 2)).ToList() : new List<int>())
-            .RuleFor(o => o.RockConditionCodelists, _ => new Collection<Codelist>())
-            .RuleFor(o => o.TextureMetaCodelistIds, (f, l) => !l.IsUnconsolidated ? f.PickRandom(textureMetaIds, f.Random.Int(0, 3)).ToList() : new List<int>()) // Consolidated properties
-            .RuleFor(o => o.TextureMetaCodelists, _ => new Collection<Codelist>())
             .RuleFor(o => o.LithologyUscsTypeCodes, _ => new List<LithologyUscsTypeCodes>())
+            .RuleFor(o => o.RockConditionCodelistIds, _ => new List<int>())
+            .RuleFor(o => o.RockConditionCodelists, _ => new Collection<Codelist>())
             .RuleFor(o => o.LithologyRockConditionCodes, _ => new List<LithologyRockConditionCodes>())
+            .RuleFor(o => o.TextureMetaCodelistIds, _ => new List<int>())
+            .RuleFor(o => o.TextureMetaCodelists, _ => new Collection<Codelist>())
             .RuleFor(o => o.LithologyTextureMetaCodes, _ => new List<LithologyTextureMetaCodes>());
 
         Lithology SeededLithologies(int seed) => fakeLithologies.UseSeed(seed).Generate();
 
         var lithologiesToInsert = new List<Lithology>();
+        var random = new Random(42);
         for (int i = 0; i < stratigraphyV2Range.Count - 1; i++)
         {
-            // Add 10 lithologies per stratigraphy
+            int switchIndex = random.Next(0, 10); // Pick a new switchIndex for each stratigraphy
             var start = (i * 10) + 1;
-            var range = Enumerable.Range(start, 10);  // ints in range must be different on each loop, so that properties are not repeated in dataset.
-            lithologiesToInsert.AddRange(range.Select(SeededLithologies));
+            var range = Enumerable.Range(start, 10);
+            int localIndex = 0;
+            foreach (var seed in range)
+            {
+                var lithology = SeededLithologies(seed);
+                lithology.IsUnconsolidated = localIndex < switchIndex;
+
+                if (lithology.IsUnconsolidated)
+                {
+                    lithology.CompactnessId = random.NextDouble() < 0.2 ? null : compactnessIds[random.Next(compactnessIds.Count)];
+                    lithology.CohesionId = random.NextDouble() < 0.2 ? null : cohesionIds[random.Next(cohesionIds.Count)];
+                    lithology.HumidityId = random.NextDouble() < 0.2 ? null : humidityIds[random.Next(humidityIds.Count)];
+                    lithology.ConsistencyId = random.NextDouble() < 0.2 ? null : consistencyIds[random.Next(consistencyIds.Count)];
+                    lithology.PlasticityId = random.NextDouble() < 0.2 ? null : plasticityIds[random.Next(plasticityIds.Count)];
+                    lithology.UscsDeterminationId = random.NextDouble() < 0.2 ? null : uscsDeterminationIds[random.Next(uscsDeterminationIds.Count)];
+                }
+
+                lithologiesToInsert.Add(lithology);
+                localIndex++;
+            }
         }
 
         context.BulkInsert(lithologiesToInsert, bulkConfig);
+
+        // Seed lithology codelist join tables (without using Faker)
+        var lithologyRange = Enumerable.Range(23_000_000, 20_000);
+
+        void SeedLithologyCodeRelationships<T>(IEnumerable<int> codelistIds)
+            where T : class, ILithologyCode, new()
+        {
+            var lithologyCodes = new List<T>();
+
+            // Create a smaller representative sample (not all possible combinations).
+            // This significantly reduces the data volume while maintaining distribution.
+            var random = new Random(lithologyRange.Count());
+            var codeListSampleSize = Math.Min(5, codelistIds.Count());
+
+            foreach (var lithologyId in lithologyRange)
+            {
+                // Select a smaller subset of codes for each lithology.
+                // This is more realistic than assigning every code to every lithology.
+                var codeListSample = codelistIds
+                    .OrderBy(_ => random.Next())
+                    .Take(random.Next(1, codeListSampleSize + 1))
+                    .ToList();
+
+                foreach (var codeId in codeListSample)
+                {
+                    lithologyCodes.Add(new() { LithologyId = lithologyId, CodelistId = codeId });
+                }
+            }
+
+            context.BulkInsert(lithologyCodes, bulkConfig);
+        }
+
+        SeedLithologyCodeRelationships<LithologyRockConditionCodes>(rockConditionIds);
+        SeedLithologyCodeRelationships<LithologyUscsTypeCodes>(uscsTypeIds);
+        SeedLithologyCodeRelationships<LithologyTextureMetaCodes>(textureMetaIds);
 
         // Seed LithologyDescriptions
         var lithologyDescription_ids = 23_500_000;
@@ -999,24 +1064,23 @@ public static class BdmsContextExtensions
 
         context.BulkInsert(lithologyDescriptionsToInsert, bulkConfig);
 
-        /*
-        // Seed layer codelist join tables (without using Faker)
-        var layerRange = Enumerable.Range(7_000_000, 20_000);
+        // Seed lithology description codelist join tables (without using Faker)
+        var lithologyDescriptionRange = Enumerable.Range(23_500_000, 20_000);
 
-        void SeedLayerCodeRelationships<T>(IEnumerable<int> codelistIds)
-            where T : class, ILayerCode, new()
+        void SeedLithologyDescriptionCodeRelationships<T>(IEnumerable<int> codelistIds)
+            where T : class, ILithologyDescriptionCode, new()
         {
-            var layerCodes = new List<T>();
+            var lithologyDescriptionCodes = new List<T>();
 
             // Create a smaller representative sample (not all possible combinations).
             // This significantly reduces the data volume while maintaining distribution.
-            var random = new Random(layerRange.Count());
+            var random = new Random(lithologyDescriptionRange.Count());
             var codeListSampleSize = Math.Min(5, codelistIds.Count());
 
-            foreach (var layerId in layerRange)
+            foreach (var lithologyDescriptionId in lithologyDescriptionRange)
             {
-                // Select a smaller subset of codes for each layer.
-                // This is more realistic than assigning every code to every layer.
+                // Select a smaller subset of codes for each lithology description.
+                // This is more realistic than assigning every code to every lithology description.
                 var codeListSample = codelistIds
                     .OrderBy(_ => random.Next())
                     .Take(random.Next(1, codeListSampleSize + 1))
@@ -1024,20 +1088,22 @@ public static class BdmsContextExtensions
 
                 foreach (var codeId in codeListSample)
                 {
-                    layerCodes.Add(new() { LayerId = layerId, CodelistId = codeId });
+                    lithologyDescriptionCodes.Add(new() { LithologyDescriptionId = lithologyDescriptionId, CodelistId = codeId });
                 }
             }
 
-            context.BulkInsert(layerCodes, bulkConfig);
+            context.BulkInsert(lithologyDescriptionCodes, bulkConfig);
         }
 
-        SeedLayerCodeRelationships<LayerColorCode>(colourIds);
-        SeedLayerCodeRelationships<LayerDebrisCode>(debrisIds);
-        SeedLayerCodeRelationships<LayerGrainShapeCode>(grainShapeIds);
-        SeedLayerCodeRelationships<LayerGrainAngularityCode>(grainAngularityIds);
-        SeedLayerCodeRelationships<LayerOrganicComponentCode>(organicComponentIds);
-        SeedLayerCodeRelationships<LayerUscs3Code>(uscsTypeIds);
-        */
+        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionComponentUnconOrganicCodes>(componentUnconOrganicIds);
+        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionComponentUnconDebrisCodes>(componentUnconDebrisIds);
+        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionGrainShapeCodes>(grainShapeIds);
+        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionGrainAngularityCodes>(grainAngularityIds);
+        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionLithologyUnconDebrisCodes>(lithologyConIds);
+        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionComponentConParticleCodes>(componentConParticleIds);
+        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionComponentConMineralCodes>(componentConMineralIds);
+        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionStructurePostGenCodes>(structurePostGenIds);
+        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionStructureSynGenCodes>(structureSynGenIds);
 
         // Seed lithologicalDescriptions
         var lithologicalDescription_ids = 9_000_000;
@@ -1057,13 +1123,12 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Id, f => lithologicalDescription_ids++);
 
         LithologicalDescription SeededLithologicalDescriptions(int seed) => fakelithologicalDescriptions.UseSeed(seed).Generate();
-
-        var lithologicalDescriptionsToInsert = new List<LithologicalDescription>(stratigraphyV2Range.Count * 10);
-        for (int i = 0; i < stratigraphyV2Range.Count; i++)
+        var lithologicalDescriptionsToInsert = new List<LithologicalDescription>();
+        for (int i = 0; i < stratigraphyV2Range.Count - 1; i++)
         {
-            // Add 10 lithological descriptions per stratigraphy profile.
+            // Add 10 lithological descriptions per stratigraphy
             var start = (i * 10) + 1;
-            var range = Enumerable.Range(start, 10);
+            var range = Enumerable.Range(start, 10);  // ints in range must be different on each loop, so that properties are not repeated in dataset.
             lithologicalDescriptionsToInsert.AddRange(range.Select(SeededLithologicalDescriptions));
         }
 
@@ -1090,12 +1155,12 @@ public static class BdmsContextExtensions
 
         FaciesDescription SeededFaciesDescriptions(int seed) => fakeFaciesDescriptions.UseSeed(seed).Generate();
 
-        var faciesDescriptionsToInsert = new List<FaciesDescription>(stratigraphyV2Range.Count * 10);
-        for (int i = 0; i < stratigraphyV2Range.Count; i++)
+        var faciesDescriptionsToInsert = new List<FaciesDescription>();
+        for (int i = 0; i < stratigraphyV2Range.Count - 1; i++)
         {
-            // Add 10 facies descriptions per stratigraphy.
+            // Add 10 facies descriptions per stratigraphy
             var start = (i * 10) + 1;
-            var range = Enumerable.Range(start, 10);
+            var range = Enumerable.Range(start, 10);  // ints in range must be different on each loop, so that properties are not repeated in dataset.
             faciesDescriptionsToInsert.AddRange(range.Select(SeededFaciesDescriptions));
         }
 
