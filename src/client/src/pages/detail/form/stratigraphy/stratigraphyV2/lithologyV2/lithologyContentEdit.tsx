@@ -211,6 +211,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       showAlert(t(t("gapOrOverlayErrorCannotSave")), "error");
       return false;
     }
+
     for (const lithology of tmpLithologies.filter(l => l.hasChanges).map(l => l.item)) {
       if (lithology.id === 0) {
         await addLithology({ ...lithology, stratigraphyId });
