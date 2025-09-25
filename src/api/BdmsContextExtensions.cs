@@ -92,6 +92,9 @@ public static class BdmsContextExtensions
         List<int> chronostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.chronostratigraphy_top_bedrock").Select(s => s.Id).ToList();
         List<int> lithostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.lithostratigraphy_top_bedrock").Select(s => s.Id).ToList();
         List<int> alterationIds = codelists.Where(c => c.Schema == "alteration").Select(s => s.Id).ToList();
+        List<int> colourIds = codelists.Where(c => c.Schema == "colour").Select(s => s.Id).ToList();
+        List<int> debrisIds = codelists.Where(c => c.Schema == "debris").Select(s => s.Id).ToList();
+        List<int> organicComponentIds = codelists.Where(c => c.Schema == "organic_components").Select(s => s.Id).ToList();
         List<int> soilStateIds = codelists.Where(c => c.Schema == "uscs_type").Select(s => s.Id).ToList();  // unclear which codelist
         List<int> kirostIds = codelists.Where(c => c.Schema == "uscs_type").Select(s => s.Id).ToList();  // unclear which codelist
         List<int> grainSize1Ids = codelists.Where(c => c.Schema == "grain_size").Select(s => s.Id).ToList();
@@ -511,6 +514,44 @@ public static class BdmsContextExtensions
         }
 
         context.BulkInsert(layersToInsert, bulkConfig);
+
+        // Seed layer codelist join tables (without using Faker)
+        var layerRange = Enumerable.Range(7_000_000, 20_000);
+
+        void SeedLayerCodeRelationships<T>(IEnumerable<int> codelistIds)
+            where T : class, ILayerCode, new()
+        {
+            var layerCodes = new List<T>();
+
+            // Create a smaller representative sample (not all possible combinations).
+            // This significantly reduces the data volume while maintaining distribution.
+            var random = new Random(layerRange.Count());
+            var codeListSampleSize = Math.Min(5, codelistIds.Count());
+
+            foreach (var layerId in layerRange)
+            {
+                // Select a smaller subset of codes for each layer.
+                // This is more realistic than assigning every code to every layer.
+                var codeListSample = codelistIds
+                    .OrderBy(_ => random.Next())
+                    .Take(random.Next(1, codeListSampleSize + 1))
+                    .ToList();
+
+                foreach (var codeId in codeListSample)
+                {
+                    layerCodes.Add(new() { LayerId = layerId, CodelistId = codeId });
+                }
+            }
+
+            context.BulkInsert(layerCodes, bulkConfig);
+        }
+
+        SeedLayerCodeRelationships<LayerColorCode>(colourIds);
+        SeedLayerCodeRelationships<LayerDebrisCode>(debrisIds);
+        SeedLayerCodeRelationships<LayerGrainShapeCode>(grainShapeIds);
+        SeedLayerCodeRelationships<LayerGrainAngularityCode>(grainAngularityIds);
+        SeedLayerCodeRelationships<LayerOrganicComponentCode>(organicComponentIds);
+        SeedLayerCodeRelationships<LayerUscs3Code>(uscsTypeIds);
 
         // Seed completions
         var completion_ids = 14_000_000;
