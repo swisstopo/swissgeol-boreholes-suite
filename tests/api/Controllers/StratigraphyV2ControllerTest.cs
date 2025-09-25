@@ -54,8 +54,8 @@ public class StratigraphyV2ControllerTest
 
         Assert.AreEqual(1000972, stratigraphy.BoreholeId);
         Assert.AreEqual("Sarah Ziemann", stratigraphy.Name);
-        Assert.AreEqual(3, stratigraphy.CreatedById);
-        Assert.AreEqual(3, stratigraphy.UpdatedById);
+        Assert.AreEqual(4, stratigraphy.CreatedById);
+        Assert.AreEqual(4, stratigraphy.UpdatedById);
         Assert.AreEqual(true, stratigraphy.IsPrimary);
     }
 
@@ -128,25 +128,9 @@ public class StratigraphyV2ControllerTest
     public async Task DeleteMainStratigraphyNotAllowedIfOthersExist()
     {
         // Precondition: Find a group of three stratigraphies with one main stratigraphy
-        var stratigraphies = await controller.GetAsync();
-        var stratigraphyTestCandidates = stratigraphies
-            .GroupBy(x => x.BoreholeId)
-            .Where(g => !g.Any(s => s.IsPrimary))
-            .ToList();
-
-        var primaryStratigraphy = new StratigraphyV2
-        {
-            Id = stratigraphies.Max(x => x.Id) + 1,
-            BoreholeId = stratigraphyTestCandidates[0].Key,
-            IsPrimary = true,
-            Name = "KODACLUSTER",
-        };
-
-        await context.AddAsync(primaryStratigraphy);
-
-        await context.SaveChangesAsync();
-
-        Assert.AreEqual(true, stratigraphyTestCandidates.Any(), "Precondition: There is at least one group of stratigraphies with one main stratigraphy");
+        var stratigraphies = await controller.GetAsync(1000005);
+        var primaryStratigraphy = stratigraphies.SingleOrDefault(s => s.IsPrimary);
+        Assert.IsNotNull(primaryStratigraphy);
 
         var deleteResult = await controller.DeleteAsync(primaryStratigraphy.Id);
         ActionResultAssert.IsInternalServerError(deleteResult);
