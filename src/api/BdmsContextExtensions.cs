@@ -1066,19 +1066,12 @@ public static class BdmsContextExtensions
                 }
             }
 
-            description.LithologyUnconMainId = mainId; // Now can be null
+            description.LithologyUnconMainId = mainId;
             description.LithologyUncon2Id = numSet >= 2 ? secondaryIds[0] : null;
             description.LithologyUncon3Id = numSet >= 3 ? secondaryIds[1] : null;
             description.LithologyUncon4Id = numSet >= 4 ? secondaryIds[2] : null;
             description.LithologyUncon5Id = numSet >= 5 ? secondaryIds[3] : null;
             description.LithologyUncon6Id = numSet >= 6 ? secondaryIds[4] : null;
-
-            var rand = new Random(i + seedOffset + 9999);
-            if (numSet == 6 && rand.NextDouble() < 0.2) description.LithologyUncon6Id = null;
-            if (numSet >= 5 && numSet <= 6 && rand.NextDouble() < 0.2) description.LithologyUncon5Id = null;
-            if (numSet >= 4 && numSet <= 5 && rand.NextDouble() < 0.2) description.LithologyUncon4Id = null;
-            if (numSet >= 3 && numSet <= 4 && rand.NextDouble() < 0.2) description.LithologyUncon3Id = null;
-            if (numSet >= 2 && numSet <= 3 && rand.NextDouble() < 0.2) description.LithologyUncon2Id = null;
         }
 
         // Generate lithology descriptions
