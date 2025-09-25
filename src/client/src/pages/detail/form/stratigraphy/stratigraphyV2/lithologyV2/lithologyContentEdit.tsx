@@ -113,6 +113,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   const updateStratigraphyItem = <T extends BaseLayer>(
     item: T,
     setState: Dispatch<SetStateAction<{ item: T; hasChanges: boolean }[]>>,
+    hasChanges: boolean,
   ): void => {
     setState(prev => {
       const isCompletelyNew =
@@ -121,28 +122,34 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       if (isCompletelyNew) {
         return [...prev, { item: item, hasChanges: true }];
       } else {
-        return prev.map(l => {
-          const isUpdatingTmp =
-            l.item.id === 0 && l.item.fromDepth === item.fromDepth && l.item.toDepth === item.toDepth;
-          const isUpdatingExisting = l.item.id !== 0 && l.item.id === item.id;
-          return isUpdatingTmp || isUpdatingExisting ? { item, hasChanges: true } : l;
-        });
+        if (hasChanges) {
+          return prev.map(l => {
+            const isUpdatingTmp =
+              l.item.id === 0 && l.item.fromDepth === item.fromDepth && l.item.toDepth === item.toDepth;
+            const isUpdatingExisting = l.item.id !== 0 && l.item.id === item.id;
+            return isUpdatingTmp || isUpdatingExisting ? { item, hasChanges: true } : l;
+          });
+        }
+        return prev;
       }
     });
   };
 
-  const updateTmpLithology = useCallback((lithology: Lithology) => {
-    updateStratigraphyItem(lithology, setTmpLithologies);
+  const updateTmpLithology = useCallback((lithology: Lithology, hasChanges: boolean) => {
+    updateStratigraphyItem(lithology, setTmpLithologies, hasChanges);
     setSelectedLithology(undefined);
   }, []);
 
-  const updateTmpLithologicalDescription = useCallback((lithologicalDescription: LithologicalDescription) => {
-    updateStratigraphyItem(lithologicalDescription, setTmpLithologicalDescriptions);
-    setSelectedLithologicalDescription(undefined);
-  }, []);
+  const updateTmpLithologicalDescription = useCallback(
+    (lithologicalDescription: LithologicalDescription, hasChanges: boolean) => {
+      updateStratigraphyItem(lithologicalDescription, setTmpLithologicalDescriptions, hasChanges);
+      setSelectedLithologicalDescription(undefined);
+    },
+    [],
+  );
 
-  const updateTmpFaciesDescription = useCallback((faciesDescription: FaciesDescription) => {
-    updateStratigraphyItem(faciesDescription, setTmpFaciesDescriptions);
+  const updateTmpFaciesDescription = useCallback((faciesDescription: FaciesDescription, hasChanges: boolean) => {
+    updateStratigraphyItem(faciesDescription, setTmpFaciesDescriptions, hasChanges);
     setSelectedFaciesDescription(undefined);
   }, []);
 
