@@ -286,7 +286,6 @@
   "fromelevation": "from elevation",
   "gap": "Gap",
   "gapOrOverlayErrorCannotSave": "There are gaps or overlaps in the lithology. Please resolve the issues before saving.",
-
   "general": "General",
   "geometry": "Borehole trajectory",
   "geometryChartNEScaleXLabel": "Relative offset, West - East",
