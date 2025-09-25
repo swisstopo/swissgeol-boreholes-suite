@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { theme } from "../../../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
+import { Codelist } from "../../../../../../../components/codelist.ts";
 import { FormContainer, FormInput } from "../../../../../../../components/form/form.ts";
 import { useFormDirtyChanges } from "../../../../../../../components/form/useFormDirtyChanges.tsx";
 import { Lithology, LithologyDescription } from "../../../lithology.ts";
@@ -87,6 +88,43 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
   useEffect(() => {
     if (lithology) {
       formMethods.reset(lithology);
+      formMethods.setValue(
+        "rockConditionCodelistIds",
+        lithology.rockConditionCodelists?.map((c: Codelist) => c.id) ?? [],
+      );
+      formMethods.setValue("uscsTypeCodelistIds", lithology.uscsTypeCodelists?.map((c: Codelist) => c.id) ?? []);
+      formMethods.setValue("textureMetaCodelistIds", lithology.textureMetaCodelists?.map((c: Codelist) => c.id) ?? []);
+
+      lithology.lithologyDescriptions?.forEach((description, index) => {
+        formMethods.setValue(
+          `lithologyDescriptions.${index}.componentUnconOrganicCodelistIds`,
+          description.componentUnconOrganicCodelists?.map((c: Codelist) => c.id) ?? [],
+        );
+        formMethods.setValue(
+          `lithologyDescriptions.${index}.componentUnconDebrisCodelistIds`,
+          description.componentUnconDebrisCodelists?.map((c: Codelist) => c.id) ?? [],
+        );
+        formMethods.setValue(
+          `lithologyDescriptions.${index}.lithologyUnconDebrisCodelistIds`,
+          description.lithologyUnconDebrisCodelists?.map((c: Codelist) => c.id) ?? [],
+        );
+        formMethods.setValue(
+          `lithologyDescriptions.${index}.componentConParticleCodelistIds`,
+          description.componentConParticleCodelists?.map((c: Codelist) => c.id) ?? [],
+        );
+        formMethods.setValue(
+          `lithologyDescriptions.${index}.componentConParticleCodelistIds`,
+          description.componentConParticleCodelists?.map((c: Codelist) => c.id) ?? [],
+        );
+        formMethods.setValue(
+          `lithologyDescriptions.${index}.structurePostGenCodelistIds`,
+          description.structurePostGenCodelists?.map((c: Codelist) => c.id) ?? [],
+        );
+        formMethods.setValue(
+          `lithologyDescriptions.${index}.structureSynGenCodelistIds`,
+          description.structureSynGenCodelists?.map((c: Codelist) => c.id) ?? [],
+        );
+      });
     }
   }, [lithology, formMethods]);
 
