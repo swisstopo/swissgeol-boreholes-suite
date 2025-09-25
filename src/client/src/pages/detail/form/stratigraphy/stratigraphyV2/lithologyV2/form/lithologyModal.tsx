@@ -95,7 +95,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
       formMethods.setValue("uscsTypeCodelistIds", lithology.uscsTypeCodelists?.map((c: Codelist) => c.id) ?? []);
       formMethods.setValue("textureMetaCodelistIds", lithology.textureMetaCodelists?.map((c: Codelist) => c.id) ?? []);
 
-      lithology.lithologyDescriptions?.forEach((description, index) => {
+      for (const [index, description] of (lithology.lithologyDescriptions ?? []).entries()) {
         formMethods.setValue(
           `lithologyDescriptions.${index}.componentUnconOrganicCodelistIds`,
           description.componentUnconOrganicCodelists?.map((c: Codelist) => c.id) ?? [],
@@ -124,7 +124,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
           `lithologyDescriptions.${index}.structureSynGenCodelistIds`,
           description.structureSynGenCodelists?.map((c: Codelist) => c.id) ?? [],
         );
-      });
+      }
     }
   }, [lithology, formMethods]);
 
