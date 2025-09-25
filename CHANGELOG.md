@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1358 - 2025-09-24
+
 ### Changed
 - Use new codelists for stratigraphy properties in borehole.
 
