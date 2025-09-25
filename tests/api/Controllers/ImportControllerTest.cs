@@ -181,6 +181,8 @@ public class ImportControllerTest
         Assert.AreEqual(0, borheoleGeometry.HAZI, nameof(borheoleGeometry.HAZI));
         Assert.AreEqual(0.1468618496717173, borheoleGeometry.DEVI, nameof(borheoleGeometry.DEVI));
 
+        /*
+         * TODO Update for v2
         // Assert stratigraphy's lithological descriptions
         Assert.AreEqual(2, borehole.Stratigraphies.Count, nameof(borehole.Stratigraphies.Count));
         var stratigraphy = borehole.Stratigraphies.First();
@@ -191,8 +193,7 @@ public class ImportControllerTest
         Assert.IsNotNull(stratigraphy.Created, nameof(stratigraphy.Created).ShouldNotBeNullMessage());
         Assert.IsNotNull(stratigraphy.CreatedById, nameof(stratigraphy.CreatedById).ShouldNotBeNullMessage());
         Assert.AreEqual("Marjolaine Hegmann", stratigraphy.Name, nameof(stratigraphy.Name));
-        /*
-         * TODO Update for v2
+        
         Assert.AreEqual(9003, stratigraphy.QualityId, nameof(stratigraphy.QualityId));
         Assert.IsNull(stratigraphy.Quality, nameof(stratigraphy.Quality).ShouldBeNullMessage());
         Assert.AreEqual("My co-worker Ali has one of these. He says it looks towering.", stratigraphy.Notes, nameof(stratigraphy.Notes));

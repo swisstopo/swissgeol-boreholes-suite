@@ -291,7 +291,8 @@ public class ImportController : ControllerBase
             borehole.MarkBoreholeContentAsNew(user, workgroupId);
 
             MapHydrotestCodelists(borehole, hydrotestCodelists);
-            MapLithologyCodelists(borehole);
+            // TODO: Re-enable lithology codelist mapping when codelists are available in the import json.
+            // MapLithologyCodelists(borehole);
         }
     }
 
