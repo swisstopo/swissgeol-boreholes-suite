@@ -89,7 +89,6 @@ public static class BdmsContextExtensions
 
         // Lithology codelists (schema without LithologySchemas static class belong to legacy schemas)
         List<int> lithologyTopBedrockIds = codelists.Where(c => c.Schema == "custom.lithology_top_bedrock").Select(s => s.Id).ToList();
-        List<int> chronostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.chronostratigraphy_top_bedrock").Select(s => s.Id).ToList();
         List<int> lithostratigraphyTopBedrockIds = codelists.Where(c => c.Schema == "custom.lithostratigraphy_top_bedrock").Select(s => s.Id).ToList();
         List<int> alterationIds = codelists.Where(c => c.Schema == "alteration").Select(s => s.Id).ToList();
         List<int> colourIds = codelists.Where(c => c.Schema == "colour").Select(s => s.Id).ToList();
@@ -588,7 +587,7 @@ public static class BdmsContextExtensions
             .StrictMode(true)
             .RuleFor(o => o.FromDepth, f => (chronostratigraphy_ids % 10) * 10)
             .RuleFor(o => o.ToDepth, f => ((chronostratigraphy_ids % 10) + 1) * 10)
-            .RuleFor(o => o.ChronostratigraphyId, f => f.PickRandom(chronostratigraphyTopBedrockIds).OrNull(f, .05f))
+            .RuleFor(o => o.ChronostratigraphyId, f => f.PickRandom(chronostratigraphyIds).OrNull(f, .05f))
             .RuleFor(o => o.Chronostratigraphy, _ => default!)
             .RuleFor(o => o.StratigraphyId, f => GetStratigraphyId(chronostratigraphy_ids, 11_000_000))
             .RuleFor(o => o.Stratigraphy, _ => default!)
@@ -619,7 +618,7 @@ public static class BdmsContextExtensions
             .StrictMode(true)
             .RuleFor(o => o.FromDepth, f => (lithostratigraphy_ids % 10) * 10)
             .RuleFor(o => o.ToDepth, f => ((lithostratigraphy_ids % 10) + 1) * 10)
-            .RuleFor(o => o.LithostratigraphyId, f => f.PickRandom(lithostratigraphyTopBedrockIds).OrNull(f, .05f))
+            .RuleFor(o => o.LithostratigraphyId, f => f.PickRandom(lithostratigraphyIds).OrNull(f, .05f))
             .RuleFor(o => o.Lithostratigraphy, _ => default!)
             .RuleFor(o => o.StratigraphyId, f => GetStratigraphyId(lithostratigraphy_ids, 14_000_000))
             .RuleFor(o => o.Stratigraphy, _ => default!)
