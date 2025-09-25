@@ -2,14 +2,15 @@ import { FC, MouseEvent, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { DevTool } from "../../../../../../../../hookformDevtools.ts";
 import { theme } from "../../../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
-import { Codelist } from "../../../../../../../components/codelist.ts";
 import { FormContainer, FormInput } from "../../../../../../../components/form/form.ts";
 import { useFormDirtyChanges } from "../../../../../../../components/form/useFormDirtyChanges.tsx";
 import { Lithology, LithologyDescription } from "../../../lithology.ts";
 import { BasicDataFormSection } from "./basicDataFormSection.tsx";
 import { FormDialog } from "./formDialog.tsx";
+import { initializeLithologicalDescriptionInForm, initializeLithologyInForm } from "./formInitializers.ts";
 import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
 import { LithologyUnconsolidatedForm } from "./lithologyUnconsolidatedForm.tsx";
 import { RemarksFormSection } from "./remarksFormSection.tsx";
@@ -88,42 +89,21 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
   useEffect(() => {
     if (lithology) {
       formMethods.reset(lithology);
-      formMethods.setValue(
-        "rockConditionCodelistIds",
-        lithology.rockConditionCodelists?.map((c: Codelist) => c.id) ?? [],
-      );
-      formMethods.setValue("uscsTypeCodelistIds", lithology.uscsTypeCodelists?.map((c: Codelist) => c.id) ?? []);
-      formMethods.setValue("textureMetaCodelistIds", lithology.textureMetaCodelists?.map((c: Codelist) => c.id) ?? []);
+      initializeLithologyInForm(formMethods, lithology);
+
+      // Add first lithological description if not present
+      if (!lithology?.lithologyDescriptions) {
+        lithology.lithologyDescriptions = [
+          {
+            id: 0,
+            lithologyId: 0,
+            isFirst: true,
+          },
+        ];
+      }
 
       for (const [index, description] of (lithology.lithologyDescriptions ?? []).entries()) {
-        formMethods.setValue(
-          `lithologyDescriptions.${index}.componentUnconOrganicCodelistIds`,
-          description.componentUnconOrganicCodelists?.map((c: Codelist) => c.id) ?? [],
-        );
-        formMethods.setValue(
-          `lithologyDescriptions.${index}.componentUnconDebrisCodelistIds`,
-          description.componentUnconDebrisCodelists?.map((c: Codelist) => c.id) ?? [],
-        );
-        formMethods.setValue(
-          `lithologyDescriptions.${index}.lithologyUnconDebrisCodelistIds`,
-          description.lithologyUnconDebrisCodelists?.map((c: Codelist) => c.id) ?? [],
-        );
-        formMethods.setValue(
-          `lithologyDescriptions.${index}.componentConParticleCodelistIds`,
-          description.componentConParticleCodelists?.map((c: Codelist) => c.id) ?? [],
-        );
-        formMethods.setValue(
-          `lithologyDescriptions.${index}.componentConParticleCodelistIds`,
-          description.componentConParticleCodelists?.map((c: Codelist) => c.id) ?? [],
-        );
-        formMethods.setValue(
-          `lithologyDescriptions.${index}.structurePostGenCodelistIds`,
-          description.structurePostGenCodelists?.map((c: Codelist) => c.id) ?? [],
-        );
-        formMethods.setValue(
-          `lithologyDescriptions.${index}.structureSynGenCodelistIds`,
-          description.structureSynGenCodelists?.map((c: Codelist) => c.id) ?? [],
-        );
+        initializeLithologicalDescriptionInForm(index, description, formMethods);
       }
     }
   }, [lithology, formMethods]);
@@ -145,6 +125,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
       onClose={closeDialog}
       isCloseDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
       <FormProvider {...formMethods}>
+        <DevTool control={formMethods.control} placement="top-left" />
         <Stack gap={3} flex={"0 1 1040px"} m={7.5}>
           <BoreholesCard
             data-cy="lithology-basic-data"

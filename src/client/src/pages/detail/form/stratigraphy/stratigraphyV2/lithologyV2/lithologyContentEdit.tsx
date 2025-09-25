@@ -266,17 +266,32 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     t,
   ]);
 
-  // Mark deletions as changes
+  // Mark deletions and adds as changes
   useEffect(() => {
     if (!hasChanges) {
-      const hasDeletedLithologies = lithologies.some(l => !tmpLithologies.find(tl => tl.item.id === l.id));
+      const hasDeletedLithologies = lithologies.some(l => !tmpLithologiesFlat.find(tl => tl.id === l.id));
+      const hasAddedLithologies = tmpLithologiesFlat.some(l => !lithologies.find(tl => tl.id === l.id));
       const hasDeletedLithologicalDescriptions = lithologicalDescriptions.some(
-        l => !tmpLithologicalDescriptions.find(tl => tl.item.id === l.id),
+        l => !tmpLithologicalDescriptionsFlat.find(tl => tl.id === l.id),
+      );
+      const hasAddedLithologicalDescriptions = tmpLithologicalDescriptionsFlat.some(
+        l => !lithologicalDescriptions.find(tl => tl.id === l.id),
       );
       const hasDeletedFaciesDescriptions = faciesDescriptions.some(
-        l => !tmpFaciesDescriptions.find(tl => tl.item.id === l.id),
+        l => !tmpFaciesDescriptionsFlat.find(tl => tl.id === l.id),
       );
-      markAsChanged(hasDeletedLithologies || hasDeletedLithologicalDescriptions || hasDeletedFaciesDescriptions);
+      const hasAddedFaciesDescriptions = tmpFaciesDescriptionsFlat.some(
+        l => !faciesDescriptions.find(tl => tl.id === l.id),
+      );
+
+      markAsChanged(
+        hasAddedLithologies ||
+          hasDeletedLithologies ||
+          hasAddedLithologicalDescriptions ||
+          hasAddedFaciesDescriptions ||
+          hasDeletedLithologicalDescriptions ||
+          hasDeletedFaciesDescriptions,
+      );
     }
   }, [
     faciesDescriptions,
@@ -284,9 +299,9 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     lithologicalDescriptions,
     lithologies,
     markAsChanged,
-    tmpFaciesDescriptions,
-    tmpLithologicalDescriptions,
-    tmpLithologies,
+    tmpFaciesDescriptionsFlat,
+    tmpLithologicalDescriptionsFlat,
+    tmpLithologiesFlat,
   ]);
 
   useEffect(() => {
