@@ -121,23 +121,23 @@ export function useLayerDepths(
       const current = layerDepths[i];
       const next = layerDepths[i + 1];
 
-      const hasFromDepthOverlapError = previous ? current.fromDepth < previous.toDepth : false;
-      const hasToDepthOverlapError = next ? current.toDepth > next.fromDepth : false;
-      const hasFromDepthGapError = previous ? current.fromDepth > previous.toDepth : false;
-      const hasToDepthGapError = next ? current.toDepth < next.fromDepth : false;
+      const hasFromDepthOverlap = previous ? current.fromDepth < previous.toDepth : false;
+      const hasToDepthOverlap = next ? current.toDepth > next.fromDepth : false;
 
-      const hasFromDepthError = hasFromDepthOverlapError || hasFromDepthGapError;
-      const hasToDepthError = hasToDepthOverlapError || hasToDepthGapError;
-
-      filledLayerDepths.push({ ...layerDepths[i], hasFromDepthError, hasToDepthError });
+      filledLayerDepths.push({
+        ...layerDepths[i],
+        hasFromDepthError: hasFromDepthOverlap,
+        hasToDepthError: hasToDepthOverlap,
+      });
+      // add gap layer
       if (i < layerDepths.length - 1) {
         if (current.toDepth < next.fromDepth) {
           filledLayerDepths.push({
             fromDepth: current.toDepth,
             toDepth: next.fromDepth,
             lithologyId: 0,
-            hasFromDepthError,
-            hasToDepthError,
+            hasFromDepthError: true,
+            hasToDepthError: true,
           });
         }
       }
