@@ -3,8 +3,8 @@ import { useTranslation } from "react-i18next";
 import { Chip, IconButton, Stack, SxProps, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import { Copy, Plus, Trash2, TriangleAlert } from "lucide-react";
-import { BaseLayer } from "../../../../../api/stratigraphy.ts";
-import { theme } from "../../../../../AppTheme.ts";
+import { BaseLayer } from "../../../../api/stratigraphy.ts";
+import { theme } from "../../../../AppTheme.ts";
 
 export const StratigraphyTableHeader = styled(Stack)(() => ({
   flexDirection: "row",

@@ -78,7 +78,6 @@ describe("Tests for the chronostratigraphy editor.", () => {
         goToDetailRouteAndAcceptTerms(`/${id}/stratigraphy/${stratigraphyId}#chronostratigraphy`);
       });
     });
-    cy.wait("@get-layers-by-profileId");
 
     // start editing session
     startBoreholeEditing();

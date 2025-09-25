@@ -63,7 +63,6 @@ describe("Tests for the lithostratigraphy editor.", () => {
         goToDetailRouteAndAcceptTerms(`/${id}/stratigraphy/${stratigraphyId}#lithostratigraphy`);
       });
     });
-    cy.wait("@get-layers-by-profileId");
 
     // start editing session
     startBoreholeEditing();

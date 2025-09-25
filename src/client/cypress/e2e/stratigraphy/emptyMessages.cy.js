@@ -10,5 +10,6 @@ describe("Messages for empty profiles", () => {
     cy.contains("No stratigraphies available...");
     startBoreholeEditing();
     cy.contains("button", "Create empty stratigraphy").should("be.visible").and("be.enabled");
+    cy.contains("button", "Extract stratigraphy from profile").should("be.visible").and("be.enabled");
   });
 });
