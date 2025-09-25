@@ -59,6 +59,14 @@ export interface BaseLayer {
   isGap?: boolean;
 }
 
+export interface MinimalLayer {
+  id: number;
+  fromDepth?: number;
+  toDepth?: number;
+  stratigraphyId: number;
+  isGap?: boolean;
+}
+
 export interface Layer {
   id: number;
   stratigraphyId: number;

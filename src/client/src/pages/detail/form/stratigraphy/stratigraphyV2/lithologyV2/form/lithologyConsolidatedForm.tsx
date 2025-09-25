@@ -29,14 +29,14 @@ const LithologyDescriptionConsolidatedForm: FC<LithologyDescriptionEditForm> = (
             schemaName={"lithology_con"}
           />,
           <FormDomainSelect
-            key={`lithologyDescriptions.${index}.colorPrimary`}
-            fieldName={`lithologyDescriptions.${index}.colorPrimary`}
+            key={`lithologyDescriptions.${index}.colorPrimaryId`}
+            fieldName={`lithologyDescriptions.${index}.colorPrimaryId`}
             label={"colorPrimary"}
             schemaName={"color"}
           />,
           <FormDomainSelect
-            key={`lithologyDescriptions.${index}.colorSecondary`}
-            fieldName={`lithologyDescriptions.${index}.colorSecondary`}
+            key={`lithologyDescriptions.${index}.colorSecondaryId`}
+            fieldName={`lithologyDescriptions.${index}.colorSecondaryId`}
             label={"colorSecondary"}
             schemaName={"color"}
           />,
@@ -57,26 +57,26 @@ const LithologyDescriptionConsolidatedForm: FC<LithologyDescriptionEditForm> = (
         ],
         [
           <FormDomainSelect
-            key={`lithologyDescriptions.${index}.grainSize`}
-            fieldName={`lithologyDescriptions.${index}.grainSize`}
+            key={`lithologyDescriptions.${index}.grainSizeId`}
+            fieldName={`lithologyDescriptions.${index}.grainSizeId`}
             label={"grainSize"}
             schemaName={"grain_size"}
           />,
           <FormDomainSelect
-            key={`lithologyDescriptions.${index}.grainAngularity`}
-            fieldName={`lithologyDescriptions.${index}.grainAngularity`}
+            key={`lithologyDescriptions.${index}.grainAngularityId`}
+            fieldName={`lithologyDescriptions.${index}.grainAngularityId`}
             label={"grainAngularity"}
             schemaName={"grain_angularity"}
           />,
           <FormDomainSelect
-            key={`lithologyDescriptions.${index}.gradation`}
-            fieldName={`lithologyDescriptions.${index}.gradation`}
+            key={`lithologyDescriptions.${index}.gradationId`}
+            fieldName={`lithologyDescriptions.${index}.gradationId`}
             label={"gradation"}
             schemaName={"gradation"}
           />,
           <FormDomainSelect
-            key={`lithologyDescriptions.${index}.cementation`}
-            fieldName={`lithologyDescriptions.${index}.cementation`}
+            key={`lithologyDescriptions.${index}.cementationId`}
+            fieldName={`lithologyDescriptions.${index}.cementationId`}
             label={"cementation"}
             schemaName={"cementation"}
           />,
@@ -138,7 +138,7 @@ export const LithologyConsolidatedForm: FC<LithologyEditForm> = ({ lithologyId, 
             schemaName={"texture_mata"}
           />
           <FormDomainSelect
-            fieldName={"alterationDegree"}
+            fieldName={"alterationDegreeId"}
             label={"alterationDegree"}
             schemaName={"alteration_degree"}
           />

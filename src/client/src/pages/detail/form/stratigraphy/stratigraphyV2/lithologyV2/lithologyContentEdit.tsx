@@ -6,6 +6,7 @@ import {
   BaseLayer,
   FaciesDescription,
   LithologicalDescription,
+  MinimalLayer,
   useFaciesDescriptionMutations,
   useLithologicalDescriptionMutations,
 } from "../../../../../../api/stratigraphy.ts";
@@ -153,7 +154,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     setSelectedFaciesDescription(undefined);
   }, []);
 
-  const handleEditLithology = useCallback((layer: BaseLayer) => {
+  const handleEditLithology = useCallback((layer: MinimalLayer) => {
     setSelectedLithology(layer as Lithology);
   }, []);
 
@@ -241,6 +242,8 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     //     await updateFaciesDescription(faciesDescription);
     //   }
     // }
+    markAsChanged(false);
+    await onReset();
     return true;
     // TODO: Remove rule disable once migrated to new stratigraphies
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -266,17 +269,32 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     t,
   ]);
 
-  // Mark deletions as changes
+  // Mark deletions and adds as changes
   useEffect(() => {
     if (!hasChanges) {
-      const hasDeletedLithologies = lithologies.some(l => !tmpLithologies.find(tl => tl.item.id === l.id));
+      const hasDeletedLithologies = lithologies.some(l => !tmpLithologiesFlat.find(tl => tl.id === l.id));
+      const hasAddedLithologies = tmpLithologiesFlat.some(l => !lithologies.find(tl => tl.id === l.id));
       const hasDeletedLithologicalDescriptions = lithologicalDescriptions.some(
-        l => !tmpLithologicalDescriptions.find(tl => tl.item.id === l.id),
+        l => !tmpLithologicalDescriptionsFlat.find(tl => tl.id === l.id),
+      );
+      const hasAddedLithologicalDescriptions = tmpLithologicalDescriptionsFlat.some(
+        l => !lithologicalDescriptions.find(tl => tl.id === l.id),
       );
       const hasDeletedFaciesDescriptions = faciesDescriptions.some(
-        l => !tmpFaciesDescriptions.find(tl => tl.item.id === l.id),
+        l => !tmpFaciesDescriptionsFlat.find(tl => tl.id === l.id),
       );
-      markAsChanged(hasDeletedLithologies || hasDeletedLithologicalDescriptions || hasDeletedFaciesDescriptions);
+      const hasAddedFaciesDescriptions = tmpFaciesDescriptionsFlat.some(
+        l => !faciesDescriptions.find(tl => tl.id === l.id),
+      );
+
+      markAsChanged(
+        hasAddedLithologies ||
+          hasDeletedLithologies ||
+          hasAddedLithologicalDescriptions ||
+          hasAddedFaciesDescriptions ||
+          hasDeletedLithologicalDescriptions ||
+          hasDeletedFaciesDescriptions,
+      );
     }
   }, [
     faciesDescriptions,
@@ -284,9 +302,9 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     lithologicalDescriptions,
     lithologies,
     markAsChanged,
-    tmpFaciesDescriptions,
-    tmpLithologicalDescriptions,
-    tmpLithologies,
+    tmpFaciesDescriptionsFlat,
+    tmpLithologicalDescriptionsFlat,
+    tmpLithologiesFlat,
   ]);
 
   useEffect(() => {
@@ -453,7 +471,18 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
             </StratigraphyTableContent>
           )}
         </Stack>
-        <AddRowButton />
+        {/* TODO: Adding new layer and then deleting it again does not yet clear the "hasChanges" of the save context */}
+        <AddRowButton
+          onClick={() =>
+            handleEditLithology({
+              fromDepth: depths[depths.length - 1].toDepth,
+              toDepth: undefined,
+              id: 0,
+              isGap: false,
+              stratigraphyId: 0,
+            })
+          }
+        />
       </Stack>
       <LithologyModal lithology={selectedLithology} updateLithology={updateTmpLithology} />
       <LithologicalDescriptionModal
