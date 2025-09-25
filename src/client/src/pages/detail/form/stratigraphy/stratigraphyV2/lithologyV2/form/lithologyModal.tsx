@@ -19,7 +19,7 @@ type FormErrors = { [key: string]: FormError | FormErrors };
 
 interface LithologyEditModalProps {
   lithology: Lithology | undefined;
-  updateLithology: (lithology: Lithology, hasChanges: boolean) => void;
+  updateLithology: (lithology: Lithology) => void;
 }
 
 export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateLithology }) => {
@@ -134,7 +134,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
     const isValid = await formMethods.trigger();
     if (!formState.isDirty || isValid) {
       const values = getValues();
-      updateLithology({ ...lithology, ...values } as Lithology, formState.isDirty);
+      updateLithology({ ...lithology, ...values });
     }
   };
 

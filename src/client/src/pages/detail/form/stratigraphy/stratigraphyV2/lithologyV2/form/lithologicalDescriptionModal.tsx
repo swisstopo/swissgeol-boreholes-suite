@@ -14,7 +14,7 @@ interface LithologicalDescriptionModalProps {
   description: LithologicalDescription | undefined;
   fromDepths: number[];
   toDepths: number[];
-  updateLithologicalDescription: (description: LithologicalDescription, hasChanges: boolean) => void;
+  updateLithologicalDescription: (description: LithologicalDescription) => void;
 }
 
 export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps> = ({
@@ -38,7 +38,7 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
     const isValid = await formMethods.trigger();
     if (!formState.isDirty || isValid) {
       const values = getValues();
-      updateLithologicalDescription({ ...description, ...values } as LithologicalDescription, formState.isDirty);
+      updateLithologicalDescription({ ...description, ...values } as LithologicalDescription);
     }
   };
 

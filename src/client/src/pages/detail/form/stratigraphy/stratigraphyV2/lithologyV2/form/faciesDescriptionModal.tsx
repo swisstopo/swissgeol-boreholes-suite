@@ -15,7 +15,7 @@ interface FaciesDescriptionModalProps {
   description: FaciesDescription | undefined;
   fromDepths: number[];
   toDepths: number[];
-  updateFaciesDescription: (description: FaciesDescription, hasChanges: boolean) => void;
+  updateFaciesDescription: (description: FaciesDescription) => void;
 }
 
 export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
@@ -39,7 +39,7 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
     const isValid = await formMethods.trigger();
     if (!formState.isDirty || isValid) {
       const values = getValues();
-      updateFaciesDescription({ ...description, ...values } as FaciesDescription, formState.isDirty);
+      updateFaciesDescription({ ...description, ...values } as FaciesDescription);
     }
   };
 
