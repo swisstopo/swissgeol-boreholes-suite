@@ -110,7 +110,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
 
   const updateTmpLithology = useCallback((lithology: Lithology, hasChanges: boolean) => {
     if (hasChanges) {
-      // TODO: For all Codelist-properties load codelist object from useCodelistSchema and set it to the lithology. We need this to build the labels in LithologyLabels
       setTmpLithologies(prev =>
         prev.map(l =>
           (l.item.id !== 0 && l.item.id === lithology.id) ||
