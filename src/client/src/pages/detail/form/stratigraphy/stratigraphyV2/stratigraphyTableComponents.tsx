@@ -60,7 +60,7 @@ export const StratigraphyTableCellRow = styled(Stack)(() => ({
 interface StratigraphyTableLayerCellProps {
   children: ReactNode;
   layer: BaseLayer;
-  onHoverClick: (layer: BaseLayer) => void;
+  onHoverClick?: (layer: BaseLayer) => void;
   onClick?: (layer: BaseLayer) => void;
   sx?: SxProps;
 }
@@ -112,19 +112,21 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
         {layer?.fromDepth !== null && layer?.fromDepth !== undefined && (
           <Typography variant="body1">{layer?.fromDepth} m MD</Typography>
         )}
-        <IconButton
-          color={"primaryInverse"}
-          sx={{
-            borderRadius: theme.spacing(0.5),
-            width: "36px",
-            height: "36px",
-          }}
-          onClick={e => {
-            e.stopPropagation();
-            onHoverClick(layer);
-          }}>
-          {isEditing ? <Trash2 /> : <Copy />}
-        </IconButton>
+        {onHoverClick && (
+          <IconButton
+            color={"primaryInverse"}
+            sx={{
+              borderRadius: theme.spacing(0.5),
+              width: "36px",
+              height: "36px",
+            }}
+            onClick={e => {
+              e.stopPropagation();
+              onHoverClick(layer);
+            }}>
+            {isEditing ? <Trash2 /> : <Copy />}
+          </IconButton>
+        )}
       </StratigraphyTableCellRow>
       <Stack
         ref={stackRef}
