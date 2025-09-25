@@ -33,6 +33,10 @@ export const StratigraphyProvider: FC<PropsWithChildren> = ({ children }) => {
     const exists = saveHandlersRef.current.some(h => h.registeringComponent === registeringComponent);
     if (!exists) {
       saveHandlersRef.current.push({ handler, registeringComponent });
+    } else {
+      saveHandlersRef.current = saveHandlersRef.current.map(h =>
+        h.registeringComponent === registeringComponent ? { handler, registeringComponent } : h,
+      );
     }
   }, []);
 
@@ -40,6 +44,10 @@ export const StratigraphyProvider: FC<PropsWithChildren> = ({ children }) => {
     const exists = resetHandlersRef.current.some(h => h.registeringComponent === registeringComponent);
     if (!exists) {
       resetHandlersRef.current.push({ handler, registeringComponent });
+    } else {
+      resetHandlersRef.current = resetHandlersRef.current.map(h =>
+        h.registeringComponent === registeringComponent ? { handler, registeringComponent } : h,
+      );
     }
   }, []);
 

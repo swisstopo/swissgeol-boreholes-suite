@@ -2,6 +2,7 @@ import { FC, MouseEvent, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { DevTool } from "../../../../../../../../hookformDevtools.ts";
 import { theme } from "../../../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
 import { FormContainer, FormInput } from "../../../../../../../components/form/form.ts";
@@ -107,6 +108,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
       onClose={closeDialog}
       isCloseDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
       <FormProvider {...formMethods}>
+        <DevTool control={formMethods.control} placement="top-left" />
         <Stack gap={3} flex={"0 1 1040px"} m={7.5}>
           <BoreholesCard
             data-cy="lithology-basic-data"

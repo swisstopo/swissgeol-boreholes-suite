@@ -117,12 +117,28 @@ export function useLayerDepths(
     layerDepths.sort((a, b) => a.fromDepth - b.fromDepth);
     const filledLayerDepths: LayerDepth[] = [];
     for (let i = 0; i < layerDepths.length; i++) {
-      filledLayerDepths.push(layerDepths[i]);
+      const previous = layerDepths[i - 1];
+      const current = layerDepths[i];
+      const next = layerDepths[i + 1];
+
+      const hasFromDepthOverlapError = previous ? current.fromDepth < previous.toDepth : false;
+      const hasToDepthOverlapError = next ? current.toDepth > next.fromDepth : false;
+      const hasFromDepthGapError = previous ? current.fromDepth > previous.toDepth : false;
+      const hasToDepthGapError = next ? current.toDepth < next.fromDepth : false;
+
+      const hasFromDepthError = hasFromDepthOverlapError || hasFromDepthGapError;
+      const hasToDepthError = hasToDepthOverlapError || hasToDepthGapError;
+
+      filledLayerDepths.push({ ...layerDepths[i], hasFromDepthError, hasToDepthError });
       if (i < layerDepths.length - 1) {
-        const current = layerDepths[i];
-        const next = layerDepths[i + 1];
         if (current.toDepth < next.fromDepth) {
-          filledLayerDepths.push({ fromDepth: current.toDepth, toDepth: next.fromDepth, lithologyId: 0 });
+          filledLayerDepths.push({
+            fromDepth: current.toDepth,
+            toDepth: next.fromDepth,
+            lithologyId: 0,
+            hasFromDepthError,
+            hasToDepthError,
+          });
         }
       }
     }

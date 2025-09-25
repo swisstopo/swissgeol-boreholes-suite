@@ -9,6 +9,7 @@ import {
   useFaciesDescriptionMutations,
   useLithologicalDescriptionMutations,
 } from "../../../../../../api/stratigraphy.ts";
+import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
 import { Lithology, useLithologyMutations } from "../../lithology.ts";
 import { StratigraphyContext, StratigraphyContextProps } from "../../stratigraphyContext.tsx";
@@ -22,8 +23,6 @@ import {
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "../stratigraphyTableComponents.tsx";
-import { FaciesDescriptionModal } from "./form/faciesDescriptionModal.tsx";
-import { LithologicalDescriptionModal } from "./form/lithologicalDescriptionModal.tsx";
 import { LithologyModal } from "./form/lithologyModal.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";
@@ -48,6 +47,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
 }) => {
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
+  const { showAlert } = useContext(AlertContext);
   const { registerSaveHandler, registerResetHandler } = useContext<StratigraphyContextProps>(StratigraphyContext);
   const {
     add: { mutateAsync: addLithology },
@@ -133,20 +133,20 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     },
     [deleteLithology],
   );
-
-  const updateTmpLithologicalDescription = useCallback((description: LithologicalDescription, hasChanges: boolean) => {
-    if (hasChanges) {
-      setTmpLithologicalDescriptions(prev =>
-        prev.map(l =>
-          (l.item.id !== 0 && l.item.id === description.id) ||
-          (l.item.id === 0 && l.item.fromDepth === description.fromDepth && l.item.toDepth === description.toDepth)
-            ? { item: description, hasChanges: true }
-            : l,
-        ),
-      );
-    }
-    setSelectedLithologicalDescription(undefined);
-  }, []);
+  //
+  // const updateTmpLithologicalDescription = useCallback((description: LithologicalDescription, hasChanges: boolean) => {
+  //   if (hasChanges) {
+  //     setTmpLithologicalDescriptions(prev =>
+  //       prev.map(l =>
+  //         (l.item.id !== 0 && l.item.id === description.id) ||
+  //         (l.item.id === 0 && l.item.fromDepth === description.fromDepth && l.item.toDepth === description.toDepth)
+  //           ? { item: description, hasChanges: true }
+  //           : l,
+  //       ),
+  //     );
+  //   }
+  //   setSelectedLithologicalDescription(undefined);
+  // }, []);
 
   const handleEditLithologicalDescription = useCallback((layer: BaseLayer) => {
     setSelectedLithologicalDescription(layer as LithologicalDescription);
@@ -161,20 +161,20 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     [deleteLithologicalDescription],
   );
 
-  const updateTmpFaciesDescription = useCallback((description: FaciesDescription, hasChanges: boolean) => {
-    if (hasChanges) {
-      setTmpFaciesDescriptions(prev =>
-        prev.map(l =>
-          (l.item.id !== 0 && l.item.id === description.id) ||
-          (l.item.id === 0 && l.item.fromDepth === description.fromDepth && l.item.toDepth === description.toDepth)
-            ? { item: description, hasChanges: true }
-            : l,
-        ),
-      );
-    }
-    setSelectedFaciesDescription(undefined);
-  }, []);
-
+  // const updateTmpFaciesDescription = useCallback((description: FaciesDescription, hasChanges: boolean) => {
+  //   if (hasChanges) {
+  //     setTmpFaciesDescriptions(prev =>
+  //       prev.map(l =>
+  //         (l.item.id !== 0 && l.item.id === description.id) ||
+  //         (l.item.id === 0 && l.item.fromDepth === description.fromDepth && l.item.toDepth === description.toDepth)
+  //           ? { item: description, hasChanges: true }
+  //           : l,
+  //       ),
+  //     );
+  //   }
+  //   setSelectedFaciesDescription(undefined);
+  // }, []);
+  //
   const handleEditFaciesDescription = useCallback((layer: BaseLayer) => {
     setSelectedFaciesDescription(layer as FaciesDescription);
   }, []);
@@ -206,7 +206,13 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   }, [faciesDescriptions, lithologicalDescriptions, lithologies]);
 
   const onSave = useCallback(async () => {
-    // TODO: Only allow saving if no gaps exist
+    console.log("onSave lithology");
+    // TODO: Only allow saving if no gaps exist#
+    console.log(depths.filter(c => c.hasFromDepthError || c.hasToDepthError));
+    if (depths.filter(c => c.hasFromDepthError || c.hasToDepthError).length > 0) {
+      showAlert(t(t("gapOrOverlayErrorCannotSave")), "error");
+      return false;
+    }
     for (const lithology of tmpLithologies.filter(l => l.hasChanges).map(l => l.item)) {
       if (lithology.id === 0) {
         await addLithology({ ...lithology, stratigraphyId });
@@ -234,6 +240,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     addFaciesDescription,
+    depths,
     addLithologicalDescription,
     addLithology,
     stratigraphyId,
@@ -255,15 +262,15 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     console.log("lithologies changed", lithologies);
   }, [lithologies]);
 
-  useEffect(() => {
-    // TODO: Update tmpLithologicalDescriptions but keep hasChanges where id matches
-    console.log("lithologicalDescriptions changed", lithologicalDescriptions);
-  }, [lithologicalDescriptions]);
-
-  useEffect(() => {
-    // TODO: Update tmpFaciesDescriptions but keep hasChanges where id matches
-    console.log("faciesDescriptions changed", faciesDescriptions);
-  }, [faciesDescriptions]);
+  // useEffect(() => {
+  //   // TODO: Update tmpLithologicalDescriptions but keep hasChanges where id matches
+  //   console.log("lithologicalDescriptions changed", lithologicalDescriptions);
+  // }, [lithologicalDescriptions]);
+  //
+  // useEffect(() => {
+  //   // TODO: Update tmpFaciesDescriptions but keep hasChanges where id matches
+  //   console.log("faciesDescriptions changed", faciesDescriptions);
+  // }, [faciesDescriptions]);
 
   const renderGapCell = (
     layer: BaseLayer,
@@ -356,8 +363,10 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
                 {/* TODO: Add FormInput for depths and update lithology if depth changes. Add overlap validation check */}
                 {depths.map((depth, index) => (
                   <StratigraphyTableCell key={`depth-${index}`} sx={{ height: `${defaultRowHeight}px` }}>
-                    <Typography>{`${depth.fromDepth} m MD`}</Typography>
-                    <Typography>{`${depth.toDepth} m MD`}</Typography>
+                    <Typography
+                      color={depth.hasFromDepthError ? "error" : "default"}>{`${depth.fromDepth} m MD`}</Typography>
+                    <Typography
+                      color={depth.hasToDepthError ? "error" : "default"}>{`${depth.toDepth} m MD`}</Typography>
                   </StratigraphyTableCell>
                 ))}
               </StratigraphyTableColumn>
@@ -410,18 +419,18 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
         <AddRowButton />
       </Stack>
       <LithologyModal lithology={selectedLithology} updateLithology={updateTmpLithology} />
-      <LithologicalDescriptionModal
-        description={selectedLithologicalDescription}
-        fromDepths={getDepthOptions(selectedLithologicalDescription, tmpLithologicalDescriptionsFlat)}
-        toDepths={getDepthOptions(selectedLithologicalDescription, tmpLithologicalDescriptionsFlat, true)}
-        updateLithologicalDescription={updateTmpLithologicalDescription}
-      />
-      <FaciesDescriptionModal
-        description={selectedFaciesDescription}
-        fromDepths={getDepthOptions(selectedFaciesDescription, tmpFaciesDescriptionsFlat)}
-        toDepths={getDepthOptions(selectedFaciesDescription, tmpFaciesDescriptionsFlat, true)}
-        updateFaciesDescription={updateTmpFaciesDescription}
-      />
+      {/*<LithologicalDescriptionModal*/}
+      {/*  description={selectedLithologicalDescription}*/}
+      {/*  fromDepths={getDepthOptions(selectedLithologicalDescription, tmpLithologicalDescriptionsFlat)}*/}
+      {/*  toDepths={getDepthOptions(selectedLithologicalDescription, tmpLithologicalDescriptionsFlat, true)}*/}
+      {/*  updateLithologicalDescription={updateTmpLithologicalDescription}*/}
+      {/*/>*/}
+      {/*<FaciesDescriptionModal*/}
+      {/*  description={selectedFaciesDescription}*/}
+      {/*  fromDepths={getDepthOptions(selectedFaciesDescription, tmpFaciesDescriptionsFlat)}*/}
+      {/*  toDepths={getDepthOptions(selectedFaciesDescription, tmpFaciesDescriptionsFlat, true)}*/}
+      {/*  updateFaciesDescription={updateTmpFaciesDescription}*/}
+      {/*/>*/}
     </>
   );
 };

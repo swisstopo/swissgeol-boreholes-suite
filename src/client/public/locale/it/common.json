@@ -286,6 +286,7 @@
   "fromdiameter": "a partire dal diametro",
   "fromelevation": "a partire dalla quota",
   "gap": "Lacuna",
+  "gapOrOverlayErrorCannotSave": "Ci sono lacune o sovrapposizioni nella litologia. Risolvere gli errori prima di salvare.",
   "general": "Generale",
   "geometry": "Traiettoria di perforazione",
   "geometryChartNEScaleXLabel": "Offset relativo, Ovest - Est",

@@ -90,6 +90,8 @@ export interface LayerDepth {
   fromDepth: number;
   toDepth: number;
   lithologyId: number;
+  hasFromDepthError?: boolean;
+  hasToDepthError?: boolean;
 }
 
 export interface LithologyEditForm {

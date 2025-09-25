@@ -286,6 +286,7 @@
   "fromdiameter": "von Durchmesser",
   "fromelevation": "von Höhe",
   "gap": "Lücke",
+  "gapOrOverlayErrorCannotSave": "Es gibt Lücken oder Überlappungen im Lithologie. Beheben Sie die Fehler vor dem Speichern.",
   "general": "Generell",
   "geometry": "Bohrlochpfad",
   "geometryChartNEScaleXLabel": "Relativer Abstand, West - Ost",
