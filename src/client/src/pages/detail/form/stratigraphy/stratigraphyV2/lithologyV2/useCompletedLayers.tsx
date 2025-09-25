@@ -28,7 +28,7 @@ export function useCompletedLayers(layers: BaseLayer[] = [], layerDepths?: Layer
       // If there's a gap between this layer and the previous depth, add a gap filler
       if (layer.fromDepth > lastDepth && index > 0) {
         const gapLayer: BaseLayer = {
-          id: index,
+          id: 0,
           fromDepth: lastDepth,
           toDepth: layer.fromDepth,
           isGap: true,
@@ -37,7 +37,7 @@ export function useCompletedLayers(layers: BaseLayer[] = [], layerDepths?: Layer
         resultLayers.push(gapLayer);
       }
 
-      resultLayers.push(layer);
+      resultLayers.push({ ...layer, isGap: false });
       lastDepth = layer.toDepth;
     });
 
