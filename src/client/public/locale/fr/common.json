@@ -286,6 +286,7 @@
   "fromdiameter": "à partir du diamètre",
   "fromelevation": "de l'altitude",
   "gap": "Lacune",
+  "gapOrOverlayErrorCannotSave": "Il y a des lacunes ou des chevauchements dans la lithologie. Veuillez corriger les erreurs avant d'enregistrer.",
   "general": "Général",
   "geometry": "Trajectoire du forage",
   "geometryChartNEScaleXLabel": "Offset relatif, Ouest - Est",
