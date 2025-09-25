@@ -241,6 +241,8 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     //     await updateFaciesDescription(faciesDescription);
     //   }
     // }
+    markAsChanged(false);
+    await onReset();
     return true;
     // TODO: Remove rule disable once migrated to new stratigraphies
     // eslint-disable-next-line react-hooks/exhaustive-deps
