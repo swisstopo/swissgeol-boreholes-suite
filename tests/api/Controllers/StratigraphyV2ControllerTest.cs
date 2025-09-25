@@ -55,7 +55,7 @@ public class StratigraphyV2ControllerTest
         Assert.AreEqual(1000972, stratigraphy.BoreholeId);
         Assert.AreEqual("Sarah Ziemann", stratigraphy.Name);
         Assert.AreEqual(4, stratigraphy.CreatedById);
-        Assert.AreEqual(4, stratigraphy.UpdatedById);
+        Assert.AreEqual(2, stratigraphy.UpdatedById);
         Assert.AreEqual(true, stratigraphy.IsPrimary);
     }
 
