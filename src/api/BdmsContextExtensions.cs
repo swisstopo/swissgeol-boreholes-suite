@@ -1273,47 +1273,6 @@ public static class BdmsContextExtensions
         SeedLithologyDescriptionCodeRelationships<LithologyDescriptionStructurePostGenCodes>(structurePostGenIds);
         SeedLithologyDescriptionCodeRelationships<LithologyDescriptionStructureSynGenCodes>(structureSynGenIds);
 
-        // Seed lithology description codelist join tables (without using Faker)
-        var lithologyDescriptionRange = Enumerable.Range(23_500_000, 20_000);
-
-        void SeedLithologyDescriptionCodeRelationships<T>(IEnumerable<int> codelistIds)
-            where T : class, ILithologyDescriptionCode, new()
-        {
-            var lithologyDescriptionCodes = new List<T>();
-
-            // Create a smaller representative sample (not all possible combinations).
-            // This significantly reduces the data volume while maintaining distribution.
-            var random = new Random(lithologyDescriptionRange.Count());
-            var codeListSampleSize = Math.Min(5, codelistIds.Count());
-
-            foreach (var lithologyDescriptionId in lithologyDescriptionRange)
-            {
-                // Select a smaller subset of codes for each lithology description.
-                // This is more realistic than assigning every code to every lithology description.
-                var codeListSample = codelistIds
-                    .OrderBy(_ => random.Next())
-                    .Take(random.Next(1, codeListSampleSize + 1))
-                    .ToList();
-
-                foreach (var codeId in codeListSample)
-                {
-                    lithologyDescriptionCodes.Add(new() { LithologyDescriptionId = lithologyDescriptionId, CodelistId = codeId });
-                }
-            }
-
-            context.BulkInsert(lithologyDescriptionCodes, bulkConfig);
-        }
-
-        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionComponentUnconOrganicCodes>(componentUnconOrganicIds);
-        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionComponentUnconDebrisCodes>(componentUnconDebrisIds);
-        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionGrainShapeCodes>(grainShapeIds);
-        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionGrainAngularityCodes>(grainAngularityIds);
-        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionLithologyUnconDebrisCodes>(lithologyConIds);
-        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionComponentConParticleCodes>(componentConParticleIds);
-        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionComponentConMineralCodes>(componentConMineralIds);
-        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionStructurePostGenCodes>(structurePostGenIds);
-        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionStructureSynGenCodes>(structureSynGenIds);
-
         // Seed lithologicalDescriptions
         var lithologicalDescription_ids = 9_000_000;
         var fakelithologicalDescriptions = new Faker<LithologicalDescription>()

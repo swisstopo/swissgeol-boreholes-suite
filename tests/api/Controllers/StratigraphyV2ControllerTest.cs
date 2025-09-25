@@ -1,5 +1,6 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
+using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -42,18 +43,18 @@ public class StratigraphyV2ControllerTest
     [TestMethod]
     public async Task GetStratigraphyByBoreholeId()
     {
-        var result = await controller.GetAsync(1000972).ConfigureAwait(false);
+        var result = await controller.GetAsync(1002601).ConfigureAwait(false);
         ActionResultAssert.IsOk(result.Result);
 
         var stratigraphies = ((OkObjectResult?)result.Result)?.Value as List<StratigraphyV2>;
         Assert.IsNotNull(stratigraphies);
         Assert.AreEqual(2, stratigraphies.Count);
 
-        Assert.AreEqual(1000972, stratigraphy.BoreholeId);
-        Assert.AreEqual("Sarah Ziemann", stratigraphy.Name);
-        Assert.AreEqual(4, stratigraphy.CreatedById);
-        Assert.AreEqual(2, stratigraphy.UpdatedById);
-        Assert.AreEqual(true, stratigraphy.IsPrimary);
+        Assert.AreEqual(1002601, stratigraphies[0].BoreholeId);
+        Assert.AreEqual("Velva STeuber", stratigraphies[0].Name);
+        Assert.AreEqual(5, stratigraphies[0].CreatedById);
+        Assert.AreEqual(4, stratigraphies[0].UpdatedById);
+        Assert.AreEqual(true, stratigraphies[0].IsPrimary);
     }
 
     [TestMethod]
@@ -133,7 +134,9 @@ public class StratigraphyV2ControllerTest
     public async Task DeleteMainStratigraphyNotAllowedIfOthersExist()
     {
         // Precondition: Find a group of three stratigraphies with one main stratigraphy
-        var stratigraphies = await controller.GetAsync(1000005);
+        var getResult = await controller.GetAsync(1000005);
+        ActionResultAssert.IsOk(getResult.Result);
+        var stratigraphies = ((OkObjectResult?)getResult.Result)?.Value as List<StratigraphyV2>;
         var primaryStratigraphy = stratigraphies.SingleOrDefault(s => s.IsPrimary);
         Assert.IsNotNull(primaryStratigraphy);
 
