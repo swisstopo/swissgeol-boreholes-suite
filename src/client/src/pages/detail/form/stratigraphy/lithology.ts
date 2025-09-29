@@ -115,13 +115,7 @@ export const useLithologies = (stratigraphyId?: number): UseQueryResult<Litholog
   useQuery({
     queryKey: [lithologyQueryKey, stratigraphyId],
     queryFn: async () => {
-      const data = await fetchLithologiesByStratigraphyId(stratigraphyId!);
-      return data.map(lithology => ({
-        ...lithology,
-        textureMetaCodelistIds: lithology.textureMetaCodelists?.map(c => c.id) ?? [],
-        uscsTypeCodelistIds: lithology.uscsTypeCodelists?.map(c => c.id) ?? [],
-        rockConditionCodelistIds: lithology.rockConditionCodelists?.map(c => c.id) ?? [],
-      }));
+      return await fetchLithologiesByStratigraphyId(stratigraphyId!);
     },
     enabled: !!stratigraphyId,
   });
