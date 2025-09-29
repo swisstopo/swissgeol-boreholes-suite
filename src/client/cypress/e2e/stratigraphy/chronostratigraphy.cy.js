@@ -9,68 +9,10 @@ import {
 
 describe("Tests for the chronostratigraphy editor.", () => {
   beforeEach(function () {
-    // Add new borehole with some lithology layers
+    // Add new borehole with stratigraphy
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
-      .then(id => createStratigraphy(id, 3000).as("stratigraphy_id"))
-      .then(stratigraphyId => {
-        const layers = {
-          layer: [
-            {
-              lithologyId: 15104751,
-              fromDepth: 0,
-              toDepth: 25,
-            },
-            {
-              lithologyId: 15104753,
-              fromDepth: 25,
-              toDepth: 35,
-            },
-            {
-              fromDepth: 35,
-              toDepth: 43,
-            },
-          ],
-          lithostratigraphy: [
-            {
-              lithostratigraphyId: 15300363,
-              fromDepth: 0,
-              toDepth: 35,
-            },
-            {
-              fromDepth: 35,
-              toDepth: 40,
-            },
-            {
-              lithostratigraphyId: 15300093,
-              fromDepth: 40,
-              toDepth: 43,
-            },
-          ],
-        };
-        Object.entries(layers).forEach(([key, value]) => {
-          cy.get("@id_token").then(token => {
-            value.forEach(layer => {
-              cy.request({
-                method: "POST",
-                url: "/api/v2/" + key,
-                cache: "no-cache",
-                credentials: "same-origin",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: {
-                  stratigraphyId: stratigraphyId,
-                  ...layer,
-                },
-                auth: bearerAuth(token),
-              }).then(response => {
-                expect(response).to.have.property("status", 200);
-              });
-            });
-          });
-        });
-      });
+      .then(id => createStratigraphy(id, 3000).as("stratigraphy_id"));
 
     // open chronostratigraphy editor
     cy.get("@borehole_id").then(id => {

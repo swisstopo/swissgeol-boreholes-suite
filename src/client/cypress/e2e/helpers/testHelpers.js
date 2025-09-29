@@ -554,15 +554,16 @@ export const createStratigraphy = (boreholeId, kindId) => {
     return cy
       .request({
         method: "POST",
-        url: "/api/v2/stratigraphy",
+        url: "/api/v2/stratigraphyv",
         cache: "no-cache",
         credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
         },
         body: {
+          id: 0,
           boreholeId: boreholeId,
-          kindId: kindId,
+          isPrimary: true,
         },
         auth: bearerAuth(token),
       })

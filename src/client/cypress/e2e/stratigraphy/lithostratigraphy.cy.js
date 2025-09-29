@@ -9,53 +9,10 @@ import {
 
 describe("Tests for the lithostratigraphy editor.", () => {
   beforeEach(function () {
-    // Add new borehole with some lithology layers
+    // Add new borehole with stratigraphy
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
-      .then(id => createStratigraphy(id, 3000).as("stratigraphy_id"))
-      .then(stratigraphyId => {
-        [
-          {
-            lithologyId: 15104758,
-            fromDepth: 0,
-            toDepth: 25,
-          },
-          {
-            lithologyId: 15104759,
-            fromDepth: 25,
-            toDepth: 35,
-          },
-          {
-            fromDepth: 35,
-            toDepth: 40,
-          },
-          {
-            fromDepth: 40,
-            toDepth: 43,
-          },
-        ].forEach(layer => {
-          cy.get("@id_token").then(token =>
-            cy
-              .request({
-                method: "POST",
-                url: "/api/v2/layer",
-                cache: "no-cache",
-                credentials: "same-origin",
-                headers: {
-                  "Content-Type": "application/json",
-                },
-                body: {
-                  stratigraphyId: stratigraphyId,
-                  ...layer,
-                },
-                auth: bearerAuth(token),
-              })
-              .then(response => {
-                expect(response).to.have.property("status", 200);
-              }),
-          );
-        });
-      });
+      .then(id => createStratigraphy(id, 3000).as("stratigraphy_id"));
 
     // open lithostratigraphy editor
     cy.get("@borehole_id").then(id => {
