@@ -41,7 +41,7 @@ export const checkTabsByTitles = (tabs, parent, datacy) => {
   const selector = createBaseSelector(parent) + `.MuiTabs-list`;
   let tabSelector = ".MuiTab-root";
   if (datacy) {
-    tabSelector = `.MuiTab-root[data-cy*="${datacy}"]`;
+    tabSelector = `.MuiTab-root[data-cy^="${datacy}"]`;
   }
   cy.get(selector)
     .find(tabSelector)
