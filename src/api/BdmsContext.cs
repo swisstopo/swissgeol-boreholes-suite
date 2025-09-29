@@ -141,6 +141,121 @@ public class BdmsContext : DbContext
         .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.StructurePostGenCodelists);
 
+    public IQueryable<Lithology> LithologiesWithProjection
+    => LithologiesWithIncludes
+    .AsNoTracking()
+    .Select(l => new Lithology
+    {
+        Id = l.Id,
+        StratigraphyId = l.StratigraphyId,
+        CreatedById = l.CreatedById,
+        Created = l.Created,
+        UpdatedById = l.UpdatedById,
+        Updated = l.Updated,
+        FromDepth = l.FromDepth,
+        ToDepth = l.ToDepth,
+        IsUnconsolidated = l.IsUnconsolidated,
+        HasBedding = l.HasBedding,
+        Share = l.Share,
+        AlterationDegreeId = l.AlterationDegreeId,
+        AlterationDegree = l.AlterationDegree,
+        Notes = l.Notes,
+        CompactnessId = l.CompactnessId,
+        Compactness = l.Compactness,
+        CohesionId = l.CohesionId,
+        Cohesion = l.Cohesion,
+        HumidityId = l.HumidityId,
+        Humidity = l.Humidity,
+        ConsistencyId = l.ConsistencyId,
+        Consistency = l.Consistency,
+        PlasticityId = l.PlasticityId,
+        Plasticity = l.Plasticity,
+        UscsDeterminationId = l.UscsDeterminationId,
+        UscsDetermination = l.UscsDetermination,
+
+        // Populate ID collections from join tables
+        UscsTypeCodelistIds = l.LithologyUscsTypeCodes == null ? new List<int>() : l.LithologyUscsTypeCodes.Select(code => code.CodelistId).ToList(),
+        RockConditionCodelistIds = l.LithologyRockConditionCodes == null ? new List<int>() : l.LithologyRockConditionCodes.Select(code => code.CodelistId).ToList(),
+        TextureMetaCodelistIds = l.LithologyTextureMetaCodes == null ? new List<int>() : l.LithologyTextureMetaCodes.Select(code => code.CodelistId).ToList(),
+
+        // Map and project LithologyDescriptions
+        LithologyDescriptions =l.LithologyDescriptions == null ? new List<LithologyDescription>() : l.LithologyDescriptions.Select(ld => new LithologyDescription
+        {
+            Id = ld.Id,
+            LithologyId = ld.LithologyId,
+            CreatedById = ld.CreatedById,
+            Created = ld.Created,
+            UpdatedById = ld.UpdatedById,
+            Updated = ld.Updated,
+            IsFirst = ld.IsFirst,
+            ColorPrimaryId = ld.ColorPrimaryId,
+            ColorPrimary = ld.ColorPrimary,
+            ColorSecondaryId = ld.ColorSecondaryId,
+            ColorSecondary = ld.ColorSecondary,
+            LithologyUnconMainId = ld.LithologyUnconMainId,
+            LithologyUnconMain = ld.LithologyUnconMain,
+            LithologyUncon2Id = ld.LithologyUncon2Id,
+            LithologyUncon2 = ld.LithologyUncon2,
+            LithologyUncon3Id = ld.LithologyUncon3Id,
+            LithologyUncon3 = ld.LithologyUncon3,
+            LithologyUncon4Id = ld.LithologyUncon4Id,
+            LithologyUncon4 = ld.LithologyUncon4,
+            LithologyUncon5Id = ld.LithologyUncon5Id,
+            LithologyUncon5 = ld.LithologyUncon5,
+            LithologyUncon6Id = ld.LithologyUncon6Id,
+            LithologyUncon6 = ld.LithologyUncon6,
+            HasStriae = ld.HasStriae,
+            LithologyConId = ld.LithologyConId,
+            LithologyCon = ld.LithologyCon,
+            GrainSizeId = ld.GrainSizeId,
+            GrainSize = ld.GrainSize,
+            GrainAngularityId = ld.GrainAngularityId,
+            GrainAngularity = ld.GrainAngularity,
+            GradationId = ld.GradationId,
+            Gradation = ld.Gradation,
+            CementationId = ld.CementationId,
+            Cementation = ld.Cementation,
+
+            // Populate ID collections from join tables
+            ComponentUnconOrganicCodelistIds = ld.LithologyDescriptionComponentUnconOrganicCodes == null ? new List<int>() : ld.LithologyDescriptionComponentUnconOrganicCodes.Select(code => code.CodelistId).ToList(),
+            ComponentUnconDebrisCodelistIds = ld.LithologyDescriptionComponentUnconDebrisCodes == null ? new List<int>() : ld.LithologyDescriptionComponentUnconDebrisCodes.Select(code => code.CodelistId).ToList(),
+            GrainShapeCodelistIds = ld.LithologyDescriptionGrainShapeCodes == null ? new List<int>() : ld.LithologyDescriptionGrainShapeCodes.Select(code => code.CodelistId).ToList(),
+            GrainAngularityCodelistIds = ld.LithologyDescriptionGrainAngularityCodes == null ? new List<int>() : ld.LithologyDescriptionGrainAngularityCodes.Select(code => code.CodelistId).ToList(),
+            LithologyUnconDebrisCodelistIds = ld.LithologyDescriptionLithologyUnconDebrisCodes == null ? new List<int>() : ld.LithologyDescriptionLithologyUnconDebrisCodes.Select(code => code.CodelistId).ToList(),
+            ComponentConParticleCodelistIds = ld.LithologyDescriptionComponentConParticleCodes == null ? new List<int>() : ld.LithologyDescriptionComponentConParticleCodes.Select(code => code.CodelistId).ToList(),
+            ComponentConMineralCodelistIds = ld.LithologyDescriptionComponentConMineralCodes == null ? new List<int>() : ld.LithologyDescriptionComponentConMineralCodes.Select(code => code.CodelistId).ToList(),
+            StructureSynGenCodelistIds = ld.LithologyDescriptionStructureSynGenCodes == null ? new List<int>() : ld.LithologyDescriptionStructureSynGenCodes.Select(code => code.CodelistId).ToList(),
+            StructurePostGenCodelistIds = ld.LithologyDescriptionStructurePostGenCodes == null ? new List<int>() : ld.LithologyDescriptionStructurePostGenCodes.Select(code => code.CodelistId).ToList(),
+
+            // Keep join tables for internal processing if needed
+            LithologyDescriptionComponentUnconOrganicCodes = ld.LithologyDescriptionComponentUnconOrganicCodes,
+            LithologyDescriptionComponentUnconDebrisCodes = ld.LithologyDescriptionComponentUnconDebrisCodes,
+            LithologyDescriptionGrainShapeCodes = ld.LithologyDescriptionGrainShapeCodes,
+            LithologyDescriptionGrainAngularityCodes = ld.LithologyDescriptionGrainAngularityCodes,
+            LithologyDescriptionLithologyUnconDebrisCodes = ld.LithologyDescriptionLithologyUnconDebrisCodes,
+            LithologyDescriptionComponentConParticleCodes = ld.LithologyDescriptionComponentConParticleCodes,
+            LithologyDescriptionComponentConMineralCodes = ld.LithologyDescriptionComponentConMineralCodes,
+            LithologyDescriptionStructureSynGenCodes = ld.LithologyDescriptionStructureSynGenCodes,
+            LithologyDescriptionStructurePostGenCodes = ld.LithologyDescriptionStructurePostGenCodes,
+
+            // Set these to null as we don't want them in the API response
+            ComponentUnconOrganicCodelists = null,
+            ComponentUnconDebrisCodelists = null,
+            GrainShapeCodelists = null,
+            GrainAngularityCodelists = null,
+            LithologyUnconDebrisCodelists = null,
+            ComponentConParticleCodelists = null,
+            ComponentConMineralCodelists = null,
+            StructureSynGenCodelists = null,
+            StructurePostGenCodelists = null,
+        }).ToList(),
+
+        // Set navigation collections to null as we don't want them in the API response
+        UscsTypeCodelists = null,
+        RockConditionCodelists = null,
+        TextureMetaCodelists = null,
+    });
+
     public DbSet<LithologyDescription> LithologyDescriptions { get; set; }
 
     public DbSet<Layer> Layers { get; set; }
