@@ -92,6 +92,7 @@ const buildUnconsolidatedSecondaryString = (
   }
 
   secondaryValues = secondaryValues.filter(v => !uselessStrings.has(v));
+  if (secondaryValues.length === 0) return "";
   return `${t("coarseComponent", { count: secondaryValues.length })}: ${secondaryValues.join(", ")}`;
 };
 

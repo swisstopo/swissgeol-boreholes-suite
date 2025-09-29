@@ -113,7 +113,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
     const isValid = await formMethods.trigger();
     if (!formState.isDirty || isValid) {
       const values = getValues();
-      updateLithology({ ...lithology, ...values }, formState.isDirty);
+      updateLithology({ ...lithology, ...values } as Lithology, formState.isDirty);
     }
   };
 
