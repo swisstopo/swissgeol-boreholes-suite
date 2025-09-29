@@ -141,6 +141,10 @@ public class BdmsContext : DbContext
         .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.StructurePostGenCodelists);
 
+    /// <summary>
+    /// Extends the provided <see cref="IQueryable"/> of type <see cref="Lithology"/> with all includes,
+    /// then projects each entity, mapping many-to-many join table IDs for all <see cref="Codelist"/> collections into lists of IDs.
+    /// </summary>
     public IQueryable<Lithology> LithologiesWithProjection
     => LithologiesWithIncludes
     .AsNoTracking()
@@ -173,12 +177,10 @@ public class BdmsContext : DbContext
         UscsDeterminationId = l.UscsDeterminationId,
         UscsDetermination = l.UscsDetermination,
 
-        // Populate ID collections from join tables
         UscsTypeCodelistIds = l.LithologyUscsTypeCodes == null ? new List<int>() : l.LithologyUscsTypeCodes.Select(code => code.CodelistId).ToList(),
         RockConditionCodelistIds = l.LithologyRockConditionCodes == null ? new List<int>() : l.LithologyRockConditionCodes.Select(code => code.CodelistId).ToList(),
         TextureMetaCodelistIds = l.LithologyTextureMetaCodes == null ? new List<int>() : l.LithologyTextureMetaCodes.Select(code => code.CodelistId).ToList(),
 
-        // Map and project LithologyDescriptions
         LithologyDescriptions = l.LithologyDescriptions == null ? new List<LithologyDescription>() : l.LithologyDescriptions.Select(ld => new LithologyDescription
         {
             Id = ld.Id,
@@ -216,7 +218,6 @@ public class BdmsContext : DbContext
             CementationId = ld.CementationId,
             Cementation = ld.Cementation,
 
-            // Populate ID collections from join tables
             ComponentUnconOrganicCodelistIds = ld.LithologyDescriptionComponentUnconOrganicCodes == null ? new List<int>() : ld.LithologyDescriptionComponentUnconOrganicCodes.Select(code => code.CodelistId).ToList(),
             ComponentUnconDebrisCodelistIds = ld.LithologyDescriptionComponentUnconDebrisCodes == null ? new List<int>() : ld.LithologyDescriptionComponentUnconDebrisCodes.Select(code => code.CodelistId).ToList(),
             GrainShapeCodelistIds = ld.LithologyDescriptionGrainShapeCodes == null ? new List<int>() : ld.LithologyDescriptionGrainShapeCodes.Select(code => code.CodelistId).ToList(),
@@ -227,7 +228,6 @@ public class BdmsContext : DbContext
             StructureSynGenCodelistIds = ld.LithologyDescriptionStructureSynGenCodes == null ? new List<int>() : ld.LithologyDescriptionStructureSynGenCodes.Select(code => code.CodelistId).ToList(),
             StructurePostGenCodelistIds = ld.LithologyDescriptionStructurePostGenCodes == null ? new List<int>() : ld.LithologyDescriptionStructurePostGenCodes.Select(code => code.CodelistId).ToList(),
 
-            // Keep join tables for internal processing if needed
             LithologyDescriptionComponentUnconOrganicCodes = ld.LithologyDescriptionComponentUnconOrganicCodes,
             LithologyDescriptionComponentUnconDebrisCodes = ld.LithologyDescriptionComponentUnconDebrisCodes,
             LithologyDescriptionGrainShapeCodes = ld.LithologyDescriptionGrainShapeCodes,
@@ -238,7 +238,6 @@ public class BdmsContext : DbContext
             LithologyDescriptionStructureSynGenCodes = ld.LithologyDescriptionStructureSynGenCodes,
             LithologyDescriptionStructurePostGenCodes = ld.LithologyDescriptionStructurePostGenCodes,
 
-            // Set these to null as we don't want them in the API response
             ComponentUnconOrganicCodelists = null,
             ComponentUnconDebrisCodelists = null,
             GrainShapeCodelists = null,
@@ -250,7 +249,6 @@ public class BdmsContext : DbContext
             StructurePostGenCodelists = null,
         }).ToList(),
 
-        // Set navigation collections to null as we don't want them in the API response
         UscsTypeCodelists = null,
         RockConditionCodelists = null,
         TextureMetaCodelists = null,
