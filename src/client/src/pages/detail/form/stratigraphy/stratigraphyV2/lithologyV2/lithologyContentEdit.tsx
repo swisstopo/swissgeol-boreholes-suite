@@ -190,12 +190,13 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   );
 
   const getDepthOptions = useCallback(
+    // TODO: Remove rule after implementing depth range logic
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     (layer: BaseLayer | undefined, options: BaseLayer[], getForToDepths: boolean = false) => {
       // TODO: Load allowed depth ranges from lithologies.
       // Limit possible values based on previous and next descriptions
       // This is called way too often, need to optimize
-      console.log("getDepthOptions", { layer, options, getForToDepths });
-      return [0, 10, 20];
+      return [];
     },
     [],
   );
@@ -255,21 +256,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     registerSaveHandler(onSave, "lithology");
     registerResetHandler(onReset, "lithology");
   }, [onReset, onSave, registerResetHandler, registerSaveHandler]);
-
-  useEffect(() => {
-    // TODO: Update tmpLithologies but keep hasChanges where id matches
-    console.log("lithologies changed", lithologies);
-  }, [lithologies]);
-
-  useEffect(() => {
-    // TODO: Update tmpLithologicalDescriptions but keep hasChanges where id matches
-    console.log("lithologicalDescriptions changed", lithologicalDescriptions);
-  }, [lithologicalDescriptions]);
-
-  useEffect(() => {
-    // TODO: Update tmpFaciesDescriptions but keep hasChanges where id matches
-    console.log("faciesDescriptions changed", faciesDescriptions);
-  }, [faciesDescriptions]);
 
   const renderGapCell = (
     layer: BaseLayer,
