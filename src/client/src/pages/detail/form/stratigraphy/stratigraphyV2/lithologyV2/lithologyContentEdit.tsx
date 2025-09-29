@@ -480,6 +480,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
               id: 0,
               isGap: false,
               stratigraphyId: 0,
+              isUnconsolidated: tmpLithologies[tmpLithologies.length - 1].item.isUnconsolidated,
             })
           }
         />

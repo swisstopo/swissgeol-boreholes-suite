@@ -129,23 +129,28 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
             data-cy="lithology-basic-data"
             title={t("basicData")}
             action={
-              <ToggleButtonGroup
-                value={isUnconsolidated}
-                onChange={(event: MouseEvent<HTMLElement>, isUnconsolidated: boolean) => {
-                  setValue("isUnconsolidated", isUnconsolidated);
-                }}
-                exclusive
-                sx={{
-                  boxShadow: "none",
-                  border: `1px solid ${theme.palette.border.light}`,
-                }}>
-                <ToggleButton value={true}>
-                  <Typography>{t("unconsolidated")}</Typography>
-                </ToggleButton>
-                <ToggleButton value={false}>
-                  <Typography>{t("consolidated")}</Typography>
-                </ToggleButton>
-              </ToggleButtonGroup>
+              <Controller
+                name="isUnconsolidated"
+                control={formMethods.control}
+                defaultValue={lithology?.isUnconsolidated === undefined ? true : lithology.isUnconsolidated}
+                render={({ field }) => (
+                  <ToggleButtonGroup
+                    value={field.value}
+                    onChange={(_, value) => field.onChange(value)}
+                    exclusive
+                    sx={{
+                      boxShadow: "none",
+                      border: `1px solid ${theme.palette.border.light}`,
+                    }}>
+                    <ToggleButton value={true}>
+                      <Typography>{t("unconsolidated")}</Typography>
+                    </ToggleButton>
+                    <ToggleButton value={false}>
+                      <Typography>{t("consolidated")}</Typography>
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                )}
+              />
             }>
             <BasicDataFormSection />
           </BoreholesCard>
