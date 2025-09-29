@@ -549,7 +549,7 @@ export const createStratigraphyV2 = (boreholeId, name, isPrimary = true, date = 
   });
 };
 
-export const createStratigraphy = (boreholeId, kindId) => {
+export const createStratigraphy = boreholeId => {
   return cy.get("@id_token").then(token => {
     return cy
       .request({

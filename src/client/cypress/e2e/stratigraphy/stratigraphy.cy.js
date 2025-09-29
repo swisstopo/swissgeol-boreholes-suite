@@ -6,13 +6,7 @@ import {
   verifyNoUnsavedChanges,
   verifyUnsavedChanges,
 } from "../helpers/buttonHelpers";
-import {
-  evaluateCheckbox,
-  evaluateInput,
-  hasError,
-  setInput,
-  toggleCheckbox,
-} from "../helpers/formHelpers.js";
+import { evaluateCheckbox, evaluateInput, hasError, setInput, toggleCheckbox } from "../helpers/formHelpers.js";
 import {
   checkTabsByTitles,
   navigateInSidebar,

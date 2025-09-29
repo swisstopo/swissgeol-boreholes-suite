@@ -2,7 +2,7 @@ import { FC, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Button, Checkbox } from "@mui/material";
 import { theme } from "../../../../AppTheme.ts";
-import { Codelist, useCodelists } from "../../../../components/codelist.ts";
+import { useCodelists } from "../../../../components/codelist.ts";
 import TranslationText from "../../../../components/legacyComponents/translationText.jsx";
 import { SettingsItem } from "../../data/SettingsItem.ts";
 
@@ -10,38 +10,22 @@ interface GeneralSettingListProps {
   data: { [key: string]: string };
   toggleFilter: (field: string, value: boolean) => void;
   settingsItems: SettingsItem[];
-  toggleField: (field: string, value: boolean) => void;
-  listName: string;
-  toggleFieldArray: (fields: string[], value: boolean) => void;
   toggleFilterArray: (fields: string[], value: boolean) => void;
 }
 
-const GeneralSettingList: FC<GeneralSettingListProps> = ({
-  data,
-  toggleFilter,
-  settingsItems,
-  toggleField,
-  listName,
-  toggleFieldArray,
-  toggleFilterArray,
-}) => {
+const GeneralSettingList: FC<GeneralSettingListProps> = ({ data, toggleFilter, settingsItems, toggleFilterArray }) => {
   const { t } = useTranslation();
   const [checkedStates, setCheckedStates] = useState<{ [key: string]: boolean }>({});
   const { data: domains } = useCodelists();
 
   useEffect(() => {
     const isChecked = (item: SettingsItem) => {
-      const isVisible = (field: string) => {
-        const layerKindConfigEntry = domains?.find((c: Codelist) => c.schema === "layer_kind");
-        const conf = layerKindConfigEntry?.conf ? JSON.parse(layerKindConfigEntry?.conf) : "";
-        return conf?.fields?.[field] ?? false;
-      };
       const getNestedValue = (settingValue: string) => {
         const splitStrings = settingValue.split(".");
         // @ts-expect-error setting values inside efilter have not been typed
         return splitStrings.length > 1 ? data?.[splitStrings[0]]?.[splitStrings[1]] : data?.[settingValue];
       };
-      return listName === "lithologyfields" ? isVisible(item.value) : getNestedValue(item.value);
+      return getNestedValue(item.value);
     };
 
     const initialState: { [key: string]: boolean } = {};
@@ -49,7 +33,7 @@ const GeneralSettingList: FC<GeneralSettingListProps> = ({
       initialState[item.value] = isChecked(item);
     });
     setCheckedStates(initialState);
-  }, [data, domains, listName, settingsItems]);
+  }, [data, domains, settingsItems]);
 
   const sendSelectAll = useCallback(
     (shouldSelectAll: boolean) => {
@@ -58,9 +42,7 @@ const GeneralSettingList: FC<GeneralSettingListProps> = ({
         newData.push(element.value);
       });
 
-      if (listName === "lithologyfields") {
-        toggleFieldArray(newData, shouldSelectAll);
-      } else toggleFilterArray(newData, shouldSelectAll);
+      toggleFilterArray(newData, shouldSelectAll);
 
       setCheckedStates(prevState => {
         const newState: { [key: string]: boolean } = { ...prevState };
@@ -70,7 +52,7 @@ const GeneralSettingList: FC<GeneralSettingListProps> = ({
         return newState;
       });
     },
-    [listName, settingsItems, toggleFieldArray, toggleFilterArray],
+    [settingsItems, toggleFilterArray],
   );
 
   const handleCheckboxChange = useCallback(
@@ -80,13 +62,9 @@ const GeneralSettingList: FC<GeneralSettingListProps> = ({
         [item.value]: checked,
       }));
 
-      if (listName === "lithologyfields") {
-        toggleField(item.value, checked);
-      } else {
-        toggleFilter(item.value, checked);
-      }
+      toggleFilter(item.value, checked);
     },
-    [listName, toggleField, toggleFilter],
+    [toggleFilter],
   );
 
   return (
