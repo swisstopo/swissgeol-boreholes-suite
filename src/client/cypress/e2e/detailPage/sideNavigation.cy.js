@@ -9,13 +9,11 @@ import {
   isMenuItemWithContent,
   isMenuItemWithoutContent,
   navigateInSidebar,
-  navigateInStratigraphy,
   SidebarMenuItem,
   StratigraphyTab,
 } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
-  getElementByDataCy,
   goToDetailRouteAndAcceptTerms,
   selectInputFile,
   startBoreholeEditing,
