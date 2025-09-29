@@ -82,7 +82,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
       return { values, errors };
     },
   });
-  const { formState, getValues, setValue } = formMethods;
+  const { formState, getValues } = formMethods;
   useFormDirtyChanges({ formState });
 
   useEffect(() => {
