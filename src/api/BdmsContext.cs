@@ -179,7 +179,7 @@ public class BdmsContext : DbContext
         TextureMetaCodelistIds = l.LithologyTextureMetaCodes == null ? new List<int>() : l.LithologyTextureMetaCodes.Select(code => code.CodelistId).ToList(),
 
         // Map and project LithologyDescriptions
-        LithologyDescriptions =l.LithologyDescriptions == null ? new List<LithologyDescription>() : l.LithologyDescriptions.Select(ld => new LithologyDescription
+        LithologyDescriptions = l.LithologyDescriptions == null ? new List<LithologyDescription>() : l.LithologyDescriptions.Select(ld => new LithologyDescription
         {
             Id = ld.Id,
             LithologyId = ld.LithologyId,
