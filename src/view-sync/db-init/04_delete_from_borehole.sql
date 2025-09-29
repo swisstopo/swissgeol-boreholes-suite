@@ -276,7 +276,7 @@ DELETE FROM bdms.facies_description WHERE id IN (
 -- Stratigraphy (if there is no Chronostratigraphy, Lithostratigraphy or Lithology)
 DELETE FROM bdms.stratigraphy_v2 WHERE borehole_id IS NULL;
 DELETE FROM bdms.stratigraphy_v2 WHERE id IN (
-    SELECT s.id_sty FROM bdms.stratigraphy_v2 s
+    SELECT s.id FROM bdms.stratigraphy_v2 s
     INNER JOIN bdms.borehole b ON b.id_bho  = s.borehole_id
     INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
     INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
