@@ -224,7 +224,7 @@ DELETE FROM bdms.completion WHERE id IN (
 );
 
 -- Stratigraphy: Chronostratigraphy
-DELETE FROM bdms.chronostratigraphy WHERE id_chr IN (
+DELETE FROM bdms.chronostratigraphy WHERE id IN (
     SELECT cs.id FROM bdms.chronostratigraphy cs
     INNER JOIN bdms.stratigraphy_v2 s ON s.id = cs.stratigraphy_id
     INNER JOIN bdms.borehole b ON b.id_bho  = s.borehole_id
@@ -244,7 +244,7 @@ DELETE FROM bdms.lithostratigraphy WHERE id IN (
 );
 
 -- Stratigraphy: Lithology
-DELETE FROM bdms.lithology WHERE id_lay IN (
+DELETE FROM bdms.lithology WHERE id IN (
     SELECT l.id FROM bdms.lithology l
     INNER JOIN bdms.stratigraphy_v2 s ON s.id = l.stratigraphy_id
     INNER JOIN bdms.borehole b ON b.id_bho  = s.borehole_id
@@ -254,7 +254,7 @@ DELETE FROM bdms.lithology WHERE id_lay IN (
 );
 
 -- Stratigraphy: Lithological description
-DELETE FROM bdms.lithological_description WHERE id_ldp IN (
+DELETE FROM bdms.lithological_description WHERE id IN (
     SELECT ld.id FROM bdms.lithological_description ld
     INNER JOIN bdms.stratigraphy_v2 s ON s.id = ld.stratigraphy_id
     INNER JOIN bdms.borehole b ON b.id_bho  = s.borehole_id
@@ -264,7 +264,7 @@ DELETE FROM bdms.lithological_description WHERE id_ldp IN (
 );
 
 -- Stratigraphy: Facies description
-DELETE FROM bdms.facies_description WHERE id_fac IN (
+DELETE FROM bdms.facies_description WHERE id IN (
     SELECT fd.id FROM bdms.facies_description fd
     INNER JOIN bdms.stratigraphy_v2 s ON s.id = fd.stratigraphy_id
     INNER JOIN bdms.borehole b ON b.id_bho  = s.borehole_id
