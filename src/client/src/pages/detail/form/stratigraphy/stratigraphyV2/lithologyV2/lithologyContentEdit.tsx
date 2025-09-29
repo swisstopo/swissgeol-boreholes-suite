@@ -87,7 +87,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
 
   const { depths } = useLayerDepths(tmpLithologiesFlat, tmpLithologicalDescriptionsFlat, tmpFaciesDescriptionsFlat);
 
-  // TODO: Set isUnconsolidated for gap layers based on previous layer: if is first layer or previous layer is unconsolidated, set isUnconsolidated to true, else false
   const { completedLayers: completedLithologies } = useCompletedLayers(tmpLithologiesFlat, depths);
   const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(
     tmpLithologicalDescriptionsFlat,
@@ -333,13 +332,18 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     defaultRowHeight: number,
     computeCellHeight: ((fromDepth: number, toDepth: number) => number) | null,
     onEdit: (layer: BaseLayer) => void,
+    index: number,
+    layers: BaseLayer[],
   ) => (
     <StratigraphyTableGap
       key={`${keyPrefix}-${layer.id}`}
       sx={{
         height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
       }}
-      layer={layer}
+      layer={{
+        ...layer,
+        isUnconsolidated: layers.at(index - 1)?.isUnconsolidated ?? true,
+      }}
       onClick={onEdit}
     />
   );
@@ -389,15 +393,22 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
         <StratigraphyTableGap
           key={`${keyPrefix}-new`}
           sx={{ height: `${defaultRowHeight}px` }}
-          layer={{ id: 0, stratigraphyId: stratigraphyId, isGap: true, fromDepth: -1, toDepth: -1 }}
+          layer={{
+            id: 0,
+            stratigraphyId: stratigraphyId,
+            isGap: true,
+            fromDepth: -1,
+            toDepth: -1,
+            isUnconsolidated: true,
+          }}
           onClick={onEdit}
         />
       );
     }
 
-    return layers.map(layer =>
+    return layers.map((layer, index) =>
       layer.isGap
-        ? renderGapCell(layer, keyPrefix, defaultRowHeight, computeCellHeight, onEdit)
+        ? renderGapCell(layer, keyPrefix, defaultRowHeight, computeCellHeight, onEdit, index, layers)
         : renderActionCell(layer, keyPrefix, defaultRowHeight, computeCellHeight, onEdit, onDelete, buildContent),
     );
   };
@@ -480,7 +491,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
               id: 0,
               isGap: false,
               stratigraphyId: 0,
-              isUnconsolidated: tmpLithologiesat(-1).item.isUnconsolidated,
+              isUnconsolidated: tmpLithologiesFlat(-1).isUnconsolidated,
             })
           }
         />
