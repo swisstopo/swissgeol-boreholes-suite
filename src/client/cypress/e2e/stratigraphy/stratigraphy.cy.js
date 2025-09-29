@@ -9,10 +9,8 @@ import {
 import {
   evaluateCheckbox,
   evaluateInput,
-  evaluateSelect,
   hasError,
   setInput,
-  setSelect,
   toggleCheckbox,
 } from "../helpers/formHelpers.js";
 import {

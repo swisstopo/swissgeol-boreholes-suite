@@ -1,5 +1,4 @@
 import {
-  bearerAuth,
   createBorehole,
   createStratigraphy,
   goToDetailRouteAndAcceptTerms,

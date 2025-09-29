@@ -30,13 +30,11 @@ const ChronostratigraphyPanel = ({ stratigraphyId }) => {
                 navState={navState}
                 setNavState={setNavState}
                 renderBackground={(lensNavState, setLensNavState) => (
-                  <>
-                    <LithostratigraphyViewProfile
-                      navState={lensNavState}
-                      setNavState={setLensNavState}
-                      stratigraphyId={stratigraphyId}
-                    />
-                  </>
+                  <LithostratigraphyViewProfile
+                    navState={lensNavState}
+                    setNavState={setLensNavState}
+                    stratigraphyId={stratigraphyId}
+                  />
                 )}
               />
             </NavigationChild>
