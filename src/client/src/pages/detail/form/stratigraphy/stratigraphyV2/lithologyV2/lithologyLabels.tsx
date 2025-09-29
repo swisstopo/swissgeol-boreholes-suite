@@ -25,7 +25,7 @@ const buildUnconsolidatedPrimaryString = (
   const codes: string[] = [];
   let primaryValues: string[] = [];
 
-  const pushCodeAndValue = (id: number | undefined) => {
+  const pushCodeAndValue = (id: number | null | undefined) => {
     if (!id) return;
     const { text, code } = getCodelistDisplayValues(id);
     codes.push(code);
