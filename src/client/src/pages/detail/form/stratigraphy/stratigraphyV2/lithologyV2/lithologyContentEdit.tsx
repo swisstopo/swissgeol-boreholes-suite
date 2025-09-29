@@ -272,19 +272,19 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   // Mark deletions and adds as changes
   useEffect(() => {
     if (!hasChanges) {
-      const hasDeletedLithologies = lithologies.some(l => !tmpLithologiesFlat.find(tl => tl.id === l.id));
-      const hasAddedLithologies = tmpLithologiesFlat.some(l => !lithologies.find(tl => tl.id === l.id));
+      const hasDeletedLithologies = lithologies.some(l => !tmpLithologiesFlat.some(tl => tl.id === l.id));
+      const hasAddedLithologies = tmpLithologiesFlat.some(l => !lithologies.some(tl => tl.id === l.id));
       const hasDeletedLithologicalDescriptions = lithologicalDescriptions.some(
-        l => !tmpLithologicalDescriptionsFlat.find(tl => tl.id === l.id),
+        l => !tmpLithologicalDescriptionsFlat.some(tl => tl.id === l.id),
       );
       const hasAddedLithologicalDescriptions = tmpLithologicalDescriptionsFlat.some(
-        l => !lithologicalDescriptions.find(tl => tl.id === l.id),
+        l => !lithologicalDescriptions.some(tl => tl.id === l.id),
       );
       const hasDeletedFaciesDescriptions = faciesDescriptions.some(
-        l => !tmpFaciesDescriptionsFlat.find(tl => tl.id === l.id),
+        l => !tmpFaciesDescriptionsFlat.some(tl => tl.id === l.id),
       );
       const hasAddedFaciesDescriptions = tmpFaciesDescriptionsFlat.some(
-        l => !faciesDescriptions.find(tl => tl.id === l.id),
+        l => !faciesDescriptions.some(tl => tl.id === l.id),
       );
 
       markAsChanged(
@@ -475,12 +475,12 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
         <AddRowButton
           onClick={() =>
             handleEditLithology({
-              fromDepth: depths[depths.length - 1].toDepth,
+              fromDepth: depth.at(-1).toDepth,
               toDepth: undefined,
               id: 0,
               isGap: false,
               stratigraphyId: 0,
-              isUnconsolidated: tmpLithologies[tmpLithologies.length - 1].item.isUnconsolidated,
+              isUnconsolidated: tmpLithologiesat(-1).item.isUnconsolidated,
             })
           }
         />
