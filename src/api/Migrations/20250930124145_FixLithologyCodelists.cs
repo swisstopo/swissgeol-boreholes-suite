@@ -41,6 +41,12 @@ public partial class FixLithologyCodelists : Migration
                 21109002, 21109004, 21109006, 21109008
             );
 
+            UPDATE bdms.layer
+			SET grain_size_2_id_cli=NULL
+            WHERE grain_size_2_id_cli IN (
+                21109002, 21109004, 21109006, 21109008
+            );
+
             UPDATE bdms.lithology_description
 			SET grain_size_id=NULL
             WHERE grain_size_id IN (
