@@ -55,7 +55,7 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
             <FormContainer>
               <BasicDataFormSection fromDepths={fromDepths} toDepths={toDepths} />
               <FormContainer direction={"row"}>
-                <FormDomainSelect fieldName={"facies"} label={"facies"} schemaName={"facies"} />
+                <FormDomainSelect fieldName={"facies"} label={"facies"} schemaName={"facies_con"} />
               </FormContainer>
               <RemarksFormSection fieldName="description" label="remarks" />
             </FormContainer>
