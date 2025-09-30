@@ -399,7 +399,8 @@ export const loginAndResetState = () => {
         });
     });
 
-    // TODO: Check if we still need this when we add new tests
+    // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2371
+    //  Check if we still need this when we add new tests
     // // Reset stratigraphies
     // cy.request({
     //   method: "GET",
