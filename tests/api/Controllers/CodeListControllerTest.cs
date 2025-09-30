@@ -96,7 +96,6 @@ public class CodeListControllerTest
             Geolcode = id,
             Schema = "component_uncon_debris",
             De = "Tuff",
-            Code = "Tuf",
             En = "tufa",
             Fr = "tuf",
             It = "tufo",
@@ -116,7 +115,6 @@ public class CodeListControllerTest
         var codeListToEdit = context.Codelists.Single(c => c.Id == id);
         Assert.AreEqual("Tuff", codeListToEdit.De);
         Assert.AreEqual("tufa", codeListToEdit.En);
-        Assert.AreEqual("Tuf", codeListToEdit.Code);
         Assert.AreEqual("tuf", codeListToEdit.Fr);
 
         // Upate CodeList
