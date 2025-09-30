@@ -292,7 +292,8 @@ public class ImportController : ControllerBase
 
             MapHydrotestCodelists(borehole, hydrotestCodelists);
 
-            // TODO: Re-enable lithology codelist mapping when codelists are available in the import json.
+            // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
+            // Re-enable lithology codelist mapping when codelists are available in the import json.
             // MapLithologyCodelists(borehole);
         }
     }

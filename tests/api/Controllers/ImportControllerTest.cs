@@ -182,7 +182,7 @@ public class ImportControllerTest
         Assert.AreEqual(0.1468618496717173, borheoleGeometry.DEVI, nameof(borheoleGeometry.DEVI));
 
         /*
-         * TODO Update for v2
+         * TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
         // Assert stratigraphy's lithological descriptions
         Assert.AreEqual(2, borehole.Stratigraphies.Count, nameof(borehole.Stratigraphies.Count));
         var stratigraphy = borehole.Stratigraphies.First();
