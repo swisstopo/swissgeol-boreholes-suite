@@ -308,15 +308,7 @@ export const createBoreholeWithCompleteDataset = () => {
     restrictionId: restrictionFreeCode,
     boreholeGeometry: [],
     sections: [{ name: "Test Section", fromDepth: 0, toDepth: 10, SectionElements: [] }],
-    stratigraphies: [
-      {
-        name: "Test Stratigraphy",
-        isPrimary: true,
-        lithologies: [],
-        lithostratigraphyLayers: [{ from: 0, to: 10 }],
-        chronostratigraphyLayers: [{ from: 0, to: 10 }],
-      },
-    ],
+    // Todo add stratigraphies
     completions: [
       {
         name: "Test Completion",
