@@ -36,7 +36,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
 
         if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        return await Context.LithologiesWithIncludes
+        return await Context.LithologiesWithProjection // LithologiesWithProjection is used to return only CodelistIds instead of the whole codeslists to the client
             .AsNoTracking()
             .Where(l => l.StratigraphyId == stratigraphyId)
             .OrderBy(l => l.FromDepth)
@@ -52,7 +52,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<Lithology>> GetByIdAsync(int id)
     {
-        var lithology = await Context.LithologiesWithIncludes
+        var lithology = await Context.LithologiesWithProjection // LithologiesWithProjection is used to return only CodelistIds instead of the whole codeslists to the client
             .AsNoTracking()
             .SingleOrDefaultAsync(l => l.Id == id)
             .ConfigureAwait(false);

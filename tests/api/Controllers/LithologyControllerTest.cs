@@ -362,10 +362,10 @@ public class LithologyControllerTest
         Assert.IsNull(updatedLithology.HumidityId);
         Assert.IsNull(updatedLithology.ConsistencyId);
         Assert.IsNull(updatedLithology.PlasticityId);
-        Assert.AreEqual(0, updatedLithology.LithologyUscsTypeCodes.Count);
+        Assert.AreEqual(0, updatedLithology.UscsTypeCodelistIds.Count);
         Assert.IsNull(updatedLithology.UscsDeterminationId);
-        Assert.AreEqual(0, updatedLithology.LithologyRockConditionCodes.Count);
-        CollectionAssert.AreEquivalent(new List<int> { 100000469, 100000482 }, updatedLithology.LithologyTextureMetaCodes.Select(c => c.CodelistId).ToList());
+        Assert.AreEqual(0, updatedLithology.RockConditionCodelistIds.Count);
+        CollectionAssert.AreEquivalent(new List<int> { 100000469, 100000482 }, updatedLithology.TextureMetaCodelistIds.ToList());
         Assert.AreEqual(1, updatedLithology.LithologyDescriptions.Count);
         var lithologyDescription = updatedLithology.LithologyDescriptions.First();
         Assert.IsTrue(lithologyDescription.IsFirst);
@@ -378,11 +378,11 @@ public class LithologyControllerTest
         Assert.IsNull(lithologyDescription.LithologyUncon4Id);
         Assert.IsNull(lithologyDescription.LithologyUncon5Id);
         Assert.IsNull(lithologyDescription.LithologyUncon6Id);
-        Assert.AreEqual(0, lithologyDescription.LithologyDescriptionComponentUnconOrganicCodes.Count);
-        Assert.AreEqual(0, lithologyDescription.LithologyDescriptionComponentUnconDebrisCodes.Count);
-        Assert.AreEqual(0, lithologyDescription.LithologyDescriptionGrainShapeCodes.Count);
-        Assert.AreEqual(0, lithologyDescription.LithologyDescriptionGrainAngularityCodes.Count);
-        Assert.AreEqual(0, lithologyDescription.LithologyDescriptionLithologyUnconDebrisCodes.Count);
+        Assert.AreEqual(0, lithologyDescription.ComponentUnconOrganicCodelistIds.Count);
+        Assert.AreEqual(0, lithologyDescription.ComponentUnconDebrisCodelistIds.Count);
+        Assert.AreEqual(0, lithologyDescription.GrainShapeCodelistIds.Count);
+        Assert.AreEqual(0, lithologyDescription.GrainAngularityCodelistIds.Count);
+        Assert.AreEqual(0, lithologyDescription.LithologyUnconDebrisCodelistIds.Count);
 
         var oldLithologyDescriptions = context.LithologyDescriptions.Where(ld => ld.LithologyId == existingUnconsolidatedLithology.Id).ToList();
         Assert.AreEqual(1, oldLithologyDescriptions.Count);
@@ -499,14 +499,14 @@ public class LithologyControllerTest
 
         // Assert unconsolidated or consolidated values are saved.
         var consolidatedLithologyLithologicalDescription = retrievedLithologies.Single(l => l.Notes == "Bulk created lithology 2").LithologyDescriptions.Single();
-        Assert.AreEqual(0, consolidatedLithologyLithologicalDescription.ComponentConParticleCodelists.Count);
-        Assert.AreEqual(0, consolidatedLithologyLithologicalDescription.ComponentConMineralCodelists.Count);
-        Assert.AreEqual(1, consolidatedLithologyLithologicalDescription.ComponentUnconDebrisCodelists.Count);
+        Assert.AreEqual(0, consolidatedLithologyLithologicalDescription.ComponentConParticleCodelistIds.Count);
+        Assert.AreEqual(0, consolidatedLithologyLithologicalDescription.ComponentConMineralCodelistIds.Count);
+        Assert.AreEqual(1, consolidatedLithologyLithologicalDescription.ComponentUnconDebrisCodelistIds.Count);
 
         var unConsolidatedLithologyLithologicalDescription = retrievedLithologies.Single(l => l.Notes == "Bulk created lithology 3").LithologyDescriptions.Single();
-        Assert.AreEqual(2, unConsolidatedLithologyLithologicalDescription.ComponentConParticleCodelists.Count);
-        Assert.AreEqual(1, unConsolidatedLithologyLithologicalDescription.ComponentConMineralCodelists.Count);
-        Assert.AreEqual(0, unConsolidatedLithologyLithologicalDescription.ComponentUnconDebrisCodelists.Count);
+        Assert.AreEqual(2, unConsolidatedLithologyLithologicalDescription.ComponentConParticleCodelistIds.Count);
+        Assert.AreEqual(1, unConsolidatedLithologyLithologicalDescription.ComponentConMineralCodelistIds.Count);
+        Assert.AreEqual(0, unConsolidatedLithologyLithologicalDescription.ComponentUnconDebrisCodelistIds.Count);
 
         foreach (var lithology in retrievedLithologies)
         {
