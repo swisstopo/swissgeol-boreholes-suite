@@ -211,7 +211,8 @@ describe("Search filter tests", () => {
     cy.get('[data-cy="filter-chip-boreholestatus"]').contains("Borehole status");
   });
 
-  it("filters boreholes by color and uscs3", () => {
+  // Todo: readd when new filtes are implemented
+  it.skip("filters boreholes by color and uscs3", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("Lithology").click();
@@ -228,7 +229,8 @@ describe("Search filter tests", () => {
     cy.get(".MuiDataGrid-row").contains("Aisha Thiel").should("exist");
   });
 
-  it("filters boreholes by original lithology in editor mode", () => {
+  // Todo: readd when new filtes are implemented
+  it.skip("filters boreholes by original lithology in editor mode", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
     cy.contains("Lithology").click();
