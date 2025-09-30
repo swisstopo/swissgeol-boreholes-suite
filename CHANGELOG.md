@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- New lithology UI
+
 ## v2.1.1358 - 2025-09-24
 
 ### Changed
