@@ -1,6 +1,4 @@
-﻿/*
- * TODO: Re-add after fixing https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
-using Amazon.S3;
+﻿using Amazon.S3;
 using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -21,6 +19,8 @@ namespace BDMS.Controllers;
 [TestClass]
 public class ImportControllerTest
 {
+    /*
+     * TODO: Re-add after fixing https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
     private const int MaxBoreholeSeedId = 1002999;
     private const int MaxStratigraphySeedId = 6002999;
     private const int MaxLayerSeedId = 7029999;
@@ -183,8 +183,6 @@ public class ImportControllerTest
         Assert.AreEqual(0, borheoleGeometry.HAZI, nameof(borheoleGeometry.HAZI));
         Assert.AreEqual(0.1468618496717173, borheoleGeometry.DEVI, nameof(borheoleGeometry.DEVI));
 
-        /*
-         * TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
         // Assert stratigraphy's lithological descriptions
         Assert.AreEqual(2, borehole.Stratigraphies.Count, nameof(borehole.Stratigraphies.Count));
         var stratigraphy = borehole.Stratigraphies.First();
@@ -306,10 +304,9 @@ public class ImportControllerTest
         Assert.IsNull(lithostratigraphyLayer.Lithostratigraphy, nameof(lithostratigraphyLayer.Lithostratigraphy).ShouldBeNullMessage());
         Assert.AreEqual(0.1, lithostratigraphyLayer.FromDepth, nameof(lithostratigraphyLayer.FromDepth));
         Assert.AreEqual(10, lithostratigraphyLayer.ToDepth, nameof(lithostratigraphyLayer.ToDepth));
-        */
 
-        // Assert borehole's completions
-        Assert.AreEqual(2, borehole.Completions.Count, nameof(borehole.Completions.Count));
+    // Assert borehole's completions
+    Assert.AreEqual(2, borehole.Completions.Count, nameof(borehole.Completions.Count));
         var completion = borehole.Completions.First();
         Assert.IsNotNull(completion.Created, nameof(completion.Created).ShouldNotBeNullMessage());
         Assert.IsNotNull(completion.CreatedById, nameof(completion.CreatedById).ShouldNotBeNullMessage());
@@ -1169,5 +1166,5 @@ public class ImportControllerTest
         var boreholeZipFile = GetFormFileByExistingFile(zipPath);
         return boreholeZipFile;
     }
+    */
 }
-*/
