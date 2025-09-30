@@ -24,13 +24,13 @@ import {
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "../stratigraphyTableComponents.tsx";
+import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 import { FaciesDescriptionModal } from "./form/faciesDescriptionModal.tsx";
 import { LithologicalDescriptionModal } from "./form/lithologicalDescriptionModal.tsx";
 import { LithologyModal } from "./form/lithologyModal.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";
 import { useLayerDepths } from "./useLayerDepths.tsx";
-import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 
 type LithologyWithChanges = { item: Lithology; hasChanges: boolean };
 type LithologicalDescriptionWithChanges = { item: LithologicalDescription; hasChanges: boolean };
@@ -430,7 +430,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
                   handleEditFaciesDescription,
                   handleDeleteFaciesDescription,
                   layer => (
-                    <FaciesDescriptionLabels description={layer as FaciesDescription}/>
+                    <FaciesDescriptionLabels description={layer as FaciesDescription} />
                   ),
                   "faciesDescription",
                 )}
