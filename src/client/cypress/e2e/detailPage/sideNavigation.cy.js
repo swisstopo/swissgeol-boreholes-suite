@@ -46,8 +46,9 @@ describe("Test for the detail page side navigation.", () => {
 
     // Check empty Stratigraphy
     navigateInSidebar(SidebarMenuItem.stratigraphy);
-    cy.contains("No stratigraphies available...");
     cy.wait("@getAllAttachments");
+    cy.contains("No stratigraphies available...");
+    cy.contains("Create empty stratigraphy");
 
     // Expand Hydrogeology menu and check its child items
     navigateInSidebar(SidebarMenuItem.hydrogeology);
