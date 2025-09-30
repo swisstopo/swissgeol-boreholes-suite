@@ -1,4 +1,5 @@
 import { checkElementColorByDataCy, createBaseSelector, getElementByDataCy, handlePrompt } from "./testHelpers.js";
+import "cypress-real-events/support";
 
 export const SidebarMenuItem = {
   location: "location",
@@ -167,7 +168,7 @@ export const isMenuItemWithoutContent = menuItem => {
 export const navigateInSidebar = (menuItem, promptSelector) => {
   checkThatParentOpen(menuItem);
   getElementByDataCy(`${menuItem}-menu-item`).should("be.visible");
-  getElementByDataCy(`${menuItem}-menu-item`).click();
+  getElementByDataCy(`${menuItem}-menu-item`).realClick();
 
   if (promptSelector) {
     handlePrompt(null, promptSelector);
