@@ -133,9 +133,9 @@ export const LithologyConsolidatedForm: FC<LithologyEditForm> = ({ lithologyId, 
       <BoreholesCard data-cy="lithology-reworking_processes_uncon" title={t("reworkingProcessesCon")}>
         <FormContainer>
           <FormDomainMultiSelect
-            fieldName={"textureMataCodelistIds"}
-            label={"textureMata"}
-            schemaName={"texture_mata"}
+            fieldName={"textureMetaCodelistIds"}
+            label={"textureMeta"}
+            schemaName={"texture_meta"}
           />
           <FormDomainSelect
             fieldName={"alterationDegree"}
