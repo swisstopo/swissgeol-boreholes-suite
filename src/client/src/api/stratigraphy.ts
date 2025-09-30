@@ -57,6 +57,16 @@ export interface BaseLayer {
   updatedById?: number | null;
   updatedBy?: User;
   isGap?: boolean;
+  isUnconsolidated?: boolean;
+}
+
+export interface MinimalLayer {
+  id: number;
+  fromDepth?: number;
+  toDepth?: number;
+  stratigraphyId: number;
+  isGap?: boolean;
+  isUnconsolidated?: boolean;
 }
 
 export interface Layer {
