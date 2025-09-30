@@ -136,7 +136,6 @@ public static class BoreholeExtensions
         borehole.MapCasingReferences();
 
         borehole.Stratigraphies?.MarkAsNew();
-        borehole.StratigraphiesV2?.MarkAsNew();
         borehole.Completions?.MarkAsNew();
         borehole.Sections?.MarkAsNew();
         borehole.Observations?.MarkAsNew();
@@ -163,15 +162,26 @@ public static class BoreholeExtensions
 
         foreach (var stratigraphy in borehole.Stratigraphies)
         {
-            foreach (var layer in stratigraphy.Layers)
+            foreach (var lithology in stratigraphy.Lithologies)
             {
-                // LayerId needs to be reset because it is part of the primary key
-                layer.LayerColorCodes?.ResetLayerIds();
-                layer.LayerDebrisCodes?.ResetLayerIds();
-                layer.LayerGrainShapeCodes?.ResetLayerIds();
-                layer.LayerGrainAngularityCodes?.ResetLayerIds();
-                layer.LayerOrganicComponentCodes?.ResetLayerIds();
-                layer.LayerUscs3Codes?.ResetLayerIds();
+                // LithologyId needs to be reset because it is part of the primary key
+                lithology.LithologyRockConditionCodes?.ResetLithologyIds();
+                lithology.LithologyUscsTypeCodes?.ResetLithologyIds();
+                lithology.LithologyTextureMetaCodes?.ResetLithologyIds();
+
+                foreach (var description in lithology.LithologyDescriptions)
+                {
+                    // LithologyDescriptionId needs to be reset because it is part of the primary key
+                    description.LithologyDescriptionComponentUnconOrganicCodes?.ResetLithologyDescriptionIds();
+                    description.LithologyDescriptionComponentUnconDebrisCodes?.ResetLithologyDescriptionIds();
+                    description.LithologyDescriptionGrainShapeCodes?.ResetLithologyDescriptionIds();
+                    description.LithologyDescriptionGrainAngularityCodes?.ResetLithologyDescriptionIds();
+                    description.LithologyDescriptionLithologyUnconDebrisCodes?.ResetLithologyDescriptionIds();
+                    description.LithologyDescriptionComponentConParticleCodes?.ResetLithologyDescriptionIds();
+                    description.LithologyDescriptionComponentConMineralCodes?.ResetLithologyDescriptionIds();
+                    description.LithologyDescriptionStructureSynGenCodes?.ResetLithologyDescriptionIds();
+                    description.LithologyDescriptionStructurePostGenCodes?.ResetLithologyDescriptionIds();
+                }
             }
         }
 

@@ -1,4 +1,4 @@
-import { addItem, saveForm } from "../helpers/buttonHelpers.js";
+import { addItem, saveForm, saveWithSaveBar } from "../helpers/buttonHelpers.js";
 import { setInput, setSelect, toggleMultiSelect } from "../helpers/formHelpers.js";
 import {
   BoreholeTab,
@@ -9,13 +9,11 @@ import {
   isMenuItemWithContent,
   isMenuItemWithoutContent,
   navigateInSidebar,
-  navigateInStratigraphy,
   SidebarMenuItem,
   StratigraphyTab,
 } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
-  getElementByDataCy,
   goToDetailRouteAndAcceptTerms,
   selectInputFile,
   startBoreholeEditing,
@@ -60,41 +58,15 @@ describe("Test for the detail page side navigation.", () => {
     // Add stratigraphy and Lithology
     navigateInSidebar(SidebarMenuItem.stratigraphy);
     addItem("addEmptyStratigraphy");
-    cy.wait([
-      "@stratigraphy_POST",
-      "@stratigraphy_by_borehole_GET",
-      "@stratigraphy_by_borehole_GET",
-      "@stratigraphy_GET",
-      "@get-layers-by-profileId",
-      "@lithological_description",
-      "@facies_description",
-      "@layer",
-    ]);
-
-    getElementByDataCy("add-layer-icon").click();
-    cy.wait("@layer");
-    getElementByDataCy("styled-layer-0").should("contain", "0 m MD");
-    getElementByDataCy("styled-layer-0").find('[data-testid="ModeEditIcon"]').click();
-    cy.wait("@get-layer-by-id");
-    setInput("fromDepth", "0");
-    setInput("toDepth", "50");
-    saveForm();
-    cy.wait(["@update-layer", "@layer", "@get-layers-by-profileId"]);
-    getElementByDataCy("styled-layer-0").should("contain", "50 m MD");
-
-    // Add chronostratigraphy
-    navigateInStratigraphy(StratigraphyTab.chronostratigraphy);
-    getElementByDataCy("add-layer-button").click({ force: true });
-    cy.wait(["@chronostratigraphy_POST", "@chronostratigraphy_GET"]);
-
-    // Add lithostratigraphy
-    navigateInStratigraphy(StratigraphyTab.lithostratigraphy);
-    getElementByDataCy("add-layer-button").click({ force: true });
-    cy.wait(["@lithostratigraphy_POST", "@lithostratigraphy_GET"]);
+    setInput("name", "AUTODESPERADO");
+    saveWithSaveBar();
+    cy.wait(["@lithology_by_stratigraphyId_GET", "@lithological_description", "@facies_description"]);
+    isActiveMenuItem(SidebarMenuItem.stratigraphy, true);
 
     // Add completion
     navigateInSidebar(SidebarMenuItem.completion);
     isActiveMenuItem(SidebarMenuItem.completion, false);
+    cy.wait("@completion_GET");
     cy.contains("No borehole architecture available").should("exist");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(500);

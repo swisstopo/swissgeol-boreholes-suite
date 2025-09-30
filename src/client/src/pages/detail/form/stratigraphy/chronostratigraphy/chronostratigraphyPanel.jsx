@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
 import { useLithostratigraphies } from "../../../../../api/stratigraphy.ts";
-import LithologyViewProfile from "../lithologyViewProfile.jsx";
 import LithostratigraphyViewProfile from "../lithostratigraphy/lithostratigraphyViewProfile.jsx";
 import NavigationChild from "../navigationChild.jsx";
 import NavigationContainer from "../navigationContainer.jsx";
@@ -31,19 +30,11 @@ const ChronostratigraphyPanel = ({ stratigraphyId }) => {
                 navState={navState}
                 setNavState={setNavState}
                 renderBackground={(lensNavState, setLensNavState) => (
-                  <>
-                    <LithostratigraphyViewProfile
-                      navState={lensNavState}
-                      setNavState={setLensNavState}
-                      stratigraphyId={stratigraphyId}
-                    />
-                    <LithologyViewProfile
-                      navState={lensNavState}
-                      setNavState={setLensNavState}
-                      stratigraphyId={stratigraphyId}
-                      minPixelHeightForDepthLabel={Number.MAX_VALUE}
-                    />
-                  </>
+                  <LithostratigraphyViewProfile
+                    navState={lensNavState}
+                    setNavState={setLensNavState}
+                    stratigraphyId={stratigraphyId}
+                  />
                 )}
               />
             </NavigationChild>
@@ -57,7 +48,6 @@ const ChronostratigraphyPanel = ({ stratigraphyId }) => {
                 navState={navState}
                 setNavState={setNavState}
               />
-              <LithologyViewProfile stratigraphyId={stratigraphyId} navState={navState} setNavState={setNavState} />
             </NavigationChild>
             <NavigationChild
               sx={{ flex: "0 0 4em" }}
