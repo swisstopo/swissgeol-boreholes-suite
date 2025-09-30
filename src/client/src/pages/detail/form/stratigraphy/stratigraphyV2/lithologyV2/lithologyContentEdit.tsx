@@ -30,6 +30,7 @@ import { LithologyModal } from "./form/lithologyModal.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";
 import { useLayerDepths } from "./useLayerDepths.tsx";
+import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 
 type LithologyWithChanges = { item: Lithology; hasChanges: boolean };
 type LithologicalDescriptionWithChanges = { item: LithologicalDescription; hasChanges: boolean };
@@ -429,9 +430,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
                   handleEditFaciesDescription,
                   handleDeleteFaciesDescription,
                   layer => (
-                    <Typography variant="body1" fontWeight={700}>
-                      {(layer as FaciesDescription).description}
-                    </Typography>
+                    <FaciesDescriptionLabels description={layer as FaciesDescription}/>
                   ),
                   "faciesDescription",
                 )}
