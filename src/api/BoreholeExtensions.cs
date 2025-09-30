@@ -160,8 +160,6 @@ public static class BoreholeExtensions
             }
         }
 
-        /*
-         * TODO: Re-add after import for stratigraphy is fixed
         foreach (var stratigraphy in borehole.Stratigraphies)
         {
             foreach (var lithology in stratigraphy.Lithologies)
@@ -186,7 +184,7 @@ public static class BoreholeExtensions
                 }
             }
         }
-        */
+        
 
         foreach (var observation in borehole.Observations)
         {
