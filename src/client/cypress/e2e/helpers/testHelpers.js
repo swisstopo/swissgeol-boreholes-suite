@@ -311,7 +311,8 @@ export const createBoreholeWithCompleteDataset = () => {
     stratigraphies: [
       {
         name: "Test Stratigraphy",
-        layers: [{ from: 0, to: 10 }],
+        isPrimary: true,
+        lithologies: [{ from: 0, to: 10 }],
         lithostratigraphyLayers: [{ from: 0, to: 10 }],
         chronostratigraphyLayers: [{ from: 0, to: 10 }],
       },
