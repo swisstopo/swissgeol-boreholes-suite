@@ -187,6 +187,43 @@ public class LithologyController : BoreholeControllerBase<Lithology>
         {
             await PrepareLithologyForSaveAsync(entity, existingLithology).ConfigureAwait(false);
             Context.Entry(existingLithology).CurrentValues.SetValues(entity);
+            if (entity.LithologyDescriptions != null)
+            {
+                foreach (var descriptionEntity in entity.LithologyDescriptions)
+                {
+                    if (descriptionEntity.Id == 0)
+                    {
+                        descriptionEntity.LithologyId = existingLithology.Id;
+                        existingLithology.LithologyDescriptions.Add(descriptionEntity);
+                        Context.LithologyDescriptions.Add(descriptionEntity);
+                    }
+                    else
+                    {
+                        var existingDescription = existingLithology.LithologyDescriptions
+                            .FirstOrDefault(d => d.Id == descriptionEntity.Id);
+
+                        if (existingDescription != null)
+                        {
+                            Context.Entry(existingDescription).CurrentValues.SetValues(descriptionEntity);
+
+                            // These properties are already handled in PrepareLithologyForSaveAsync
+                            // but ensure they're synchronized here as well:
+                            existingDescription.LithologyConId = descriptionEntity.LithologyConId;
+                            existingDescription.LithologyUnconMainId = descriptionEntity.LithologyUnconMainId;
+                            existingDescription.LithologyUncon2Id = descriptionEntity.LithologyUncon2Id;
+                            existingDescription.LithologyUncon3Id = descriptionEntity.LithologyUncon3Id;
+                            existingDescription.LithologyUncon4Id = descriptionEntity.LithologyUncon4Id;
+                            existingDescription.LithologyUncon5Id = descriptionEntity.LithologyUncon5Id;
+                            existingDescription.LithologyUncon6Id = descriptionEntity.LithologyUncon6Id;
+                            existingDescription.GrainSizeId = descriptionEntity.GrainSizeId;
+                            existingDescription.GrainAngularityId = descriptionEntity.GrainAngularityId;
+                            existingDescription.GradationId = descriptionEntity.GradationId;
+                            existingDescription.CementationId = descriptionEntity.CementationId;
+                            existingDescription.HasStriae = descriptionEntity.HasStriae;
+                        }
+                    }
+                }
+            }
             await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
             return await GetByIdAsync(entity.Id).ConfigureAwait(false);
         }
