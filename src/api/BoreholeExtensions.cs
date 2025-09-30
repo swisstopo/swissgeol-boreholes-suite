@@ -184,7 +184,6 @@ public static class BoreholeExtensions
                 }
             }
         }
-        
 
         foreach (var observation in borehole.Observations)
         {
