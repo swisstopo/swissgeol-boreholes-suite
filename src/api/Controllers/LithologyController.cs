@@ -199,7 +199,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
                     }
                     else
                     {
-                        var existingDescription = existingLithology.LithologyDescriptions
+                        var existingDescription = existingLithology.LithologyDescriptions?
                             .FirstOrDefault(d => d.Id == descriptionEntity.Id);
 
                         if (existingDescription != null)
@@ -224,6 +224,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
                     }
                 }
             }
+
             await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
             return await GetByIdAsync(entity.Id).ConfigureAwait(false);
         }

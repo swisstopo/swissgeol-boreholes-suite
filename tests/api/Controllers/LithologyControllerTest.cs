@@ -388,6 +388,7 @@ public class LithologyControllerTest
         Assert.AreEqual(1, oldLithologyDescriptions.Count);
         Assert.AreEqual(lithologyDescription.Id, oldLithologyDescriptions[0].Id);
     }
+
     [TestMethod]
     public async Task EditLithologyLithologyDescription()
     {
