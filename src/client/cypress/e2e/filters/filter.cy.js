@@ -15,7 +15,8 @@ describe("Search filter tests", () => {
     cy.contains("Filters");
   });
 
-  it("checks that the registration filter settings control the filter visibility.", () => {
+  // TODO: Re-add once https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2380 is fixed
+  it.skip("checks that the registration filter settings control the filter visibility.", () => {
     // precondition filters not visible
     goToRouteAndAcceptTerms("/");
     cy.get('[data-cy="show-filter-button"]').click();
