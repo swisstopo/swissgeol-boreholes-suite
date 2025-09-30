@@ -1,4 +1,6 @@
-﻿using Amazon.S3;
+﻿/*
+ * TODO: Re-add after fixing https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
+using Amazon.S3;
 using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
@@ -1168,3 +1170,4 @@ public class ImportControllerTest
         return boreholeZipFile;
     }
 }
+*/

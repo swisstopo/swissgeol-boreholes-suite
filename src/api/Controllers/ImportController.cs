@@ -63,6 +63,10 @@ public class ImportController : ControllerBase
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<ActionResult<int>> UploadCsvFileAsync(int workgroupId, IFormFile boreholesFile)
     {
+        // TODO: Remove after fixing https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
+        return Problem("Import currently not available.");
+
+        #pragma warning disable CS0162 // Unreachable code detected
         if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
         {
             return Unauthorized();
@@ -158,6 +162,7 @@ public class ImportController : ControllerBase
             logger.LogError(ex, "Error while importing borehole(s) to workgroup with id <{WorkgroupId}>.", workgroupId);
             return Problem("Error while importing borehole(s).");
         }
+        #pragma warning restore CS0162 // Unreachable code detected
     }
 
     /// <summary>
@@ -172,6 +177,10 @@ public class ImportController : ControllerBase
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<ActionResult<int>> UploadJsonFileAsync(int workgroupId, IFormFile boreholesFile)
     {
+        // TODO: Remove after fixing https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
+        return Problem("Import currently not available.");
+
+        #pragma warning disable CS0162 // Unreachable code detected
         if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
         {
             return Unauthorized();
@@ -184,6 +193,7 @@ public class ImportController : ControllerBase
         var boreholes = await DeserializeBoreholeDataAsync(boreholesFile.OpenReadStream()).ConfigureAwait(false);
         if (boreholes == null) return BadRequest("The provided file is not an array of boreholes or is not in a valid JSON format.");
         return await ProcessAndSaveBoreholesAsync(workgroupId, boreholes).ConfigureAwait(false);
+        #pragma warning restore CS0162 // Unreachable code detected
     }
 
     /// <summary>
@@ -199,6 +209,10 @@ public class ImportController : ControllerBase
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<ActionResult<int>> UploadZipFileAsync(int workgroupId, IFormFile boreholesFile)
     {
+        // TODO: Remove after fixing https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
+        return Problem("Import currently not available.");
+
+        #pragma warning disable CS0162 // Unreachable code detected
         if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
         {
             return Unauthorized();
@@ -230,6 +244,7 @@ public class ImportController : ControllerBase
 
         await UploadAttachmentsAsync(zipArchive, boreholeFiles).ConfigureAwait(false);
         return !ModelState.IsValid ? ValidationProblem() : result;
+        #pragma warning restore CS0162 // Unreachable code detected
     }
 
     private void InitializeImport(int workgroupId, string fileType)
