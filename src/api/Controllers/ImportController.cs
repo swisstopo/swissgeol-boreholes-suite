@@ -288,13 +288,15 @@ public class ImportController : ControllerBase
 
         foreach (var borehole in boreholes)
         {
+            /*
+             * TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
+            Re-enable the commented code when import is fixed.
             borehole.MarkBoreholeContentAsNew(user, workgroupId);
 
             MapHydrotestCodelists(borehole, hydrotestCodelists);
 
-            // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
-            // Re-enable lithology codelist mapping when codelists are available in the import json.
-            // MapLithologyCodelists(borehole);
+            MapLithologyCodelists(borehole);
+            */
         }
     }
 
