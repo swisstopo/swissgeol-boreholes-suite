@@ -85,7 +85,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   );
   const tmpFaciesDescriptionsFlat = useMemo(() => tmpFaciesDescriptions.map(l => l.item), [tmpFaciesDescriptions]);
 
-  const { depths } = useLayerDepths(tmpLithologiesFlat, tmpLithologicalDescriptionsFlat, tmpFaciesDescriptionsFlat);
+  const { depths } = useLayerDepths(tmpLithologiesFlat);
 
   const { completedLayers: completedLithologies } = useCompletedLayers(tmpLithologiesFlat, depths);
   const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(
