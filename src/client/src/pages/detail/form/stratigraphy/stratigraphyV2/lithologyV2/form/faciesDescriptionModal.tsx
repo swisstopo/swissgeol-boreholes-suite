@@ -40,6 +40,9 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
     const isValid = await formMethods.trigger();
     if (!formState.isDirty || isValid) {
       const values = getValues();
+      delete values.facies;
+      if (String(values.faciesId) === "") values.faciesId = null;
+
       updateFaciesDescription({ ...description, ...values } as FaciesDescription, formState.isDirty);
     }
   };
