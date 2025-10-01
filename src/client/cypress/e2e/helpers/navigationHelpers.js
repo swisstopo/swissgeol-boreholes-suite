@@ -119,7 +119,7 @@ export const navigateInStratigraphy = tab => {
 
   switch (tab) {
     case StratigraphyTab.lithology:
-      cy.wait("@lithology_by_stratigraphyId_GET, @lithological_description, @facies_description");
+      cy.wait(["@lithology_by_stratigraphyId_GET", "@lithological_description", "@facies_description"]);
       break;
     case StratigraphyTab.chronostratigraphy:
       cy.wait("@chronostratigraphy_GET");
