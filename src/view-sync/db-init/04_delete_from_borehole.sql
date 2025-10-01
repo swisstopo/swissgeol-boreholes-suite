@@ -224,10 +224,10 @@ DELETE FROM bdms.completion WHERE id IN (
 );
 
 -- Stratigraphy: Chronostratigraphy
-DELETE FROM bdms.chronostratigraphy WHERE id_chr IN (
-    SELECT cs.id_chr FROM bdms.chronostratigraphy cs
-    INNER JOIN bdms.stratigraphy s ON s.id_sty = cs.id_sty_fk
-    INNER JOIN bdms.borehole b ON b.id_bho  = s.id_bho_fk
+DELETE FROM bdms.chronostratigraphy WHERE id IN (
+    SELECT cs.id FROM bdms.chronostratigraphy cs
+    INNER JOIN bdms.stratigraphy_v2 s ON s.id = cs.stratigraphy_id
+    INNER JOIN bdms.borehole b ON b.id_bho  = s.borehole_id
     INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
     INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
     WHERE t.chronostratigraphy = false
@@ -236,48 +236,48 @@ DELETE FROM bdms.chronostratigraphy WHERE id_chr IN (
 -- Stratigraphy: Lithostratigraphy
 DELETE FROM bdms.lithostratigraphy WHERE id IN (
     SELECT l.id FROM bdms.lithostratigraphy l
-    INNER JOIN bdms.stratigraphy s ON s.id_sty = l.stratigraphy_id
-    INNER JOIN bdms.borehole b ON b.id_bho  = s.id_bho_fk
+    INNER JOIN bdms.stratigraphy_v2 s ON s.id = l.stratigraphy_id
+    INNER JOIN bdms.borehole b ON b.id_bho  = s.borehole_id
     INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
     INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
     WHERE t.lithostratigraphy = false
 );
 
 -- Stratigraphy: Lithology
-DELETE FROM bdms.layer WHERE id_lay IN (
-    SELECT l.id_lay FROM bdms.layer l
-    INNER JOIN bdms.stratigraphy s ON s.id_sty = l.id_sty_fk
-    INNER JOIN bdms.borehole b ON b.id_bho  = s.id_bho_fk
+DELETE FROM bdms.lithology WHERE id IN (
+    SELECT l.id FROM bdms.lithology l
+    INNER JOIN bdms.stratigraphy_v2 s ON s.id = l.stratigraphy_id
+    INNER JOIN bdms.borehole b ON b.id_bho  = s.borehole_id
     INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
     INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
     WHERE t.lithology = false
 );
 
 -- Stratigraphy: Lithological description
-DELETE FROM bdms.lithological_description WHERE id_ldp IN (
-    SELECT ld.id_ldp FROM bdms.lithological_description ld
-    INNER JOIN bdms.stratigraphy s ON s.id_sty = ld.id_sty_fk
-    INNER JOIN bdms.borehole b ON b.id_bho  = s.id_bho_fk
+DELETE FROM bdms.lithological_description WHERE id IN (
+    SELECT ld.id FROM bdms.lithological_description ld
+    INNER JOIN bdms.stratigraphy_v2 s ON s.id = ld.stratigraphy_id
+    INNER JOIN bdms.borehole b ON b.id_bho  = s.borehole_id
     INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
     INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
     WHERE t.lithology = false
 );
 
 -- Stratigraphy: Facies description
-DELETE FROM bdms.facies_description WHERE id_fac IN (
-    SELECT fd.id_fac FROM bdms.facies_description fd
-    INNER JOIN bdms.stratigraphy s ON s.id_sty = fd.id_sty_fk
-    INNER JOIN bdms.borehole b ON b.id_bho  = s.id_bho_fk
+DELETE FROM bdms.facies_description WHERE id IN (
+    SELECT fd.id FROM bdms.facies_description fd
+    INNER JOIN bdms.stratigraphy_v2 s ON s.id = fd.stratigraphy_id
+    INNER JOIN bdms.borehole b ON b.id_bho  = s.borehole_id
     INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
     INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
     WHERE t.lithology = false
 );
 
 -- Stratigraphy (if there is no Chronostratigraphy, Lithostratigraphy or Lithology)
-DELETE FROM bdms.stratigraphy WHERE id_bho_fk IS NULL;
-DELETE FROM bdms.stratigraphy WHERE id_sty IN (
-    SELECT s.id_sty FROM bdms.stratigraphy s
-    INNER JOIN bdms.borehole b ON b.id_bho  = s.id_bho_fk
+DELETE FROM bdms.stratigraphy_v2 WHERE borehole_id IS NULL;
+DELETE FROM bdms.stratigraphy_v2 WHERE id IN (
+    SELECT s.id FROM bdms.stratigraphy_v2 s
+    INNER JOIN bdms.borehole b ON b.id_bho  = s.borehole_id
     INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
     INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
     WHERE t.chronostratigraphy = false AND t.lithostratigraphy = false AND t.lithology = false

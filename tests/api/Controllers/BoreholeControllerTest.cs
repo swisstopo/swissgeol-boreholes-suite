@@ -131,7 +131,7 @@ public class BoreholeControllerTest
         newBorehole.Id = id;
 
         var boreholeToEdit = GetBorehole(id);
-        Assert.AreEqual(1, boreholeToEdit.Stratigraphies.Count);
+        Assert.AreEqual(2, boreholeToEdit.Stratigraphies.Count);
         Assert.AreEqual(0, boreholeToEdit.BoreholeFiles.Count);
         Assert.AreEqual(0, boreholeToEdit.BoreholeGeometry.Count);
         Assert.AreEqual(0, boreholeToEdit.Completions.Count);
@@ -192,7 +192,7 @@ public class BoreholeControllerTest
         Assert.AreEqual(newBorehole.ReferenceElevationTypeId, updatedBorehole.ReferenceElevationTypeId);
 
         // Stratigraphies remain unchanged
-        Assert.AreEqual(1, updatedBorehole.Stratigraphies.Count);
+        Assert.AreEqual(2, updatedBorehole.Stratigraphies.Count);
         Assert.AreEqual(0, updatedBorehole.BoreholeFiles.Count);
         Assert.AreEqual(0, updatedBorehole.BoreholeGeometry.Count);
         Assert.AreEqual(0, updatedBorehole.Completions.Count);
@@ -560,7 +560,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task Copy()
     {
-        boreholeId = GetBoreholeIdToCopy();
+        var boreholeId = 1000030;
         var originalBorehole = GetBorehole(boreholeId);
 
         Assert.IsTrue(originalBorehole.ValidateCasingReferences(), "Precondition: Borehole has invalid casing reference");
@@ -588,8 +588,8 @@ public class BoreholeControllerTest
         Assert.AreNotEqual(originalBorehole.Id, copiedBorehole.Id);
         Assert.AreNotSame(originalBorehole.Stratigraphies, copiedBorehole.Stratigraphies);
         Assert.AreNotEqual(originalStratigraphy.Id, copiedstratigraphy.Id);
-        Assert.AreNotSame(originalStratigraphy.Layers, copiedstratigraphy.Layers);
-        Assert.AreNotEqual(originalStratigraphy.Layers.First().Id, copiedstratigraphy.Layers.First().Id);
+        Assert.AreNotSame(originalStratigraphy.Lithologies, copiedstratigraphy.Lithologies);
+        Assert.AreNotEqual(originalStratigraphy.Lithologies.First().Id, copiedstratigraphy.Lithologies.First().Id);
 
         Assert.AreEqual(originalStratigraphy.LithologicalDescriptions.Count, copiedstratigraphy.LithologicalDescriptions.Count);
         for (int i = 0; i < originalStratigraphy.LithologicalDescriptions.Count; i++)
@@ -632,14 +632,14 @@ public class BoreholeControllerTest
         Assert.AreNotEqual(0, originalBorehole.BoreholeFiles.Count);
         Assert.AreEqual(0, copiedBorehole.BoreholeFiles.Count);
 
-        Assert.AreNotSame(originalStratigraphy.Layers.First().LayerColorCodes, copiedstratigraphy.Layers.First().LayerColorCodes);
-        Assert.AreEqual(originalStratigraphy.Layers.First().LayerColorCodes.Count, copiedstratigraphy.Layers.First().LayerColorCodes.Count);
+        Assert.AreNotSame(originalStratigraphy.Lithologies.First().LithologyRockConditionCodes, copiedstratigraphy.Lithologies.First().LithologyRockConditionCodes);
+        Assert.AreEqual(originalStratigraphy.Lithologies.First().LithologyRockConditionCodes.Count, copiedstratigraphy.Lithologies.First().LithologyRockConditionCodes.Count);
 
-        Assert.AreNotSame(originalStratigraphy.Layers.First().LayerGrainShapeCodes, copiedstratigraphy.Layers.First().LayerGrainShapeCodes);
-        Assert.AreEqual(originalStratigraphy.Layers.First().LayerGrainShapeCodes.Count, copiedstratigraphy.Layers.First().LayerGrainShapeCodes.Count);
+        Assert.AreNotSame(originalStratigraphy.Lithologies.First().LithologyUscsTypeCodes, copiedstratigraphy.Lithologies.First().LithologyUscsTypeCodes);
+        Assert.AreEqual(originalStratigraphy.Lithologies.First().LithologyUscsTypeCodes.Count, copiedstratigraphy.Lithologies.First().LithologyUscsTypeCodes.Count);
 
-        Assert.AreNotSame(originalStratigraphy.Layers.First().LayerUscs3Codes, copiedstratigraphy.Layers.First().LayerUscs3Codes);
-        Assert.AreEqual(originalStratigraphy.Layers.First().LayerUscs3Codes.Count, copiedstratigraphy.Layers.First().LayerUscs3Codes.Count);
+        Assert.AreNotSame(originalStratigraphy.Lithologies.First().LithologyTextureMetaCodes, copiedstratigraphy.Lithologies.First().LithologyTextureMetaCodes);
+        Assert.AreEqual(originalStratigraphy.Lithologies.First().LithologyTextureMetaCodes.Count, copiedstratigraphy.Lithologies.First().LithologyTextureMetaCodes.Count);
 
         var originalCompletion = originalBorehole.Completions.First();
         var copiedCompletion = copiedBorehole.Completions.First();
@@ -748,41 +748,6 @@ public class BoreholeControllerTest
             ReferenceElevationPrecisionId = 20114002,
             ReferenceElevationTypeId = 20117003,
         };
-    }
-
-    // Get the id of a borehole with certain conditions.
-    private int GetBoreholeIdToCopy()
-    {
-        var borehole = context.BoreholesWithIncludes
-            .AsNoTracking()
-            .AsEnumerable()
-            .FirstOrDefault(b =>
-                b.Stratigraphies != null &&
-                b.Stratigraphies.Any() &&
-                b.Stratigraphies.First().Layers != null &&
-                b.Stratigraphies.First().Layers.Any(x => x.LayerColorCodes != null && x.LayerColorCodes.Any()) &&
-                b.Stratigraphies.First().Layers.Any(x => x.LayerGrainShapeCodes != null && x.LayerGrainShapeCodes.Any()) &&
-                b.Stratigraphies.First().Layers.Any(x => x.LayerUscs3Codes != null && x.LayerUscs3Codes.Any()) &&
-                b.Stratigraphies.First().LithologicalDescriptions != null &&
-                b.Stratigraphies.First().FaciesDescriptions != null &&
-                b.Stratigraphies.First().ChronostratigraphyLayers != null &&
-                b.Stratigraphies.First().LithostratigraphyLayers != null &&
-                b.Completions.First() != null &&
-                b.Completions.First().Casings.First() != null &&
-                b.Completions.First().Casings.First().CasingElements.First() != null &&
-                b.Observations.First() != null &&
-                b.Observations.OfType<WaterIngress>().Any() &&
-                b.Observations.OfType<FieldMeasurement>().Any(fm => fm.FieldMeasurementResults.Count != 0) &&
-                b.Sections.First() != null &&
-                b.Sections.First().SectionElements.First() != null &&
-                b.BoreholeGeometry.Any() &&
-                b.BoreholeFiles.First().File != null &&
-                b.Canton != null &&
-                b.Stratigraphies.First().ChronostratigraphyLayers.First().ChronostratigraphyId != null);
-
-        Assert.IsNotNull(borehole != null, "Precondition: No borehole for conditions found.");
-
-        return borehole.Id;
     }
 
     [TestMethod]

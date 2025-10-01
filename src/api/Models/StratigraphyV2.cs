@@ -70,4 +70,34 @@ public class StratigraphyV2 : IChangeTracking, IIdentifyable
 
     /// <inheritdoc />
     public User? CreatedBy { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="Lithology"/>s associated with the <see cref="StratigraphyV2"/>.
+    /// </summary>
+    [IncludeInExport]
+    public ICollection<Lithology>? Lithologies { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="LithologicalDescription"/>s associated with the <see cref="StratigraphyV2"/>.
+    /// </summary>
+    [IncludeInExport]
+    public ICollection<LithologicalDescription>? LithologicalDescriptions { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="FaciesDescription"/>s associated with the <see cref="StratigraphyV2"/>.
+    /// </summary>
+    [IncludeInExport]
+    public ICollection<FaciesDescription>? FaciesDescriptions { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="ChronostratigraphyLayer"/>s associated with the <see cref="StratigraphyV2"/>.
+    /// </summary>
+    [IncludeInExport]
+    public ICollection<ChronostratigraphyLayer>? ChronostratigraphyLayers { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="LithostratigraphyLayer"/>s associated with the <see cref="StratigraphyV2"/>.
+    /// </summary>
+    [IncludeInExport]
+    public ICollection<LithostratigraphyLayer>? LithostratigraphyLayers { get; set; }
 }

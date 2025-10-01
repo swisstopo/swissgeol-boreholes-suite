@@ -68,7 +68,7 @@ public class ExportController : ControllerBase
 
         if (!await HasViewPermissionsForAllBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
 
-        MapLayerCodelists(boreholes);
+        MapLithologyCodelists(boreholes);
         return new JsonResult(boreholes, jsonExportOptions);
     }
 
@@ -319,7 +319,7 @@ public class ExportController : ControllerBase
 
         if (!await HasViewPermissionsForAllBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
 
-        MapLayerCodelists(boreholes);
+        MapLithologyCodelists(boreholes);
 
         try
         {
@@ -390,26 +390,36 @@ public class ExportController : ControllerBase
             .ConfigureAwait(false);
     }
 
-    private static void MapLayerCodelists(IEnumerable<Borehole> boreholes)
+    private static void MapLithologyCodelists(IEnumerable<Borehole> boreholes)
     {
         foreach (var borehole in boreholes)
         {
-            MapLayerCodelists(borehole);
+            MapLithologyCodelists(borehole);
         }
     }
 
-    private static void MapLayerCodelists(Borehole borehole)
+    private static void MapLithologyCodelists(Borehole borehole)
     {
         foreach (var stratigraphy in borehole.Stratigraphies)
         {
-            foreach (var layer in stratigraphy.Layers)
+            foreach (var lithology in stratigraphy.Lithologies)
             {
-                layer.ColorCodelistIds = layer.LayerColorCodes?.Select(code => code.CodelistId).ToList();
-                layer.DebrisCodelistIds = layer.LayerDebrisCodes?.Select(code => code.CodelistId).ToList();
-                layer.GrainAngularityCodelistIds = layer.LayerGrainAngularityCodes?.Select(code => code.CodelistId).ToList();
-                layer.GrainShapeCodelistIds = layer.LayerGrainShapeCodes?.Select(code => code.CodelistId).ToList();
-                layer.OrganicComponentCodelistIds = layer.LayerOrganicComponentCodes?.Select(code => code.CodelistId).ToList();
-                layer.Uscs3CodelistIds = layer.LayerUscs3Codes?.Select(code => code.CodelistId).ToList();
+                lithology.RockConditionCodelistIds = lithology.LithologyRockConditionCodes?.Select(code => code.CodelistId).ToList();
+                lithology.UscsTypeCodelistIds = lithology.LithologyUscsTypeCodes?.Select(code => code.CodelistId).ToList();
+                lithology.TextureMetaCodelistIds = lithology.LithologyTextureMetaCodes?.Select(code => code.CodelistId).ToList();
+
+                foreach (var description in lithology.LithologyDescriptions)
+                {
+                    description.ComponentUnconOrganicCodelistIds = description.LithologyDescriptionComponentUnconOrganicCodes?.Select(code => code.CodelistId).ToList();
+                    description.ComponentUnconDebrisCodelistIds = description.LithologyDescriptionComponentUnconDebrisCodes?.Select(code => code.CodelistId).ToList();
+                    description.GrainShapeCodelistIds = description.LithologyDescriptionGrainShapeCodes?.Select(code => code.CodelistId).ToList();
+                    description.GrainAngularityCodelistIds = description.LithologyDescriptionGrainAngularityCodes?.Select(code => code.CodelistId).ToList();
+                    description.LithologyUnconDebrisCodelistIds = description.LithologyDescriptionLithologyUnconDebrisCodes?.Select(code => code.CodelistId).ToList();
+                    description.ComponentConParticleCodelistIds = description.LithologyDescriptionComponentConParticleCodes?.Select(code => code.CodelistId).ToList();
+                    description.ComponentConMineralCodelistIds = description.LithologyDescriptionComponentConMineralCodes?.Select(code => code.CodelistId).ToList();
+                    description.StructureSynGenCodelistIds = description.LithologyDescriptionStructureSynGenCodes?.Select(code => code.CodelistId).ToList();
+                    description.StructurePostGenCodelistIds = description.LithologyDescriptionStructurePostGenCodes?.Select(code => code.CodelistId).ToList();
+                }
             }
         }
     }

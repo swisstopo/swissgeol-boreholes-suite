@@ -1,6 +1,7 @@
 ﻿using BDMS.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -8,19 +9,19 @@ namespace BDMS.Models;
 /// Represents a facies description entity in the database.
 /// </summary>
 [Table("facies_description")]
-public class FaciesDescription : ILayerDescription, IChangeTracking, IIdentifyable
+public class FaciesDescription : ILithology, IChangeTracking, IIdentifyable
 {
     /// <inheritdoc />
-    [Column("id_fac")]
+    [Column("id")]
     [Key]
     public int Id { get; set; }
 
     /// <inheritdoc />
-    [Column("id_sty_fk")]
+    [Column("stratigraphy_id")]
     public int StratigraphyId { get; set; }
 
     /// <inheritdoc />
-    public Stratigraphy? Stratigraphy { get; set; }
+    public StratigraphyV2? Stratigraphy { get; set; }
 
     /// <inheritdoc />
     [Column("creator")]
@@ -65,11 +66,13 @@ public class FaciesDescription : ILayerDescription, IChangeTracking, IIdentifyab
 
     /// <inheritdoc />
     [IncludeInExport]
+    [JsonRequired]
     [Column("depth_from")]
-    public double? FromDepth { get; set; }
+    public double FromDepth { get; set; }
 
     /// <inheritdoc />
     [IncludeInExport]
+    [JsonRequired]
     [Column("depth_to")]
-    public double? ToDepth { get; set; }
+    public double ToDepth { get; set; }
 }

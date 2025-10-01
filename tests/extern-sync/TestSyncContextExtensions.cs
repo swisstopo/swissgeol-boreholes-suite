@@ -102,14 +102,24 @@ internal static class TestSyncContextExtensions
             stratigraphy.ChronostratigraphyLayers = stratigraphy.ChronostratigraphyLayers?.OrderBy(c => c.FromDepth).ToList();
             stratigraphy.LithostratigraphyLayers = stratigraphy.LithostratigraphyLayers?.OrderBy(l => l.FromDepth).ToList();
 
-            foreach (var layer in stratigraphy.Layers)
+            foreach (var lithology in stratigraphy.Lithologies)
             {
-                layer.LayerColorCodes = layer.LayerColorCodes.OrderBy(l => l.CodelistId).ToList();
-                layer.LayerDebrisCodes = layer.LayerDebrisCodes.OrderBy(l => l.CodelistId).ToList();
-                layer.LayerGrainShapeCodes = layer.LayerGrainShapeCodes.OrderBy(l => l.CodelistId).ToList();
-                layer.LayerGrainAngularityCodes = layer.LayerGrainAngularityCodes.OrderBy(l => l.CodelistId).ToList();
-                layer.LayerOrganicComponentCodes = layer.LayerOrganicComponentCodes.OrderBy(l => l.CodelistId).ToList();
-                layer.LayerUscs3Codes = layer.LayerUscs3Codes.OrderBy(l => l.CodelistId).ToList();
+                lithology.LithologyRockConditionCodes = lithology.LithologyRockConditionCodes.OrderBy(l => l.CodelistId).ToList();
+                lithology.LithologyUscsTypeCodes = lithology.LithologyUscsTypeCodes.OrderBy(l => l.CodelistId).ToList();
+                lithology.LithologyTextureMetaCodes = lithology.LithologyTextureMetaCodes.OrderBy(l => l.CodelistId).ToList();
+
+                foreach (var description in lithology.LithologyDescriptions)
+                {
+                    description.LithologyDescriptionComponentUnconOrganicCodes = description.LithologyDescriptionComponentUnconOrganicCodes.OrderBy(l => l.CodelistId).ToList();
+                    description.LithologyDescriptionComponentUnconDebrisCodes = description.LithologyDescriptionComponentUnconDebrisCodes.OrderBy(l => l.CodelistId).ToList();
+                    description.LithologyDescriptionGrainShapeCodes = description.LithologyDescriptionGrainShapeCodes.OrderBy(l => l.CodelistId).ToList();
+                    description.LithologyDescriptionGrainAngularityCodes = description.LithologyDescriptionGrainAngularityCodes.OrderBy(l => l.CodelistId).ToList();
+                    description.LithologyDescriptionLithologyUnconDebrisCodes = description.LithologyDescriptionLithologyUnconDebrisCodes.OrderBy(l => l.CodelistId).ToList();
+                    description.LithologyDescriptionComponentConParticleCodes = description.LithologyDescriptionComponentConParticleCodes.OrderBy(l => l.CodelistId).ToList();
+                    description.LithologyDescriptionComponentConMineralCodes = description.LithologyDescriptionComponentConMineralCodes.OrderBy(l => l.CodelistId).ToList();
+                    description.LithologyDescriptionStructurePostGenCodes = description.LithologyDescriptionStructurePostGenCodes.OrderBy(l => l.CodelistId).ToList();
+                    description.LithologyDescriptionStructureSynGenCodes = description.LithologyDescriptionStructureSynGenCodes.OrderBy(l => l.CodelistId).ToList();
+                }
             }
         }
 
@@ -147,7 +157,7 @@ internal static class TestSyncContextExtensions
         // Collections, objects and attributes to be removed.
         var listsToRemove = new[] { "Workflows" };
         var objectsToRemove = new[] { "Workgroup", "UpdatedBy", "Assignee", "Settings", "Workflow" };
-        var attributesToRemove = new[] { "Id", "BoreholeId", "StratigraphyId", "CompletionId", "Created", "CreatedById", "Updated", "UpdatedById", "CreatedAt", "SectionId", "LayerId", "FileId", "WorkgroupId", "UserId", "CasingId", "LockedById", "AssigneeId", "ReviewedTabsId", "PublishedTabsId", "WorkflowId" };
+        var attributesToRemove = new[] { "Id", "BoreholeId", "StratigraphyId", "LithologyId", "LithologyDescriptionId", "CompletionId", "Created", "CreatedById", "Updated", "UpdatedById", "CreatedAt", "SectionId", "LayerId", "FileId", "WorkgroupId", "UserId", "CasingId", "LockedById", "AssigneeId", "ReviewedTabsId", "PublishedTabsId", "WorkflowId" };
 
         // Build dynamic regular expressions.
         var removeSettingsRegex = $"\"Settings\"\\s*:\\s*\".*?\"\\s*,?";

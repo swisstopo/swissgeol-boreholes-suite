@@ -63,22 +63,26 @@ describe("Viewer tests", () => {
   it("Assures viewer can click on all borehole menu items and see something", () => {
     loginAsViewer();
     showTableAndWaitForData();
-    clickOnRowWithText("Aaron Rempel");
-    evaluateInput("originalName", "Aaron Rempel");
+    clickOnRowWithText("Aaron Konopelski");
+    evaluateInput("originalName", "Aaron Konopelski");
     navigateInSidebar(SidebarMenuItem.borehole);
-    evaluateInput("total_depth_tvd", "1'913.61");
+    evaluateInput("total_depth_tvd", "683.83");
     navigateInBorehole(BoreholeTab.sections);
     cy.contains("No section available").should("exist");
     navigateInBorehole(BoreholeTab.geometry);
     cy.contains("Top view").should("exist");
     navigateInSidebar(SidebarMenuItem.stratigraphy);
-    cy.contains("Ibrahim Bednar").should("exist");
+    cy.wait(["@lithology_by_stratigraphyId_GET", "@lithological_description", "@facies_description"]);
+    cy.contains("Kaia Macejkovic").should("exist");
     navigateInStratigraphy(StratigraphyTab.chronostratigraphy);
     cy.contains("Phanerozoic").should("exist");
     navigateInStratigraphy(StratigraphyTab.lithostratigraphy);
-    cy.contains("Surbrunnen-Flysch").should("exist");
+    cy.contains("Fanez-Formation").should("exist");
     navigateInSidebar(SidebarMenuItem.completion);
+    cy.wait("@completion_GET");
     cy.contains("No borehole architecture available").should("exist");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(500);
     // Todo reanable and fix flakiness
     // navigateInSidebar(SidebarMenuItem.hydrogeology);
     // navigateInSidebar(SidebarMenuItem.waterIngress);

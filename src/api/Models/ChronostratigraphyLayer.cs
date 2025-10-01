@@ -1,6 +1,7 @@
 ﻿using BDMS.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -8,19 +9,19 @@ namespace BDMS.Models;
 /// Represents a chronostratigraphy entity in the database.
 /// </summary>
 [Table("chronostratigraphy")]
-public class ChronostratigraphyLayer : ILayerDescription, IChangeTracking, IIdentifyable
+public class ChronostratigraphyLayer : ILithologyLegacy, IChangeTracking, IIdentifyable
 {
     /// <inheritdoc />
-    [Column("id_chr")]
+    [Column("id")]
     [Key]
     public int Id { get; set; }
 
     /// <inheritdoc />
-    [Column("id_sty_fk")]
+    [Column("stratigraphy_id")]
     public int StratigraphyId { get; set; }
 
     /// <inheritdoc />
-    public Stratigraphy? Stratigraphy { get; set; }
+    public StratigraphyV2? Stratigraphy { get; set; }
 
     /// <inheritdoc />
     [Column("creator")]

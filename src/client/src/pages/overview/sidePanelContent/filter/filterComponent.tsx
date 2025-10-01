@@ -69,28 +69,6 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
       isSelected: false,
       searchData: boreholeSearchData,
     },
-    // TODO: Re-enable when filter is refactored
-    // {
-    //   id: 4,
-    //   name: "lithology",
-    //   translationId: "lithology",
-    //   isSelected: false,
-    //   searchData: lithologySearchData,
-    // },
-    // {
-    //   id: 5,
-    //   name: "chronostratigraphy",
-    //   translationId: "chronostratigraphy",
-    //   isSelected: false,
-    //   searchData: chronostratigraphySearchData,
-    // },
-    // {
-    //   id: 6,
-    //   name: "lithostratigraphy",
-    //   translationId: "lithostratigraphy",
-    //   isSelected: false,
-    //   searchData: lithostratigraphySearchData,
-    // },
     {
       id: 7,
       name: "registration",

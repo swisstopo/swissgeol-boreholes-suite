@@ -3,8 +3,6 @@ import { hasPagination, showTableAndWaitForData, verifyPaginationText } from "..
 import { evaluateSelect, setInput, setSelect, setYesNoSelect } from "../helpers/formHelpers.js";
 import {
   createBorehole,
-  createLithologyLayer,
-  createStratigraphy,
   getElementByDataCy,
   goToRouteAndAcceptTerms,
   returnToOverview,
@@ -17,7 +15,8 @@ describe("Search filter tests", () => {
     cy.contains("Filters");
   });
 
-  it("checks that the registration filter settings control the filter visibility.", () => {
+  // TODO: Re-add once https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2380 is fixed
+  it.skip("checks that the registration filter settings control the filter visibility.", () => {
     // precondition filters not visible
     goToRouteAndAcceptTerms("/");
     cy.get('[data-cy="show-filter-button"]').click();
@@ -64,63 +63,61 @@ describe("Search filter tests", () => {
   });
 
   it("filters boreholes national_interest and striae", () => {
+    // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2370
+    // Reactivate all commented code once lithology filter is fixed
     createBorehole({
       originalName: "Borehole 1 with striae: true",
       name: "striae true / null",
       nationalInterest: false,
-    })
-      .as("borehole_id")
-      .then(boreholeId => {
-        createStratigraphy(boreholeId, 3000)
-          .as("stratigraphy_id")
-          .then(id => {
-            createLithologyLayer(id, { isStriae: null });
-            createLithologyLayer(id, { isStriae: true });
-          });
-      });
+    }).as("borehole_id");
+    // .then(boreholeId => {
+    //   createStratigraphy(boreholeId, 3000)
+    //     .as("stratigraphy_id")
+    //     .then(id => {
+    //       createLithologyLayer(id, { isStriae: null });
+    //       createLithologyLayer(id, { isStriae: true });
+    //     });
+    // });
 
     createBorehole({
       originalName: "Borehole 1 with striae: false",
       name: "striae false / null",
       nationalInterest: false,
-    })
-      .as("borehole_id2")
-      .then(boreholeId2 => {
-        createStratigraphy(boreholeId2, 3000)
-          .as("stratigraphy_id")
-          .then(id => {
-            createLithologyLayer(id, { isStriae: false });
-            createLithologyLayer(id, { isStriae: null });
-          });
-      });
+    }).as("borehole_id2");
+    // .then(boreholeId2 => {
+    //   createStratigraphy(boreholeId2, 3000)
+    //     .as("stratigraphy_id")
+    //     .then(id => {
+    //       createLithologyLayer(id, { isStriae: false });
+    //       createLithologyLayer(id, { isStriae: null });
+    //     });
+    // });
 
     createBorehole({
       originalName: "Borehole 2 with striae: false",
       name: "striae false / null",
       nationalInterest: false,
-    })
-      .as("borehole_id3")
-      .then(boreholeId3 => {
-        createStratigraphy(boreholeId3, 3000)
-          .as("stratigraphy_id")
-          .then(id => {
-            createLithologyLayer(id, { isStriae: false });
-          });
-      });
+    }).as("borehole_id3");
+    // .then(boreholeId3 => {
+    //   createStratigraphy(boreholeId3, 3000)
+    //     .as("stratigraphy_id")
+    //     .then(id => {
+    //       createLithologyLayer(id, { isStriae: false });
+    //     });
+    // });
 
     createBorehole({
       originalName: "Borehole 3 with striae: false",
       name: "striae false, national_interest null",
       nationalInterest: null,
-    })
-      .as("borehole_id3")
-      .then(boreholeId3 => {
-        createStratigraphy(boreholeId3, 3000)
-          .as("stratigraphy_id")
-          .then(id => {
-            createLithologyLayer(id, { isStriae: false });
-          });
-      });
+    }).as("borehole_id3");
+    // .then(boreholeId3 => {
+    //   createStratigraphy(boreholeId3, 3000)
+    //     .as("stratigraphy_id")
+    //     .then(id => {
+    //       createLithologyLayer(id, { isStriae: false });
+    //     });
+    // });
 
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
@@ -143,7 +140,6 @@ describe("Search filter tests", () => {
     verifyPaginationText("1–100 of 2703");
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
 
-    // TODO: Reactivate when lithology filter is fixed
     // cy.contains("Lithology").click();
     // getElementByDataCy("show-all-fields-switch").click();
     // setYesNoSelect("striae", "Yes");
@@ -216,7 +212,7 @@ describe("Search filter tests", () => {
     cy.get('[data-cy="filter-chip-boreholestatus"]').contains("Borehole status");
   });
 
-  // TODO: Reactivate when lithology filter is fixed
+  // Todo: readd when new filtes are implemented
   it.skip("filters boreholes by color and uscs3", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
@@ -234,7 +230,7 @@ describe("Search filter tests", () => {
     cy.get(".MuiDataGrid-row").contains("Aisha Thiel").should("exist");
   });
 
-  // TODO: Reactivate when lithology filter is fixed
+  // Todo: readd when new filtes are implemented
   it.skip("filters boreholes by original lithology in editor mode", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
