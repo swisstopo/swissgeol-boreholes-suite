@@ -40,8 +40,8 @@ export interface Stratigraphy {
   updatedById: number | null;
   updatedBy?: User;
   lithologies: Lithology[];
-  lithostratigraphies: Lithostratigraphy[];
-  chronostratigraphies: Chronostratigraphy[];
+  lithostratigraphyLayers: Lithostratigraphy[];
+  chronostratigraphyLayers: Chronostratigraphy[];
 }
 
 export interface BaseLayer {

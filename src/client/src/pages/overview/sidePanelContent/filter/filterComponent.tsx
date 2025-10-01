@@ -14,7 +14,6 @@ import { FilterContext } from "./filterContext.tsx";
 import { boreholeSearchData } from "./filterData/boreholeSearchData.js";
 import { chronostratigraphySearchData } from "./filterData/chronostratigraphySearchData.js";
 import { Filter, FilterComponentProps, FilterInputConfig } from "./filterData/filterInterfaces.ts";
-import { lithologySearchData } from "./filterData/lithologySearchData.js";
 import { lithostratigraphySearchData } from "./filterData/lithostratigraphySearchData.js";
 import { LocationSearchData } from "./filterData/LocationSearchData.js";
 import { registrationSearchData } from "./filterData/registrationSearchData.js";
@@ -71,13 +70,6 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
       translationId: "borehole",
       isSelected: false,
       searchData: boreholeSearchData,
-    },
-    {
-      id: 4,
-      name: "lithology",
-      translationId: "lithology",
-      isSelected: false,
-      searchData: lithologySearchData,
     },
     {
       id: 5,
