@@ -138,23 +138,29 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     });
   };
 
-  const updateTmpLithology = useCallback((lithology: Lithology, hasChanges: boolean) => {
-    updateStratigraphyItem(lithology, setTmpLithologies, hasChanges);
-    setSelectedLithology(undefined);
-  }, []);
+  const updateTmpLithology = useCallback(
+    (lithology: Lithology, hasChanges: boolean) => {
+      updateStratigraphyItem(lithology, setTmpLithologies, hasChanges);
+      setSelectedLithology(undefined);
+    },
+    [updateStratigraphyItem],
+  );
 
   const updateTmpLithologicalDescription = useCallback(
     (lithologicalDescription: LithologicalDescription, hasChanges: boolean) => {
       updateStratigraphyItem(lithologicalDescription, setTmpLithologicalDescriptions, hasChanges);
       setSelectedLithologicalDescription(undefined);
     },
-    [],
+    [updateStratigraphyItem],
   );
 
-  const updateTmpFaciesDescription = useCallback((faciesDescription: FaciesDescription, hasChanges: boolean) => {
-    updateStratigraphyItem(faciesDescription, setTmpFaciesDescriptions, hasChanges);
-    setSelectedFaciesDescription(undefined);
-  }, []);
+  const updateTmpFaciesDescription = useCallback(
+    (faciesDescription: FaciesDescription, hasChanges: boolean) => {
+      updateStratigraphyItem(faciesDescription, setTmpFaciesDescriptions, hasChanges);
+      setSelectedFaciesDescription(undefined);
+    },
+    [updateStratigraphyItem],
+  );
 
   const handleEditLithology = useCallback((layer: MinimalLayer) => {
     setSelectedLithology(layer as Lithology);
