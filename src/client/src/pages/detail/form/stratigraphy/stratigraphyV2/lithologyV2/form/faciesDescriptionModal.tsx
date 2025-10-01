@@ -32,6 +32,7 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
   useEffect(() => {
     if (description) {
       formMethods.reset(description);
+      formMethods.setValue("faciesId", description?.faciesId ?? null);
     }
   }, [description, formMethods]);
 
