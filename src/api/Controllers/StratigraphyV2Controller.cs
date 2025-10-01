@@ -56,19 +56,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
     {
         try
         {
-            var stratigraphy = await Context.StratigraphiesV2
-                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyRockConditionCodes)
-                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyUscsTypeCodes)
-                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyTextureMetaCodes)
-                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionComponentUnconOrganicCodes)
-                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionComponentUnconDebrisCodes)
-                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionGrainShapeCodes)
-                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionGrainAngularityCodes)
-                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionLithologyUnconDebrisCodes)
-                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionComponentConParticleCodes)
-                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionComponentConMineralCodes)
-                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionStructureSynGenCodes)
-                .Include(s => s.Lithologies).ThenInclude(l => l.LithologyDescriptions).ThenInclude(ld => ld.LithologyDescriptionStructurePostGenCodes)
+            var stratigraphy = await Context.StratigraphiesV2WithIncludes
                 .AsNoTracking()
                 .SingleOrDefaultAsync(b => b.Id == id)
                 .ConfigureAwait(false);
