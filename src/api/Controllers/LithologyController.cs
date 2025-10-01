@@ -227,7 +227,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
         // Remove old lithology descriptions
         var currentLithologyDescriptionIds = entity.LithologyDescriptions?.Select(ld => ld.Id).ToList();
         var existingDescriptions = existingLithology?.LithologyDescriptions?.ToList() ?? [];
-        var descriptionsToRemove = existingDescriptions.Where(ld => !currentLithologyDescriptionIds.Contains(ld.Id)).ToList() ?? [];
+        var descriptionsToRemove = existingDescriptions.Where(ld => !currentLithologyDescriptionIds.Contains(ld.Id)).ToList();
 
         foreach (var lithologyDescription in descriptionsToRemove)
         {
