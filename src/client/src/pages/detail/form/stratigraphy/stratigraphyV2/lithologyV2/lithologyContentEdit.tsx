@@ -112,31 +112,34 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     [depths],
   );
 
-  const updateStratigraphyItem = <T extends BaseLayer>(
-    item: T,
-    setState: Dispatch<SetStateAction<{ item: T; hasChanges: boolean }[]>>,
-    hasChanges: boolean,
-  ): void => {
-    setState(prev => {
-      const isCompletelyNew =
-        item.id === 0 &&
-        !prev.some(existing => existing.item.fromDepth === item.fromDepth && existing.item.toDepth === item.toDepth);
-      if (isCompletelyNew) {
-        markAsChanged(true); // In case where a gap is filled without changing the initial formValues the isDirty evaluation for changes fails.
-        return [...prev, { item: item, hasChanges: true }];
-      } else {
-        if (hasChanges) {
-          return prev.map(l => {
-            const isUpdatingTmp =
-              l.item.id === 0 && l.item.fromDepth === item.fromDepth && l.item.toDepth === item.toDepth;
-            const isUpdatingExisting = l.item.id !== 0 && l.item.id === item.id;
-            return isUpdatingTmp || isUpdatingExisting ? { item, hasChanges: true } : l;
-          });
+  const updateStratigraphyItem = useCallback(
+    <T extends BaseLayer>(
+      item: T,
+      setState: Dispatch<SetStateAction<{ item: T; hasChanges: boolean }[]>>,
+      hasChanges: boolean,
+    ): void => {
+      setState(prev => {
+        const isCompletelyNew =
+          item.id === 0 &&
+          !prev.some(existing => existing.item.fromDepth === item.fromDepth && existing.item.toDepth === item.toDepth);
+        if (isCompletelyNew) {
+          markAsChanged(true); // In case where a gap is filled without changing the initial formValues the isDirty evaluation for changes fails.
+          return [...prev, { item: item, hasChanges: true }];
+        } else {
+          if (hasChanges) {
+            return prev.map(l => {
+              const isUpdatingTmp =
+                l.item.id === 0 && l.item.fromDepth === item.fromDepth && l.item.toDepth === item.toDepth;
+              const isUpdatingExisting = l.item.id !== 0 && l.item.id === item.id;
+              return isUpdatingTmp || isUpdatingExisting ? { item, hasChanges: true } : l;
+            });
+          }
+          return prev;
         }
-        return prev;
-      }
-    });
-  };
+      });
+    },
+    [markAsChanged],
+  );
 
   const updateTmpLithology = useCallback(
     (lithology: Lithology, hasChanges: boolean) => {
