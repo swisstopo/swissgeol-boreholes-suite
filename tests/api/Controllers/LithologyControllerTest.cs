@@ -427,7 +427,7 @@ public class LithologyControllerTest
             LithologyUnconMainId = 100000027, // Changed main fraction
             LithologyUncon2Id = 100000042, // Changed second fraction
             ComponentUnconOrganicCodelistIds = new List<int> { 21108005 },
-            GrainShapeCodelistIds = new List<int> { 21110001 },
+            GrainShapeCodelistIds = new List<int> { 21110004 },
         };
 
         // Prepare edited lithology
@@ -441,6 +441,7 @@ public class LithologyControllerTest
             HasBedding = true,
             Notes = "Updated with edited description",
             LithologyDescriptions = modifiedDescriptions,
+            RockConditionCodelistIds = new List<int> { 100000169 },
         };
 
         var editResponse = await controller.EditAsync(editedLithology);
@@ -452,6 +453,8 @@ public class LithologyControllerTest
         Assert.IsTrue(updatedLithology.HasBedding);
 
         Assert.AreEqual(2, updatedLithology.LithologyDescriptions.Count);
+        Assert.AreEqual(1, updatedLithology.RockConditionCodelistIds.Count);
+        Assert.AreEqual(100000169, updatedLithology.RockConditionCodelistIds.First());
 
         // Find the edited description
         var editedDescription = updatedLithology.LithologyDescriptions.First(ld => ld.Id == originalDescriptionId);
@@ -468,7 +471,7 @@ public class LithologyControllerTest
         Assert.AreEqual(1, editedDescription.ComponentUnconOrganicCodelistIds.Count, "Should have one component unconsolidated organic ID");
         Assert.IsTrue(editedDescription.ComponentUnconOrganicCodelistIds.Contains(21108005), "Should contain the new component unconsolidated organic ID");
         Assert.AreNotEqual(originalComponentUnconOrganicCodelistIds.Count, editedDescription.ComponentUnconOrganicCodelistIds.Count, "Number of component unconsolidated organic IDs should be different from original");
-        Assert.IsTrue(editedDescription.GrainShapeCodelistIds.Contains(21110001), "Should contain the new grain shape ID");
+        Assert.IsTrue(editedDescription.GrainShapeCodelistIds.Contains(21110004), "Should contain the new grain shape ID");
 
         // Clean up
         await controller.DeleteAsync(existingUnconsolidatedLithology.Id);
