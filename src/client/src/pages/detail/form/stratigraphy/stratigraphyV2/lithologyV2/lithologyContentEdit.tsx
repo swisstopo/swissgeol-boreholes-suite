@@ -24,6 +24,7 @@ import {
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "../../stratigraphyTableComponents.tsx";
+import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 import { FaciesDescriptionModal } from "./form/faciesDescriptionModal.tsx";
 import { LithologicalDescriptionModal } from "./form/lithologicalDescriptionModal.tsx";
 import { LithologyModal } from "./form/lithologyModal.tsx";
@@ -429,9 +430,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
                   handleEditFaciesDescription,
                   handleDeleteFaciesDescription,
                   layer => (
-                    <Typography variant="body1" fontWeight={700}>
-                      {(layer as FaciesDescription).description}
-                    </Typography>
+                    <FaciesDescriptionLabels description={layer as FaciesDescription} />
                   ),
                   "faciesDescription",
                 )}
