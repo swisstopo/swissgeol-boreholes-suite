@@ -390,6 +390,94 @@ public class LithologyControllerTest
     }
 
     [TestMethod]
+    public async Task EditLithologyLithologyDescription()
+    {
+        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var existingUnconsolidatedLithology = GetCompleteLithology(stratigraphyId);
+        var createResponse = await controller.CreateAsync(existingUnconsolidatedLithology);
+        ActionResultAssert.IsOk(createResponse.Result);
+        var okObjectResult = createResponse.Result as OkObjectResult;
+        Assert.IsNotNull(okObjectResult);
+        existingUnconsolidatedLithology = okObjectResult.Value as Lithology;
+        Assert.IsNotNull(existingUnconsolidatedLithology);
+
+        Assert.IsTrue(existingUnconsolidatedLithology.IsUnconsolidated);
+        Assert.IsTrue(existingUnconsolidatedLithology.HasBedding);
+        Assert.AreEqual(2, existingUnconsolidatedLithology.LithologyDescriptions.Count);
+
+        // Get the first description to modify
+        var descriptionToEdit = existingUnconsolidatedLithology.LithologyDescriptions.First(ld => !ld.IsFirst);
+        var originalDescriptionId = descriptionToEdit.Id;
+        var originalColorPrimaryId = descriptionToEdit.ColorPrimaryId;
+
+        var originalLithologyUnconMainId = descriptionToEdit.LithologyUnconMainId;
+        var originalComponentUnconOrganicCodelistIds = descriptionToEdit.ComponentUnconOrganicCodelistIds.ToList();
+
+        var modifiedDescriptions = existingUnconsolidatedLithology.LithologyDescriptions.ToList();
+        var indexToModify = modifiedDescriptions.FindIndex(ld => ld.Id == originalDescriptionId);
+
+        // Update properties of the existing description
+        modifiedDescriptions[indexToModify] = new LithologyDescription
+        {
+            Id = originalDescriptionId,
+            LithologyId = existingUnconsolidatedLithology.Id,
+            IsFirst = false,
+            ColorPrimaryId = 100000079, // Changed color primary
+            ColorSecondaryId = 100000082, // Changed color secondary
+            LithologyUnconMainId = 100000027, // Changed main fraction
+            LithologyUncon2Id = 100000042, // Changed second fraction
+            ComponentUnconOrganicCodelistIds = new List<int> { 21108005 },
+            GrainShapeCodelistIds = new List<int> { 21110004 },
+        };
+
+        // Prepare edited lithology
+        var editedLithology = new Lithology
+        {
+            Id = existingUnconsolidatedLithology.Id,
+            StratigraphyId = existingUnconsolidatedLithology.StratigraphyId,
+            FromDepth = existingUnconsolidatedLithology.FromDepth + 2,
+            ToDepth = existingUnconsolidatedLithology.ToDepth + 2,
+            IsUnconsolidated = true, // Keep as unconsolidated so uncon values are not reset.
+            HasBedding = true,
+            Notes = "Updated with edited description",
+            LithologyDescriptions = modifiedDescriptions,
+            RockConditionCodelistIds = new List<int> { 100000169 },
+        };
+
+        var editResponse = await controller.EditAsync(editedLithology);
+        ActionResultAssert.IsOk(editResponse.Result);
+        var editedResult = editResponse.Result as OkObjectResult;
+        var updatedLithology = editedResult.Value as Lithology;
+
+        Assert.IsTrue(updatedLithology.IsUnconsolidated);
+        Assert.IsTrue(updatedLithology.HasBedding);
+
+        Assert.AreEqual(2, updatedLithology.LithologyDescriptions.Count);
+        Assert.AreEqual(1, updatedLithology.RockConditionCodelistIds.Count);
+        Assert.AreEqual(100000169, updatedLithology.RockConditionCodelistIds.First());
+
+        // Find the edited description
+        var editedDescription = updatedLithology.LithologyDescriptions.First(ld => ld.Id == originalDescriptionId);
+        Assert.IsNotNull(editedDescription);
+
+        // Verify the description was updated
+        Assert.AreEqual(100000079, editedDescription.ColorPrimaryId);
+        Assert.AreNotEqual(originalColorPrimaryId, editedDescription.ColorPrimaryId);
+        Assert.AreEqual(100000082, editedDescription.ColorSecondaryId);
+        Assert.AreEqual(100000027, editedDescription.LithologyUnconMainId);
+        Assert.AreNotEqual(originalLithologyUnconMainId, editedDescription.LithologyUnconMainId);
+
+        // Check codelists were updated
+        Assert.AreEqual(1, editedDescription.ComponentUnconOrganicCodelistIds.Count, "Should have one component unconsolidated organic ID");
+        Assert.IsTrue(editedDescription.ComponentUnconOrganicCodelistIds.Contains(21108005), "Should contain the new component unconsolidated organic ID");
+        Assert.AreNotEqual(originalComponentUnconOrganicCodelistIds.Count, editedDescription.ComponentUnconOrganicCodelistIds.Count, "Number of component unconsolidated organic IDs should be different from original");
+        Assert.IsTrue(editedDescription.GrainShapeCodelistIds.Contains(21110004), "Should contain the new grain shape ID");
+
+        // Clean up
+        await controller.DeleteAsync(existingUnconsolidatedLithology.Id);
+    }
+
+    [TestMethod]
     public async Task EditWithInexistentId()
     {
         var id = 9815784;
