@@ -7,6 +7,8 @@ import {
   FaciesDescription,
   LithologicalDescription,
   MinimalLayer,
+  useFaciesDescriptionMutations,
+  useLithologicalDescriptionMutations,
 } from "../../../../../../api/stratigraphy.ts";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
@@ -59,16 +61,16 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     update: { mutateAsync: updateLithology },
     delete: { mutateAsync: deleteLithology },
   } = useLithologyMutations();
-  // const {
-  //   add: { mutateAsync: addLithologicalDescription },
-  //   update: { mutateAsync: updateLithologicalDescription },
-  //   delete: { mutateAsync: deleteLithologicalDescription },
-  // } = useLithologicalDescriptionMutations();
-  // const {
-  //   add: { mutateAsync: addFaciesDescription },
-  //   update: { mutateAsync: updateFaciesDescription },
-  //   delete: { mutateAsync: deleteFaciesDescription },
-  // } = useFaciesDescriptionMutations();
+  const {
+    add: { mutateAsync: addLithologicalDescription },
+    update: { mutateAsync: updateLithologicalDescription },
+    delete: { mutateAsync: deleteLithologicalDescription },
+  } = useLithologicalDescriptionMutations();
+  const {
+    add: { mutateAsync: addFaciesDescription },
+    update: { mutateAsync: updateFaciesDescription },
+    delete: { mutateAsync: deleteFaciesDescription },
+  } = useFaciesDescriptionMutations();
   const [tmpLithologies, setTmpLithologies] = useState<LithologyWithChanges[]>(
     lithologies.map(item => ({ item, hasChanges: false })),
   );
@@ -120,6 +122,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
         item.id === 0 &&
         !prev.some(existing => existing.item.fromDepth === item.fromDepth && existing.item.toDepth === item.toDepth);
       if (isCompletelyNew) {
+        markAsChanged(true); // In case where a gap is filled without changing the initial formValues the isDirty evaluation for changes fails.
         return [...prev, { item: item, hasChanges: true }];
       } else {
         if (hasChanges) {
@@ -196,20 +199,36 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   };
 
   const getDepthOptions = useCallback(
-    // TODO: Remove rule after implementing depth range logic
-    // eslint-disable-next-line @typescript-eslint/no-unused-vars
-    (layer: BaseLayer | undefined, options: BaseLayer[], getForToDepths: boolean = false) => {
-      // TODO: Load allowed depth ranges from lithologies.
-      // Limit possible values based on previous and next descriptions
-      // This is called way too often, need to optimize
-      return [];
+    (layer: BaseLayer | undefined, layers: BaseLayer[], getForToDepths: boolean = false) => {
+      if (!layer || !completedLithologies) return [];
+      let allPossibleDepths: number[] = [
+        completedLithologies[0].fromDepth,
+        ...completedLithologies.map(c => c.toDepth),
+      ];
+
+      const layerIndex = layers.findIndex(l => l.id === layer.id);
+      const previousLayer = layerIndex > 0 ? layers[layerIndex - 1] : null;
+      const nextLayer = layerIndex < layers.length - 1 ? layers[layerIndex + 1] : null;
+
+      allPossibleDepths = previousLayer ? allPossibleDepths.filter(d => d >= previousLayer.toDepth) : allPossibleDepths;
+      allPossibleDepths = nextLayer ? allPossibleDepths.filter(d => d <= nextLayer.fromDepth) : allPossibleDepths;
+
+      return getForToDepths ? allPossibleDepths.slice(1) : allPossibleDepths.slice(0, -1);
     },
-    [],
+    [completedLithologies],
   );
 
   useEffect(() => {
     setTmpLithologies(lithologies.map(item => ({ item, hasChanges: false })));
   }, [lithologies]);
+
+  useEffect(() => {
+    setTmpFaciesDescriptions(faciesDescriptions.map(item => ({ item, hasChanges: false })));
+  }, [faciesDescriptions]);
+
+  useEffect(() => {
+    setTmpLithologicalDescriptions(lithologicalDescriptions.map(item => ({ item, hasChanges: false })));
+  }, [lithologicalDescriptions]);
 
   const onReset = useCallback(async () => {
     setTmpLithologies(lithologies.map(item => ({ item, hasChanges: false })));
@@ -237,36 +256,35 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
         await updateLithology(lithology);
       }
     }
-    // TODO: Re-add once migrated to new stratigraphies
-    // // check for deleted lithological descriptions
-    // for (const lithologicalDescription of lithologicalDescriptions) {
-    //   if (!tmpLithologicalDescriptions.find(l => l.item.id === lithologicalDescription.id)) {
-    //     deleteLithologicalDescription(lithologicalDescription);
-    //   }
-    // }
+    // check for deleted lithological descriptions
+    for (const lithologicalDescription of lithologicalDescriptions) {
+      if (!tmpLithologicalDescriptions.find(l => l.item.id === lithologicalDescription.id)) {
+        await deleteLithologicalDescription(lithologicalDescription);
+      }
+    }
 
-    // for (const lithologicalDescription of tmpLithologicalDescriptions.filter(l => l.hasChanges).map(l => l.item)) {
-    //   if (lithologicalDescription.id === 0) {
-    //     await addLithologicalDescription({ ...lithologicalDescription, stratigraphyId });
-    //   } else {
-    //     await updateLithologicalDescription(lithologicalDescription);
-    //   }
-    // }
-    //
-    // // check for deleted facies descriptions
-    // for (const faciesDescription of faciesDescriptions) {
-    //   if (!tmpFaciesDescriptions.find(l => l.item.id === faciesDescription.id)) {
-    //     deleteFaciesDescription(faciesDescription);
-    //   }
-    // }
+    for (const lithologicalDescription of tmpLithologicalDescriptions.filter(l => l.hasChanges).map(l => l.item)) {
+      if (lithologicalDescription.id === 0) {
+        await addLithologicalDescription({ ...lithologicalDescription, stratigraphyId });
+      } else {
+        await updateLithologicalDescription(lithologicalDescription);
+      }
+    }
 
-    // for (const faciesDescription of tmpFaciesDescriptions.filter(l => l.hasChanges).map(l => l.item)) {
-    //   if (faciesDescription.id === 0) {
-    //     await addFaciesDescription({ ...faciesDescription, stratigraphyId });
-    //   } else {
-    //     await updateFaciesDescription(faciesDescription);
-    //   }
-    // }
+    // check for deleted facies descriptions
+    for (const faciesDescription of faciesDescriptions) {
+      if (!tmpFaciesDescriptions.find(l => l.item.id === faciesDescription.id)) {
+        await deleteFaciesDescription(faciesDescription);
+      }
+    }
+
+    for (const faciesDescription of tmpFaciesDescriptions.filter(l => l.hasChanges).map(l => l.item)) {
+      if (faciesDescription.id === 0) {
+        await addFaciesDescription({ ...faciesDescription, stratigraphyId });
+      } else {
+        await updateFaciesDescription(faciesDescription);
+      }
+    }
     markAsChanged(false);
     return true;
   }, [
@@ -280,6 +298,16 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     addLithology,
     stratigraphyId,
     updateLithology,
+    lithologicalDescriptions,
+    tmpLithologicalDescriptions,
+    deleteLithologicalDescription,
+    addLithologicalDescription,
+    updateLithologicalDescription,
+    faciesDescriptions,
+    tmpFaciesDescriptions,
+    deleteFaciesDescription,
+    addFaciesDescription,
+    updateFaciesDescription,
   ]);
 
   useEffect(() => {
@@ -462,14 +490,14 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       <LithologyModal lithology={selectedLithology} updateLithology={updateTmpLithology} />
       <LithologicalDescriptionModal
         description={selectedLithologicalDescription}
-        fromDepths={getDepthOptions(selectedLithologicalDescription, tmpLithologicalDescriptionsFlat)}
-        toDepths={getDepthOptions(selectedLithologicalDescription, tmpLithologicalDescriptionsFlat, true)}
+        fromDepths={getDepthOptions(selectedLithologicalDescription, completedLithologicalDescriptions)}
+        toDepths={getDepthOptions(selectedLithologicalDescription, completedLithologicalDescriptions, true)}
         updateLithologicalDescription={updateTmpLithologicalDescription}
       />
       <FaciesDescriptionModal
         description={selectedFaciesDescription}
-        fromDepths={getDepthOptions(selectedFaciesDescription, tmpFaciesDescriptionsFlat)}
-        toDepths={getDepthOptions(selectedFaciesDescription, tmpFaciesDescriptionsFlat, true)}
+        fromDepths={getDepthOptions(selectedFaciesDescription, completedFaciesDescriptions)}
+        toDepths={getDepthOptions(selectedFaciesDescription, completedFaciesDescriptions, true)}
         updateFaciesDescription={updateTmpFaciesDescription}
       />
     </>

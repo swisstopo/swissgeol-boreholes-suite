@@ -48,7 +48,7 @@ export function useCompletedLayers(layers: BaseLayer[] = [], layerDepths?: Layer
       const lastLayer = sortedLayers[sortedLayers.length - 1];
       if (lastLayer.toDepth < lastDepthValue) {
         resultLayers.push({
-          id: resultLayers.length,
+          id: 0,
           fromDepth: lastLayer.toDepth,
           toDepth: lastDepthValue,
           isGap: true,
