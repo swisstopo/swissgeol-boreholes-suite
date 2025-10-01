@@ -328,7 +328,7 @@ export const createBoreholeWithCompleteDataset = () => {
             toDepth: 10,
           },
         ],
-        chronostratigraphieLayers: [
+        chronostratigraphyLayers: [
           {
             fromDepth: 0,
             toDepth: 10,
