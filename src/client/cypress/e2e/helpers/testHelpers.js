@@ -322,6 +322,18 @@ export const createBoreholeWithCompleteDataset = () => {
             isUnconsolidated: true,
           },
         ],
+        lithostratigraphyLayers: [
+          {
+            fromDepth: 0,
+            toDepth: 10,
+          },
+        ],
+        chronostratigraphieLayers: [
+          {
+            fromDepth: 0,
+            toDepth: 10,
+          },
+        ],
       },
     ],
     completions: [

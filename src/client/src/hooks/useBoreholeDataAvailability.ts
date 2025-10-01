@@ -29,14 +29,15 @@ export const useBoreholeDataAvailability = (borehole: BoreholeV2) => {
     const hasInstrumentations =
       hasCompletion && (borehole.completions?.some(completion => completion.instrumentations?.length > 0) ?? false);
     const hasLithology =
-      (hasStratigraphy && borehole.stratigraphies?.some(stratigraphy => stratigraphy?.layers?.length > 0)) ?? false;
+      (hasStratigraphy && borehole.stratigraphies?.some(stratigraphy => stratigraphy?.lithologies?.length > 0)) ??
+      false;
     const hasLithostratigraphy =
       (hasStratigraphy &&
-        borehole.stratigraphies?.some(stratigraphy => stratigraphy.lithostratigraphyLayers?.length > 0)) ??
+        borehole.stratigraphies?.some(stratigraphy => stratigraphy.lithostratigraphies?.length > 0)) ??
       false;
     const hasChronostratigraphy =
       (hasStratigraphy &&
-        borehole.stratigraphies?.some(stratigraphy => stratigraphy.chronostratigraphyLayers?.length > 0)) ??
+        borehole.stratigraphies?.some(stratigraphy => stratigraphy.chronostratigraphies?.length > 0)) ??
       false;
 
     return {
