@@ -126,6 +126,7 @@ export const useLithologyMutations = () => {
 
   const useAddLithology = useMutation({
     mutationFn: (lithology: Lithology) => {
+      test;
       return fetchApiV2WithApiError(`${lithologyController}`, "POST", lithology);
     },
     onSuccess: () => {

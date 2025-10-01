@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Dialog, DialogProps, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
+import { useExtractStratigraphies } from "../../../../../api/file/file.ts";
 import { BoreholesButton, CancelButton } from "../../../../../components/buttons/buttons.tsx";
 import {
   DialogFooterContainer,
@@ -10,6 +11,7 @@ import {
   DialogMainContent,
 } from "../../../../../components/styledComponents.ts";
 import { StratigraphyExtractionView } from "./stratigraphyExtractionView.tsx";
+import { useBulkAddMutation } from "./useBulkAddMutations.ts";
 
 interface StratigraphyExtractionDialogProps {
   file: BoreholeAttachment;
@@ -26,6 +28,8 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
 }) => {
   const { t } = useTranslation();
   const [abortController, setAbortController] = useState<AbortController>();
+  const { data: lithologicalDescriptions = [], isLoading } = useExtractStratigraphies(file);
+  const { mutate: bulkAddLithologiesWithLithologicalDescriptions } = useBulkAddMutation();
 
   const closeDialog = useCallback(() => {
     if (abortController) {
@@ -42,8 +46,12 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   };
 
   const addStratigraphies = useCallback(() => {
+    bulkAddLithologiesWithLithologicalDescriptions({
+      lithologies: [],
+      lithologicalDescriptions: lithologicalDescriptions,
+    });
     closeDialog();
-  }, [closeDialog]);
+  }, [bulkAddLithologiesWithLithologicalDescriptions, closeDialog, lithologicalDescriptions]);
 
   return (
     <Dialog open={open} onClose={handleClose} fullScreen>
@@ -55,13 +63,17 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
         </Stack>
       </DialogHeaderContainer>
       <DialogMainContent>
-        <StratigraphyExtractionView file={file} />
+        <StratigraphyExtractionView
+          file={file}
+          lithologicalDescriptions={lithologicalDescriptions}
+          isLoading={isLoading}
+        />
       </DialogMainContent>
       <DialogFooterContainer>
         <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={0.75}>
           <CancelButton onClick={closeDialog} />
           <BoreholesButton
-            disabled={true}
+            disabled={lithologicalDescriptions?.length < 1}
             variant="contained"
             color="primary"
             label={t("addStratigraphy", { count: 1 })}
