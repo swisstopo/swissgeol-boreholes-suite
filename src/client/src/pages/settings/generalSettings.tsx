@@ -11,13 +11,10 @@ import { patchSettings } from "../../api-lib";
 import { ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
-import { Codelist, useCodelistMutations, useCodelists } from "../../components/codelist.ts";
 import { FullPageCentered } from "../../components/styledComponents.ts";
 import GeneralSettingList from "./components/editorSettingList/generalSettingList.tsx";
 import { MapSettings } from "./components/editorSettingList/mapSettings";
 import { boreholeEditorData } from "./data/boreholeEditorData.ts";
-import { lithologyFieldEditorData } from "./data/lithologyFieldEditorData.ts";
-import { lithologyFilterEditorData } from "./data/lithologyFilterEditorData.ts";
 import { locationEditorData } from "./data/locationEditorData.ts";
 import { registrationEditorData } from "./data/registrationEditorData.ts";
 import { SettingsItem } from "./data/SettingsItem.ts";
@@ -37,14 +34,9 @@ const projections = {
 const GeneralSettings = () => {
   const { showAlert } = useContext(AlertContext);
   const { i18n, t } = useTranslation();
-  const { data: codelists } = useCodelists();
-  const {
-    update: { mutate: updateCodelist },
-  } = useCodelistMutations();
 
   const setting = useSelector((state: ReduxRootState) => state.setting);
   const dispatch = useDispatch();
-  const confCodelist: Codelist | undefined = codelists.find(c => c.id === 3000);
   const [state, setState] = useState({
     fields: false,
     identifiers: false,
@@ -77,19 +69,6 @@ const GeneralSettings = () => {
       translationId: "searchFiltersBoreholes",
       isSelected: false,
     },
-
-    {
-      id: 2,
-      name: "lithology",
-      translationId: "searchFiltersLayers",
-      isSelected: false,
-    },
-    {
-      id: 3,
-      name: "lithologyfields",
-      translationId: "lithologyfields",
-      isSelected: false,
-    },
     {
       id: 4,
       name: "registration",
@@ -97,45 +76,6 @@ const GeneralSettings = () => {
       isSelected: false,
     },
   ]);
-
-  const updateFieldsInConfig = (
-    fieldUpdates: Record<string, boolean>,
-    updateCodelistFunction: (updatedCodelist: Codelist) => void,
-  ) => {
-    if (confCodelist?.conf) {
-      const configObject = JSON.parse(confCodelist?.conf);
-      const updatedConfig = {
-        ...configObject,
-        fields: {
-          ...configObject.fields,
-          ...fieldUpdates,
-        },
-      };
-      const updatedCodelist: Codelist = {
-        ...confCodelist,
-        conf: JSON.stringify(updatedConfig),
-      };
-      updateCodelistFunction(updatedCodelist);
-    }
-  };
-
-  // Update a single field
-  const toggleField = (filter: string, enabled: boolean) => {
-    updateFieldsInConfig({ [filter]: enabled }, updateCodelist);
-  };
-
-  // Update multiple fields
-  const toggleFieldArray = (filter: string[], enabled: boolean) => {
-    const fieldUpdates = filter.reduce(
-      (acc, element) => {
-        acc[element] = enabled;
-        return acc;
-      },
-      {} as Record<string, boolean>,
-    );
-
-    updateFieldsInConfig(fieldUpdates, updateCodelist);
-  };
 
   const toggleFilterArray = (filter: string[], enabled: boolean) => {
     const newFilter: string[] = [];
@@ -227,10 +167,6 @@ const GeneralSettings = () => {
       selectedData = locationEditorData;
     } else if (name === "borehole" && isSelected) {
       selectedData = boreholeEditorData;
-    } else if (name === "lithology" && isSelected) {
-      selectedData = lithologyFilterEditorData;
-    } else if (name === "lithologyfields" && isSelected) {
-      selectedData = lithologyFieldEditorData;
     } else if (name === "registration" && isSelected) {
       selectedData = registrationEditorData;
     } else {
@@ -290,10 +226,7 @@ const GeneralSettings = () => {
                 <GeneralSettingList
                   settingsItems={handleButtonSelected(filter.name, filter.isSelected)}
                   data={setting.data.efilter}
-                  listName={filter.name}
-                  toggleField={toggleField}
                   toggleFilter={toggleFilter}
-                  toggleFieldArray={toggleFieldArray}
                   toggleFilterArray={toggleFilterArray}
                 />
               )}

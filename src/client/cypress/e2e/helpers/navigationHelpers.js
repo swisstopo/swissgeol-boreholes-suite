@@ -1,4 +1,5 @@
 import { checkElementColorByDataCy, createBaseSelector, getElementByDataCy, handlePrompt } from "./testHelpers.js";
+import "cypress-real-events/support";
 
 export const SidebarMenuItem = {
   location: "location",
@@ -41,7 +42,7 @@ export const checkTabsByTitles = (tabs, parent, datacy) => {
   const selector = createBaseSelector(parent) + `.MuiTabs-list`;
   let tabSelector = ".MuiTab-root";
   if (datacy) {
-    tabSelector = `.MuiTab-root[data-cy*="${datacy}"]`;
+    tabSelector = `.MuiTab-root[data-cy^="${datacy}"]`;
   }
   cy.get(selector)
     .find(tabSelector)
@@ -118,7 +119,7 @@ export const navigateInStratigraphy = tab => {
 
   switch (tab) {
     case StratigraphyTab.lithology:
-      getElementByDataCy("name-formInput").should("exist");
+      cy.wait(["@lithology_by_stratigraphyId_GET", "@lithological_description", "@facies_description"]);
       break;
     case StratigraphyTab.chronostratigraphy:
       cy.wait("@chronostratigraphy_GET");
@@ -167,7 +168,7 @@ export const isMenuItemWithoutContent = menuItem => {
 export const navigateInSidebar = (menuItem, promptSelector) => {
   checkThatParentOpen(menuItem);
   getElementByDataCy(`${menuItem}-menu-item`).should("be.visible");
-  getElementByDataCy(`${menuItem}-menu-item`).click();
+  getElementByDataCy(`${menuItem}-menu-item`).realClick();
 
   if (promptSelector) {
     handlePrompt(null, promptSelector);

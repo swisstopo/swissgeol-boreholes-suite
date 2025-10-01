@@ -13,7 +13,6 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v1/borehole", req => {
     return (req.alias = `borehole_${req.body.action.toLowerCase()}`);
   });
-  cy.intercept("/api/v1/borehole/profile/layer").as("layer");
   cy.intercept("/api/v1/borehole/edit", req => {
     return (req.alias = `edit_${req.body.action.toLowerCase()}`);
   });
@@ -97,11 +96,6 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/codelist?testKindIds=**").as("codelist_by_testKindIds_GET");
   cy.intercept("/api/v2/codelist*", req => {
     return (req.alias = `codelist_${req.method}`);
-  });
-
-  cy.intercept("/api/v2/stratigraphy?boreholeId=**").as("stratigraphy_by_borehole_GET");
-  cy.intercept("/api/v2/stratigraphy*", req => {
-    return (req.alias = `stratigraphy_${req.method}`);
   });
 
   cy.intercept("/api/v2/stratigraphyv?boreholeId=**").as("stratigraphyV2_by_borehole_GET");
@@ -316,10 +310,30 @@ export const createBoreholeWithCompleteDataset = () => {
     sections: [{ name: "Test Section", fromDepth: 0, toDepth: 10, SectionElements: [] }],
     stratigraphies: [
       {
-        name: "Test Stratigraphy",
-        layers: [{ from: 0, to: 10 }],
-        lithostratigraphyLayers: [{ from: 0, to: 10 }],
-        chronostratigraphyLayers: [{ from: 0, to: 10 }],
+        id: 0,
+        boreholeId: 0,
+        isPrimary: true,
+        lithologies: [
+          {
+            id: 0,
+            stratigraphyId: 0,
+            fromDepth: 0,
+            toDepth: 10,
+            isUnconsolidated: true,
+          },
+        ],
+        lithostratigraphyLayers: [
+          {
+            fromDepth: 0,
+            toDepth: 10,
+          },
+        ],
+        chronostratigraphieLayers: [
+          {
+            fromDepth: 0,
+            toDepth: 10,
+          },
+        ],
       },
     ],
     completions: [
@@ -386,18 +400,6 @@ export const deleteBorehole = id => {
   });
 };
 
-export const deleteStratigraphy = id => {
-  cy.get("@id_token").then(token => {
-    cy.request({
-      method: "DELETE",
-      url: `/api/v2/stratigraphy?id=${id}`,
-      auth: bearerAuth(token),
-    }).then(res => {
-      expect(res.status).to.equal(200);
-    });
-  });
-};
-
 export const loginAndResetState = () => {
   loginAsAdmin();
   cy.get("@id_token").then(token => {
@@ -417,18 +419,20 @@ export const loginAndResetState = () => {
         });
     });
 
-    // Reset stratigraphies
-    cy.request({
-      method: "GET",
-      url: "/api/v2/stratigraphy/getall",
-      auth: bearerAuth(token),
-    }).then(response => {
-      response.body
-        .filter(st => st.id > 6002999) // max id in seed data.
-        .forEach(st => {
-          deleteStratigraphy(st.id);
-        });
-    });
+    // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2371
+    //  Check if we still need this when we add new tests
+    // // Reset stratigraphies
+    // cy.request({
+    //   method: "GET",
+    //   url: "/api/v2/stratigraphy/getall",
+    //   auth: bearerAuth(token),
+    // }).then(response => {
+    //   response.body
+    //     .filter(st => st.id > 6002999) // max id in seed data.
+    //     .forEach(st => {
+    //       deleteStratigraphy(st.id);
+    //     });
+    // });
 
     // Reset user settings (i.e. table ordering)
     cy.request({
@@ -549,45 +553,27 @@ export const createStratigraphyV2 = (boreholeId, name, isPrimary = true, date = 
   });
 };
 
-export const createStratigraphy = (boreholeId, kindId) => {
+export const createStratigraphy = boreholeId => {
   return cy.get("@id_token").then(token => {
     return cy
       .request({
         method: "POST",
-        url: "/api/v2/stratigraphy",
+        url: "/api/v2/stratigraphyv",
         cache: "no-cache",
         credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
         },
         body: {
+          id: 0,
           boreholeId: boreholeId,
-          kindId: kindId,
+          isPrimary: true,
         },
         auth: bearerAuth(token),
       })
       .then(res => {
         return cy.wrap(res.body.id);
       });
-  });
-};
-
-export const createLithologyLayer = (stratigraphyId, layer) => {
-  return cy.get("@id_token").then(token => {
-    return cy.request({
-      method: "POST",
-      url: "/api/v2/layer",
-      cache: "no-cache",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: {
-        stratigraphyId: stratigraphyId,
-        ...layer,
-      },
-      auth: bearerAuth(token),
-    });
   });
 };
 
