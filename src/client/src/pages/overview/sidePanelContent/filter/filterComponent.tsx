@@ -12,9 +12,7 @@ import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 import FilterChips from "./FilterChips.tsx";
 import { FilterContext } from "./filterContext.tsx";
 import { boreholeSearchData } from "./filterData/boreholeSearchData.js";
-import { chronostratigraphySearchData } from "./filterData/chronostratigraphySearchData.js";
 import { Filter, FilterComponentProps, FilterInputConfig } from "./filterData/filterInterfaces.ts";
-import { lithostratigraphySearchData } from "./filterData/lithostratigraphySearchData.js";
 import { LocationSearchData } from "./filterData/LocationSearchData.js";
 import { registrationSearchData } from "./filterData/registrationSearchData.js";
 import { FilterReset } from "./filterReset.tsx";
@@ -70,20 +68,6 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
       translationId: "borehole",
       isSelected: false,
       searchData: boreholeSearchData,
-    },
-    {
-      id: 5,
-      name: "chronostratigraphy",
-      translationId: "chronostratigraphy",
-      isSelected: false,
-      searchData: chronostratigraphySearchData,
-    },
-    {
-      id: 6,
-      name: "lithostratigraphy",
-      translationId: "lithostratigraphy",
-      isSelected: false,
-      searchData: lithostratigraphySearchData,
     },
     {
       id: 7,
