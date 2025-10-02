@@ -33,7 +33,7 @@ public class CodeListControllerTest
     public async Task GetAllEntriesAsync()
     {
         var codeLists = await controller.GetAsync();
-        Assert.AreEqual(5665, codeLists.Count());
+        Assert.AreEqual(5638, codeLists.Count());
     }
 
     [TestMethod]
@@ -94,9 +94,8 @@ public class CodeListControllerTest
         {
             Id = id,
             Geolcode = id,
-            Schema = "debris",
+            Schema = "component_uncon_debris",
             De = "Tuff",
-            Code = "Tuf",
             En = "tufa",
             Fr = "tuf",
             It = "tufo",
@@ -116,7 +115,6 @@ public class CodeListControllerTest
         var codeListToEdit = context.Codelists.Single(c => c.Id == id);
         Assert.AreEqual("Tuff", codeListToEdit.De);
         Assert.AreEqual("tufa", codeListToEdit.En);
-        Assert.AreEqual("Tuf", codeListToEdit.Code);
         Assert.AreEqual("tuf", codeListToEdit.Fr);
 
         // Upate CodeList
@@ -238,6 +236,6 @@ public class CodeListControllerTest
         var expectedHeader = "id_cli,schema_cli,code_cli,text_cli_en,text_cli_de,text_cli_fr,text_cli_it,text_cli_ro";
 
         Assert.AreEqual(expectedHeader, response.Content.Split('\n')[0]);
-        Assert.AreEqual(5667, response.Content.Split('\n').Length);
+        Assert.AreEqual(5640, response.Content.Split('\n').Length);
     }
 }

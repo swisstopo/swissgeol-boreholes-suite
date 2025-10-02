@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20250930124145_FixLithologyCodelists")]
+    partial class FixLithologyCodelists
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -581,7 +584,7 @@ namespace BDMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnName("id_chr");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -603,7 +606,7 @@ namespace BDMS.Migrations
 
                     b.Property<int>("StratigraphyId")
                         .HasColumnType("integer")
-                        .HasColumnName("stratigraphy_id");
+                        .HasColumnName("id_sty_fk");
 
                     b.Property<double?>("ToDepth")
                         .HasColumnType("double precision")
@@ -829,7 +832,7 @@ namespace BDMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnName("id_fac");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -849,15 +852,15 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("facies_id");
 
-                    b.Property<double>("FromDepth")
+                    b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
 
                     b.Property<int>("StratigraphyId")
                         .HasColumnType("integer")
-                        .HasColumnName("stratigraphy_id");
+                        .HasColumnName("id_sty_fk");
 
-                    b.Property<double>("ToDepth")
+                    b.Property<double?>("ToDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_to");
 
@@ -1448,7 +1451,7 @@ namespace BDMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnName("id_ldp");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
@@ -1464,15 +1467,15 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("description");
 
-                    b.Property<double>("FromDepth")
+                    b.Property<double?>("FromDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_from");
 
                     b.Property<int>("StratigraphyId")
                         .HasColumnType("integer")
-                        .HasColumnName("stratigraphy_id");
+                        .HasColumnName("id_sty_fk");
 
-                    b.Property<double>("ToDepth")
+                    b.Property<double?>("ToDepth")
                         .HasColumnType("double precision")
                         .HasColumnName("depth_to");
 
@@ -3134,7 +3137,7 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.StratigraphyV2", "Stratigraphy")
+                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("ChronostratigraphyLayers")
                         .HasForeignKey("StratigraphyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -3217,7 +3220,7 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("FaciesId");
 
-                    b.HasOne("BDMS.Models.StratigraphyV2", "Stratigraphy")
+                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("FaciesDescriptions")
                         .HasForeignKey("StratigraphyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -3658,7 +3661,7 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.StratigraphyV2", "Stratigraphy")
+                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("LithologicalDescriptions")
                         .HasForeignKey("StratigraphyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -3706,7 +3709,7 @@ namespace BDMS.Migrations
                         .HasForeignKey("PlasticityId");
 
                     b.HasOne("BDMS.Models.StratigraphyV2", "Stratigraphy")
-                        .WithMany("Lithologies")
+                        .WithMany()
                         .HasForeignKey("StratigraphyId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -4079,7 +4082,7 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("LithostratigraphyId");
 
-                    b.HasOne("BDMS.Models.StratigraphyV2", "Stratigraphy")
+                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("LithostratigraphyLayers")
                         .HasForeignKey("StratigraphyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -4230,7 +4233,7 @@ namespace BDMS.Migrations
             modelBuilder.Entity("BDMS.Models.Stratigraphy", b =>
                 {
                     b.HasOne("BDMS.Models.Borehole", "Borehole")
-                        .WithMany()
+                        .WithMany("Stratigraphies")
                         .HasForeignKey("BoreholeId");
 
                     b.HasOne("BDMS.Models.User", "CreatedBy")
@@ -4257,7 +4260,7 @@ namespace BDMS.Migrations
             modelBuilder.Entity("BDMS.Models.StratigraphyV2", b =>
                 {
                     b.HasOne("BDMS.Models.Borehole", "Borehole")
-                        .WithMany("Stratigraphies")
+                        .WithMany("StratigraphiesV2")
                         .HasForeignKey("BoreholeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -4449,6 +4452,8 @@ namespace BDMS.Migrations
 
                     b.Navigation("Stratigraphies");
 
+                    b.Navigation("StratigraphiesV2");
+
                     b.Navigation("Workflow");
                 });
 
@@ -4578,18 +4583,13 @@ namespace BDMS.Migrations
 
             modelBuilder.Entity("BDMS.Models.Stratigraphy", b =>
                 {
-                    b.Navigation("Layers");
-                });
-
-            modelBuilder.Entity("BDMS.Models.StratigraphyV2", b =>
-                {
                     b.Navigation("ChronostratigraphyLayers");
 
                     b.Navigation("FaciesDescriptions");
 
-                    b.Navigation("LithologicalDescriptions");
+                    b.Navigation("Layers");
 
-                    b.Navigation("Lithologies");
+                    b.Navigation("LithologicalDescriptions");
 
                     b.Navigation("LithostratigraphyLayers");
                 });

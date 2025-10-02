@@ -10,7 +10,7 @@ import {
   StratigraphyTableGap,
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
-} from "../stratigraphyV2/stratigraphyTableComponents.tsx";
+} from "../stratigraphyTableComponents.tsx";
 
 interface ExtractedStratigraphyTableProps {
   lithologicalDescriptions: BaseLayer[];
