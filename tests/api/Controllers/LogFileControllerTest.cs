@@ -143,7 +143,7 @@ public class LogFileControllerTest
         var borehole = await CreateTestBoreholeAsync();
         var logRun = await CreateTestLogRunAsync(borehole.Id);
         var logFile = await CreateTestLogFileAsync(logRun.Id);
-        logFile.Type = "application/las";
+        logFile.FileType = "application/las";
         await context.SaveChangesAsync();
 
         var response = await controller.GetFileAsync(logFile.Id);
@@ -281,7 +281,7 @@ public class LogFileControllerTest
             LogRunId = logRunId,
             Name = fileName,
             NameUuid = Guid.NewGuid().ToString() + ".las",
-            Type = "application/las",
+            FileType = "application/las",
             Public = false,
         };
 
