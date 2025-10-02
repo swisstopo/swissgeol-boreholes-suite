@@ -32,7 +32,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
 }) => {
   const { t } = useTranslation();
 
-  const { depths } = useLayerDepths(lithologies, lithologicalDescriptions, faciesDescriptions);
+  const { depths } = useLayerDepths(lithologies);
 
   const { completedLayers: completedLithologies } = useCompletedLayers(lithologies, depths);
   const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(lithologicalDescriptions, depths);

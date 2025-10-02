@@ -57,6 +57,16 @@ export interface BaseLayer {
   updatedById?: number | null;
   updatedBy?: User;
   isGap?: boolean;
+  isUnconsolidated?: boolean;
+}
+
+export interface MinimalLayer {
+  id: number;
+  fromDepth?: number;
+  toDepth?: number;
+  stratigraphyId: number;
+  isGap?: boolean;
+  isUnconsolidated?: boolean;
 }
 
 export interface Layer {
@@ -82,13 +92,13 @@ export interface Lithostratigraphy {
 }
 
 export interface LithologicalDescription extends BaseLayer {
-  description: string;
+  description?: string;
 }
 
 export interface FaciesDescription extends BaseLayer {
-  description: string;
-  faciesId: number | null;
-  facies: Codelist | null;
+  description?: string;
+  faciesId?: number | null;
+  facies?: Codelist | null;
 }
 
 export interface ExtractedLithologicalDescription extends LithologicalDescription {

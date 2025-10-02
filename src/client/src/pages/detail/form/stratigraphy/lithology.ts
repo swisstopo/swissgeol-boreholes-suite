@@ -10,21 +10,21 @@ export interface LithologyDescription {
   lithologyId: number;
   lithology?: Lithology;
   isFirst: boolean;
-  colorPrimaryId?: number;
+  colorPrimaryId?: number | null;
   colorPrimary?: Codelist;
-  colorSecondaryId?: number;
+  colorSecondaryId?: number | null;
   colorSecondary?: Codelist;
-  lithologyUnconMainId?: number;
+  lithologyUnconMainId?: number | null;
   lithologyUnconMain?: Codelist;
-  lithologyUncon2Id?: number;
+  lithologyUncon2Id?: number | null;
   lithologyUncon2?: Codelist;
-  lithologyUncon3Id?: number;
+  lithologyUncon3Id?: number | null;
   lithologyUncon3?: Codelist;
-  lithologyUncon4Id?: number;
+  lithologyUncon4Id?: number | null;
   lithologyUncon4?: Codelist;
-  lithologyUncon5Id?: number;
+  lithologyUncon5Id?: number | null;
   lithologyUncon5?: Codelist;
-  lithologyUncon6Id?: number;
+  lithologyUncon6Id?: number | null;
   lithologyUncon6?: Codelist;
   componentUnconOrganicCodelistIds?: number[];
   componentUnconOrganicCodelists?: Codelist[];
@@ -37,19 +37,19 @@ export interface LithologyDescription {
   hasStriae?: boolean;
   lithologyUnconDebrisCodelistIds?: number[];
   lithologyUnconDebrisCodelists?: Codelist[];
-  lithologyConId?: number;
+  lithologyConId?: number | null;
   lithologyCon?: Codelist;
   componentConParticleCodelistIds?: number[];
   componentConParticleCodelists?: Codelist[];
   componentConMineralCodelistIds?: number[];
   componentConMineralCodelists?: Codelist[];
-  grainSizeId?: number;
+  grainSizeId?: number | null;
   grainSize?: Codelist;
-  grainAngularityId?: number;
+  grainAngularityId?: number | null;
   grainAngularity?: Codelist;
-  gradationId?: number;
+  gradationId?: number | null;
   gradation?: Codelist;
-  cementationId?: number;
+  cementationId?: number | null;
   cementation?: Codelist;
   structureSynGenCodelistIds?: number[];
   structureSynGenCodelists?: Codelist[];
@@ -63,22 +63,22 @@ export interface Lithology extends BaseLayer {
   share?: number;
   shareInverse?: number;
   lithologyDescriptions?: LithologyDescription[];
-  alterationDegreeId?: number;
+  alterationDegreeId?: number | null;
   alterationDegree?: Codelist;
   notes?: string;
-  compactnessId?: number;
+  compactnessId?: number | null;
   compactness?: Codelist;
-  cohesionId?: number;
+  cohesionId?: number | null;
   cohesion?: Codelist;
-  humidityId?: number;
+  humidityId?: number | null;
   humidity?: Codelist;
-  consistencyId?: number;
+  consistencyId?: number | null;
   consistency?: Codelist;
-  plasticityId?: number;
+  plasticityId?: number | null;
   plasticity?: Codelist;
   uscsTypeCodelistIds?: number[];
   uscsTypeCodelists?: Codelist[];
-  uscsDeterminationId?: number;
+  uscsDeterminationId?: number | null;
   uscsDetermination?: Codelist;
   rockConditionCodelistIds?: number[];
   rockConditionCodelists?: Codelist[];
@@ -125,8 +125,8 @@ export const useLithologyMutations = () => {
   const resetTabStatus = useResetTabStatus(["lithology"]);
 
   const useAddLithology = useMutation({
-    mutationFn: async (lithology: Lithology) => {
-      return await fetchApiV2WithApiError(`${lithologyController}`, "POST", lithology);
+    mutationFn: (lithology: Lithology) => {
+      return fetchApiV2WithApiError(`${lithologyController}`, "POST", lithology);
     },
     onSuccess: () => {
       resetTabStatus();
@@ -135,12 +135,25 @@ export const useLithologyMutations = () => {
   });
 
   const useUpdateLithology = useMutation({
-    mutationFn: async (lithology: Lithology) => {
+    mutationFn: (lithology: Lithology) => {
       delete lithology.createdBy;
       delete lithology.updatedBy;
       delete lithology.stratigraphy;
 
-      return await fetchApiV2WithApiError(`${lithologyController}`, "PUT", lithology);
+      return fetchApiV2WithApiError(`${lithologyController}`, "PUT", lithology);
+    },
+    onMutate: async (updatedLithology: Lithology) => {
+      await queryClient.cancelQueries({ queryKey: [lithologyQueryKey] });
+      const previousLithologies = queryClient.getQueryData<Lithology[]>([lithologyQueryKey]);
+      queryClient.setQueryData<Lithology[]>([lithologyQueryKey], old =>
+        old ? old.map(l => (l.id === updatedLithology.id ? { ...l, ...updatedLithology } : l)) : [],
+      );
+      return { previousLithologies };
+    },
+    onError: (err, updatedLithology, context) => {
+      if (context?.previousLithologies) {
+        queryClient.setQueryData([lithologyQueryKey], context.previousLithologies);
+      }
     },
     onSuccess: () => {
       resetTabStatus();
@@ -149,8 +162,21 @@ export const useLithologyMutations = () => {
   });
 
   const useDeleteLithology = useMutation({
-    mutationFn: async (lithology: Lithology) => {
-      return await fetchApiV2WithApiError(`${lithologyController}?id=${lithology.id}`, "DELETE");
+    mutationFn: (lithology: Lithology) => {
+      return fetchApiV2WithApiError(`${lithologyController}?id=${lithology.id}`, "DELETE");
+    },
+    onMutate: async (deletedLithology: Lithology) => {
+      await queryClient.cancelQueries({ queryKey: [lithologyQueryKey] });
+      const previousLithologies = queryClient.getQueryData<Lithology[]>([lithologyQueryKey]);
+      queryClient.setQueryData<Lithology[]>([lithologyQueryKey], old =>
+        old ? old.filter(l => l.id !== deletedLithology.id) : [],
+      );
+      return { previousLithologies };
+    },
+    onError: (err, deletedLithology, context) => {
+      if (context?.previousLithologies) {
+        queryClient.setQueryData([lithologyQueryKey], context.previousLithologies);
+      }
     },
     onSuccess: () => {
       resetTabStatus();

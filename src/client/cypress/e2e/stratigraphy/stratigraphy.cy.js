@@ -316,6 +316,8 @@ describe("Tests for stratigraphy", () => {
       verifyNoUnsavedChanges();
       setInput("name", "Reset Stratigraphy");
       discardChanges();
+      // TODO optimize, why are attachments fetched every time when stratigraphy renders
+      cy.wait("@getAllAttachments");
       cy.location().should(location => {
         expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy`);
       });

@@ -1,5 +1,5 @@
-import { FC, MouseEvent, useEffect } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FC, useEffect } from "react";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { theme } from "../../../../../../../AppTheme.ts";
@@ -11,6 +11,11 @@ import { BasicDataFormSection } from "./basicDataFormSection.tsx";
 import { FormDialog } from "./formDialog.tsx";
 import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
 import { LithologyUnconsolidatedForm } from "./lithologyUnconsolidatedForm.tsx";
+import {
+  initializeLithologicalDescriptionInForm,
+  initializeLithologyInForm,
+  prepareLithologyForSubmit,
+} from "./lithologyUtils.ts";
 import { RemarksFormSection } from "./remarksFormSection.tsx";
 
 type FormError = { type: string; message: string };
@@ -81,12 +86,28 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
       return { values, errors };
     },
   });
-  const { formState, getValues, setValue } = formMethods;
+  const { formState, getValues } = formMethods;
   useFormDirtyChanges({ formState });
 
   useEffect(() => {
     if (lithology) {
       formMethods.reset(lithology);
+      initializeLithologyInForm(formMethods, lithology);
+
+      // Add first lithology description if not present
+      if (!lithology?.lithologyDescriptions) {
+        lithology.lithologyDescriptions = [
+          {
+            id: 0,
+            lithologyId: 0,
+            isFirst: true,
+          },
+        ];
+      }
+
+      for (const [index, description] of (lithology.lithologyDescriptions ?? []).entries()) {
+        initializeLithologicalDescriptionInForm(index, description, formMethods);
+      }
     }
   }, [lithology, formMethods]);
 
@@ -96,6 +117,8 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
     const isValid = await formMethods.trigger();
     if (!formState.isDirty || isValid) {
       const values = getValues();
+      prepareLithologyForSubmit(values);
+
       updateLithology({ ...lithology, ...values } as Lithology, formState.isDirty);
     }
   };
@@ -112,23 +135,28 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
             data-cy="lithology-basic-data"
             title={t("basicData")}
             action={
-              <ToggleButtonGroup
-                value={isUnconsolidated}
-                onChange={(event: MouseEvent<HTMLElement>, isUnconsolidated: boolean) => {
-                  setValue("isUnconsolidated", isUnconsolidated);
-                }}
-                exclusive
-                sx={{
-                  boxShadow: "none",
-                  border: `1px solid ${theme.palette.border.light}`,
-                }}>
-                <ToggleButton value={true}>
-                  <Typography>{t("unconsolidated")}</Typography>
-                </ToggleButton>
-                <ToggleButton value={false}>
-                  <Typography>{t("consolidated")}</Typography>
-                </ToggleButton>
-              </ToggleButtonGroup>
+              <Controller
+                name="isUnconsolidated"
+                control={formMethods.control}
+                defaultValue={lithology?.isUnconsolidated === undefined ? true : lithology.isUnconsolidated}
+                render={({ field }) => (
+                  <ToggleButtonGroup
+                    value={field.value}
+                    onChange={(_, value) => field.onChange(value)}
+                    exclusive
+                    sx={{
+                      boxShadow: "none",
+                      border: `1px solid ${theme.palette.border.light}`,
+                    }}>
+                    <ToggleButton value={true}>
+                      <Typography>{t("unconsolidated")}</Typography>
+                    </ToggleButton>
+                    <ToggleButton value={false}>
+                      <Typography>{t("consolidated")}</Typography>
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                )}
+              />
             }>
             <BasicDataFormSection />
           </BoreholesCard>
