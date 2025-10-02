@@ -3,7 +3,8 @@
 ## [Unreleased]
 
 ### Added
-- New lithology UI
+- - Added new lithology UI and backend to manage the borehole's lithologies. Removed legacy lithology UI.
+
 
 ## v2.1.1358 - 2025-09-24
 
