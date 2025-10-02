@@ -94,7 +94,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
       formMethods.reset(lithology);
       initializeLithologyInForm(formMethods, lithology);
 
-      // add first lithological description if not present
+      // Add first lithology description if not present
       if (!lithology?.lithologyDescriptions) {
         lithology.lithologyDescriptions = [
           {
