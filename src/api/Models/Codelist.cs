@@ -237,4 +237,10 @@ public class Codelist : IIdentifyable
     /// </summary>
     [JsonIgnore]
     public ICollection<LithologyTextureMetaCodes>? LithologyTextureMetaCodes { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="LogFileToolTypeCodes"/> join table entities.
+    /// </summary>
+    [JsonIgnore]
+    public ICollection<LogFileToolTypeCodes>? LogFileToolTypeCodes { get; set; }
 }
