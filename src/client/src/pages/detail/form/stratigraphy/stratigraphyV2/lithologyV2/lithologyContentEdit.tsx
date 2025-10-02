@@ -245,19 +245,15 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     setTmpFaciesDescriptions(faciesDescriptions.map(item => ({ item, hasChanges: false })));
   }, [faciesDescriptions, lithologicalDescriptions, lithologies]);
 
-  const onSave = useCallback(async () => {
-    if (depths.some(c => c.hasFromDepthError || c.hasToDepthError)) {
-      showAlert(t(t("gapOrOverlayErrorCannotSave")), "error");
-      return false;
-    }
-
-    // Check for deleted lithologies
+  const deleteLithologies = useCallback(async () => {
     for (const lithology of lithologies) {
-      if (!tmpLithologies.find(l => l.item.id === lithology.id)) {
+      if (!tmpLithologies.some(l => l.item.id === lithology.id)) {
         await deleteLithology(lithology);
       }
     }
+  }, [deleteLithology, lithologies, tmpLithologies]);
 
+  const addAndUpdateLithologies = useCallback(async () => {
     for (const lithology of tmpLithologies.filter(l => l.hasChanges).map(l => l.item)) {
       if (lithology.id === 0) {
         await addLithology({ ...lithology, stratigraphyId });
@@ -265,13 +261,17 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
         await updateLithology(lithology);
       }
     }
-    // check for deleted lithological descriptions
+  }, [addLithology, stratigraphyId, tmpLithologies, updateLithology]);
+
+  const deleteLithologicalDescriptions = useCallback(async () => {
     for (const lithologicalDescription of lithologicalDescriptions) {
-      if (!tmpLithologicalDescriptions.find(l => l.item.id === lithologicalDescription.id)) {
+      if (!tmpLithologicalDescriptions.some(l => l.item.id === lithologicalDescription.id)) {
         await deleteLithologicalDescription(lithologicalDescription);
       }
     }
+  }, [deleteLithologicalDescription, lithologicalDescriptions, tmpLithologicalDescriptions]);
 
+  const addAndUpdateLithologicalDescriptions = useCallback(async () => {
     for (const lithologicalDescription of tmpLithologicalDescriptions.filter(l => l.hasChanges).map(l => l.item)) {
       if (lithologicalDescription.id === 0) {
         await addLithologicalDescription({ ...lithologicalDescription, stratigraphyId });
@@ -279,14 +279,17 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
         await updateLithologicalDescription(lithologicalDescription);
       }
     }
+  }, [addLithologicalDescription, stratigraphyId, tmpLithologicalDescriptions, updateLithologicalDescription]);
 
-    // check for deleted facies descriptions
+  const deleteFaciesDescriptions = useCallback(async () => {
     for (const faciesDescription of faciesDescriptions) {
-      if (!tmpFaciesDescriptions.find(l => l.item.id === faciesDescription.id)) {
+      if (!tmpFaciesDescriptions.some(l => l.item.id === faciesDescription.id)) {
         await deleteFaciesDescription(faciesDescription);
       }
     }
+  }, [deleteFaciesDescription, faciesDescriptions, tmpFaciesDescriptions]);
 
+  const addAndUpdateFaciesDescriptions = useCallback(async () => {
     for (const faciesDescription of tmpFaciesDescriptions.filter(l => l.hasChanges).map(l => l.item)) {
       if (faciesDescription.id === 0) {
         await addFaciesDescription({ ...faciesDescription, stratigraphyId });
@@ -294,29 +297,34 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
         await updateFaciesDescription(faciesDescription);
       }
     }
+  }, [addFaciesDescription, stratigraphyId, tmpFaciesDescriptions, updateFaciesDescription]);
+
+  const onSave = useCallback(async () => {
+    if (depths.some(c => c.hasFromDepthError || c.hasToDepthError)) {
+      showAlert(t(t("gapOrOverlayErrorCannotSave")), "error");
+      return false;
+    }
+    await Promise.all([
+      deleteLithologies(),
+      addAndUpdateLithologies(),
+      deleteLithologicalDescriptions(),
+      addAndUpdateLithologicalDescriptions(),
+      deleteFaciesDescriptions(),
+      addAndUpdateFaciesDescriptions(),
+    ]);
     markAsChanged(false);
     return true;
   }, [
     depths,
+    deleteLithologies,
+    addAndUpdateLithologies,
+    deleteLithologicalDescriptions,
+    addAndUpdateLithologicalDescriptions,
+    deleteFaciesDescriptions,
+    addAndUpdateFaciesDescriptions,
     markAsChanged,
     showAlert,
     t,
-    lithologies,
-    tmpLithologies,
-    deleteLithology,
-    addLithology,
-    stratigraphyId,
-    updateLithology,
-    lithologicalDescriptions,
-    tmpLithologicalDescriptions,
-    deleteLithologicalDescription,
-    addLithologicalDescription,
-    updateLithologicalDescription,
-    faciesDescriptions,
-    tmpFaciesDescriptions,
-    deleteFaciesDescription,
-    addFaciesDescription,
-    updateFaciesDescription,
   ]);
 
   useEffect(() => {

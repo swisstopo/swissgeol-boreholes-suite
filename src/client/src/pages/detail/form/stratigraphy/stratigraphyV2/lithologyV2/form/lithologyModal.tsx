@@ -132,42 +132,44 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
       if (String(values.plasticityId) === "") values.plasticityId = null;
       if (String(values.uscsDeterminationId) === "") values.uscsDeterminationId = null;
 
-      values.lithologyDescriptions?.forEach(description => {
-        delete description.colorPrimary;
-        delete description.colorSecondary;
-        delete description.lithologyUnconMain;
-        delete description.lithologyUncon2;
-        delete description.lithologyUncon3;
-        delete description.lithologyUncon4;
-        delete description.lithologyUncon5;
-        delete description.lithologyUncon6;
-        delete description.componentUnconOrganicCodelists;
-        delete description.componentUnconDebrisCodelists;
-        delete description.grainShapeCodelists;
-        delete description.grainAngularityCodelists;
-        delete description.lithologyUnconDebrisCodelists;
-        delete description.lithologyCon;
-        delete description.componentConParticleCodelists;
-        delete description.componentConMineralCodelists;
-        delete description.grainSize;
-        delete description.grainAngularity;
-        delete description.gradation;
-        delete description.cementation;
-        delete description.structureSynGenCodelists;
-        delete description.structurePostGenCodelists;
+      if (values?.lithologyDescriptions) {
+        for (const description of values.lithologyDescriptions) {
+          delete description.colorPrimary;
+          delete description.colorSecondary;
+          delete description.lithologyUnconMain;
+          delete description.lithologyUncon2;
+          delete description.lithologyUncon3;
+          delete description.lithologyUncon4;
+          delete description.lithologyUncon5;
+          delete description.lithologyUncon6;
+          delete description.componentUnconOrganicCodelists;
+          delete description.componentUnconDebrisCodelists;
+          delete description.grainShapeCodelists;
+          delete description.grainAngularityCodelists;
+          delete description.lithologyUnconDebrisCodelists;
+          delete description.lithologyCon;
+          delete description.componentConParticleCodelists;
+          delete description.componentConMineralCodelists;
+          delete description.grainSize;
+          delete description.grainAngularity;
+          delete description.gradation;
+          delete description.cementation;
+          delete description.structureSynGenCodelists;
+          delete description.structurePostGenCodelists;
 
-        if (String(description.lithologyUnconMainId) === "") description.lithologyUnconMainId = null;
-        if (String(description.lithologyUncon2Id) === "") description.lithologyUncon2Id = null;
-        if (String(description.lithologyUncon3Id) === "") description.lithologyUncon3Id = null;
-        if (String(description.lithologyUncon4Id) === "") description.lithologyUncon4Id = null;
-        if (String(description.lithologyUncon5Id) === "") description.lithologyUncon5Id = null;
-        if (String(description.lithologyUncon6Id) === "") description.lithologyUncon6Id = null;
-        if (String(description.lithologyConId) === "") description.lithologyConId = null;
-        if (String(description.grainSizeId) === "") description.grainSizeId = null;
-        if (String(description.grainAngularityId) === "") description.grainAngularityId = null;
-        if (String(description.gradationId) === "") description.gradationId = null;
-        if (String(description.cementationId) === "") description.cementationId = null;
-      });
+          if (String(description.lithologyUnconMainId) === "") description.lithologyUnconMainId = null;
+          if (String(description.lithologyUncon2Id) === "") description.lithologyUncon2Id = null;
+          if (String(description.lithologyUncon3Id) === "") description.lithologyUncon3Id = null;
+          if (String(description.lithologyUncon4Id) === "") description.lithologyUncon4Id = null;
+          if (String(description.lithologyUncon5Id) === "") description.lithologyUncon5Id = null;
+          if (String(description.lithologyUncon6Id) === "") description.lithologyUncon6Id = null;
+          if (String(description.lithologyConId) === "") description.lithologyConId = null;
+          if (String(description.grainSizeId) === "") description.grainSizeId = null;
+          if (String(description.grainAngularityId) === "") description.grainAngularityId = null;
+          if (String(description.gradationId) === "") description.gradationId = null;
+          if (String(description.cementationId) === "") description.cementationId = null;
+        }
+      }
 
       updateLithology({ ...lithology, ...values } as Lithology, formState.isDirty);
     }
