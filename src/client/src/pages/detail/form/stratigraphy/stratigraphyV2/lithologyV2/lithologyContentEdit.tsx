@@ -216,8 +216,15 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       ];
 
       const layerIndex = layers.findIndex(l => l.id === layer.id);
-      const previousLayer = layerIndex > 0 ? layers[layerIndex - 1] : null;
-      const nextLayer = layerIndex < layers.length - 1 ? layers[layerIndex + 1] : null;
+      let previousLayer = layers[layerIndex - 1] ?? null;
+      let nextLayer = layers[layerIndex + 1] ?? null;
+      // Ignore gap layers when restricting depth options
+      if (previousLayer?.isGap) {
+        previousLayer = layers[layerIndex - 2] ?? null;
+      }
+      if (nextLayer?.isGap) {
+        nextLayer = layers[layerIndex + 2] ?? null;
+      }
 
       allPossibleDepths = previousLayer ? allPossibleDepths.filter(d => d >= previousLayer.toDepth) : allPossibleDepths;
       allPossibleDepths = nextLayer ? allPossibleDepths.filter(d => d <= nextLayer.fromDepth) : allPossibleDepths;
