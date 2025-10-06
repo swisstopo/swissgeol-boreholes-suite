@@ -1,6 +1,8 @@
 import { FC, ReactNode, SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router";
+import { IconButton } from "@mui/material";
 import { Box } from "@mui/system";
+import { Maximize2 } from "lucide-react";
 import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
 import { AddWorkgroupDialog } from "../../pages/settings/admin/dialogs/AddWorkgroupDialog.tsx";
 import { AddButton } from "../buttons/buttons.tsx";
@@ -12,6 +14,7 @@ import {
   TabsWithDivider,
   TabWithContent,
 } from "../styledTabComponents.tsx";
+import { TabModal } from "./tabModal.tsx";
 
 export interface Tab {
   label: string;
@@ -23,13 +26,16 @@ export interface Tab {
 interface TabPanelProps {
   tabs: Tab[];
   variant?: "card" | "list";
+  supportFullscreen?: boolean;
+  title?: string;
 }
 
-export const TabPanel: FC<TabPanelProps> = ({ tabs, variant = "card" }) => {
+export const TabPanel: FC<TabPanelProps> = ({ tabs, variant = "card", supportFullscreen, title }) => {
   const { navigateTo } = useBoreholesNavigate();
   const { hash } = useLocation();
   const [activeIndex, setActiveIndex] = useState(0);
   const [workgroupDialogOpen, setWorkgroupDialogOpen] = useState(false);
+  const [showFullscreen, setShowFullscreen] = useState(false);
 
   const { Tabs, Tab, TabContent } = useMemo(
     () =>
@@ -79,9 +85,30 @@ export const TabPanel: FC<TabPanelProps> = ({ tabs, variant = "card" }) => {
         ))}
         <Box sx={{ flexGrow: 1 }}></Box>
         {hash === "#workgroups" && <AddButton label={"addWorkgroup"} variant={"contained"} onClick={addWorkgroup} />}
+        {supportFullscreen && (
+          <IconButton
+            color="primaryInverse"
+            data-cy="showFullscreenTabs"
+            onClick={() => setShowFullscreen(true)}
+            sx={{
+              width: "36px",
+              height: "36px",
+              borderRadius: "2px",
+            }}>
+            <Maximize2 />
+          </IconButton>
+        )}
       </Tabs>
       <TabContent>{tabs[activeIndex].component}</TabContent>
       <AddWorkgroupDialog open={workgroupDialogOpen} setOpen={setWorkgroupDialogOpen} />
+      <TabModal
+        open={showFullscreen}
+        onClose={() => setShowFullscreen(false)}
+        title={title || ""}
+        tabs={tabs}
+        activeIndex={activeIndex}
+        setActiveIndex={setActiveIndex}
+      />
     </>
   );
 };

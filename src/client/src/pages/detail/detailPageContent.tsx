@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router";
 import { Box } from "@mui/material";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme";
+import { useDevMode } from "../../hooks/useDevMode.tsx";
 import { Attachments } from "./attachments/attachments.tsx";
 import { BoreholePanel } from "./form/borehole/boreholePanel.tsx";
 import Completion from "./form/completion/completion.jsx";
@@ -13,7 +14,6 @@ import { LocationPanel } from "./form/location/locationPanel.tsx";
 import { LogPanel } from "./form/log/logPanel.tsx";
 import { StratigraphyPanel } from "./form/stratigraphy/stratigraphyPanel.tsx";
 import { WorkflowView } from "./form/workflow/workflowView.tsx";
-import { useDevMode } from "../../hooks/useDevMode.tsx";
 
 interface DetailPageContentProps {
   borehole: BoreholeV2;
