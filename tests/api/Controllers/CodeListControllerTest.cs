@@ -46,21 +46,21 @@ public class CodeListControllerTest
     [TestMethod]
     public async Task GetEntriesBySchema()
     {
-        var codeLists = await controller.GetAsync("custom.chronostratigraphy_top_bedrock");
-        Assert.AreEqual(137, codeLists.Count());
-        var codeListToTest = codeLists.Single(c => c.Id == 15001070);
-        Assert.AreEqual(15001070, codeListToTest.Id);
-        Assert.AreEqual(15001070, codeListToTest.Geolcode);
-        Assert.AreEqual("{\"color\":[128,207,216]}", codeListToTest.Conf);
+        var codeLists = await controller.GetAsync("chronostratigraphy");
+        Assert.AreEqual(140, codeLists.Count());
+        var codeListToTest = codeLists.Single(c => c.Id == 100_002_860);
+        Assert.AreEqual(100_002_860, codeListToTest.Id);
+        Assert.AreEqual(15001005, codeListToTest.Geolcode);
+        Assert.AreEqual("{\"color\":[255,239,175]}", codeListToTest.Conf);
         Assert.AreEqual(false, codeListToTest.IsDefault);
-        Assert.AreEqual("custom.chronostratigraphy_top_bedrock", codeListToTest.Schema);
-        Assert.AreEqual("Mittlerer Jura", codeListToTest.De);
-        Assert.AreEqual("Middle Jurassic", codeListToTest.En);
-        Assert.AreEqual("Jurassique moyen", codeListToTest.Fr);
-        Assert.AreEqual("Giurassico Medio", codeListToTest.It);
-        Assert.AreEqual(700, codeListToTest.Order);
-        Assert.AreEqual("jm", codeListToTest.Code);
-        Assert.AreEqual(new LTree("15001001.15001049.15001065.15001070"), codeListToTest.Path);
+        Assert.AreEqual("chronostratigraphy", codeListToTest.Schema);
+        Assert.AreEqual("Pleistozän", codeListToTest.De);
+        Assert.AreEqual("Pleistocene", codeListToTest.En);
+        Assert.AreEqual("Pléistocène", codeListToTest.Fr);
+        Assert.AreEqual("Pleistocene", codeListToTest.It);
+        Assert.AreEqual(50, codeListToTest.Order);
+        Assert.AreEqual("", codeListToTest.Code);
+        Assert.AreEqual(new LTree("15001001.15001002.15001003.15001005"), codeListToTest.Path);
     }
 
     [TestMethod]
