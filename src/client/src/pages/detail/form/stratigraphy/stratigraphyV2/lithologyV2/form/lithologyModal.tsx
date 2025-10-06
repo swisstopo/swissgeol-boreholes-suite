@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { theme } from "../../../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
-import { FormContainer, FormInput } from "../../../../../../../components/form/form.ts";
 import { useFormDirtyChanges } from "../../../../../../../components/form/useFormDirtyChanges.tsx";
 import { Lithology, LithologyDescription } from "../../../lithology.ts";
 import { BasicDataFormSection } from "./basicDataFormSection.tsx";
@@ -160,19 +159,19 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
             }>
             <BasicDataFormSection />
           </BoreholesCard>
-          <BoreholesCard data-cy="lithology-lithological-description" title={t("lithologyLayerDescription")}>
-            {/* // TODO: Load description from lithological descriptions based on depths */}
-            <FormContainer>
-              <FormInput
-                fieldName={"description"}
-                label={"description"}
-                value={""}
-                multiline={true}
-                rows={3}
-                readonly={true}
-              />
-            </FormContainer>
-          </BoreholesCard>
+          {/* // TODO: Load description from lithological descriptions based on depths https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2386 */}
+          {/*<BoreholesCard data-cy="lithology-lithological-description" title={t("lithologyLayerDescription")}>*/}
+          {/*  <FormContainer>*/}
+          {/*    <FormInput*/}
+          {/*      fieldName={"description"}*/}
+          {/*      label={"description"}*/}
+          {/*      value={""}*/}
+          {/*      multiline={true}*/}
+          {/*      rows={3}*/}
+          {/*      readonly={true}*/}
+          {/*    />*/}
+          {/*  </FormContainer>*/}
+          {/*</BoreholesCard>*/}
           {lithology &&
             (isUnconsolidated ? (
               <LithologyUnconsolidatedForm lithologyId={lithology.id} formMethods={formMethods} />

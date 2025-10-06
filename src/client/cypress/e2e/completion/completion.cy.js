@@ -127,7 +127,7 @@ const assertNewCompletionCreated = boreholeId => {
 
 describe("completion crud tests", () => {
   // Skip currently very flaky test
-  // Todo reactivate and resolve flakyness issue
+  // Todo reactivate and resolve flakyness issue https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2390
   it.skip("adds, edits, copies and deletes completions", () => {
     createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
@@ -388,7 +388,7 @@ describe("completion crud tests", () => {
   });
 
   // Skip currently very flaky test
-  // Todo reactivate and resolve flakyness issue
+  // Todo reactivate and resolve flakyness issue https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2390
   it.skip("checks completion content validation", () => {
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")

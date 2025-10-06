@@ -178,7 +178,7 @@ export function useExtractStratigraphies(file: BoreholeAttachment) {
       await getDataExtractionFileInfo(file.id);
       const response = await extractStratigraphies(file.nameUuid, signal);
       const lithologicalDescriptions: ExtractedLithologicalDescription[] =
-        // Todo: The extraction currently only supports a single borehole per file
+        // Todo: The extraction currently only supports a single borehole per file https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2146
         Array.isArray(response.boreholes) && response.boreholes.length > 0
           ? response.boreholes[0]?.layers?.map(({ start, end, material_description }, idx) => ({
               id: idx,
