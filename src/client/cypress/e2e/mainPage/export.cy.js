@@ -354,7 +354,7 @@ describe("Test for exporting boreholes.", () => {
     cy.get(".MuiAlert-message").contains("An error occurred while fetching a file from the cloud storage.");
   });
 
-  // TODO: Reactivate this test when import is fixed
+  // TODO: Reactivate this test when import is fixed https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
   it.skip("exports and reimports a borehole using csv", () => {
     const boreholeName = "AAA_WALRUS";
     createBorehole({

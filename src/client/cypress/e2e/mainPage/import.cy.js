@@ -40,7 +40,7 @@ const dropFileIntoImportDropzone = boreholeFile => {
   });
 };
 
-// Todo reactivate tests when import functionality is reactivated
+// Todo reactivate tests when import functionality is reactivated https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
 describe.skip("Test for importing boreholes.", () => {
   it("Successfully imports multiple boreholes.", () => {
     goToRouteAndAcceptTerms("/");

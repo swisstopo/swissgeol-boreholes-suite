@@ -118,7 +118,7 @@ export const boreholeSearchData = [
   },
 
   // {
-  /// Todo: Reactivate when filters are migrated to new API
+  /// Todo: Reactivate when filters are migrated to new API https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2370
   //   id: 31,
   //   type: "Dropdown",
   //   label: "lithology_top_bedrock",
