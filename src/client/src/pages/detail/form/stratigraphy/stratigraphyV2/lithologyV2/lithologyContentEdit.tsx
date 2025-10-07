@@ -177,11 +177,9 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   const handleDeleteLithology = useCallback(
     (index: number) => {
       setTmpLithologies(prev => {
-        console.log("handleDeleteLithology", { index, prev });
         if (index >= 0 && index < prev.length) {
           const newTmpLithologies = [...prev.slice(0, index), ...prev.slice(index + 1)];
           compareAndMarkAsChanged(newTmpLithologies, lithologies);
-          console.log("newTmpLithologies", newTmpLithologies);
           return newTmpLithologies;
         }
 
@@ -492,18 +490,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     buildContent: (layer: BaseLayer) => ReactNode,
     keyPrefix: string,
   ) => {
-    if (!layers || layers.length === 0) {
-      console.log("renderTableCells no layers", layers);
-      return (
-        <StratigraphyTableGap
-          key={`${keyPrefix}-new`}
-          sx={{ height: `${defaultRowHeight}px` }}
-          index={-1}
-          onClick={onEdit}
-        />
-      );
-    }
-
     return layers.map((layer, index) => {
       if (layer.isGap) {
         const gapLayer: BaseLayer = { ...layer };
