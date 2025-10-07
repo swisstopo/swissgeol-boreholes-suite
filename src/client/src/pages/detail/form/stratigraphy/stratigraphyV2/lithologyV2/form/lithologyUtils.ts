@@ -65,6 +65,7 @@ export function initializeLithologyInForm<TFieldValues>(
   formMethods: UseFormReturn<Lithology, TFieldValues>,
   lithology: Lithology,
 ) {
+  formMethods.setValue("hasBedding", lithology?.hasBedding ?? false);
   formMethods.setValue("isUnconsolidated", lithology?.isUnconsolidated ?? true);
   formMethods.setValue("alterationDegreeId", lithology?.alterationDegreeId ?? null);
   formMethods.setValue("alterationDegreeId", lithology?.alterationDegreeId ?? null);
