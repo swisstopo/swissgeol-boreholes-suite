@@ -35,6 +35,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
     hasHydroTest,
     hasFieldMeasurement,
     hasAttachments,
+    hasLogRuns,
   } = useBoreholeDataAvailability(borehole);
 
   useEffect(() => {
@@ -167,7 +168,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
           {runsDevMode && (
             <SgcMenuItem
               active={location.pathname === `/${id}/log`}
-              empty={!hasAttachments}
+              empty={!hasLogRuns}
               data-cy="log-menu-item"
               isReviewed={!auth.anonymousModeEnabled && isReviewed(["log"])}
               onClick={() => {
