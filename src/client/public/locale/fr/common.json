@@ -370,7 +370,7 @@
   "lithologyUnconMain": "Type / fraction principal(e) de sol",
   "lithologyUnconPreviousRequired": "Entrée obligatoire, car les éléments accessoires ultérieurs sont enregistrés",
   "lithologyUnconSecondary": "Composant mineur",
-  "lithologyUnconType": "Zusammengesetzter Litho-Code",
+  "lithologyUnconType": "Code lithographique composite",
   "lithology_top_bedrock": "Lithologie du toit du rocher",
   "lithologyfields": "Champs lithologie",
   "lithostratigraphy": "Lithostratigraphie",
