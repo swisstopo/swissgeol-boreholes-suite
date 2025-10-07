@@ -112,7 +112,22 @@ export const getLayersWithGaps = (
     });
   }
 
-  return resultLayers;
+  // Merge adjacent gap resultLayers
+  const mergedLayers: BaseLayerChangeTracker[] = [];
+  for (let i = 0; i < resultLayers.length; i++) {
+    const prev = mergedLayers.length > 0 ? mergedLayers[mergedLayers.length - 1] : undefined;
+    const current = resultLayers[i];
+    if (
+      prev?.item.isGap &&
+      current.item.isGap &&
+      mergedLayers[mergedLayers.length - 1].item.toDepth === current.item.fromDepth
+    ) {
+      prev.item.toDepth = current.item.toDepth;
+    } else {
+      mergedLayers.push(current);
+    }
+  }
+  return mergedLayers;
 };
 
 export interface BaseLayerChangeTracker {
