@@ -872,7 +872,7 @@ public class BdmsContext : DbContext
                     .HasForeignKey(l => l.LithologyId),
                 j => j.HasKey(lc => new { lc.LithologyId, lc.CodelistId }));
 
-        // Join table for log file and codelists with schema name 'tool_type'.
+        // Join table for log file and codelists with schema name 'log_tool_type'.
         modelBuilder.Entity<LogFile>()
             .HasMany(l => l.ToolTypeCodelists)
             .WithMany()
