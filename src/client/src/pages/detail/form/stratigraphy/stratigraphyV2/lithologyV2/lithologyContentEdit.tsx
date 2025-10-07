@@ -144,17 +144,19 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       hasChanges: boolean,
     ) => {
       setState(prev => {
-        if (typeof index === "number" && index >= 0 && index < prev.length) {
-          if (hasChanges) {
+        if (hasChanges) {
+          if (typeof index === "number" && index >= 0 && index < prev.length) {
             const updated = [...prev];
             updated[index] = { item, hasChanges: true };
             return updated;
           }
-          return prev;
+
+          // fallback to add if index is undefined or out of bounds
+          markAsChanged(true);
+          return [...prev, { item, hasChanges: true }];
         }
-        // fallback to add if index is undefined or out of bounds
-        markAsChanged(true);
-        return [...prev, { item, hasChanges: true }];
+
+        return prev;
       });
     },
     [markAsChanged],
