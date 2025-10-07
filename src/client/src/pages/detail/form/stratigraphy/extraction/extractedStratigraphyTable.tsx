@@ -26,27 +26,27 @@ export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = (
         <StratigraphyTableGap
           key={`${keyPrefix}-new`}
           sx={{ height: `${defaultRowHeight}px` }}
-          layer={{ id: 0, stratigraphyId: 0, isGap: true, fromDepth: -1, toDepth: -1 }}
+          index={-1}
         />
       );
     }
-    return layers.map(layer =>
+    return layers.map((layer, index) =>
       layer.isGap ? (
         <StratigraphyTableGap
+          index={index}
           key={`${keyPrefix}-${layer.id}`}
           sx={{
             height: `${defaultRowHeight}px`,
           }}
-          layer={layer}
         />
       ) : (
         <StratigraphyTableActionCell
+          index={index}
           key={`${keyPrefix}-${layer.id}`}
           sx={{
             height: `${defaultRowHeight}px`,
           }}
-          layer={layer}
-          onHoverClick={() => console.log("copy layer content", layer)}>
+          layer={layer}>
           {buildContent(layer)}
         </StratigraphyTableActionCell>
       ),

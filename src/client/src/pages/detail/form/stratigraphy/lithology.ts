@@ -5,6 +5,121 @@ import { BaseLayer } from "../../../../api/stratigraphy.ts";
 import { Codelist } from "../../../../components/codelist.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 
+export const getMinMaxDepth = (
+  lithologies: BaseLayer[],
+  lithologicalDescriptions: BaseLayer[],
+  faciesDescriptions: BaseLayer[],
+): { minDepth: number; maxDepth: number } => {
+  let minDepth: number | undefined;
+  let maxDepth: number | undefined;
+
+  const all = [lithologies, lithologicalDescriptions, faciesDescriptions];
+  all.forEach(arr => {
+    arr.forEach(item => {
+      if (minDepth === undefined || item.fromDepth < minDepth) minDepth = item.fromDepth;
+      if (maxDepth === undefined || item.toDepth > maxDepth) maxDepth = item.toDepth;
+    });
+  });
+
+  return {
+    minDepth: minDepth === undefined ? 0 : minDepth,
+    maxDepth: maxDepth === undefined ? 0 : maxDepth,
+  };
+};
+
+export const getLayersWithGaps = (
+  layers: BaseLayerChangeTracker[],
+  minDepth: number,
+  maxDepth: number,
+): BaseLayerChangeTracker[] => {
+  const sortedLayers = [...layers].sort((a, b) => a.item.fromDepth - b.item.fromDepth);
+  const resultLayers: BaseLayerChangeTracker[] = [];
+
+  // Helper to check if a layer is Lithology (by property presence)
+  const isLithology = (layer: BaseLayer): layer is Lithology => {
+    return "hasBedding" in layer && "isUnconsolidated" in layer;
+  };
+
+  // Add gap at start if needed
+  if (sortedLayers.length > 0) {
+    const firstLayer = sortedLayers[0];
+    if (minDepth < firstLayer.item.fromDepth) {
+      const gapLayer: BaseLayer = {
+        id: 0,
+        fromDepth: minDepth,
+        toDepth: firstLayer.item.fromDepth,
+        isGap: true,
+        stratigraphyId: firstLayer.item.stratigraphyId,
+        ...(isLithology(firstLayer.item) && { hasBedding: false, isUnconsolidated: true }),
+      };
+      resultLayers.push({ item: gapLayer, hasChanges: false });
+    }
+  }
+
+  let lastDepth = 0;
+  sortedLayers.forEach((layer, index) => {
+    // If there's a gap between this layer and the previous depth, add a gap filler
+    if (layer.item.fromDepth > lastDepth && index > 0) {
+      const prev = sortedLayers[index - 1].item;
+      const gapLayer: BaseLayer = {
+        id: 0,
+        fromDepth: lastDepth,
+        toDepth: layer.item.fromDepth,
+        isGap: true,
+        stratigraphyId: layer.item.stratigraphyId,
+        ...(isLithology(prev) && { hasBedding: false, isUnconsolidated: prev.isUnconsolidated ?? true }),
+      };
+      resultLayers.push({ item: gapLayer, hasChanges: false });
+    }
+
+    resultLayers.push({
+      item: { ...layer.item, isGap: layer.item.isGap ?? false },
+      hasChanges: layer.hasChanges ?? false,
+    });
+    lastDepth = layer.item.toDepth;
+  });
+
+  // Add gap at end if needed
+  if (sortedLayers.length > 0) {
+    const lastLayer = sortedLayers[sortedLayers.length - 1];
+    if (lastLayer.item.toDepth < maxDepth) {
+      const gapLayer: BaseLayer = {
+        id: 0,
+        fromDepth: lastLayer.item.toDepth,
+        toDepth: maxDepth,
+        isGap: true,
+        stratigraphyId: lastLayer.item.stratigraphyId,
+        ...(isLithology(lastLayer.item) && {
+          hasBedding: false,
+          isUnconsolidated: lastLayer.item.isUnconsolidated ?? true,
+        }),
+      };
+      resultLayers.push({ item: gapLayer, hasChanges: false });
+    }
+  }
+
+  // If layers is empty but minDepth and maxDepth are provided, return a single gap covering the full range
+  if (sortedLayers.length === 0 && minDepth < maxDepth) {
+    resultLayers.push({
+      item: {
+        id: 0,
+        fromDepth: minDepth,
+        toDepth: maxDepth,
+        isGap: true,
+        stratigraphyId: 0,
+      },
+      hasChanges: false,
+    });
+  }
+
+  return resultLayers;
+};
+
+export interface BaseLayerChangeTracker {
+  item: BaseLayer;
+  hasChanges: boolean;
+}
+
 export interface LithologyDescription {
   id: number;
   lithologyId: number;

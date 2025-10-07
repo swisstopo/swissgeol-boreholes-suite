@@ -51,6 +51,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
   );
 
   const renderGapCell = (
+    index: number,
     layer: BaseLayer,
     keyPrefix: string,
     defaultRowHeight: number,
@@ -61,11 +62,12 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
       sx={{
         height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
       }}
-      layer={layer}
+      index={index}
     />
   );
 
   const renderActionCell = (
+    index: number,
     layer: BaseLayer,
     keyPrefix: string,
     defaultRowHeight: number,
@@ -77,6 +79,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
       sx={{
         height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
       }}
+      index={index}
       layer={layer}>
       {buildContent(layer)}
     </StratigraphyTableActionCell>
@@ -94,15 +97,15 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
         <StratigraphyTableGap
           key={`${keyPrefix}-new`}
           sx={{ height: `${defaultRowHeight}px` }}
-          layer={{ id: 0, stratigraphyId: stratigraphyId, isGap: true, fromDepth: -1, toDepth: -1 }}
+          index={-1}
         />
       );
     }
 
-    return layers.map(layer =>
+    return layers.map((layer, index) =>
       layer.isGap
-        ? renderGapCell(layer, keyPrefix, defaultRowHeight, computeCellHeight)
-        : renderActionCell(layer, keyPrefix, defaultRowHeight, computeCellHeight, buildContent),
+        ? renderGapCell(index, layer, keyPrefix, defaultRowHeight, computeCellHeight)
+        : renderActionCell(index, layer, keyPrefix, defaultRowHeight, computeCellHeight, buildContent),
     );
   };
 
