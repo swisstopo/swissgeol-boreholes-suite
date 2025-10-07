@@ -238,7 +238,7 @@ public class LogFileController : ControllerBase
     /// <returns>An OK result if successful.</returns>
     [HttpPut]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult> UpdateAsync([FromBody] List<LogFileUpdate> logFileUpdates)
+    public async Task<ActionResult> UpdateAsync([FromBody] Collection<LogFileUpdate> logFileUpdates)
     {
         if (!ModelState.IsValid)
         {

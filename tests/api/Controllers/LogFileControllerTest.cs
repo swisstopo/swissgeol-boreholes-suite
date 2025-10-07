@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Collections.ObjectModel;
 using System.Security.Claims;
 using System.Text;
 using static BDMS.Helpers;
@@ -279,7 +280,7 @@ public class LogFileControllerTest
         Assert.IsFalse(logFile1.Public);
         Assert.IsFalse(logFile2.Public);
 
-        var updateData = new List<LogFileUpdate>
+        var updateData = new Collection<LogFileUpdate>
         {
             new() { Id = logFile1.Id, Public = true },
             new() { Id = logFile2.Id, Public = true },
@@ -309,7 +310,7 @@ public class LogFileControllerTest
         Assert.IsNull(logFile.DataPackageId);
 
         // update all updatable properties
-        var updateData1 = new List<LogFileUpdate>
+        var updateData1 = new Collection<LogFileUpdate>
         {
             new()
             {
@@ -345,7 +346,7 @@ public class LogFileControllerTest
             .Setup(x => x.CanEditBoreholeAsync("sub_admin", borehole.Id))
             .ReturnsAsync(false);
 
-        var updateData = new List<LogFileUpdate>
+        var updateData = new Collection<LogFileUpdate>
         {
             new() { Id = logFile.Id, Public = true },
         };
@@ -357,7 +358,7 @@ public class LogFileControllerTest
     [TestMethod]
     public async Task UpdateWithNonexistentId()
     {
-        var updateData = new List<LogFileUpdate>
+        var updateData = new Collection<LogFileUpdate>
         {
             new() { Id = 999999, Public = true },
         };
