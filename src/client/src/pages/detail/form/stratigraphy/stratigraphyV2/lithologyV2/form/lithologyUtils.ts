@@ -46,6 +46,8 @@ export function prepareLithologyForSubmit(values: Lithology) {
       delete description.structureSynGenCodelists;
       delete description.structurePostGenCodelists;
 
+      if (String(description.colorPrimaryId) === "") description.colorPrimaryId = null;
+      if (String(description.colorSecondaryId) === "") description.colorSecondaryId = null;
       if (String(description.lithologyUnconMainId) === "") description.lithologyUnconMainId = null;
       if (String(description.lithologyUncon2Id) === "") description.lithologyUncon2Id = null;
       if (String(description.lithologyUncon3Id) === "") description.lithologyUncon3Id = null;
