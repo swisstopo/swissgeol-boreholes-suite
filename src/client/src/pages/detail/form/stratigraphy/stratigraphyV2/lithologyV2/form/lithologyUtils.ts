@@ -67,6 +67,8 @@ export function initializeLithologyInForm<TFieldValues>(
   formMethods: UseFormReturn<Lithology, TFieldValues>,
   lithology: Lithology,
 ) {
+  formMethods.setValue("fromDepth", lithology?.fromDepth ?? null);
+  formMethods.setValue("toDepth", lithology?.toDepth ?? null);
   formMethods.setValue("hasBedding", lithology?.hasBedding ?? false);
   formMethods.setValue("isUnconsolidated", lithology?.isUnconsolidated ?? true);
   formMethods.setValue("alterationDegreeId", lithology?.alterationDegreeId ?? null);
@@ -84,6 +86,7 @@ export function initializeLithologicalDescriptionInForm<TFieldValues>(
   description: LithologyDescription,
   formMethods: UseFormReturn<Lithology, TFieldValues>,
 ) {
+  formMethods.setValue(`lithologyDescriptions.${index}.isFirst`, description.isFirst ?? true);
   formMethods.setValue(`lithologyDescriptions.${index}.lithologyConId`, description.lithologyConId ?? null);
   formMethods.setValue(`lithologyDescriptions.${index}.colorPrimaryId`, description.colorPrimaryId ?? null);
   formMethods.setValue(`lithologyDescriptions.${index}.colorSecondaryId`, description.colorSecondaryId ?? null);

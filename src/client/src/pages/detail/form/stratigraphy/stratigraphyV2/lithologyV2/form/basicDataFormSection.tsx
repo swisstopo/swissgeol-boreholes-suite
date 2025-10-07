@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { FormContainer, FormInput, FormSelect } from "../../../../../../../components/form/form.ts";
+import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../../../../components/form/form.ts";
 
 interface BasicDataFormSectionProps {
   fromDepths?: number[];
@@ -25,7 +25,7 @@ export const BasicDataFormSection: FC<BasicDataFormSectionProps> = ({
           required={true}
         />
       ) : (
-        <FormInput fieldName={fromDepthField} label={"fromdepth"} required={true} />
+        <FormInput fieldName={fromDepthField} label={"fromdepth"} required={true} type={FormValueType.Number} />
       )}
       {toDepths ? (
         <FormSelect
@@ -35,7 +35,7 @@ export const BasicDataFormSection: FC<BasicDataFormSectionProps> = ({
           required={true}
         />
       ) : (
-        <FormInput fieldName={toDepthField} label={"todepth"} required={true} />
+        <FormInput fieldName={toDepthField} label={"todepth"} required={true} type={FormValueType.Number} />
       )}
     </FormContainer>
   </FormContainer>

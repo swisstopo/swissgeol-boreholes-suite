@@ -81,7 +81,19 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
       const result = lithologyDescriptionsValidate(values.lithologyDescriptions);
       if (result !== true) {
         buildErrorStructure(result, errors);
+      } else {
+        formMethods.clearErrors();
       }
+
+      if (Number.isNaN(values.fromDepth)) {
+        errors.fromDepth = { type: "required", message: "required" };
+      }
+      if (Number.isNaN(values.toDepth)) {
+        errors.toDepth = { type: "required", message: "required" };
+      } else if (values.fromDepth >= values.toDepth) {
+        errors.toDepth = { type: "manual", message: "toDepthMustBeGreaterThanFromDepth" };
+      }
+
       return { values, errors };
     },
   });
