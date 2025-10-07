@@ -90,6 +90,9 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
 
   useEffect(() => {
     if (lithology) {
+      if (lithology.hasBedding === undefined) lithology.hasBedding = false;
+      if (lithology.isUnconsolidated === undefined) lithology.isUnconsolidated = true;
+
       formMethods.reset(lithology);
       initializeLithologyInForm(formMethods, lithology);
 

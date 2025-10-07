@@ -67,6 +67,7 @@ export interface MinimalLayer {
   stratigraphyId: number;
   isGap?: boolean;
   isUnconsolidated?: boolean;
+  hasBedding?: boolean;
 }
 
 export interface Layer {
