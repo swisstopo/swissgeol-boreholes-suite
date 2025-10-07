@@ -72,14 +72,13 @@ export function useCompletedLayers(layers: BaseLayer[] = [], layerDepths?: Layer
     // If layers is empty but layerDepths is provided, return a single gap covering the full range
     if (sortedLayers.length === 0 && layerDepths && layerDepths.length > 0) {
       const sortedDepths = [...layerDepths].sort((a, b) => a.fromDepth - b.fromDepth);
-      const gapLayer: BaseLayer = {
+      resultLayers.push({
         id: 0,
         fromDepth: sortedDepths[0].fromDepth,
         toDepth: sortedDepths[sortedDepths.length - 1].toDepth,
         isGap: true,
         stratigraphyId: 0,
-      };
-      resultLayers.push(gapLayer);
+      });
     }
 
     return resultLayers;
