@@ -105,9 +105,6 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
       if (lithology.hasBedding === undefined) lithology.hasBedding = false;
       if (lithology.isUnconsolidated === undefined) lithology.isUnconsolidated = true;
 
-      formMethods.reset(lithology);
-      initializeLithologyInForm(formMethods, lithology);
-
       // Add first lithology description if not present
       if (!lithology?.lithologyDescriptions) {
         lithology.lithologyDescriptions = [
@@ -119,7 +116,10 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
         ];
       }
 
-      for (const [index, description] of (lithology.lithologyDescriptions ?? []).entries()) {
+      formMethods.reset(lithology);
+      initializeLithologyInForm(formMethods, lithology);
+
+      for (const [index, description] of lithology.lithologyDescriptions.entries()) {
         initializeLithologicalDescriptionInForm(index, description, formMethods);
       }
     }

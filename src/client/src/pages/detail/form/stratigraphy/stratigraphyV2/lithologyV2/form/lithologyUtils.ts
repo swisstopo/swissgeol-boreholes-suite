@@ -70,8 +70,8 @@ export function initializeLithologyInForm<TFieldValues>(
   formMethods.setValue("fromDepth", lithology?.fromDepth ?? null);
   formMethods.setValue("toDepth", lithology?.toDepth ?? null);
   formMethods.setValue("hasBedding", lithology?.hasBedding ?? false);
+  formMethods.setValue("share", lithology?.share ?? undefined);
   formMethods.setValue("isUnconsolidated", lithology?.isUnconsolidated ?? true);
-  formMethods.setValue("alterationDegreeId", lithology?.alterationDegreeId ?? null);
   formMethods.setValue("alterationDegreeId", lithology?.alterationDegreeId ?? null);
   formMethods.setValue("compactnessId", lithology?.compactnessId ?? null);
   formMethods.setValue("consistencyId", lithology?.consistencyId ?? null);
@@ -79,6 +79,9 @@ export function initializeLithologyInForm<TFieldValues>(
   formMethods.setValue("humidityId", lithology?.humidityId ?? null);
   formMethods.setValue("uscsDeterminationId", lithology?.uscsDeterminationId ?? null);
   formMethods.setValue("plasticityId", lithology?.plasticityId ?? null);
+  formMethods.setValue("uscsTypeCodelistIds", lithology?.uscsTypeCodelistIds ?? []);
+  formMethods.setValue("rockConditionCodelistIds", lithology?.rockConditionCodelistIds ?? []);
+  formMethods.setValue("textureMetaCodelistIds", lithology?.textureMetaCodelistIds ?? []);
 }
 
 export function initializeLithologicalDescriptionInForm<TFieldValues>(
@@ -90,14 +93,48 @@ export function initializeLithologicalDescriptionInForm<TFieldValues>(
   formMethods.setValue(`lithologyDescriptions.${index}.lithologyConId`, description.lithologyConId ?? null);
   formMethods.setValue(`lithologyDescriptions.${index}.colorPrimaryId`, description.colorPrimaryId ?? null);
   formMethods.setValue(`lithologyDescriptions.${index}.colorSecondaryId`, description.colorSecondaryId ?? null);
-  formMethods.setValue(`lithologyDescriptions.${index}.grainSizeId`, description.grainSizeId ?? null);
-  formMethods.setValue(`lithologyDescriptions.${index}.grainAngularityId`, description.grainAngularityId ?? null);
-  formMethods.setValue(`lithologyDescriptions.${index}.gradationId`, description.gradationId ?? null);
-  formMethods.setValue(`lithologyDescriptions.${index}.cementationId`, description.cementationId ?? null);
   formMethods.setValue(`lithologyDescriptions.${index}.lithologyUnconMainId`, description.lithologyUnconMainId ?? null);
   formMethods.setValue(`lithologyDescriptions.${index}.lithologyUncon2Id`, description.lithologyUncon2Id ?? null);
   formMethods.setValue(`lithologyDescriptions.${index}.lithologyUncon3Id`, description.lithologyUncon3Id ?? null);
   formMethods.setValue(`lithologyDescriptions.${index}.lithologyUncon4Id`, description.lithologyUncon4Id ?? null);
   formMethods.setValue(`lithologyDescriptions.${index}.lithologyUncon5Id`, description.lithologyUncon5Id ?? null);
   formMethods.setValue(`lithologyDescriptions.${index}.lithologyUncon6Id`, description.lithologyUncon6Id ?? null);
+  formMethods.setValue(
+    `lithologyDescriptions.${index}.componentUnconOrganicCodelistIds`,
+    description.componentUnconOrganicCodelistIds ?? [],
+  );
+  formMethods.setValue(
+    `lithologyDescriptions.${index}.componentUnconDebrisCodelistIds`,
+    description.componentUnconDebrisCodelistIds ?? [],
+  );
+  formMethods.setValue(`lithologyDescriptions.${index}.grainShapeCodelistIds`, description.grainShapeCodelistIds ?? []);
+  formMethods.setValue(
+    `lithologyDescriptions.${index}.grainAngularityCodelistIds`,
+    description.grainAngularityCodelistIds ?? [],
+  );
+  formMethods.setValue(
+    `lithologyDescriptions.${index}.lithologyUnconDebrisCodelistIds`,
+    description.lithologyUnconDebrisCodelistIds ?? [],
+  );
+  formMethods.setValue(`lithologyDescriptions.${index}.lithologyConId`, description.lithologyConId ?? null);
+  formMethods.setValue(`lithologyDescriptions.${index}.grainSizeId`, description.grainSizeId ?? null);
+  formMethods.setValue(`lithologyDescriptions.${index}.grainAngularityId`, description.grainAngularityId ?? null);
+  formMethods.setValue(`lithologyDescriptions.${index}.gradationId`, description.gradationId ?? null);
+  formMethods.setValue(`lithologyDescriptions.${index}.cementationId`, description.cementationId ?? null);
+  formMethods.setValue(
+    `lithologyDescriptions.${index}.componentConParticleCodelistIds`,
+    description.componentConParticleCodelistIds ?? [],
+  );
+  formMethods.setValue(
+    `lithologyDescriptions.${index}.componentConMineralCodelistIds`,
+    description.componentConMineralCodelistIds ?? [],
+  );
+  formMethods.setValue(
+    `lithologyDescriptions.${index}.structureSynGenCodelistIds`,
+    description.structureSynGenCodelistIds ?? [],
+  );
+  formMethods.setValue(
+    `lithologyDescriptions.${index}.structurePostGenCodelistIds`,
+    description.structurePostGenCodelistIds ?? [],
+  );
 }
