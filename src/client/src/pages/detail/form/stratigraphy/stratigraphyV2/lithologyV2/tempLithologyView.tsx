@@ -25,7 +25,6 @@ interface LithologyContentEditProps {
 
 // Temporary Lithology View component (read-only, non-editable) to display lithology before panable/zoomable version is fully implemented.
 export const TempLithologyView: FC<LithologyContentEditProps> = ({
-  stratigraphyId,
   lithologies,
   lithologicalDescriptions,
   faciesDescriptions,
@@ -93,13 +92,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
     keyPrefix: string,
   ) => {
     if (!layers || layers.length === 0) {
-      return (
-        <StratigraphyTableGap
-          key={`${keyPrefix}-new`}
-          sx={{ height: `${defaultRowHeight}px` }}
-          index={-1}
-        />
-      );
+      return <StratigraphyTableGap key={`${keyPrefix}-new`} sx={{ height: `${defaultRowHeight}px` }} index={-1} />;
     }
 
     return layers.map((layer, index) =>

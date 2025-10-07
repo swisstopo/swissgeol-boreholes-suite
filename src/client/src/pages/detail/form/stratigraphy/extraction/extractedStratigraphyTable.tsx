@@ -22,13 +22,7 @@ export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = (
 
   const renderTableCells = (layers: BaseLayer[], buildContent: (layer: BaseLayer) => ReactNode, keyPrefix: string) => {
     if (!layers || layers.length === 0) {
-      return (
-        <StratigraphyTableGap
-          key={`${keyPrefix}-new`}
-          sx={{ height: `${defaultRowHeight}px` }}
-          index={-1}
-        />
-      );
+      return <StratigraphyTableGap key={`${keyPrefix}-new`} sx={{ height: `${defaultRowHeight}px` }} index={-1} />;
     }
     return layers.map((layer, index) =>
       layer.isGap ? (
