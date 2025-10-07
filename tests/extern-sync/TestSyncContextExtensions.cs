@@ -157,7 +157,7 @@ internal static class TestSyncContextExtensions
         // Collections, objects and attributes to be removed.
         var listsToRemove = new[] { "Workflows" };
         var objectsToRemove = new[] { "Workgroup", "UpdatedBy", "Assignee", "Settings", "Workflow" };
-        var attributesToRemove = new[] { "Id", "BoreholeId", "StratigraphyId", "LithologyId", "LithologyDescriptionId", "CompletionId", "Created", "CreatedById", "Updated", "UpdatedById", "CreatedAt", "SectionId", "LayerId", "FileId", "WorkgroupId", "UserId", "CasingId", "LockedById", "AssigneeId", "ReviewedTabsId", "PublishedTabsId", "WorkflowId" };
+        var attributesToRemove = new[] { "Id", "BoreholeId", "StratigraphyId", "LithologyId", "LithologyDescriptionId", "CompletionId", "Created", "CreatedById", "Updated", "UpdatedById", "CreatedAt", "SectionId", "LayerId", "FileId", "LogRunId", "LogFileId", "WorkgroupId", "UserId", "CasingId", "LockedById", "AssigneeId", "ReviewedTabsId", "PublishedTabsId", "WorkflowId" };
 
         // Build dynamic regular expressions.
         var removeSettingsRegex = $"\"Settings\"\\s*:\\s*\".*?\"\\s*,?";

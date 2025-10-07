@@ -161,6 +161,7 @@ public static class SyncContextExtensions
         }
 
         borehole.Observations?.ClearNavigationProperties();
+        borehole.LogRuns?.ClearNavigationProperties();
 
         foreach (var completion in borehole.Completions)
         {
@@ -170,6 +171,14 @@ public static class SyncContextExtensions
         }
 
         return borehole;
+    }
+
+    private static void ClearNavigationProperties(this IEnumerable<LogRun> logRuns)
+    {
+        foreach (var logRun in logRuns)
+        {
+            logRun.LogFiles?.Clear();
+        }
     }
 
     private static void ClearNavigationProperties(this IEnumerable<Casing> casings)
