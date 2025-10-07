@@ -53,6 +53,7 @@ public class BdmsContext : DbContext
         .Include(b => b.BoreholeFiles).ThenInclude(f => f.File)
         .Include(b => b.Photos)
         .Include(b => b.Documents)
+        .Include(b => b.LogRuns).ThenInclude(lr => lr.LogFiles).ThenInclude(lf => lf.ToolTypeCodelists)
         .Include(b => b.BoreholeGeometry)
         .Include(b => b.Workgroup)
         .Include(b => b.UpdatedBy);
@@ -347,6 +348,16 @@ public class BdmsContext : DbContext
     public DbSet<Photo> Photos { get; set; }
 
     public DbSet<Document> Documents { get; set; }
+
+    public DbSet<LogRun> LogRuns { get; set; }
+
+    public DbSet<LogFile> LogFiles { get; set; }
+
+    public IQueryable<LogRun> LogRunsWithIncludes
+        => LogRuns
+        .Include(lr => lr.LogFiles).ThenInclude(lf => lf.ToolTypeCodelists)
+        .Include(lr => lr.ConveyanceMethod)
+        .Include(lr => lr.BoreholeStatus);
 
     public BdmsContext(DbContextOptions options)
         : base(options)
@@ -860,5 +871,20 @@ public class BdmsContext : DbContext
                     .WithMany(b => b.LithologyTextureMetaCodes)
                     .HasForeignKey(l => l.LithologyId),
                 j => j.HasKey(lc => new { lc.LithologyId, lc.CodelistId }));
+
+        // Join table for log file and codelists with schema name 'tool_type'.
+        modelBuilder.Entity<LogFile>()
+            .HasMany(l => l.ToolTypeCodelists)
+            .WithMany()
+            .UsingEntity<LogFileToolTypeCodes>(
+                j => j
+                    .HasOne(hc => hc.Codelist)
+                    .WithMany(c => c.LogFileToolTypeCodes)
+                    .HasForeignKey(hc => hc.CodelistId),
+                j => j
+                    .HasOne(hc => hc.LogFile)
+                    .WithMany(h => h.LogFileToolTypeCodes)
+                    .HasForeignKey(hc => hc.LogFileId),
+                j => j.HasKey(hc => new { hc.LogFileId, hc.CodelistId }));
     }
 }
