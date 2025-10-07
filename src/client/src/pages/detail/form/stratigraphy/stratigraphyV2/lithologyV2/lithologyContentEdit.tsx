@@ -145,8 +145,11 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     ) => {
       setState(prev => {
         if (hasChanges) {
+          item.isGap = false;
+
           if (typeof index === "number" && index >= 0 && index < prev.length) {
             const updated = [...prev];
+
             updated[index] = { item, hasChanges: true };
             return updated;
           }
