@@ -5,7 +5,7 @@ export interface LogRun {
   boreholeId: number;
 }
 
-export const logsByBoreholeIdQueryKey = "logsByBoreholeId";
+export const logsQueryKey= "logs";
 export const useLogsByBoreholeId = (boreholeId?: number) =>
   useQuery({
     queryKey: [logsByBoreholeIdQueryKey, boreholeId],
