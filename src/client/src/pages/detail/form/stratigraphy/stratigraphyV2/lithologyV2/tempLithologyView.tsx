@@ -17,7 +17,6 @@ import { useCompletedLayers } from "./useCompletedLayers.tsx";
 import { useLayerDepths } from "./useLayerDepths.tsx";
 
 interface LithologyContentEditProps {
-  stratigraphyId: number;
   lithologies: Lithology[];
   lithologicalDescriptions: LithologicalDescription[];
   faciesDescriptions: FaciesDescription[];
