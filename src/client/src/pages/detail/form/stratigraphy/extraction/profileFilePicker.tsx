@@ -73,9 +73,7 @@ export const ProfileFilePicker: FC<ProfileFilePickerProps> = ({ boreholeId, open
         },
       }}>
       <DialogHeaderContainer>
-        <Stack direction="row">
-          <Typography variant="h4">{t("extractStratigraphyFromProfile")}</Typography>
-        </Stack>
+        <Typography variant="h4">{t("extractStratigraphyFromProfile")}</Typography>
       </DialogHeaderContainer>
       <DialogMainContent>
         <Stack gap={1.5}>
@@ -100,9 +98,7 @@ export const ProfileFilePicker: FC<ProfileFilePickerProps> = ({ boreholeId, open
         </Stack>
       </DialogMainContent>
       <DialogFooterContainer>
-        <Stack direction="row" justifyContent="flex-end" alignItems="center">
-          <CancelButton onClick={closeDialog} />
-        </Stack>
+        <CancelButton onClick={closeDialog} />
       </DialogFooterContainer>
     </Dialog>
   );
