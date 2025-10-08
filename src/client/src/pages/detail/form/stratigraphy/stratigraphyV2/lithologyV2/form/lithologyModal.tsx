@@ -65,7 +65,10 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
     if (!formState.isDirty || isValid) {
       const values = getValues();
       prepareLithologyForSubmit(values);
-      updateLithology({ ...lithology, ...values } as Lithology, formState.isDirty);
+      updateLithology(
+        { ...lithology, ...values } as Lithology,
+        formState.isDirty || (Boolean(lithology?.isGap) && isValid),
+      );
     }
   };
 

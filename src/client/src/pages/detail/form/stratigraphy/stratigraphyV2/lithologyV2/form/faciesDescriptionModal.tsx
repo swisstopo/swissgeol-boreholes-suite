@@ -43,7 +43,10 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
       delete values.facies;
       if (String(values.faciesId) === "") values.faciesId = null;
 
-      updateFaciesDescription({ ...description, ...values } as FaciesDescription, formState.isDirty);
+      updateFaciesDescription(
+        { ...description, ...values } as FaciesDescription,
+        formState.isDirty || (Boolean(description?.isGap) && isValid),
+      );
     }
   };
 
