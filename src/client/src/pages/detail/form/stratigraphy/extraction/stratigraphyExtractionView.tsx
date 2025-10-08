@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
-import { useExtractStratigraphies } from "../../../../../api/file/file.ts";
+import { ExtractedLithologicalDescription } from "../../../../../api/stratigraphy.ts";
 import { theme } from "../../../../../AppTheme.ts";
 import { ExtractionImageContainer } from "../../../labeling/extractionImageContainer.tsx";
 import { PageSelection } from "../../../labeling/pageSelection.tsx";
@@ -10,10 +10,15 @@ import { ExtractedStratigraphyTable } from "./extractedStratigraphyTable.tsx";
 
 interface StratigraphyExtractionViewProps {
   file: BoreholeAttachment;
+  lithologicalDescriptions: ExtractedLithologicalDescription[];
+  isLoading: boolean;
 }
 
-export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = ({ file }) => {
-  const { data: lithologicalDescriptions = [], isLoading } = useExtractStratigraphies(file);
+export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = ({
+  file,
+  lithologicalDescriptions,
+  isLoading,
+}) => {
   const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(lithologicalDescriptions);
   const [activePage, setActivePage] = useState<number>(1);
   const [pageCount, setPageCount] = useState<number>();
