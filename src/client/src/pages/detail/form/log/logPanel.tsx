@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useEffect, useState } from "react";
+import { FC, useCallback, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
@@ -6,25 +6,18 @@ import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
-import { LogRun, useLogsByBoreholeId } from "./log.ts";
+import { useLogsByBoreholeId } from "./log.ts";
 import { LogTable } from "./logTable.tsx";
 
 export const LogPanel: FC = () => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
   const { id: boreholeId } = useRequiredParams();
-  const { data, isLoading } = useLogsByBoreholeId(Number(boreholeId));
-  const [runs, setRuns] = useState<LogRun[]>([]);
+  const { data: logRuns = [], isLoading } = useLogsByBoreholeId(Number(boreholeId));
 
   const addRun = useCallback(() => {
     console.log("Add log run");
   }, []);
-
-  useEffect(() => {
-    if (data) {
-      setRuns(data as LogRun[]);
-    }
-  }, [data]);
 
   if (isLoading) {
     return (
@@ -43,7 +36,7 @@ export const LogPanel: FC = () => {
           {
             label: t("table"),
             hash: "#table",
-            component: <LogTable runs={runs} />,
+            component: <LogTable runs={logRuns} />,
           },
         ]}
       />
