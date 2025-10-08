@@ -5,6 +5,7 @@ import { styled } from "@mui/system";
 import { Copy, Plus, Trash2, TriangleAlert } from "lucide-react";
 import { BaseLayer } from "../../../../api/stratigraphy.ts";
 import { theme } from "../../../../AppTheme.ts";
+import { StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
 
 export const StratigraphyTableHeader = styled(Stack)(() => ({
   flexDirection: "row",
@@ -113,19 +114,15 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
           <Typography variant="body1">{layer?.fromDepth} m MD</Typography>
         )}
         {onHoverClick && (
-          <IconButton
-            color={"primaryInverse"}
-            sx={{
-              borderRadius: theme.spacing(0.5),
-              width: "36px",
-              height: "36px",
-            }}
+          <StandaloneIconButton
+            icon={isEditing ? <Trash2 /> : <Copy />}
             onClick={e => {
               e.stopPropagation();
               onHoverClick(layer);
-            }}>
-            {isEditing ? <Trash2 /> : <Copy />}
-          </IconButton>
+            }}
+            dataCy={"showFullscreenTabs"}
+            color={"primaryInverse"}
+          />
         )}
       </StratigraphyTableCellRow>
       <Stack

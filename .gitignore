@@ -436,3 +436,5 @@ src/client/.env.production.local
 
 src/client/npm-debug.log*
 src/client/tmp/*
+
+!src/client/src/pages/detail/form/log/

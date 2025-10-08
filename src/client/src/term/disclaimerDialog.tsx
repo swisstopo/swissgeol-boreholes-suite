@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Checkbox, Dialog, DialogProps, FormControlLabel, Stack, Typography } from "@mui/material";
+import { Checkbox, Dialog, DialogProps, FormControlLabel, Typography } from "@mui/material";
 import { AcceptButton } from "../components/buttons/buttons.tsx";
 import { LanguagePopup } from "../components/header/languagePopup.tsx";
 import { DialogFooterContainer, DialogHeaderContainer, DialogMainContent } from "../components/styledComponents.ts";
@@ -28,13 +28,11 @@ export const DisclaimerDialog = ({ markdownContent, onClose = () => {} }: Discla
 
   return (
     <Dialog open={open} onClose={handleClose} maxWidth="md">
-      <DialogHeaderContainer>
-        <Stack direction="row">
-          <Typography variant="h4" sx={{ flexGrow: 1 }}>
-            {t("terms")}
-          </Typography>
-          <LanguagePopup />
-        </Stack>
+      <DialogHeaderContainer sx={{ justifyContent: "space-between" }}>
+        <Typography variant="h4" sx={{ flexGrow: 1 }}>
+          {t("terms")}
+        </Typography>
+        <LanguagePopup />
       </DialogHeaderContainer>
       <DialogMainContent>
         {markdownContent && <MarkdownWrapper markdownContent={markdownContent} />}
@@ -44,9 +42,7 @@ export const DisclaimerDialog = ({ markdownContent, onClose = () => {} }: Discla
         />
       </DialogMainContent>
       <DialogFooterContainer>
-        <Stack direction="row" justifyContent="flex-end" alignItems="center">
-          <AcceptButton onClick={closeDialog} />
-        </Stack>
+        <AcceptButton onClick={closeDialog} />
       </DialogFooterContainer>
     </Dialog>
   );

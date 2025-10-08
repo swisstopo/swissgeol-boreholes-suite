@@ -8,6 +8,7 @@ export const useBoreholeDataAvailability = (borehole: BoreholeV2) => {
     const hasCompletion = (borehole.completions?.length ?? 0) > 0;
     const hasObservation = (borehole.observations?.length ?? 0) > 0;
     const hasSections = (borehole.sections?.length ?? 0) > 0;
+    const hasLogRuns = (borehole.logruns?.length ?? 0) > 0;
     const hasGeometry = borehole.boreholeGeometry !== undefined && borehole.boreholeGeometry !== null;
     const hasWaterIngress =
       hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.waterIngress) ?? false);
@@ -60,12 +61,14 @@ export const useBoreholeDataAvailability = (borehole: BoreholeV2) => {
       hasLithology,
       hasLithostratigraphy,
       hasChronostratigraphy,
+      hasLogRuns,
     };
   }, [
     borehole.boreholeFiles?.length,
     borehole.boreholeGeometry,
     borehole.completions,
     borehole.documents?.length,
+    borehole.logruns?.length,
     borehole.observations,
     borehole.photos?.length,
     borehole.sections?.length,
