@@ -129,6 +129,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     ) => {
       setState(prev => {
         if (hasChanges) {
+          markAsChanged(true);
           item.isGap = false;
 
           if (typeof index === "number" && index >= 0 && index < prev.length) {
@@ -139,7 +140,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
           }
 
           // fallback to add if index is undefined or out of bounds
-          markAsChanged(true);
           return [...prev, { item, hasChanges: true }];
         }
 
