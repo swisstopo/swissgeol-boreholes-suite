@@ -98,6 +98,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     }
     return tmpLithologiesFlat.at(selectedLithologyIndex);
   }, [depths, selectedLithologyIndex, tmpLithologiesFlat]);
+
   const [selectedLithologicalDescriptionIndex, setSelectedLithologicalDescriptionIndex] = useState<number>();
   const selectedLithologicalDescription = useMemo(() => {
     if (selectedLithologicalDescriptionIndex === undefined) return undefined;
