@@ -53,7 +53,7 @@ public class BdmsContext : DbContext
         .Include(b => b.BoreholeFiles).ThenInclude(f => f.File)
         .Include(b => b.Photos)
         .Include(b => b.Documents)
-        .Include(b => b.LogRuns).ThenInclude(lr => lr.LogFiles).ThenInclude(lf => lf.ToolTypeCodelists)
+        .Include(b => b.LogRuns).ThenInclude(lr => lr.LogFiles).ThenInclude(lf => lf.LogFileToolTypeCodes)
         .Include(b => b.BoreholeGeometry)
         .Include(b => b.Workgroup)
         .Include(b => b.UpdatedBy);
@@ -355,7 +355,7 @@ public class BdmsContext : DbContext
 
     public IQueryable<LogRun> LogRunsWithIncludes
         => LogRuns
-        .Include(lr => lr.LogFiles).ThenInclude(lf => lf.ToolTypeCodelists)
+        .Include(lr => lr.LogFiles).ThenInclude(lf => lf.LogFileToolTypeCodes)
         .Include(lr => lr.ConveyanceMethod)
         .Include(lr => lr.BoreholeStatus);
 
