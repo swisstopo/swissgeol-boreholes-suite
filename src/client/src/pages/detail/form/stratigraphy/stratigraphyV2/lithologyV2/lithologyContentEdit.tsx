@@ -13,13 +13,7 @@ import {
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
 import { SaveContext } from "../../../../saveContext.tsx";
-import {
-  BaseLayerChangeTracker,
-  getLayersWithGaps,
-  getMinMaxDepth,
-  Lithology,
-  useLithologyMutations,
-} from "../../lithology.ts";
+import { Lithology, useLithologyMutations } from "../../lithology.ts";
 import { StratigraphyContext, StratigraphyContextProps } from "../../stratigraphyContext.tsx";
 import {
   AddRowButton,
@@ -31,6 +25,7 @@ import {
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "../../stratigraphyTableComponents.tsx";
+import { BaseLayerChangeTracker, getLayersWithGaps, getMinMaxDepth } from "../../stratigraphyUtils.ts";
 import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 import { FaciesDescriptionModal } from "./form/faciesDescriptionModal.tsx";
 import { LithologicalDescriptionModal } from "./form/lithologicalDescriptionModal.tsx";
