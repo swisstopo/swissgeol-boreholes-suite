@@ -105,7 +105,7 @@ public class LithologicalDescriptionController : BoreholeControllerBase<Litholog
         }
 
         var stratigraphyId = stratigraphyIds.Single();
-        var stratigraphy = await Context.Stratigraphies
+        var stratigraphy = await Context.StratigraphiesV2
             .AsNoTracking()
             .SingleOrDefaultAsync(x => x.Id == stratigraphyId)
             .ConfigureAwait(false);
