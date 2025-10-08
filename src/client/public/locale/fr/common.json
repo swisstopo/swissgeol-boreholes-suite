@@ -589,7 +589,7 @@
   "title": "BDMS",
   "to": "à",
   "toDepthMasl": "À la profondeur [m s.m.]",
-  "toDepthMustBeGreaterThanFromDepth": "\"De laprofondeur\" doit être supérieure \"à la profondeur\"",
+  "toDepthMustBeGreaterThanFromDepth": "\"De la profondeur\" doit être supérieure \"à la profondeur\"",
   "todepth": "À la profondeur [m MD]",
   "todepth_from": "De la profondeur [m MD] (de)",
   "todepth_to": "De la profondeur [m MD] (à)",
