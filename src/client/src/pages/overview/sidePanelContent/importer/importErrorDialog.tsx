@@ -25,11 +25,9 @@ export const ImportErrorDialog = ({ open, setOpen, errorResponse }: ImportErrorD
     <Dialog open={open} onClose={closeDialog}>
       <Stack sx={{ width: 500, borderRadius: 1 }}>
         <DialogHeaderContainer>
-          <Stack direction="row">
-            <Typography variant="h4" sx={{ flexGrow: 1 }}>
-              {t("validationErrorHeader")}
-            </Typography>
-          </Stack>
+          <Typography variant="h4" sx={{ flexGrow: 1 }}>
+            {t("validationErrorHeader")}
+          </Typography>
         </DialogHeaderContainer>
         <DialogMainContent data-cy="borehole-import-dialog">
           {errorResponse && (
@@ -58,11 +56,9 @@ export const ImportErrorDialog = ({ open, setOpen, errorResponse }: ImportErrorD
           )}
         </DialogMainContent>
         <DialogFooterContainer>
-          <Stack direction="row" justifyContent="flex-end" alignItems="center">
-            <Button variant={"contained"} onClick={closeDialog}>
-              Close
-            </Button>
-          </Stack>
+          <Button variant={"contained"} onClick={closeDialog}>
+            {t("close")}
+          </Button>
         </DialogFooterContainer>
       </Stack>
     </Dialog>

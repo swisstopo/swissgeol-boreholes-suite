@@ -4,6 +4,7 @@ import { Codelist } from "../components/codelist.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
+import { LogRun } from "../pages/detail/form/log/log.ts";
 import { Workflow } from "../pages/detail/form/workflow/workflow.ts";
 import { Document, Photo, User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
@@ -74,6 +75,7 @@ export interface BoreholeV2 {
   updatedById: number;
   updatedBy: User;
   stratigraphies: Stratigraphy[] | null;
+  logruns: LogRun[] | null;
   locked: Date | string | null;
   lockedById: number | null;
   completions: Completion[] | null;
