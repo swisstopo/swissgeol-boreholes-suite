@@ -43,73 +43,58 @@ const createGapLayer = (fromDepth: number, toDepth: number, stratigraphyId: numb
   return { item: gapLayer, hasChanges: false } as BaseLayerChangeTracker;
 };
 
-export const getLayersWithGaps = (
-  layers: BaseLayerChangeTracker[],
-  minDepth: number,
-  maxDepth: number,
-): BaseLayerChangeTracker[] => {
-  const sortedLayers = [...layers].sort((a, b) => a.item.fromDepth - b.item.fromDepth);
-  const resultLayers: BaseLayerChangeTracker[] = [];
+const checkForFullRangeGap = (layers: BaseLayerChangeTracker[], minDepth: number, maxDepth: number) => {
+  if (layers.length === 0 && minDepth < maxDepth) {
+    return createGapLayer(minDepth, maxDepth, 0);
+  }
+  return undefined;
+};
 
-  // Add gap at start if minDepth is less than the first layer's fromDepth
-  if (sortedLayers.length > 0) {
-    const firstLayer = sortedLayers[0];
+const checkForStartGap = (layers: BaseLayerChangeTracker[], minDepth: number) => {
+  if (layers.length > 0) {
+    const firstLayer = layers[0];
     if (minDepth < firstLayer.item.fromDepth) {
-      const gapLayer = createGapLayer(
+      return createGapLayer(
         minDepth,
         firstLayer.item.fromDepth,
         firstLayer.item.stratigraphyId,
         isLithology(firstLayer.item) ? true : undefined,
       );
-      resultLayers.push(gapLayer);
     }
   }
+  return undefined;
+};
 
-  // Map through layers and add gap where necessary
-  let lastDepth = 0;
-  for (let index = 0; index < sortedLayers.length; index++) {
-    const layer = sortedLayers[index];
-    if (layer.item.fromDepth > lastDepth && index > 0) {
-      const prev = sortedLayers[index - 1].item;
-      const gapLayer = createGapLayer(
-        lastDepth,
-        layer.item.fromDepth,
-        layer.item.stratigraphyId,
-        isLithology(prev) ? (prev.isUnconsolidated ?? true) : undefined,
-      );
-      resultLayers.push(gapLayer);
-    }
-
-    resultLayers.push({
-      item: { ...layer.item, isGap: layer.item.isGap ?? false },
-      hasChanges: layer.hasChanges ?? false,
-    });
-    lastDepth = layer.item.toDepth;
+const checkForGapBetween = (current: BaseLayerChangeTracker, prev?: BaseLayerChangeTracker) => {
+  if (prev && current.item.fromDepth > prev.item.toDepth) {
+    return createGapLayer(
+      prev.item.toDepth,
+      current.item.fromDepth,
+      current.item.stratigraphyId,
+      isLithology(prev.item) ? (prev.item.isUnconsolidated ?? true) : undefined,
+    );
   }
+  return undefined;
+};
 
-  // Add gap at end if maxDepth is greater than the last layer's toDepth
-  if (sortedLayers.length > 0) {
-    const lastLayer = sortedLayers.at(-1)?.item;
+const checkForEndGap = (layers: BaseLayerChangeTracker[], maxDepth: number) => {
+  if (layers.length > 0) {
+    const lastLayer = layers.at(-1)?.item;
     if (lastLayer && lastLayer.toDepth < maxDepth) {
-      const gapLayer = createGapLayer(
+      return createGapLayer(
         lastLayer.toDepth,
         maxDepth,
         lastLayer.stratigraphyId,
         isLithology(lastLayer) ? (lastLayer.isUnconsolidated ?? true) : undefined,
       );
-      resultLayers.push(gapLayer);
     }
   }
+  return undefined;
+};
 
-  // If layers is empty but minDepth and maxDepth are provided, return a single gap covering the full range
-  if (sortedLayers.length === 0 && minDepth < maxDepth) {
-    const gapLayer = createGapLayer(minDepth, maxDepth, 0);
-    resultLayers.push(gapLayer);
-  }
-
-  // Merge adjacent gap resultLayers
+const mergeAdjacentGaps = (layers: BaseLayerChangeTracker[]): BaseLayerChangeTracker[] => {
   const mergedLayers: BaseLayerChangeTracker[] = [];
-  for (const current of resultLayers) {
+  for (const current of layers) {
     const prev = mergedLayers.at(-1);
     if (prev?.item.isGap && current.item.isGap && mergedLayers.at(-1)?.item.toDepth === current.item.fromDepth) {
       prev.item.toDepth = current.item.toDepth;
@@ -118,6 +103,42 @@ export const getLayersWithGaps = (
     }
   }
   return mergedLayers;
+};
+
+export const getLayersWithGaps = (
+  layers: BaseLayerChangeTracker[],
+  minDepth: number,
+  maxDepth: number,
+): BaseLayerChangeTracker[] => {
+  const sortedLayers = [...layers].sort((a, b) => a.item.fromDepth - b.item.fromDepth);
+  const resultLayers: BaseLayerChangeTracker[] = [];
+
+  // If layers is empty but minDepth and maxDepth are provided, return a single gap covering the full range
+  const fullRangeGap = checkForFullRangeGap(sortedLayers, minDepth, maxDepth);
+  if (fullRangeGap) return [fullRangeGap];
+
+  // Add gap at start if minDepth is less than the first layer's fromDepth
+  const startGap = checkForStartGap(sortedLayers, minDepth);
+  if (startGap) resultLayers.push(startGap);
+
+  // Map through layers and add gap where necessary
+  for (let index = 0; index < sortedLayers.length; index++) {
+    const current = sortedLayers[index];
+    const prev = index > 0 ? sortedLayers[index - 1] : undefined;
+    const gapBetween = checkForGapBetween(current, prev);
+    if (gapBetween) resultLayers.push(gapBetween);
+
+    resultLayers.push({
+      item: { ...current.item, isGap: current.item.isGap ?? false },
+      hasChanges: current.hasChanges ?? false,
+    });
+  }
+
+  // Add gap at end if maxDepth is greater than the last layer's toDepth
+  const endGap = checkForEndGap(sortedLayers, maxDepth);
+  if (endGap) resultLayers.push(endGap);
+
+  return mergeAdjacentGaps(resultLayers);
 };
 
 export interface BaseLayerChangeTracker {
