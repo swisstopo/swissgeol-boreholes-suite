@@ -6,7 +6,6 @@ import { FaciesDescription } from "../../../../../../../api/stratigraphy.ts";
 import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
 import { FormContainer } from "../../../../../../../components/form/formContainer.tsx";
 import { FormDomainSelect } from "../../../../../../../components/form/formDomainSelect.tsx";
-import { useFormDirtyChanges } from "../../../../../../../components/form/useFormDirtyChanges.tsx";
 import { BasicDataFormSection } from "./basicDataFormSection.tsx";
 import { FormDialog } from "./formDialog.tsx";
 import { RemarksFormSection } from "./remarksFormSection.tsx";
@@ -27,7 +26,6 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
   const { t } = useTranslation();
   const formMethods = useForm<FaciesDescription>({ mode: "all" });
   const { formState, getValues } = formMethods;
-  useFormDirtyChanges({ formState });
 
   useEffect(() => {
     if (description) {

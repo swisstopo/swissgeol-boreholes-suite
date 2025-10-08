@@ -6,7 +6,6 @@ import { theme } from "../../../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
 import { FormContainer } from "../../../../../../../components/form/formContainer.tsx";
 import { FormInput } from "../../../../../../../components/form/formInput.tsx";
-import { useFormDirtyChanges } from "../../../../../../../components/form/useFormDirtyChanges.tsx";
 import { Lithology } from "../../../lithology.ts";
 import { FormDialog } from "./formDialog.tsx";
 import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
@@ -36,7 +35,6 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
     },
   });
   const { formState, getValues } = formMethods;
-  useFormDirtyChanges({ formState });
 
   useEffect(() => {
     if (lithology) {

@@ -5,7 +5,6 @@ import { Stack } from "@mui/material";
 import { LithologicalDescription } from "../../../../../../../api/stratigraphy.ts";
 import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
 import { FormContainer } from "../../../../../../../components/form/form.ts";
-import { useFormDirtyChanges } from "../../../../../../../components/form/useFormDirtyChanges.tsx";
 import { BasicDataFormSection } from "./basicDataFormSection.tsx";
 import { FormDialog } from "./formDialog.tsx";
 import { RemarksFormSection } from "./remarksFormSection.tsx";
@@ -26,7 +25,6 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
   const { t } = useTranslation();
   const formMethods = useForm<LithologicalDescription>({ mode: "all" });
   const { formState, getValues } = formMethods;
-  useFormDirtyChanges({ formState });
 
   useEffect(() => {
     if (description) {

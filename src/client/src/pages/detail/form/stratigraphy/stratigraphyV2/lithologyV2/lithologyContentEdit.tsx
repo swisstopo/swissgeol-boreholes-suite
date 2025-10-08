@@ -1,7 +1,6 @@
 import { Dispatch, FC, ReactNode, SetStateAction, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
-import { Trash2 } from "lucide-react";
 import {
   BaseLayer,
   FaciesDescription,
@@ -11,7 +10,6 @@ import {
   useLithologicalDescriptionMutations,
 } from "../../../../../../api/stratigraphy.ts";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
-import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
 import { SaveContext } from "../../../../saveContext.tsx";
 import { Lithology, useLithologyMutations } from "../../lithology.ts";
 import { StratigraphyContext, StratigraphyContextProps } from "../../stratigraphyContext.tsx";
@@ -47,7 +45,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   faciesDescriptions,
 }) => {
   const { t } = useTranslation();
-  const { showPrompt } = useContext(PromptContext);
   const { showAlert } = useContext(AlertContext);
   const { registerSaveHandler, registerResetHandler } = useContext<StratigraphyContextProps>(StratigraphyContext);
   const { markAsChanged } = useContext(SaveContext);
@@ -123,15 +120,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     [depths],
   );
 
-  const compareAndMarkAsChanged = useCallback(
-    (newTmpLayers: BaseLayerChangeTracker[], layers: BaseLayer[]) => {
-      const newTmpLayersFlat = newTmpLayers.map(l => l.item);
-      const areArraysEqual = JSON.stringify(newTmpLayersFlat) === JSON.stringify(layers);
-      markAsChanged(!areArraysEqual);
-    },
-    [markAsChanged],
-  );
-
   const updateStratigraphyItem = useCallback(
     (
       index: number | undefined,
@@ -178,14 +166,14 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       setTmpLithologies(prev => {
         if (index >= 0 && index < prev.length) {
           const newTmpLithologies = [...prev.slice(0, index), ...prev.slice(index + 1)];
-          compareAndMarkAsChanged(newTmpLithologies, lithologies);
+          markAsChanged(true);
           return newTmpLithologies;
         }
 
         return prev;
       });
     },
-    [compareAndMarkAsChanged, lithologies],
+    [markAsChanged],
   );
 
   const updateTmpLithologicalDescription = useCallback(
@@ -210,14 +198,14 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       setTmpLithologicalDescriptions(prev => {
         if (index >= 0 && index < prev.length) {
           const newTmpLithologicalDescriptions = [...prev.slice(0, index), ...prev.slice(index + 1)];
-          compareAndMarkAsChanged(newTmpLithologicalDescriptions, lithologicalDescriptions);
+          markAsChanged(true);
           return newTmpLithologicalDescriptions;
         }
 
         return prev;
       });
     },
-    [compareAndMarkAsChanged, lithologicalDescriptions],
+    [markAsChanged],
   );
 
   const updateTmpFaciesDescription = useCallback(
@@ -237,14 +225,14 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       setTmpFaciesDescriptions(prev => {
         if (index >= 0 && index < prev.length) {
           const newTmpFaciesDescriptions = [...prev.slice(0, index), ...prev.slice(index + 1)];
-          compareAndMarkAsChanged(newTmpFaciesDescriptions, faciesDescriptions);
+          markAsChanged(true);
           return newTmpFaciesDescriptions;
         }
 
         return prev;
       });
     },
-    [compareAndMarkAsChanged, faciesDescriptions],
+    [markAsChanged],
   );
 
   const getDepthOptions = useCallback(
@@ -403,6 +391,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       deleteFaciesDescriptions(),
       addAndUpdateFaciesDescriptions(),
     ]);
+    console.log("onSave");
     markAsChanged(false);
     return true;
   }, [
@@ -461,17 +450,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       index={index}
       layer={layer}
       onClick={onEdit}
-      onHoverClick={layer => {
-        showPrompt("deleteMessage", [
-          { label: "cancel" },
-          {
-            label: "delete",
-            icon: <Trash2 />,
-            variant: "contained",
-            action: () => onDelete(layer),
-          },
-        ]);
-      }}>
+      onHoverClick={index => onDelete(index)}>
       {buildContent(layer)}
     </StratigraphyTableActionCell>
   );
