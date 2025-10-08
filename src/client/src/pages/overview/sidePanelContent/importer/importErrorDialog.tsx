@@ -57,7 +57,7 @@ export const ImportErrorDialog = ({ open, setOpen, errorResponse }: ImportErrorD
         </DialogMainContent>
         <DialogFooterContainer>
           <Button variant={"contained"} onClick={closeDialog}>
-            Close
+            {t("close")}
           </Button>
         </DialogFooterContainer>
       </Stack>
