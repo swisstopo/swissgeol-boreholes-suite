@@ -85,10 +85,10 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
         formMethods.clearErrors();
       }
 
-      if (Number.isNaN(values.fromDepth)) {
+      if (values.fromDepth === null) {
         errors.fromDepth = { type: "required", message: "required" };
       }
-      if (Number.isNaN(values.toDepth)) {
+      if (values.toDepth === null) {
         errors.toDepth = { type: "required", message: "required" };
       } else if (values.fromDepth >= values.toDepth) {
         errors.toDepth = { type: "manual", message: "toDepthMustBeGreaterThanFromDepth" };
