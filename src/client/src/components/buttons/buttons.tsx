@@ -1,8 +1,10 @@
 import { FC, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Button, IconButton } from "@mui/material";
+import { IconButtonProps } from "@mui/material/IconButton/IconButton";
 import { ArrowDownToLine, Check, ChevronLeft, Pencil, Plus, Save, Trash2 } from "lucide-react";
 import CopyIcon from "../../assets/icons/copy.svg?react";
+import { theme } from "../../AppTheme.ts";
 import { capitalizeFirstLetter } from "../../utils.ts";
 import { ButtonProps } from "./buttonsInterface";
 
@@ -128,20 +130,30 @@ export const ExportButton: FC<ButtonProps> = props => {
   );
 };
 
-export const ReturnButton: FC<{ onClick: () => void }> = ({ onClick }) => {
+interface StandaloneIconButtonsProps extends IconButtonProps {
+  icon: ReactNode;
+  dataCy?: string;
+}
+
+export const StandaloneIconButton: FC<StandaloneIconButtonsProps> = ({ icon, onClick, color, dataCy, ...rest }) => {
   return (
     <IconButton
-      color="primary"
-      data-cy="backButton"
+      color={color ?? "primary"}
+      data-cy={dataCy ?? "iconButton"}
       onClick={onClick}
       sx={{
         width: "36px",
         height: "36px",
-        borderRadius: "2px",
-      }}>
-      <ChevronLeft />
+        borderRadius: theme.spacing(0.5),
+      }}
+      {...rest}>
+      {icon}
     </IconButton>
   );
+};
+
+export const ReturnButton: FC<{ onClick: () => void }> = ({ onClick }) => {
+  return <StandaloneIconButton icon={<ChevronLeft />} onClick={onClick} dataCy={"backButton"} />;
 };
 
 interface FileButtonProps {

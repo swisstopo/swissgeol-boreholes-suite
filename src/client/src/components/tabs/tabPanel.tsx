@@ -1,11 +1,10 @@
 import { FC, ReactNode, SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useLocation } from "react-router";
-import { IconButton } from "@mui/material";
 import { Box } from "@mui/system";
 import { Maximize2 } from "lucide-react";
 import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
 import { AddWorkgroupDialog } from "../../pages/settings/admin/dialogs/AddWorkgroupDialog.tsx";
-import { AddButton } from "../buttons/buttons.tsx";
+import { AddButton, StandaloneIconButton } from "../buttons/buttons.tsx";
 import {
   BoreholeListTabContent,
   BoreholeTab,
@@ -86,17 +85,12 @@ export const TabPanel: FC<TabPanelProps> = ({ tabs, variant = "card", supportFul
         <Box sx={{ flexGrow: 1 }}></Box>
         {hash === "#workgroups" && <AddButton label={"addWorkgroup"} variant={"contained"} onClick={addWorkgroup} />}
         {supportFullscreen && (
-          <IconButton
-            color="primaryInverse"
-            data-cy="showFullscreenTabs"
+          <StandaloneIconButton
+            icon={<Maximize2 />}
             onClick={() => setShowFullscreen(true)}
-            sx={{
-              width: "36px",
-              height: "36px",
-              borderRadius: "2px",
-            }}>
-            <Maximize2 />
-          </IconButton>
+            dataCy={"showFullscreenTabs"}
+            color={"primaryInverse"}
+          />
         )}
       </Tabs>
       <TabContent>{tabs[activeIndex].component}</TabContent>
