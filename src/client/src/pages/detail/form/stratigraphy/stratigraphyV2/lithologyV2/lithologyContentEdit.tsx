@@ -11,7 +11,7 @@ import {
 } from "../../../../../../api/stratigraphy.ts";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 import { SaveContext } from "../../../../saveContext.tsx";
-import { Lithology, useLithologyMutations } from "../../lithology.ts";
+import { LayerDepth, Lithology, useLithologyMutations } from "../../lithology.ts";
 import { StratigraphyContext, StratigraphyContextProps } from "../../stratigraphyContext.tsx";
 import {
   AddRowButton,
@@ -23,13 +23,12 @@ import {
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "../../stratigraphyTableComponents.tsx";
-import { BaseLayerChangeTracker, getLayersWithGaps, getMinMaxDepth } from "../../stratigraphyUtils.ts";
+import { BaseLayerChangeTracker, getLayerDepths, getLayersWithGaps } from "../../stratigraphyUtils.ts";
 import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 import { FaciesDescriptionModal } from "./form/faciesDescriptionModal.tsx";
 import { LithologicalDescriptionModal } from "./form/lithologicalDescriptionModal.tsx";
 import { LithologyModal } from "./form/lithologyModal.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";
-import { useLayerDepths } from "./useLayerDepths.tsx";
 
 interface LithologyContentEditProps {
   stratigraphyId: number;
@@ -77,7 +76,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     [tmpFaciesDescriptions],
   );
 
-  const { depths } = useLayerDepths(tmpLithologiesFlat);
+  const [depths, setDepths] = useState<LayerDepth[]>([]);
 
   const [selectedLithologyIndex, setSelectedLithologyIndex] = useState<number>();
   const selectedLithology = useMemo(() => {
@@ -260,57 +259,65 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   );
 
   const initTmpLayers = useCallback(() => {
-    const { minDepth, maxDepth } = getMinMaxDepth(lithologies, lithologicalDescriptions, faciesDescriptions);
+    const initDepths = getLayerDepths(lithologies, lithologicalDescriptions, faciesDescriptions);
 
     const tmpLithologies = getLayersWithGaps(
       lithologies.map(layer => ({ item: layer, hasChanges: false })),
-      minDepth,
-      maxDepth,
+      initDepths,
+      stratigraphyId,
     );
     setTmpLithologies(tmpLithologies);
 
     const tmpLithologicalDescriptions = getLayersWithGaps(
       lithologicalDescriptions.map(layer => ({ item: layer, hasChanges: false })),
-      minDepth,
-      maxDepth,
+      initDepths,
+      stratigraphyId,
+      true,
     );
     setTmpLithologicalDescriptions(tmpLithologicalDescriptions);
 
     const tmpFaciesDescriptions = getLayersWithGaps(
       faciesDescriptions.map(layer => ({ item: layer, hasChanges: false })),
-      minDepth,
-      maxDepth,
+      initDepths,
+      stratigraphyId,
+      true,
     );
     setTmpFaciesDescriptions(tmpFaciesDescriptions);
-  }, [lithologies, lithologicalDescriptions, faciesDescriptions]);
+    setDepths(initDepths);
+  }, [lithologies, lithologicalDescriptions, faciesDescriptions, stratigraphyId]);
 
   useEffect(() => {
-    const { minDepth, maxDepth } = getMinMaxDepth(
-      tmpLithologiesFlat,
-      tmpLithologicalDescriptionsFlat,
-      tmpFaciesDescriptionsFlat,
-    );
-    const newTmpLithologies = getLayersWithGaps(tmpLithologies, minDepth, maxDepth);
-    if (JSON.stringify(newTmpLithologies) !== JSON.stringify(tmpLithologies)) {
-      setTmpLithologies(newTmpLithologies);
-    }
-  }, [tmpLithologies, tmpLithologiesFlat, tmpLithologicalDescriptionsFlat, tmpFaciesDescriptionsFlat]);
+    if (tmpLithologies.length > 0 || tmpLithologicalDescriptions.length > 0 || tmpFaciesDescriptions.length > 0) {
+      const updatedDepths = getLayerDepths(
+        tmpLithologies.map(l => l.item as Lithology),
+        tmpLithologicalDescriptions.map(l => l.item as LithologicalDescription),
+        tmpFaciesDescriptions.map(l => l.item as FaciesDescription),
+      );
+      if (JSON.stringify(updatedDepths) !== JSON.stringify(depths)) {
+        setDepths(updatedDepths);
+      }
 
-  useEffect(() => {
-    const { minDepth, maxDepth } = getMinMaxDepth(tmpLithologiesFlat, [], []);
-    const newTmpLithologicalDescriptions = getLayersWithGaps(tmpLithologicalDescriptions, minDepth, maxDepth);
-    if (JSON.stringify(newTmpLithologicalDescriptions) !== JSON.stringify(tmpLithologicalDescriptions)) {
-      setTmpLithologicalDescriptions(newTmpLithologicalDescriptions);
-    }
-  }, [tmpLithologiesFlat, tmpLithologicalDescriptions]);
+      const newTmpLithologies = getLayersWithGaps(tmpLithologies, updatedDepths, stratigraphyId);
+      if (JSON.stringify(newTmpLithologies) !== JSON.stringify(tmpLithologies)) {
+        setTmpLithologies(newTmpLithologies);
+      }
 
-  useEffect(() => {
-    const { minDepth, maxDepth } = getMinMaxDepth(tmpLithologiesFlat, [], []);
-    const newTmpFaciesDescriptions = getLayersWithGaps(tmpFaciesDescriptions, minDepth, maxDepth);
-    if (JSON.stringify(newTmpFaciesDescriptions) !== JSON.stringify(tmpFaciesDescriptions)) {
-      setTmpFaciesDescriptions(newTmpFaciesDescriptions);
+      const newTmpLithologicalDescriptions = getLayersWithGaps(
+        tmpLithologicalDescriptions,
+        updatedDepths,
+        stratigraphyId,
+        true,
+      );
+      if (JSON.stringify(newTmpLithologicalDescriptions) !== JSON.stringify(tmpLithologicalDescriptions)) {
+        setTmpLithologicalDescriptions(newTmpLithologicalDescriptions);
+      }
+
+      const newTmpFaciesDescriptions = getLayersWithGaps(tmpFaciesDescriptions, updatedDepths, stratigraphyId, true);
+      if (JSON.stringify(newTmpFaciesDescriptions) !== JSON.stringify(tmpFaciesDescriptions)) {
+        setTmpFaciesDescriptions(newTmpFaciesDescriptions);
+      }
     }
-  }, [tmpLithologiesFlat, tmpFaciesDescriptions]);
+  }, [tmpLithologies, tmpLithologicalDescriptions, tmpFaciesDescriptions, depths, stratigraphyId]);
 
   useEffect(() => {
     initTmpLayers();
