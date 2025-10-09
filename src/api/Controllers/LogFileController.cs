@@ -100,17 +100,18 @@ public class LogFileController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> DownloadAsync([Range(1, int.MaxValue)] int id)
     {
-        if (id == 0) return BadRequest("No logFileId provided.");
-
         try
         {
             var logFile = await context.LogFiles
                 .FirstOrDefaultAsync(f => f.Id == id)
                 .ConfigureAwait(false);
 
-            if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), logFile.LogRun.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+            if (logFile == null|| logFile.NameUuid == null)
+            {
+                return NotFound($"File with id {id} not found.");
+            }
 
-            if (logFile?.NameUuid == null) return NotFound($"File with id {id} not found.");
+            if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), logFile.LogRun.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
             var fileBytes = await logFileCloudService.GetObject(logFile.NameUuid).ConfigureAwait(false);
 
@@ -240,11 +241,6 @@ public class LogFileController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult> UpdateAsync([FromBody] Collection<LogFileUpdate> logFileUpdates)
     {
-        if (!ModelState.IsValid)
-        {
-            return BadRequest(ModelState);
-        }
-
         if (logFileUpdates == null || logFileUpdates.Count == 0 || logFileUpdates.Any(d => d == null || d.Id <= 0))
         {
             return BadRequest("The data must not be empty and must contain valid entries.");

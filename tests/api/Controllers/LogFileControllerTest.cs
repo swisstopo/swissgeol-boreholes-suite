@@ -85,6 +85,28 @@ public class LogFileControllerTest
     }
 
     [TestMethod]
+    public async Task DownloadUnknownFileReturnsNotFound()
+    {
+        var response = await controller.DownloadAsync(999999);
+        ActionResultAssert.IsNotFound(response);
+    }
+
+    [TestMethod]
+    public async Task DownloadFailsWithoutPermissions()
+    {
+        var borehole = await CreateTestBoreholeAsync();
+        var logRun = await CreateTestLogRunAsync(borehole.Id);
+        await UploadTestLogFile(logRun.Id);
+
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", logRun.BoreholeId))
+            .ReturnsAsync(false);
+
+        var response = await controller.DownloadAsync(logRun.Id);
+        ActionResultAssert.IsUnauthorized(response);
+    }
+
+    [TestMethod]
     public async Task UploadAndDownload()
     {
         var borehole = await CreateTestBoreholeAsync();
