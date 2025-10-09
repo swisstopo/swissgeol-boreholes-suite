@@ -13,7 +13,6 @@ import {
 } from "../../../../../components/styledComponents.ts";
 import { useBoreholesNavigate } from "../../../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../../../hooks/useRequiredParams.ts";
-import { Lithology } from "../lithology.ts";
 import { StratigraphyExtractionView } from "./stratigraphyExtractionView.tsx";
 import { useBulkAddMutation } from "./useBulkAddMutations.ts";
 
@@ -33,7 +32,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   const { t } = useTranslation();
   const [abortController, setAbortController] = useState<AbortController>();
   const { data: lithologicalDescriptions = [], isLoading } = useExtractStratigraphies(file);
-  const { mutateAsync: bulkAddLithologiesWithLithologicalDescriptions } = useBulkAddMutation();
+  const { mutateAsync: bulkAddLithologicalDescriptionsWithLithologies } = useBulkAddMutation();
   const { id } = useRequiredParams<{ id: string }>();
   const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
@@ -53,19 +52,8 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   };
 
   const addStratigraphy = useCallback(async () => {
-    const bulkAddResult = await bulkAddLithologiesWithLithologicalDescriptions({
+    const bulkAddResult = await bulkAddLithologicalDescriptionsWithLithologies({
       boreholeId: Number(id),
-      lithologies: lithologicalDescriptions.map(
-        ld =>
-          ({
-            id: 0,
-            toDepth: ld.toDepth,
-            fromDepth: ld.fromDepth,
-            isUnconsolidated: true,
-            hasBedding: false,
-            stratigraphyId: ld.stratigraphyId,
-          }) as Lithology,
-      ),
       lithologicalDescriptions: lithologicalDescriptions.map(ld => ({ ...ld, id: 0 })),
     });
     closeDialog();
@@ -74,7 +62,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
       hash: location.hash,
     });
   }, [
-    bulkAddLithologiesWithLithologicalDescriptions,
+    bulkAddLithologicalDescriptionsWithLithologies,
     closeDialog,
     id,
     lithologicalDescriptions,
