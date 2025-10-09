@@ -1,26 +1,214 @@
-import { BaseLayer } from "../../../../api/stratigraphy.ts";
-import { Lithology } from "./lithology.ts";
+import { BaseLayer, FaciesDescription, LithologicalDescription } from "../../../../api/stratigraphy.ts";
+import { LayerDepth, Lithology } from "./lithology.ts";
 
-export const getMinMaxDepth = (
-  lithologies: BaseLayer[],
-  lithologicalDescriptions: BaseLayer[],
-  faciesDescriptions: BaseLayer[],
-): { minDepth: number; maxDepth: number } => {
-  let minDepth: number | undefined;
-  let maxDepth: number | undefined;
+const checkDescriptionDepthExtendingCurrentLayers = (descriptions: BaseLayer[], layerDepths: LayerDepth[]) => {
+  const firstLayer = layerDepths.at(0)!;
+  const lastLayer = layerDepths.at(-1)!;
 
-  const all = [lithologies, lithologicalDescriptions, faciesDescriptions];
-  for (const arr of all) {
-    for (const item of arr) {
-      if (minDepth === undefined || item.fromDepth < minDepth) minDepth = item.fromDepth;
-      if (maxDepth === undefined || item.toDepth > maxDepth) maxDepth = item.toDepth;
-    }
+  const firstDescription = descriptions.at(0)!;
+  const lastDescription = descriptions.at(-1)!;
+
+  if (firstDescription.fromDepth < firstLayer.fromDepth) {
+    layerDepths.push({
+      fromDepth: firstDescription.fromDepth,
+      toDepth: firstLayer.fromDepth,
+      lithologyId: 0,
+      hasFromDepthError: true,
+      hasToDepthError: true,
+    });
   }
 
-  return {
-    minDepth: minDepth ?? 0,
-    maxDepth: maxDepth ?? 0,
-  };
+  if (lastLayer.toDepth < lastDescription.toDepth) {
+    layerDepths.push({
+      fromDepth: lastLayer.toDepth,
+      toDepth: lastDescription.toDepth,
+      lithologyId: 0,
+      hasFromDepthError: true,
+      hasToDepthError: true,
+    });
+  }
+};
+
+const checkLayerForMultipleDescriptionDepthsFullyWithin = (descriptions: BaseLayer[], layerDepths: LayerDepth[]) => {
+  for (let i = 0; i < layerDepths.length; i++) {
+    const layer = layerDepths[i];
+    if (layer.lithologyId === 0) {
+      // Find descriptions fully within this layer
+      const matchingDescriptions = descriptions.filter(
+        d => d.fromDepth >= layer.fromDepth && d.toDepth <= layer.toDepth,
+      );
+      if (matchingDescriptions.length > 1) {
+        // Remove the original layer
+        layerDepths.splice(i, 1);
+        // Insert new layers for each description
+        const newLayers = matchingDescriptions.map(d => ({
+          fromDepth: d.fromDepth,
+          toDepth: d.toDepth,
+          lithologyId: 0,
+          hasFromDepthError: true,
+          hasToDepthError: true,
+        }));
+        layerDepths.splice(i, 0, ...newLayers);
+        i += newLayers.length - 1;
+      }
+    }
+  }
+};
+
+const checkLayerForDescriptionDepthOverlapping = (descriptions: BaseLayer[], layerDepths: LayerDepth[]) => {
+  for (let i = 0; i < layerDepths.length; i++) {
+    const layer = layerDepths[i];
+    if (layer.lithologyId === 0) {
+      // Find descriptions that overlap this gap
+      const overlappingDescriptions = descriptions.filter(
+        d => d.fromDepth < layer.toDepth && d.toDepth > layer.fromDepth,
+      );
+      if (overlappingDescriptions.length > 0) {
+        // For each overlapping description, split the gap as needed
+        const splits: LayerDepth[] = [];
+        let start = layer.fromDepth;
+        for (const desc of overlappingDescriptions) {
+          if (desc.fromDepth > start) {
+            splits.push({
+              fromDepth: start,
+              toDepth: desc.fromDepth,
+              lithologyId: 0,
+              hasFromDepthError: true,
+              hasToDepthError: true,
+            });
+          }
+          splits.push({
+            fromDepth: Math.max(start, desc.fromDepth),
+            toDepth: Math.min(layer.toDepth, desc.toDepth),
+            lithologyId: 0,
+            hasFromDepthError: true,
+            hasToDepthError: true,
+          });
+          start = Math.min(layer.toDepth, desc.toDepth);
+        }
+        if (start < layer.toDepth) {
+          splits.push({
+            fromDepth: start,
+            toDepth: layer.toDepth,
+            lithologyId: 0,
+            hasFromDepthError: true,
+            hasToDepthError: true,
+          });
+        }
+        // Remove the original gap and insert the splits
+        layerDepths.splice(i, 1, ...splits);
+        i += splits.length - 1;
+      }
+    }
+  }
+};
+
+const checkDescriptionDepthLayers = (descriptions: BaseLayer[], layerDepths: LayerDepth[]) => {
+  if (descriptions.length === 0) return;
+
+  // If there are no current layers, add all descriptions as gap layers
+  if (layerDepths.length === 0) {
+    for (const description of descriptions) {
+      layerDepths.push({
+        fromDepth: description.fromDepth,
+        toDepth: description.toDepth,
+        lithologyId: 0,
+        hasFromDepthError: true,
+        hasToDepthError: true,
+      });
+    }
+    return;
+  }
+
+  // Add gap layers if descriptions extend beyond current layers
+  checkDescriptionDepthExtendingCurrentLayers(descriptions, layerDepths);
+
+  // Split gap layers if multiple descriptions fit inside a layer
+  checkLayerForMultipleDescriptionDepthsFullyWithin(descriptions, layerDepths);
+
+  // Split gap layers if a description overlaps the layer
+  checkLayerForDescriptionDepthOverlapping(descriptions, layerDepths);
+};
+
+const checkLayerDepths = (depths: LayerDepth[]) => {
+  const checkedLayerDepths: LayerDepth[] = [];
+  for (let i = 0; i < depths.length; i++) {
+    const previous = depths[i - 1];
+    const current = depths[i];
+    const next = depths[i + 1];
+
+    const hasFromDepthOverlap = (previous ? current.fromDepth < previous.toDepth : false) || current.hasFromDepthError;
+    const hasToDepthOverlap = (next ? current.toDepth > next.fromDepth : false) || current.hasToDepthError;
+
+    checkedLayerDepths.push({
+      ...current,
+      hasFromDepthError: hasFromDepthOverlap,
+      hasToDepthError: hasToDepthOverlap,
+    });
+
+    // Add gap layer if there's a gap between current and next. This can happen if the lithologies and
+    // lithologicalDescriptions are empty but the faciesDescriptions contains layers with gaps in between.
+    if (i < depths.length - 1) {
+      if (current.toDepth < next.fromDepth) {
+        checkedLayerDepths.push({
+          fromDepth: current.toDepth,
+          toDepth: next.fromDepth,
+          lithologyId: 0,
+          hasFromDepthError: true,
+          hasToDepthError: true,
+        });
+      }
+    }
+  }
+  console.log("Checked final layer depths:", [...checkedLayerDepths]);
+  return checkedLayerDepths;
+};
+
+export const getLayerDepths = (
+  lithologies: Lithology[],
+  lithologicalDescriptions: LithologicalDescription[],
+  faciesDescriptions: FaciesDescription[],
+) => {
+  const lithologiesWithoutGaps = lithologies.filter(l => !l.isGap).sort((a, b) => a.fromDepth - b.fromDepth);
+  const layerDepths: LayerDepth[] = [];
+  for (let i = 0; i < lithologiesWithoutGaps.length; i++) {
+    const current = lithologiesWithoutGaps[i];
+    // Add gap layer for gap between previous and current lithology
+    if (i > 0) {
+      const prev = lithologiesWithoutGaps[i - 1];
+      if (current.fromDepth > prev.toDepth) {
+        layerDepths.push({
+          fromDepth: prev.toDepth,
+          toDepth: current.fromDepth,
+          lithologyId: 0,
+          hasFromDepthError: true,
+          hasToDepthError: true,
+        });
+      }
+    }
+    layerDepths.push({
+      fromDepth: current.fromDepth,
+      toDepth: current.toDepth,
+      lithologyId: current.id,
+      hasFromDepthError: false,
+      hasToDepthError: false,
+    });
+  }
+  layerDepths.sort((a, b) => a.fromDepth - b.fromDepth);
+
+  checkDescriptionDepthLayers(
+    lithologicalDescriptions.filter(l => !l.isGap),
+    layerDepths,
+  );
+  layerDepths.sort((a, b) => a.fromDepth - b.fromDepth);
+
+  checkDescriptionDepthLayers(
+    faciesDescriptions.filter(l => !l.isGap),
+    layerDepths,
+  );
+  layerDepths.sort((a, b) => a.fromDepth - b.fromDepth);
+
+  return checkLayerDepths(layerDepths);
 };
 
 const isLithology = (layer: BaseLayer): layer is Lithology => {
@@ -39,53 +227,68 @@ const createGapLayer = (fromDepth: number, toDepth: number, stratigraphyId: numb
   return { item: gapLayer, hasChanges: false } as BaseLayerChangeTracker;
 };
 
-const checkForFullRangeGap = (layers: BaseLayerChangeTracker[], minDepth: number, maxDepth: number) => {
-  if (layers.length === 0 && minDepth < maxDepth) {
-    return createGapLayer(minDepth, maxDepth, 0);
-  }
-  return undefined;
-};
-
-const checkForStartGap = (layers: BaseLayerChangeTracker[], minDepth: number) => {
+const checkForStartGaps = (layers: BaseLayerChangeTracker[], depths: LayerDepth[]) => {
+  const gapLayers: BaseLayerChangeTracker[] = [];
   if (layers.length > 0) {
-    const firstLayer = layers[0];
-    if (minDepth < firstLayer.item.fromDepth) {
-      return createGapLayer(
-        minDepth,
-        firstLayer.item.fromDepth,
-        firstLayer.item.stratigraphyId,
-        isLithology(firstLayer.item) ? true : undefined,
+    const firstLayerFromDepth = layers[0].item.fromDepth;
+    const preLayers = depths.filter(d => d.toDepth <= firstLayerFromDepth).sort((a, b) => a.fromDepth - b.fromDepth);
+
+    for (const d of preLayers) {
+      gapLayers.push(
+        createGapLayer(
+          d.fromDepth,
+          d.toDepth,
+          layers[0].item.stratigraphyId,
+          isLithology(layers[0].item) ? true : undefined,
+        ),
       );
     }
   }
-  return undefined;
+  return gapLayers;
 };
 
-const checkForGapBetween = (current: BaseLayerChangeTracker, prev?: BaseLayerChangeTracker) => {
-  if (prev && current.item.fromDepth > prev.item.toDepth) {
-    return createGapLayer(
-      prev.item.toDepth,
-      current.item.fromDepth,
-      current.item.stratigraphyId,
-      isLithology(prev.item) ? (prev.item.isUnconsolidated ?? true) : undefined,
-    );
-  }
-  return undefined;
-};
+const checkForGapsBetween = (depths: LayerDepth[], current: BaseLayerChangeTracker, prev?: BaseLayerChangeTracker) => {
+  const gapLayers: BaseLayerChangeTracker[] = [];
+  if (prev && !prev.item.isGap && current.item.fromDepth > prev.item.toDepth) {
+    const gapDepths = depths
+      .filter(d => d.fromDepth >= prev.item.toDepth && d.toDepth <= current.item.fromDepth)
+      .sort((a, b) => a.fromDepth - b.fromDepth);
 
-const checkForEndGap = (layers: BaseLayerChangeTracker[], maxDepth: number) => {
-  if (layers.length > 0) {
-    const lastLayer = layers.at(-1)?.item;
-    if (lastLayer && lastLayer.toDepth < maxDepth) {
-      return createGapLayer(
-        lastLayer.toDepth,
-        maxDepth,
-        lastLayer.stratigraphyId,
-        isLithology(lastLayer) ? (lastLayer.isUnconsolidated ?? true) : undefined,
+    for (const d of gapDepths) {
+      gapLayers.push(
+        createGapLayer(
+          d.fromDepth,
+          d.toDepth,
+          current.item.stratigraphyId,
+          isLithology(prev.item) ? (prev.item.isUnconsolidated ?? true) : undefined,
+        ),
       );
     }
   }
-  return undefined;
+  return gapLayers;
+};
+
+const checkForEndGaps = (layers: BaseLayerChangeTracker[], depths: LayerDepth[]) => {
+  const gapLayers: BaseLayerChangeTracker[] = [];
+  if (layers.length > 0) {
+    const lastLayer = layers.at(-1);
+    if (lastLayer && !lastLayer.item.isGap) {
+      const lastLayerToDepth = lastLayer.item.toDepth;
+      const postLayers = depths.filter(d => d.fromDepth >= lastLayerToDepth).sort((a, b) => a.fromDepth - b.fromDepth);
+
+      for (const d of postLayers) {
+        gapLayers.push(
+          createGapLayer(
+            d.fromDepth,
+            d.toDepth,
+            layers.at(-1)!.item.stratigraphyId,
+            isLithology(layers.at(-1)!.item) ? (layers.at(-1)!.item.isUnconsolidated ?? true) : undefined,
+          ),
+        );
+      }
+    }
+  }
+  return gapLayers;
 };
 
 const mergeAdjacentGaps = (layers: BaseLayerChangeTracker[]): BaseLayerChangeTracker[] => {
@@ -103,38 +306,45 @@ const mergeAdjacentGaps = (layers: BaseLayerChangeTracker[]): BaseLayerChangeTra
 
 export const getLayersWithGaps = (
   layers: BaseLayerChangeTracker[],
-  minDepth: number,
-  maxDepth: number,
+  depths: LayerDepth[],
+  stratigraphyId: number,
+  mergeGaps?: boolean,
 ): BaseLayerChangeTracker[] => {
-  const sortedLayers = [...layers].sort((a, b) => a.item.fromDepth - b.item.fromDepth);
+  const sortedLayers = [...layers].filter(l => !l.item.isGap).sort((a, b) => a.item.fromDepth - b.item.fromDepth);
   const resultLayers: BaseLayerChangeTracker[] = [];
 
-  // If layers is empty but minDepth and maxDepth are provided, return a single gap covering the full range
-  const fullRangeGap = checkForFullRangeGap(sortedLayers, minDepth, maxDepth);
-  if (fullRangeGap) return [fullRangeGap];
+  if (sortedLayers.length === 0) {
+    // If layers is empty but depths has entries, create a gap layer for each depth entry
+    for (const d of depths) {
+      resultLayers.push(createGapLayer(d.fromDepth, d.toDepth, stratigraphyId, true));
+    }
+  } else {
+    // Add gap layers for each depth entry before the first layer
+    resultLayers.push(...checkForStartGaps(sortedLayers, depths));
 
-  // Add gap at start if minDepth is less than the first layer's fromDepth
-  const startGap = checkForStartGap(sortedLayers, minDepth);
-  if (startGap) resultLayers.push(startGap);
+    // Add layers and handle gaps between them
+    for (let index = 0; index < sortedLayers.length; index++) {
+      const current = sortedLayers[index];
+      const prev = index > 0 ? sortedLayers[index - 1] : undefined;
 
-  // Map through layers and add gap where necessary
-  for (let index = 0; index < sortedLayers.length; index++) {
-    const current = sortedLayers[index];
-    const prev = index > 0 ? sortedLayers[index - 1] : undefined;
-    const gapBetween = checkForGapBetween(current, prev);
-    if (gapBetween) resultLayers.push(gapBetween);
+      // For each gap between layers, add a gap for each matching depths entry
+      resultLayers.push(...checkForGapsBetween(depths, current, prev));
 
-    resultLayers.push({
-      item: { ...current.item, isGap: current.item.isGap ?? false },
-      hasChanges: current.hasChanges ?? false,
-    });
+      resultLayers.push({
+        item: { ...current.item, isGap: current.item.isGap ?? false },
+        hasChanges: current.hasChanges ?? false,
+      });
+    }
+
+    // Add gap layers for each depth entry after the last layer
+    resultLayers.push(...checkForEndGaps(sortedLayers, depths));
   }
 
-  // Add gap at end if maxDepth is greater than the last layer's toDepth
-  const endGap = checkForEndGap(sortedLayers, maxDepth);
-  if (endGap) resultLayers.push(endGap);
-
-  return mergeAdjacentGaps(resultLayers);
+  if (mergeGaps) {
+    return mergeAdjacentGaps(resultLayers);
+  } else {
+    return resultLayers;
+  }
 };
 
 export interface BaseLayerChangeTracker {
