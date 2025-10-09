@@ -111,7 +111,11 @@ export async function fetchApiV2Legacy(url: string, method: string, payload: obj
  * @returns The HTTP response as JSON.
  * @throws {ApiError|Error} - Throws an `ApiError` or a generic `Error` based on the response content.
  */
-export async function fetchApiV2WithApiError(url: string, method: string, payload: FormData | object | null = null) {
+export async function fetchApiV2WithApiError<T>(
+  url: string,
+  method: string,
+  payload: FormData | object | null = null,
+): Promise<T | Response> {
   const response = await fetchApiV2Base(url, method, payload ? JSON.stringify(payload) : null, "application/json");
   if (response.ok) {
     return await readApiResponse(response);
@@ -386,7 +390,7 @@ export const createDocument = async (document: Document): Promise<Document> => {
 };
 
 export const updateDocuments = async (documents: DocumentUpdate[]): Promise<Document> => {
-  return await fetchApiV2WithApiError("document", "PUT", documents);
+  return await fetchApiV2WithApiError<Document>("document", "PUT", documents);
 };
 
 export const deleteDocuments = async (documentIds: number[]): Promise<Response> => {
