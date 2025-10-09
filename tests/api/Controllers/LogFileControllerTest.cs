@@ -17,9 +17,9 @@ namespace BDMS.Controllers;
 [TestClass]
 public class LogFileControllerTest
 {
+    private const string TestFileName = "test_logfile.las";
     private BdmsContext context;
     private User adminUser;
-    private LogFileCloudService logFileCloudService;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
     private LogFileController controller;
 
@@ -47,7 +47,7 @@ public class LogFileControllerTest
 
         var logFileCloudServiceLoggerMock = new Mock<ILogger<LogFileCloudService>>(MockBehavior.Strict);
         logFileCloudServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
-        logFileCloudService = new LogFileCloudService(logFileCloudServiceLoggerMock.Object, s3ClientMock,  configuration, contextAccessorMock.Object, context);
+        var logFileCloudService = new LogFileCloudService(logFileCloudServiceLoggerMock.Object, s3ClientMock,  configuration, contextAccessorMock.Object, context);
 
         boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
 
@@ -70,7 +70,7 @@ public class LogFileControllerTest
         var borehole = await CreateTestBoreholeAsync();
         var logRun = await CreateTestLogRunAsync(borehole.Id);
 
-        var fileName = "test_logfile.las";
+        var fileName = TestFileName;
         var content = Guid.NewGuid().ToString();
         var file = GetFormFileByContent(content, fileName);
 
@@ -148,7 +148,7 @@ public class LogFileControllerTest
             .Setup(x => x.CanEditBoreholeAsync("sub_admin", logRun.BoreholeId))
             .ReturnsAsync(false);
 
-        var fileName = "test_logfile.las";
+        var fileName = TestFileName;
         var content = Guid.NewGuid().ToString();
         var file = GetFormFileByContent(content, fileName);
 
@@ -159,7 +159,7 @@ public class LogFileControllerTest
     [TestMethod]
     public async Task UploadReturnsNotFoundWithNonExistentLogRun()
     {
-        var fileName = "test_logfile.las";
+        var fileName = TestFileName;
         var content = Guid.NewGuid().ToString();
         var file = GetFormFileByContent(content, fileName);
         var response = await controller.UploadAsync(file, 999999);
@@ -397,7 +397,7 @@ public class LogFileControllerTest
             OriginalName = "Test Borehole Original",
         };
 
-        context.Boreholes.Add(borehole);
+        await context.Boreholes.AddAsync(borehole);
         await context.SaveChangesAsync();
 
         return borehole;
@@ -414,7 +414,7 @@ public class LogFileControllerTest
             BitSize = 0.2,
         };
 
-        context.LogRuns.Add(logRun);
+        await context.LogRuns.AddAsync(logRun);
         await context.SaveChangesAsync();
 
         return logRun;
@@ -423,7 +423,7 @@ public class LogFileControllerTest
     private async Task<LogFile> UploadTestLogFile(int logRunId)
     {
         var content = Guid.NewGuid().ToString();
-        var formFile = GetFormFileByContent(content, "test_logfile.las");
+        var formFile = GetFormFileByContent(content, TestFileName);
         var response = await controller.UploadAsync(formFile, logRunId);
         var okResult = (OkObjectResult)response;
         return (LogFile)okResult.Value!;

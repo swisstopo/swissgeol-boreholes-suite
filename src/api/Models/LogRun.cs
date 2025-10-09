@@ -13,6 +13,7 @@ public class LogRun : IIdentifyable, IChangeTracking
 {
     /// <inheritdoc />
     [Key]
+    [JsonRequired]
     [Column("id")]
     public int Id { get; set; }
 

@@ -221,7 +221,7 @@ public class LogRunControllerTest
             ConveyanceMethodId = 100003000,
             BoreholeStatusId = 100003005,
         };
-        context.Add(logRun);
+        await context.AddAsync(logRun);
         await context.SaveChangesAsync();
         return logRun.Id;
     }
