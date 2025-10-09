@@ -105,13 +105,15 @@ export const FormInput: FC<FormInputProps> = ({
       value={controlledValue}
       disabled={disabled || false}
       data-cy={fieldName + "-formInput"}
-      InputProps={{
-        ...inputProps /* eslint-disable  @typescript-eslint/no-explicit-any */,
-        ...(withThousandSeparator && { inputComponent: NumericFormatWithThousandSeparator as any }),
-        ...(isDateTimeInput && { inputProps: { max: "9999-01-01T00:00" } }),
-        ...(isDateInput && { inputProps: { max: "9999-01-01" } }),
-        readOnly: isReadOnly,
-        disabled: disabled,
+      slotProps={{
+        input: {
+          ...inputProps /* eslint-disable  @typescript-eslint/no-explicit-any */,
+          ...(withThousandSeparator && { inputComponent: NumericFormatWithThousandSeparator as any }),
+          ...(isDateTimeInput && { max: "9999-01-01T00:00" }),
+          ...(isDateInput && { max: "9999-01-01" }),
+          readOnly: isReadOnly,
+          disabled: disabled,
+        },
       }}
     />
   );

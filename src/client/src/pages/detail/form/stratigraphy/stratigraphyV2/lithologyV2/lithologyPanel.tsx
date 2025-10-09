@@ -45,7 +45,6 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
   } else {
     return (
       <TempLithologyView
-        stratigraphyId={stratigraphyId}
         lithologies={lithologies}
         lithologicalDescriptions={lithologicalDescriptions}
         faciesDescriptions={faciesDescriptions}

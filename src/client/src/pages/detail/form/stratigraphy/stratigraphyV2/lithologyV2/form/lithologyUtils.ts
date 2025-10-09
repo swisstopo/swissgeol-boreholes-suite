@@ -1,7 +1,10 @@
-import { UseFormReturn } from "react-hook-form";
+import { parseFloatWithThousandsSeparator } from "../../../../../../../components/form/formUtils.ts";
 import { Lithology, LithologyDescription } from "../../../lithology.ts";
 
-export function prepareLithologyForSubmit(values: Lithology) {
+export const prepareLithologyForSubmit = (values: Lithology) => {
+  values.fromDepth = parseFloatWithThousandsSeparator(values.fromDepth)!;
+  values.toDepth = parseFloatWithThousandsSeparator(values.toDepth)!;
+
   delete values.shareInverse;
   delete values.alterationDegree;
   delete values.compactness;
@@ -61,40 +64,70 @@ export function prepareLithologyForSubmit(values: Lithology) {
       if (String(description.cementationId) === "") description.cementationId = null;
     }
   }
-}
+};
 
-export function initializeLithologyInForm<TFieldValues>(
-  formMethods: UseFormReturn<Lithology, TFieldValues>,
-  lithology: Lithology,
-) {
-  formMethods.setValue("hasBedding", lithology?.hasBedding ?? false);
-  formMethods.setValue("isUnconsolidated", lithology?.isUnconsolidated ?? true);
-  formMethods.setValue("alterationDegreeId", lithology?.alterationDegreeId ?? null);
-  formMethods.setValue("alterationDegreeId", lithology?.alterationDegreeId ?? null);
-  formMethods.setValue("compactnessId", lithology?.compactnessId ?? null);
-  formMethods.setValue("consistencyId", lithology?.consistencyId ?? null);
-  formMethods.setValue("cohesionId", lithology?.cohesionId ?? null);
-  formMethods.setValue("humidityId", lithology?.humidityId ?? null);
-  formMethods.setValue("uscsDeterminationId", lithology?.uscsDeterminationId ?? null);
-  formMethods.setValue("plasticityId", lithology?.plasticityId ?? null);
-}
+export type FormError = { type: string; message: string };
+export type FormErrors = { [key: string]: FormError | FormErrors };
 
-export function initializeLithologicalDescriptionInForm<TFieldValues>(
-  index: number,
-  description: LithologyDescription,
-  formMethods: UseFormReturn<Lithology, TFieldValues>,
-) {
-  formMethods.setValue(`lithologyDescriptions.${index}.lithologyConId`, description.lithologyConId ?? null);
-  formMethods.setValue(`lithologyDescriptions.${index}.colorPrimaryId`, description.colorPrimaryId ?? null);
-  formMethods.setValue(`lithologyDescriptions.${index}.colorSecondaryId`, description.colorSecondaryId ?? null);
-  formMethods.setValue(`lithologyDescriptions.${index}.grainSizeId`, description.grainSizeId ?? null);
-  formMethods.setValue(`lithologyDescriptions.${index}.grainAngularityId`, description.grainAngularityId ?? null);
-  formMethods.setValue(`lithologyDescriptions.${index}.gradationId`, description.gradationId ?? null);
-  formMethods.setValue(`lithologyDescriptions.${index}.cementationId`, description.cementationId ?? null);
-  formMethods.setValue(`lithologyDescriptions.${index}.lithologyUnconMainId`, description.lithologyUnconMainId ?? null);
-  formMethods.setValue(`lithologyDescriptions.${index}.lithologyUncon2Id`, description.lithologyUncon2Id ?? null);
-  formMethods.setValue(`lithologyDescriptions.${index}.lithologyUncon3Id`, description.lithologyUncon3Id ?? null);
-  formMethods.setValue(`lithologyDescriptions.${index}.lithologyUncon4Id`, description.lithologyUncon4Id ?? null);
-  formMethods.setValue(`lithologyDescriptions.${index}.lithologyUncon5Id`, description.lithologyUncon5Id ?? null);
-  formMethods.setValue(`lithologyDescriptions.${index}.lithologyUncon6Id`, description.lithologyUncon6Id ?? null);
-}
+const buildErrorStructure = (result: boolean | Record<string, string>, errors: FormErrors) => {
+  for (const [path, message] of Object.entries(result)) {
+    const keys = path.split(".");
+    let curr = errors;
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      if (i === keys.length - 1) {
+        curr[key] = { type: "manual", message };
+      } else {
+        if (typeof curr[key] !== "object" || curr[key] === null || "type" in curr[key]) {
+          curr[key] = {};
+        }
+        curr = curr[key];
+      }
+    }
+  }
+};
+
+export const validateDepths = (values: Lithology, errors: FormErrors) => {
+  const fromDepth = parseFloatWithThousandsSeparator(values.fromDepth);
+  const toDepth = parseFloatWithThousandsSeparator(values.toDepth);
+  if (fromDepth === null) {
+    errors.fromDepth = { type: "required", message: "required" };
+  }
+  if (toDepth === null) {
+    errors.toDepth = { type: "required", message: "required" };
+  } else if (fromDepth && fromDepth >= toDepth) {
+    errors.toDepth = { type: "manual", message: "toDepthMustBeGreaterThanFromDepth" };
+  }
+};
+
+export const validateLithologyUnconValues = (descriptions: LithologyDescription[] | undefined, errors: FormErrors) => {
+  if (!descriptions || descriptions.length === 0) return;
+
+  const index = descriptions?.[0].isFirst ? 0 : 1;
+  const fields = [
+    "lithologyUnconMainId",
+    "lithologyUncon2Id",
+    "lithologyUncon3Id",
+    "lithologyUncon4Id",
+    "lithologyUncon5Id",
+    "lithologyUncon6Id",
+  ];
+  const flatErrors: Record<string, string> = {};
+
+  for (let i = 0; i < fields.length; i++) {
+    const field = fields[i];
+    const value = descriptions?.[index]?.[field as keyof LithologyDescription] as number;
+    if (value && i > 0) {
+      for (let j = 0; j < i; j++) {
+        const prevValue = descriptions?.[index]?.[fields[j] as keyof LithologyDescription] as number;
+        if (!prevValue) {
+          flatErrors[`lithologyDescriptions.${index}.${fields[j]}`] = "lithologyUnconPreviousRequired";
+        }
+      }
+    }
+  }
+
+  if (Object.keys(flatErrors).length > 0) {
+    buildErrorStructure(flatErrors, errors);
+  }
+};
