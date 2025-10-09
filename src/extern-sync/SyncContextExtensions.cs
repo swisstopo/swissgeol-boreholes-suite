@@ -161,7 +161,6 @@ public static class SyncContextExtensions
         }
 
         borehole.Observations?.ClearNavigationProperties();
-
         foreach (var completion in borehole.Completions)
         {
             completion.Backfills?.ClearNavigationProperties();

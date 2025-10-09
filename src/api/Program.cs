@@ -102,6 +102,7 @@ builder.Services.AddScoped<LocationService>();
 builder.Services.AddScoped<CoordinateService>();
 builder.Services.AddScoped<BoreholeFileCloudService>();
 builder.Services.AddScoped<PhotoCloudService>();
+builder.Services.AddScoped<LogFileCloudService>();
 builder.Services.AddSingleton<IAmazonS3>(sp =>
 {
     var s3ConfigSection = builder.Configuration.GetSection("S3");
