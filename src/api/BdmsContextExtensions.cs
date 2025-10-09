@@ -1475,7 +1475,8 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.CreatedBy, _ => default!)
             .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
             .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
-            .RuleFor(o => o.UpdatedBy, _ => default!);
+            .RuleFor(o => o.UpdatedBy, _ => default!)
+            .RuleFor(o => o.ServiceCo, f => f.Random.Word());
 
         LogRun SeededLogRuns(int seed) => fakeLogRuns.UseSeed(seed).Generate();
         var logRuns = logRunRange.Select(SeededLogRuns).ToList();

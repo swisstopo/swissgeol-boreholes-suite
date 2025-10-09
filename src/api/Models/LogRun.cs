@@ -62,6 +62,13 @@ public class LogRun : IIdentifyable, IChangeTracking
     public string? Comment { get; set; }
 
     /// <summary>
+    /// Gets or sets the <see cref="LogRun"/>'s service co.
+    /// </summary>
+    [IncludeInExport]
+    [Column("service_co")]
+    public string? ServiceCo { get; set; }
+
+    /// <summary>
     /// Gets or sets the <see cref="LogRun"/>'s bit size at the time of logging.
     /// </summary>
     [IncludeInExport]
