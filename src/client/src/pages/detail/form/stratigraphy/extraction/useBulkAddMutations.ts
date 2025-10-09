@@ -11,11 +11,9 @@ export const useBulkAddMutation = () => {
   return useMutation({
     mutationFn: async ({
       boreholeId,
-      lithologies,
       lithologicalDescriptions,
     }: {
       boreholeId: number;
-      lithologies: Omit<Lithology, "id" | "stratigraphyId">[];
       lithologicalDescriptions: Omit<LithologicalDescription, "id" | "stratigraphyId">[];
     }) => {
       const newStratigraphy: Stratigraphy = await fetchApiV2WithApiError("stratigraphyv", "POST", {
@@ -28,7 +26,25 @@ export const useBulkAddMutation = () => {
       const lithologiesPromise = fetchApiV2WithApiError(
         "lithology/bulk",
         "POST",
-        lithologies.map(l => ({ ...l, stratigraphyId: newStratigraphy.id })),
+
+        lithologicalDescriptions.map(
+          ld =>
+            ({
+              id: 0,
+              toDepth: ld.toDepth,
+              fromDepth: ld.fromDepth,
+              isUnconsolidated: true,
+              hasBedding: false,
+              stratigraphyId: newStratigraphy.id,
+              lithologyDescriptions: [
+                {
+                  id: 0,
+                  lithologyId: 0,
+                  isFirst: true,
+                },
+              ],
+            }) as Lithology,
+        ),
       );
 
       const lithologicalDescriptionsPromise = fetchApiV2WithApiError(
