@@ -196,8 +196,7 @@ public class LogFileController : ControllerBase
     public async Task<ActionResult> DeleteAsync([FromQuery][MaxLength(100)] IReadOnlyList<int> logFileIds)
     {
         var (logFiles, errorResult) = await ValidateAndGetLogFilesAsync(logFileIds).ConfigureAwait(false);
-        if (errorResult != null)
-            return errorResult;
+        if (errorResult != null) return errorResult;
 
         await logFileCloudService.DeleteObjects(logFiles!.Select(lf => lf.NameUuid!)).ConfigureAwait(false);
 
