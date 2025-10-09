@@ -87,7 +87,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
         fromDepth: depths?.at(-1)?.toDepth,
         toDepth: undefined,
         id: 0,
-        isGap: false,
+        isGap: true,
         stratigraphyId: 0,
         isUnconsolidated: tmpLithologiesFlat?.at(-1)?.isUnconsolidated ?? true,
         hasBedding: false,
