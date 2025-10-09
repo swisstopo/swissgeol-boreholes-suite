@@ -29,10 +29,7 @@ public class LogRunController : BoreholeControllerBase<LogRun>
             .SingleOrDefaultAsync(b => b.Id == boreholeId)
             .ConfigureAwait(false);
 
-        if (borehole == null)
-        {
-            return NotFound();
-        }
+        if (borehole == null) return NotFound();
 
         if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
