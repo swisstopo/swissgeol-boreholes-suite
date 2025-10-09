@@ -48,10 +48,7 @@ public class LogFileController : ControllerBase
             .FirstOrDefaultAsync(lr => lr.Id == logRunId)
             .ConfigureAwait(false);
 
-        if (logRun == null)
-        {
-            return NotFound($"LogRun with ID {logRunId} not found.");
-        }
+        if (logRun == null) return NotFound($"LogRun with ID {logRunId} not found.");
 
         if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), logRun.BoreholeId).ConfigureAwait(false))
         {
