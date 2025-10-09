@@ -391,8 +391,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       deleteFaciesDescriptions(),
       addAndUpdateFaciesDescriptions(),
     ]);
-    console.log("onSave");
-    markAsChanged(false);
     return true;
   }, [
     depths,
@@ -402,7 +400,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     addAndUpdateLithologicalDescriptions,
     deleteFaciesDescriptions,
     addAndUpdateFaciesDescriptions,
-    markAsChanged,
     showAlert,
     t,
   ]);
