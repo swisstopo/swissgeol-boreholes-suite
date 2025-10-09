@@ -60,14 +60,16 @@ export const StratigraphyTableCellRow = styled(Stack)(() => ({
 
 interface StratigraphyTableLayerCellProps {
   children: ReactNode;
+  index: number;
   layer: BaseLayer;
-  onHoverClick?: (layer: BaseLayer) => void;
-  onClick?: (layer: BaseLayer) => void;
+  onHoverClick?: (index: number) => void;
+  onClick?: (index: number) => void;
   sx?: SxProps;
 }
 
 export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = ({
   children,
+  index,
   layer,
   onHoverClick,
   onClick,
@@ -102,7 +104,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
       }}
       onClick={() => {
         if (onClick && isEditing) {
-          onClick(layer);
+          onClick(index);
         }
       }}>
       <StratigraphyTableCellRow
@@ -118,9 +120,8 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
             icon={isEditing ? <Trash2 /> : <Copy />}
             onClick={e => {
               e.stopPropagation();
-              onHoverClick(layer);
+              onHoverClick(index);
             }}
-            dataCy={"showFullscreenTabs"}
             color={"primaryInverse"}
           />
         )}
@@ -146,12 +147,12 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
 };
 
 interface StratigraphyTableGapProps {
-  layer: BaseLayer;
-  onClick?: (layer: BaseLayer) => void;
+  index: number;
+  onClick?: (index: number) => void;
   sx?: SxProps;
 }
 
-export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ layer, onClick, sx }) => {
+export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ index, onClick, sx }) => {
   const { t } = useTranslation();
   return (
     <StratigraphyTableCell
@@ -169,7 +170,7 @@ export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ layer, onC
       }}
       onClick={() => {
         if (onClick) {
-          onClick(layer);
+          onClick(index);
         }
       }}>
       <StratigraphyTableCellRow color={theme.palette.error.main}>

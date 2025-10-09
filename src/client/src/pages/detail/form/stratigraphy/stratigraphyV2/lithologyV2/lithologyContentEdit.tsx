@@ -1,7 +1,6 @@
 import { Dispatch, FC, ReactNode, SetStateAction, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
-import { Trash2 } from "lucide-react";
 import {
   BaseLayer,
   FaciesDescription,
@@ -11,7 +10,6 @@ import {
   useLithologicalDescriptionMutations,
 } from "../../../../../../api/stratigraphy.ts";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
-import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
 import { SaveContext } from "../../../../saveContext.tsx";
 import { Lithology, useLithologyMutations } from "../../lithology.ts";
 import { StratigraphyContext, StratigraphyContextProps } from "../../stratigraphyContext.tsx";
@@ -25,18 +23,13 @@ import {
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "../../stratigraphyTableComponents.tsx";
+import { BaseLayerChangeTracker, getLayersWithGaps, getMinMaxDepth } from "../../stratigraphyUtils.ts";
 import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 import { FaciesDescriptionModal } from "./form/faciesDescriptionModal.tsx";
 import { LithologicalDescriptionModal } from "./form/lithologicalDescriptionModal.tsx";
 import { LithologyModal } from "./form/lithologyModal.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";
-import { useCompletedLayers } from "./useCompletedLayers.tsx";
 import { useLayerDepths } from "./useLayerDepths.tsx";
-
-type BaseLayerWithChanges = { item: BaseLayer; hasChanges: boolean };
-type LithologyWithChanges = { item: Lithology; hasChanges: boolean };
-type LithologicalDescriptionWithChanges = { item: LithologicalDescription; hasChanges: boolean };
-type FaciesDescriptionWithChanges = { item: FaciesDescription; hasChanges: boolean };
 
 interface LithologyContentEditProps {
   stratigraphyId: number;
@@ -52,7 +45,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   faciesDescriptions,
 }) => {
   const { t } = useTranslation();
-  const { showPrompt } = useContext(PromptContext);
   const { showAlert } = useContext(AlertContext);
   const { registerSaveHandler, registerResetHandler } = useContext<StratigraphyContextProps>(StratigraphyContext);
   const { markAsChanged } = useContext(SaveContext);
@@ -71,34 +63,50 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     update: { mutateAsync: updateFaciesDescription },
     delete: { mutateAsync: deleteFaciesDescription },
   } = useFaciesDescriptionMutations();
-  const [tmpLithologies, setTmpLithologies] = useState<LithologyWithChanges[]>(
-    lithologies.map(item => ({ item, hasChanges: false })),
-  );
-  const tmpLithologiesFlat = useMemo(() => tmpLithologies.map(l => l.item), [tmpLithologies]);
-  const [tmpLithologicalDescriptions, setTmpLithologicalDescriptions] = useState<LithologicalDescriptionWithChanges[]>(
-    lithologicalDescriptions.map(item => ({ item, hasChanges: false })),
-  );
+
+  const [tmpLithologies, setTmpLithologies] = useState<BaseLayerChangeTracker[]>([]);
+  const tmpLithologiesFlat = useMemo(() => tmpLithologies.map(l => l.item as Lithology), [tmpLithologies]);
+  const [tmpLithologicalDescriptions, setTmpLithologicalDescriptions] = useState<BaseLayerChangeTracker[]>([]);
   const tmpLithologicalDescriptionsFlat = useMemo(
-    () => tmpLithologicalDescriptions.map(l => l.item),
+    () => tmpLithologicalDescriptions.map(l => l.item as LithologicalDescription),
     [tmpLithologicalDescriptions],
   );
-  const [tmpFaciesDescriptions, setTmpFaciesDescriptions] = useState<FaciesDescriptionWithChanges[]>(
-    faciesDescriptions.map(item => ({ item, hasChanges: false })),
+  const [tmpFaciesDescriptions, setTmpFaciesDescriptions] = useState<BaseLayerChangeTracker[]>([]);
+  const tmpFaciesDescriptionsFlat = useMemo(
+    () => tmpFaciesDescriptions.map(l => l.item as FaciesDescription),
+    [tmpFaciesDescriptions],
   );
-  const tmpFaciesDescriptionsFlat = useMemo(() => tmpFaciesDescriptions.map(l => l.item), [tmpFaciesDescriptions]);
 
   const { depths } = useLayerDepths(tmpLithologiesFlat);
 
-  const { completedLayers: completedLithologies } = useCompletedLayers(tmpLithologiesFlat, depths);
-  const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(
-    tmpLithologicalDescriptionsFlat,
-    depths,
-  );
-  const { completedLayers: completedFaciesDescriptions } = useCompletedLayers(tmpFaciesDescriptionsFlat, depths);
+  const [selectedLithologyIndex, setSelectedLithologyIndex] = useState<number>();
+  const selectedLithology = useMemo(() => {
+    if (selectedLithologyIndex === undefined) return undefined;
+    if (selectedLithologyIndex === -1) {
+      return {
+        fromDepth: depths?.at(-1)?.toDepth,
+        toDepth: undefined,
+        id: 0,
+        isGap: false,
+        stratigraphyId: 0,
+        isUnconsolidated: tmpLithologiesFlat?.at(-1)?.isUnconsolidated ?? true,
+        hasBedding: false,
+      } as MinimalLayer as Lithology;
+    }
+    return tmpLithologiesFlat.at(selectedLithologyIndex);
+  }, [depths, selectedLithologyIndex, tmpLithologiesFlat]);
 
-  const [selectedLithology, setSelectedLithology] = useState<Lithology>();
-  const [selectedLithologicalDescription, setSelectedLithologicalDescription] = useState<LithologicalDescription>();
-  const [selectedFaciesDescription, setSelectedFaciesDescription] = useState<FaciesDescription>();
+  const [selectedLithologicalDescriptionIndex, setSelectedLithologicalDescriptionIndex] = useState<number>();
+  const selectedLithologicalDescription = useMemo(() => {
+    if (selectedLithologicalDescriptionIndex === undefined) return undefined;
+    return tmpLithologicalDescriptionsFlat.at(selectedLithologicalDescriptionIndex);
+  }, [selectedLithologicalDescriptionIndex, tmpLithologicalDescriptionsFlat]);
+
+  const [selectedFaciesDescriptionIndex, setSelectedFaciesDescriptionIndex] = useState<number>();
+  const selectedFaciesDescription = useMemo(() => {
+    if (selectedFaciesDescriptionIndex === undefined) return undefined;
+    return tmpFaciesDescriptionsFlat.at(selectedFaciesDescriptionIndex);
+  }, [selectedFaciesDescriptionIndex, tmpFaciesDescriptionsFlat]);
 
   const defaultRowHeight = 240;
 
@@ -113,29 +121,29 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   );
 
   const updateStratigraphyItem = useCallback(
-    <T extends BaseLayer>(
-      item: T,
-      setState: Dispatch<SetStateAction<{ item: T; hasChanges: boolean }[]>>,
+    (
+      index: number | undefined,
+      item: BaseLayer,
+      setState: Dispatch<SetStateAction<BaseLayerChangeTracker[]>>,
       hasChanges: boolean,
-    ): void => {
+    ) => {
       setState(prev => {
-        const isCompletelyNew =
-          item.id === 0 &&
-          !prev.some(existing => existing.item.fromDepth === item.fromDepth && existing.item.toDepth === item.toDepth);
-        if (isCompletelyNew) {
-          markAsChanged(true); // In case where a gap is filled without changing the initial formValues the isDirty evaluation for changes fails.
-          return [...prev, { item: item, hasChanges: true }];
-        } else {
-          if (hasChanges) {
-            return prev.map(l => {
-              const isUpdatingTmp =
-                l.item.id === 0 && l.item.fromDepth === item.fromDepth && l.item.toDepth === item.toDepth;
-              const isUpdatingExisting = l.item.id !== 0 && l.item.id === item.id;
-              return isUpdatingTmp || isUpdatingExisting ? { item, hasChanges: true } : l;
-            });
+        if (hasChanges) {
+          markAsChanged(true);
+          item.isGap = false;
+
+          if (typeof index === "number" && index >= 0 && index < prev.length) {
+            const updated = [...prev];
+
+            updated[index] = { item, hasChanges: true };
+            return updated;
           }
-          return prev;
+
+          // fallback to add if index is undefined or out of bounds
+          return [...prev, { item, hasChanges: true }];
         }
+
+        return prev;
       });
     },
     [markAsChanged],
@@ -143,77 +151,94 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
 
   const updateTmpLithology = useCallback(
     (lithology: Lithology, hasChanges: boolean) => {
-      updateStratigraphyItem(lithology, setTmpLithologies, hasChanges);
-      setSelectedLithology(undefined);
+      updateStratigraphyItem(selectedLithologyIndex, lithology, setTmpLithologies, hasChanges);
+      setSelectedLithologyIndex(undefined);
     },
-    [updateStratigraphyItem],
+    [selectedLithologyIndex, updateStratigraphyItem],
+  );
+
+  const handleEditLithology = useCallback((layerIndex: number) => {
+    setSelectedLithologyIndex(layerIndex);
+  }, []);
+
+  const handleDeleteLithology = useCallback(
+    (index: number) => {
+      setTmpLithologies(prev => {
+        if (index >= 0 && index < prev.length) {
+          const newTmpLithologies = [...prev.slice(0, index), ...prev.slice(index + 1)];
+          markAsChanged(true);
+          return newTmpLithologies;
+        }
+
+        return prev;
+      });
+    },
+    [markAsChanged],
   );
 
   const updateTmpLithologicalDescription = useCallback(
     (lithologicalDescription: LithologicalDescription, hasChanges: boolean) => {
-      updateStratigraphyItem(lithologicalDescription, setTmpLithologicalDescriptions, hasChanges);
-      setSelectedLithologicalDescription(undefined);
+      updateStratigraphyItem(
+        selectedLithologicalDescriptionIndex,
+        lithologicalDescription,
+        setTmpLithologicalDescriptions,
+        hasChanges,
+      );
+      setSelectedLithologicalDescriptionIndex(undefined);
     },
-    [updateStratigraphyItem],
+    [selectedLithologicalDescriptionIndex, updateStratigraphyItem],
+  );
+
+  const handleEditLithologicalDescription = useCallback((index: number) => {
+    setSelectedLithologicalDescriptionIndex(index);
+  }, []);
+
+  const handleDeleteLithologicalDescription = useCallback(
+    (index: number) => {
+      setTmpLithologicalDescriptions(prev => {
+        if (index >= 0 && index < prev.length) {
+          const newTmpLithologicalDescriptions = [...prev.slice(0, index), ...prev.slice(index + 1)];
+          markAsChanged(true);
+          return newTmpLithologicalDescriptions;
+        }
+
+        return prev;
+      });
+    },
+    [markAsChanged],
   );
 
   const updateTmpFaciesDescription = useCallback(
     (faciesDescription: FaciesDescription, hasChanges: boolean) => {
-      updateStratigraphyItem(faciesDescription, setTmpFaciesDescriptions, hasChanges);
-      setSelectedFaciesDescription(undefined);
+      updateStratigraphyItem(selectedFaciesDescriptionIndex, faciesDescription, setTmpFaciesDescriptions, hasChanges);
+      setSelectedFaciesDescriptionIndex(undefined);
     },
-    [updateStratigraphyItem],
+    [selectedFaciesDescriptionIndex, updateStratigraphyItem],
   );
 
-  const handleEditLithology = useCallback((layer: MinimalLayer) => {
-    setSelectedLithology(layer as Lithology);
+  const handleEditFaciesDescription = useCallback((index: number) => {
+    setSelectedFaciesDescriptionIndex(index);
   }, []);
 
-  const compareAndMarkAsChanged = (newTmpLayers: BaseLayerWithChanges[], layers: BaseLayer[]) => {
-    const newTmpLayersFlat = newTmpLayers.map(l => l.item);
-    const areArraysEqual = JSON.stringify(newTmpLayersFlat) === JSON.stringify(layers);
-    markAsChanged(!areArraysEqual);
-  };
+  const handleDeleteFaciesDescription = useCallback(
+    (index: number) => {
+      setTmpFaciesDescriptions(prev => {
+        if (index >= 0 && index < prev.length) {
+          const newTmpFaciesDescriptions = [...prev.slice(0, index), ...prev.slice(index + 1)];
+          markAsChanged(true);
+          return newTmpFaciesDescriptions;
+        }
 
-  const handleDeleteLithology = (lithology: BaseLayer) => {
-    setTmpLithologies(prev => {
-      const newTmpLithologies = prev.filter(l => l.item.id !== lithology.id);
-      compareAndMarkAsChanged(newTmpLithologies, lithologies);
-      return newTmpLithologies;
-    });
-  };
-
-  const handleEditLithologicalDescription = useCallback((layer: BaseLayer) => {
-    setSelectedLithologicalDescription(layer as LithologicalDescription);
-  }, []);
-
-  const handleDeleteLithologicalDescription = (lithologicalDescription: BaseLayer) => {
-    setTmpLithologicalDescriptions(prev => {
-      const newTmpLithologicalDescriptions = prev.filter(l => l.item.id !== lithologicalDescription.id);
-      compareAndMarkAsChanged(newTmpLithologicalDescriptions, lithologicalDescriptions);
-      return newTmpLithologicalDescriptions;
-    });
-  };
-
-  const handleEditFaciesDescription = useCallback((layer: BaseLayer) => {
-    setSelectedFaciesDescription(layer as FaciesDescription);
-  }, []);
-
-  const handleDeleteFaciesDescription = (faciesDescription: BaseLayer) => {
-    setTmpFaciesDescriptions(prev => {
-      const newTmpFaciesDescriptions = prev.filter(l => l.item.id !== faciesDescription.id);
-      compareAndMarkAsChanged(newTmpFaciesDescriptions, faciesDescriptions);
-      return newTmpFaciesDescriptions;
-    });
-  };
+        return prev;
+      });
+    },
+    [markAsChanged],
+  );
 
   const getDepthOptions = useCallback(
     (layer: BaseLayer | undefined, layers: BaseLayer[], getForToDepths: boolean = false) => {
-      if (!layer || !completedLithologies) return [];
-      let allPossibleDepths: number[] = [
-        completedLithologies[0].fromDepth,
-        ...completedLithologies.map(c => c.toDepth),
-      ];
+      if (!layer || !tmpLithologiesFlat) return [];
+      let allPossibleDepths: number[] = [tmpLithologiesFlat[0].fromDepth, ...tmpLithologiesFlat.map(c => c.toDepth)];
 
       const layerIndex = layers.findIndex(l => l.id === layer.id);
       let previousLayer = layers[layerIndex - 1] ?? null;
@@ -231,26 +256,69 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
 
       return getForToDepths ? allPossibleDepths.slice(1) : allPossibleDepths.slice(0, -1);
     },
-    [completedLithologies],
+    [tmpLithologiesFlat],
   );
 
-  useEffect(() => {
-    setTmpLithologies(lithologies.map(item => ({ item, hasChanges: false })));
-  }, [lithologies]);
+  const initTmpLayers = useCallback(() => {
+    const { minDepth, maxDepth } = getMinMaxDepth(lithologies, lithologicalDescriptions, faciesDescriptions);
+
+    const tmpLithologies = getLayersWithGaps(
+      lithologies.map(layer => ({ item: layer, hasChanges: false })),
+      minDepth,
+      maxDepth,
+    );
+    setTmpLithologies(tmpLithologies);
+
+    const tmpLithologicalDescriptions = getLayersWithGaps(
+      lithologicalDescriptions.map(layer => ({ item: layer, hasChanges: false })),
+      minDepth,
+      maxDepth,
+    );
+    setTmpLithologicalDescriptions(tmpLithologicalDescriptions);
+
+    const tmpFaciesDescriptions = getLayersWithGaps(
+      faciesDescriptions.map(layer => ({ item: layer, hasChanges: false })),
+      minDepth,
+      maxDepth,
+    );
+    setTmpFaciesDescriptions(tmpFaciesDescriptions);
+  }, [lithologies, lithologicalDescriptions, faciesDescriptions]);
 
   useEffect(() => {
-    setTmpFaciesDescriptions(faciesDescriptions.map(item => ({ item, hasChanges: false })));
-  }, [faciesDescriptions]);
+    const { minDepth, maxDepth } = getMinMaxDepth(
+      tmpLithologiesFlat,
+      tmpLithologicalDescriptionsFlat,
+      tmpFaciesDescriptionsFlat,
+    );
+    const newTmpLithologies = getLayersWithGaps(tmpLithologies, minDepth, maxDepth);
+    if (JSON.stringify(newTmpLithologies) !== JSON.stringify(tmpLithologies)) {
+      setTmpLithologies(newTmpLithologies);
+    }
+  }, [tmpLithologies, tmpLithologiesFlat, tmpLithologicalDescriptionsFlat, tmpFaciesDescriptionsFlat]);
 
   useEffect(() => {
-    setTmpLithologicalDescriptions(lithologicalDescriptions.map(item => ({ item, hasChanges: false })));
-  }, [lithologicalDescriptions]);
+    const { minDepth, maxDepth } = getMinMaxDepth(tmpLithologiesFlat, [], []);
+    const newTmpLithologicalDescriptions = getLayersWithGaps(tmpLithologicalDescriptions, minDepth, maxDepth);
+    if (JSON.stringify(newTmpLithologicalDescriptions) !== JSON.stringify(tmpLithologicalDescriptions)) {
+      setTmpLithologicalDescriptions(newTmpLithologicalDescriptions);
+    }
+  }, [tmpLithologiesFlat, tmpLithologicalDescriptions]);
+
+  useEffect(() => {
+    const { minDepth, maxDepth } = getMinMaxDepth(tmpLithologiesFlat, [], []);
+    const newTmpFaciesDescriptions = getLayersWithGaps(tmpFaciesDescriptions, minDepth, maxDepth);
+    if (JSON.stringify(newTmpFaciesDescriptions) !== JSON.stringify(tmpFaciesDescriptions)) {
+      setTmpFaciesDescriptions(newTmpFaciesDescriptions);
+    }
+  }, [tmpLithologiesFlat, tmpFaciesDescriptions]);
+
+  useEffect(() => {
+    initTmpLayers();
+  }, [initTmpLayers]);
 
   const onReset = useCallback(async () => {
-    setTmpLithologies(lithologies.map(item => ({ item, hasChanges: false })));
-    setTmpLithologicalDescriptions(lithologicalDescriptions.map(item => ({ item, hasChanges: false })));
-    setTmpFaciesDescriptions(faciesDescriptions.map(item => ({ item, hasChanges: false })));
-  }, [faciesDescriptions, lithologicalDescriptions, lithologies]);
+    initTmpLayers();
+  }, [initTmpLayers]);
 
   const deleteLithologies = useCallback(async () => {
     for (const lithology of lithologies) {
@@ -261,7 +329,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   }, [deleteLithology, lithologies, tmpLithologies]);
 
   const addAndUpdateLithologies = useCallback(async () => {
-    for (const lithology of tmpLithologies.filter(l => l.hasChanges).map(l => l.item)) {
+    for (const lithology of tmpLithologies.filter(l => l.hasChanges).map(l => l.item as Lithology)) {
       if (lithology.id === 0) {
         await addLithology({ ...lithology, stratigraphyId });
       } else {
@@ -279,7 +347,9 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   }, [deleteLithologicalDescription, lithologicalDescriptions, tmpLithologicalDescriptions]);
 
   const addAndUpdateLithologicalDescriptions = useCallback(async () => {
-    for (const lithologicalDescription of tmpLithologicalDescriptions.filter(l => l.hasChanges).map(l => l.item)) {
+    for (const lithologicalDescription of tmpLithologicalDescriptions
+      .filter(l => l.hasChanges)
+      .map(l => l.item as LithologicalDescription)) {
       if (lithologicalDescription.id === 0) {
         await addLithologicalDescription({ ...lithologicalDescription, stratigraphyId });
       } else {
@@ -297,7 +367,9 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   }, [deleteFaciesDescription, faciesDescriptions, tmpFaciesDescriptions]);
 
   const addAndUpdateFaciesDescriptions = useCallback(async () => {
-    for (const faciesDescription of tmpFaciesDescriptions.filter(l => l.hasChanges).map(l => l.item)) {
+    for (const faciesDescription of tmpFaciesDescriptions
+      .filter(l => l.hasChanges)
+      .map(l => l.item as FaciesDescription)) {
       if (faciesDescription.id === 0) {
         await addFaciesDescription({ ...faciesDescription, stratigraphyId });
       } else {
@@ -319,7 +391,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       deleteFaciesDescriptions(),
       addAndUpdateFaciesDescriptions(),
     ]);
-    markAsChanged(false);
     return true;
   }, [
     depths,
@@ -329,7 +400,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     addAndUpdateLithologicalDescriptions,
     deleteFaciesDescriptions,
     addAndUpdateFaciesDescriptions,
-    markAsChanged,
     showAlert,
     t,
   ]);
@@ -340,56 +410,44 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   }, [onReset, onSave, registerResetHandler, registerSaveHandler]);
 
   const renderGapCell = (
+    index: number,
     layer: BaseLayer,
     keyPrefix: string,
     defaultRowHeight: number,
     computeCellHeight: ((fromDepth: number, toDepth: number) => number) | null,
-    onEdit: (layer: BaseLayer) => void,
-    index: number,
-    layers: BaseLayer[],
+    onEdit: (index: number) => void,
   ) => {
     return (
       <StratigraphyTableGap
-        key={`${keyPrefix}-${layer.id}`}
+        key={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
         sx={{
           height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
         }}
-        layer={{
-          ...layer,
-          isUnconsolidated: layers.at(index - 1)?.isUnconsolidated ?? true,
-        }}
+        index={index}
         onClick={onEdit}
       />
     );
   };
 
   const renderActionCell = (
+    index: number,
     layer: BaseLayer,
     keyPrefix: string,
     defaultRowHeight: number,
     computeCellHeight: ((fromDepth: number, toDepth: number) => number) | null,
-    onEdit: (layer: BaseLayer) => void,
-    onDelete: (layer: BaseLayer) => void,
+    onEdit: (index: number) => void,
+    onDelete: (index: number) => void,
     buildContent: (layer: BaseLayer) => ReactNode,
   ) => (
     <StratigraphyTableActionCell
-      key={`${keyPrefix}-${layer.id}`}
+      key={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
       sx={{
         height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
       }}
+      index={index}
       layer={layer}
       onClick={onEdit}
-      onHoverClick={layer => {
-        showPrompt("deleteMessage", [
-          { label: "cancel" },
-          {
-            label: "delete",
-            icon: <Trash2 />,
-            variant: "contained",
-            action: () => onDelete(layer),
-          },
-        ]);
-      }}>
+      onHoverClick={index => onDelete(index)}>
       {buildContent(layer)}
     </StratigraphyTableActionCell>
   );
@@ -402,22 +460,11 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     layers: BaseLayer[],
     defaultRowHeight: number,
     computeCellHeight: ((fromDepth: number, toDepth: number) => number) | null,
-    onEdit: (layer: BaseLayer) => void,
-    onDelete: (layer: BaseLayer) => void,
+    onEdit: (index: number) => void,
+    onDelete: (index: number) => void,
     buildContent: (layer: BaseLayer) => ReactNode,
     keyPrefix: string,
   ) => {
-    if (!layers || layers.length === 0) {
-      return (
-        <StratigraphyTableGap
-          key={`${keyPrefix}-new`}
-          sx={{ height: `${defaultRowHeight}px` }}
-          layer={{ id: 0, stratigraphyId: stratigraphyId, isGap: true, fromDepth: -1, toDepth: -1 }}
-          onClick={onEdit}
-        />
-      );
-    }
-
     return layers.map((layer, index) => {
       if (layer.isGap) {
         const gapLayer: BaseLayer = { ...layer };
@@ -425,9 +472,18 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
         if (isLithology(layer)) {
           gapLayer.isUnconsolidated = (layers.at(index - 1) as Lithology)?.isUnconsolidated ?? true;
         }
-        return renderGapCell(gapLayer, keyPrefix, defaultRowHeight, computeCellHeight, onEdit, index, layers);
+        return renderGapCell(index, gapLayer, keyPrefix, defaultRowHeight, computeCellHeight, onEdit);
       }
-      return renderActionCell(layer, keyPrefix, defaultRowHeight, computeCellHeight, onEdit, onDelete, buildContent);
+      return renderActionCell(
+        index,
+        layer,
+        keyPrefix,
+        defaultRowHeight,
+        computeCellHeight,
+        onEdit,
+        onDelete,
+        buildContent,
+      );
     });
   };
 
@@ -456,7 +512,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
               </StratigraphyTableColumn>
               <StratigraphyTableColumn>
                 {renderTableCells(
-                  completedLithologies,
+                  tmpLithologiesFlat,
                   defaultRowHeight,
                   computeCellHeight,
                   handleEditLithology,
@@ -469,7 +525,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
               </StratigraphyTableColumn>
               <StratigraphyTableColumn>
                 {renderTableCells(
-                  completedLithologicalDescriptions,
+                  tmpLithologicalDescriptionsFlat,
                   defaultRowHeight,
                   computeCellHeight,
                   handleEditLithologicalDescription,
@@ -479,12 +535,12 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
                       {(layer as LithologicalDescription).description}
                     </Typography>
                   ),
-                  "lithologicalDescription",
+                  `lithologicalDescription`,
                 )}
               </StratigraphyTableColumn>
               <StratigraphyTableColumn>
                 {renderTableCells(
-                  completedFaciesDescriptions,
+                  tmpFaciesDescriptionsFlat,
                   defaultRowHeight,
                   computeCellHeight,
                   handleEditFaciesDescription,
@@ -492,37 +548,25 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
                   layer => (
                     <FaciesDescriptionLabels description={layer as FaciesDescription} />
                   ),
-                  "faciesDescription",
+                  `faciesDescription`,
                 )}
               </StratigraphyTableColumn>
             </StratigraphyTableContent>
           )}
         </Stack>
-        <AddRowButton
-          onClick={() =>
-            handleEditLithology({
-              fromDepth: depths?.at(-1)?.toDepth,
-              toDepth: undefined,
-              id: 0,
-              isGap: false,
-              stratigraphyId: 0,
-              isUnconsolidated: tmpLithologiesFlat?.at(-1)?.isUnconsolidated ?? true,
-              hasBedding: false,
-            })
-          }
-        />
+        <AddRowButton onClick={() => handleEditLithology(-1)} />
       </Stack>
       <LithologyModal lithology={selectedLithology} updateLithology={updateTmpLithology} />
       <LithologicalDescriptionModal
         description={selectedLithologicalDescription}
-        fromDepths={getDepthOptions(selectedLithologicalDescription, completedLithologicalDescriptions)}
-        toDepths={getDepthOptions(selectedLithologicalDescription, completedLithologicalDescriptions, true)}
+        fromDepths={getDepthOptions(selectedLithologicalDescription, tmpLithologicalDescriptionsFlat)}
+        toDepths={getDepthOptions(selectedLithologicalDescription, tmpLithologicalDescriptionsFlat, true)}
         updateLithologicalDescription={updateTmpLithologicalDescription}
       />
       <FaciesDescriptionModal
         description={selectedFaciesDescription}
-        fromDepths={getDepthOptions(selectedFaciesDescription, completedFaciesDescriptions)}
-        toDepths={getDepthOptions(selectedFaciesDescription, completedFaciesDescriptions, true)}
+        fromDepths={getDepthOptions(selectedFaciesDescription, tmpFaciesDescriptionsFlat)}
+        toDepths={getDepthOptions(selectedFaciesDescription, tmpFaciesDescriptionsFlat, true)}
         updateFaciesDescription={updateTmpFaciesDescription}
       />
     </>
