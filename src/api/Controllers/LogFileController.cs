@@ -220,9 +220,7 @@ public class LogFileController : ControllerBase
         var logFileIds = logFileUpdates.Select(d => d.Id).ToList();
 
         var (logFiles, errorResult) = await ValidateAndGetLogFilesAsync(logFileIds).ConfigureAwait(false);
-        if (errorResult != null)
-            return errorResult;
-
+        if (errorResult != null) return errorResult;
         foreach (var logFile in logFiles)
         {
             var updateData = logFileUpdates.FirstOrDefault(d => d.Id == logFile.Id);
