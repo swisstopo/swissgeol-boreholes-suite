@@ -99,10 +99,11 @@ public class LogFileControllerTest
         await UploadTestLogFile(logRun.Id);
 
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_admin", logRun.BoreholeId))
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", logRun.BoreholeId))
             .ReturnsAsync(false);
 
-        var response = await controller.DownloadAsync(logRun.Id);
+        var uploadedFile = context.LogFiles.Single(f => f.LogRunId == logRun.Id);
+        var response = await controller.DownloadAsync(uploadedFile.Id);
         ActionResultAssert.IsUnauthorized(response);
     }
 

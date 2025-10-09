@@ -106,7 +106,7 @@ public class LogFileController : ControllerBase
                 .FirstOrDefaultAsync(f => f.Id == id)
                 .ConfigureAwait(false);
 
-            if (logFile == null|| logFile.NameUuid == null)
+            if (logFile == null || logFile.NameUuid == null)
             {
                 return NotFound($"File with id {id} not found.");
             }
@@ -195,38 +195,13 @@ public class LogFileController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult> DeleteAsync([FromQuery][MaxLength(100)] IReadOnlyList<int> logFileIds)
     {
-        if (logFileIds == null || logFileIds.Count == 0)
-        {
-            return BadRequest("The list of logFileIds must not be empty.");
-        }
+        var (logFiles, errorResult) = await ValidateAndGetLogFilesAsync(logFileIds).ConfigureAwait(false);
+        if (errorResult != null)
+            return errorResult;
 
-        var logFiles = await context.LogFiles
-            .Include(lf => lf.LogRun)
-            .Where(lf => logFileIds.Contains(lf.Id))
-            .ToListAsync()
-            .ConfigureAwait(false);
+        await logFileCloudService.DeleteObjects(logFiles!.Select(lf => lf.NameUuid!)).ConfigureAwait(false);
 
-        if (logFiles.Count == 0)
-        {
-            return NotFound();
-        }
-
-        // Make sure all log files belong to the same borehole
-        var boreholeIds = logFiles.Select(lf => lf.LogRun!.BoreholeId).Distinct().ToList();
-        if (boreholeIds.Count != 1)
-        {
-            return BadRequest("Not all log files are associated with the same borehole.");
-        }
-
-        var boreholeId = boreholeIds.Single();
-        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
-        {
-            return Unauthorized();
-        }
-
-        await logFileCloudService.DeleteObjects(logFiles.Select(lf => lf.NameUuid!)).ConfigureAwait(false);
-
-        context.RemoveRange(logFiles);
+        context.RemoveRange(logFiles!);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
         return Ok();
@@ -248,29 +223,9 @@ public class LogFileController : ControllerBase
 
         var logFileIds = logFileUpdates.Select(d => d.Id).ToList();
 
-        var logFiles = await context.LogFiles
-            .Include(lf => lf.LogRun)
-            .Where(lf => logFileIds.Contains(lf.Id))
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        if (logFiles.Count == 0)
-        {
-            return NotFound();
-        }
-
-        // Make sure all log files belong to the same borehole
-        var boreholeIds = logFiles.Select(lf => lf.LogRun!.BoreholeId).Distinct().ToList();
-        if (boreholeIds.Count != 1)
-        {
-            return BadRequest("Not all log files are associated with the same borehole.");
-        }
-
-        var boreholeId = boreholeIds.Single();
-        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
-        {
-            return Unauthorized();
-        }
+        var (logFiles, errorResult) = await ValidateAndGetLogFilesAsync(logFileIds).ConfigureAwait(false);
+        if (errorResult != null)
+            return errorResult;
 
         foreach (var logFile in logFiles)
         {
@@ -289,5 +244,31 @@ public class LogFileController : ControllerBase
         await context.SaveChangesAsync().ConfigureAwait(false);
 
         return Ok();
+    }
+
+    private async Task<(List<LogFile>? LogFiles, ActionResult? ErrorResult)>
+    ValidateAndGetLogFilesAsync(IReadOnlyList<int> logFileIds)
+    {
+        if (logFileIds == null || logFileIds.Count == 0)
+            return (null, BadRequest("The list of logFileIds must not be empty."));
+
+        var logFiles = await context.LogFiles
+            .Include(lf => lf.LogRun)
+            .Where(lf => logFileIds.Contains(lf.Id))
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        if (logFiles.Count == 0)
+            return (null, NotFound());
+
+        var boreholeIds = logFiles.Select(lf => lf.LogRun!.BoreholeId).Distinct().ToList();
+        if (boreholeIds.Count != 1)
+            return (null, BadRequest("Not all log files are associated with the same borehole."));
+
+        var boreholeId = boreholeIds.Single();
+        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
+            return (null, Unauthorized());
+
+        return (logFiles, null);
     }
 }
