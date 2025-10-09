@@ -2089,7 +2089,7 @@ namespace BDMS.Migrations
 
                     b.HasIndex("CodelistId");
 
-                    b.ToTable("logfile_tooltype_codelist", "bdms");
+                    b.ToTable("log_file_tool_type_codelist", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.LogRun", b =>
