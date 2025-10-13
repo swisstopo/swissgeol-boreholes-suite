@@ -239,6 +239,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.TopBedrockIntersected, f => f.Random.Bool().OrNull(f, .2f))
            .RuleFor(o => o.Photos, _ => new Collection<Photo>())
            .RuleFor(o => o.Documents, _ => new Collection<Document>())
+           .RuleFor(o => o.LogRuns, _ => new Collection<LogRun>())
            .FinishWith((f, o) => { o.Name = o.OriginalName; });
 
         Borehole SeededBoreholes(int seed) => fakeBoreholes.UseSeed(seed).Generate();
@@ -1437,6 +1438,119 @@ public static class BdmsContextExtensions
 
         context.BulkInsert(lithostratigraphiesToInsert, bulkConfig);
 
+        // Seed log runs
+        // Each ten log runs should be associated with the one borehole.
+        int GetBoreholeId(int currentLogRunId, int startId)
+        {
+            return 1_000_000 + (int)Math.Floor((double)((currentLogRunId - startId) / 10));
+        }
+
+        var boreholeStatusIds = codelists.Where(c => c.Schema == "log_borehole_status").Select(s => s.Id).ToList();
+        var conveyanceMethodIds = codelists.Where(c => c.Schema == "log_convenyance_method").Select(s => s.Id).ToList();
+        var toolTypeIds = codelists.Where(c => c.Schema == "log_tool_type").Select(s => s.Id).ToList();
+        var passTypeIds = codelists.Where(c => c.Schema == "log_pass_type").Select(s => s.Id).ToList();
+        var depthTypeIds = codelists.Where(c => c.Schema == "log_depth_type").Select(s => s.Id).ToList();
+        var dataPackageIds = codelists.Where(c => c.Schema == "log_data_package").Select(s => s.Id).ToList();
+
+        var logRun_ids = 24_000_000;
+        var logRunRange = Enumerable.Range(logRun_ids, 1000);
+        var fakeLogRuns = new Faker<LogRun>()
+            .StrictMode(true)
+            .RuleFor(o => o.Id, f => logRun_ids++)
+            .RuleFor(o => o.BoreholeId, f => GetBoreholeId(logRun_ids, 24_000_000))
+            .RuleFor(o => o.Borehole, _ => default!)
+            .RuleFor(o => o.RunNumber, f => $"R{f.Random.Number(1, 99):D2}")
+            .RuleFor(o => o.FromDepth, f => (logRun_ids % 10) * 10)
+            .RuleFor(o => o.ToDepth, f => ((logRun_ids % 10) + 1) * 10)
+            .RuleFor(o => o.RunDate, f => DateOnly.FromDateTime(f.Date.Past()))
+            .RuleFor(o => o.Comment, f => f.Lorem.Sentence().OrNull(f, .4f))
+            .RuleFor(o => o.BitSize, f => f.Random.Double(5, 30))
+            .RuleFor(o => o.ConveyanceMethodId, f => f.PickRandom(conveyanceMethodIds).OrNull(f, .1f))
+            .RuleFor(o => o.ConveyanceMethod, _ => default!)
+            .RuleFor(o => o.BoreholeStatusId, f => f.PickRandom(boreholeStatusIds).OrNull(f, .1f))
+            .RuleFor(o => o.BoreholeStatus, _ => default!)
+            .RuleFor(o => o.LogFiles, _ => new Collection<LogFile>())
+            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, _ => default!)
+            .RuleFor(o => o.ServiceCo, f => f.Random.Word());
+
+        LogRun SeededLogRuns(int seed) => fakeLogRuns.UseSeed(seed).Generate();
+        var logRuns = logRunRange.Select(SeededLogRuns).ToList();
+        context.BulkInsert(logRuns, bulkConfig);
+
+        // Seed log files
+        var logFile_ids = 25_000_000;
+
+        var fakeLogFiles = new Faker<LogFile>()
+            .StrictMode(true)
+            .RuleFor(o => o.Id, f => logFile_ids++)
+            .RuleFor(o => o.LogRunId, f => f.PickRandom(logRuns).Id)
+            .RuleFor(o => o.LogRun, _ => default!)
+            .RuleFor(o => o.Name, f => f.System.FileName())
+            .RuleFor(o => o.NameUuid, f => f.Random.Uuid().ToString())
+            .RuleFor(o => o.FileType, f => f.Random.Word())
+            .RuleFor(o => o.PassTypeId, f => f.PickRandom(passTypeIds).OrNull(f, .1f))
+            .RuleFor(o => o.PassType, _ => default!)
+            .RuleFor(o => o.Pass, f => f.Random.Int(1, 5).OrNull(f, .2f))
+            .RuleFor(o => o.DataPackageId, f => f.PickRandom(dataPackageIds).OrNull(f, .1f))
+            .RuleFor(o => o.DataPackage, _ => default!)
+            .RuleFor(o => o.DeliveryDate, f => DateOnly.FromDateTime(f.Date.Past()).OrNull(f, .1f))
+            .RuleFor(o => o.DepthTypeId, f => f.PickRandom(depthTypeIds).OrNull(f, .1f))
+            .RuleFor(o => o.DepthType, _ => default!)
+            .RuleFor(o => o.ToolTypeCodelistIds, _ => new List<int>())
+            .RuleFor(o => o.ToolTypeCodelists, _ => new Collection<Codelist>())
+            .RuleFor(o => o.LogFileToolTypeCodes, _ => new List<LogFileToolTypeCodes>())
+            .RuleFor(o => o.Public, f => f.Random.Bool(.9f))
+            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.UpdatedById, f => f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, _ => default!);
+
+        // Generate 1-4 log files per log run
+        var logFilesToInsert = new List<LogFile>();
+        foreach (var logRunId in logRuns.Select(l => l.Id))
+        {
+            int fileCount = new Random(logRunId).Next(1, 5);
+            for (int i = 0; i < fileCount; i++)
+            {
+                var logFile = fakeLogFiles
+                    .UseSeed(logFile_ids + i)
+                    .RuleFor(o => o.LogRunId, _ => logRunId)
+                    .Generate();
+                logFilesToInsert.Add(logFile);
+            }
+        }
+
+        context.BulkInsert(logFilesToInsert, bulkConfig);
+
+        var logFileToolTypeRelationships = new List<LogFileToolTypeCodes>();
+        foreach (var logFileId in logFilesToInsert.Select(l => l.Id))
+        {
+            int toolCount = new Random(logFileId).Next(1, 4);
+
+            var selectedToolTypeIds = toolTypeIds
+                .OrderBy(_ => new Random(logFileId).Next())
+                .Take(toolCount)
+                .ToList();
+
+            foreach (var toolTypeId in selectedToolTypeIds)
+            {
+                logFileToolTypeRelationships.Add(new LogFileToolTypeCodes
+                {
+                    LogFileId = logFileId,
+                    CodelistId = toolTypeId,
+                });
+            }
+        }
+
+        context.BulkInsert(logFileToolTypeRelationships, bulkConfig);
+
         // Sync all database sequences
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workgroups', 'id_wgp'), {workgroup_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.borehole', 'id_bho'), {borehole_ids - 1})");
@@ -1458,6 +1572,8 @@ public static class BdmsContextExtensions
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow', 'id'), {workflow_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workflow_change', 'workflow_change_id'), {workflowChange_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.document', 'id'), {document_ids - 1})");
+        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.log_run', 'id'), {logRun_ids - 1})");
+        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.log_file', 'id'), {logFile_ids - 1})");
     }
 }
 #pragma warning restore CA1505
