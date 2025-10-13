@@ -160,7 +160,6 @@ const checkLayerDepths = (depths: LayerDepth[]) => {
       }
     }
   }
-  console.log("Checked final layer depths:", [...checkedLayerDepths]);
   return checkedLayerDepths;
 };
 
