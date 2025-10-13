@@ -330,6 +330,7 @@ export const getLayersWithGaps = (
       // For each gap between layers, add a gap for each matching depths entry
       resultLayers.push(...checkForGapsBetween(depths, current, prev));
 
+      // Add the current layer
       resultLayers.push({
         item: { ...current.item, isGap: current.item.isGap ?? false },
         hasChanges: current.hasChanges ?? false,
