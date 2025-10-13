@@ -111,14 +111,14 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
                   fieldName={"fromDepth"}
                   label={"fromdepth"}
                   required={true}
-                  value={String(lithology?.fromDepth)}
+                  value={lithology?.fromDepth}
                   withThousandSeparator={true}
                 />
                 <FormInput
                   fieldName={"toDepth"}
                   label={"todepth"}
                   required={true}
-                  value={String(lithology?.toDepth)}
+                  value={lithology?.toDepth}
                   withThousandSeparator={true}
                 />
               </FormContainer>
