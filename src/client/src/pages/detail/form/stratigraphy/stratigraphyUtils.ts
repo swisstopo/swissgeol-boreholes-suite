@@ -1,6 +1,14 @@
 import { BaseLayer, FaciesDescription, LithologicalDescription } from "../../../../api/stratigraphy.ts";
 import { LayerDepth, Lithology } from "./lithology.ts";
 
+const createGapLayerDepth = (fromDepth: number, toDepth: number): LayerDepth => ({
+  fromDepth,
+  toDepth,
+  lithologyId: 0,
+  hasFromDepthError: true,
+  hasToDepthError: true,
+});
+
 const checkDescriptionDepthExtendingCurrentLayers = (descriptions: BaseLayer[], layerDepths: LayerDepth[]) => {
   const firstLayer = layerDepths.at(0)!;
   const lastLayer = layerDepths.at(-1)!;
@@ -9,23 +17,11 @@ const checkDescriptionDepthExtendingCurrentLayers = (descriptions: BaseLayer[], 
   const lastDescription = descriptions.at(-1)!;
 
   if (firstDescription.fromDepth < firstLayer.fromDepth) {
-    layerDepths.push({
-      fromDepth: firstDescription.fromDepth,
-      toDepth: firstLayer.fromDepth,
-      lithologyId: 0,
-      hasFromDepthError: true,
-      hasToDepthError: true,
-    });
+    layerDepths.push(createGapLayerDepth(firstDescription.fromDepth, firstLayer.fromDepth));
   }
 
   if (lastLayer.toDepth < lastDescription.toDepth) {
-    layerDepths.push({
-      fromDepth: lastLayer.toDepth,
-      toDepth: lastDescription.toDepth,
-      lithologyId: 0,
-      hasFromDepthError: true,
-      hasToDepthError: true,
-    });
+    layerDepths.push(createGapLayerDepth(lastLayer.toDepth, lastDescription.toDepth));
   }
 };
 
@@ -41,13 +37,7 @@ const checkLayerForMultipleDescriptionDepthsFullyWithin = (descriptions: BaseLay
         // Remove the original layer
         layerDepths.splice(i, 1);
         // Insert new layers for each description
-        const newLayers = matchingDescriptions.map(d => ({
-          fromDepth: d.fromDepth,
-          toDepth: d.toDepth,
-          lithologyId: 0,
-          hasFromDepthError: true,
-          hasToDepthError: true,
-        }));
+        const newLayers = matchingDescriptions.map(d => createGapLayerDepth(d.fromDepth, d.toDepth));
         layerDepths.splice(i, 0, ...newLayers);
         i += newLayers.length - 1;
       }
@@ -69,31 +59,13 @@ const checkLayerForDescriptionDepthOverlapping = (descriptions: BaseLayer[], lay
         let start = layer.fromDepth;
         for (const desc of overlappingDescriptions) {
           if (desc.fromDepth > start) {
-            splits.push({
-              fromDepth: start,
-              toDepth: desc.fromDepth,
-              lithologyId: 0,
-              hasFromDepthError: true,
-              hasToDepthError: true,
-            });
+            splits.push(createGapLayerDepth(start, desc.fromDepth));
           }
-          splits.push({
-            fromDepth: Math.max(start, desc.fromDepth),
-            toDepth: Math.min(layer.toDepth, desc.toDepth),
-            lithologyId: 0,
-            hasFromDepthError: true,
-            hasToDepthError: true,
-          });
+          splits.push(createGapLayerDepth(Math.max(start, desc.fromDepth), Math.min(layer.toDepth, desc.toDepth)));
           start = Math.min(layer.toDepth, desc.toDepth);
         }
         if (start < layer.toDepth) {
-          splits.push({
-            fromDepth: start,
-            toDepth: layer.toDepth,
-            lithologyId: 0,
-            hasFromDepthError: true,
-            hasToDepthError: true,
-          });
+          splits.push(createGapLayerDepth(start, layer.toDepth));
         }
         // Remove the original gap and insert the splits
         layerDepths.splice(i, 1, ...splits);
@@ -109,13 +81,7 @@ const checkDescriptionDepthLayers = (descriptions: BaseLayer[], layerDepths: Lay
   // If there are no current layers, add all descriptions as gap layers
   if (layerDepths.length === 0) {
     for (const description of descriptions) {
-      layerDepths.push({
-        fromDepth: description.fromDepth,
-        toDepth: description.toDepth,
-        lithologyId: 0,
-        hasFromDepthError: true,
-        hasToDepthError: true,
-      });
+      layerDepths.push(createGapLayerDepth(description.fromDepth, description.toDepth));
     }
     return;
   }
