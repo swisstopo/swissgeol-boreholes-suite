@@ -38,6 +38,7 @@ export const LogTable: FC<LogTableProps> = ({ runs, isLoading }) => {
   const deleteLogRun = () => {
     console.log("Delete log runs", selectionModel);
   };
+  
   const exportData = () => {
     console.log("Export log runs", selectionModel);
   };
