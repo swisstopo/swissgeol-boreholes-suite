@@ -6,7 +6,7 @@ import { useResetTabStatus } from "../../hooks/useResetTabStatus.ts";
 import { useSaveOnCtrlS } from "../../hooks/useSaveOnCtrlS";
 import { TabName } from "../../pages/detail/form/workflow/workflow.ts";
 import { FormContainer } from "../form/form";
-import { useFormDirtyChanges } from "../form/useFormDirtyChanges.tsx";
+import { useFormDirtyMarkAsChanged } from "../form/useFormDirty.tsx";
 import { useValidateFormOnMount } from "../form/useValidateFormOnMount.tsx";
 import { DataCardContext } from "./dataCardContext.tsx";
 import { DataCardSaveAndCancelButtons } from "./saveAndCancelButtons.tsx";
@@ -63,7 +63,7 @@ export const DataInputCard = <T extends FieldValues>({
 
   useValidateFormOnMount({ formMethods });
   useSaveOnCtrlS(handleSubmit(submitForm));
-  useFormDirtyChanges({ formState });
+  useFormDirtyMarkAsChanged({ formState });
 
   return (
     <FormProvider {...formMethods}>

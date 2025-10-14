@@ -8,7 +8,7 @@ import { FormCheckbox } from "../../../../components/form/formCheckbox.tsx";
 import { FormContainer } from "../../../../components/form/formContainer.tsx";
 import { FormInput } from "../../../../components/form/formInput.tsx";
 import { ensureDatetime } from "../../../../components/form/formUtils.ts";
-import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges.tsx";
+import { useFormDirtyMarkAsChanged } from "../../../../components/form/useFormDirty.tsx";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 import { StratigraphyContext, StratigraphyContextProps } from "./stratigraphyContext.tsx";
 
@@ -30,7 +30,7 @@ export const StratigraphyForm: FC<StratigraphyFormProps> = ({
   } = useStratigraphyMutations();
   const formMethods = useForm<Stratigraphy>({ mode: "all" });
   const { formState, getValues } = formMethods;
-  useFormDirtyChanges({ formState });
+  useFormDirtyMarkAsChanged({ formState });
   const { registerSaveHandler, registerResetHandler } = useContext<StratigraphyContextProps>(StratigraphyContext);
   const showApiErrorAlert = useApiErrorAlert();
 

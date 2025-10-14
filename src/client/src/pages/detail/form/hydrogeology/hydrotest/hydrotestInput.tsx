@@ -11,7 +11,7 @@ import { DataCardSaveAndCancelButtons } from "../../../../../components/dataCard
 import { useUnsavedChangesPrompt } from "../../../../../components/dataCard/useUnsavedChangesPrompt.tsx";
 import { FormContainer, FormDomainMultiSelect, FormDomainSelect, FormInput } from "../../../../../components/form/form";
 import { parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
-import { useFormDirtyChanges } from "../../../../../components/form/useFormDirtyChanges.tsx";
+import { useFormDirtyMarkAsChanged } from "../../../../../components/form/useFormDirty.tsx";
 import { useValidateFormOnMount } from "../../../../../components/form/useValidateFormOnMount.tsx";
 import { useResetTabStatus } from "../../../../../hooks/useResetTabStatus.ts";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils";
@@ -72,7 +72,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
   });
 
   useValidateFormOnMount({ formMethods });
-  useFormDirtyChanges({ formState });
+  useFormDirtyMarkAsChanged({ formState });
 
   const getFilteredDomains = (schema: string, data: Codelist[]) =>
     data?.filter(c => c.schema === schema).map(c => c.id) || [];
