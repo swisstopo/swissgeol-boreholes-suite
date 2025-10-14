@@ -1,5 +1,7 @@
-import { useQuery, UseQueryResult } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
+import { User } from "../../../../api/apiInterfaces.ts";
 import { fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
+import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 
 export interface LogRun {
   id: number;
@@ -14,6 +16,8 @@ export interface LogRun {
   conveyanceMethodId: number;
   boreholeStatusId?: number;
   logFiles: LogFile[];
+  createdBy?: User | null;
+  updatedBy?: User | null;
 }
 
 export interface LogFile {
@@ -33,3 +37,50 @@ export const useLogsByBoreholeId = (boreholeId?: number): UseQueryResult<LogRun[
     },
     enabled: !!boreholeId,
   });
+
+const logRunController = "logrun";
+
+export const useLogRunMutations = () => {
+  const queryClient = useQueryClient();
+  const resetTabStatus = useResetTabStatus(["log"]);
+
+  const useAddLogRun = useMutation({
+    mutationFn: async (logRun: LogRun) => {
+      return await fetchApiV2WithApiError(logRunController, "POST", logRun);
+    },
+    onSuccess: (_data, logRun) => {
+      resetTabStatus();
+      queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRun.boreholeId] });
+    },
+  });
+
+  const useUpdateLogRun = useMutation({
+    mutationFn: async (logRun: LogRun) => {
+      // remove derived objects
+      delete logRun.createdBy;
+      delete logRun.updatedBy;
+
+      return await fetchApiV2WithApiError(logRunController, "PUT", logRun);
+    },
+    onSuccess: (_data, logRun) => {
+      resetTabStatus();
+      queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRun.boreholeId] });
+    },
+  });
+
+  const useDeleteLogRun = useMutation({
+    mutationFn: async (logRun: LogRun) => {
+      return await fetchApiV2WithApiError(`${logRunController}?id=${logRun.id}`, "DELETE");
+    },
+    onSuccess: (_data, logRun) => {
+      resetTabStatus();
+      queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRun.boreholeId] });
+    },
+  });
+
+  return {
+    add: useAddLogRun,
+    update: useUpdateLogRun,
+    delete: useDeleteLogRun,
+  };
+};

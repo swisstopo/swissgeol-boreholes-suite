@@ -2,14 +2,14 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { User } from "./apiInterfaces.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 
-export const fetchCurrentUser = async (): Promise<User> => await fetchApiV2WithApiError("user/self", "GET");
+export const fetchCurrentUser = async (): Promise<User> => await fetchApiV2WithApiError<User>("user/self", "GET");
 
 export const fetchUser = async (id: number): Promise<User> => await fetchApiV2WithApiError(`user/${id}`, "GET");
 
-export const fetchUsers = async (): Promise<User[]> => await fetchApiV2WithApiError("user", "GET");
+export const fetchUsers = async (): Promise<User[]> => await fetchApiV2WithApiError<User[]>("user", "GET");
 
 export const fetchEditorUsersOnWorkgroup = async (workgroupId: number): Promise<User[]> =>
-  await fetchApiV2WithApiError(`user/editorsOnWorkgroup/${workgroupId}`, "GET");
+  await fetchApiV2WithApiError<User[]>(`user/editorsOnWorkgroup/${workgroupId}`, "GET");
 
 export const updateUser = async (user: User) => {
   if (user.disabledAt) {

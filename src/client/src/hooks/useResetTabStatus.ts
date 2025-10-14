@@ -13,8 +13,8 @@ export const useResetTabStatus = (tabsToReset: TabName[]) => {
   if (isLoading || !borehole) return () => {};
 
   return () => {
-    const anyTabIsReviewed = tabsToReset.some(tab => borehole.workflow?.reviewedTabs[tab] === true);
-    const anyTabIsPublished = tabsToReset.some(tab => borehole.workflow?.publishedTabs[tab] === true);
+    const anyTabIsReviewed = tabsToReset.some(tab => borehole?.workflow?.reviewedTabs[tab] === true);
+    const anyTabIsPublished = tabsToReset.some(tab => borehole?.workflow?.publishedTabs[tab] === true);
 
     if (!anyTabIsReviewed && !anyTabIsPublished) return;
 
@@ -25,7 +25,7 @@ export const useResetTabStatus = (tabsToReset: TabName[]) => {
 
     if (anyTabIsReviewed) {
       updateTabStatus({
-        boreholeId: borehole.id,
+        boreholeId: borehole?.id,
         tab: TabType.Reviewed,
         changes,
       });
@@ -33,7 +33,7 @@ export const useResetTabStatus = (tabsToReset: TabName[]) => {
 
     if (anyTabIsPublished) {
       updateTabStatus({
-        boreholeId: borehole.id,
+        boreholeId: borehole?.id,
         tab: TabType.Published,
         changes,
       });
