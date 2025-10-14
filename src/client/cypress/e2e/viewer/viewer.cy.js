@@ -15,7 +15,7 @@ describe("Viewer tests", () => {
     loginAsViewer();
     showTableAndWaitForData();
 
-    // TODO: Re-add when import is fixed
+    // TODO: Re-add when import is fixed https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
     // getElementByDataCy("import-borehole-button").should("have.class", "Mui-disabled");
     getElementByDataCy("new-borehole-button").should("have.class", "Mui-disabled");
 
@@ -83,7 +83,7 @@ describe("Viewer tests", () => {
     cy.contains("No borehole architecture available").should("exist");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(500);
-    // Todo reanable and fix flakiness
+    // Todo reanable and fix flakiness https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2390
     // navigateInSidebar(SidebarMenuItem.hydrogeology);
     // navigateInSidebar(SidebarMenuItem.waterIngress);
     // cy.contains("No water ingresses available").should("exist");

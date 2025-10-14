@@ -52,13 +52,16 @@ export const FormSegmentBox = styled(Box)({
   padding: theme.spacing(3),
 });
 
-export const DialogHeaderContainer = styled(Box)({
+export const DialogHeaderContainer = styled(Stack)({
   borderBottom: "1px solid " + theme.palette.border.light,
   paddingTop: theme.spacing(3),
   paddingRight: theme.spacing(3),
   paddingLeft: theme.spacing(3),
   paddingBottom: theme.spacing(2),
   flex: 0,
+  flexDirection: "row",
+  justifyContent: "flex-start",
+  alignItems: "center",
 });
 
 export const DialogMainContent = styled(Box)({
@@ -67,10 +70,14 @@ export const DialogMainContent = styled(Box)({
   overflow: "auto",
 });
 
-export const DialogFooterContainer = styled(Box)({
+export const DialogFooterContainer = styled(Stack)({
   borderTop: "1px solid " + theme.palette.border.light,
   padding: theme.spacing(3),
   flex: 0,
+  flexDirection: "row",
+  justifyContent: "flex-end",
+  alignItems: "center",
+  gap: theme.spacing(0.75),
 });
 
 export const DetailHeaderStack = styled(Stack)({

@@ -13,10 +13,12 @@ export const FaciesDescriptionLabels: FC<FaciesDescriptionLabelsProps> = ({ desc
 
   return (
     <>
-      <Typography variant="body1" fontWeight={700}>
-        {description.description}
-      </Typography>
-      {faciesId && <Typography variant="body2">{getCodelistDisplayValues(faciesId).text}</Typography>}
+      {faciesId && (
+        <Typography variant="body1" fontWeight={700}>
+          {getCodelistDisplayValues(faciesId).text}
+        </Typography>
+      )}
+      <Typography variant="body2">{description.description}</Typography>
     </>
   );
 };

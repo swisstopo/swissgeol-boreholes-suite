@@ -5,6 +5,7 @@ import { styled } from "@mui/system";
 import { Copy, Plus, Trash2, TriangleAlert } from "lucide-react";
 import { BaseLayer } from "../../../../api/stratigraphy.ts";
 import { theme } from "../../../../AppTheme.ts";
+import { StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
 
 export const StratigraphyTableHeader = styled(Stack)(() => ({
   flexDirection: "row",
@@ -59,14 +60,16 @@ export const StratigraphyTableCellRow = styled(Stack)(() => ({
 
 interface StratigraphyTableLayerCellProps {
   children: ReactNode;
+  index: number;
   layer: BaseLayer;
-  onHoverClick?: (layer: BaseLayer) => void;
-  onClick?: (layer: BaseLayer) => void;
+  onHoverClick?: (index: number) => void;
+  onClick?: (index: number) => void;
   sx?: SxProps;
 }
 
 export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = ({
   children,
+  index,
   layer,
   onHoverClick,
   onClick,
@@ -101,7 +104,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
       }}
       onClick={() => {
         if (onClick && isEditing) {
-          onClick(layer);
+          onClick(index);
         }
       }}>
       <StratigraphyTableCellRow
@@ -113,19 +116,14 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
           <Typography variant="body1">{layer?.fromDepth} m MD</Typography>
         )}
         {onHoverClick && (
-          <IconButton
-            color={"primaryInverse"}
-            sx={{
-              borderRadius: theme.spacing(0.5),
-              width: "36px",
-              height: "36px",
-            }}
+          <StandaloneIconButton
+            icon={isEditing ? <Trash2 /> : <Copy />}
             onClick={e => {
               e.stopPropagation();
-              onHoverClick(layer);
-            }}>
-            {isEditing ? <Trash2 /> : <Copy />}
-          </IconButton>
+              onHoverClick(index);
+            }}
+            color={"primaryInverse"}
+          />
         )}
       </StratigraphyTableCellRow>
       <Stack
@@ -149,12 +147,12 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
 };
 
 interface StratigraphyTableGapProps {
-  layer: BaseLayer;
-  onClick?: (layer: BaseLayer) => void;
+  index: number;
+  onClick?: (index: number) => void;
   sx?: SxProps;
 }
 
-export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ layer, onClick, sx }) => {
+export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ index, onClick, sx }) => {
   const { t } = useTranslation();
   return (
     <StratigraphyTableCell
@@ -172,7 +170,7 @@ export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ layer, onC
       }}
       onClick={() => {
         if (onClick) {
-          onClick(layer);
+          onClick(index);
         }
       }}>
       <StratigraphyTableCellRow color={theme.palette.error.main}>
@@ -189,8 +187,13 @@ export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ layer, onC
   );
 };
 
-export const LayerAddButton = () => (
+interface AddButtonProps {
+  onClick?: () => void;
+}
+
+export const LayerAddButton: FC<AddButtonProps> = ({ onClick }) => (
   <IconButton
+    onClick={onClick}
     sx={{
       borderRadius: "50%",
       backgroundColor: theme.palette.primary.main,
@@ -205,7 +208,7 @@ export const LayerAddButton = () => (
   </IconButton>
 );
 
-export const AddRowButton = () => {
+export const AddRowButton: FC<AddButtonProps> = ({ onClick }) => {
   const dashedOutlineImage = `url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%23C6D3DA' stroke-width='1' stroke-dasharray='9%2C9' stroke-dashoffset='0' stroke-linecap='square'/%3E%3C/svg%3E")`;
   const dashedOutlineImageHover = `url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%23ACB4BD' stroke-width='1' stroke-dasharray='9%2C9' stroke-dashoffset='0' stroke-linecap='square'/%3E%3C/svg%3E")`;
 
@@ -227,7 +230,7 @@ export const AddRowButton = () => {
           },
         },
       }}>
-      <LayerAddButton />
+      <LayerAddButton onClick={onClick} />
     </Stack>
   );
 };

@@ -380,7 +380,7 @@ describe("Tests the publication workflow.", () => {
     });
   });
 
-  // TODO: Re-add and fix navigation to location tab
+  // TODO: Re-add and fix navigation to location tab https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2390
   it.skip("Resets reviewed and published checkboxes when borehole tabs change", () => {
     createBoreholeWithCompleteDataset().as("borehole_id");
     cy.get("@borehole_id").then(id => {

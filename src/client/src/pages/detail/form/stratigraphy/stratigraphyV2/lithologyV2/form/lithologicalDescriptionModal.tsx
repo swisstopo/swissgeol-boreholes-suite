@@ -5,7 +5,7 @@ import { Stack } from "@mui/material";
 import { LithologicalDescription } from "../../../../../../../api/stratigraphy.ts";
 import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
 import { FormContainer } from "../../../../../../../components/form/form.ts";
-import { useFormDirtyChanges } from "../../../../../../../components/form/useFormDirtyChanges.tsx";
+import { useFormDirty } from "../../../../../../../components/form/useFormDirty.tsx";
 import { BasicDataFormSection } from "./basicDataFormSection.tsx";
 import { FormDialog } from "./formDialog.tsx";
 import { RemarksFormSection } from "./remarksFormSection.tsx";
@@ -26,7 +26,7 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
   const { t } = useTranslation();
   const formMethods = useForm<LithologicalDescription>({ mode: "all" });
   const { formState, getValues } = formMethods;
-  useFormDirtyChanges({ formState });
+  const isDirty = useFormDirty({ formState });
 
   useEffect(() => {
     if (description) {
@@ -36,9 +36,12 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
 
   const closeDialog = async () => {
     const isValid = await formMethods.trigger();
-    if (!formState.isDirty || isValid) {
+    if (!isDirty || isValid) {
       const values = getValues();
-      updateLithologicalDescription({ ...description, ...values } as LithologicalDescription, formState.isDirty);
+      updateLithologicalDescription(
+        { ...description, ...values } as LithologicalDescription,
+        isDirty || (Boolean(description?.isGap) && isValid),
+      );
     }
   };
 

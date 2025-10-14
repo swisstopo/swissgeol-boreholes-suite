@@ -17,7 +17,6 @@ import { useCompletedLayers } from "./useCompletedLayers.tsx";
 import { useLayerDepths } from "./useLayerDepths.tsx";
 
 interface LithologyContentEditProps {
-  stratigraphyId: number;
   lithologies: Lithology[];
   lithologicalDescriptions: LithologicalDescription[];
   faciesDescriptions: FaciesDescription[];
@@ -25,14 +24,13 @@ interface LithologyContentEditProps {
 
 // Temporary Lithology View component (read-only, non-editable) to display lithology before panable/zoomable version is fully implemented.
 export const TempLithologyView: FC<LithologyContentEditProps> = ({
-  stratigraphyId,
   lithologies,
   lithologicalDescriptions,
   faciesDescriptions,
 }) => {
   const { t } = useTranslation();
 
-  const { depths } = useLayerDepths(lithologies, lithologicalDescriptions, faciesDescriptions);
+  const { depths } = useLayerDepths(lithologies);
 
   const { completedLayers: completedLithologies } = useCompletedLayers(lithologies, depths);
   const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(lithologicalDescriptions, depths);
@@ -51,6 +49,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
   );
 
   const renderGapCell = (
+    index: number,
     layer: BaseLayer,
     keyPrefix: string,
     defaultRowHeight: number,
@@ -61,11 +60,12 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
       sx={{
         height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
       }}
-      layer={layer}
+      index={index}
     />
   );
 
   const renderActionCell = (
+    index: number,
     layer: BaseLayer,
     keyPrefix: string,
     defaultRowHeight: number,
@@ -77,6 +77,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
       sx={{
         height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
       }}
+      index={index}
       layer={layer}>
       {buildContent(layer)}
     </StratigraphyTableActionCell>
@@ -90,19 +91,13 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
     keyPrefix: string,
   ) => {
     if (!layers || layers.length === 0) {
-      return (
-        <StratigraphyTableGap
-          key={`${keyPrefix}-new`}
-          sx={{ height: `${defaultRowHeight}px` }}
-          layer={{ id: 0, stratigraphyId: stratigraphyId, isGap: true, fromDepth: -1, toDepth: -1 }}
-        />
-      );
+      return <StratigraphyTableGap key={`${keyPrefix}-new`} sx={{ height: `${defaultRowHeight}px` }} index={-1} />;
     }
 
-    return layers.map(layer =>
+    return layers.map((layer, index) =>
       layer.isGap
-        ? renderGapCell(layer, keyPrefix, defaultRowHeight, computeCellHeight)
-        : renderActionCell(layer, keyPrefix, defaultRowHeight, computeCellHeight, buildContent),
+        ? renderGapCell(index, layer, keyPrefix, defaultRowHeight, computeCellHeight)
+        : renderActionCell(index, layer, keyPrefix, defaultRowHeight, computeCellHeight, buildContent),
     );
   };
 

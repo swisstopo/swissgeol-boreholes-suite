@@ -479,6 +479,12 @@ public class Borehole : IChangeTracking, IIdentifyable
     public ICollection<Document>? Documents { get; set; }
 
     /// <summary>
+    /// Gets the <see cref="Borehole"/>'s log runs.
+    /// </summary>
+    [IncludeInExport]
+    public ICollection<LogRun>? LogRuns { get; set; }
+
+    /// <summary>
     /// Gets the <see cref="Codelist"/>s used by the <see cref="Borehole"/> to store multiple id types.
     /// </summary>
     public ICollection<Codelist>? Codelists { get; }

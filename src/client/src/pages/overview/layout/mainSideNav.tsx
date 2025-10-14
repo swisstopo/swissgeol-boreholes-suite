@@ -53,7 +53,7 @@ const MainSideNav = ({
     setSideDrawerContent(DrawerContentTypes.CustomLayers);
   };
 
-  // Todo reactivate import when lithology is fully migrated and importer is adapted to new api
+  // Todo reactivate import when lithology is fully migrated and importer is adapted to new api https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
   // const handleToggleUpload = () => {
   //   handleDrawer(DrawerContentTypes.Import);
   //   setSideDrawerContent(DrawerContentTypes.Import);
@@ -70,7 +70,7 @@ const MainSideNav = ({
   const isFilterPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.Filters;
   const isAddPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.NewBorehole;
   const isLayersPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.CustomLayers;
-  // Todo reactivate import when lithology is fully migrated and importer is adapted to new api
+  // Todo reactivate import when lithology is fully migrated and importer is adapted to new api https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
   // const isUploadPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.Import;
   const editingDisabled = enabledWorkgroups.length === 0;
   const activeFilterCount = filterContext.activeFilterLength + (filterContext.filterPolygon === null ? 0 : 1);
@@ -117,7 +117,7 @@ const MainSideNav = ({
             {/*  selected={isUploadPanelVisible}*/}
             {/*  onClick={handleToggleUpload}*/}
             {/*/>*/}
-            {/*Todo reactivate import when lithology is fully migrated and importer is adapted to new api*/}
+            {/*Todo reactivate import when lithology is fully migrated and importer is adapted to new api https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174*/}
           </>
         )}
         <NavButton

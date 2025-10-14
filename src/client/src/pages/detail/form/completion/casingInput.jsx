@@ -12,7 +12,7 @@ import { useUnsavedChangesPrompt } from "../../../../components/dataCard/useUnsa
 import { FormContainer, FormInput, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
-import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges.js";
+import { useFormDirtyMarkAsChanged } from "../../../../components/form/useFormDirty.tsx";
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { extractCasingDepth } from "./casingUtils.jsx";
@@ -115,7 +115,7 @@ const CasingInput = props => {
   });
 
   useValidateFormOnMount({ formMethods });
-  useFormDirtyChanges({ formState });
+  useFormDirtyMarkAsChanged({ formState });
 
   useEffect(() => {
     trigger("casingElements");

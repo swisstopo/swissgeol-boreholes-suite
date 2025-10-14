@@ -212,7 +212,7 @@ describe("Search filter tests", () => {
     cy.get('[data-cy="filter-chip-boreholestatus"]').contains("Borehole status");
   });
 
-  // Todo: readd when new filtes are implemented
+  // Todo: readd when new filtes are implemented https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2370
   it.skip("filters boreholes by color and uscs3", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();
@@ -230,7 +230,7 @@ describe("Search filter tests", () => {
     cy.get(".MuiDataGrid-row").contains("Aisha Thiel").should("exist");
   });
 
-  // Todo: readd when new filtes are implemented
+  // Todo: readd when new filtes are implemented https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2370
   it.skip("filters boreholes by original lithology in editor mode", () => {
     goToRouteAndAcceptTerms("/");
     getElementByDataCy("show-filter-button").click();

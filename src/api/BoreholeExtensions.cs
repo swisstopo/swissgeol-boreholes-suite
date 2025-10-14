@@ -141,6 +141,7 @@ public static class BoreholeExtensions
         borehole.Observations?.MarkAsNew();
         borehole.BoreholeGeometry?.MarkAsNew();
         borehole.Documents?.MarkAsNew();
+        borehole.LogRuns?.MarkAsNew();
 
         borehole.Workflow = new Workflow
         {

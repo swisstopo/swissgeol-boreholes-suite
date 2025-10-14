@@ -1,20 +1,23 @@
-import { FC, MouseEvent, useEffect } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FC, useEffect } from "react";
+import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { theme } from "../../../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
-import { FormContainer, FormInput } from "../../../../../../../components/form/form.ts";
-import { useFormDirtyChanges } from "../../../../../../../components/form/useFormDirtyChanges.tsx";
-import { Lithology, LithologyDescription } from "../../../lithology.ts";
-import { BasicDataFormSection } from "./basicDataFormSection.tsx";
+import { FormContainer } from "../../../../../../../components/form/formContainer.tsx";
+import { FormInput } from "../../../../../../../components/form/formInput.tsx";
+import { useFormDirty } from "../../../../../../../components/form/useFormDirty.tsx";
+import { Lithology } from "../../../lithology.ts";
 import { FormDialog } from "./formDialog.tsx";
 import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
 import { LithologyUnconsolidatedForm } from "./lithologyUnconsolidatedForm.tsx";
+import {
+  FormErrors,
+  prepareLithologyForSubmit,
+  validateDepths,
+  validateLithologyUnconValues,
+} from "./lithologyUtils.ts";
 import { RemarksFormSection } from "./remarksFormSection.tsx";
-
-type FormError = { type: string; message: string };
-type FormErrors = { [key: string]: FormError | FormErrors };
 
 interface LithologyEditModalProps {
   lithology: Lithology | undefined;
@@ -23,69 +26,34 @@ interface LithologyEditModalProps {
 
 export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateLithology }) => {
   const { t } = useTranslation();
-
-  const lithologyDescriptionsValidate = (descriptions: LithologyDescription[] | undefined) => {
-    if (!descriptions || descriptions.length === 0) return true;
-
-    const index = descriptions?.[0].isFirst ? 0 : 1;
-    const errors: Record<string, string> = {};
-    const fields = [
-      "lithologyUnconMainId",
-      "lithologyUncon2Id",
-      "lithologyUncon3Id",
-      "lithologyUncon4Id",
-      "lithologyUncon5Id",
-      "lithologyUncon6Id",
-    ];
-    for (let i = 0; i < fields.length; i++) {
-      const field = fields[i];
-      const value = descriptions?.[index]?.[field as keyof LithologyDescription] as number;
-      if (value && i > 0) {
-        for (let j = 0; j < i; j++) {
-          const prevValue = descriptions?.[index]?.[fields[j] as keyof LithologyDescription] as number;
-          if (!prevValue) {
-            errors[`lithologyDescriptions.${index}.${fields[j]}`] = "lithologyUnconPreviousRequired";
-          }
-        }
-      }
-    }
-    return Object.keys(errors).length === 0 || errors;
-  };
-
-  const buildErrorStructure = (result: boolean | Record<string, string>, errors: FormErrors) => {
-    for (const [path, message] of Object.entries(result)) {
-      const keys = path.split(".");
-      let curr = errors;
-      for (let i = 0; i < keys.length; i++) {
-        const key = keys[i];
-        if (i === keys.length - 1) {
-          curr[key] = { type: "manual", message };
-        } else {
-          if (typeof curr[key] !== "object" || curr[key] === null || "type" in curr[key]) {
-            curr[key] = {};
-          }
-          curr = curr[key];
-        }
-      }
-    }
-  };
-
   const formMethods = useForm<Lithology>({
     mode: "all",
     resolver: async values => {
       const errors: FormErrors = {};
-      const result = lithologyDescriptionsValidate(values.lithologyDescriptions);
-      if (result !== true) {
-        buildErrorStructure(result, errors);
-      }
+      validateDepths(values, errors);
+      validateLithologyUnconValues(values.lithologyDescriptions, errors);
       return { values, errors };
     },
   });
-  const { formState, getValues, setValue } = formMethods;
-  useFormDirtyChanges({ formState });
+  const { formState, getValues } = formMethods;
+  const isDirty = useFormDirty({ formState });
 
   useEffect(() => {
     if (lithology) {
+      if (lithology.hasBedding === undefined) lithology.hasBedding = false;
+      if (lithology.isUnconsolidated === undefined) lithology.isUnconsolidated = true;
+
+      // Add first lithology description if not present
+      if (!lithology?.lithologyDescriptions) {
+        lithology.lithologyDescriptions = [
+          {
+            id: 0,
+            lithologyId: 0,
+            isFirst: true,
+          },
+        ];
+      }
+
       formMethods.reset(lithology);
     }
   }, [lithology, formMethods]);
@@ -94,9 +62,10 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
 
   const closeDialog = async () => {
     const isValid = await formMethods.trigger();
-    if (!formState.isDirty || isValid) {
+    if (!isDirty || isValid) {
       const values = getValues();
-      updateLithology({ ...lithology, ...values } as Lithology, formState.isDirty);
+      prepareLithologyForSubmit(values);
+      updateLithology({ ...lithology, ...values } as Lithology, isDirty || (Boolean(lithology?.isGap) && isValid));
     }
   };
 
@@ -112,39 +81,61 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
             data-cy="lithology-basic-data"
             title={t("basicData")}
             action={
-              <ToggleButtonGroup
-                value={isUnconsolidated}
-                onChange={(event: MouseEvent<HTMLElement>, isUnconsolidated: boolean) => {
-                  setValue("isUnconsolidated", isUnconsolidated);
-                }}
-                exclusive
-                sx={{
-                  boxShadow: "none",
-                  border: `1px solid ${theme.palette.border.light}`,
-                }}>
-                <ToggleButton value={true}>
-                  <Typography>{t("unconsolidated")}</Typography>
-                </ToggleButton>
-                <ToggleButton value={false}>
-                  <Typography>{t("consolidated")}</Typography>
-                </ToggleButton>
-              </ToggleButtonGroup>
-            }>
-            <BasicDataFormSection />
-          </BoreholesCard>
-          <BoreholesCard data-cy="lithology-lithological-description" title={t("lithologyLayerDescription")}>
-            {/* // TODO: Load description from lithological descriptions based on depths */}
-            <FormContainer>
-              <FormInput
-                fieldName={"description"}
-                label={"description"}
-                value={""}
-                multiline={true}
-                rows={3}
-                readonly={true}
+              <Controller
+                name="isUnconsolidated"
+                control={formMethods.control}
+                defaultValue={lithology?.isUnconsolidated === undefined ? true : lithology.isUnconsolidated}
+                render={({ field }) => (
+                  <ToggleButtonGroup
+                    value={field.value}
+                    onChange={(_, value) => field.onChange(value)}
+                    exclusive
+                    sx={{
+                      boxShadow: "none",
+                      border: `1px solid ${theme.palette.border.light}`,
+                    }}>
+                    <ToggleButton value={true}>
+                      <Typography>{t("unconsolidated")}</Typography>
+                    </ToggleButton>
+                    <ToggleButton value={false}>
+                      <Typography>{t("consolidated")}</Typography>
+                    </ToggleButton>
+                  </ToggleButtonGroup>
+                )}
               />
+            }>
+            <FormContainer>
+              <FormContainer direction={"row"}>
+                <FormInput
+                  fieldName={"fromDepth"}
+                  label={"fromdepth"}
+                  required={true}
+                  value={lithology?.fromDepth}
+                  withThousandSeparator={true}
+                />
+                <FormInput
+                  fieldName={"toDepth"}
+                  label={"todepth"}
+                  required={true}
+                  value={lithology?.toDepth}
+                  withThousandSeparator={true}
+                />
+              </FormContainer>
             </FormContainer>
           </BoreholesCard>
+          {/* // TODO: Load description from lithological descriptions based on depths https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2386 */}
+          {/*<BoreholesCard data-cy="lithology-lithological-description" title={t("lithologyLayerDescription")}>*/}
+          {/*  <FormContainer>*/}
+          {/*    <FormInput*/}
+          {/*      fieldName={"description"}*/}
+          {/*      label={"description"}*/}
+          {/*      value={""}*/}
+          {/*      multiline={true}*/}
+          {/*      rows={3}*/}
+          {/*      readonly={true}*/}
+          {/*    />*/}
+          {/*  </FormContainer>*/}
+          {/*</BoreholesCard>*/}
           {lithology &&
             (isUnconsolidated ? (
               <LithologyUnconsolidatedForm lithologyId={lithology.id} formMethods={formMethods} />

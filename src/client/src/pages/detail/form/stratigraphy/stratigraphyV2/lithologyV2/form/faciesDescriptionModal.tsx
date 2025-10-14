@@ -6,7 +6,7 @@ import { FaciesDescription } from "../../../../../../../api/stratigraphy.ts";
 import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
 import { FormContainer } from "../../../../../../../components/form/formContainer.tsx";
 import { FormDomainSelect } from "../../../../../../../components/form/formDomainSelect.tsx";
-import { useFormDirtyChanges } from "../../../../../../../components/form/useFormDirtyChanges.tsx";
+import { useFormDirty } from "../../../../../../../components/form/useFormDirty.tsx";
 import { BasicDataFormSection } from "./basicDataFormSection.tsx";
 import { FormDialog } from "./formDialog.tsx";
 import { RemarksFormSection } from "./remarksFormSection.tsx";
@@ -27,19 +27,26 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
   const { t } = useTranslation();
   const formMethods = useForm<FaciesDescription>({ mode: "all" });
   const { formState, getValues } = formMethods;
-  useFormDirtyChanges({ formState });
+  const isDirty = useFormDirty({ formState });
 
   useEffect(() => {
     if (description) {
       formMethods.reset(description);
+      formMethods.setValue("faciesId", description?.faciesId ?? null);
     }
   }, [description, formMethods]);
 
   const closeDialog = async () => {
     const isValid = await formMethods.trigger();
-    if (!formState.isDirty || isValid) {
+    if (!isDirty || isValid) {
       const values = getValues();
-      updateFaciesDescription({ ...description, ...values } as FaciesDescription, formState.isDirty);
+      delete values.facies;
+      if (String(values.faciesId) === "") values.faciesId = null;
+
+      updateFaciesDescription(
+        { ...description, ...values } as FaciesDescription,
+        isDirty || (Boolean(description?.isGap) && isValid),
+      );
     }
   };
 

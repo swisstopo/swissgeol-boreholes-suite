@@ -2,6 +2,7 @@ import { Navigate, Route, Routes } from "react-router";
 import { Box } from "@mui/material";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme";
+import { useDevMode } from "../../hooks/useDevMode.tsx";
 import { Attachments } from "./attachments/attachments.tsx";
 import { BoreholePanel } from "./form/borehole/boreholePanel.tsx";
 import Completion from "./form/completion/completion.jsx";
@@ -10,6 +11,7 @@ import GroundwaterLevelMeasurement from "./form/hydrogeology/groundwaterLevelMea
 import Hydrotest from "./form/hydrogeology/hydrotest/hydrotest.tsx";
 import WaterIngress from "./form/hydrogeology/waterIngress/waterIngress.tsx";
 import { LocationPanel } from "./form/location/locationPanel.tsx";
+import { LogPanel } from "./form/log/logPanel.tsx";
 import { StratigraphyPanel } from "./form/stratigraphy/stratigraphyPanel.tsx";
 import { WorkflowView } from "./form/workflow/workflowView.tsx";
 
@@ -19,6 +21,8 @@ interface DetailPageContentProps {
 }
 
 export const DetailPageContent = ({ borehole, panelOpen }: DetailPageContentProps) => {
+  const { runsDevMode } = useDevMode();
+
   return (
     <>
       {borehole && (
@@ -51,6 +55,7 @@ export const DetailPageContent = ({ borehole, panelOpen }: DetailPageContentProp
             <Route path="hydrogeology" element={<Navigate to="hydrogeology/wateringress" replace />} />
             <Route path="completion/:completionId" element={<Completion />} />
             <Route path="completion" element={<Completion />} />
+            {runsDevMode && <Route path="log" element={<LogPanel />} />}
             <Route path="status" element={<WorkflowView />} />
             <Route path="" element={<Navigate to="location" replace />} />
           </Routes>
