@@ -171,10 +171,10 @@ class PointComponent extends React.Component {
   removeMapFeature() {
     this.centerFeature = null;
     this.position.clear();
-    this.setState({
-      ...this.state,
+    this.setState(prevState => ({
+      ...prevState,
       point: null,
-    });
+    }));
   }
 
   manageMapInteractions() {

@@ -1,6 +1,7 @@
 ﻿using BDMS.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -12,12 +13,14 @@ public class LogRun : IIdentifyable, IChangeTracking
 {
     /// <inheritdoc />
     [Key]
+    [JsonRequired]
     [Column("id")]
     public int Id { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/> id.
     /// </summary>
+    [JsonRequired]
     [Column("borehole_id")]
     public int BoreholeId { get; set; }
 
@@ -30,6 +33,7 @@ public class LogRun : IIdentifyable, IChangeTracking
     /// Gets or sets the <see cref="LogRun"/>'s run number.
     /// </summary>
     [IncludeInExport]
+    [JsonRequired]
     [Column("run_number")]
     public string RunNumber { get; set; }
 
@@ -37,6 +41,7 @@ public class LogRun : IIdentifyable, IChangeTracking
     /// Gets or sets the <see cref="LogRun"/>'s upper depth.
     /// </summary>
     [IncludeInExport]
+    [JsonRequired]
     [Column("from_depth")]
     public double FromDepth { get; set; }
 
@@ -44,6 +49,7 @@ public class LogRun : IIdentifyable, IChangeTracking
     /// Gets or sets the <see cref="LogRun"/>'s lower depth.
     /// </summary>
     [IncludeInExport]
+    [JsonRequired]
     [Column("to_depth")]
     public double ToDepth { get; set; }
 
@@ -51,6 +57,7 @@ public class LogRun : IIdentifyable, IChangeTracking
     /// Gets or sets the the <see cref="LogRun"/>'s date.
     /// </summary>
     [IncludeInExport]
+    [JsonRequired]
     [Column("run_date")]
     public DateOnly? RunDate { get; set; }
 
@@ -58,6 +65,7 @@ public class LogRun : IIdentifyable, IChangeTracking
     /// Gets or sets the <see cref="LogRun"/>'s comment.
     /// </summary>
     [IncludeInExport]
+    [JsonRequired]
     [Column("comment")]
     public string? Comment { get; set; }
 
@@ -65,6 +73,7 @@ public class LogRun : IIdentifyable, IChangeTracking
     /// Gets or sets the <see cref="LogRun"/>'s service co.
     /// </summary>
     [IncludeInExport]
+    [JsonRequired]
     [Column("service_co")]
     public string? ServiceCo { get; set; }
 
@@ -72,6 +81,7 @@ public class LogRun : IIdentifyable, IChangeTracking
     /// Gets or sets the <see cref="LogRun"/>'s bit size at the time of logging.
     /// </summary>
     [IncludeInExport]
+    [JsonRequired]
     [Column("bit_size")]
     public double BitSize { get; set; }
 
@@ -79,6 +89,7 @@ public class LogRun : IIdentifyable, IChangeTracking
     /// Gets or sets the id of the <see cref="LogRun"/>'s conveyance method.
     /// </summary>
     [IncludeInExport]
+    [JsonRequired]
     [Column("conveyance_method_id")]
     public int? ConveyanceMethodId { get; set; }
 
@@ -91,6 +102,7 @@ public class LogRun : IIdentifyable, IChangeTracking
     /// Gets or sets the id of the <see cref="LogRun"/>'s borehole status.
     /// </summary>
     [IncludeInExport]
+    [JsonRequired]
     [Column("borehole_status_id")]
     public int? BoreholeStatusId { get; set; }
 

@@ -16,7 +16,6 @@ namespace BDMS;
 public class LogFileCloudServiceTest
 {
     private BdmsContext context;
-    private User adminUser;
     private AmazonS3Client s3Client;
     private string bucketName;
     private LogFileCloudService logFileCloudService;
@@ -27,7 +26,7 @@ public class LogFileCloudServiceTest
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
 
         context = ContextFactory.GetTestContext();
-        adminUser = context.Users.FirstOrDefault(u => u.SubjectId == "sub_admin") ?? throw new InvalidOperationException("No User found in database.");
+        var adminUser = context.Users.FirstOrDefault(u => u.SubjectId == "sub_admin") ?? throw new InvalidOperationException("No User found in database.");
 
         var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());

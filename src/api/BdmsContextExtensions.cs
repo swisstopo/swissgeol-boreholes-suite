@@ -1514,14 +1514,14 @@ public static class BdmsContextExtensions
 
         // Generate 1-4 log files per log run
         var logFilesToInsert = new List<LogFile>();
-        foreach (var logRun in logRuns)
+        foreach (var logRunId in logRuns.Select(l => l.Id))
         {
-            int fileCount = new Random(logRun.Id).Next(1, 5);
+            int fileCount = new Random(logRunId).Next(1, 5);
             for (int i = 0; i < fileCount; i++)
             {
                 var logFile = fakeLogFiles
                     .UseSeed(logFile_ids + i)
-                    .RuleFor(o => o.LogRunId, _ => logRun.Id)
+                    .RuleFor(o => o.LogRunId, _ => logRunId)
                     .Generate();
                 logFilesToInsert.Add(logFile);
             }
@@ -1530,12 +1530,12 @@ public static class BdmsContextExtensions
         context.BulkInsert(logFilesToInsert, bulkConfig);
 
         var logFileToolTypeRelationships = new List<LogFileToolTypeCodes>();
-        foreach (var logFile in logFilesToInsert)
+        foreach (var logFileId in logFilesToInsert.Select(l => l.Id))
         {
-            int toolCount = new Random(logFile.Id).Next(1, 4);
+            int toolCount = new Random(logFileId).Next(1, 4);
 
             var selectedToolTypeIds = toolTypeIds
-                .OrderBy(_ => new Random(logFile.Id).Next())
+                .OrderBy(_ => new Random(logFileId).Next())
                 .Take(toolCount)
                 .ToList();
 
@@ -1543,7 +1543,7 @@ public static class BdmsContextExtensions
             {
                 logFileToolTypeRelationships.Add(new LogFileToolTypeCodes
                 {
-                    LogFileId = logFile.Id,
+                    LogFileId = logFileId,
                     CodelistId = toolTypeId,
                 });
             }

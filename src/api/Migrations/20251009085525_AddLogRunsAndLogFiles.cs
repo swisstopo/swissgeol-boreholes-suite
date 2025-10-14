@@ -135,7 +135,7 @@ public partial class AddLogRunsAndLogFiles : Migration
             });
 
         migrationBuilder.CreateTable(
-            name: "logfile_tooltype_codelist",
+            name: "log_file_tool_type_codelist",
             schema: "bdms",
             columns: table => new
             {
@@ -144,16 +144,16 @@ public partial class AddLogRunsAndLogFiles : Migration
             },
             constraints: table =>
             {
-                table.PrimaryKey("PK_logfile_tooltype_codelist", x => new { x.logfile_id, x.codelist_id });
+                table.PrimaryKey("PK_log_file_tool_type_codelist", x => new { x.logfile_id, x.codelist_id });
                 table.ForeignKey(
-                    name: "FK_logfile_tooltype_codelist_codelist_codelist_id",
+                    name: "FK_log_file_tool_type_codelist_codelist_codelist_id",
                     column: x => x.codelist_id,
                     principalSchema: "bdms",
                     principalTable: "codelist",
                     principalColumn: "id_cli",
                     onDelete: ReferentialAction.Cascade);
                 table.ForeignKey(
-                    name: "FK_logfile_tooltype_codelist_log_file_logfile_id",
+                    name: "FK_log_file_tool_type_codelist_log_file_logfile_id",
                     column: x => x.logfile_id,
                     principalSchema: "bdms",
                     principalTable: "log_file",
@@ -228,9 +228,9 @@ public partial class AddLogRunsAndLogFiles : Migration
             column: "updater");
 
         migrationBuilder.CreateIndex(
-            name: "IX_logfile_tooltype_codelist_codelist_id",
+            name: "IX_log_file_tool_type_codelist_codelist_id",
             schema: "bdms",
-            table: "logfile_tooltype_codelist",
+            table: "log_file_tool_type_codelist",
             column: "codelist_id");
     }
 
@@ -238,7 +238,7 @@ public partial class AddLogRunsAndLogFiles : Migration
     protected override void Down(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.DropTable(
-            name: "logfile_tooltype_codelist",
+            name: "log_file_tool_type_codelist",
             schema: "bdms");
 
         migrationBuilder.DropTable(

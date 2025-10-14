@@ -5,7 +5,7 @@ namespace BDMS.Models;
 /// <summary>
 /// Join table entity for a <see cref="Models.Codelist"/> with the schemaName 'log_tool_type' attached to a <see cref="LogFile"/>.
 /// </summary>
-[Table("logfile_tooltype_codelist")]
+[Table("log_file_tool_type_codelist")]
 public class LogFileToolTypeCodes
 {
     /// <summary>

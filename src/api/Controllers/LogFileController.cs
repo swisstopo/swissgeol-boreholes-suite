@@ -48,10 +48,7 @@ public class LogFileController : ControllerBase
             .FirstOrDefaultAsync(lr => lr.Id == logRunId)
             .ConfigureAwait(false);
 
-        if (logRun == null)
-        {
-            return NotFound($"LogRun with ID {logRunId} not found.");
-        }
+        if (logRun == null) return NotFound($"LogRun with ID {logRunId} not found.");
 
         if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), logRun.BoreholeId).ConfigureAwait(false))
         {
@@ -196,8 +193,7 @@ public class LogFileController : ControllerBase
     public async Task<ActionResult> DeleteAsync([FromQuery][MaxLength(100)] IReadOnlyList<int> logFileIds)
     {
         var (logFiles, errorResult) = await ValidateAndGetLogFilesAsync(logFileIds).ConfigureAwait(false);
-        if (errorResult != null)
-            return errorResult;
+        if (errorResult != null) return errorResult;
 
         await logFileCloudService.DeleteObjects(logFiles!.Select(lf => lf.NameUuid!)).ConfigureAwait(false);
 
@@ -224,9 +220,7 @@ public class LogFileController : ControllerBase
         var logFileIds = logFileUpdates.Select(d => d.Id).ToList();
 
         var (logFiles, errorResult) = await ValidateAndGetLogFilesAsync(logFileIds).ConfigureAwait(false);
-        if (errorResult != null)
-            return errorResult;
-
+        if (errorResult != null) return errorResult;
         foreach (var logFile in logFiles)
         {
             var updateData = logFileUpdates.FirstOrDefault(d => d.Id == logFile.Id);

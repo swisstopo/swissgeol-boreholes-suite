@@ -22,31 +22,25 @@ export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = (
 
   const renderTableCells = (layers: BaseLayer[], buildContent: (layer: BaseLayer) => ReactNode, keyPrefix: string) => {
     if (!layers || layers.length === 0) {
-      return (
-        <StratigraphyTableGap
-          key={`${keyPrefix}-new`}
-          sx={{ height: `${defaultRowHeight}px` }}
-          layer={{ id: 0, stratigraphyId: 0, isGap: true, fromDepth: -1, toDepth: -1 }}
-        />
-      );
+      return <StratigraphyTableGap key={`${keyPrefix}-new`} sx={{ height: `${defaultRowHeight}px` }} index={-1} />;
     }
-    return layers.map(layer =>
+    return layers.map((layer, index) =>
       layer.isGap ? (
         <StratigraphyTableGap
+          index={index}
           key={`${keyPrefix}-${layer.id}`}
           sx={{
             height: `${defaultRowHeight}px`,
           }}
-          layer={layer}
         />
       ) : (
         <StratigraphyTableActionCell
+          index={index}
           key={`${keyPrefix}-${layer.id}`}
           sx={{
             height: `${defaultRowHeight}px`,
           }}
-          layer={layer}
-          onHoverClick={() => console.log("copy layer content", layer)}>
+          layer={layer}>
           {buildContent(layer)}
         </StratigraphyTableActionCell>
       ),

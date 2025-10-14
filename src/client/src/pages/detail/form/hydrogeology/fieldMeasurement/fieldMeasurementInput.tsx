@@ -12,7 +12,7 @@ import { useUnsavedChangesPrompt } from "../../../../../components/dataCard/useU
 import { FormContainer, FormInput } from "../../../../../components/form/form.js";
 import { FormDomainSelect } from "../../../../../components/form/formDomainSelect.js";
 import { parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
-import { useFormDirtyChanges } from "../../../../../components/form/useFormDirtyChanges.tsx";
+import { useFormDirtyMarkAsChanged } from "../../../../../components/form/useFormDirty.tsx";
 import { useValidateFormOnMount } from "../../../../../components/form/useValidateFormOnMount.tsx";
 import { useResetTabStatus } from "../../../../../hooks/useResetTabStatus.ts";
 import { prepareCasingDataForSubmit } from "../../completion/casingUtils.jsx";
@@ -76,7 +76,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
   });
 
   useValidateFormOnMount({ formMethods });
-  useFormDirtyChanges({ formState });
+  useFormDirtyMarkAsChanged({ formState });
 
   useEffect(() => {
     trigger("fieldMeasurementResults");

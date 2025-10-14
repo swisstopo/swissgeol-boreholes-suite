@@ -81,7 +81,7 @@ public class LogFile : IIdentifyable, IChangeTracking
     public Codelist? DataPackage { get; set; }
 
     /// <summary>
-    /// Gets or sets the the <see cref="LogFile"/>'s date.
+    /// Gets or sets the <see cref="LogFile"/>'s date.
     /// </summary>
     [IncludeInExport]
     [Column("delivery_date")]

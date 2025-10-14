@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    [Migration("20251009085525_AddLogRunsAndLogFiles")]
-    partial class AddLogRunsAndLogFiles
+    [Migration("20251009145004_SetStratigraphySequence")]
+    partial class SetStratigraphySequence
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -1992,188 +1992,6 @@ namespace BDMS.Migrations
                     b.HasIndex("UpdatedById");
 
                     b.ToTable("lithostratigraphy", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LogFile", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation");
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("creator");
-
-                    b.Property<int?>("DataPackageId")
-                        .HasColumnType("integer")
-                        .HasColumnName("data_package_id");
-
-                    b.Property<DateOnly?>("DeliveryDate")
-                        .HasColumnType("date")
-                        .HasColumnName("delivery_date");
-
-                    b.Property<int?>("DepthTypeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("depth_type_id");
-
-                    b.Property<string>("FileType")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("file_type");
-
-                    b.Property<int>("LogRunId")
-                        .HasColumnType("integer")
-                        .HasColumnName("log_run_id");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name");
-
-                    b.Property<string>("NameUuid")
-                        .HasColumnType("text")
-                        .HasColumnName("name_uuid");
-
-                    b.Property<int?>("Pass")
-                        .HasColumnType("integer")
-                        .HasColumnName("pass");
-
-                    b.Property<int?>("PassTypeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("pass_type_id");
-
-                    b.Property<bool>("Public")
-                        .HasColumnType("boolean")
-                        .HasColumnName("public");
-
-                    b.Property<DateTime?>("Updated")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("update");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("updater");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("DataPackageId");
-
-                    b.HasIndex("DepthTypeId");
-
-                    b.HasIndex("LogRunId");
-
-                    b.HasIndex("PassTypeId");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("log_file", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LogFileToolTypeCodes", b =>
-                {
-                    b.Property<int>("LogFileId")
-                        .HasColumnType("integer")
-                        .HasColumnName("logfile_id");
-
-                    b.Property<int>("CodelistId")
-                        .HasColumnType("integer")
-                        .HasColumnName("codelist_id");
-
-                    b.HasKey("LogFileId", "CodelistId");
-
-                    b.HasIndex("CodelistId");
-
-                    b.ToTable("log_file_tool_type_codelist", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LogRun", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<double>("BitSize")
-                        .HasColumnType("double precision")
-                        .HasColumnName("bit_size");
-
-                    b.Property<int>("BoreholeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("borehole_id");
-
-                    b.Property<int?>("BoreholeStatusId")
-                        .HasColumnType("integer")
-                        .HasColumnName("borehole_status_id");
-
-                    b.Property<string>("Comment")
-                        .HasColumnType("text")
-                        .HasColumnName("comment");
-
-                    b.Property<int?>("ConveyanceMethodId")
-                        .HasColumnType("integer")
-                        .HasColumnName("conveyance_method_id");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation");
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("creator");
-
-                    b.Property<double>("FromDepth")
-                        .HasColumnType("double precision")
-                        .HasColumnName("from_depth");
-
-                    b.Property<DateOnly?>("RunDate")
-                        .HasColumnType("date")
-                        .HasColumnName("run_date");
-
-                    b.Property<string>("RunNumber")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("run_number");
-
-                    b.Property<string>("ServiceCo")
-                        .HasColumnType("text")
-                        .HasColumnName("service_co");
-
-                    b.Property<double>("ToDepth")
-                        .HasColumnType("double precision")
-                        .HasColumnName("to_depth");
-
-                    b.Property<DateTime?>("Updated")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("update");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("updater");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BoreholeId");
-
-                    b.HasIndex("BoreholeStatusId");
-
-                    b.HasIndex("ConveyanceMethodId");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("log_run", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.Observation", b =>
@@ -4283,101 +4101,6 @@ namespace BDMS.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
-            modelBuilder.Entity("BDMS.Models.LogFile", b =>
-                {
-                    b.HasOne("BDMS.Models.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("BDMS.Models.Codelist", "DataPackage")
-                        .WithMany()
-                        .HasForeignKey("DataPackageId");
-
-                    b.HasOne("BDMS.Models.Codelist", "DepthType")
-                        .WithMany()
-                        .HasForeignKey("DepthTypeId");
-
-                    b.HasOne("BDMS.Models.LogRun", "LogRun")
-                        .WithMany("LogFiles")
-                        .HasForeignKey("LogRunId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.Codelist", "PassType")
-                        .WithMany()
-                        .HasForeignKey("PassTypeId");
-
-                    b.HasOne("BDMS.Models.User", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("DataPackage");
-
-                    b.Navigation("DepthType");
-
-                    b.Navigation("LogRun");
-
-                    b.Navigation("PassType");
-
-                    b.Navigation("UpdatedBy");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LogFileToolTypeCodes", b =>
-                {
-                    b.HasOne("BDMS.Models.Codelist", "Codelist")
-                        .WithMany("LogFileToolTypeCodes")
-                        .HasForeignKey("CodelistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.LogFile", "LogFile")
-                        .WithMany("LogFileToolTypeCodes")
-                        .HasForeignKey("LogFileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Codelist");
-
-                    b.Navigation("LogFile");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LogRun", b =>
-                {
-                    b.HasOne("BDMS.Models.Borehole", "Borehole")
-                        .WithMany("LogRuns")
-                        .HasForeignKey("BoreholeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.Codelist", "BoreholeStatus")
-                        .WithMany()
-                        .HasForeignKey("BoreholeStatusId");
-
-                    b.HasOne("BDMS.Models.Codelist", "ConveyanceMethod")
-                        .WithMany()
-                        .HasForeignKey("ConveyanceMethodId");
-
-                    b.HasOne("BDMS.Models.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("BDMS.Models.User", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-
-                    b.Navigation("Borehole");
-
-                    b.Navigation("BoreholeStatus");
-
-                    b.Navigation("ConveyanceMethod");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("UpdatedBy");
-                });
-
             modelBuilder.Entity("BDMS.Models.Observation", b =>
                 {
                     b.HasOne("BDMS.Models.Borehole", "Borehole")
@@ -4721,8 +4444,6 @@ namespace BDMS.Migrations
 
                     b.Navigation("Documents");
 
-                    b.Navigation("LogRuns");
-
                     b.Navigation("Observations");
 
                     b.Navigation("Photos");
@@ -4790,8 +4511,6 @@ namespace BDMS.Migrations
                     b.Navigation("LithologyTextureMetaCodes");
 
                     b.Navigation("LithologyUscsTypeCodes");
-
-                    b.Navigation("LogFileToolTypeCodes");
                 });
 
             modelBuilder.Entity("BDMS.Models.Completion", b =>
@@ -4853,16 +4572,6 @@ namespace BDMS.Migrations
                     b.Navigation("LithologyDescriptionStructurePostGenCodes");
 
                     b.Navigation("LithologyDescriptionStructureSynGenCodes");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LogFile", b =>
-                {
-                    b.Navigation("LogFileToolTypeCodes");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LogRun", b =>
-                {
-                    b.Navigation("LogFiles");
                 });
 
             modelBuilder.Entity("BDMS.Models.Section", b =>

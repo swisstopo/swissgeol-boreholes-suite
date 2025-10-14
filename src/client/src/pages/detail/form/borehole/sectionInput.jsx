@@ -12,7 +12,7 @@ import { DataCardSaveAndCancelButtons } from "../../../../components/dataCard/sa
 import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
-import { useFormDirtyChanges } from "../../../../components/form/useFormDirtyChanges.js";
+import { useFormDirtyMarkAsChanged } from "../../../../components/form/useFormDirty.tsx";
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { useSaveOnCtrlS } from "../../../../hooks/useSaveOnCtrlS";
@@ -103,7 +103,7 @@ const SectionInput = ({ item, parentId }) => {
 
   useSaveOnCtrlS(handleSubmit(submitForm));
   useValidateFormOnMount({ formMethods });
-  useFormDirtyChanges({ formState });
+  useFormDirtyMarkAsChanged({ formState });
 
   useEffect(() => {
     trigger("sectionElements");
