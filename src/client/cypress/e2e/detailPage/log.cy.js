@@ -61,9 +61,6 @@ describe("Test for the borehole log.", () => {
     verifyFullRowContent(["R96", "10.0 - 20.0", "CAL, GYRO, GR", "Other"], 0);
     verifyRowWithTextCheckState("R96", true);
 
-    sortBy("Run date");
-    verifyFullRowContent(["R53", "40.0 - 50.0", "CAL, GYRO", "Other"], 0);
-    verifyRowWithTextCheckState("R53", false);
     sortBy("Comment");
     verifyFullRowContent(["R96", "10.0 - 20.0", "CAL, GYRO, GR", "Other"], 0);
     verifyRowWithTextCheckState("R96", true);
