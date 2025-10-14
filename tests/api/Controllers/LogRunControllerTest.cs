@@ -8,9 +8,8 @@ using static BDMS.Helpers;
 namespace BDMS.Controllers;
 
 [TestClass]
-public class LogRunControllerTest
+public class LogRunControllerTest : TestControllerBase
 {
-    private BdmsContext context;
     private LogRunController controller;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
     private static int testBoreholeId = 1000085;
@@ -149,6 +148,21 @@ public class LogRunControllerTest
     }
 
     [TestMethod]
+    public async Task DeleteMultipleLogRuns()
+    {
+        var borehole = await CreateTestBoreholeAsync();
+        var logRun1 = await CreateTestLogRunAsync(borehole.Id);
+        var logRun2 = await CreateTestLogRunAsync(borehole.Id);
+
+        Assert.AreEqual(2, context.LogRuns.Count(lr => lr.BoreholeId == borehole.Id));
+
+        var response = await controller.DeleteMultipleAsync([logRun1.Id, logRun2.Id]);
+        ActionResultAssert.IsOk(response);
+
+        Assert.AreEqual(0, context.LogRuns.Count(lr => lr.BoreholeId == borehole.Id));
+    }
+
+    [TestMethod]
     public async Task DeleteFailsWithoutPermissions()
     {
         boreholePermissionServiceMock
@@ -157,10 +171,7 @@ public class LogRunControllerTest
 
         var logRunId = await CreateCompleteLogRunAsync();
         var response = await controller.DeleteAsync(logRunId);
-        Assert.IsInstanceOfType(response, typeof(ObjectResult));
-        ObjectResult objectResult = (ObjectResult)response;
-        ProblemDetails problemDetails = (ProblemDetails)objectResult.Value!;
-        StringAssert.StartsWith(problemDetails.Detail, "The borehole is locked by another user or you are missing permissions.");
+        ActionResultAssert.IsUnauthorized(response);
     }
 
     [TestMethod]

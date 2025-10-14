@@ -68,19 +68,22 @@ export const useLogRunMutations = () => {
     },
   });
 
-  const useDeleteLogRun = useMutation({
-    mutationFn: async (logRun: LogRun) => {
-      return await fetchApiV2WithApiError(`${logRunController}?id=${logRun.id}`, "DELETE");
+  const useDeleteLogRuns = useMutation({
+    mutationFn: async (logRuns: LogRun[]) => {
+      return await fetchApiV2WithApiError(
+        `logrun?${logRuns.map(logrun => `logRunIds=${logrun.id}`).join("&")}`,
+        "DELETE",
+      );
     },
-    onSuccess: (_data, logRun) => {
+    onSuccess: (_data, logRuns) => {
       resetTabStatus();
-      queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRun.boreholeId] });
+      queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRuns[0]?.boreholeId] });
     },
   });
 
   return {
     add: useAddLogRun,
     update: useUpdateLogRun,
-    delete: useDeleteLogRun,
+    delete: useDeleteLogRuns,
   };
 };

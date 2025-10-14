@@ -8,7 +8,7 @@ import { Codelist, useCodelists } from "../../../../components/codelist.ts";
 import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
 import { Table } from "../../../../components/table/table.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
-import { LogRun } from "./log.ts";
+import { LogRun, useLogRunMutations } from "./log.ts";
 
 interface LogTableProps {
   runs: LogRun[];
@@ -21,6 +21,9 @@ export const LogTable: FC<LogTableProps> = ({ runs, isLoading }) => {
   const apiRef = useGridApiRef();
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const codelists = useCodelists();
+  const {
+    delete: { mutate: deleteLogRuns },
+  } = useLogRunMutations();
 
   const displayServiceOrTool = useCallback(
     (logRun: LogRun) => {
@@ -35,8 +38,8 @@ export const LogTable: FC<LogTableProps> = ({ runs, isLoading }) => {
     [codelists.data],
   );
 
-  const deleteLogRun = () => {
-    console.log("Delete log runs", selectionModel);
+  const deleteLogRun = (selectedRows: GridRowSelectionModel) => {
+    deleteLogRuns(runs.filter(run => selectedRows.includes(run.id)));
   };
 
   const exportData = () => {
@@ -106,7 +109,9 @@ export const LogTable: FC<LogTableProps> = ({ runs, isLoading }) => {
           </Typography>
           {selection && (
             <>
-              {editingEnabled && <DeleteButton disabled={selectionModel.length === 0} onClick={() => deleteLogRun()} />}
+              {editingEnabled && (
+                <DeleteButton disabled={selectionModel.length === 0} onClick={() => deleteLogRun(selectionModel)} />
+              )}
               <ExportButton label={"exportData"} disabled={selectionModel.length === 0} onClick={() => exportData()} />
               <ExportButton
                 label={"exportTable"}

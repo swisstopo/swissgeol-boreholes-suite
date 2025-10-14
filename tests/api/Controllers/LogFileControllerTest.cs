@@ -15,10 +15,9 @@ using static BDMS.Helpers;
 namespace BDMS.Controllers;
 
 [TestClass]
-public class LogFileControllerTest
+public class LogFileControllerTest : TestControllerBase
 {
     private const string TestFileName = "test_logfile.las";
-    private BdmsContext context;
     private User adminUser;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
     private LogFileController controller;
@@ -387,37 +386,6 @@ public class LogFileControllerTest
         };
         var result = await controller.UpdateAsync(updateData);
         ActionResultAssert.IsNotFound(result);
-    }
-
-    private async Task<Borehole> CreateTestBoreholeAsync()
-    {
-        var borehole = new Borehole
-        {
-            Name = "Test Borehole",
-            OriginalName = "Test Borehole Original",
-        };
-
-        await context.Boreholes.AddAsync(borehole);
-        await context.SaveChangesAsync();
-
-        return borehole;
-    }
-
-    private async Task<LogRun> CreateTestLogRunAsync(int boreholeId)
-    {
-        var logRun = new LogRun
-        {
-            BoreholeId = boreholeId,
-            RunNumber = "RUN01",
-            FromDepth = 0,
-            ToDepth = 100,
-            BitSize = 0.2,
-        };
-
-        await context.LogRuns.AddAsync(logRun);
-        await context.SaveChangesAsync();
-
-        return logRun;
     }
 
     private async Task<LogFile> UploadTestLogFile(int logRunId)
