@@ -1,3 +1,4 @@
+import { FormErrors } from "../../../../../../../components/form/form.ts";
 import { parseFloatWithThousandsSeparator } from "../../../../../../../components/form/formUtils.ts";
 import { Lithology, LithologyDescription } from "../../../lithology.ts";
 
@@ -65,9 +66,6 @@ export const prepareLithologyForSubmit = (values: Lithology) => {
     }
   }
 };
-
-export type FormError = { type: string; message: string };
-export type FormErrors = { [key: string]: FormError | FormErrors };
 
 const buildErrorStructure = (result: boolean | Record<string, string>, errors: FormErrors) => {
   for (const [path, message] of Object.entries(result)) {

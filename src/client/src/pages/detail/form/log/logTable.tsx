@@ -1,46 +1,31 @@
-import { FC, useCallback, useContext, useMemo, useState } from "react";
+import { Dispatch, FC, SetStateAction, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
 import { Stack } from "@mui/system";
-import { GridColDef, GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
+import { GridColDef, GridEventListener, GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
 import { DeleteButton, ExportButton } from "../../../../components/buttons/buttons.tsx";
 import { Codelist, useCodelists } from "../../../../components/codelist.ts";
 import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
 import { Table } from "../../../../components/table/table.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { LogRun, useLogRunMutations } from "./log.ts";
+import { getServiceOrToolArray } from "./logUtils.ts";
 
 interface LogTableProps {
   runs: LogRun[];
   isLoading: boolean;
+  setSelectedLogRun: Dispatch<SetStateAction<LogRun | undefined>>;
 }
 
-export const LogTable: FC<LogTableProps> = ({ runs, isLoading }) => {
+export const LogTable: FC<LogTableProps> = ({ runs, isLoading, setSelectedLogRun }) => {
   const { editingEnabled } = useContext(EditStateContext);
   const { t, i18n } = useTranslation();
   const apiRef = useGridApiRef();
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
-  const codelists = useCodelists();
+  const { data: codelists } = useCodelists();
   const {
     delete: { mutate: deleteLogRuns },
   } = useLogRunMutations();
-
-  const displayServiceOrTool = useCallback(
-    (logRun: LogRun) => {
-      return (
-        logRun.logFiles
-          ?.flatMap(file => file.toolTypeCodelistIds)
-          .filter((id, index, array) => array.indexOf(id) === index) // get unique ids
-          ?.map(id => codelists.data?.find((d: Codelist) => d.id === id)?.code)
-          .join(", ") ?? ""
-      );
-    },
-    [codelists.data],
-  );
-
-  const deleteLogRun = (selectedRows: GridRowSelectionModel) => {
-    deleteLogRuns(runs.filter(run => selectedRows.includes(run.id)));
-  };
 
   const exportData = () => {
     console.log("Export log runs", selectionModel);
@@ -50,13 +35,22 @@ export const LogTable: FC<LogTableProps> = ({ runs, isLoading }) => {
     console.log("Export log runs table", selectionModel);
   };
 
+  const handleRowClick: GridEventListener<"rowClick"> = params => {
+    setSelectedLogRun(runs.find(run => run.id === params.row.id) ?? undefined);
+  };
+
+  const deleteLogRun = (selectedRows: GridRowSelectionModel) => {
+    // Todo: only permanently delete runs on save
+    deleteLogRuns(runs.filter(run => selectedRows.includes(run.id)));
+  };
+
   const columns = useMemo<GridColDef<LogRun>[]>(
     () => [
       {
         field: "runNumber",
         headerName: t("runNumber"),
         flex: 1,
-        valueGetter: (value, row) => row?.runNumber ?? "",
+        valueGetter: (_, row) => row?.runNumber ?? "",
       },
       {
         field: "loggedInterval",
@@ -67,8 +61,8 @@ export const LogTable: FC<LogTableProps> = ({ runs, isLoading }) => {
       },
       {
         field: "serviceOrTool",
-        valueGetter: (value, row) => {
-          return displayServiceOrTool(row);
+        valueGetter: (_, row) => {
+          return getServiceOrToolArray(row, codelists).join(", ");
         },
         headerName: t("serviceOrTool"),
         flex: 1,
@@ -91,7 +85,7 @@ export const LogTable: FC<LogTableProps> = ({ runs, isLoading }) => {
         flex: 1,
       },
     ],
-    [t, displayServiceOrTool, i18n.language],
+    [t, codelists, i18n.language],
   );
   if (runs.length === 0) {
     return <Typography>{t("noLogRun")}</Typography>;
@@ -128,6 +122,7 @@ export const LogTable: FC<LogTableProps> = ({ runs, isLoading }) => {
         rows={runs}
         columns={columns}
         showQuickFilter={false}
+        onRowClick={handleRowClick}
         checkboxSelection
         rowSelectionModel={selectionModel}
         onRowSelectionModelChange={setSelectionModel}

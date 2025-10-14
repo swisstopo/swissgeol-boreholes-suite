@@ -1,6 +1,7 @@
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { User } from "../../../../api/apiInterfaces.ts";
 import { fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
+import { Codelist } from "../../../../components/codelist.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 
 export interface LogRun {
@@ -9,13 +10,15 @@ export interface LogRun {
   runNumber?: string;
   fromDepth?: number;
   toDepth?: number;
-  runDate?: Date;
+  runDate?: Date | string | null;
   comment?: string;
   serviceCo?: string;
   bitSize?: number;
-  conveyanceMethodId: number;
-  boreholeStatusId?: number;
-  logFiles: LogFile[];
+  conveyanceMethodId?: number | null;
+  conveyanceMethod?: Codelist;
+  boreholeStatusId?: number | null;
+  boreholeStatus?: Codelist;
+  logFiles?: LogFile[];
   createdBy?: User | null;
   updatedBy?: User | null;
 }
