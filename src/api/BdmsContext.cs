@@ -398,7 +398,6 @@ public class BdmsContext : DbContext
                 ToolTypeCodelistIds = lf.LogFileToolTypeCodes == null ?
                     new List<int>() :
                     lf.LogFileToolTypeCodes.Select(tc => tc.CodelistId).ToList(),
-                LogFileToolTypeCodes = null,
                 ToolTypeCodelists = null,
             }).ToList(),
         });

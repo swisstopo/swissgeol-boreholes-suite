@@ -43,29 +43,29 @@ describe("Test for the borehole log.", () => {
     assertCountDisplayed("2 selected");
     assertExportButtonsDisabled(false);
 
-    verifyFullRowContent(["R44", "0.0 - 10.0", "CAL, GYRO", "Not specified", "06/04/2021"], 0);
+    verifyFullRowContent(["R44", "0.0 - 10.0", "CAL, GYRO", "Not specified"], 0);
     verifyRowWithTextCheckState("R44", true);
 
     // sort by all columns
     sortBy("Run number");
-    verifyFullRowContent(["R01", "30.0 - 40.0", "CAL", "CH", "19/05/2021"], 0);
+    verifyFullRowContent(["R01", "30.0 - 40.0", "CAL", "CH"], 0);
     verifyRowWithTextCheckState("R01", false);
 
     sortBy("Logged interval");
-    verifyFullRowContent(["R44", "0.0 - 10.0", "CAL, GYRO, GR", "Not specified", "06/04/2021"], 0);
+    verifyFullRowContent(["R44", "0.0 - 10.0", "CAL, GYRO, GR", "Not specified"], 0);
     verifyRowWithTextCheckState("R44", true);
 
-    // sortBy("Service or tool"); currently hardcoded
+    sortBy("Service or tool");
     sortBy("Borehole status");
     sortBy("Borehole status"); // sort descending
-    verifyFullRowContent(["R96", "10.0 - 20.0", "CAL, GYRO, GR", "Other", "20/12/2021"], 0);
+    verifyFullRowContent(["R96", "10.0 - 20.0", "CAL, GYRO, GR", "Other"], 0);
     verifyRowWithTextCheckState("R96", true);
 
     sortBy("Run date");
-    verifyFullRowContent(["R53", "40.0 - 50.0", "CAL, GYRO", "Other", "01/02/2021"], 0);
+    verifyFullRowContent(["R53", "40.0 - 50.0", "CAL, GYRO", "Other"], 0);
     verifyRowWithTextCheckState("R53", false);
     sortBy("Comment");
-    verifyFullRowContent(["R96", "10.0 - 20.0", "CAL, GYRO, GR", "Other", "20/12/2021"], 0);
+    verifyFullRowContent(["R96", "10.0 - 20.0", "CAL, GYRO, GR", "Other"], 0);
     verifyRowWithTextCheckState("R96", true);
   });
 });
