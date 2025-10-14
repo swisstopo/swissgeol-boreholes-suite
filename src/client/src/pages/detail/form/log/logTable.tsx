@@ -26,8 +26,7 @@ export const LogTable: FC<LogTableProps> = ({ runs, isLoading }) => {
     (logRun: LogRun) => {
       return (
         logRun.logFiles
-          ?.map(file => file.toolTypeCodelistIds)
-          .flat()
+          ?.flatMap(file => file.toolTypeCodelistIds)
           .filter((id, index, array) => array.indexOf(id) === index) // get unique ids
           ?.map(id => codelists.data?.find((d: Codelist) => d.id === id)?.code)
           .join(", ") ?? ""

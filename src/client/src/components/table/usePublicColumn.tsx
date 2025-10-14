@@ -45,9 +45,9 @@ export const usePublicColumn = <T extends ItemWithPublicState>({
     (event: ChangeEvent<HTMLInputElement>) => {
       const checked = event.target.checked;
       const currentRows = apiRef.current.getRowModels();
-      Array.from(currentRows.keys()).forEach(id => {
+      for (const id of Array.from(currentRows.keys())) {
         togglePublicValueForRow(id, checked);
-      });
+      }
     },
     [apiRef, togglePublicValueForRow],
   );

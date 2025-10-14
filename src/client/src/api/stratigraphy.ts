@@ -20,9 +20,9 @@ export interface Stratigraphy {
   updated: Date | string | null;
   updatedById: number | null;
   updatedBy?: User;
-  lithologies: Lithology[];
-  lithostratigraphyLayers: Lithostratigraphy[];
-  chronostratigraphyLayers: Chronostratigraphy[];
+  lithologies: Lithology[] | null;
+  lithostratigraphyLayers: Lithostratigraphy[] | null;
+  chronostratigraphyLayers: Chronostratigraphy[] | null;
 }
 
 export interface BaseLayer {
@@ -147,7 +147,7 @@ export const useStratigraphiesByBoreholeId = (boreholeId?: number) =>
   useQuery({
     queryKey: [stratigraphiesQueryKey, boreholeId],
     queryFn: async () => {
-      return await fetchApiV2WithApiError(`${stratigraphyController}?boreholeId=${boreholeId!}`, "GET");
+      return await fetchApiV2WithApiError<Stratigraphy[]>(`${stratigraphyController}?boreholeId=${boreholeId!}`, "GET");
     },
     enabled: !!boreholeId,
   });
@@ -158,7 +158,7 @@ export const useStratigraphyMutations = () => {
 
   const useAddStratigraphy = useMutation({
     mutationFn: async (stratigraphy: Stratigraphy) => {
-      return await fetchApiV2WithApiError(stratigraphyController, "POST", stratigraphy);
+      return await fetchApiV2WithApiError<Stratigraphy>(stratigraphyController, "POST", stratigraphy);
     },
     onSuccess: (_data, stratigraphy) => {
       resetTabStatus();
@@ -168,7 +168,7 @@ export const useStratigraphyMutations = () => {
 
   const useCopyStratigraphy = useMutation({
     mutationFn: async (stratigraphy: Stratigraphy) => {
-      return await fetchApiV2WithApiError(`${stratigraphyController}/copy?id=${stratigraphy.id}`, "POST");
+      return await fetchApiV2WithApiError<number>(`${stratigraphyController}/copy?id=${stratigraphy.id}`, "POST");
     },
     onSuccess: (_data, stratigraphy) => {
       resetTabStatus();
@@ -182,7 +182,7 @@ export const useStratigraphyMutations = () => {
       delete stratigraphy.createdBy;
       delete stratigraphy.updatedBy;
 
-      return await fetchApiV2WithApiError(stratigraphyController, "PUT", stratigraphy);
+      return await fetchApiV2WithApiError<Stratigraphy>(stratigraphyController, "PUT", stratigraphy);
     },
     onSuccess: (_data, stratigraphy) => {
       resetTabStatus();

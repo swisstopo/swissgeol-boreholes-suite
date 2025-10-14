@@ -29,8 +29,7 @@ export const useLogsByBoreholeId = (boreholeId?: number): UseQueryResult<LogRun[
   useQuery<LogRun[]>({
     queryKey: [logsQueryKey, boreholeId],
     queryFn: async (): Promise<LogRun[]> => {
-      const response = await fetchApiV2WithApiError<LogRun[]>(`logrun?boreholeId=${boreholeId}`, "GET");
-      return response as LogRun[];
+      return await fetchApiV2WithApiError<LogRun[]>(`logrun?boreholeId=${boreholeId}`, "GET");
     },
     enabled: !!boreholeId,
   });

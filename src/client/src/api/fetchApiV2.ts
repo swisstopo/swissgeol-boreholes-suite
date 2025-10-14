@@ -184,7 +184,7 @@ export const useCantons = () =>
   useQuery({
     queryKey: ["cantons"],
     queryFn: () => {
-      return fetchApiV2WithApiError("canton", "GET");
+      return fetchApiV2WithApiError<string[]>("canton", "GET");
     },
     staleTime: staleTime10Min,
     gcTime: garbageCollectionTime15Min,

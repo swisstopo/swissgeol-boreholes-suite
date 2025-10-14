@@ -135,10 +135,10 @@ export const updateBorehole = async (borehole: BoreholeV2): Promise<BoreholeV2> 
 export const deleteBorehole = async (id: number) => await fetchApiV2WithApiError(`borehole?id=${id}`, "DELETE");
 
 export const canUserEditBorehole = async (id: number) =>
-  await fetchApiV2WithApiError(`permissions/canedit?boreholeId=${id}`, "GET");
+  await fetchApiV2WithApiError<boolean>(`permissions/canedit?boreholeId=${id}`, "GET");
 
 export const canUserUpdateBoreholeStatus = async (id: number) =>
-  await fetchApiV2WithApiError(`permissions/canchangestatus?boreholeId=${id}`, "GET");
+  await fetchApiV2WithApiError<boolean>(`permissions/canchangestatus?boreholeId=${id}`, "GET");
 
 export const boreholeQueryKey = "boreholes";
 
