@@ -115,12 +115,13 @@ export async function fetchApiV2WithApiError<T>(
   url: string,
   method: string,
   payload: FormData | object | null = null,
-): Promise<T | Response> {
+): Promise<T> {
   const response = await fetchApiV2Base(url, method, payload ? JSON.stringify(payload) : null, "application/json");
   if (response.ok) {
     return await readApiResponse(response);
   } else {
     await handleFetchError(response);
+    return new Promise<T>(() => {});
   }
 }
 
@@ -385,12 +386,12 @@ export const getDocumentsByBoreholeId = async (boreholeId: number): Promise<Docu
   return await fetchApiV2Legacy(`document/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
 };
 
-export const createDocument = async (document: Document): Promise<Document> => {
+export const createDocument = async (document: Document): Promise<Response> => {
   return await fetchApiV2Legacy("document", "POST", document);
 };
 
-export const updateDocuments = async (documents: DocumentUpdate[]): Promise<Document> => {
-  return await fetchApiV2WithApiError<Document>("document", "PUT", documents);
+export const updateDocuments = async (documents: DocumentUpdate[]): Promise<Response> => {
+  return await fetchApiV2WithApiError("document", "PUT", documents);
 };
 
 export const deleteDocuments = async (documentIds: number[]): Promise<Response> => {

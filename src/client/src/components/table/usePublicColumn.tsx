@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useContext, useEffect, useState } from "react";
+import { ChangeEvent, Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from "react";
 import { Checkbox, Stack, Typography } from "@mui/material";
 import { GridColumnHeaderParams, GridRenderCellParams, GridRowId } from "@mui/x-data-grid";
 import { GridApiCommunity } from "@mui/x-data-grid/internals";
@@ -13,7 +13,7 @@ export interface ItemWithPublicState {
 interface UsePublicColumnProps<T extends ItemWithPublicState> {
   apiRef: RefObject<GridApiCommunity>;
   updatedRows: Map<GridRowId, T>;
-  setUpdatedRows: (updatedRows: Map<GridRowId, T>) => void;
+  setUpdatedRows: Dispatch<SetStateAction<Map<GridRowId, T>>>;
   rows?: T[];
 }
 

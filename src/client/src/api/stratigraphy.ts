@@ -81,40 +81,51 @@ export interface ExtractedLithologicalDescription extends LithologicalDescriptio
 export const fetchLithologicalDescriptionsByProfileId = async (
   profileId: number,
 ): Promise<LithologicalDescription[]> => {
-  return await fetchApiV2WithApiError(`lithologicaldescription?stratigraphyId=${profileId}`, "GET");
+  return await fetchApiV2WithApiError<LithologicalDescription[]>(
+    `lithologicaldescription?stratigraphyId=${profileId}`,
+    "GET",
+  );
 };
 
 export const addLithologicalDescription = async (
   lithologicalDescription: LithologicalDescription,
 ): Promise<LithologicalDescription> => {
-  return await fetchApiV2WithApiError("lithologicaldescription", "POST", lithologicalDescription);
+  return await fetchApiV2WithApiError<LithologicalDescription>(
+    "lithologicaldescription",
+    "POST",
+    lithologicalDescription,
+  );
 };
 
 export const updateLithologicalDescription = async (
   lithologicalDescription: LithologicalDescription,
 ): Promise<LithologicalDescription> => {
-  return await fetchApiV2WithApiError("lithologicaldescription", "PUT", lithologicalDescription);
+  return await fetchApiV2WithApiError<LithologicalDescription>(
+    "lithologicaldescription",
+    "PUT",
+    lithologicalDescription,
+  );
 };
 
 export const deleteLithologicalDescription = async (id: number): Promise<void> => {
-  return await fetchApiV2WithApiError(`lithologicaldescription?id=${id}`, "DELETE");
+  await fetchApiV2WithApiError(`lithologicaldescription?id=${id}`, "DELETE");
 };
 
 // facies descriptions
 export const fetchFaciesDescriptionsByProfileId = async (profileId: number): Promise<FaciesDescription[]> => {
-  return await fetchApiV2WithApiError(`faciesdescription?stratigraphyId=${profileId}`, "GET");
+  return await fetchApiV2WithApiError<FaciesDescription[]>(`faciesdescription?stratigraphyId=${profileId}`, "GET");
 };
 
 export const addFaciesDescription = async (faciesDescription: FaciesDescription): Promise<FaciesDescription> => {
-  return await fetchApiV2WithApiError("faciesdescription", "POST", faciesDescription);
+  return await fetchApiV2WithApiError<FaciesDescription>("faciesdescription", "POST", faciesDescription);
 };
 
 export const updateFaciesDescription = async (faciesDescription: FaciesDescription): Promise<FaciesDescription> => {
-  return await fetchApiV2WithApiError("faciesdescription", "PUT", faciesDescription);
+  return await fetchApiV2WithApiError<FaciesDescription>("faciesdescription", "PUT", faciesDescription);
 };
 
 export const deleteFaciesDescription = async (id: number): Promise<void> => {
-  return await fetchApiV2WithApiError(`faciesdescription?id=${id}`, "DELETE");
+  await fetchApiV2WithApiError(`faciesdescription?id=${id}`, "DELETE");
 };
 
 export const stratigraphiesQueryKey = "stratigraphies";

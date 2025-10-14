@@ -107,7 +107,7 @@ export const importBoreholesZip = async (workgroupId: number | null, combinedFor
 };
 
 export const createBorehole = async (workgroupId: number): Promise<BoreholeV2> => {
-  return await fetchApiV2WithApiError(`borehole`, "POST", {
+  return await fetchApiV2WithApiError<BoreholeV2>(`borehole`, "POST", {
     workgroupId,
     originalReferenceSystem: referenceSystems.LV95.code,
   });
@@ -125,10 +125,12 @@ export const exportJsonWithAttachmentsBorehole = async (boreholeIds: number[] | 
   return await download(`export/zip?${getIdQuery(boreholeIds)}`);
 };
 
-export const fetchBoreholeById = async (id: number) => await fetchApiV2WithApiError(`borehole/${id}`, "GET");
+export const fetchBoreholeById = async (id: number): Promise<BoreholeV2> => {
+  return await fetchApiV2WithApiError<BoreholeV2>(`borehole/${id}`, "GET");
+};
 
-export const updateBorehole = async (borehole: BoreholeV2) => {
-  return await fetchApiV2WithApiError("borehole", "PUT", borehole);
+export const updateBorehole = async (borehole: BoreholeV2): Promise<BoreholeV2> => {
+  return await fetchApiV2WithApiError<BoreholeV2>("borehole", "PUT", borehole);
 };
 export const deleteBorehole = async (id: number) => await fetchApiV2WithApiError(`borehole?id=${id}`, "DELETE");
 
