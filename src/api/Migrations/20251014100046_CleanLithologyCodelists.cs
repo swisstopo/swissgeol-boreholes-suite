@@ -16,6 +16,10 @@ public partial class CleanLithologyCodelists : Migration
             SET order_cli=90
             WHERE id_cli=23101010;
 
+            UPDATE bdms.layer
+            SET gradation_id_cli=NULL
+            WHERE gradation_id_cli=30000020;
+
             UPDATE bdms.lithology_description
             SET gradation_id=100000495
             WHERE gradation_id=30000020;
