@@ -83,7 +83,7 @@ public class LogRun : IIdentifyable, IChangeTracking
     [IncludeInExport]
     [JsonRequired]
     [Column("bit_size")]
-    public double BitSize { get; set; }
+    public double? BitSize { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="LogRun"/>'s conveyance method.
