@@ -60,7 +60,7 @@ public class LogFileCloudServiceTest
         await logFileCloudService.UploadLogFileAndLinkToLogRunAsync(formFile.OpenReadStream(), formFile.FileName, formFile.ContentType, minLogRunId);
         fileName = fileName.Replace(" ", "_");
         var logRun = context.LogRunsWithIncludes.Single(b => b.Id == minLogRunId);
-        Assert.AreEqual(logRun.LogFiles.First().Name, fileName);
+        Assert.IsNotNull(logRun.LogFiles.SingleOrDefault(f => f.Name == fileName));
     }
 
     [TestMethod]
@@ -74,10 +74,11 @@ public class LogFileCloudServiceTest
         var logRun = context.LogRunsWithIncludes.Single(b => b.Id == minLogRunId);
 
         // Check if file is linked to logRun
-        Assert.AreEqual(logRun.LogFiles.First().Name, fileName);
+        var uploadedFile = logRun.LogFiles.SingleOrDefault(f => f.Name == fileName);
+        Assert.IsNotNull(uploadedFile);
 
         // Ensure file exists in cloud storage
-        var request = new GetObjectMetadataRequest { BucketName = bucketName, Key = logRun.LogFiles.First().NameUuid };
+        var request = new GetObjectMetadataRequest { BucketName = bucketName, Key = uploadedFile.NameUuid };
         await s3Client.GetObjectMetadataAsync(request);
     }
 

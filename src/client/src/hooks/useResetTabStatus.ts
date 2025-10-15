@@ -5,10 +5,12 @@ import { useRequiredParams } from "./useRequiredParams.ts";
 
 export const useResetTabStatus = (tabsToReset: TabName[]) => {
   const { id } = useRequiredParams<{ id: string }>();
-  const { data: borehole } = useBorehole(parseInt(id, 10));
+  const { data: borehole, isLoading } = useBorehole(parseInt(id, 10));
   const {
     updateTabStatus: { mutate: updateTabStatus },
   } = useWorkflowMutation();
+
+  if (isLoading || !borehole) return () => {};
 
   return () => {
     const anyTabIsReviewed = tabsToReset.some(tab => borehole.workflow?.reviewedTabs[tab] === true);

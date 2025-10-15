@@ -30,10 +30,10 @@ export const useUsers = () => {
   });
 };
 
-export const useEditorUsersOnWorkgroup = (workgroupId: number) => {
+export const useEditorUsersOnWorkgroup = (workgroupId?: number) => {
   return useQuery({
     queryKey: [usersQueryKey, "editors", workgroupId],
-    queryFn: () => fetchEditorUsersOnWorkgroup(workgroupId),
+    queryFn: () => fetchEditorUsersOnWorkgroup(workgroupId!),
     enabled: !!workgroupId,
   });
 };

@@ -2,8 +2,32 @@ import { useMemo } from "react";
 import { BoreholeV2 } from "../api/borehole";
 import { ObservationType } from "../pages/detail/form/hydrogeology/Observation";
 
-export const useBoreholeDataAvailability = (borehole: BoreholeV2) => {
+export const useBoreholeDataAvailability = (borehole?: BoreholeV2) => {
   return useMemo(() => {
+    if (!borehole) {
+      return {
+        hasSections: false,
+        hasGeometry: false,
+        hasStratigraphy: false,
+        hasCompletion: false,
+        hasObservation: false,
+        hasWaterIngress: false,
+        hasGroundwaterLevelMeasurement: false,
+        hasHydroTest: false,
+        hasFieldMeasurement: false,
+        hasAttachments: false,
+        hasBoreholeFiles: false,
+        hasPhotos: false,
+        hasDocuments: false,
+        hasCasings: false,
+        hasBackfills: false,
+        hasInstrumentations: false,
+        hasLithology: false,
+        hasLithostratigraphy: false,
+        hasChronostratigraphy: false,
+        hasLogRuns: false,
+      };
+    }
     const hasStratigraphy = (borehole.stratigraphies?.length ?? 0) > 0;
     const hasCompletion = (borehole.completions?.length ?? 0) > 0;
     const hasObservation = (borehole.observations?.length ?? 0) > 0;
@@ -30,15 +54,16 @@ export const useBoreholeDataAvailability = (borehole: BoreholeV2) => {
     const hasInstrumentations =
       hasCompletion && (borehole.completions?.some(completion => completion.instrumentations?.length > 0) ?? false);
     const hasLithology =
-      (hasStratigraphy && borehole.stratigraphies?.some(stratigraphy => stratigraphy?.lithologies?.length > 0)) ??
+      (hasStratigraphy &&
+        borehole.stratigraphies?.some(stratigraphy => (stratigraphy?.lithologies?.length ?? 0) > 0)) ??
       false;
     const hasLithostratigraphy =
       (hasStratigraphy &&
-        borehole.stratigraphies?.some(stratigraphy => stratigraphy.lithostratigraphyLayers?.length > 0)) ??
+        borehole.stratigraphies?.some(stratigraphy => (stratigraphy?.lithostratigraphyLayers?.length ?? 0) > 0)) ??
       false;
     const hasChronostratigraphy =
       (hasStratigraphy &&
-        borehole.stratigraphies?.some(stratigraphy => stratigraphy.chronostratigraphyLayers?.length > 0)) ??
+        borehole.stratigraphies?.some(stratigraphy => (stratigraphy?.chronostratigraphyLayers?.length ?? 0) > 0)) ??
       false;
 
     return {
@@ -63,15 +88,5 @@ export const useBoreholeDataAvailability = (borehole: BoreholeV2) => {
       hasChronostratigraphy,
       hasLogRuns,
     };
-  }, [
-    borehole.boreholeFiles?.length,
-    borehole.boreholeGeometry,
-    borehole.completions,
-    borehole.documents?.length,
-    borehole.logruns?.length,
-    borehole.observations,
-    borehole.photos?.length,
-    borehole.sections?.length,
-    borehole.stratigraphies,
-  ]);
+  }, [borehole]);
 };

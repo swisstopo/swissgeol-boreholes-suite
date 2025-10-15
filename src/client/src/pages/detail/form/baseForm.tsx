@@ -40,6 +40,7 @@ export const BaseForm = <T extends FieldValues>({
   const onSubmit = useCallback(
     async (formInputs: T): Promise<boolean> => {
       try {
+        if (!borehole) return false;
         await updateBorehole({
           ...borehole,
           ...prepareDataForSubmit(formInputs),

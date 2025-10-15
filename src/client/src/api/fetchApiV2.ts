@@ -111,12 +111,17 @@ export async function fetchApiV2Legacy(url: string, method: string, payload: obj
  * @returns The HTTP response as JSON.
  * @throws {ApiError|Error} - Throws an `ApiError` or a generic `Error` based on the response content.
  */
-export async function fetchApiV2WithApiError(url: string, method: string, payload: FormData | object | null = null) {
+export async function fetchApiV2WithApiError<T>(
+  url: string,
+  method: string,
+  payload: FormData | object | null = null,
+): Promise<T> {
   const response = await fetchApiV2Base(url, method, payload ? JSON.stringify(payload) : null, "application/json");
   if (response.ok) {
     return await readApiResponse(response);
   } else {
     await handleFetchError(response);
+    return new Promise<T>(() => {});
   }
 }
 
@@ -179,7 +184,7 @@ export const useCantons = () =>
   useQuery({
     queryKey: ["cantons"],
     queryFn: () => {
-      return fetchApiV2WithApiError("canton", "GET");
+      return fetchApiV2WithApiError<string[]>("canton", "GET");
     },
     staleTime: staleTime10Min,
     gcTime: garbageCollectionTime15Min,
@@ -381,11 +386,11 @@ export const getDocumentsByBoreholeId = async (boreholeId: number): Promise<Docu
   return await fetchApiV2Legacy(`document/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
 };
 
-export const createDocument = async (document: Document): Promise<Document> => {
+export const createDocument = async (document: Document): Promise<Response> => {
   return await fetchApiV2Legacy("document", "POST", document);
 };
 
-export const updateDocuments = async (documents: DocumentUpdate[]): Promise<Document> => {
+export const updateDocuments = async (documents: DocumentUpdate[]): Promise<Response> => {
   return await fetchApiV2WithApiError("document", "PUT", documents);
 };
 

@@ -171,7 +171,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig, filters, setFilte
                     />
                   </Box>
                 )}
-                {item.type === "Canton" && cantons?.length > 0 && (
+                {item.type === "Canton" && cantons && cantons.length > 0 && (
                   <FormSelect
                     canReset={false}
                     readonly={false}
@@ -180,11 +180,12 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig, filters, setFilte
                     onUpdate={selected => {
                       updateChange(item.value, selected);
                     }}
-                    values={cantons.map((canton: string, idx: number) => ({
-                      key: `mun-opt-${idx}`,
-                      value: canton,
-                      name: canton,
-                    }))}
+                    values={
+                      cantons?.map((canton: string, idx: number) => ({
+                        key: idx,
+                        name: canton,
+                      })) ?? []
+                    }
                   />
                 )}
               </FormContainer>

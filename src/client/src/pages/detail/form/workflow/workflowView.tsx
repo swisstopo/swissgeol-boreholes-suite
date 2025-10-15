@@ -39,7 +39,7 @@ export const WorkflowView = () => {
   const { t } = useTranslation();
   const { data: canChangeStatus } = useBoreholeStatusEditable(parseInt(boreholeId));
   const { setEditingEnabled } = useContext(EditStateContext);
-  const { data: editorUsersForWorkgroup } = useEditorUsersOnWorkgroup(borehole.workgroup?.id ?? 0);
+  const { data: editorUsersForWorkgroup } = useEditorUsersOnWorkgroup(borehole?.workgroup?.id ?? 0);
   const { navigateTo } = useBoreholesNavigate();
   const { showAlert } = useContext(AlertContext);
   const {
@@ -222,7 +222,7 @@ export const WorkflowView = () => {
         availableAssignees={availableAssignees}
         selection={makeSelectionEntries()}
         canChangeStatus={canChangeStatus}
-        isRestricted={borehole.restrictionId !== restrictionFreeCode || !isAnythingApproved}
+        isRestricted={borehole?.restrictionId !== restrictionFreeCode || !isAnythingApproved}
         onSgcWorkflowReviewChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
           handleTabStatusUpdate(e, TabType.Reviewed)
         }
