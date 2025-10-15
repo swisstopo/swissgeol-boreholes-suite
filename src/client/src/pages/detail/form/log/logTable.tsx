@@ -185,7 +185,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
 
   const selection = true;
   return (
-    <>
+    <Stack height={"100%"}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
         <Stack direction="row" alignItems="center" gap={1}>
           <Typography data-cy="log-run-count">
@@ -258,6 +258,6 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
         onRowSelectionModelChange={setSelectionModel}
         rowAutoHeight={true}
       />
-    </>
+    </Stack>
   );
 };
