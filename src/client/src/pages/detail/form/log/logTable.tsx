@@ -182,7 +182,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
           <Typography data-cy="log-run-count">
             {selectionModel.length > 0
               ? t("selectedCount", { count: selectionModel.length })
-              : `${filteredRuns.length} ${t("runs")}`}
+              : `${filteredRuns.length} ${t("run", { count: filteredRuns.length })}`}
           </Typography>
           {selection && (
             <>
