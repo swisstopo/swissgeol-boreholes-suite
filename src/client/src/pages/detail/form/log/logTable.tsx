@@ -74,9 +74,14 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
       }
     }
     if (toolTypeFilter && toolTypeFilter.length > 0) {
-      filtered = filtered.filter(run =>
-        run.logFiles?.some(file => file.toolTypeCodelistIds?.some(id => toolTypeFilter.includes(id)) ?? false),
-      );
+      const hasMatchingToolType = (run: LogRun) => {
+        if (!run.logFiles) return false;
+        return run.logFiles.some(file => {
+          if (!file.toolTypeCodelistIds) return false;
+          return file.toolTypeCodelistIds.some(id => toolTypeFilter.includes(id));
+        });
+      };
+      filtered = filtered.filter(hasMatchingToolType);
     }
     return filtered;
   }, [runs, runFilter, sectionFilter, sectionFilters, toolTypeFilter]);
