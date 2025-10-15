@@ -1,11 +1,13 @@
 ﻿using BDMS.Models;
-using Microsoft.AspNetCore.Mvc;
 
 namespace BDMS.Controllers;
 
 public abstract class TestControllerBase
 {
-    protected BdmsContext context;
+    /// <summary>
+    /// Gets or sets the <see cref="BdmsContext"/> used by the test controller.
+    /// </summary>
+    protected BdmsContext Context { get; set; }
 
     /// <summary>
     /// Creates a test borehole in the database for testing purposes.
@@ -19,8 +21,8 @@ public abstract class TestControllerBase
             OriginalName = "Test Borehole Original",
         };
 
-        await context.Boreholes.AddAsync(borehole);
-        await context.SaveChangesAsync();
+        await Context.Boreholes.AddAsync(borehole);
+        await Context.SaveChangesAsync();
 
         return borehole;
     }
@@ -41,8 +43,8 @@ public abstract class TestControllerBase
             BitSize = 0.2,
         };
 
-        await context.LogRuns.AddAsync(logRun);
-        await context.SaveChangesAsync();
+        await Context.LogRuns.AddAsync(logRun);
+        await Context.SaveChangesAsync();
 
         return logRun;
     }

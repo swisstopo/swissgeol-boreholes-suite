@@ -27,8 +27,8 @@ public class LogFileControllerTest : TestControllerBase
     {
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
 
-        context = ContextFactory.GetTestContext();
-        adminUser = context.Users.FirstOrDefault(u => u.SubjectId == "sub_admin") ?? throw new InvalidOperationException("No User found in database.");
+        Context = ContextFactory.GetTestContext();
+        adminUser = Context.Users.FirstOrDefault(u => u.SubjectId == "sub_admin") ?? throw new InvalidOperationException("No User found in database.");
 
         var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
@@ -46,13 +46,13 @@ public class LogFileControllerTest : TestControllerBase
 
         var logFileCloudServiceLoggerMock = new Mock<ILogger<LogFileCloudService>>(MockBehavior.Strict);
         logFileCloudServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
-        var logFileCloudService = new LogFileCloudService(logFileCloudServiceLoggerMock.Object, s3ClientMock,  configuration, contextAccessorMock.Object, context);
+        var logFileCloudService = new LogFileCloudService(logFileCloudServiceLoggerMock.Object, s3ClientMock,  configuration, contextAccessorMock.Object, Context);
 
         boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
 
         var logFileControllerLoggerMock = new Mock<ILogger<LogFileController>>(MockBehavior.Strict);
         logFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
-        controller = new LogFileController(context, logFileControllerLoggerMock.Object, boreholePermissionServiceMock.Object, logFileCloudService);
+        controller = new LogFileController(Context, logFileControllerLoggerMock.Object, boreholePermissionServiceMock.Object, logFileCloudService);
         controller.ControllerContext = GetControllerContextAdmin();
     }
 
@@ -60,7 +60,7 @@ public class LogFileControllerTest : TestControllerBase
     public async Task TestCleanup()
     {
         Mock.VerifyAll();
-        await context.DisposeAsync();
+        await Context.DisposeAsync();
     }
 
     [TestMethod]
@@ -76,7 +76,7 @@ public class LogFileControllerTest : TestControllerBase
         var response = await controller.UploadAsync(file, logRun.Id);
         ActionResultAssert.IsOk(response);
 
-        var logFile = context.LogFiles.Single(f => f.Name == fileName);
+        var logFile = Context.LogFiles.Single(f => f.Name == fileName);
         Assert.AreEqual(adminUser.SubjectId, logFile.CreatedBy.SubjectId);
         Assert.AreEqual(adminUser.Id, logFile.CreatedById);
         Assert.AreEqual(adminUser.SubjectId, logFile.UpdatedBy.SubjectId);
@@ -101,7 +101,7 @@ public class LogFileControllerTest : TestControllerBase
             .Setup(x => x.CanViewBoreholeAsync("sub_admin", logRun.BoreholeId))
             .ReturnsAsync(false);
 
-        var uploadedFile = context.LogFiles.Single(f => f.LogRunId == logRun.Id);
+        var uploadedFile = Context.LogFiles.Single(f => f.LogRunId == logRun.Id);
         var response = await controller.DownloadAsync(uploadedFile.Id);
         ActionResultAssert.IsUnauthorized(response);
     }
@@ -119,7 +119,7 @@ public class LogFileControllerTest : TestControllerBase
         var response = await controller.UploadAsync(file, logRun.Id);
         ActionResultAssert.IsOk(response);
 
-        var uploadedFile = context.LogFiles.Single(f => f.Name == fileName);
+        var uploadedFile = Context.LogFiles.Single(f => f.Name == fileName);
 
         response = await controller.DownloadAsync(uploadedFile.Id);
 
@@ -131,7 +131,7 @@ public class LogFileControllerTest : TestControllerBase
         Assert.AreEqual(adminUser.SubjectId, uploadedFile.CreatedBy.SubjectId);
         Assert.AreEqual(adminUser.Id, uploadedFile.CreatedById);
 
-        var logFile = context.LogFiles.Single(lf => lf.Id == uploadedFile.Id);
+        var logFile = Context.LogFiles.Single(lf => lf.Id == uploadedFile.Id);
         Assert.AreEqual(DateTime.UtcNow.Date, logFile.Created?.Date);
         Assert.AreEqual(adminUser.SubjectId, logFile.CreatedBy.SubjectId);
         Assert.AreEqual(adminUser.Id, logFile.CreatedById);
@@ -230,7 +230,7 @@ public class LogFileControllerTest : TestControllerBase
         var logRun = await CreateTestLogRunAsync(borehole.Id);
         var logFile = await UploadTestLogFile(logRun.Id);
         logFile.FileType = "application/las";
-        await context.SaveChangesAsync();
+        await Context.SaveChangesAsync();
 
         var response = await controller.GetFileAsync(logFile.Id);
         Assert.IsInstanceOfType<FileResult>(response);
@@ -265,8 +265,8 @@ public class LogFileControllerTest : TestControllerBase
         var response = await controller.DeleteAsync([logFile1.Id, logFile2.Id]);
         ActionResultAssert.IsOk(response);
 
-        Assert.IsFalse(context.LogFiles.Any(lf => lf.Id == logFile1.Id));
-        Assert.IsFalse(context.LogFiles.Any(lf => lf.Id == logFile2.Id));
+        Assert.IsFalse(Context.LogFiles.Any(lf => lf.Id == logFile1.Id));
+        Assert.IsFalse(Context.LogFiles.Any(lf => lf.Id == logFile2.Id));
     }
 
     [TestMethod]
@@ -311,8 +311,8 @@ public class LogFileControllerTest : TestControllerBase
         var result = await controller.UpdateAsync(updateData);
         ActionResultAssert.IsOk(result);
 
-        var updatedLogFile1 = context.LogFiles.Single(lf => lf.Id == logFile1.Id);
-        var updatedLogFile2 = context.LogFiles.Single(lf => lf.Id == logFile2.Id);
+        var updatedLogFile1 = Context.LogFiles.Single(lf => lf.Id == logFile1.Id);
+        var updatedLogFile2 = Context.LogFiles.Single(lf => lf.Id == logFile2.Id);
         Assert.IsTrue(updatedLogFile1.Public);
         Assert.IsTrue(updatedLogFile2.Public);
     }
@@ -348,7 +348,7 @@ public class LogFileControllerTest : TestControllerBase
         var result = await controller.UpdateAsync(updateData1);
         ActionResultAssert.IsOk(result);
 
-        var updatedLogFile1 = context.LogFiles.Single(lf => lf.Id == logFile.Id);
+        var updatedLogFile1 = Context.LogFiles.Single(lf => lf.Id == logFile.Id);
         Assert.IsTrue(updatedLogFile1.Public);
         Assert.AreEqual(4, updatedLogFile1.Pass);
         Assert.AreEqual(new DateOnly(2023, 6, 1), updatedLogFile1.DeliveryDate);

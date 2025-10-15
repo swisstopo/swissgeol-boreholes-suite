@@ -75,7 +75,7 @@ public class LogRunController : BoreholeControllerBase<LogRun>
     [Authorize(Policy = PolicyNames.Viewer)]
     public override async Task<IActionResult> DeleteAsync(int id)
     {
-        return await DeleteMultipleAsync(new List<int> { id });
+        return await DeleteMultipleAsync(new List<int> { id }).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
