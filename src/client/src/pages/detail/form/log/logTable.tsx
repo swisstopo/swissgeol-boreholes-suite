@@ -8,24 +8,24 @@ import { Codelist, useCodelists } from "../../../../components/codelist.ts";
 import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
 import { Table } from "../../../../components/table/table.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
-import { LogRun, useLogRunMutations } from "./log.ts";
+import { SaveContext } from "../../saveContext.tsx";
+import { LogRunChangeTracker, TmpLogRun } from "./log.ts";
 import { getServiceOrToolArray } from "./logUtils.ts";
 
 interface LogTableProps {
-  runs: LogRun[];
+  runs: TmpLogRun[];
   isLoading: boolean;
-  setSelectedLogRun: Dispatch<SetStateAction<LogRun | undefined>>;
+  setSelectedLogRunId: Dispatch<SetStateAction<string | undefined>>;
+  setTmpLogRuns: Dispatch<SetStateAction<LogRunChangeTracker[]>>;
 }
 
-export const LogTable: FC<LogTableProps> = ({ runs, isLoading, setSelectedLogRun }) => {
+export const LogTable: FC<LogTableProps> = ({ runs, isLoading, setSelectedLogRunId, setTmpLogRuns }) => {
   const { editingEnabled } = useContext(EditStateContext);
   const { t, i18n } = useTranslation();
   const apiRef = useGridApiRef();
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
+  const { markAsChanged } = useContext(SaveContext);
   const { data: codelists } = useCodelists();
-  const {
-    delete: { mutate: deleteLogRuns },
-  } = useLogRunMutations();
 
   const exportData = () => {
     console.log("Export log runs", selectionModel);
@@ -36,15 +36,15 @@ export const LogTable: FC<LogTableProps> = ({ runs, isLoading, setSelectedLogRun
   };
 
   const handleRowClick: GridEventListener<"rowClick"> = params => {
-    setSelectedLogRun(runs.find(run => run.id === params.row.id) ?? undefined);
+    setSelectedLogRunId(params.row.tmpId);
   };
 
   const deleteLogRun = (selectedRows: GridRowSelectionModel) => {
-    // Todo: only permanently delete runs on save
-    deleteLogRuns(runs.filter(run => selectedRows.includes(run.id)));
+    setTmpLogRuns(prev => prev.filter(run => !selectedRows.includes(run.item.tmpId)));
+    markAsChanged(true);
   };
 
-  const columns = useMemo<GridColDef<LogRun>[]>(
+  const columns = useMemo<GridColDef<TmpLogRun>[]>(
     () => [
       {
         field: "runNumber",
@@ -54,7 +54,7 @@ export const LogTable: FC<LogTableProps> = ({ runs, isLoading, setSelectedLogRun
       },
       {
         field: "loggedInterval",
-        valueGetter: (_, row: LogRun) =>
+        valueGetter: (_, row: TmpLogRun) =>
           `${formatNumberForDisplay(row?.fromDepth, 1)} - ${formatNumberForDisplay(row?.toDepth, 1)}`,
         headerName: t("loggedInterval") + ` [${t("mMd")}]`,
         flex: 1,
@@ -120,6 +120,7 @@ export const LogTable: FC<LogTableProps> = ({ runs, isLoading, setSelectedLogRun
         apiRef={apiRef}
         isLoading={isLoading}
         rows={runs}
+        getRowId={row => row.tmpId}
         columns={columns}
         showQuickFilter={false}
         onRowClick={handleRowClick}

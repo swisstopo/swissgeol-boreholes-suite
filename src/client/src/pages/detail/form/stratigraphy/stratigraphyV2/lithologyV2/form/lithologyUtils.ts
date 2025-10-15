@@ -85,19 +85,6 @@ const buildErrorStructure = (result: boolean | Record<string, string>, errors: F
   }
 };
 
-export const validateDepths = (values: Lithology, errors: FormErrors) => {
-  const fromDepth = parseFloatWithThousandsSeparator(values.fromDepth);
-  const toDepth = parseFloatWithThousandsSeparator(values.toDepth);
-  if (fromDepth === null) {
-    errors.fromDepth = { type: "required", message: "required" };
-  }
-  if (toDepth === null) {
-    errors.toDepth = { type: "required", message: "required" };
-  } else if (fromDepth && fromDepth >= toDepth) {
-    errors.toDepth = { type: "manual", message: "toDepthMustBeGreaterThanFromDepth" };
-  }
-};
-
 export const validateLithologyUnconValues = (descriptions: LithologyDescription[] | undefined, errors: FormErrors) => {
   if (!descriptions || descriptions.length === 0) return;
 

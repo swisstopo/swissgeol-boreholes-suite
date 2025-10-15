@@ -4,6 +4,15 @@ import { fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
 import { Codelist } from "../../../../components/codelist.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 
+export interface TmpLogRun extends LogRun {
+  tmpId: string;
+}
+
+export interface LogRunChangeTracker {
+  item: TmpLogRun;
+  hasChanges: boolean;
+}
+
 export interface LogRun {
   id: number;
   boreholeId: number;

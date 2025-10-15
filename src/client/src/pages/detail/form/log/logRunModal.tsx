@@ -12,24 +12,26 @@ import {
   FormInput,
   FormValueType,
 } from "../../../../components/form/form.ts";
+import { validateDepths } from "../../../../components/form/formUtils.ts";
 import { useFormDirty } from "../../../../components/form/useFormDirty.tsx";
-import { LogRun } from "./log.ts";
-import { getServiceOrToolArray, preparelogRunForSubmit } from "./logUtils.ts";
+import { TmpLogRun } from "./log.ts";
+import { getServiceOrToolArray, preparelogRunForSubmit, validateRunNumber } from "./logUtils.ts";
 
 interface LogRunModalProps {
-  logRun: LogRun | undefined;
-  updateLogRun: () => void;
+  logRun: TmpLogRun | undefined;
+  updateLogRun: (logRun: TmpLogRun, hasChanges: boolean) => void;
 }
 
 export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun }) => {
   const { t } = useTranslation();
   const { data: codelists } = useCodelists();
 
-  const formMethods = useForm<LogRun>({
+  const formMethods = useForm<TmpLogRun>({
     mode: "all",
     resolver: async values => {
       const errors: FormErrors = {};
-      //validatelogRunValues(values, errors);
+      validateDepths(values, errors);
+      validateRunNumber(values, errors);
       return { values, errors };
     },
   });
@@ -47,7 +49,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun }) => {
     if (!isDirty || isValid) {
       const values = getValues();
       preparelogRunForSubmit(values);
-      updateLogRun();
+      updateLogRun({ ...logRun, ...values } as TmpLogRun, isDirty);
     }
   };
 
@@ -64,15 +66,17 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun }) => {
           <BoreholesCard data-cy="logRun-general" title={t("generalInformation")}>
             <FormContainer>
               <FormContainer direction={"row"}>
-                <FormInput fieldName={"runNumber"} label={"runNumber"} value={logRun.runNumber} />
+                <FormInput fieldName={"runNumber"} required={true} label={"runNumber"} value={logRun.runNumber} />
                 <FormInput
                   fieldName={"fromDepth"}
+                  required={true}
                   label={"topLoggedInterval"}
                   value={logRun.fromDepth}
                   withThousandSeparator={true}
                 />
                 <FormInput
                   fieldName={"toDepth"}
+                  required={true}
                   label={"bottomLoggedInterval"}
                   value={logRun.toDepth}
                   withThousandSeparator={true}
@@ -116,7 +120,6 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun }) => {
                     readOnly: true,
                   }}
                 />
-                {/*<TextField label={t("serviceOrTool")} variant="outlined" fullWidth slotProps={} />*/}
               </FormContainer>
               <FormContainer direction="row">
                 <FormInput fieldName="comment" label="comment" multiline={true} rows={3} value={logRun.comment} />
