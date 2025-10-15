@@ -220,7 +220,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
       </Stack>
       {filterVisible && (
         <FormProvider {...formMethods}>
-          <FormContainer direction={"row"} mb={2} justifyContent={"space-between"}>
+          <FormContainer direction={"row"} mb={2} justifyContent={"space-between"} data-cy={"filter-form"}>
             <FormMultiSelect fieldName={"runNumbers"} label={"runNumber"} values={runNumbers} readonly={false} />
             <FormSelect
               fieldName={"section"}
