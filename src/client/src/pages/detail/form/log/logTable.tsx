@@ -75,11 +75,15 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
     }
     if (toolTypeFilter && toolTypeFilter.length > 0) {
       const hasMatchingToolType = (run: LogRun) => {
-        if (!run.logFiles) return false;
-        return run.logFiles.some(file => {
-          if (!file.toolTypeCodelistIds) return false;
-          return file.toolTypeCodelistIds.some(id => toolTypeFilter.includes(id));
-        });
+        for (const file of run.logFiles) {
+          if (!file.toolTypeCodelistIds) continue;
+          for (const id of file.toolTypeCodelistIds) {
+            if (toolTypeFilter.includes(id)) {
+              return true;
+            }
+          }
+        }
+        return false;
       };
       filtered = filtered.filter(hasMatchingToolType);
     }
