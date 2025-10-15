@@ -98,7 +98,7 @@ export const FormSelect: FC<FormSelectProps> = ({
         return (
           <Autocomplete
             key={`${fieldName}-${fieldValue ?? "empty"}`}
-            sx={{ flex: "1" }}
+            sx={{ flex: "1", ...sx }}
             options={menuItems}
             getOptionLabel={option => option.label}
             isOptionEqualToValue={(option, value) => option.key === value.key}

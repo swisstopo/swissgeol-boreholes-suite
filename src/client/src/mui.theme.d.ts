@@ -121,6 +121,15 @@ declare module "@mui/material/styles" {
         };
       };
     };
+    toggleButton: {
+      color: string;
+      hoverBackgroundColor: string;
+      active: {
+        color: string;
+        backgroundColor: string;
+        hoverBackgroundColor: string;
+      };
+    };
   }
 
   interface AppThemeTypography extends Typography {

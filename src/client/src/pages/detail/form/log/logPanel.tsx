@@ -36,7 +36,7 @@ export const LogPanel: FC = () => {
           {
             label: t("table"),
             hash: "#table",
-            component: <LogTable runs={logRuns} isLoading={isLoading} />,
+            component: <LogTable runs={logRuns} isLoading={isLoading} boreholeId={boreholeId} />,
           },
         ]}
       />

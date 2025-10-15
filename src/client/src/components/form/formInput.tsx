@@ -72,6 +72,7 @@ export const FormInput: FC<FormInputProps> = ({
       error={!!formFieldError}
       helperText={formFieldError?.message ? t(formFieldError.message) : ""}
       sx={{
+        flex: "1",
         ...sx,
         ...getFieldBorderColor(isReadOnly),
       }}

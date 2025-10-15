@@ -81,7 +81,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
         <>
           {Array.isArray(values) && values.length > 0 ? (
             <Autocomplete
-              sx={{ ...(isReadOnly ? readonlyStyles : {}), width: "100%" }}
+              sx={{ ...(isReadOnly ? readonlyStyles : {}), flex: "1" }}
               key={`${fieldName}-${fieldValue ? fieldValue.join("-") : "empty"}`}
               multiple
               options={menuItems}

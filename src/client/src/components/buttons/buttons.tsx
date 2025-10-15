@@ -18,7 +18,7 @@ export const BoreholesBaseButton: FC<ButtonProps> = props => {
       data-cy={props.dataCy ?? props.label?.toLowerCase() + "-button"}
       color={color}
       endIcon={props.icon}
-      sx={{ height: "36px" }}>
+      sx={{ height: "36px", ...props.sx }}>
       {props.label && capitalizeFirstLetter(t(props.label))}
     </Button>
   );

@@ -108,6 +108,15 @@ const themePalette: AppThemePalette = {
       },
     },
   },
+  toggleButton: {
+    color: "#337083",
+    hoverBackgroundColor: "rgba(0,0,0,0.04)",
+    active: {
+      color: "#2F4356",
+      backgroundColor: "#D6E2E6",
+      hoverBackgroundColor: "rgba(0,0,0,0.12)",
+    },
+  },
 };
 
 const themeBoxShadows: Shadows = [...defaultTheme.shadows];
@@ -441,10 +450,16 @@ export const theme = createTheme({
           margin: themeSpacing(0.5),
           padding: "7px",
           textTransform: "none",
-          color: themePalette.primary.main,
+          color: themePalette.toggleButton.color,
+          "&:hover": {
+            backgroundColor: themePalette.toggleButton.hoverBackgroundColor,
+          },
           "&.Mui-selected": {
-            color: themePalette.buttonStates.outlined.hoverOrFocus.color,
-            backgroundColor: themePalette.buttonStates.outlined.hoverOrFocus.backgroundColor,
+            color: themePalette.toggleButton.active.color,
+            backgroundColor: themePalette.toggleButton.active.backgroundColor,
+            "&:hover": {
+              backgroundColor: themePalette.toggleButton.active.hoverBackgroundColor,
+            },
           },
         },
       },
