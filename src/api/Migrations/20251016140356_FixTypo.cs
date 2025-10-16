@@ -3,6 +3,7 @@
 #nullable disable
 
 namespace BDMS.Migrations;
+#pragma warning disable CA1505
 
 /// <inheritdoc />
 public partial class FixTypo : Migration
