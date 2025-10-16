@@ -1,5 +1,4 @@
 import { discardChanges, saveWithSaveBar } from "../helpers/buttonHelpers.js";
-import "cypress-real-events/support";
 import {
   checkAllVisibleRows,
   checkRowWithIndex,
@@ -118,13 +117,21 @@ describe("Test for the borehole log.", () => {
     setInput("runNumber", "R01");
     hasError("runNumber", false);
 
-    getElementByDataCy("fromDepth-formInput").realClick().clear().type("700456.67");
+    setInput("fromDepth", "700456.67");
     evaluateInput("fromDepth", "700'456.67"); // verify formatting
     hasError("fromDepth", false);
-    getElementByDataCy("toDepth-formInput").realClick().clear().type("800456.67");
-    hasError("toDepth", false);
 
-    //Todo: add check for fromDepth < toDepth error, is currently not working because of input focus issue
+    setInput("toDepth", "8");
+    hasError("toDepth", true);
+    cy.contains("To depth must be greater than from depth");
+
+    // Focus  the "toDepth" field and clear it using backspace
+    cy.contains("Bottom of logged interval").click();
+    cy.focused().type("{backspace}");
+    evaluateInput("toDepth", "");
+
+    setInput("toDepth", "800456");
+    hasError("toDepth", false);
     getElementByDataCy("close-button").click();
 
     // verify one row was added
