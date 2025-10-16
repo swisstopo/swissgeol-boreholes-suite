@@ -12,14 +12,6 @@ export class ApiError extends Error {
   }
 }
 
-export const RolePriority: Record<Role, number> = {
-  View: 0,
-  Editor: 1,
-  Controller: 2,
-  Validator: 3,
-  Publisher: 4,
-};
-
 export enum Role {
   View = "View",
   Editor = "Editor",
@@ -28,12 +20,14 @@ export enum Role {
   Publisher = "Publisher",
 }
 
+export type NullableDateString = Date | string | null;
+
 export interface Workgroup {
   id: number;
   name: string;
   isDisabled?: boolean;
-  disabledAt?: Date | string;
-  createdAt?: Date | string;
+  disabledAt?: NullableDateString;
+  createdAt?: NullableDateString;
   settings?: string;
   boreholeCount: number;
   roles?: Role[];
@@ -75,8 +69,8 @@ export interface User {
   isAdmin: boolean;
   deletable: boolean;
   isDisabled?: boolean;
-  disabledAt?: Date | string;
-  createdAt?: Date | string;
+  disabledAt?: NullableDateString;
+  createdAt?: NullableDateString;
   settings?: string;
   workgroupRoles?: WorkgroupRole[];
   termsAccepted?: TermsAccepted[];
@@ -127,9 +121,9 @@ export interface Photo {
   toDepth: number;
   public: boolean;
   createdBy?: User;
-  created?: Date | string;
+  created?: NullableDateString;
   updatedBy?: User;
-  updated?: Date | string;
+  updated?: NullableDateString;
 }
 
 export interface Document {
@@ -139,9 +133,9 @@ export interface Document {
   description?: string;
   public: boolean;
   createdBy?: User;
-  created?: Date | string;
+  created?: NullableDateString;
   updatedBy?: User;
-  updated?: Date | string;
+  updated?: NullableDateString;
 }
 
 export interface DocumentUpdate {

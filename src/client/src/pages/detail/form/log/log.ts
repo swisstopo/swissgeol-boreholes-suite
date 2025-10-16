@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
-import { User } from "../../../../api/apiInterfaces.ts";
+import { NullableDateString, User } from "../../../../api/apiInterfaces.ts";
 import { fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
 import { Codelist } from "../../../../components/codelist.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
@@ -19,7 +19,7 @@ export interface LogRun {
   runNumber: string;
   fromDepth: number;
   toDepth: number;
-  runDate?: Date | string | null;
+  runDate?: NullableDateString;
   comment?: string;
   serviceCo?: string;
   bitSize?: number;
@@ -28,9 +28,9 @@ export interface LogRun {
   boreholeStatusId?: number | null;
   boreholeStatus?: Codelist;
   logFiles?: LogFile[];
-  created?: Date | string | null;
+  created?: NullableDateString;
   createdBy?: User | null;
-  updated?: Date | string | null;
+  updated?: NullableDateString;
   updatedBy?: User | null;
 }
 

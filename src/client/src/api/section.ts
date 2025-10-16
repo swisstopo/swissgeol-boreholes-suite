@@ -1,4 +1,4 @@
-import { User } from "./apiInterfaces.ts";
+import { NullableDateString, User } from "./apiInterfaces.ts";
 import { BoreholeV2 } from "./borehole.ts";
 
 export interface Section {
@@ -23,8 +23,8 @@ export interface SectionElement {
   toDepth: number;
   order: number;
   drillingMethodId: number | null;
-  drillingStartDate: string | null;
-  drillingEndDate: string | null;
+  drillingStartDate: NullableDateString;
+  drillingEndDate: NullableDateString;
   cuttingsId: number | null;
   drillingDiameter: number | null;
   drillingCoreDiameter: number | null;
@@ -32,8 +32,8 @@ export interface SectionElement {
   drillingMudSubtypeId: number | null;
   createdById: number | null;
   createdBy: User | null;
-  created: string | null;
+  created: NullableDateString;
   updatedById: number | null;
   updatedBy: User | null;
-  updated: string | null;
+  updated: NullableDateString;
 }
