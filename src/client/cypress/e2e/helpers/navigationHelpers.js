@@ -247,7 +247,7 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.log:
-      //cy.wait("@getAllAttachments");
+      cy.wait("@logrun_by_borehole_GET");
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/log$/);
       });
