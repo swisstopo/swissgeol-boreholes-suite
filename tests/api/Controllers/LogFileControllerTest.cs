@@ -66,8 +66,8 @@ public class LogFileControllerTest : TestControllerBase
     [TestMethod]
     public async Task Upload()
     {
-        var borehole = await CreateTestBoreholeAsync();
-        var logRun = await CreateTestLogRunAsync(borehole.Id);
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
 
         var fileName = TestFileName;
         var content = Guid.NewGuid().ToString();
@@ -93,8 +93,8 @@ public class LogFileControllerTest : TestControllerBase
     [TestMethod]
     public async Task DownloadFailsWithoutPermissions()
     {
-        var borehole = await CreateTestBoreholeAsync();
-        var logRun = await CreateTestLogRunAsync(borehole.Id);
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
         await UploadTestLogFile(logRun.Id);
 
         boreholePermissionServiceMock
@@ -109,8 +109,8 @@ public class LogFileControllerTest : TestControllerBase
     [TestMethod]
     public async Task UploadAndDownload()
     {
-        var borehole = await CreateTestBoreholeAsync();
-        var logRun = await CreateTestLogRunAsync(borehole.Id);
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
 
         var fileName = "another-log.las";
         var content = Guid.NewGuid().ToString();
@@ -140,8 +140,8 @@ public class LogFileControllerTest : TestControllerBase
     [TestMethod]
     public async Task UploadFailsWithoutPermissions()
     {
-        var borehole = await CreateTestBoreholeAsync();
-        var logRun = await CreateTestLogRunAsync(borehole.Id);
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
 
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync("sub_admin", logRun.BoreholeId))
@@ -168,8 +168,8 @@ public class LogFileControllerTest : TestControllerBase
     [TestMethod]
     public async Task UploadReturnsBadRequestWithoutFile()
     {
-        var borehole = await CreateTestBoreholeAsync();
-        var logRun = await CreateTestLogRunAsync(borehole.Id);
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
         var response = await controller.UploadAsync(null, logRun.Id);
         ActionResultAssert.IsBadRequest(response);
     }
@@ -177,8 +177,8 @@ public class LogFileControllerTest : TestControllerBase
     [TestMethod]
     public async Task UploadReturnsBadRequestWithFileToLarge()
     {
-        var borehole = await CreateTestBoreholeAsync();
-        var logRun = await CreateTestLogRunAsync(borehole.Id);
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
 
         long targetSizeInBytes = 210 * 1024 * 1024; // 210MB
         byte[] content = new byte[targetSizeInBytes];
@@ -192,8 +192,8 @@ public class LogFileControllerTest : TestControllerBase
     [TestMethod]
     public async Task GetAllForLogRun()
     {
-        var borehole = await CreateTestBoreholeAsync();
-        var logRun = await CreateTestLogRunAsync(borehole.Id);
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
         await UploadTestLogFile(logRun.Id);
 
         var response = await controller.GetAllForLogRunAsync(logRun.Id);
@@ -204,8 +204,8 @@ public class LogFileControllerTest : TestControllerBase
     [TestMethod]
     public async Task GetAllFailsForUserWithInsufficientPermissions()
     {
-        var borehole = await CreateTestBoreholeAsync();
-        var logRun = await CreateTestLogRunAsync(borehole.Id);
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
         await UploadTestLogFile(logRun.Id);
 
         boreholePermissionServiceMock
@@ -226,8 +226,8 @@ public class LogFileControllerTest : TestControllerBase
     [TestMethod]
     public async Task GetFile()
     {
-        var borehole = await CreateTestBoreholeAsync();
-        var logRun = await CreateTestLogRunAsync(borehole.Id);
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
         var logFile = await UploadTestLogFile(logRun.Id);
         logFile.FileType = "application/las";
         await Context.SaveChangesAsync();
@@ -242,8 +242,8 @@ public class LogFileControllerTest : TestControllerBase
     [TestMethod]
     public async Task GetFileFailsWithoutPermissions()
     {
-        var borehole = await CreateTestBoreholeAsync();
-        var logRun = await CreateTestLogRunAsync(borehole.Id);
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
         var logFile = await UploadTestLogFile(logRun.Id);
 
         boreholePermissionServiceMock
@@ -257,8 +257,8 @@ public class LogFileControllerTest : TestControllerBase
     [TestMethod]
     public async Task DeleteMultipleLogFiles()
     {
-        var borehole = await CreateTestBoreholeAsync();
-        var logRun = await CreateTestLogRunAsync(borehole.Id);
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
         var logFile1 = await UploadTestLogFile(logRun.Id);
         var logFile2 = await UploadTestLogFile(logRun.Id);
 
@@ -272,8 +272,8 @@ public class LogFileControllerTest : TestControllerBase
     [TestMethod]
     public async Task DeleteFailsWithoutPermissions()
     {
-        var borehole = await CreateTestBoreholeAsync();
-        var logRun = await CreateTestLogRunAsync(borehole.Id);
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
         var logFile = await UploadTestLogFile(logRun.Id);
 
         boreholePermissionServiceMock
@@ -294,8 +294,8 @@ public class LogFileControllerTest : TestControllerBase
     [TestMethod]
     public async Task UpdateMultipleLogFilesPublicState()
     {
-        var borehole = await CreateTestBoreholeAsync();
-        var logRun = await CreateTestLogRunAsync(borehole.Id);
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
         var logFile1 = await UploadTestLogFile(logRun.Id);
         var logFile2 = await UploadTestLogFile(logRun.Id);
 
@@ -320,8 +320,8 @@ public class LogFileControllerTest : TestControllerBase
     [TestMethod]
     public async Task UpdateAllUpdatableProps()
     {
-        var borehole = await CreateTestBoreholeAsync();
-        var logRun = await CreateTestLogRunAsync(borehole.Id);
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
         var logFile = await UploadTestLogFile(logRun.Id);
 
         Assert.IsFalse(logFile.Public);
@@ -360,8 +360,8 @@ public class LogFileControllerTest : TestControllerBase
     [TestMethod]
     public async Task UpdateFailsWithoutPermissions()
     {
-        var borehole = await CreateTestBoreholeAsync();
-        var logRun = await CreateTestLogRunAsync(borehole.Id);
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
         var logFile = await UploadTestLogFile(logRun.Id);
 
         boreholePermissionServiceMock
