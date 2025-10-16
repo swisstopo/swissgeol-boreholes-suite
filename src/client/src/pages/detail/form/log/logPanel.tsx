@@ -18,7 +18,6 @@ export const LogPanel: FC = () => {
   const { editingEnabled } = useContext(EditStateContext);
   const { id: boreholeId } = useRequiredParams();
   const [selectedLogRunId, setSelectedLogRunId] = useState<string | undefined>();
-
   const { registerSaveHandler, registerResetHandler, unMount, markAsChanged } = useContext(SaveContext);
   const { data: logRuns = [], isLoading } = useLogsByBoreholeId(Number(boreholeId));
   const [tmpLogRuns, setTmpLogRuns] = useState<LogRunChangeTracker[]>([]);
