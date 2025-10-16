@@ -3,7 +3,7 @@ import { FieldValues, FormProvider, UseFormReturn } from "react-hook-form";
 import { Box } from "@mui/material";
 import { DevTool } from "../../../../hookformDevtools.ts";
 import { useBorehole, useBoreholeMutations } from "../../../api/borehole.ts";
-import { useFormDirtyChanges } from "../../../components/form/useFormDirtyChanges.tsx";
+import { useFormDirtyMarkAsChanged } from "../../../components/form/useFormDirty.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
 import { useResetTabStatus } from "../../../hooks/useResetTabStatus.ts";
 import { useLabelingContext } from "../labeling/labelingContext.tsx";
@@ -35,11 +35,12 @@ export const BaseForm = <T extends FieldValues>({
   } = useBoreholeMutations();
   const resetTabStatus = useResetTabStatus([tabStatusToReset]);
   const { getValues, reset, formState } = formMethods;
-  useFormDirtyChanges({ formState });
+  useFormDirtyMarkAsChanged({ formState });
 
   const onSubmit = useCallback(
     async (formInputs: T): Promise<boolean> => {
       try {
+        if (!borehole) return false;
         await updateBorehole({
           ...borehole,
           ...prepareDataForSubmit(formInputs),

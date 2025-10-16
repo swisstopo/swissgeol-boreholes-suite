@@ -355,9 +355,52 @@ public class BdmsContext : DbContext
 
     public IQueryable<LogRun> LogRunsWithIncludes
         => LogRuns
-        .Include(lr => lr.LogFiles).ThenInclude(lf => lf.LogFileToolTypeCodes)
+        .Include(lr => lr.LogFiles).ThenInclude(lf => lf.LogFileToolTypeCodes).ThenInclude(tc => tc.Codelist)
         .Include(lr => lr.ConveyanceMethod)
-        .Include(lr => lr.BoreholeStatus);
+        .Include(lr => lr.BoreholeStatus)
+        .Select(lr => new LogRun
+        {
+            Id = lr.Id,
+            CreatedById = lr.CreatedById,
+            Created = lr.Created,
+            UpdatedById = lr.UpdatedById,
+            Updated = lr.Updated,
+            BoreholeId = lr.BoreholeId,
+            FromDepth = lr.FromDepth,
+            ToDepth = lr.ToDepth,
+            RunNumber = lr.RunNumber,
+            BitSize = lr.BitSize,
+            RunDate = lr.RunDate,
+            ServiceCo = lr.ServiceCo,
+            Comment = lr.Comment,
+            ConveyanceMethodId = lr.ConveyanceMethodId,
+            ConveyanceMethod = lr.ConveyanceMethod,
+            BoreholeStatusId = lr.BoreholeStatusId,
+            BoreholeStatus = lr.BoreholeStatus,
+
+            LogFiles = lr.LogFiles == null ? new List<LogFile>() : lr.LogFiles.Select(lf => new LogFile
+            {
+                Id = lf.Id,
+                LogRunId = lf.LogRunId,
+                CreatedById = lf.CreatedById,
+                Created = lf.Created,
+                UpdatedById = lf.UpdatedById,
+                Updated = lf.Updated,
+                Name = lf.Name,
+                DataPackageId = lf.DataPackageId,
+                DepthTypeId = lf.DepthTypeId,
+                PassTypeId = lf.PassTypeId,
+                DeliveryDate = lf.DeliveryDate,
+                NameUuid = lf.NameUuid,
+                Public = lf.Public,
+                FileType = lf.FileType,
+                Pass = lf.Pass,
+                ToolTypeCodelistIds = lf.LogFileToolTypeCodes == null ?
+                    new List<int>() :
+                    lf.LogFileToolTypeCodes.Select(tc => tc.CodelistId).ToList(),
+                ToolTypeCodelists = null,
+            }).ToList(),
+        });
 
     public BdmsContext(DbContextOptions options)
         : base(options)

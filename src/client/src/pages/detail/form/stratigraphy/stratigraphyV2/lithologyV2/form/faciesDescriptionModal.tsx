@@ -6,6 +6,7 @@ import { FaciesDescription } from "../../../../../../../api/stratigraphy.ts";
 import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
 import { FormContainer } from "../../../../../../../components/form/formContainer.tsx";
 import { FormDomainSelect } from "../../../../../../../components/form/formDomainSelect.tsx";
+import { useFormDirty } from "../../../../../../../components/form/useFormDirty.tsx";
 import { BasicDataFormSection } from "./basicDataFormSection.tsx";
 import { FormDialog } from "./formDialog.tsx";
 import { RemarksFormSection } from "./remarksFormSection.tsx";
@@ -26,6 +27,7 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
   const { t } = useTranslation();
   const formMethods = useForm<FaciesDescription>({ mode: "all" });
   const { formState, getValues } = formMethods;
+  const isDirty = useFormDirty({ formState });
 
   useEffect(() => {
     if (description) {
@@ -36,14 +38,14 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
 
   const closeDialog = async () => {
     const isValid = await formMethods.trigger();
-    if (!formState.isDirty || isValid) {
+    if (!isDirty || isValid) {
       const values = getValues();
       delete values.facies;
       if (String(values.faciesId) === "") values.faciesId = null;
 
       updateFaciesDescription(
         { ...description, ...values } as FaciesDescription,
-        formState.isDirty || (Boolean(description?.isGap) && isValid),
+        isDirty || (Boolean(description?.isGap) && isValid),
       );
     }
   };

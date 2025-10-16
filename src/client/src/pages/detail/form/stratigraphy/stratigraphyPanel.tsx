@@ -60,7 +60,7 @@ export const StratigraphyPanel: FC = () => {
           updated: null,
           updatedById: null,
           name: "",
-          layers: null,
+          lithologies: null,
           chronostratigraphyLayers: null,
           lithostratigraphyLayers: null,
         },

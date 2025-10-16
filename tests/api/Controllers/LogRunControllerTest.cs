@@ -1,5 +1,4 @@
-﻿using BDMS.Authentication;
-using BDMS.Models;
+﻿using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
@@ -56,6 +55,39 @@ public class LogRunControllerTest
         Assert.IsNotNull(logRuns);
         Assert.IsTrue(logRuns.All(lr => lr.BoreholeId == boreholeId));
         Assert.AreEqual(10, logRuns.Count());
+
+        var firstLogRun = logRuns.OrderBy(lr => lr.Id).First();
+        Assert.AreEqual(3, firstLogRun.CreatedById);
+        Assert.AreEqual(4, firstLogRun.UpdatedById);
+        Assert.AreEqual(24000849, firstLogRun.Id);
+        Assert.AreEqual("driver", firstLogRun.ServiceCo);
+        Assert.AreEqual("R80", firstLogRun.RunNumber);
+        Assert.AreEqual(0, firstLogRun.FromDepth);
+        Assert.AreEqual(10, firstLogRun.ToDepth);
+        Assert.AreEqual(1000085, firstLogRun.BoreholeId);
+        Assert.AreEqual(5.8903691782105572, firstLogRun.BitSize);
+        Assert.AreEqual(new DateOnly(2021, 4, 1), firstLogRun.RunDate);
+        Assert.AreEqual("Odit enim vero ab eaque qui est ducimus reiciendis eligendi.", firstLogRun.Comment);
+        Assert.AreEqual(100003002, firstLogRun.ConveyanceMethod.Id);
+        Assert.AreEqual(100003005, firstLogRun.BoreholeStatus.Id);
+        Assert.AreEqual(4, firstLogRun.LogFiles.Count);
+
+        var logFile = firstLogRun.LogFiles!.OrderBy(f => f.Id).First();
+        Assert.AreEqual(25002122, logFile.Id);
+        Assert.AreEqual(24000849, logFile.LogRunId);
+        Assert.AreEqual(1, logFile.CreatedById);
+        Assert.AreEqual(3, logFile.UpdatedById);
+        Assert.AreEqual("png.ecelp4800", logFile.Name);
+        Assert.AreEqual(100003013, logFile.DataPackageId);
+        Assert.AreEqual(100003027, logFile.DepthTypeId);
+        Assert.AreEqual(100003026, logFile.PassTypeId);
+        Assert.AreEqual(new DateOnly(2021, 6, 6), logFile.DeliveryDate);
+        Assert.AreEqual("0d9b13e0-5ff0-5351-8a35-af2b6a8f9da5", logFile.NameUuid);
+        Assert.AreEqual(true, logFile.Public);
+        Assert.AreEqual("Total", logFile.FileType);
+        Assert.AreEqual(3, logFile.Pass);
+        Assert.AreEqual(1, logFile.ToolTypeCodelistIds.Count);
+        Assert.AreEqual(100003032, logFile.ToolTypeCodelistIds.First());
     }
 
     [TestMethod]

@@ -6,6 +6,7 @@ import { theme } from "../../../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
 import { FormContainer } from "../../../../../../../components/form/formContainer.tsx";
 import { FormInput } from "../../../../../../../components/form/formInput.tsx";
+import { useFormDirty } from "../../../../../../../components/form/useFormDirty.tsx";
 import { Lithology } from "../../../lithology.ts";
 import { FormDialog } from "./formDialog.tsx";
 import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
@@ -35,6 +36,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
     },
   });
   const { formState, getValues } = formMethods;
+  const isDirty = useFormDirty({ formState });
 
   useEffect(() => {
     if (lithology) {
@@ -60,13 +62,10 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
 
   const closeDialog = async () => {
     const isValid = await formMethods.trigger();
-    if (!formState.isDirty || isValid) {
+    if (!isDirty || isValid) {
       const values = getValues();
       prepareLithologyForSubmit(values);
-      updateLithology(
-        { ...lithology, ...values } as Lithology,
-        formState.isDirty || (Boolean(lithology?.isGap) && isValid),
-      );
+      updateLithology({ ...lithology, ...values } as Lithology, isDirty || (Boolean(lithology?.isGap) && isValid));
     }
   };
 
