@@ -52,8 +52,7 @@ function addMinimalLogRun(fromDepth = 0, toDepth = 10, runNumber = "R01") {
 }
 
 describe("Test for the borehole log.", () => {
-  it("Correctly displays logs", () => {
-    // Todo:  temporarily test with existing borehole, adding logs is not yet implemented. Integrate in new test when implemented.
+  it("Correctly displays log run table", () => {
     goToDetailRouteAndAcceptTerms(`/1000070/log?dev=true`);
     assertExportButtonsDisabled();
     getElementByDataCy("delete-button").should("not.exist");
