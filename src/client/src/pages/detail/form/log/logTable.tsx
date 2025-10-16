@@ -233,7 +233,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
                       backgroundColor: `${theme.palette.toggleButton.active.hoverBackgroundColor} !important`,
                     },
                   }
-                : {}
+                : undefined
             }
             icon={<Filter2Icon />}
           />

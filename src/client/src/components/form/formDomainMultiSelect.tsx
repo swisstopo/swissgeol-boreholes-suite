@@ -33,7 +33,7 @@ export const FormDomainMultiSelect: FC<FormDomainMultiSelectProps> = props => {
       }
       renderTagLabel={
         showCodeInValues && showCodeOnlyInChips
-          ? (option: FormSelectMenuItem) => option.label.match(/\(([^)]+)\)$/)?.[1] ?? option.label
+          ? (option: FormSelectMenuItem) => /\(([^)]+)\)$/.exec(option.label)?.[1] ?? option.label
           : undefined
       }
     />
