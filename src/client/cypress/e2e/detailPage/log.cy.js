@@ -6,6 +6,7 @@ import {
   verifyRowContains,
   verifyRowWithTextCheckState,
 } from "../helpers/dataGridHelpers.js";
+import { evaluateMultiSelect, toggleMultiSelect } from "../helpers/formHelpers.js";
 import { getElementByDataCy, goToDetailRouteAndAcceptTerms, startBoreholeEditing } from "../helpers/testHelpers";
 
 function assertExportButtonsDisabled(isDisabled = true) {
@@ -64,5 +65,31 @@ describe("Test for the borehole log.", () => {
     sortBy("Comment");
     verifyFullRowContent(["R96", "10.0 - 20.0", "CAL, GYRO, GR", "Other"], 0);
     verifyRowWithTextCheckState("R96", true);
+  });
+
+  it("filters log runs in table", () => {
+    // Todo:  temporarily test with existing borehole, adding logs is not yet implemented. Integrate in new test when implemented.
+    goToDetailRouteAndAcceptTerms(`/1000070/log?dev=true`);
+    assertCountDisplayed("10 runs");
+    getElementByDataCy("filter-button").should("exist");
+    getElementByDataCy("filter-form").should("not.exist");
+    getElementByDataCy("filter-button").click();
+    getElementByDataCy("filter-form").should("exist");
+    toggleMultiSelect("runNumbers", [3], 11); // "R49
+    assertCountDisplayed("1 run");
+    toggleMultiSelect("sections", [3], 8); // "Belgium (54.0 - 141.0)"
+    assertCountDisplayed("0 runs");
+    toggleMultiSelect("runNumbers", [0], 11); // Reset
+    assertCountDisplayed("5 runs");
+    toggleMultiSelect("toolTypes", [2, 3]);
+    assertCountDisplayed("2 runs");
+    getElementByDataCy("filter-button").click();
+    getElementByDataCy("filter-form").should("not.exist");
+    assertCountDisplayed("10 runs");
+    getElementByDataCy("filter-button").click();
+    getElementByDataCy("filter-form").should("exist");
+    evaluateMultiSelect("runNumbers", []);
+    evaluateMultiSelect("sections", []);
+    evaluateMultiSelect("toolTypes", []);
   });
 });

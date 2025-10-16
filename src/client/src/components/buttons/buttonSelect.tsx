@@ -92,7 +92,7 @@ export const ButtonSelect: FC<ButtonSelectProps> = ({
           <Box sx={{ p: 1.5, borderBottom: `1px solid ${theme.palette.border.light}` }}>
             <TextField
               sx={{ m: 0 }}
-              placeholder={t("filter")}
+              placeholder={t("filter") + "…"}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">

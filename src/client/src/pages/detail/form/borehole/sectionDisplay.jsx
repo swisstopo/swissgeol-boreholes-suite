@@ -9,7 +9,7 @@ const SectionDisplay = ({ item }) => {
 
   return (
     <DataDisplayCard item={item} deleteData={deleteSection} entityName={"sections"}>
-      <FormDisplay label="section_name" value={item?.name} />
+      <FormDisplay label="sectionName" value={item?.name} />
 
       {item?.sectionElements
         ?.sort((a, b) => a.order - b.order)
