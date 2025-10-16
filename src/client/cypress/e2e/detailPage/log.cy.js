@@ -6,7 +6,7 @@ import {
   verifyRowContains,
   verifyRowWithTextCheckState,
 } from "../helpers/dataGridHelpers.js";
-import { setSelect, toggleMultiSelect } from "../helpers/formHelpers.js";
+import { toggleMultiSelect } from "../helpers/formHelpers.js";
 import { getElementByDataCy, goToDetailRouteAndAcceptTerms, startBoreholeEditing } from "../helpers/testHelpers";
 
 function assertExportButtonsDisabled(isDisabled = true) {

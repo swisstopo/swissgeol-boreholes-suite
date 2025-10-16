@@ -19,6 +19,7 @@ export interface FormMultiSelectProps {
   values?: FormMultiSelectValue[];
   sx?: SxProps;
   className?: string;
+  renderTagLabel?: (option: FormSelectMenuItem) => string;
 }
 
 export interface FormMultiSelectValue {
@@ -37,6 +38,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
   values,
   sx,
   className,
+  renderTagLabel,
 }) => {
   const { t } = useTranslation();
   const { formState, register, setValue, control } = useFormContext();
@@ -69,6 +71,8 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
     pointerEvents: "none",
     "& .MuiAutocomplete-endAdornment": { display: "none !important" },
   };
+
+  const renderDefaultTagLabel = (option: FormSelectMenuItem) => option.label;
 
   // Without the controller the textfield is not updated when a value is removed by clicking the delete icon on the chip.
   // Check value length to avoid MUI console error: `children` must be passed when using the `TextField` component with `select`.
@@ -106,16 +110,19 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
                 }
               }}
               renderTags={(tagValue, getTagProps) => {
-                return tagValue.map((option, index) => (
-                  // eslint-disable-next-line react/jsx-key -- Key is provided by getTagProps
-                  <Chip
-                    sx={{ height: "26px" }}
-                    label={option.label}
-                    title={tooltipLabel ? t(tooltipLabel) : undefined}
-                    {...getTagProps({ index })}
-                    data-cy={`chip-${option.label}`}
-                  />
-                ));
+                return tagValue.map((option, index) => {
+                  const label = renderTagLabel ? renderTagLabel(option) : renderDefaultTagLabel(option);
+                  return (
+                    // eslint-disable-next-line react/jsx-key -- Key is provided by getTagProps
+                    <Chip
+                      sx={{ height: "26px" }}
+                      label={label}
+                      title={tooltipLabel ? t(tooltipLabel) : undefined}
+                      {...getTagProps({ index })}
+                      data-cy={`chip-${label}`}
+                    />
+                  );
+                });
               }}
               renderInput={params => (
                 <TextField

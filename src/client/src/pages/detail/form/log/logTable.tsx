@@ -253,7 +253,8 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
               schemaName={"log_tool_type"}
               fieldName={"toolTypes"}
               label={"serviceOrTool"}
-              showCode={true}
+              showCodeInValues={true}
+              showCodeOnlyInChips={true}
               readonly={false}
             />
           </FormContainer>
