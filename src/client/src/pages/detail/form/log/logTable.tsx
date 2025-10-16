@@ -123,6 +123,16 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
     }
   }, [boreholeId, sectionFilters]);
 
+  useEffect(() => {
+    if (!filterVisible) {
+      formMethods.reset({
+        runNumbers: [],
+        sections: [],
+        toolTypes: [],
+      });
+    }
+  }, [filterVisible, formMethods]);
+
   const displayServiceOrTool = useCallback(
     (logRun: LogRun) => {
       return (

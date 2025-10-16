@@ -6,7 +6,7 @@ import {
   verifyRowContains,
   verifyRowWithTextCheckState,
 } from "../helpers/dataGridHelpers.js";
-import { toggleMultiSelect } from "../helpers/formHelpers.js";
+import { evaluateMultiSelect, toggleMultiSelect } from "../helpers/formHelpers.js";
 import { getElementByDataCy, goToDetailRouteAndAcceptTerms, startBoreholeEditing } from "../helpers/testHelpers";
 
 function assertExportButtonsDisabled(isDisabled = true) {
@@ -77,11 +77,19 @@ describe("Test for the borehole log.", () => {
     getElementByDataCy("filter-form").should("exist");
     toggleMultiSelect("runNumbers", [3], 11); // "R49
     assertCountDisplayed("1 run");
-    toggleMultiSelect("section", [3], 8); // "Belgium (54.0 - 141.0)"
+    toggleMultiSelect("sections", [3], 8); // "Belgium (54.0 - 141.0)"
     assertCountDisplayed("0 runs");
     toggleMultiSelect("runNumbers", [0], 11); // Reset
     assertCountDisplayed("5 runs");
     toggleMultiSelect("toolTypes", [2, 3]);
     assertCountDisplayed("2 runs");
+    getElementByDataCy("filter-button").click();
+    getElementByDataCy("filter-form").should("not.exist");
+    assertCountDisplayed("10 runs");
+    getElementByDataCy("filter-button").click();
+    getElementByDataCy("filter-form").should("exist");
+    evaluateMultiSelect("runNumbers", []);
+    evaluateMultiSelect("sections", []);
+    evaluateMultiSelect("toolTypes", []);
   });
 });
