@@ -8,9 +8,10 @@ import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { SaveContext } from "../../saveContext.tsx";
-import { LogRun, LogRunChangeTracker, TmpLogRun, useLogRunMutations, useLogsByBoreholeId } from "./log.ts";
+import { LogRunChangeTracker, TmpLogRun, useLogRunMutations, useLogsByBoreholeId } from "./log.ts";
 import { LogRunModal } from "./logRunModal.tsx";
 import { LogTable } from "./logTable.tsx";
+import { preparelogRunForSubmit } from "./logUtils.ts";
 
 export const LogPanel: FC = () => {
   const { t } = useTranslation();
@@ -84,7 +85,8 @@ export const LogPanel: FC = () => {
   }, [deleteLogRuns, logRuns, tmpLogRunsFlat]);
 
   const addAndUpdateLogRuns = useCallback(async () => {
-    for (const logRun of tmpLogRuns.filter(l => l.hasChanges).map(l => l.item as LogRun)) {
+    for (const logRun of tmpLogRuns.filter(l => l.hasChanges).map(l => l.item)) {
+      preparelogRunForSubmit(logRun);
       if (logRun.id === 0) {
         await addLogRun({ ...logRun, boreholeId: Number(boreholeId) });
       } else {

@@ -96,6 +96,8 @@ export const formatNumberForDisplay = (value?: number | null, minDecimals = 0, m
 
 export const ensureDatetime = (date: string) => (date.endsWith("Z") ? date : `${date}T00:00:00.000Z`);
 
+export const ensureDateOnly = (date: string) => date.split("T")[0].split("Z")[0];
+
 /**
  * Convert a value to a boolean.
  * @param value The value to convert from (yes=1, no=0, undefined=null).

@@ -16,9 +16,9 @@ export interface LogRunChangeTracker {
 export interface LogRun {
   id: number;
   boreholeId: number;
-  runNumber?: string;
-  fromDepth?: number;
-  toDepth?: number;
+  runNumber: string;
+  fromDepth: number;
+  toDepth: number;
   runDate?: Date | string | null;
   comment?: string;
   serviceCo?: string;
@@ -28,7 +28,9 @@ export interface LogRun {
   boreholeStatusId?: number | null;
   boreholeStatus?: Codelist;
   logFiles?: LogFile[];
+  created?: Date | string | null;
   createdBy?: User | null;
+  updated?: Date | string | null;
   updatedBy?: User | null;
 }
 

@@ -15,7 +15,7 @@ import {
 import { validateDepths } from "../../../../components/form/formUtils.ts";
 import { useFormDirty } from "../../../../components/form/useFormDirty.tsx";
 import { TmpLogRun } from "./log.ts";
-import { getServiceOrToolArray, preparelogRunForSubmit, validateRunNumber } from "./logUtils.ts";
+import { getServiceOrToolArray, validateRunNumber } from "./logUtils.ts";
 
 interface LogRunModalProps {
   logRun: TmpLogRun | undefined;
@@ -48,7 +48,6 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun }) => {
     const isValid = await formMethods.trigger();
     if (!isDirty || isValid) {
       const values = getValues();
-      preparelogRunForSubmit(values);
       updateLogRun({ ...logRun, ...values } as TmpLogRun, isDirty);
     }
   };
