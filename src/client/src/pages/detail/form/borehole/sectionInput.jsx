@@ -116,7 +116,7 @@ const SectionInput = ({ item, parentId }) => {
       <FormProvider {...formMethods}>
         <form onSubmit={handleSubmit(submitForm)}>
           <FormContainer>
-            <FormInput fieldName="name" label="section_name" value={item?.name} required={true} />
+            <FormInput fieldName="name" label="sectionName" value={item?.name} required={true} />
             {fields
               .sort((a, b) => a.order - b.order)
               .map((field, index) => (

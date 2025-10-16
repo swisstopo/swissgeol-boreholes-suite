@@ -139,6 +139,7 @@ export const LogPanel: FC = () => {
                   isLoading={isLoading}
                   setSelectedLogRunId={setSelectedLogRunId}
                   setTmpLogRuns={setTmpLogRuns}
+                  boreholeId={boreholeId}
                 />
               ),
             },

@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Codelist, useCodelists } from "../codelist.ts";
+import { Codelist, CodelistLabelStyle, useCodelistLabel, useCodelists } from "../codelist.ts";
 import { FormSelect } from "./form";
 import { FormSelectProps, FormSelectValue } from "./formSelect.tsx";
 
@@ -8,13 +8,21 @@ export interface FormDomainSelectProps extends FormSelectProps {
   schemaName: string;
   prefilteredDomains?: Codelist[];
   additionalValues?: FormSelectValue[];
-  showCode?: boolean;
+  labelStyle?: CodelistLabelStyle;
 }
 
 export const FormDomainSelect: FC<FormDomainSelectProps> = props => {
-  const { label, selected, schemaName, prefilteredDomains, additionalValues, showCode } = props;
+  const {
+    label,
+    selected,
+    schemaName,
+    prefilteredDomains,
+    additionalValues,
+    labelStyle = CodelistLabelStyle.TextOnly,
+  } = props;
   const { data: domains } = useCodelists();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const getLabel = useCodelistLabel(labelStyle);
 
   return (
     <FormSelect
@@ -31,7 +39,7 @@ export const FormDomainSelect: FC<FormDomainSelectProps> = props => {
           .sort((a: Codelist, b: Codelist) => a.order - b.order)
           .map((d: Codelist) => ({
             key: d.id,
-            name: showCode ? `${String(d[i18n.language])} (${String(d.code)})` : String(d[i18n.language]),
+            name: getLabel(d),
           })) ?? []),
       ]}
     />

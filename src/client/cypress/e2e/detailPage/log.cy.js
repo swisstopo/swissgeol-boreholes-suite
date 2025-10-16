@@ -1,7 +1,6 @@
 import { discardChanges, saveWithSaveBar } from "../helpers/buttonHelpers.js";
 import {
   checkAllVisibleRows,
-  checkRowWithIndex,
   checkTwoFirstRows,
   clickOnRowWithText,
   sortBy,
@@ -12,11 +11,13 @@ import {
 } from "../helpers/dataGridHelpers.js";
 import {
   evaluateInput,
+  evaluateMultiSelect,
   evaluateSelect,
   evaluateTextarea,
   hasError,
   setInput,
   setSelect,
+  toggleMultiSelect,
 } from "../helpers/formHelpers.js";
 import { isActiveMenuItem, navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
@@ -235,5 +236,31 @@ describe("Test for the borehole log.", () => {
     isActiveMenuItem(SidebarMenuItem.log);
     cy.contains("No run added yet...");
     cy.contains("Unsaved changes").should("not.exist");
+  });
+
+  it("filters log runs in table", () => {
+    // Todo:  temporarily test with existing borehole, adding logs is not yet implemented. Integrate in new test when implemented.
+    goToDetailRouteAndAcceptTerms(`/1000070/log?dev=true`);
+    assertCountDisplayed("10 runs");
+    getElementByDataCy("filter-button").should("exist");
+    getElementByDataCy("filter-form").should("not.exist");
+    getElementByDataCy("filter-button").click();
+    getElementByDataCy("filter-form").should("exist");
+    toggleMultiSelect("runNumbers", [3], 11); // "R49
+    assertCountDisplayed("1 run");
+    toggleMultiSelect("sections", [3], 8); // "Belgium (54.0 - 141.0)"
+    assertCountDisplayed("0 runs");
+    toggleMultiSelect("runNumbers", [0], 11); // Reset
+    assertCountDisplayed("5 runs");
+    toggleMultiSelect("toolTypes", [2, 3]);
+    assertCountDisplayed("2 runs");
+    getElementByDataCy("filter-button").click();
+    getElementByDataCy("filter-form").should("not.exist");
+    assertCountDisplayed("10 runs");
+    getElementByDataCy("filter-button").click();
+    getElementByDataCy("filter-form").should("exist");
+    evaluateMultiSelect("runNumbers", []);
+    evaluateMultiSelect("sections", []);
+    evaluateMultiSelect("toolTypes", []);
   });
 });

@@ -72,6 +72,7 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
       error={!className?.includes("ai") && !disabled && !!formFieldError}
       helperText={formFieldError?.message ? t(formFieldError?.message) : ""}
       sx={{
+        flex: "1",
         ...sx,
         ...getFieldBorderColor(isReadOnly),
       }}

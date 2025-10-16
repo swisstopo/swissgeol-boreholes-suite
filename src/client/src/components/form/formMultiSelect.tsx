@@ -19,6 +19,7 @@ export interface FormMultiSelectProps {
   values?: FormMultiSelectValue[];
   sx?: SxProps;
   className?: string;
+  renderTagLabel?: (option: FormSelectMenuItem) => string;
 }
 
 export interface FormMultiSelectValue {
@@ -37,6 +38,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
   values,
   sx,
   className,
+  renderTagLabel,
 }) => {
   const { t } = useTranslation();
   const { formState, register, setValue, control } = useFormContext();
@@ -81,7 +83,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
         <>
           {Array.isArray(values) && values.length > 0 ? (
             <Autocomplete
-              sx={{ ...(isReadOnly ? readonlyStyles : {}), width: "100%" }}
+              sx={{ ...(isReadOnly ? readonlyStyles : {}), flex: "1" }}
               key={`${fieldName}-${fieldValue ? fieldValue.join("-") : "empty"}`}
               multiple
               options={menuItems}
@@ -106,16 +108,19 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
                 }
               }}
               renderTags={(tagValue, getTagProps) => {
-                return tagValue.map((option, index) => (
-                  // eslint-disable-next-line react/jsx-key -- Key is provided by getTagProps
-                  <Chip
-                    sx={{ height: "26px" }}
-                    label={option.label}
-                    title={tooltipLabel ? t(tooltipLabel) : undefined}
-                    {...getTagProps({ index })}
-                    data-cy={`chip-${option.label}`}
-                  />
-                ));
+                return tagValue.map((option, index) => {
+                  const label = renderTagLabel ? renderTagLabel(option) : option.label;
+                  return (
+                    // eslint-disable-next-line react/jsx-key -- Key is provided by getTagProps
+                    <Chip
+                      sx={{ height: "26px" }}
+                      label={label}
+                      title={tooltipLabel ? t(tooltipLabel) : undefined}
+                      {...getTagProps({ index })}
+                      data-cy={`chip-${label}`}
+                    />
+                  );
+                });
               }}
               renderInput={params => (
                 <TextField

@@ -1,19 +1,19 @@
 import { FC } from "react";
-import { useTranslation } from "react-i18next";
-import { Codelist, useCodelists } from "../codelist.ts";
+import { Codelist, CodelistLabelStyle, useCodelistLabel, useCodelists } from "../codelist.ts";
 import { FormMultiSelect } from "./form.ts";
 import { FormMultiSelectProps } from "./formMultiSelect.tsx";
+import { FormSelectMenuItem } from "./formSelect.tsx";
 
 export interface FormDomainMultiSelectProps extends FormMultiSelectProps {
   schemaName: string;
   prefilteredDomains?: Codelist[];
-  showCode?: boolean;
+  labelStyle?: CodelistLabelStyle;
 }
 
 export const FormDomainMultiSelect: FC<FormDomainMultiSelectProps> = props => {
-  const { label, selected, schemaName, prefilteredDomains, showCode } = props;
+  const { label, selected, schemaName, prefilteredDomains, labelStyle = CodelistLabelStyle.TextOnly } = props;
   const { data: codelists } = useCodelists();
-  const { i18n } = useTranslation();
+  const getLabel = useCodelistLabel(labelStyle);
 
   return (
     <FormMultiSelect
@@ -26,8 +26,13 @@ export const FormDomainMultiSelect: FC<FormDomainMultiSelectProps> = props => {
           .sort((a: Codelist, b: Codelist) => a.order - b.order)
           .map((d: Codelist) => ({
             key: d.id,
-            name: showCode ? `${String(d[i18n.language])} (${String(d.code)})` : String(d[i18n.language]),
+            name: getLabel(d),
           })) ?? []
+      }
+      renderTagLabel={
+        labelStyle === CodelistLabelStyle.TextAndCodeChipsCodeOnly
+          ? (option: FormSelectMenuItem) => /\(([^)]+)\)$/.exec(option.label)?.[1] ?? option.label
+          : undefined
       }
     />
   );

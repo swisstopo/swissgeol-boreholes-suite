@@ -61,7 +61,7 @@ describe("Section crud tests", () => {
 
     saveSection("POST");
 
-    evaluateDisplayValue("section_name", "section-1");
+    evaluateDisplayValue("sectionName", "section-1");
 
     evaluateDisplayValue("0.fromdepth", "0");
     evaluateDisplayValue("0.todepth", "10");
@@ -94,7 +94,7 @@ describe("Section crud tests", () => {
     cy.get('[data-cy="sectionElements.0.delete"]').click();
 
     saveSection("PUT");
-    evaluateDisplayValue("section_name", "section-1");
+    evaluateDisplayValue("sectionName", "section-1");
     evaluateDisplayValue("0.drilling_method", "auger drilling");
     evaluateDisplayValue("0.overcoring", "No");
 

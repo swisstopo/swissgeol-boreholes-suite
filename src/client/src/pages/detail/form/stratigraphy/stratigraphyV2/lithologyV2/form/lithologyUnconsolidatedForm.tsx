@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Divider, Stack, TextField, Typography } from "@mui/material";
 import { theme } from "../../../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
-import { Codelist, useCodelistSchema } from "../../../../../../../components/codelist.ts";
+import { Codelist, CodelistLabelStyle, useCodelistSchema } from "../../../../../../../components/codelist.ts";
 import {
   FormCheckbox,
   FormContainer,
@@ -39,14 +39,14 @@ const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> =
             fieldName={`lithologyDescriptions.${index}.lithologyUnconMainId`}
             label={"lithologyUnconMain"}
             schemaName={"lithology_uncon_main"}
-            showCode={true}
+            labelStyle={CodelistLabelStyle.TextAndCode}
           />,
           <FormDomainSelect
             key={`lithologyDescriptions.${index}.lithologyUncon2Id`}
             fieldName={`lithologyDescriptions.${index}.lithologyUncon2Id`}
             label={"lithologyUnconSecondary"}
             schemaName={"lithology_uncon_secondary"}
-            showCode={true}
+            labelStyle={CodelistLabelStyle.TextAndCode}
           />,
         ],
         [
@@ -55,7 +55,7 @@ const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> =
             fieldName={`lithologyDescriptions.${index}.lithologyUncon3Id`}
             label={"componentUncon"}
             schemaName={"lithology_uncon_secondary"}
-            showCode={true}
+            labelStyle={CodelistLabelStyle.TextAndCode}
             sx={{
               "& .MuiInputLabel-root": {
                 overflow: "visible",
@@ -66,19 +66,19 @@ const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> =
             key={`lithologyDescriptions.${index}.lithologyUncon4Id`}
             fieldName={`lithologyDescriptions.${index}.lithologyUncon4Id`}
             schemaName={"lithology_uncon_secondary"}
-            showCode={true}
+            labelStyle={CodelistLabelStyle.TextAndCode}
           />,
           <FormDomainSelect
             key={`lithologyDescriptions.${index}.lithologyUncon5Id`}
             fieldName={`lithologyDescriptions.${index}.lithologyUncon5Id`}
             schemaName={"lithology_uncon_secondary"}
-            showCode={true}
+            labelStyle={CodelistLabelStyle.TextAndCode}
           />,
           <FormDomainSelect
             key={`lithologyDescriptions.${index}.lithologyUncon6Id`}
             fieldName={`lithologyDescriptions.${index}.lithologyUncon6Id`}
             schemaName={"lithology_uncon_secondary"}
-            showCode={true}
+            labelStyle={CodelistLabelStyle.TextAndCode}
           />,
         ],
         [
