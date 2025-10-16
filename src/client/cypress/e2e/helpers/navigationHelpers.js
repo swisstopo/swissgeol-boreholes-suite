@@ -11,6 +11,7 @@ export const SidebarMenuItem = {
   groundwaterLevelMeasurement: "groundwaterlevelmeasurement",
   fieldMeasurement: "fieldmeasurement",
   hydrotest: "hydrotest",
+  log: "log",
   attachments: "attachments",
   status: "status",
 };
@@ -242,6 +243,13 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       cy.wait("@hydrotest_GET");
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/hydrogeology\/hydrotest/);
+      });
+      isActiveMenuItem(menuItem);
+      break;
+    case SidebarMenuItem.log:
+      //cy.wait("@getAllAttachments");
+      cy.location().should(location => {
+        expect(location.pathname).to.match(/^\/\d+\/log$/);
       });
       isActiveMenuItem(menuItem);
       break;

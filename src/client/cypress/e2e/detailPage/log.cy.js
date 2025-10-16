@@ -1,7 +1,8 @@
-import { saveWithSaveBar } from "../helpers/buttonHelpers.js";
+import { discardChanges, saveWithSaveBar } from "../helpers/buttonHelpers.js";
 import "cypress-real-events/support";
 import {
   checkAllVisibleRows,
+  checkRowWithIndex,
   checkTwoFirstRows,
   clickOnRowWithText,
   sortBy,
@@ -10,11 +11,20 @@ import {
   verifyRowWithTextCheckState,
   verifyTableLength,
 } from "../helpers/dataGridHelpers.js";
-import { evaluateInput, hasError, setInput, setSelect } from "../helpers/formHelpers.js";
+import {
+  evaluateInput,
+  evaluateSelect,
+  evaluateTextarea,
+  hasError,
+  setInput,
+  setSelect,
+} from "../helpers/formHelpers.js";
+import { isActiveMenuItem, navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
   getElementByDataCy,
   goToDetailRouteAndAcceptTerms,
+  handlePrompt,
   startBoreholeEditing,
 } from "../helpers/testHelpers";
 
@@ -118,17 +128,22 @@ describe("Test for the borehole log.", () => {
     //Todo: add check for fromDepth < toDepth error, is currently not working because of input focus issue
     getElementByDataCy("close-button").click();
 
-    // One row was added
+    // verify one row was added
     verifyRowContains("R01", 0);
     verifyTableLength(1);
 
-    // Add 5 more runs
+    // add 5 more runs
     addMinimalLogRun(100, 110, "R02");
     addMinimalLogRun(110, 120, "R03");
     addMinimalLogRun(120, 130, "R04");
     addMinimalLogRun(130, 140, "R05");
     addMinimalLogRun(140, 150, "R06");
     verifyTableLength(6);
+
+    // delete temporary log run
+    checkRowWithIndex(5); //"R06"
+    getElementByDataCy("delete-button").click();
+    verifyTableLength(5);
 
     saveWithSaveBar();
 
@@ -146,12 +161,73 @@ describe("Test for the borehole log.", () => {
     verifyRowContains("R03-EDITED", 2);
     saveWithSaveBar();
 
-    // Todo:
-    // can edit an existing log and save
-    // can delete an existing log and save
-    // can delete a temporary log and save
-    // cannot save if required fields missing
-    // can save with adds edits and deletes
-    // verify navigation blocking
+    // verify that changes were saved
+    clickOnRowWithText("R03-EDITED");
+    evaluateInput("runNumber", "R03-EDITED");
+    evaluateSelect("boreholeStatusId", "CH");
+    evaluateSelect("conveyanceMethodId", "PCL");
+    evaluateInput("bitSize", "789'456.7897");
+    evaluateInput("serviceCo", "A new service company");
+    evaluateTextarea("comment", "A comment");
+    getElementByDataCy("close-button").click();
+
+    // delete an existing log run
+    checkRowWithIndex(3); //"R04"
+    getElementByDataCy("delete-button").click();
+    verifyTableLength(4);
+    verifyRowContains("R05", 3); // verify that R05 is now at index 3
+    saveWithSaveBar();
+    verifyTableLength(4);
+
+    // verify that a change containing adds edits and deletes can be saved
+
+    // add
+    addMinimalLogRun(140, 150, "R06");
+
+    // edit
+    clickOnRowWithText("R02");
+    setInput("runNumber", "R02-EDITED");
+    getElementByDataCy("close-button").click();
+
+    // delete
+    checkRowWithIndex(3); //"R05"
+    getElementByDataCy("delete-button").click();
+
+    verifyTableLength(4);
+    saveWithSaveBar();
+  });
+
+  it("Blocks navigation with unsaved changes", () => {
+    createBorehole({ originalName: "BLOCKING TIME!" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      goToDetailRouteAndAcceptTerms(`/${id}/log?dev=true`);
+      cy.wait(["@borehole"]);
+    });
+    startBoreholeEditing();
+
+    // can discard changes
+    addMinimalLogRun(1, 10, "BLOCK ME");
+    verifyTableLength(1);
+    discardChanges();
+    verifyTableLength(0);
+    addMinimalLogRun(1, 10, "BLOCK ME");
+
+    // blocks navigation with unsaved changes
+    getElementByDataCy("attachments-menu-item").click();
+    const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
+    handlePrompt(messageUnsavedChanges, "cancel");
+
+    // remains on page
+    cy.contains("BLOCK ME");
+    getElementByDataCy("attachments-menu-item").click();
+    handlePrompt(messageUnsavedChanges, "discardchanges");
+
+    // navigates away
+    isActiveMenuItem(SidebarMenuItem.attachments);
+
+    navigateInSidebar(SidebarMenuItem.log);
+    isActiveMenuItem(SidebarMenuItem.log);
+    cy.contains("No run added yet...");
+    cy.contains("Unsaved changes").should("not.exist");
   });
 });
