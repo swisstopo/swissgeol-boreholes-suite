@@ -8,6 +8,7 @@
 
 ### Changed
 - Update legal links in disclaimer for all languages.
+- Upgraded to PostgreSQL 17 and PostGIS 3.5.
 
 ## v2.1.1358 - 2025-09-24
 
