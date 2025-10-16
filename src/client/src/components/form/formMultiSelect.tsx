@@ -72,8 +72,6 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
     "& .MuiAutocomplete-endAdornment": { display: "none !important" },
   };
 
-  const renderDefaultTagLabel = (option: FormSelectMenuItem) => option.label;
-
   // Without the controller the textfield is not updated when a value is removed by clicking the delete icon on the chip.
   // Check value length to avoid MUI console error: `children` must be passed when using the `TextField` component with `select`.
   return (
@@ -111,7 +109,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
               }}
               renderTags={(tagValue, getTagProps) => {
                 return tagValue.map((option, index) => {
-                  const label = renderTagLabel ? renderTagLabel(option) : renderDefaultTagLabel(option);
+                  const label = renderTagLabel ? renderTagLabel(option) : option.label;
                   return (
                     // eslint-disable-next-line react/jsx-key -- Key is provided by getTagProps
                     <Chip

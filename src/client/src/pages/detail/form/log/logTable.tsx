@@ -8,7 +8,7 @@ import Filter2Icon from "../../../../assets/icons/filter2.svg?react";
 import { getSectionsByBoreholeId } from "../../../../api/fetchApiV2.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { BoreholesButton, DeleteButton, ExportButton } from "../../../../components/buttons/buttons.tsx";
-import { Codelist, useCodelists } from "../../../../components/codelist.ts";
+import { Codelist, CodelistLabelStyle, useCodelists } from "../../../../components/codelist.ts";
 import { FormContainer, FormDomainMultiSelect, FormMultiSelect } from "../../../../components/form/form.ts";
 import { FormMultiSelectValue } from "../../../../components/form/formMultiSelect.tsx";
 import { FormSelectValue } from "../../../../components/form/formSelect.tsx";
@@ -263,8 +263,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
               schemaName={"log_tool_type"}
               fieldName={"toolTypes"}
               label={"serviceOrTool"}
-              showCodeInValues={true}
-              showCodeOnlyInChips={true}
+              labelStyle={CodelistLabelStyle.TextAndCodeChipsCodeOnly}
               readonly={false}
             />
           </FormContainer>
