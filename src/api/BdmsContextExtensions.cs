@@ -1447,7 +1447,7 @@ public static class BdmsContextExtensions
         }
 
         var boreholeStatusIds = codelists.Where(c => c.Schema == "log_borehole_status").Select(s => s.Id).ToList();
-        var conveyanceMethodIds = codelists.Where(c => c.Schema == "log_convenyance_method").Select(s => s.Id).ToList();
+        var conveyanceMethodIds = codelists.Where(c => c.Schema == "log_conveyance_method").Select(s => s.Id).ToList();
         var toolTypeIds = codelists.Where(c => c.Schema == "log_tool_type").Select(s => s.Id).ToList();
         var passTypeIds = codelists.Where(c => c.Schema == "log_pass_type").Select(s => s.Id).ToList();
         var depthTypeIds = codelists.Where(c => c.Schema == "log_depth_type").Select(s => s.Id).ToList();

@@ -98,7 +98,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun }) => {
                 <FormDomainSelect
                   fieldName={"conveyanceMethodId"}
                   label={"conveyanceMethod"}
-                  schemaName={"log_convenyance_method"}
+                  schemaName={"log_conveyance_method"}
                   selected={logRun.conveyanceMethodId}
                 />
                 <FormInput fieldName={"serviceCo"} label={"serviceCo"} value={logRun.serviceCo} />
