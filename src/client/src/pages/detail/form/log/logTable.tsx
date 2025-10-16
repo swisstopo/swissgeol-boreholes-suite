@@ -9,7 +9,7 @@ import { getSectionsByBoreholeId } from "../../../../api/fetchApiV2.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { BoreholesButton, DeleteButton, ExportButton } from "../../../../components/buttons/buttons.tsx";
 import { Codelist, useCodelists } from "../../../../components/codelist.ts";
-import { FormContainer, FormDomainMultiSelect, FormMultiSelect, FormSelect } from "../../../../components/form/form.ts";
+import { FormContainer, FormDomainMultiSelect, FormMultiSelect } from "../../../../components/form/form.ts";
 import { FormMultiSelectValue } from "../../../../components/form/formMultiSelect.tsx";
 import { FormSelectValue } from "../../../../components/form/formSelect.tsx";
 import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
@@ -26,7 +26,7 @@ interface SectionFilter {
 
 interface LogRunFilter {
   runNumbers: number[];
-  section: number;
+  sections: number[];
   toolTypes: number[];
 }
 
@@ -42,9 +42,11 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
   const apiRef = useGridApiRef();
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const [filterVisible, setFilterVisible] = useState(false);
+  const [sectionFilters, setSectionFilters] = useState<SectionFilter[]>();
+
   const formMethods = useForm<LogRunFilter>({ mode: "onChange" });
   const runFilter = formMethods.watch("runNumbers");
-  const sectionFilter = formMethods.watch("section");
+  const sectionFilter = formMethods.watch("sections");
   const toolTypeFilter = formMethods.watch("toolTypes");
 
   const codelists = useCodelists();
@@ -55,22 +57,32 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
         .map(run => ({ key: run.id, name: run.runNumber! }) as FormMultiSelectValue),
     [runs],
   );
-  const [sectionFilters, setSectionFilters] = useState<SectionFilter[]>();
   const filteredRuns = useMemo<LogRun[]>(() => {
     let filtered = runs;
     if (runFilter && runFilter.length > 0) {
       filtered = filtered.filter(run => runFilter.includes(run.id));
     }
     if (sectionFilter && sectionFilters) {
-      const section = sectionFilters.find(s => s.id === sectionFilter);
-      if (section) {
-        filtered = filtered.filter(
-          run =>
-            run.fromDepth !== undefined &&
-            run.toDepth !== undefined &&
-            run.fromDepth <= section.toDepth &&
-            run.toDepth >= section.fromDepth,
-        );
+      const sections: SectionFilter[] = [];
+      for (const id of sectionFilter) {
+        const section = sectionFilters.find(s => s.id === id);
+        if (section) sections.push(section);
+      }
+      if (sections.length > 0) {
+        const hasOverlapWithSections = (run: LogRun) => {
+          for (const section of sections) {
+            if (
+              run.fromDepth !== undefined &&
+              run.toDepth !== undefined &&
+              run.fromDepth <= section.toDepth &&
+              run.toDepth >= section.fromDepth
+            ) {
+              return true;
+            }
+          }
+          return false;
+        };
+        filtered = filtered.filter(hasOverlapWithSections);
       }
     }
     if (toolTypeFilter && toolTypeFilter.length > 0) {
@@ -231,8 +243,8 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
         <FormProvider {...formMethods}>
           <FormContainer direction={"row"} mb={2} justifyContent={"space-between"} data-cy={"filter-form"}>
             <FormMultiSelect fieldName={"runNumbers"} label={"runNumber"} values={runNumbers} readonly={false} />
-            <FormSelect
-              fieldName={"section"}
+            <FormMultiSelect
+              fieldName={"sections"}
               label={"sectionName"}
               values={sectionFilters?.map(filter => ({ key: filter.id, name: filter.label }) as FormSelectValue) ?? []}
               readonly={false}
