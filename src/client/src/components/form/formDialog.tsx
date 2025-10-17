@@ -1,11 +1,7 @@
 import { FC, ReactNode } from "react";
 import { Dialog, Typography } from "@mui/material";
-import { BoreholesButton } from "../../../../../../../components/buttons/buttons.tsx";
-import {
-  DialogFooterContainer,
-  DialogHeaderContainer,
-  DialogMainContent,
-} from "../../../../../../../components/styledComponents.ts";
+import { BoreholesButton } from "../buttons/buttons.tsx";
+import { DialogFooterContainer, DialogHeaderContainer, DialogMainContent } from "../styledComponents.ts";
 
 interface FormDialogProps {
   open: boolean;

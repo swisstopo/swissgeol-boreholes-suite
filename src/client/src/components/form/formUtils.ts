@@ -1,4 +1,7 @@
 import { theme } from "../../AppTheme.ts";
+import { LogRun } from "../../pages/detail/form/log/log.ts";
+import { Lithology } from "../../pages/detail/form/stratigraphy/lithology.ts";
+import { FormErrors } from "./form.ts";
 
 /**
  * Parse the input value if it's a string. If it's a number, return it as is.
@@ -93,6 +96,8 @@ export const formatNumberForDisplay = (value?: number | null, minDecimals = 0, m
 
 export const ensureDatetime = (date: string) => (date.endsWith("Z") ? date : `${date}T00:00:00.000Z`);
 
+export const ensureDateOnly = (date: string) => date.split("T")[0].split("Z")[0];
+
 /**
  * Convert a value to a boolean.
  * @param value The value to convert from (yes=1, no=0, undefined=null).
@@ -102,4 +107,17 @@ export const convertValueToBoolean = (value: number | boolean | null): boolean |
   if (value === 1) return true;
   if (value === 0) return false;
   return null;
+};
+
+export const validateDepths = (values: Lithology | LogRun, errors: FormErrors) => {
+  const fromDepth = parseFloatWithThousandsSeparator(values.fromDepth);
+  const toDepth = parseFloatWithThousandsSeparator(values.toDepth);
+  if (fromDepth === null) {
+    errors.fromDepth = { type: "required", message: "required" };
+  }
+  if (toDepth === null) {
+    errors.toDepth = { type: "required", message: "required" };
+  } else if (fromDepth && fromDepth >= toDepth) {
+    errors.toDepth = { type: "manual", message: "toDepthMustBeGreaterThanFromDepth" };
+  }
 };

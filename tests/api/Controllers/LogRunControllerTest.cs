@@ -8,9 +8,8 @@ using static BDMS.Helpers;
 namespace BDMS.Controllers;
 
 [TestClass]
-public class LogRunControllerTest
+public class LogRunControllerTest : TestControllerBase
 {
-    private BdmsContext context;
     private LogRunController controller;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
     private static int testBoreholeId = 1000085;
@@ -18,13 +17,13 @@ public class LogRunControllerTest
     [TestInitialize]
     public void TestInitialize()
     {
-        context = ContextFactory.GetTestContext();
+        Context = ContextFactory.GetTestContext();
         boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
-        controller = new LogRunController(context, new Mock<ILogger<LogRunController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new LogRunController(Context, new Mock<ILogger<LogRunController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
-    public async Task TestCleanup() => await context.DisposeAsync();
+    public async Task TestCleanup() => await Context.DisposeAsync();
 
     [TestMethod]
     public async Task GetFailsWithoutPermissions()
@@ -33,7 +32,7 @@ public class LogRunControllerTest
             .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
-        var response = await controller.GetAsync(context.Boreholes.First().Id).ConfigureAwait(false);
+        var response = await controller.GetAsync(Context.Boreholes.First().Id).ConfigureAwait(false);
 
         ActionResultAssert.IsUnauthorized(response.Result);
     }
@@ -109,7 +108,7 @@ public class LogRunControllerTest
         var response = await controller.CreateAsync(logRun);
         ActionResultAssert.IsOk(response.Result);
 
-        var updatedLogRun = context.LogRunsWithIncludes.SingleOrDefault(x => x.Id == logRun.Id);
+        var updatedLogRun = Context.LogRunsWithIncludes.SingleOrDefault(x => x.Id == logRun.Id);
         Assert.IsNotNull(updatedLogRun);
         Assert.AreEqual("RUN-001", updatedLogRun.RunNumber);
         Assert.AreEqual(10, updatedLogRun.FromDepth);
@@ -145,7 +144,22 @@ public class LogRunControllerTest
         response = await controller.DeleteAsync(logRunId);
         ActionResultAssert.IsNotFound(response);
 
-        Assert.AreEqual(null, context.LogRuns.SingleOrDefault(x => x.Id == logRunId));
+        Assert.AreEqual(null, Context.LogRuns.SingleOrDefault(x => x.Id == logRunId));
+    }
+
+    [TestMethod]
+    public async Task DeleteMultipleLogRuns()
+    {
+        var borehole = await CreateTestBoreholeAsync();
+        var logRun1 = await CreateTestLogRunAsync(borehole.Id);
+        var logRun2 = await CreateTestLogRunAsync(borehole.Id);
+
+        Assert.AreEqual(2, Context.LogRuns.Count(lr => lr.BoreholeId == borehole.Id));
+
+        var response = await controller.DeleteMultipleAsync([logRun1.Id, logRun2.Id]);
+        ActionResultAssert.IsOk(response);
+
+        Assert.AreEqual(0, Context.LogRuns.Count(lr => lr.BoreholeId == borehole.Id));
     }
 
     [TestMethod]
@@ -157,10 +171,7 @@ public class LogRunControllerTest
 
         var logRunId = await CreateCompleteLogRunAsync();
         var response = await controller.DeleteAsync(logRunId);
-        Assert.IsInstanceOfType(response, typeof(ObjectResult));
-        ObjectResult objectResult = (ObjectResult)response;
-        ProblemDetails problemDetails = (ProblemDetails)objectResult.Value!;
-        StringAssert.StartsWith(problemDetails.Detail, "The borehole is locked by another user or you are missing permissions.");
+        ActionResultAssert.IsUnauthorized(response);
     }
 
     [TestMethod]
@@ -192,7 +203,7 @@ public class LogRunControllerTest
         var response = await controller.EditAsync(changedLogRun);
         ActionResultAssert.IsOk(response.Result);
 
-        var updatedLogRun = context.LogRuns.SingleOrDefault(x => x.Id == logRunId);
+        var updatedLogRun = Context.LogRuns.SingleOrDefault(x => x.Id == logRunId);
         Assert.IsNotNull(updatedLogRun);
         Assert.AreEqual("RUN-002", updatedLogRun.RunNumber);
         Assert.AreEqual(30, updatedLogRun.FromDepth);
@@ -253,8 +264,8 @@ public class LogRunControllerTest
             ConveyanceMethodId = 100003000,
             BoreholeStatusId = 100003005,
         };
-        await context.AddAsync(logRun);
-        await context.SaveChangesAsync();
+        await Context.AddAsync(logRun);
+        await Context.SaveChangesAsync();
         return logRun.Id;
     }
 }

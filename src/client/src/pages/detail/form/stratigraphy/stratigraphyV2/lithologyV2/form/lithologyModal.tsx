@@ -4,19 +4,16 @@ import { useTranslation } from "react-i18next";
 import { Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { theme } from "../../../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
+import { FormErrors } from "../../../../../../../components/form/form.ts";
 import { FormContainer } from "../../../../../../../components/form/formContainer.tsx";
+import { FormDialog } from "../../../../../../../components/form/formDialog.tsx";
 import { FormInput } from "../../../../../../../components/form/formInput.tsx";
+import { validateDepths } from "../../../../../../../components/form/formUtils.ts";
 import { useFormDirty } from "../../../../../../../components/form/useFormDirty.tsx";
 import { Lithology } from "../../../lithology.ts";
-import { FormDialog } from "./formDialog.tsx";
 import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
 import { LithologyUnconsolidatedForm } from "./lithologyUnconsolidatedForm.tsx";
-import {
-  FormErrors,
-  prepareLithologyForSubmit,
-  validateDepths,
-  validateLithologyUnconValues,
-} from "./lithologyUtils.ts";
+import { prepareLithologyForSubmit, validateLithologyUnconValues } from "./lithologyUtils.ts";
 import { RemarksFormSection } from "./remarksFormSection.tsx";
 
 interface LithologyEditModalProps {

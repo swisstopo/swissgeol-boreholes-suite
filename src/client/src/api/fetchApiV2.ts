@@ -386,12 +386,12 @@ export const getDocumentsByBoreholeId = async (boreholeId: number): Promise<Docu
   return await fetchApiV2Legacy(`document/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
 };
 
-export const createDocument = async (document: Document): Promise<Response> => {
+export const createDocument = async (document: Document): Promise<Document> => {
   return await fetchApiV2Legacy("document", "POST", document);
 };
 
-export const updateDocuments = async (documents: DocumentUpdate[]): Promise<Response> => {
-  return await fetchApiV2WithApiError("document", "PUT", documents);
+export const updateDocuments = async (documents: DocumentUpdate[]): Promise<Document[]> => {
+  return await fetchApiV2WithApiError<Document[]>("document", "PUT", documents);
 };
 
 export const deleteDocuments = async (documentIds: number[]): Promise<Response> => {

@@ -6,6 +6,7 @@ import {
   WorkflowStatus,
 } from "@swissgeol/ui-core";
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
+import { NullableDateString } from "../../../../api/apiInterfaces.ts";
 import { boreholeQueryKey, canEditQueryKey, canUpdateStatusQueryKey } from "../../../../api/borehole.ts";
 import { fetchApiV2Legacy } from "../../../../api/fetchApiV2.ts";
 
@@ -19,7 +20,7 @@ export interface Workflow extends GenericWorkflow {
 }
 
 export interface WorkflowChange extends Omit<SwissgeolWorkflowChange, "createdAt"> {
-  created?: Date | string | null;
+  created?: NullableDateString;
   createdAt: LocalDate | string;
 }
 

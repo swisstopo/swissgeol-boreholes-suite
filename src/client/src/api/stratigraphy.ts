@@ -3,7 +3,7 @@ import { Codelist } from "../components/codelist.ts";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
 import { Lithology } from "../pages/detail/form/stratigraphy/lithology.ts";
 import { ExtractionBoundingBox } from "../pages/detail/labeling/labelingInterfaces.tsx";
-import { User } from "./apiInterfaces.ts";
+import { NullableDateString, User } from "./apiInterfaces.ts";
 import { boreholeQueryKey, BoreholeV2 } from "./borehole.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 
@@ -14,10 +14,10 @@ export interface Stratigraphy {
   name: string | null;
   date: string | null;
   isPrimary: boolean;
-  created: Date | string | null;
+  created: NullableDateString;
   createdById: number | null;
   createdBy?: User;
-  updated: Date | string | null;
+  updated: NullableDateString;
   updatedById: number | null;
   updatedBy?: User;
   lithologies: Lithology[] | null;
@@ -31,10 +31,10 @@ export interface BaseLayer {
   toDepth: number;
   stratigraphyId: number;
   stratigraphy?: Stratigraphy;
-  created?: Date | string | null;
+  created?: NullableDateString;
   createdById?: number | null;
   createdBy?: User;
-  updated?: Date | string | null;
+  updated?: NullableDateString;
   updatedById?: number | null;
   updatedBy?: User;
   isGap?: boolean;

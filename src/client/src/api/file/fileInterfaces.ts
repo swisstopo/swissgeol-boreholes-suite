@@ -1,4 +1,4 @@
-import { User } from "../apiInterfaces";
+import { NullableDateString, User } from "../apiInterfaces";
 
 export const maxFileSizeKB = 210_000_000;
 
@@ -19,7 +19,7 @@ export interface BoreholeFile {
   fileId: number;
   file: File;
   user?: User;
-  attached?: Date | string;
+  attached?: NullableDateString;
   description?: string;
   public?: boolean;
 }

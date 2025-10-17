@@ -5,9 +5,9 @@ import { Stack } from "@mui/material";
 import { LithologicalDescription } from "../../../../../../../api/stratigraphy.ts";
 import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
 import { FormContainer } from "../../../../../../../components/form/form.ts";
+import { FormDialog } from "../../../../../../../components/form/formDialog.tsx";
 import { useFormDirty } from "../../../../../../../components/form/useFormDirty.tsx";
 import { BasicDataFormSection } from "./basicDataFormSection.tsx";
-import { FormDialog } from "./formDialog.tsx";
 import { RemarksFormSection } from "./remarksFormSection.tsx";
 
 interface LithologicalDescriptionModalProps {

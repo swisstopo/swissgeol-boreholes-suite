@@ -1,9 +1,9 @@
-import { FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { Dispatch, FC, SetStateAction, useContext, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
 import { Stack } from "@mui/system";
-import { GridColDef, GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
+import { GridColDef, GridEventListener, GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
 import Filter2Icon from "../../../../assets/icons/filter2.svg?react";
 import { getSectionsByBoreholeId } from "../../../../api/fetchApiV2.ts";
 import { theme } from "../../../../AppTheme.ts";
@@ -15,7 +15,9 @@ import { FormSelectValue } from "../../../../components/form/formSelect.tsx";
 import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
 import { Table } from "../../../../components/table/table.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
-import { LogRun } from "./log.ts";
+import { SaveContext } from "../../saveContext.tsx";
+import { LogRunChangeTracker, TmpLogRun } from "./log.ts";
+import { getServiceOrToolArray } from "./logUtils.ts";
 
 interface SectionFilter {
   id: number;
@@ -32,11 +34,13 @@ interface LogRunFilter {
 
 interface LogTableProps {
   boreholeId: string;
-  runs: LogRun[];
+  runs: TmpLogRun[];
   isLoading: boolean;
+  setSelectedLogRunId: Dispatch<SetStateAction<string | undefined>>;
+  setTmpLogRuns: Dispatch<SetStateAction<LogRunChangeTracker[]>>;
 }
 
-export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => {
+export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSelectedLogRunId, setTmpLogRuns }) => {
   const { editingEnabled } = useContext(EditStateContext);
   const { t, i18n } = useTranslation();
   const apiRef = useGridApiRef();
@@ -44,12 +48,14 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
   const [filterVisible, setFilterVisible] = useState(false);
   const [sectionFilters, setSectionFilters] = useState<SectionFilter[]>();
 
+  const { markAsChanged } = useContext(SaveContext);
+  const { data: codelists } = useCodelists();
+
   const formMethods = useForm<LogRunFilter>({ mode: "onChange" });
   const runFilter = formMethods.watch("runNumbers");
   const sectionFilter = formMethods.watch("sections");
   const toolTypeFilter = formMethods.watch("toolTypes");
 
-  const codelists = useCodelists();
   const runNumbers = useMemo<FormMultiSelectValue[]>(
     () =>
       runs
@@ -57,7 +63,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
         .map(run => ({ key: run.id, name: run.runNumber! }) as FormMultiSelectValue),
     [runs],
   );
-  const filteredRuns = useMemo<LogRun[]>(() => {
+  const filteredRuns = useMemo<TmpLogRun[]>(() => {
     let filtered = runs;
     if (runFilter && runFilter.length > 0) {
       filtered = filtered.filter(run => runFilter.includes(run.id));
@@ -69,7 +75,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
         if (section) sections.push(section);
       }
       if (sections.length > 0) {
-        const hasOverlapWithSections = (run: LogRun) => {
+        const hasOverlapWithSections = (run: TmpLogRun) => {
           for (const section of sections) {
             if (
               run.fromDepth !== undefined &&
@@ -86,7 +92,8 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
       }
     }
     if (toolTypeFilter && toolTypeFilter.length > 0) {
-      const hasMatchingToolType = (run: LogRun) => {
+      const hasMatchingToolType = (run: TmpLogRun) => {
+        if (!run.logFiles) return false;
         for (const file of run.logFiles) {
           if (!file.toolTypeCodelistIds) continue;
           for (const id of file.toolTypeCodelistIds) {
@@ -133,23 +140,6 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
     }
   }, [filterVisible, formMethods]);
 
-  const displayServiceOrTool = useCallback(
-    (logRun: LogRun) => {
-      return (
-        logRun.logFiles
-          ?.flatMap(file => file.toolTypeCodelistIds)
-          .filter((id, index, array) => array.indexOf(id) === index) // get unique ids
-          ?.map(id => codelists.data?.find((d: Codelist) => d.id === id)?.code)
-          .join(", ") ?? ""
-      );
-    },
-    [codelists.data],
-  );
-
-  const deleteLogRun = () => {
-    console.log("Delete log runs", selectionModel);
-  };
-
   const exportData = () => {
     console.log("Export log runs", selectionModel);
   };
@@ -158,25 +148,34 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
     console.log("Export log runs table", selectionModel);
   };
 
-  const columns = useMemo<GridColDef<LogRun>[]>(
+  const handleRowClick: GridEventListener<"rowClick"> = params => {
+    setSelectedLogRunId(params.row.tmpId);
+  };
+
+  const deleteLogRun = (selectedRows: GridRowSelectionModel) => {
+    setTmpLogRuns(prev => prev.filter(run => !selectedRows.includes(run.item.tmpId)));
+    markAsChanged(true);
+  };
+
+  const columns = useMemo<GridColDef<TmpLogRun>[]>(
     () => [
       {
         field: "runNumber",
         headerName: t("runNumber"),
         flex: 1,
-        valueGetter: (value, row) => row?.runNumber ?? "",
+        valueGetter: (_, row) => row?.runNumber ?? "",
       },
       {
         field: "loggedInterval",
-        valueGetter: (_, row: LogRun) =>
+        valueGetter: (_, row: TmpLogRun) =>
           `${formatNumberForDisplay(row?.fromDepth, 1)} - ${formatNumberForDisplay(row?.toDepth, 1)}`,
         headerName: t("loggedInterval") + ` [${t("mMd")}]`,
         flex: 1,
       },
       {
         field: "serviceOrTool",
-        valueGetter: (value, row) => {
-          return displayServiceOrTool(row);
+        valueGetter: (_, row) => {
+          return getServiceOrToolArray(row, codelists).join(", ");
         },
         headerName: t("serviceOrTool"),
         flex: 1,
@@ -199,7 +198,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
         flex: 1,
       },
     ],
-    [t, displayServiceOrTool, i18n.language],
+    [t, codelists, i18n.language],
   );
   if (runs.length === 0) {
     return <Typography>{t("noLogRun")}</Typography>;
@@ -217,7 +216,9 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
           </Typography>
           {selection && (
             <>
-              {editingEnabled && <DeleteButton disabled={selectionModel.length === 0} onClick={() => deleteLogRun()} />}
+              {editingEnabled && (
+                <DeleteButton disabled={selectionModel.length === 0} onClick={() => deleteLogRun(selectionModel)} />
+              )}
               <ExportButton label={"exportData"} disabled={selectionModel.length === 0} onClick={() => exportData()} />
               <ExportButton
                 label={"exportTable"}
@@ -273,8 +274,10 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading }) => 
         apiRef={apiRef}
         isLoading={isLoading}
         rows={filteredRuns}
+        getRowId={row => row.tmpId}
         columns={columns}
         showQuickFilter={false}
+        onRowClick={handleRowClick}
         checkboxSelection
         rowSelectionModel={selectionModel}
         onRowSelectionModelChange={setSelectionModel}

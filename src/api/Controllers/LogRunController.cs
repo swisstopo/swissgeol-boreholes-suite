@@ -40,10 +40,43 @@ public class LogRunController : BoreholeControllerBase<LogRun>
             .ConfigureAwait(false);
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Deletes one or multiple log runs.
+    /// </summary>
+    /// <param name="logRunIds">The IDs of the log runs to delete.</param>
+    /// <returns>An OK result if successful.</returns>
+    [HttpDelete]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> DeleteAsync(int id)
-        => base.DeleteAsync(id);
+    public async Task<ActionResult> DeleteMultipleAsync([FromQuery][MaxLength(100)] IReadOnlyList<int> logRunIds)
+    {
+        if (logRunIds == null || logRunIds.Count == 0) return BadRequest("The list of logRunIds must not be empty.");
+
+        var logRuns = await Context.LogRuns
+            .Where(l => logRunIds.Contains(l.Id))
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        if (logRuns.Count == 0) return NotFound();
+
+        var boreholeIds = logRuns.Select(l => l.BoreholeId).Distinct().ToList();
+        if (boreholeIds.Count != 1) return BadRequest("Not all log runs are attached to the same borehole.");
+
+        var boreholeId = boreholeIds.Single();
+        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        Context.RemoveRange(logRuns);
+        await Context.SaveChangesAsync().ConfigureAwait(false);
+
+        return Ok();
+    }
+
+    /// <inheritdoc />
+    [HttpDelete("{id}")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public override async Task<IActionResult> DeleteAsync(int id)
+    {
+        return await DeleteMultipleAsync(new List<int> { id }).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]

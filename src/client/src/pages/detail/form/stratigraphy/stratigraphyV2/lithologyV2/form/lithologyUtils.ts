@@ -1,3 +1,4 @@
+import { FormErrors } from "../../../../../../../components/form/form.ts";
 import { parseFloatWithThousandsSeparator } from "../../../../../../../components/form/formUtils.ts";
 import { Lithology, LithologyDescription } from "../../../lithology.ts";
 
@@ -66,9 +67,6 @@ export const prepareLithologyForSubmit = (values: Lithology) => {
   }
 };
 
-export type FormError = { type: string; message: string };
-export type FormErrors = { [key: string]: FormError | FormErrors };
-
 const buildErrorStructure = (result: boolean | Record<string, string>, errors: FormErrors) => {
   for (const [path, message] of Object.entries(result)) {
     const keys = path.split(".");
@@ -84,19 +82,6 @@ const buildErrorStructure = (result: boolean | Record<string, string>, errors: F
         curr = curr[key];
       }
     }
-  }
-};
-
-export const validateDepths = (values: Lithology, errors: FormErrors) => {
-  const fromDepth = parseFloatWithThousandsSeparator(values.fromDepth);
-  const toDepth = parseFloatWithThousandsSeparator(values.toDepth);
-  if (fromDepth === null) {
-    errors.fromDepth = { type: "required", message: "required" };
-  }
-  if (toDepth === null) {
-    errors.toDepth = { type: "required", message: "required" };
-  } else if (fromDepth && fromDepth >= toDepth) {
-    errors.toDepth = { type: "manual", message: "toDepthMustBeGreaterThanFromDepth" };
   }
 };
 

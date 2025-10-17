@@ -6,7 +6,7 @@ import { referenceSystems } from "../pages/detail/form/location/coordinateSegmen
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 import { LogRun } from "../pages/detail/form/log/log.ts";
 import { Workflow } from "../pages/detail/form/workflow/workflow.ts";
-import { Document, Photo, User, Workgroup } from "./apiInterfaces.ts";
+import { Document, NullableDateString, Photo, User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
 import { download, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
@@ -62,7 +62,7 @@ export interface BoreholeV2 {
   originalName: string;
   projectName: number;
   restrictionId: number;
-  restrictionUntil: Date | string | null;
+  restrictionUntil: NullableDateString;
   nationalInterest: boolean | null;
   elevationZ: number | string; // Number with thousands separator then parsed to number
   elevationPrecisionId: number;
@@ -71,12 +71,12 @@ export interface BoreholeV2 {
   referenceElevationTypeId: number;
   locationPrecisionId: number | null;
   hrsId: number;
-  updated: Date | string | null;
+  updated: NullableDateString;
   updatedById: number;
   updatedBy: User;
   stratigraphies: Stratigraphy[] | null;
   logruns: LogRun[] | null;
-  locked: Date | string | null;
+  locked: NullableDateString;
   lockedById: number | null;
   completions: Completion[] | null;
   observations: Observation[] | null;

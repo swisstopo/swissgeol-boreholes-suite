@@ -33,6 +33,9 @@ export enum FormValueType {
   Workgroup = "workgroup",
 }
 
+export type FormError = { type: string; message: string };
+export type FormErrors = { [key: string]: FormError | FormErrors };
+
 export { FormInput } from "./formInput";
 export { FormSelect } from "./formSelect";
 export { FormMultiSelect } from "./formMultiSelect";
@@ -44,3 +47,4 @@ export { FormCoordinate } from "./formCoordinate";
 export { FormContainer } from "./formContainer";
 export { FormBooleanSelect } from "./formBooleanSelect";
 export { FormInputDisplayOnly } from "./formInputDisplayOnly";
+export { FormDialog } from "./formDialog";
