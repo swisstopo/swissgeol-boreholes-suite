@@ -34,7 +34,7 @@ jobs:
           path: ${{ github.workspace }}/**/TestResults/**/*
 
       - name: Publish test results
-        uses: EnricoMi/publish-unit-test-result-action@v2
+        uses: EnricoMi/publish-unit-test-result-action@3a74b2957438d0b6e2e61d67b05318aa25c9e6c6
         if: always()
         with:
           files: "${{ github.workspace }}/**/*.trx"
