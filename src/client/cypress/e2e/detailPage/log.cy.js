@@ -1,6 +1,7 @@
 import { discardChanges, saveWithSaveBar } from "../helpers/buttonHelpers.js";
 import {
   checkAllVisibleRows,
+  checkRowWithIndex,
   checkTwoFirstRows,
   clickOnRowWithText,
   sortBy,
