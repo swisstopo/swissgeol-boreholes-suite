@@ -8,14 +8,14 @@ from tornado.httpclient import (
 
 
 class Wms(Viewer):
-    
+
     async def get(self):
         http_client = AsyncHTTPClient()
         lang = self.get_argument('lang', 'en')
         url = self.get_argument(
             'url',
             (
-                "http://wms.geo.admin.ch?"
+                "https://wms.geo.admin.ch?"
                 "request=getCapabilities&service=WMS&lang={}"
             )
         )
@@ -24,7 +24,7 @@ class Wms(Viewer):
 
             if 'lang={}' in url:
                 url = url.format(lang)
-            
+
             elif 'lang=' not in url:
                 url = f'{url}&lang={lang}'
 
