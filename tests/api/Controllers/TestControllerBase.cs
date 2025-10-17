@@ -13,7 +13,7 @@ public abstract class TestControllerBase
     /// Creates a test borehole in the database for testing purposes.
     /// </summary>
     /// <returns>The created borehole entity.</returns>
-    protected async Task<Borehole> CreateTestBoreholeAsync()
+    protected async Task<Borehole> AddTestBoreholeAsync()
     {
         var borehole = new Borehole
         {
@@ -31,13 +31,14 @@ public abstract class TestControllerBase
     /// Creates a test log run associated with the specified borehole.
     /// </summary>
     /// <param name="boreholeId">The ID of the borehole to associate with the log run.</param>
+    /// <param name="runNumber">The run number for the log run to add, defaults to "RUN01".</param>
     /// <returns>The created log run entity.</returns>
-    protected async Task<LogRun> CreateTestLogRunAsync(int boreholeId)
+    protected async Task<LogRun> AddTestLogRunAsync(int boreholeId, string? runNumber = "RUN01")
     {
         var logRun = new LogRun
         {
             BoreholeId = boreholeId,
-            RunNumber = "RUN01",
+            RunNumber = runNumber!,
             FromDepth = 0,
             ToDepth = 100,
             BitSize = 0.2,
