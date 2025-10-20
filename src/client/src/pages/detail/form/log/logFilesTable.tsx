@@ -51,13 +51,10 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
       );
     }
     if (extensionsFilters && extensionsFilter && extensionsFilter.length > 0) {
-      filtered = filtered.filter(file => {
-        const fileTypeLower = file.fileType.toLowerCase();
-        return extensionsFilter.some(filterValue => {
-          const ext = extensionsFilters.find(ext => ext.key === filterValue);
-          return ext && fileTypeLower === ext.name.toLowerCase();
-        });
-      });
+      const extensionNames = extensionsFilter
+        .map(filterValue => extensionsFilters.find(ext => ext.key === filterValue)?.name?.toLowerCase())
+        .filter(Boolean);
+      filtered = filtered.filter(file => extensionNames.includes(file.fileType.toLowerCase()));
     }
     if (passTypesFilter && passTypesFilter.length > 0) {
       filtered = filtered.filter(file => file.passTypeId && passTypesFilter.includes(file.passTypeId));
@@ -117,13 +114,10 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
       },
       {
         field: "toolTypeCodelistIds",
-        valueGetter: (values: number[] | undefined) =>
-          values
-            ?.map(value => {
-              const code = codelists.find(code => code.id === value);
-              return code?.code ?? "";
-            })
-            .join(", ") ?? "",
+        valueGetter: (values: number[] | undefined) => {
+          if (!values || values.length === 0) return "";
+          return values.map(value => codelists.find(code => code.id === value)?.code ?? "").join(", ");
+        },
         headerName: t("toolType"),
         flex: 1,
       },
