@@ -98,6 +98,15 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
     rows: files,
   });
 
+  const getCodelistCode = useCallback(
+    (id: number) => {
+      const codelistEntry = codelists.find(code => code.id === id);
+      if (!codelistEntry) return "";
+      return codelistEntry.code;
+    },
+    [codelists],
+  );
+
   const getCodelistValue = useCallback(
     (id: number) => {
       const code = codelists.find(code => code.id === id);
@@ -118,12 +127,10 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
         field: "toolTypeCodelistIds",
         valueGetter: (values: number[] | undefined) => {
           if (!values || values.length === 0) return "";
-          const codes = values.map(value => {
-            const codelistEntry = codelists.find(code => code.id === value);
-            if (!codelistEntry) return "";
-            return codelistEntry.code;
-          });
-          return codes.filter(code => code !== "").join(", ");
+          return values
+            .map(getCodelistCode)
+            .filter(code => code !== "")
+            .join(", ");
         },
         headerName: t("toolType"),
         flex: 1,
@@ -172,7 +179,7 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
         renderCell: getPublicColumnCell,
       },
     ],
-    [t, getPublicColumnHeader, getPublicColumnCell, codelists, getCodelistValue],
+    [t, getPublicColumnHeader, getPublicColumnCell, getCodelistCode, getCodelistValue],
   );
 
   return (
