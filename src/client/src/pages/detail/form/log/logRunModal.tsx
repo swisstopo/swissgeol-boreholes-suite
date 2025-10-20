@@ -1,8 +1,10 @@
-import { FC, useEffect } from "react";
+import { FC, useCallback, useContext, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Chip, Stack } from "@mui/material";
+import { Trash2 } from "lucide-react";
 import { BoreholesCard } from "../../../../components/boreholesCard.tsx";
+import { AddButton, StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
 import { useCodelists } from "../../../../components/codelist.ts";
 import {
   FormContainer,
@@ -14,7 +16,9 @@ import {
 } from "../../../../components/form/form.ts";
 import { validateDepths } from "../../../../components/form/formUtils.ts";
 import { useFormDirty } from "../../../../components/form/useFormDirty.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 import { TmpLogRun } from "./log.ts";
+import { LogFileTable } from "./logFilesTable.tsx";
 import { getServiceOrToolArray, validateRunNumber } from "./logUtils.ts";
 
 interface LogRunModalProps {
@@ -26,6 +30,7 @@ interface LogRunModalProps {
 export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }) => {
   const { t } = useTranslation();
   const { data: codelists } = useCodelists();
+  const { editingEnabled } = useContext(EditStateContext);
 
   const formMethods = useForm<TmpLogRun>({
     mode: "all",
@@ -44,6 +49,8 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
       formMethods.reset(logRun);
     }
   }, [logRun, formMethods]);
+
+  const addFile = useCallback(() => {}, []);
 
   const closeDialog = async () => {
     const isValid = await formMethods.trigger();
@@ -125,6 +132,21 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
                 <FormInput fieldName="comment" label="comment" multiline={true} rows={3} value={logRun.comment} />
               </FormContainer>
             </FormContainer>
+          </BoreholesCard>
+          <BoreholesCard
+            data-cy="logRun-files"
+            title={t("files")}
+            action={editingEnabled && <AddButton label="addFile" variant="contained" onClick={addFile} />}>
+            {editingEnabled ? (
+              <BoreholesCard
+                data-cy="logRun-files"
+                title={t("newFile")}
+                action={
+                  <StandaloneIconButton icon={<Trash2 />} color={"primaryInverse"} onClick={() => {}} />
+                }></BoreholesCard>
+            ) : (
+              <LogFileTable files={logRun.logFiles ?? []} />
+            )}
           </BoreholesCard>
           <Stack pb={4.5} />
         </Stack>
