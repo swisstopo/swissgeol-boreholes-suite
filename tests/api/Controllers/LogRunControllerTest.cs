@@ -254,7 +254,7 @@ public class LogRunControllerTest : TestControllerBase
     public async Task EditWithExistingRunNumber()
     {
         var borehole = await AddTestBoreholeAsync();
-        var logRun1 = await AddTestLogRunAsync(borehole.Id, "Number1");
+        await AddTestLogRunAsync(borehole.Id, "Number1");
         var logRun2 = await AddTestLogRunAsync(borehole.Id, "Number2");
 
         logRun2.RunNumber = "Number1";
@@ -267,7 +267,7 @@ public class LogRunControllerTest : TestControllerBase
     public async Task CreateWithExistingRunNumber()
     {
         var borehole = await AddTestBoreholeAsync();
-        var logRun1 = await AddTestLogRunAsync(borehole.Id, "RUN01");
+        await AddTestLogRunAsync(borehole.Id, "RUN01");
 
         var logRun = new LogRun
         {

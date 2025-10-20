@@ -92,7 +92,7 @@ public class LogRunController : BoreholeControllerBase<LogRun>
             return Problem(detail: "Run number must be unique");
         }
 
-        return await base.CreateAsync(entity);
+        return await base.CreateAsync(entity).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -109,7 +109,7 @@ public class LogRunController : BoreholeControllerBase<LogRun>
             return Problem(detail: "Run number must be unique");
         }
 
-         return await base.EditAsync(entity);
+        return await base.EditAsync(entity).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -122,10 +122,10 @@ public class LogRunController : BoreholeControllerBase<LogRun>
 
     private async Task<bool> IsRunNumberUnique(LogRun logRun)
     {
-        var hasBoreholeLogRunssWithSameRunNumber = await Context.LogRuns
+        var hasBoreholeLogRunsWithSameRunNumber = await Context.LogRuns
                 .AnyAsync(lr => lr.BoreholeId == logRun.BoreholeId && lr.Id != logRun.Id && lr.RunNumber == logRun.RunNumber)
                 .ConfigureAwait(false);
 
-        return !hasBoreholeLogRunssWithSameRunNumber;
+        return !hasBoreholeLogRunsWithSameRunNumber;
     }
 }
