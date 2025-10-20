@@ -86,8 +86,15 @@ const formatWithThousandsSeparator = (minDecimals: number, maxDecimals: number, 
  * @param {number} maxDecimals The maximum number of decimal places to display (defaults to 3).
  * @returns The formatted number.
  */
-export const formatNumberForDisplay = (value?: number | null, minDecimals = 0, maxDecimals = 3): string => {
+export const formatNumberForDisplay = (
+  value?: number | string | null,
+  minDecimals: number = 0,
+  maxDecimals: number = 3,
+): string => {
   if (value == null) return "-";
+  if (typeof value === "string") {
+    value = Number(value);
+  }
   if (Math.abs(value) < 0.001 && value !== 0) {
     return formatWithScientificNotation(value);
   }
