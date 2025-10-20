@@ -51,10 +51,12 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
       );
     }
     if (extensionsFilters && extensionsFilter && extensionsFilter.length > 0) {
-      const extensionNames = extensionsFilter
-        .map(filterValue => extensionsFilters.find(ext => ext.key === filterValue)?.name?.toLowerCase())
-        .filter(Boolean);
-      filtered = filtered.filter(file => extensionNames.includes(file.fileType.toLowerCase()));
+      const extensionNames = new Set(
+        extensionsFilter
+          .map(filterValue => extensionsFilters.find(ext => ext.key === filterValue)?.name?.toLowerCase())
+          .filter(Boolean),
+      );
+      filtered = filtered.filter(file => extensionNames.has(file.fileType.toLowerCase()));
     }
     if (passTypesFilter && passTypesFilter.length > 0) {
       filtered = filtered.filter(file => file.passTypeId && passTypesFilter.includes(file.passTypeId));
@@ -116,7 +118,12 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
         field: "toolTypeCodelistIds",
         valueGetter: (values: number[] | undefined) => {
           if (!values || values.length === 0) return "";
-          return values.map(value => codelists.find(code => code.id === value)?.code ?? "").join(", ");
+          const codes = values.map(value => {
+            const codelistEntry = codelists.find(code => code.id === value);
+            if (!codelistEntry) return "";
+            return codelistEntry[i18n.language] ?? codelistEntry["en"];
+          });
+          return codes.filter(code => code !== "").join(", ");
         },
         headerName: t("toolType"),
         flex: 1,
