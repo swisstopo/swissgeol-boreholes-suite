@@ -121,7 +121,7 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
           const codes = values.map(value => {
             const codelistEntry = codelists.find(code => code.id === value);
             if (!codelistEntry) return "";
-            return codelistEntry[i18n.language] ?? codelistEntry["en"];
+            return codelistEntry.code;
           });
           return codes.filter(code => code !== "").join(", ");
         },
