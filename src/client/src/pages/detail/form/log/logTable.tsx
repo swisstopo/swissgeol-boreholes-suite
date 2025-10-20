@@ -192,9 +192,6 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
     ],
     [t, codelists, i18n.language],
   );
-  if (runs.length === 0) {
-    return <Typography>{t("noLogRun")}</Typography>;
-  }
 
   const selection = true;
   return (
@@ -275,6 +272,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
         rowSelectionModel={selectionModel}
         onRowSelectionModelChange={setSelectionModel}
         rowAutoHeight={true}
+        noRowsLabel={"noLogRun"}
       />
     </Stack>
   );

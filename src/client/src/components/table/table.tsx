@@ -1,6 +1,6 @@
 import { MutableRefObject, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { SxProps } from "@mui/material";
+import { Stack, SxProps, Typography } from "@mui/material";
 import {
   DataGrid,
   GridColDef,
@@ -48,6 +48,7 @@ interface TableProps<T extends GridValidRowModel> {
   isDisabled?: boolean;
   showQuickFilter?: boolean;
   rowAutoHeight?: boolean;
+  noRowsLabel?: string;
   sx?: SxProps;
 }
 
@@ -78,9 +79,10 @@ export const Table = <T extends GridValidRowModel>({
   isDisabled = false,
   showQuickFilter = true,
   rowAutoHeight = false,
+  noRowsLabel,
   sx,
 }: TableProps<T>) => {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
   const internalApiRef = useGridApiRef();
   const effectiveApiRef = apiRef ?? internalApiRef;
@@ -138,61 +140,76 @@ export const Table = <T extends GridValidRowModel>({
       }
     : {};
 
+  const dataGridSx =
+    rows.length === 0 && noRowsLabel
+      ? {
+          "--DataGrid-overlayHeight": "0px",
+          "--height": "0px",
+          ...quickFilterStyles,
+          ...disabledStyles,
+          ...sx,
+          ...loadingStyles,
+        }
+      : {
+          "--DataGrid-overlayHeight": "44px",
+          ...quickFilterStyles,
+          ...disabledStyles,
+          ...sx,
+          ...loadingStyles,
+        };
+
   return (
-    <DataGrid
-      sx={{
-        "--DataGrid-overlayHeight": "44px",
-        ...quickFilterStyles,
-        ...disabledStyles,
-        ...sx,
-        ...loadingStyles,
-      }}
-      data-cy={dataCy ?? "data-table"}
-      columnHeaderHeight={44}
-      sortingOrder={["asc", "desc"]}
-      loading={isLoading ?? !rows?.length}
-      rowCount={actualRowCount}
-      rows={rows}
-      columns={adjustedWidthColumns}
-      getRowHeight={() => (rowAutoHeight ? "auto" : 44)}
-      onRowClick={onRowClick}
-      pageSizeOptions={[maxRowsPerPage]}
-      slots={{ toolbar: GridToolbar }}
-      slotProps={{
-        pagination: {
-          ActionsComponent: TablePaginationActions,
-        },
-        toolbar: {
-          csvOptions: { disableToolbarButton: true },
-          printOptions: { disableToolbarButton: true },
-          showQuickFilter: showQuickFilter,
-        },
-      }}
-      localeText={muiLocales[i18n.language]}
-      disableColumnSelector
-      disableRowSelectionOnClick
-      hideFooter={actualRowCount < maxRowsPerPage}
-      hideFooterSelectedRowCount
-      disableColumnFilter
-      disableColumnMenu={true}
-      disableDensitySelector
-      filterModel={filterModel}
-      getRowClassName={getRowClassName ?? defaultRowClassName}
-      onFilterModelChange={onFilterModelChange}
-      sortModel={sortModel}
-      onSortModelChange={onSortModelChange}
-      paginationModel={paginationModel}
-      onPaginationModelChange={onPaginationModelChange}
-      onColumnResize={handleColumnResize}
-      apiRef={apiRef}
-      paginationMode={paginationMode}
-      sortingMode={sortingMode}
-      checkboxSelection={checkboxSelection}
-      disableColumnSorting={disableColumnSorting}
-      isRowSelectable={isRowSelectable}
-      rowSelectionModel={rowSelectionModel}
-      onRowSelectionModelChange={onRowSelectionModelChange}
-      getRowId={getRowId}
-    />
+    <Stack gap={1.5}>
+      <DataGrid
+        sx={dataGridSx}
+        data-cy={dataCy ?? "data-table"}
+        columnHeaderHeight={44}
+        sortingOrder={["asc", "desc"]}
+        loading={isLoading ?? !rows?.length}
+        rowCount={actualRowCount}
+        rows={rows}
+        columns={adjustedWidthColumns}
+        getRowHeight={() => (rowAutoHeight ? "auto" : 44)}
+        onRowClick={onRowClick}
+        pageSizeOptions={[maxRowsPerPage]}
+        slots={{ toolbar: GridToolbar }}
+        slotProps={{
+          pagination: {
+            ActionsComponent: TablePaginationActions,
+          },
+          toolbar: {
+            csvOptions: { disableToolbarButton: true },
+            printOptions: { disableToolbarButton: true },
+            showQuickFilter: showQuickFilter,
+          },
+        }}
+        localeText={muiLocales[i18n.language]}
+        disableColumnSelector
+        disableRowSelectionOnClick
+        hideFooter={actualRowCount < maxRowsPerPage}
+        hideFooterSelectedRowCount
+        disableColumnFilter
+        disableColumnMenu={true}
+        disableDensitySelector
+        filterModel={filterModel}
+        getRowClassName={getRowClassName ?? defaultRowClassName}
+        onFilterModelChange={onFilterModelChange}
+        sortModel={sortModel}
+        onSortModelChange={onSortModelChange}
+        paginationModel={paginationModel}
+        onPaginationModelChange={onPaginationModelChange}
+        onColumnResize={handleColumnResize}
+        apiRef={apiRef}
+        paginationMode={paginationMode}
+        sortingMode={sortingMode}
+        checkboxSelection={checkboxSelection}
+        disableColumnSorting={disableColumnSorting}
+        isRowSelectable={isRowSelectable}
+        rowSelectionModel={rowSelectionModel}
+        onRowSelectionModelChange={onRowSelectionModelChange}
+        getRowId={getRowId}
+      />
+      {rows.length === 0 && noRowsLabel && <Typography pl={2}>{t(noRowsLabel)}</Typography>}
+    </Stack>
   );
 };
