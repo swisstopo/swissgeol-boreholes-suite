@@ -219,12 +219,13 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
               {editingEnabled && (
                 <DeleteButton disabled={selectionModel.length === 0} onClick={() => deleteLogRun(selectionModel)} />
               )}
-              <ExportButton label={"exportData"} disabled={selectionModel.length === 0} onClick={() => exportData()} />
-              <ExportButton
-                label={"exportTable"}
-                disabled={selectionModel.length === 0}
-                onClick={() => exportTable()}
-              />
+              {/* TODO: Hide until logic is implemented with https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2361*/}
+              {/*<ExportButton label={"exportData"} disabled={selectionModel.length === 0} onClick={() => exportData()} />*/}
+              {/*<ExportButton*/}
+              {/*  label={"exportTable"}*/}
+              {/*  disabled={selectionModel.length === 0}*/}
+              {/*  onClick={() => exportTable()}*/}
+              {/*/>*/}
             </>
           )}
         </Stack>
