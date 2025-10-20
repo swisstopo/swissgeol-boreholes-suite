@@ -1,4 +1,4 @@
-import { FC, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useEffect, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
@@ -97,6 +97,14 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
     rows: files,
   });
 
+  const getCodelistValue = useCallback(
+    (id: number) => {
+      const code = codelists.find(code => code.id === id);
+      return code?.[i18n.language] ?? code?.["en"] ?? "";
+    },
+    [codelists, i18n.language],
+  );
+
   const columns = useMemo<GridColDef<LogFile>[]>(
     () => [
       {
@@ -124,10 +132,7 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
       },
       {
         field: "passTypeId",
-        valueGetter: (value: number) => {
-          const code = codelists.find(code => code.id === value);
-          return code?.[i18n.language] ?? code?.["en"] ?? "";
-        },
+        valueGetter: (value: number) => getCodelistValue(value),
         headerName: t("passType"),
         flex: 1,
       },
@@ -138,19 +143,13 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
       },
       {
         field: "dataPackageId",
-        valueGetter: (value: number) => {
-          const code = codelists.find(code => code.id === value);
-          return code?.[i18n.language] ?? code?.["en"] ?? "";
-        },
+        valueGetter: (value: number) => getCodelistValue(value),
         headerName: t("dataPackage"),
         flex: 1,
       },
       {
         field: "depthTypeId",
-        valueGetter: (value: number) => {
-          const code = codelists.find(code => code.id === value);
-          return code?.[i18n.language] ?? code?.["en"] ?? "";
-        },
+        valueGetter: (value: number) => getCodelistValue(value),
         headerName: t("depthType"),
         flex: 1,
       },
@@ -170,7 +169,7 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
         renderCell: getPublicColumnCell,
       },
     ],
-    [t, getPublicColumnHeader, getPublicColumnCell, codelists, i18n.language],
+    [t, getPublicColumnHeader, getPublicColumnCell, codelists, getCodelistValue],
   );
 
   return (
