@@ -468,6 +468,8 @@
   "noAttachments": "Aucune annexe",
   "noComments": "Aucun commentaire",
   "noDocuments": "Aucun document disponible...",
+  "noFilterResult": "Aucun résultat trouvé pour les filtres appliqués.",
+  "noLogFile": "Aucun fichier disponible...",
   "noLogRun": "Aucun run disponible...",
   "noPhotos": "Aucune photo disponible...",
   "noPhotosUploaded": "Aucune photo n'a encore été téléchargée.",

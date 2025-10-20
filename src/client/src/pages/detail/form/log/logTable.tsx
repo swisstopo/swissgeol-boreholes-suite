@@ -272,7 +272,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
         rowSelectionModel={selectionModel}
         onRowSelectionModelChange={setSelectionModel}
         rowAutoHeight={true}
-        noRowsLabel={"noLogRun"}
+        noRowsLabel={runs.length > 0 ? "noLogRun" : "noFilterResult"}
       />
     </Stack>
   );
