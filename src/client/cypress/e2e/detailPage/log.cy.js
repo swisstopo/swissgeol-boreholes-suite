@@ -30,10 +30,9 @@ import {
 } from "../helpers/testHelpers";
 
 function assertExportButtonsDisabled(isDisabled = true) {
-  {
-    // TODO: Re-add once logic is implemented with https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2361
-    // getElementByDataCy("exportdata-button").should(isDisabled ? "have.attr" : "not.have.attr", "disabled");
-    // getElementByDataCy("exporttable-button").should(isDisabled ? "have.attr" : "not.have.attr", "disabled");
+  // TODO: Re-add once logic is implemented with https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2361
+  // getElementByDataCy("exportdata-button").should(isDisabled ? "have.attr" : "not.have.attr", "disabled");
+  // getElementByDataCy("exporttable-button").should(isDisabled ? "have.attr" : "not.have.attr", "disabled");
 }
 
 function assertCountDisplayed(textContent) {
