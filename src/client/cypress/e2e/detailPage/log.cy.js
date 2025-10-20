@@ -29,6 +29,8 @@ import {
   startBoreholeEditing,
 } from "../helpers/testHelpers";
 
+// TODO: Remove rule once logic is implemented with https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2361
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function assertExportButtonsDisabled(isDisabled = true) {
   // TODO: Re-add once logic is implemented with https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2361
   // getElementByDataCy("exportdata-button").should(isDisabled ? "have.attr" : "not.have.attr", "disabled");
