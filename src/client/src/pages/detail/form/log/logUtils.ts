@@ -3,7 +3,7 @@ import { FormErrors } from "../../../../components/form/form.ts";
 import { ensureDateOnly, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 import { LogRun, TmpLogRun } from "./log.ts";
 
-export const preparelogRunForSubmit = (data: TmpLogRun) => {
+export const prepareLogRunForSubmit = (data: TmpLogRun) => {
   data.fromDepth = parseFloatWithThousandsSeparator(data.fromDepth)!;
   data.toDepth = parseFloatWithThousandsSeparator(data.toDepth)!;
   data.bitSize = parseFloatWithThousandsSeparator(data.bitSize)!;
@@ -26,8 +26,12 @@ export const getServiceOrToolArray = (logRun: LogRun, codelists: Codelist[]): (s
     .map(id => codelists.find((d: Codelist) => d.id === id)?.code ?? "");
 };
 
-export const validateRunNumber = (values: LogRun, errors: FormErrors) => {
-  if (!values.runNumber) {
+export const validateRunNumber = (values: LogRun, errors: FormErrors, runs: TmpLogRun[]) => {
+  const runNumber = values.runNumber;
+  if (!runNumber) {
     errors.runNumber = { type: "required", message: "required" };
+  }
+  if (runs.filter(r => r.runNumber === runNumber && r.tmpId !== String(values.id)).length > 0) {
+    errors.runNumber = { type: "manual", message: "mustBeUnique" };
   }
 };

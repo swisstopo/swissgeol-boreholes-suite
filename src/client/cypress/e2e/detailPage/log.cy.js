@@ -94,7 +94,7 @@ describe("Test for the borehole log.", () => {
     verifyRowWithTextCheckState("R96", true);
   });
 
-  it("Adds edits and deletes logs", () => {
+  it("Adds, edits and deletes logs", () => {
     createBorehole({ originalName: "FANCYPHANTOMFERRY" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/log?dev=true`);
@@ -187,14 +187,23 @@ describe("Test for the borehole log.", () => {
     saveWithSaveBar();
     verifyTableLength(4);
 
-    // verify that a change containing adds edits and deletes can be saved
-
+    // verify that a change containing adds, edits and deletes can be saved
     // add
-    addMinimalLogRun(140, 150, "R06");
+    getElementByDataCy("addlogrun-button").click();
+    setInput("fromDepth", 140);
+    setInput("toDepth", 150);
+    setInput("runNumber", "R02");
+    hasError("runNumber", true);
+    setInput("runNumber", "R06");
+    hasError("runNumber", false);
+    getElementByDataCy("close-button").click();
 
     // edit
     clickOnRowWithText("R02");
+    setInput("runNumber", "R06");
+    hasError("runNumber", true);
     setInput("runNumber", "R02-EDITED");
+    hasError("runNumber", false);
     getElementByDataCy("close-button").click();
 
     // delete
@@ -239,8 +248,7 @@ describe("Test for the borehole log.", () => {
     cy.contains("Unsaved changes").should("not.exist");
   });
 
-  it("filters log runs in table", () => {
-    // Todo:  temporarily test with existing borehole, adding logs is not yet implemented. Integrate in new test when implemented.
+  it("Filters log runs in table", () => {
     goToDetailRouteAndAcceptTerms(`/1000070/log?dev=true`);
     assertCountDisplayed("10 runs");
     getElementByDataCy("filter-button").should("exist");
