@@ -51,12 +51,13 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
       );
     }
     if (extensionsFilters && extensionsFilter && extensionsFilter.length > 0) {
-      filtered = filtered.filter(file =>
-        extensionsFilter.some(
-          filterValue =>
-            file.fileType.toLowerCase() === extensionsFilters.find(ext => ext.key === filterValue)?.name.toLowerCase(),
-        ),
-      );
+      filtered = filtered.filter(file => {
+        const fileTypeLower = file.fileType.toLowerCase();
+        return extensionsFilter.some(filterValue => {
+          const ext = extensionsFilters.find(ext => ext.key === filterValue);
+          return ext && fileTypeLower === ext.name.toLowerCase();
+        });
+      });
     }
     if (passTypesFilter && passTypesFilter.length > 0) {
       filtered = filtered.filter(file => file.passTypeId && passTypesFilter.includes(file.passTypeId));
@@ -72,7 +73,9 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
 
   useEffect(() => {
     if (!extensionsFilters) {
-      const extensions = Array.from(new Set(files.map(file => file.fileType.toLowerCase()))).sort();
+      const extensions = Array.from(new Set(files.map(file => file.fileType.toLowerCase()))).sort((a, b) =>
+        a.localeCompare(b),
+      );
       setExtensionsFilters(extensions.map((ext, index) => ({ key: index, name: ext })));
     }
   }, [extensionsFilters, files]);

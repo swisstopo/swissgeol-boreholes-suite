@@ -12,7 +12,16 @@ export interface FormBooleanSelectProps extends FormSelectProps {
 export const FormBooleanSelect: FC<FormBooleanSelectProps> = props => {
   const { label, selected, onUpdate, allowUndefined = true } = props;
   const { t } = useTranslation();
-  const value = selected === true ? 1 : selected === false ? 0 : selected === null && allowUndefined ? 2 : undefined;
+  let value: number | undefined;
+  if (selected === true) {
+    value = 1;
+  } else if (selected === false) {
+    value = 0;
+  } else if (selected === null && allowUndefined) {
+    value = 2;
+  } else {
+    value = undefined;
+  }
 
   const options = [
     { key: 1, name: t("yes") },
