@@ -65,7 +65,6 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
     if (dataPackagesFilter && dataPackagesFilter.length > 0) {
       filtered = filtered.filter(file => file.dataPackageId && dataPackagesFilter.includes(file.dataPackageId));
     }
-    console.log("publicFilter", publicFilter);
     if (publicFilter !== null) {
       filtered = filtered.filter(file => file.public === (publicFilter === 1));
     }
