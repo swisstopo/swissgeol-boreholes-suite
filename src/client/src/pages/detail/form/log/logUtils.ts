@@ -31,7 +31,7 @@ export const validateRunNumber = (values: LogRun, errors: FormErrors, runs: TmpL
   if (!runNumber) {
     errors.runNumber = { type: "required", message: "required" };
   }
-  if (runs.filter(r => r.runNumber === runNumber && r.tmpId !== String(values.id)).length > 0) {
+  if (runs.some(r => r.runNumber === runNumber && r.tmpId !== String(values.id))) {
     errors.runNumber = { type: "manual", message: "mustBeUnique" };
   }
 };
