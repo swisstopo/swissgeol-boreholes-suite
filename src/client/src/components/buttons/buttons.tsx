@@ -177,3 +177,34 @@ export const FileButton: FC<FileButtonProps> = ({ label, icon, onClick }) => {
     </Button>
   );
 };
+
+interface ToggleButtonProps {
+  label: string;
+  icon: ReactNode;
+  active: boolean;
+  onToggle: (active: boolean) => void;
+}
+
+export const ToggleButton: FC<ToggleButtonProps> = ({ label, icon, active, onToggle }) => {
+  return (
+    <BoreholesButton
+      label={label}
+      onClick={() => onToggle(!active)}
+      variant={active ? "contained" : "outlined"}
+      sx={
+        active
+          ? {
+              color: `${theme.palette.toggleButton.active.color} !important`,
+              backgroundColor: `${theme.palette.toggleButton.active.backgroundColor} !important`,
+              padding: `9px 13px`,
+              boxShadow: "none",
+              "&:hover": {
+                backgroundColor: `${theme.palette.toggleButton.active.hoverBackgroundColor} !important`,
+              },
+            }
+          : undefined
+      }
+      icon={icon}
+    />
+  );
+};

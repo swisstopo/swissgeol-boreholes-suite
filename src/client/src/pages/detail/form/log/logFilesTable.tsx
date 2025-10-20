@@ -5,8 +5,7 @@ import { Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { GridColDef, GridRowId, GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
 import Filter2Icon from "../../../../assets/icons/filter2.svg?react";
-import { theme } from "../../../../AppTheme.ts";
-import { BoreholesButton } from "../../../../components/buttons/buttons.tsx";
+import { ToggleButton } from "../../../../components/buttons/buttons.tsx";
 import { CodelistLabelStyle, useCodelists } from "../../../../components/codelist.ts";
 import { FormBooleanSelect } from "../../../../components/form/formBooleanSelect.tsx";
 import { FormContainer } from "../../../../components/form/formContainer.tsx";
@@ -183,25 +182,7 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
           </Typography>
         </Stack>
         <Stack direction="row" alignItems="center" gap={1}>
-          <BoreholesButton
-            label={"filter"}
-            onClick={() => setFilterVisible(prev => !prev)}
-            variant={filterVisible ? "contained" : "outlined"}
-            sx={
-              filterVisible
-                ? {
-                    color: `${theme.palette.toggleButton.active.color} !important`,
-                    backgroundColor: `${theme.palette.toggleButton.active.backgroundColor} !important`,
-                    padding: `9px 13px`,
-                    boxShadow: "none",
-                    "&:hover": {
-                      backgroundColor: `${theme.palette.toggleButton.active.hoverBackgroundColor} !important`,
-                    },
-                  }
-                : undefined
-            }
-            icon={<Filter2Icon />}
-          />
+          <ToggleButton label={"filter"} icon={<Filter2Icon />} active={filterVisible} onToggle={setFilterVisible} />
         </Stack>
       </Stack>
       {filterVisible && (
