@@ -83,7 +83,7 @@ public class LogRunControllerTest : TestControllerBase
         Assert.AreEqual(new DateOnly(2021, 6, 6), logFile.DeliveryDate);
         Assert.AreEqual("0d9b13e0-5ff0-5351-8a35-af2b6a8f9da5", logFile.NameUuid);
         Assert.AreEqual(true, logFile.Public);
-        Assert.AreEqual("Total", logFile.FileType);
+        Assert.AreEqual("ecelp4800", logFile.FileType);
         Assert.AreEqual(3, logFile.Pass);
         Assert.AreEqual(1, logFile.ToolTypeCodelistIds.Count);
         Assert.AreEqual(100003032, logFile.ToolTypeCodelistIds.First());
