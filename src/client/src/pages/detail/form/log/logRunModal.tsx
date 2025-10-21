@@ -19,6 +19,7 @@ import {
 import { validateDepths } from "../../../../components/form/formUtils";
 import { useFormDirty } from "../../../../components/form/useFormDirty";
 import { EditStateContext } from "../../editStateContext";
+import { FileDropzone } from "./fileDropzone.tsx";
 import { TmpLogRun } from "./log";
 import { LogFileTable } from "./logFilesTable";
 import { getServiceOrToolArray, validateRunNumber } from "./logUtils";
@@ -146,6 +147,12 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
                       title={file.id === 0 ? t("newFile") : (file.name ?? "-")}
                       action={<StandaloneIconButton icon={<Trash2 />} color="primaryInverse" onClick={() => {}} />}>
                       <FormContainer>
+                        <FileDropzone
+                          existingFile={file.name ? new File([], file.name) : undefined}
+                          onChange={file => {
+                            console.log("got new file", file?.name ?? "none");
+                          }}
+                        />
                         <FormContainer direction={"row"}>
                           <FormDomainMultiSelect
                             schemaName="log_tool_type"

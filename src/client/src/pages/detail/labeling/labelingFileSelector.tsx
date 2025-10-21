@@ -5,7 +5,7 @@ import { useLocation } from "react-router";
 import { AlertColor, Box, CircularProgress, Divider, Stack, Typography } from "@mui/material";
 import { ChevronRight, FileImageIcon, FileTextIcon } from "lucide-react";
 import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
-import { maxFileSizeKB } from "../../../api/file/fileInterfaces.ts";
+import { maxFileSizeBytes } from "../../../api/file/fileInterfaces.ts";
 import { AddButton, BoreholesBaseButton, FileButton } from "../../../components/buttons/buttons.tsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
@@ -61,7 +61,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     maxFiles: 1,
-    maxSize: maxFileSizeKB,
+    maxSize: maxFileSizeBytes,
     accept: { [labelingFileFormat[activeTab]]: [] },
     noDrag: false,
     noClick: true,
