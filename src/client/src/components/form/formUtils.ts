@@ -93,6 +93,7 @@ export const formatNumberForDisplay = (
 ): string => {
   if (value == null) return "-";
   if (typeof value === "string") {
+    if (value === "") return "-";
     value = Number(value);
   }
   if (Math.abs(value) < 0.001 && value !== 0) {
