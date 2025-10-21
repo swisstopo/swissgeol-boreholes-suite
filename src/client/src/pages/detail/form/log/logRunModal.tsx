@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useContext, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Chip, Stack } from "@mui/material";
@@ -14,7 +14,9 @@ import {
 } from "../../../../components/form/form.ts";
 import { validateDepths } from "../../../../components/form/formUtils.ts";
 import { useFormDirty } from "../../../../components/form/useFormDirty.tsx";
+import { EditStateContext } from "../../editStateContext.tsx";
 import { TmpLogRun } from "./log.ts";
+import { LogFileTable } from "./logFilesTable.tsx";
 import { getServiceOrToolArray, validateRunNumber } from "./logUtils.ts";
 
 interface LogRunModalProps {
@@ -26,6 +28,7 @@ interface LogRunModalProps {
 export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }) => {
   const { t } = useTranslation();
   const { data: codelists } = useCodelists();
+  const { editingEnabled } = useContext(EditStateContext);
 
   const formMethods = useForm<TmpLogRun>({
     mode: "all",
@@ -125,6 +128,9 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
                 <FormInput fieldName="comment" label="comment" multiline={true} rows={3} value={logRun.comment} />
               </FormContainer>
             </FormContainer>
+          </BoreholesCard>
+          <BoreholesCard data-cy="logRun-files" title={t("files")}>
+            {editingEnabled ? "Work in progress" : <LogFileTable files={logRun.logFiles ?? []} />}
           </BoreholesCard>
           <Stack pb={4.5} />
         </Stack>

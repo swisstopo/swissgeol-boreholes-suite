@@ -38,8 +38,22 @@ export interface LogFile {
   id: number;
   logRunId: number;
   name: string;
-  public: boolean;
+  fileType: string;
+  passTypeId?: number;
+  passType?: Codelist;
+  pass?: number;
+  dataPackageId?: number;
+  dataPackage?: Codelist;
+  deliveryDate?: NullableDateString;
+  depthTypeId?: number;
+  depthType?: Codelist;
   toolTypeCodelistIds: number[];
+  toolTypeCodelists?: Codelist[];
+  public: boolean;
+  created?: NullableDateString;
+  createdBy?: User | null;
+  updated?: NullableDateString;
+  updatedBy?: User | null;
 }
 
 export const logsQueryKey = "logs";

@@ -6,8 +6,7 @@ import { Stack } from "@mui/system";
 import { GridColDef, GridEventListener, GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
 import Filter2Icon from "../../../../assets/icons/filter2.svg?react";
 import { getSectionsByBoreholeId } from "../../../../api/fetchApiV2.ts";
-import { theme } from "../../../../AppTheme.ts";
-import { BoreholesButton, DeleteButton } from "../../../../components/buttons/buttons.tsx";
+import { DeleteButton, ToggleButton } from "../../../../components/buttons/buttons.tsx";
 import { Codelist, CodelistLabelStyle, useCodelists } from "../../../../components/codelist.ts";
 import { FormContainer, FormDomainMultiSelect, FormMultiSelect } from "../../../../components/form/form.ts";
 import { FormMultiSelectValue } from "../../../../components/form/formMultiSelect.tsx";
@@ -55,6 +54,11 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
   const runFilter = formMethods.watch("runNumbers");
   const sectionFilter = formMethods.watch("sections");
   const toolTypeFilter = formMethods.watch("toolTypes");
+
+  const hasActiveFilter = useMemo(
+    () => runFilter?.length > 0 || sectionFilter?.length > 0 || toolTypeFilter?.length > 0,
+    [runFilter, sectionFilter, toolTypeFilter],
+  );
 
   const runNumbers = useMemo<FormMultiSelectValue[]>(
     () =>
@@ -219,25 +223,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
           )}
         </Stack>
         <Stack direction="row" alignItems="center" gap={1}>
-          <BoreholesButton
-            label={"filter"}
-            onClick={() => setFilterVisible(prev => !prev)}
-            variant={filterVisible ? "contained" : "outlined"}
-            sx={
-              filterVisible
-                ? {
-                    color: `${theme.palette.toggleButton.active.color} !important`,
-                    backgroundColor: `${theme.palette.toggleButton.active.backgroundColor} !important`,
-                    padding: `9px 13px`,
-                    boxShadow: "none",
-                    "&:hover": {
-                      backgroundColor: `${theme.palette.toggleButton.active.hoverBackgroundColor} !important`,
-                    },
-                  }
-                : undefined
-            }
-            icon={<Filter2Icon />}
-          />
+          <ToggleButton label={"filter"} icon={<Filter2Icon />} active={filterVisible} onToggle={setFilterVisible} />
         </Stack>
       </Stack>
       {filterVisible && (
@@ -272,7 +258,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
         rowSelectionModel={selectionModel}
         onRowSelectionModelChange={setSelectionModel}
         rowAutoHeight={true}
-        noRowsLabel={"noLogRun"}
+        noRowsLabel={hasActiveFilter ? "noFilterResult" : "noLogRun"}
       />
     </Stack>
   );
