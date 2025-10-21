@@ -1,25 +1,27 @@
 import { FC, useCallback, useContext, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Chip, Stack } from "@mui/material";
+import { Chip, Stack, Typography } from "@mui/material";
 import { Trash2 } from "lucide-react";
-import { BoreholesCard } from "../../../../components/boreholesCard.tsx";
-import { AddButton, StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
-import { useCodelists } from "../../../../components/codelist.ts";
+import { BoreholesCard } from "../../../../components/boreholesCard";
+import { AddButton, StandaloneIconButton } from "../../../../components/buttons/buttons";
+import { CodelistLabelStyle, useCodelists } from "../../../../components/codelist";
 import {
+  FormCheckbox,
   FormContainer,
   FormDialog,
+  FormDomainMultiSelect,
   FormDomainSelect,
   FormErrors,
   FormInput,
   FormValueType,
-} from "../../../../components/form/form.ts";
-import { validateDepths } from "../../../../components/form/formUtils.ts";
-import { useFormDirty } from "../../../../components/form/useFormDirty.tsx";
-import { EditStateContext } from "../../editStateContext.tsx";
-import { TmpLogRun } from "./log.ts";
-import { LogFileTable } from "./logFilesTable.tsx";
-import { getServiceOrToolArray, validateRunNumber } from "./logUtils.ts";
+} from "../../../../components/form/form";
+import { validateDepths } from "../../../../components/form/formUtils";
+import { useFormDirty } from "../../../../components/form/useFormDirty";
+import { EditStateContext } from "../../editStateContext";
+import { TmpLogRun } from "./log";
+import { LogFileTable } from "./logFilesTable";
+import { getServiceOrToolArray, validateRunNumber } from "./logUtils";
 
 interface LogRunModalProps {
   logRun: TmpLogRun | undefined;
@@ -69,53 +71,48 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
       onClose={closeDialog}
       isCloseDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
       <FormProvider {...formMethods}>
-        <Stack gap={3} flex={"0 1 1040px"} m={7.5}>
+        <Stack gap={3} flex="0 1 1040px" m={7.5}>
           <BoreholesCard data-cy="logRun-general" title={t("generalInformation")}>
             <FormContainer>
-              <FormContainer direction={"row"}>
-                <FormInput fieldName={"runNumber"} required={true} label={"runNumber"} value={logRun.runNumber} />
+              <FormContainer direction="row">
+                <FormInput fieldName="runNumber" required label="runNumber" value={logRun.runNumber} />
                 <FormInput
-                  fieldName={"fromDepth"}
-                  required={true}
-                  label={"topLoggedInterval"}
+                  fieldName="fromDepth"
+                  required
+                  label="topLoggedInterval"
                   value={logRun.fromDepth}
-                  withThousandSeparator={true}
+                  withThousandSeparator
                 />
                 <FormInput
-                  fieldName={"toDepth"}
-                  required={true}
-                  label={"bottomLoggedInterval"}
+                  fieldName="toDepth"
+                  required
+                  label="bottomLoggedInterval"
                   value={logRun.toDepth}
-                  withThousandSeparator={true}
+                  withThousandSeparator
                 />
                 <FormDomainSelect
-                  fieldName={"boreholeStatusId"}
-                  label={"boreholeStatus"}
-                  schemaName={"log_borehole_status"}
+                  fieldName="boreholeStatusId"
+                  label="boreholeStatus"
+                  schemaName="log_borehole_status"
                   selected={logRun.boreholeStatusId}
                 />
               </FormContainer>
-              <FormContainer direction={"row"}>
-                <FormInput fieldName={"runDate"} label={"runDate"} type={FormValueType.Date} value={logRun.runDate} />
-                <FormInput
-                  fieldName={"bitSize"}
-                  label={"bitSize"}
-                  value={logRun.bitSize}
-                  withThousandSeparator={true}
-                />
+              <FormContainer direction="row">
+                <FormInput fieldName="runDate" label="runDate" type={FormValueType.Date} value={logRun.runDate} />
+                <FormInput fieldName="bitSize" label="bitSize" value={logRun.bitSize} withThousandSeparator />
                 <FormDomainSelect
-                  fieldName={"conveyanceMethodId"}
-                  label={"conveyanceMethod"}
-                  schemaName={"log_conveyance_method"}
+                  fieldName="conveyanceMethodId"
+                  label="conveyanceMethod"
+                  schemaName="log_conveyance_method"
                   selected={logRun.conveyanceMethodId}
                 />
-                <FormInput fieldName={"serviceCo"} label={"serviceCo"} value={logRun.serviceCo} />
+                <FormInput fieldName="serviceCo" label="serviceCo" value={logRun.serviceCo} />
               </FormContainer>
-              <FormContainer direction={"row"}>
+              <FormContainer direction="row">
                 <FormInput
                   label={t("serviceOrTool")}
                   fieldName="serviceOrTool"
-                  readonly={true}
+                  readonly
                   inputProps={{
                     startAdornment: (
                       <Stack direction="row" gap={1}>
@@ -129,7 +126,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
                 />
               </FormContainer>
               <FormContainer direction="row">
-                <FormInput fieldName="comment" label="comment" multiline={true} rows={3} value={logRun.comment} />
+                <FormInput fieldName="comment" label="comment" multiline rows={3} value={logRun.comment} />
               </FormContainer>
             </FormContainer>
           </BoreholesCard>
@@ -138,12 +135,58 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
             title={t("files")}
             action={editingEnabled && <AddButton label="addFile" variant="contained" onClick={addFile} />}>
             {editingEnabled ? (
-              <BoreholesCard
-                data-cy="logRun-files"
-                title={t("newFile")}
-                action={
-                  <StandaloneIconButton icon={<Trash2 />} color={"primaryInverse"} onClick={() => {}} />
-                }></BoreholesCard>
+              logRun.logFiles?.length === 0 ? (
+                <Typography pl={2}>{t("noLogFile")}</Typography>
+              ) : (
+                <Stack gap={2.25}>
+                  {logRun.logFiles?.map((file, index) => (
+                    <BoreholesCard
+                      key={file.id}
+                      data-cy="logRun-files"
+                      title={file.id === 0 ? t("newFile") : (file.name ?? "-")}
+                      action={<StandaloneIconButton icon={<Trash2 />} color="primaryInverse" onClick={() => {}} />}>
+                      <FormContainer>
+                        <FormContainer direction={"row"}>
+                          <FormDomainMultiSelect
+                            schemaName="log_tool_type"
+                            fieldName={`logFiles.[${index}].toolTypeCodelistIds`}
+                            label="toolType"
+                            labelStyle={CodelistLabelStyle.TextAndCodeChipsCodeOnly}
+                          />
+                          <FormInput fieldName={`logFiles.[${index}].fileType`} label="extension" readonly />
+                          <FormDomainSelect
+                            schemaName="log_pass_type"
+                            fieldName={`logFiles.[${index}].passTypeId`}
+                            label="passType"
+                          />
+                          <FormInput fieldName={`logFiles.[${index}].pass`} label="pass" type={FormValueType.Number} />
+                        </FormContainer>
+                        <FormContainer direction={"row"}>
+                          <FormDomainSelect
+                            schemaName="log_data_package"
+                            fieldName={`logFiles.[${index}].dataPackageId`}
+                            label="dataPackage"
+                            sx={{ flex: 1 }}
+                          />
+                          <FormInput
+                            fieldName={`logFiles.[${index}].deliveryDate`}
+                            label="deliveryDate"
+                            type={FormValueType.Date}
+                            sx={{ flex: 1 }}
+                          />
+                          <FormDomainSelect
+                            schemaName="log_depth_type"
+                            fieldName={`logFiles.[${index}].depthTypeId`}
+                            label="depthType"
+                            sx={{ flex: 1 }}
+                          />
+                          <FormCheckbox fieldName={`logFiles.[${index}].public`} label="public" sx={{ flex: 1 }} />
+                        </FormContainer>
+                      </FormContainer>
+                    </BoreholesCard>
+                  ))}
+                </Stack>
+              )
             ) : (
               <LogFileTable files={logRun.logFiles ?? []} />
             )}
