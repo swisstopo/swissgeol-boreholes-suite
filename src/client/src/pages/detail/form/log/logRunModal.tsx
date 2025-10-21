@@ -1,10 +1,8 @@
-import { FC, useCallback, useContext, useEffect } from "react";
+import { FC, useContext, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Chip, Stack } from "@mui/material";
-import { Trash2 } from "lucide-react";
 import { BoreholesCard } from "../../../../components/boreholesCard.tsx";
-import { AddButton, StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
 import { useCodelists } from "../../../../components/codelist.ts";
 import {
   FormContainer,
@@ -49,8 +47,6 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
       formMethods.reset(logRun);
     }
   }, [logRun, formMethods]);
-
-  const addFile = useCallback(() => {}, []);
 
   const closeDialog = async () => {
     const isValid = await formMethods.trigger();
@@ -133,20 +129,8 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
               </FormContainer>
             </FormContainer>
           </BoreholesCard>
-          <BoreholesCard
-            data-cy="logRun-files"
-            title={t("files")}
-            action={editingEnabled && <AddButton label="addFile" variant="contained" onClick={addFile} />}>
-            {editingEnabled ? (
-              <BoreholesCard
-                data-cy="logRun-files"
-                title={t("newFile")}
-                action={
-                  <StandaloneIconButton icon={<Trash2 />} color={"primaryInverse"} onClick={() => {}} />
-                }></BoreholesCard>
-            ) : (
-              <LogFileTable files={logRun.logFiles ?? []} />
-            )}
+          <BoreholesCard data-cy="logRun-files" title={t("files")}>
+            {editingEnabled ? "Work in progress" : <LogFileTable files={logRun.logFiles ?? []} />}
           </BoreholesCard>
           <Stack pb={4.5} />
         </Stack>
