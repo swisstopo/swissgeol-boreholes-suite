@@ -159,7 +159,7 @@ export const Table = <T extends GridValidRowModel>({
         };
 
   return (
-    <Stack gap={1.5}>
+    <>
       <DataGrid
         sx={dataGridSx}
         data-cy={dataCy ?? "data-table"}
@@ -209,7 +209,11 @@ export const Table = <T extends GridValidRowModel>({
         onRowSelectionModelChange={onRowSelectionModelChange}
         getRowId={getRowId}
       />
-      {rows.length === 0 && noRowsLabel && <Typography pl={2}>{t(noRowsLabel)}</Typography>}
-    </Stack>
+      {rows.length === 0 && noRowsLabel && (
+        <Typography pl={2} mt={1.5}>
+          {t(noRowsLabel)}
+        </Typography>
+      )}
+    </>
   );
 };
