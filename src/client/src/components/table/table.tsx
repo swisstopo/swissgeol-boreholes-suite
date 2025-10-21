@@ -1,6 +1,6 @@
 import { MutableRefObject, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Stack, SxProps, Typography } from "@mui/material";
+import { SxProps, Typography } from "@mui/material";
 import {
   DataGrid,
   GridColDef,
