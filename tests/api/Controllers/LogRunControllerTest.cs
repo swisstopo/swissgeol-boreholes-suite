@@ -150,9 +150,9 @@ public class LogRunControllerTest : TestControllerBase
     [TestMethod]
     public async Task DeleteMultipleLogRuns()
     {
-        var borehole = await CreateTestBoreholeAsync();
-        var logRun1 = await CreateTestLogRunAsync(borehole.Id);
-        var logRun2 = await CreateTestLogRunAsync(borehole.Id);
+        var borehole = await AddTestBoreholeAsync();
+        var logRun1 = await AddTestLogRunAsync(borehole.Id);
+        var logRun2 = await AddTestLogRunAsync(borehole.Id, "RUN02");
 
         Assert.AreEqual(2, Context.LogRuns.Count(lr => lr.BoreholeId == borehole.Id));
 
@@ -248,6 +248,37 @@ public class LogRunControllerTest : TestControllerBase
         var objectResult = (ObjectResult)response.Result;
         var problemDetails = (ProblemDetails)objectResult.Value!;
         StringAssert.StartsWith(problemDetails.Detail, "The borehole is locked by another user or you are missing permissions.");
+    }
+
+    [TestMethod]
+    public async Task EditWithExistingRunNumber()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        await AddTestLogRunAsync(borehole.Id, "Number1");
+        var logRun2 = await AddTestLogRunAsync(borehole.Id, "Number2");
+
+        logRun2.RunNumber = "Number1";
+
+        var createResult = await controller.EditAsync(logRun2);
+        ActionResultAssert.IsInternalServerError(createResult.Result, "Run number must be unique");
+    }
+
+    [TestMethod]
+    public async Task CreateWithExistingRunNumber()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        await AddTestLogRunAsync(borehole.Id, "RUN01");
+
+        var logRun = new LogRun
+        {
+            BoreholeId = borehole.Id,
+            RunNumber = "RUN01",
+            FromDepth = 0,
+            ToDepth = 100,
+        };
+
+        var createResult = await controller.CreateAsync(logRun);
+        ActionResultAssert.IsInternalServerError(createResult.Result, "Run number must be unique");
     }
 
     private async Task<int> CreateCompleteLogRunAsync()

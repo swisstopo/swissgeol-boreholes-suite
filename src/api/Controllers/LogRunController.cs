@@ -80,13 +80,37 @@ public class LogRunController : BoreholeControllerBase<LogRun>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<ActionResult<LogRun>> CreateAsync(LogRun entity)
-        => base.CreateAsync(entity);
+    public override async Task<ActionResult<LogRun>> CreateAsync(LogRun entity)
+    {
+        if (entity == null)
+        {
+            return BadRequest(ModelState);
+        }
+
+        if (!await IsRunNumberUnique(entity).ConfigureAwait(false))
+        {
+            return Problem(detail: "Run number must be unique");
+        }
+
+        return await base.CreateAsync(entity).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<ActionResult<LogRun>> EditAsync(LogRun entity)
-        => base.EditAsync(entity);
+    public override async Task<ActionResult<LogRun>> EditAsync(LogRun entity)
+    {
+        if (entity == null)
+        {
+            return BadRequest(ModelState);
+        }
+
+        if (!await IsRunNumberUnique(entity).ConfigureAwait(false))
+        {
+            return Problem(detail: "Run number must be unique");
+        }
+
+        return await base.EditAsync(entity).ConfigureAwait(false);
+    }
 
     /// <inheritdoc />
     protected override Task<int?> GetBoreholeId(LogRun entity)
@@ -94,5 +118,14 @@ public class LogRunController : BoreholeControllerBase<LogRun>
         if (entity == null) return Task.FromResult<int?>(default);
 
         return Task.FromResult<int?>(entity.BoreholeId);
+    }
+
+    private async Task<bool> IsRunNumberUnique(LogRun logRun)
+    {
+        var hasBoreholeLogRunsWithSameRunNumber = await Context.LogRuns
+                .AnyAsync(lr => lr.BoreholeId == logRun.BoreholeId && lr.Id != logRun.Id && lr.RunNumber == logRun.RunNumber)
+                .ConfigureAwait(false);
+
+        return !hasBoreholeLogRunsWithSameRunNumber;
     }
 }
