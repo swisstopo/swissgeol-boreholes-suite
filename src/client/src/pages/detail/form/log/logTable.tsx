@@ -55,6 +55,11 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
   const sectionFilter = formMethods.watch("sections");
   const toolTypeFilter = formMethods.watch("toolTypes");
 
+  const hasActiveFilter = useMemo(
+    () => runFilter?.length > 0 || sectionFilter?.length > 0 || toolTypeFilter?.length > 0,
+    [runFilter, sectionFilter, toolTypeFilter],
+  );
+
   const runNumbers = useMemo<FormMultiSelectValue[]>(
     () =>
       runs
@@ -253,7 +258,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
         rowSelectionModel={selectionModel}
         onRowSelectionModelChange={setSelectionModel}
         rowAutoHeight={true}
-        noRowsLabel={runs.length > 0 ? "noLogRun" : "noFilterResult"}
+        noRowsLabel={hasActiveFilter ? "noFilterResult" : "noLogRun"}
       />
     </Stack>
   );

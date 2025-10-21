@@ -43,6 +43,22 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
   const dataPackagesFilter = formMethods.watch("dataPackages");
   const publicFilter = formMethods.watch("public");
 
+  const hasActiveFilter = useMemo(
+    () =>
+      toolTypeFilter?.length > 0 ||
+      extensionsFilter?.length > 0 ||
+      passTypesFilter?.length > 0 ||
+      dataPackagesFilter?.length > 0 ||
+      publicFilter !== null,
+    [
+      dataPackagesFilter?.length,
+      extensionsFilter?.length,
+      passTypesFilter?.length,
+      publicFilter,
+      toolTypeFilter?.length,
+    ],
+  );
+
   const filteredFiles = useMemo<LogFile[]>(() => {
     let filtered = files;
     if (toolTypeFilter && toolTypeFilter.length > 0) {
@@ -235,7 +251,7 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
         rowSelectionModel={selectionModel}
         onRowSelectionModelChange={setSelectionModel}
         rowAutoHeight={true}
-        noRowsLabel={files.length === 0 ? "noLogFile" : "noFilterResult"}
+        noRowsLabel={hasActiveFilter ? "noFilterResult" : "noLogFile"}
       />
     </Stack>
   );
