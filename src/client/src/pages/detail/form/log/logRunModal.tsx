@@ -20,9 +20,10 @@ import { getServiceOrToolArray, validateRunNumber } from "./logUtils.ts";
 interface LogRunModalProps {
   logRun: TmpLogRun | undefined;
   updateLogRun: (logRun: TmpLogRun, hasChanges: boolean) => void;
+  runs: TmpLogRun[];
 }
 
-export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun }) => {
+export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }) => {
   const { t } = useTranslation();
   const { data: codelists } = useCodelists();
 
@@ -31,7 +32,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun }) => {
     resolver: async values => {
       const errors: FormErrors = {};
       validateDepths(values, errors);
-      validateRunNumber(values, errors);
+      validateRunNumber(values, errors, runs);
       return { values, errors };
     },
   });

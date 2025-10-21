@@ -81,13 +81,21 @@ const formatWithThousandsSeparator = (minDecimals: number, maxDecimals: number, 
 /**
  * Formats a number with thousands separators and a minimum number of decimal places.
  * If the number is less than 0.001 and has more than 3 decimal places, the number is formatted with scientific notation.
- * @param {number | null | undefined} value The number to format.
+ * @param {number | string | null | undefined} value The number to format.
  * @param {number} minDecimals The minimum number of decimal places to display (defaults to 0).
  * @param {number} maxDecimals The maximum number of decimal places to display (defaults to 3).
  * @returns The formatted number.
  */
-export const formatNumberForDisplay = (value?: number | null, minDecimals = 0, maxDecimals = 3): string => {
+export const formatNumberForDisplay = (
+  value?: number | string | null,
+  minDecimals: number = 0,
+  maxDecimals: number = 3,
+): string => {
   if (value == null) return "-";
+  if (typeof value === "string") {
+    if (value === "") return "-";
+    value = Number(value);
+  }
   if (Math.abs(value) < 0.001 && value !== 0) {
     return formatWithScientificNotation(value);
   }

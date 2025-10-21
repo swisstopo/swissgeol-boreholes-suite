@@ -11,7 +11,7 @@ import { SaveContext } from "../../saveContext.tsx";
 import { LogRunChangeTracker, TmpLogRun, useLogRunMutations, useLogsByBoreholeId } from "./log.ts";
 import { LogRunModal } from "./logRunModal.tsx";
 import { LogTable } from "./logTable.tsx";
-import { preparelogRunForSubmit } from "./logUtils.ts";
+import { prepareLogRunForSubmit } from "./logUtils.ts";
 
 export const LogPanel: FC = () => {
   const { t } = useTranslation();
@@ -85,7 +85,7 @@ export const LogPanel: FC = () => {
 
   const addAndUpdateLogRuns = useCallback(async () => {
     for (const logRun of tmpLogRuns.filter(l => l.hasChanges).map(l => l.item)) {
-      preparelogRunForSubmit(logRun);
+      prepareLogRunForSubmit(logRun);
       if (logRun.id === 0) {
         await addLogRun({ ...logRun, boreholeId: Number(boreholeId) });
       } else {
@@ -151,7 +151,7 @@ export const LogPanel: FC = () => {
           </Stack>
         )}
       </Box>
-      <LogRunModal logRun={selectedLogRun} updateLogRun={updateTmpLogRun} />
+      <LogRunModal logRun={selectedLogRun} updateLogRun={updateTmpLogRun} runs={tmpLogRunsFlat} />
     </>
   );
 };

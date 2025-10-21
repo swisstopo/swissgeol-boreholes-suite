@@ -7,7 +7,7 @@ import { GridColDef, GridEventListener, GridRowSelectionModel, useGridApiRef } f
 import Filter2Icon from "../../../../assets/icons/filter2.svg?react";
 import { getSectionsByBoreholeId } from "../../../../api/fetchApiV2.ts";
 import { theme } from "../../../../AppTheme.ts";
-import { BoreholesButton, DeleteButton, ExportButton } from "../../../../components/buttons/buttons.tsx";
+import { BoreholesButton, DeleteButton } from "../../../../components/buttons/buttons.tsx";
 import { Codelist, CodelistLabelStyle, useCodelists } from "../../../../components/codelist.ts";
 import { FormContainer, FormDomainMultiSelect, FormMultiSelect } from "../../../../components/form/form.ts";
 import { FormMultiSelectValue } from "../../../../components/form/formMultiSelect.tsx";
@@ -140,14 +140,6 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
     }
   }, [filterVisible, formMethods]);
 
-  const exportData = () => {
-    console.log("Export log runs", selectionModel);
-  };
-
-  const exportTable = () => {
-    console.log("Export log runs table", selectionModel);
-  };
-
   const handleRowClick: GridEventListener<"rowClick"> = params => {
     setSelectedLogRunId(params.row.tmpId);
   };
@@ -200,9 +192,6 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
     ],
     [t, codelists, i18n.language],
   );
-  if (runs.length === 0) {
-    return <Typography>{t("noLogRun")}</Typography>;
-  }
 
   const selection = true;
   return (
@@ -219,12 +208,13 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
               {editingEnabled && (
                 <DeleteButton disabled={selectionModel.length === 0} onClick={() => deleteLogRun(selectionModel)} />
               )}
-              <ExportButton label={"exportData"} disabled={selectionModel.length === 0} onClick={() => exportData()} />
-              <ExportButton
-                label={"exportTable"}
-                disabled={selectionModel.length === 0}
-                onClick={() => exportTable()}
-              />
+              {/* TODO: Hide until logic is implemented with https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2361*/}
+              {/*<ExportButton label={"exportData"} disabled={selectionModel.length === 0} onClick={() => exportData()} />*/}
+              {/*<ExportButton*/}
+              {/*  label={"exportTable"}*/}
+              {/*  disabled={selectionModel.length === 0}*/}
+              {/*  onClick={() => exportTable()}*/}
+              {/*/>*/}
             </>
           )}
         </Stack>
@@ -282,6 +272,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
         rowSelectionModel={selectionModel}
         onRowSelectionModelChange={setSelectionModel}
         rowAutoHeight={true}
+        noRowsLabel={"noLogRun"}
       />
     </Stack>
   );
