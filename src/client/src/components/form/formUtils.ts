@@ -4,19 +4,6 @@ import { Lithology } from "../../pages/detail/form/stratigraphy/lithology.ts";
 import { FormError, FormErrors } from "./form.ts";
 
 /**
- * Parse the input value if it's a string. If it's a number, return it as is.
- * @param {string | number} value The value to parse.
- * @returns The parsed float number if the input is a string, or the input value itself if it's a number.
- */
-export const parseIfString = (value: string | number) => {
-  if (typeof value === "string") {
-    return parseFloatWithThousandsSeparator(value);
-  } else {
-    return value;
-  }
-};
-
-/**
  * Parse a string to a float number, removing thousands separators if present.
  * @param {string/ number} value The string or number to parse.
  * @returns The parsed float number.
