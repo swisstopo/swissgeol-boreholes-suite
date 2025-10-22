@@ -30,12 +30,12 @@ export const getServiceOrToolArray = (logRun: LogRun, codelists: Codelist[]): (s
     .map(id => codelists.find((d: Codelist) => d.id === id)?.code ?? "");
 };
 
-export const validateRunNumber = (values: LogRun, errors: FormErrors, runs: TmpLogRun[]) => {
+export const validateRunNumber = (values: TmpLogRun, errors: FormErrors, runs: TmpLogRun[]) => {
   const runNumber = values.runNumber;
   if (!runNumber) {
     errors.runNumber = { type: "required", message: "required" };
   }
-  if (runs.some(r => r.runNumber === runNumber && r.tmpId !== String(values.id))) {
+  if (runs.some(r => r.runNumber === runNumber && r.tmpId !== values.tmpId)) {
     errors.runNumber = { type: "manual", message: "mustBeUnique" };
   }
 };
