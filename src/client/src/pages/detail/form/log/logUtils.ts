@@ -35,3 +35,22 @@ export const validateRunNumber = (values: LogRun, errors: FormErrors, runs: TmpL
     errors.runNumber = { type: "manual", message: "mustBeUnique" };
   }
 };
+
+export const validateFiles = (values: LogRun, errors: FormErrors) => {
+  if (!values.logFiles || values.logFiles.length === 0) return;
+
+  values.logFiles.forEach((file, idx) => {
+    if (!file) return;
+    const missingName = !file.name || file.name.trim() === "";
+    const missingType = !file.fileType || file.fileType.trim() === "";
+    if (missingName || missingType) {
+      if (!errors.logFiles) {
+        errors.logFiles = {};
+      }
+      // @ts-expect-error dynamic index assignment for nested array errors
+      const existing = errors.logFiles[idx] as FormErrors | undefined;
+      // @ts-expect-error dynamic index assignment for nested array errors
+      errors.logFiles[idx] = { ...(existing || {}), name: { type: "required", message: "required" } };
+    }
+  });
+};

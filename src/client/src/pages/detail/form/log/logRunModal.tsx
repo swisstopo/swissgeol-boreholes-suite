@@ -16,6 +16,7 @@ import {
   FormErrors,
   FormInput,
   FormValueType,
+  getFormFieldError,
 } from "../../../../components/form/form";
 import { validateDepths } from "../../../../components/form/formUtils";
 import { useFormDirty } from "../../../../components/form/useFormDirty";
@@ -23,7 +24,9 @@ import { EditStateContext } from "../../editStateContext";
 import { FileDropzone } from "./fileDropzone.tsx";
 import { LogFile, TmpLogRun } from "./log";
 import { LogFileTable } from "./logFilesTable";
-import { getServiceOrToolArray, validateRunNumber } from "./logUtils";
+import { getServiceOrToolArray, validateFiles, validateRunNumber } from "./logUtils";
+
+type LogFileField = LogFile & { _rhfId: string };
 
 interface LogRunModalProps {
   logRun: TmpLogRun | undefined;
@@ -42,6 +45,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
       const errors: FormErrors = {};
       validateDepths(values, errors);
       validateRunNumber(values, errors, runs);
+      validateFiles(values, errors);
       return { values, errors };
     },
   });
@@ -55,6 +59,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
     name: "logFiles",
     keyName: "_rhfId",
   });
+  const files: LogFileField[] = fileFields as unknown as LogFileField[];
 
   const { formState, getValues } = formMethods;
   const isDirty = useFormDirty({ formState });
@@ -99,17 +104,6 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
     [remove],
   );
 
-  type LogFileField = LogFile & { _rhfId: string };
-  const files: LogFileField[] = fileFields as unknown as LogFileField[];
-
-  const closeDialog = async () => {
-    const isValid = await formMethods.trigger();
-    if (!isDirty || isValid) {
-      const values = getValues();
-      updateLogRun({ ...logRun, ...values } as TmpLogRun, isDirty);
-    }
-  };
-
   const onFileChanged = useCallback(
     (selected: File | undefined, index: number) => {
       const currentName = formMethods.getValues(`logFiles.${index}.name`);
@@ -125,6 +119,14 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
     },
     [formMethods],
   );
+
+  const closeDialog = async () => {
+    const isValid = await formMethods.trigger();
+    if (!isDirty || isValid) {
+      const values = getValues();
+      updateLogRun({ ...logRun, ...values } as TmpLogRun, isDirty);
+    }
+  };
 
   if (!logRun) return null;
 
@@ -206,6 +208,8 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
                   {files.map((file, index) => {
                     const name = watchedFiles?.[index]?.name ?? file.name;
                     const titleText = name ? name : file.id === 0 ? t("newFile") : "-";
+                    const logFileErrors = formState.errors.logFiles?.[index];
+                    const nameError = getFormFieldError("name", logFileErrors);
                     return (
                       <BoreholesCard
                         key={file._rhfId}
@@ -218,6 +222,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
                           <FileDropzone
                             existingFile={file.name ? new File([], file.name) : undefined}
                             onChange={file => onFileChanged(file, index)}
+                            errorMessageKey={nameError?.message}
                           />
                           <FormContainer direction={"row"}>
                             <FormDomainMultiSelect

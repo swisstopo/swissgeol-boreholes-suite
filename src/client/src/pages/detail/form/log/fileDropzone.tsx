@@ -10,12 +10,13 @@ import { StandaloneIconButton } from "../../../../components/buttons/buttons.tsx
 interface FileDropzoneProps {
   existingFile?: File;
   onChange: (file?: File) => void;
+  errorMessageKey?: string;
 }
 
-export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange }) => {
+export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange, errorMessageKey }) => {
   const { t } = useTranslation();
   const [file, setFile] = useState<File | undefined>(existingFile);
-  const [error, setError] = useState<string>();
+  const [error, setError] = useState<string | undefined>(errorMessageKey);
 
   useEffect(() => {
     onChange(file);
