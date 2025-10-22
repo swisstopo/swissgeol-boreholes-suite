@@ -1,5 +1,5 @@
 import { FC, useCallback, useContext, useEffect } from "react";
-import { FormProvider, useFieldArray, useForm } from "react-hook-form";
+import { FormProvider, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Chip, Stack, Typography } from "@mui/material";
 import { Trash2 } from "lucide-react";
@@ -59,6 +59,8 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
   const { formState, getValues } = formMethods;
   const isDirty = useFormDirty({ formState });
 
+  const watchedFiles = useWatch({ control: formMethods.control, name: "logFiles" }) as LogFile[] | undefined;
+
   useEffect(() => {
     if (logRun) {
       const withTmpFileIds = {
@@ -107,6 +109,30 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
       updateLogRun({ ...logRun, ...values } as TmpLogRun, isDirty);
     }
   };
+
+  const onFileChanged = useCallback(
+    (selected: File | undefined, index: number) => {
+      if (selected) {
+        const currentName = formMethods.getValues(`logFiles.${index}.name`);
+        if (currentName !== selected.name) {
+          formMethods.setValue(`logFiles.${index}.name`, selected.name, { shouldDirty: true, shouldTouch: true });
+        }
+        const newExt = selected.name.includes(".") ? (selected.name.split(".").pop() || "").toLowerCase() : "";
+        const currentExt = formMethods.getValues(`logFiles.${index}.fileType`);
+        if (currentExt !== newExt) {
+          formMethods.setValue(`logFiles.${index}.fileType`, newExt, { shouldDirty: true, shouldTouch: true });
+        }
+      } else {
+        if (formMethods.getValues(`logFiles.${index}.name`) !== "") {
+          formMethods.setValue(`logFiles.${index}.name`, "", { shouldDirty: true, shouldTouch: true });
+        }
+        if (formMethods.getValues(`logFiles.${index}.fileType`) !== "") {
+          formMethods.setValue(`logFiles.${index}.fileType`, "", { shouldDirty: true, shouldTouch: true });
+        }
+      }
+    },
+    [formMethods],
+  );
 
   if (!logRun) return null;
 
@@ -185,60 +211,63 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
                 <Typography pl={2}>{t("noLogFile")}</Typography>
               ) : (
                 <Stack gap={2.25}>
-                  {files.map((file, index) => (
-                    <BoreholesCard
-                      key={file._rhfId}
-                      data-cy="logRun-files"
-                      title={file.id === 0 ? t("newFile") : (file.name ?? "-")}
-                      action={
-                        <StandaloneIconButton icon={<Trash2 />} color="primaryInverse" onClick={removeFile(index)} />
-                      }>
-                      <FormContainer>
-                        <FileDropzone
-                          existingFile={file.name ? new File([], file.name) : undefined}
-                          onChange={file => {
-                            console.log("got new file", file?.name ?? "none");
-                          }}
-                        />
-                        <FormContainer direction={"row"}>
-                          <FormDomainMultiSelect
-                            schemaName="log_tool_type"
-                            fieldName={`logFiles.${index}.toolTypeCodelistIds`}
-                            label="toolType"
-                            labelStyle={CodelistLabelStyle.TextAndCodeChipsCodeOnly}
+                  {files.map((file, index) => {
+                    const watchedName = watchedFiles?.[index]?.name ?? file.name;
+                    const titleText =
+                      file.id === 0 ? (watchedName ? watchedName : t("newFile")) : watchedName ? watchedName : "-";
+                    return (
+                      <BoreholesCard
+                        key={file._rhfId}
+                        data-cy="logRun-files"
+                        title={titleText}
+                        action={
+                          <StandaloneIconButton icon={<Trash2 />} color="primaryInverse" onClick={removeFile(index)} />
+                        }>
+                        <FormContainer>
+                          <FileDropzone
+                            existingFile={file.name ? new File([], file.name) : undefined}
+                            onChange={file => onFileChanged(file, index)}
                           />
-                          <FormInput fieldName={`logFiles.${index}.fileType`} label="extension" readonly />
-                          <FormDomainSelect
-                            schemaName="log_pass_type"
-                            fieldName={`logFiles.${index}.passTypeId`}
-                            label="passType"
-                          />
-                          <FormInput fieldName={`logFiles.${index}.pass`} label="pass" type={FormValueType.Number} />
+                          <FormContainer direction={"row"}>
+                            <FormDomainMultiSelect
+                              schemaName="log_tool_type"
+                              fieldName={`logFiles.${index}.toolTypeCodelistIds`}
+                              label="toolType"
+                              labelStyle={CodelistLabelStyle.TextAndCodeChipsCodeOnly}
+                            />
+                            <FormInput fieldName={`logFiles.${index}.fileType`} label="extension" readonly />
+                            <FormDomainSelect
+                              schemaName="log_pass_type"
+                              fieldName={`logFiles.${index}.passTypeId`}
+                              label="passType"
+                            />
+                            <FormInput fieldName={`logFiles.${index}.pass`} label="pass" type={FormValueType.Number} />
+                          </FormContainer>
+                          <FormContainer direction={"row"}>
+                            <FormDomainSelect
+                              schemaName="log_data_package"
+                              fieldName={`logFiles.${index}.dataPackageId`}
+                              label="dataPackage"
+                              sx={{ flex: 1 }}
+                            />
+                            <FormInput
+                              fieldName={`logFiles.${index}.deliveryDate`}
+                              label="deliveryDate"
+                              type={FormValueType.Date}
+                              sx={{ flex: 1 }}
+                            />
+                            <FormDomainSelect
+                              schemaName="log_depth_type"
+                              fieldName={`logFiles.${index}.depthTypeId`}
+                              label="depthType"
+                              sx={{ flex: 1 }}
+                            />
+                            <FormCheckbox fieldName={`logFiles.${index}.public`} label="public" sx={{ flex: 1 }} />
+                          </FormContainer>
                         </FormContainer>
-                        <FormContainer direction={"row"}>
-                          <FormDomainSelect
-                            schemaName="log_data_package"
-                            fieldName={`logFiles.${index}.dataPackageId`}
-                            label="dataPackage"
-                            sx={{ flex: 1 }}
-                          />
-                          <FormInput
-                            fieldName={`logFiles.${index}.deliveryDate`}
-                            label="deliveryDate"
-                            type={FormValueType.Date}
-                            sx={{ flex: 1 }}
-                          />
-                          <FormDomainSelect
-                            schemaName="log_depth_type"
-                            fieldName={`logFiles.${index}.depthTypeId`}
-                            label="depthType"
-                            sx={{ flex: 1 }}
-                          />
-                          <FormCheckbox fieldName={`logFiles.${index}.public`} label="public" sx={{ flex: 1 }} />
-                        </FormContainer>
-                      </FormContainer>
-                    </BoreholesCard>
-                  ))}
+                      </BoreholesCard>
+                    );
+                  })}
                 </Stack>
               )
             ) : (
