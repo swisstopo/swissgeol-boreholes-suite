@@ -46,7 +46,11 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
     },
   });
 
-  const { fields: fileFields, prepend } = useFieldArray({
+  const {
+    fields: fileFields,
+    prepend,
+    remove,
+  } = useFieldArray({
     control: formMethods.control,
     name: "logFiles",
     keyName: "_rhfId",
@@ -85,6 +89,13 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
     };
     prepend(newFile);
   }, [prepend, logRun]);
+
+  const removeFile = useCallback(
+    (idx: number) => () => {
+      remove(idx);
+    },
+    [remove],
+  );
 
   type LogFileField = LogFile & { _rhfId: string };
   const files: LogFileField[] = fileFields as unknown as LogFileField[];
@@ -179,7 +190,9 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
                       key={file._rhfId}
                       data-cy="logRun-files"
                       title={file.id === 0 ? t("newFile") : (file.name ?? "-")}
-                      action={<StandaloneIconButton icon={<Trash2 />} color="primaryInverse" onClick={() => {}} />}>
+                      action={
+                        <StandaloneIconButton icon={<Trash2 />} color="primaryInverse" onClick={removeFile(index)} />
+                      }>
                       <FormContainer>
                         <FileDropzone
                           existingFile={file.name ? new File([], file.name) : undefined}
