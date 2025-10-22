@@ -1,5 +1,8 @@
 import { FormErrors } from "../../../../../../../components/form/form.ts";
-import { parseFloatWithThousandsSeparator } from "../../../../../../../components/form/formUtils.ts";
+import {
+  buildErrorStructure,
+  parseFloatWithThousandsSeparator,
+} from "../../../../../../../components/form/formUtils.ts";
 import { Lithology, LithologyDescription } from "../../../lithology.ts";
 
 export const prepareLithologyForSubmit = (values: Lithology) => {
@@ -63,24 +66,6 @@ export const prepareLithologyForSubmit = (values: Lithology) => {
       if (String(description.grainAngularityId) === "") description.grainAngularityId = null;
       if (String(description.gradationId) === "") description.gradationId = null;
       if (String(description.cementationId) === "") description.cementationId = null;
-    }
-  }
-};
-
-const buildErrorStructure = (result: boolean | Record<string, string>, errors: FormErrors) => {
-  for (const [path, message] of Object.entries(result)) {
-    const keys = path.split(".");
-    let curr = errors;
-    for (let i = 0; i < keys.length; i++) {
-      const key = keys[i];
-      if (i === keys.length - 1) {
-        curr[key] = { type: "manual", message };
-      } else {
-        if (typeof curr[key] !== "object" || curr[key] === null || "type" in curr[key]) {
-          curr[key] = {};
-        }
-        curr = curr[key];
-      }
     }
   }
 };

@@ -1,7 +1,7 @@
 import { theme } from "../../AppTheme.ts";
 import { LogRun } from "../../pages/detail/form/log/log.ts";
 import { Lithology } from "../../pages/detail/form/stratigraphy/lithology.ts";
-import { FormErrors } from "./form.ts";
+import { FormError, FormErrors } from "./form.ts";
 
 /**
  * Parse the input value if it's a string. If it's a number, return it as is.
@@ -127,5 +127,33 @@ export const validateDepths = (values: Lithology | LogRun, errors: FormErrors) =
     errors.toDepth = { type: "required", message: "required" };
   } else if (fromDepth && fromDepth >= toDepth) {
     errors.toDepth = { type: "manual", message: "toDepthMustBeGreaterThanFromDepth" };
+  }
+};
+
+const isFormError = (val: unknown): val is FormError => {
+  return !!val && typeof val === "object" && "type" in (val as Record<string, unknown>);
+};
+
+export const buildErrorStructure = (
+  result: boolean | Record<string, string>,
+  errors: FormErrors,
+  errorType: string = "manual",
+) => {
+  if (!result || typeof result === "boolean") return;
+  for (const [path, message] of Object.entries(result)) {
+    const keys = path.split(".");
+    let curr = errors;
+    for (let i = 0; i < keys.length; i++) {
+      const key = keys[i];
+      if (i === keys.length - 1) {
+        curr[key] = { type: errorType, message };
+      } else {
+        const currentVal = curr[key];
+        if (typeof currentVal !== "object" || currentVal === null || isFormError(currentVal)) {
+          curr[key] = {};
+        }
+        curr = curr[key] as FormErrors;
+      }
+    }
   }
 };

@@ -1,6 +1,10 @@
 import { Codelist } from "../../../../components/codelist.ts";
 import { FormErrors } from "../../../../components/form/form.ts";
-import { ensureDateOnly, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
+import {
+  buildErrorStructure,
+  ensureDateOnly,
+  parseFloatWithThousandsSeparator,
+} from "../../../../components/form/formUtils.ts";
 import { LogRun, TmpLogRun } from "./log.ts";
 
 export const prepareLogRunForSubmit = (data: TmpLogRun) => {
@@ -38,19 +42,16 @@ export const validateRunNumber = (values: LogRun, errors: FormErrors, runs: TmpL
 
 export const validateFiles = (values: LogRun, errors: FormErrors) => {
   if (!values.logFiles || values.logFiles.length === 0) return;
-
+  const flatErrors: Record<string, string> = {};
   values.logFiles.forEach((file, idx) => {
     if (!file) return;
     const missingName = !file.name || file.name.trim() === "";
     const missingType = !file.fileType || file.fileType.trim() === "";
     if (missingName || missingType) {
-      if (!errors.logFiles) {
-        errors.logFiles = {};
-      }
-      // @ts-expect-error dynamic index assignment for nested array errors
-      const existing = errors.logFiles[idx] as FormErrors | undefined;
-      // @ts-expect-error dynamic index assignment for nested array errors
-      errors.logFiles[idx] = { ...(existing || {}), name: { type: "required", message: "required" } };
+      flatErrors[`logFiles.${idx}.name`] = "required";
     }
   });
+  if (Object.keys(flatErrors).length > 0) {
+    buildErrorStructure(flatErrors, errors, "required");
+  }
 };

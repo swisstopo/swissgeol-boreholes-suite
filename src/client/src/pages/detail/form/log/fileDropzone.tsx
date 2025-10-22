@@ -19,6 +19,10 @@ export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange, er
   const [error, setError] = useState<string | undefined>(errorMessageKey);
 
   useEffect(() => {
+    setError(errorMessageKey);
+  }, [errorMessageKey]);
+
+  useEffect(() => {
     onChange(file);
   }, [file, onChange]);
 
