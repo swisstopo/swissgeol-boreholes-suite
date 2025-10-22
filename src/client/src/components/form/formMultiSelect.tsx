@@ -110,13 +110,14 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
               renderTags={(tagValue, getTagProps) => {
                 return tagValue.map((option, index) => {
                   const label = renderTagLabel ? renderTagLabel(option) : option.label;
+                  const { key, ...chipProps } = getTagProps({ index });
                   return (
-                    // eslint-disable-next-line react/jsx-key -- Key is provided by getTagProps
                     <Chip
+                      key={key}
                       sx={{ height: "26px" }}
                       label={label}
                       title={tooltipLabel ? t(tooltipLabel) : undefined}
-                      {...getTagProps({ index })}
+                      {...chipProps}
                       data-cy={`chip-${label}`}
                     />
                   );
