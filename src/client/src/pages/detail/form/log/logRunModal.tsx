@@ -130,6 +130,71 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
 
   if (!logRun) return null;
 
+  const filesSection =
+    files.length === 0 ? (
+      <Typography pl={2}>{t("noLogFile")}</Typography>
+    ) : (
+      <Stack gap={2.25}>
+        {files.map((file, index) => {
+          const name = watchedFiles?.[index]?.name ?? file.name;
+          const titleText = name || (file.id === 0 ? t("newFile") : "-");
+          const logFileErrors = formState.errors.logFiles?.[index];
+          const nameError = getFormFieldError("name", logFileErrors);
+          return (
+            <BoreholesCard
+              key={file._rhfId}
+              data-cy="logRun-files"
+              title={titleText}
+              action={<StandaloneIconButton icon={<Trash2 />} color="primaryInverse" onClick={removeFile(index)} />}>
+              <FormContainer>
+                <FileDropzone
+                  existingFile={file.name ? new File([], file.name) : undefined}
+                  onChange={file => onFileChanged(file, index)}
+                  errorMessageKey={nameError?.message}
+                />
+                <FormContainer direction={"row"}>
+                  <FormDomainMultiSelect
+                    schemaName="log_tool_type"
+                    fieldName={`logFiles.${index}.toolTypeCodelistIds`}
+                    label="toolType"
+                    labelStyle={CodelistLabelStyle.TextAndCodeChipsCodeOnly}
+                  />
+                  <FormInput fieldName={`logFiles.${index}.fileType`} label="extension" readonly />
+                  <FormDomainSelect
+                    schemaName="log_pass_type"
+                    fieldName={`logFiles.${index}.passTypeId`}
+                    label="passType"
+                  />
+                  <FormInput fieldName={`logFiles.${index}.pass`} label="pass" type={FormValueType.Number} />
+                </FormContainer>
+                <FormContainer direction={"row"}>
+                  <FormDomainSelect
+                    schemaName="log_data_package"
+                    fieldName={`logFiles.${index}.dataPackageId`}
+                    label="dataPackage"
+                    sx={{ flex: 1 }}
+                  />
+                  <FormInput
+                    fieldName={`logFiles.${index}.deliveryDate`}
+                    label="deliveryDate"
+                    type={FormValueType.Date}
+                    sx={{ flex: 1 }}
+                  />
+                  <FormDomainSelect
+                    schemaName="log_depth_type"
+                    fieldName={`logFiles.${index}.depthTypeId`}
+                    label="depthType"
+                    sx={{ flex: 1 }}
+                  />
+                  <FormCheckbox fieldName={`logFiles.${index}.public`} label="public" sx={{ flex: 1 }} />
+                </FormContainer>
+              </FormContainer>
+            </BoreholesCard>
+          );
+        })}
+      </Stack>
+    );
+
   return (
     <FormDialog
       open={true}
@@ -200,75 +265,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
             data-cy="logRun-files"
             title={t("files")}
             action={editingEnabled && <AddButton label="addFile" variant="contained" onClick={addFile} />}>
-            {editingEnabled ? (
-              files.length === 0 ? (
-                <Typography pl={2}>{t("noLogFile")}</Typography>
-              ) : (
-                <Stack gap={2.25}>
-                  {files.map((file, index) => {
-                    const name = watchedFiles?.[index]?.name ?? file.name;
-                    const titleText = name || (file.id === 0 ? t("newFile") : "-");
-                    const logFileErrors = formState.errors.logFiles?.[index];
-                    const nameError = getFormFieldError("name", logFileErrors);
-                    return (
-                      <BoreholesCard
-                        key={file._rhfId}
-                        data-cy="logRun-files"
-                        title={titleText}
-                        action={
-                          <StandaloneIconButton icon={<Trash2 />} color="primaryInverse" onClick={removeFile(index)} />
-                        }>
-                        <FormContainer>
-                          <FileDropzone
-                            existingFile={file.name ? new File([], file.name) : undefined}
-                            onChange={file => onFileChanged(file, index)}
-                            errorMessageKey={nameError?.message}
-                          />
-                          <FormContainer direction={"row"}>
-                            <FormDomainMultiSelect
-                              schemaName="log_tool_type"
-                              fieldName={`logFiles.${index}.toolTypeCodelistIds`}
-                              label="toolType"
-                              labelStyle={CodelistLabelStyle.TextAndCodeChipsCodeOnly}
-                            />
-                            <FormInput fieldName={`logFiles.${index}.fileType`} label="extension" readonly />
-                            <FormDomainSelect
-                              schemaName="log_pass_type"
-                              fieldName={`logFiles.${index}.passTypeId`}
-                              label="passType"
-                            />
-                            <FormInput fieldName={`logFiles.${index}.pass`} label="pass" type={FormValueType.Number} />
-                          </FormContainer>
-                          <FormContainer direction={"row"}>
-                            <FormDomainSelect
-                              schemaName="log_data_package"
-                              fieldName={`logFiles.${index}.dataPackageId`}
-                              label="dataPackage"
-                              sx={{ flex: 1 }}
-                            />
-                            <FormInput
-                              fieldName={`logFiles.${index}.deliveryDate`}
-                              label="deliveryDate"
-                              type={FormValueType.Date}
-                              sx={{ flex: 1 }}
-                            />
-                            <FormDomainSelect
-                              schemaName="log_depth_type"
-                              fieldName={`logFiles.${index}.depthTypeId`}
-                              label="depthType"
-                              sx={{ flex: 1 }}
-                            />
-                            <FormCheckbox fieldName={`logFiles.${index}.public`} label="public" sx={{ flex: 1 }} />
-                          </FormContainer>
-                        </FormContainer>
-                      </BoreholesCard>
-                    );
-                  })}
-                </Stack>
-              )
-            ) : (
-              <LogFileTable files={logRun.logFiles ?? []} />
-            )}
+            {editingEnabled ? filesSection : <LogFileTable files={logRun.logFiles ?? []} />}
           </BoreholesCard>
           <Stack pb={4.5} />
         </Stack>
