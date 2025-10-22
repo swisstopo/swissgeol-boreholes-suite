@@ -39,17 +39,18 @@ export interface LogFile {
   logRunId: number;
   name: string;
   fileType: string;
-  passTypeId?: number;
+  passTypeId?: number | null;
   passType?: Codelist;
-  pass?: number;
-  dataPackageId?: number;
+  pass?: number | null;
+  dataPackageId?: number | null;
   dataPackage?: Codelist;
-  deliveryDate?: NullableDateString;
-  depthTypeId?: number;
+  deliveryDate?: NullableDateString | null;
+  depthTypeId?: number | null;
   depthType?: Codelist;
   toolTypeCodelistIds: number[];
   toolTypeCodelists?: Codelist[];
   public: boolean;
+  tmpId?: string;
   created?: NullableDateString;
   createdBy?: User | null;
   updated?: NullableDateString;
@@ -74,6 +75,8 @@ export const useLogRunMutations = () => {
 
   const useAddLogRun = useMutation({
     mutationFn: async (logRun: LogRun) => {
+      // remove temporary objects
+      logRun.logFiles?.forEach(f => delete f.tmpId);
       return await fetchApiV2WithApiError(logRunController, "POST", logRun);
     },
     onSuccess: (_data, logRun) => {
@@ -84,10 +87,10 @@ export const useLogRunMutations = () => {
 
   const useUpdateLogRun = useMutation({
     mutationFn: async (logRun: LogRun) => {
-      // remove derived objects
+      // remove derived and temporary objects
       delete logRun.createdBy;
       delete logRun.updatedBy;
-
+      logRun.logFiles?.forEach(f => delete f.tmpId);
       return await fetchApiV2WithApiError(logRunController, "PUT", logRun);
     },
     onSuccess: (_data, logRun) => {

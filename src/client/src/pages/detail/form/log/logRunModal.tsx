@@ -1,8 +1,9 @@
 import { FC, useCallback, useContext, useEffect } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Chip, Stack, Typography } from "@mui/material";
 import { Trash2 } from "lucide-react";
+import { v4 as uuidv4 } from "uuid";
 import { BoreholesCard } from "../../../../components/boreholesCard";
 import { AddButton, StandaloneIconButton } from "../../../../components/buttons/buttons";
 import { CodelistLabelStyle, useCodelists } from "../../../../components/codelist";
@@ -20,7 +21,7 @@ import { validateDepths } from "../../../../components/form/formUtils";
 import { useFormDirty } from "../../../../components/form/useFormDirty";
 import { EditStateContext } from "../../editStateContext";
 import { FileDropzone } from "./fileDropzone.tsx";
-import { TmpLogRun } from "./log";
+import { LogFile, TmpLogRun } from "./log";
 import { LogFileTable } from "./logFilesTable";
 import { getServiceOrToolArray, validateRunNumber } from "./logUtils";
 
@@ -44,16 +45,49 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
       return { values, errors };
     },
   });
+
+  const { fields: fileFields, prepend } = useFieldArray({
+    control: formMethods.control,
+    name: "logFiles",
+    keyName: "_rhfId",
+  });
+
   const { formState, getValues } = formMethods;
   const isDirty = useFormDirty({ formState });
 
   useEffect(() => {
     if (logRun) {
-      formMethods.reset(logRun);
+      const withTmpFileIds = {
+        ...logRun,
+        logFiles: logRun.logFiles?.map(f => ({
+          ...f,
+          tmpId: f.tmpId ?? (f.id > 0 ? String(f.id) : uuidv4()),
+        })) as LogFile[],
+      } as TmpLogRun;
+      formMethods.reset(withTmpFileIds);
     }
   }, [logRun, formMethods]);
 
-  const addFile = useCallback(() => {}, []);
+  const addFile = useCallback(() => {
+    const newFile: LogFile = {
+      id: 0,
+      logRunId: logRun?.id ?? 0,
+      name: "",
+      fileType: "",
+      passTypeId: null,
+      pass: null,
+      dataPackageId: null,
+      deliveryDate: null,
+      depthTypeId: null,
+      toolTypeCodelistIds: [],
+      public: false,
+      tmpId: uuidv4(),
+    };
+    prepend(newFile);
+  }, [prepend, logRun]);
+
+  type LogFileField = LogFile & { _rhfId: string };
+  const files: LogFileField[] = fileFields as unknown as LogFileField[];
 
   const closeDialog = async () => {
     const isValid = await formMethods.trigger();
@@ -136,13 +170,13 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
             title={t("files")}
             action={editingEnabled && <AddButton label="addFile" variant="contained" onClick={addFile} />}>
             {editingEnabled ? (
-              logRun.logFiles?.length === 0 ? (
+              files.length === 0 ? (
                 <Typography pl={2}>{t("noLogFile")}</Typography>
               ) : (
                 <Stack gap={2.25}>
-                  {logRun.logFiles?.map((file, index) => (
+                  {files.map((file, index) => (
                     <BoreholesCard
-                      key={file.id}
+                      key={file._rhfId}
                       data-cy="logRun-files"
                       title={file.id === 0 ? t("newFile") : (file.name ?? "-")}
                       action={<StandaloneIconButton icon={<Trash2 />} color="primaryInverse" onClick={() => {}} />}>
@@ -156,38 +190,38 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
                         <FormContainer direction={"row"}>
                           <FormDomainMultiSelect
                             schemaName="log_tool_type"
-                            fieldName={`logFiles.[${index}].toolTypeCodelistIds`}
+                            fieldName={`logFiles.${index}.toolTypeCodelistIds`}
                             label="toolType"
                             labelStyle={CodelistLabelStyle.TextAndCodeChipsCodeOnly}
                           />
-                          <FormInput fieldName={`logFiles.[${index}].fileType`} label="extension" readonly />
+                          <FormInput fieldName={`logFiles.${index}.fileType`} label="extension" readonly />
                           <FormDomainSelect
                             schemaName="log_pass_type"
-                            fieldName={`logFiles.[${index}].passTypeId`}
+                            fieldName={`logFiles.${index}.passTypeId`}
                             label="passType"
                           />
-                          <FormInput fieldName={`logFiles.[${index}].pass`} label="pass" type={FormValueType.Number} />
+                          <FormInput fieldName={`logFiles.${index}.pass`} label="pass" type={FormValueType.Number} />
                         </FormContainer>
                         <FormContainer direction={"row"}>
                           <FormDomainSelect
                             schemaName="log_data_package"
-                            fieldName={`logFiles.[${index}].dataPackageId`}
+                            fieldName={`logFiles.${index}.dataPackageId`}
                             label="dataPackage"
                             sx={{ flex: 1 }}
                           />
                           <FormInput
-                            fieldName={`logFiles.[${index}].deliveryDate`}
+                            fieldName={`logFiles.${index}.deliveryDate`}
                             label="deliveryDate"
                             type={FormValueType.Date}
                             sx={{ flex: 1 }}
                           />
                           <FormDomainSelect
                             schemaName="log_depth_type"
-                            fieldName={`logFiles.[${index}].depthTypeId`}
+                            fieldName={`logFiles.${index}.depthTypeId`}
                             label="depthType"
                             sx={{ flex: 1 }}
                           />
-                          <FormCheckbox fieldName={`logFiles.[${index}].public`} label="public" sx={{ flex: 1 }} />
+                          <FormCheckbox fieldName={`logFiles.${index}.public`} label="public" sx={{ flex: 1 }} />
                         </FormContainer>
                       </FormContainer>
                     </BoreholesCard>
