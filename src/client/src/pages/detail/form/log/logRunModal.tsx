@@ -112,23 +112,15 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
 
   const onFileChanged = useCallback(
     (selected: File | undefined, index: number) => {
-      if (selected) {
-        const currentName = formMethods.getValues(`logFiles.${index}.name`);
-        if (currentName !== selected.name) {
-          formMethods.setValue(`logFiles.${index}.name`, selected.name, { shouldDirty: true, shouldTouch: true });
-        }
-        const newExt = selected.name.includes(".") ? (selected.name.split(".").pop() || "").toLowerCase() : "";
-        const currentExt = formMethods.getValues(`logFiles.${index}.fileType`);
-        if (currentExt !== newExt) {
-          formMethods.setValue(`logFiles.${index}.fileType`, newExt, { shouldDirty: true, shouldTouch: true });
-        }
-      } else {
-        if (formMethods.getValues(`logFiles.${index}.name`) !== "") {
-          formMethods.setValue(`logFiles.${index}.name`, "", { shouldDirty: true, shouldTouch: true });
-        }
-        if (formMethods.getValues(`logFiles.${index}.fileType`) !== "") {
-          formMethods.setValue(`logFiles.${index}.fileType`, "", { shouldDirty: true, shouldTouch: true });
-        }
+      const currentName = formMethods.getValues(`logFiles.${index}.name`);
+      const updatedName = selected ? selected.name : "";
+      const currentExt = formMethods.getValues(`logFiles.${index}.fileType`);
+      const updatedExt = selected?.name.includes(".") ? (selected.name.split(".").pop() || "").toLowerCase() : "";
+      if (currentName !== updatedName) {
+        formMethods.setValue(`logFiles.${index}.name`, updatedName, { shouldDirty: true, shouldTouch: true });
+      }
+      if (currentExt !== updatedExt) {
+        formMethods.setValue(`logFiles.${index}.fileType`, updatedExt, { shouldDirty: true, shouldTouch: true });
       }
     },
     [formMethods],
@@ -212,9 +204,8 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
               ) : (
                 <Stack gap={2.25}>
                   {files.map((file, index) => {
-                    const watchedName = watchedFiles?.[index]?.name ?? file.name;
-                    const titleText =
-                      file.id === 0 ? (watchedName ? watchedName : t("newFile")) : watchedName ? watchedName : "-";
+                    const name = watchedFiles?.[index]?.name ?? file.name;
+                    const titleText = name ? name : file.id === 0 ? t("newFile") : "-";
                     return (
                       <BoreholesCard
                         key={file._rhfId}
