@@ -495,7 +495,7 @@ export const theme = createTheme({
             color: themePalette.action.disabled,
             borderColor: `${themePalette.action.disabled} !important`,
             backgroundColor: "#ffffff",
-            "-webkit-text-fill-color": `${themePalette.action.disabled} !important`,
+            WebkitTextFillColor: `${themePalette.action.disabled} !important`,
           },
           "&.ai .MuiOutlinedInput-notchedOutline": {
             borderColor: `${themePalette.ai.main} !important`,
