@@ -14,9 +14,17 @@ export const prepareLogRunForSubmit = (data: TmpLogRun) => {
 
   delete data.conveyanceMethod;
   delete data.boreholeStatus;
-  delete data.updated;
   delete data.created;
+  delete data.createdBy;
+  delete data.updated;
+  delete data.updatedBy;
   data.runDate = data?.runDate ? ensureDateOnly(data.runDate.toString()) : null;
+
+  if (data.logFiles) {
+    for (const f of data.logFiles) {
+      delete f.tmpId;
+    }
+  }
 
   if (String(data.conveyanceMethodId) === "") data.conveyanceMethodId = null;
   if (String(data.boreholeStatusId) === "") data.boreholeStatusId = null;
@@ -43,14 +51,14 @@ export const validateRunNumber = (values: TmpLogRun, errors: FormErrors, runs: T
 export const validateFiles = (values: LogRun, errors: FormErrors) => {
   if (!values.logFiles || values.logFiles.length === 0) return;
   const flatErrors: Record<string, string> = {};
-  values.logFiles.forEach((file, idx) => {
+  for (const [idx, file] of values.logFiles.entries()) {
     if (!file) return;
     const missingName = !file.name || file.name.trim() === "";
     const missingType = !file.fileType || file.fileType.trim() === "";
     if (missingName || missingType) {
       flatErrors[`logFiles.${idx}.name`] = "required";
     }
-  });
+  }
   if (Object.keys(flatErrors).length > 0) {
     buildErrorStructure(flatErrors, errors, "required");
   }

@@ -35,13 +35,10 @@ export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange, er
         let errorKey: string;
         const errorCode = fileRejections[0].errors[0].code;
 
-        switch (errorCode) {
-          case "file-too-large":
-            errorKey = "fileMaxSizeExceeded";
-            break;
-          default:
-            errorKey = "fileDropzoneErrorChooseFile";
-            break;
+        if (errorCode === "file-too-large") {
+          errorKey = "fileMaxSizeExceeded";
+        } else {
+          errorKey = "fileDropzoneErrorChooseFile";
         }
 
         setError(errorKey);

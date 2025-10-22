@@ -207,7 +207,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
                 <Stack gap={2.25}>
                   {files.map((file, index) => {
                     const name = watchedFiles?.[index]?.name ?? file.name;
-                    const titleText = name ? name : file.id === 0 ? t("newFile") : "-";
+                    const titleText = name || (file.id === 0 ? t("newFile") : "-");
                     const logFileErrors = formState.errors.logFiles?.[index];
                     const nameError = getFormFieldError("name", logFileErrors);
                     return (
