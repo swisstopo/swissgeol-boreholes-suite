@@ -201,6 +201,12 @@ describe("Test for the borehole log.", () => {
     hasError("runNumber", false);
     getElementByDataCy("close-button").click();
 
+    // verify that unique check also works when editing newly added run
+    clickOnRowWithText("R06");
+    evaluateInput("runNumber", "R06");
+    setInput("toDepth", 155);
+    getElementByDataCy("close-button").click();
+
     // edit
     clickOnRowWithText("R02");
     setInput("runNumber", "R06");
