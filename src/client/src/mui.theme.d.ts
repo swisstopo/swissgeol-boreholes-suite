@@ -79,6 +79,8 @@ declare module "@mui/material/styles" {
       light: string;
       darker: string;
       dark: string;
+      fileDropzone: string;
+      fileDropzoneSelected: string;
     };
     background: {
       default: string;
@@ -92,6 +94,7 @@ declare module "@mui/material/styles" {
       listItemActive: string;
       backdrop: string;
       tabFocus: string;
+      fileDropzoneSelected: string;
     };
     transparent: string;
     buttonStates: {

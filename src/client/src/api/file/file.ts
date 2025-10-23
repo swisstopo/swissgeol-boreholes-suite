@@ -10,10 +10,10 @@ import { fetchCreatePngs, fetchExtractData, fetchExtractStratigraphy, fetchPageB
 import { download, fetchApiV2Base, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../fetchApiV2.ts";
 import { processFileWithOCR } from "../ocr.ts";
 import { ExtractedLithologicalDescription } from "../stratigraphy.ts";
-import { BoreholeFile, DataExtractionResponse, maxFileSizeKB } from "./fileInterfaces.ts";
+import { BoreholeFile, DataExtractionResponse, maxFileSizeBytes } from "./fileInterfaces.ts";
 
 export async function uploadFile(boreholeId: number, file: File) {
-  if (file && file.size <= maxFileSizeKB) {
+  if (file && file.size <= maxFileSizeBytes) {
     const formData = new FormData();
     formData.append("file", file);
     const response = await upload(`boreholefile/upload?boreholeId=${boreholeId}`, "POST", formData);
