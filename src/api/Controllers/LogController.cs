@@ -9,12 +9,12 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class LogRunController : BoreholeControllerBase<LogRun>
+public class LogController : BoreholeControllerBase<LogRun>
 {
     private const int MaxFileSize = 210_000_000; // ~200MB max file size
     private readonly LogFileCloudService logFileCloudService;
 
-    public LogRunController(BdmsContext context, ILogger<LogRunController> logger, IBoreholePermissionService boreholePermissionService, LogFileCloudService logFileCloudService)
+    public LogController(BdmsContext context, ILogger<LogController> logger, IBoreholePermissionService boreholePermissionService, LogFileCloudService logFileCloudService)
         : base(context, logger, boreholePermissionService)
     {
         this.logFileCloudService = logFileCloudService;

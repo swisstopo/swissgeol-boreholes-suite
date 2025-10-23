@@ -13,11 +13,11 @@ using static BDMS.Helpers;
 namespace BDMS.Controllers;
 
 [TestClass]
-public class LogRunControllerTest : TestControllerBase
+public class LogControllerTest : TestControllerBase
 {
     private const string TestFileName = "test_logfile.las";
     private User adminUser;
-    private LogRunController controller;
+    private LogController controller;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     private static int testBoreholeId = 1000085;
@@ -50,9 +50,9 @@ public class LogRunControllerTest : TestControllerBase
 
         boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
 
-        var logRunControllerLoggerMock = new Mock<ILogger<LogRunController>>(MockBehavior.Strict);
-        logRunControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
-        controller = new LogRunController(Context, logRunControllerLoggerMock.Object, boreholePermissionServiceMock.Object, logFileCloudService) { ControllerContext = GetControllerContextAdmin() };
+        var logControllerLoggerMock = new Mock<ILogger<LogController>>(MockBehavior.Strict);
+        logControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
+        controller = new LogController(Context, logControllerLoggerMock.Object, boreholePermissionServiceMock.Object, logFileCloudService) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]

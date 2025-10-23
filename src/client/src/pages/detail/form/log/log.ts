@@ -55,17 +55,16 @@ export interface LogFile {
   updatedBy?: User | null;
 }
 
+const logRunController = "log";
 export const logsQueryKey = "logs";
 export const useLogsByBoreholeId = (boreholeId?: number): UseQueryResult<LogRun[]> =>
   useQuery<LogRun[]>({
     queryKey: [logsQueryKey, boreholeId],
     queryFn: async (): Promise<LogRun[]> => {
-      return await fetchApiV2WithApiError<LogRun[]>(`logrun?boreholeId=${boreholeId}`, "GET");
+      return await fetchApiV2WithApiError<LogRun[]>(`${logRunController}?boreholeId=${boreholeId}`, "GET");
     },
     enabled: !!boreholeId,
   });
-
-const logRunController = "logrun";
 
 export const useLogRunMutations = () => {
   const queryClient = useQueryClient();
