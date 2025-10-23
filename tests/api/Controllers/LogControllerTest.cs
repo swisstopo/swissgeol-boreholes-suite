@@ -387,8 +387,9 @@ public class LogControllerTest : TestControllerBase
     {
         var logRunId = await CreateCompleteLogRunAsync();
         var logFile1 = await UploadTestLogFile(logRunId);
-        var logFile2 = await UploadTestLogFile(logRunId);
+        await UploadTestLogFile(logRunId);
         var initialLogRun = Context.LogRuns.SingleOrDefault(x => x.Id == logRunId);
+        Assert.IsNotNull(initialLogRun);
         Assert.AreEqual(2, initialLogRun.LogFiles.Count);
 
         logFile1.PassTypeId = 100003022;

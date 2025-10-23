@@ -149,7 +149,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
   };
 
   const deleteLogRun = (selectedRows: GridRowSelectionModel) => {
-    setTmpLogRuns(prev => prev.filter(run => !selectedRows.includes(run.item.tmpId!)));
+    setTmpLogRuns(prev => prev.filter(run => run.item.tmpId !== undefined && !selectedRows.includes(run.item.tmpId)));
     markAsChanged(true);
   };
 

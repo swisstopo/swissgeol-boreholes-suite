@@ -93,13 +93,11 @@ export const LogPanel: FC = () => {
           const uploadedLogFiles = await uploadLogFiles(createdLogRun.id, logRun.logFiles);
           await updateLogRun({ ...createdLogRun, logFiles: uploadedLogFiles });
         }
+      } else if (logRun.logFiles && logRun.logFiles.some(f => f.file)) {
+        const uploadedLogFiles = await uploadLogFiles(logRun.id, logRun.logFiles);
+        await updateLogRun({ ...logRun, logFiles: uploadedLogFiles });
       } else {
-        if (logRun.logFiles && logRun.logFiles.filter(f => f.file).length > 0) {
-          const uploadedLogFiles = await uploadLogFiles(logRun.id, logRun.logFiles);
-          await updateLogRun({ ...logRun, logFiles: uploadedLogFiles });
-        } else {
-          await updateLogRun(logRun);
-        }
+        await updateLogRun(logRun);
       }
     }
   }, [addLogRun, boreholeId, tmpLogRuns, updateLogRun]);

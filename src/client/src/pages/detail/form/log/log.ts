@@ -92,10 +92,8 @@ export const useLogRunMutations = () => {
 
   const useDeleteLogRuns = useMutation({
     mutationFn: async (logRuns: LogRun[]) => {
-      return await fetchApiV2WithApiError(
-        `${logRunController}?${logRuns.map(logrun => `logRunIds=${logrun.id}`).join("&")}`,
-        "DELETE",
-      );
+      const queryParams = logRuns.map(logRun => "logRunIds=" + logRun.id).join("&");
+      return await fetchApiV2WithApiError(`${logRunController}?${queryParams}`, "DELETE");
     },
     onSuccess: (_data, logRuns) => {
       resetTabStatus();
@@ -130,9 +128,9 @@ export const uploadLogFile = async (logRunId: number, file: File): Promise<LogFi
   const formData = new FormData();
   formData.append("file", file);
   const response = await upload(`${logRunController}/upload?logRunId=${logRunId}`, "POST", formData);
-  if (!response.ok) {
-    throw new ApiError(await response.text(), response.status);
-  } else {
+  if (response.ok) {
     return (await response.json()) as LogFile;
+  } else {
+    throw new ApiError(await response.text(), response.status);
   }
 };
