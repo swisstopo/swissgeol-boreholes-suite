@@ -11,9 +11,13 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class LogRunController : BoreholeControllerBase<LogRun>
 {
-    public LogRunController(BdmsContext context, ILogger<LogRunController> logger, IBoreholePermissionService boreholePermissionService)
+    private const int MaxFileSize = 210_000_000; // ~200MB max file size
+    private readonly LogFileCloudService logFileCloudService;
+
+    public LogRunController(BdmsContext context, ILogger<LogRunController> logger, IBoreholePermissionService boreholePermissionService, LogFileCloudService logFileCloudService)
         : base(context, logger, boreholePermissionService)
     {
+        this.logFileCloudService = logFileCloudService;
     }
 
     /// <summary>
@@ -41,6 +45,125 @@ public class LogRunController : BoreholeControllerBase<LogRun>
     }
 
     /// <summary>
+    /// Uploads a log file to the cloud storage and links it to the log run.
+    /// </summary>
+    /// <param name="file">The file to upload.</param>
+    /// <param name="logRunId">The log run ID to associate with the file.</param>
+    /// <returns>The newly created log file.</returns>
+    [HttpPost("upload")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    [RequestSizeLimit(int.MaxValue)]
+    [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
+    public async Task<IActionResult> UploadAsync(IFormFile file, [Range(1, int.MaxValue)] int logRunId)
+    {
+        var logRun = await Context.LogRuns
+            .Include(lr => lr.Borehole)
+            .FirstOrDefaultAsync(lr => lr.Id == logRunId)
+            .ConfigureAwait(false);
+
+        if (logRun == null) return NotFound($"LogRun with ID {logRunId} not found.");
+
+        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), logRun.BoreholeId).ConfigureAwait(false))
+        {
+            return Unauthorized();
+        }
+
+        if (file == null || file.Length == 0)
+        {
+            return BadRequest("No file provided.");
+        }
+
+        if (file.Length > MaxFileSize)
+        {
+            return BadRequest($"File size exceeds maximum file size of {MaxFileSize} bytes.");
+        }
+
+        try
+        {
+            var logFile = await logFileCloudService.UploadLogFileAndLinkToLogRunAsync(
+                file.OpenReadStream(),
+                file.FileName,
+                file.ContentType,
+                logRunId)
+                .ConfigureAwait(false);
+
+            return Ok(logFile);
+        }
+        catch (InvalidOperationException ex)
+        {
+            Logger.LogError(ex, "An error occurred while uploading the file.");
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "An error occurred while uploading the file.");
+            return Problem("An error occurred while uploading the file.");
+        }
+    }
+
+    /// <summary>
+    /// Downloads a log file from the cloud storage.
+    /// </summary>
+    /// <param name="id">The <see cref="LogFile.Id"/> of the file to download.</param>
+    /// <returns>The stream of the downloaded file.</returns>
+    [HttpGet("download")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> DownloadAsync([Range(1, int.MaxValue)] int id)
+    {
+        try
+        {
+            var logFile = await Context.LogFiles
+                .FirstOrDefaultAsync(f => f.Id == id)
+                .ConfigureAwait(false);
+
+            if (logFile == null || logFile.NameUuid == null)
+            {
+                return NotFound($"File with id {id} not found.");
+            }
+
+            if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), logFile.LogRun.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+
+            var fileBytes = await logFileCloudService.GetObject(logFile.NameUuid).ConfigureAwait(false);
+
+            return File(fileBytes, "application/octet-stream", logFile.Name);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "An error occurred while downloading the file.");
+            return Problem("An error occurred while downloading the file.");
+        }
+    }
+
+    /// <summary>
+    /// Gets the file data for a specific log file.
+    /// </summary>
+    /// <param name="logFileId">The ID of the log file.</param>
+    /// <returns>The file content.</returns>
+    [HttpGet("file")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> GetFileAsync([Range(1, int.MaxValue)] int logFileId)
+    {
+        var logFile = await Context.LogFiles
+            .Include(lf => lf.LogRun)
+            .FirstOrDefaultAsync(lf => lf.Id == logFileId)
+            .ConfigureAwait(false);
+
+        if (logFile == null || logFile.FileType == null)
+        {
+            return NotFound();
+        }
+
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), logFile.LogRun!.BoreholeId).ConfigureAwait(false))
+        {
+            return Unauthorized();
+        }
+
+        var fileData = await logFileCloudService.GetObject(logFile.NameUuid!).ConfigureAwait(false);
+
+        return File(fileData, logFile.FileType, logFile.Name);
+    }
+
+    /// <summary>
     /// Deletes one or multiple log runs.
     /// </summary>
     /// <param name="logRunIds">The IDs of the log runs to delete.</param>
@@ -63,6 +186,18 @@ public class LogRunController : BoreholeControllerBase<LogRun>
 
         var boreholeId = boreholeIds.Single();
         if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        foreach (var logRun in logRuns)
+        {
+            var logFileIds = logRun.LogFiles?.Select(f => f.Id).ToList();
+            var existingLogRun = logRuns.SingleOrDefault(run => run.Id == logRun.Id);
+            var filesToRemove = existingLogRun.LogFiles?.Where(f => logFileIds.Contains(f.Id)).ToList();
+            if (filesToRemove != null)
+            {
+                await logFileCloudService.DeleteObjects(filesToRemove!.Select(lf => lf.NameUuid!)).ConfigureAwait(false);
+                Context.RemoveRange(filesToRemove!);
+            }
+        }
 
         Context.RemoveRange(logRuns);
         await Context.SaveChangesAsync().ConfigureAwait(false);
@@ -92,6 +227,8 @@ public class LogRunController : BoreholeControllerBase<LogRun>
             return Problem(detail: "Run number must be unique");
         }
 
+        entity.LogFiles = null; // Cannot create LogFiles here because the files first have to be uploaded to S3
+
         return await base.CreateAsync(entity).ConfigureAwait(false);
     }
 
@@ -104,12 +241,94 @@ public class LogRunController : BoreholeControllerBase<LogRun>
             return BadRequest(ModelState);
         }
 
+        var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
+        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        var existingLogRun = await Context.LogRuns
+            .Include(lr => lr.BoreholeStatus)
+            .Include(lr => lr.ConveyanceMethod)
+            .Include(lr => lr.LogFiles).ThenInclude(lf => lf.PassType)
+            .Include(lr => lr.LogFiles).ThenInclude(lf => lf.DataPackage)
+            .Include(lr => lr.LogFiles).ThenInclude(lf => lf.DepthType)
+            .Include(lr => lr.LogFiles).ThenInclude(lf => lf.LogFileToolTypeCodes)
+            .SingleOrDefaultAsync(l => l.Id == entity.Id).ConfigureAwait(false);
+
+        if (existingLogRun == null)
+        {
+            return NotFound();
+        }
+
         if (!await IsRunNumberUnique(entity).ConfigureAwait(false))
         {
             return Problem(detail: "Run number must be unique");
         }
 
-        return await base.EditAsync(entity).ConfigureAwait(false);
+        if (entity.LogFiles != null)
+        {
+            if (entity.LogFiles.Any(f => f.Id == 0))
+            {
+                return Problem(detail: "LogFiles must first be uploaded to S3");
+            }
+
+            var logFileIds = entity.LogFiles?.Select(f => f.Id).ToList();
+            var filesToRemove = existingLogRun.LogFiles?.Where(f => !logFileIds.Contains(f.Id)).ToList();
+            if (filesToRemove != null && filesToRemove.Count > 0)
+            {
+                await logFileCloudService.DeleteObjects(filesToRemove!.Select(lf => lf.NameUuid!)).ConfigureAwait(false);
+                Context.RemoveRange(filesToRemove!);
+            }
+
+            foreach (var logFile in entity.LogFiles)
+            {
+                var existingLogFile = existingLogRun.LogFiles?.SingleOrDefault(f => f.Id == logFile.Id);
+                if (existingLogFile != null)
+                {
+                    await UpdateLogFileToolTypeCodes(existingLogFile.Id, existingLogFile.LogFileToolTypeCodes, logFile.ToolTypeCodelistIds).ConfigureAwait(false);
+                    Context.Entry(existingLogFile).CurrentValues.SetValues(logFile);
+
+                    // The following fields should never be updated by the user, but only when the file changes
+                    Context.Entry(existingLogFile).Property(x => x.Name).IsModified = false;
+                    Context.Entry(existingLogFile).Property(x => x.NameUuid).IsModified = false;
+                    Context.Entry(existingLogFile).Property(x => x.FileType).IsModified = false;
+                }
+            }
+        }
+
+        Context.Entry(existingLogRun).CurrentValues.SetValues(entity);
+        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+
+        var updatedLogRun = await Context.LogRunsWithIncludes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(l => l.Id == entity.Id).ConfigureAwait(false);
+        return Ok(updatedLogRun);
+    }
+
+    private async Task UpdateLogFileToolTypeCodes(int logFileId, IList<LogFileToolTypeCodes>? existingCodes, ICollection<int>? newCodelistIds)
+    {
+        newCodelistIds = newCodelistIds?.ToList() ?? [];
+        existingCodes ??= [];
+
+        // Remove codes not in newCodelistIds
+        var codesToRemove = existingCodes.Where(toolTypeCode => !newCodelistIds.Contains(toolTypeCode.CodelistId)).ToList();
+        foreach (var toolTypeCode in codesToRemove)
+        {
+            Context.Remove(toolTypeCode);
+        }
+
+        // Add codes that are in newCodelistIds but not in existingCodes
+        var idsToAdd = newCodelistIds.Where(id => !existingCodes.Any(lc => lc.CodelistId == id)).ToList();
+        foreach (var id in idsToAdd)
+        {
+            var codelist = await Context.Codelists.FindAsync(id).ConfigureAwait(false);
+            if (codelist != null)
+            {
+                existingCodes.Add(new LogFileToolTypeCodes
+                {
+                    CodelistId = codelist.Id,
+                    LogFileId = logFileId,
+                });
+            }
+        }
     }
 
     /// <inheritdoc />

@@ -22,16 +22,16 @@ import { validateDepths } from "../../../../components/form/formUtils";
 import { useFormDirty } from "../../../../components/form/useFormDirty";
 import { EditStateContext } from "../../editStateContext";
 import { FileDropzone } from "./fileDropzone.tsx";
-import { LogFile, TmpLogRun } from "./log";
+import { LogFile, LogRun } from "./log";
 import { LogFileTable } from "./logFilesTable";
-import { getServiceOrToolArray, validateFiles, validateRunNumber } from "./logUtils";
+import { getFileExtension, getServiceOrToolArray, validateFiles, validateRunNumber } from "./logUtils";
 
 type LogFileField = LogFile & { _rhfId: string };
 
 interface LogRunModalProps {
-  logRun: TmpLogRun | undefined;
-  updateLogRun: (logRun: TmpLogRun, hasChanges: boolean) => void;
-  runs: TmpLogRun[];
+  logRun: LogRun | undefined;
+  updateLogRun: (logRun: LogRun, hasChanges: boolean) => void;
+  runs: LogRun[];
 }
 
 export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }) => {
@@ -39,7 +39,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
   const { data: codelists } = useCodelists();
   const { editingEnabled } = useContext(EditStateContext);
 
-  const formMethods = useForm<TmpLogRun>({
+  const formMethods = useForm<LogRun>({
     mode: "all",
     resolver: async values => {
       const errors: FormErrors = {};
@@ -72,9 +72,10 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
         ...logRun,
         logFiles: logRun.logFiles?.map(f => ({
           ...f,
+          extension: getFileExtension(f.name),
           tmpId: f.tmpId ?? (f.id > 0 ? String(f.id) : uuidv4()),
         })) as LogFile[],
-      } as TmpLogRun;
+      } as LogRun;
       formMethods.reset(withTmpFileIds);
     }
   }, [logRun, formMethods]);
@@ -84,7 +85,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
       id: 0,
       logRunId: logRun?.id ?? 0,
       name: "",
-      fileType: "",
+      extension: "",
       passTypeId: null,
       pass: null,
       dataPackageId: null,
@@ -108,13 +109,13 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
     (selected: File | undefined, index: number) => {
       const currentName = formMethods.getValues(`logFiles.${index}.name`);
       const updatedName = selected ? selected.name : "";
-      const currentExt = formMethods.getValues(`logFiles.${index}.fileType`);
-      const updatedExt = selected?.name.includes(".") ? (selected.name.split(".").pop() || "").toLowerCase() : "";
       if (currentName !== updatedName) {
         formMethods.setValue(`logFiles.${index}.name`, updatedName, { shouldDirty: true, shouldTouch: true });
-      }
-      if (currentExt !== updatedExt) {
-        formMethods.setValue(`logFiles.${index}.fileType`, updatedExt, { shouldDirty: true, shouldTouch: true });
+        formMethods.setValue(`logFiles.${index}.extension`, getFileExtension(updatedName), {
+          shouldDirty: true,
+          shouldTouch: true,
+        });
+        formMethods.setValue(`logFiles.${index}.file`, selected, { shouldDirty: true, shouldTouch: true });
       }
     },
     [formMethods],
@@ -124,7 +125,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
     const isValid = await formMethods.trigger();
     if (!isDirty || isValid) {
       const values = getValues();
-      updateLogRun({ ...logRun, ...values } as TmpLogRun, isDirty);
+      updateLogRun({ ...logRun, ...values } as LogRun, isDirty);
     }
   };
 
@@ -159,7 +160,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
                     label="toolType"
                     labelStyle={CodelistLabelStyle.TextAndCodeChipsCodeOnly}
                   />
-                  <FormInput fieldName={`logFiles.${index}.fileType`} label="extension" readonly />
+                  <FormInput fieldName={`logFiles.${index}.extension`} label="extension" readonly />
                   <FormDomainSelect
                     schemaName="log_pass_type"
                     fieldName={`logFiles.${index}.passTypeId`}

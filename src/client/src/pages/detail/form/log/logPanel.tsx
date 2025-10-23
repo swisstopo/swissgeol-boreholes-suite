@@ -8,7 +8,7 @@ import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { SaveContext } from "../../saveContext.tsx";
-import { LogRunChangeTracker, TmpLogRun, useLogRunMutations, useLogsByBoreholeId } from "./log.ts";
+import { LogRun, LogRunChangeTracker, uploadLogFiles, useLogRunMutations, useLogsByBoreholeId } from "./log.ts";
 import { LogRunModal } from "./logRunModal.tsx";
 import { LogTable } from "./logTable.tsx";
 import { prepareLogRunForSubmit } from "./logUtils.ts";
@@ -21,7 +21,7 @@ export const LogPanel: FC = () => {
   const { registerSaveHandler, registerResetHandler, unMount, markAsChanged } = useContext(SaveContext);
   const { data: logRuns = [], isLoading } = useLogsByBoreholeId(Number(boreholeId));
   const [tmpLogRuns, setTmpLogRuns] = useState<LogRunChangeTracker[]>([]);
-  const tmpLogRunsFlat: TmpLogRun[] = useMemo(() => tmpLogRuns.map(l => l.item as TmpLogRun), [tmpLogRuns]);
+  const tmpLogRunsFlat: LogRun[] = useMemo(() => tmpLogRuns.map(l => l.item as LogRun), [tmpLogRuns]);
 
   const {
     delete: { mutateAsync: deleteLogRuns },
@@ -36,7 +36,7 @@ export const LogPanel: FC = () => {
         id: 0,
         boreholeId: Number(boreholeId),
         tmpId: "new",
-      } as TmpLogRun;
+      } as LogRun;
     }
     return tmpLogRunsFlat.find(l => l.tmpId === selectedLogRunId || l.id.toString() === selectedLogRunId);
   }, [boreholeId, selectedLogRunId, tmpLogRunsFlat]);
@@ -46,7 +46,7 @@ export const LogPanel: FC = () => {
   }, []);
 
   const updateLogRunItem = useCallback(
-    (selectedId: string | undefined, item: TmpLogRun, hasChanges: boolean) => {
+    (selectedId: string | undefined, item: LogRun, hasChanges: boolean) => {
       setTmpLogRuns(prev => {
         if (hasChanges) {
           markAsChanged(true);
@@ -66,7 +66,7 @@ export const LogPanel: FC = () => {
   );
 
   const updateTmpLogRun = useCallback(
-    (logRun: TmpLogRun, hasChanges: boolean) => {
+    (logRun: LogRun, hasChanges: boolean) => {
       updateLogRunItem(selectedLogRunId, logRun, hasChanges);
       setSelectedLogRunId(undefined);
     },
@@ -84,12 +84,22 @@ export const LogPanel: FC = () => {
   }, [deleteLogRuns, logRuns, tmpLogRunsFlat]);
 
   const addAndUpdateLogRuns = useCallback(async () => {
+    // TODO: Add error handling with proper user feedback
     for (const logRun of tmpLogRuns.filter(l => l.hasChanges).map(l => l.item)) {
       prepareLogRunForSubmit(logRun);
       if (logRun.id === 0) {
-        await addLogRun({ ...logRun, boreholeId: Number(boreholeId) });
+        const createdLogRun = await addLogRun({ ...logRun, boreholeId: Number(boreholeId), logFiles: [] });
+        if (logRun.logFiles && logRun.logFiles.length > 0) {
+          const uploadedLogFiles = await uploadLogFiles(createdLogRun.id, logRun.logFiles);
+          await updateLogRun({ ...createdLogRun, logFiles: uploadedLogFiles });
+        }
       } else {
-        await updateLogRun(logRun);
+        if (logRun.logFiles && logRun.logFiles.filter(f => f.file).length > 0) {
+          const uploadedLogFiles = await uploadLogFiles(logRun.id, logRun.logFiles);
+          await updateLogRun({ ...logRun, logFiles: uploadedLogFiles });
+        } else {
+          await updateLogRun(logRun);
+        }
       }
     }
   }, [addLogRun, boreholeId, tmpLogRuns, updateLogRun]);

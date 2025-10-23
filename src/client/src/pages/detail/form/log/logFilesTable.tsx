@@ -14,6 +14,7 @@ import { FormMultiSelect, FormMultiSelectValue } from "../../../../components/fo
 import { Table } from "../../../../components/table/table.tsx";
 import { usePublicColumn } from "../../../../components/table/usePublicColumn.tsx";
 import { LogFile } from "./log.ts";
+import { getFileExtension } from "./logUtils.ts";
 
 interface LogFileFilter {
   toolTypes: number[];
@@ -69,10 +70,10 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
     if (extensionsFilters && extensionsFilter && extensionsFilter.length > 0) {
       const extensionNames = new Set(
         extensionsFilter
-          .map(filterValue => extensionsFilters.find(ext => ext.key === filterValue)?.name?.toLowerCase())
+          .map(filterValue => extensionsFilters.find(ext => ext.key === filterValue)?.name?.toUpperCase())
           .filter(Boolean),
       );
-      filtered = filtered.filter(file => extensionNames.has(file.fileType.toLowerCase()));
+      filtered = filtered.filter(file => extensionNames.has(getFileExtension(file.name)));
     }
     if (passTypesFilter && passTypesFilter.length > 0) {
       filtered = filtered.filter(file => file.passTypeId && passTypesFilter.includes(file.passTypeId));
@@ -88,9 +89,9 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
 
   useEffect(() => {
     if (!extensionsFilters) {
-      const extensions = Array.from(new Set(files.map(file => file.fileType.toLowerCase()))).sort((a, b) =>
-        a.localeCompare(b),
-      );
+      const extensions = Array.from(
+        new Set(files.map(file => getFileExtension(file.name)).filter(v => v.length > 0)),
+      ).sort((a, b) => a.localeCompare(b));
       setExtensionsFilters(extensions.map((ext, index) => ({ key: index, name: ext })));
     }
   }, [extensionsFilters, files]);
@@ -152,9 +153,10 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
         flex: 1,
       },
       {
-        field: "fileType",
+        field: "extension",
         headerName: t("extension"),
         flex: 1,
+        valueGetter: (value, row) => getFileExtension(row?.name, "-"),
       },
       {
         field: "passTypeId",

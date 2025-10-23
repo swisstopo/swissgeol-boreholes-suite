@@ -5,13 +5,14 @@ import {
   ensureDateOnly,
   parseFloatWithThousandsSeparator,
 } from "../../../../components/form/formUtils.ts";
-import { LogRun, TmpLogRun } from "./log.ts";
+import { LogRun } from "./log.ts";
 
-export const prepareLogRunForSubmit = (data: TmpLogRun) => {
+export const prepareLogRunForSubmit = (data: LogRun) => {
   data.fromDepth = parseFloatWithThousandsSeparator(data.fromDepth)!;
   data.toDepth = parseFloatWithThousandsSeparator(data.toDepth)!;
   data.bitSize = parseFloatWithThousandsSeparator(data.bitSize)!;
 
+  delete data.tmpId;
   delete data.conveyanceMethod;
   delete data.boreholeStatus;
   delete data.created;
@@ -21,8 +22,13 @@ export const prepareLogRunForSubmit = (data: TmpLogRun) => {
   data.runDate = data?.runDate ? ensureDateOnly(data.runDate.toString()) : null;
 
   if (data.logFiles) {
-    for (const f of data.logFiles) {
-      delete f.tmpId;
+    for (const file of data.logFiles) {
+      delete file.tmpId;
+      delete file.name;
+      delete file.created;
+      delete file.createdBy;
+      delete file.updated;
+      delete file.updatedBy;
     }
   }
 
@@ -38,7 +44,7 @@ export const getServiceOrToolArray = (logRun: LogRun, codelists: Codelist[]): (s
     .map(id => codelists.find((d: Codelist) => d.id === id)?.code ?? "");
 };
 
-export const validateRunNumber = (values: TmpLogRun, errors: FormErrors, runs: TmpLogRun[]) => {
+export const validateRunNumber = (values: LogRun, errors: FormErrors, runs: LogRun[]) => {
   const runNumber = values.runNumber;
   if (!runNumber) {
     errors.runNumber = { type: "required", message: "required" };
@@ -54,12 +60,16 @@ export const validateFiles = (values: LogRun, errors: FormErrors) => {
   for (const [idx, file] of values.logFiles.entries()) {
     if (!file) return;
     const missingName = !file.name || file.name.trim() === "";
-    const missingType = !file.fileType || file.fileType.trim() === "";
-    if (missingName || missingType) {
+    if (missingName) {
       flatErrors[`logFiles.${idx}.name`] = "required";
     }
   }
   if (Object.keys(flatErrors).length > 0) {
     buildErrorStructure(flatErrors, errors, "required");
   }
+};
+
+export const getFileExtension = (fileName?: string, placeholder?: string): string => {
+  const extension = fileName?.split(".").pop();
+  return extension ? extension.toLowerCase() : (placeholder ?? "");
 };

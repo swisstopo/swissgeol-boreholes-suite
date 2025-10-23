@@ -15,7 +15,7 @@ import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts
 import { Table } from "../../../../components/table/table.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { SaveContext } from "../../saveContext.tsx";
-import { LogRunChangeTracker, TmpLogRun } from "./log.ts";
+import { LogRun, LogRunChangeTracker } from "./log.ts";
 import { getServiceOrToolArray } from "./logUtils.ts";
 
 interface SectionFilter {
@@ -33,7 +33,7 @@ interface LogRunFilter {
 
 interface LogTableProps {
   boreholeId: string;
-  runs: TmpLogRun[];
+  runs: LogRun[];
   isLoading: boolean;
   setSelectedLogRunId: Dispatch<SetStateAction<string | undefined>>;
   setTmpLogRuns: Dispatch<SetStateAction<LogRunChangeTracker[]>>;
@@ -67,7 +67,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
         .map(run => ({ key: run.id, name: run.runNumber! }) as FormMultiSelectValue),
     [runs],
   );
-  const filteredRuns = useMemo<TmpLogRun[]>(() => {
+  const filteredRuns = useMemo<LogRun[]>(() => {
     let filtered = runs;
     if (runFilter && runFilter.length > 0) {
       filtered = filtered.filter(run => runFilter.includes(run.id));
@@ -79,7 +79,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
         if (section) sections.push(section);
       }
       if (sections.length > 0) {
-        const hasOverlapWithSections = (run: TmpLogRun) => {
+        const hasOverlapWithSections = (run: LogRun) => {
           for (const section of sections) {
             if (
               run.fromDepth !== undefined &&
@@ -96,7 +96,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
       }
     }
     if (toolTypeFilter && toolTypeFilter.length > 0) {
-      const hasMatchingToolType = (run: TmpLogRun) => {
+      const hasMatchingToolType = (run: LogRun) => {
         if (!run.logFiles) return false;
         for (const file of run.logFiles) {
           if (!file.toolTypeCodelistIds) continue;
@@ -149,11 +149,11 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
   };
 
   const deleteLogRun = (selectedRows: GridRowSelectionModel) => {
-    setTmpLogRuns(prev => prev.filter(run => !selectedRows.includes(run.item.tmpId)));
+    setTmpLogRuns(prev => prev.filter(run => !selectedRows.includes(run.item.tmpId!)));
     markAsChanged(true);
   };
 
-  const columns = useMemo<GridColDef<TmpLogRun>[]>(
+  const columns = useMemo<GridColDef<LogRun>[]>(
     () => [
       {
         field: "runNumber",
@@ -163,7 +163,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
       },
       {
         field: "loggedInterval",
-        valueGetter: (_, row: TmpLogRun) =>
+        valueGetter: (_, row: LogRun) =>
           `${formatNumberForDisplay(row?.fromDepth, 1)} - ${formatNumberForDisplay(row?.toDepth, 1)}`,
         headerName: t("loggedInterval") + ` [${t("mMd")}]`,
         flex: 1,
@@ -250,7 +250,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
         apiRef={apiRef}
         isLoading={isLoading}
         rows={filteredRuns}
-        getRowId={row => row.tmpId}
+        getRowId={row => row.tmpId!}
         columns={columns}
         showQuickFilter={false}
         onRowClick={handleRowClick}
