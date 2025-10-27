@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { ReactNode, useCallback, useEffect, useState } from "react";
 import { AlertColor } from "@mui/material";
 import { AlertOptions } from "./alertInterfaces";
 
@@ -6,10 +6,13 @@ export const useAlertManager = () => {
   const [currentAlert, setCurrentAlert] = useState<AlertOptions>();
   const [alerts, setAlerts] = useState<AlertOptions[]>([]);
 
-  const showAlert = useCallback((text: string, severity: AlertColor | undefined, allowAutoHide?: boolean) => {
-    const newAlert = { text, severity: severity ?? "info", allowAutoHide: allowAutoHide ?? true };
-    setAlerts(prevAlerts => [...prevAlerts, newAlert]);
-  }, []);
+  const showAlert = useCallback(
+    (text: string | ReactNode, severity: AlertColor | undefined, allowAutoHide?: boolean) => {
+      const newAlert = { text, severity: severity ?? "info", allowAutoHide: allowAutoHide ?? true };
+      setAlerts(prevAlerts => [...prevAlerts, newAlert]);
+    },
+    [],
+  );
 
   const closeAlert = () => {
     setCurrentAlert(undefined);

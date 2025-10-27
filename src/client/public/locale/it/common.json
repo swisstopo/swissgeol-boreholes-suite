@@ -406,6 +406,8 @@
   "locked_by": "Modifiche in corso da parte di",
   "locked_status": "Stato",
   "log": "LOG",
+  "logFileSaveError": "Errore durante il salvataggio dei file LOG",
+  "logRunSaveError": "Errore durante il salvataggio del LOG run",
   "loggedInterval": "Intervallo registrato",
   "mMd": "m s.l.m.",
   "mainCompletion": "Questa è l'architettura di perforazione principale",

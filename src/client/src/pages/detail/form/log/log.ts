@@ -1,5 +1,5 @@
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
-import { NullableDateString, User } from "../../../../api/apiInterfaces.ts";
+import { ApiError, NullableDateString, User } from "../../../../api/apiInterfaces.ts";
 import { fetchApiV2WithApiError, uploadWithApiError } from "../../../../api/fetchApiV2.ts";
 import { Codelist } from "../../../../components/codelist.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
@@ -83,22 +83,32 @@ export const useLogRunMutations = () => {
   const useUpdateLogRun = useMutation({
     mutationFn: async (logRun: LogRun) => {
       if (logRun.logFiles && logRun.logFiles.some(file => file.file)) {
+        const errors: Map<string, ApiError> = new Map();
         const uploadPromises = logRun.logFiles.map(async file => {
           file.logRunId = logRun.id;
           if (file.file) {
-            const formData = new FormData();
-            formData.append("file", file.file);
-            const savedFile = await uploadWithApiError<LogFile>(
-              `${logRunController}/upload?logRunId=${logRun.id}`,
-              "POST",
-              formData,
-            );
-            file.id = savedFile.id;
-            delete file.file;
+            try {
+              const formData = new FormData();
+              formData.append("file", file.file);
+              const savedFile = await uploadWithApiError<LogFile>(
+                `${logRunController}/upload?logRunId=${logRun.id}`,
+                "POST",
+                formData,
+              );
+              file.id = savedFile.id;
+              delete file.file;
+            } catch (error) {
+              if (error instanceof Error) {
+                errors.set(`${file.tmpId}`, error);
+              }
+            }
           }
           return file;
         });
         logRun.logFiles = await Promise.all(uploadPromises);
+        if (errors.size > 0) {
+          throw new ApiError("One or more file uploads failed", 400, errors);
+        }
       }
       return await fetchApiV2WithApiError<LogRun>(logRunController, "PUT", logRun);
     },

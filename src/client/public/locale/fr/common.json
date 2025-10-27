@@ -406,6 +406,8 @@
   "locked_by": "Changements en cours par",
   "locked_status": "Statut",
   "log": "LOG",
+  "logFileSaveError": "Erreur lors de l'enregistrement des fichiers LOG",
+  "logRunSaveError": "Erreur lors de l'enregistrement du LOG run",
   "loggedInterval": "Intervalle enregistré",
   "mMd": "m s.m.",
   "mainCompletion": "Ceci est l’architecture de forage principale",

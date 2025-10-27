@@ -406,6 +406,8 @@
   "locked_by": "Änderung in Bearbeitung von",
   "locked_status": "Status",
   "log": "LOG",
+  "logFileSaveError": "Fehler beim Speichern der Log-Dateien",
+  "logRunSaveError": "Fehler beim Speichern der Log-Runs",
   "loggedInterval": "Geloggtes Intervall",
   "mMd": "m ü.M.",
   "mainCompletion": "Dies ist die Hauptbohrlocharchitektur",

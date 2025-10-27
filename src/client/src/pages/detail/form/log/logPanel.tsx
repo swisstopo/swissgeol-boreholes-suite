@@ -1,7 +1,9 @@
 import { FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, CircularProgress, Stack } from "@mui/material";
+import { Box, CircularProgress, List, ListItem, Stack, Typography } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
+import { ApiError } from "../../../../api/apiInterfaces.ts";
+import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
@@ -22,6 +24,7 @@ export const LogPanel: FC = () => {
   const { data: logRuns = [], isLoading } = useLogsByBoreholeId(Number(boreholeId));
   const [tmpLogRuns, setTmpLogRuns] = useState<LogRunChangeTracker[]>([]);
   const tmpLogRunsFlat: LogRun[] = useMemo(() => tmpLogRuns.map(l => l.item as LogRun), [tmpLogRuns]);
+  const { showAlert } = useContext(AlertContext);
 
   const {
     delete: { mutateAsync: deleteLogRuns },
@@ -79,31 +82,77 @@ export const LogPanel: FC = () => {
 
   const deleteRuns = useCallback(async () => {
     const logRunsToDelete = logRuns.filter(lr => !tmpLogRunsFlat.some(tlr => tlr.id === lr.id));
-    if (logRunsToDelete.length === 0) return;
+    if (logRunsToDelete.length === 0) return true;
     await deleteLogRuns(logRunsToDelete);
+    return true;
   }, [deleteLogRuns, logRuns, tmpLogRunsFlat]);
 
   const addAndUpdateLogRuns = useCallback(async () => {
+    const errors: { runNumber: string; fileName?: string; errorMessage: string }[] = [];
     for (const logRun of tmpLogRuns.filter(l => l.hasChanges).map(l => l.item)) {
-      prepareLogRunForSubmit(logRun);
-      if (logRun.id === 0) {
-        const createdLogRun = await addLogRun({ ...logRun, boreholeId: Number(boreholeId), logFiles: [] });
-        if (logRun.logFiles && logRun.logFiles.length > 0) {
-          await updateLogRun({ ...createdLogRun, logFiles: logRun.logFiles });
+      try {
+        prepareLogRunForSubmit(logRun);
+        if (logRun.id === 0) {
+          const createdLogRun = await addLogRun({ ...logRun, boreholeId: Number(boreholeId), logFiles: [] });
+          if (logRun.logFiles && logRun.logFiles.length > 0) {
+            await updateLogRun({ ...createdLogRun, logFiles: logRun.logFiles });
+          }
+        } else {
+          await updateLogRun(logRun);
         }
-      } else {
-        await updateLogRun(logRun);
+      } catch (error) {
+        if (error instanceof ApiError) {
+          error.innerErrors?.forEach((err, key) => {
+            const fileName = logRun.logFiles?.find(f => f.tmpId === key)?.file?.name;
+            errors.push({ runNumber: logRun.runNumber, fileName, errorMessage: err.message });
+          });
+        }
       }
     }
-  }, [addLogRun, boreholeId, tmpLogRuns, updateLogRun]);
+    if (errors.length > 0) {
+      const hasRunErrors = errors.some(e => e.fileName === undefined);
+      let alertMessage;
+      if (hasRunErrors) {
+        showAlert(t("logRunSaveWithErrors"), "error", false);
+        alertMessage = (
+          <Stack>
+            <Typography variant={"body2"}>{t("logRunSaveError")}</Typography>
+            <List>
+              {errors.map((e, index) => (
+                <ListItem key={index}>
+                  {e.runNumber}: {e.errorMessage}
+                </ListItem>
+              ))}
+            </List>
+          </Stack>
+        );
+      } else {
+        alertMessage = (
+          <Stack>
+            <Typography variant={"body2"}>{t("logFileSaveError")}</Typography>
+            <List>
+              {errors.map((e, index) => (
+                <ListItem key={index}>
+                  {e.runNumber} - {e.fileName}: {e.errorMessage}
+                </ListItem>
+              ))}
+            </List>
+          </Stack>
+        );
+      }
+      showAlert(alertMessage, "error", false);
+      return false;
+    }
+    return true;
+  }, [addLogRun, boreholeId, showAlert, t, tmpLogRuns, updateLogRun]);
 
   const onReset = useCallback(async () => {
     initTmpLogRuns();
   }, [initTmpLogRuns]);
 
   const onSave = useCallback(async () => {
-    await Promise.all([deleteRuns(), addAndUpdateLogRuns()]);
-    return true;
+    const results = await Promise.all([deleteRuns(), addAndUpdateLogRuns()]);
+    return results.every(r => r === true);
   }, [addAndUpdateLogRuns, deleteRuns]);
 
   useEffect(() => {

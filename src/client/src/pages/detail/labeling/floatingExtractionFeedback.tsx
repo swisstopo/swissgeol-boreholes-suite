@@ -1,4 +1,4 @@
-import { FC } from "react";
+import { FC, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertColor, Box, Button, CircularProgress } from "@mui/material";
 import { X } from "lucide-react";
@@ -12,7 +12,7 @@ interface FloatingExtractionFeedbackProps {
   alertIsOpen: boolean;
   closeAlert: () => void;
   severity?: AlertColor;
-  text?: string;
+  text?: string | ReactNode;
 }
 
 export const FloatingExtractionFeedback: FC<FloatingExtractionFeedbackProps> = ({

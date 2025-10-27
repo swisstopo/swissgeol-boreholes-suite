@@ -2,12 +2,14 @@ import { File } from "./file/fileInterfaces";
 
 export class ApiError extends Error {
   status?: number;
+  innerErrors?: Map<string, Error>;
 
-  constructor(message: string, status?: number) {
+  constructor(message: string, status?: number, innerErrors?: Map<string, ApiError>) {
     super(message);
     this.name = "ApiError";
     this.message = message;
     this.status = status;
+    this.innerErrors = innerErrors;
     Object.setPrototypeOf(this, ApiError.prototype);
   }
 }

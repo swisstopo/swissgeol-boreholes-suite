@@ -23,7 +23,6 @@ export const prepareLogRunForSubmit = (data: LogRun) => {
 
   if (data.logFiles) {
     for (const file of data.logFiles) {
-      delete file.tmpId;
       delete file.name;
       delete file.created;
       delete file.createdBy;

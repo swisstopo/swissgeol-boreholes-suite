@@ -406,6 +406,8 @@
   "locked_by": "Change in progress by",
   "locked_status": "Status",
   "log": "LOG",
+  "logFileSaveError": "Error saving the LOG files",
+  "logRunSaveError": "Error saving the LOG runs",
   "loggedInterval": "Logged interval",
   "mMd": "m MD",
   "mainCompletion": "This is the main borehole architecture",
