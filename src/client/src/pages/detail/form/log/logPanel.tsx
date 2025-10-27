@@ -8,7 +8,7 @@ import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { SaveContext } from "../../saveContext.tsx";
-import { LogRun, LogRunChangeTracker, uploadLogFiles, useLogRunMutations, useLogsByBoreholeId } from "./log.ts";
+import { LogRun, LogRunChangeTracker, useLogRunMutations, useLogsByBoreholeId } from "./log.ts";
 import { LogRunModal } from "./logRunModal.tsx";
 import { LogTable } from "./logTable.tsx";
 import { prepareLogRunForSubmit } from "./logUtils.ts";
@@ -84,18 +84,13 @@ export const LogPanel: FC = () => {
   }, [deleteLogRuns, logRuns, tmpLogRunsFlat]);
 
   const addAndUpdateLogRuns = useCallback(async () => {
-    // TODO: Add error handling with proper user feedback
     for (const logRun of tmpLogRuns.filter(l => l.hasChanges).map(l => l.item)) {
       prepareLogRunForSubmit(logRun);
       if (logRun.id === 0) {
         const createdLogRun = await addLogRun({ ...logRun, boreholeId: Number(boreholeId), logFiles: [] });
         if (logRun.logFiles && logRun.logFiles.length > 0) {
-          const uploadedLogFiles = await uploadLogFiles(createdLogRun.id, logRun.logFiles);
-          await updateLogRun({ ...createdLogRun, logFiles: uploadedLogFiles });
+          await updateLogRun({ ...createdLogRun, logFiles: logRun.logFiles });
         }
-      } else if (logRun.logFiles && logRun.logFiles.some(f => f.file)) {
-        const uploadedLogFiles = await uploadLogFiles(logRun.id, logRun.logFiles);
-        await updateLogRun({ ...logRun, logFiles: uploadedLogFiles });
       } else {
         await updateLogRun(logRun);
       }

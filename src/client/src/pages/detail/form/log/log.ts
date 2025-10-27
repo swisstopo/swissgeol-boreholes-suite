@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
-import { ApiError, NullableDateString, User } from "../../../../api/apiInterfaces.ts";
-import { fetchApiV2WithApiError, upload } from "../../../../api/fetchApiV2.ts";
+import { NullableDateString, User } from "../../../../api/apiInterfaces.ts";
+import { fetchApiV2WithApiError, uploadWithApiError } from "../../../../api/fetchApiV2.ts";
 import { Codelist } from "../../../../components/codelist.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 
@@ -82,6 +82,24 @@ export const useLogRunMutations = () => {
 
   const useUpdateLogRun = useMutation({
     mutationFn: async (logRun: LogRun) => {
+      if (logRun.logFiles && logRun.logFiles.some(file => file.file)) {
+        const uploadPromises = logRun.logFiles.map(async file => {
+          file.logRunId = logRun.id;
+          if (file.file) {
+            const formData = new FormData();
+            formData.append("file", file.file);
+            const savedFile = await uploadWithApiError<LogFile>(
+              `${logRunController}/upload?logRunId=${logRun.id}`,
+              "POST",
+              formData,
+            );
+            file.id = savedFile.id;
+            delete file.file;
+          }
+          return file;
+        });
+        logRun.logFiles = await Promise.all(uploadPromises);
+      }
       return await fetchApiV2WithApiError<LogRun>(logRunController, "PUT", logRun);
     },
     onSuccess: (_data, logRun) => {
@@ -106,31 +124,4 @@ export const useLogRunMutations = () => {
     update: useUpdateLogRun,
     delete: useDeleteLogRuns,
   };
-};
-
-export const uploadLogFiles = async (logRunId: number, logFiles: LogFile[]): Promise<LogFile[]> => {
-  // TODO: Check if we can optimize multiple file uploads in one request or use parallel uploads
-  // TODO: Add error handling
-  const uploadedLogFiles = [];
-  for (const file of logFiles) {
-    file.logRunId = logRunId;
-    if (file.file) {
-      const savedFile = await uploadLogFile(logRunId, file.file);
-      file.id = savedFile.id;
-      delete file.file;
-    }
-    uploadedLogFiles.push(file);
-  }
-  return uploadedLogFiles;
-};
-
-export const uploadLogFile = async (logRunId: number, file: File): Promise<LogFile> => {
-  const formData = new FormData();
-  formData.append("file", file);
-  const response = await upload(`${logRunController}/upload?logRunId=${logRunId}`, "POST", formData);
-  if (response.ok) {
-    return (await response.json()) as LogFile;
-  } else {
-    throw new ApiError(await response.text(), response.status);
-  }
 };
