@@ -21,7 +21,6 @@ import {
   createBorehole,
   createWateringress,
   deleteDownloadedFile,
-  getElementByDataCy,
   getImportFileFromFixtures,
   goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
@@ -125,9 +124,9 @@ describe("Test for exporting boreholes.", () => {
     verifyTVDContentInCSVFile(fileName, "700", "800", "900");
     startBoreholeEditing();
 
-    getElementByDataCy("geometry-tab").click();
+    cy.dataCy("geometry-tab").click();
     cy.wait(["@boreholegeometry_GET", "@boreholegeometry_formats"]);
-    getElementByDataCy("boreholegeometryimport-button").should("be.disabled");
+    cy.dataCy("boreholegeometryimport-button").should("be.disabled");
 
     // upload geometry csv file
     let geometryFile = new DataTransfer();
@@ -137,20 +136,20 @@ describe("Test for exporting boreholes.", () => {
       });
       geometryFile.items.add(file);
     });
-    getElementByDataCy("import-geometry-input").within(() => {
+    cy.dataCy("import-geometry-input").within(() => {
       cy.get("input[type=file]", { force: true }).then(input => {
         input[0].files = geometryFile.files;
         input[0].dispatchEvent(new Event("change", { bubbles: true }));
       });
     });
 
-    getElementByDataCy("boreholegeometryimport-button").should("be.enabled");
+    cy.dataCy("boreholegeometryimport-button").should("be.enabled");
     setSelect("geometryFormat", 1);
-    getElementByDataCy("boreholegeometryimport-button").click();
+    cy.dataCy("boreholegeometryimport-button").click();
     cy.wait(["@boreholegeometry_POST", "@boreholegeometry_GET"]);
     cy.get(".MuiTableBody-root").should("exist");
 
-    getElementByDataCy("general-tab").click();
+    cy.dataCy("general-tab").click();
     cy.wait(["@borehole_by_id", "@get-depth-tvd", "@get-depth-tvd", "@get-depth-tvd"]);
     evaluateInput("totalDepth", "700");
     evaluateInput("total_depth_tvd", "674.87");
@@ -162,7 +161,7 @@ describe("Test for exporting boreholes.", () => {
     exportCSVItem();
     verifyTVDContentInCSVFile(secondFileName, "674.8678208299723", "762.6098263945338", "846.9637100889873");
     startBoreholeEditing();
-    getElementByDataCy("deleteborehole-button").click();
+    cy.dataCy("deleteborehole-button").click();
     handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "delete");
   });
 
@@ -251,8 +250,8 @@ describe("Test for exporting boreholes.", () => {
 
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}`);
-      getElementByDataCy("edit-button").should("exist");
-      getElementByDataCy("editingstop-button").should("not.exist");
+      cy.dataCy("edit-button").should("exist");
+      cy.dataCy("editingstop-button").should("not.exist");
       exportItem();
       exportJsonItem();
       exportItem();
@@ -276,7 +275,7 @@ describe("Test for exporting boreholes.", () => {
 
       selectInputFile("FREEZINGCOLD.txt", "text/plain");
 
-      getElementByDataCy("addProfile-button").should("be.visible").click();
+      cy.dataCy("addProfile-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
 
       exportItem("detail-header");
@@ -395,7 +394,7 @@ describe("Test for exporting boreholes.", () => {
       checkRowWithText(boreholeName);
       deleteItem();
       handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "delete");
-      getElementByDataCy("import-borehole-button").click();
+      cy.dataCy("import-borehole-button").click();
       cy.contains(boreholeName).should("not.exist");
 
       cy.readFile(downloadedFilePath, "utf-8").then(fileContent => {

@@ -7,7 +7,6 @@ import {
 } from "../helpers/dataGridHelpers";
 import { setInput, setSelect } from "../helpers/formHelpers";
 import {
-  getElementByDataCy,
   goToRouteAndAcceptTerms,
   newEditableBorehole,
   returnToOverview,
@@ -30,7 +29,7 @@ describe("Tests for filtering data by identifier.", () => {
 
     cy.contains("h6", "Location").click();
     // show all options
-    getElementByDataCy("show-all-fields-switch").click();
+    cy.dataCy("show-all-fields-switch").click();
     verifyPaginationText("1–100 of 3001");
 
     setSelect("borehole_identifier", 1);
@@ -64,7 +63,7 @@ describe("Tests for filtering data by identifier.", () => {
 
     cy.contains("h6", "Location").click();
     // show all options
-    getElementByDataCy("show-all-fields-switch").click();
+    cy.dataCy("show-all-fields-switch").click();
 
     setSelect("borehole_identifier", 1);
     showTableAndWaitForData();

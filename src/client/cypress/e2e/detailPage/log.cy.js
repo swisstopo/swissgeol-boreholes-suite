@@ -23,7 +23,6 @@ import {
 import { isActiveMenuItem, navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
-  getElementByDataCy,
   goToDetailRouteAndAcceptTerms,
   handlePrompt,
   startBoreholeEditing,
@@ -33,12 +32,12 @@ import {
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
 function assertExportButtonsDisabled(isDisabled = true) {
   // TODO: Re-add once logic is implemented with https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2361
-  // getElementByDataCy("exportdata-button").should(isDisabled ? "have.attr" : "not.have.attr", "disabled");
-  // getElementByDataCy("exporttable-button").should(isDisabled ? "have.attr" : "not.have.attr", "disabled");
+  // cy.dataCy("exportdata-button").should(isDisabled ? "have.attr" : "not.have.attr", "disabled");
+  // cy.dataCy("exporttable-button").should(isDisabled ? "have.attr" : "not.have.attr", "disabled");
 }
 
 function assertCountDisplayed(textContent) {
-  getElementByDataCy("log-run-count").should("contain", textContent);
+  cy.dataCy("log-run-count").should("contain", textContent);
 }
 
 function verifyFullRowContent(cellContents, index) {
@@ -48,24 +47,24 @@ function verifyFullRowContent(cellContents, index) {
 }
 
 function addMinimalLogRun(fromDepth = 0, toDepth = 10, runNumber = "R01") {
-  getElementByDataCy("addlogrun-button").click();
+  cy.dataCy("addlogrun-button").click();
   setInput("fromDepth", fromDepth);
   setInput("toDepth", toDepth);
   setInput("runNumber", runNumber);
-  getElementByDataCy("close-button").click();
+  cy.dataCy("close-button").click();
 }
 
 describe("Test for the borehole log.", () => {
   it("Correctly displays log run table", () => {
     goToDetailRouteAndAcceptTerms(`/1000070/log?dev=true`);
     assertExportButtonsDisabled();
-    getElementByDataCy("delete-button").should("not.exist");
+    cy.dataCy("delete-button").should("not.exist");
     assertCountDisplayed("10 runs");
 
     startBoreholeEditing();
     assertExportButtonsDisabled();
-    getElementByDataCy("delete-button").should("be.visible");
-    getElementByDataCy("delete-button").should("have.attr", "disabled");
+    cy.dataCy("delete-button").should("be.visible");
+    cy.dataCy("delete-button").should("have.attr", "disabled");
 
     checkAllVisibleRows();
     assertCountDisplayed("10 selected");
@@ -106,15 +105,15 @@ describe("Test for the borehole log.", () => {
     startBoreholeEditing();
 
     // Does not add a new log run when nothing is entered
-    getElementByDataCy("addlogrun-button").click();
+    cy.dataCy("addlogrun-button").click();
     cy.contains("h4", "New run");
-    getElementByDataCy("close-button").click();
+    cy.dataCy("close-button").click();
     cy.contains("p", "No run added yet...");
 
     // Displays validation errors when required fields missing
-    getElementByDataCy("addlogrun-button").click();
+    cy.dataCy("addlogrun-button").click();
     setSelect("conveyanceMethodId", 3); //"PCL"
-    getElementByDataCy("close-button").click();
+    cy.dataCy("close-button").click();
     hasError("fromDepth", true);
     hasError("toDepth", true);
     hasError("runNumber", true);
@@ -137,7 +136,7 @@ describe("Test for the borehole log.", () => {
 
     setInput("toDepth", "800456");
     hasError("toDepth", false);
-    getElementByDataCy("close-button").click();
+    cy.dataCy("close-button").click();
 
     // verify one row was added
     verifyRowContains("R01", 0);
@@ -153,7 +152,7 @@ describe("Test for the borehole log.", () => {
 
     // delete temporary log run
     checkRowWithIndex(5); //"R06"
-    getElementByDataCy("delete-button").click();
+    cy.dataCy("delete-button").click();
     verifyTableLength(5);
 
     saveWithSaveBar();
@@ -168,7 +167,7 @@ describe("Test for the borehole log.", () => {
     setInput("serviceCo", "A new service company");
     setInput("comment", "A comment");
 
-    getElementByDataCy("close-button").click();
+    cy.dataCy("close-button").click();
     verifyRowContains("R03-EDITED", 2);
     saveWithSaveBar();
 
@@ -180,11 +179,11 @@ describe("Test for the borehole log.", () => {
     evaluateInput("bitSize", "789'456.7897");
     evaluateInput("serviceCo", "A new service company");
     evaluateTextarea("comment", "A comment");
-    getElementByDataCy("close-button").click();
+    cy.dataCy("close-button").click();
 
     // delete an existing log run
     checkRowWithIndex(3); //"R04"
-    getElementByDataCy("delete-button").click();
+    cy.dataCy("delete-button").click();
     verifyTableLength(4);
     verifyRowContains("R05", 3); // verify that R05 is now at index 3
     saveWithSaveBar();
@@ -192,20 +191,20 @@ describe("Test for the borehole log.", () => {
 
     // verify that a change containing adds, edits and deletes can be saved
     // add
-    getElementByDataCy("addlogrun-button").click();
+    cy.dataCy("addlogrun-button").click();
     setInput("fromDepth", 140);
     setInput("toDepth", 150);
     setInput("runNumber", "R02");
     hasError("runNumber", true);
     setInput("runNumber", "R06");
     hasError("runNumber", false);
-    getElementByDataCy("close-button").click();
+    cy.dataCy("close-button").click();
 
     // verify that unique check also works when editing newly added run
     clickOnRowWithText("R06");
     evaluateInput("runNumber", "R06");
     setInput("toDepth", 155);
-    getElementByDataCy("close-button").click();
+    cy.dataCy("close-button").click();
 
     // edit
     clickOnRowWithText("R02");
@@ -213,11 +212,11 @@ describe("Test for the borehole log.", () => {
     hasError("runNumber", true);
     setInput("runNumber", "R02-EDITED");
     hasError("runNumber", false);
-    getElementByDataCy("close-button").click();
+    cy.dataCy("close-button").click();
 
     // delete
     checkRowWithIndex(3); //"R05"
-    getElementByDataCy("delete-button").click();
+    cy.dataCy("delete-button").click();
 
     verifyTableLength(4);
     saveWithSaveBar();
@@ -239,13 +238,13 @@ describe("Test for the borehole log.", () => {
     addMinimalLogRun(1, 10, "BLOCK ME");
 
     // blocks navigation with unsaved changes
-    getElementByDataCy("attachments-menu-item").click();
+    cy.dataCy("attachments-menu-item").click();
     const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
     handlePrompt(messageUnsavedChanges, "cancel");
 
     // remains on page
     cy.contains("BLOCK ME");
-    getElementByDataCy("attachments-menu-item").click();
+    cy.dataCy("attachments-menu-item").click();
     handlePrompt(messageUnsavedChanges, "discardchanges");
 
     // navigates away
@@ -260,10 +259,10 @@ describe("Test for the borehole log.", () => {
   it("Filters log runs in table", () => {
     goToDetailRouteAndAcceptTerms(`/1000070/log?dev=true`);
     assertCountDisplayed("10 runs");
-    getElementByDataCy("filter-button").should("exist");
-    getElementByDataCy("filter-form").should("not.exist");
-    getElementByDataCy("filter-button").click();
-    getElementByDataCy("filter-form").should("exist");
+    cy.dataCy("filter-button").should("exist");
+    cy.dataCy("filter-form").should("not.exist");
+    cy.dataCy("filter-button").click();
+    cy.dataCy("filter-form").should("exist");
     toggleMultiSelect("runNumbers", [3], 11); // "R49
     assertCountDisplayed("1 run");
     toggleMultiSelect("sections", [3], 8); // "Belgium (54.0 - 141.0)"
@@ -272,11 +271,11 @@ describe("Test for the borehole log.", () => {
     assertCountDisplayed("5 runs");
     toggleMultiSelect("toolTypes", [2, 3]);
     assertCountDisplayed("2 runs");
-    getElementByDataCy("filter-button").click();
-    getElementByDataCy("filter-form").should("not.exist");
+    cy.dataCy("filter-button").click();
+    cy.dataCy("filter-form").should("not.exist");
     assertCountDisplayed("10 runs");
-    getElementByDataCy("filter-button").click();
-    getElementByDataCy("filter-form").should("exist");
+    cy.dataCy("filter-button").click();
+    cy.dataCy("filter-form").should("exist");
     evaluateMultiSelect("runNumbers", []);
     evaluateMultiSelect("sections", []);
     evaluateMultiSelect("toolTypes", []);

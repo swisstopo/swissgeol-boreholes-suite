@@ -13,7 +13,6 @@ import { isActiveTab } from "../helpers/navigationHelpers";
 import {
   createBorehole,
   createCompletion,
-  getElementByDataCy,
   goToDetailRouteAndAcceptTerms,
   handlePrompt,
   startBoreholeEditing,
@@ -87,7 +86,7 @@ const setHeaderTab = (index, promptHandler) => {
 
 const isHeaderTabSelected = index => {
   const selector = `completion-header-tab-${index}`;
-  getElementByDataCy(selector).invoke("attr", "aria-selected").should("eq", "true");
+  cy.dataCy(selector).invoke("attr", "aria-selected").should("eq", "true");
   isActiveTab(selector);
 };
 
@@ -109,7 +108,7 @@ export const setContentTab = (tab, promptHandler) => {
 
 export const isContentTabSelected = tabName => {
   const selector = `completion-content-tab-${tabName}`;
-  getElementByDataCy(selector).invoke("attr", "aria-selected").should("eq", "true");
+  cy.dataCy(selector).invoke("attr", "aria-selected").should("eq", "true");
   isActiveTab(selector);
 };
 
@@ -308,9 +307,9 @@ describe("completion crud tests", () => {
           assertNewCompletionCreated(boreholeId);
           setInput("name", "new completion");
           const selector = "completion-header-tab-0";
-          getElementByDataCy(selector).focus();
-          getElementByDataCy(selector).click({ force: true });
-          getElementByDataCy("prompt").find('[data-cy="save-button"]').should("be.disabled");
+          cy.dataCy(selector).focus();
+          cy.dataCy(selector).click({ force: true });
+          cy.dataCy("prompt").find('[data-cy="save-button"]').should("be.disabled");
           handlePrompt("Borehole architecture: You have unsaved changes. How would you like to proceed?", "cancel");
 
           // new to existing: changes can be reverted in prompt

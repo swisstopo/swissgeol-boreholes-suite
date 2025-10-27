@@ -3,7 +3,6 @@ import { evaluateDisplayValue, evaluateInput, setInput, setSelect } from "../hel
 import { BoreholeTab, navigateInBorehole } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
-  getElementByDataCy,
   goToDetailRouteAndAcceptTerms,
   handlePrompt,
   startBoreholeEditing,
@@ -160,7 +159,7 @@ describe("Section crud tests", () => {
   it("blocks navigation when there are unsaved changes", () => {
     addItem("addSection");
     setInput("name", "AA_CAPYBARA");
-    getElementByDataCy("geometry-tab").click();
+    cy.dataCy("geometry-tab").click();
     const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
     handlePrompt(messageUnsavedChanges, "cancel");
     cy.location().should(location => {

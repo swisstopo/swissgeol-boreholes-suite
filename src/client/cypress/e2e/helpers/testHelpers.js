@@ -378,12 +378,8 @@ export const returnToOverview = () => {
   cy.wait(["@edit_list", "@borehole"]);
 };
 
-export const getElementByDataCy = attribute => {
-  return cy.get(`[data-cy=${attribute}]`);
-};
-
 export const checkElementColorByDataCy = (attribute, expectedColor) => {
-  getElementByDataCy(attribute).should("have.css", "color", expectedColor);
+  cy.dataCy(attribute).should("have.css", "color", expectedColor);
 };
 
 export const deleteBorehole = id => {

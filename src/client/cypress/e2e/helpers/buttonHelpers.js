@@ -1,15 +1,15 @@
-import { createBaseSelector, getElementByDataCy } from "./testHelpers";
+import { createBaseSelector } from "./testHelpers";
 
 /**
  * Clicks on the save button and waits for borehole update.
  * @param {string} parent (optional) The parent of the button.
  */
 export const saveWithSaveBar = parent => {
-  getElementByDataCy("save-bar-text").should("contain", "Unsaved changes");
+  cy.dataCy("save-bar-text").should("contain", "Unsaved changes");
   saveForm(parent);
 
-  getElementByDataCy("save-bar-text").should("contain", "Changes saved");
-  getElementByDataCy("save-bar-text").should("not.exist");
+  cy.dataCy("save-bar-text").should("contain", "Changes saved");
+  cy.dataCy("save-bar-text").should("not.exist");
 };
 
 export const verifyNoUnsavedChanges = () => {
@@ -167,7 +167,7 @@ export const addItem = itemLabel => {
 };
 
 export const addStratigraphy = () => {
-  getElementByDataCy("addStratigraphy-button-select").scrollIntoView();
-  getElementByDataCy("addStratigraphy-button-select").click();
-  getElementByDataCy("addEmpty-button-select-item").click();
+  cy.dataCy("addStratigraphy-button-select").scrollIntoView();
+  cy.dataCy("addStratigraphy-button-select").click();
+  cy.dataCy("addEmpty-button-select-item").click();
 };

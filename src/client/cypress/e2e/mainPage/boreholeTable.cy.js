@@ -10,7 +10,7 @@ import {
   verifyRowContains,
   waitForTableData,
 } from "../helpers/dataGridHelpers";
-import { getElementByDataCy, goToRouteAndAcceptTerms, returnToOverview } from "../helpers/testHelpers.js";
+import { goToRouteAndAcceptTerms, returnToOverview } from "../helpers/testHelpers.js";
 
 describe("Borehole editor table tests", () => {
   it("Boreholes are displayed in correct order with admin login", () => {
@@ -138,7 +138,7 @@ describe("Borehole editor table tests", () => {
     // filter data
     cy.get('[data-cy="show-filter-button"]').click();
     cy.contains("Registration").click();
-    getElementByDataCy("show-all-fields-switch").click();
+    cy.dataCy("show-all-fields-switch").click();
     cy.contains("Created by").next().find("input").type("v_ U%r");
     cy.wait("@edit_list");
     verifyPaginationText("1–100 of 602");
