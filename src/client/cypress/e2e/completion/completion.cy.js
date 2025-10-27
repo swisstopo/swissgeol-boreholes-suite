@@ -19,11 +19,11 @@ import {
 } from "../helpers/testHelpers";
 
 const toggleHeaderOpen = () => {
-  cy.get('[data-cy="completion-header-display"]')
+  cy.dataCy("completion-header-display")
     .invoke("attr", "aria-expanded")
     .then(expanded => {
       if (expanded === "false") {
-        cy.get('[data-cy="completion-toggle-header"]').click();
+        cy.dataCy("completion-toggle-header").click();
       }
     });
 };
@@ -75,7 +75,7 @@ const setHeaderTab = (index, promptHandler) => {
   if (promptHandler && promptHandler.length > 0) {
     handlePrompt("Borehole architecture: You have unsaved changes. How would you like to proceed?", promptHandler);
   } else {
-    cy.get('[data-cy="prompt"]').should("not.exist");
+    cy.dataCy("prompt").should("not.exist");
   }
 
   if (!promptHandler || promptHandler !== "cancel") {
@@ -142,27 +142,27 @@ describe("completion crud tests", () => {
       // add completion
       addCompletion();
       assertNewCompletionCreated(id);
-      cy.get('[data-cy="addcompletion-button"]').should("be.disabled");
-      cy.get('[data-cy="save-button"]').should("be.disabled");
-      cy.get('[data-cy="cancel-button"]').should("be.enabled");
+      cy.dataCy("addcompletion-button").should("be.disabled");
+      cy.dataCy("save-button").should("be.disabled");
+      cy.dataCy("cancel-button").should("be.enabled");
       cancelEditing();
-      cy.get('[data-cy="addcompletion-button"]').should("be.enabled");
-      cy.get('[data-cy="completion-header-tab-0"]').should("not.exist");
+      cy.dataCy("addcompletion-button").should("be.enabled");
+      cy.dataCy("completion-header-tab-0").should("not.exist");
 
       addCompletion();
       assertNewCompletionCreated(id);
-      cy.get('[data-cy="addcompletion-button"]').should("be.disabled");
+      cy.dataCy("addcompletion-button").should("be.disabled");
 
       setInput("name", "Compl-1");
       setSelect("kindId", 1);
-      cy.get('[data-cy="save-button"]').should("be.enabled");
+      cy.dataCy("save-button").should("be.enabled");
 
       setInput("abandonDate", "2012-11-14");
       setInput("notes", "Lorem.");
       saveChanges();
       cy.wait("@backfill_by_completion_GET");
       cy.contains("Compl-1");
-      cy.get('[data-cy="addcompletion-button"]').should("be.enabled");
+      cy.dataCy("addcompletion-button").should("be.enabled");
 
       // copy completion
       copyCompletion();
@@ -200,7 +200,7 @@ describe("completion crud tests", () => {
       handlePrompt("Do you really want to delete this completion?", "cancel");
       cy.contains("Compl-2");
       deleteCompletion();
-      cy.get('[data-cy="completion-header-tab-1"]').should("not.exist");
+      cy.dataCy("completion-header-tab-1").should("not.exist");
       isHeaderTabSelected(0);
       evaluateDisplayValue("mainCompletion", "Yes");
     });
@@ -297,7 +297,7 @@ describe("completion crud tests", () => {
           // new to existing: no prompt should be displayed when no changes have been made
           addCompletion();
           assertNewCompletionCreated(boreholeId);
-          cy.get(`[data-cy="name-formInput"]`).click();
+          cy.dataCy("name-formInput").click();
           setHeaderTab(0);
           cy.wait("@casing_by_completion_GET");
           assertLocationAndHash(boreholeId, completion1Id, "#casing");
@@ -420,7 +420,7 @@ describe("completion crud tests", () => {
     // reset when switching content tabs
     setContentTab("instrumentation", "reset");
     setContentTab("casing");
-    cy.get('[data-cy="casing-card.0"]').should("not.exist");
+    cy.dataCy("casing-card.0").should("not.exist");
 
     // save when switching content tabs
 
@@ -460,7 +460,7 @@ describe("completion crud tests", () => {
     cancelEditing();
     setContentTab("backfill");
     cy.wait("@backfill_by_completion_GET");
-    cy.get('[data-cy="backfill-card.0"]').should("not.exist");
+    cy.dataCy("backfill-card.0").should("not.exist");
 
     // save content changes when switching header tabs
 
@@ -478,7 +478,7 @@ describe("completion crud tests", () => {
     cancelEditing();
     setContentTab("backfill");
     cy.wait("@backfill_by_completion_GET");
-    cy.get('[data-cy="backfill-card.0"]').should("be.visible");
+    cy.dataCy("backfill-card.0").should("be.visible");
 
     // cancel header changes, no prompt should be displayed for content changes because tab switching was already canceled
     setContentTab("instrumentation");
@@ -498,7 +498,7 @@ describe("completion crud tests", () => {
     setInput("name", "Compl-1 updated", "completion-header");
     addCompletion();
     handlePrompt("Borehole architecture: You have unsaved changes. How would you like to proceed?", "cancel");
-    cy.get('[data-cy="prompt"]').should("not.exist");
+    cy.dataCy("prompt").should("not.exist");
     isHeaderTabSelected(0);
     isContentTabSelected("instrumentation");
     evaluateInput("fromDepth", "0");
@@ -531,7 +531,7 @@ describe("completion crud tests", () => {
     evaluateDisplayValue("name", "Compl-1", "completion-header");
     setContentTab("instrumentation");
     cy.wait("@instrumentation_by_completion_GET");
-    cy.get('[data-cy="instrumentation-card.0"]').should("not.exist");
+    cy.dataCy("instrumentation-card.0").should("not.exist");
 
     //reset header changes, save content changes
     // eslint-disable-next-line cypress/no-unnecessary-waiting
@@ -554,7 +554,7 @@ describe("completion crud tests", () => {
     setHeaderTab(0);
     evaluateDisplayValue("name", "Compl-1", "completion-header");
     setContentTab("instrumentation");
-    cy.get('[data-cy="instrumentation-card.0"]').should("be.visible");
+    cy.dataCy("instrumentation-card.0").should("be.visible");
     evaluateDisplayValue("notes", "-");
 
     // save header changes, cancel content changes
@@ -589,7 +589,7 @@ describe("completion crud tests", () => {
     evaluateDisplayValue("notes", "-");
 
     // save header changes, save content changes
-    cy.get('[data-cy="instrumentation-card.0"]').should("be.visible");
+    cy.dataCy("instrumentation-card.0").should("be.visible");
     evaluateDisplayValue("notes", "-");
     startEditing("instrumentation-card.0");
     cy.wait("@casing_by_completion_GET");
@@ -625,14 +625,14 @@ describe("completion crud tests", () => {
 
         assertLocationAndHash(id, completion1Id, "#casing");
         cy.reload(forceReload);
-        cy.get('[data-cy="accept-button"]').click();
+        cy.dataCy("accept-button").click();
 
         assertLocationAndHash(id, completion1Id, "#casing");
         setContentTab("instrumentation");
 
         assertLocationAndHash(id, completion1Id, "#instrumentation");
         cy.reload(forceReload);
-        cy.get('[data-cy="accept-button"]').click();
+        cy.dataCy("accept-button").click();
         assertLocationAndHash(id, completion1Id, "#instrumentation");
         // Resets hash from #instrumentation to #casing when switching to another completion
         // eslint-disable-next-line cypress/no-unnecessary-waiting

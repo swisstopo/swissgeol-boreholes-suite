@@ -5,7 +5,7 @@ describe("Admin about page tests", () => {
   it("shows version information linking the corresponding release on GitHub.", () => {
     goToRouteAndAcceptTerms("/setting#about");
 
-    cy.get('[data-cy="version"]')
+    cy.dataCy("version")
       .should("contain", "0.0.99+dev")
       .should("have.attr", "href", "https://github.com/swisstopo/swissgeol-boreholes-suite/releases/tag/v0.0.99");
   });

@@ -87,7 +87,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // Upload and verify file "WHITE   SPACE.pdf" to test file names with white spaces.
       selectInputFile("WHITE   SPACE.pdf", "application/pdf");
-      cy.get('[data-cy="addProfile-button"]').should("be.visible").click();
+      cy.dataCy("addProfile-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
       verifyTableLength(4);
       verifyRowContains("WHITE___SPACE.pdf", 3);

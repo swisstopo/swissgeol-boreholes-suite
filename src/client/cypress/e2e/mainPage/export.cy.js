@@ -405,13 +405,13 @@ describe("Test for exporting boreholes.", () => {
         });
         boreholeFile.items.add(file);
 
-        cy.get('[data-cy="import-boreholeFile-input"]').within(() => {
+        cy.dataCy("import-boreholeFile-input").within(() => {
           cy.get("input[type=file]", { force: true }).then(input => {
             input[0].files = boreholeFile.files; // Attach the file
             input[0].dispatchEvent(new Event("change", { bubbles: true }));
           });
         });
-        cy.get('[data-cy="import-button"]').click();
+        cy.dataCy("import-button").click();
         cy.wait("@borehole-upload");
       });
 

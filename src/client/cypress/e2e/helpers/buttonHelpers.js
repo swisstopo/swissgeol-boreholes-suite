@@ -13,14 +13,14 @@ export const saveWithSaveBar = parent => {
 };
 
 export const verifyNoUnsavedChanges = () => {
-  cy.get('[data-cy="save-button"]').should("be.disabled");
-  cy.get('[data-cy="discardchanges-button"]').should("be.disabled");
+  cy.dataCy("save-button").should("be.disabled");
+  cy.dataCy("discardchanges-button").should("be.disabled");
   cy.contains("Unsaved changes").should("not.exist");
 };
 
 export const verifyUnsavedChanges = () => {
-  cy.get('[data-cy="save-button"]').should("not.be.disabled");
-  cy.get('[data-cy="discardchanges-button"]').should("not.be.disabled");
+  cy.dataCy("save-button").should("not.be.disabled");
+  cy.dataCy("discardchanges-button").should("not.be.disabled");
   cy.contains("Unsaved changes").should("exist");
 };
 
@@ -156,7 +156,7 @@ export const copyItem = parent => {
  */
 export const addItem = itemLabel => {
   cy.get(".MuiCircularProgress-root").should("not.exist");
-  const button = () => cy.get(`[data-cy="${itemLabel.toLowerCase()}-button"]`);
+  const button = () => cy.dataCy(`${itemLabel.toLowerCase()}-button`);
   button().scrollIntoView();
   button().should("be.visible");
   button().should("be.enabled");
