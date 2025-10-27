@@ -917,7 +917,13 @@ public class BdmsContext : DbContext
 
         // Join table for log file and codelists with schema name 'log_tool_type'.
         modelBuilder.Entity<LogFile>()
+            .Property(lf => lf.Name)
+            .IsRequired();
+        modelBuilder.Entity<LogFile>()
             .Property(lf => lf.NameUuid)
+            .IsRequired();
+        modelBuilder.Entity<LogFile>()
+            .Property(lf => lf.FileType)
             .IsRequired();
         modelBuilder.Entity<LogFile>()
             .HasMany(l => l.ToolTypeCodelists)
