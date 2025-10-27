@@ -82,7 +82,7 @@ export const useLogRunMutations = () => {
 
   const useUpdateLogRun = useMutation({
     mutationFn: async (logRun: LogRun) => {
-      if (logRun.logFiles && logRun.logFiles.some(file => file.file)) {
+      if (logRun.logFiles?.some(file => file.file)) {
         const uploadPromises = logRun.logFiles.map(async file => {
           file.logRunId = logRun.id;
           if (file.file) {
