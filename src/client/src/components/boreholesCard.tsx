@@ -21,7 +21,7 @@ export const BoreholesCard: FC<BoreholesCardProps> = ({ "data-cy": dataCy, title
           action={action}
         />
       )}
-      <CardContent sx={{ pt: 4, px: 3 }}>{children}</CardContent>
+      <CardContent sx={{ pt: 3, px: 3 }}>{children}</CardContent>
     </Card>
   );
 };

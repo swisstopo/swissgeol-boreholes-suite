@@ -1524,6 +1524,7 @@ public static class BdmsContextExtensions
                     .UseSeed(logFile_ids + i)
                     .RuleFor(o => o.LogRunId, _ => logRunId)
                     .Generate();
+                logFile.FileType = logFile.Name.Split('.').Last();
                 logFilesToInsert.Add(logFile);
             }
         }

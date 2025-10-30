@@ -133,9 +133,14 @@ export const FormSelect: FC<FormSelectProps> = ({
                 />
               );
             }}
-            renderOption={(props, option) => (
-              <li {...props}>{option.italic ? <em>{option.label}</em> : option.label}</li>
-            )}
+            renderOption={(props, option) => {
+              const { key, ...rest } = props;
+              return (
+                <li key={key} {...rest}>
+                  {option.italic ? <em>{option.label}</em> : option.label}
+                </li>
+              );
+            }}
             disabled={disabled}
             disableClearable
           />

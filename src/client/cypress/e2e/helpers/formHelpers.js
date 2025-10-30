@@ -243,20 +243,16 @@ export const toggleCheckbox = (fieldName, parent = "") => {
 /**
  * Evaluates the state of a checkbox form element.s
  * @param {string} fieldName The name of the checkbox field.
- * @param {number} expectedChecked The expected state of the checkbox.
+ * @param {boolean} expectedChecked The expected state of the checkbox.
  * @param {string} parent (optional) The parent of the form element.
  */
 export const evaluateCheckbox = (fieldName, expectedChecked, parent) => {
-  const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formCheckbox"]`;
-  cy.get(selector)
-    .invoke("attr", "aria-disabled")
-    .should(val => {
-      if (expectedChecked) {
-        expect(val).to.eq("true");
-      } else {
-        expect([undefined, "false"]).to.include(val);
-      }
-    });
+  const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formCheckbox"] input`;
+  if (expectedChecked) {
+    cy.get(selector).should("be.checked");
+  } else {
+    cy.get(selector).should("not.be.checked");
+  }
 };
 
 /**
