@@ -18,7 +18,6 @@ import {
   createBorehole,
   deleteBorehole,
   deleteDownloadedFile,
-  getElementByDataCy,
   goToDetailRouteAndAcceptTerms,
   readDownloadedFile,
   selectInputFile,
@@ -43,14 +42,14 @@ describe("Tests for 'Attachments' edit page.", () => {
     selectInputFile("LOUDSPATULA.txt", "text/plain");
 
     // upload file
-    getElementByDataCy("addProfile-button").should("be.visible").click();
+    cy.dataCy("addProfile-button").should("be.visible").click();
     cy.wait(["@upload-files", "@getAllAttachments"]);
   };
 
   const uploadPhoto = () => {
     selectInputFile(photoFilename, "image/jpeg");
 
-    getElementByDataCy("addPhoto-button").should("be.visible").click();
+    cy.dataCy("addPhoto-button").should("be.visible").click();
     cy.wait(["@upload-photo", "@getAllPhotos"]);
   };
 
@@ -72,7 +71,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       selectInputFile("IRATETRINITY.pdf", "application/pdf");
 
       // upload and verify file IRATETRINITY.pdf
-      getElementByDataCy("addProfile-button").should("be.visible").click();
+      cy.dataCy("addProfile-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
 
       verifyTableLength(2);
@@ -80,7 +79,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // Upload and verify file "IRATETRINITY.pdf" for the second time but with different file name.
       selectInputFile("IRATETRINITY_2.pdf", "application/pdf");
-      getElementByDataCy("addProfile-button").should("be.visible").click();
+      cy.dataCy("addProfile-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
 
       verifyTableLength(3);
@@ -88,7 +87,7 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       // Upload and verify file "WHITE   SPACE.pdf" to test file names with white spaces.
       selectInputFile("WHITE   SPACE.pdf", "application/pdf");
-      cy.get('[data-cy="addProfile-button"]').should("be.visible").click();
+      cy.dataCy("addProfile-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
       verifyTableLength(4);
       verifyRowContains("WHITE___SPACE.pdf", 3);
@@ -113,23 +112,23 @@ describe("Tests for 'Attachments' edit page.", () => {
       checkPublicStatus("WHITE___SPACE.pdf", false, false);
       startBoreholeEditing();
 
-      getElementByDataCy("public-header").find('input[type="checkbox"]').should("not.be.checked");
+      cy.dataCy("public-header").find('input[type="checkbox"]').should("not.be.checked");
       checkPublicStatus("IRATETRINITY_2.pdf", false, true);
       checkPublicStatus("WHITE___SPACE.pdf", false, true);
       checkRowWithText("IRATETRINITY_2.pdf", "public");
-      getElementByDataCy("public-header").find(".MuiCheckbox-indeterminate").should("exist");
-      getElementByDataCy("public-header").find('input[type="checkbox"]').click();
-      getElementByDataCy("public-header").find('input[type="checkbox"]').should("be.checked");
+      cy.dataCy("public-header").find(".MuiCheckbox-indeterminate").should("exist");
+      cy.dataCy("public-header").find('input[type="checkbox"]').click();
+      cy.dataCy("public-header").find('input[type="checkbox"]').should("be.checked");
       checkPublicStatus("LOUDSPATULA.txt", true, true);
       checkPublicStatus("IRATETRINITY.pdf", true, true);
       checkPublicStatus("IRATETRINITY_2.pdf", true, true);
       checkPublicStatus("WHITE___SPACE.pdf", true, true);
       unCheckRowWithText("IRATETRINITY.pdf", "public");
-      getElementByDataCy("public-header").find(".MuiCheckbox-indeterminate").should("exist");
+      cy.dataCy("public-header").find(".MuiCheckbox-indeterminate").should("exist");
       checkRowWithText("IRATETRINITY.pdf", "public");
-      getElementByDataCy("public-header").find('input[type="checkbox"]').should("be.checked");
-      getElementByDataCy("public-header").find('input[type="checkbox"]').click();
-      getElementByDataCy("public-header").find('input[type="checkbox"]').should("not.be.checked");
+      cy.dataCy("public-header").find('input[type="checkbox"]').should("be.checked");
+      cy.dataCy("public-header").find('input[type="checkbox"]').click();
+      cy.dataCy("public-header").find('input[type="checkbox"]').should("not.be.checked");
       checkPublicStatus("LOUDSPATULA.txt", false, true);
       checkPublicStatus("IRATETRINITY.pdf", false, true);
       checkPublicStatus("IRATETRINITY_2.pdf", false, true);
@@ -175,7 +174,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       startBoreholeEditing();
       // navigate to photos tab
       navigateInSidebar(SidebarMenuItem.attachments);
-      getElementByDataCy("photos-tab").click();
+      cy.dataCy("photos-tab").click();
 
       uploadPhoto();
 
@@ -195,12 +194,12 @@ describe("Tests for 'Attachments' edit page.", () => {
       readDownloadedFile(photoFilename);
 
       checkPublicStatus(photoFilename, false, true);
-      getElementByDataCy("public-header").find('input[type="checkbox"]').should("not.be.checked");
-      getElementByDataCy("public-header").find('input[type="checkbox"]').click();
-      getElementByDataCy("public-header").find('input[type="checkbox"]').should("be.checked");
+      cy.dataCy("public-header").find('input[type="checkbox"]').should("not.be.checked");
+      cy.dataCy("public-header").find('input[type="checkbox"]').click();
+      cy.dataCy("public-header").find('input[type="checkbox"]').should("be.checked");
       checkPublicStatus(photoFilename, true, true);
       unCheckRowWithText(photoFilename, "public");
-      getElementByDataCy("public-header").find('input[type="checkbox"]').should("not.be.checked");
+      cy.dataCy("public-header").find('input[type="checkbox"]').should("not.be.checked");
       checkRowWithText(photoFilename, "public");
       saveWithSaveBar();
 
@@ -254,14 +253,14 @@ describe("Tests for 'Attachments' edit page.", () => {
       startBoreholeEditing();
 
       navigateInSidebar(SidebarMenuItem.attachments);
-      getElementByDataCy("documents-tab").click();
+      cy.dataCy("documents-tab").click();
       cy.wait("@getAllDocuments");
 
       // create 2 documents
-      getElementByDataCy("addDocument-button").should("be.visible").click();
+      cy.dataCy("addDocument-button").should("be.visible").click();
       cy.wait(["@document_POST", "@getAllDocuments"]);
       verifyTableLength(1);
-      getElementByDataCy("addDocument-button").should("be.visible").click();
+      cy.dataCy("addDocument-button").should("be.visible").click();
       cy.wait(["@document_POST", "@getAllDocuments"]);
       verifyTableLength(2);
 
@@ -275,7 +274,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       checkRowWithText("https://localhost/document2.pdf", "public");
 
       // add another document
-      getElementByDataCy("addDocument-button").should("be.visible").click();
+      cy.dataCy("addDocument-button").should("be.visible").click();
       cy.wait(["@document_POST", "@getAllDocuments"]);
       verifyTableLength(3);
 
@@ -320,10 +319,10 @@ describe("Tests for 'Attachments' edit page.", () => {
       startBoreholeEditing();
 
       navigateInSidebar(SidebarMenuItem.attachments);
-      getElementByDataCy("documents-tab").click();
+      cy.dataCy("documents-tab").click();
       cy.wait("@getAllDocuments");
 
-      getElementByDataCy("addDocument-button").should("be.visible").click();
+      cy.dataCy("addDocument-button").should("be.visible").click();
       cy.wait(["@document_POST", "@getAllDocuments"]);
       verifyTableLength(1);
       setTextInRow(0, "document-url", "https://localhost/document1.pdf");

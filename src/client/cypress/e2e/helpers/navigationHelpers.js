@@ -1,4 +1,4 @@
-import { checkElementColorByDataCy, createBaseSelector, getElementByDataCy, handlePrompt } from "./testHelpers.js";
+import { checkElementColorByDataCy, createBaseSelector, handlePrompt } from "./testHelpers.js";
 import "cypress-real-events/support";
 
 export const SidebarMenuItem = {
@@ -69,7 +69,7 @@ export const navigateToTabWithTitle = (title, parent) => {
 };
 
 export const isActiveTab = tab => {
-  getElementByDataCy(tab).should("have.css", "color", activeColor);
+  cy.dataCy(tab).should("have.css", "color", activeColor);
 };
 
 export const isInactiveTab = (tab, hasContent) => {
@@ -88,14 +88,14 @@ export const isInactiveBoreholeTab = (tab, hasContent) => {
 };
 
 export const navigateInBorehole = (tab, promptSelector) => {
-  getElementByDataCy(`${tab}-tab`).click();
+  cy.dataCy(`${tab}-tab`).click();
   if (promptSelector) {
     handlePrompt(null, promptSelector);
   }
 
   switch (tab) {
     case BoreholeTab.general:
-      getElementByDataCy("typeId-formSelect").should("exist");
+      cy.dataCy("typeId-formSelect").should("exist");
       break;
     case BoreholeTab.sections:
       cy.wait("@section_GET");
@@ -116,7 +116,7 @@ export const navigateInBorehole = (tab, promptSelector) => {
 };
 
 export const navigateInStratigraphy = tab => {
-  getElementByDataCy(`${tab}-tab`).click();
+  cy.dataCy(`${tab}-tab`).click();
 
   switch (tab) {
     case StratigraphyTab.lithology:
@@ -135,19 +135,19 @@ export const navigateInStratigraphy = tab => {
     expect(location.hash).to.eq(`#${tab}`);
   });
 
-  getElementByDataCy(`${tab}-tab`).should("have.class", "Mui-selected");
+  cy.dataCy(`${tab}-tab`).should("have.class", "Mui-selected");
 };
 
 const checkThatParentOpen = menuItem => {
   const parent = sidebarParentMap[menuItem];
   if (parent) {
-    getElementByDataCy(`${menuItem}-menu-item`).should("be.visible");
+    cy.dataCy(`${menuItem}-menu-item`).should("be.visible");
   }
 };
 
 export const isActiveMenuItem = (menuItem, hasContent) => {
   const selector = `${menuItem}-menu-item`;
-  getElementByDataCy(selector).should("have.css", "border-left-color", activeColor);
+  cy.dataCy(selector).should("have.css", "border-left-color", activeColor);
 
   if (hasContent === true) {
     checkElementColorByDataCy(selector, activeColor);
@@ -168,8 +168,8 @@ export const isMenuItemWithoutContent = menuItem => {
 
 export const navigateInSidebar = (menuItem, promptSelector) => {
   checkThatParentOpen(menuItem);
-  getElementByDataCy(`${menuItem}-menu-item`).should("be.visible");
-  getElementByDataCy(`${menuItem}-menu-item`).realClick();
+  cy.dataCy(`${menuItem}-menu-item`).should("be.visible");
+  cy.dataCy(`${menuItem}-menu-item`).realClick();
 
   if (promptSelector) {
     handlePrompt(null, promptSelector);
@@ -180,7 +180,7 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/location$/);
       });
-      getElementByDataCy("borehole_identifier-formInput").should("exist");
+      cy.dataCy("borehole_identifier-formInput").should("exist");
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.borehole:
@@ -188,7 +188,7 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
         expect(location.pathname).to.match(/^\/\d+\/borehole$/);
         expect(location.hash).to.eq("#general");
       });
-      getElementByDataCy("typeId-formSelect").should("exist");
+      cy.dataCy("typeId-formSelect").should("exist");
       isActiveBoreholeTab(BoreholeTab.general);
       isActiveMenuItem(menuItem);
       break;
@@ -213,10 +213,10 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.hydrogeology:
-      getElementByDataCy("wateringress-menu-item").should("be.visible");
-      getElementByDataCy("groundwaterlevelmeasurement-menu-item").should("be.visible");
-      getElementByDataCy("fieldmeasurement-menu-item").should("be.visible");
-      getElementByDataCy("hydrotest-menu-item").should("be.visible");
+      cy.dataCy("wateringress-menu-item").should("be.visible");
+      cy.dataCy("groundwaterlevelmeasurement-menu-item").should("be.visible");
+      cy.dataCy("fieldmeasurement-menu-item").should("be.visible");
+      cy.dataCy("hydrotest-menu-item").should("be.visible");
       break;
     case SidebarMenuItem.waterIngress:
       cy.wait("@wateringress_GET");

@@ -7,7 +7,6 @@ import {
   setSelect,
 } from "../helpers/formHelpers.js";
 import {
-  getElementByDataCy,
   goToRouteAndAcceptTerms,
   newEditableBorehole,
   newUneditableBorehole,
@@ -123,7 +122,7 @@ function clickCoordinateLabelingButton() {
 }
 
 function assertLabelingAlertText(expectedText) {
-  getElementByDataCy("labeling-alert")
+  cy.dataCy("labeling-alert")
     .invoke("text")
     .then(actualText => {
       cy.log("Actual Alert Text:", actualText); // Logs the found text in Cypress
@@ -161,18 +160,18 @@ function moveMouseOntoMap() {
 }
 
 function openPanel() {
-  getElementByDataCy("labeling-toggle-button").click();
+  cy.dataCy("labeling-toggle-button").click();
   cy.get('[data-cy="labeling-panel"]').should("exist");
 }
 
 function closePanel() {
-  getElementByDataCy("labeling-toggle-button").click();
+  cy.dataCy("labeling-toggle-button").click();
   cy.get('[data-cy="labeling-panel"]').should("not.exist");
 }
 
 function selectEmptyPhotoTab() {
-  getElementByDataCy("labeling-tab-photo").click();
-  getElementByDataCy("labeling-file-selector").contains("No photo has been uploaded yet.");
+  cy.dataCy("labeling-tab-photo").click();
+  cy.dataCy("labeling-file-selector").contains("No photo has been uploaded yet.");
 }
 
 function uploadPhoto() {
@@ -195,8 +194,8 @@ describe("Test labeling tool", () => {
 
     // panel is closed by default
     startBoreholeEditing();
-    getElementByDataCy("labeling-toggle-button").should("exist");
-    getElementByDataCy("labeling-panel").should("not.exist");
+    cy.dataCy("labeling-toggle-button").should("exist");
+    cy.dataCy("labeling-panel").should("not.exist");
     // panel can be opened and closed
     openPanel();
     closePanel();
@@ -211,8 +210,8 @@ describe("Test labeling tool", () => {
 
     stopBoreholeEditing();
     // panel stays open when editing stops
-    getElementByDataCy("labeling-toggle-button").should("exist");
-    getElementByDataCy("labeling-panel").should("exist");
+    cy.dataCy("labeling-toggle-button").should("exist");
+    cy.dataCy("labeling-panel").should("exist");
     closePanel();
     openPanel();
     cy.get('[data-cy="labeling-panel-position-bottom"]').should("have.class", "Mui-selected");
@@ -223,19 +222,19 @@ describe("Test labeling tool", () => {
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutProfiles();
 
-    getElementByDataCy("labeling-file-dropzone").attachFile("import/borehole_attachment_1.pdf", {
+    cy.dataCy("labeling-file-dropzone").attachFile("import/borehole_attachment_1.pdf", {
       subjectType: "drag-n-drop",
     });
     cy.wait(["@getAllAttachments", "@upload-files", "@borehole_by_id"]);
-    getElementByDataCy("labeling-file-button-select").contains("borehole_attachment_1.pdf");
+    cy.dataCy("labeling-file-button-select").contains("borehole_attachment_1.pdf");
 
     reloadPanel();
     cy.wait(["@getAllAttachments"]);
-    getElementByDataCy("labeling-file-selector").should("not.exist");
-    getElementByDataCy("labeling-file-button-select").contains("borehole_attachment_1.pdf");
+    cy.dataCy("labeling-file-selector").should("not.exist");
+    cy.dataCy("labeling-file-button-select").contains("borehole_attachment_1.pdf");
 
     // Simulate file upload using Add profile in labeling-file-button-select
-    getElementByDataCy("labeling-panel").find('input[type="file"]').attachFile("import/borehole_attachment_3.pdf", {
+    cy.dataCy("labeling-panel").find('input[type="file"]').attachFile("import/borehole_attachment_3.pdf", {
       subjectType: "input",
     });
     cy.wait("@getAllAttachments");
@@ -260,12 +259,12 @@ describe("Test labeling tool", () => {
       expect(interactions.some(interaction => interaction.constructor.name === "Draw")).to.be.false;
     });
     stopBoreholeEditing();
-    getElementByDataCy("editingstop-button").should("not.exist");
-    getElementByDataCy("edit-button").should("be.visible");
-    getElementByDataCy("labeling-toggle-button").should("exist");
-    getElementByDataCy("labeling-panel").should("exist");
+    cy.dataCy("editingstop-button").should("not.exist");
+    cy.dataCy("edit-button").should("be.visible");
+    cy.dataCy("labeling-toggle-button").should("exist");
+    cy.dataCy("labeling-panel").should("exist");
 
-    getElementByDataCy("text-extraction-button").should("not.exist");
+    cy.dataCy("text-extraction-button").should("not.exist");
 
     //can zoom and rotate
     cy.get('[data-cy="labeling-panel"] [data-cy="zoom-in-button"]').click();
@@ -275,20 +274,20 @@ describe("Test labeling tool", () => {
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
 
-    getElementByDataCy("labeling-file-button-select").click();
+    cy.dataCy("labeling-file-button-select").click();
     assertSelectContent(["borehole_attachment_1.pdf", "borehole_attachment_3.pdf", "WOLFHEART.pdf"]);
     cy.contains("Add profile").should("not.exist");
     // can select different file from dropdown
     cy.get(".MuiListItem-root").contains("WOLFHEART.pdf").click();
-    getElementByDataCy("labeling-file-button-select").contains("WOLFHEART.pdf");
+    cy.dataCy("labeling-file-button-select").contains("WOLFHEART.pdf");
 
     reloadPanel();
-    getElementByDataCy("labeling-file-selector").contains("Profiles").should("exist");
-    getElementByDataCy("addfile-button").should("not.exist");
-    getElementByDataCy("file-button").contains("borehole_attachment_1.pdf");
-    getElementByDataCy("file-button").contains("borehole_attachment_3.pdf");
-    getElementByDataCy("file-button").contains("WOLFHEART.pdf");
-    getElementByDataCy("file-button").contains("borehole_attachment_3.pdf").click();
+    cy.dataCy("labeling-file-selector").contains("Profiles").should("exist");
+    cy.dataCy("addfile-button").should("not.exist");
+    cy.dataCy("file-button").contains("borehole_attachment_1.pdf");
+    cy.dataCy("file-button").contains("borehole_attachment_3.pdf");
+    cy.dataCy("file-button").contains("WOLFHEART.pdf");
+    cy.dataCy("file-button").contains("borehole_attachment_3.pdf").click();
     waitForLabelingImageLoaded();
   });
 
@@ -447,14 +446,14 @@ describe("Test labeling tool", () => {
     toggleLabelingPanelWithoutProfiles();
     selectLabelingAttachment();
     assertPageCount(1, 3);
-    getElementByDataCy("labeling-page-next").click();
+    cy.dataCy("labeling-page-next").click();
     waitForLabelingImageLoaded();
     assertPageCount(2, 3);
-    getElementByDataCy("labeling-page-next").click();
+    cy.dataCy("labeling-page-next").click();
     waitForLabelingImageLoaded();
     assertPageCount(3, 3);
     cy.wait("@extraction-file-info");
-    getElementByDataCy("text-extraction-button").click();
+    cy.dataCy("text-extraction-button").click();
     assertDrawTooltipInvisible();
     moveMouseOntoMap();
     assertDrawTooltip("Draw box around any text");
@@ -466,7 +465,7 @@ describe("Test labeling tool", () => {
     cy.get('button[aria-label="Close"]').click(); // close alert
 
     // draw box around text
-    getElementByDataCy("text-extraction-button").click();
+    cy.dataCy("text-extraction-button").click();
     assertDrawTooltipInvisible();
     moveMouseOntoMap();
     assertDrawTooltip("Draw box around any text");
@@ -476,7 +475,7 @@ describe("Test labeling tool", () => {
     assertClipboardContent("Some information without coordinates");
 
     // draw box around first word and small part of second word
-    getElementByDataCy("text-extraction-button").click();
+    cy.dataCy("text-extraction-button").click();
     assertDrawTooltipInvisible();
     moveMouseOntoMap();
     assertDrawTooltip("Draw box around any text");
@@ -490,7 +489,7 @@ describe("Test labeling tool", () => {
     assertDrawTooltipInvisible();
     moveMouseOntoMap();
     assertDrawTooltip("Draw box around north & east coordinates");
-    getElementByDataCy("text-extraction-button").click();
+    cy.dataCy("text-extraction-button").click();
     assertDrawTooltipInvisible();
     moveMouseOntoMap();
     assertDrawTooltip("Draw box around any text");
@@ -541,7 +540,7 @@ describe("Test labeling tool", () => {
     toggleLabelingPanelWithoutProfiles();
     selectEmptyPhotoTab();
 
-    getElementByDataCy("labeling-file-selector-manage-photos").click();
+    cy.dataCy("labeling-file-selector-manage-photos").click();
     cy.location()
       .its("href")
       .should("match", /\/attachments#photos$/);
@@ -549,21 +548,21 @@ describe("Test labeling tool", () => {
     uploadPhoto();
     reloadPanel();
 
-    getElementByDataCy("labeling-file-selector").should("not.exist");
-    getElementByDataCy("labeling-file-button-select").contains("12.00 - 34.00");
+    cy.dataCy("labeling-file-selector").should("not.exist");
+    cy.dataCy("labeling-file-button-select").contains("12.00 - 34.00");
 
     // text extraction is not available for photos
-    getElementByDataCy("text-extraction-button").should("not.exist");
+    cy.dataCy("text-extraction-button").should("not.exist");
 
     // can zoom and rotate
-    getElementByDataCy("zoom-in-button").click();
-    getElementByDataCy("rotate-button").click();
+    cy.dataCy("zoom-in-button").click();
+    cy.dataCy("rotate-button").click();
     cy.window().then(win => {
       const view = win.labelingImage.getView();
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
 
-    getElementByDataCy("labeling-panel")
+    cy.dataCy("labeling-panel")
       .find('input[type="file"]')
       .attachFile({
         fileContent: new Blob([0]),
@@ -574,19 +573,19 @@ describe("Test labeling tool", () => {
     stopBoreholeEditing();
 
     // can navigate with previous button
-    getElementByDataCy("labeling-file-button-select").contains("123.00 - 456.00");
-    getElementByDataCy("labeling-page-previous").click();
-    getElementByDataCy("labeling-file-button-select").contains("12.00 - 34.00");
+    cy.dataCy("labeling-file-button-select").contains("123.00 - 456.00");
+    cy.dataCy("labeling-page-previous").click();
+    cy.dataCy("labeling-file-button-select").contains("12.00 - 34.00");
 
     // can search in photo select list
-    getElementByDataCy("labeling-file-button-select").click();
+    cy.dataCy("labeling-file-button-select").click();
     assertSelectContent(["12.00 - 34.00", "123.00 - 456.00"]);
-    getElementByDataCy("labeling-file-button-select-search").type("456");
+    cy.dataCy("labeling-file-button-select-search").type("456");
     assertSelectContent(["123.00 - 456.00"]);
 
     // can save other changes on a borehole with photos
-    getElementByDataCy("labeling-tab-profile").click({ force: true }); // close select
-    getElementByDataCy("labeling-toggle-button").click();
+    cy.dataCy("labeling-tab-profile").click({ force: true }); // close select
+    cy.dataCy("labeling-toggle-button").click();
     navigateInSidebar(SidebarMenuItem.borehole);
     startBoreholeEditing();
     setSelect("purposeId", 1);

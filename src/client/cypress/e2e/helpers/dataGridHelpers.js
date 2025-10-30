@@ -61,7 +61,7 @@ export const waitForTableData = () => {
 };
 
 export const showTableAndWaitForData = () => {
-  cy.get('[data-cy="showTableButton"]').click();
+  cy.dataCy("showTableButton").click();
   waitForTableData();
 };
 
