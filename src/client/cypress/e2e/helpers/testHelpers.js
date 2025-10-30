@@ -195,13 +195,13 @@ export const login = user => {
 
 export const goToDetailRouteAndAcceptTerms = route => {
   cy.visit(route);
-  cy.get('[data-cy="accept-button"]').click();
+  cy.dataCy("accept-button").click();
   cy.wait(["@borehole_by_id", "@get-current-user"]);
 };
 
 export const goToRouteAndAcceptTerms = route => {
   cy.visit(route);
-  cy.get('[data-cy="accept-button"]').click();
+  cy.dataCy("accept-button").click();
 };
 
 /**
@@ -267,7 +267,7 @@ export const newEditableBorehole = () => {
 };
 
 export const newUneditableBorehole = () => {
-  cy.get('[data-cy="new-borehole-button"]').click();
+  cy.dataCy("new-borehole-button").click();
   cy.contains("button", "Create").click();
   const id = waitForCreation();
   cy.wait(["@borehole_by_id"]);
@@ -368,22 +368,18 @@ export const stopBoreholeEditing = discardChanges => {
   stopEditing();
 
   if (discardChanges) {
-    cy.get('[data-cy="prompt"]').find(`[data-cy="discardchanges-button"]`).click();
+    cy.dataCy("prompt").find(`[data-cy="discardchanges-button"]`).click();
   }
   cy.wait(["@update-borehole", "@borehole_by_id"]);
 };
 
 export const returnToOverview = () => {
-  cy.get('[data-cy="backButton"]').click();
+  cy.dataCy("backButton").click();
   cy.wait(["@edit_list", "@borehole"]);
 };
 
-export const getElementByDataCy = attribute => {
-  return cy.get(`[data-cy=${attribute}]`);
-};
-
 export const checkElementColorByDataCy = (attribute, expectedColor) => {
-  getElementByDataCy(attribute).should("have.css", "color", expectedColor);
+  cy.dataCy(attribute).should("have.css", "color", expectedColor);
 };
 
 export const deleteBorehole = id => {
@@ -791,11 +787,11 @@ export const createInstrument = (completionId, casingId, name, statusId, kindId,
 };
 
 export const handlePrompt = (message, action) => {
-  cy.get('[data-cy="prompt"]').should("be.visible");
+  cy.dataCy("prompt").should("be.visible");
   if (message && message.length > 0) {
     cy.contains(message);
   }
-  cy.get('[data-cy="prompt"]').find(`[data-cy="${action.toLowerCase()}-button"]`).click();
+  cy.dataCy("prompt").find(`[data-cy="${action.toLowerCase()}-button"]`).click();
 };
 
 export const createBaseSelector = parent => {
@@ -807,8 +803,8 @@ export const createBaseSelector = parent => {
 };
 
 export const selectLanguage = language => {
-  cy.get('[data-cy="language-button-select"]').click({ force: true });
-  cy.get(`[data-cy="${language.toLowerCase()}-button-select-item"]`).click({ force: true });
+  cy.dataCy("language-button-select").click({ force: true });
+  cy.dataCy(`${language.toLowerCase()}-button-select-item`).click({ force: true });
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(1000);
 };
@@ -837,7 +833,7 @@ export const dropGeometryCSVFile = () => {
     });
     geometryFile.items.add(file);
   });
-  cy.get('[data-cy="import-geometry-input"]').within(() => {
+  cy.dataCy("import-geometry-input").within(() => {
     cy.get("input[type=file]", { force: true }).then(input => {
       input[0].files = geometryFile.files;
       input[0].dispatchEvent(new Event("change", { bubbles: true }));

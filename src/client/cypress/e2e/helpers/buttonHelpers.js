@@ -1,26 +1,26 @@
-import { createBaseSelector, getElementByDataCy } from "./testHelpers";
+import { createBaseSelector } from "./testHelpers";
 
 /**
  * Clicks on the save button and waits for borehole update.
  * @param {string} parent (optional) The parent of the button.
  */
 export const saveWithSaveBar = parent => {
-  getElementByDataCy("save-bar-text").should("contain", "Unsaved changes");
+  cy.dataCy("save-bar-text").should("contain", "Unsaved changes");
   saveForm(parent);
 
-  getElementByDataCy("save-bar-text").should("contain", "Changes saved");
-  getElementByDataCy("save-bar-text").should("not.exist");
+  cy.dataCy("save-bar-text").should("contain", "Changes saved");
+  cy.dataCy("save-bar-text").should("not.exist");
 };
 
 export const verifyNoUnsavedChanges = () => {
-  cy.get('[data-cy="save-button"]').should("be.disabled");
-  cy.get('[data-cy="discardchanges-button"]').should("be.disabled");
+  cy.dataCy("save-button").should("be.disabled");
+  cy.dataCy("discardchanges-button").should("be.disabled");
   cy.contains("Unsaved changes").should("not.exist");
 };
 
 export const verifyUnsavedChanges = () => {
-  cy.get('[data-cy="save-button"]').should("not.be.disabled");
-  cy.get('[data-cy="discardchanges-button"]').should("not.be.disabled");
+  cy.dataCy("save-button").should("not.be.disabled");
+  cy.dataCy("discardchanges-button").should("not.be.disabled");
   cy.contains("Unsaved changes").should("exist");
 };
 
@@ -156,7 +156,7 @@ export const copyItem = parent => {
  */
 export const addItem = itemLabel => {
   cy.get(".MuiCircularProgress-root").should("not.exist");
-  const button = () => cy.get(`[data-cy="${itemLabel.toLowerCase()}-button"]`);
+  const button = () => cy.dataCy(`${itemLabel.toLowerCase()}-button`);
   button().scrollIntoView();
   button().should("be.visible");
   button().should("be.enabled");
@@ -167,7 +167,7 @@ export const addItem = itemLabel => {
 };
 
 export const addStratigraphy = () => {
-  getElementByDataCy("addStratigraphy-button-select").scrollIntoView();
-  getElementByDataCy("addStratigraphy-button-select").click();
-  getElementByDataCy("addEmpty-button-select-item").click();
+  cy.dataCy("addStratigraphy-button-select").scrollIntoView();
+  cy.dataCy("addStratigraphy-button-select").click();
+  cy.dataCy("addEmpty-button-select-item").click();
 };

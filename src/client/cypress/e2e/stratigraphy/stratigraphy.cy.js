@@ -16,7 +16,6 @@ import {
 import {
   createBorehole,
   createStratigraphyV2,
-  getElementByDataCy,
   goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   handlePrompt,
@@ -44,8 +43,8 @@ describe("Tests for stratigraphy", () => {
       goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy?dev=true`);
       cy.wait("@stratigraphyV2_by_borehole_GET");
       startBoreholeEditing();
-      getElementByDataCy("extractstratigraphyfromprofile-button").click();
-      getElementByDataCy("addProfile-button").click();
+      cy.dataCy("extractstratigraphyfromprofile-button").click();
+      cy.dataCy("addProfile-button").click();
 
       cy.get('input[type="file"]').attachFile("labeling_attachment.pdf");
       cy.wait("@extract-stratigraphy", { timeout: 60000 }).then(interception => {
@@ -62,13 +61,13 @@ describe("Tests for stratigraphy", () => {
       cy.wait("@stratigraphyV2_by_borehole_GET");
       startBoreholeEditing();
 
-      getElementByDataCy("addemptystratigraphy-button").click();
+      cy.dataCy("addemptystratigraphy-button").click();
       cy.location().should(location => {
         expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/new`);
       });
       setInput("name", "First Stratigraphy");
-      getElementByDataCy("stratigraphy-header").contains("First Stratigraphy").should("not.exist");
-      getElementByDataCy("isPrimary-formCheckbox").should("not.exist");
+      cy.dataCy("stratigraphy-header").contains("First Stratigraphy").should("not.exist");
+      cy.dataCy("isPrimary-formCheckbox").should("not.exist");
       saveWithSaveBar();
       cy.wait("@stratigraphyV2_POST").then(interception => {
         cy.wait("@stratigraphyV2_by_borehole_GET");
@@ -80,16 +79,16 @@ describe("Tests for stratigraphy", () => {
         });
 
         // Shows the title after saving
-        getElementByDataCy("stratigraphy-header").contains("First Stratigraphy").should("exist");
-        getElementByDataCy("delete-button").should("exist");
-        getElementByDataCy("duplicate-button").should("exist");
+        cy.dataCy("stratigraphy-header").contains("First Stratigraphy").should("exist");
+        cy.dataCy("delete-button").should("exist");
+        cy.dataCy("duplicate-button").should("exist");
 
         // Shows tabs when more than one stratigraphy is available
         addStratigraphy();
         cy.location().should(location => {
           expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/new`);
         });
-        getElementByDataCy("stratigraphy-header").should("not.exist");
+        cy.dataCy("stratigraphy-header").should("not.exist");
         checkTabsByTitles(
           [{ title: "First Stratigraphy" }, { title: "Not specified", active: true }],
           null,
@@ -223,7 +222,7 @@ describe("Tests for stratigraphy", () => {
         });
 
         // Can duplicate existing stratigraphy
-        getElementByDataCy("duplicate-button").click();
+        cy.dataCy("duplicate-button").click();
         cy.wait("@stratigraphyV2_COPY").then(interception => {
           cy.wait(["@stratigraphyV2_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
           const copiedStratigraphyId = interception.response.body;
@@ -262,7 +261,7 @@ describe("Tests for stratigraphy", () => {
 
           // Cannot delete primary stratigraphy if multiple stratigraphies are available
           evaluateCheckbox("isPrimary", true);
-          getElementByDataCy("delete-button").should("be.disabled").parent().trigger("mouseover");
+          cy.dataCy("delete-button").should("be.disabled").parent().trigger("mouseover");
           cy.contains("The main stratigraphy cannot be deleted.").should("be.visible");
 
           navigateToTabWithTitle("GATETRUCK");
@@ -271,7 +270,7 @@ describe("Tests for stratigraphy", () => {
           });
           checkTabsByTitles([{ title: "BATONTRUCK" }, { title: "GATETRUCK", active: true }], null, "stratigraphy-tab");
           evaluateCheckbox("isPrimary", false);
-          getElementByDataCy("delete-button").click();
+          cy.dataCy("delete-button").click();
           handlePrompt(
             "Do you really want to delete this entry? The entry will be permanently deleted from the database.",
             "delete",
@@ -282,9 +281,9 @@ describe("Tests for stratigraphy", () => {
             expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/${stratigraphyId1}`);
           });
 
-          getElementByDataCy("stratigraphy-header").contains("BATONTRUCK").should("exist");
-          getElementByDataCy("delete-button").should("be.enabled");
-          getElementByDataCy("delete-button").click();
+          cy.dataCy("stratigraphy-header").contains("BATONTRUCK").should("exist");
+          cy.dataCy("delete-button").should("be.enabled");
+          cy.dataCy("delete-button").click();
           handlePrompt(
             "Do you really want to delete this entry? The entry will be permanently deleted from the database.",
             "delete",
@@ -309,7 +308,7 @@ describe("Tests for stratigraphy", () => {
       startBoreholeEditing();
 
       // Can reset new stratigraphy with changes
-      getElementByDataCy("addemptystratigraphy-button").click();
+      cy.dataCy("addemptystratigraphy-button").click();
       cy.location().should(location => {
         expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/new`);
       });
@@ -323,20 +322,20 @@ describe("Tests for stratigraphy", () => {
       });
 
       // Can reset existing stratigraphy with changes
-      getElementByDataCy("addemptystratigraphy-button").click();
+      cy.dataCy("addemptystratigraphy-button").click();
       cy.location().should(location => {
         expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/new`);
       });
       setInput("name", "CHESSCLUSTER");
       saveForm();
       cy.wait(["@stratigraphyV2_POST", "@stratigraphyV2_by_borehole_GET"]);
-      getElementByDataCy("stratigraphy-header").contains("CHESSCLUSTER").should("exist");
+      cy.dataCy("stratigraphy-header").contains("CHESSCLUSTER").should("exist");
       verifyNoUnsavedChanges();
       setInput("name", "DISHMUTANT");
       verifyUnsavedChanges();
       discardChanges();
       evaluateInput("name", "CHESSCLUSTER");
-      getElementByDataCy("stratigraphy-header").contains("CHESSCLUSTER").should("exist");
+      cy.dataCy("stratigraphy-header").contains("CHESSCLUSTER").should("exist");
     });
   });
 
@@ -364,16 +363,13 @@ describe("Tests for stratigraphy", () => {
         cy.wait("@stratigraphyV2_by_borehole_GET");
 
         // Does not show main stratigraphy chip if only one stratigraphy is available
-        getElementByDataCy("stratigraphy-header").find(".MuiChip-root").should("have.length", 0);
+        cy.dataCy("stratigraphy-header").find(".MuiChip-root").should("have.length", 0);
         startBoreholeEditing();
         setInput("date", "2024-03-20");
         saveWithSaveBar();
         cy.wait(["@stratigraphyV2_PUT", "@stratigraphyV2_by_borehole_GET"]);
         stopBoreholeEditing();
-        getElementByDataCy("stratigraphy-header")
-          .find(".MuiChip-root")
-          .should("have.length", 1)
-          .and("contain", "20.03.2024");
+        cy.dataCy("stratigraphy-header").find(".MuiChip-root").should("have.length", 1).and("contain", "20.03.2024");
 
         startBoreholeEditing();
         addStratigraphy();
@@ -384,9 +380,9 @@ describe("Tests for stratigraphy", () => {
         saveWithSaveBar();
         cy.wait(["@stratigraphyV2_POST", "@stratigraphyV2_by_borehole_GET"]);
         stopBoreholeEditing();
-        getElementByDataCy("stratigraphy-header").should("not.exist");
+        cy.dataCy("stratigraphy-header").should("not.exist");
         navigateToTabWithTitle("JOLLYBOUNCE");
-        getElementByDataCy("stratigraphy-content")
+        cy.dataCy("stratigraphy-content")
           .find(".MuiChip-root")
           .should("have.length", 2)
           .and("contain", "Main stratigraphy")

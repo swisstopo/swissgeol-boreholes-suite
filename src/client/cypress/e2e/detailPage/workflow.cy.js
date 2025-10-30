@@ -22,7 +22,6 @@ import {
   createBorehole,
   createBoreholeWithCompleteDataset,
   dropGeometryCSVFile,
-  getElementByDataCy,
   goToDetailRouteAndAcceptTerms,
   loginAsEditor,
   selectInputFile,
@@ -49,7 +48,7 @@ describe("Tests the publication workflow.", () => {
     goToDetailRouteAndAcceptTerms(`/${id}/status`);
     cy.wait("@borehole_by_id");
     startBoreholeEditing();
-    getElementByDataCy("workflow-status-chip").should("contain", "Draft");
+    cy.dataCy("workflow-status-chip").should("contain", "Draft");
     assertWorkflowSteps("Draft");
   }
 
@@ -133,7 +132,7 @@ describe("Tests the publication workflow.", () => {
       cy.get(".assignee").should("contain", "validator user");
 
       // assert status update in header
-      getElementByDataCy("workflow-status-chip").should("contain", "Review");
+      cy.dataCy("workflow-status-chip").should("contain", "Review");
       stopBoreholeEditing();
     });
   });
@@ -250,10 +249,10 @@ describe("Tests the publication workflow.", () => {
       cy.get("sgc-text-area").find("textarea").type("I published a borehole!");
       cy.get("sgc-modal-wrapper").find("sgc-button").contains("Publish").click();
       assertWorkflowSteps("Reviewed");
-      getElementByDataCy("workflow-status-chip").should("contain", "Published");
+      cy.dataCy("workflow-status-chip").should("contain", "Published");
       cy.get("sgc-workflow-step").contains("Published").should("exist");
       // no restriction chip in published status
-      getElementByDataCy("restricted-chip").should("not.exist");
+      cy.dataCy("restricted-chip").should("not.exist");
 
       cy.get("sgc-tab").contains("History").click();
       checkWorkflowChangeContent("Admin User", "Status changed from Reviewed to Published", "I published a borehole!");
@@ -263,23 +262,23 @@ describe("Tests the publication workflow.", () => {
   function AssertHeaderChips(status, assignee, hasRequestedChanges = false, restrictionStatus = null) {
     // Special case where enum value does not match translation
     if (status === WorkflowStatus.InReview) {
-      getElementByDataCy("workflow-status-chip").should("contain", "Review");
+      cy.dataCy("workflow-status-chip").should("contain", "Review");
     } else {
-      getElementByDataCy("workflow-status-chip").should("contain", status);
+      cy.dataCy("workflow-status-chip").should("contain", status);
     }
-    getElementByDataCy("workflow-status-chip").should(
+    cy.dataCy("workflow-status-chip").should(
       "have.class",
       `MuiChip-color${capitalizeFirstLetter(colorStatusMap[status])}`,
     );
     if (assignee != null) {
-      getElementByDataCy("workflow-assignee-chip").should("contain", assignee);
+      cy.dataCy("workflow-assignee-chip").should("contain", assignee);
     }
     if (hasRequestedChanges) {
-      getElementByDataCy("workflow-changes-requested-chip").should("be.visible");
+      cy.dataCy("workflow-changes-requested-chip").should("be.visible");
     }
     if (restrictionStatus != null) {
-      getElementByDataCy("restricted-chip").should("be.visible");
-      getElementByDataCy("restricted-chip").should("contain", restrictionStatus);
+      cy.dataCy("restricted-chip").should("be.visible");
+      cy.dataCy("restricted-chip").should("contain", restrictionStatus);
     }
   }
 
@@ -305,12 +304,12 @@ describe("Tests the publication workflow.", () => {
       AssertHeaderChips(WorkflowStatus.Draft);
       AssignNewUser("Editor User");
       AssertHeaderChips(WorkflowStatus.Draft, "Editor User");
-      getElementByDataCy("review-button").should("not.exist");
+      cy.dataCy("review-button").should("not.exist");
       AssignNewUser("Admin User");
       AssertHeaderChips(WorkflowStatus.Draft, "Admin User");
       // Button to start review is only visible if current user is the assignee
-      getElementByDataCy("review-button").should("exist");
-      getElementByDataCy("review-button").click();
+      cy.dataCy("review-button").should("exist");
+      cy.dataCy("review-button").click();
       AssertHeaderChips(WorkflowStatus.InReview, "Admin User");
       assertWorkflowSteps("In review");
 
@@ -325,25 +324,25 @@ describe("Tests the publication workflow.", () => {
       clickSgcButtonWithContent("Publish");
       cy.get("sgc-modal-wrapper").find("sgc-button").contains("Publish").click();
       AssertHeaderChips(WorkflowStatus.Published);
-      getElementByDataCy("workflow-additional-reviewed-chip").should("be.visible");
+      cy.dataCy("workflow-additional-reviewed-chip").should("be.visible");
       manuallyResetStatusToDraft();
 
       AssertHeaderChips(WorkflowStatus.Draft, "Admin User");
-      getElementByDataCy("review-button").should("exist");
+      cy.dataCy("review-button").should("exist");
     });
   });
 
   function assertAllMenuItemsHaveReviewStatus(status) {
-    getElementByDataCy("location-menu-item").should("have.attr", "reviewed", status);
-    getElementByDataCy("borehole-menu-item").should("have.attr", "reviewed", status);
-    getElementByDataCy("stratigraphy-menu-item").should("have.attr", "reviewed", status);
-    getElementByDataCy("completion-menu-item").should("have.attr", "reviewed", status);
-    getElementByDataCy("hydrogeology-menu-item").should("have.attr", "reviewed", status);
-    getElementByDataCy("wateringress-menu-item").should("have.attr", "reviewed", status);
-    getElementByDataCy("groundwaterlevelmeasurement-menu-item").should("have.attr", "reviewed", status);
-    getElementByDataCy("hydrotest-menu-item").should("have.attr", "reviewed", status);
-    getElementByDataCy("fieldmeasurement-menu-item").should("have.attr", "reviewed", status);
-    getElementByDataCy("attachments-menu-item").should("have.attr", "reviewed", status);
+    cy.dataCy("location-menu-item").should("have.attr", "reviewed", status);
+    cy.dataCy("borehole-menu-item").should("have.attr", "reviewed", status);
+    cy.dataCy("stratigraphy-menu-item").should("have.attr", "reviewed", status);
+    cy.dataCy("completion-menu-item").should("have.attr", "reviewed", status);
+    cy.dataCy("hydrogeology-menu-item").should("have.attr", "reviewed", status);
+    cy.dataCy("wateringress-menu-item").should("have.attr", "reviewed", status);
+    cy.dataCy("groundwaterlevelmeasurement-menu-item").should("have.attr", "reviewed", status);
+    cy.dataCy("hydrotest-menu-item").should("have.attr", "reviewed", status);
+    cy.dataCy("fieldmeasurement-menu-item").should("have.attr", "reviewed", status);
+    cy.dataCy("attachments-menu-item").should("have.attr", "reviewed", status);
   }
 
   it("Displays checkmarks on side menu", () => {
@@ -352,7 +351,7 @@ describe("Tests the publication workflow.", () => {
       navigateToWorkflowAndStartEditing(id);
       requestReviewFromValidator();
       cy.get("sgc-tab").contains("Review").click();
-      getElementByDataCy("hydrogeology-menu-item").click();
+      cy.dataCy("hydrogeology-menu-item").click();
 
       assertAllMenuItemsHaveReviewStatus("false");
 
@@ -367,16 +366,16 @@ describe("Tests the publication workflow.", () => {
       clickTabStatusCheckbox("review", "Water ingress");
       clickTabStatusCheckbox("review", "Profiles");
 
-      getElementByDataCy("location-menu-item").should("have.attr", "reviewed", "true");
-      getElementByDataCy("borehole-menu-item").should("have.attr", "reviewed", "partial");
-      getElementByDataCy("stratigraphy-menu-item").should("have.attr", "reviewed", "partial");
-      getElementByDataCy("completion-menu-item").should("have.attr", "reviewed", "partial");
-      getElementByDataCy("hydrogeology-menu-item").should("have.attr", "reviewed", "partial");
-      getElementByDataCy("wateringress-menu-item").should("have.attr", "reviewed", "false");
-      getElementByDataCy("groundwaterlevelmeasurement-menu-item").should("have.attr", "reviewed", "true");
-      getElementByDataCy("hydrotest-menu-item").should("have.attr", "reviewed", "true");
-      getElementByDataCy("fieldmeasurement-menu-item").should("have.attr", "reviewed", "true");
-      getElementByDataCy("attachments-menu-item").should("have.attr", "reviewed", "partial");
+      cy.dataCy("location-menu-item").should("have.attr", "reviewed", "true");
+      cy.dataCy("borehole-menu-item").should("have.attr", "reviewed", "partial");
+      cy.dataCy("stratigraphy-menu-item").should("have.attr", "reviewed", "partial");
+      cy.dataCy("completion-menu-item").should("have.attr", "reviewed", "partial");
+      cy.dataCy("hydrogeology-menu-item").should("have.attr", "reviewed", "partial");
+      cy.dataCy("wateringress-menu-item").should("have.attr", "reviewed", "false");
+      cy.dataCy("groundwaterlevelmeasurement-menu-item").should("have.attr", "reviewed", "true");
+      cy.dataCy("hydrotest-menu-item").should("have.attr", "reviewed", "true");
+      cy.dataCy("fieldmeasurement-menu-item").should("have.attr", "reviewed", "true");
+      cy.dataCy("attachments-menu-item").should("have.attr", "reviewed", "partial");
     });
   });
 
@@ -391,7 +390,7 @@ describe("Tests the publication workflow.", () => {
       finishReview();
       cy.get("sgc-tab").contains("Approval").click();
       clickCheckAllCheckbox("approval");
-      getElementByDataCy("hydrogeology-menu-item").click(); // open hydrogeology menu items
+      cy.dataCy("hydrogeology-menu-item").click(); // open hydrogeology menu items
       assertAllMenuItemsHaveReviewStatus("true");
 
       manuallyResetStatusToDraft();
@@ -417,8 +416,8 @@ describe("Tests the publication workflow.", () => {
       isUncheckedTabStatusBox("approval", "General");
       isIndeterminateTabStatusBox("approval", "Borehole");
 
-      getElementByDataCy("location-menu-item").should("have.attr", "reviewed", "false");
-      getElementByDataCy("borehole-menu-item").should("have.attr", "reviewed", "partial");
+      cy.dataCy("location-menu-item").should("have.attr", "reviewed", "false");
+      cy.dataCy("borehole-menu-item").should("have.attr", "reviewed", "partial");
 
       navigateInSidebar(SidebarMenuItem.borehole);
       navigateInBorehole(BoreholeTab.sections);
@@ -440,7 +439,7 @@ describe("Tests the publication workflow.", () => {
       setSelect("geometryFormat", 1);
       cy.get('[data-cy="boreholegeometryimport-button"]').click();
 
-      getElementByDataCy("borehole-menu-item").should("have.attr", "reviewed", "false");
+      cy.dataCy("borehole-menu-item").should("have.attr", "reviewed", "false");
 
       navigateInSidebar(SidebarMenuItem.status);
 
@@ -457,8 +456,8 @@ describe("Tests the publication workflow.", () => {
       navigateInSidebar(SidebarMenuItem.stratigraphy);
 
       // add new empty stratigraphy
-      getElementByDataCy("addStratigraphy-button-select").click();
-      getElementByDataCy("addEmpty-button-select-item").click();
+      cy.dataCy("addStratigraphy-button-select").click();
+      cy.dataCy("addEmpty-button-select-item").click();
       cy.wait([
         "@stratigraphy_POST",
         "@stratigraphy_by_borehole_GET",
@@ -477,8 +476,8 @@ describe("Tests the publication workflow.", () => {
       setSelect("kindId", 1);
       saveForm("completion-header");
 
-      getElementByDataCy("stratigraphy-menu-item").should("have.attr", "reviewed", "false");
-      getElementByDataCy("completion-menu-item").should("have.attr", "reviewed", "false");
+      cy.dataCy("stratigraphy-menu-item").should("have.attr", "reviewed", "false");
+      cy.dataCy("completion-menu-item").should("have.attr", "reviewed", "false");
 
       navigateInSidebar(SidebarMenuItem.status);
 
@@ -513,16 +512,16 @@ describe("Tests the publication workflow.", () => {
       // upload profile attachment
       navigateInSidebar(SidebarMenuItem.attachments);
       selectInputFile("QUIETBULLDOZER.txt", "text/plain");
-      getElementByDataCy("addProfile-button").should("be.visible").click();
+      cy.dataCy("addProfile-button").should("be.visible").click();
       cy.wait(["@upload-files", "@getAllAttachments"]);
 
-      getElementByDataCy("hydrogeology-menu-item").click(); // open hydrogeology menu items
-      getElementByDataCy("hydrogeology-menu-item").should("have.attr", "reviewed", "partial");
-      getElementByDataCy("wateringress-menu-item").should("have.attr", "reviewed", "false");
-      getElementByDataCy("groundwaterlevelmeasurement-menu-item").should("have.attr", "reviewed", "true");
-      getElementByDataCy("hydrotest-menu-item").should("have.attr", "reviewed", "true");
-      getElementByDataCy("fieldmeasurement-menu-item").should("have.attr", "reviewed", "true");
-      getElementByDataCy("attachments-menu-item").should("have.attr", "reviewed", "partial");
+      cy.dataCy("hydrogeology-menu-item").click(); // open hydrogeology menu items
+      cy.dataCy("hydrogeology-menu-item").should("have.attr", "reviewed", "partial");
+      cy.dataCy("wateringress-menu-item").should("have.attr", "reviewed", "false");
+      cy.dataCy("groundwaterlevelmeasurement-menu-item").should("have.attr", "reviewed", "true");
+      cy.dataCy("hydrotest-menu-item").should("have.attr", "reviewed", "true");
+      cy.dataCy("fieldmeasurement-menu-item").should("have.attr", "reviewed", "true");
+      cy.dataCy("attachments-menu-item").should("have.attr", "reviewed", "partial");
 
       navigateInSidebar(SidebarMenuItem.status);
 

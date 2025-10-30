@@ -1,3 +1,4 @@
+import "./commands.js";
 import { interceptApiCalls, login, loginAndResetState } from "../e2e/helpers/testHelpers";
 import "cypress-file-upload";
 import { stopEditing } from "../e2e/helpers/buttonHelpers.js";

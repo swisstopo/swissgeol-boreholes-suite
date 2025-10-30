@@ -1,5 +1,5 @@
 import { setSelect } from "../helpers/formHelpers.js";
-import { getElementByDataCy, goToRouteAndAcceptTerms, returnToOverview } from "../helpers/testHelpers.js";
+import { goToRouteAndAcceptTerms, returnToOverview } from "../helpers/testHelpers.js";
 
 describe("map settings", () => {
   it("Adds wms and wmts to user maps", () => {
@@ -8,7 +8,7 @@ describe("map settings", () => {
     const wmsName = "Army logistics centres (ALC)";
     const wmtsName = "Wetness potential agricultural land";
 
-    getElementByDataCy("general-tab").click();
+    cy.dataCy("general-tab").click();
     cy.contains("Map").click();
     // Add WMS
     cy.get('[data-cy="load-layers-button"]').click();
@@ -39,8 +39,8 @@ describe("map settings", () => {
     goToRouteAndAcceptTerms("/");
 
     // Remove layers
-    getElementByDataCy("settings-button").click();
-    getElementByDataCy("general-tab").click();
+    cy.dataCy("settings-button").click();
+    cy.dataCy("general-tab").click();
     cy.contains("Map").click();
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);

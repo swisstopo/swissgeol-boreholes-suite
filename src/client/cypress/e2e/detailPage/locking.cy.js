@@ -1,6 +1,5 @@
 import {
   createBorehole,
-  getElementByDataCy,
   goToDetailRouteAndAcceptTerms,
   loginAsAdmin,
   loginAsEditor,
@@ -22,9 +21,9 @@ describe("Borehole locking tests", () => {
       goToDetailRouteAndAcceptTerms(`/${id}`);
 
       // check that edit buttons are not visible
-      getElementByDataCy("export-button").should("exist");
-      getElementByDataCy("edit-button").should("not.exist");
-      getElementByDataCy("editingstop-button").should("not.exist");
+      cy.dataCy("export-button").should("exist");
+      cy.dataCy("edit-button").should("not.exist");
+      cy.dataCy("editingstop-button").should("not.exist");
 
       // start editing existing borehole as editor
       goToDetailRouteAndAcceptTerms(`/1000488`);

@@ -3,7 +3,6 @@ import { evaluateDisplayValue, evaluateInput, setInput, setSelect } from "../hel
 import { BoreholeTab, navigateInBorehole } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
-  getElementByDataCy,
   goToDetailRouteAndAcceptTerms,
   handlePrompt,
   startBoreholeEditing,
@@ -33,15 +32,15 @@ describe("Section crud tests", () => {
   it("adds, edits and deletes sections", () => {
     // create section
     addItem("addSection");
-    cy.get('[data-cy="sectionElements.0.delete"]').should("be.disabled");
-    cy.get('[data-cy="addsection-button"]').should("be.disabled");
-    cy.get('[data-cy="save-button"]').should("be.disabled");
+    cy.dataCy("sectionElements.0.delete").should("be.disabled");
+    cy.dataCy("addsection-button").should("be.disabled");
+    cy.dataCy("save-button").should("be.disabled");
 
     setInput("name", "section-1");
     setInput("sectionElements.0.fromDepth", "0");
     setInput("sectionElements.0.toDepth", "10");
 
-    cy.get('[data-cy="save-button"]').should("be.enabled");
+    cy.dataCy("save-button").should("be.enabled");
 
     setSelect("sectionElements.0.drillingMethodId", 2);
     setSelect("sectionElements.0.cuttingsId", 2);
@@ -53,8 +52,8 @@ describe("Section crud tests", () => {
     setInput("sectionElements.0.drillingCoreDiameter", "5.6");
 
     addItem("addSectionElement");
-    cy.get('[data-cy="sectionElements.0.delete"]').should("be.enabled");
-    cy.get('[data-cy="sectionElements.1.delete"]').should("be.enabled");
+    cy.dataCy("sectionElements.0.delete").should("be.enabled");
+    cy.dataCy("sectionElements.1.delete").should("be.enabled");
 
     evaluateInput("sectionElements.1.fromDepth", "0");
     evaluateInput("sectionElements.1.toDepth", "10");
@@ -91,7 +90,7 @@ describe("Section crud tests", () => {
     startEditing();
     setInput("name", "section-1 updated");
     setSelect("sectionElements.1.drillingMethodId", 13);
-    cy.get('[data-cy="sectionElements.0.delete"]').click();
+    cy.dataCy("sectionElements.0.delete").click();
 
     saveSection("PUT");
     evaluateDisplayValue("sectionName", "section-1");
@@ -160,7 +159,7 @@ describe("Section crud tests", () => {
   it("blocks navigation when there are unsaved changes", () => {
     addItem("addSection");
     setInput("name", "AA_CAPYBARA");
-    getElementByDataCy("geometry-tab").click();
+    cy.dataCy("geometry-tab").click();
     const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
     handlePrompt(messageUnsavedChanges, "cancel");
     cy.location().should(location => {
