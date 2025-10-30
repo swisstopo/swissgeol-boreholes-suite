@@ -422,37 +422,37 @@ describe("Test for the borehole log.", () => {
 
     clickOnRowWithText("R01");
     assertFileCountDisplayed("2 files");
-    cy.dataCy("filter-button").should("exist");
-    cy.dataCy("filter-form").should("not.exist");
-    cy.dataCy("filter-button").click();
-    cy.dataCy("filter-form").should("exist");
+    cy.dataCy("logRun-files").dataCy("filter-button").should("exist");
+    cy.dataCy("logRun-files").dataCy("filter-form").should("not.exist");
+    cy.dataCy("logRun-files").dataCy("filter-button").click();
+    cy.dataCy("logRun-files").dataCy("filter-form").should("exist");
 
-    toggleMultiSelect("toolTypes", [1]); // "CAL"
+    toggleMultiSelect("toolTypes", [1], 25, "logRun-files"); // "CAL"
     assertFileCountDisplayed("1 file");
-    toggleMultiSelect("extensions", [2], 3); // "zip"
+    toggleMultiSelect("extensions", [2], 3, "logRun-files"); // "zip"
     assertFileCountDisplayed("0 files");
-    toggleMultiSelect("toolTypes", [0]); // Reset
+    toggleMultiSelect("toolTypes", [0], 25, "logRun-files"); // Reset
     assertFileCountDisplayed("1 file");
-    toggleMultiSelect("passTypes", [3]); // "Main & repeat"
+    toggleMultiSelect("passTypes", [3], 8, "logRun-files"); // "Main & repeat"
     assertFileCountDisplayed("1 file");
-    toggleMultiSelect("extensions", [2]); // remove "zip"
+    toggleMultiSelect("extensions", [2], 3, "logRun-files"); // remove "zip"
     assertFileCountDisplayed("2 files");
-    toggleMultiSelect("dataPackages", [2]); // "Field data (WL)"
+    toggleMultiSelect("dataPackages", [2], 12, "logRun-files"); // "Field data (WL)"
     assertFileCountDisplayed("0 files");
-    toggleMultiSelect("dataPackages", [4]); // "Real-time data (WL)"
+    toggleMultiSelect("dataPackages", [4], 12, "logRun-files"); // "Real-time data (WL)"
     assertFileCountDisplayed("2 files");
-    setSelect("public", 2); // "No"
+    setSelect("public", 2, 3, "logRun-files"); // "No"
     assertFileCountDisplayed("1 file");
 
-    cy.dataCy("filter-button").click();
-    cy.dataCy("filter-form").should("not.exist");
+    cy.dataCy("logRun-files").dataCy("filter-button").click();
+    cy.dataCy("logRun-files").dataCy("filter-form").should("not.exist");
     assertFileCountDisplayed("2 files");
-    cy.dataCy("filter-button").click();
-    cy.dataCy("filter-form").should("exist");
-    evaluateMultiSelect("toolTypes", []);
-    evaluateMultiSelect("extensions", []);
-    evaluateMultiSelect("passTypes", []);
-    evaluateMultiSelect("dataPackages", []);
-    evaluateSelect("public", "");
+    cy.dataCy("logRun-files").dataCy("filter-button").click();
+    cy.dataCy("logRun-files").dataCy("filter-form").should("exist");
+    evaluateMultiSelect("toolTypes", [], "logRun-files");
+    evaluateMultiSelect("extensions", [], "logRun-files");
+    evaluateMultiSelect("passTypes", [], "logRun-files");
+    evaluateMultiSelect("dataPackages", [], "logRun-files");
+    evaluateSelect("public", "", "logRun-files");
   });
 });
