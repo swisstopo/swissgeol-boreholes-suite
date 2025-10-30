@@ -77,6 +77,7 @@ export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange, er
   if (file) {
     return (
       <Stack
+        data-cy={"file-dropzone"}
         sx={{
           flexDirection: "row",
           alignItems: "center",

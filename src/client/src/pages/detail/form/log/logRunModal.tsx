@@ -144,9 +144,16 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
           return (
             <BoreholesCard
               key={file._rhfId}
-              data-cy="logRun-files"
+              data-cy={`logRun-file-${index}`}
               title={titleText}
-              action={<StandaloneIconButton icon={<Trash2 />} color="primaryInverse" onClick={removeFile(index)} />}>
+              action={
+                <StandaloneIconButton
+                  icon={<Trash2 />}
+                  color="primaryInverse"
+                  onClick={removeFile(index)}
+                  dataCy={"delete-file-button"}
+                />
+              }>
               <FormContainer>
                 <FileDropzone
                   existingFile={file.name ? new File([], file.name) : undefined}

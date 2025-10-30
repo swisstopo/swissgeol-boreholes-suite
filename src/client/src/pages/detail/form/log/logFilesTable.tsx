@@ -70,7 +70,7 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
     if (extensionsFilters && extensionsFilter && extensionsFilter.length > 0) {
       const extensionNames = new Set(
         extensionsFilter
-          .map(filterValue => extensionsFilters.find(ext => ext.key === filterValue)?.name?.toUpperCase())
+          .map(filterValue => extensionsFilters.find(ext => ext.key === filterValue)?.name?.toLowerCase())
           .filter(Boolean),
       );
       filtered = filtered.filter(file => extensionNames.has(getFileExtension(file.name)));
@@ -204,10 +204,10 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
     <Stack height={"100%"}>
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
         <Stack direction="row" alignItems="center" gap={1}>
-          <Typography data-cy="log-run-count">
+          <Typography data-cy="log-file-count">
             {selectionModel.length > 0
               ? t("selectedCount", { count: selectionModel.length })
-              : `${filteredFiles.length} ${t("run", { count: filteredFiles.length })}`}
+              : t("fileCount", { count: filteredFiles.length })}
           </Typography>
         </Stack>
         <Stack direction="row" alignItems="center" gap={1}>

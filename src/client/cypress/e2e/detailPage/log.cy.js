@@ -11,6 +11,7 @@ import {
   verifyTableLength,
 } from "../helpers/dataGridHelpers.js";
 import {
+  evaluateCheckbox,
   evaluateInput,
   evaluateMultiSelect,
   evaluateSelect,
@@ -18,14 +19,17 @@ import {
   hasError,
   setInput,
   setSelect,
+  toggleCheckbox,
   toggleMultiSelect,
 } from "../helpers/formHelpers.js";
 import { isActiveMenuItem, navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
+  createBaseSelector,
   createBorehole,
   goToDetailRouteAndAcceptTerms,
   handlePrompt,
   startBoreholeEditing,
+  stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
 // TODO: Remove rule once logic is implemented with https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2361
@@ -36,8 +40,12 @@ function assertExportButtonsDisabled(isDisabled = true) {
   // cy.dataCy("exporttable-button").should(isDisabled ? "have.attr" : "not.have.attr", "disabled");
 }
 
-function assertCountDisplayed(textContent) {
+function assertRunCountDisplayed(textContent) {
   cy.dataCy("log-run-count").should("contain", textContent);
+}
+
+function assertFileCountDisplayed(textContent) {
+  cy.dataCy("log-file-count").should("contain", textContent);
 }
 
 function verifyFullRowContent(cellContents, index) {
@@ -46,12 +54,36 @@ function verifyFullRowContent(cellContents, index) {
   }
 }
 
-function addMinimalLogRun(fromDepth = 0, toDepth = 10, runNumber = "R01") {
+function addLogRun() {
   cy.dataCy("addlogrun-button").click();
+}
+
+function closeLogRunEditor() {
+  cy.dataCy("close-button").click();
+}
+
+function addMinimalLogRun(fromDepth = 0, toDepth = 10, runNumber = "R01") {
+  addLogRun();
   setInput("fromDepth", fromDepth);
   setInput("toDepth", toDepth);
   setInput("runNumber", runNumber);
-  cy.dataCy("close-button").click();
+  closeLogRunEditor();
+}
+
+function selectFile(filePath, parent) {
+  const selector = createBaseSelector(parent) + `[data-cy="file-dropzone"]`;
+  cy.get(selector).selectFile(`cypress/fixtures/${filePath}`, {
+    force: true,
+    fileName: filePath,
+  });
+
+  cy.get(selector).contains(filePath.split("/").pop());
+  cy.get(selector).dataCy("iconButton").should("exist");
+}
+
+function removeFile(parent) {
+  const selector = createBaseSelector(parent) + `[data-cy="file-dropzone"]`;
+  cy.get(selector).dataCy("iconButton").click();
 }
 
 describe("Test for the borehole log.", () => {
@@ -59,7 +91,7 @@ describe("Test for the borehole log.", () => {
     goToDetailRouteAndAcceptTerms(`/1000070/log?dev=true`);
     assertExportButtonsDisabled();
     cy.dataCy("delete-button").should("not.exist");
-    assertCountDisplayed("10 runs");
+    assertRunCountDisplayed("10 runs");
 
     startBoreholeEditing();
     assertExportButtonsDisabled();
@@ -67,10 +99,10 @@ describe("Test for the borehole log.", () => {
     cy.dataCy("delete-button").should("have.attr", "disabled");
 
     checkAllVisibleRows();
-    assertCountDisplayed("10 selected");
+    assertRunCountDisplayed("10 selected");
     uncheckAllVisibleRows();
     checkTwoFirstRows();
-    assertCountDisplayed("2 selected");
+    assertRunCountDisplayed("2 selected");
     assertExportButtonsDisabled(false);
 
     verifyFullRowContent(["R44", "0.0 - 10.0", "CAL, GYRO", "Not specified"], 0);
@@ -105,15 +137,15 @@ describe("Test for the borehole log.", () => {
     startBoreholeEditing();
 
     // Does not add a new log run when nothing is entered
-    cy.dataCy("addlogrun-button").click();
+    addLogRun();
     cy.contains("h4", "New run");
-    cy.dataCy("close-button").click();
+    closeLogRunEditor();
     cy.contains("p", "No run added yet...");
 
     // Displays validation errors when required fields missing
-    cy.dataCy("addlogrun-button").click();
+    addLogRun();
     setSelect("conveyanceMethodId", 3); //"PCL"
-    cy.dataCy("close-button").click();
+    closeLogRunEditor();
     hasError("fromDepth", true);
     hasError("toDepth", true);
     hasError("runNumber", true);
@@ -136,7 +168,7 @@ describe("Test for the borehole log.", () => {
 
     setInput("toDepth", "800456");
     hasError("toDepth", false);
-    cy.dataCy("close-button").click();
+    closeLogRunEditor();
 
     // verify one row was added
     verifyRowContains("R01", 0);
@@ -167,7 +199,7 @@ describe("Test for the borehole log.", () => {
     setInput("serviceCo", "A new service company");
     setInput("comment", "A comment");
 
-    cy.dataCy("close-button").click();
+    closeLogRunEditor();
     verifyRowContains("R03-EDITED", 2);
     saveWithSaveBar();
 
@@ -179,7 +211,7 @@ describe("Test for the borehole log.", () => {
     evaluateInput("bitSize", "789'456.7897");
     evaluateInput("serviceCo", "A new service company");
     evaluateTextarea("comment", "A comment");
-    cy.dataCy("close-button").click();
+    closeLogRunEditor();
 
     // delete an existing log run
     checkRowWithIndex(3); //"R04"
@@ -191,20 +223,20 @@ describe("Test for the borehole log.", () => {
 
     // verify that a change containing adds, edits and deletes can be saved
     // add
-    cy.dataCy("addlogrun-button").click();
+    addLogRun();
     setInput("fromDepth", 140);
     setInput("toDepth", 150);
     setInput("runNumber", "R02");
     hasError("runNumber", true);
     setInput("runNumber", "R06");
     hasError("runNumber", false);
-    cy.dataCy("close-button").click();
+    closeLogRunEditor();
 
     // verify that unique check also works when editing newly added run
     clickOnRowWithText("R06");
     evaluateInput("runNumber", "R06");
     setInput("toDepth", 155);
-    cy.dataCy("close-button").click();
+    closeLogRunEditor();
 
     // edit
     clickOnRowWithText("R02");
@@ -212,7 +244,7 @@ describe("Test for the borehole log.", () => {
     hasError("runNumber", true);
     setInput("runNumber", "R02-EDITED");
     hasError("runNumber", false);
-    cy.dataCy("close-button").click();
+    closeLogRunEditor();
 
     // delete
     checkRowWithIndex(3); //"R05"
@@ -220,6 +252,67 @@ describe("Test for the borehole log.", () => {
 
     verifyTableLength(4);
     saveWithSaveBar();
+  });
+
+  it("can add, update and delete log files", () => {
+    createBorehole({ originalName: "FANCYPHANTOMFERRY" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      goToDetailRouteAndAcceptTerms(`/${id}/log?dev=true`);
+      cy.wait(["@borehole"]);
+    });
+    startBoreholeEditing();
+    addMinimalLogRun(100, 110, "R01");
+    verifyRowContains("R01", 0);
+
+    // can add new file
+    clickOnRowWithText("R01");
+    cy.dataCy("logRun-files").contains("No file added yet...");
+    cy.dataCy("addfile-button").click();
+    cy.dataCy("logRun-file-0").find(".MuiCardHeader-title").contains("New file");
+    cy.dataCy("logRun-file-0").dataCy("delete-file-button").should("exist");
+    selectFile("labeling_attachment.pdf", "logRun-file-0");
+    cy.dataCy("logRun-file-0").find(".MuiCardHeader-title").contains("labeling_attachment.pdf");
+    evaluateInput("logFiles.0.extension", "pdf");
+
+    toggleMultiSelect("logFiles.0.toolTypeCodelistIds", [1, 2]);
+    setSelect("logFiles.0.passTypeId", 3);
+    setInput("logFiles.0.pass", 6);
+    setSelect("logFiles.0.dataPackageId", 4);
+    setInput("logFiles.0.deliveryDate", "2024-02-02");
+    setSelect("logFiles.0.depthTypeId", 3);
+    toggleCheckbox("logFiles.0.public");
+    closeLogRunEditor();
+    saveWithSaveBar();
+
+    // can edit existing file
+    clickOnRowWithText("R01");
+    cy.dataCy("logRun-file-0").find(".MuiCardHeader-title").contains("labeling_attachment.pdf");
+    evaluateMultiSelect("logFiles.0.toolTypeCodelistIds", ["CAL", "GYRO"]);
+    evaluateSelect("logFiles.0.passTypeId", "Main & repeat");
+    evaluateInput("logFiles.0.pass", "6");
+    evaluateSelect("logFiles.0.dataPackageId", "Real-Time data (LWD)");
+    evaluateInput("logFiles.0.deliveryDate", "2024-02-02");
+    evaluateSelect("logFiles.0.depthTypeId", "MD & TVD");
+    evaluateCheckbox("logFiles.0.public", true);
+    removeFile("logRun-file-0");
+    cy.dataCy("logRun-file-0").find(".MuiCardHeader-title").contains("-");
+    evaluateInput("logFiles.0.extension", "");
+    selectFile("import/COLDWATER.zip", "logRun-file-0");
+    cy.dataCy("logRun-file-0").find(".MuiCardHeader-title").contains("COLDWATER.zip");
+    evaluateInput("logFiles.0.extension", "zip");
+    closeLogRunEditor();
+    saveWithSaveBar();
+
+    // can delete existing file
+    clickOnRowWithText("R01");
+    cy.dataCy("logRun-file-0").find(".MuiCardHeader-title").contains("COLDWATER.zip");
+    cy.dataCy("logRun-file-0").dataCy("delete-file-button").click();
+    cy.dataCy("logRun-files").contains("No file added yet...");
+    closeLogRunEditor();
+    saveWithSaveBar();
+
+    clickOnRowWithText("R01");
+    cy.dataCy("logRun-files").contains("No file added yet...");
   });
 
   it("Blocks navigation with unsaved changes", () => {
@@ -258,26 +351,108 @@ describe("Test for the borehole log.", () => {
 
   it("Filters log runs in table", () => {
     goToDetailRouteAndAcceptTerms(`/1000070/log?dev=true`);
-    assertCountDisplayed("10 runs");
+    assertRunCountDisplayed("10 runs");
     cy.dataCy("filter-button").should("exist");
     cy.dataCy("filter-form").should("not.exist");
     cy.dataCy("filter-button").click();
     cy.dataCy("filter-form").should("exist");
     toggleMultiSelect("runNumbers", [3], 11); // "R49
-    assertCountDisplayed("1 run");
+    assertRunCountDisplayed("1 run");
     toggleMultiSelect("sections", [3], 8); // "Belgium (54.0 - 141.0)"
-    assertCountDisplayed("0 runs");
+    assertRunCountDisplayed("0 runs");
     toggleMultiSelect("runNumbers", [0], 11); // Reset
-    assertCountDisplayed("5 runs");
+    assertRunCountDisplayed("5 runs");
     toggleMultiSelect("toolTypes", [2, 3]);
-    assertCountDisplayed("2 runs");
+    assertRunCountDisplayed("2 runs");
     cy.dataCy("filter-button").click();
     cy.dataCy("filter-form").should("not.exist");
-    assertCountDisplayed("10 runs");
+    assertRunCountDisplayed("10 runs");
     cy.dataCy("filter-button").click();
     cy.dataCy("filter-form").should("exist");
     evaluateMultiSelect("runNumbers", []);
     evaluateMultiSelect("sections", []);
     evaluateMultiSelect("toolTypes", []);
+  });
+
+  it("filters log files", () => {
+    createBorehole({ originalName: "FANCYPHANTOMFERRY" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      goToDetailRouteAndAcceptTerms(`/${id}/log?dev=true`);
+      cy.wait(["@borehole"]);
+    });
+    startBoreholeEditing();
+    addMinimalLogRun(100, 110, "R01");
+    verifyRowContains("R01", 0);
+
+    // can add new file
+    clickOnRowWithText("R01");
+    cy.dataCy("logRun-files").contains("No file added yet...");
+    cy.dataCy("addfile-button").click();
+    cy.dataCy("logRun-file-0").find(".MuiCardHeader-title").contains("New file");
+    cy.dataCy("logRun-file-0").dataCy("delete-file-button").should("exist");
+    selectFile("labeling_attachment.pdf", "logRun-file-0");
+    cy.dataCy("logRun-file-0").find(".MuiCardHeader-title").contains("labeling_attachment.pdf");
+    evaluateInput("logFiles.0.extension", "pdf");
+
+    toggleMultiSelect("logFiles.0.toolTypeCodelistIds", [1, 2]);
+    setSelect("logFiles.0.passTypeId", 3);
+    setInput("logFiles.0.pass", 6);
+    setSelect("logFiles.0.dataPackageId", 4);
+    setInput("logFiles.0.deliveryDate", "2024-02-02");
+    setSelect("logFiles.0.depthTypeId", 3);
+    toggleCheckbox("logFiles.0.public");
+
+    cy.dataCy("addfile-button").click();
+    cy.dataCy("logRun-file-0").find(".MuiCardHeader-title").contains("New file");
+    cy.dataCy("logRun-file-0").dataCy("delete-file-button").should("exist");
+    selectFile("import/COLDWATER.zip", "logRun-file-0");
+    cy.dataCy("logRun-file-0").find(".MuiCardHeader-title").contains("COLDWATER.zip");
+    evaluateInput("logFiles.0.extension", "zip");
+
+    toggleMultiSelect("logFiles.0.toolTypeCodelistIds", [3, 4]);
+    setSelect("logFiles.0.passTypeId", 3);
+    setInput("logFiles.0.pass", 4);
+    setSelect("logFiles.0.dataPackageId", 4);
+    setInput("logFiles.0.deliveryDate", "2021-08-11");
+    setSelect("logFiles.0.depthTypeId", 3);
+
+    closeLogRunEditor();
+    saveWithSaveBar();
+    stopBoreholeEditing();
+
+    clickOnRowWithText("R01");
+    assertFileCountDisplayed("2 files");
+    cy.dataCy("filter-button").should("exist");
+    cy.dataCy("filter-form").should("not.exist");
+    cy.dataCy("filter-button").click();
+    cy.dataCy("filter-form").should("exist");
+
+    toggleMultiSelect("toolTypes", [1]); // "CAL"
+    assertFileCountDisplayed("1 file");
+    toggleMultiSelect("extensions", [2], 3); // "zip"
+    assertFileCountDisplayed("0 files");
+    toggleMultiSelect("toolTypes", [0]); // Reset
+    assertFileCountDisplayed("1 file");
+    toggleMultiSelect("passTypes", [3]); // "Main & repeat"
+    assertFileCountDisplayed("1 file");
+    toggleMultiSelect("extensions", [2]); // remove "zip"
+    assertFileCountDisplayed("2 files");
+    toggleMultiSelect("dataPackages", [2]); // "Field data (WL)"
+    assertFileCountDisplayed("0 files");
+    toggleMultiSelect("dataPackages", [4]); // "Real-time data (WL)"
+    assertFileCountDisplayed("2 files");
+    setSelect("public", 2); // "No"
+    assertFileCountDisplayed("1 file");
+
+    cy.dataCy("filter-button").click();
+    cy.dataCy("filter-form").should("not.exist");
+    assertFileCountDisplayed("2 files");
+    cy.dataCy("filter-button").click();
+    cy.dataCy("filter-form").should("exist");
+    evaluateMultiSelect("toolTypes", []);
+    evaluateMultiSelect("extensions", []);
+    evaluateMultiSelect("passTypes", []);
+    evaluateMultiSelect("dataPackages", []);
+    evaluateSelect("public", "");
   });
 });
