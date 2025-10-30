@@ -8,7 +8,6 @@ import {
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
-  getElementByDataCy,
   getImportFileFromFixtures,
   giveAdminUser2workgroups,
   goToDetailRouteAndAcceptTerms,
@@ -25,14 +24,14 @@ const addMinimalAttachment = (boreholeIdentifier, fileName) => {
     goToDetailRouteAndAcceptTerms(`/${id}/attachments`);
     startBoreholeEditing();
     selectInputFile(fileName, "text/plain");
-    getElementByDataCy("addProfile-button").should("be.visible").click();
+    cy.dataCy("addProfile-button").should("be.visible").click();
     cy.wait(["@upload-files", "@getAllAttachments", "@borehole_by_id"]);
     stopBoreholeEditing();
   });
 };
 
 const dropFileIntoImportDropzone = boreholeFile => {
-  getElementByDataCy("import-boreholeFile-input").within(() => {
+  cy.dataCy("import-boreholeFile-input").within(() => {
     cy.get("input[type=file]", { force: true }).then(input => {
       input[0].files = boreholeFile.files;
       input[0].dispatchEvent(new Event("change", { bubbles: true }));
@@ -44,7 +43,7 @@ const dropFileIntoImportDropzone = boreholeFile => {
 describe.skip("Test for importing boreholes.", () => {
   it("Successfully imports multiple boreholes.", () => {
     goToRouteAndAcceptTerms("/");
-    getElementByDataCy("import-borehole-button").click();
+    cy.dataCy("import-borehole-button").click();
 
     // Select borehole csv file
     let boreholeFile = new DataTransfer();
@@ -57,7 +56,7 @@ describe.skip("Test for importing boreholes.", () => {
     dropFileIntoImportDropzone(boreholeFile);
 
     // Import boreholes
-    getElementByDataCy("import-button").click();
+    cy.dataCy("import-button").click();
     cy.wait("@borehole-upload");
 
     // Check if boreholes were imported
@@ -66,7 +65,7 @@ describe.skip("Test for importing boreholes.", () => {
 
   it("Displays borehole validation errors.", () => {
     goToRouteAndAcceptTerms("/");
-    getElementByDataCy("import-borehole-button").click();
+    cy.dataCy("import-borehole-button").click();
 
     // Select borehole csv file
     getImportFileFromFixtures("boreholes-missing-fields-and-duplicates.csv", null)
@@ -81,10 +80,10 @@ describe.skip("Test for importing boreholes.", () => {
       .then(boreholeFile => {
         dropFileIntoImportDropzone(boreholeFile);
       });
-    getElementByDataCy("import-button").click();
+    cy.dataCy("import-button").click();
 
     cy.wait("@borehole-upload");
-    getElementByDataCy("borehole-import-dialog")
+    cy.dataCy("borehole-import-dialog")
       .should("not.contain", "Row0")
       .should("contain", "Row1")
       .should("contain", "Field 'location_x' is required.")
@@ -97,8 +96,8 @@ describe.skip("Test for importing boreholes.", () => {
   it("can select workgroup when importing boreholes", () => {
     giveAdminUser2workgroups();
     goToRouteAndAcceptTerms(`/`);
-    getElementByDataCy("import-borehole-button").click();
-    getElementByDataCy("workgroup-formSelect").click();
+    cy.dataCy("import-borehole-button").click();
+    cy.dataCy("workgroup-formSelect").click();
     // Verify two workgroup options are visible
     cy.contains("Reset");
     cy.contains("Default");
@@ -128,13 +127,13 @@ describe.skip("Test for importing boreholes.", () => {
     addMinimalAttachment("@borehole_id2", "BREWINGHOT.txt");
 
     returnToOverview();
-    getElementByDataCy("show-filter-button").click();
+    cy.dataCy("show-filter-button").click();
     cy.contains("Location").click();
     cy.contains("Original name").next().find("input").type("COLDWATER");
     cy.wait("@edit_list");
     showTableAndWaitForData();
 
-    getElementByDataCy("boreholes-number-preview").should("have.text", "2");
+    cy.dataCy("boreholes-number-preview").should("have.text", "2");
     verifyRowContains("COLDWATERBATH", 0);
     verifyRowContains("COLDWATERDRINK", 1);
 
@@ -146,7 +145,7 @@ describe.skip("Test for importing boreholes.", () => {
 
     // verify that boreholes were deleted
     cy.wait("@edit_deletelist");
-    getElementByDataCy("boreholes-number-preview").should("have.text", "0");
+    cy.dataCy("boreholes-number-preview").should("have.text", "0");
 
     // reupload prepared zip file
     getImportFileFromFixtures("COLDWATER.zip", "binary").then(fileContent => {
@@ -154,10 +153,10 @@ describe.skip("Test for importing boreholes.", () => {
       const fileToReupload = new File([blob], "COLDWATER.zip", { type: "application/zip" });
       const dataTransfer = new DataTransfer();
       dataTransfer.items.add(fileToReupload);
-      getElementByDataCy("import-borehole-button").click();
+      cy.dataCy("import-borehole-button").click();
       dropFileIntoImportDropzone(dataTransfer);
-      getElementByDataCy("import-button").click();
-      getElementByDataCy("boreholes-number-preview").should("have.text", "2");
+      cy.dataCy("import-button").click();
+      cy.dataCy("boreholes-number-preview").should("have.text", "2");
       verifyRowContains("COLDWATERBATH", 0);
       verifyRowContains("COLDWATERDRINK", 1);
       clickOnRowWithText("COLDWATERBATH");

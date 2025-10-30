@@ -8,7 +8,7 @@ import {
   SidebarMenuItem,
   StratigraphyTab,
 } from "../helpers/navigationHelpers.js";
-import { getElementByDataCy, loginAsViewer } from "../helpers/testHelpers";
+import { loginAsViewer } from "../helpers/testHelpers";
 
 describe("Viewer tests", () => {
   it("Assures viewer cannot add, edit or delete boreholes", () => {
@@ -16,8 +16,8 @@ describe("Viewer tests", () => {
     showTableAndWaitForData();
 
     // TODO: Re-add when import is fixed https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
-    // getElementByDataCy("import-borehole-button").should("have.class", "Mui-disabled");
-    getElementByDataCy("new-borehole-button").should("have.class", "Mui-disabled");
+    // cy.dataCy("import-borehole-button").should("have.class", "Mui-disabled");
+    cy.dataCy("new-borehole-button").should("have.class", "Mui-disabled");
 
     // click on borehole
     clickOnRowWithText("Aaron Rempel");
@@ -37,27 +37,27 @@ describe("Viewer tests", () => {
         cy.wrap(i).should("have.class", "readonly", "readonly");
       });
 
-    getElementByDataCy("edit-button").should("not.exist");
+    cy.dataCy("edit-button").should("not.exist");
   });
 
   it("Assures viewer can export boreholes as CSV and JSON including attachments", () => {
     loginAsViewer();
     showTableAndWaitForData();
     checkRowWithText("Aaron Rempel");
-    getElementByDataCy("copy-button").should("not.exist");
-    getElementByDataCy("bulkediting-button").should("not.exist");
-    getElementByDataCy("delete-button").should("not.exist");
-    getElementByDataCy("export-button").click();
-    getElementByDataCy("csv-button").should("exist");
-    getElementByDataCy("json-button").should("exist");
-    cy.get('[data-cy="json + pdf-button"]').should("exist");
-    getElementByDataCy("cancel-button").click();
+    cy.dataCy("copy-button").should("not.exist");
+    cy.dataCy("bulkediting-button").should("not.exist");
+    cy.dataCy("delete-button").should("not.exist");
+    cy.dataCy("export-button").click();
+    cy.dataCy("csv-button").should("exist");
+    cy.dataCy("json-button").should("exist");
+    cy.dataCy("json + pdf-button").should("exist");
+    cy.dataCy("cancel-button").click();
     clickOnRowWithText("Aaron Rempel");
-    getElementByDataCy("edit-button").should("not.exist");
-    getElementByDataCy("export-button").click();
-    getElementByDataCy("csv-button").should("exist");
-    getElementByDataCy("json-button").should("exist");
-    cy.get('[data-cy="json + pdf-button"]').should("exist");
+    cy.dataCy("edit-button").should("not.exist");
+    cy.dataCy("export-button").click();
+    cy.dataCy("csv-button").should("exist");
+    cy.dataCy("json-button").should("exist");
+    cy.dataCy("json + pdf-button").should("exist");
   });
 
   it("Assures viewer can click on all borehole menu items and see something", () => {
@@ -95,6 +95,6 @@ describe("Viewer tests", () => {
     // cy.contains("No hydrotests available").should("exist");
     navigateInSidebar(SidebarMenuItem.attachments);
     cy.contains("No profiles available...").should("exist");
-    getElementByDataCy("status-menu-item").should("not.exist"); // viewer cannot see status menu item
+    cy.dataCy("status-menu-item").should("not.exist"); // viewer cannot see status menu item
   });
 });

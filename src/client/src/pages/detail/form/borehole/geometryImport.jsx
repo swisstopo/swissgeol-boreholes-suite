@@ -25,7 +25,7 @@ import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FormSelect } from "../../../../components/form/form";
 import { StackHalfWidth } from "../../../../components/styledComponents.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
-import { FileDropzone } from "../../attachments/fileDropzone.jsx";
+import { FileDropzone } from "./fileDropzone.jsx";
 
 const GeometryImport = ({ boreholeId }) => {
   const { t, i18n } = useTranslation();

@@ -7,7 +7,6 @@ import {
 } from "../helpers/dataGridHelpers";
 import { setInput, setSelect } from "../helpers/formHelpers";
 import {
-  getElementByDataCy,
   goToRouteAndAcceptTerms,
   newEditableBorehole,
   returnToOverview,
@@ -26,18 +25,18 @@ describe("Tests for filtering data by identifier.", () => {
 
     stopBoreholeEditing();
     returnToOverview();
-    cy.get('[data-cy="show-filter-button"]').click();
+    cy.dataCy("show-filter-button").click();
 
     cy.contains("h6", "Location").click();
     // show all options
-    getElementByDataCy("show-all-fields-switch").click();
+    cy.dataCy("show-all-fields-switch").click();
     verifyPaginationText("1–100 of 3001");
 
     setSelect("borehole_identifier", 1);
 
     hasPagination(false);
     // click reset label
-    cy.get('[data-cy="reset-filter-button"]').click();
+    cy.dataCy("reset-filter-button").click();
     verifyPaginationText("1–100 of 3001");
   });
 
@@ -60,11 +59,11 @@ describe("Tests for filtering data by identifier.", () => {
 
     stopBoreholeEditing();
     returnToOverview();
-    cy.get('[data-cy="show-filter-button"]').click();
+    cy.dataCy("show-filter-button").click();
 
     cy.contains("h6", "Location").click();
     // show all options
-    getElementByDataCy("show-all-fields-switch").click();
+    cy.dataCy("show-all-fields-switch").click();
 
     setSelect("borehole_identifier", 1);
     showTableAndWaitForData();
@@ -73,10 +72,10 @@ describe("Tests for filtering data by identifier.", () => {
     cy.contains("button", "Bulk editing").click({ force: true });
 
     // Bulk edit dialog should open.
-    cy.get("[data-cy='bulk-edit-accordion']").should("have.length", 16);
+    cy.dataCy("bulk-edit-accordion").should("have.length", 16);
     cy.contains("button", "Cancel").click();
 
     // click reset label
-    cy.get('[data-cy="reset-filter-button"]').click();
+    cy.dataCy("reset-filter-button").click();
   });
 });

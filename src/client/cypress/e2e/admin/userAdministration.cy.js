@@ -10,7 +10,7 @@ import {
   waitForTableData,
 } from "../helpers/dataGridHelpers.js";
 import { setSelect } from "../helpers/formHelpers.js";
-import { getElementByDataCy, goToRouteAndAcceptTerms, handlePrompt } from "../helpers/testHelpers.js";
+import { goToRouteAndAcceptTerms, handlePrompt } from "../helpers/testHelpers.js";
 
 describe("User administration settings tests", () => {
   it("displays, sorts and filters user table and shows user detail.", () => {
@@ -29,9 +29,9 @@ describe("User administration settings tests", () => {
     verifyRowContains("Active", 0);
 
     // navigate away and check if sorting is still applied
-    getElementByDataCy("workgroups-tab").click();
+    cy.dataCy("workgroups-tab").click();
     cy.contains("Blues");
-    getElementByDataCy("users-tab").click();
+    cy.dataCy("users-tab").click();
     verifyRowContains("viewer", 0);
 
     // filter with quick filter
@@ -47,9 +47,9 @@ describe("User administration settings tests", () => {
     verifyRowContains("Active", 0);
 
     // Click on Editor
-    getElementByDataCy("settings-header").should("contain", "Settings");
+    cy.dataCy("settings-header").should("contain", "Settings");
     clickOnRowWithText("editor");
-    getElementByDataCy("settings-header").should("contain", "E. User");
+    cy.dataCy("settings-header").should("contain", "E. User");
 
     // Admin checkbox should not be checked
     cy.get('[data-cy="is-user-admin-checkbox"] input').should("not.be.checked");
@@ -58,27 +58,27 @@ describe("User administration settings tests", () => {
     verifyTableLength(1);
     verifyRowContains("Default", 0); // Workgroup
     // Editor user should have role editor
-    getElementByDataCy("Editor-chip").should("be.visible");
+    cy.dataCy("Editor-chip").should("be.visible");
 
-    getElementByDataCy("backButton").click();
+    cy.dataCy("backButton").click();
     waitForTableData();
 
     // Click on Admin
     clickOnRowWithText("Admin");
-    getElementByDataCy("settings-header").should("contain", "A. User");
+    cy.dataCy("settings-header").should("contain", "A. User");
     // Admin checkbox should be checked
     cy.get('[data-cy="is-user-admin-checkbox"] input').should("be.checked");
     verifyTableLength(1);
     verifyRowContains("Default", 0); // Workgroup
 
     // Admin user should have roles view, editor, controller, validator, publisher
-    getElementByDataCy("View-chip").should("be.visible");
-    getElementByDataCy("Editor-chip").should("be.visible");
-    getElementByDataCy("Controller-chip").should("be.visible");
-    getElementByDataCy("Validator-chip").should("be.visible");
-    getElementByDataCy("Publisher-chip").should("be.visible");
+    cy.dataCy("View-chip").should("be.visible");
+    cy.dataCy("Editor-chip").should("be.visible");
+    cy.dataCy("Controller-chip").should("be.visible");
+    cy.dataCy("Validator-chip").should("be.visible");
+    cy.dataCy("Publisher-chip").should("be.visible");
 
-    getElementByDataCy("backButton").click();
+    cy.dataCy("backButton").click();
     waitForTableData();
     verifyRowWithTextCheckState("Admin", true, "isAdmin");
     verifyRowWithTextCheckState("editor", false, "isAdmin");
@@ -94,7 +94,7 @@ describe("User administration settings tests", () => {
     // Uncheck is admin from user detail
     cy.get('[data-cy="is-user-admin-checkbox"] input').click();
     cy.get('[data-cy="is-user-admin-checkbox"] input').should("not.be.checked");
-    getElementByDataCy("backButton").click();
+    cy.dataCy("backButton").click();
     waitForTableData();
     verifyRowWithTextCheckState("editor", false, "isAdmin");
   });
@@ -117,61 +117,61 @@ describe("User administration settings tests", () => {
     verifyRowWithTextCheckState("controller", false, "isAdmin");
 
     // try to delete controller from user table
-    getElementByDataCy("delete-id-3").click();
+    cy.dataCy("delete-id-3").click();
     handlePrompt(messageForActiveNonDeletableUser, "cancel");
 
     // go to detail view and try to delete
     clickOnRowWithText("controller");
     cy.contains("C. user");
-    getElementByDataCy("deleteuser-button").click();
+    cy.dataCy("deleteuser-button").click();
     handlePrompt(messageForActiveNonDeletableUser, "cancel");
 
     // verify editing is enabled on active user
-    getElementByDataCy("is-user-admin-checkbox").children().first().should("not.have.attr", "disabled");
+    cy.dataCy("is-user-admin-checkbox").children().first().should("not.have.attr", "disabled");
 
     // inactivate controller
-    getElementByDataCy("inactivate-button").click();
+    cy.dataCy("inactivate-button").click();
     cy.wait("@update-user");
-    getElementByDataCy("is-user-admin-checkbox").children().first().should("have.attr", "disabled");
+    cy.dataCy("is-user-admin-checkbox").children().first().should("have.attr", "disabled");
 
-    getElementByDataCy("deleteuser-button").click();
+    cy.dataCy("deleteuser-button").click();
     handlePrompt(messageForInactiveNonDeletableUser, "cancel");
 
     // go to users table
-    getElementByDataCy("backButton").click();
+    cy.dataCy("backButton").click();
     waitForTableData();
     verifyRowWithContentAlsoContains("controller", "Inactive");
-    getElementByDataCy("delete-id-3").click(); // controller
+    cy.dataCy("delete-id-3").click(); // controller
     handlePrompt(messageForInactiveNonDeletableUser, "cancel");
 
     // go to user detail and reactive controller
     clickOnRowWithText("controller");
     cy.wait("@get-user");
-    getElementByDataCy("activate-button").click();
+    cy.dataCy("activate-button").click();
 
     // go back to user table and check prompts for deletable user
-    getElementByDataCy("backButton").click();
+    cy.dataCy("backButton").click();
     waitForTableData();
     verifyRowContains("Active", 4); // user that can be deleted
-    getElementByDataCy("delete-id-7").click(); // user that can be deleted
+    cy.dataCy("delete-id-7").click(); // user that can be deleted
     handlePrompt(messageForActiveDeletableUser, "cancel");
     clickOnRowWithText("user_that_can");
     cy.wait("@get-user");
     cy.contains("U. be_deleted");
-    getElementByDataCy("deleteuser-button").click();
+    cy.dataCy("deleteuser-button").click();
     handlePrompt(messageForActiveDeletableUser, "cancel");
-    getElementByDataCy("inactivate-button").click();
+    cy.dataCy("inactivate-button").click();
     cy.wait("@update-user");
-    getElementByDataCy("deleteuser-button").click();
+    cy.dataCy("deleteuser-button").click();
     handlePrompt(messageForInactiveDeletableUser, "cancel");
-    getElementByDataCy("activate-button").click();
+    cy.dataCy("activate-button").click();
     cy.wait("@update-user");
 
     // got back to user table and check if user with only files can be deleted
-    getElementByDataCy("backButton").click();
+    cy.dataCy("backButton").click();
     waitForTableData();
     verifyRowContains("Active", 5); // user with only files
-    getElementByDataCy("delete-id-6").click(); // user with only files
+    cy.dataCy("delete-id-6").click(); // user with only files
     handlePrompt(messageForActiveNonDeletableUser, "cancel");
   });
 
@@ -180,21 +180,21 @@ describe("User administration settings tests", () => {
     waitForTableData();
 
     // Add two workgroup roles to workgroup Reggae
-    getElementByDataCy("addworkgroup-button").click();
+    cy.dataCy("addworkgroup-button").click();
     setSelect("workgroup", 1); // Workgroup called "Reggae";
     setSelect("role", 1); // "Editor";
-    getElementByDataCy("add-button").click();
+    cy.dataCy("add-button").click();
 
-    getElementByDataCy("addworkgroup-button").click();
+    cy.dataCy("addworkgroup-button").click();
     setSelect("workgroup", 1); // Workgroup called "Reggae";
     setSelect("role", 2); // "Controller";
-    getElementByDataCy("add-button").click();
+    cy.dataCy("add-button").click();
 
     // Add one workgroup roles to workgroup Country
-    getElementByDataCy("addworkgroup-button").click();
+    cy.dataCy("addworkgroup-button").click();
     setSelect("workgroup", 4); // Workgroup called "Country";
     setSelect("role", 0); // "View";
-    getElementByDataCy("add-button").click();
+    cy.dataCy("add-button").click();
 
     verifyRowContains("Country", 0);
     verifyRowContains("Default", 1);
@@ -210,20 +210,20 @@ describe("User administration settings tests", () => {
     verifyRowContains("Country", 2);
 
     // delete all workgroup roles for Reggae Workgroup
-    getElementByDataCy("delete-id-2").click();
+    cy.dataCy("delete-id-2").click();
     handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Reggae"?', "delete");
     verifyTableLength(2);
     verifyRowContains("Default", 0);
     verifyRowContains("Country", 1);
 
     // cancel delete all workgroup roles for Country Workgroup
-    getElementByDataCy("delete-id-5").click();
+    cy.dataCy("delete-id-5").click();
     handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Country"?', "cancel");
     verifyTableLength(2);
     verifyRowContains("Default", 0);
     verifyRowContains("Country", 1);
 
-    getElementByDataCy("delete-id-5").click();
+    cy.dataCy("delete-id-5").click();
     handlePrompt('Do you want to remove all roles of the user "u. be_deleted" in the workgroup "Country"?', "delete");
     verifyRowContains("Default", 0);
     verifyTableLength(1);
@@ -247,27 +247,27 @@ describe("User administration settings tests", () => {
   it("displays error alert when updating user fails.", () => {
     cy.intercept("PUT", "api/v2/user", req => req.destroy());
     goToRouteAndAcceptTerms("/setting/user/2");
-    getElementByDataCy("inactivate-button").click();
+    cy.dataCy("inactivate-button").click();
     cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
     cy.get('[aria-label="Close"]').click(); // close alert
 
     // user should still be displayed as active
-    getElementByDataCy("activate-button").should("have.class", "Mui-selected");
-    getElementByDataCy("inactivate-button").should("not.have.class", "Mui-selected");
+    cy.dataCy("activate-button").should("have.class", "Mui-selected");
+    cy.dataCy("inactivate-button").should("not.have.class", "Mui-selected");
 
-    getElementByDataCy("is-user-admin-checkbox").click();
+    cy.dataCy("is-user-admin-checkbox").click();
     cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
 
     // user should not be displayed as admin
-    getElementByDataCy("is-user-admin-checkbox").should("not.be.checked");
+    cy.dataCy("is-user-admin-checkbox").should("not.be.checked");
   });
 
   it("displays error alert when deleting user fails.", () => {
     cy.intercept("DELETE", "api/v2/user/7", req => req.destroy());
     goToRouteAndAcceptTerms("/setting/user/7"); // deletable user
     cy.contains("U. be_deleted");
-    getElementByDataCy("deleteuser-button").click();
-    getElementByDataCy("delete-button").click();
+    cy.dataCy("deleteuser-button").click();
+    cy.dataCy("delete-button").click();
     cy.get(".MuiAlert-message").contains(errorWhileFetchingMessage);
     cy.get('[aria-label="Close"]').click(); // close alert
 

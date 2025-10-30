@@ -2,7 +2,6 @@ import { saveWithSaveBar } from "../helpers/buttonHelpers";
 import { verifyPaginationText } from "../helpers/dataGridHelpers";
 import { setSelect } from "../helpers/formHelpers";
 import {
-  getElementByDataCy,
   goToRouteAndAcceptTerms,
   newEditableBorehole,
   returnToOverview,
@@ -11,8 +10,8 @@ import {
 
 describe("Tests for filtering data by reference system.", () => {
   function goToEditorLocationFilter() {
-    getElementByDataCy("settings-button").click();
-    getElementByDataCy("general-tab").click();
+    cy.dataCy("settings-button").click();
+    cy.dataCy("general-tab").click();
     cy.contains("div", "Location filters").click();
   }
 
@@ -58,7 +57,7 @@ describe("Tests for filtering data by reference system.", () => {
     cy.get('[data-cy="show-filter-button"]').click();
 
     cy.contains("h6", "Location").click();
-    getElementByDataCy("show-all-fields-switch").click();
+    cy.dataCy("show-all-fields-switch").click();
     verifyPaginationText("1–100 of 3001");
 
     cy.get('[data-cy="originalReferenceSystem-formSelect"]').should("exist");

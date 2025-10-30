@@ -2,7 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { Box, Chip } from "@mui/material";
-import { theme } from "../../../AppTheme.ts";
+import PropTypes from "prop-types";
+import { theme } from "../../../../AppTheme.ts";
 
 /**
  * A component that provides a file dropzone for selecting and uploading files.
@@ -216,4 +217,15 @@ export const FileDropzone = props => {
       </Box>
     </div>
   );
+};
+
+FileDropzone.propTypes = {
+  onHandleFileChange: PropTypes.func.isRequired,
+  defaultText: PropTypes.string.isRequired,
+  maxFilesToSelectAtOnce: PropTypes.number.isRequired,
+  maxFilesToUpload: PropTypes.number.isRequired,
+  acceptedFileTypes: PropTypes.arrayOf(PropTypes.string).isRequired,
+  isDisabled: PropTypes.bool.isRequired,
+  dataCy: PropTypes.string,
+  setFileType: PropTypes.func,
 };

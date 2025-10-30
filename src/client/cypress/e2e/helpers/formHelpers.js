@@ -184,9 +184,9 @@ export const evaluateSelect = (fieldName, expectedText, parent = null, editable 
     const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"] input`;
     cy.get(selector).should("have.value", expectedText, `Expected ${fieldName} to have value ${expectedText}`);
   } else if (!expectedText) {
-    cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiOutlinedInput-input").should("be.empty");
+    cy.dataCy(`${fieldName}-formSelect`).find(".MuiOutlinedInput-input").should("be.empty");
   } else {
-    cy.get(`[data-cy="${fieldName}-formSelect"]`).find(".MuiOutlinedInput-input").should("have.value", expectedText);
+    cy.dataCy(`${fieldName}-formSelect`).find(".MuiOutlinedInput-input").should("have.value", expectedText);
   }
 };
 
@@ -223,8 +223,8 @@ export const evaluateMultiSelect = (fieldName, expectedValues, parent) => {
         cy.get('[data-cy^="chip-"]').should("not.exist");
       } else {
         expectedValues.forEach(v => {
-          cy.get(`[data-cy="chip-${v}"]`).scrollIntoView();
-          cy.get(`[data-cy="chip-${v}"]`).should("be.visible");
+          cy.dataCy(`chip-${v}`).scrollIntoView();
+          cy.dataCy(`chip-${v}`).should("be.visible");
         });
       }
     });

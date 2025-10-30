@@ -13,7 +13,6 @@ import {
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
   createBorehole,
-  getElementByDataCy,
   goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   handlePrompt,
@@ -37,7 +36,7 @@ describe("Test for the borehole form.", () => {
     goToRouteAndAcceptTerms(`/`);
     // create boreholes
     newEditableBorehole().as("borehole_id");
-    getElementByDataCy("save-bar").should("be.visible");
+    cy.dataCy("save-bar").should("be.visible");
 
     // fills and evaluates all mui dropdowns on location tab (identifiers are tested separately)
     setSelect("restrictionId", 2);
@@ -101,9 +100,9 @@ describe("Test for the borehole form.", () => {
       goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
       cy.wait("@borehole_by_id");
       evaluateInput("totalDepth", "");
-      getElementByDataCy("save-bar").should("not.exist");
+      cy.dataCy("save-bar").should("not.exist");
       startBoreholeEditing();
-      getElementByDataCy("save-bar").should("be.visible");
+      cy.dataCy("save-bar").should("be.visible");
 
       setSelect("purposeId", 1);
       setSelect("typeId", 1);
@@ -121,7 +120,7 @@ describe("Test for the borehole form.", () => {
       setInput("remarks", "This is a test remark");
 
       // navigate away is blocked before saving
-      getElementByDataCy("location-menu-item").click();
+      cy.dataCy("location-menu-item").click();
       const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
       handlePrompt(messageUnsavedChanges, "cancel");
 
