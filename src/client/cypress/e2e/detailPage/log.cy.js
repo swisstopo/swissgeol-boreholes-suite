@@ -427,11 +427,11 @@ describe("Test for the borehole log.", () => {
     cy.dataCy("logRun-files").dataCy("filter-button").click();
     cy.dataCy("logRun-files").dataCy("filter-form").should("exist");
 
-    toggleMultiSelect("toolTypes", [1], 25, "logRun-files"); // "CAL"
+    toggleMultiSelect("toolTypes", [1], 26, "logRun-files"); // "CAL"
     assertFileCountDisplayed("1 file");
     toggleMultiSelect("extensions", [2], 3, "logRun-files"); // "zip"
     assertFileCountDisplayed("0 files");
-    toggleMultiSelect("toolTypes", [0], 25, "logRun-files"); // Reset
+    toggleMultiSelect("toolTypes", [0], 26, "logRun-files"); // Reset
     assertFileCountDisplayed("1 file");
     toggleMultiSelect("passTypes", [3], 8, "logRun-files"); // "Main & repeat"
     assertFileCountDisplayed("1 file");
