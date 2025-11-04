@@ -384,7 +384,7 @@ describe("Test for the borehole log.", () => {
     addMinimalLogRun(100, 110, "R01");
     verifyRowContains("R01", 0);
 
-    // can add new file
+    // add two files
     clickOnRowWithText("R01");
     cy.dataCy("logRun-files").contains("No file added yet...");
     cy.dataCy("addfile-button").click();
