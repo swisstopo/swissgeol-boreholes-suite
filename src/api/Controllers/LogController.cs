@@ -75,7 +75,7 @@ public class LogController : BoreholeControllerBase<LogRun>
 
         if (file.Length > MaxFileSize)
         {
-            return BadRequest($"File size exceeds maximum file size of {MaxFileSize} bytes.");
+            return Problem(detail: $"{logRun.RunNumber} - {file.FileName}: File size exceeds maximum file size of {MaxFileSize} bytes.", type: ProblemType.UserError);
         }
 
         try
@@ -97,7 +97,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         catch (Exception ex)
         {
             Logger.LogError(ex, "An error occurred while uploading the file.");
-            return Problem("An error occurred while uploading the file.");
+            return Problem(detail: $"{logRun.RunNumber} - {file.FileName}: {ex.Message}", type: ProblemType.UserError);
         }
     }
 
@@ -195,7 +195,7 @@ public class LogController : BoreholeControllerBase<LogRun>
 
         if (!await IsRunNumberUnique(entity).ConfigureAwait(false))
         {
-            return Problem(detail: "Run number must be unique");
+            return Problem(detail: $"{entity.RunNumber}: Run number must be unique", type: ProblemType.UserError);
         }
 
         entity.LogFiles = null; // Cannot create LogFiles here because the files first have to be uploaded to S3
@@ -260,7 +260,6 @@ public class LogController : BoreholeControllerBase<LogRun>
                     // The following fields should never be updated by the user, but only when the file changes
                     Context.Entry(existingLogFile).Property(x => x.Name).IsModified = false;
                     Context.Entry(existingLogFile).Property(x => x.NameUuid).IsModified = false;
-                    Context.Entry(existingLogFile).Property(x => x.FileType).IsModified = false;
                 }
             }
         }

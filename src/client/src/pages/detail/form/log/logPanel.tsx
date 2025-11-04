@@ -2,6 +2,8 @@ import { FC, useCallback, useContext, useEffect, useMemo, useState } from "react
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
+import { ApiError } from "../../../../api/apiInterfaces.ts";
+import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
@@ -19,6 +21,7 @@ export const LogPanel: FC = () => {
   const { id: boreholeId } = useRequiredParams();
   const [selectedLogRunId, setSelectedLogRunId] = useState<string | undefined>();
   const { registerSaveHandler, registerResetHandler, unMount, markAsChanged } = useContext(SaveContext);
+  const { showAlert } = useContext(AlertContext);
   const { data: logRuns = [], isLoading } = useLogsByBoreholeId(Number(boreholeId));
   const [tmpLogRuns, setTmpLogRuns] = useState<LogRunChangeTracker[]>([]);
   const tmpLogRunsFlat: LogRun[] = useMemo(() => tmpLogRuns.map(l => l.item as LogRun), [tmpLogRuns]);
@@ -102,9 +105,16 @@ export const LogPanel: FC = () => {
   }, [initTmpLogRuns]);
 
   const onSave = useCallback(async () => {
-    await Promise.all([deleteRuns(), addAndUpdateLogRuns()]);
-    return true;
-  }, [addAndUpdateLogRuns, deleteRuns]);
+    try {
+      await Promise.all([deleteRuns(), addAndUpdateLogRuns()]);
+      return true;
+    } catch (error) {
+      if (error instanceof ApiError) {
+        showAlert(error.message, "error", false);
+      }
+      return false;
+    }
+  }, [addAndUpdateLogRuns, deleteRuns, showAlert]);
 
   useEffect(() => {
     registerSaveHandler(onSave);
