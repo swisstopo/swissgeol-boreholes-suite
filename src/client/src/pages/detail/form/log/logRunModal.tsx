@@ -180,19 +180,16 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
                     schemaName="log_data_package"
                     fieldName={`logFiles.${index}.dataPackageId`}
                     label="dataPackage"
-                    sx={{ flex: 1 }}
                   />
                   <FormInput
                     fieldName={`logFiles.${index}.deliveryDate`}
                     label="deliveryDate"
                     type={FormValueType.Date}
-                    sx={{ flex: 1 }}
                   />
                   <FormDomainSelect
                     schemaName="log_depth_type"
                     fieldName={`logFiles.${index}.depthTypeId`}
                     label="depthType"
-                    sx={{ flex: 1 }}
                   />
                   <FormCheckbox fieldName={`logFiles.${index}.public`} label="public" sx={{ flex: 1 }} />
                 </FormContainer>
