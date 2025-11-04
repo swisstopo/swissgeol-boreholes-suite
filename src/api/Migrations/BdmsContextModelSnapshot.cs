@@ -2020,10 +2020,6 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("depth_type_id");
 
-                    b.Property<string>("FileType")
-                        .HasColumnType("text")
-                        .HasColumnName("file_type");
-
                     b.Property<int>("LogRunId")
                         .HasColumnType("integer")
                         .HasColumnName("log_run_id");
