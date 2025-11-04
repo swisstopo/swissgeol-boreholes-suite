@@ -1493,7 +1493,6 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.LogRun, _ => default!)
             .RuleFor(o => o.Name, f => f.System.FileName())
             .RuleFor(o => o.NameUuid, f => f.Random.Uuid().ToString())
-            .RuleFor(o => o.FileType, f => f.Random.Word())
             .RuleFor(o => o.PassTypeId, f => f.PickRandom(passTypeIds).OrNull(f, .1f))
             .RuleFor(o => o.PassType, _ => default!)
             .RuleFor(o => o.Pass, f => f.Random.Int(1, 5).OrNull(f, .2f))
@@ -1524,7 +1523,6 @@ public static class BdmsContextExtensions
                     .UseSeed(logFile_ids + i)
                     .RuleFor(o => o.LogRunId, _ => logRunId)
                     .Generate();
-                logFile.FileType = logFile.Name.Split('.').Last();
                 logFilesToInsert.Add(logFile);
             }
         }

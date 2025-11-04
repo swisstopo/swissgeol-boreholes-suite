@@ -135,35 +135,6 @@ public class LogController : BoreholeControllerBase<LogRun>
     }
 
     /// <summary>
-    /// Gets the file data for a specific log file.
-    /// </summary>
-    /// <param name="logFileId">The ID of the log file.</param>
-    /// <returns>The file content.</returns>
-    [HttpGet("file")]
-    [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> GetFileAsync([Range(1, int.MaxValue)] int logFileId)
-    {
-        var logFile = await Context.LogFiles
-            .Include(lf => lf.LogRun)
-            .FirstOrDefaultAsync(lf => lf.Id == logFileId)
-            .ConfigureAwait(false);
-
-        if (logFile == null || logFile.FileType == null)
-        {
-            return NotFound();
-        }
-
-        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), logFile.LogRun!.BoreholeId).ConfigureAwait(false))
-        {
-            return Unauthorized();
-        }
-
-        var fileData = await logFileCloudService.GetObject(logFile.NameUuid!).ConfigureAwait(false);
-
-        return File(fileData, logFile.FileType, logFile.Name);
-    }
-
-    /// <summary>
     /// Deletes one or multiple log runs.
     /// </summary>
     /// <param name="logRunIds">The IDs of the log runs to delete.</param>

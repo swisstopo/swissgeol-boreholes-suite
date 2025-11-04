@@ -43,13 +43,6 @@ public class LogFile : IIdentifyable, IChangeTracking
     public string? NameUuid { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="LogFile"/>'s type.
-    /// </summary>
-    [JsonIgnore]
-    [Column("file_type")]
-    public string? FileType { get; set; }
-
-    /// <summary>
     /// Gets or sets the id of the <see cref="LogFile"/>'s pass type.
     /// </summary>
     [IncludeInExport]

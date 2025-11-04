@@ -57,7 +57,6 @@ public class LogFileCloudService : CloudServiceBase
                 LogRunId = logRunId,
                 Name = fileName,
                 NameUuid = fileNameGuid,
-                FileType = contentType,
                 Public = false,
             };
 

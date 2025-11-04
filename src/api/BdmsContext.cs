@@ -393,7 +393,6 @@ public class BdmsContext : DbContext
                 DeliveryDate = lf.DeliveryDate,
                 NameUuid = lf.NameUuid,
                 Public = lf.Public,
-                FileType = lf.FileType,
                 Pass = lf.Pass,
                 ToolTypeCodelistIds = lf.LogFileToolTypeCodes == null ?
                     new List<int>() :
@@ -921,9 +920,6 @@ public class BdmsContext : DbContext
             .IsRequired();
         modelBuilder.Entity<LogFile>()
             .Property(lf => lf.NameUuid)
-            .IsRequired();
-        modelBuilder.Entity<LogFile>()
-            .Property(lf => lf.FileType)
             .IsRequired();
         modelBuilder.Entity<LogFile>()
             .HasMany(l => l.ToolTypeCodelists)

@@ -185,44 +185,6 @@ public class LogControllerTest : TestControllerBase
     }
 
     [TestMethod]
-    public async Task GetFileWithNonexistentId()
-    {
-        var response = await controller.GetFileAsync(999999);
-        ActionResultAssert.IsNotFound(response);
-    }
-
-    [TestMethod]
-    public async Task GetFile()
-    {
-        var borehole = await AddTestBoreholeAsync();
-        var logRun = await AddTestLogRunAsync(borehole.Id);
-        var logFile = await UploadTestLogFile(logRun.Id);
-        logFile.FileType = "application/las";
-        await Context.SaveChangesAsync();
-
-        var response = await controller.GetFileAsync(logFile.Id);
-        Assert.IsInstanceOfType<FileResult>(response);
-
-        var fileResult = (FileResult)response;
-        Assert.AreEqual("application/las", fileResult.ContentType);
-    }
-
-    [TestMethod]
-    public async Task GetFileFailsWithoutPermissions()
-    {
-        var borehole = await AddTestBoreholeAsync();
-        var logRun = await AddTestLogRunAsync(borehole.Id);
-        var logFile = await UploadTestLogFile(logRun.Id);
-
-        boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync("sub_admin", borehole.Id))
-            .ReturnsAsync(false);
-
-        var response = await controller.GetFileAsync(logFile.Id);
-        ActionResultAssert.IsUnauthorized(response);
-    }
-
-    [TestMethod]
     public async Task GetFailsWithoutPermissions()
     {
         boreholePermissionServiceMock
@@ -280,7 +242,6 @@ public class LogControllerTest : TestControllerBase
         Assert.AreEqual(new DateOnly(2021, 6, 6), logFile.DeliveryDate);
         Assert.AreEqual("0d9b13e0-5ff0-5351-8a35-af2b6a8f9da5", logFile.NameUuid);
         Assert.AreEqual(true, logFile.Public);
-        Assert.AreEqual("ecelp4800", logFile.FileType);
         Assert.AreEqual(3, logFile.Pass);
         Assert.AreEqual(1, logFile.ToolTypeCodelistIds.Count);
         Assert.AreEqual(100003032, logFile.ToolTypeCodelistIds.First());
