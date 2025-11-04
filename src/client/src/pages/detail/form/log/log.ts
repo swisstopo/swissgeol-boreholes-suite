@@ -43,7 +43,7 @@ export interface LogFile {
   pass?: number | null;
   dataPackageId?: number | null;
   dataPackage?: Codelist;
-  deliveryDate?: NullableDateString | null;
+  deliveryDate?: NullableDateString;
   depthTypeId?: number | null;
   depthType?: Codelist;
   toolTypeCodelistIds: number[];
@@ -55,13 +55,13 @@ export interface LogFile {
   updatedBy?: User | null;
 }
 
-const logRunController = "log";
+const logController = "log";
 export const logsQueryKey = "logs";
 export const useLogsByBoreholeId = (boreholeId?: number): UseQueryResult<LogRun[]> =>
   useQuery<LogRun[]>({
     queryKey: [logsQueryKey, boreholeId],
     queryFn: async (): Promise<LogRun[]> => {
-      return await fetchApiV2WithApiError<LogRun[]>(`${logRunController}?boreholeId=${boreholeId}`, "GET");
+      return await fetchApiV2WithApiError<LogRun[]>(`${logController}?boreholeId=${boreholeId}`, "GET");
     },
     enabled: !!boreholeId,
   });
@@ -72,7 +72,7 @@ export const useLogRunMutations = () => {
 
   const useAddLogRun = useMutation({
     mutationFn: async (logRun: LogRun) => {
-      return await fetchApiV2WithApiError<LogRun>(logRunController, "POST", logRun);
+      return await fetchApiV2WithApiError<LogRun>(logController, "POST", logRun);
     },
     onSuccess: (_data, logRun) => {
       resetTabStatus();
@@ -89,7 +89,7 @@ export const useLogRunMutations = () => {
             const formData = new FormData();
             formData.append("file", file.file);
             const savedFile = await uploadWithApiError<LogFile>(
-              `${logRunController}/upload?logRunId=${logRun.id}`,
+              `${logController}/upload?logRunId=${logRun.id}`,
               "POST",
               formData,
             );
@@ -100,7 +100,7 @@ export const useLogRunMutations = () => {
         });
         logRun.logFiles = await Promise.all(uploadPromises);
       }
-      return await fetchApiV2WithApiError<LogRun>(logRunController, "PUT", logRun);
+      return await fetchApiV2WithApiError<LogRun>(logController, "PUT", logRun);
     },
     onSuccess: (_data, logRun) => {
       resetTabStatus();
@@ -111,7 +111,7 @@ export const useLogRunMutations = () => {
   const useDeleteLogRuns = useMutation({
     mutationFn: async (logRuns: LogRun[]) => {
       const queryParams = logRuns.map(logRun => "logRunIds=" + logRun.id).join("&");
-      return await fetchApiV2WithApiError(`${logRunController}?${queryParams}`, "DELETE");
+      return await fetchApiV2WithApiError(`${logController}?${queryParams}`, "DELETE");
     },
     onSuccess: (_data, logRuns) => {
       resetTabStatus();
