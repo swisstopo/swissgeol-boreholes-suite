@@ -3,7 +3,6 @@
 #nullable disable
 
 namespace BDMS.Migrations;
-#pragma warning disable CA1505
 
 /// <inheritdoc />
 public partial class MakeBitSizeNullable : Migration
@@ -36,4 +35,3 @@ public partial class MakeBitSizeNullable : Migration
             oldNullable: true);
     }
 }
-#pragma warning restore CA1505
