@@ -7,7 +7,6 @@ import { BoreholeV2, useBoreholeStatusEditable } from "../../api/borehole.ts";
 import { useAuth } from "../../auth/useBdmsAuth";
 import { useBoreholeDataAvailability } from "../../hooks/useBoreholeDataAvailability.ts";
 import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
-import { useDevMode } from "../../hooks/useDevMode.tsx";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { capitalizeFirstLetter } from "../../utils";
 import { TabStatus } from "./form/workflow/workflow.ts";
@@ -24,7 +23,6 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const { t } = useTranslation();
   const auth = useAuth();
   const { navigateTo } = useBoreholesNavigate();
-  const { runsDevMode } = useDevMode();
 
   const {
     hasStratigraphy,
@@ -165,18 +163,16 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
               </SgcMenuItem>
             </>
           )}
-          {runsDevMode && (
-            <SgcMenuItem
-              active={location.pathname === `/${id}/log`}
-              empty={!hasLogRuns}
-              data-cy="log-menu-item"
-              isReviewed={!auth.anonymousModeEnabled && isReviewed(["log"])}
-              onClick={() => {
-                navigateTo({ path: `/${id}/log` });
-              }}>
-              {t("log")}
-            </SgcMenuItem>
-          )}
+          <SgcMenuItem
+            active={location.pathname === `/${id}/log`}
+            empty={!hasLogRuns}
+            data-cy="log-menu-item"
+            isReviewed={!auth.anonymousModeEnabled && isReviewed(["log"])}
+            onClick={() => {
+              navigateTo({ path: `/${id}/log` });
+            }}>
+            {t("log")}
+          </SgcMenuItem>
           <SgcMenuItem
             active={location.pathname === `/${id}/attachments`}
             empty={!hasAttachments}
