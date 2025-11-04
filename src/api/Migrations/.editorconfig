@@ -1,0 +1,4 @@
+# Description: Ignores rule concerning unmaintainable code, which is not useful for migrations
+
+[*.cs]
+dotnet_diagnostic.CA1505.severity = none
