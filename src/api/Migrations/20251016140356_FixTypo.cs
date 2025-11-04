@@ -3,7 +3,6 @@
 #nullable disable
 
 namespace BDMS.Migrations;
-#pragma warning disable CA1505
 
 /// <inheritdoc />
 public partial class FixTypo : Migration
@@ -18,4 +17,3 @@ public partial class FixTypo : Migration
         ");
     }
 }
-#pragma warning restore CA1505
