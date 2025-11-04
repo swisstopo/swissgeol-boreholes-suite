@@ -26,7 +26,7 @@ import { LogFile, LogRun } from "./log";
 import { LogFileTable } from "./logFilesTable";
 import { getFileExtension, getServiceOrToolArray, validateFiles, validateRunNumber } from "./logUtils";
 
-type LogFileField = LogFile & { _rhfId: string };
+type LogFileField = LogFile & { fileKey: string };
 
 interface LogRunModalProps {
   logRun: LogRun | undefined;
@@ -57,7 +57,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
   } = useFieldArray({
     control: formMethods.control,
     name: "logFiles",
-    keyName: "_rhfId",
+    keyName: "fileKey",
   });
   const files: LogFileField[] = fileFields as unknown as LogFileField[];
 
@@ -143,7 +143,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
           const nameError = getFormFieldError("name", logFileErrors);
           return (
             <BoreholesCard
-              key={file._rhfId}
+              key={file.fileKey}
               data-cy={`logRun-file-${index}`}
               title={titleText}
               action={
