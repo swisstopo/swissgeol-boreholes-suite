@@ -23,4 +23,5 @@ public enum WorkflowStatusField
     Profiles,
     Photos,
     Documents,
+    Log,
 }
