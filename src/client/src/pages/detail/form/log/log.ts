@@ -43,7 +43,7 @@ export interface LogFile {
   pass?: number | null;
   dataPackageId?: number | null;
   dataPackage?: Codelist;
-  deliveryDate?: NullableDateString | null;
+  deliveryDate?: NullableDateString;
   depthTypeId?: number | null;
   depthType?: Codelist;
   toolTypeCodelistIds: number[];
