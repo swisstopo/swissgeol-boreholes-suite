@@ -52,7 +52,7 @@ const checkLayerForDescriptionDepthOverlapping = (descriptions: BaseLayer[], lay
       // Find descriptions that overlap this layer, but are not exact matches of fromDepth and toDepth with any other layers
       const overlappingDescriptions = descriptions.filter(
         d =>
-          !layers.some(l => d.fromDepth === l.fromDepth && d.toDepth === l.toDepth) &&
+          !(layerDepths.some(l => d.fromDepth === l.fromDepth) && layerDepths.some(l => d.toDepth === l.toDepth)) &&
           d.fromDepth < layer.toDepth &&
           d.toDepth > layer.fromDepth,
       );
