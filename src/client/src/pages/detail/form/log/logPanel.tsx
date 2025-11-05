@@ -2,12 +2,11 @@ import { FC, useCallback, useContext, useEffect, useMemo, useState } from "react
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
-import { ApiError } from "../../../../api/apiInterfaces.ts";
-import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { SaveContext } from "../../saveContext.tsx";
 import { LogRun, LogRunChangeTracker, useLogRunMutations, useLogsByBoreholeId } from "./log.ts";
@@ -21,7 +20,7 @@ export const LogPanel: FC = () => {
   const { id: boreholeId } = useRequiredParams();
   const [selectedLogRunId, setSelectedLogRunId] = useState<string | undefined>();
   const { registerSaveHandler, registerResetHandler, unMount, markAsChanged } = useContext(SaveContext);
-  const { showAlert } = useContext(AlertContext);
+  const showApiErrorAlert = useApiErrorAlert();
   const { data: logRuns = [], isLoading } = useLogsByBoreholeId(Number(boreholeId));
   const [tmpLogRuns, setTmpLogRuns] = useState<LogRunChangeTracker[]>([]);
   const tmpLogRunsFlat: LogRun[] = useMemo(() => tmpLogRuns.map(l => l.item as LogRun), [tmpLogRuns]);
@@ -109,12 +108,10 @@ export const LogPanel: FC = () => {
       await Promise.all([deleteRuns(), addAndUpdateLogRuns()]);
       return true;
     } catch (error) {
-      if (error instanceof ApiError) {
-        showAlert(error.message, "error", false);
-      }
+      showApiErrorAlert(error);
       return false;
     }
-  }, [addAndUpdateLogRuns, deleteRuns, showAlert]);
+  }, [addAndUpdateLogRuns, deleteRuns, showApiErrorAlert]);
 
   useEffect(() => {
     registerSaveHandler(onSave);
