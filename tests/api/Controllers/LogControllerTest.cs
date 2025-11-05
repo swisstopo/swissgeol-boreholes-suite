@@ -181,7 +181,7 @@ public class LogControllerTest : TestControllerBase
 
         var formFile = new FormFile(stream, 0, stream.Length, "file", "testfile.las");
         var response = await controller.UploadAsync(formFile, logRun.Id);
-        ActionResultAssert.IsBadRequest(response);
+        ActionResultAssert.IsInternalServerError(response, "RUN01 - testfile.las: File size exceeds maximum file size of 210000000 bytes.");
     }
 
     [TestMethod]
