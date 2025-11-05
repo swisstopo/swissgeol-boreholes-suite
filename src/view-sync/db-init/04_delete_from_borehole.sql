@@ -81,7 +81,7 @@ DELETE FROM bdms.document WHERE id IN (
 DELETE FROM bdms.log_run lr
 WHERE NOT EXISTS (
     SELECT 1 FROM bdms.log_file lf
-    WHERE lf.logRun_id = lr.id AND lf.public IS TRUE
+    WHERE lf.log_run_id = lr.id AND lf.public IS TRUE
 );
 
 -- Purge remaining non-public log files
