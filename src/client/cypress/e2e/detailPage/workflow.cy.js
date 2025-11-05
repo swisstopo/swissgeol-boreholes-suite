@@ -573,7 +573,7 @@ describe("Tests the publication workflow.", () => {
     });
   });
 
-  it.only("Can review and reset log tab", () => {
+  it("Can review and reset log tab", () => {
     createBoreholeWithCompleteDataset().as("borehole_id");
     cy.get("@borehole_id").then(id => {
       navigateToWorkflowAndStartEditing(id);
