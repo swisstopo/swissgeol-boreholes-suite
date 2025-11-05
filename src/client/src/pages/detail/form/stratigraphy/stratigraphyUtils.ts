@@ -49,9 +49,12 @@ const checkLayerForDescriptionDepthOverlapping = (descriptions: BaseLayer[], lay
   for (let i = 0; i < layerDepths.length; i++) {
     const layer = layerDepths[i];
     if (layer.lithologyId === 0) {
-      // Find descriptions that overlap this gap
+      // Find descriptions that overlap this layer, but are not exact matches of fromDepth and toDepth with any other layers
       const overlappingDescriptions = descriptions.filter(
-        d => d.fromDepth < layer.toDepth && d.toDepth > layer.fromDepth,
+        d =>
+          !layers.some(l => d.fromDepth === l.fromDepth && d.toDepth === l.toDepth) &&
+          d.fromDepth < layer.toDepth &&
+          d.toDepth > layer.fromDepth,
       );
       if (overlappingDescriptions.length > 0) {
         // For each overlapping description, split the gap as needed
