@@ -2671,7 +2671,9 @@ namespace BDMS.Migrations
                         .HasColumnName("location");
 
                     b.Property<bool>("Log")
+                        .ValueGeneratedOnAdd()
                         .HasColumnType("boolean")
+                        .HasDefaultValue(false)
                         .HasColumnName("log");
 
                     b.Property<bool>("Photos")
