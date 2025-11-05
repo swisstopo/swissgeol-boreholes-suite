@@ -5,6 +5,7 @@
 ### Added
 - Added new lithology UI and backend to manage the borehole's lithologies. Removed legacy lithology UI.
 - Added functionality to automatically extract lithological descriptions from borehole profiles.
+- Added new log UI and backend to add, edit and delete borehole log runs and log files.
 
 ### Changed
 - Update legal links in disclaimer for all languages.
