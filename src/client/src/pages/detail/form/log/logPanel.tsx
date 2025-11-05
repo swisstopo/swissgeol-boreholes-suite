@@ -6,9 +6,10 @@ import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { SaveContext } from "../../saveContext.tsx";
-import { LogRunChangeTracker, TmpLogRun, useLogRunMutations, useLogsByBoreholeId } from "./log.ts";
+import { LogRun, LogRunChangeTracker, useLogRunMutations, useLogsByBoreholeId } from "./log.ts";
 import { LogRunModal } from "./logRunModal.tsx";
 import { LogTable } from "./logTable.tsx";
 import { prepareLogRunForSubmit } from "./logUtils.ts";
@@ -19,9 +20,10 @@ export const LogPanel: FC = () => {
   const { id: boreholeId } = useRequiredParams();
   const [selectedLogRunId, setSelectedLogRunId] = useState<string | undefined>();
   const { registerSaveHandler, registerResetHandler, unMount, markAsChanged } = useContext(SaveContext);
+  const showApiErrorAlert = useApiErrorAlert();
   const { data: logRuns = [], isLoading } = useLogsByBoreholeId(Number(boreholeId));
   const [tmpLogRuns, setTmpLogRuns] = useState<LogRunChangeTracker[]>([]);
-  const tmpLogRunsFlat: TmpLogRun[] = useMemo(() => tmpLogRuns.map(l => l.item as TmpLogRun), [tmpLogRuns]);
+  const tmpLogRunsFlat: LogRun[] = useMemo(() => tmpLogRuns.map(l => l.item as LogRun), [tmpLogRuns]);
 
   const {
     delete: { mutateAsync: deleteLogRuns },
@@ -36,7 +38,7 @@ export const LogPanel: FC = () => {
         id: 0,
         boreholeId: Number(boreholeId),
         tmpId: "new",
-      } as TmpLogRun;
+      } as LogRun;
     }
     return tmpLogRunsFlat.find(l => l.tmpId === selectedLogRunId || l.id.toString() === selectedLogRunId);
   }, [boreholeId, selectedLogRunId, tmpLogRunsFlat]);
@@ -46,7 +48,7 @@ export const LogPanel: FC = () => {
   }, []);
 
   const updateLogRunItem = useCallback(
-    (selectedId: string | undefined, item: TmpLogRun, hasChanges: boolean) => {
+    (selectedId: string | undefined, item: LogRun, hasChanges: boolean) => {
       setTmpLogRuns(prev => {
         if (hasChanges) {
           markAsChanged(true);
@@ -66,7 +68,7 @@ export const LogPanel: FC = () => {
   );
 
   const updateTmpLogRun = useCallback(
-    (logRun: TmpLogRun, hasChanges: boolean) => {
+    (logRun: LogRun, hasChanges: boolean) => {
       updateLogRunItem(selectedLogRunId, logRun, hasChanges);
       setSelectedLogRunId(undefined);
     },
@@ -87,7 +89,10 @@ export const LogPanel: FC = () => {
     for (const logRun of tmpLogRuns.filter(l => l.hasChanges).map(l => l.item)) {
       prepareLogRunForSubmit(logRun);
       if (logRun.id === 0) {
-        await addLogRun({ ...logRun, boreholeId: Number(boreholeId) });
+        const createdLogRun = await addLogRun({ ...logRun, boreholeId: Number(boreholeId), logFiles: [] });
+        if (logRun.logFiles && logRun.logFiles.length > 0) {
+          await updateLogRun({ ...createdLogRun, logFiles: logRun.logFiles });
+        }
       } else {
         await updateLogRun(logRun);
       }
@@ -99,9 +104,14 @@ export const LogPanel: FC = () => {
   }, [initTmpLogRuns]);
 
   const onSave = useCallback(async () => {
-    await Promise.all([deleteRuns(), addAndUpdateLogRuns()]);
-    return true;
-  }, [addAndUpdateLogRuns, deleteRuns]);
+    try {
+      await Promise.all([deleteRuns(), addAndUpdateLogRuns()]);
+      return true;
+    } catch (error) {
+      showApiErrorAlert(error);
+      return false;
+    }
+  }, [addAndUpdateLogRuns, deleteRuns, showApiErrorAlert]);
 
   useEffect(() => {
     registerSaveHandler(onSave);

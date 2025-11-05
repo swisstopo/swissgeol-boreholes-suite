@@ -65,6 +65,8 @@ const themePalette: AppThemePalette = {
     light: "#DFE4E9",
     darker: "#ACB4BD",
     dark: "#596978",
+    fileDropzone: "#337083",
+    fileDropzoneSelected: "#D6E2E6",
   },
   background: {
     default: "#ffffff",
@@ -76,6 +78,7 @@ const themePalette: AppThemePalette = {
     menuItemActive: "#A65462",
     filterItemActive: "#1C2834",
     listItemActive: "#DFE4E9",
+    fileDropzoneSelected: "#F8FBFC",
 
     backdrop: "rgba(255,255,255,0.7)",
     tabFocus: "rgba(100, 95, 228, 0.32)",
@@ -492,7 +495,7 @@ export const theme = createTheme({
             color: themePalette.action.disabled,
             borderColor: `${themePalette.action.disabled} !important`,
             backgroundColor: "#ffffff",
-            "-webkit-text-fill-color": `${themePalette.action.disabled} !important`,
+            WebkitTextFillColor: `${themePalette.action.disabled} !important`,
           },
           "&.ai .MuiOutlinedInput-notchedOutline": {
             borderColor: `${themePalette.ai.main} !important`,

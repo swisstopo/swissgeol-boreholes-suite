@@ -1,29 +1,188 @@
-﻿using BDMS.Models;
+﻿using Amazon.S3;
+using BDMS.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Security.Claims;
+using System.Text;
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
 
 [TestClass]
-public class LogRunControllerTest : TestControllerBase
+public class LogControllerTest : TestControllerBase
 {
-    private LogRunController controller;
+    private const string TestFileName = "test_logfile.las";
+    private User adminUser;
+    private LogController controller;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
+
     private static int testBoreholeId = 1000085;
 
     [TestInitialize]
     public void TestInitialize()
     {
+        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+
         Context = ContextFactory.GetTestContext();
+        adminUser = Context.Users.FirstOrDefault(u => u.SubjectId == "sub_admin") ?? throw new InvalidOperationException("No User found in database.");
+
+        var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
+        contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
+        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, adminUser.SubjectId) }));
+
+        var s3ClientMock = new AmazonS3Client(
+            configuration["S3:ACCESS_KEY"],
+            configuration["S3:SECRET_KEY"],
+            new AmazonS3Config
+            {
+                ServiceURL = configuration["S3:ENDPOINT"],
+                ForcePathStyle = true,
+                UseHttp = configuration["S3:SECURE"] == "0",
+            });
+
+        var logFileCloudServiceLoggerMock = new Mock<ILogger<LogFileCloudService>>(MockBehavior.Strict);
+        logFileCloudServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
+        var logFileCloudService = new LogFileCloudService(logFileCloudServiceLoggerMock.Object, s3ClientMock, configuration, contextAccessorMock.Object, Context);
+
         boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
-        controller = new LogRunController(Context, new Mock<ILogger<LogRunController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+
+        var logControllerLoggerMock = new Mock<ILogger<LogController>>(MockBehavior.Strict);
+        logControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
+        controller = new LogController(Context, logControllerLoggerMock.Object, boreholePermissionServiceMock.Object, logFileCloudService) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
     public async Task TestCleanup() => await Context.DisposeAsync();
+
+    [TestMethod]
+    public async Task Upload()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
+
+        var fileName = TestFileName;
+        var content = Guid.NewGuid().ToString();
+        var file = GetFormFileByContent(content, fileName);
+
+        var response = await controller.UploadAsync(file, logRun.Id);
+        ActionResultAssert.IsOk(response);
+
+        var logFile = Context.LogFiles.Single(f => f.Name == fileName);
+        Assert.AreEqual(adminUser.SubjectId, logFile.CreatedBy.SubjectId);
+        Assert.AreEqual(adminUser.Id, logFile.CreatedById);
+        Assert.AreEqual(adminUser.SubjectId, logFile.UpdatedBy.SubjectId);
+        Assert.AreEqual(adminUser.Id, logFile.UpdatedById);
+    }
+
+    [TestMethod]
+    public async Task DownloadUnknownFileReturnsNotFound()
+    {
+        var response = await controller.DownloadAsync(999999);
+        ActionResultAssert.IsNotFound(response);
+    }
+
+    [TestMethod]
+    public async Task DownloadFailsWithoutPermissions()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
+        await UploadTestLogFile(logRun.Id);
+
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync("sub_admin", logRun.BoreholeId))
+            .ReturnsAsync(false);
+
+        var uploadedFile = Context.LogFiles.Single(f => f.LogRunId == logRun.Id);
+        var response = await controller.DownloadAsync(uploadedFile.Id);
+        ActionResultAssert.IsUnauthorized(response);
+    }
+
+    [TestMethod]
+    public async Task UploadAndDownload()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
+
+        var fileName = "another-log.las";
+        var content = Guid.NewGuid().ToString();
+        var file = GetFormFileByContent(content, fileName);
+
+        var response = await controller.UploadAsync(file, logRun.Id);
+        ActionResultAssert.IsOk(response);
+
+        var uploadedFile = Context.LogFiles.Single(f => f.Name == fileName);
+
+        response = await controller.DownloadAsync(uploadedFile.Id);
+
+        var fileContentResult = (FileContentResult)response;
+        string contentResult = Encoding.ASCII.GetString(fileContentResult.FileContents);
+        Assert.AreEqual(content, contentResult);
+
+        Assert.AreEqual(DateTime.UtcNow.Date, uploadedFile.Created?.Date);
+        Assert.AreEqual(adminUser.SubjectId, uploadedFile.CreatedBy.SubjectId);
+        Assert.AreEqual(adminUser.Id, uploadedFile.CreatedById);
+
+        var logFile = Context.LogFiles.Single(lf => lf.Id == uploadedFile.Id);
+        Assert.AreEqual(DateTime.UtcNow.Date, logFile.Created?.Date);
+        Assert.AreEqual(adminUser.SubjectId, logFile.CreatedBy.SubjectId);
+        Assert.AreEqual(adminUser.Id, logFile.CreatedById);
+    }
+
+    [TestMethod]
+    public async Task UploadFailsWithoutPermissions()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
+
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", logRun.BoreholeId))
+            .ReturnsAsync(false);
+
+        var fileName = TestFileName;
+        var content = Guid.NewGuid().ToString();
+        var file = GetFormFileByContent(content, fileName);
+
+        var response = await controller.UploadAsync(file, logRun.Id);
+        ActionResultAssert.IsUnauthorized(response);
+    }
+
+    [TestMethod]
+    public async Task UploadReturnsNotFoundWithNonExistentLogRun()
+    {
+        var fileName = TestFileName;
+        var content = Guid.NewGuid().ToString();
+        var file = GetFormFileByContent(content, fileName);
+        var response = await controller.UploadAsync(file, 999999);
+        ActionResultAssert.IsNotFound(response);
+    }
+
+    [TestMethod]
+    public async Task UploadReturnsBadRequestWithoutFile()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
+        var response = await controller.UploadAsync(null, logRun.Id);
+        ActionResultAssert.IsBadRequest(response);
+    }
+
+    [TestMethod]
+    public async Task UploadReturnsBadRequestWithFileToLarge()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
+
+        long targetSizeInBytes = 210 * 1024 * 1024; // 210MB
+        byte[] content = new byte[targetSizeInBytes];
+        var stream = new MemoryStream(content);
+
+        var formFile = new FormFile(stream, 0, stream.Length, "file", "testfile.las");
+        var response = await controller.UploadAsync(formFile, logRun.Id);
+        ActionResultAssert.IsInternalServerError(response, "RUN01 - testfile.las: File size exceeds maximum file size of 210000000 bytes.");
+    }
 
     [TestMethod]
     public async Task GetFailsWithoutPermissions()
@@ -74,17 +233,16 @@ public class LogRunControllerTest : TestControllerBase
         var logFile = firstLogRun.LogFiles!.OrderBy(f => f.Id).First();
         Assert.AreEqual(25002122, logFile.Id);
         Assert.AreEqual(24000849, logFile.LogRunId);
-        Assert.AreEqual(1, logFile.CreatedById);
-        Assert.AreEqual(3, logFile.UpdatedById);
+        Assert.AreEqual(4, logFile.CreatedById);
+        Assert.AreEqual(1, logFile.UpdatedById);
         Assert.AreEqual("png.ecelp4800", logFile.Name);
-        Assert.AreEqual(100003013, logFile.DataPackageId);
-        Assert.AreEqual(100003027, logFile.DepthTypeId);
-        Assert.AreEqual(100003026, logFile.PassTypeId);
-        Assert.AreEqual(new DateOnly(2021, 6, 6), logFile.DeliveryDate);
+        Assert.AreEqual(100003014, logFile.DataPackageId);
+        Assert.AreEqual(100003029, logFile.DepthTypeId);
+        Assert.AreEqual(100003021, logFile.PassTypeId);
+        Assert.AreEqual(new DateOnly(2021, 7, 20), logFile.DeliveryDate);
         Assert.AreEqual("0d9b13e0-5ff0-5351-8a35-af2b6a8f9da5", logFile.NameUuid);
         Assert.AreEqual(true, logFile.Public);
-        Assert.AreEqual("Total", logFile.FileType);
-        Assert.AreEqual(3, logFile.Pass);
+        Assert.AreEqual(5, logFile.Pass);
         Assert.AreEqual(1, logFile.ToolTypeCodelistIds.Count);
         Assert.AreEqual(100003032, logFile.ToolTypeCodelistIds.First());
     }
@@ -137,6 +295,8 @@ public class LogRunControllerTest : TestControllerBase
     public async Task DeleteLogRun()
     {
         var logRunId = await CreateCompleteLogRunAsync();
+        var logFile1 = await UploadTestLogFile(logRunId);
+        var logFile2 = await UploadTestLogFile(logRunId);
 
         var response = await controller.DeleteAsync(logRunId);
         ActionResultAssert.IsOk(response);
@@ -145,6 +305,8 @@ public class LogRunControllerTest : TestControllerBase
         ActionResultAssert.IsNotFound(response);
 
         Assert.AreEqual(null, Context.LogRuns.SingleOrDefault(x => x.Id == logRunId));
+        Assert.IsFalse(Context.LogFiles.Any(lf => lf.Id == logFile1.Id));
+        Assert.IsFalse(Context.LogFiles.Any(lf => lf.Id == logFile2.Id));
     }
 
     [TestMethod]
@@ -185,6 +347,19 @@ public class LogRunControllerTest : TestControllerBase
     public async Task EditLogRun()
     {
         var logRunId = await CreateCompleteLogRunAsync();
+        var logFile1 = await UploadTestLogFile(logRunId);
+        await UploadTestLogFile(logRunId);
+        var initialLogRun = Context.LogRuns.SingleOrDefault(x => x.Id == logRunId);
+        Assert.IsNotNull(initialLogRun);
+        Assert.AreEqual(2, initialLogRun.LogFiles.Count);
+
+        logFile1.PassTypeId = 100003022;
+        logFile1.Pass = 2;
+        logFile1.DataPackageId = 100003013;
+        logFile1.DeliveryDate = new DateOnly(2023, 6, 1);
+        logFile1.DepthTypeId = 100003028;
+        logFile1.ToolTypeCodelistIds = new List<int> { 100003032, 100003033 };
+        logFile1.Public = true;
 
         var changedLogRun = new LogRun
         {
@@ -198,6 +373,7 @@ public class LogRunControllerTest : TestControllerBase
             Comment = "Updated test log run",
             ConveyanceMethodId = 100003001,
             BoreholeStatusId = 100003006,
+            LogFiles = new List<LogFile> { logFile1 },
         };
 
         var response = await controller.EditAsync(changedLogRun);
@@ -213,6 +389,24 @@ public class LogRunControllerTest : TestControllerBase
         Assert.AreEqual("Updated test log run", updatedLogRun.Comment);
         Assert.AreEqual(100003001, updatedLogRun.ConveyanceMethodId);
         Assert.AreEqual(100003006, updatedLogRun.BoreholeStatusId);
+        Assert.AreEqual(1, updatedLogRun.LogFiles.Count);
+        var updatedLogFile1 = updatedLogRun.LogFiles.First();
+        Assert.AreEqual(logFile1.Id, updatedLogFile1.Id);
+        Assert.AreEqual(100003022, updatedLogFile1.PassTypeId);
+        Assert.AreEqual(2, updatedLogFile1.Pass);
+        Assert.AreEqual(100003013, updatedLogFile1.DataPackageId);
+        Assert.AreEqual(new DateOnly(2023, 6, 1), updatedLogFile1.DeliveryDate);
+        Assert.AreEqual(100003028, updatedLogFile1.DepthTypeId);
+        CollectionAssert.AreEqual(new List<int> { 100003032, 100003033 }, updatedLogFile1.LogFileToolTypeCodes.Select(c => c.CodelistId).ToList());
+        Assert.AreEqual(true, updatedLogFile1.Public);
+
+        updatedLogFile1.ToolTypeCodelistIds = new List<int> { 100003033, 100003043 };
+        updatedLogRun.LogFiles = new List<LogFile> { updatedLogFile1 };
+        response = await controller.EditAsync(updatedLogRun);
+        ActionResultAssert.IsOk(response.Result);
+        updatedLogRun = Context.LogRuns.SingleOrDefault(x => x.Id == logRunId);
+        Assert.AreEqual(1, updatedLogRun.LogFiles.Count);
+        CollectionAssert.AreEqual(new List<int> { 100003033, 100003043 }, updatedLogRun.LogFiles.First().LogFileToolTypeCodes.Select(c => c.CodelistId).ToList());
     }
 
     [TestMethod]
@@ -244,10 +438,7 @@ public class LogRunControllerTest : TestControllerBase
             .ReturnsAsync(false);
 
         var response = await controller.EditAsync(new LogRun { Id = 561227, BoreholeId = testBoreholeId });
-        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
-        var objectResult = (ObjectResult)response.Result;
-        var problemDetails = (ProblemDetails)objectResult.Value!;
-        StringAssert.StartsWith(problemDetails.Detail, "The borehole is locked by another user or you are missing permissions.");
+        ActionResultAssert.IsUnauthorized(response.Result);
     }
 
     [TestMethod]
@@ -298,5 +489,14 @@ public class LogRunControllerTest : TestControllerBase
         await Context.AddAsync(logRun);
         await Context.SaveChangesAsync();
         return logRun.Id;
+    }
+
+    private async Task<LogFile> UploadTestLogFile(int logRunId)
+    {
+        var content = Guid.NewGuid().ToString();
+        var formFile = GetFormFileByContent(content, TestFileName);
+        var response = await controller.UploadAsync(formFile, logRunId);
+        var okResult = (OkObjectResult)response;
+        return (LogFile)okResult.Value!;
     }
 }

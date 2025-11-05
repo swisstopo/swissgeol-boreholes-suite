@@ -393,7 +393,6 @@ public class BdmsContext : DbContext
                 DeliveryDate = lf.DeliveryDate,
                 NameUuid = lf.NameUuid,
                 Public = lf.Public,
-                FileType = lf.FileType,
                 Pass = lf.Pass,
                 ToolTypeCodelistIds = lf.LogFileToolTypeCodes == null ?
                     new List<int>() :
@@ -916,6 +915,12 @@ public class BdmsContext : DbContext
                 j => j.HasKey(lc => new { lc.LithologyId, lc.CodelistId }));
 
         // Join table for log file and codelists with schema name 'log_tool_type'.
+        modelBuilder.Entity<LogFile>()
+            .Property(lf => lf.Name)
+            .IsRequired();
+        modelBuilder.Entity<LogFile>()
+            .Property(lf => lf.NameUuid)
+            .IsRequired();
         modelBuilder.Entity<LogFile>()
             .HasMany(l => l.ToolTypeCodelists)
             .WithMany()

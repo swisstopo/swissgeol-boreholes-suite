@@ -132,12 +132,13 @@ export async function fetchApiV2WithApiError<T>(
  * @param {FormData} payload - The file data to upload.
  * @returns {Promise<any>} - The parsed response content.
  * @throws {ApiError|Error} - Throws an `ApiError` or a generic `Error` based on the response content. */
-export async function uploadWithApiError(url: string, method: string, payload: FormData) {
+export async function uploadWithApiError<T>(url: string, method: string, payload: FormData): Promise<T> {
   const response = await fetchApiV2Base(url, method, payload);
   if (response.ok) {
     return await readApiResponse(response);
   } else {
     await handleFetchError(response);
+    return new Promise<T>(() => {});
   }
 }
 

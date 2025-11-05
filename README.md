@@ -112,7 +112,6 @@ Für neue Fetch-Requests sollte immer `fetchApiV2WithApiError` (bzw. `uploadWith
     - **GET-Requests Daten im Cache vorhanden:** Es werden veraltete Daten angezeigt und der Nutzer erhält einen Hinweis (Alert), dass die Daten nicht aktuell sein könnten.
     - **ADD/UPDATE/DELETE-Requests:** Die bisherigen Daten werden weiterhin angezeigt, Nutzer erhält einen Hinweis (Alert), dass die die Aktion nicht erfolgreich war.
     - **Individuelle Reaktion auf Fehler:** Bei Fehlern vom Typ `ApiError` wird kein Standardalert angezeigt (siehe `queryClient`-Konfiguration in `App.tsx`). Der `isError`-State bzw. der `onError`-Handler der Query/Mutation kann verwendet werden, um je nach Bedarf eine Fallback-Komponente zu rendern oder einen Alert anzuzeigen. `ApiError` werden entweder direkt clientseitig von der Fetch-Funktion geworfen (siehe Beispiele in `file.ts` ) oder sie werden für Problem-Responses mit `type:"userError"` geworfen (siehe `handleFetchError` in `fetchApiV2.ts` und `StratigraphyV2Controller.cs`).
-- 
 
 - **Fetch-Requests, die nicht von TanStack Query gemanagt werden (legacy):**
   - Wird `fetchApiV2WithApiError` verwendet, muss der Fetch-Request in einem `try-catch`-Block ausgeführt und Fehler explizit behandelt werden.

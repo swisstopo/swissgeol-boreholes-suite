@@ -33,7 +33,7 @@ public class LogFile : IIdentifyable, IChangeTracking
     /// </summary>
     [IncludeInExport]
     [Column("name")]
-    public string Name { get; set; }
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the unique <see cref="LogFile"/> name.
@@ -41,13 +41,6 @@ public class LogFile : IIdentifyable, IChangeTracking
     [IncludeInExport]
     [Column("name_uuid")]
     public string? NameUuid { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="LogFile"/>'s type.
-    /// </summary>
-    [IncludeInExport]
-    [Column("file_type")]
-    public string FileType { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="LogFile"/>'s pass type.

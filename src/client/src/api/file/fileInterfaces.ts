@@ -1,6 +1,6 @@
 import { NullableDateString, User } from "../apiInterfaces";
 
-export const maxFileSizeKB = 210_000_000;
+export const maxFileSizeBytes = 210_000_000;
 
 export interface File {
   id: number;
