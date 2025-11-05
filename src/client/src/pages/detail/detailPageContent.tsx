@@ -6,8 +6,7 @@ import { Attachments } from "./attachments/attachments.tsx";
 import { BoreholePanel } from "./form/borehole/boreholePanel.tsx";
 import Completion from "./form/completion/completion.jsx";
 import { FieldMeasurement } from "./form/hydrogeology/fieldMeasurement/fieldMeasurement.tsx";
-import GroundwaterLevelMeasurement
-  from "./form/hydrogeology/groundwaterLevelMeasurement/groundwaterLevelMeasurement.tsx";
+import GroundwaterLevelMeasurement from "./form/hydrogeology/groundwaterLevelMeasurement/groundwaterLevelMeasurement.tsx";
 import Hydrotest from "./form/hydrogeology/hydrotest/hydrotest.tsx";
 import WaterIngress from "./form/hydrogeology/waterIngress/waterIngress.tsx";
 import { LocationPanel } from "./form/location/locationPanel.tsx";
