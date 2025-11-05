@@ -319,15 +319,6 @@ DELETE FROM bdms."section" WHERE id IN (
     WHERE t."section"  = false
 );
 
--- Borehole: Log
-DELETE FROM bdms.borehole_geometry WHERE id IN (
-    SELECT bg.id FROM bdms.borehole_geometry bg
-    INNER JOIN bdms.borehole b ON b.id_bho  = bg.borehole_id
-    INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
-    INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
-    WHERE t.geometry = false
-);
-
 -- Borehole: General
 UPDATE bdms.borehole AS b
 SET
