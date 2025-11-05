@@ -1,11 +1,13 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.AspNetCore.Mvc.ModelBinding;
 
 namespace BDMS.Models;
 
 /// <summary>
 /// Represents the reviewed or published tab status of a <see cref="Workflow"/>.
 /// </summary>
+[BindNever]
 [Table("tab_status")]
 public class TabStatus : IIdentifyable
 {
