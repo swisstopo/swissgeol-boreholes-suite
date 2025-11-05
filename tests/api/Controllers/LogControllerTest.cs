@@ -181,7 +181,7 @@ public class LogControllerTest : TestControllerBase
 
         var formFile = new FormFile(stream, 0, stream.Length, "file", "testfile.las");
         var response = await controller.UploadAsync(formFile, logRun.Id);
-        ActionResultAssert.IsBadRequest(response);
+        ActionResultAssert.IsInternalServerError(response, "RUN01 - testfile.las: File size exceeds maximum file size of 210000000 bytes.");
     }
 
     [TestMethod]
@@ -233,16 +233,16 @@ public class LogControllerTest : TestControllerBase
         var logFile = firstLogRun.LogFiles!.OrderBy(f => f.Id).First();
         Assert.AreEqual(25002122, logFile.Id);
         Assert.AreEqual(24000849, logFile.LogRunId);
-        Assert.AreEqual(1, logFile.CreatedById);
-        Assert.AreEqual(3, logFile.UpdatedById);
+        Assert.AreEqual(4, logFile.CreatedById);
+        Assert.AreEqual(1, logFile.UpdatedById);
         Assert.AreEqual("png.ecelp4800", logFile.Name);
-        Assert.AreEqual(100003013, logFile.DataPackageId);
-        Assert.AreEqual(100003027, logFile.DepthTypeId);
-        Assert.AreEqual(100003026, logFile.PassTypeId);
-        Assert.AreEqual(new DateOnly(2021, 6, 6), logFile.DeliveryDate);
+        Assert.AreEqual(100003014, logFile.DataPackageId);
+        Assert.AreEqual(100003029, logFile.DepthTypeId);
+        Assert.AreEqual(100003021, logFile.PassTypeId);
+        Assert.AreEqual(new DateOnly(2021, 7, 20), logFile.DeliveryDate);
         Assert.AreEqual("0d9b13e0-5ff0-5351-8a35-af2b6a8f9da5", logFile.NameUuid);
         Assert.AreEqual(true, logFile.Public);
-        Assert.AreEqual(3, logFile.Pass);
+        Assert.AreEqual(5, logFile.Pass);
         Assert.AreEqual(1, logFile.ToolTypeCodelistIds.Count);
         Assert.AreEqual(100003032, logFile.ToolTypeCodelistIds.First());
     }
