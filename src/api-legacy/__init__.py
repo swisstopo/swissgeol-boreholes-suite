@@ -21,17 +21,7 @@ from bms.v1.exceptions import DuplicateException
 from bms.v1.borehole.producer import BoreholeProducerHandler
 from bms.v1.borehole.viewer import BoreholeViewerHandler
 
-
-# Profiles layers's ACTION Handlers
-from bms.v1.borehole.profile.layer.viewer import ProfileLayerViewerHandler
-
-# Stratigraphy's layers handlers
-from bms.v1.borehole.stratigraphy.layer.producer import LayerProducerHandler
-from bms.v1.borehole.stratigraphy.layer.viewer import LayerViewerHandler
-
 from bms.v1.setting.handler import SettingHandler
-
-
 
 # Terms handlers
 from bms.v1.terms.handler import TermsHandler
@@ -42,9 +32,6 @@ from bms.v1.borehole import ListBorehole
 from bms.v1.borehole import BoreholeIds
 from bms.v1.borehole import GetBorehole
 from bms.v1.borehole import PatchBorehole
-
-# GeoApi actions
-from bms.v1.geoapi import Wms
 
 # User actions
 from bms.v1.user.handler import UserHandler

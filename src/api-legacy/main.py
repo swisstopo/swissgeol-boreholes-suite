@@ -93,23 +93,9 @@ if __name__ == "__main__":
         BoreholeViewerHandler,
         BoreholeProducerHandler,
 
-
-
-        # Layer handlers
-        LayerViewerHandler,
-        LayerProducerHandler,
-
-        # Layer handlers
-        ProfileLayerViewerHandler,
-
-
-
         # Terms handlers
         TermsHandler,
         TermsAdminHandler,
-
-        # Other handlers
-        Wms,
     )
 
     AsyncIOMainLoop().install()
@@ -130,21 +116,9 @@ if __name__ == "__main__":
         (r'/api/v1/borehole', BoreholeViewerHandler),
         (r'/api/v1/borehole/edit', BoreholeProducerHandler),
 
-
-
         # Terms handlers
         (r'/api/v1/terms', TermsHandler),
         (r'/api/v1/terms/admin', TermsAdminHandler),
-
-        # Layer handlers (will be deprecated)
-        (r'/api/v1/borehole/stratigraphy/layer', LayerViewerHandler),
-        (r'/api/v1/borehole/stratigraphy/layer/edit', LayerProducerHandler),
-
-        # Lithology Layer handlers
-        (r'/api/v1/borehole/profile/layer', ProfileLayerViewerHandler),
-
-        # Other handlers
-        (r"/api/v1/geoapi/wms/swisstopo", Wms),
 
     ], **settings)
 

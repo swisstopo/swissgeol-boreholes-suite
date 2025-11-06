@@ -51,21 +51,6 @@ export function deleteBoreholes(ids) {
   });
 }
 
-export function loadBorehole(id) {
-  return fetch("/borehole", {
-    type: "GET",
-    id: id,
-  });
-}
-
-export function updateBorehole(data) {
-  return {
-    path: "/borehole",
-    type: "UPDATE",
-    data: data,
-  };
-}
-
 export function getGeojson(filter = {}) {
   return fetch("/borehole", {
     action: "GEOJSON",
