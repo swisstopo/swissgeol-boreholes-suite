@@ -119,7 +119,7 @@ export const WorkflowView = () => {
       {
         name: () => t("log"),
         isDisabled: !hasLogRuns,
-        fields: [field("log", !hasBoreholeFiles, "logRuns")],
+        fields: [field("log", !hasLogRuns, "logRuns")],
       },
       {
         name: () => t("attachments"),

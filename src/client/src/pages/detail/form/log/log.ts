@@ -107,7 +107,6 @@ export const useLogRunMutations = () => {
     onSuccess: (_data, logRun) => {
       resetTabStatus();
       queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRun.boreholeId] });
-      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, logRun.boreholeId] });
     },
   });
 
