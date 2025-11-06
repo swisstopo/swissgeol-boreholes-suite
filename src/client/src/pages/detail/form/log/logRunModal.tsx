@@ -115,6 +115,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
           shouldDirty: true,
           shouldTouch: true,
         });
+        formMethods.trigger(`logFiles.${index}`);
         formMethods.setValue(`logFiles.${index}.file`, selected, { shouldDirty: true, shouldTouch: true });
       }
     },
