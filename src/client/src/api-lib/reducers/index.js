@@ -84,45 +84,6 @@ export function user() {
   };
 }
 
-export function workgroups() {
-  const initialState = {
-    isFetching: false,
-    fetchCount: 0,
-    fetchTime: 0,
-    id: null,
-    data: [],
-  };
-  return function _workgroups(state = { ...initialState }, action) {
-    const { path } = action;
-    if (path !== "/user/workgroup/edit") {
-      return state;
-    }
-    switch (action.type) {
-      case "LIST": {
-        return {
-          ...initialState,
-          id: action.id,
-          fetchTime: new Date().getTime(),
-          isFetching: true,
-        };
-      }
-      case "LIST_OK": {
-        let copy = {
-          ...state,
-          fetchCount: state.fetchCount + 1,
-          isFetching: false,
-          fetchTime: new Date().getTime() - state.fetchTime,
-          data: action.json.data,
-        };
-        return copy;
-      }
-      default: {
-        return state;
-      }
-    }
-  };
-}
-
 export function borehole() {
   const initialState = {
     isFetching: false,
@@ -447,146 +408,14 @@ export function boreholeEditorList() {
   };
 }
 
-export function projectList() {
-  const initialState = {
-    isFetching: false,
-    fetchTime: 0,
-    fetchCount: 0,
-    length: 0,
-    data: [],
-    page: 1,
-    pages: 0,
-  };
-  return function projects(state = initialState, action) {
-    const { path } = action;
-    if (path !== "/borehole/project") {
-      return state;
-    }
-    switch (action.type) {
-      case "LIST": {
-        return {
-          ...initialState,
-          fetchTime: new Date().getTime(),
-          page: state.page,
-          pages: state.pages,
-          isFetching: true,
-        };
-      }
-      case "LIST_OK": {
-        let copy = {
-          ...state,
-          fetchCount: state.fetchCount + 1,
-          length: action.json.rows,
-          isFetching: false,
-          fetchTime: new Date().getTime() - state.fetchTime,
-          data: action.json.data,
-          pages: Object.prototype.hasOwnProperty.call(action.json, "pages") ? action.json.pages : null,
-          page: Object.prototype.hasOwnProperty.call(action.json, "page") ? action.json.page : null,
-        };
-        return copy;
-      }
-      default: {
-        return state;
-      }
-    }
-  };
-}
-
-export function stratigraphyList() {
-  const initialState = {
-    isFetching: false,
-    fetchTime: 0,
-    fetchCount: 0,
-    length: 0,
-    data: [],
-    page: 1,
-    pages: 0,
-  };
-  return function stratigraphy(state = initialState, action) {
-    const { path } = action;
-    if (path !== "/borehole/stratigraphy") {
-      return state;
-    }
-    switch (action.type) {
-      case "LIST": {
-        return {
-          ...initialState,
-          fetchTime: new Date().getTime(),
-          page: state.page,
-          pages: state.pages,
-          isFetching: true,
-        };
-      }
-      case "LIST_OK": {
-        let copy = {
-          ...state,
-          fetchCount: state.fetchCount + 1,
-          length: action.json.rows,
-          isFetching: false,
-          fetchTime: new Date().getTime() - state.fetchTime,
-          data: action.json.data,
-          pages: Object.prototype.hasOwnProperty.call(action.json, "pages") ? action.json.pages : null,
-          page: Object.prototype.hasOwnProperty.call(action.json, "page") ? action.json.page : null,
-        };
-        return copy;
-      }
-      default: {
-        return state;
-      }
-    }
-  };
-}
-
-export function layersList() {
-  const initialState = {
-    isFetching: false,
-    fetchTime: 0,
-    fetchCount: 0,
-    data: [],
-  };
-  return function layers(state = initialState, action) {
-    const { path } = action;
-    if (path !== "/borehole/stratigraphy/layer") {
-      return state;
-    }
-    switch (action.type) {
-      case "LIST": {
-        return {
-          ...initialState,
-          fetchTime: new Date().getTime(),
-          data: [],
-          isFetching: true,
-        };
-      }
-      case "LIST_OK": {
-        let copy = {
-          ...state,
-          fetchCount: state.fetchCount + 1,
-          isFetching: false,
-          fetchTime: new Date().getTime() - state.fetchTime,
-          data: action.json.data,
-        };
-        return copy;
-      }
-      default: {
-        return state;
-      }
-    }
-  };
-}
-
 // Function that add dynamically reducers to the store
 // Inspired by: https://stackoverflow.com/a/33044701
 export function createReducer(pluginsReducers) {
   const combinedReducers = combineReducers({
     core_user: user(),
-    core_workgroups: workgroups(),
     core_borehole: borehole(),
     core_borehole_list: boreholeList(),
     core_borehole_editor_list: boreholeEditorList(),
-    core_project_list: projectList(),
-    core_stratigraphy_list: stratigraphyList(),
-    core_layers_list: layersList(),
     ...pluginsReducers,
   });
   return combinedReducers;
