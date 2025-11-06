@@ -96,7 +96,7 @@ DELETE FROM bdms.log_run WHERE borehole_id IN (
 );
 
 -- Clean-up unreferenced files.
--- Photos, documents and log runs get deleted automatically when boreholes are deleted.
+-- Note: Photos, documents and log files get deleted automatically when boreholes are deleted and therefore do not need a separate DELETE statement.
 DELETE FROM bdms.files
 WHERE id_fil NOT IN (SELECT id_fil_fk FROM bdms.borehole_files);
 
