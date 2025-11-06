@@ -62,6 +62,7 @@ export const WorkflowView = () => {
     hasLithology,
     hasLithostratigraphy,
     hasChronostratigraphy,
+    hasLogRuns,
   } = useBoreholeDataAvailability(borehole);
 
   const {
@@ -77,10 +78,10 @@ export const WorkflowView = () => {
   }, [canChangeStatus, showAlert, navigateTo, t, boreholeId]);
 
   const makeSelectionEntries = (): SgcWorkflowSelectionEntry<string>[] => {
-    const field = (name: string, isDisabled: boolean = false) => ({
+    const field = (name: string, isDisabled: boolean = false, label: string = name) => ({
       field: name,
       isDisabled: isDisabled,
-      name: () => t(name),
+      name: () => t(label),
     });
     return [
       {
@@ -114,6 +115,11 @@ export const WorkflowView = () => {
           field("fieldMeasurement", !hasFieldMeasurement),
           field("hydrotest", !hasHydroTest),
         ],
+      },
+      {
+        name: () => t("log"),
+        isDisabled: !hasLogRuns,
+        fields: [field("log", !hasLogRuns, "logRuns")],
       },
       {
         name: () => t("attachments"),

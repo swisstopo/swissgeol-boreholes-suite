@@ -59,6 +59,10 @@ public class SyncBoreholesTaskTest
         Assert.AreEqual(2, originalBoreholes.SelectMany(b => b.Photos ?? Array.Empty<Photo>()).Count());
         Assert.AreEqual(2, syncedBoreholes.SelectMany(b => b.Photos ?? Array.Empty<Photo>()).Count());
 
+        // Validate log files. Log file details are already asserted by comparing serialized JSON output.
+        Assert.AreEqual(51, originalBoreholes.SelectMany(b => b.LogRuns.SelectMany(lr => lr.LogFiles ?? Array.Empty<LogFile>())).Count());
+        Assert.AreEqual(51, syncedBoreholes.SelectMany(b => b.LogRuns.SelectMany(lr => lr.LogFiles ?? Array.Empty<LogFile>())).Count());
+
         // Validate workgroup
         foreach (var syncedBorehole in syncedBoreholes)
         {

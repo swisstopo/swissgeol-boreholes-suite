@@ -3,6 +3,7 @@ import { restrictionFreeCode } from "../../../src/components/codelist.ts";
 import { colorStatusMap } from "../../../src/pages/detail/form/workflow/statusColorMap.ts";
 import { capitalizeFirstLetter } from "../../../src/utils.js";
 import { addItem, saveForm, saveWithSaveBar } from "../helpers/buttonHelpers.js";
+import { checkRowWithIndex, verifyRowContains, verifyTableLength } from "../helpers/dataGridHelpers.js";
 import { setInput, setSelect } from "../helpers/formHelpers.js";
 import { BoreholeTab, navigateInBorehole, navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
@@ -569,6 +570,33 @@ describe("Tests the publication workflow.", () => {
       cy.location().should(location => {
         expect(location.pathname).to.eq(`/${id}/location`);
       });
+    });
+  });
+
+  it("Can review and reset log tab", () => {
+    createBoreholeWithCompleteDataset().as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      navigateToWorkflowAndStartEditing(id);
+      requestReviewFromValidator();
+      cy.get("sgc-tab").contains("Review").click();
+      isUncheckedTabStatusBox("review", "LOG");
+      isUncheckedTabStatusBox("review", "Log runs");
+      clickTabStatusCheckbox("review", "Log runs");
+      isCheckedTabStatusBox("review", "LOG");
+      isCheckedTabStatusBox("review", "Log runs");
+      navigateInSidebar(SidebarMenuItem.log);
+      verifyTableLength(1);
+      verifyRowContains("Run 111", 0); // log run from complete borehole
+      checkRowWithIndex(0);
+      cy.dataCy("delete-button").click();
+      verifyTableLength(0);
+      saveWithSaveBar();
+      navigateInSidebar(SidebarMenuItem.status);
+      cy.get("sgc-tab").contains("Review").click();
+
+      // log was reset to unchecked
+      isUncheckedTabStatusBox("review", "LOG");
+      isUncheckedTabStatusBox("review", "Log runs");
     });
   });
 });

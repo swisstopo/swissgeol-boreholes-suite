@@ -356,6 +356,22 @@ export const createBoreholeWithCompleteDataset = () => {
     boreholeFiles: [{ name: "Test Profile File", file: { name: "testfile", url: "testurl", type: "text/csv" } }],
     photos: [{ name: "Test Photo", nameUuid: "uuid1234", fileType: "image/tiff" }],
     documents: [{ name: "Test Document", url: "testurl" }],
+    logRuns: [
+      {
+        id: 0,
+        boreholeId: 0,
+        runNumber: "Run 111",
+        fromDepth: 0,
+        toDepth: 10,
+        comment: "Test Log Run",
+        serviceCo: "Test Service Co",
+        runDate: null,
+        bitSize: 34.235,
+        conveyanceMethodId: null,
+        boreholeStatusId: null,
+        logFiles: [{ name: "logfile", nameUuid: "uuid1234" }],
+      },
+    ],
   });
 };
 

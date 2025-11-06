@@ -77,8 +77,26 @@ DELETE FROM bdms.document WHERE id IN (
     WHERE t.document = false
 );
 
+-- Purge log runs without any log files or with no public log files
+DELETE FROM bdms.log_run lr
+WHERE NOT EXISTS (
+    SELECT 1 FROM bdms.log_file lf
+    WHERE lf.log_run_id = lr.id AND lf.public IS TRUE
+);
+
+-- Purge remaining non-public log files
+DELETE FROM bdms.log_file WHERE public IS NOT true;
+
+-- Purge non-published log runs and their log files
+DELETE FROM bdms.log_run WHERE borehole_id IN (
+    SELECT lr.borehole_id FROM bdms.log_run lr
+    INNER JOIN bdms.workflow w ON w.borehole_id = lr.borehole_id
+    INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
+    WHERE t.log = false
+);
+
 -- Clean-up unreferenced files.
--- Photos and documents gets deleted automatically when boreholes are deleted.
+-- Note: Photos, documents and log files get deleted automatically when boreholes are deleted and therefore do not need a separate DELETE statement.
 DELETE FROM bdms.files
 WHERE id_fil NOT IN (SELECT id_fil_fk FROM bdms.borehole_files);
 

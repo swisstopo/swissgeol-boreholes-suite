@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using Microsoft.AspNetCore.Mvc.ModelBinding;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
@@ -6,6 +7,7 @@ namespace BDMS.Models;
 /// <summary>
 /// Represents the reviewed or published tab status of a <see cref="Workflow"/>.
 /// </summary>
+[BindNever]
 [Table("tab_status")]
 public class TabStatus : IIdentifyable
 {
@@ -115,4 +117,10 @@ public class TabStatus : IIdentifyable
     /// </summary>
     [Column("document")]
     public bool Documents { get; set; }
+
+    /// <summary>
+    /// Gets or sets the status of the log tab of the borehole.
+    /// </summary>
+    [Column("log")]
+    public bool Log { get; set; }
 }

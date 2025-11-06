@@ -1,5 +1,6 @@
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { NullableDateString, User } from "../../../../api/apiInterfaces.ts";
+import { boreholeQueryKey } from "../../../../api/borehole.ts";
 import { fetchApiV2WithApiError, uploadWithApiError } from "../../../../api/fetchApiV2.ts";
 import { Codelist } from "../../../../components/codelist.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
@@ -77,6 +78,7 @@ export const useLogRunMutations = () => {
     onSuccess: (_data, logRun) => {
       resetTabStatus();
       queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRun.boreholeId] });
+      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, logRun.boreholeId] });
     },
   });
 
@@ -116,6 +118,7 @@ export const useLogRunMutations = () => {
     onSuccess: (_data, logRuns) => {
       resetTabStatus();
       queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRuns[0]?.boreholeId] });
+      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, logRuns[0]?.boreholeId] });
     },
   });
 

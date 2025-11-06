@@ -75,7 +75,7 @@ export interface BoreholeV2 {
   updatedById: number;
   updatedBy: User;
   stratigraphies: Stratigraphy[] | null;
-  logruns: LogRun[] | null;
+  logRuns: LogRun[] | null;
   locked: NullableDateString;
   lockedById: number | null;
   completions: Completion[] | null;
