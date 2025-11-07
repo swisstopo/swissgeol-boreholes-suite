@@ -42,7 +42,7 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | ---------------------------   | -------------- | ----------- | ------------------------------------------------------------------------------------- |
 | OriginalName                  | Text           | Ja          | Originalname                                                                          |
 | ProjectName                   | Text           | Nein        | Projektname                                                                           |
-| Name                          | Text           | Nein        | Name                                                                                  |
+| Name                          | Text           | Nein        | Name (ohne Personendaten)                                                             |
 | RestrictionId                 | ID (Codeliste) | Nein        | Beschränkung                                                                          |
 | RestrictionUntil              | Datum          | Nein        | Ablaufdatum der Beschränkung                                                          |
 | NationalInterest              | True/False     | Nein        | Nationales Interesse                                                                  |
@@ -63,7 +63,8 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | DepthPrecisionId              | ID (Codeliste) | Nein        | +/- Bohrlochlänge [m MD]                                                              |
 | TopBedrockFreshMd             | Dezimalzahl    | Nein        | Top Fels (frisch) [m MD]                                                              |
 | TopBedrockWeatheredMd         | Dezimalzahl    | Nein        | Top Fels (verwittert) [m MD]                                                          |
-| HasGroundwater                | True/False     | Nein        | Grundwasser                                                                           |
+| TopBedrockIntersected         | True/False     | Nein        | Top Fels ereicht                                                                      |
+| HasGroundwater                | True/False     | Nein        | Grundwasser vorhanden                                                                 |
 | LithologyTopBedrockId         | ID (Codeliste) | Nein        | Lithologie Top Fels                                                                   |
 | ChronostratigraphyTopBedrockId| ID (Codeliste) | Nein        | Chronostratigraphie Top Fels                                                          |
 | LithostratigraphyTopBedrockId | ID (Codeliste) | Nein        | Lithostratigraphie Top Fels                                                           |
