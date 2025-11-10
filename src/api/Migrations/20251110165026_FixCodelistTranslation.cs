@@ -11,6 +11,5 @@ public partial class FixCodelistTranslation : Migration
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.Sql(@"UPDATE bdms.codelist SET text_cli_de = 'geschiefert' WHERE id_cli = 100000470;");
-
     }
 }
