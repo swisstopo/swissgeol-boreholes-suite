@@ -93,8 +93,8 @@ describe("Test for the detail page side navigation.", () => {
     isMenuItemWithContent(SidebarMenuItem.stratigraphy);
     navigateInSidebar(SidebarMenuItem.stratigraphy);
     isActiveTab(StratigraphyTab.lithology + "-tab");
-    isInactiveTab(StratigraphyTab.chronostratigraphy + "-tab", true);
-    isInactiveTab(StratigraphyTab.lithostratigraphy + "-tab", true);
+    isInactiveTab(StratigraphyTab.chronostratigraphy + "-tab");
+    isInactiveTab(StratigraphyTab.lithostratigraphy + "-tab");
 
     navigateInSidebar(SidebarMenuItem.hydrogeology);
     navigateInSidebar(SidebarMenuItem.waterIngress);
