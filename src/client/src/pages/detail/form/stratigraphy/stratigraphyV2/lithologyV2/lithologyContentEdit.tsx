@@ -238,8 +238,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     (layer: BaseLayer | undefined, layers: BaseLayer[], getForToDepths: boolean = false) => {
       if (!layer || !tmpLithologiesFlat) return [];
       let allPossibleDepths: number[] = [tmpLithologiesFlat[0].fromDepth, ...tmpLithologiesFlat.map(c => c.toDepth)];
-
-      const layerIndex = layers.findIndex(l => l.id === layer.id);
+      const layerIndex = layers.findIndex(l => l.fromDepth === layer.fromDepth && l.toDepth === layer.toDepth);
       let previousLayer = layers[layerIndex - 1] ?? null;
       let nextLayer = layers[layerIndex + 1] ?? null;
       // Ignore gap layers when restricting depth options
