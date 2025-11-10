@@ -63,7 +63,7 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | DepthPrecisionId              | ID (Codeliste) | Nein        | +/- Bohrlochlänge [m MD]                                                              |
 | TopBedrockFreshMd             | Dezimalzahl    | Nein        | Top Fels (frisch) [m MD]                                                              |
 | TopBedrockWeatheredMd         | Dezimalzahl    | Nein        | Top Fels (verwittert) [m MD]                                                          |
-| TopBedrockIntersected         | True/False     | Nein        | Top Fels ereicht                                                                      |
+| TopBedrockIntersected         | True/False     | Nein        | Top Fels erreicht                                                                      |
 | HasGroundwater                | True/False     | Nein        | Grundwasser vorhanden                                                                 |
 | LithologyTopBedrockId         | ID (Codeliste) | Nein        | Lithologie Top Fels                                                                   |
 | ChronostratigraphyTopBedrockId| ID (Codeliste) | Nein        | Chronostratigraphie Top Fels                                                          |
