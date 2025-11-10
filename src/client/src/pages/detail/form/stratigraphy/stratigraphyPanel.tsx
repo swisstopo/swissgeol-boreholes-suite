@@ -5,6 +5,7 @@ import { Box, Card, Chip, CircularProgress, Stack, Tooltip, Typography } from "@
 import { Trash2 } from "lucide-react";
 import CopyIcon from "../../../../assets/icons/copy.svg?react";
 import ExtractAiIcon from "../../../../assets/icons/extractAi.svg?react";
+import { useBorehole } from "../../../../api/borehole.ts";
 import { Stratigraphy, useStratigraphiesByBoreholeId, useStratigraphyMutations } from "../../../../api/stratigraphy";
 import { theme } from "../../../../AppTheme";
 import { AddButton, BoreholesButton, DeleteButton } from "../../../../components/buttons/buttons";
@@ -12,6 +13,7 @@ import { PromptContext } from "../../../../components/prompt/promptContext";
 import { FullPageCentered } from "../../../../components/styledComponents";
 import { BoreholeTab, BoreholeTabContent, BoreholeTabs } from "../../../../components/styledTabComponents";
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
+import { useBoreholeDataAvailability } from "../../../../hooks/useBoreholeDataAvailability.ts";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams";
 import { formatDate } from "../../../../utils";
@@ -31,6 +33,8 @@ export const StratigraphyPanel: FC = () => {
   const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
   const { data: stratigraphies } = useStratigraphiesByBoreholeId(Number(boreholeId));
+  const { data: borehole } = useBorehole(Number(boreholeId));
+  const { hasLithology, hasLithostratigraphy, hasChronostratigraphy } = useBoreholeDataAvailability(borehole);
   const {
     copy: { mutateAsync: copyStratigraphy },
     delete: { mutateAsync: deleteStratigraphy },
@@ -312,16 +316,19 @@ export const StratigraphyPanel: FC = () => {
                       label: t("lithology"),
                       hash: "#lithology",
                       component: <LithologyPanel stratigraphyId={selectedStratigraphy.id} />,
+                      hasContent: hasLithology,
                     },
                     {
                       label: t("chronostratigraphy"),
                       hash: "#chronostratigraphy",
                       component: <ChronostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
+                      hasContent: hasLithostratigraphy,
                     },
                     {
                       label: t("lithostratigraphy"),
                       hash: "#lithostratigraphy",
                       component: <LithostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
+                      hasContent: hasChronostratigraphy,
                     },
                   ]}
                 />
