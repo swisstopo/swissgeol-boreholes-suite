@@ -51,7 +51,7 @@
   "bed": "Bed",
   "bedding": "Alternating bedding",
   "beforedate": "Before this date",
-  "bitSize": "Bit size at the time of logging",
+  "bitSize": "Bit size [mm]",
   "borehole": "Borehole",
   "boreholeAssignedTo": "Borehole assigned to <strong>{{user}}</strong>",
   "boreholeCount": "Borehole count",

@@ -107,6 +107,9 @@ export const FormInput: FC<FormInputProps> = ({
       disabled={disabled || false}
       data-cy={fieldName + "-formInput"}
       slotProps={{
+        inputLabel: {
+          sx: { minWidth: "max-content" },
+        },
         input: {
           ...inputProps /* eslint-disable  @typescript-eslint/no-explicit-any */,
           ...(withThousandSeparator && { inputComponent: NumericFormatWithThousandSeparator as any }),

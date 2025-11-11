@@ -86,11 +86,19 @@ export const FormSelect: FC<FormSelectProps> = ({
             <TextField
               value={selectedLabel}
               label={label ? t(label) : undefined}
-              InputProps={{ readOnly: isReadOnly, disabled: disabled }}
               sx={{ ...sx, ...getFieldBorderColor(isReadOnly) }}
               className={`readonly ${className ?? ""}`}
               data-cy={fieldName + "-formSelect"}
               disabled={disabled ?? false}
+              slotProps={{
+                inputLabel: {
+                  sx: { minWidth: "max-content" },
+                },
+                input: {
+                  readOnly: isReadOnly,
+                  disabled: disabled,
+                },
+              }}
             />
           );
         }
@@ -130,6 +138,11 @@ export const FormSelect: FC<FormSelectProps> = ({
                   className={className}
                   data-cy={fieldName + "-formSelect"}
                   disabled={disabled}
+                  slotProps={{
+                    inputLabel: {
+                      sx: { minWidth: "max-content" },
+                    },
+                  }}
                 />
               );
             }}
