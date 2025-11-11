@@ -1,13 +1,13 @@
 import { FC, useContext } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { InputProps, SxProps } from "@mui/material";
-import { TextField } from "@mui/material/";
+import { InputProps, SxProps, TextField } from "@mui/material";
 import { isValid } from "date-fns";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { FormValueType, getFormFieldError } from "./form";
 import { getFieldBorderColor } from "./formUtils.ts";
 import { NumericFormatWithThousandSeparator } from "./numericFormatWithThousandSeparator.tsx";
+import { useLabelOverflow } from "./useLabelOverflow.tsx";
 
 export interface FormInputProps {
   fieldName: string;
@@ -52,6 +52,7 @@ export const FormInput: FC<FormInputProps> = ({
   const isDateTimeInput = type === FormValueType.DateTime;
   const isDateInput = type === FormValueType.Date;
   const isReadOnly = readonly ?? !editingEnabled;
+  const { labelWithTooltip } = useLabelOverflow(label);
 
   const getDefaultValue = (value: string | number | Date | undefined | null) => {
     if (value == undefined) {
@@ -81,7 +82,7 @@ export const FormInput: FC<FormInputProps> = ({
       multiline={multiline || false}
       placeholder={placeholder && t(placeholder)}
       rows={rows}
-      label={t(label)}
+      label={labelWithTooltip}
       {...register(fieldName, {
         required: required || false,
         valueAsNumber: type === FormValueType.Number,
@@ -107,9 +108,6 @@ export const FormInput: FC<FormInputProps> = ({
       disabled={disabled || false}
       data-cy={fieldName + "-formInput"}
       slotProps={{
-        inputLabel: {
-          sx: { minWidth: "max-content" },
-        },
         input: {
           ...inputProps /* eslint-disable  @typescript-eslint/no-explicit-any */,
           ...(withThousandSeparator && { inputComponent: NumericFormatWithThousandSeparator as any }),

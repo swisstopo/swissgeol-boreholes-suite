@@ -5,6 +5,7 @@ import { Autocomplete, SxProps, TextField } from "@mui/material";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { getFormFieldError } from "./form";
 import { getFieldBorderColor } from "./formUtils.ts";
+import { useLabelOverflow } from "./useLabelOverflow.tsx";
 
 export interface FormSelectProps {
   fieldName: string;
@@ -49,6 +50,7 @@ export const FormSelect: FC<FormSelectProps> = ({
   const { control } = useFormContext();
   const { editingEnabled } = useContext(EditStateContext);
   const isReadOnly = readonly ?? !editingEnabled;
+  const { labelWithTooltip } = useLabelOverflow(label);
 
   // Synchronize Autocomplete with react hook form state
   const fieldValue = useWatch({
@@ -85,7 +87,7 @@ export const FormSelect: FC<FormSelectProps> = ({
           return (
             <TextField
               value={selectedLabel}
-              label={label ? t(label) : undefined}
+              label={labelWithTooltip}
               sx={{ ...sx, ...getFieldBorderColor(isReadOnly) }}
               className={`readonly ${className ?? ""}`}
               data-cy={fieldName + "-formSelect"}
@@ -130,7 +132,7 @@ export const FormSelect: FC<FormSelectProps> = ({
               return (
                 <TextField
                   {...params}
-                  label={label ? t(label) : undefined}
+                  label={labelWithTooltip}
                   required={required}
                   error={!!formFieldError}
                   helperText={formFieldError?.message ? t(formFieldError.message) : ""}
@@ -138,11 +140,6 @@ export const FormSelect: FC<FormSelectProps> = ({
                   className={className}
                   data-cy={fieldName + "-formSelect"}
                   disabled={disabled}
-                  slotProps={{
-                    inputLabel: {
-                      sx: { minWidth: "max-content" },
-                    },
-                  }}
                 />
               );
             }}
