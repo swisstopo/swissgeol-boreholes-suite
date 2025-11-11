@@ -7,7 +7,7 @@ import { GridColDef, GridEventListener, GridRowSelectionModel, useGridApiRef } f
 import Filter2Icon from "../../../../assets/icons/filter2.svg?react";
 import { getSectionsByBoreholeId } from "../../../../api/fetchApiV2.ts";
 import { DeleteButton, ToggleButton } from "../../../../components/buttons/buttons.tsx";
-import { Codelist, CodelistLabelStyle, useCodelists } from "../../../../components/codelist.ts";
+import { CodelistLabelStyle, useCodelists } from "../../../../components/codelist.ts";
 import { FormContainer, FormDomainMultiSelect, FormMultiSelect } from "../../../../components/form/form.ts";
 import { FormMultiSelectValue } from "../../../../components/form/formMultiSelect.tsx";
 import { FormSelectValue } from "../../../../components/form/formSelect.tsx";
@@ -177,8 +177,11 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
         flex: 1,
       },
       {
-        field: "boreholeStatus",
-        valueGetter: (value: Codelist) => value?.[i18n.language] ?? value?.["en"] ?? "",
+        field: "boreholeStatusId",
+        valueGetter: (value: number) => {
+          const boreholeStatusCode = codelists?.find(d => d.id === value);
+          return boreholeStatusCode?.[i18n.language] ?? boreholeStatusCode?.["en"] ?? "";
+        },
         headerName: t("boreholeStatus"),
         flex: 1,
       },
