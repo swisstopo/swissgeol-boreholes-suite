@@ -55,6 +55,7 @@ const LithologyDescriptionUnconsolidatedForm: FC<LithologyDescriptionEditForm> =
             fieldName={`lithologyDescriptions.${index}.lithologyUncon3Id`}
             label={"componentUncon"}
             schemaName={"lithology_uncon_secondary"}
+            ignoreOverlow
             labelStyle={CodelistLabelStyle.TextAndCode}
             sx={{
               "& .MuiInputLabel-root": {

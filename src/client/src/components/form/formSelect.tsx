@@ -13,6 +13,7 @@ export interface FormSelectProps {
   required?: boolean;
   disabled?: boolean;
   readonly?: boolean;
+  ignoreOverlow?: boolean;
   selected?: number | boolean | null;
   values?: FormSelectValue[];
   sx?: SxProps;
@@ -44,6 +45,7 @@ export const FormSelect: FC<FormSelectProps> = ({
   sx,
   className,
   onUpdate,
+  ignoreOverlow = false,
   canReset = true, // option to disable reset in dropdown without using the required rule and error display
 }) => {
   const { t } = useTranslation();
@@ -74,6 +76,8 @@ export const FormSelect: FC<FormSelectProps> = ({
     });
   }
 
+  const translatedLabel = label ? t(label) : "";
+
   return (
     <Controller
       name={fieldName}
@@ -87,7 +91,7 @@ export const FormSelect: FC<FormSelectProps> = ({
           return (
             <TextField
               value={selectedLabel}
-              label={labelWithTooltip}
+              label={ignoreOverlow ? translatedLabel : labelWithTooltip}
               sx={{ ...sx, ...getFieldBorderColor(isReadOnly) }}
               className={`readonly ${className ?? ""}`}
               data-cy={fieldName + "-formSelect"}
@@ -132,7 +136,7 @@ export const FormSelect: FC<FormSelectProps> = ({
               return (
                 <TextField
                   {...params}
-                  label={labelWithTooltip}
+                  label={ignoreOverlow ? translatedLabel : labelWithTooltip}
                   required={required}
                   error={!!formFieldError}
                   helperText={formFieldError?.message ? t(formFieldError.message) : ""}
