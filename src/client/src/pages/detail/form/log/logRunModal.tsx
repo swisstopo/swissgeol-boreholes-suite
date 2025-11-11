@@ -253,7 +253,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
                   inputProps={{
                     startAdornment: (
                       <Stack direction="row" gap={1}>
-                        {getServiceOrToolArray(logRun, codelists).map(tool => (
+                        {getServiceOrToolArray(watchedFiles, codelists).map(tool => (
                           <Chip key={tool} label={tool} size="small" color="primary" />
                         ))}
                       </Stack>

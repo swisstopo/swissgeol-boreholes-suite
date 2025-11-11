@@ -171,7 +171,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
       {
         field: "serviceOrTool",
         valueGetter: (_, row) => {
-          return getServiceOrToolArray(row, codelists).join(", ");
+          return getServiceOrToolArray(row?.logFiles, codelists).join(", ");
         },
         headerName: t("serviceOrTool"),
         flex: 1,
