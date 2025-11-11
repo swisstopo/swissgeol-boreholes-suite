@@ -1,7 +1,7 @@
 import { CSSProperties, FC, useCallback, useEffect, useMemo, useState } from "react";
 import { FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
-import { Stack, Typography } from "@mui/material";
+import { Box, Stack, Typography } from "@mui/material";
 import { CloudUpload, X } from "lucide-react";
 import { maxFileSizeBytes } from "../../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../../AppTheme.ts";
@@ -49,7 +49,7 @@ export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange, er
     [error, setFile],
   );
 
-  const { getRootProps, getInputProps } = useDropzone({
+  const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     maxFiles: 1,
     maxSize: maxFileSizeBytes,
@@ -65,13 +65,17 @@ export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange, er
       minHeight: "84px",
       padding: "20px",
       border: `2px dashed`,
-      borderColor: error ? theme.palette.error.main : theme.palette.primary.main,
       borderRadius: "4px",
       outline: "none",
       transition: "border .24s ease-in-out",
       cursor: "pointer",
+      borderColor: isDragActive
+        ? theme.palette.secondary.main
+        : error
+          ? theme.palette.error.main
+          : theme.palette.primary.main,
     }),
-    [error],
+    [error, isDragActive],
   );
 
   if (file) {
@@ -100,7 +104,15 @@ export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange, er
   }
 
   return (
-    <div {...getRootProps({ style })}>
+    <Box
+      {...getRootProps({
+        style,
+        onDragOver: e => {
+          e.stopPropagation();
+          e.preventDefault();
+          e.dataTransfer.dropEffect = "copy";
+        },
+      })}>
       <input {...getInputProps()} data-cy="file-dropzone" />
       <Stack direction={"row"} gap={1.5} sx={{ color: theme.palette.primary.main }}>
         <CloudUpload />
@@ -114,6 +126,6 @@ export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange, er
           {t(error)}
         </Typography>
       )}
-    </div>
+    </Box>
   );
 };
