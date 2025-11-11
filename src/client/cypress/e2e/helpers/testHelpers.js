@@ -308,7 +308,16 @@ export const createBoreholeWithCompleteDataset = () => {
   return createBorehole({
     originalName: "Complete Test Borehole",
     restrictionId: restrictionFreeCode,
-    boreholeGeometry: [],
+    boreholeGeometry: [
+      {
+        md: 0,
+        x: 0,
+        y: 0,
+        z: 0,
+        hazi: 0,
+        devi: 0,
+      },
+    ],
     sections: [{ name: "Test Section", fromDepth: 0, toDepth: 10, SectionElements: [] }],
     stratigraphies: [
       {
