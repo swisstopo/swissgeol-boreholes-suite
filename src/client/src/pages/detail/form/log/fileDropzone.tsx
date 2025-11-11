@@ -55,8 +55,14 @@ export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange, er
     maxSize: maxFileSizeBytes,
   });
 
-  const style = useMemo<CSSProperties>(
-    () => ({
+  const style = useMemo<CSSProperties>(() => {
+    const getBorderColor = () => {
+      if (isDragActive) return theme.palette.secondary.main;
+      if (error) return theme.palette.error.main;
+      return theme.palette.primary.main;
+    };
+
+    return {
       display: "flex",
       flexDirection: "column",
       alignItems: "center",
@@ -69,14 +75,9 @@ export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange, er
       outline: "none",
       transition: "border .24s ease-in-out",
       cursor: "pointer",
-      borderColor: isDragActive
-        ? theme.palette.secondary.main
-        : error
-          ? theme.palette.error.main
-          : theme.palette.primary.main,
-    }),
-    [error, isDragActive],
-  );
+      borderColor: getBorderColor(),
+    };
+  }, [error, isDragActive]);
 
   if (file) {
     return (
