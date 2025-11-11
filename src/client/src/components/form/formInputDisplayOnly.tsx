@@ -1,7 +1,7 @@
 import React from "react";
-import { useTranslation } from "react-i18next";
 import { TextField, TextFieldProps } from "@mui/material";
 import { NumericFormatWithThousandSeparator } from "./numericFormatWithThousandSeparator.tsx";
+import { useLabelOverflow } from "./useLabelOverflow.tsx";
 
 interface FormInputDisplayOnlyProps extends Omit<TextFieldProps, "value"> {
   label: string;
@@ -17,10 +17,11 @@ export const FormInputDisplayOnly: React.FC<FormInputDisplayOnlyProps> = ({
   disabled = true,
   ...props
 }) => {
-  const { t } = useTranslation();
+  const { labelWithTooltip } = useLabelOverflow(label);
+
   return (
     <TextField
-      label={t(label)}
+      label={labelWithTooltip}
       data-cy={label + "-formInput"}
       value={value}
       className="readonly"

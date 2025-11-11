@@ -7,6 +7,7 @@ import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { getFormFieldError } from "./form";
 import { FormSelectMenuItem } from "./formSelect.tsx";
 import { getFieldBorderColor } from "./formUtils.ts";
+import { useLabelOverflow } from "./useLabelOverflow.tsx";
 
 export interface FormMultiSelectProps {
   fieldName: string;
@@ -43,6 +44,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
   const { t } = useTranslation();
   const { formState, register, setValue, control } = useFormContext();
   const { editingEnabled } = useContext(EditStateContext);
+  const { labelWithTooltip } = useLabelOverflow(label);
   const isReadOnly = readonly ?? !editingEnabled;
 
   // Synchronize Autocomplete with react hook form state
@@ -126,7 +128,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
               renderInput={params => (
                 <TextField
                   {...params}
-                  label={t(label)}
+                  label={labelWithTooltip}
                   required={required}
                   error={!!formFieldError}
                   helperText={formFieldError?.message ? t(formFieldError.message) : ""}
@@ -154,7 +156,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
               helperText={formFieldError?.message ? t(formFieldError.message) : ""}
               sx={{ ...sx }}
               className={`${readonly ? "readonly" : ""} ${className ?? ""}`}
-              label={t(label)}
+              label={labelWithTooltip}
               {...register(fieldName, {
                 required: required || false,
               })}

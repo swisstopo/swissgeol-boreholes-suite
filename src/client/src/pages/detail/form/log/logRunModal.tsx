@@ -208,7 +208,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
       onClose={closeDialog}
       isCloseDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
       <FormProvider {...formMethods}>
-        <Stack gap={3} flex="0 1 1040px" m={7.5}>
+        <Stack gap={3} m={7.5} flex="1 1 1040px" sx={{ maxWidth: "1160px" }}>
           <BoreholesCard data-cy="logRun-general" title={t("generalInformation")}>
             <FormContainer>
               <FormContainer direction="row">

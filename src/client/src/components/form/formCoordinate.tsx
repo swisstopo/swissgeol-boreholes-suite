@@ -9,6 +9,7 @@ import { Direction, ReferenceSystemKey } from "../../pages/detail/form/location/
 import { getFormFieldError } from "./form";
 import { getFieldBorderColor, parseFloatWithThousandsSeparator } from "./formUtils.ts";
 import { NumericFormatWithThousandSeparator } from "./numericFormatWithThousandSeparator.tsx";
+import { useLabelOverflow } from "./useLabelOverflow.tsx";
 
 const inLV95XBounds = (value: string): boolean => {
   const coordinate = parseFloatWithThousandsSeparator(value);
@@ -62,6 +63,7 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
   const { t } = useTranslation();
   const { formState, register } = useFormContext();
   const { editingEnabled } = useContext(EditStateContext);
+  const { labelWithTooltip } = useLabelOverflow(`location_${direction.toLowerCase()}_${referenceSystem}`);
   const isReadOnly = readonly ?? !editingEnabled;
 
   const formFieldError = getFormFieldError(fieldName, formState.errors);
@@ -77,7 +79,7 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
         ...getFieldBorderColor(isReadOnly),
       }}
       className={`${isReadOnly ? "readonly" : ""} ${className ?? ""}`}
-      label={t(`location_${direction.toLowerCase()}_${referenceSystem}`)}
+      label={labelWithTooltip}
       {...register(fieldName, {
         required: required || false,
         validate: value => {
