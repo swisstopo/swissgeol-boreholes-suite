@@ -5,7 +5,7 @@ import {
   ensureDateOnly,
   parseFloatWithThousandsSeparator,
 } from "../../../../components/form/formUtils.ts";
-import { LogRun } from "./log.ts";
+import { LogFile, LogRun } from "./log.ts";
 
 export const prepareLogRunForSubmit = (data: LogRun) => {
   data.fromDepth = parseFloatWithThousandsSeparator(data.fromDepth)!;
@@ -36,9 +36,12 @@ export const prepareLogRunForSubmit = (data: LogRun) => {
   if (String(data.boreholeStatusId) === "") data.boreholeStatusId = null;
 };
 
-export const getServiceOrToolArray = (logRun: LogRun, codelists: Codelist[]): (string | undefined)[] => {
-  if (!logRun?.logFiles) return [];
-  return logRun.logFiles
+export const getServiceOrToolArray = (
+  logFiles: LogFile[] | undefined,
+  codelists: Codelist[],
+): (string | undefined)[] => {
+  if (!logFiles) return [];
+  return logFiles
     .flatMap(file => file.toolTypeCodelistIds)
     .filter((id, index, array) => array.indexOf(id) === index) // get unique ids
     .map(id => codelists.find((d: Codelist) => d.id === id)?.code ?? "");

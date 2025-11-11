@@ -5,6 +5,7 @@ import { Autocomplete, SxProps, TextField } from "@mui/material";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { getFormFieldError } from "./form";
 import { getFieldBorderColor } from "./formUtils.ts";
+import { useLabelOverflow } from "./useLabelOverflow.tsx";
 
 export interface FormSelectProps {
   fieldName: string;
@@ -12,6 +13,7 @@ export interface FormSelectProps {
   required?: boolean;
   disabled?: boolean;
   readonly?: boolean;
+  ignoreOverlow?: boolean;
   selected?: number | boolean | null;
   values?: FormSelectValue[];
   sx?: SxProps;
@@ -43,12 +45,14 @@ export const FormSelect: FC<FormSelectProps> = ({
   sx,
   className,
   onUpdate,
+  ignoreOverlow = false,
   canReset = true, // option to disable reset in dropdown without using the required rule and error display
 }) => {
   const { t } = useTranslation();
   const { control } = useFormContext();
   const { editingEnabled } = useContext(EditStateContext);
   const isReadOnly = readonly ?? !editingEnabled;
+  const { labelWithTooltip } = useLabelOverflow(label);
 
   // Synchronize Autocomplete with react hook form state
   const fieldValue = useWatch({
@@ -72,6 +76,8 @@ export const FormSelect: FC<FormSelectProps> = ({
     });
   }
 
+  const translatedLabel = label ? t(label) : "";
+
   return (
     <Controller
       name={fieldName}
@@ -85,12 +91,20 @@ export const FormSelect: FC<FormSelectProps> = ({
           return (
             <TextField
               value={selectedLabel}
-              label={label ? t(label) : undefined}
-              InputProps={{ readOnly: isReadOnly, disabled: disabled }}
+              label={ignoreOverlow ? translatedLabel : labelWithTooltip}
               sx={{ ...sx, ...getFieldBorderColor(isReadOnly) }}
               className={`readonly ${className ?? ""}`}
               data-cy={fieldName + "-formSelect"}
               disabled={disabled ?? false}
+              slotProps={{
+                inputLabel: {
+                  sx: { minWidth: "max-content" },
+                },
+                input: {
+                  readOnly: isReadOnly,
+                  disabled: disabled,
+                },
+              }}
             />
           );
         }
@@ -122,7 +136,7 @@ export const FormSelect: FC<FormSelectProps> = ({
               return (
                 <TextField
                   {...params}
-                  label={label ? t(label) : undefined}
+                  label={ignoreOverlow ? translatedLabel : labelWithTooltip}
                   required={required}
                   error={!!formFieldError}
                   helperText={formFieldError?.message ? t(formFieldError.message) : ""}

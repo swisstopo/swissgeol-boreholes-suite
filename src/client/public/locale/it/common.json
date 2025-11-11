@@ -52,7 +52,7 @@
   "bed": "Strato",
   "bedding": "Stratificazione alternata",
   "beforedate": "Fino a questa data",
-  "bitSize": "Bit size al momento della registrazione",
+  "bitSize": "Bit size [mm]",
   "borehole": "Perforazione",
   "boreholeAssignedTo": "Perforazione assegnata a <strong>{{user}}</strong>",
   "boreholeCount": "Numero di perforazioni",
