@@ -26,7 +26,7 @@ export const useLabelOverflow = (label: string | undefined) => {
   const translatedLabel = label ? t(label) : "";
 
   const labelWithTooltip = (
-    <Tooltip title={isLabelOverflowing ? translatedLabel : ""} arrow placement="top">
+    <Tooltip title={isLabelOverflowing ? translatedLabel : ""} placement="top">
       <Box
         ref={labelRef}
         sx={{
