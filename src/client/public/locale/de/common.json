@@ -51,7 +51,7 @@
   "bed": "Bank",
   "bedding": "Wechsellagerung",
   "beforedate": "bis Datum",
-  "bitSize": "Bohrmeissel-Durchmesser zum Zeitpunkt der Logaufnahme",
+  "bitSize": "Bohrmeissel-Durchmesser [mm]",
   "borehole": "Bohrung",
   "boreholeAssignedTo": "Bohrung <strong>{{user}}</strong> zugewiesen",
   "boreholeCount": "Anzahl Bohrungen",

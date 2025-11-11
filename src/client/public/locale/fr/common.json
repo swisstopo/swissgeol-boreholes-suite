@@ -51,7 +51,7 @@
   "bed": "Banc",
   "bedding": "Stratification alternée",
   "beforedate": "Jusqu'à cette date",
-  "bitSize": "Taille du trépan au moment de l'enregistrement",
+  "bitSize": "Taille du trépan [mm]",
   "borehole": "Forage",
   "boreholeAssignedTo": "Forage assigné à <strong>{{user}}</strong>",
   "boreholeCount": "Nombre de forages",
