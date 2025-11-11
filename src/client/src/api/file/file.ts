@@ -1,4 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
+import { ExtractedLithologicalDescription } from "../../pages/detail/form/stratigraphy/lithologicalDescription.ts";
 import {
   BoundingBoxResponse,
   ExtractionRequest,
@@ -9,7 +10,6 @@ import { ApiError, BoreholeAttachment } from "../apiInterfaces.ts";
 import { fetchCreatePngs, fetchExtractData, fetchExtractStratigraphy, fetchPageBoundingBoxes } from "../dataextraction";
 import { download, fetchApiV2Base, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../fetchApiV2.ts";
 import { processFileWithOCR } from "../ocr.ts";
-import { ExtractedLithologicalDescription } from "../stratigraphy.ts";
 import { BoreholeFile, DataExtractionResponse, maxFileSizeBytes } from "./fileInterfaces.ts";
 
 export async function uploadFile(boreholeId: number, file: File) {

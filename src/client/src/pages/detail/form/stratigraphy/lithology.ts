@@ -104,6 +104,10 @@ export interface LithologyDescriptionEditForm extends LithologyEditForm {
   hasBedding?: boolean;
 }
 
+interface MutationContext {
+  previousLithologies?: Lithology[];
+}
+
 const lithologyController = "lithology";
 
 export const fetchLithologiesByStratigraphyId = async (stratigraphyId: number): Promise<Lithology[]> =>
@@ -120,45 +124,67 @@ export const useLithologies = (stratigraphyId?: number): UseQueryResult<Litholog
     enabled: !!stratigraphyId,
   });
 
-export const useLithologyMutations = () => {
+export const useLithologyMutations = (skipInvalidation = false) => {
   const queryClient = useQueryClient();
   const resetTabStatus = useResetTabStatus(["lithology"]);
+
+  const getLithologiesSnapshot = async (lithologyId: number) => {
+    await queryClient.cancelQueries({ queryKey: [lithologyQueryKey, lithologyId] });
+    return queryClient.getQueryData<Lithology[]>([lithologyQueryKey, lithologyId]);
+  };
+
+  const commonOnSuccess = () => {
+    if (!skipInvalidation) {
+      resetTabStatus();
+      queryClient.invalidateQueries({ queryKey: [lithologyQueryKey] });
+    }
+  };
+
+  const commonOnError = (lithology: Lithology, context?: MutationContext) => {
+    if (context?.previousLithologies) {
+      queryClient.setQueryData([lithologyQueryKey, lithology.stratigraphyId], context.previousLithologies);
+    }
+  };
+
+  // Use to manually invalidate queries after awaiting promises in batch updates, use with skipInvalidation
+  // Todo: use batch updates methods for lithologies
+  const invalidateQueries = () => {
+    resetTabStatus();
+    queryClient.invalidateQueries({ queryKey: [lithologyQueryKey] });
+  };
 
   const useAddLithology = useMutation({
     mutationFn: (lithology: Lithology) => {
       return fetchApiV2WithApiError(`${lithologyController}`, "POST", lithology);
     },
-    onSuccess: () => {
-      resetTabStatus();
-      queryClient.invalidateQueries({ queryKey: [lithologyQueryKey] });
+    onMutate: async (newLithology: Lithology) => {
+      const previousLithologies = await getLithologiesSnapshot(newLithology.id);
+      const optimisticLithology = {
+        ...newLithology,
+        id: Date.now(), // Temporary ID until server responds
+      };
+      queryClient.setQueryData<Lithology[]>([lithologyQueryKey, newLithology.stratigraphyId], old =>
+        old ? [...old, optimisticLithology] : [optimisticLithology],
+      );
+      return { previousLithologies };
     },
+    onError: (err, lithology, context) => commonOnError(lithology, context),
+    onSuccess: commonOnSuccess,
   });
 
   const useUpdateLithology = useMutation({
     mutationFn: (lithology: Lithology) => {
-      delete lithology.createdBy;
-      delete lithology.updatedBy;
-      delete lithology.stratigraphy;
-
       return fetchApiV2WithApiError(`${lithologyController}`, "PUT", lithology);
     },
     onMutate: async (updatedLithology: Lithology) => {
-      await queryClient.cancelQueries({ queryKey: [lithologyQueryKey] });
-      const previousLithologies = queryClient.getQueryData<Lithology[]>([lithologyQueryKey]);
-      queryClient.setQueryData<Lithology[]>([lithologyQueryKey], old =>
+      const previousLithologies = await getLithologiesSnapshot(updatedLithology.id);
+      queryClient.setQueryData<Lithology[]>([lithologyQueryKey, updatedLithology.stratigraphyId], old =>
         old ? old.map(l => (l.id === updatedLithology.id ? { ...l, ...updatedLithology } : l)) : [],
       );
       return { previousLithologies };
     },
-    onError: (err, updatedLithology, context) => {
-      if (context?.previousLithologies) {
-        queryClient.setQueryData([lithologyQueryKey], context.previousLithologies);
-      }
-    },
-    onSuccess: () => {
-      resetTabStatus();
-      queryClient.invalidateQueries({ queryKey: [lithologyQueryKey] });
-    },
+    onError: (err, lithology, context) => commonOnError(lithology, context),
+    onSuccess: commonOnSuccess,
   });
 
   const useDeleteLithology = useMutation({
@@ -166,23 +192,15 @@ export const useLithologyMutations = () => {
       return fetchApiV2WithApiError(`${lithologyController}?id=${lithology.id}`, "DELETE");
     },
     onMutate: async (deletedLithology: Lithology) => {
-      await queryClient.cancelQueries({ queryKey: [lithologyQueryKey] });
-      const previousLithologies = queryClient.getQueryData<Lithology[]>([lithologyQueryKey]);
-      queryClient.setQueryData<Lithology[]>([lithologyQueryKey], old =>
+      const previousLithologies = await getLithologiesSnapshot(deletedLithology.id);
+      queryClient.setQueryData<Lithology[]>([lithologyQueryKey, deletedLithology.stratigraphyId], old =>
         old ? old.filter(l => l.id !== deletedLithology.id) : [],
       );
       return { previousLithologies };
     },
-    onError: (err, deletedLithology, context) => {
-      if (context?.previousLithologies) {
-        queryClient.setQueryData([lithologyQueryKey], context.previousLithologies);
-      }
-    },
-    onSuccess: () => {
-      resetTabStatus();
-      queryClient.invalidateQueries({ queryKey: [lithologyQueryKey] });
-    },
+    onError: (err, lithology, context) => commonOnError(lithology, context),
+    onSuccess: commonOnSuccess,
   });
 
-  return { add: useAddLithology, update: useUpdateLithology, delete: useDeleteLithology };
+  return { add: useAddLithology, update: useUpdateLithology, delete: useDeleteLithology, invalidateQueries };
 };

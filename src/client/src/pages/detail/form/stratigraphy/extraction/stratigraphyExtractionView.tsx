@@ -1,10 +1,10 @@
 import { FC, useState } from "react";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
-import { ExtractedLithologicalDescription } from "../../../../../api/stratigraphy.ts";
 import { theme } from "../../../../../AppTheme.ts";
 import { ExtractionImageContainer } from "../../../labeling/extractionImageContainer.tsx";
 import { PageSelection } from "../../../labeling/pageSelection.tsx";
+import { ExtractedLithologicalDescription } from "../lithologicalDescription.ts";
 import { useCompletedLayers } from "../stratigraphyV2/lithologyV2/useCompletedLayers.tsx";
 import { ExtractedStratigraphyTable } from "./extractedStratigraphyTable.tsx";
 

@@ -1,9 +1,10 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress } from "@mui/material";
-import { useFaciesDescription, useLithologicalDescription } from "../../../../../../api/stratigraphy.ts";
 import { FullPageCentered } from "../../../../../../components/styledComponents.ts";
 import { EditStateContext } from "../../../../editStateContext.tsx";
+import { useFaciesDescriptions } from "../../faciesDescription.ts";
+import { useLithologicalDescriptions } from "../../lithologicalDescription.ts";
 import { useLithologies } from "../../lithology.ts";
 import { LithologyContentEdit } from "./lithologyContentEdit.tsx";
 import { TempLithologyView } from "./tempLithologyView.tsx";
@@ -13,8 +14,8 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
   const { editingEnabled } = useContext(EditStateContext);
   const { data: lithologies, isLoading: isLoadingLithologies } = useLithologies(stratigraphyId);
   const { data: lithologicalDescriptions, isLoading: isLoadingLithologicalDescriptions } =
-    useLithologicalDescription(stratigraphyId);
-  const { data: faciesDescriptions, isLoading: isLoadingFaciesDescription } = useFaciesDescription(stratigraphyId);
+    useLithologicalDescriptions(stratigraphyId);
+  const { data: faciesDescriptions, isLoading: isLoadingFaciesDescription } = useFaciesDescriptions(stratigraphyId);
 
   // Loading state
   if (isLoadingLithologies || isLoadingLithologicalDescriptions || isLoadingFaciesDescription) {
