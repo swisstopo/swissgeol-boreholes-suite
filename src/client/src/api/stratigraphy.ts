@@ -1,8 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Codelist } from "../components/codelist.ts";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
 import { Lithology } from "../pages/detail/form/stratigraphy/lithology.ts";
-import { ExtractionBoundingBox } from "../pages/detail/labeling/labelingInterfaces.tsx";
 import { NullableDateString, User } from "./apiInterfaces.ts";
 import { boreholeQueryKey, BoreholeV2 } from "./borehole.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
@@ -60,73 +58,6 @@ export interface Lithostratigraphy {
   id: number;
   stratigraphyId: number;
 }
-
-export interface LithologicalDescription extends BaseLayer {
-  description?: string;
-}
-
-export interface FaciesDescription extends BaseLayer {
-  description?: string;
-  faciesId?: number | null;
-  facies?: Codelist | null;
-}
-
-export interface ExtractedLithologicalDescription extends LithologicalDescription {
-  startDepthBoundingBoxes: ExtractionBoundingBox[];
-  endDepthBoundingBoxes: ExtractionBoundingBox[];
-  descriptionBoundingBoxes: ExtractionBoundingBox[];
-}
-
-// lithological descriptions
-export const fetchLithologicalDescriptionsByProfileId = async (
-  profileId: number,
-): Promise<LithologicalDescription[]> => {
-  return await fetchApiV2WithApiError<LithologicalDescription[]>(
-    `lithologicaldescription?stratigraphyId=${profileId}`,
-    "GET",
-  );
-};
-
-export const addLithologicalDescription = async (
-  lithologicalDescription: LithologicalDescription,
-): Promise<LithologicalDescription> => {
-  return await fetchApiV2WithApiError<LithologicalDescription>(
-    "lithologicaldescription",
-    "POST",
-    lithologicalDescription,
-  );
-};
-
-export const updateLithologicalDescription = async (
-  lithologicalDescription: LithologicalDescription,
-): Promise<LithologicalDescription> => {
-  return await fetchApiV2WithApiError<LithologicalDescription>(
-    "lithologicaldescription",
-    "PUT",
-    lithologicalDescription,
-  );
-};
-
-export const deleteLithologicalDescription = async (id: number): Promise<void> => {
-  await fetchApiV2WithApiError(`lithologicaldescription?id=${id}`, "DELETE");
-};
-
-// facies descriptions
-export const fetchFaciesDescriptionsByProfileId = async (profileId: number): Promise<FaciesDescription[]> => {
-  return await fetchApiV2WithApiError<FaciesDescription[]>(`faciesdescription?stratigraphyId=${profileId}`, "GET");
-};
-
-export const addFaciesDescription = async (faciesDescription: FaciesDescription): Promise<FaciesDescription> => {
-  return await fetchApiV2WithApiError<FaciesDescription>("faciesdescription", "POST", faciesDescription);
-};
-
-export const updateFaciesDescription = async (faciesDescription: FaciesDescription): Promise<FaciesDescription> => {
-  return await fetchApiV2WithApiError<FaciesDescription>("faciesdescription", "PUT", faciesDescription);
-};
-
-export const deleteFaciesDescription = async (id: number): Promise<void> => {
-  await fetchApiV2WithApiError(`faciesdescription?id=${id}`, "DELETE");
-};
 
 export const stratigraphiesQueryKey = "stratigraphies";
 
@@ -205,120 +136,6 @@ export const useStratigraphyMutations = () => {
     copy: useCopyStratigraphy,
     update: useUpdateStratigraphy,
     delete: useDeleteStratigraphy,
-  };
-};
-
-export const lithologicalDescriptionQueryKey = "lithoDesc";
-
-export const useLithologicalDescription = (stratigraphyId?: number) =>
-  useQuery({
-    queryKey: [lithologicalDescriptionQueryKey, stratigraphyId],
-    queryFn: async () => {
-      return await fetchLithologicalDescriptionsByProfileId(stratigraphyId!);
-    },
-    enabled: !!stratigraphyId,
-  });
-
-export const useLithologicalDescriptionMutations = () => {
-  const queryClient = useQueryClient();
-  const resetTabStatus = useResetTabStatus(["lithology"]);
-
-  const useAddLithologicalDescription = useMutation({
-    mutationFn: async (lithologicalDescription: LithologicalDescription) => {
-      return addLithologicalDescription(lithologicalDescription);
-    },
-    onSuccess: () => {
-      resetTabStatus();
-      queryClient.invalidateQueries({
-        queryKey: [lithologicalDescriptionQueryKey],
-      });
-    },
-  });
-  const useUpdateLithologicalDescription = useMutation({
-    mutationFn: async (lithologicalDescription: LithologicalDescription) => {
-      return updateLithologicalDescription(lithologicalDescription);
-    },
-    onSuccess: () => {
-      resetTabStatus();
-      queryClient.invalidateQueries({
-        queryKey: [lithologicalDescriptionQueryKey],
-      });
-    },
-  });
-  const useDeleteLithologicalDescription = useMutation({
-    mutationFn: async (lithologicalDescription: LithologicalDescription) => {
-      return deleteLithologicalDescription(lithologicalDescription.id);
-    },
-    onSuccess: () => {
-      resetTabStatus();
-      queryClient.invalidateQueries({
-        queryKey: [lithologicalDescriptionQueryKey],
-      });
-    },
-  });
-
-  return {
-    add: useAddLithologicalDescription,
-    update: useUpdateLithologicalDescription,
-    delete: useDeleteLithologicalDescription,
-  };
-};
-
-export const faciesDescriptionQueryKey = "faciesDesc";
-
-export const useFaciesDescription = (stratigraphyId?: number) =>
-  useQuery({
-    queryKey: [faciesDescriptionQueryKey, stratigraphyId],
-    queryFn: async () => {
-      return await fetchFaciesDescriptionsByProfileId(stratigraphyId!);
-    },
-    enabled: !!stratigraphyId,
-  });
-
-export const useFaciesDescriptionMutations = () => {
-  const queryClient = useQueryClient();
-  const resetTabStatus = useResetTabStatus(["lithology"]);
-
-  const useAddFaciesDescription = useMutation({
-    mutationFn: async (faciesDescription: FaciesDescription) => {
-      return addFaciesDescription(faciesDescription);
-    },
-    onSuccess: () => {
-      resetTabStatus();
-      queryClient.invalidateQueries({
-        queryKey: [faciesDescriptionQueryKey],
-      });
-    },
-  });
-
-  const useUpdateFaciesDescription = useMutation({
-    mutationFn: async (faciesDescription: FaciesDescription) => {
-      return updateFaciesDescription(faciesDescription);
-    },
-    onSuccess: () => {
-      resetTabStatus();
-      queryClient.invalidateQueries({
-        queryKey: [faciesDescriptionQueryKey],
-      });
-    },
-  });
-
-  const useDeleteFaciesDescription = useMutation({
-    mutationFn: async (faciesDescription: FaciesDescription) => {
-      return deleteFaciesDescription(faciesDescription.id);
-    },
-    onSuccess: () => {
-      resetTabStatus();
-      queryClient.invalidateQueries({
-        queryKey: [faciesDescriptionQueryKey],
-      });
-    },
-  });
-
-  return {
-    add: useAddFaciesDescription,
-    update: useUpdateFaciesDescription,
-    delete: useDeleteFaciesDescription,
   };
 };
 

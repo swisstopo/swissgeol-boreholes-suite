@@ -1,4 +1,6 @@
-import { BaseLayer, FaciesDescription, LithologicalDescription } from "../../../../api/stratigraphy.ts";
+import { BaseLayer } from "../../../../api/stratigraphy.ts";
+import { FaciesDescription } from "./faciesDescription.ts";
+import { LithologicalDescription } from "./lithologicalDescription.ts";
 import { LayerDepth, Lithology } from "./lithology.ts";
 
 const createGapLayerDepth = (fromDepth: number, toDepth: number): LayerDepth => ({
