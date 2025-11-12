@@ -2,6 +2,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchApiV2WithApiError } from "../../../../../api/fetchApiV2.ts";
 import { stratigraphiesQueryKey, Stratigraphy } from "../../../../../api/stratigraphy.ts";
 import { useResetTabStatus } from "../../../../../hooks/useResetTabStatus.ts";
+import { LithologicalDescription } from "../lithologicalDescription.ts";
 import { Lithology } from "../lithology.ts";
 
 export const useBulkAddMutation = () => {
