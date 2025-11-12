@@ -78,6 +78,11 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
       } as LogRun;
       formMethods.reset(withTmpFileIds);
     }
+    return () => {
+      formMethods.reset({
+        logFiles: [],
+      });
+    };
   }, [logRun, formMethods]);
 
   const addFile = useCallback(() => {
