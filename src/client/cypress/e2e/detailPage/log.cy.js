@@ -59,7 +59,7 @@ function addLogRun() {
 }
 
 function closeLogRunEditor() {
-  cy.dataCy("close-button").click();
+  cy.get(".MuiDialog-container").dataCy("close-button").click();
 }
 
 function addMinimalLogRun(fromDepth = 0, toDepth = 10, runNumber = "R01") {
@@ -263,6 +263,8 @@ describe("Test for the borehole log.", () => {
     startBoreholeEditing();
     addMinimalLogRun(100, 110, "R01");
     verifyRowContains("R01", 0);
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(1000);
 
     // can add new file
     clickOnRowWithText("R01");
@@ -303,9 +305,16 @@ describe("Test for the borehole log.", () => {
     closeLogRunEditor();
     saveWithSaveBar();
 
+    // verify files are reset for new log run
+    addLogRun();
+    cy.dataCy("logRun-files").contains("No file added yet...");
+    closeLogRunEditor();
+
     // can delete existing file
     clickOnRowWithText("R01");
     cy.dataCy("logRun-file-0").find(".MuiCardHeader-title").contains("COLDWATER.zip");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(1000);
     cy.dataCy("logRun-file-0").dataCy("delete-file-button").click();
     cy.dataCy("logRun-files").contains("No file added yet...");
     closeLogRunEditor();
