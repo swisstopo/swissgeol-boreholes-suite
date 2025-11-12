@@ -1,6 +1,6 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 import { fetchApiV2WithApiError } from "../../../../../api/fetchApiV2.ts";
-import { LithologicalDescription, stratigraphiesQueryKey, Stratigraphy } from "../../../../../api/stratigraphy.ts";
+import { stratigraphiesQueryKey, Stratigraphy } from "../../../../../api/stratigraphy.ts";
 import { useResetTabStatus } from "../../../../../hooks/useResetTabStatus.ts";
 import { Lithology } from "../lithology.ts";
 
