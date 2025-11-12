@@ -20,6 +20,9 @@ export const prepareLithologyForSubmit = (values: Lithology) => {
   delete values.uscsTypeCodelists;
   delete values.rockConditionCodelists;
   delete values.textureMetaCodelists;
+  delete values.createdBy;
+  delete values.updatedBy;
+  delete values.stratigraphy;
   if (String(values.alterationDegreeId) === "") values.alterationDegreeId = null;
   if (String(values.compactnessId) === "") values.compactnessId = null;
   if (String(values.cohesionId) === "") values.cohesionId = null;

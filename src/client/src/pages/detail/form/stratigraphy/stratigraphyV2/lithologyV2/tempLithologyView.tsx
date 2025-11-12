@@ -1,7 +1,9 @@
 import { FC, ReactNode, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
-import { BaseLayer, FaciesDescription, LithologicalDescription } from "../../../../../../api/stratigraphy.ts";
+import { BaseLayer } from "../../../../../../api/stratigraphy.ts";
+import { FaciesDescription } from "../../faciesDescription.ts";
+import { LithologicalDescription } from "../../lithologicalDescription.ts";
 import { Lithology } from "../../lithology.ts";
 import {
   StratigraphyTableActionCell,

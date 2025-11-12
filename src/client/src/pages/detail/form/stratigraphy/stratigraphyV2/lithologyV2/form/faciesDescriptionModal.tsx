@@ -2,12 +2,12 @@ import { FC, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Stack } from "@mui/material";
-import { FaciesDescription } from "../../../../../../../api/stratigraphy.ts";
 import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
 import { FormContainer } from "../../../../../../../components/form/formContainer.tsx";
 import { FormDialog } from "../../../../../../../components/form/formDialog.tsx";
 import { FormDomainSelect } from "../../../../../../../components/form/formDomainSelect.tsx";
 import { useFormDirty } from "../../../../../../../components/form/useFormDirty.tsx";
+import { FaciesDescription } from "../../../faciesDescription.ts";
 import { BasicDataFormSection } from "./basicDataFormSection.tsx";
 import { RemarksFormSection } from "./remarksFormSection.tsx";
 
