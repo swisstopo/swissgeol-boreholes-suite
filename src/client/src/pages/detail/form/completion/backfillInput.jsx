@@ -1,29 +1,21 @@
-import { useEffect, useState } from "react";
-import { addBackfill, getCasings, updateBackfill } from "../../../../api/fetchApiV2.ts";
+import { addBackfill, updateBackfill } from "../../../../api/fetchApiV2.ts";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard.tsx";
 import { FormContainer, FormInput, FormSelect } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
+import { useCasings } from "./casing.ts";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils";
 import { completionSchemaConstants } from "./completionSchemaConstants";
 import { prepareEntityDataForSubmit } from "./completionUtils.js";
 
 const BackfillInput = ({ item, parentId }) => {
-  const [casings, setCasings] = useState([]);
   const getCasingOptions = useGetCasingOptions();
+  const { data: casings = [] } = useCasings(parentId);
 
   const prepareFormDataForSubmit = data => {
     data = prepareCasingDataForSubmit(data);
     data = prepareEntityDataForSubmit(data, parentId);
     return data;
   };
-
-  useEffect(() => {
-    if (parentId) {
-      getCasings(parentId).then(casings => {
-        setCasings(casings);
-      });
-    }
-  }, [parentId]);
 
   return (
     <DataInputCard

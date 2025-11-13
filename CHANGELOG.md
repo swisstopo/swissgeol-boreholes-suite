@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- The casing was not displayed in the form select element when editing a sealing.
+
 ## v2.1.1419 - 2025-11-13
 
 ### Added
