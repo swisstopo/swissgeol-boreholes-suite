@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1419 - 2025-11-13
+
 ### Added
 - Added new lithology UI and backend to manage the borehole's lithologies. Removed legacy lithology UI.
 - Added functionality to automatically extract lithological descriptions from borehole profiles.
