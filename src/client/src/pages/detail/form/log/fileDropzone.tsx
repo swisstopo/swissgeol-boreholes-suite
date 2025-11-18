@@ -3,7 +3,7 @@ import { FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { Box, Stack, Typography } from "@mui/material";
 import { CloudUpload, X } from "lucide-react";
-import { maxFileSizeBytes } from "../../../../api/file/fileInterfaces.ts";
+import { FileSizeLimit, largeMaxFileSizeBytes } from "../../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
 
@@ -36,9 +36,9 @@ export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange, er
         const errorCode = fileRejections[0].errors[0].code;
 
         if (errorCode === "file-too-large") {
-          errorKey = "fileMaxSizeExceeded";
+          errorKey = t("fileMaxSizeExceeded", { size: FileSizeLimit.Large });
         } else {
-          errorKey = "fileDropzoneErrorChooseFile";
+          errorKey = t("fileDropzoneErrorChooseFile");
         }
 
         setError(errorKey);
@@ -46,13 +46,13 @@ export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange, er
         setFile(acceptedFiles[0]);
       }
     },
-    [error, setFile],
+    [error, t],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     maxFiles: 1,
-    maxSize: maxFileSizeBytes,
+    maxSize: largeMaxFileSizeBytes,
   });
 
   const style = useMemo<CSSProperties>(() => {

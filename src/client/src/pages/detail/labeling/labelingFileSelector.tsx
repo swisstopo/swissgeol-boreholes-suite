@@ -5,7 +5,7 @@ import { useLocation } from "react-router";
 import { AlertColor, Box, CircularProgress, Divider, Stack, Typography } from "@mui/material";
 import { ChevronRight, FileImageIcon, FileTextIcon } from "lucide-react";
 import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
-import { maxFileSizeBytes } from "../../../api/file/fileInterfaces.ts";
+import { FileSizeLimit, maxFileSizeBytes } from "../../../api/file/fileInterfaces.ts";
 import { AddButton, BoreholesBaseButton, FileButton } from "../../../components/buttons/buttons.tsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
@@ -48,7 +48,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
         const errorMessages: { [key: string]: string } = {
           "file-invalid-type": t("fileInvalidType"),
           "too-many-files": t("fileTooMany"),
-          "file-too-large": t("fileMaxSizeExceeded"),
+          "file-too-large": t("fileMaxSizeExceeded", { size: FileSizeLimit.Standard }),
         };
         showAlert(errorMessages[errorCode] || fileRejections[0].errors[0].message, "error");
       } else {

@@ -279,7 +279,7 @@
   "fileDropzoneText2": "Click to browse, or drag & drop files here",
   "fileInvalidType": "Invalid file type",
   "fileLimit1File200Mb": "File limit: 1 file, up to 200 MB",
-  "fileMaxSizeExceeded": "Exceeded maximum file size of 210 MB",
+  "fileMaxSizeExceeded": "Exceeded maximum file size of  {{size}}",
   "fileTooMany": "Too many files selected",
   "files": "Files",
   "filter": "Filter",

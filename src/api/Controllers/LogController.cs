@@ -11,7 +11,7 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class LogController : BoreholeControllerBase<LogRun>
 {
-    private const int MaxFileSize = 210_000_000; // ~200MB max file size
+    private const long MaxFileSize = 5_000_000_000; // ~5 GB max file size
     private readonly LogFileCloudService logFileCloudService;
 
     public LogController(BdmsContext context, ILogger<LogController> logger, IBoreholePermissionService boreholePermissionService, LogFileCloudService logFileCloudService)

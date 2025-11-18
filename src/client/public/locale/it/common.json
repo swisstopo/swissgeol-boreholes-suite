@@ -279,7 +279,7 @@
   "fileDropzoneText2": "Clicca per sfogliare o trascina i file qui",
   "fileInvalidType": "Tipo di file non valido",
   "fileLimit1File200Mb": "1 file fino a 200 MB",
-  "fileMaxSizeExceeded": "Superata la dimensione massima del file di 210 MB",
+  "fileMaxSizeExceeded": "Superata la dimensione massima del file di {{size}}",
   "fileTooMany": "Troppi file selezionati",
   "files": "File",
   "filter": "Filtro",
