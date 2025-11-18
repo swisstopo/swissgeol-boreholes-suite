@@ -52,7 +52,7 @@ public class LogController : BoreholeControllerBase<LogRun>
     /// <returns>The newly created log file.</returns>
     [HttpPost("upload")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    [RequestSizeLimit(int.MaxValue)]
+    [RequestSizeLimit(MaxFileSize)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<IActionResult> UploadAsync(IFormFile file, [Range(1, int.MaxValue)] int logRunId)
     {
