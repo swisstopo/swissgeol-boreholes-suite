@@ -279,7 +279,7 @@
   "fileDropzoneText2": "Datei hier ablegen oder klicken, um sie hochzuladen",
   "fileInvalidType": "Dateityp nicht unterstützt",
   "fileLimit1File200Mb": "Maximal 1 Datei, maximal 200 MB",
-  "fileMaxSizeExceeded": "Maximalen Dateigröße von 210 MB überschritten",
+  "fileMaxSizeExceeded": "Maximalen Dateigröße von {{size}} überschritten",
   "fileTooMany": "Zu viele Dateien ausgewählt",
   "files": "Dateien",
   "filter": "Filter",

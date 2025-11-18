@@ -170,18 +170,18 @@ public class LogControllerTest : TestControllerBase
     }
 
     [TestMethod]
-    public async Task UploadReturnsBadRequestWithFileToLarge()
+    public async Task UploadReturnsBadRequestWithFileTooLarge()
     {
         var borehole = await AddTestBoreholeAsync();
         var logRun = await AddTestLogRunAsync(borehole.Id);
 
-        long targetSizeInBytes = 210 * 1024 * 1024; // 210MB
-        byte[] content = new byte[targetSizeInBytes];
-        var stream = new MemoryStream(content);
+        var mockStream = new Mock<Stream>();
+        mockStream.Setup(s => s.Length).Returns(5_000_000_001); // over the 5GB limit
+        mockStream.Setup(s => s.Read(It.IsAny<byte[]>(), It.IsAny<int>(), It.IsAny<int>())).Returns(0);
 
-        var formFile = new FormFile(stream, 0, stream.Length, "file", "testfile.las");
+        var formFile = new FormFile(mockStream.Object, 0, mockStream.Object.Length, "file", "testfile.las");
         var response = await controller.UploadAsync(formFile, logRun.Id);
-        ActionResultAssert.IsInternalServerError(response, "RUN01 - testfile.las: File size exceeds maximum file size of 210000000 bytes.");
+        ActionResultAssert.IsInternalServerError(response, "RUN01 - testfile.las: File size exceeds maximum file size of 5000000000 bytes.");
     }
 
     [TestMethod]
