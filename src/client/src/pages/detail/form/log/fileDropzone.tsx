@@ -16,11 +16,12 @@ interface FileDropzoneProps {
 export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange, errorMessageKey }) => {
   const { t } = useTranslation();
   const [file, setFile] = useState<File | undefined>(existingFile);
-  const [error, setError] = useState<string | undefined>(errorMessageKey);
+  const [error, setError] = useState<string | undefined>();
 
   useEffect(() => {
-    setError(errorMessageKey);
-  }, [errorMessageKey]);
+    if (!errorMessageKey) return;
+    setError(t(errorMessageKey));
+  }, [errorMessageKey, t]);
 
   useEffect(() => {
     onChange(file);
@@ -32,16 +33,16 @@ export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange, er
         setError(undefined);
       }
       if (fileRejections.length > 0) {
-        let errorKey: string;
+        let errorMessage: string;
         const errorCode = fileRejections[0].errors[0].code;
 
         if (errorCode === "file-too-large") {
-          errorKey = t("fileMaxSizeExceeded", { size: FileSizeLimit.Large });
+          errorMessage = t("fileMaxSizeExceeded", { size: FileSizeLimit.Large });
         } else {
-          errorKey = t("fileDropzoneErrorChooseFile");
+          errorMessage = t("fileDropzoneErrorChooseFile");
         }
 
-        setError(errorKey);
+        setError(errorMessage);
       } else {
         setFile(acceptedFiles[0]);
       }
@@ -124,7 +125,7 @@ export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange, er
       </Typography>
       {error && (
         <Typography variant="body2" color={theme.palette.error.main}>
-          {t(error)}
+          {error}
         </Typography>
       )}
     </Box>
