@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1425 - 2025-11-20
+
 ### Changed
 - The max file size for file uploads in the log tab has been increased to 5 GB.
 
