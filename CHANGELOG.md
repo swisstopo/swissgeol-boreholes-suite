@@ -2,55 +2,69 @@
 
 ## [Unreleased]
 
+### Fixed
+
+- Lithologies used deprecated `custom.lithology_top_bedrock` codelists instead of the new `lithology_con`.
+
 ## v2.1.1425 - 2025-11-20
 
 ### Changed
+
 - The max file size for file uploads in the log tab has been increased to 5 GB.
 
 ## v2.1.1422 - 2025-11-13
 
 ### Fixed
+
 - The casing was not displayed in the form select element when editing a sealing.
 
 ## v2.1.1419 - 2025-11-13
 
 ### Added
+
 - Added new lithology UI and backend to manage the borehole's lithologies. Removed legacy lithology UI.
 - Added functionality to automatically extract lithological descriptions from borehole profiles.
 - Added new log UI and backend to add, edit and delete borehole log runs and log files.
 
 ### Changed
+
 - Update legal links in disclaimer for all languages.
 - Upgraded to PostgreSQL 17 and PostGIS 3.5.
 
 ## v2.1.1358 - 2025-09-24
 
 ### Changed
+
 - Use new codelists for stratigraphy properties in borehole.
 
 ## v2.1.1346 - 2025-09-23
 
 ### Changed
+
 - Migrated stratigraphies and layers to new lithology tables.
 - Renamed codelist schema `texture_mata` to `texture_meta`.
 
 ## v2.1.1335 - 2025-09-17
 
 ### Added
+
 - Added new lithology table
 
 ## v2.1.1328 - 2025-09-11
 
 ### Changed
+
 - Filters for registration are now hidden on the view instance.
 - The _show all_ switch in the filters is now hidden on the view instance and all fields are shown by default.
 
 ### Fixed
+
 - _view-sync_ did not sync *Water ingresses*, *Groundwater measurements* and *Field measurements* correctly.
 
 ## v2.1.1325 - 2025-09-08
 
 ### Changed
+
 - Upgraded swissgeol OCR service to version 1.1.0.
 - Added new workflow UI and backend to manage the borehole's publication status. Removed legacy workflow UI and backend.
 - Filters for workgroup and status are now hidden on the view instance.
@@ -61,65 +75,81 @@
 - _extern-sync_ now syncs all boreholes once they reach the `Reviewed` status.
 
 ### Fixed
-- Boreholes that were locked by any user could not be edited by others, including administrators, even after lock timeout expiration.
+
+- Boreholes that were locked by any user could not be edited by others, including administrators, even after lock
+  timeout expiration.
 - There was an overflow issue in UI of the borehole detail view in the tabs _borehole_ and _completion_.
 
 ## v2.1.1266 - 2025-07-22
 
 ### Changed
+
 - Upgraded to Node 22.
 
 ## v2.1.1257 - 2025-07-17
 
 ### Changed
+
 - Lithology, lithostratigraphy and chronostratigraphy are combined into one menu item.
 - Removed description quality of lithological descriptions and facies descriptions.
 
 ### Fixed
+
 - The pagination was not displayed on the last page of the borehole table.
 - Borehole exports no longer contain photos.
-- Fixed bug where public checkbox state was reset when adding a new attachment (e.g. photo, profile, document) to a borehole.
+- Fixed bug where public checkbox state was reset when adding a new attachment (e.g. photo, profile, document) to a
+  borehole.
 - The axis labels on top view geometry chart were switched and the ticks did not include any decimals.
 - Adjusted table style to match the UI-design.
 
 ## v2.1.1230 - 2025-06-13
 
 ### Added
+
 - Added the documents tab to the borehole attachments.
 
 ### Changed
+
 - Updated _extern-sync_ logic to filter published boreholes by target workgroup for duplication check.
-- In the overview map when hovering over a borehole, clicking the tooltip text now navigates to the borehole detail view. If several boreholes are located at the same position, a list of boreholes is displayed in the tooltip and clicking on one of them navigates to the respective borehole detail view.
+- In the overview map when hovering over a borehole, clicking the tooltip text now navigates to the borehole detail
+  view. If several boreholes are located at the same position, a list of boreholes is displayed in the tooltip and
+  clicking on one of them navigates to the respective borehole detail view.
 - Administrators can now edit workgroup names on the settings page.
 - Show loading indicator when importing data.
 - Select input fields now filter and display only the options that match the user's input.
 - Remove type from profile table.
 
 ### Fixed
+
 - Boreholes could not be exported in the _view_ environment.
 - `Boreholes.swissgeol.ch ID` was not listed in the location type ID filter.
 - The lithostratigraphy was missing when copying a stratigraphy.
 - Loading a page by url did not work after a redirect from the login page.
-- When changing settings for lithology fields, the state of the checkboxes would be lost when navigating away and returning.
+- When changing settings for lithology fields, the state of the checkboxes would be lost when navigating away and
+  returning.
 - Editing boreholes with photos would cause an error.
 - Boreholes with observations could not be exported as JSON.
 
 ## v2.1.1200 - 2025-05-22
 
 ### Added
+
 - Added the photos tab to the borehole attachments.
 - Added photo viewer to the borehole sidepanel.
 - Added data collection to detail page.
 - Automatic conversion from meters above sea level (MASL) to measured depth (MD) in hydro module.
 
 ### Changed
+
 - Upgraded to React 19.1
 - Refactored save logic in the borehole detail view.
 - Refactored attachments tabs to unify the design and behavior of the tables.
-- Pagination in the side panel now navigates to first and last page of the document, instead of the next or previous file when clicking on the outer arrows.
+- Pagination in the side panel now navigates to first and last page of the document, instead of the next or previous
+  file when clicking on the outer arrows.
 - Added codelist entry 'liner' to the codelist `casing_type`.
 
 ### Fixed
+
 - Boreholes were always copied to the default workgroup instead of the selected workgroup.
 - _view-sync_ failed if the source database had a default workgroup named `Default`.
 - Depths with thousand separators could not be input in lithostratigraphy and chronostratigraphy.
@@ -129,17 +159,22 @@
 ## v2.1.1162 - 2025-04-10
 
 ### Fixed
-- Calculations of TVD resulted in an error when the distance between the two coordinates to interpolate was larger than their difference of MD.
+
+- Calculations of TVD resulted in an error when the distance between the two coordinates to interpolate was larger than
+  their difference of MD.
 
 ## v2.1.1156 - 2025-04-04
 
 ### Added
+
 - Added a button to add workgroups in the workgroup administration.
 
 ### Changed
+
 - The text extraction button is now disabled when the text extraction is in progress.
 - Update legal links in disclaimer for all languages.
-- Number inputs in the borehole sections, hydrogeology, completion and layer descriptions are now displayed with thousand separators.
+- Number inputs in the borehole sections, hydrogeology, completion and layer descriptions are now displayed with
+  thousand separators.
 - The borehole geometry charts and tables now display numbers with thousand separators.
 - Bump data extraction API version to v1.0.30.
 - The panel displaying the PDF is now also visible when editing is disabled.
@@ -147,7 +182,9 @@
 - Reduced data of exported JSON files.
 
 ### Fixed
-- When extracting coordinates from a PDF with the labeling feature, they could not be reset by pressing the discard changes button.
+
+- When extracting coordinates from a PDF with the labeling feature, they could not be reset by pressing the discard
+  changes button.
 - Copying a borehole did not update its casing references to the copied casings.
 - Importing a borehole with attachments assigned to a non-existent user id resulted in an error.
 - When exporting .zip archives for boreholes whose names contained dots the .zip extension was missing.
@@ -155,9 +192,11 @@
 ## v2.1.1125 - 2025-03-19
 
 ### Changed
+
 - Attachments are now displayed in a table following new UI design.
 
 ### Fixed
+
 - Attachments page was missing scrollbars.
 - The input field for the alternate name was always overwritten by the original name when loading the location page.
 - Tooltips in the labeling area where not complete and would sometimes overlap with text to be selected.
@@ -209,9 +248,9 @@
 - Added functionality to import borehole attachments inside a ZIP file.
 - Added field `Top bedrock intersected` to borehole form.
 
-### Changed 
+### Changed
 
-- Exporting boreholes as CSV and JSON (without attachments) is now also available in anonymous mode. 
+- Exporting boreholes as CSV and JSON (without attachments) is now also available in anonymous mode.
 - Display an error message to the user when attachment files could not be fetched from cloud storage during export.
 - Removed all asterisks from required form fields.
 - Updated the UI design of the tabs component.
@@ -221,7 +260,7 @@
 
 ### Fixed
 
-- Workgroup reset in the bulk edit form had to be clicked twice to take effect. 
+- Workgroup reset in the bulk edit form had to be clicked twice to take effect.
 - Numeric inputs on the borehole tab were not correctly reset.
 - When navigating away from the sections tab with unsaved changes, no warning prompt was displayed.
 - Replace whitespaces in borehole attachments before upload. Also replace whitespaces in existing filenames.
@@ -235,11 +274,14 @@
 - Added ZIP export with JSON and attachments for single and multiple boreholes.
 - Added geopackage export for single and multiple boreholes.
 
-### Changed 
+### Changed
+
 - Removed attachments from csv import.
-- Updated recommended csv headers for borehole import to camel case e.g. `OriginalName` (snake case e.g. `original_name` is still supported for all properties except for custom identifiers).
+- Updated recommended csv headers for borehole import to camel case e.g. `OriginalName` (snake case e.g. `original_name`
+  is still supported for all properties except for custom identifiers).
 - Changed order of `Top Bedrock (fresh)` and `Top Bedrock (weathered)` fields in borehole form.
-- When importing custom IDs with CSV, the headers are now dynamically mapped to the `borehole_identifier` codelists in the database.
+- When importing custom IDs with CSV, the headers are now dynamically mapped to the `borehole_identifier` codelists in
+  the database.
 - Moved borehole import to side drawer and adapted UI design.
 - Years greater than 9999 can no longer be used in date inputs.
 - The application language is now determined by the browser language if it is any of the supported languages.
@@ -250,7 +292,8 @@
 
 - Observations were not included in exported borehole JSON file.
 - Fixed bug where values of 0 were not displayed in numeric input fields.
-- Fixed bug where `Lithostratigraphhy Top Bedrock` and `Chronostratigraphhy Top Bedrock` were not displayed in form after updating them and navigating away.
+- Fixed bug where `Lithostratigraphhy Top Bedrock` and `Chronostratigraphhy Top Bedrock` were not displayed in form
+  after updating them and navigating away.
 - Ensure all hydrotest codelist values are imported.
 - JSON export/import did not handle borehole geometry and location geometry correctly.
 - JSON import did not handle casing references of observations, backfills and instrumentations correctly.
@@ -291,7 +334,8 @@
 - The basemap selector buttons were not displayed correctly on hover.
 - No scrollbar was displayed in the side drawer when many additional layers were added.
 - There was no appropriate error message when the drawn box did not contain extractable coordinates.
-- There was an internal error alert when navigating back from the borehole detail to the borehole table in anonymous mode.
+- There was an internal error alert when navigating back from the borehole detail to the borehole table in anonymous
+  mode.
 - The responsive design of the coordinate segment in the detail view was broken.
 - When clicking the select all checkbox in the borehole table, only the boreholes on the current page were selected.
 - Some filter chips were missing translations or where not displayed correctly.
@@ -315,7 +359,8 @@
 
 ### Changed
 
-- Renamed technical attributes `kind_id_cli` to `borehole_type_id`, `top_bedrock` to `top_bedrock_fresh` and `qt_top_bedrock` to `top_bedrock_weathered`.
+- Renamed technical attributes `kind_id_cli` to `borehole_type_id`, `top_bedrock` to `top_bedrock_fresh` and
+  `qt_top_bedrock` to `top_bedrock_weathered`.
 - Moved groundwater radio buttons in borehole form to the bottom.
 - Made `startTime` and `reliability` optional for hydrogeology.
 - Removed title from prompt dialog.
@@ -350,7 +395,8 @@
 - Users can now only import or add new boreholes to workgroups where they have an editor role.
 - Label for description quality was wrong in lithology filter and settings.
 - Boreholes could not be deleted in the detail view if the publication status was not `Change in progess`.
-- Boreholes table loaded all boreholes instead of none when a filter combination with polygon was used that did not return any boreholes.
+- Boreholes table loaded all boreholes instead of none when a filter combination with polygon was used that did not
+  return any boreholes.
 - Boreholes table reset scroll position when hovering over a row.
 - When returning to the boreholes table from another page, the last scroll position was lost.
 - Status filter labels were not displayed correctly.
@@ -378,7 +424,8 @@
 - Show more entries on the boreholes table when screensize is smaller than 1200px.
 - Calculate TVD values in General panel using the geometry of the borehole.
 - Moved logout to header and improved header style.
-- Removed entries `drilling_date`,`drilling_diameter`,`drilling_method_id`,`spud_date` and `cuttings_id` from the borehole import.
+- Removed entries `drilling_date`,`drilling_diameter`,`drilling_method_id`,`spud_date` and `cuttings_id` from the
+  borehole import.
 - Removed entries `inclination`,`inclination_direction` and `qt_inclination_direction_id` from the borehole import.
 - Removed settings for `codelist translations` and `identifiers` from admin settings.
 - Removed entries `total_depth_tvd`, and `qt_total_depth_tvd_id` from the borehole import.
@@ -415,7 +462,8 @@
 - Set minimal resolution to 0.1 for open layer maps.
 - Renamed table `borehole_codelist ` to `borehole_identifiers_codelist`.
 - Changed order of menu items in borehole detail view.
-- Split generic join table `hydrotest_codelists` into 3 separate join tables for each many to many relationship between hydrotest and codelist.
+- Split generic join table `hydrotest_codelists` into 3 separate join tables for each many to many relationship between
+  hydrotest and codelist.
 
 ### Fixed
 
@@ -436,7 +484,8 @@
 - IsOpenBorehole option for instrumentation and backfill.
 - Support adding multiple field measurement results in `hydrogeology`.
 - Show prompt for unsaved changes when switching data card or completion tabs.
-- Add entry `resin` to codelist `backfill_material` and entries `U-probe` and `double U-probe` to codelist `casing_type`.
+- Add entry `resin` to codelist `backfill_material` and entries `U-probe` and `double U-probe` to codelist
+  `casing_type`.
 - Show prompt before deleting data card.
 
 ### Changed
@@ -449,9 +498,11 @@
 - Increased editing lock timeout to 60 minutes.
 - Administrators are always allowed to edit all boreholes.
 - Removed the functionality to add new users since they are now managed by the IAM.
-- Removed the functionality to edit user details (first name, surname and password) since they are now managed by the IAM.
+- Removed the functionality to edit user details (first name, surname and password) since they are now managed by the
+  IAM.
 - Removed middle name from user details because it was not used until now.
-- Disable inputs of the editor view's _borehole_ tab, when editing mode is not active or borehole status does not allow editing.
+- Disable inputs of the editor view's _borehole_ tab, when editing mode is not active or borehole status does not allow
+  editing.
 - Simplified and restructured the completion section (database, API, UI).
 - Link hydrogeology observations to new completion casing.
 - Use always _m MD_ as unit for borehole depth.
@@ -459,9 +510,11 @@
 - Replaced label for layer description quality.
 - Reduced number of seeded boreholes for development from 10'000 to 3'000.
 - Use reusable card components for hydrogeology.
-- Renamed various codelists to have more evocative names (e.g. `location_precision` instead of `qt_location`, `plasticity` instead of `mlpr101`, …)
+- Renamed various codelists to have more evocative names (e.g. `location_precision` instead of `qt_location`,
+  `plasticity` instead of `mlpr101`, …)
 - Remove stratigraphy kind.
-- Split generic join table `layer_codelists` into 6 separate join tables for each many to many relationship between layer and codelist.
+- Split generic join table `layer_codelists` into 6 separate join tables for each many to many relationship between
+  layer and codelist.
 - Replaced create-react-app (react-scripts) with vite for frontend tooling.
 - Included typescript configuration.
 - Prevent typing dates in profile and filter, only allow selecting date in datepicker.
@@ -469,9 +522,11 @@
 - Store precision of coordinates, to be able to display zeros after the decimal points in coordinate inputs.
 - Link casing to backfill.
 - Removed square brackets from _m MD_ in `chronostratigraphy` and `lithostratigraphy`.
-- Implemented a validation to check the user's role and the lock status of the borehole before performing any data manipulations on child tables in the .NET API.
+- Implemented a validation to check the user's role and the lock status of the borehole before performing any data
+  manipulations on child tables in the .NET API.
 - Include completion in casing name for hydrogeological observations.
-- Removed property _isLast_ from `ChronostratigraphyLayer`, `LithostratigraphyLayer`, `LithologicalDescription` and `FaciesDescription`.
+- Removed property _isLast_ from `ChronostratigraphyLayer`, `LithostratigraphyLayer`, `LithologicalDescription` and
+  `FaciesDescription`.
 - Removed feedback functionality.
 - Included new `swissgeol boreholes` logo and icon.
 - Removed `completed` checkbox from hydrogeology observations and added option `open hole` to completion name.
@@ -497,7 +552,8 @@
 
 - Use numeric input instead of dropdown for top bedrock quality fields.
 - Proxy requests to legacy api through .NET API with authentication.
-- Disable inputs of the editor view's borehole _location_ tab, when editing mode is not active or borehole status does not allow editing.
+- Disable inputs of the editor view's borehole _location_ tab, when editing mode is not active or borehole status does
+  not allow editing.
 - Remove obsolete database view `completness`.
 - Use a non-root user in the .NET Docker image.
 
@@ -543,7 +599,8 @@
 
 ### Fixed
 
-- Fixed bug where empty strings were displayed instead of _unknown_ in the _casing_ dropdown when adding water ingresses, hydrotests, groundwater measurements or field measurements.
+- Fixed bug where empty strings were displayed instead of _unknown_ in the _casing_ dropdown when adding water
+  ingresses, hydrotests, groundwater measurements or field measurements.
 - Fixed label and setting for lithology top bedrock attribute of layer.
 - Fixed bug where normal user had no permission to create hydrotests.
 
@@ -566,7 +623,8 @@
 - Fixed italian translation for _completionFinished_.
 - Workgroup dropdown in the import menu was not scrollable.
 - Ensure duplicated boreholes are detected during borehole import.
-- When the application was set to German, an issue occurred where the term 'keine_Angabe' was unecessarily displayed in the lithology subtitle.
+- When the application was set to German, an issue occurred where the term 'keine_Angabe' was unecessarily displayed in
+  the lithology subtitle.
 - Ensure copied stratigraphy is not primary.
 - Ensure borehole attachments can be managed by any user role.
 - Enable upload of borehole attachments with a size of up to 200 Mb.
@@ -581,9 +639,11 @@
 - Added boreholes.swissgeol.ch id to details view.
 - Added `import_id` as required field for borehole import.
 - Added functionality to add, edit and delete hydrotests, which belong to the hydrogeology observations of a borehole.
-- Added functionality to add, edit and delete field measurement, which belong to the hydrogeology observations of a borehole.
+- Added functionality to add, edit and delete field measurement, which belong to the hydrogeology observations of a
+  borehole.
 - Added csv export for current codelist table.
-- Added the fields _qt_location_, _qt_elevation_, _reference_elevation_qt_ and _reference_elevation_type_ to bulk editing.
+- Added the fields _qt_location_, _qt_elevation_, _reference_elevation_qt_ and _reference_elevation_type_ to bulk
+  editing.
 
 ### Changed
 
@@ -591,7 +651,8 @@
 - Borehole duplicates are only identified within the same workgroup when importing boreholes.
 - Filter contents are shown directly below the filter group without reordering.
 - Harmonized labels for _from_depth_ and _to_depth_ fields across the application.
-- The duplicate checks for a borehole's _original_name_ and _alternate_name_ have been removed. Duplicate names are now allowed.
+- The duplicate checks for a borehole's _original_name_ and _alternate_name_ have been removed. Duplicate names are now
+  allowed.
 - Improve chronostratigraphy edit, change the stratigraphy selection to a simple dropdown.
 - Hide overlapping chronostratigraphy layer depth labels and add depth scale.
 
@@ -614,7 +675,8 @@
 - Added validation for required borehole csv import fields.
 - Added online help.
 - Added validation for duplicated boreholes during the cvs import.
-- Added functionality to add, edit and delete wateringresses, which belong to the hydrogeology observations of a borehole.
+- Added functionality to add, edit and delete wateringresses, which belong to the hydrogeology observations of a
+  borehole.
 - Use .NET API for managing borehole files.
 
 ### Changed
@@ -630,10 +692,12 @@
 
 - Fixed scrolling behaviour for _lithological_descriptions_ and _facies_descriptions_.
 - Fixed missing datapoints on map zoom after filtering by map extent.
-- Fixed table was reset to page 1 when returning to borehole list from detail with appearance _Map & List|Details_ and _List|Details & Map_.
+- Fixed table was reset to page 1 when returning to borehole list from detail with appearance _Map & List|Details_ and
+  _List|Details & Map_.
 - Fixed search filters were not applied to points on map.
 - Fixed scrolling behaviour for _lithology_layers_.
-- Fixed error when repeatedly sorting by "original name" that caused the application to crash under special circumstances.
+- Fixed error when repeatedly sorting by "original name" that caused the application to crash under special
+  circumstances.
 
 ## v2.0.273 - 2023-04-04
 
@@ -650,7 +714,8 @@
 - Memorized table and map state when navigating through the application.
 - When leaving settings page, correctly navigate back to the previously selected mode (viewer or editor).
 - Display loader icon when fetching data for stratigraphy or users.
-- Removed _lithological description_ and _facies description_ from lithology layer in viewer mode, editor mode and in settings.
+- Removed _lithological description_ and _facies description_ from lithology layer in viewer mode, editor mode and in
+  settings.
 - Removed _set manually_ from resolving options when deleting a lithology layer.
 - Display lithology layer details in lithology column in editor mode.
 - Immediately delete layers in _casing_ and _backfill_ columns, without showing a delete dialog.
@@ -664,7 +729,8 @@
 - Removed import settings from administrator settings.
 - Enabled editor mode settings for all user types.
 - Replaced csv import coordinates related columns by `location_x` and `location_y`.
-- Auto detect the provided coordinate reference system in the csv import and calculate the coordinates for the not provided reference system.
+- Auto detect the provided coordinate reference system in the csv import and calculate the coordinates for the not
+  provided reference system.
 
 ### Fixed
 
@@ -675,7 +741,8 @@
 - Fixed internal error in viewer/editor settings for _Stratigraphy fields_ when clicking _Select all_.
 - Fixed error when downloading a borehole profile.
 - Fixed bug where a facies description with a height of 0 could be created.
-- Fixed broken layout of _lithological description_ and _facies description_ columns when a gap of more than one layer was created in the _lithology_ column.
+- Fixed broken layout of _lithological description_ and _facies description_ columns when a gap of more than one layer
+  was created in the _lithology_ column.
 - Fixed bug where lithological descriptions where not copied when copying boreholes or stratigraphies.
 - Fixed bug where coordinates were not updated when pasted in the coordinate input.
 - Empty text or numeric fields are always displayed as `-` in the detail sections of the viewer mode.
@@ -693,7 +760,8 @@
 
 ### Added
 
-- Added new location migration endpoint in order to be able to manually update location information (country_bho, canton_bho and municipality_bho).
+- Added new location migration endpoint in order to be able to manually update location information (country_bho,
+  canton_bho and municipality_bho).
 
 ## v2.0.183 - 2023-02-10
 
@@ -715,7 +783,8 @@
 
 ### Added
 
-- Added new data migration endpoint to recalculate the coordinates depending on whether the original spatial reference system is LV03 or LV95 based.
+- Added new data migration endpoint to recalculate the coordinates depending on whether the original spatial reference
+  system is LV03 or LV95 based.
 
 ### Changed
 
@@ -752,22 +821,27 @@
 
 - Added possibility to add a casing layer (_CasingId_) to an instrument.
 - Added new columns in borehole table for LV03 coordinates.
-- Added inputs for entering coordinates in LV03 as well as LV95. The coordinates in the coordinate system that were not entered by the user, are automatically transformed and completed.
+- Added inputs for entering coordinates in LV03 as well as LV95. The coordinates in the coordinate system that were not
+  entered by the user, are automatically transformed and completed.
 - Added search filter for reference systems (LV03 and LV95).
 - Added cluster layer for displaying points on map while maintaining application performance.
 - Added input field to codelist translation UI, that is used to change the order of the codelist.
 - Added filter in editor mode for registration details creation date and user.
 - Added db constraints for `stratigraphy.fill_casng_id_sty_fk` and `layer.gradation_id_cli`.
-- Added new db field `original_lithology` to layer table. The new field contains english text values of `unconrocks_id_cli` and `lithok_id_cli`.
+- Added new db field `original_lithology` to layer table. The new field contains english text values of
+  `unconrocks_id_cli` and `lithok_id_cli`.
 
 ### Changed
 
-- Migrated existing LV95 coordinates into LV03 coordinates using 'shift' method. Preserve original LV95 coordinates for some selected boreholes (e.g. Bülach-1-1, ...).
+- Migrated existing LV95 coordinates into LV03 coordinates using 'shift' method. Preserve original LV95 coordinates for
+  some selected boreholes (e.g. Bülach-1-1, ...).
 - Points on the overview map are now displayed as clusters depending on zoom level.
 - Ordered codelists in translation UI by `order` column instead of by `geolcode`.
 - Coordinates, elevations diameters and depths in inputs and texts are now displayed with thousand separators.
 - Removed `mentions` functionality in workflow comments.
-- Removed unused columns from database: `borehole.import_id`, `borehole.tecto_id_cli`, `stratigraphy.import_id`, `layer.import_id`, `layer.tectonic_unit_id_cli`, `layer.symbol_id_cli`, `layer.soil_state_id_cli`, `layer.kirost_id_cli`.
+- Removed unused columns from database: `borehole.import_id`, `borehole.tecto_id_cli`, `stratigraphy.import_id`,
+  `layer.import_id`, `layer.tectonic_unit_id_cli`, `layer.symbol_id_cli`, `layer.soil_state_id_cli`,
+  `layer.kirost_id_cli`.
 - Removed unused table `bdms.statigraphy_codelist` from database.
 - Removed `layer.unconrocks_id_cli` and `layer.lithok_id_cli` from database.
 - Changed cardinality of `uscs3` field on `bdms.layer` to m:n.
@@ -775,7 +849,8 @@
 ### Fixed
 
 - Fixed sending feedback e-mail.
-- Display `lithology_top_bedrock`, `lithostratigraphy_top_bedrock`and `chronostratigraphy_top_bedrock` as domain trees in bulk edit.
+- Display `lithology_top_bedrock`, `lithostratigraphy_top_bedrock`and `chronostratigraphy_top_bedrock` as domain trees
+  in bulk edit.
 - Added space above the instrument list.
 - Fixed bug where casing IDs could be selected, even though the name of completion was `No casing`.
 - Fixed bug where filtering by `identifier` led to bugs in bulk edit.
