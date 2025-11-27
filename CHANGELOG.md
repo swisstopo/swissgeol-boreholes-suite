@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1427 - 2025-11-27
+
 ### Fixed
 - Lithologies used deprecated `custom.lithology_top_bedrock` codelists instead of the new `lithology_con`.
 
