@@ -6,7 +6,7 @@
 - Lithologies used deprecated `custom.lithology_top_bedrock` codelists instead of the new `lithology_con`.
 
 ### Changed
-- Upgraded swissgeol OCR service to version 1.1.2.
+- Upgraded swissgeol OCR service to version 1.1.3.
 
 ## v2.1.1425 - 2025-11-20
 
