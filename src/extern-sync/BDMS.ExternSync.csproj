@@ -4,6 +4,7 @@
     <GenerateRuntimeConfigurationFiles>true</GenerateRuntimeConfigurationFiles>
     <Product>BDMS.ExternSync</Product>
     <OutputType>Exe</OutputType>
+    <PlatformTarget>x64</PlatformTarget>
   </PropertyGroup>
 
   <ItemGroup>
