@@ -1,7 +1,6 @@
 ﻿using BDMS.Models;
 using Bogus;
 using EFCore.BulkExtensions;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Infrastructure;

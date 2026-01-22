@@ -3,7 +3,7 @@ import { FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { Box, Stack, Typography } from "@mui/material";
 import { CloudUpload, X } from "lucide-react";
-import { maxFileSizeBytes } from "../../../../api/file/fileInterfaces.ts";
+import { FileSizeLimit, largeMaxFileSizeBytes } from "../../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
 
@@ -16,11 +16,12 @@ interface FileDropzoneProps {
 export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange, errorMessageKey }) => {
   const { t } = useTranslation();
   const [file, setFile] = useState<File | undefined>(existingFile);
-  const [error, setError] = useState<string | undefined>(errorMessageKey);
+  const [error, setError] = useState<string | undefined>();
 
   useEffect(() => {
-    setError(errorMessageKey);
-  }, [errorMessageKey]);
+    if (!errorMessageKey) return;
+    setError(t(errorMessageKey));
+  }, [errorMessageKey, t]);
 
   useEffect(() => {
     onChange(file);
@@ -32,27 +33,27 @@ export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange, er
         setError(undefined);
       }
       if (fileRejections.length > 0) {
-        let errorKey: string;
+        let errorMessage: string;
         const errorCode = fileRejections[0].errors[0].code;
 
         if (errorCode === "file-too-large") {
-          errorKey = "fileMaxSizeExceeded";
+          errorMessage = t("fileMaxSizeExceeded", { size: FileSizeLimit.Large });
         } else {
-          errorKey = "fileDropzoneErrorChooseFile";
+          errorMessage = t("fileDropzoneErrorChooseFile");
         }
 
-        setError(errorKey);
+        setError(errorMessage);
       } else {
         setFile(acceptedFiles[0]);
       }
     },
-    [error, setFile],
+    [error, t],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
     onDrop,
     maxFiles: 1,
-    maxSize: maxFileSizeBytes,
+    maxSize: largeMaxFileSizeBytes,
   });
 
   const style = useMemo<CSSProperties>(() => {
@@ -124,7 +125,7 @@ export const FileDropzone: FC<FileDropzoneProps> = ({ existingFile, onChange, er
       </Typography>
       {error && (
         <Typography variant="body2" color={theme.palette.error.main}>
-          {t(error)}
+          {error}
         </Typography>
       )}
     </Box>

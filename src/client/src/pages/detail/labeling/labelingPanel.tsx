@@ -6,7 +6,7 @@ import { PanelBottom, PanelRight } from "lucide-react";
 import { BoreholeAttachment, Photo } from "../../../api/apiInterfaces.ts";
 import { getPhotoImageData, getPhotosByBoreholeId, uploadPhoto } from "../../../api/fetchApiV2.ts";
 import { uploadFile } from "../../../api/file/file.ts";
-import { File as FileInterface, maxFileSizeBytes } from "../../../api/file/fileInterfaces.ts";
+import { File as FileInterface, FileSizeLimit, maxFileSizeBytes } from "../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
@@ -165,7 +165,7 @@ const LabelingPanel: FC = () => {
           const file = event.target.files?.[0];
           if (file) {
             if (file.size >= maxFileSizeBytes) {
-              showAlert(t("fileMaxSizeExceeded"), "error");
+              showAlert(t("fileMaxSizeExceeded", { size: FileSizeLimit.Standard }), "error");
             } else if (!matchesFileFormat(expectedFileFormat, file.type)) {
               showAlert(t("fileInvalidType"), "error");
             } else {

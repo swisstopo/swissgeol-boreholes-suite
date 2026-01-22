@@ -2,6 +2,17 @@
 
 ## [Unreleased]
 
+### Changed
+- Upgraded NuGet packages and GitHub actions.
+
+### Fixed
+- Lithologies used deprecated `custom.lithology_top_bedrock` codelists instead of the new `lithology_con`.
+
+## v2.1.1425 - 2025-11-20
+
+### Changed
+- The max file size for file uploads in the log tab has been increased to 5 GB.
+
 ## v2.1.1422 - 2025-11-13
 
 ### Fixed
