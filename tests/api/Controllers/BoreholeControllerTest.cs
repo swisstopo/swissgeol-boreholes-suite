@@ -205,7 +205,7 @@ public class BoreholeControllerTest
     {
         using var initialContext = ContextFactory.CreateContext();
 
-        var boreholeToEdit = initialContext.Boreholes.Single(c => c.Id == testBoreholeId);
+        var boreholeToEdit = await initialContext.Boreholes.SingleAsync(c => c.Id == testBoreholeId);
         Assert.AreEqual(0, boreholeToEdit.BoreholeCodelists.Count);
 
         boreholeToEdit.BoreholeCodelists.Add(new BoreholeCodelist
