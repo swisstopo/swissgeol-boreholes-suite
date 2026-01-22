@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- Upgraded NuGet packages and GitHub actions.
+
 ### Fixed
 - Lithologies used deprecated `custom.lithology_top_bedrock` codelists instead of the new `lithology_con`.
 
