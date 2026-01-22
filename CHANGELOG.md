@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- Upgraded NuGet packages and GitHub actions.
+
 ## v2.1.1427 - 2025-11-27
 
 ### Fixed
