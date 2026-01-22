@@ -46,10 +46,9 @@ internal static class TestSyncContextExtensions
     private static async Task<PostgreSqlContainer> CreatePostgreSqlContainerAsync()
     {
         var initDbDirectoryPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "initdb.d"));
-        var postgreSqlContainer = new PostgreSqlBuilder()
-            .WithImage("postgis/postgis:17-3.5-alpine")
+        var postgreSqlContainer = new PostgreSqlBuilder("postgis/postgis:17-3.5-alpine")
             .WithDatabase(BoreholesDatabaseName)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilPortIsAvailable(5432))
+            .WithWaitStrategy(Wait.ForUnixContainer().UntilInternalTcpPortIsAvailable(5432))
             .WithResourceMapping(initDbDirectoryPath, "/docker-entrypoint-initdb.d")
             .Build();
         await postgreSqlContainer.StartAsync();

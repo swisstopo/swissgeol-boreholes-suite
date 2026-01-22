@@ -39,7 +39,7 @@ public class AuthenticationTest
         var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "TestAuthentication"));
         var transformation = new DatabaseAuthenticationClaimsTransformation(context);
 
-        await Assert.ThrowsExceptionAsync<InvalidOperationException>(
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(
             () => transformation.CreateOrUpdateUser(principal));
     }
 
@@ -126,7 +126,7 @@ public class AuthenticationTest
         var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "TestAuthentication"));
         var transformation = new DatabaseAuthenticationClaimsTransformation(context);
 
-        await Assert.ThrowsExceptionAsync<NullReferenceException>(
+        await Assert.ThrowsExactlyAsync<NullReferenceException>(
             () => transformation.CreateOrUpdateUser(principal));
     }
 }

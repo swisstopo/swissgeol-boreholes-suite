@@ -1,13 +1,11 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
-using Azure;
 using BDMS.Models;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Infrastructure;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Collections.ObjectModel;
 using System.Security.Claims;
