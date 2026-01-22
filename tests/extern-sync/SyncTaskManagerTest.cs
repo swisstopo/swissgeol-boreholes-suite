@@ -48,7 +48,7 @@ public class SyncTaskManagerTest
 
         var syncTaskManager = new SyncTaskManager(syncTasks.Select(t => t.Object).ToList(), Mock.Of<ILogger<SyncTaskManager>>());
 
-        var exception = await Assert.ThrowsExceptionAsync<InvalidOperationException>(() =>
+        var exception = await Assert.ThrowsExactlyAsync<InvalidOperationException>(() =>
             syncTaskManager.ExecuteTasksAsync(Mock.Of<CancellationTokenSource>().Token));
 
         Assert.AreEqual("BLACKTOLL SQUEAKY.", exception.Message);

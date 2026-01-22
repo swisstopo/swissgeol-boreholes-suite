@@ -237,19 +237,19 @@ public class BoreholePermissionServiceTest
     [TestMethod]
     public async Task CanEditBoreholeAsyncWithUserNotSet()
     {
-        await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanEditBoreholeAsync(null, null));
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () => await boreholePermissionService.CanEditBoreholeAsync(null, null));
     }
 
     [TestMethod]
     public async Task CanEditBoreholeAsyncWithUnknownUser()
     {
-        await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanEditBoreholeAsync("NON-EXISTENT-NAME", null));
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () => await boreholePermissionService.CanEditBoreholeAsync("NON-EXISTENT-NAME", null));
     }
 
     [TestMethod]
     public async Task CanEditBoreholeAsyncWithUnknownBorehole()
     {
-        await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanEditBoreholeAsync(EditorSubjectId, null));
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () => await boreholePermissionService.CanEditBoreholeAsync(EditorSubjectId, null));
     }
 
     [TestMethod]
@@ -261,15 +261,15 @@ public class BoreholePermissionServiceTest
 
     [TestMethod]
     public async Task CanViewBoreholeAsyncWithUserNotSet()
-        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanViewBoreholeAsync(null, null));
+        => await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () => await boreholePermissionService.CanViewBoreholeAsync(null, null));
 
     [TestMethod]
     public async Task CanViewBoreholeAsyncWithUnknownUser()
-        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanViewBoreholeAsync("NON-EXISTENT-NAME", null));
+        => await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () => await boreholePermissionService.CanViewBoreholeAsync("NON-EXISTENT-NAME", null));
 
     [TestMethod]
     public async Task CanViewBoreholeAsyncWithUnknownBorehole()
-        => await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () => await boreholePermissionService.CanViewBoreholeAsync(EditorSubjectId, null));
+        => await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () => await boreholePermissionService.CanViewBoreholeAsync(EditorSubjectId, null));
 
     [TestMethod]
     public async Task CanViewBoreholeAsync()
@@ -281,7 +281,7 @@ public class BoreholePermissionServiceTest
     [TestMethod]
     public void HasUserRoleOnWorkgroupNullUser()
     {
-        Assert.ThrowsException<NullReferenceException>(() => boreholePermissionService.HasUserRoleOnWorkgroup(null, 1, Role.Editor));
+        Assert.ThrowsExactly<NullReferenceException>(() => boreholePermissionService.HasUserRoleOnWorkgroup(null, 1, Role.Editor));
     }
 
     [TestMethod]

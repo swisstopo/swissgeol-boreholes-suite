@@ -232,7 +232,7 @@ public class BoreholeFileControllerTest
         Assert.AreEqual(secondBoreholeBoreholeFilesBeforeUpload + 1, context.BoreholeFiles.Where(bf => bf.BoreholeId == secondBoreholeId).Count());
 
         // Ensure the file got deleted for the first borehole
-        var exception = await Assert.ThrowsExceptionAsync<AmazonS3Exception>(() => boreholeFileCloudService.GetObject(firstBoreholeAddedFile.NameUuid!));
+        var exception = await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => boreholeFileCloudService.GetObject(firstBoreholeAddedFile.NameUuid!));
         Assert.AreEqual("The specified key does not exist.", exception.Message);
 
         // Ensure the file still exists for the second borehole
@@ -276,7 +276,7 @@ public class BoreholeFileControllerTest
         Assert.AreEqual(boreholeFilesBeforeUpload, context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count());
 
         // Ensure file does not exist
-        await Assert.ThrowsExceptionAsync<AmazonS3Exception>(() => boreholeFileCloudService.GetObject(latestFileInDb.NameUuid!));
+        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => boreholeFileCloudService.GetObject(latestFileInDb.NameUuid!));
     }
 
     [TestMethod]
