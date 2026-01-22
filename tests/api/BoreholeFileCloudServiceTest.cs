@@ -153,7 +153,7 @@ public class BoreholeFileCloudServiceTest
     [TestMethod]
     public async Task GetObjectWithNotExistingObjectNameShouldThrowException()
     {
-        await Assert.ThrowsExceptionAsync<AmazonS3Exception>(() => boreholeFileUploadService.GetObject("doesNotExist"));
+        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => boreholeFileUploadService.GetObject("doesNotExist"));
     }
 
     [TestMethod]
@@ -188,6 +188,6 @@ public class BoreholeFileCloudServiceTest
         await boreholeFileUploadService.DeleteObject(pdfFormFile.FileName);
 
         // Ensure file does not exist
-        await Assert.ThrowsExceptionAsync<AmazonS3Exception>(() => boreholeFileUploadService.GetObject(pdfFormFile.FileName));
+        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => boreholeFileUploadService.GetObject(pdfFormFile.FileName));
     }
 }

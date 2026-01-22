@@ -75,9 +75,7 @@ public class LithologyControllerTest
         {
             Assert.IsTrue(
                 lithologies.ElementAt(i - 1).FromDepth <= lithologies.ElementAt(i).FromDepth,
-                "Expected lithologies to be sorted by FromDepth but after {0} followed {1}",
-                lithologies.ElementAt(i - 1).FromDepth,
-                lithologies.ElementAt(i).FromDepth);
+                string.Format("Expected lithologies to be sorted by FromDepth but after {0} followed {1}", lithologies.ElementAt(i - 1).FromDepth, lithologies.ElementAt(i).FromDepth));
         }
     }
 

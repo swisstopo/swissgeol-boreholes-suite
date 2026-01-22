@@ -124,7 +124,7 @@ public class SyncBoreholesTaskTest
         await syncContext.Source.Boreholes.AddAsync(publishedBorehole);
         await syncContext.Source.SaveChangesAsync();
 
-        var exception = await Assert.ThrowsExceptionAsync<InvalidOperationException>(
+        var exception = await Assert.ThrowsExactlyAsync<InvalidOperationException>(
             async () => await syncTask.ExecuteAndValidateAsync(Mock.Of<CancellationTokenSource>().Token));
 
         StringAssert.Contains(exception.Message, "Environment variable <TARGET_DEFAULT_WORKGROUP_NAME> was not set.");
@@ -141,7 +141,7 @@ public class SyncBoreholesTaskTest
         await syncContext.Source.Boreholes.AddAsync(publishedBorehole);
         await syncContext.Source.SaveChangesAsync();
 
-        var exception = await Assert.ThrowsExceptionAsync<InvalidOperationException>(
+        var exception = await Assert.ThrowsExactlyAsync<InvalidOperationException>(
             async () => await syncTask.ExecuteAndValidateAsync(Mock.Of<CancellationTokenSource>().Token));
 
         StringAssert.Contains(exception.Message, "No suitable default workgroup was found at target database.");
@@ -165,7 +165,7 @@ public class SyncBoreholesTaskTest
         await syncContext.Target.Workgroups.AddAsync(defaultWorkgroup);
         await syncContext.Target.SaveChangesAsync();
 
-        var exception = await Assert.ThrowsExceptionAsync<InvalidOperationException>(
+        var exception = await Assert.ThrowsExactlyAsync<InvalidOperationException>(
             async () => await syncTask.ExecuteAndValidateAsync(Mock.Of<CancellationTokenSource>().Token));
 
         StringAssert.Contains(exception.Message, "Environment variable <TARGET_DEFAULT_USER_SUB> was not set.");
@@ -187,7 +187,7 @@ public class SyncBoreholesTaskTest
         await syncContext.Target.Workgroups.AddAsync(defaultWorkgroup);
         await syncContext.Target.SaveChangesAsync();
 
-        var exception = await Assert.ThrowsExceptionAsync<InvalidOperationException>(
+        var exception = await Assert.ThrowsExactlyAsync<InvalidOperationException>(
             async () => await syncTask.ExecuteAndValidateAsync(Mock.Of<CancellationTokenSource>().Token));
 
         StringAssert.Contains(exception.Message, "No suitable default user was found at target database.");

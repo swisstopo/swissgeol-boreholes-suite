@@ -127,13 +127,13 @@ public class BoreholeGeometryExtensionsTest
     [TestMethod]
     public void GetDepthTVDTooLow()
     {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => geometry.GetDepthTVD(-42));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => geometry.GetDepthTVD(-42));
     }
 
     [TestMethod]
     public void GetDepthTVDTooHigh()
     {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => geometry.GetDepthTVD(double.MaxValue));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => geometry.GetDepthTVD(double.MaxValue));
     }
 
     [TestMethod]
@@ -145,13 +145,13 @@ public class BoreholeGeometryExtensionsTest
             new BoreholeGeometryElement { MD = (100 * Math.PI) / 2, X = 42, Y = 100, Z = 200, HAZI = 0, DEVI = 90 },
         };
 
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => arc90DegGeometry.GetDepthMD(100 - 1e-12));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => arc90DegGeometry.GetDepthMD(100 - 1e-12));
         AssertRoundtrip(arc90DegGeometry, 100, 0);
         AssertRoundtrip(arc90DegGeometry, 125, 25.268025514208);
         AssertRoundtrip(arc90DegGeometry, 150, 52.35987755983);
         AssertRoundtrip(arc90DegGeometry, 175, 84.806207898148);
         AssertRoundtrip(arc90DegGeometry, 200, 157.07963267949);
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => arc90DegGeometry.GetDepthMD(200 + 1e-12));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => arc90DegGeometry.GetDepthMD(200 + 1e-12));
     }
 
     [TestMethod]
@@ -208,19 +208,19 @@ public class BoreholeGeometryExtensionsTest
     [TestMethod]
     public void GetDepthMDTooLow()
     {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => geometry.GetDepthMD(-42));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => geometry.GetDepthMD(-42));
     }
 
     [TestMethod]
     public void GetDepthMDTooHigh()
     {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => geometry.GetDepthMD(double.MaxValue));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => geometry.GetDepthMD(double.MaxValue));
     }
 
     [TestMethod]
     public void GetDepthMDEmptyGeometry()
     {
-        Assert.ThrowsException<ArgumentOutOfRangeException>(() => new List<BoreholeGeometryElement>().GetDepthMD(10));
+        Assert.ThrowsExactly<ArgumentOutOfRangeException>(() => new List<BoreholeGeometryElement>().GetDepthMD(10));
     }
 
     private static void AssertRoundtrip(List<BoreholeGeometryElement> geometry, double inputTVD, double expectedMD)

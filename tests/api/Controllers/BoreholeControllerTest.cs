@@ -787,7 +787,7 @@ public class BoreholeControllerTest
     {
         boreholeId = testBoreholeId;
         controller.ControllerContext.HttpContext.User = null;
-        await Assert.ThrowsExceptionAsync<InvalidOperationException>(async () =>
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
         {
             await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         });

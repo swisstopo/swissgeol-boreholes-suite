@@ -115,7 +115,7 @@ public class LogFileCloudServiceTest
     [TestMethod]
     public async Task GetObjectWithNotExistingObjectNameShouldThrowException()
     {
-        await Assert.ThrowsExceptionAsync<AmazonS3Exception>(() => logFileCloudService.GetObject("doesNotExist"));
+        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => logFileCloudService.GetObject("doesNotExist"));
     }
 
     [TestMethod]
@@ -138,6 +138,6 @@ public class LogFileCloudServiceTest
         await logFileCloudService.UploadObject(formFile.OpenReadStream(), formFile.FileName, formFile.ContentType);
         await logFileCloudService.GetObject(formFile.FileName);
         await logFileCloudService.DeleteObject(formFile.FileName);
-        await Assert.ThrowsExceptionAsync<AmazonS3Exception>(() => logFileCloudService.GetObject(formFile.FileName));
+        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => logFileCloudService.GetObject(formFile.FileName));
     }
 }

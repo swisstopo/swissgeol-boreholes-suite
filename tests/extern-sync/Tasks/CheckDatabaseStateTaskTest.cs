@@ -36,7 +36,7 @@ public class CheckDatabaseStateTaskTest
         await syncContext.Target.Database.ExecuteSqlRawAsync(insertStatement);
         using var syncTask = new CheckDatabaseStateTask(syncContext, new Mock<ILogger<CheckDatabaseStateTask>>().Object, GetDefaultConfiguration());
 
-        var exception = await Assert.ThrowsExceptionAsync<InvalidOperationException>(
+        var exception = await Assert.ThrowsExactlyAsync<InvalidOperationException>(
             async () => await syncTask.ExecuteAndValidateAsync(Mock.Of<CancellationTokenSource>().Token));
 
         StringAssert.Contains(exception.Message, "Source and target databases have different schema versions.");
