@@ -47,7 +47,7 @@
     "i18next-browser-languagedetector": "^7.2.0",
     "i18next-http-backend": "^2.4.2",
     "immer": "^10.0.3",
-    "lodash": "^4.17.21",
+    "lodash": "^4.17.23",
     "lucide-react": "^0.438.0",
     "markdown-to-jsx": "^7.0.1",
     "moment": "^2.29.4",
