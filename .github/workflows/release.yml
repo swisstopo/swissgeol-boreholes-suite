@@ -15,160 +15,35 @@ env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  retag-docker-image:
+  retag-docker-images:
     runs-on: ubuntu-latest
-    name: Push updated Docker image
+    name: Tag Docker images as latest
 
     steps:
-      - name: Checkout repository
-        uses: actions/checkout@v6
-
       - name: Set environment variables
         run: |
           echo VERSION=${TAG_NAME#v} >> $GITHUB_ENV
           echo BASE_IMAGE_NAME=$REGISTRY/$(echo ${GITHUB_REPOSITORY,,}) >> $GITHUB_ENV
-          echo COMMITED_AT=$(git show -s --format=%cI `git rev-parse HEAD`) >> $GITHUB_ENV
-          echo REVISION=$(git rev-parse --short HEAD) >> $GITHUB_ENV
-
-      - name: Collect Docker image metadata (api-legacy)
-        id: meta-api-legacy
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.BASE_IMAGE_NAME }}-api-legacy
-          labels: |
-            org.opencontainers.image.created=${{ env.COMMITED_AT }}
-            org.opencontainers.image.version=v${{ env.VERSION }}
-            org.opencontainers.image.maintainer=GeoWerkstatt GmbH <support@geowerkstatt.ch>
-          tags: |
-            type=semver,pattern=v{{version}}
-
-      - name: Collect Docker image metadata (api)
-        id: meta-api
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.BASE_IMAGE_NAME }}-api
-          labels: |
-            org.opencontainers.image.created=${{ env.COMMITED_AT }}
-            org.opencontainers.image.version=v${{ env.VERSION }}
-            org.opencontainers.image.maintainer=GeoWerkstatt GmbH <support@geowerkstatt.ch>
-          tags: |
-            type=semver,pattern=v{{version}}
-
-      - name: Collect Docker image metadata (client)
-        id: meta-client
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.BASE_IMAGE_NAME }}-client
-          labels: |
-            org.opencontainers.image.created=${{ env.COMMITED_AT }}
-            org.opencontainers.image.version=v${{ env.VERSION }}
-            org.opencontainers.image.maintainer=GeoWerkstatt GmbH <support@geowerkstatt.ch>
-          tags: |
-            type=semver,pattern=v{{version}}
-
-      - name: Collect Docker image metadata (view-sync)
-        id: meta-view-sync
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.BASE_IMAGE_NAME }}-view-sync
-          labels: |
-            org.opencontainers.image.created=${{ env.COMMITED_AT }}
-            org.opencontainers.image.version=v${{ env.VERSION }}
-            org.opencontainers.image.maintainer=GeoWerkstatt GmbH <support@geowerkstatt.ch>
-          tags: |
-            type=semver,pattern=v{{version}}
-
-      - name: Collect Docker image metadata (extern-sync)
-        id: meta-extern-sync
-        uses: docker/metadata-action@v5
-        with:
-          images: ${{ env.BASE_IMAGE_NAME }}-extern-sync
-          labels: |
-            org.opencontainers.image.created=${{ env.COMMITED_AT }}
-            org.opencontainers.image.version=v${{ env.VERSION }}
-            org.opencontainers.image.maintainer=GeoWerkstatt GmbH <support@geowerkstatt.ch>
-          tags: |
-            type=semver,pattern=v{{version}}
 
       - name: Log in to the GitHub container registry
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
-          username: ${{ github.repository_owner  }}
+          username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Build and push Docker image (api-legacy)
-        uses: docker/build-push-action@v5
-        with:
-          context: ./src/api-legacy
-          push: true
-          build-args: |
-            VERSION=${{ env.VERSION }}
-            REVISION=${{ env.REVISION }}
-          tags: ${{ steps.meta-api-legacy.outputs.tags }}
-          labels: ${{ steps.meta-api-legacy.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.BASE_IMAGE_NAME }}-api-legacy:edge
-          cache-to: type=inline
-
-      - name: Build and push Docker image (api)
-        uses: docker/build-push-action@v5
-        with:
-          context: ./src
-          file: ./src/api/Dockerfile
-          push: true
-          build-args: |
-            VERSION=${{ env.VERSION }}
-            REVISION=${{ env.REVISION }}
-          tags: ${{ steps.meta-api.outputs.tags }}
-          labels: ${{ steps.meta-api.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.BASE_IMAGE_NAME }}-api:edge
-          cache-to: type=inline
-
-      - name: Build and push Docker image (client)
-        uses: docker/build-push-action@v5
-        with:
-          context: ./src/client
-          target: deploy
-          push: true
-          build-args: |
-            VERSION=${{ env.VERSION }}
-            REVISION=${{ env.REVISION }}
-          tags: ${{ steps.meta-client.outputs.tags }}
-          labels: ${{ steps.meta-client.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.BASE_IMAGE_NAME }}-client:edge
-          cache-to: type=inline
-
-      - name: Build and push Docker image (view-sync)
-        uses: docker/build-push-action@v5
-        with:
-          context: ./src/view-sync
-          push: true
-          build-args: |
-            VERSION=${{ env.VERSION }}
-            REVISION=${{ env.REVISION }}
-          tags: ${{ steps.meta-view-sync.outputs.tags }}
-          labels: ${{ steps.meta-view-sync.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.BASE_IMAGE_NAME }}-view-sync:edge
-          cache-to: type=inline
-
-      - name: Build and push Docker image (extern-sync)
-        uses: docker/build-push-action@v5
-        with:
-          context: ./src
-          file: ./src/extern-sync/Dockerfile
-          push: true
-          build-args: |
-            VERSION=${{ env.VERSION }}
-            REVISION=${{ env.REVISION }}
-          tags: ${{ steps.meta-extern-sync.outputs.tags }}
-          labels: ${{ steps.meta-extern-sync.outputs.labels }}
-          cache-from: type=registry,ref=${{ env.BASE_IMAGE_NAME }}-extern-sync:edge
-          cache-to: type=inline
+      - name: Pull, tag and push Docker images
+        run: |
+          for image in api-legacy api client view-sync extern-sync; do
+            docker pull ${BASE_IMAGE_NAME}-${image}:v${VERSION}
+            docker tag ${BASE_IMAGE_NAME}-${image}:v${VERSION} ${BASE_IMAGE_NAME}-${image}:latest
+            docker push ${BASE_IMAGE_NAME}-${image}:latest
+          done
 
   patch-changelog:
     runs-on: ubuntu-latest
     name: Patch CHANGELOG.md and update GitHub release notes
-    needs: retag-docker-image
+    needs: retag-docker-images
 
     steps:
       - name: Checkout repository
