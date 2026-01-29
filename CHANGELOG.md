@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1431 - 2026-01-29
+
 ### Changed
 - Upgraded NuGet packages and GitHub actions.
 - Upgraded swissgeol OCR service to version 1.1.3.
