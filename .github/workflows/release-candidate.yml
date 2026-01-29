@@ -1,0 +1,38 @@
+name: Release Candidate
+
+on:
+  workflow_dispatch:
+    inputs:
+      VERSION:
+        description: "Source version to tag (e.g., 2.1.1427)"
+        required: true
+
+env:
+  REGISTRY: ghcr.io
+
+jobs:
+  add-release-candidate-tag:
+    runs-on: ubuntu-latest
+    name: Add RC tag to Docker images
+
+    steps:
+      - name: Set environment variables
+        run: |
+          echo BASE_IMAGE_NAME=$REGISTRY/$(echo ${GITHUB_REPOSITORY,,}) >> $GITHUB_ENV
+          echo SOURCE_TAG=v${{ github.event.inputs.VERSION }} >> $GITHUB_ENV
+          echo RC_TAG=v${{ github.event.inputs.VERSION }}-rc >> $GITHUB_ENV
+
+      - name: Log in to the GitHub container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Pull, tag with RC suffix and push Docker images
+        run: |
+          for image in api-legacy api client view-sync extern-sync; do
+            docker pull ${BASE_IMAGE_NAME}-${image}:${SOURCE_TAG}
+            docker tag ${BASE_IMAGE_NAME}-${image}:${SOURCE_TAG} ${BASE_IMAGE_NAME}-${image}:${RC_TAG}
+            docker push ${BASE_IMAGE_NAME}-${image}:${RC_TAG}
+          done
