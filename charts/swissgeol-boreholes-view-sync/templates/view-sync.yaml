@@ -1,0 +1,83 @@
+apiVersion: batch/v1
+kind: CronJob
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+  {{- if .Values.keel.enabled | default true }}
+  annotations:
+    keel.sh/policy: {{ .Values.keel.policy | default "force" }}
+    keel.sh/match-tag: {{ .Values.keel.matchTag | default "'true'" }}
+    keel.sh/trigger: {{ .Values.keel.trigger | default "poll" }}
+  {{- end }}
+spec:
+  schedule: "{{ .Values.app.schedule | default "0 0 * * *" }}"
+  timeZone: "{{ .Values.app.timezone | default "Europe/Zurich" }}"
+  concurrencyPolicy: Forbid
+  successfulJobsHistoryLimit: 3
+  failedJobsHistoryLimit: 1
+  jobTemplate:
+    spec:
+      template:
+        spec:
+          containers:
+            - name: {{ .Release.Name }}
+              image: ghcr.io/swisstopo/swissgeol-boreholes-suite-view-sync:{{ .Values.app.version | default "latest" }}
+              imagePullPolicy: Always
+              env:
+                - name: SOURCE_DB_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: "{{ .Release.Name }}-config"
+                      key: sourceDatabaseHost
+                - name: SOURCE_DB_PORT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: "{{ .Release.Name }}-config"
+                      key: sourceDatabasePort
+                - name: SOURCE_DB_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: "{{ .Release.Name }}-config"
+                      key: sourceDatabaseName
+                - name: SOURCE_DB_SCHEMA
+                  valueFrom:
+                    configMapKeyRef:
+                      name: "{{ .Release.Name }}-config"
+                      key: sourceDatabaseSchema
+                - name: SOURCE_DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-secrets"
+                      key: sourceDatabaseUsername
+                - name: SOURCE_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-secrets"
+                      key: sourceDatabasePassword
+                - name: TARGET_DB_HOST
+                  valueFrom:
+                    configMapKeyRef:
+                      name: "{{ .Release.Name }}-config"
+                      key: targetDatabaseHost
+                - name: TARGET_DB_PORT
+                  valueFrom:
+                    configMapKeyRef:
+                      name: "{{ .Release.Name }}-config"
+                      key: targetDatabasePort
+                - name: TARGET_DB_NAME
+                  valueFrom:
+                    configMapKeyRef:
+                      name: "{{ .Release.Name }}-config"
+                      key: targetDatabaseName
+                - name: TARGET_DB_USERNAME
+                  valueFrom:
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-secrets"
+                      key: targetDatabaseUsername
+                - name: TARGET_DB_PASSWORD
+                  valueFrom:
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-secrets"
+                      key: targetDatabasePassword
+          restartPolicy: Never
+      backoffLimit: 4

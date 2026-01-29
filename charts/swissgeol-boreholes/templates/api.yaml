@@ -1,0 +1,159 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-api
+  namespace: {{ .Release.Namespace }}
+  {{- if .Values.keel.enabled | default true }}
+  annotations:
+    keel.sh/policy: {{ .Values.keel.policy | default "force" }}
+    keel.sh/match-tag: {{ .Values.keel.matchTag | default "'true'" }}
+    keel.sh/trigger: {{ .Values.keel.trigger | default "poll" }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount}}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-api
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-api
+    spec:
+      containers:
+      - name: {{ .Release.Name }}-api
+        image: ghcr.io/swisstopo/swissgeol-boreholes-suite-api:{{ .Values.app.version | default "latest" }}
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 8080
+        livenessProbe:
+          tcpSocket:
+            port: 8080
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 3
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 3
+        startupProbe:
+          httpGet:
+            path: /health
+            port: 8080
+          periodSeconds: 10
+          timeoutSeconds: 2
+          failureThreshold: 30
+        env:
+        - name: S3__ACCESS_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-secrets
+              key: s3AccessKey
+              optional: true
+        - name: S3__SECRET_KEY
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-secrets
+              key: s3SecretKey
+              optional: true
+        - name: S3__BUCKET_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-config
+              key: s3Bucket
+        - name: S3__PHOTOS_BUCKET_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-config
+              key: s3PhotosBucket
+        - name: S3__LOGFILES_BUCKET_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-config
+              key: s3LogFilesBucket
+        - name: S3__ENDPOINT
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-config
+              key: s3Endpoint
+        - name: S3__SECURE
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-config
+              key: s3Secure
+              optional: true
+        - name: CONNECTIONSTRINGS__BdmsContext
+          valueFrom:
+            secretKeyRef:
+              name: {{ .Release.Name }}-secrets
+              key: databaseConnectionString
+        - name: TZ
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-config
+              key: timezone
+        - name: ReverseProxy__Clusters__pythonApi__Destinations__legacyApi__Address
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-config
+              key: legacyApiAddress
+        - name: ReverseProxy__Clusters__dataExtractionApi__Destinations__dataExtractionApi__Address
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-config
+              key: dataExtractionApiAddress
+        - name: ReverseProxy__Clusters__ocrApi__Destinations__ocrApi__Address
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-config
+              key: ocrApiAddress
+        - name: Auth__Authority
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-config
+              key: authAuthority
+        - name: Auth__Audience
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-config
+              key: authAudience
+        - name: Auth__Scopes
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-config
+              key: authScopes
+        - name: Auth__GroupClaimType
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-config
+              key: authGroupClaimType
+        - name: Auth__AuthorizedGroupName
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-config
+              key: authAuthorizedGroupName
+        - name: Auth__AnonymousModeEnabled
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-config
+              key: authAnonymousModeEnabled
+        - name: GoogleAnalytics__TrackingId
+          valueFrom:
+            configMapKeyRef:
+              name: {{ .Release.Name }}-config
+              key: googleAnalyticsTrackingId
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-api
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: {{ .Release.Name }}-api
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 8080

@@ -1,0 +1,86 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-dataextraction-api
+  namespace: {{ .Release.Namespace }}
+  {{- if .Values.keel.enabled | default true }}
+  annotations:
+    keel.sh/policy: {{ .Values.keel.policy | default "force" }}
+    keel.sh/match-tag: {{ .Values.keel.matchTag | default "'true'" }}
+    keel.sh/trigger: {{ .Values.keel.trigger | default "poll" }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount}}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-dataextraction-api
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-dataextraction-api
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-dataextraction-api
+          image: ghcr.io/swisstopo/swissgeol-boreholes-dataextraction-api:{{ .Values.dataextraction.version | default "latest" }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          livenessProbe:
+            tcpSocket:
+              port: 8000
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: 8000
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          startupProbe:
+            tcpSocket:
+              port: 8000
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 30
+          env:
+            - name: AWS_DEFAULT_REGION
+              value: eu-central-1
+            - name: AWS_ACCESS_KEY_ID
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: s3AccessKey
+            - name: AWS_SECRET_ACCESS_KEY
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
+                  key: s3SecretKey
+            - name: AWS_S3_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-config
+                  key: s3Bucket
+            - name: AWS_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-config
+                  key: s3Endpoint
+            - name: TZ
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-config
+                  key: timezone
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-dataextraction-api
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: {{ .Release.Name }}-dataextraction-api
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8000

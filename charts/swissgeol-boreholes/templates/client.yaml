@@ -1,0 +1,68 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-client
+  namespace: {{ .Release.Namespace }}
+  {{- if .Values.keel.enabled | default true }}
+  annotations:
+    keel.sh/policy: {{ .Values.keel.policy | default "force" }}
+    keel.sh/match-tag: {{ .Values.keel.matchTag | default "'true'" }}
+    keel.sh/trigger: {{ .Values.keel.trigger | default "poll" }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount}}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-client
+  template:
+    metadata:
+      labels:
+        app: {{ .Release.Name }}-client
+    spec:
+      containers:
+        - name: {{ .Release.Name }}-client
+          image: ghcr.io/swisstopo/swissgeol-boreholes-suite-client:{{ .Values.app.version | default "latest" }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 3000
+          livenessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          startupProbe:
+            httpGet:
+              path: /healthz
+              port: 3000
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 30
+          env:
+            - name: TZ
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-config
+                  key: timezone
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-client
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: {{ .Release.Name }}-client
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 3000
+

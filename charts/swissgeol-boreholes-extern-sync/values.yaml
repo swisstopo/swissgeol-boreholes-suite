@@ -1,0 +1,66 @@
+# Default values for the swissgeol-boreholes-extern-sync application.
+# This is a YAML-formatted file.
+
+#
+# General application configuration
+#
+app:
+  # -- The tag name of the Docker image tag to be deployed
+  # -- e.g. v2.0.506, latest or edge
+  # -- defaults to "latest"
+  version:
+  # -- The timezone which will be used in the application
+  # -- defaults to "Europe/Zurich"
+  timezone:
+  # -- The schedule for the cron job
+  # -- Refer to https://en.wikipedia.org/wiki/Cron for valid values.
+  # -- defaults to "0 0 * * *" which means every day at midnight
+  schedule:
+
+configuration:
+  # -- The default workgroup name to assign the borehole to if there is no matching workgroup in the target database
+  targetDefaultWorkgroupName:
+  # -- The default user subject/identifier to assign the synced boreholes to.
+  targetDefaultUserSub:
+
+# Database configuration (source and target)
+db:
+  source:
+    # -- The hostname of the source database server
+    host:
+    # -- The port of the source database server
+    # -- defaults to "5432"
+    port:
+    # -- The name of the source database
+    name:
+    # -- The username to connect to the source database
+    username:
+    # -- The password to connect to the source database
+    password:
+  target:
+    # -- The hostname of the target database server
+    host:
+    # -- The port of the target database server
+    # -- defaults to "5432"
+    port:
+    # -- The name of the target database
+    name:
+    # -- The username to connect to the target database
+    username:
+    # -- The password to connect to the target database
+    password:
+
+# Keel deployment automation configuration
+keel:
+  # -- Enables Keel deployment automation for the deployment
+  # -- defaults to true
+  enabled:
+  # -- The policy for Keel to use for updates
+  # -- defaults to "force"
+  policy:
+  # -- Whether to match tags for updates
+  # -- defaults to "'true'"
+  matchTag:
+  # -- The trigger type for Keel
+  # -- defaults to "poll"
+  trigger:
