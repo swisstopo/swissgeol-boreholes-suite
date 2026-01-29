@@ -1,0 +1,20 @@
+apiVersion: v2
+name: swissgeol-boreholes
+description: Borehole Data Management System
+type: application
+version: 0.9.0
+icon: https://raw.githubusercontent.com/swisstopo/swissgeol-boreholes-suite/main/src/client/public/favicon.ico
+appVersion: "v2.1.1427"
+home: https://www.swissgeol.ch/en
+maintainers:
+  - name: geowerkstatt GmbH
+    email: support@geowerkstatt.ch
+    url: https://www.geowerkstatt.ch/
+keywords:
+  - boreholes
+  - dataextraction
+  - swissgeol
+  - geoadmin
+sources:
+  - https://github.com/swisstopo/swissgeol-boreholes-suite
+  - https://github.com/swisstopo/swissgeol-boreholes-dataextraction

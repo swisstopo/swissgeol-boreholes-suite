@@ -1,0 +1,14 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  namespace: {{ .Release.Namespace }}
+data:
+  sourceDatabaseHost: {{ .Values.db.source.host }}
+  sourceDatabasePort: {{ .Values.db.source.port | default "5432" | quote }}
+  sourceDatabaseName: {{ .Values.db.source.name }}
+  sourceDatabaseSchema: {{ .Values.db.source.schema }}
+  targetDatabaseHost: {{ .Values.db.target.host }}
+  targetDatabasePort: {{ .Values.db.target.port | default "5432" | quote }}
+  targetDatabaseName: {{ .Values.db.target.name }}
+  timezone: {{ .Values.app.timezone | default "Europe/Zurich" | quote }}
