@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Added new GitHub Action workflow to add a release-candidate Docker image tag to a specific version.
+
 ## v2.1.1431 - 2026-01-29
 
 ### Changed
