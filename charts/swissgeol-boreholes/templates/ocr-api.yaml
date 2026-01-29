@@ -19,7 +19,14 @@ spec:
       labels:
         app: {{ .Release.Name }}-ocr-api
     spec:
+      {{- if .Values.ocr.awsRoleArn }}
       serviceAccountName: {{ .Release.Name }}-ocr-api
+      {{- end }}
+      automountServiceAccountToken: {{ .Values.automountServiceAccountToken }}
+      {{- if .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Release.Name }}-ocr-api
           image: ghcr.io/swisstopo/swissgeol-ocr-api:{{ .Values.ocr.version | default "latest" }}
@@ -46,6 +53,10 @@ spec:
             failureThreshold: 30
           resources:
             {{- toYaml .Values.resources.ocr | nindent 12 }}
+          {{- if .Values.securityContext }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- end }}
           env:
             - name: AWS_DEFAULT_REGION
               value: eu-central-1

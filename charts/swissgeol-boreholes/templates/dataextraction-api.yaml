@@ -19,6 +19,11 @@ spec:
       labels:
         app: {{ .Release.Name }}-dataextraction-api
     spec:
+      automountServiceAccountToken: {{ .Values.automountServiceAccountToken }}
+      {{- if .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- end }}
       containers:
         - name: {{ .Release.Name }}-dataextraction-api
           image: ghcr.io/swisstopo/swissgeol-boreholes-dataextraction-api:{{ .Values.dataextraction.version | default "latest" }}
@@ -45,6 +50,10 @@ spec:
             failureThreshold: 30
           resources:
             {{- toYaml .Values.resources.dataextraction | nindent 12 }}
+          {{- if .Values.securityContext }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- end }}
           env:
             - name: AWS_DEFAULT_REGION
               value: eu-central-1

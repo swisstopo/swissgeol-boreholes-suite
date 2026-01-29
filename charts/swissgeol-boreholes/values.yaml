@@ -78,6 +78,11 @@ database:
 #
 replicaCount: 1
 
+# Pod-level security settings (optional)
+automountServiceAccountToken: true
+podSecurityContext: {}
+securityContext: {}
+
 # Resource requests and limits per component
 resources:
   api:
