@@ -30,6 +30,10 @@ app.use((req, res, next) => {
 
 app.use(express.static(path.join(__dirname, "dist")));
 
+app.get("/healthz", (req, res) => {
+  res.status(200).send("ok");
+});
+
 app.get("/help/*", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "help", "index.html"));
 });
