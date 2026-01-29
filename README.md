@@ -67,6 +67,44 @@ Requests and das Legacy API werden mit dem [YARP Reverse Proxy](https://microsof
 
 Die Applikation kann auch im anonymen Modus betrieben werden, um die Bohrdaten öffentlich zugänglich zu machen. In diesem Modus ist die Applikation nur im read-only Modus verfügbar. Die Konfiguration erfolgt über OIDC-Konfiguration (siehe oben). Die Applikation wird im anonymen Modus gestartet, wenn `Auth:AnonymousModeEnabled` auf `true` gesetzt ist.
 
+## Release-Prozess
+
+### Pre-release
+
+Jede Änderung, die in den `main`-Branch gemerged wird, löst automatisch den
+[Pre-release-Workflow](./.github/workflows/pre-release.yml) aus. Dieser erstellt einen neuen GitHub **Pre-release** mit einer neuen Versionsnummer, baut ein Docker-Image mit derselben Version und taggt das Image zusätzlich mit `:edge`.
+
+### PROD-Release
+
+Ein PROD-Release entsteht, indem ein beliebiger Pre-release im GitHub Release-Bereich
+als **„Set as the latest release"** markiert wird. Das entsprechende Docker-Image bekommt dabei zusätzlich den `latest`-Tag.
+
+### Release Candidate (RC)
+
+Um eine bestimmte Version als Release Candidate zu kennzeichnen, kann der GitHub-Workflow
+[Release Candidate](./.github/workflows/release-candidate.yml) manuell gestartet werden. Er ergänzt den _Release Candidate_ Docker-Image-Tag für eine bestehende Version.
+
+**So geht's:**
+
+1. Im GitHub Repository unter _Actions_ den Workflow _Release Candidate_ auswählen.
+2. Auf _Run workflow_ klicken.
+3. Die Quellversion eingeben (z.B. `2.1.1427` ohne `v`).
+
+Der Workflow erstellt dann für alle Docker-Images (Client, API, etc.) einen neuen Tag (z.B. `:v2.1.1427-rc`).
+
+### Hotfix-Release erstellen
+
+Ein Hotfix-Release wird erstellt, indem vom letzten Release-Git-Tag ein neuer Branch angelegt wird. Dort werden die nötigen Korrekturen gemacht und anschliessend manuell ein neuer GitHub [Pre-release](https://github.com/swisstopo/swissgeol-boreholes-suite/releases) erstellt, der dann wiederum als **„Set as the latest release"** markiert werden kann.
+
+### Docker-Image-Tags
+
+| Tag | Beschreibung |
+| --- | ----------- |
+| `:edge` | Neuester Stand aus `main` (letzter Pre-release) |
+| `:v<version>` | Bestimmte Version, z.B. `:v2.1.1427` |
+| `:v<version>-rc` | Release Candidate einer bestimmten Version, z.B. `:v2.1.1427-rc` |
+| `:latest` | Aktuelle produktive Version (PROD-Release) |
+
 ## Developer best practices
 
 #### UI/UX
