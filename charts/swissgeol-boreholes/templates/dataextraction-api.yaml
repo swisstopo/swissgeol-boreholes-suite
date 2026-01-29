@@ -34,19 +34,22 @@ spec:
           ports:
             - containerPort: 8000
           livenessProbe:
-            tcpSocket:
+            httpGet:
+              path: /health
               port: 8000
             periodSeconds: 10
             timeoutSeconds: 2
             failureThreshold: 3
           readinessProbe:
-            tcpSocket:
+            httpGet:
+              path: /health
               port: 8000
             periodSeconds: 10
             timeoutSeconds: 2
             failureThreshold: 3
           startupProbe:
-            tcpSocket:
+            httpGet:
+              path: /health
               port: 8000
             periodSeconds: 10
             timeoutSeconds: 2
