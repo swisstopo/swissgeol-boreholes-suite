@@ -19,5 +19,5 @@ PR-based updates. No changes are made here.
 
 ## Probe coverage note
 
-OCR and Dataextraction use TCP-only probes for now. Revisit later to add explicit
-HTTP health endpoints and switch probes accordingly.
+OCR uses TCP-only probes for now. Revisit later to add an explicit HTTP health
+endpoint and switch probes accordingly.
