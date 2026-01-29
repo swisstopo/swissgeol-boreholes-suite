@@ -44,6 +44,8 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 2
             failureThreshold: 30
+          resources:
+            {{- toYaml .Values.resources.ocr | nindent 12 }}
           env:
             - name: AWS_DEFAULT_REGION
               value: eu-central-1

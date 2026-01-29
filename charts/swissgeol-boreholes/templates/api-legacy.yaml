@@ -43,6 +43,8 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 2
             failureThreshold: 30
+          resources:
+            {{- toYaml .Values.resources.apiLegacy | nindent 12 }}
           env:
             - name: DB_HOST
               valueFrom:

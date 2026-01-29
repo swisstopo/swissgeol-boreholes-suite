@@ -46,6 +46,8 @@ spec:
             periodSeconds: 10
             timeoutSeconds: 2
             failureThreshold: 30
+          resources:
+            {{- toYaml .Values.resources.client | nindent 12 }}
           env:
             - name: TZ
               valueFrom:

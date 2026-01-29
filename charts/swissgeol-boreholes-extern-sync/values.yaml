@@ -17,6 +17,15 @@ app:
   # -- defaults to "0 0 * * *" which means every day at midnight
   schedule:
 
+# Resource requests and limits
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+
 configuration:
   # -- The default workgroup name to assign the borehole to if there is no matching workgroup in the target database
   targetDefaultWorkgroupName:
