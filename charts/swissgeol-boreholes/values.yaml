@@ -37,6 +37,8 @@ ocr:
   useAggressiveStrategy:
   # -- The AWS role ARN to be used for the OCR API.
   awsRoleArn:
+  # -- Whether to automount the service account token for the OCR API (needed for IRSA).
+  automountServiceAccountToken: true
 
 # OpenID Connect configuration
 auth:
@@ -79,7 +81,7 @@ database:
 replicaCount: 1
 
 # Pod-level security settings (optional)
-automountServiceAccountToken: true
+automountServiceAccountToken: false
 podSecurityContext: {}
 securityContext: {}
 
@@ -89,37 +91,47 @@ resources:
     requests:
       cpu: 250m
       memory: 512Mi
+      ephemeral-storage: 1Gi
     limits:
       cpu: 1000m
       memory: 1Gi
+      ephemeral-storage: 2Gi
   apiLegacy:
     requests:
       cpu: 100m
       memory: 256Mi
+      ephemeral-storage: 1Gi
     limits:
       cpu: 500m
       memory: 512Mi
+      ephemeral-storage: 2Gi
   client:
     requests:
       cpu: 50m
       memory: 128Mi
+      ephemeral-storage: 1Gi
     limits:
       cpu: 250m
       memory: 256Mi
+      ephemeral-storage: 2Gi
   dataextraction:
     requests:
       cpu: 250m
       memory: 512Mi
+      ephemeral-storage: 1Gi
     limits:
       cpu: 1000m
       memory: 1Gi
+      ephemeral-storage: 2Gi
   ocr:
     requests:
       cpu: 250m
       memory: 512Mi
+      ephemeral-storage: 1Gi
     limits:
       cpu: 1000m
       memory: 1Gi
+      ephemeral-storage: 2Gi
 
 # AWS S3 Bucket configuration
 s3:
