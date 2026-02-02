@@ -68,7 +68,6 @@ helm install swissgeol-boreholes-extern-sync swissgeol-boreholes/swissgeol-boreh
   --set configuration.targetDefaultUserSub="default_user" \
   --set db.source.host="source.example.com" \
   --set db.source.name="source_db" \
-  --set db.source.schema="source_schema" \
   --set db.source.username="source_user" \
   --set db.source.password="source_password" \
   --set db.target.host="target.example.com" \
