@@ -32,7 +32,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Release.Name }}-ocr-api
-          image: ghcr.io/swisstopo/swissgeol-ocr-api:{{ .Values.ocr.version | default "latest" }}
+          image: ghcr.io/swisstopo/swissgeol-ocr-api:{{ required "ocr.version is required" .Values.ocr.version }}
           imagePullPolicy: Always
           ports:
             - containerPort: 8000

@@ -29,7 +29,7 @@ spec:
       {{- end }}
       containers:
       - name: {{ .Release.Name }}-api
-        image: ghcr.io/swisstopo/swissgeol-boreholes-suite-api:{{ .Values.app.version | default "latest" }}
+        image: ghcr.io/swisstopo/swissgeol-boreholes-suite-api:{{ required "app.version is required" .Values.app.version }}
         imagePullPolicy: Always
         ports:
         - containerPort: 8080

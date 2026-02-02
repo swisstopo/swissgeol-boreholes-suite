@@ -38,10 +38,11 @@ helm install swissgeol-boreholes-view-sync swissgeol-boreholes/swissgeol-borehol
 
 ## Configuring the Chart
 
-The following table lists the configurable parameters of the swissgeol-boreholes chart and their default values.
+The following table lists the configurable parameters of the swissgeol-boreholes chart and their default/required values.
 
-| Parameter            | Description       | Type   | Default |
-| -------------------- | ----------------- | ------ | ------- |
+| Parameter            | Description       | Type   | Default / Required |
+| -------------------- | ----------------- | ------ | ------------------ |
+| `app.version`        | Docker image tag  | config | **required**       |
 | `db.source.host`     | Database host     | config | `""`    |
 | `db.source.port`     | Database port     | config | `5432`  |
 | `db.source.name`     | Database name     | config | `""`    |
@@ -54,7 +55,7 @@ The following table lists the configurable parameters of the swissgeol-boreholes
 | `db.target.username` | Database username | secret | `""`    |
 | `db.target.password` | Database password | secret | `""`    |
 
-Specify each parameter using the `--set key=value` argument to `helm install`. For example,
+Specify each parameter using the `--set key=value` argument to `helm install`. For example, for a dev install:
 
 ```bash
 helm install swissgeol-boreholes-view-sync swissgeol-boreholes/swissgeol-boreholes-view-sync \

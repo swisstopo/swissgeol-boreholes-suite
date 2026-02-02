@@ -38,14 +38,14 @@ helm install swissgeol-boreholes swissgeol-boreholes/swissgeol-boreholes
 
 ## Configuring the Chart
 
-The following table lists the configurable parameters of the swissgeol-boreholes chart and their default values.
+The following table lists the configurable parameters of the swissgeol-boreholes chart and their default/required values.
 
-| Parameter                    | Description                    | Default                  |
+| Parameter                    | Description                    | Default / Required       |
 | ---------------------------- | ------------------------------ | ------------------------ |
 | `replicaCount`               | Number of replicas             | `1`                      |
 | `app.domain`                 | Base domain name               | `boreholes.swissgeol.ch` |
-| `app.version`                | Docker image tag               | `latest`                 |
-| `dataextraction.version`     | Data extraction API version    | `latest`                 |
+| `app.version`                | Docker image tag               | **required**             |
+| `dataextraction.version`     | Data extraction API version    | **required**             |
 | `auth.authority`             | Issuer URL                     | `""`                     |
 | `auth.audience`              | Client id                      | `""`                     |
 | `auth.anonymousModeEnabled`  | Enable anonymous mode          | `false`                  |
@@ -59,13 +59,13 @@ The following table lists the configurable parameters of the swissgeol-boreholes
 | `s3.logFilesBucket`          | S3 log files bucket name       | `""`                     |
 | `s3.accessKey`               | S3 access key                  | `""`                     |
 | `s3.secretKey`               | S3 secret key                  | `""`                     |
-| `ocr.version`                | OCR API version                | `latest`                 |
+| `ocr.version`                | OCR API version                | **required**             |
 | `ocr.confidenceThreshold`    | OCR confidence score threshold | `0.45`                   |
 | `ocr.useAggressiveStrategy`  | OCR processing strategy        | `true`                   |
 | `ocr.awsRoleArn`             | OCR API AWS role ARN           | `""`                     |
 | `googleAnalytics.trackingId` | Google Analytics Tracking ID   | `""`                     |
 
-Specify each parameter using the `--set key=value` argument to `helm install`. For example,
+Specify each parameter using the `--set key=value` argument to `helm install`. For example, for a dev install:
 
 ```bash
 helm install swissgeol-boreholes swissgeol-boreholes/swissgeol-boreholes \

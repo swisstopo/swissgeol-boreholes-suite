@@ -29,7 +29,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Release.Name }}-client
-          image: ghcr.io/swisstopo/swissgeol-boreholes-suite-client:{{ .Values.app.version | default "latest" }}
+          image: ghcr.io/swisstopo/swissgeol-boreholes-suite-client:{{ required "app.version is required" .Values.app.version }}
           imagePullPolicy: Always
           ports:
             - containerPort: 3000
@@ -79,4 +79,3 @@ spec:
     - protocol: TCP
       port: 80
       targetPort: 3000
-

@@ -6,8 +6,8 @@
 #
 app:
   # -- The tag name of the Docker image tag to be deployed
-  # -- e.g. v2.0.506, latest or edge
-  # -- defaults to "latest"
+  # -- e.g. v2.0.506
+  # -- required
   version:
   # -- The timezone which will be used in the application
   # -- defaults to "Europe/Zurich"

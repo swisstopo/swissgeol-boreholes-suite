@@ -12,20 +12,20 @@ app:
   # -- defaults to "Europe/Zurich"
   timezone:
   # -- The tag name of the Docker image tag to be deployed
-  # -- e.g. v2.0.506, latest or edge
-  # -- defaults to "latest"
+  # -- e.g. v2.0.506
+  # -- required
   version:
 
 dataextraction:
   # -- The tag name of the Docker image tag to be deployed
-  # -- e.g. v2.0.506, latest or edge
-  # -- defaults to "latest"
+  # -- e.g. v2.0.506
+  # -- required
   version:
 
 ocr:
   # -- The tag name of the Docker image tag to be deployed
-  # -- e.g. v2.0.506, latest or edge
-  # -- defaults to "latest"
+  # -- e.g. v2.0.506
+  # -- required
   version:
   # -- The OCR confidence score threshold to be used.
   # -- defaults to 0.45

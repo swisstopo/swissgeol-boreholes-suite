@@ -30,7 +30,7 @@ spec:
           {{- end }}
           containers:
             - name: {{ .Release.Name }}
-              image: ghcr.io/swisstopo/swissgeol-boreholes-suite-extern-sync:{{ .Values.app.version | default "latest" }}
+              image: ghcr.io/swisstopo/swissgeol-boreholes-suite-extern-sync:{{ required "app.version is required" .Values.app.version }}
               imagePullPolicy: Always
               resources:
                 {{- toYaml .Values.resources | nindent 16 }}

@@ -29,7 +29,7 @@ spec:
       {{- end }}
       containers:
         - name: {{ .Release.Name }}-dataextraction-api
-          image: ghcr.io/swisstopo/swissgeol-boreholes-dataextraction-api:{{ .Values.dataextraction.version | default "latest" }}
+          image: ghcr.io/swisstopo/swissgeol-boreholes-dataextraction-api:{{ required "dataextraction.version is required" .Values.dataextraction.version }}
           imagePullPolicy: Always
           ports:
             - containerPort: 8000
