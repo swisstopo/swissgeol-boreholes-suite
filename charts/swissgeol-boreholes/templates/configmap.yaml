@@ -19,9 +19,9 @@ data:
   authGroupClaimType: {{ .Values.auth.groupClaimType | default "cognito:groups" | quote }}
   authAuthorizedGroupName: {{ .Values.auth.authorizedGroupName | default "boreholes.swissgeol" | quote }}
   authAnonymousModeEnabled: {{ .Values.auth.anonymousModeEnabled | default "false" | quote }}
-  legacyApiAddress: "http://{{ .Release.Name }}-api-legacy.{{ .Release.Namespace }}.svc.cluster.local"
-  dataExtractionApiAddress: "http://{{ .Release.Name }}-dataextraction-api.{{ .Release.Namespace }}.svc.cluster.local"
-  ocrApiAddress: "http://{{ .Release.Name }}-ocr-api.{{ .Release.Namespace }}.svc.cluster.local"
+  legacyApiAddress: "http://{{ .Release.Name }}-api-legacy.{{ .Release.Namespace }}.svc.cluster.local" # NOSONAR - ClusterIP-only service DNS (svc.cluster.local) for in-cluster calls; not exposed externally; HTTP is intentional for pod-to-pod traffic
+  dataExtractionApiAddress: "http://{{ .Release.Name }}-dataextraction-api.{{ .Release.Namespace }}.svc.cluster.local" # NOSONAR - ClusterIP-only service DNS (svc.cluster.local) for in-cluster calls; not exposed externally; HTTP is intentional for pod-to-pod traffic
+  ocrApiAddress: "http://{{ .Release.Name }}-ocr-api.{{ .Release.Namespace }}.svc.cluster.local" # NOSONAR - ClusterIP-only service DNS (svc.cluster.local) for in-cluster calls; not exposed externally; HTTP is intentional for pod-to-pod traffic
   ocrConfidenceThreshold: {{ .Values.ocr.confidenceThreshold | default "0.45" | quote }}
   ocrUseAggressiveStrategy: {{ .Values.ocr.useAggressiveStrategy | default "true" | quote }}
   ocrSkipProcessing: {{ .Values.ocr.skipProcessing | default "false" | quote }}
