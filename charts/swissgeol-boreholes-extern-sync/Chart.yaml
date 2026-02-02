@@ -7,7 +7,7 @@ icon: https://raw.githubusercontent.com/swisstopo/swissgeol-boreholes-suite/main
 appVersion: "v2.1.1427"
 home: https://www.swissgeol.ch/en
 maintainers:
-  - name: geowerkstatt GmbH
+  - name: geowerkstatt
     email: support@geowerkstatt.ch
     url: https://www.geowerkstatt.ch/
 keywords:
