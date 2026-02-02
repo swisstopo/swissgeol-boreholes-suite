@@ -10,7 +10,7 @@ metadata:
     keel.sh/trigger: {{ .Values.keel.trigger | default "poll" }}
   {{- end }}
 spec:
-  replicas: {{ .Values.replicaCount}}
+  replicas: {{ .Values.replicaCount }}
   selector:
     matchLabels:
       app: {{ .Release.Name }}-client
