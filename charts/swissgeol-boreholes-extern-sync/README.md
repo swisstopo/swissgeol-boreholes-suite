@@ -102,4 +102,4 @@ helm install --dry-run swissgeol-boreholes-extern-sync charts/swissgeol-borehole
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
+This project is licensed under the MIT License - see the [LICENSE](../../LICENSE) file for details.
