@@ -10,10 +10,10 @@
           "minLength": 1
         },
         "domain": {
-          "type": "string"
+          "type": ["string", "null"]
         },
         "timezone": {
-          "type": "string"
+          "type": ["string", "null"]
         }
       },
       "required": ["version"]
