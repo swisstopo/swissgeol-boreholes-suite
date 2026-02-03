@@ -4,11 +4,11 @@ metadata:
   name: {{ .Release.Name }}-config
   namespace: {{ .Release.Namespace }}
 data:
-  sourceDatabaseHost: {{ .Values.db.source.host }}
+  sourceDatabaseHost: {{ .Values.db.source.host | quote }}
   sourceDatabasePort: {{ .Values.db.source.port | default "5432" | quote }}
-  sourceDatabaseName: {{ .Values.db.source.name }}
-  sourceDatabaseSchema: {{ .Values.db.source.schema }}
-  targetDatabaseHost: {{ .Values.db.target.host }}
+  sourceDatabaseName: {{ .Values.db.source.name | quote }}
+  sourceDatabaseSchema: {{ .Values.db.source.schema | quote }}
+  targetDatabaseHost: {{ .Values.db.target.host | quote }}
   targetDatabasePort: {{ .Values.db.target.port | default "5432" | quote }}
-  targetDatabaseName: {{ .Values.db.target.name }}
+  targetDatabaseName: {{ .Values.db.target.name | quote }}
   timezone: {{ .Values.app.timezone | default "Europe/Zurich" | quote }}
