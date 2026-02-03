@@ -4,6 +4,6 @@ metadata:
   name: {{ .Release.Name }}-config
   namespace: {{ .Release.Namespace }}
 data:
-  targetDefaultWorkgroupName: {{ .Values.configuration.targetDefaultWorkgroupName }}
-  targetDefaultUserSub: {{ .Values.configuration.targetDefaultUserSub }}
+  targetDefaultWorkgroupName: {{ .Values.configuration.targetDefaultWorkgroupName | quote }}
+  targetDefaultUserSub: {{ .Values.configuration.targetDefaultUserSub | quote }}
   timezone: {{ .Values.app.timezone | default "Europe/Zurich" | quote }}
