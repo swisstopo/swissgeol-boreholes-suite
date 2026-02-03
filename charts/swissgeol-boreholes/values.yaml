@@ -151,7 +151,7 @@ s3:
   secretKey:
   # -- Set to 0 to use a insecure connection
   # -- defaults to 1 (secure connection)
-  secure:
+  secure: "1"
 
 # Google Analytics configuration
 googleAnalytics:

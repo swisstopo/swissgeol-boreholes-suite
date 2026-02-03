@@ -12,7 +12,7 @@ data:
   s3Bucket: {{ .Values.s3.bucket | quote }}
   s3PhotosBucket: {{ .Values.s3.photosBucket | quote }}
   s3LogFilesBucket: {{ .Values.s3.logFilesBucket | quote }}
-  s3Secure: {{ .Values.s3.secure | default "1" | quote }}
+  s3Secure: {{ .Values.s3.secure | quote }}
   authAuthority: {{ .Values.auth.authority | quote }}
   authAudience: {{ .Values.auth.audience | quote }}
   authScopes: {{ .Values.auth.scopes | default "openid profile email" | quote }}
