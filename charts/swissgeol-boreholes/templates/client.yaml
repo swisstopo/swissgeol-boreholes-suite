@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-client
   namespace: {{ .Release.Namespace }}
-  {{- if .Values.keel.enabled | default true }}
+  {{- if ne .Values.keel.enabled false }}
   annotations:
     keel.sh/policy: {{ .Values.keel.policy | default "force" }}
     keel.sh/match-tag: {{ .Values.keel.matchTag | default "'true'" }}
