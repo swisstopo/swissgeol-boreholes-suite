@@ -5,13 +5,13 @@ metadata:
   namespace: {{ .Release.Namespace }}
 data:
   timezone: {{ .Values.app.timezone | default "Europe/Zurich" | quote }}
-  databaseHost: {{ .Values.database.host }}
-  databaseName: {{ .Values.database.name }}
+  databaseHost: {{ .Values.database.host | quote }}
+  databaseName: {{ .Values.database.name | quote }}
   databasePort: {{ .Values.database.port | default "5432" | quote }}
-  s3Endpoint: {{ .Values.s3.endpoint }}
-  s3Bucket: {{ .Values.s3.bucket }}
-  s3PhotosBucket: {{ .Values.s3.photosBucket }}
-  s3LogFilesBucket: {{ .Values.s3.logFilesBucket }}
+  s3Endpoint: {{ .Values.s3.endpoint | quote }}
+  s3Bucket: {{ .Values.s3.bucket | quote }}
+  s3PhotosBucket: {{ .Values.s3.photosBucket | quote }}
+  s3LogFilesBucket: {{ .Values.s3.logFilesBucket | quote }}
   s3Secure: {{ .Values.s3.secure | default "1" | quote }}
   authAuthority: {{ .Values.auth.authority | quote }}
   authAudience: {{ .Values.auth.audience | quote }}
