@@ -112,7 +112,7 @@ jobs:
     name: Run extern-sync
 
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v6
 
       - name: Setup environment
         working-directory: src/extern-sync
