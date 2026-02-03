@@ -13,9 +13,9 @@ jobs:
   changes:
     runs-on: ubuntu-latest
     outputs:
-      swissgeol-boreholes: ${{ steps.filter.outputs.swissgeol-boreholes }}
-      swissgeol-boreholes-extern-sync: ${{ steps.filter.outputs.swissgeol-boreholes-extern-sync }}
-      swissgeol-boreholes-view-sync: ${{ steps.filter.outputs.swissgeol-boreholes-view-sync }}
+      swissgeol-boreholes: ${{ steps.filter.outputs['swissgeol-boreholes'] }}
+      swissgeol-boreholes-extern-sync: ${{ steps.filter.outputs['swissgeol-boreholes-extern-sync'] }}
+      swissgeol-boreholes-view-sync: ${{ steps.filter.outputs['swissgeol-boreholes-view-sync'] }}
     steps:
       - uses: actions/checkout@34e114876b0b11c390a56381ad16ebd13914f8d5 # v4.3.1
         with:
@@ -35,7 +35,7 @@ jobs:
 
   release-swissgeol-boreholes:
     needs: changes
-    if: needs.changes.outputs.swissgeol-boreholes == 'true'
+    if: needs.changes.outputs['swissgeol-boreholes'] == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -71,7 +71,7 @@ jobs:
 
   release-swissgeol-boreholes-extern-sync:
     needs: changes
-    if: needs.changes.outputs.swissgeol-boreholes-extern-sync == 'true'
+    if: needs.changes.outputs['swissgeol-boreholes-extern-sync'] == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -107,7 +107,7 @@ jobs:
 
   release-swissgeol-boreholes-view-sync:
     needs: changes
-    if: needs.changes.outputs.swissgeol-boreholes-view-sync == 'true'
+    if: needs.changes.outputs['swissgeol-boreholes-view-sync'] == 'true'
     runs-on: ubuntu-latest
     permissions:
       contents: write
