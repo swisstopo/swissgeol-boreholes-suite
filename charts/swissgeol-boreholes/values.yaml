@@ -149,7 +149,7 @@ s3:
   accessKey:
   # -- The secret key to connect to the S3 bucket
   secretKey:
-  # -- Set to 0 to use a insecure connection
+  # -- Set to 0 to use an insecure connection
   # -- defaults to 1 (secure connection)
   secure: "1"
 
