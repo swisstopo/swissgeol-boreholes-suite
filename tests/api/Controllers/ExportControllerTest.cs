@@ -99,7 +99,7 @@ public class ExportControllerTest
         Assert.IsTrue(fileContentResult.FileContents.Length > 0);
     }
 
-    // Export 3 seeded boreholes from richBoreholesRange (Ids 0 - 100), to increase likelyhood, that each attribute is exported at least once.
+    // Export 3 seeded boreholes from richBoreholesRange (IDs 1_000_000 - 1_000_100), to increase likelyhood, that each attribute is exported at least once.
     [TestMethod]
     [DataRow(1_000_057)]
     [DataRow(1_000_058)]
@@ -108,7 +108,7 @@ public class ExportControllerTest
     {
         var newBorehole = await context.BoreholesWithIncludes.AsNoTracking().SingleAsync(b => b.Id == boreholeId);
 
-        // Make sure all CodelistId collections are populated so they can be compared, to the export
+        // Make sure all CodelistId collections are populated so they can be compared, to the export.
         foreach (var strat in newBorehole.Stratigraphies ?? [])
         {
             foreach (var lithology in strat.Lithologies)
