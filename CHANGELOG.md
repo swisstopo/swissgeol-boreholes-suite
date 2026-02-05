@@ -2,8 +2,14 @@
 
 ## [Unreleased]
 
+### Fixed
+- Fixed French translation of codelist entry `casing plugging`.
+
 ### Added
 - Added new GitHub Action workflow to add a release-candidate Docker image tag to a specific version.
+
+### Fixed
+- Fix repeated Basic Auth password prompts.
 
 ## v2.1.1431 - 2026-01-29
 
