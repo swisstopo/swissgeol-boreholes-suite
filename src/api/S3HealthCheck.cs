@@ -23,9 +23,17 @@ public class S3HealthCheck : IHealthCheck
     /// <inheritdoc />
     public async Task<HealthCheckResult> CheckHealthAsync(HealthCheckContext context, CancellationToken cancellationToken = default)
     {
-        foreach (var key in new[] { "S3:BUCKET_NAME", "S3:PHOTOS_BUCKET_NAME", "S3:LOGFILES_BUCKET_NAME" })
+        var bucketKeys = new[] { "S3:BUCKET_NAME", "S3:PHOTOS_BUCKET_NAME", "S3:LOGFILES_BUCKET_NAME" };
+
+        if (bucketKeys.All(key => string.IsNullOrEmpty(configuration[key])))
+        {
+            return HealthCheckResult.Healthy("S3 not configured, skipping check.");
+        }
+
+        foreach (var key in bucketKeys)
         {
             var bucketName = configuration[key];
+
             try
             {
                 if (!await AmazonS3Util.DoesS3BucketExistV2Async(s3Client, bucketName).ConfigureAwait(false))
