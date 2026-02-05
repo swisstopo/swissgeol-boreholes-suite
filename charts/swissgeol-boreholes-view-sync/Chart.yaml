@@ -2,9 +2,9 @@ apiVersion: v2
 name: swissgeol-boreholes-view-sync
 description: Synchronizes freely available drilling data from a source database to a target database.
 type: application
-version: 0.3.0
+version: 0.3.1
 icon: https://raw.githubusercontent.com/swisstopo/swissgeol-boreholes-suite/main/src/client/public/favicon.ico
-appVersion: "v2.1.1427"
+appVersion: "v2.1.1431"
 home: https://www.swissgeol.ch/en
 maintainers:
   - name: geowerkstatt
