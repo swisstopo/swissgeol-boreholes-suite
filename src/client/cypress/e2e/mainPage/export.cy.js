@@ -285,7 +285,7 @@ describe("Test for exporting boreholes.", () => {
     readDownloadedFile(`${boreholeName}.zip`);
   });
 
-  it("exports a single borehole from rich boareholes range and asserts stratigraphy", () => {
+  it("exports a single borehole from rich boreholes range and asserts stratigraphy", () => {
     const id = 1000055;
     goToRouteAndAcceptTerms(`/${id}`);
     const fileName = "Mohammed_Rice.json";
