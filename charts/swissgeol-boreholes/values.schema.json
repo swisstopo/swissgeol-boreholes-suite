@@ -1,0 +1,60 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "properties": {
+    "app": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "domain": {
+          "type": ["string", "null"]
+        },
+        "timezone": {
+          "type": ["string", "null"]
+        }
+      },
+      "required": ["version"]
+    },
+    "dataextraction": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": ["version"]
+    },
+    "ocr": {
+      "type": "object",
+      "properties": {
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "skipProcessing": {
+          "type": "boolean"
+        },
+        "automountServiceAccountToken": {
+          "type": "boolean"
+        }
+      },
+      "required": ["version"]
+    },
+    "s3": {
+      "type": "object",
+      "properties": {
+        "secure": {
+          "anyOf": [
+            { "type": "string", "enum": ["0", "1"] },
+            { "type": "integer", "enum": [0, 1] }
+          ],
+          "default": "1"
+        }
+      }
+    }
+  }
+}

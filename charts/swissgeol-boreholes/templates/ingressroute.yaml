@@ -1,0 +1,19 @@
+apiVersion: traefik.io/v1alpha1
+kind: IngressRoute
+metadata:
+  name: {{ .Release.Name }}
+  namespace: {{ .Release.Namespace }}
+spec:
+  entryPoints:
+    - web
+  routes:
+    - kind: Rule
+      match: "Host(`{{ .Values.app.domain | default "boreholes.swissgeol.ch" }}`) && (PathPrefix(`/api`) || PathPrefix(`/dataextraction`) || PathPrefix(`/ocr`) || PathPrefix(`/health`))"
+      services:
+        - name: {{ .Release.Name }}-api
+          port: 80
+    - kind: Rule
+      match: "Host(`{{ .Values.app.domain | default "boreholes.swissgeol.ch" }}`)"
+      services:
+        - name: {{ .Release.Name }}-client
+          port: 80

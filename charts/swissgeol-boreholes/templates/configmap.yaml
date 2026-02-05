@@ -1,0 +1,28 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ .Release.Name }}-config
+  namespace: {{ .Release.Namespace }}
+data:
+  timezone: {{ .Values.app.timezone | default "Europe/Zurich" | quote }}
+  databaseHost: {{ .Values.database.host | quote }}
+  databaseName: {{ .Values.database.name | quote }}
+  databasePort: {{ .Values.database.port | default "5432" | quote }}
+  s3Endpoint: {{ .Values.s3.endpoint | quote }}
+  s3Bucket: {{ .Values.s3.bucket | quote }}
+  s3PhotosBucket: {{ .Values.s3.photosBucket | quote }}
+  s3LogFilesBucket: {{ .Values.s3.logFilesBucket | quote }}
+  s3Secure: {{ .Values.s3.secure | quote }}
+  authAuthority: {{ .Values.auth.authority | quote }}
+  authAudience: {{ .Values.auth.audience | quote }}
+  authScopes: {{ .Values.auth.scopes | default "openid profile email" | quote }}
+  authGroupClaimType: {{ .Values.auth.groupClaimType | default "cognito:groups" | quote }}
+  authAuthorizedGroupName: {{ .Values.auth.authorizedGroupName | default "boreholes.swissgeol" | quote }}
+  authAnonymousModeEnabled: {{ .Values.auth.anonymousModeEnabled | default "false" | quote }}
+  legacyApiAddress: "http://{{ .Release.Name }}-api-legacy.{{ .Release.Namespace }}.svc.cluster.local/" # NOSONAR - ClusterIP-only service DNS (svc.cluster.local) for in-cluster calls; not exposed externally; HTTP is intentional for pod-to-pod traffic
+  dataExtractionApiAddress: "http://{{ .Release.Name }}-dataextraction-api.{{ .Release.Namespace }}.svc.cluster.local/" # NOSONAR - ClusterIP-only service DNS (svc.cluster.local) for in-cluster calls; not exposed externally; HTTP is intentional for pod-to-pod traffic
+  ocrApiAddress: "http://{{ .Release.Name }}-ocr-api.{{ .Release.Namespace }}.svc.cluster.local/" # NOSONAR - ClusterIP-only service DNS (svc.cluster.local) for in-cluster calls; not exposed externally; HTTP is intentional for pod-to-pod traffic
+  ocrConfidenceThreshold: {{ .Values.ocr.confidenceThreshold | default "0.45" | quote }}
+  ocrUseAggressiveStrategy: {{ .Values.ocr.useAggressiveStrategy | default "true" | quote }}
+  ocrSkipProcessing: {{ .Values.ocr.skipProcessing | default "false" | quote }}
+  googleAnalyticsTrackingId: {{ .Values.googleAnalytics.trackingId | default "" | quote }}
