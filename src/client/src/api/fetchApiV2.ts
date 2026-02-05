@@ -32,9 +32,11 @@ export async function fetchApiV2Base(
   const baseUrl = "/api/v2/";
   // @ts-expect-error redux store will not be typed, as it's going to be removed
   const authentication = store.getState().core_user.authentication;
-  let headers: Record<string, string> = {
-    Authorization: getAuthorizationHeader(authentication),
-  };
+  let headers: Record<string, string> = {};
+  // Only add Authorization header if user is authenticated (not in anonymous mode)
+  if (authentication !== null) {
+    headers.Authorization = getAuthorizationHeader(authentication);
+  }
   if (contentType) headers = { ...headers, "Content-Type": contentType };
   return await fetch(baseUrl + url, {
     method: method,
