@@ -6,48 +6,18 @@ on:
       - main
     paths:
       - "charts/**"
-      - ".github/workflows/charts-release.yml"
   workflow_dispatch:
 
 jobs:
-  changes:
+  release:
+    permissions:
+      contents: write
     runs-on: ubuntu-latest
-    outputs:
-      swissgeol-boreholes: ${{ steps.filter.outputs['swissgeol-boreholes'] }}
-      swissgeol-boreholes-extern-sync: ${{ steps.filter.outputs['swissgeol-boreholes-extern-sync'] }}
-      swissgeol-boreholes-view-sync: ${{ steps.filter.outputs['swissgeol-boreholes-view-sync'] }}
     steps:
       - uses: actions/checkout@v6
         with:
           fetch-depth: 0
 
-      - name: Detect chart changes
-        id: filter
-        uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
-        with:
-          filters: |
-            swissgeol-boreholes:
-              - 'charts/swissgeol-boreholes/**'
-            swissgeol-boreholes-extern-sync:
-              - 'charts/swissgeol-boreholes-extern-sync/**'
-            swissgeol-boreholes-view-sync:
-              - 'charts/swissgeol-boreholes-view-sync/**'
-
-  release-swissgeol-boreholes:
-    needs: changes
-    if: needs.changes.outputs['swissgeol-boreholes'] == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    concurrency:
-      group: chart-release
-      cancel-in-progress: false
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
       - name: Configure Git
         run: |
           git config user.name "$GITHUB_ACTOR"
@@ -56,87 +26,9 @@ jobs:
       - name: Install Helm
         uses: azure/setup-helm@b7246b12e77f7134dc2d460a3d5bad15bbe29390 # v4.1.0
 
-      - name: Prepare chart for release
-        run: |
-          mkdir -p charts-tmp
-          cp -R charts/swissgeol-boreholes charts-tmp/
-
       - name: Run chart-releaser
         uses: helm/chart-releaser-action@a917fd15b20e8b64b94d9158ad54cd6345335584 # v1.6.0
         with:
-          charts_dir: charts-tmp
-          charts_repo_url: https://swisstopo.github.io/swissgeol-boreholes-suite/
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-
-  release-swissgeol-boreholes-extern-sync:
-    needs: changes
-    if: needs.changes.outputs['swissgeol-boreholes-extern-sync'] == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    concurrency:
-      group: chart-release
-      cancel-in-progress: false
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Configure Git
-        run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-
-      - name: Install Helm
-        uses: azure/setup-helm@b7246b12e77f7134dc2d460a3d5bad15bbe29390 # v4.1.0
-
-      - name: Prepare chart for release
-        run: |
-          mkdir -p charts-tmp
-          cp -R charts/swissgeol-boreholes-extern-sync charts-tmp/
-
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@a917fd15b20e8b64b94d9158ad54cd6345335584 # v1.6.0
-        with:
-          charts_dir: charts-tmp
-          charts_repo_url: https://swisstopo.github.io/swissgeol-boreholes-suite/
-        env:
-          CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
-
-  release-swissgeol-boreholes-view-sync:
-    needs: changes
-    if: needs.changes.outputs['swissgeol-boreholes-view-sync'] == 'true'
-    runs-on: ubuntu-latest
-    permissions:
-      contents: write
-    concurrency:
-      group: chart-release
-      cancel-in-progress: false
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v6
-        with:
-          fetch-depth: 0
-
-      - name: Configure Git
-        run: |
-          git config user.name "$GITHUB_ACTOR"
-          git config user.email "$GITHUB_ACTOR@users.noreply.github.com"
-
-      - name: Install Helm
-        uses: azure/setup-helm@b7246b12e77f7134dc2d460a3d5bad15bbe29390 # v4.1.0
-
-      - name: Prepare chart for release
-        run: |
-          mkdir -p charts-tmp
-          cp -R charts/swissgeol-boreholes-view-sync charts-tmp/
-
-      - name: Run chart-releaser
-        uses: helm/chart-releaser-action@a917fd15b20e8b64b94d9158ad54cd6345335584 # v1.6.0
-        with:
-          charts_dir: charts-tmp
-          charts_repo_url: https://swisstopo.github.io/swissgeol-boreholes-suite/
+          skip_existing: true
         env:
           CR_TOKEN: "${{ secrets.GITHUB_TOKEN }}"
