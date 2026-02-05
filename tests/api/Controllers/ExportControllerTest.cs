@@ -99,7 +99,7 @@ public class ExportControllerTest
         Assert.IsTrue(fileContentResult.FileContents.Length > 0);
     }
 
-    // Export 3 seeded boreholes from richBoreholesRange (IDs 1_000_000 - 1_000_100), to increase likelyhood, that each attribute is exported at least once.
+    // Export 3 seeded boreholes from richBoreholesRange (IDs 1_000_000 - 1_000_100), to increase likelihood, that each attribute is exported at least once.
     [TestMethod]
     [DataRow(1_000_057)]
     [DataRow(1_000_058)]
