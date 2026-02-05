@@ -35,6 +35,9 @@ ocr:
   # -- text does not overlap with any pre-existing digital text.
   # -- defaults to "true"
   useAggressiveStrategy:
+  # -- Skip OCR processing entirely.
+  # -- defaults to "false"
+  skipProcessing:
   # -- The AWS role ARN to be used for the OCR API.
   awsRoleArn:
   # -- Whether to automount the service account token for the OCR API (needed for IRSA).
