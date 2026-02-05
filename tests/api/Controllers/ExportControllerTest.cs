@@ -577,15 +577,10 @@ public class ExportControllerTest
 
     private static IEnumerable<PropertyInfo> GetExportProperties(Type type)
     {
-        return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(p => p.GetCustomAttribute<Json.IncludeInExportAttribute>() != null);
+        return type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.GetCustomAttribute<Json.IncludeInExportAttribute>() != null);
     }
 
-    private static void AssertPropertyEqual(
-    PropertyInfo prop,
-    object? expectedValue,
-    object? actualValue,
-    ISet<object?> visited)
+    private static void AssertPropertyEqual(PropertyInfo prop, object? expectedValue, object? actualValue, ISet<object?> visited)
     {
         var propertyType = prop.PropertyType;
 
@@ -631,17 +626,10 @@ public class ExportControllerTest
         var expectedDate = (DateTime?)expectedValue;
         var actualDate = (DateTime?)actualValue;
 
-        Assert.AreEqual(
-            expectedDate?.ToUniversalTime().ToString(),
-            actualDate?.ToUniversalTime().ToString(),
-            $"Date Property {prop.Name} differs between original and exported entity.");
+        Assert.AreEqual(expectedDate?.ToUniversalTime().ToString(), actualDate?.ToUniversalTime().ToString(), $"Date Property {prop.Name} differs between original and exported entity.");
     }
 
-    private static void AssertCollectionEqual(
-    PropertyInfo prop,
-    object? expectedValue,
-    object? actualValue,
-    ISet<object?> visited)
+    private static void AssertCollectionEqual(PropertyInfo prop, object? expectedValue, object? actualValue, ISet<object?> visited)
     {
         var expectedEnumerable = ((System.Collections.IEnumerable?)expectedValue)?.Cast<object?>().ToList();
         var actualEnumerable = ((System.Collections.IEnumerable?)actualValue)?.Cast<object?>().ToList();
@@ -656,10 +644,7 @@ public class ExportControllerTest
 
         Assert.IsNotNull(expectedEnumerable, $"Expected collection for property {prop.Name} is null.");
         Assert.IsNotNull(actualEnumerable, $"Actual collection for property {prop.Name} is null.");
-        Assert.AreEqual(
-            expectedEnumerable!.Count,
-            actualEnumerable!.Count,
-            $"Collection size for property {prop.Name} differs between original and exported entity.");
+        Assert.AreEqual(expectedEnumerable!.Count, actualEnumerable!.Count, $"Collection size for property {prop.Name} differs between original and exported entity.");
 
         for (var i = 0; i < expectedEnumerable.Count; i++)
         {
