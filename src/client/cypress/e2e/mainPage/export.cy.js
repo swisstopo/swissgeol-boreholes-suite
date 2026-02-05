@@ -317,7 +317,7 @@ describe("Test for exporting boreholes.", () => {
 
       //First LithologicalDescription
       expect(json[0].Stratigraphies[0].LithologicalDescriptions[0]).to.have.property("Description");
-      expect(json[0].Stratigraphies[0].FaciesDescriptions[0]).to.have.property("ToDepth");
+      expect(json[0].Stratigraphies[0].LithologicalDescriptions[0]).to.have.property("ToDepth");
 
       //First FaciesDescription
       expect(json[0].Stratigraphies[0].FaciesDescriptions[0]).to.have.property("Description");
