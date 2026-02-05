@@ -106,7 +106,7 @@ public class ExportControllerTest
     [DataRow(1_000_059)]
     public async Task ExportJson(int boreholeId)
     {
-        var newBorehole = context.BoreholesWithIncludes.AsNoTracking().Single(b => b.Id == boreholeId);
+        var newBorehole = await context.BoreholesWithIncludes.AsNoTracking().SingleAsync(b => b.Id == boreholeId);
 
         // Make sure all CodelistId collections are populated so they can be compared, to the export
         foreach (var strat in newBorehole.Stratigraphies ?? [])
@@ -140,7 +140,6 @@ public class ExportControllerTest
 
         var exported = boreholes.Single();
         AssertEntitiesEqualByIncludeInExportAttribute(newBorehole, exported, new HashSet<object?>());
-        context.Dispose();
     }
 
     [TestMethod]
@@ -565,69 +564,115 @@ public class ExportControllerTest
         Assert.AreEqual(type, actual!.GetType(), "Entity types do not match.");
 
         // Select all properties with the attribute [IncludeInExport].
-        var properties = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
-            .Where(p => p.GetCustomAttribute<Json.IncludeInExportAttribute>() != null);
+        var properties = GetExportProperties(type);
 
         foreach (var prop in properties)
         {
             var expectedValue = prop.GetValue(expected);
             var actualValue = prop.GetValue(actual);
 
-            // Dates: compare UTC strings.
-            if (prop.PropertyType == typeof(DateTime) || prop.PropertyType == typeof(DateTime?))
-            {
-                var expectedDate = (DateTime?)expectedValue;
-                var actualDate = (DateTime?)actualValue;
+            AssertPropertyEqual(prop, expectedValue, actualValue, visited);
+        }
+    }
 
-                Assert.AreEqual(
-                    expectedDate?.ToUniversalTime().ToString(),
-                    actualDate?.ToUniversalTime().ToString(),
-                    $"Date Property {prop.Name} differs between original and exported entity.");
+    private static IEnumerable<PropertyInfo> GetExportProperties(Type type)
+    {
+        return type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+            .Where(p => p.GetCustomAttribute<Json.IncludeInExportAttribute>() != null);
+    }
+
+    private static void AssertPropertyEqual(
+    PropertyInfo prop,
+    object? expectedValue,
+    object? actualValue,
+    ISet<object?> visited)
+    {
+        var propertyType = prop.PropertyType;
+
+        if (IsDateTime(propertyType))
+        {
+            AssertDateTimeEqual(prop, expectedValue, actualValue);
+            return;
+        }
+
+        if (IsCollectionType(propertyType))
+        {
+            AssertCollectionEqual(prop, expectedValue, actualValue, visited);
+            return;
+        }
+
+        if (!IsComplexType(propertyType))
+        {
+            Assert.AreEqual(expectedValue, actualValue, $"Property {prop.Name} differs between original and exported entity.");
+            return;
+        }
+
+        // Complex nested entity: compare recursively.
+        AssertEntitiesEqualByIncludeInExportAttribute(expectedValue, actualValue, visited);
+    }
+
+    private static bool IsDateTime(Type propertyType)
+    {
+        return propertyType == typeof(DateTime) || propertyType == typeof(DateTime?);
+    }
+
+    private static bool IsCollectionType(Type propertyType)
+    {
+        return typeof(System.Collections.IEnumerable).IsAssignableFrom(propertyType) && propertyType != typeof(string);
+    }
+
+    private static bool IsComplexType(Type propertyType)
+    {
+        return propertyType.IsClass && propertyType != typeof(string);
+    }
+
+    private static void AssertDateTimeEqual(PropertyInfo prop, object? expectedValue, object? actualValue)
+    {
+        var expectedDate = (DateTime?)expectedValue;
+        var actualDate = (DateTime?)actualValue;
+
+        Assert.AreEqual(
+            expectedDate?.ToUniversalTime().ToString(),
+            actualDate?.ToUniversalTime().ToString(),
+            $"Date Property {prop.Name} differs between original and exported entity.");
+    }
+
+    private static void AssertCollectionEqual(
+    PropertyInfo prop,
+    object? expectedValue,
+    object? actualValue,
+    ISet<object?> visited)
+    {
+        var expectedEnumerable = ((System.Collections.IEnumerable?)expectedValue)?.Cast<object?>().ToList();
+        var actualEnumerable = ((System.Collections.IEnumerable?)actualValue)?.Cast<object?>().ToList();
+
+        var expectedNullOrEmpty = expectedEnumerable == null || expectedEnumerable.Count == 0;
+        var actualNullOrEmpty = actualEnumerable == null || actualEnumerable.Count == 0;
+
+        if (expectedNullOrEmpty && actualNullOrEmpty)
+        {
+            return;
+        }
+
+        Assert.IsNotNull(expectedEnumerable, $"Expected collection for property {prop.Name} is null.");
+        Assert.IsNotNull(actualEnumerable, $"Actual collection for property {prop.Name} is null.");
+        Assert.AreEqual(
+            expectedEnumerable!.Count,
+            actualEnumerable!.Count,
+            $"Collection size for property {prop.Name} differs between original and exported entity.");
+
+        for (var i = 0; i < expectedEnumerable.Count; i++)
+        {
+            var expectedItem = expectedEnumerable[i];
+            var actualItem = actualEnumerable[i];
+
+            if (expectedItem == null && actualItem == null)
+            {
+                continue;
             }
 
-            // Collections: compare size first, then recursively compare each element in order.
-            else if (typeof(System.Collections.IEnumerable).IsAssignableFrom(prop.PropertyType) && prop.PropertyType != typeof(string))
-            {
-                var expectedEnumerable = ((System.Collections.IEnumerable?)expectedValue)?.Cast<object?>().ToList();
-                var actualEnumerable = ((System.Collections.IEnumerable?)actualValue)?.Cast<object?>().ToList();
-
-                var expectedEnumerableNullOrEmpty = expectedEnumerable == null || expectedEnumerable.Count == 0;
-                var actualEnumerableNullOrEmpty = actualEnumerable == null || actualEnumerable.Count == 0;
-
-                if (expectedEnumerableNullOrEmpty && actualEnumerableNullOrEmpty)
-                {
-                    continue;
-                }
-
-                Assert.IsNotNull(expectedEnumerable, $"Expected collection for property {prop.Name} is null.");
-                Assert.IsNotNull(actualEnumerable, $"Actual collection for property {prop.Name} is null.");
-                Assert.AreEqual(expectedEnumerable!.Count, actualEnumerable!.Count, $"Collection size for property {prop.Name} differs between original and exported entity.");
-
-                for (int i = 0; i < expectedEnumerable.Count; i++)
-                {
-                    var expectedItem = expectedEnumerable[i];
-                    var actualItem = actualEnumerable[i];
-
-                    if (expectedItem == null && actualItem == null)
-                    {
-                        continue;
-                    }
-
-                    // Recursively compare each collection element, so nested entities are checked.
-                    AssertEntitiesEqualByIncludeInExportAttribute(expectedItem, actualItem, visited);
-                }
-            }
-
-            // All other types: compare directly.
-            else if (!prop.PropertyType.IsClass || prop.PropertyType == typeof(string))
-            {
-                Assert.AreEqual(expectedValue, actualValue, $"Property {prop.Name} differs between original and exported entity.");
-            }
-            else
-            {
-                // Recursively compare nested entity.
-                AssertEntitiesEqualByIncludeInExportAttribute(expectedValue, actualValue, visited);
-            }
+            // Recursively compare each collection element, so nested entities are checked.
+            AssertEntitiesEqualByIncludeInExportAttribute(expectedItem, actualItem, visited);
         }
     }
 
