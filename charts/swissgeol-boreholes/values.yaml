@@ -1,0 +1,177 @@
+# Default values for the swissgeol-boreholes application.
+# This is a YAML-formatted file.
+
+#
+# General application configuration
+#
+app:
+  # -- The fully qualified domain name the application gets accessed by
+  # -- defaults to "boreholes.swissgeol.ch"
+  domain:
+  # -- The timezone which will be used in the application
+  # -- defaults to "Europe/Zurich"
+  timezone:
+  # -- The tag name of the Docker image tag to be deployed
+  # -- e.g. v2.0.506
+  # -- required
+  version:
+
+dataextraction:
+  # -- The tag name of the Docker image tag to be deployed
+  # -- e.g. v2.0.506
+  # -- required
+  version:
+
+ocr:
+  # -- The tag name of the Docker image tag to be deployed
+  # -- e.g. v2.0.506
+  # -- required
+  version:
+  # -- The OCR confidence score threshold to be used.
+  # -- defaults to 0.45
+  confidenceThreshold:
+  # -- Applies OCR more aggressively, also e.g. to images inside
+  # -- digitally-born PDF documents, as long as the newly detected
+  # -- text does not overlap with any pre-existing digital text.
+  # -- defaults to "true"
+  useAggressiveStrategy:
+  # -- Skip OCR processing entirely.
+  # -- defaults to "false"
+  skipProcessing: false
+  # -- The AWS role ARN to be used for the OCR API.
+  awsRoleArn:
+  # -- Whether to automount the service account token for the OCR API (needed for IRSA).
+  automountServiceAccountToken: true
+
+# OpenID Connect configuration
+auth:
+  # -- The issuer URL of the OpenID Connect provider
+  # -- e.g. https://cognito-idp.<region>.amazonaws.com/<user_pool_id>
+  authority:
+  # -- The client ID of the application
+  audience:
+  # -- The required scopes needed by the application
+  # -- defaults to "openid profile email"
+  scopes:
+  # -- The claim type to be used to get the user's groups
+  # -- defaults to "cognito:groups"
+  groupClaimType:
+  # -- The name of the group the user must be a member of
+  # -- defaults to "boreholes.swissgeol"
+  authorizedGroupName:
+  # -- Enables anonymous mode for the application.
+  # -- In this mode, the application does not require authentication.
+  # -- defaults to false
+  anonymousModeEnabled:
+
+# Database configuration
+database:
+  # -- The hostname of the database server
+  host:
+  # -- The port of the database server
+  # -- defaults to "5432"
+  port:
+  # -- The name of the database
+  name:
+  # -- The username to connect to the database
+  username:
+  # -- The password to connect to the database
+  password:
+
+#
+# Desired number of replicas for the application
+#
+replicaCount: 1
+
+# Pod-level security settings (optional)
+automountServiceAccountToken: false
+podSecurityContext: {}
+securityContext: {}
+
+# Resource requests and limits per component
+resources:
+  api:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+      ephemeral-storage: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+      ephemeral-storage: 2Gi
+  apiLegacy:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 1Gi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+      ephemeral-storage: 2Gi
+  client:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+      ephemeral-storage: 1Gi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+      ephemeral-storage: 2Gi
+  dataextraction:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+      ephemeral-storage: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+      ephemeral-storage: 2Gi
+  ocr:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+      ephemeral-storage: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+      ephemeral-storage: 2Gi
+
+# AWS S3 Bucket configuration
+s3:
+  # -- The endpoint of the S3 bucket
+  # -- If a region is used it must be part of the endpoint
+  # -- e.g. https://s3.<region>.amazonaws.com
+  endpoint:
+  # -- The name of the S3 bucket
+  bucket:
+  # -- The name of the S3 bucket for the photos
+  photosBucket:
+  # -- The name of the S3 bucket for the log files
+  logFilesBucket:
+  # -- The access key to connect to the S3 bucket
+  accessKey:
+  # -- The secret key to connect to the S3 bucket
+  secretKey:
+  # -- Set to 0 to use an insecure connection
+  # -- defaults to 1 (secure connection)
+  secure: "1"
+
+# Google Analytics configuration
+googleAnalytics:
+  # -- The tracking ID of the Google Analytics account
+  trackingId:
+
+# Keel deployment automation configuration
+keel:
+  # -- Enables Keel deployment automation for the deployment
+  # -- defaults to true
+  enabled:
+  # -- The policy for Keel to use for updates
+  # -- defaults to "force"
+  policy:
+  # -- Whether to match tags for updates
+  # -- defaults to "'true'"
+  matchTag:
+  # -- The trigger type for Keel
+  # -- defaults to "poll"
+  trigger:

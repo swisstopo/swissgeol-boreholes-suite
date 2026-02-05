@@ -1,0 +1,34 @@
+name: Chart Lint
+
+on:
+  pull_request:
+    paths:
+      - "charts/**"
+      - "ct.yaml"
+      - ".github/workflows/chart-lint.yml"
+  push:
+    branches:
+      - main
+    paths:
+      - "charts/**"
+      - "ct.yaml"
+      - ".github/workflows/chart-lint.yml"
+  workflow_dispatch:
+
+jobs:
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Install Helm
+        uses: azure/setup-helm@b7246b12e77f7134dc2d460a3d5bad15bbe29390 # v4.1.0
+
+      - name: Set up chart-testing
+        uses: helm/chart-testing-action@6ec842c01de15ebb84c8627d2744a0c2f2755c9f # v2.8.0
+
+      - name: Lint charts
+        run: ct lint --config ct.yaml --helm-lint-extra-args "--set app.version=latest --set dataextraction.version=latest --set ocr.version=latest"

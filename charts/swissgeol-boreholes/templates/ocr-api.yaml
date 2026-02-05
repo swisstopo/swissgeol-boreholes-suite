@@ -1,0 +1,124 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ .Release.Name }}-ocr-api
+  namespace: {{ .Release.Namespace }}
+  {{- if ne .Values.keel.enabled false }}
+  annotations:
+    keel.sh/policy: {{ .Values.keel.policy | default "force" }}
+    keel.sh/match-tag: {{ .Values.keel.matchTag | default "'true'" }}
+    keel.sh/trigger: {{ .Values.keel.trigger | default "poll" }}
+  {{- end }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app: {{ .Release.Name }}-ocr-api
+  template:
+    metadata:
+      annotations:
+        checksum/config: {{ include (print $.Template.BasePath "/configmap.yaml") . | sha256sum }}
+        checksum/secret: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
+      labels:
+        app: {{ .Release.Name }}-ocr-api
+    spec:
+      {{- if .Values.ocr.awsRoleArn }}
+      serviceAccountName: {{ .Release.Name }}-ocr-api
+      {{- end }}
+      automountServiceAccountToken: {{ .Values.ocr.automountServiceAccountToken }}
+      {{- if .Values.podSecurityContext }}
+      securityContext:
+        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+      {{- end }}
+      containers:
+        - name: {{ .Release.Name }}-ocr-api
+          image: ghcr.io/swisstopo/swissgeol-ocr-api:{{ required "ocr.version is required" .Values.ocr.version }}
+          imagePullPolicy: Always
+          ports:
+            - containerPort: 8000
+          livenessProbe:
+            tcpSocket:
+              port: 8000
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          readinessProbe:
+            tcpSocket:
+              port: 8000
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 3
+          startupProbe:
+            tcpSocket:
+              port: 8000
+            periodSeconds: 10
+            timeoutSeconds: 2
+            failureThreshold: 30
+          resources:
+            {{- toYaml .Values.resources.ocr | nindent 12 }}
+          {{- if .Values.securityContext }}
+          securityContext:
+            {{- toYaml .Values.securityContext | nindent 12 }}
+          {{- end }}
+          env:
+            - name: AWS_DEFAULT_REGION
+              value: eu-central-1
+            - name: S3_INPUT_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-config
+                  key: s3Bucket
+            - name: S3_INPUT_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-config
+                  key: s3Endpoint
+            - name: S3_INPUT_FOLDER
+              value: ''
+            - name: S3_OUTPUT_BUCKET
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-config
+                  key: s3Bucket
+            - name: S3_OUTPUT_ENDPOINT
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-config
+                  key: s3Endpoint
+            - name: S3_OUTPUT_FOLDER
+              value: ''
+            - name: CONFIDENCE_THRESHOLD
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-config
+                  key: ocrConfidenceThreshold
+            - name: USE_AGGRESSIVE_STRATEGY
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-config
+                  key: ocrUseAggressiveStrategy
+            - name: SKIP_PROCESSING
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-config
+                  key: ocrSkipProcessing
+            - name: TMP_PATH
+              value: /tmp/ocr
+            - name: TZ
+              valueFrom:
+                configMapKeyRef:
+                  name: {{ .Release.Name }}-config
+                  key: timezone
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Release.Name }}-ocr-api
+  namespace: {{ .Release.Namespace }}
+spec:
+  selector:
+    app: {{ .Release.Name }}-ocr-api
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 8000
