@@ -25,11 +25,6 @@ public class S3HealthCheck : IHealthCheck
     {
         var bucketKeys = new[] { "S3:BUCKET_NAME", "S3:PHOTOS_BUCKET_NAME", "S3:LOGFILES_BUCKET_NAME" };
 
-        if (bucketKeys.All(key => string.IsNullOrEmpty(configuration[key])))
-        {
-            return HealthCheckResult.Healthy("S3 not configured, skipping check.");
-        }
-
         foreach (var key in bucketKeys)
         {
             var bucketName = configuration[key];
