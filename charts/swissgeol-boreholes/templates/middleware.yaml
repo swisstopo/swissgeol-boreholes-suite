@@ -1,0 +1,11 @@
+{{- if .Values.auth.basicAuthEnabled }}
+apiVersion: traefik.io/v1alpha1
+kind: Middleware
+metadata:
+  name: {{ .Release.Name }}-basic-auth
+  namespace: {{ .Release.Namespace }}
+spec:
+  basicAuth:
+    secret: {{ .Release.Name }}-secrets
+    removeHeader: true
+{{- end }}
