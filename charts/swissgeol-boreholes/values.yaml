@@ -51,7 +51,7 @@ auth:
   # -- The client ID of the application
   audience:
   # -- The required scopes needed by the application
-  # -- defaults to "openid profile"
+  # -- defaults to "openid profile email"
   scopes:
   # -- The claim type to be used to get the user's groups
   # -- defaults to "cognito:groups"
