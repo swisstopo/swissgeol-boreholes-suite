@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- Fixed French translation of codelist entry `casing plugging`.
+
 ### Added
 - Added new GitHub Action workflow to add a release-candidate Docker image tag to a specific version.
 
