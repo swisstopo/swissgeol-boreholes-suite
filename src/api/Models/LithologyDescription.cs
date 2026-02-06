@@ -54,6 +54,7 @@ public class LithologyDescription : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets whether the <see cref="LithologyDescription"/> is the first of maximum two.
     /// </summary>
+    [IncludeInExport]
     [Column("first")]
     public bool IsFirst { get; set; } = true;
 
