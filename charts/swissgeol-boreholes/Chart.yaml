@@ -2,7 +2,7 @@ apiVersion: v2
 name: swissgeol-boreholes
 description: Borehole Data Management System
 type: application
-version: 0.10.0
+version: 0.10.1
 icon: https://raw.githubusercontent.com/swisstopo/swissgeol-boreholes-suite/main/src/client/public/favicon.ico
 appVersion: "v2.1.1431"
 home: https://www.swissgeol.ch/en

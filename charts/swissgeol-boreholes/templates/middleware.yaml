@@ -6,6 +6,6 @@ metadata:
   namespace: {{ .Release.Namespace }}
 spec:
   basicAuth:
-    secret: {{ .Release.Name }}-secrets
+    secret: {{ .Release.Name }}-basic-auth-secret
     removeHeader: true
 {{- end }}
