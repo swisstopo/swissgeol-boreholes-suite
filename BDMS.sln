@@ -9,7 +9,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution 
 	ProjectSection(SolutionItems) = preProject
 		.editorconfig = .editorconfig
 		CHANGELOG.md = CHANGELOG.md
-		README.md = README.md
+		README.app.md = README.app.md
 	EndProjectSection
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BDMS.Test", "tests\api\BDMS.Test.csproj", "{4981EB19-F2EE-4F45-A6DD-ED21B61CB3C6}"
