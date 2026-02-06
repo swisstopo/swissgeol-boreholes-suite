@@ -63,6 +63,14 @@ auth:
   # -- In this mode, the application does not require authentication.
   # -- defaults to false
   anonymousModeEnabled:
+  # -- Enables basic authentication on the Traefik IngressRoute.
+  # -- When enabled, requires basicAuthUsername and basicAuthPassword.
+  # -- defaults to false
+  basicAuthEnabled: false
+  # -- The username for basic authentication
+  basicAuthUsername:
+  # -- The password for basic authentication
+  basicAuthPassword:
 
 # Database configuration
 database:
