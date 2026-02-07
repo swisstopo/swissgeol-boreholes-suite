@@ -23,7 +23,7 @@ jobs:
           echo RC_TAG=v${{ github.event.inputs.VERSION }}-rc >> $GITHUB_ENV
 
       - name: Log in to the GitHub container registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.repository_owner }}
