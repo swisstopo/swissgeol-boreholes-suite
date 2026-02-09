@@ -1,9 +1,12 @@
 {
   "$schema": "https://json-schema.org/draft-07/schema#",
   "type": "object",
+  "additionalProperties": false,
+
   "properties": {
     "app": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "version": {
           "type": "string",
@@ -18,8 +21,10 @@
       },
       "required": ["version"]
     },
+
     "dataextraction": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
         "version": {
           "type": "string",
@@ -28,25 +33,138 @@
       },
       "required": ["version"]
     },
+
     "ocr": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
-        "version": {
-          "type": "string",
-          "minLength": 1
+        "version": { "type": "string", "minLength": 1 },
+
+        "confidenceThreshold": {
+          "type": ["number", "null"],
+          "minimum": 0,
+          "maximum": 1,
+          "default": 0.45
         },
+
+        "useAggressiveStrategy": {
+          "type": ["boolean", "null"],
+          "default": true
+        },
+
         "skipProcessing": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": false
         },
+
+        "awsRoleArn": { "type": ["string", "null"], "minLength": 1 },
+
         "automountServiceAccountToken": {
-          "type": "boolean"
+          "type": "boolean",
+          "default": true
         }
       },
       "required": ["version"]
     },
+
+    "auth": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "authority": { "type": ["string", "null"], "minLength": 1 },
+        "audience": { "type": ["string", "null"], "minLength": 1 },
+        "scopes": { "type": ["string", "null"], "minLength": 1, "default": "openid profile email" },
+        "groupClaimType": { "type": ["string", "null"], "minLength": 1, "default": "cognito:groups" },
+        "authorizedGroupName": { "type": ["string", "null"], "minLength": 1, "default": "boreholes.swissgeol" },
+
+        "anonymousModeEnabled": { "type": ["boolean", "null"], "default": false },
+
+        "basicAuthEnabled": { "type": "boolean", "default": false },
+        "basicAuthUsername": { "type": ["string", "null"], "minLength": 1 },
+        "basicAuthPassword": { "type": ["string", "null"], "minLength": 1 }
+      },
+      "allOf": [
+        {
+          "if": {
+            "properties": { "basicAuthEnabled": { "const": true } },
+            "required": ["basicAuthEnabled"]
+          },
+          "then": {
+            "required": ["basicAuthUsername", "basicAuthPassword"],
+            "properties": {
+              "basicAuthUsername": { "type": "string", "minLength": 1 },
+              "basicAuthPassword": { "type": "string", "minLength": 1 }
+            }
+          }
+        }
+      ]
+    },
+
+    "database": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "host": { "type": ["string", "null"], "minLength": 1 },
+        "port": {
+          "anyOf": [
+            { "type": "integer", "minimum": 1, "maximum": 65535 },
+            { "type": "string", "pattern": "^[0-9]{1,5}$" },
+            { "type": "null" }
+          ],
+          "default": 5432
+        },
+        "name": { "type": ["string", "null"], "minLength": 1 },
+        "username": { "type": ["string", "null"], "minLength": 1 },
+        "password": { "type": ["string", "null"], "minLength": 1 }
+      }
+    },
+
+    "replicaCount": {
+      "type": "integer",
+      "minimum": 1,
+      "default": 1
+    },
+
+    "automountServiceAccountToken": {
+      "type": "boolean",
+      "default": false
+    },
+
+    "podSecurityContext": {
+      "type": "object",
+      "default": {},
+      "additionalProperties": true
+    },
+
+    "securityContext": {
+      "type": "object",
+      "default": {},
+      "additionalProperties": true
+    },
+
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "api": { "$ref": "#/definitions/componentResources" },
+        "apiLegacy": { "$ref": "#/definitions/componentResources" },
+        "client": { "$ref": "#/definitions/componentResources" },
+        "dataextraction": { "$ref": "#/definitions/componentResources" },
+        "ocr": { "$ref": "#/definitions/componentResources" }
+      }
+    },
+
     "s3": {
       "type": "object",
+      "additionalProperties": false,
       "properties": {
+        "endpoint": { "type": ["string", "null"], "minLength": 1 },
+        "bucket": { "type": ["string", "null"], "minLength": 1 },
+        "photosBucket": { "type": ["string", "null"], "minLength": 1 },
+        "logFilesBucket": { "type": ["string", "null"], "minLength": 1 },
+        "accessKey": { "type": ["string", "null"], "minLength": 1 },
+        "secretKey": { "type": ["string", "null"], "minLength": 1 },
+
         "secure": {
           "anyOf": [
             { "type": "string", "enum": ["0", "1"] },
@@ -54,6 +172,62 @@
           ],
           "default": "1"
         }
+      }
+    },
+
+    "googleAnalytics": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "trackingId": { "type": ["string", "null"], "minLength": 1 }
+      }
+    },
+
+    "keel": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": ["boolean", "null"], "default": true },
+        "policy": { "type": ["string", "null"], "minLength": 1, "default": "force" },
+
+        "matchTag": {
+          "anyOf": [
+            { "type": "boolean" },
+            { "type": "string", "enum": ["true", "false", "'true'", "\"true\"", "'false'", "\"false\""] },
+            { "type": "null" }
+          ],
+          "default": "true"
+        },
+
+        "trigger": { "type": ["string", "null"], "minLength": 1, "default": "poll" }
+      }
+    }
+  },
+
+  "required": ["app", "dataextraction", "ocr"],
+
+  "definitions": {
+    "k8sQuantity": {
+      "type": "string",
+      "minLength": 1
+    },
+
+    "resourceRequestsLimits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cpu": { "$ref": "#/definitions/k8sQuantity" },
+        "memory": { "$ref": "#/definitions/k8sQuantity" },
+        "ephemeral-storage": { "$ref": "#/definitions/k8sQuantity" }
+      }
+    },
+
+    "componentResources": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "requests": { "$ref": "#/definitions/resourceRequestsLimits" },
+        "limits": { "$ref": "#/definitions/resourceRequestsLimits" }
       }
     }
   }

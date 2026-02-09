@@ -1,23 +1,78 @@
-# Helm Charts
+﻿# Environment configuration for [Bohrdatenmanagementsystem](https://github.com/geoadmin/suite-bdms) (BDMS)
 
-This repository hosts the swissgeol-boreholes Helm charts.
+## Configure and run Bohrdatenmanagementsystem
 
-Helm repo URL:
-`https://swisstopo.github.io/swissgeol-boreholes-suite/`
+(For kubernetes deployment see [kubernetes-manifests](./kubernetes-manifests/README.md))
 
-## Manual cluster update
+Clone the source repository and cd into the newly created directory
 
-Clusters must update their Helm repo URL from the old config repository to the new
-suite repository and run upgrades manually.
+```bash
+~$ git clone https://github.com/geoadmin/config-bdms.git
+~$ cd config-bdms
+```
 
-## Keel note
+Use the [dotenv](./.env.template) template file to configure environment by copying the contents of the template file into a new _.env_ file.
 
-Keel is currently used via chart annotations for automated image updates. Some teams
-avoid tag-based auto updates because of governance/audit requirements, GitOps drift,
-or rollout predictability. Alternatives include Flux/Argo image automation or
-PR-based updates. No changes are made here.
+```bash
+~$ cp ./.env.template ./.env
+```
 
-## Probe coverage note
+Spin up the Docker containers in detached mode.
 
-OCR uses TCP-only probes for now. Revisit later to add an explicit HTTP health
-endpoint and switch probes accordingly.
+```bash
+~$ docker-compose up -d
+```
+
+## Environment variables
+
+Container images are configured using a `.env` file passed at runtime. Refer to the [dotenv](./.env.template) template file for a complete list of the parameters and their documentation.
+
+## Prerequisites
+
+### PostgreSQL database
+
+A PostgreSQL database with the following extensions enabled and a pre-configured user which has the permission to create databases.
+
+```sql
+CREATE EXTENSION IF NOT EXISTS ltree;
+CREATE EXTENSION IF NOT EXISTS pgcrypto;
+CREATE EXTENSION IF NOT EXISTS postgis;
+```
+
+For testing purposes you can use the provided database backup with sample data (located under the [db folder](./db/)) or spin up a dockerized PostgreSQL database and use this instance when [configuring](#configure-and-run-bohrdatenmanagementsystem) Bohrdatenmanagementsystem.
+
+```yml
+db:
+  image: postgis/postgis
+  environment:
+    POSTGRES_USER: postgres
+    POSTGRES_PASSWORD: mysecretpassword 
+    POSTGRES_DB: postgres
+  ports:
+    - 5432:5432
+```
+
+### S3-Compatible Object Storage
+
+In order to be able to upload and save borehole attachments a S3 compatible object storage must be configured. For testing purposes, you can spin up a dockerized object storage.
+
+```yml
+minio:
+  image: minio/minio
+  environment:
+    MINIO_ROOT_USER: minio
+    MINIO_ROOT_PASSWORD: mysecretpassword
+    MINIO_CONSOLE_ADDRESS: 9001
+  ports:
+    - 9000:9000 # object storage server address
+    - 9001:9001 # embedded console user interface
+  command: minio server /home/shared
+```
+
+## Automatic Container Updates
+
+Bohrdatenmanagementsystem Docker containers automatically get updated with [Watchtower](https://containrrr.dev/watchtower/). If a new image gets pushed to the registry Watchtower will automatically spin up a new container with the same options that were used when it was deployed initially. Refer to the [dotenv](./.env.template) for scheduling options.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.

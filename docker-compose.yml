@@ -126,6 +126,11 @@ services:
       Auth__AnonymousModeEnabled: false
       S3__ENDPOINT: http://minio:9000
       S3__SECURE: 1
+      S3__ACCESS_KEY: REDSQUIRREL
+      S3__SECRET_KEY: YELLOWMONKEY
+      S3__BUCKET_NAME: cannonflea
+      S3__PHOTOS_BUCKET_NAME: cannonflea-photos
+      S3__LOGFILES_BUCKET_NAME: cannonflea-logfiles
     extra_hosts:
       - "localhost:host-gateway"
   dataextraction:

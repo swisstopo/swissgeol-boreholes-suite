@@ -9,11 +9,19 @@ spec:
   routes:
     - kind: Rule
       match: "Host(`{{ .Values.app.domain | default "boreholes.swissgeol.ch" }}`) && (PathPrefix(`/api`) || PathPrefix(`/dataextraction`) || PathPrefix(`/ocr`) || PathPrefix(`/health`))"
+{{- if .Values.auth.basicAuthEnabled }}
+      middlewares:
+        - name: {{ .Release.Name }}-basic-auth
+{{- end }}
       services:
         - name: {{ .Release.Name }}-api
           port: 80
     - kind: Rule
       match: "Host(`{{ .Values.app.domain | default "boreholes.swissgeol.ch" }}`)"
+{{- if .Values.auth.basicAuthEnabled }}
+      middlewares:
+        - name: {{ .Release.Name }}-basic-auth
+{{- end }}
       services:
         - name: {{ .Release.Name }}-client
           port: 80

@@ -17,7 +17,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Set environment variables
         run: |
@@ -28,7 +28,7 @@ jobs:
 
       - name: Collect Docker image metadata (api-legacy)
         id: meta-api-legacy
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         with:
           images: ${{ env.BASE_IMAGE_NAME }}-api-legacy
           labels: |
@@ -43,7 +43,7 @@ jobs:
 
       - name: Collect Docker image metadata (api)
         id: meta-api
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         with:
           images: ${{ env.BASE_IMAGE_NAME }}-api
           labels: |
@@ -58,7 +58,7 @@ jobs:
 
       - name: Collect Docker image metadata (client)
         id: meta-client
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         with:
           images: ${{ env.BASE_IMAGE_NAME }}-client
           labels: |
@@ -73,7 +73,7 @@ jobs:
 
       - name: Collect Docker image metadata (view-sync)
         id: meta-view-sync
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         with:
           images: ${{ env.BASE_IMAGE_NAME }}-view-sync
           labels: |
@@ -88,7 +88,7 @@ jobs:
 
       - name: Collect Docker image metadata (extern-sync)
         id: meta-extern-sync
-        uses: docker/metadata-action@v5
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         with:
           images: ${{ env.BASE_IMAGE_NAME }}-extern-sync
           labels: |
@@ -102,14 +102,14 @@ jobs:
             type=semver,pattern=v{{version}},value=${{ env.VERSION }}
 
       - name: Log in to the GitHub container registry
-        uses: docker/login-action@v3
+        uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.repository_owner  }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image (api-legacy)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: ./src/api-legacy
           push: true
@@ -122,7 +122,7 @@ jobs:
           cache-to: type=inline
 
       - name: Build and push Docker image (api)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: ./src
           file: ./src/api/Dockerfile
@@ -136,7 +136,7 @@ jobs:
           cache-to: type=inline
 
       - name: Build and push Docker image (client)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: ./src/client
           target: deploy
@@ -150,7 +150,7 @@ jobs:
           cache-to: type=inline
 
       - name: Build and push Docker image (view-sync)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: ./src/view-sync
           push: true
@@ -163,7 +163,7 @@ jobs:
           cache-to: type=inline
 
       - name: Build and push Docker image (extern-sync)
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         with:
           context: ./src
           file: ./src/extern-sync/Dockerfile
