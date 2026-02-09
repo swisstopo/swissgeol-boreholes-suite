@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
@@ -98,89 +97,47 @@ public class ExportControllerTest
         Assert.IsTrue(fileContentResult.FileContents.Length > 0);
     }
 
+    // Export 3 seeded boreholes from richBoreholesRange (IDs 1_000_000 - 1_000_100), to increase likelihood, that each attribute is exported at least once.
     [TestMethod]
-    public async Task ExportJson()
+    [DataRow(1_000_057)]
+    [DataRow(1_000_058)]
+    [DataRow(1_000_059)]
+    public async Task ExportJson(int boreholeId)
     {
-        var newBorehole = GetBoreholeToAdd();
+        var newBorehole = await context.BoreholesWithIncludes.AsNoTracking().SingleAsync(b => b.Id == boreholeId);
 
-        var fieldMeasurementResult = new FieldMeasurementResult
+        // Make sure all CodelistId collections are populated so they can be compared, to the export.
+        foreach (var strat in newBorehole.Stratigraphies ?? [])
         {
-            ParameterId = (await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementParameterSchema).FirstAsync().ConfigureAwait(false)).Id,
-            SampleTypeId = (await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementSampleTypeSchema).FirstAsync().ConfigureAwait(false)).Id,
-            Value = 10.0,
-        };
+            foreach (var lithology in strat.Lithologies)
+            {
+                lithology.RockConditionCodelistIds = lithology.LithologyRockConditionCodes?.Select(c => c.CodelistId).ToList();
+                lithology.UscsTypeCodelistIds = lithology.LithologyUscsTypeCodes?.Select(c => c.CodelistId).ToList();
+                lithology.TextureMetaCodelistIds = lithology.LithologyTextureMetaCodes?.Select(c => c.CodelistId).ToList();
 
-        var fieldMeasurement = new FieldMeasurement
-        {
-            Borehole = newBorehole,
-            StartTime = new DateTime(2021, 01, 01, 01, 01, 01, DateTimeKind.Utc),
-            EndTime = new DateTime(2021, 01, 01, 13, 01, 01, DateTimeKind.Utc),
-            Type = ObservationType.FieldMeasurement,
-            Comment = "Field measurement observation for testing",
-            FieldMeasurementResults = [fieldMeasurementResult],
-        };
-
-        var groundwaterLevelMeasurement = new GroundwaterLevelMeasurement
-        {
-            Borehole = newBorehole,
-            StartTime = new DateTime(2021, 01, 01, 01, 01, 01, DateTimeKind.Utc),
-            EndTime = new DateTime(2021, 01, 01, 13, 01, 01, DateTimeKind.Utc),
-            Type = ObservationType.GroundwaterLevelMeasurement,
-            Comment = "Groundwater level measurement observation for testing",
-            LevelM = 10.0,
-            LevelMasl = 11.0,
-            KindId = (await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).FirstAsync().ConfigureAwait(false)).Id,
-        };
-
-        var waterIngress = new WaterIngress
-        {
-            Borehole = newBorehole,
-            IsOpenBorehole = true,
-            Type = ObservationType.WaterIngress,
-            Comment = "Water ingress observation for testing",
-            QuantityId = (await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).FirstAsync().ConfigureAwait(false)).Id,
-            ConditionsId = (await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressConditionsSchema).FirstAsync().ConfigureAwait(false)).Id,
-        };
-
-        var hydroTestResult = new HydrotestResult
-        {
-            ParameterId = 15203191,
-            Value = 10.0,
-            MaxValue = 15.0,
-            MinValue = 5.0,
-        };
-
-        var kindCodelistIds = await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Take(2).Select(c => c.Id).ToListAsync().ConfigureAwait(false);
-        var flowDirectionCodelistIds = await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema).Take(2).Select(c => c.Id).ToListAsync().ConfigureAwait(false);
-        var evaluationMethodCodelistIds = await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.EvaluationMethodSchema).Take(2).Select(c => c.Id).ToListAsync().ConfigureAwait(false);
-
-        var kindCodelists = await GetCodelists(context, kindCodelistIds).ConfigureAwait(false);
-        var flowDirectionCodelists = await GetCodelists(context, flowDirectionCodelistIds).ConfigureAwait(false);
-        var evaluationMethodCodelists = await GetCodelists(context, evaluationMethodCodelistIds).ConfigureAwait(false);
-
-        var hydroTest = new Hydrotest
-        {
-            Borehole = newBorehole,
-            StartTime = new DateTime(2021, 01, 01, 01, 01, 01, DateTimeKind.Utc),
-            EndTime = new DateTime(2021, 01, 01, 13, 01, 01, DateTimeKind.Utc),
-            Type = ObservationType.Hydrotest,
-            Comment = "Hydrotest observation for testing",
-            HydrotestResults = [hydroTestResult],
-            HydrotestFlowDirectionCodes = [new() { CodelistId = flowDirectionCodelists[0].Id }, new() { CodelistId = flowDirectionCodelists[1].Id }],
-            HydrotestKindCodes = [new() { CodelistId = kindCodelists[0].Id }, new() { CodelistId = kindCodelists[1].Id }],
-            HydrotestEvaluationMethodCodes = [new() { CodelistId = evaluationMethodCodelists[0].Id }, new() { CodelistId = evaluationMethodCodelists[1].Id }],
-        };
-
-        newBorehole.Observations = [hydroTest, fieldMeasurement, groundwaterLevelMeasurement, waterIngress];
-
-        context.Add(newBorehole);
-        await context.SaveChangesAsync().ConfigureAwait(false);
+                foreach (var lithologyDescription in lithology.LithologyDescriptions)
+                {
+                    lithologyDescription.ComponentUnconOrganicCodelistIds = lithologyDescription.LithologyDescriptionComponentUnconOrganicCodes?.Select(c => c.CodelistId).ToList();
+                    lithologyDescription.ComponentConParticleCodelistIds = lithologyDescription.LithologyDescriptionComponentConParticleCodes?.Select(c => c.CodelistId).ToList();
+                    lithologyDescription.ComponentUnconDebrisCodelistIds = lithologyDescription.LithologyDescriptionComponentUnconDebrisCodes?.Select(c => c.CodelistId).ToList();
+                    lithologyDescription.GrainShapeCodelistIds = lithologyDescription.LithologyDescriptionGrainShapeCodes?.Select(c => c.CodelistId).ToList();
+                    lithologyDescription.GrainAngularityCodelistIds = lithologyDescription.LithologyDescriptionGrainAngularityCodes?.Select(c => c.CodelistId).ToList();
+                    lithologyDescription.LithologyUnconDebrisCodelistIds = lithologyDescription.LithologyDescriptionLithologyUnconDebrisCodes?.Select(c => c.CodelistId).ToList();
+                    lithologyDescription.ComponentConMineralCodelistIds = lithologyDescription.LithologyDescriptionComponentConMineralCodes?.Select(c => c.CodelistId).ToList();
+                    lithologyDescription.StructureSynGenCodelistIds = lithologyDescription.LithologyDescriptionStructureSynGenCodes?.Select(c => c.CodelistId).ToList();
+                    lithologyDescription.StructurePostGenCodelistIds = lithologyDescription.LithologyDescriptionStructurePostGenCodes?.Select(c => c.CodelistId).ToList();
+                }
+            }
+        }
 
         var response = await controller.ExportJsonAsync([newBorehole.Id]).ConfigureAwait(false);
         JsonResult jsonResult = (JsonResult)response!;
         Assert.IsNotNull(jsonResult.Value);
         List<Borehole> boreholes = (List<Borehole>)jsonResult.Value;
         Assert.AreEqual(1, boreholes.Count);
+
+        var exported = boreholes.Single();
+        AssertEntitiesEqualByIncludeInExportAttribute(newBorehole, exported, new HashSet<object?>());
     }
 
     [TestMethod]
@@ -585,6 +542,120 @@ public class ExportControllerTest
             var badRequestResult = result as BadRequestObjectResult;
             Assert.IsNotNull(badRequestResult, $"Method {method.Name} did not return BadRequestObjectResult");
             Assert.AreEqual("The user lacks permissions to export the borehole(s).", badRequestResult.Value);
+        }
+    }
+
+    private static void AssertEntitiesEqualByIncludeInExportAttribute(object? expected, object? actual, ISet<object?> visited)
+    {
+        Assert.IsNotNull(expected);
+        Assert.IsNotNull(actual);
+
+        // Prevent infinite recursion in case of cycles in the object graph.
+        if (visited.Contains(expected))
+        {
+            return;
+        }
+
+        visited.Add(expected);
+
+        var type = expected!.GetType();
+        Assert.AreEqual(type, actual!.GetType(), "Entity types do not match.");
+
+        // Select all properties with the attribute [IncludeInExport].
+        var properties = GetExportProperties(type);
+
+        foreach (var prop in properties)
+        {
+            var expectedValue = prop.GetValue(expected);
+            var actualValue = prop.GetValue(actual);
+
+            AssertPropertyEqual(prop, expectedValue, actualValue, visited);
+        }
+    }
+
+    private static IEnumerable<PropertyInfo> GetExportProperties(Type type)
+    {
+        return type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.GetCustomAttribute<Json.IncludeInExportAttribute>() != null);
+    }
+
+    private static void AssertPropertyEqual(PropertyInfo prop, object? expectedValue, object? actualValue, ISet<object?> visited)
+    {
+        var propertyType = prop.PropertyType;
+
+        if (IsDateTime(propertyType))
+        {
+            AssertDateTimeEqual(prop, expectedValue, actualValue);
+            return;
+        }
+
+        if (IsCollectionType(propertyType))
+        {
+            AssertCollectionEqual(prop, expectedValue, actualValue, visited);
+            return;
+        }
+
+        if (!IsComplexType(propertyType))
+        {
+            Assert.AreEqual(expectedValue, actualValue, $"Property {prop.Name} differs between original and exported entity.");
+            return;
+        }
+
+        // Complex nested entity: compare recursively.
+        AssertEntitiesEqualByIncludeInExportAttribute(expectedValue, actualValue, visited);
+    }
+
+    private static bool IsDateTime(Type propertyType)
+    {
+        return propertyType == typeof(DateTime) || propertyType == typeof(DateTime?);
+    }
+
+    private static bool IsCollectionType(Type propertyType)
+    {
+        return typeof(System.Collections.IEnumerable).IsAssignableFrom(propertyType) && propertyType != typeof(string);
+    }
+
+    private static bool IsComplexType(Type propertyType)
+    {
+        return propertyType.IsClass && propertyType != typeof(string);
+    }
+
+    private static void AssertDateTimeEqual(PropertyInfo prop, object? expectedValue, object? actualValue)
+    {
+        var expectedDate = (DateTime?)expectedValue;
+        var actualDate = (DateTime?)actualValue;
+
+        Assert.AreEqual(expectedDate?.ToUniversalTime().ToString(), actualDate?.ToUniversalTime().ToString(), $"Date Property {prop.Name} differs between original and exported entity.");
+    }
+
+    private static void AssertCollectionEqual(PropertyInfo prop, object? expectedValue, object? actualValue, ISet<object?> visited)
+    {
+        var expectedEnumerable = ((System.Collections.IEnumerable?)expectedValue)?.Cast<object?>().ToList();
+        var actualEnumerable = ((System.Collections.IEnumerable?)actualValue)?.Cast<object?>().ToList();
+
+        var expectedNullOrEmpty = expectedEnumerable == null || expectedEnumerable.Count == 0;
+        var actualNullOrEmpty = actualEnumerable == null || actualEnumerable.Count == 0;
+
+        if (expectedNullOrEmpty && actualNullOrEmpty)
+        {
+            return;
+        }
+
+        Assert.IsNotNull(expectedEnumerable, $"Expected collection for property {prop.Name} is null.");
+        Assert.IsNotNull(actualEnumerable, $"Actual collection for property {prop.Name} is null.");
+        Assert.AreEqual(expectedEnumerable!.Count, actualEnumerable!.Count, $"Collection size for property {prop.Name} differs between original and exported entity.");
+
+        for (var i = 0; i < expectedEnumerable.Count; i++)
+        {
+            var expectedItem = expectedEnumerable[i];
+            var actualItem = actualEnumerable[i];
+
+            if (expectedItem == null && actualItem == null)
+            {
+                continue;
+            }
+
+            // Recursively compare each collection element, so nested entities are checked.
+            AssertEntitiesEqualByIncludeInExportAttribute(expectedItem, actualItem, visited);
         }
     }
 

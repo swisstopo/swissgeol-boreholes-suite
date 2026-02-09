@@ -65,6 +65,7 @@ public class Lithology : ILithology, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets whether the <see cref="Lithology"/> is unconsolidated or consolidated.
     /// </summary>
+    [IncludeInExport]
     [JsonRequired]
     [Column("unconsolidated")]
     public bool IsUnconsolidated { get; set; }
@@ -72,18 +73,21 @@ public class Lithology : ILithology, IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets whether the <see cref="Lithology"/> has bedding.
     /// </summary>
+    [IncludeInExport]
     [Column("bedding")]
     public bool HasBedding { get; set; } = false;
 
     /// <summary>
     /// Gets or sets the share of the bedding.
     /// </summary>
+    [IncludeInExport]
     [Column("bedding_share")]
     public int? Share { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="LithologyDescription"/>  entities.
     /// </summary>
+    [IncludeInExport]
     public ICollection<LithologyDescription>? LithologyDescriptions { get; set; }
 
     /// <summary>

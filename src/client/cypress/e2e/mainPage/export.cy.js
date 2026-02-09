@@ -285,6 +285,61 @@ describe("Test for exporting boreholes.", () => {
     readDownloadedFile(`${boreholeName}.zip`);
   });
 
+  it("exports a single borehole from rich boreholes range and asserts stratigraphy", () => {
+    const id = 1000055;
+    goToRouteAndAcceptTerms(`/${id}`);
+    const fileName = "Mohammed_Rice.json";
+
+    exportItem("detail-header");
+    exportJsonItem();
+
+    cy.wait("@borehole_export_json").its("response.statusCode").should("eq", 200);
+    readDownloadedFile(fileName);
+
+    cy.readFile(prepareDownloadPath(fileName)).then(fileContent => {
+      const json = typeof fileContent === "string" ? JSON.parse(fileContent) : fileContent;
+      expect(json).to.be.an("array");
+      expect(json[0].Stratigraphies).to.be.an("array");
+
+      //First Stratigraphy
+      expect(json[0].Stratigraphies[0]).to.have.property("IsPrimary");
+      expect(json[0].Stratigraphies[0]).to.have.property("Name");
+      expect(json[0].Stratigraphies[0]).to.have.property("Lithologies");
+      expect(json[0].Stratigraphies[0].Lithologies).to.be.an("array");
+      expect(json[0].Stratigraphies[0]).to.have.property("LithologicalDescriptions");
+      expect(json[0].Stratigraphies[0].LithologicalDescriptions).to.be.an("array");
+      expect(json[0].Stratigraphies[0]).to.have.property("FaciesDescriptions");
+      expect(json[0].Stratigraphies[0].FaciesDescriptions).to.be.an("array");
+      expect(json[0].Stratigraphies[0]).to.have.property("ChronostratigraphyLayers");
+      expect(json[0].Stratigraphies[0].ChronostratigraphyLayers).to.be.an("array");
+      expect(json[0].Stratigraphies[0]).to.have.property("LithostratigraphyLayers");
+      expect(json[0].Stratigraphies[0].LithostratigraphyLayers).to.be.an("array");
+
+      //First LithologicalDescription
+      expect(json[0].Stratigraphies[0].LithologicalDescriptions[0]).to.have.property("Description");
+      expect(json[0].Stratigraphies[0].LithologicalDescriptions[0]).to.have.property("ToDepth");
+
+      //First FaciesDescription
+      expect(json[0].Stratigraphies[0].FaciesDescriptions[0]).to.have.property("Description");
+      expect(json[0].Stratigraphies[0].FaciesDescriptions[0]).to.have.property("FaciesId");
+      expect(json[0].Stratigraphies[0].FaciesDescriptions[0]).to.have.property("FromDepth");
+
+      //First Lithology
+      expect(json[0].Stratigraphies[0].Lithologies[0]).to.have.property("IsUnconsolidated");
+      expect(json[0].Stratigraphies[0].Lithologies[0]).to.have.property("ToDepth");
+      expect(json[0].Stratigraphies[0].Lithologies[0]).to.have.property("LithologyDescriptions");
+
+      //First LithologyDescription
+      expect(json[0].Stratigraphies[0].Lithologies[0].LithologyDescriptions[0]).to.have.property(
+        "LithologyUnconMainId",
+      );
+      expect(
+        json[0].Stratigraphies[0].Lithologies[0].LithologyDescriptions[0].LithologyUnconDebrisCodelistIds,
+      ).to.be.an("array");
+    });
+    deleteDownloadedFile(fileName);
+  });
+
   it("exports a single borehole with observations", () => {
     const boreholeName = "AQUABED";
     const fileName = `${boreholeName}.json`;
