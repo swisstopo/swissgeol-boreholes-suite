@@ -4,6 +4,7 @@
 
 ### Fixed
 - Fixed French translation of codelist entry `casing plugging`.
+- Included all missing properties from `Lithology`/`LithologyDescription` in borehole JSON export.
 
 ### Added
 - Added new GitHub Action workflow to add a release-candidate Docker image tag to a specific version.
