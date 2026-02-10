@@ -1,78 +1,75 @@
-﻿# Environment configuration for [Bohrdatenmanagementsystem](https://github.com/geoadmin/suite-bdms) (BDMS)
+﻿# SwissGeol Boreholes Suite Helm Charts
 
-## Configure and run Bohrdatenmanagementsystem
+[![.github/workflows/ci.yml](https://github.com/swisstopo/swissgeol-boreholes-suite/actions/workflows/ci.yml/badge.svg)](https://github.com/swisstopo/swissgeol-boreholes-suite/actions/workflows/ci.yml) [![Release](https://github.com/swisstopo/swissgeol-boreholes-suite/actions/workflows/release.yml/badge.svg)](https://github.com/swisstopo/swissgeol-boreholes-suite/actions/workflows/release.yml) [![License](https://img.shields.io/github/license/geoadmin/suite-bdms)](https://github.com/swisstopo/swissgeol-boreholes-suite/blob/main/LICENSE)
 
-(For kubernetes deployment see [kubernetes-manifests](./kubernetes-manifests/README.md))
+## Overview
 
-Clone the source repository and cd into the newly created directory
+This repository hosts the Helm charts for the **SwissGeol Boreholes Suite** (boreholes.swissgeol.ch).
 
-```bash
-~$ git clone https://github.com/geoadmin/config-bdms.git
-~$ cd config-bdms
-```
+The application is a comprehensive web platform developed by **swisstopo** for the simple, structured, and harmonized acquisition and management of geological borehole data. It enables users to capture, view, and manage geological data through a modern web interface backed by robust APIs.
 
-Use the [dotenv](./.env.template) template file to configure environment by copying the contents of the template file into a new _.env_ file.
+## Usage
 
-```bash
-~$ cp ./.env.template ./.env
-```
-
-Spin up the Docker containers in detached mode.
+To use the charts in this repository, add the repo to your Helm client:
 
 ```bash
-~$ docker-compose up -d
+helm repo add swissgeol-boreholes https://swisstopo.github.io/swissgeol-boreholes-suite/
+helm repo update
 ```
 
-## Environment variables
+## Available Charts
 
-Container images are configured using a `.env` file passed at runtime. Refer to the [dotenv](./.env.template) template file for a complete list of the parameters and their documentation.
+This repository contains three distinct Helm charts that make up the suite's ecosystem.
+
+### 1. Main Application
+**Chart Name:** `swissgeol-boreholes`
+
+This is the core web application. It deploys the frontend, backend APIs (.NET and Python Legacy), and configures connections to necessary services (PostgreSQL, S3, OIDC).
+
+*   **Primary Function:** Provides the User Interface and APIs for managing borehole data.
+*   **Key Features:** OIDC Authentication, Data Extraction, OCR capabilities, and structured data entry.
+*   **Install Command:**
+    ```bash
+    helm install my-release swissgeol-boreholes/swissgeol-boreholes
+    ```
+
+### 2. View Synchronization
+**Chart Name:** `swissgeol-boreholes-view-sync`
+
+A Kubernetes CronJob designed to maintain data consistency for public viewing.
+
+*   **Primary Function:** Synchronizes **freely available** drilling data from the source database to a target database.
+*   **Use Case:** Ensures that the public-facing view of the data remains up-to-date with the internal edit state without exposing restricted data.
+*   **Install Command:**
+    ```bash
+    helm install my-release swissgeol-boreholes/swissgeol-boreholes-view-sync
+    ```
+
+### 3. External Synchronization
+**Chart Name:** `swissgeol-boreholes-extern-sync`
+
+A Kubernetes CronJob designed for targeted data exchange.
+
+*   **Primary Function:** Synchronizes **selected** drilling data between a source and a target database.
+*   **Use Case:** Facilitates specific data transfers to external partners or specific workgroups based on configuration.
+*   **Install Command:**
+    ```bash
+    helm install my-release swissgeol-boreholes/swissgeol-boreholes-extern-sync
+    ```
 
 ## Prerequisites
 
-### PostgreSQL database
+To utilize these charts, your environment should meet the following requirements:
 
-A PostgreSQL database with the following extensions enabled and a pre-configured user which has the permission to create databases.
+*   **Kubernetes:** Version 1.23+
+*   **Helm:** Version 3.8.0+
+*   **Dependencies:** External PostgreSQL database and S3-compatible storage (for the main application).
 
-```sql
-CREATE EXTENSION IF NOT EXISTS ltree;
-CREATE EXTENSION IF NOT EXISTS pgcrypto;
-CREATE EXTENSION IF NOT EXISTS postgis;
-```
+## Support & Source Code
 
-For testing purposes you can use the provided database backup with sample data (located under the [db folder](./db/)) or spin up a dockerized PostgreSQL database and use this instance when [configuring](#configure-and-run-bohrdatenmanagementsystem) Bohrdatenmanagementsystem.
-
-```yml
-db:
-  image: postgis/postgis
-  environment:
-    POSTGRES_USER: postgres
-    POSTGRES_PASSWORD: mysecretpassword 
-    POSTGRES_DB: postgres
-  ports:
-    - 5432:5432
-```
-
-### S3-Compatible Object Storage
-
-In order to be able to upload and save borehole attachments a S3 compatible object storage must be configured. For testing purposes, you can spin up a dockerized object storage.
-
-```yml
-minio:
-  image: minio/minio
-  environment:
-    MINIO_ROOT_USER: minio
-    MINIO_ROOT_PASSWORD: mysecretpassword
-    MINIO_CONSOLE_ADDRESS: 9001
-  ports:
-    - 9000:9000 # object storage server address
-    - 9001:9001 # embedded console user interface
-  command: minio server /home/shared
-```
-
-## Automatic Container Updates
-
-Bohrdatenmanagementsystem Docker containers automatically get updated with [Watchtower](https://containrrr.dev/watchtower/). If a new image gets pushed to the registry Watchtower will automatically spin up a new container with the same options that were used when it was deployed initially. Refer to the [dotenv](./.env.template) for scheduling options.
+*   **Source Code:** [github.com/swisstopo/swissgeol-boreholes-suite](https://github.com/swisstopo/swissgeol-boreholes-suite)
+*   **Issues:** Please report bugs or feature requests in the main repository issue tracker.
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](./LICENSE) file for details.
+This project is licensed under the MIT License.
