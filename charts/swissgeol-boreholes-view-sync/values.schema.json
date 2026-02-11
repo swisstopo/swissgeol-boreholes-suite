@@ -1,0 +1,139 @@
+{
+  "$schema": "https://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+
+  "properties": {
+    "app": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "version": {
+          "type": "string",
+          "minLength": 1
+        },
+        "timezone": {
+          "type": ["string", "null"]
+        },
+        "schedule": {
+          "type": ["string", "null"],
+          "minLength": 1
+        }
+      },
+      "required": ["version"]
+    },
+
+    "automountServiceAccountToken": {
+      "type": "boolean",
+      "default": false
+    },
+
+    "podSecurityContext": {
+      "type": "object",
+      "default": {},
+      "additionalProperties": true
+    },
+
+    "securityContext": {
+      "type": "object",
+      "default": {},
+      "additionalProperties": true
+    },
+
+    "resources": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "requests": { "$ref": "#/definitions/resourceRequestsLimits" },
+        "limits": { "$ref": "#/definitions/resourceRequestsLimits" }
+      }
+    },
+
+    "db": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "source": { "$ref": "#/definitions/sourceDatabaseConnection" },
+        "target": { "$ref": "#/definitions/databaseConnection" }
+      }
+    },
+
+    "keel": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "enabled": { "type": ["boolean", "null"], "default": true },
+        "policy": { "type": ["string", "null"], "minLength": 1, "default": "force" },
+
+        "matchTag": {
+          "anyOf": [
+            { "type": "boolean" },
+            { "type": "string", "enum": ["true", "false", "'true'", "\"true\"", "'false'", "\"false\""] },
+            { "type": "null" }
+          ],
+          "default": "true"
+        },
+
+        "trigger": { "type": ["string", "null"], "minLength": 1, "default": "poll" }
+      }
+    }
+  },
+
+  "required": ["app"],
+
+  "definitions": {
+    "k8sQuantity": {
+      "type": "string",
+      "minLength": 1
+    },
+
+    "resourceRequestsLimits": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "cpu": { "$ref": "#/definitions/k8sQuantity" },
+        "memory": { "$ref": "#/definitions/k8sQuantity" },
+        "ephemeral-storage": { "$ref": "#/definitions/k8sQuantity" }
+      }
+    },
+
+    "databaseConnection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "host": { "type": ["string", "null"], "minLength": 1 },
+        "port": {
+          "anyOf": [
+            { "type": "integer", "minimum": 1, "maximum": 65535 },
+            { "type": "string", "pattern": "^[0-9]{1,5}$" },
+            { "type": "null" }
+          ],
+          "default": 5432
+        },
+        "name": { "type": ["string", "null"], "minLength": 1 },
+        "username": { "type": ["string", "null"], "minLength": 1 },
+        "password": { "type": ["string", "null"], "minLength": 1 }
+      }
+    },
+
+    "sourceDatabaseConnection": {
+      "type": "object",
+      "additionalProperties": false,
+      "properties": {
+        "host": { "type": ["string", "null"], "minLength": 1 },
+        "port": {
+          "anyOf": [
+            { "type": "integer", "minimum": 1, "maximum": 65535 },
+            { "type": "string", "pattern": "^[0-9]{1,5}$" },
+            { "type": "null" }
+          ],
+          "default": 5432
+        },
+        "name": { "type": ["string", "null"], "minLength": 1 },
+        "schema": { "type": ["string", "null"], "minLength": 1 },
+        "username": { "type": ["string", "null"], "minLength": 1 },
+        "password": { "type": ["string", "null"], "minLength": 1 }
+      }
+    }
+  }
+}
