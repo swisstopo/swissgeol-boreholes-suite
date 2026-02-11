@@ -67,7 +67,7 @@ public class ChronostratigraphyControllerTest
         Assert.AreEqual(11_000_014, chronostratigraphy.Id);
         Assert.AreEqual(40, chronostratigraphy.FromDepth);
         Assert.AreEqual(50, chronostratigraphy.ToDepth);
-        Assert.AreEqual(15_001_080, chronostratigraphy.ChronostratigraphyId);
+        Assert.AreEqual(100_002_934, chronostratigraphy.ChronostratigraphyId);
         Assert.AreEqual(6_000_001, chronostratigraphy.StratigraphyId);
     }
 
@@ -98,7 +98,7 @@ public class ChronostratigraphyControllerTest
             ToDepth = 100,
             Id = 11_000_039,
             Chronostratigraphy = null,
-            ChronostratigraphyId = 15_001_088,
+            ChronostratigraphyId = 100_002_943,
             Updated = new DateTime(2021, 6, 27, 4, 22, 39).ToUniversalTime(),
             UpdatedBy = null,
             UpdatedById = 5,
@@ -112,7 +112,7 @@ public class ChronostratigraphyControllerTest
             UpdatedById = 3,
             Created = new DateTime(2021, 4, 29, 15, 56, 01).ToUniversalTime(),
             StratigraphyId = 6_000_010,
-            ChronostratigraphyId = 15_001_057,
+            ChronostratigraphyId = 100_002_984,
         };
 
         var chronostratigraphyToEdit = context.ChronostratigraphyLayers.Single(c => c.Id == id);
@@ -131,7 +131,7 @@ public class ChronostratigraphyControllerTest
         Assert.AreEqual(3, updatedChronostratigraphy.CreatedById);
         Assert.AreEqual(1, updatedChronostratigraphy.UpdatedById);
         Assert.AreEqual(6_000_010, updatedChronostratigraphy.StratigraphyId);
-        Assert.AreEqual(15_001_057, updatedChronostratigraphy.ChronostratigraphyId);
+        Assert.AreEqual(100_002_984, updatedChronostratigraphy.ChronostratigraphyId);
     }
 
     [TestMethod]
