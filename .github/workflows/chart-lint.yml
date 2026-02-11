@@ -30,5 +30,8 @@ jobs:
       - name: Set up chart-testing
         uses: helm/chart-testing-action@6ec842c01de15ebb84c8627d2744a0c2f2755c9f # v2.8.0
 
-      - name: Lint charts
-        run: ct lint --config ct.yaml --helm-lint-extra-args "--set app.version=latest --set dataextraction.version=latest --set ocr.version=latest"
+      - name: Lint main chart
+        run: ct lint --config ct.yaml --charts charts/swissgeol-boreholes --helm-lint-extra-args "--set app.version=latest --set dataextraction.version=latest --set ocr.version=latest"
+
+      - name: Lint sync charts
+        run: ct lint --config ct.yaml --charts charts/swissgeol-boreholes-extern-sync,charts/swissgeol-boreholes-view-sync --helm-lint-extra-args "--set app.version=latest"
