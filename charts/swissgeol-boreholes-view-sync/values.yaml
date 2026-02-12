@@ -19,14 +19,9 @@ app:
 
 # Pod-level security settings
 automountServiceAccountToken: false
-podSecurityContext:
-  seccompProfile:
-    type: RuntimeDefault
+podSecurityContext: {}
 securityContext:
   allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-      - ALL
   seccompProfile:
     type: RuntimeDefault
 
