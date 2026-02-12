@@ -12,8 +12,6 @@ import { DrawerContentTypes } from "./overviewPageInterfaces.ts";
 import { ErrorResponse } from "./sidePanelContent/commons/actionsInterfaces.ts";
 import CustomLayersPanel from "./sidePanelContent/customLayers/customLayersPanel.jsx";
 import { FilterComponent } from "./sidePanelContent/filter/filterComponent.tsx";
-// TODO: Remove rule after fixing https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 import ImportPanel from "./sidePanelContent/importer/importPanel.tsx";
 import NewBoreholePanel from "./sidePanelContent/newBoreholePanel.tsx";
 
@@ -21,8 +19,6 @@ export const OverviewPage = () => {
   const [sideDrawerOpen, setSideDrawerOpen] = useState<boolean>(false);
   const location = useLocation();
   const [sideDrawerContent, setSideDrawerContent] = useState(DrawerContentTypes.Filters);
-  // TODO: Remove rule after fixing https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [errorsResponse, setErrorsResponse] = useState<ErrorResponse | null>(null);
   const [errorDialogOpen, setErrorDialogOpen] = useState<boolean>(false);
   const { analyticsId } = useContext<AnalyticsContextProps>(AnalyticsContext);
@@ -34,15 +30,14 @@ export const OverviewPage = () => {
     setSideDrawerOpen(open);
   };
 
-  // TODO: Re-add after fixing https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
-  // import: (
-  //   <ImportPanel
-  //     toggleDrawer={toggleSideDrawer}
-  //     setErrorsResponse={setErrorsResponse}
-  //     setErrorDialogOpen={setErrorDialogOpen}
-  //   />
-  // ),
   const sideDrawerComponentMap = {
+    import: (
+      <ImportPanel
+        toggleDrawer={toggleSideDrawer}
+        setErrorsResponse={setErrorsResponse}
+        setErrorDialogOpen={setErrorDialogOpen}
+      />
+    ),
     filters: (
       <FormProvider {...formMethods}>
         <FilterComponent toggleDrawer={toggleSideDrawer} formMethods={formMethods} />

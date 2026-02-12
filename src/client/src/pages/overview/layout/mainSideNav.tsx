@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Badge, Stack } from "@mui/material";
 import { Filter, Layers, Plus, Settings } from "lucide-react";
 import HelpIcon from "../../../assets/icons/help.svg?react";
+import UploadIcon from "../../../assets/icons/upload.svg?react";
 import { useAuth } from "../../../auth/useBdmsAuth.tsx";
 import { NavButton } from "../../../components/buttons/navButton.tsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
@@ -53,11 +54,10 @@ const MainSideNav = ({
     setSideDrawerContent(DrawerContentTypes.CustomLayers);
   };
 
-  // Todo reactivate import when lithology is fully migrated and importer is adapted to new api https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
-  // const handleToggleUpload = () => {
-  //   handleDrawer(DrawerContentTypes.Import);
-  //   setSideDrawerContent(DrawerContentTypes.Import);
-  // };
+  const handleToggleUpload = () => {
+    handleDrawer(DrawerContentTypes.Import);
+    setSideDrawerContent(DrawerContentTypes.Import);
+  };
 
   const handleDrawer = (buttonName: DrawerContentTypes) => {
     if (sideDrawerContent === buttonName) {
@@ -70,8 +70,7 @@ const MainSideNav = ({
   const isFilterPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.Filters;
   const isAddPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.NewBorehole;
   const isLayersPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.CustomLayers;
-  // Todo reactivate import when lithology is fully migrated and importer is adapted to new api https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
-  // const isUploadPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.Import;
+  const isUploadPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.Import;
   const editingDisabled = enabledWorkgroups.length === 0;
   const activeFilterCount = filterContext.activeFilterLength + (filterContext.filterPolygon === null ? 0 : 1);
 
@@ -109,15 +108,14 @@ const MainSideNav = ({
               disabled={editingDisabled}
               onClick={handleToggleAdd}
             />
-            {/*<NavButton*/}
-            {/*  data-cy="import-borehole-button"*/}
-            {/*  icon={<UploadIcon />}*/}
-            {/*  label={t("upload")}*/}
-            {/*  disabled={editingDisabled}*/}
-            {/*  selected={isUploadPanelVisible}*/}
-            {/*  onClick={handleToggleUpload}*/}
-            {/*/>*/}
-            {/*Todo reactivate import when lithology is fully migrated and importer is adapted to new api https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174*/}
+            <NavButton
+              data-cy="import-borehole-button"
+              icon={<UploadIcon />}
+              label={t("upload")}
+              disabled={editingDisabled}
+              selected={isUploadPanelVisible}
+              onClick={handleToggleUpload}
+            />
           </>
         )}
         <NavButton
