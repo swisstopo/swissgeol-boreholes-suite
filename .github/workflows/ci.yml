@@ -4,25 +4,12 @@ on:
   push:
   workflow_dispatch:
 
+permissions:
+  contents: read
+  checks: write
+  pull-requests: write
+
 jobs:
-  check-changes:
-    runs-on: ubuntu-latest
-    name: Check for source changes
-    outputs:
-      src-changed: ${{ steps.filter.outputs.src }}
-    steps:
-      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
-
-      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
-        id: filter
-        with:
-          filters: |
-            src:
-              - 'src/**'
-              - 'db/**'
-              - 'config/**'
-              - 'docker-compose.yml'
-
   ci:
     runs-on: ubuntu-latest
     name: Build and run tests
@@ -69,8 +56,6 @@ jobs:
         run: npm run lint
 
   cypress-tests:
-    needs: check-changes
-    if: needs.check-changes.outputs.src-changed == 'true'
     runs-on: ubuntu-latest
     name: Run cypress tests
     strategy:
@@ -95,10 +80,27 @@ jobs:
       - working-directory: ./src/client
         run: npm ci
 
-      - name: Cypress run
+      # Dependabot runs cannot access repository secrets, so we need two steps:
+      # one with recording (when the key is available) and one without.
+      - name: Cypress run (with recording)
+        if: secrets.CYPRESS_RECORD_KEY != ''
         uses: cypress-io/github-action@84d178e4bbce871e23f2ffa3085898cde0e4f0ec # v7.1.2
         with:
           command: npx cypress run --record --parallel --key ${{ secrets.CYPRESS_RECORD_KEY }} --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}}
+          build: npm run build
+          start: npm start
+          wait-on: "http://localhost:3000"
+          wait-on-timeout: 120
+          working-directory: ./src/client
+        env:
+          VITE_APP_VERSION: 0.0.99+dev
+          TZ: Europe/Zurich
+
+      - name: Cypress run (without recording)
+        if: secrets.CYPRESS_RECORD_KEY == ''
+        uses: cypress-io/github-action@84d178e4bbce871e23f2ffa3085898cde0e4f0ec # v7.1.2
+        with:
+          command: npx cypress run
           build: npm run build
           start: npm start
           wait-on: "http://localhost:3000"
