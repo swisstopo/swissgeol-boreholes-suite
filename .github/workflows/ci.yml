@@ -5,6 +5,24 @@ on:
   workflow_dispatch:
 
 jobs:
+  check-changes:
+    runs-on: ubuntu-latest
+    name: Check for source changes
+    outputs:
+      src-changed: ${{ steps.filter.outputs.src }}
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - uses: dorny/paths-filter@de90cc6fb38fc0963ad72b210f1f284cd68cea36 # v3.0.2
+        id: filter
+        with:
+          filters: |
+            src:
+              - 'src/**'
+              - 'db/**'
+              - 'config/**'
+              - 'docker-compose.yml'
+
   ci:
     runs-on: ubuntu-latest
     name: Build and run tests
@@ -51,6 +69,8 @@ jobs:
         run: npm run lint
 
   cypress-tests:
+    needs: check-changes
+    if: needs.check-changes.outputs.src-changed == 'true'
     runs-on: ubuntu-latest
     name: Run cypress tests
     strategy:
