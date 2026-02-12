@@ -54,7 +54,9 @@ public class ImportControllerTest
         var loggerBoreholeFileCloudService = new Mock<ILogger<BoreholeFileCloudService>>(MockBehavior.Strict);
         var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
-        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, context.Users.FirstOrDefault().SubjectId) }));
+        var testUser = context.Users.FirstOrDefault();
+        Assert.IsNotNull(testUser, "Test database must contain at least one user.");
+        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, testUser!.SubjectId) }));
         var boreholeFileCloudService = new BoreholeFileCloudService(context, configuration, loggerBoreholeFileCloudService.Object, contextAccessorMock.Object, s3ClientMock);
 
         boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
