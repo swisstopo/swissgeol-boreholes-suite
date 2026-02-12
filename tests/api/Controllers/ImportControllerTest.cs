@@ -28,8 +28,6 @@ public class ImportControllerTest
     private ImportController controller;
     private Mock<IHttpClientFactory> httpClientFactoryMock;
     private Mock<ILogger<ImportController>> loggerMock;
-    private Mock<ILogger<LocationService>> loggerLocationServiceMock;
-    private Mock<ILogger<CoordinateService>> loggerCoordinateServiceMock;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
@@ -41,10 +39,10 @@ public class ImportControllerTest
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
         loggerMock = new Mock<ILogger<ImportController>>();
 
-        loggerLocationServiceMock = new Mock<ILogger<LocationService>>(MockBehavior.Strict);
+        var loggerLocationServiceMock = new Mock<ILogger<LocationService>>(MockBehavior.Strict);
         var locationService = new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object);
 
-        loggerCoordinateServiceMock = new Mock<ILogger<CoordinateService>>(MockBehavior.Strict);
+        var loggerCoordinateServiceMock = new Mock<ILogger<CoordinateService>>(MockBehavior.Strict);
         var coordinateService = new CoordinateService(loggerCoordinateServiceMock.Object, httpClientFactoryMock.Object);
 
         var s3ClientMock = new AmazonS3Client(configuration["S3:ACCESS_KEY"], configuration["S3:SECRET_KEY"], new AmazonS3Config()
@@ -78,7 +76,7 @@ public class ImportControllerTest
         context.Stratigraphies.RemoveRange(addedStratigraphies);
         context.Layers.RemoveRange(addedLayers);
         context.Codelists.RemoveRange(context.Codelists.Where(c => c.Id == TestCodelistId));
-        context.SaveChanges();
+        await context.SaveChangesAsync().ConfigureAwait(false);
 
         await context.DisposeAsync();
         httpClientFactoryMock.Verify();
@@ -634,7 +632,7 @@ public class ImportControllerTest
     {
         // Add new borehole identifier to test dynamic ID import.
         context.Codelists.Add(new Codelist { Id = TestCodelistId, Schema = "borehole_identifier", Code = "new code", En = "Random New Id", Conf = null });
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync().ConfigureAwait(false);
 
         httpClientFactoryMock
             .Setup(cf => cf.CreateClient(It.IsAny<string>()))
@@ -650,11 +648,11 @@ public class ImportControllerTest
         Assert.AreEqual(6, okResult.Value);
 
         // Assert imported values
-        var borehole = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_6");
+        var borehole = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_6").ConfigureAwait(false);
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual("Unit_Test_6_a", borehole.Name);
         Assert.AreEqual(null, borehole.IsPublic);
-        Assert.AreEqual(new DateTime(2024, 06, 15), borehole.RestrictionUntil);
+        Assert.AreEqual(new DateTime(2024, 06, 15, 0, 0, 0, DateTimeKind.Utc), borehole.RestrictionUntil);
         Assert.AreEqual(2474.472693, borehole.TotalDepth);
         Assert.AreEqual("Projekt 6", borehole.ProjectName);
         Assert.AreEqual(5, borehole.BoreholeCodelists.Count);
@@ -691,7 +689,7 @@ public class ImportControllerTest
         Assert.AreEqual(6, okResult.Value);
 
         // Assert imported values
-        var borehole = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_2");
+        var borehole = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_2").ConfigureAwait(false);
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual(null, borehole.Name);
         Assert.AreEqual(null, borehole.IsPublic);
@@ -722,7 +720,7 @@ public class ImportControllerTest
         Assert.AreEqual(7, okResult.Value);
 
         // Assert imported values
-        var boreholeLV95 = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_2");
+        var boreholeLV95 = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_2").ConfigureAwait(false);
         Assert.AreEqual(ReferenceSystem.LV95, boreholeLV95.OriginalReferenceSystem);
         Assert.AreEqual(2000010.12, boreholeLV95.LocationX);
         Assert.AreEqual(1000010.1, boreholeLV95.LocationY);
@@ -731,7 +729,7 @@ public class ImportControllerTest
         Assert.AreEqual(2, boreholeLV95.PrecisionLocationXLV03);
         Assert.AreEqual(2, boreholeLV95.PrecisionLocationYLV03);
 
-        var boreholeLV03 = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_6");
+        var boreholeLV03 = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_6").ConfigureAwait(false);
         Assert.AreEqual(ReferenceSystem.LV03, boreholeLV03.OriginalReferenceSystem.Value);
         Assert.AreEqual(20050.12, boreholeLV03.LocationXLV03);
         Assert.AreEqual(10050.12345, boreholeLV03.LocationYLV03);
@@ -740,7 +738,7 @@ public class ImportControllerTest
         Assert.AreEqual(5, boreholeLV03.PrecisionLocationX);
         Assert.AreEqual(5, boreholeLV03.PrecisionLocationY);
 
-        var boreholeWithZeros = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_7");
+        var boreholeWithZeros = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_7").ConfigureAwait(false);
         Assert.AreEqual(ReferenceSystem.LV03, boreholeWithZeros.OriginalReferenceSystem.Value);
         Assert.AreEqual(20060.000, boreholeWithZeros.LocationXLV03);
         Assert.AreEqual(10060.0000, boreholeWithZeros.LocationYLV03);
@@ -767,7 +765,7 @@ public class ImportControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.OrderByDescending(b => b.Id).FirstOrDefault();
+        var borehole = await context.Boreholes.OrderByDescending(b => b.Id).FirstOrDefaultAsync();
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual("Unit_Test_special_chars_1", borehole.OriginalName);
         Assert.AreEqual("„ÖÄÜöäü-*#%&7{}[]()='~^><\\@¦+Š", borehole.ProjectName);
@@ -804,7 +802,7 @@ public class ImportControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.Single(b => b.OriginalName != null && b.OriginalName.Contains("LV95 - All coordinates set"));
+        var borehole = await context.Boreholes.SingleAsync(b => b.OriginalName != null && b.OriginalName.Contains("LV95 - All coordinates set")).ConfigureAwait(false);
         Assert.AreEqual(ReferenceSystem.LV95, borehole.OriginalReferenceSystem);
         Assert.AreEqual(2631690, borehole.LocationX);
         Assert.AreEqual(1170516, borehole.LocationY);
@@ -833,7 +831,7 @@ public class ImportControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.Single(b => b.OriginalName != null && b.OriginalName.Contains("LV03 - All coordinates set"));
+        var borehole = await context.Boreholes.SingleAsync(b => b.OriginalName != null && b.OriginalName.Contains("LV03 - All coordinates set")).ConfigureAwait(false);
         Assert.AreEqual(ReferenceSystem.LV03, borehole.OriginalReferenceSystem);
         Assert.AreEqual(2649258.1270818082, borehole.LocationX);
         Assert.AreEqual(1131551.4611465326, borehole.LocationY);
@@ -862,7 +860,7 @@ public class ImportControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.Single(b => b.OriginalName != null && b.OriginalName.Contains("LV03 - LV03 x out of range"));
+        var borehole = await context.Boreholes.SingleAsync(b => b.OriginalName != null && b.OriginalName.Contains("LV03 - LV03 x out of range")).ConfigureAwait(false);
         Assert.AreEqual(ReferenceSystem.LV03, borehole.OriginalReferenceSystem);
         Assert.AreEqual(2999999, borehole.LocationX);
         Assert.AreEqual(1, borehole.LocationY);
@@ -1025,7 +1023,7 @@ public class ImportControllerTest
             TotalDepth = 1000,
             WorkgroupId = 1,
         });
-        context.SaveChanges();
+        await context.SaveChangesAsync().ConfigureAwait(false);
 
         var boreholeCsvFile = GetFormFileByExistingFile("duplicateBoreholesInDb.csv");
 
@@ -1047,8 +1045,8 @@ public class ImportControllerTest
            .Returns(() => new HttpClient())
            .Verifiable();
 
-        var maxWorkgroudId = context.Workgroups.Max(w => w.Id);
-        var minWorkgroudId = context.Workgroups.Min(w => w.Id);
+        var maxWorkgroudId = await context.Workgroups.MaxAsync(w => w.Id).ConfigureAwait(false);
+        var minWorkgroudId = await context.Workgroups.MinAsync(w => w.Id).ConfigureAwait(false);
 
         // Create Boreholes with same LocationX, LocationY and TotalDepth as in provided csv, but different WorkgroupId as provided
         context.Boreholes.Add(new Borehole
@@ -1066,7 +1064,7 @@ public class ImportControllerTest
             LocationY = 1500000,
             TotalDepth = null,
         });
-        context.SaveChanges();
+        await context.SaveChangesAsync().ConfigureAwait(false);
 
         var boreholeCsvFile = GetFormFileByExistingFile("duplicateBoreholesInDbButDifferentWorkgroup.csv");
 
@@ -1105,7 +1103,7 @@ public class ImportControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.Single(b => b.OriginalName == "ACORNFLEA");
+        var borehole = await context.Boreholes.SingleAsync(b => b.OriginalName == "ACORNFLEA").ConfigureAwait(false);
         Assert.AreEqual(null, borehole.Canton);
         Assert.AreEqual(null, borehole.Country);
         Assert.AreEqual(null, borehole.Municipality);
