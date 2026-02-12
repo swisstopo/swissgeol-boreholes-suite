@@ -142,18 +142,6 @@
       "additionalProperties": true
     },
 
-    "apiLegacyPodSecurityContext": {
-      "type": "object",
-      "default": {},
-      "additionalProperties": true
-    },
-
-    "apiLegacySecurityContext": {
-      "type": "object",
-      "default": {},
-      "additionalProperties": true
-    },
-
     "resources": {
       "type": "object",
       "additionalProperties": false,
