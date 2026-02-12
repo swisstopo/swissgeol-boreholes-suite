@@ -38,6 +38,9 @@ spec:
               securityContext:
                 {{- toYaml .Values.securityContext | nindent 16 }}
               {{- end }}
+              volumeMounts:
+              - name: tmp
+                mountPath: /tmp
               env:
                 - name: CONNECTIONSTRINGS__SourceBdmsContext
                   valueFrom:
@@ -64,5 +67,8 @@ spec:
                     configMapKeyRef:
                       name: {{ .Release.Name }}-config
                       key: timezone
+          volumes:
+          - name: tmp
+            emptyDir: {}
           restartPolicy: Never
       backoffLimit: 4
