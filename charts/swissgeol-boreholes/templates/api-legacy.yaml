@@ -23,9 +23,9 @@ spec:
         app: {{ .Release.Name }}-api-legacy
     spec:
       automountServiceAccountToken: {{ .Values.automountServiceAccountToken }}
-      {{- if .Values.podSecurityContext }}
+      {{- with (.Values.apiLegacyPodSecurityContext | default .Values.podSecurityContext) }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
+        {{- toYaml . | nindent 8 }}
       {{- end }}
       containers:
         - name: {{ .Release.Name }}-api-legacy
@@ -53,9 +53,9 @@ spec:
             failureThreshold: 30
           resources:
             {{- toYaml .Values.resources.apiLegacy | nindent 12 }}
-          {{- if .Values.securityContext }}
+          {{- with (.Values.apiLegacySecurityContext | default .Values.securityContext) }}
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
+            {{- toYaml . | nindent 12 }}
           {{- end }}
           env:
             - name: DB_HOST
