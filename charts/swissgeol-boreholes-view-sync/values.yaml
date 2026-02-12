@@ -17,10 +17,18 @@ app:
   # -- defaults to "0 0 * * *" which means every day at midnight
   schedule:
 
-# Pod-level security settings (optional)
+# Pod-level security settings
 automountServiceAccountToken: false
-podSecurityContext: {}
-securityContext: {}
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
 
 # Resource requests and limits
 resources:
