@@ -91,10 +91,33 @@ database:
 #
 replicaCount: 1
 
-# Pod-level security settings (optional)
+# Pod-level security settings
 automountServiceAccountToken: false
-podSecurityContext: {}
-securityContext: {}
+podSecurityContext:
+  runAsNonRoot: true
+  seccompProfile:
+    type: RuntimeDefault
+securityContext:
+  allowPrivilegeEscalation: false
+  runAsNonRoot: true
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
+
+# Security context override for api-legacy which runs as root.
+# Remove this section when api-legacy is dismantled.
+apiLegacyPodSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
+apiLegacySecurityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
 
 # Resource requests and limits per component
 resources:
