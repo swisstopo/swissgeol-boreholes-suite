@@ -63,10 +63,6 @@ public class ImportController : ControllerBase
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<ActionResult<int>> UploadCsvFileAsync(int workgroupId, IFormFile boreholesFile)
     {
-        // TODO: Remove after fixing https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
-        return Problem("Import currently not available.");
-
-        #pragma warning disable CS0162 // Unreachable code detected
         if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
         {
             return Unauthorized();
