@@ -90,7 +90,7 @@ Um eine bestimmte Version als Release Candidate zu kennzeichnen, kann der GitHub
 2. Auf _Run workflow_ klicken.
 3. Die Quellversion eingeben (z.B. `2.1.1427` ohne `v`).
 
-Der Workflow erstellt dann für alle Docker-Images (Client, API, etc.) einen neuen Tag (z.B. `:v2.1.1427-rc`).
+Der Workflow erstellt dann für alle Docker-Images (Client, API, etc.) einen neuen Tag (z.B. `:v2.1.1427-rc`) sowie einen stabilen Major-Version-Tag (z.B. `:v2`).
 
 ### Hotfix-Release erstellen
 
@@ -103,6 +103,7 @@ Ein Hotfix-Release wird erstellt, indem vom letzten Release-Git-Tag ein neuer Br
 | `:edge` | Neuester Stand aus `main` (letzter Pre-release) |
 | `:v<version>` | Bestimmte Version, z.B. `:v2.1.1427` |
 | `:v<version>-rc` | Release Candidate einer bestimmten Version, z.B. `:v2.1.1427-rc` |
+| `:v<major>` | Stabile Major-Version, z.B. `:v2` (wird beim Release Candidate aktualisiert) |
 | `:latest` | Aktuelle produktive Version (PROD-Release) |
 
 ## Developer best practices
