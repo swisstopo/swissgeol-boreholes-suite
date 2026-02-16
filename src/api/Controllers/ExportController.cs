@@ -68,7 +68,7 @@ public class ExportController : ControllerBase
 
         if (!await HasViewPermissionsForAllBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
 
-        MapLithologyCodelists(boreholes);
+        MapCodelists(boreholes);
         return new JsonResult(boreholes, jsonExportOptions);
     }
 
@@ -319,7 +319,7 @@ public class ExportController : ControllerBase
 
         if (!await HasViewPermissionsForAllBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
 
-        MapLithologyCodelists(boreholes);
+        MapCodelists(boreholes);
 
         try
         {
@@ -390,11 +390,38 @@ public class ExportController : ControllerBase
             .ConfigureAwait(false);
     }
 
-    private static void MapLithologyCodelists(IEnumerable<Borehole> boreholes)
+    private static void MapCodelists(IEnumerable<Borehole> boreholes)
     {
         foreach (var borehole in boreholes)
         {
             MapLithologyCodelists(borehole);
+            MapHydrotestCodelists(borehole);
+            MapLogFileCodelists(borehole);
+        }
+    }
+
+    private static void MapLogFileCodelists(Borehole borehole)
+    {
+        foreach (var logRun in borehole.LogRuns)
+        {
+            foreach (var logFile in logRun.LogFiles)
+            {
+                logFile.ToolTypeCodelistIds = logFile.LogFileToolTypeCodes?.Select(c => c.CodelistId).ToList();
+            }
+        }
+    }
+
+    private static void MapHydrotestCodelists(Borehole borehole)
+    {
+        foreach (var observation in borehole.Observations ?? [])
+        {
+            if (observation.Type == ObservationType.Hydrotest)
+            {
+                var hydroTest = observation as Hydrotest;
+                hydroTest.EvaluationMethodCodelistIds = hydroTest.HydrotestEvaluationMethodCodes?.Select(c => c.CodelistId).ToList();
+                hydroTest.FlowDirectionCodelistIds = hydroTest.HydrotestFlowDirectionCodes?.Select(c => c.CodelistId).ToList();
+                hydroTest.KindCodelistIds = hydroTest.HydrotestKindCodes?.Select(c => c.CodelistId).ToList();
+            }
         }
     }
 
