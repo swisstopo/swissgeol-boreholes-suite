@@ -15,8 +15,7 @@ describe("Viewer tests", () => {
     loginAsViewer();
     showTableAndWaitForData();
 
-    // TODO: Re-add when import is fixed https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
-    // cy.dataCy("import-borehole-button").should("have.class", "Mui-disabled");
+    cy.dataCy("import-borehole-button").should("have.class", "Mui-disabled");
     cy.dataCy("new-borehole-button").should("have.class", "Mui-disabled");
 
     // click on borehole
