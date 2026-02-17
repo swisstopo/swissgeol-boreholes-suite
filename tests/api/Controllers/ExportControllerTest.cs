@@ -130,32 +130,12 @@ public class ExportControllerTest
         var originalBorehole = await context.BoreholesWithIncludes.AsNoTracking().SingleAsync(b => b.Id == boreholeId);
         PopulateCodelistCollectionsFromJoinTables(originalBorehole);
 
-        var response = await controller.ExportJsonAsync([originalBorehole.Id]).ConfigureAwait(false);
-        JsonResult jsonResult = (JsonResult)response!;
-        Assert.IsNotNull(jsonResult.Value);
-        List<Borehole> boreholes = (List<Borehole>)jsonResult.Value;
-        Assert.AreEqual(1, boreholes.Count);
+        var exportedBorehole = await ExportSingleBoreholeAsync(originalBorehole.Id);
 
-        var exported = boreholes.Single();
+        ReorderBoreholeForComparison(originalBorehole);
+        ReorderBoreholeForComparison(exportedBorehole);
 
-        // Make order of casings deterministic for comparison
-        if (originalBorehole.Completions != null)
-        {
-            foreach (var completion in originalBorehole.Completions)
-            {
-                completion.Casings = completion.Casings?.OrderBy(c => c.Name).ToList();
-            }
-        }
-
-        if (exported.Completions != null)
-        {
-            foreach (var completion in exported.Completions)
-            {
-                completion.Casings = completion.Casings?.OrderBy(c => c.Name).ToList();
-            }
-        }
-
-        AssertEntitiesEqualByIncludeInExportAttribute(originalBorehole, exported, new HashSet<object?>());
+        AssertEntitiesEqualByIncludeInExportAttribute(originalBorehole, exportedBorehole, new HashSet<object?>());
     }
 
     [TestMethod]
@@ -237,16 +217,10 @@ public class ExportControllerTest
         context.Add(newBorehole);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        var response = await controller.ExportJsonAsync([newBorehole.Id]).ConfigureAwait(false);
-        JsonResult jsonResult = (JsonResult)response!;
-        Assert.IsNotNull(jsonResult.Value);
-        List<Borehole> boreholes = (List<Borehole>)jsonResult.Value;
-        Assert.AreEqual(1, boreholes.Count);
-        var exportedBorehole = boreholes.Single();
+        var exportedBorehole = await ExportSingleBoreholeAsync(newBorehole.Id);
 
-        // Make order of observations deterministic for comparison
-        newBorehole.Observations = newBorehole.Observations?.OrderBy(o => o.Type).ToList();
-        exportedBorehole.Observations = exportedBorehole.Observations?.OrderBy(o => o.Type).ToList();
+        ReorderBoreholeForComparison(newBorehole);
+        ReorderBoreholeForComparison(exportedBorehole);
 
         AssertEntitiesEqualByIncludeInExportAttribute(newBorehole, exportedBorehole, new HashSet<object?>());
     }
@@ -260,17 +234,9 @@ public class ExportControllerTest
     public async Task ExportAndReimportJson(int boreholeId)
     {
         var originalBorehole = await context.BoreholesWithIncludes.AsNoTracking().SingleAsync(b => b.Id == boreholeId);
-
         PopulateCodelistCollectionsFromJoinTables(originalBorehole);
 
-        // Export to JSON
-        var exportResponse = await controller.ExportJsonAsync([originalBorehole.Id]).ConfigureAwait(false);
-        JsonResult jsonResult = (JsonResult)exportResponse!;
-        Assert.IsNotNull(jsonResult.Value);
-        List<Borehole> exportedBoreholes = (List<Borehole>)jsonResult.Value;
-        Assert.AreEqual(1, exportedBoreholes.Count);
-
-        var exportedBorehole = exportedBoreholes.Single();
+        var exportedBorehole = await ExportSingleBoreholeAsync(originalBorehole.Id);
 
         ReorderBoreholeForComparison(originalBorehole);
         ReorderBoreholeForComparison(exportedBorehole);
@@ -288,7 +254,7 @@ public class ExportControllerTest
             },
         };
 
-        var jsonToImport = JsonSerializer.Serialize(exportedBoreholes, jsonExportOptions);
+        var jsonToImport = JsonSerializer.Serialize(new List<Borehole> { exportedBorehole }, jsonExportOptions);
         var tempFilePath = Path.Combine(Path.GetTempPath(), $"borehole_export_{boreholeId}_{Guid.NewGuid()}.json");
 
         try
@@ -934,6 +900,16 @@ public class ExportControllerTest
                 completion.Casings = completion.Casings?.OrderBy(c => c.Name).ToList();
             }
         }
+    }
+
+    private async Task<Borehole> ExportSingleBoreholeAsync(int boreholeId)
+    {
+        var response = await controller.ExportJsonAsync([boreholeId]).ConfigureAwait(false);
+        JsonResult jsonResult = (JsonResult)response!;
+        Assert.IsNotNull(jsonResult.Value);
+        List<Borehole> boreholes = (List<Borehole>)jsonResult.Value;
+        Assert.AreEqual(1, boreholes.Count);
+        return boreholes.Single();
     }
 
     private Borehole GetBoreholeToAdd()
