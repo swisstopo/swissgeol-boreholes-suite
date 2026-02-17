@@ -157,7 +157,6 @@ public class ImportController : ControllerBase
             logger.LogError(ex, "Error while importing borehole(s) to workgroup with id <{WorkgroupId}>.", workgroupId);
             return Problem("Error while importing borehole(s).");
         }
-        #pragma warning restore CS0162 // Unreachable code detected
     }
 
     /// <summary>
@@ -199,10 +198,6 @@ public class ImportController : ControllerBase
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<ActionResult<int>> UploadZipFileAsync(int workgroupId, IFormFile boreholesFile)
     {
-        // TODO: Remove after fixing https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
-        return Problem("Import currently not available.");
-
-        #pragma warning disable CS0162 // Unreachable code detected
         if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
         {
             return Unauthorized();
