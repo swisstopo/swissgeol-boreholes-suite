@@ -95,8 +95,8 @@ const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpen }: Im
             <BoreholeImportDropzone
               file={file}
               setFile={setFile}
-              // Todo reactivate import when lithology is fully migrated and importer is adapted to new api https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
-              acceptedFileTypes={["text/csv"]} // "application/json",  "application/zip", "application/x-zip-compressed"
+              // Todo reactivate .zip import when lithology is fully migrated and importer is adapted to new api https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
+              acceptedFileTypes={["text/csv", "application/json"]} //  "application/zip", "application/x-zip-compressed"
             />
             <Box>
               <Link sx={{ cursor: "pointer" }} variant="subtitle1" onClick={downloadCodelistCsv}>

@@ -106,7 +106,7 @@ export const BoreholeImportDropzone = ({ file, setFile, acceptedFileTypes }: Bor
               <Stack alignItems={"center"}>
                 <DropZoneTypography text={t("clickOrDragAndDrop")} />
                 {/*Todo reactivate all formats (JSON, CSV, ZIP) when lithology is fully migrated and importer is adapted to new api https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174*/}
-                <DropZoneTypography text={t("allowedFormats") + ": CSV"} />
+                <DropZoneTypography text={t("allowedFormats") + ": CSV, JSON"} />
                 <DropZoneTypography text={t("fileLimit1File200Mb")} />
                 <DropZoneTypography text={t("needHelpSeeDocumentation")} />
               </Stack>
