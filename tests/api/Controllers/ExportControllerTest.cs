@@ -789,7 +789,7 @@ public class ExportControllerTest
 
         foreach (var logrun in newBorehole.LogRuns ?? [])
         {
-            foreach (var logFile in logrun.LogFiles)
+            foreach (var logFile in logrun.LogFiles ?? [])
             {
                 logFile.ToolTypeCodelistIds = logFile.LogFileToolTypeCodes?.Select(c => c.CodelistId).ToList();
             }

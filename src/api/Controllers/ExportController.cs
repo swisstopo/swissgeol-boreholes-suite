@@ -402,9 +402,9 @@ public class ExportController : ControllerBase
 
     private static void MapLogFileCodelists(Borehole borehole)
     {
-        foreach (var logRun in borehole.LogRuns)
+        foreach (var logRun in borehole.LogRuns ?? [])
         {
-            foreach (var logFile in logRun.LogFiles)
+            foreach (var logFile in logRun.LogFiles ?? [])
             {
                 logFile.ToolTypeCodelistIds = logFile.LogFileToolTypeCodes?.Select(c => c.CodelistId).ToList();
             }
@@ -427,15 +427,15 @@ public class ExportController : ControllerBase
 
     private static void MapLithologyCodelists(Borehole borehole)
     {
-        foreach (var stratigraphy in borehole.Stratigraphies)
+        foreach (var stratigraphy in borehole.Stratigraphies ?? [])
         {
-            foreach (var lithology in stratigraphy.Lithologies)
+            foreach (var lithology in stratigraphy.Lithologies ?? [])
             {
                 lithology.RockConditionCodelistIds = lithology.LithologyRockConditionCodes?.Select(code => code.CodelistId).ToList();
                 lithology.UscsTypeCodelistIds = lithology.LithologyUscsTypeCodes?.Select(code => code.CodelistId).ToList();
                 lithology.TextureMetaCodelistIds = lithology.LithologyTextureMetaCodes?.Select(code => code.CodelistId).ToList();
 
-                foreach (var description in lithology.LithologyDescriptions)
+                foreach (var description in lithology.LithologyDescriptions ?? [])
                 {
                     description.ComponentUnconOrganicCodelistIds = description.LithologyDescriptionComponentUnconOrganicCodes?.Select(code => code.CodelistId).ToList();
                     description.ComponentUnconDebrisCodelistIds = description.LithologyDescriptionComponentUnconDebrisCodes?.Select(code => code.CodelistId).ToList();
