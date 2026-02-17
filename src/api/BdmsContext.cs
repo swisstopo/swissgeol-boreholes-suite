@@ -76,7 +76,7 @@ public class BdmsContext : DbContext
         .Include(l => l.LithologyTextureMetaCodes)
         .Include(l => l.TextureMetaCodelists)
         .Include(l => l.LithologyUscsTypeCodes)
-        .Include(l => l.UscsTypeCodelistIds)
+        .Include(l => l.UscsTypeCodelists)
         .Include(l => l.LithologyDescriptions)
         .ThenInclude(ld => ld.LithologyDescriptionComponentUnconOrganicCodes)
         .Include(l => l.LithologyDescriptions)
