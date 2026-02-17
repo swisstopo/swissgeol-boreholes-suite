@@ -5,7 +5,6 @@ using CsvHelper;
 using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.CodeAnalysis;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.IO.Converters;
 using System.Globalization;
@@ -173,10 +172,6 @@ public class ImportController : ControllerBase
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
     public async Task<ActionResult<int>> UploadJsonFileAsync(int workgroupId, IFormFile boreholesFile)
     {
-        // TODO: Remove after fixing https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
-        return Problem("Import currently not available.");
-
-        #pragma warning disable CS0162 // Unreachable code detected
         if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
         {
             return Unauthorized();
@@ -189,7 +184,6 @@ public class ImportController : ControllerBase
         var boreholes = await DeserializeBoreholeDataAsync(boreholesFile.OpenReadStream()).ConfigureAwait(false);
         if (boreholes == null) return BadRequest("The provided file is not an array of boreholes or is not in a valid JSON format.");
         return await ProcessAndSaveBoreholesAsync(workgroupId, boreholes).ConfigureAwait(false);
-        #pragma warning restore CS0162 // Unreachable code detected
     }
 
     /// <summary>
@@ -240,7 +234,6 @@ public class ImportController : ControllerBase
 
         await UploadAttachmentsAsync(zipArchive, boreholeFiles).ConfigureAwait(false);
         return !ModelState.IsValid ? ValidationProblem() : result;
-        #pragma warning restore CS0162 // Unreachable code detected
     }
 
     private void InitializeImport(int workgroupId, string fileType)
@@ -299,15 +292,10 @@ public class ImportController : ControllerBase
 
         foreach (var borehole in boreholes)
         {
-            /*
-             * TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
-            Re-enable the commented code when import is fixed.
             borehole.MarkBoreholeContentAsNew(user, workgroupId);
-
             MapHydrotestCodelists(borehole, hydrotestCodelists);
-
             MapLithologyCodelists(borehole);
-            */
+            MapLogCodelists(borehole);
         }
     }
 
@@ -407,6 +395,17 @@ public class ImportController : ControllerBase
             .ConfigureAwait(false);
     }
 
+    private static void MapLogCodelists(BoreholeImport borehole)
+    {
+        foreach (var logRun in borehole.LogRuns ?? [])
+        {
+            foreach (var logFile in logRun.LogFiles ?? [])
+            {
+                logFile.LogFileToolTypeCodes = logFile.ToolTypeCodelistIds?.Select(id => new LogFileToolTypeCodes { CodelistId = id }).ToList();
+            }
+        }
+    }
+
     private static void MapHydrotestCodelists(BoreholeImport borehole, List<Codelist> hydrotestCodelists)
     {
         var hydroTests = borehole.Observations?.OfType<Hydrotest>().ToList();
@@ -424,13 +423,13 @@ public class ImportController : ControllerBase
     {
         foreach (var stratigraphy in borehole.Stratigraphies)
         {
-            foreach (var lithology in stratigraphy.Lithologies)
+            foreach (var lithology in stratigraphy.Lithologies ?? [])
             {
                 lithology.LithologyRockConditionCodes = lithology.RockConditionCodelistIds?.Select(id => new LithologyRockConditionCodes { CodelistId = id }).ToList();
                 lithology.LithologyUscsTypeCodes = lithology.UscsTypeCodelistIds?.Select(id => new LithologyUscsTypeCodes { CodelistId = id }).ToList();
                 lithology.LithologyTextureMetaCodes = lithology.TextureMetaCodelistIds?.Select(id => new LithologyTextureMetaCodes { CodelistId = id }).ToList();
 
-                foreach (var description in lithology.LithologyDescriptions)
+                foreach (var description in lithology.LithologyDescriptions ?? [])
                 {
                     description.LithologyDescriptionComponentUnconOrganicCodes = description.ComponentUnconOrganicCodelistIds?.Select(id => new LithologyDescriptionComponentUnconOrganicCodes { CodelistId = id }).ToList();
                     description.LithologyDescriptionComponentUnconDebrisCodes = description.ComponentUnconDebrisCodelistIds?.Select(id => new LithologyDescriptionComponentUnconDebrisCodes { CodelistId = id }).ToList();

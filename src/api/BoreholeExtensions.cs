@@ -163,14 +163,14 @@ public static class BoreholeExtensions
 
         foreach (var stratigraphy in borehole.Stratigraphies)
         {
-            foreach (var lithology in stratigraphy.Lithologies)
+            foreach (var lithology in stratigraphy.Lithologies ?? [])
             {
                 // LithologyId needs to be reset because it is part of the primary key
                 lithology.LithologyRockConditionCodes?.ResetLithologyIds();
                 lithology.LithologyUscsTypeCodes?.ResetLithologyIds();
                 lithology.LithologyTextureMetaCodes?.ResetLithologyIds();
 
-                foreach (var description in lithology.LithologyDescriptions)
+                foreach (var description in lithology.LithologyDescriptions ?? [])
                 {
                     // LithologyDescriptionId needs to be reset because it is part of the primary key
                     description.LithologyDescriptionComponentUnconOrganicCodes?.ResetLithologyDescriptionIds();
