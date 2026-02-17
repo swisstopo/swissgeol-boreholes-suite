@@ -887,11 +887,17 @@ public class ExportControllerTest
     private static void ReorderBoreholeForComparison(Borehole borehole)
     {
         borehole.Observations = borehole.Observations?.Where(o => o.Type != ObservationType.None).OrderBy(o => o.Type).ToList();
-        if (borehole.Completions != null)
+
+        foreach (var completion in borehole.Completions ?? [])
         {
-            foreach (var completion in borehole.Completions)
+            completion.Casings = completion.Casings?.OrderBy(c => c.Name).ToList();
+        }
+
+        foreach (var logRun in borehole.LogRuns ?? [])
+        {
+            foreach (var logFiles in logRun.LogFiles ?? [])
             {
-                completion.Casings = completion.Casings?.OrderBy(c => c.Name).ToList();
+                logFiles.ToolTypeCodelistIds = logFiles.ToolTypeCodelistIds.OrderBy(lf => lf).ToList();
             }
         }
     }
