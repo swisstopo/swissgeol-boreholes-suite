@@ -21,7 +21,6 @@ jobs:
           echo BASE_IMAGE_NAME=$REGISTRY/$(echo ${GITHUB_REPOSITORY,,}) >> $GITHUB_ENV
           echo SOURCE_TAG=v${{ github.event.inputs.VERSION }} >> $GITHUB_ENV
           echo RC_TAG=v${{ github.event.inputs.VERSION }}-rc >> $GITHUB_ENV
-          echo MAJOR_TAG=v$(echo "${{ github.event.inputs.VERSION }}" | cut -d. -f1) >> $GITHUB_ENV
 
       - name: Log in to the GitHub container registry
         uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
@@ -30,12 +29,10 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Pull, tag with RC suffix and major version, and push Docker images
+      - name: Pull, tag with RC suffix and push Docker images
         run: |
           for image in api-legacy api client view-sync extern-sync; do
             docker pull ${BASE_IMAGE_NAME}-${image}:${SOURCE_TAG}
             docker tag ${BASE_IMAGE_NAME}-${image}:${SOURCE_TAG} ${BASE_IMAGE_NAME}-${image}:${RC_TAG}
-            docker tag ${BASE_IMAGE_NAME}-${image}:${SOURCE_TAG} ${BASE_IMAGE_NAME}-${image}:${MAJOR_TAG}
             docker push ${BASE_IMAGE_NAME}-${image}:${RC_TAG}
-            docker push ${BASE_IMAGE_NAME}-${image}:${MAJOR_TAG}
           done
