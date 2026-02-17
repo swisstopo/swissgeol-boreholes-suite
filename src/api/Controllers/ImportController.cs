@@ -421,7 +421,7 @@ public class ImportController : ControllerBase
 
     private static void MapLithologyCodelists(BoreholeImport borehole)
     {
-        foreach (var stratigraphy in borehole.Stratigraphies)
+        foreach (var stratigraphy in borehole.Stratigraphies ?? [])
         {
             foreach (var lithology in stratigraphy.Lithologies ?? [])
             {
