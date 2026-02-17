@@ -35,9 +35,15 @@ public class ExportControllerTest
     private ExportController controller;
     private ImportController importController;
     private User adminUser;
-    private static readonly JsonSerializerOptions jsonImportOptions = new()
+    private static readonly JsonSerializerOptions jsonOptions = new()
     {
+        WriteIndented = true,
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter(), new GeoJsonConverterFactory() },
+        TypeInfoResolver = new DefaultJsonTypeInfoResolver
+        {
+            Modifiers = { JsonExportHelper.RequireIncludeInExportAttribute },
+        },
     };
 
     [TestInitialize]
@@ -242,19 +248,7 @@ public class ExportControllerTest
         ReorderBoreholeForComparison(exportedBorehole);
         AssertEntitiesEqualByIncludeInExportAttribute(originalBorehole, exportedBorehole, new HashSet<object?>());
 
-        // Serialize to JSON and save to temporary file
-        JsonSerializerOptions jsonExportOptions = new()
-        {
-            WriteIndented = true,
-            ReferenceHandler = ReferenceHandler.IgnoreCycles,
-            Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter(), new GeoJsonConverterFactory() },
-            TypeInfoResolver = new DefaultJsonTypeInfoResolver
-            {
-                Modifiers = { JsonExportHelper.RequireIncludeInExportAttribute },
-            },
-        };
-
-        var jsonToImport = JsonSerializer.Serialize(new List<Borehole> { exportedBorehole }, jsonExportOptions);
+        var jsonToImport = JsonSerializer.Serialize(new List<Borehole> { exportedBorehole }, jsonOptions);
         var tempFilePath = Path.Combine(Path.GetTempPath(), $"borehole_export_{boreholeId}_{Guid.NewGuid()}.json");
 
         try
@@ -284,8 +278,8 @@ public class ExportControllerTest
             AssertEntitiesEqualByIncludeInExportAttribute(originalBorehole, importedBorehole, new HashSet<object?>(), true);
 
             // Compare serialized Json values.
-            var serializedOriginal = SerializeComparableJson(originalBorehole, jsonExportOptions);
-            var serializedImported = SerializeComparableJson(importedBorehole, jsonExportOptions);
+            var serializedOriginal = SerializeComparableJson(originalBorehole);
+            var serializedImported = SerializeComparableJson(importedBorehole);
             Assert.AreEqual(serializedOriginal, serializedImported, "Serialized JSON of original and imported borehole differ, indicating a mismatch in the export/import process.");
         }
         finally
@@ -344,7 +338,7 @@ public class ExportControllerTest
         Assert.IsNotNull(pdfFile, "The ZIP file does not contain a PDF file.");
 
         using var jsonStream = jsonFile.Open();
-        var boreholes = await JsonSerializer.DeserializeAsync<List<Borehole>>(jsonStream, jsonImportOptions).ConfigureAwait(false);
+        var boreholes = await JsonSerializer.DeserializeAsync<List<Borehole>>(jsonStream, jsonOptions).ConfigureAwait(false);
         var borehole = boreholes.Single();
 
         // Check some properties of deserialized borehole
@@ -883,11 +877,11 @@ public class ExportControllerTest
         }
     }
 
-    private static string SerializeComparableJson(Borehole borehole, JsonSerializerOptions jsonExportOptions)
+    private static string SerializeComparableJson(Borehole borehole)
     {
         // Remove ids and change tracking attributes before comparing
         var attributesToRemove = new[] { "Id", "BoreholeId", "StratigraphyId", "LithologyId", "LithologyDescriptionId", "CompletionId", "Created", "CreatedById", "Updated", "UpdatedById", "CreatedAt", "SectionId", "FileId", "LogRunId", "WorkgroupId", "UserId", "CasingId", "LockedById", "AssigneeId", "ReviewedTabsId", "PublishedTabsId", "WorkflowId" };
-        return Regex.Replace(JsonSerializer.Serialize(borehole, jsonExportOptions), $"\"({string.Join("|", attributesToRemove)})\"\\s*:\\s*[^,}}]+,?", string.Empty);
+        return Regex.Replace(JsonSerializer.Serialize(borehole, jsonOptions), $"\"({string.Join("|", attributesToRemove)})\"\\s*:\\s*[^,}}]+,?", string.Empty);
     }
 
     private static void ReorderBoreholeForComparison(Borehole borehole)
