@@ -1,4 +1,5 @@
 ﻿using Amazon.S3;
+using BDMS.Json;
 using BDMS.Models;
 using CsvHelper;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NetTopologySuite.IO.Converters;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Reflection;
@@ -14,6 +16,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
+using System.Text.RegularExpressions;
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
@@ -29,6 +33,7 @@ public class ExportControllerTest
     private BdmsContext context;
     private BoreholeFileCloudService boreholeFileCloudService;
     private ExportController controller;
+    private ImportController importController;
     private User adminUser;
     private static readonly JsonSerializerOptions jsonImportOptions = new()
     {
@@ -77,11 +82,28 @@ public class ExportControllerTest
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string>(), It.IsAny<int>()))
             .ReturnsAsync(true);
 
+        boreholePermissionServiceMock
+            .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Role>()))
+            .ReturnsAsync(true);
+
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
 
-        var loggerMock = new Mock<ILogger<ExportController>>();
-        controller = new ExportController(context, boreholeFileCloudService, loggerMock.Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        var exportLoggerMock = new Mock<ILogger<ExportController>>();
+        var importLoggerMock = new Mock<ILogger<ImportController>>();
+
+        var locationServiceLoggerMock = new Mock<ILogger<LocationService>>(MockBehavior.Strict);
+        var httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
+        var locationService = new LocationService(locationServiceLoggerMock.Object, httpClientFactoryMock.Object);
+        var coordinateServiceLoggerMock = new Mock<ILogger<CoordinateService>>(MockBehavior.Strict);
+        var coordinateService = new CoordinateService(coordinateServiceLoggerMock.Object, httpClientFactoryMock.Object);
+
+        importController = new ImportController(context, importLoggerMock.Object, locationService, coordinateService, boreholeFileCloudService, boreholePermissionServiceMock.Object)
+        {
+            ControllerContext = GetControllerContextAdmin(),
+        };
+
+        controller = new ExportController(context, boreholeFileCloudService, exportLoggerMock.Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestMethod]
@@ -105,10 +127,10 @@ public class ExportControllerTest
     [DataRow(1_000_079)]
     public async Task ExportJson(int boreholeId)
     {
-        var newBorehole = await context.BoreholesWithIncludes.AsNoTracking().SingleAsync(b => b.Id == boreholeId);
-        PopulateCodelistCollectionsFromJoinTables(newBorehole);
+        var originalBorehole = await context.BoreholesWithIncludes.AsNoTracking().SingleAsync(b => b.Id == boreholeId);
+        PopulateCodelistCollectionsFromJoinTables(originalBorehole);
 
-        var response = await controller.ExportJsonAsync([newBorehole.Id]).ConfigureAwait(false);
+        var response = await controller.ExportJsonAsync([originalBorehole.Id]).ConfigureAwait(false);
         JsonResult jsonResult = (JsonResult)response!;
         Assert.IsNotNull(jsonResult.Value);
         List<Borehole> boreholes = (List<Borehole>)jsonResult.Value;
@@ -117,9 +139,9 @@ public class ExportControllerTest
         var exported = boreholes.Single();
 
         // Make order of casings deterministic for comparison
-        if (newBorehole.Completions != null)
+        if (originalBorehole.Completions != null)
         {
-            foreach (var completion in newBorehole.Completions)
+            foreach (var completion in originalBorehole.Completions)
             {
                 completion.Casings = completion.Casings?.OrderBy(c => c.Name).ToList();
             }
@@ -133,7 +155,7 @@ public class ExportControllerTest
             }
         }
 
-        AssertEntitiesEqualByIncludeInExportAttribute(newBorehole, exported, new HashSet<object?>());
+        AssertEntitiesEqualByIncludeInExportAttribute(originalBorehole, exported, new HashSet<object?>());
     }
 
     [TestMethod]
@@ -227,6 +249,87 @@ public class ExportControllerTest
         exportedBorehole.Observations = exportedBorehole.Observations?.OrderBy(o => o.Type).ToList();
 
         AssertEntitiesEqualByIncludeInExportAttribute(newBorehole, exportedBorehole, new HashSet<object?>());
+    }
+
+    // Export several seeded boreholes from richBoreholesRange (IDs 1_000_000 - 1_000_100), to increase likelihood, that each attribute is exported at least once.
+    [TestMethod]
+    [DataRow(1_000_000)]
+    [DataRow(1_000_049)]
+    [DataRow(1_000_039)]
+    [DataRow(1_000_029)]
+    public async Task ExportAndReimportJson(int boreholeId)
+    {
+        var originalBorehole = await context.BoreholesWithIncludes.AsNoTracking().SingleAsync(b => b.Id == boreholeId);
+
+        PopulateCodelistCollectionsFromJoinTables(originalBorehole);
+
+        // Export to JSON
+        var exportResponse = await controller.ExportJsonAsync([originalBorehole.Id]).ConfigureAwait(false);
+        JsonResult jsonResult = (JsonResult)exportResponse!;
+        Assert.IsNotNull(jsonResult.Value);
+        List<Borehole> exportedBoreholes = (List<Borehole>)jsonResult.Value;
+        Assert.AreEqual(1, exportedBoreholes.Count);
+
+        var exportedBorehole = exportedBoreholes.Single();
+
+        ReorderBoreholeForComparison(originalBorehole);
+        ReorderBoreholeForComparison(exportedBorehole);
+        AssertEntitiesEqualByIncludeInExportAttribute(originalBorehole, exportedBorehole, new HashSet<object?>());
+
+        // Serialize to JSON and save to temporary file
+        JsonSerializerOptions jsonExportOptions = new()
+        {
+            WriteIndented = true,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles,
+            Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter(), new GeoJsonConverterFactory() },
+            TypeInfoResolver = new DefaultJsonTypeInfoResolver
+            {
+                Modifiers = { JsonExportHelper.RequireIncludeInExportAttribute },
+            },
+        };
+
+        var jsonToImport = JsonSerializer.Serialize(exportedBoreholes, jsonExportOptions);
+        var tempFilePath = Path.Combine(Path.GetTempPath(), $"borehole_export_{boreholeId}_{Guid.NewGuid()}.json");
+
+        try
+        {
+            await System.IO.File.WriteAllTextAsync(tempFilePath, jsonToImport).ConfigureAwait(false);
+
+            // Read the file back using GetFormFileByExistingFile
+            var jsonFile = GetFormFileByExistingFile(tempFilePath);
+
+            var importResult = await importController.UploadJsonFileAsync(workgroupId: 2, jsonFile).ConfigureAwait(false);
+            Assert.IsInstanceOfType(importResult.Result, typeof(OkObjectResult));
+            var okResult = (OkObjectResult)importResult.Result!;
+            Assert.AreEqual(1, okResult.Value);
+
+            // Retrieve the imported borehole and compare
+            var importedBorehole = await context.BoreholesWithIncludes.AsNoTracking()
+                .Where(b => b.OriginalName == originalBorehole.OriginalName)
+                .OrderByDescending(b => b.Id)
+                .FirstAsync()
+                .ConfigureAwait(false);
+
+            PopulateCodelistCollectionsFromJoinTables(importedBorehole);
+            ReorderBoreholeForComparison(importedBorehole);
+
+            // Remove all BoreholeFiles from original borehole, without zip files in the upload no boreholeFiles are created in the imported borehole
+            originalBorehole.BoreholeFiles = [];
+            AssertEntitiesEqualByIncludeInExportAttribute(originalBorehole, importedBorehole, new HashSet<object?>(), true);
+
+            // Compare serialized Json values.
+            var serializedOriginal = SerializeComparableJson(originalBorehole, jsonExportOptions);
+            var serializedImported = SerializeComparableJson(importedBorehole, jsonExportOptions);
+            Assert.AreEqual(serializedOriginal, serializedImported, "Serialized JSON of original and imported borehole differ, indicating a mismatch in the export/import process.");
+        }
+        finally
+        {
+            // Clean up temporary file
+            if (System.IO.File.Exists(tempFilePath))
+            {
+                System.IO.File.Delete(tempFilePath);
+            }
+        }
     }
 
     [TestMethod]
@@ -634,7 +737,7 @@ public class ExportControllerTest
         }
     }
 
-    private static void AssertEntitiesEqualByIncludeInExportAttribute(object? expected, object? actual, ISet<object?> visited)
+    private static void AssertEntitiesEqualByIncludeInExportAttribute(object? expected, object? actual, ISet<object?> visited, bool ignoreNonImportableProps = false)
     {
         if (expected == null && actual == null) return;
 
@@ -654,10 +757,15 @@ public class ExportControllerTest
 
         foreach (var prop in properties)
         {
+            if (ignoreNonImportableProps && new string[] { "Created", "Updated", "Id", "BoreholeId", "StratigraphyId", "LithologyId", "LithostratigraphyId", "CompletionId", "ChronostratigraphyId", "CasingId", "LogRunId" }.Contains(prop.Name))
+            {
+                continue;
+            }
+
             var expectedValue = prop.GetValue(expected);
             var actualValue = prop.GetValue(actual);
 
-            AssertPropertyEqual(prop, expectedValue, actualValue, visited);
+            AssertPropertyEqual(prop, expectedValue, actualValue, visited, ignoreNonImportableProps);
         }
     }
 
@@ -666,7 +774,7 @@ public class ExportControllerTest
         return type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.GetCustomAttribute<Json.IncludeInExportAttribute>() != null);
     }
 
-    private static void AssertPropertyEqual(PropertyInfo prop, object? expectedValue, object? actualValue, ISet<object?> visited)
+    private static void AssertPropertyEqual(PropertyInfo prop, object? expectedValue, object? actualValue, ISet<object?> visited, bool ignoreNonImportableProps = false)
     {
         if (expectedValue == null && actualValue == null) return;
 
@@ -680,7 +788,7 @@ public class ExportControllerTest
 
         if (IsCollectionType(propertyType))
         {
-            AssertCollectionEqual(prop, expectedValue, actualValue, visited);
+            AssertCollectionEqual(prop, expectedValue, actualValue, visited, ignoreNonImportableProps);
             return;
         }
 
@@ -691,7 +799,7 @@ public class ExportControllerTest
         }
 
         // Complex nested entity: compare recursively.
-        AssertEntitiesEqualByIncludeInExportAttribute(expectedValue, actualValue, visited);
+        AssertEntitiesEqualByIncludeInExportAttribute(expectedValue, actualValue, visited, ignoreNonImportableProps);
     }
 
     private static bool IsDateTime(Type propertyType)
@@ -717,7 +825,7 @@ public class ExportControllerTest
         Assert.AreEqual(expectedDate?.ToUniversalTime().ToString(), actualDate?.ToUniversalTime().ToString(), $"Date Property {prop.Name} differs between original and exported entity.");
     }
 
-    private static void AssertCollectionEqual(PropertyInfo prop, object? expectedValue, object? actualValue, ISet<object?> visited)
+    private static void AssertCollectionEqual(PropertyInfo prop, object? expectedValue, object? actualValue, ISet<object?> visited, bool ignoreNonImportableProps = false)
     {
         if (expectedValue == null && actualValue == null) return;
         var expectedEnumerable = ((System.Collections.IEnumerable?)expectedValue)?.Cast<object?>().ToList();
@@ -733,7 +841,7 @@ public class ExportControllerTest
 
         Assert.IsNotNull(expectedEnumerable, $"Expected collection for property {prop.Name} is null.");
         Assert.IsNotNull(actualEnumerable, $"Actual collection for property {prop.Name} is null.");
-        Assert.AreEqual(expectedEnumerable!.Count, actualEnumerable!.Count, $"Collection size for property {prop.Name} differs between original and exported entity.");
+        Assert.AreEqual(expectedEnumerable!.Count, actualEnumerable!.Count, $"Collection size for property {prop.Name} differs between expected and actual entity.");
 
         var expectedCollectionType = expectedEnumerable.FirstOrDefault()?.GetType()?.Name ?? "Unknown";
         var actualCollectionType = actualEnumerable.FirstOrDefault()?.GetType()?.Name ?? "Unknown";
@@ -751,7 +859,7 @@ public class ExportControllerTest
             }
 
             // Recursively compare each collection element, so nested entities are checked.
-            AssertEntitiesEqualByIncludeInExportAttribute(expectedItem, actualItem, visited);
+            AssertEntitiesEqualByIncludeInExportAttribute(expectedItem, actualItem, visited, ignoreNonImportableProps);
         }
     }
 
@@ -805,6 +913,25 @@ public class ExportControllerTest
                 hydroTest.EvaluationMethodCodelistIds = hydroTest.HydrotestEvaluationMethodCodes?.Select(c => c.CodelistId).ToList();
                 hydroTest.FlowDirectionCodelistIds = hydroTest.HydrotestFlowDirectionCodes?.Select(c => c.CodelistId).ToList();
                 hydroTest.KindCodelistIds = hydroTest.HydrotestKindCodes?.Select(c => c.CodelistId).ToList();
+            }
+        }
+    }
+
+    private static string SerializeComparableJson(Borehole borehole, JsonSerializerOptions jsonExportOptions)
+    {
+        // Remove ids and change tracking attributes before comparing
+        var attributesToRemove = new[] { "Id", "BoreholeId", "StratigraphyId", "LithologyId", "LithologyDescriptionId", "CompletionId", "Created", "CreatedById", "Updated", "UpdatedById", "CreatedAt", "SectionId", "FileId", "LogRunId", "WorkgroupId", "UserId", "CasingId", "LockedById", "AssigneeId", "ReviewedTabsId", "PublishedTabsId", "WorkflowId" };
+        return Regex.Replace(JsonSerializer.Serialize(borehole, jsonExportOptions), $"\"({string.Join("|", attributesToRemove)})\"\\s*:\\s*[^,}}]+,?", string.Empty);
+    }
+
+    private static void ReorderBoreholeForComparison(Borehole borehole)
+    {
+        borehole.Observations = borehole.Observations?.Where(o => o.Type != ObservationType.None).OrderBy(o => o.Type).ToList();
+        if (borehole.Completions != null)
+        {
+            foreach (var completion in borehole.Completions)
+            {
+                completion.Casings = completion.Casings?.OrderBy(c => c.Name).ToList();
             }
         }
     }
