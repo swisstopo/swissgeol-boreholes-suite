@@ -303,7 +303,7 @@ public class ExportControllerTest
         var fileName = $"{Guid.NewGuid()}.pdf";
         var content = Guid.NewGuid().ToString();
         var fileBytes = Encoding.UTF8.GetBytes(content);
-        var boreholeFile = await boreholeFileCloudService.UploadFileAndLinkToBoreholeAsync(new MemoryStream(fileBytes), fileName, "application/pdf", newBorehole.Id).ConfigureAwait(false);
+        var boreholeFile = await boreholeFileCloudService.UploadFileAndLinkToBoreholeAsync(new MemoryStream(fileBytes), fileName, null, null, "application/pdf", newBorehole.Id).ConfigureAwait(false);
         context.BoreholeFiles.Add(boreholeFile);
 
         var photoName = $"{Guid.NewGuid()}.tif";

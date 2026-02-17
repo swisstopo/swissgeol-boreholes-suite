@@ -25,9 +25,11 @@ public class BoreholeFileCloudService : CloudServiceBase
     /// </summary>
     /// <param name="fileStream">The file stream for the file to upload and link to the <see cref="Borehole"/>.</param>
     /// <param name="fileName">The name of the file to upload.</param>
+    /// <param name="fileDescription">The description of the file to upload.</param>
+    /// <param name="filePublicStatus">The public status of the file to upload.</param>
     /// <param name="contentType">The content type of the file.</param>
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> to link the uploaded file to.</param>
-    public async Task<BoreholeFile> UploadFileAndLinkToBoreholeAsync(Stream fileStream, string fileName, string contentType, int boreholeId)
+    public async Task<BoreholeFile> UploadFileAndLinkToBoreholeAsync(Stream fileStream, string fileName, string? fileDescription, bool? filePublicStatus, string contentType, int boreholeId)
     {
         // Use transaction to ensure data is only stored to db if the file upload was sucessful. Only create a transaction if there is not already one from the calling method.
         using var transaction = context.Database.CurrentTransaction == null ? await context.Database.BeginTransactionAsync().ConfigureAwait(false) : null;
@@ -64,9 +66,9 @@ public class BoreholeFileCloudService : CloudServiceBase
                 throw new InvalidOperationException($"File <{fileName}> is already attached to borehole with Id <{boreholeId}>.");
 
             // Link file to the borehole.
-            var boreholeFile = new BoreholeFile { FileId = fileId, BoreholeId = boreholeId, UserId = user.Id, Attached = DateTime.UtcNow };
+            var newBoreholeFile = new BoreholeFile { FileId = fileId, BoreholeId = boreholeId, Description = fileDescription, Public = filePublicStatus, UserId = user.Id, Attached = DateTime.UtcNow };
 
-            var entityEntry = await context.BoreholeFiles.AddAsync(boreholeFile).ConfigureAwait(false);
+            var entityEntry = await context.BoreholeFiles.AddAsync(newBoreholeFile).ConfigureAwait(false);
             await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!).ConfigureAwait(false);
 
             if (transaction != null) await transaction.CommitAsync().ConfigureAwait(false);

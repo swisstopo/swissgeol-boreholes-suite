@@ -315,17 +315,18 @@ public class ImportController : ControllerBase
                     await attachment.Open().CopyToAsync(memoryStream).ConfigureAwait(false);
                     memoryStream.Position = 0;
 
-                    await UploadFormFileAsync(memoryStream, fileToProcess.File.Name, GetContentType(attachment.Name), borehole, i).ConfigureAwait(false);
+                    await UploadFormFileAsync(memoryStream, fileToProcess, GetContentType(attachment.Name), borehole, i).ConfigureAwait(false);
                 }
             }
         }
     }
 
-    private async Task UploadFormFileAsync(Stream fileStream, string fileName, string contentType, Borehole borehole, int index)
+    private async Task UploadFormFileAsync(Stream fileStream, BoreholeFile boreholeFile, string contentType, Borehole borehole, int index)
     {
+        var fileName = boreholeFile.File.Name;
         try
         {
-            await boreholeFileCloudService.UploadFileAndLinkToBoreholeAsync(fileStream, fileName, contentType, borehole.Id).ConfigureAwait(false);
+            await boreholeFileCloudService.UploadFileAndLinkToBoreholeAsync(fileStream, fileName, boreholeFile.Description, boreholeFile.Public, contentType, borehole.Id).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

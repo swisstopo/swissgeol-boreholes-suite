@@ -622,10 +622,15 @@ public class ImportControllerTest
         var uploadedBoreholesWithAttachment = await context.BoreholesWithIncludes.Where(b => b.OriginalName.StartsWith("Carmen Catnip")).ToListAsync();
         Assert.AreEqual(uploadedBoreholesWithAttachment.SelectMany(b => b.Files!).Count(), 3);
 
-        var firstBoreholes = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Cheese");
-        var secondBoreholes = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Fondue");
-        Assert.AreEqual(firstBoreholes.Files.Count, 2);
-        Assert.AreEqual(secondBoreholes.Files.Single().Name, "logos.png");
+        var firstBorehole = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Cheese");
+        var secondBorehole = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Fondue");
+        Assert.AreEqual(firstBorehole.Files.Count, 2);
+        Assert.AreEqual(secondBorehole.Files.Single().Name, "logos.png");
+
+        // Assert BoreholeFile description and public attribute
+        var profile = firstBorehole.BoreholeFiles.First();
+        Assert.AreEqual(profile.Description, "Describing Incredible Granite");
+        Assert.AreEqual(profile.Public, true);
     }
 
     [TestMethod]

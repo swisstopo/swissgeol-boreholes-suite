@@ -61,7 +61,7 @@ public class BoreholeFileCloudServiceTest
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
         var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), fileName);
 
-        await boreholeFileUploadService.UploadFileAndLinkToBoreholeAsync(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType, minBoreholeId);
+        await boreholeFileUploadService.UploadFileAndLinkToBoreholeAsync(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, null, null, pdfFormFile.ContentType, minBoreholeId);
 
         fileName = fileName.Replace(" ", "_");
 
@@ -81,13 +81,16 @@ public class BoreholeFileCloudServiceTest
         var firstPdfFormFile = GetFormFileByContent(content, fileName);
 
         // Upload file
-        await boreholeFileUploadService.UploadFileAndLinkToBoreholeAsync(firstPdfFormFile.OpenReadStream(), firstPdfFormFile.FileName, firstPdfFormFile.ContentType, minBoreholeId).ConfigureAwait(false);
+        await boreholeFileUploadService.UploadFileAndLinkToBoreholeAsync(firstPdfFormFile.OpenReadStream(), firstPdfFormFile.FileName, "New description", false, firstPdfFormFile.ContentType, minBoreholeId).ConfigureAwait(false);
 
         // Get borehole with file linked from db
         var borehole = context.BoreholesWithIncludes.Single(b => b.Id == minBoreholeId);
 
         // Check if file is linked to borehole
-        Assert.AreEqual(borehole.BoreholeFiles.First().File.Name, fileName);
+        var boreholeFile = borehole.BoreholeFiles.First();
+        Assert.AreEqual(boreholeFile.File.Name, fileName);
+        Assert.AreEqual(boreholeFile.Description, "New description");
+        Assert.AreEqual(boreholeFile.Public, false);
 
         // Ensure file exists in cloud storage
         var request = new GetObjectMetadataRequest { BucketName = bucketName, Key = borehole.BoreholeFiles.First().File.NameUuid };
