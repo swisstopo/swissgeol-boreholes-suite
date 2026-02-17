@@ -881,7 +881,7 @@ public class ExportControllerTest
     {
         // Remove ids and change tracking attributes before comparing
         var attributesToRemove = new[] { "Id", "BoreholeId", "StratigraphyId", "LithologyId", "LithologyDescriptionId", "CompletionId", "Created", "CreatedById", "Updated", "UpdatedById", "CreatedAt", "SectionId", "FileId", "LogRunId", "WorkgroupId", "UserId", "CasingId", "LockedById", "AssigneeId", "ReviewedTabsId", "PublishedTabsId", "WorkflowId" };
-        return Regex.Replace(JsonSerializer.Serialize(borehole, jsonOptions), $"\"({string.Join("|", attributesToRemove)})\"\\s*:\\s*[^,}}]+,?", string.Empty);
+        return Regex.Replace(JsonSerializer.Serialize(borehole, jsonOptions), $"\"({string.Join("|", attributesToRemove)})\"\\s*:\\s*[^,}}]+,?", string.Empty, RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
     }
 
     private static void ReorderBoreholeForComparison(Borehole borehole)
