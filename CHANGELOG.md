@@ -2,7 +2,7 @@
 
 ## [Unreleased]
 
-## Changed
+### Changed
 - Upgraded dataextraction service to version 1.0.144
 
 ### Fixed
