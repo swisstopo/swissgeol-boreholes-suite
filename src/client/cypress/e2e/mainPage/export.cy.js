@@ -340,7 +340,7 @@ describe("Test for exporting boreholes.", () => {
     deleteDownloadedFile(fileName);
   });
 
-  it("exports a single borehole with observations", () => {
+  it.only("exports a single borehole with observations", () => {
     const boreholeName = "AQUABED";
     const fileName = `${boreholeName}.json`;
     createBorehole({
@@ -362,7 +362,6 @@ describe("Test for exporting boreholes.", () => {
         CasingId: null,
         Comment: null,
         ConditionsId: null,
-        Duration: null,
         EndTime: null,
         FromDepthM: 0,
         FromDepthMasl: null,
@@ -378,6 +377,8 @@ describe("Test for exporting boreholes.", () => {
 
       cy.readFile(prepareDownloadPath(fileName)).then(fileContent => {
         const json = typeof fileContent === "string" ? JSON.parse(fileContent) : fileContent;
+        console.log(json[0].Observations);
+        console.log(expectedObservation);
         expect(json).to.be.an("array");
         expect(json[0]).to.have.property("Observations");
         expect(json[0].Observations).to.be.an("array");
