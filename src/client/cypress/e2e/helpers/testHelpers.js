@@ -277,6 +277,7 @@ export const newUneditableBorehole = () => {
 const waitForCreation = () => {
   return cy.wait(["@post-borehole"]).then(interception => {
     cy.task("log", "Created new borehole with id:" + interception.response.body.id);
+    cy.wrap(interception.response.body.hrsId).should("eq", 20106001);
     return cy.wrap(interception.response.body.id);
   });
 };
