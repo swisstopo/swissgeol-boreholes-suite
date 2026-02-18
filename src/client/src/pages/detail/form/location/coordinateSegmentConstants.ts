@@ -35,3 +35,5 @@ export const referenceSystems: { [key: string]: ReferenceSystem } = {
     fieldName: { X: FieldNameDirectionKeys.locationXLV03, Y: FieldNameDirectionKeys.locationYLV03 },
   },
 };
+
+export const defaultHrsId = 20106001;
