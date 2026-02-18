@@ -74,8 +74,7 @@ const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpen }: Im
       importBoreholesCsv(currentWorkgroupId, combinedFormData).then(response => {
         handleImportResponse(response);
       });
-    }
-    if (getFileExtension(file) === "json") {
+    } else if (getFileExtension(file) === "json") {
       importBoreholesJson(currentWorkgroupId, combinedFormData).then(response => {
         handleImportResponse(response);
       });
