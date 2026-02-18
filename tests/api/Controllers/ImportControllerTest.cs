@@ -447,7 +447,7 @@ public class ImportControllerTest
 
         // Assert section's sectionelements
         Assert.AreEqual(2, section.SectionElements.Count, nameof(section.SectionElements.Count));
-        var sectionElement = section.SectionElements.First();
+        var sectionElement = section.SectionElements[0];
         Assert.IsNotNull(sectionElement.Created, nameof(sectionElement.Created).ShouldNotBeNullMessage());
         Assert.IsNotNull(sectionElement.CreatedById, nameof(sectionElement.CreatedById).ShouldNotBeNullMessage());
         Assert.IsNotNull(sectionElement.Updated, nameof(sectionElement.Updated).ShouldNotBeNullMessage());
