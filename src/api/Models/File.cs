@@ -64,7 +64,7 @@ public class File : IChangeTracking, IIdentifyable
     public ICollection<Borehole>? Boreholes { get; }
 
     /// <summary>
-    /// Gets the <see cref="BoreholeFile"/> join table entities.
+    /// Gets the <see cref="Profile"/> join table entities.
     /// </summary>
-    public ICollection<BoreholeFile>? BoreholeFiles { get; }
+    public ICollection<Profile>? Profiles { get; }
 }

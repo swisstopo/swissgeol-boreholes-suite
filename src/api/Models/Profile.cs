@@ -7,7 +7,7 @@ namespace BDMS.Models;
 /// Join table entity for a <see cref="Models.File"/> attached to a <see cref="Models.Borehole"/>.
 /// </summary>
 [Table("borehole_files")]
-public class BoreholeFile : IChangeTracking, IUserAttached<User?, int?>
+public class Profile : IChangeTracking, IUserAttached<User?, int?>
 {
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/> id.
@@ -33,13 +33,13 @@ public class BoreholeFile : IChangeTracking, IUserAttached<User?, int?>
     public File File { get; set; }
 
     /// <summary>
-    /// Gets or sets the id of the user that created the <see cref="BoreholeFile"/>.
+    /// Gets or sets the id of the user that created the <see cref="Profile"/>.
     /// </summary>
     [Column("id_usr_fk")]
     public int? UserId { get; set; }
 
     /// <summary>
-    /// Gets or sets the user that created the <see cref="BoreholeFile"/>.
+    /// Gets or sets the user that created the <see cref="Profile"/>.
     /// </summary>
     public User? User { get; set; }
 
@@ -72,14 +72,14 @@ public class BoreholeFile : IChangeTracking, IUserAttached<User?, int?>
     public User? UpdatedBy { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="BoreholeFile"/> description.
+    /// Gets or sets the <see cref="Profile"/> description.
     /// </summary>
     [IncludeInExport]
     [Column("description_bfi")]
     public string? Description { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the <see cref="BoreholeFile"/> is publicly visible.
+    /// Gets or sets whether the <see cref="Profile"/> is publicly visible.
     /// </summary>
     [IncludeInExport]
     [Column("public_bfi")]

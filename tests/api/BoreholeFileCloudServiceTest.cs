@@ -16,7 +16,7 @@ public class BoreholeFileCloudServiceTest
 {
     private AmazonS3Client s3Client;
     private BdmsContext context;
-    private BoreholeFileCloudService boreholeFileUploadService;
+    private ProfileCloudService boreholeFileUploadService;
     private string bucketName;
     private Models.User adminUser;
 
@@ -32,7 +32,7 @@ public class BoreholeFileCloudServiceTest
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
         contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, adminUser.SubjectId) }));
 
-        var loggerMock = new Mock<ILogger<BoreholeFileCloudService>>(MockBehavior.Strict);
+        var loggerMock = new Mock<ILogger<ProfileCloudService>>(MockBehavior.Strict);
         loggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
 
         var s3ClientMock = new AmazonS3Client(
@@ -45,7 +45,7 @@ public class BoreholeFileCloudServiceTest
                 UseHttp = configuration["S3:SECURE"] == "0",
             });
 
-        boreholeFileUploadService = new BoreholeFileCloudService(context, configuration, loggerMock.Object, contextAccessorMock.Object, s3ClientMock);
+        boreholeFileUploadService = new ProfileCloudService(context, configuration, loggerMock.Object, contextAccessorMock.Object, s3ClientMock);
 
         bucketName = configuration["S3:BUCKET_NAME"].ToLowerInvariant();
         s3Client = s3ClientMock;
@@ -69,7 +69,7 @@ public class BoreholeFileCloudServiceTest
         var borehole = context.BoreholesWithIncludes.Single(b => b.Id == minBoreholeId);
 
         // Check if fileName whitespace is replaced with underscore
-        Assert.AreEqual(borehole.BoreholeFiles.First().File.Name, fileName);
+        Assert.AreEqual(borehole.Profiles.First().File.Name, fileName);
     }
 
     [TestMethod]
@@ -87,13 +87,13 @@ public class BoreholeFileCloudServiceTest
         var borehole = context.BoreholesWithIncludes.Single(b => b.Id == minBoreholeId);
 
         // Check if file is linked to borehole
-        var boreholeFile = borehole.BoreholeFiles.First();
+        var boreholeFile = borehole.Profiles.First();
         Assert.AreEqual(boreholeFile.File.Name, fileName);
         Assert.AreEqual(boreholeFile.Description, "New description");
         Assert.AreEqual(boreholeFile.Public, false);
 
         // Ensure file exists in cloud storage
-        var request = new GetObjectMetadataRequest { BucketName = bucketName, Key = borehole.BoreholeFiles.First().File.NameUuid };
+        var request = new GetObjectMetadataRequest { BucketName = bucketName, Key = borehole.Profiles.First().File.NameUuid };
         await s3Client.GetObjectMetadataAsync(request);
     }
 

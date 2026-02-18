@@ -462,10 +462,10 @@ public class Borehole : IChangeTracking, IIdentifyable
     public ICollection<File>? Files { get; }
 
     /// <summary>
-    /// Gets the <see cref="BoreholeFile"/> join table entities.
+    /// Gets the <see cref="Profile"/> join table entities.
     /// </summary>
     [IncludeInExport]
-    public ICollection<BoreholeFile>? BoreholeFiles { get; set; }
+    public ICollection<Profile>? Profiles { get; set; }
 
     /// <summary>
     /// Gets the <see cref="Borehole"/>'s photos.

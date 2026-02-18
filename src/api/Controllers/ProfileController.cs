@@ -9,19 +9,19 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class BoreholeFileController : ControllerBase
+public class ProfileController : ControllerBase
 {
     private const int MaxFileSize = 210_000_000; // 1024 x 1024 x 200 = 209715200 bytes
     private readonly BdmsContext context;
-    private readonly BoreholeFileCloudService boreholeFileCloudService;
+    private readonly ProfileCloudService profileCloudService;
     private readonly ILogger logger;
     private readonly IBoreholePermissionService boreholePermissionService;
 
-    public BoreholeFileController(BdmsContext context, ILogger<BoreholeFileController> logger, BoreholeFileCloudService boreholeFileCloudService, IBoreholePermissionService boreholePermissionService)
+    public ProfileController(BdmsContext context, ILogger<ProfileController> logger, ProfileCloudService profileCloudService, IBoreholePermissionService boreholePermissionService)
         : base()
     {
         this.logger = logger;
-        this.boreholeFileCloudService = boreholeFileCloudService;
+        this.profileCloudService = profileCloudService;
         this.context = context;
         this.boreholePermissionService = boreholePermissionService;
     }
@@ -48,13 +48,9 @@ public class BoreholeFileController : ControllerBase
 
         try
         {
-            var boreholeFile = await boreholeFileCloudService.UploadFileAndLinkToBoreholeAsync(file.OpenReadStream(), file.FileName, null, null, file.ContentType, boreholeId).ConfigureAwait(false);
-            return Ok(boreholeFile);
-        }
-        catch (InvalidOperationException ex)
-        {
-            logger.LogError(ex, "An error occurred while uploading the file.");
-            return BadRequest(ex.Message);
+            using var fileStream = file.OpenReadStream();
+            var result = await profileCloudService.UploadFileAndLinkToBoreholeAsync(fileStream, file.FileName, null, null, file.ContentType, boreholeId).ConfigureAwait(false);
+            return Ok(result);
         }
         catch (Exception ex)
         {
@@ -85,7 +81,7 @@ public class BoreholeFileController : ControllerBase
 
             if (boreholeFile?.File?.NameUuid == null) return NotFound($"File with id {boreholeFileId} not found.");
 
-            var fileBytes = await boreholeFileCloudService.GetObject(boreholeFile.File.NameUuid).ConfigureAwait(false);
+            var fileBytes = await profileCloudService.GetObject(boreholeFile.File.NameUuid).ConfigureAwait(false);
 
             return File(fileBytes, "application/octet-stream", boreholeFile.File.Name);
         }
@@ -110,25 +106,25 @@ public class BoreholeFileController : ControllerBase
 
         try
         {
-            var boreholeFile = await context.BoreholeFiles
+            var profile = await context.Profiles
                 .Include(f => f.File)
                 .FirstOrDefaultAsync(f => f.FileId == boreholeFileId)
                 .ConfigureAwait(false);
 
             // Check if user has permission to view the borehole file.
-            if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeFile.BoreholeId).ConfigureAwait(false))
+            if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), profile.BoreholeId).ConfigureAwait(false))
             {
                 return Unauthorized("You are missing permissions to view the borehole file.");
             }
 
-            if (boreholeFile.File?.NameUuid == null) return NotFound($"File with id {boreholeFileId} not found.");
+            if (profile.File?.NameUuid == null) return NotFound($"File with id {boreholeFileId} not found.");
 
-            var fileUuid = boreholeFile.File.NameUuid.Replace(".pdf", "", StringComparison.OrdinalIgnoreCase);
-            var fileCount = await boreholeFileCloudService.CountDataExtractionObjects(fileUuid).ConfigureAwait(false);
+            var fileUuid = profile.File.NameUuid.Replace(".pdf", "", StringComparison.OrdinalIgnoreCase);
+            var fileCount = await profileCloudService.CountDataExtractionObjects(fileUuid).ConfigureAwait(false);
 
             try
             {
-                var dataExtractionImageInfo = await boreholeFileCloudService.GetDataExtractionImageInfo(fileUuid, index).ConfigureAwait(false);
+                var dataExtractionImageInfo = await profileCloudService.GetDataExtractionImageInfo(fileUuid, index).ConfigureAwait(false);
                 return Ok(new DataExtractionInfo(dataExtractionImageInfo.FileName, dataExtractionImageInfo.Width, dataExtractionImageInfo.Height, fileCount));
             }
             catch (Exception ex)
@@ -162,7 +158,7 @@ public class BoreholeFileController : ControllerBase
         try
         {
             var decodedImageName = Uri.UnescapeDataString($"dataextraction/{imageName}");
-            var fileBytes = await boreholeFileCloudService.GetObject(decodedImageName).ConfigureAwait(false);
+            var fileBytes = await profileCloudService.GetObject(decodedImageName).ConfigureAwait(false);
             return File(fileBytes, "image/png", decodedImageName);
         }
         catch (Exception ex)
@@ -173,20 +169,20 @@ public class BoreholeFileController : ControllerBase
     }
 
     /// <summary>
-    /// Get all <see cref="BoreholeFile"/> that are linked to the <see cref="Borehole"/> with <see cref="Borehole.Id"/> provided in <paramref name="boreholeId"/>.
+    /// Get all <see cref="Profile"/> that are linked to the <see cref="Borehole"/> with <see cref="Borehole.Id"/> provided in <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="boreholeId">The id of the <see cref="Borehole"/>.</param>
-    /// <returns>A list of <see cref="BoreholeFile"/>.</returns>
+    /// <returns>A list of <see cref="Profile"/>.</returns>
     [HttpGet("getAllForBorehole")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<IEnumerable<BoreholeFile>>> GetAllOfBorehole([Required, Range(1, int.MaxValue)] int boreholeId)
+    public async Task<ActionResult<IEnumerable<Profile>>> GetAllOfBorehole([Required, Range(1, int.MaxValue)] int boreholeId)
     {
         if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
         if (boreholeId == 0) return BadRequest("No boreholeId provided.");
 
         // Get all borehole files that are linked to the borehole.
-        return await context.BoreholeFiles
+        return await context.Profiles
             .Include(bf => bf.User)
             .Include(bf => bf.File)
             .Where(bf => bf.BoreholeId == boreholeId)
@@ -196,9 +192,9 @@ public class BoreholeFileController : ControllerBase
     }
 
     /// <summary>
-    /// Detaches a <see cref="BoreholeFile"/> from the <see cref="Borehole"/> and deletes the <see cref="Models.File"/>.
+    /// Detaches a <see cref="Profile"/> from the <see cref="Borehole"/> and deletes the <see cref="Models.File"/>.
     /// </summary>
-    /// <param name="boreholeFileId">The <see cref="BoreholeFile.FileId"/> of the file to detach from the borehole.</param>
+    /// <param name="boreholeFileId">The <see cref="Profile.FileId"/> of the file to detach from the borehole.</param>
     [HttpPost("detachFile")]
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> DetachFromBorehole([Range(1, int.MaxValue)] int boreholeFileId)
@@ -208,24 +204,24 @@ public class BoreholeFileController : ControllerBase
         try
         {
             // Get the file and its borehole files from the database.
-            var boreholeFile = await context.BoreholeFiles.Include(f => f.File).SingleOrDefaultAsync(f => f.FileId == boreholeFileId).ConfigureAwait(false);
+            var profile = await context.Profiles.Include(f => f.File).SingleOrDefaultAsync(f => f.FileId == boreholeFileId).ConfigureAwait(false);
 
-            if (boreholeFile == null) return NotFound($"Borehole file for the provided {nameof(boreholeFileId)} not found.");
+            if (profile == null) return NotFound($"Borehole file for the provided {nameof(boreholeFileId)} not found.");
 
             // Check if associated borehole is locked or user has permissions
-            if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeFile.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+            if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), profile.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-            var fileId = boreholeFile.File.Id;
+            var fileId = profile.File.Id;
 
             // Remove the requested borehole file from the database.
-            context.BoreholeFiles.Remove(boreholeFile);
+            context.Profiles.Remove(profile);
             await context.SaveChangesAsync().ConfigureAwait(false);
 
             // Delete the file from the cloud storage and the database.
             var file = await context.Files.SingleOrDefaultAsync(f => f.Id == fileId).ConfigureAwait(false);
             if (file?.NameUuid != null)
             {
-                await boreholeFileCloudService.DeleteObject(file.NameUuid).ConfigureAwait(false);
+                await profileCloudService.DeleteObject(file.NameUuid).ConfigureAwait(false);
                 context.Files.Remove(file);
                 await context.SaveChangesAsync().ConfigureAwait(false);
             }
@@ -240,34 +236,34 @@ public class BoreholeFileController : ControllerBase
     }
 
     /// <summary>
-    /// Update the <see cref="BoreholeFile"/> with the provided <paramref name="boreholeId"/> and <paramref name="boreholeFileId"/>.
+    /// Update the <see cref="Profile"/> with the provided <paramref name="boreholeId"/> and <paramref name="boreholeFileId"/>.
     /// </summary>
-    /// <param name="boreholeFileUpdate">The updated <see cref="BoreholeFileUpdate"/> object containing the new <see cref="BoreholeFile"/> properties.</param>
-    /// <param name="boreholeId">The id of the <see cref="Borehole"/> to which the <see cref="BoreholeFile"/> is linked to.</param>
-    /// <param name="boreholeFileId">The id of the <see cref="BoreholeFile"/> to update.</param>
+    /// <param name="profileUpdate">The updated <see cref="ProfileUpdate"/> object containing the new <see cref="Profile"/> properties.</param>
+    /// <param name="boreholeId">The id of the <see cref="Borehole"/> to which the <see cref="Profile"/> is linked to.</param>
+    /// <param name="boreholeFileId">The id of the <see cref="Profile"/> to update.</param>
     /// <remarks>
-    /// Only the <see cref="BoreholeFile.Public"/> and <see cref="BoreholeFile.Description"/> properties can be updated.
+    /// Only the <see cref="Profile.Public"/> and <see cref="Profile.Description"/> properties can be updated.
     /// </remarks>
     [HttpPut("update")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> Update([FromBody] BoreholeFileUpdate boreholeFileUpdate, [Required, Range(1, int.MaxValue)] int boreholeId, [Range(1, int.MaxValue)] int boreholeFileId)
+    public async Task<IActionResult> Update([FromBody] ProfileUpdate profileUpdate, [Required, Range(1, int.MaxValue)] int boreholeId, [Range(1, int.MaxValue)] int boreholeFileId)
     {
-        if (boreholeFileUpdate == null) return BadRequest("No boreholeFileUpdate provided.");
+        if (profileUpdate == null) return BadRequest("No profileUpdate provided.");
         if (boreholeId == 0) return BadRequest("No boreholeId provided.");
         if (boreholeFileId == 0) return BadRequest("No boreholeFileId provided.");
 
-        var existingBoreholeFile = await context.BoreholeFiles
+        var existingProfile = await context.Profiles
             .FirstOrDefaultAsync(bf => bf.FileId == boreholeFileId && bf.BoreholeId == boreholeId)
             .ConfigureAwait(false);
 
-        if (existingBoreholeFile == null) return NotFound("Borehole file not found.");
+        if (existingProfile == null) return NotFound("Borehole file not found.");
 
         if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        existingBoreholeFile.Public = boreholeFileUpdate.Public;
-        existingBoreholeFile.Description = boreholeFileUpdate.Description;
+        existingProfile.Public = profileUpdate.Public;
+        existingProfile.Description = profileUpdate.Description;
 
-        context.Entry(existingBoreholeFile).State = EntityState.Modified;
+        context.Entry(existingProfile).State = EntityState.Modified;
         await context.SaveChangesAsync().ConfigureAwait(false);
 
         return Ok();

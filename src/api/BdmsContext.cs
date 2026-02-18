@@ -50,7 +50,7 @@ public class BdmsContext : DbContext
         .Include(b => b.Workflow).ThenInclude(w => w.ReviewedTabs)
         .Include(b => b.Workflow).ThenInclude(w => w.PublishedTabs)
         .Include(b => b.Workflow).ThenInclude(w => w.Assignee)
-        .Include(b => b.BoreholeFiles).ThenInclude(f => f.File)
+        .Include(b => b.Profiles).ThenInclude(f => f.File)
         .Include(b => b.Photos)
         .Include(b => b.Documents)
         .Include(b => b.LogRuns).ThenInclude(lr => lr.LogFiles).ThenInclude(lf => lf.LogFileToolTypeCodes)
@@ -303,7 +303,7 @@ public class BdmsContext : DbContext
 
     public IQueryable<Workgroup> WorkgroupsWithIncludes => Workgroups.Include(w => w.Boreholes);
 
-    public DbSet<BoreholeFile> BoreholeFiles { get; set; }
+    public DbSet<Profile> Profiles { get; set; }
 
     public DbSet<LithologicalDescription> LithologicalDescriptions { get; set; }
 
@@ -454,14 +454,14 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<Borehole>()
             .HasMany(b => b.Files)
             .WithMany(f => f.Boreholes)
-            .UsingEntity<BoreholeFile>(
+            .UsingEntity<Profile>(
                 j => j
                     .HasOne(bf => bf.File)
-                    .WithMany(f => f.BoreholeFiles)
+                    .WithMany(f => f.Profiles)
                     .HasForeignKey(bf => bf.FileId),
                 j => j
                     .HasOne(bf => bf.Borehole)
-                    .WithMany(b => b.BoreholeFiles)
+                    .WithMany(b => b.Profiles)
                     .HasForeignKey(bf => bf.BoreholeId),
                 j => j.HasKey(bf => new { bf.BoreholeId, bf.FileId }));
 

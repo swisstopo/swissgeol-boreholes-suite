@@ -8,12 +8,12 @@ namespace BDMS;
 /// <summary>
 /// Represents a service to manage borehole files in the cloud storage.
 /// </summary>
-public class BoreholeFileCloudService : CloudServiceBase
+public class ProfileCloudService : CloudServiceBase
 {
     private readonly BdmsContext context;
     private readonly IHttpContextAccessor httpContextAccessor;
 
-    public BoreholeFileCloudService(BdmsContext context, IConfiguration configuration, ILogger<BoreholeFileCloudService> logger, IHttpContextAccessor httpContextAccessor, IAmazonS3 s3Client)
+    public ProfileCloudService(BdmsContext context, IConfiguration configuration, ILogger<ProfileCloudService> logger, IHttpContextAccessor httpContextAccessor, IAmazonS3 s3Client)
         : base(logger, s3Client, configuration["S3:BUCKET_NAME"]!)
     {
         this.httpContextAccessor = httpContextAccessor;
@@ -29,7 +29,7 @@ public class BoreholeFileCloudService : CloudServiceBase
     /// <param name="filePublicStatus">The public status of the file to upload.</param>
     /// <param name="contentType">The content type of the file.</param>
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> to link the uploaded file to.</param>
-    public async Task<BoreholeFile> UploadFileAndLinkToBoreholeAsync(Stream fileStream, string fileName, string? fileDescription, bool? filePublicStatus, string contentType, int boreholeId)
+    public async Task<Profile> UploadFileAndLinkToBoreholeAsync(Stream fileStream, string fileName, string? fileDescription, bool? filePublicStatus, string contentType, int boreholeId)
     {
         // Use transaction to ensure data is only stored to db if the file upload was sucessful. Only create a transaction if there is not already one from the calling method.
         using var transaction = context.Database.CurrentTransaction == null ? await context.Database.BeginTransactionAsync().ConfigureAwait(false) : null;
@@ -62,13 +62,13 @@ public class BoreholeFileCloudService : CloudServiceBase
             await UploadObject(fileStream, fileNameGuid, contentType).ConfigureAwait(false);
 
             // If file is already linked to the borehole, throw an exception.
-            if (await context.BoreholeFiles.AnyAsync(bf => bf.BoreholeId == boreholeId && bf.FileId == fileId).ConfigureAwait(false))
+            if (await context.Profiles.AnyAsync(bf => bf.BoreholeId == boreholeId && bf.FileId == fileId).ConfigureAwait(false))
                 throw new InvalidOperationException($"File <{fileName}> is already attached to borehole with Id <{boreholeId}>.");
 
             // Link file to the borehole.
-            var newBoreholeFile = new BoreholeFile { FileId = fileId, BoreholeId = boreholeId, Description = fileDescription, Public = filePublicStatus, UserId = user.Id, Attached = DateTime.UtcNow };
+            var newProfile = new Profile { FileId = fileId, BoreholeId = boreholeId, Description = fileDescription, Public = filePublicStatus, UserId = user.Id, Attached = DateTime.UtcNow };
 
-            var entityEntry = await context.BoreholeFiles.AddAsync(newBoreholeFile).ConfigureAwait(false);
+            var entityEntry = await context.Profiles.AddAsync(newProfile).ConfigureAwait(false);
             await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!).ConfigureAwait(false);
 
             if (transaction != null) await transaction.CommitAsync().ConfigureAwait(false);

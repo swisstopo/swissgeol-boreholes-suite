@@ -25,7 +25,7 @@ public class ImportController : ControllerBase
     private readonly ILogger logger;
     private readonly LocationService locationService;
     private readonly CoordinateService coordinateService;
-    private readonly BoreholeFileCloudService boreholeFileCloudService;
+    private readonly ProfileCloudService profileCloudService;
     private readonly IBoreholePermissionService boreholePermissionService;
     private readonly string nullOrEmptyMsg = "Field '{0}' is required.";
 
@@ -40,13 +40,13 @@ public class ImportController : ControllerBase
         },
     };
 
-    public ImportController(BdmsContext context, ILogger<ImportController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileCloudService boreholeFileCloudService, IBoreholePermissionService boreholePermissionService)
+    public ImportController(BdmsContext context, ILogger<ImportController> logger, LocationService locationService, CoordinateService coordinateService, ProfileCloudService profileCloudService, IBoreholePermissionService boreholePermissionService)
     {
         this.context = context;
         this.logger = logger;
         this.locationService = locationService;
         this.coordinateService = coordinateService;
-        this.boreholeFileCloudService = boreholeFileCloudService;
+        this.profileCloudService = profileCloudService;
         this.boreholePermissionService = boreholePermissionService;
     }
 
@@ -294,7 +294,7 @@ public class ImportController : ControllerBase
         }
     }
 
-    private async Task UploadAttachmentsAsync(ZipArchive zipArchive, List<(BoreholeImport Borehole, List<BoreholeFile>? Files)> boreholeFiles)
+    private async Task UploadAttachmentsAsync(ZipArchive zipArchive, List<(BoreholeImport Borehole, List<Profile>? Files)> boreholeFiles)
     {
         for (var i = 0; i < boreholeFiles.Count; i++)
         {
@@ -321,12 +321,12 @@ public class ImportController : ControllerBase
         }
     }
 
-    private async Task UploadFormFileAsync(Stream fileStream, BoreholeFile boreholeFile, string contentType, Borehole borehole, int index)
+    private async Task UploadFormFileAsync(Stream fileStream, Profile boreholeFile, string contentType, Borehole borehole, int index)
     {
         var fileName = boreholeFile.File.Name;
         try
         {
-            await boreholeFileCloudService.UploadFileAndLinkToBoreholeAsync(fileStream, fileName, boreholeFile.Description, boreholeFile.Public, contentType, borehole.Id).ConfigureAwait(false);
+            await profileCloudService.UploadFileAndLinkToBoreholeAsync(fileStream, fileName, boreholeFile.Description, boreholeFile.Public, contentType, borehole.Id).ConfigureAwait(false);
         }
         catch (Exception ex)
         {

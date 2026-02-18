@@ -31,7 +31,7 @@ public class ExportControllerTest
     private const string ExportFileName = "boreholes_export";
     private const int TestBoreholeId = 1000068;
     private BdmsContext context;
-    private BoreholeFileCloudService boreholeFileCloudService;
+    private ProfileCloudService profileCloudService;
     private ExportController controller;
     private ImportController importController;
     private User adminUser;
@@ -67,9 +67,9 @@ public class ExportControllerTest
                 UseHttp = configuration["S3:SECURE"] == "0",
             });
 
-        var boreholeFileCloudServiceLoggerMock = new Mock<ILogger<BoreholeFileCloudService>>(MockBehavior.Strict);
-        boreholeFileCloudServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
-        boreholeFileCloudService = new BoreholeFileCloudService(context, configuration, boreholeFileCloudServiceLoggerMock.Object, contextAccessorMock.Object, s3ClientMock);
+        var profileCloudServiceLoggerMock = new Mock<ILogger<ProfileCloudService>>(MockBehavior.Strict);
+        profileCloudServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
+        profileCloudService = new ProfileCloudService(context, configuration, profileCloudServiceLoggerMock.Object, contextAccessorMock.Object, s3ClientMock);
 
         var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
@@ -92,8 +92,8 @@ public class ExportControllerTest
             .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Role>()))
             .ReturnsAsync(true);
 
-        var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
-        boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
+        var profileControllerLoggerMock = new Mock<ILogger<ProfileController>>(MockBehavior.Strict);
+        profileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
 
         var exportLoggerMock = new Mock<ILogger<ExportController>>();
         var importLoggerMock = new Mock<ILogger<ImportController>>();
@@ -104,12 +104,12 @@ public class ExportControllerTest
         var coordinateServiceLoggerMock = new Mock<ILogger<CoordinateService>>(MockBehavior.Strict);
         var coordinateService = new CoordinateService(coordinateServiceLoggerMock.Object, httpClientFactoryMock.Object);
 
-        importController = new ImportController(context, importLoggerMock.Object, locationService, coordinateService, boreholeFileCloudService, boreholePermissionServiceMock.Object)
+        importController = new ImportController(context, importLoggerMock.Object, locationService, coordinateService, profileCloudService, boreholePermissionServiceMock.Object)
         {
             ControllerContext = GetControllerContextAdmin(),
         };
 
-        controller = new ExportController(context, boreholeFileCloudService, exportLoggerMock.Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new ExportController(context, profileCloudService, exportLoggerMock.Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestMethod]
@@ -273,8 +273,8 @@ public class ExportControllerTest
             PopulateCodelistCollectionsFromJoinTables(importedBorehole);
             ReorderBoreholeForComparison(importedBorehole);
 
-            // Remove all BoreholeFiles from original borehole, without zip files in the upload no boreholeFiles are created in the imported borehole
-            originalBorehole.BoreholeFiles = [];
+            // Remove all Profiles from original borehole, without zip files in the upload no boreholeFiles are created in the imported borehole
+            originalBorehole.Profiles = [];
             AssertEntitiesEqualByIncludeInExportAttribute(originalBorehole, importedBorehole, new HashSet<object?>(), true);
 
             // Compare serialized Json values.
@@ -303,8 +303,8 @@ public class ExportControllerTest
         var fileName = $"{Guid.NewGuid()}.pdf";
         var content = Guid.NewGuid().ToString();
         var fileBytes = Encoding.UTF8.GetBytes(content);
-        var boreholeFile = await boreholeFileCloudService.UploadFileAndLinkToBoreholeAsync(new MemoryStream(fileBytes), fileName, null, null, "application/pdf", newBorehole.Id).ConfigureAwait(false);
-        context.BoreholeFiles.Add(boreholeFile);
+        var profile = await profileCloudService.UploadFileAndLinkToBoreholeAsync(new MemoryStream(fileBytes), fileName, null, null, "application/pdf", newBorehole.Id).ConfigureAwait(false);
+        context.Profiles.Add(profile);
 
         var photoName = $"{Guid.NewGuid()}.tif";
 
@@ -360,7 +360,7 @@ public class ExportControllerTest
         // Save first to get boreholeId
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        var fileWithoutAttachments = new BoreholeFile
+        var fileWithoutAttachments = new Profile
         {
             BoreholeId = newBorehole.Id,
             File = new Models.File() { Name = "file.pdf", NameUuid = $"{Guid.NewGuid}.pdf", Type = "pdf" },
@@ -669,11 +669,11 @@ public class ExportControllerTest
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string>(), It.IsAny<int>()))
             .ReturnsAsync(false);
 
-        var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
+        var boreholeFileControllerLoggerMock = new Mock<ILogger<ProfileController>>(MockBehavior.Strict);
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
 
         var loggerMock = new Mock<ILogger<ExportController>>();
-        controller = new ExportController(context, boreholeFileCloudService, loggerMock.Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new ExportController(context, profileCloudService, loggerMock.Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
 
         // Get all export methods from ExportController
         var exportMethods = typeof(ExportController)
