@@ -115,6 +115,8 @@ public class ExportControllerTest
         Assert.AreEqual(1, boreholes.Count);
 
         var exported = boreholes.Single();
+
+        // Make order of casings deterministic for comparison
         if (newBorehole.Completions != null)
         {
             foreach (var completion in newBorehole.Completions)
