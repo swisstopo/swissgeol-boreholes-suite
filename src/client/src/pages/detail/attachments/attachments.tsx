@@ -14,7 +14,7 @@ export const Attachments: FC = () => {
   const { id } = useRequiredParams<{ id: string }>();
   const boreholeId = parseInt(id);
   const { data: borehole } = useBorehole(boreholeId);
-  const { hasPhotos, hasBoreholeFiles, hasDocuments } = useBoreholeDataAvailability(borehole);
+  const { hasPhotos, hasProfiles, hasDocuments } = useBoreholeDataAvailability(borehole);
 
   const tabs = useMemo<Tab[]>(
     () => [
@@ -22,7 +22,7 @@ export const Attachments: FC = () => {
         label: t("profiles"),
         hash: "#profiles",
         component: <Profiles boreholeId={boreholeId} />,
-        hasContent: hasBoreholeFiles,
+        hasContent: hasProfiles,
       },
       {
         label: t("photos"),
@@ -37,7 +37,7 @@ export const Attachments: FC = () => {
         hasContent: hasDocuments,
       },
     ],
-    [boreholeId, hasBoreholeFiles, hasDocuments, hasPhotos, t],
+    [boreholeId, hasProfiles, hasDocuments, hasPhotos, t],
   );
   return (
     <Box sx={{ position: "relative", height: "100%", display: "flex", flexDirection: "column" }}>

@@ -10,7 +10,7 @@ import { File as FileInterface, FileSizeLimit, maxFileSizeBytes } from "../../..
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
-import { useBoreholeFiles, useInvalidateBoreholeFiles } from "../attachments/useBoreholeFiles.tsx";
+import { useInvalidateProfiles, useProfiles } from "../attachments/useProfiles.tsx";
 import { FloatingExtractionFeedback } from "./floatingExtractionFeedback.tsx";
 import { useLabelingContext } from "./labelingContext.tsx";
 import { LabelingExtraction } from "./labelingExtraction.tsx";
@@ -64,8 +64,8 @@ const LabelingPanel: FC = () => {
   const [activePage, setActivePage] = useState<number>(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { alertIsOpen, text, severity, autoHideDuration, showAlert, closeAlert } = useAlertManager();
-  const { data: boreholeFiles } = useBoreholeFiles(boreholeId);
-  const invalidateBoreholeFiles = useInvalidateBoreholeFiles();
+  const { data: profiles } = useProfiles(boreholeId);
+  const invalidateProfiles = useInvalidateProfiles();
 
   const expectedFileFormat = labelingFileFormat[panelTab];
   const isPhotoSelected = selectedAttachment && "fromDepth" in selectedAttachment;
@@ -91,7 +91,7 @@ const LabelingPanel: FC = () => {
     if (boreholeId) {
       setIsLoadingFiles(true);
       try {
-        const files = panelTab === PanelTab.profile ? boreholeFiles : await loadPhotos();
+        const files = panelTab === PanelTab.profile ? profiles : await loadPhotos();
         setFiles(files);
         if (files?.length === 1) {
           setSelectedAttachment(selected => selected ?? files[0]);
@@ -103,7 +103,7 @@ const LabelingPanel: FC = () => {
         setIsLoadingFiles(false);
       }
     }
-  }, [boreholeFiles, boreholeId, loadPhotos, panelTab]);
+  }, [profiles, boreholeId, loadPhotos, panelTab]);
 
   const addFile = useCallback(
     async (file: File) => {
@@ -111,7 +111,7 @@ const LabelingPanel: FC = () => {
         if (panelTab === PanelTab.profile) {
           const fileResponse = await uploadFile(Number(boreholeId), file);
           setSelectedAttachment(fileResponse.file);
-          invalidateBoreholeFiles();
+          invalidateProfiles();
         } else {
           const photoResponse = await uploadPhoto(Number(boreholeId), file);
           setSelectedAttachment(photoResponse);
@@ -121,7 +121,7 @@ const LabelingPanel: FC = () => {
         showAlert(t((error as Error).message), "error");
       }
     },
-    [boreholeId, invalidateBoreholeFiles, loadFiles, panelTab, showAlert, t],
+    [boreholeId, invalidateProfiles, loadFiles, panelTab, showAlert, t],
   );
 
   const loadSelectedPhoto = useCallback(async () => {

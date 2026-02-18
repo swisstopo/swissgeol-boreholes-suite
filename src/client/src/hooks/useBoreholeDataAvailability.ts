@@ -16,7 +16,7 @@ export const useBoreholeDataAvailability = (borehole?: BoreholeV2) => {
         hasHydroTest: false,
         hasFieldMeasurement: false,
         hasAttachments: false,
-        hasBoreholeFiles: false,
+        hasProfiles: false,
         hasPhotos: false,
         hasDocuments: false,
         hasCasings: false,
@@ -43,10 +43,10 @@ export const useBoreholeDataAvailability = (borehole?: BoreholeV2) => {
       hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.hydrotest) ?? false);
     const hasFieldMeasurement =
       hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.fieldMeasurement) ?? false);
-    const hasBoreholeFiles = (borehole.boreholeFiles?.length ?? 0) > 0;
+    const hasProfiles = (borehole.profiles?.length ?? 0) > 0;
     const hasDocuments = (borehole.documents?.length ?? 0) > 0;
     const hasPhotos = (borehole.photos?.length ?? 0) > 0;
-    const hasAttachments = hasBoreholeFiles || hasPhotos || hasDocuments;
+    const hasAttachments = hasProfiles || hasPhotos || hasDocuments;
     const hasCasings =
       hasCompletion && (borehole.completions?.some(completion => completion.casings?.length > 0) ?? false);
     const hasBackfills =
@@ -77,7 +77,7 @@ export const useBoreholeDataAvailability = (borehole?: BoreholeV2) => {
       hasHydroTest,
       hasFieldMeasurement,
       hasAttachments,
-      hasBoreholeFiles,
+      hasProfiles,
       hasPhotos,
       hasDocuments,
       hasCasings,

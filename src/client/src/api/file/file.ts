@@ -10,7 +10,7 @@ import { ApiError, BoreholeAttachment } from "../apiInterfaces.ts";
 import { fetchCreatePngs, fetchExtractData, fetchExtractStratigraphy, fetchPageBoundingBoxes } from "../dataextraction";
 import { download, fetchApiV2Base, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../fetchApiV2.ts";
 import { processFileWithOCR } from "../ocr.ts";
-import { BoreholeFile, DataExtractionResponse, maxFileSizeBytes } from "./fileInterfaces.ts";
+import { DataExtractionResponse, maxFileSizeBytes, Profile } from "./fileInterfaces.ts";
 
 export async function uploadFile(boreholeId: number, file: File) {
   if (file && file.size <= maxFileSizeBytes) {
@@ -24,7 +24,7 @@ export async function uploadFile(boreholeId: number, file: File) {
         throw new ApiError("errorDuringBoreholeFileUpload", response.status);
       }
     } else {
-      const uploadedFile = (await response.json()) as BoreholeFile;
+      const uploadedFile = (await response.json()) as Profile;
       processFileWithOCR({ file: uploadedFile.file.nameUuid });
       return uploadedFile;
     }
@@ -33,8 +33,8 @@ export async function uploadFile(boreholeId: number, file: File) {
   }
 }
 
-export const detachFile = async (boreholeFileId: number) => {
-  return await fetchApiV2Legacy(`boreholefile/detachFile?boreholeFileId=${boreholeFileId}`, "POST");
+export const detachFile = async (profileId: number) => {
+  return await fetchApiV2Legacy(`boreholefile/detachFile?profileId=${profileId}`, "POST");
 };
 
 export async function getFiles<FileResponse>(boreholeId: number): Promise<FileResponse[]> {
@@ -46,36 +46,27 @@ export async function getFiles<FileResponse>(boreholeId: number): Promise<FileRe
   }
 }
 
-export const downloadFile = async (boreholeFileId: number) => {
-  return await download(`boreholefile/download?boreholeFileId=${boreholeFileId}`);
+export const downloadFile = async (profileId: number) => {
+  return await download(`boreholefile/download?profileId=${profileId}`);
 };
 
-export const updateFile = async (
-  boreholeId: string,
-  boreholeFileId: number,
-  description: string,
-  isPublic: boolean,
-) => {
-  return await fetchApiV2WithApiError(
-    `boreholefile/update?boreholeId=${boreholeId}&boreholeFileId=${boreholeFileId}`,
-    "PUT",
-    {
-      description: description,
-      public: isPublic,
-    },
-  );
+export const updateFile = async (boreholeId: string, profileId: number, description: string, isPublic: boolean) => {
+  return await fetchApiV2WithApiError(`boreholefile/update?boreholeId=${boreholeId}&profileId=${profileId}`, "PUT", {
+    description: description,
+    public: isPublic,
+  });
 };
 
-export async function getDataExtractionFileInfo(boreholeFileId: number, index = 1): Promise<DataExtractionResponse> {
+export async function getDataExtractionFileInfo(profileId: number, index = 1): Promise<DataExtractionResponse> {
   let response = await fetchApiV2Legacy(
-    `boreholefile/getDataExtractionFileInfo?boreholeFileId=${boreholeFileId}&index=${index}`,
+    `boreholefile/getDataExtractionFileInfo?profileId=${profileId}&index=${index}`,
     "GET",
   );
   if (response) {
     response = response as DataExtractionResponse;
     if (response.count === 0) {
       await createExtractionPngs(response.fileName);
-      return await getDataExtractionFileInfo(boreholeFileId, index);
+      return await getDataExtractionFileInfo(profileId, index);
     }
     return response;
   } else {

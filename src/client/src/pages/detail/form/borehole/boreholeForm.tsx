@@ -59,7 +59,7 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
     data.topBedrockWeatheredMd = parseFloatWithThousandsSeparator(data?.topBedrockWeatheredMd);
     data.hasGroundwater = convertRadioValueToBoolean(data?.hasGroundwater);
     data.topBedrockIntersected = convertRadioValueToBoolean(data?.topBedrockIntersected);
-    data.boreholeFiles = null;
+    data.profiles = null;
     data.workflow = null;
 
     return data;

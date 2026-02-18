@@ -83,7 +83,7 @@ export const BoreholeImportDropzone = ({ file, setFile, acceptedFileTypes }: Bor
     <>
       {!file && (
         <Box
-          data-cy="import-boreholeFile-input"
+          data-cy="import-profile-input"
           sx={dropZoneStyles}
           {...getRootProps()}
           onDragOver={e => {

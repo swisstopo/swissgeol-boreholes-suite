@@ -3,13 +3,13 @@ import { useTranslation } from "react-i18next";
 import { TextField, Typography } from "@mui/material";
 import { GridColDef, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui/x-data-grid";
 import { detachFile, downloadFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file";
-import { BoreholeFile } from "../../../../api/file/fileInterfaces";
+import { Profile } from "../../../../api/file/fileInterfaces";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 import { formatDate } from "../../../../utils.ts";
 import { EditStateContext } from "../../editStateContext";
 import { AttachmentContent } from "../attachmentsContent";
 import { useAttachments } from "../useAttachments.tsx";
-import { useInvalidateBoreholeFiles } from "../useBoreholeFiles.tsx";
+import { useInvalidateProfiles } from "../useProfiles.tsx";
 
 interface ProfilesProps {
   boreholeId: number;
@@ -20,27 +20,27 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const { editingEnabled } = useContext(EditStateContext);
   const apiRef = useGridApiRef();
   const showApiErrorAlert = useApiErrorAlert();
-  const invalidateBoreholeFiles = useInvalidateBoreholeFiles();
+  const invalidateProfiles = useInvalidateProfiles();
 
   const loadAttachments = useCallback(async () => {
-    const files = await getFiles<BoreholeFile>(boreholeId);
-    return files.map(boreholeFile => ({
-      id: boreholeFile.fileId,
-      ...boreholeFile,
+    const files = await getFiles<Profile>(boreholeId);
+    return files.map(profile => ({
+      id: profile.fileId,
+      ...profile,
     }));
   }, [boreholeId]);
 
   const addAttachment = async (file?: File) => {
     if (file) {
       await uploadFile(boreholeId, file);
-      invalidateBoreholeFiles();
+      invalidateProfiles();
     }
   };
 
   const deleteAttachments = async (ids: number[]) => {
     const detachPromises = ids.map(id => detachFile(id));
     await Promise.all(detachPromises);
-    invalidateBoreholeFiles();
+    invalidateProfiles();
   };
 
   const exportAttachments = async (ids: number[]) => {
@@ -49,7 +49,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   };
 
   const updateAttachments = useCallback(
-    async (updatedRows: Map<GridRowId, BoreholeFile>) => {
+    async (updatedRows: Map<GridRowId, Profile>) => {
       const updatePromises = Array.from(updatedRows.entries()).map(([id, row]) => {
         const data = apiRef.current.getRowWithUpdatedValues(id, "description");
         if (data) {
@@ -63,7 +63,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         return Promise.resolve();
       });
       const results = await Promise.allSettled(updatePromises);
-      invalidateBoreholeFiles();
+      invalidateProfiles();
       const errors = results.filter(r => r.status === "rejected").map(r => r.reason);
       if (errors.length > 0) {
         showApiErrorAlert(errors.map(e => e.message).join(", "));
@@ -71,7 +71,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
       }
       return true;
     },
-    [apiRef, boreholeId, invalidateBoreholeFiles, showApiErrorAlert],
+    [apiRef, boreholeId, invalidateProfiles, showApiErrorAlert],
   );
 
   const {
@@ -84,7 +84,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
     getPublicColumnCell,
     updatedRows,
     setUpdatedRows,
-  } = useAttachments<BoreholeFile>({
+  } = useAttachments<Profile>({
     apiRef,
     loadAttachments,
     addAttachment,
@@ -98,7 +98,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
     (id: GridRowId, description: string) => {
       setUpdatedRows(prevRows => {
         const newMap = new Map(prevRows);
-        const row: BoreholeFile = newMap.get(id) ?? ({ description: "" } as BoreholeFile);
+        const row: Profile = newMap.get(id) ?? ({ description: "" } as Profile);
         row.description = description;
         newMap.set(id, row);
         return newMap;
@@ -108,7 +108,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   );
 
   const getDescriptionField = useCallback(
-    (params: GridRenderCellParams<BoreholeFile>, focused: boolean) => {
+    (params: GridRenderCellParams<Profile>, focused: boolean) => {
       const value = updatedRows.get(params.id)?.description ?? params.value ?? "";
       return (
         <TextField
@@ -122,7 +122,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
     [updateDescription, updatedRows],
   );
 
-  const columns = useMemo<GridColDef<BoreholeFile>[]>(
+  const columns = useMemo<GridColDef<Profile>[]>(
     () => [
       {
         field: "name",
@@ -171,7 +171,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   );
 
   return (
-    <AttachmentContent<BoreholeFile>
+    <AttachmentContent<Profile>
       apiRef={apiRef}
       isLoading={isLoading}
       columns={columns}

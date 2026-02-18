@@ -1,6 +1,6 @@
 import { NullableDateString } from "../../../../api/apiInterfaces.ts";
 import { BasicIdentifier, BoreholeV2, Identifier } from "../../../../api/borehole.ts";
-import { BoreholeFile } from "../../../../api/file/fileInterfaces.ts";
+import { Profile } from "../../../../api/file/fileInterfaces.ts";
 import { Codelist } from "../../../../components/codelist.ts";
 import { Workflow } from "../workflow/workflow.ts";
 import { ReferenceSystemCode } from "./coordinateSegmentInterfaces.ts";
@@ -39,7 +39,7 @@ export interface LocationFormInputs extends LocationFormBaseInputs {
   locationY: string;
   locationX: string;
   boreholeCodelists: BasicIdentifier[];
-  boreholeFiles: BoreholeFile[] | null;
+  profiles: Profile[] | null;
 }
 
 export interface LocationFormSubmission extends LocationFormBaseInputs {
@@ -53,6 +53,6 @@ export interface LocationFormSubmission extends LocationFormBaseInputs {
   locationY: string | number | null;
   locationX: string | number | null;
   codelists?: Codelist[];
-  boreholeFiles: BoreholeFile[] | null;
+  profiles: Profile[] | null;
   workflow: Workflow | null;
 }

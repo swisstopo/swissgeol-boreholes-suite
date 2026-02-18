@@ -77,7 +77,7 @@ export const LocationPanel: FC<LocationPanelProps> = ({ borehole, labelingPanelO
     data.locationXLV03 = parseFloatWithThousandsSeparator(data?.locationXLV03);
     data.locationYLV03 = parseFloatWithThousandsSeparator(data?.locationYLV03);
     data.boreholeCodelists = getCompleteCodelists(data.boreholeCodelists);
-    data.boreholeFiles = null;
+    data.profiles = null;
     data.workflow = null;
     return data;
   }, []);
