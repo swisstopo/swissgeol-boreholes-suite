@@ -624,6 +624,8 @@ public class ImportControllerTest
 
         var firstBorehole = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Cheese");
         var secondBorehole = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Fondue");
+        Assert.IsNotNull(firstBorehole);
+        Assert.IsNotNull(secondBorehole);
         Assert.AreEqual(firstBorehole.Files.Count, 2);
         Assert.AreEqual(secondBorehole.Files.Single().Name, "logos.png");
 
