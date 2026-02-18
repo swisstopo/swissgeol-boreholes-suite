@@ -62,7 +62,7 @@ public class ProfileController : ControllerBase
     /// <summary>
     /// Downloads a file from the cloud storage.
     /// </summary>
-    /// <param name="boreholeFileId">The <see cref="BoreholeFile.FileId"/> of the file to download.</param>
+    /// <param name="boreholeFileId">The <see cref="Profile.FileId"/> of the file to download.</param>
     /// <returns>The stream of the downloaded file.</returns>
     [HttpGet("download")]
     [Authorize(Policy = PolicyNames.Viewer)]
@@ -72,7 +72,7 @@ public class ProfileController : ControllerBase
 
         try
         {
-            var boreholeFile = await context.BoreholeFiles
+            var boreholeFile = await context.Profiles
                 .Include(f => f.File)
                 .FirstOrDefaultAsync(f => f.FileId == boreholeFileId)
                 .ConfigureAwait(false);

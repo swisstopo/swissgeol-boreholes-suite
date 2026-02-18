@@ -15,11 +15,11 @@ namespace BDMS.Controllers;
 
 [DeploymentItem("TestData")]
 [TestClass]
-public class BoreholeFileControllerTest
+public class ProfileControllerTest
 {
     private BdmsContext context;
-    private BoreholeFileController controller;
-    private BoreholeFileCloudService boreholeFileCloudService;
+    private ProfileController controller;
+    private ProfileCloudService profileCloudService;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
     private User adminUser;
 
@@ -47,9 +47,9 @@ public class BoreholeFileControllerTest
                 UseHttp = configuration["S3:SECURE"] == "0",
             });
 
-        var boreholeFileCloudServiceLoggerMock = new Mock<ILogger<BoreholeFileCloudService>>(MockBehavior.Strict);
-        boreholeFileCloudServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
-        boreholeFileCloudService = new BoreholeFileCloudService(context, configuration, boreholeFileCloudServiceLoggerMock.Object, contextAccessorMock.Object, s3ClientMock);
+        var profileCloudServiceLoggerMock = new Mock<ILogger<ProfileCloudService>>(MockBehavior.Strict);
+        profileCloudServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
+        profileCloudService = new ProfileCloudService(context, configuration, profileCloudServiceLoggerMock.Object, contextAccessorMock.Object, s3ClientMock);
 
         boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
@@ -68,9 +68,9 @@ public class BoreholeFileControllerTest
             .Setup(x => x.CanEditBoreholeAsync("sub_viewer", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
-        var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
-        boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
-        controller = new BoreholeFileController(context, boreholeFileControllerLoggerMock.Object, boreholeFileCloudService, boreholePermissionServiceMock.Object);
+        var ProfileControllerLoggerMock = new Mock<ILogger<ProfileController>>(MockBehavior.Strict);
+        ProfileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
+        controller = new ProfileController(context, ProfileControllerLoggerMock.Object, profileCloudService, boreholePermissionServiceMock.Object);
         controller.ControllerContext = GetControllerContextAdmin();
     }
 
@@ -104,14 +104,14 @@ public class BoreholeFileControllerTest
         Assert.AreEqual(adminUser.SubjectId, file.CreatedBy.SubjectId);
         Assert.AreEqual(adminUser.Id, file.CreatedById);
 
-        var boreholefile = context.BoreholeFiles.Single(bf => bf.FileId == file.Id);
-        Assert.AreEqual(DateTime.UtcNow.Date, boreholefile.Created?.Date);
-        Assert.AreEqual(adminUser.SubjectId, boreholefile.CreatedBy.SubjectId);
-        Assert.AreEqual(adminUser.Id, boreholefile.CreatedById);
-        Assert.AreEqual(DateTime.UtcNow.Date, boreholefile.Updated?.Date);
-        Assert.AreEqual(adminUser.SubjectId, boreholefile.UpdatedBy.SubjectId);
-        Assert.AreEqual(adminUser.Id, boreholefile.UpdatedById);
-        Assert.AreEqual(DateTime.UtcNow.Date, boreholefile.Attached?.Date);
+        var Profile = context.Profiles.Single(bf => bf.FileId == file.Id);
+        Assert.AreEqual(DateTime.UtcNow.Date, Profile.Created?.Date);
+        Assert.AreEqual(adminUser.SubjectId, Profile.CreatedBy.SubjectId);
+        Assert.AreEqual(adminUser.Id, Profile.CreatedById);
+        Assert.AreEqual(DateTime.UtcNow.Date, Profile.Updated?.Date);
+        Assert.AreEqual(adminUser.SubjectId, Profile.UpdatedBy.SubjectId);
+        Assert.AreEqual(adminUser.Id, Profile.UpdatedById);
+        Assert.AreEqual(DateTime.UtcNow.Date, Profile.Attached?.Date);
     }
 
     [TestMethod]
@@ -125,16 +125,16 @@ public class BoreholeFileControllerTest
         // Upload
         await controller.Upload(firstPdfFormFile, minBoreholeId);
 
-        // Get all boreholeFiles of borehole
-        var boreholeFilesOfBorehole = await controller.GetAllOfBorehole(minBoreholeId);
-        Assert.IsNotNull(boreholeFilesOfBorehole.Value);
+        // Get all Profiles of borehole
+        var ProfilesOfBorehole = await controller.GetAllOfBorehole(minBoreholeId);
+        Assert.IsNotNull(ProfilesOfBorehole.Value);
 
         // Get the uploaded borehole file in the response list
-        var uploadedBoreholeFile = boreholeFilesOfBorehole.Value.FirstOrDefault(bf => bf.File.Name == fileName);
-        Assert.IsNotNull(uploadedBoreholeFile);
+        var uploadedProfile = ProfilesOfBorehole.Value.FirstOrDefault(bf => bf.File.Name == fileName);
+        Assert.IsNotNull(uploadedProfile);
 
         // Download uploaded file
-        var response = await controller.Download(uploadedBoreholeFile.FileId);
+        var response = await controller.Download(uploadedProfile.FileId);
         var fileContentResult = (FileContentResult)response;
         string contentResult = Encoding.ASCII.GetString(fileContentResult.FileContents);
         Assert.AreEqual(content, contentResult);
@@ -143,7 +143,7 @@ public class BoreholeFileControllerTest
             .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
-        var unauthorizedResponse = await controller.Download(uploadedBoreholeFile.FileId);
+        var unauthorizedResponse = await controller.Download(uploadedProfile.FileId);
         ActionResultAssert.IsUnauthorized(unauthorizedResponse);
     }
 
@@ -153,7 +153,7 @@ public class BoreholeFileControllerTest
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
 
         // Get counts before upload
-        var boreholeFilesBeforeUpload = context.BoreholeFiles.Where(bf => bf.BoreholeId == minBoreholeId).Count();
+        var ProfilesBeforeUpload = context.Profiles.Where(bf => bf.BoreholeId == minBoreholeId).Count();
 
         var firstFileName = $"{Guid.NewGuid}.pdf";
         var secondFileName = $"{Guid.NewGuid}.pdf";
@@ -163,17 +163,17 @@ public class BoreholeFileControllerTest
         await controller.Upload(firstPdfFormFile, minBoreholeId);
         await controller.Upload(secondPdfFormFile, minBoreholeId);
 
-        // Get boreholeFiles of borehole from controller
-        var boreholeFilesOfBorehole = await controller.GetAllOfBorehole(minBoreholeId);
+        // Get Profiles of borehole from controller
+        var ProfilesOfBorehole = await controller.GetAllOfBorehole(minBoreholeId);
 
-        var firstBoreholeFile = boreholeFilesOfBorehole.Value?.FirstOrDefault(bf => bf.File.Name == firstFileName);
-        var secondBoreholeFile = boreholeFilesOfBorehole.Value?.FirstOrDefault(bf => bf.File.Name == secondFileName);
+        var firstProfile = ProfilesOfBorehole.Value?.FirstOrDefault(bf => bf.File.Name == firstFileName);
+        var secondProfile = ProfilesOfBorehole.Value?.FirstOrDefault(bf => bf.File.Name == secondFileName);
 
-        Assert.AreEqual(firstFileName, firstBoreholeFile.File.Name);
-        Assert.AreEqual(adminUser.SubjectId, firstBoreholeFile.User.SubjectId);
-        Assert.AreEqual(secondFileName, secondBoreholeFile.File.Name);
-        Assert.AreEqual(adminUser.SubjectId, secondBoreholeFile.User.SubjectId);
-        Assert.AreEqual(boreholeFilesBeforeUpload + 2, boreholeFilesOfBorehole.Value?.Count());
+        Assert.AreEqual(firstFileName, firstProfile.File.Name);
+        Assert.AreEqual(adminUser.SubjectId, firstProfile.User.SubjectId);
+        Assert.AreEqual(secondFileName, secondProfile.File.Name);
+        Assert.AreEqual(adminUser.SubjectId, secondProfile.User.SubjectId);
+        Assert.AreEqual(ProfilesBeforeUpload + 2, ProfilesOfBorehole.Value?.Count());
     }
 
     [TestMethod]
@@ -198,9 +198,9 @@ public class BoreholeFileControllerTest
 
         // Get counts before upload
         var filesCountBeforeUpload = context.Files.Count();
-        var boreholeFilesCountBeforeUpload = context.BoreholeFiles.Count();
-        var firstBoreholeBoreholeFilesBeforeUpload = context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count();
-        var secondBoreholeBoreholeFilesBeforeUpload = context.BoreholeFiles.Where(bf => bf.BoreholeId == secondBoreholeId).Count();
+        var ProfilesCountBeforeUpload = context.Profiles.Count();
+        var firstBoreholeProfilesBeforeUpload = context.Profiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count();
+        var secondBoreholeProfilesBeforeUpload = context.Profiles.Where(bf => bf.BoreholeId == secondBoreholeId).Count();
 
         // Create file to upload
         var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), File1);
@@ -211,32 +211,32 @@ public class BoreholeFileControllerTest
 
         // Check counts after upload
         Assert.AreEqual(filesCountBeforeUpload + 2, context.Files.Count());
-        Assert.AreEqual(boreholeFilesCountBeforeUpload + 2, context.BoreholeFiles.Count());
-        Assert.AreEqual(firstBoreholeBoreholeFilesBeforeUpload + 1, context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count());
-        Assert.AreEqual(secondBoreholeBoreholeFilesBeforeUpload + 1, context.BoreholeFiles.Where(bf => bf.BoreholeId == secondBoreholeId).Count());
+        Assert.AreEqual(ProfilesCountBeforeUpload + 2, context.Profiles.Count());
+        Assert.AreEqual(firstBoreholeProfilesBeforeUpload + 1, context.Profiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count());
+        Assert.AreEqual(secondBoreholeProfilesBeforeUpload + 1, context.Profiles.Where(bf => bf.BoreholeId == secondBoreholeId).Count());
 
         // Get the added files
-        var firstBoreholeAddedFile = context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).OrderBy(bf => bf.FileId).Last().File;
-        var secondBoreholeAddedFile = context.BoreholeFiles.Where(bf => bf.BoreholeId == secondBoreholeId).OrderBy(bf => bf.FileId).Last().File;
+        var firstBoreholeAddedFile = context.Profiles.Where(bf => bf.BoreholeId == firstBoreholeId).OrderBy(bf => bf.FileId).Last().File;
+        var secondBoreholeAddedFile = context.Profiles.Where(bf => bf.BoreholeId == secondBoreholeId).OrderBy(bf => bf.FileId).Last().File;
 
-        // Clear context to ensure file has no info about its boreholeFiles
+        // Clear context to ensure file has no info about its Profiles
         context.ChangeTracker.Clear();
 
         // Detach borehole file from first borehole
-        await controller.DetachFromBorehole(firstBoreholeAddedFile.BoreholeFiles.First(bf => bf.BoreholeId == firstBoreholeId).FileId);
+        await controller.DetachFromBorehole(firstBoreholeAddedFile.Profiles.First(bf => bf.BoreholeId == firstBoreholeId).FileId);
 
         // Check counts after detach
         Assert.AreEqual(filesCountBeforeUpload + 1, context.Files.Count());
-        Assert.AreEqual(boreholeFilesCountBeforeUpload + 1, context.BoreholeFiles.Count());
-        Assert.AreEqual(firstBoreholeBoreholeFilesBeforeUpload, context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count());
-        Assert.AreEqual(secondBoreholeBoreholeFilesBeforeUpload + 1, context.BoreholeFiles.Where(bf => bf.BoreholeId == secondBoreholeId).Count());
+        Assert.AreEqual(ProfilesCountBeforeUpload + 1, context.Profiles.Count());
+        Assert.AreEqual(firstBoreholeProfilesBeforeUpload, context.Profiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count());
+        Assert.AreEqual(secondBoreholeProfilesBeforeUpload + 1, context.Profiles.Where(bf => bf.BoreholeId == secondBoreholeId).Count());
 
         // Ensure the file got deleted for the first borehole
-        var exception = await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => boreholeFileCloudService.GetObject(firstBoreholeAddedFile.NameUuid!));
+        var exception = await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => profileCloudService.GetObject(firstBoreholeAddedFile.NameUuid!));
         Assert.AreEqual("The specified key does not exist.", exception.Message);
 
         // Ensure the file still exists for the second borehole
-        await boreholeFileCloudService.GetObject(secondBoreholeAddedFile.NameUuid!);
+        await profileCloudService.GetObject(secondBoreholeAddedFile.NameUuid!);
     }
 
     [TestMethod]
@@ -247,8 +247,8 @@ public class BoreholeFileControllerTest
 
         // Get counts before upload
         var filesCountBeforeUpload = context.Files.Count();
-        var boreholeFilesCountBeforeUpload = context.BoreholeFiles.Count();
-        var boreholeFilesBeforeUpload = context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count();
+        var ProfilesCountBeforeUpload = context.Profiles.Count();
+        var ProfilesBeforeUpload = context.Profiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count();
 
         // Create file to upload
         var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), File1);
@@ -260,27 +260,27 @@ public class BoreholeFileControllerTest
         var latestFileInDb = context.Files.OrderBy(f => f.Id).Last();
 
         // Ensure file exists
-        await boreholeFileCloudService.GetObject(latestFileInDb.NameUuid!);
+        await profileCloudService.GetObject(latestFileInDb.NameUuid!);
 
         // Check counts after upload
         Assert.AreEqual(filesCountBeforeUpload + 1, context.Files.Count());
-        Assert.AreEqual(boreholeFilesCountBeforeUpload + 1, context.BoreholeFiles.Count());
-        Assert.AreEqual(boreholeFilesBeforeUpload + 1, context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count());
+        Assert.AreEqual(ProfilesCountBeforeUpload + 1, context.Profiles.Count());
+        Assert.AreEqual(ProfilesBeforeUpload + 1, context.Profiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count());
 
         // Detach borehole file from first borehole
-        await controller.DetachFromBorehole(latestFileInDb.BoreholeFiles.First(bf => bf.BoreholeId == firstBoreholeId).FileId);
+        await controller.DetachFromBorehole(latestFileInDb.Profiles.First(bf => bf.BoreholeId == firstBoreholeId).FileId);
 
         // Check counts after detach
         Assert.AreEqual(filesCountBeforeUpload, context.Files.Count());
-        Assert.AreEqual(boreholeFilesCountBeforeUpload, context.BoreholeFiles.Count());
-        Assert.AreEqual(boreholeFilesBeforeUpload, context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count());
+        Assert.AreEqual(ProfilesCountBeforeUpload, context.Profiles.Count());
+        Assert.AreEqual(ProfilesBeforeUpload, context.Profiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count());
 
         // Ensure file does not exist
-        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => boreholeFileCloudService.GetObject(latestFileInDb.NameUuid!));
+        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => profileCloudService.GetObject(latestFileInDb.NameUuid!));
     }
 
     [TestMethod]
-    public async Task UpdateWithValidBoreholeFile()
+    public async Task UpdateWithValidProfile()
     {
         var borehole = new Borehole();
         context.Boreholes.Add(borehole);
@@ -289,19 +289,19 @@ public class BoreholeFileControllerTest
         context.Files.Add(file);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        var boreholeFile = new BoreholeFile() { BoreholeId = borehole.Id, FileId = file.Id, Description = null, Public = null };
-        context.BoreholeFiles.Add(boreholeFile);
+        var Profile = new Profile() { BoreholeId = borehole.Id, FileId = file.Id, Description = null, Public = null };
+        context.Profiles.Add(Profile);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
         // Create update borehole file object
-        var updateBoreholeFile = new BoreholeFileUpdate() { Description = "Changed Description", Public = true };
+        var updateProfile = new ProfileUpdate() { Description = "Changed Description", Public = true };
 
         // Update borehole file
-        var response = await controller.Update(updateBoreholeFile, borehole.Id, file.Id).ConfigureAwait(false);
+        var response = await controller.Update(updateProfile, borehole.Id, file.Id).ConfigureAwait(false);
         ActionResultAssert.IsOk(response);
 
-        Assert.AreEqual(true, boreholeFile.Public);
-        Assert.AreEqual("Changed Description", boreholeFile.Description);
+        Assert.AreEqual(true, Profile.Public);
+        Assert.AreEqual("Changed Description", Profile.Description);
     }
 
     [TestMethod]
@@ -319,7 +319,7 @@ public class BoreholeFileControllerTest
     }
 
     [TestMethod]
-    public async Task UploadWithMissingBoreholeFileId()
+    public async Task UploadWithMissingProfileId()
     {
         var content = Guid.NewGuid().ToString();
         var firstPdfFormFile = GetFormFileByContent(content, File1);
@@ -343,7 +343,7 @@ public class BoreholeFileControllerTest
     public async Task UploadWithMissingFile() => await AssertIsBadRequestResponse(() => controller.Upload(null, 1));
 
     [TestMethod]
-    public async Task DownloadWithMissingBoreholeFileId() => await AssertIsBadRequestResponse(() => controller.Download(0));
+    public async Task DownloadWithMissingProfileId() => await AssertIsBadRequestResponse(() => controller.Download(0));
 
     [TestMethod]
     public async Task GetAllOfBoreholeWithMissingBoreholeId()
@@ -353,7 +353,7 @@ public class BoreholeFileControllerTest
     }
 
     [TestMethod]
-    public async Task DetachFromBoreholeWithMissingBoreholeFileId() => await AssertIsBadRequestResponse(() => controller.DetachFromBorehole(0));
+    public async Task DetachFromBoreholeWithMissingProfileId() => await AssertIsBadRequestResponse(() => controller.DetachFromBorehole(0));
 
     [TestMethod]
     public async Task DetachFailsWithoutPermission()
@@ -363,8 +363,8 @@ public class BoreholeFileControllerTest
 
         // Get counts before upload
         var filesCountBeforeUpload = context.Files.Count();
-        var boreholeFilesCountBeforeUpload = context.BoreholeFiles.Count();
-        var boreholeFilesBeforeUpload = context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count();
+        var ProfilesCountBeforeUpload = context.Profiles.Count();
+        var ProfilesBeforeUpload = context.Profiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count();
 
         // Create file to upload
         var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), File1);
@@ -376,32 +376,32 @@ public class BoreholeFileControllerTest
         var latestFileInDb = context.Files.OrderBy(f => f.Id).Last();
 
         // Ensure file exists
-        await boreholeFileCloudService.GetObject(latestFileInDb.NameUuid!);
+        await profileCloudService.GetObject(latestFileInDb.NameUuid!);
 
         // Check counts after upload
         Assert.AreEqual(filesCountBeforeUpload + 1, context.Files.Count());
-        Assert.AreEqual(boreholeFilesCountBeforeUpload + 1, context.BoreholeFiles.Count());
-        Assert.AreEqual(boreholeFilesBeforeUpload + 1, context.BoreholeFiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count());
+        Assert.AreEqual(ProfilesCountBeforeUpload + 1, context.Profiles.Count());
+        Assert.AreEqual(ProfilesBeforeUpload + 1, context.Profiles.Where(bf => bf.BoreholeId == firstBoreholeId).Count());
 
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         // Detach borehole file from first borehole
-        var response = await controller.DetachFromBorehole(latestFileInDb.BoreholeFiles.First(bf => bf.BoreholeId == firstBoreholeId).FileId);
+        var response = await controller.DetachFromBorehole(latestFileInDb.Profiles.First(bf => bf.BoreholeId == firstBoreholeId).FileId);
         ActionResultAssert.IsUnauthorized(response);
     }
 
     [TestMethod]
-    public async Task UpdateWithMissingBoreholeId() => await AssertIsBadRequestResponse(() => controller.Update(new BoreholeFileUpdate(), 0, 1));
+    public async Task UpdateWithMissingBoreholeId() => await AssertIsBadRequestResponse(() => controller.Update(new ProfileUpdate(), 0, 1));
 
     [TestMethod]
-    public async Task UpdateWithMissingBoreholeFileId() => await AssertIsBadRequestResponse(() => controller.Update(new BoreholeFileUpdate(), 1, 0));
+    public async Task UpdateWithMissingProfileId() => await AssertIsBadRequestResponse(() => controller.Update(new ProfileUpdate(), 1, 0));
 
     [TestMethod]
-    public async Task UpdateWithBoreholeFileNotFound()
+    public async Task UpdateWithProfileNotFound()
     {
-        var result = await controller.Update(new BoreholeFileUpdate(), 1, 1);
+        var result = await controller.Update(new ProfileUpdate(), 1, 1);
         ActionResultAssert.IsNotFound(result);
     }
 
@@ -419,15 +419,15 @@ public class BoreholeFileControllerTest
         await context.Files.AddAsync(file);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        var boreholeFile = new BoreholeFile() { BoreholeId = borehole.Id, FileId = file.Id, Description = null, Public = null };
-        await context.BoreholeFiles.AddAsync(boreholeFile);
+        var Profile = new Profile() { BoreholeId = borehole.Id, FileId = file.Id, Description = null, Public = null };
+        await context.Profiles.AddAsync(Profile);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
         // Create update borehole file object
-        var updateBoreholeFile = new BoreholeFileUpdate() { Description = "Changed Description", Public = true };
+        var updateProfile = new ProfileUpdate() { Description = "Changed Description", Public = true };
 
         // Update borehole file
-        var response = await controller.Update(updateBoreholeFile, borehole.Id, file.Id).ConfigureAwait(false);
+        var response = await controller.Update(updateProfile, borehole.Id, file.Id).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(response);
     }
 
@@ -439,15 +439,15 @@ public class BoreholeFileControllerTest
         var labelingFile = GetFormFileByExistingFile("labeling_attachment.pdf");
         var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
         ActionResultAssert.IsOk(uploadResult);
-        var file = (uploadResult as OkObjectResult)?.Value as BoreholeFile;
+        var file = (uploadResult as OkObjectResult)?.Value as Profile;
         var fileUuid = file.File.NameUuid.Replace(".pdf", "");
 
         var image1 = GetFormFileByExistingFile("labeling_attachment-1.png");
-        await boreholeFileCloudService.UploadObject(image1.OpenReadStream(), $"dataextraction/{fileUuid}-1.png", image1.ContentType);
+        await profileCloudService.UploadObject(image1.OpenReadStream(), $"dataextraction/{fileUuid}-1.png", image1.ContentType);
         var image2 = GetFormFileByExistingFile("labeling_attachment-2.png");
-        await boreholeFileCloudService.UploadObject(image2.OpenReadStream(), $"dataextraction/{fileUuid}-2.png", image2.ContentType);
+        await profileCloudService.UploadObject(image2.OpenReadStream(), $"dataextraction/{fileUuid}-2.png", image2.ContentType);
         var image3 = GetFormFileByExistingFile("labeling_attachment-3.png");
-        await boreholeFileCloudService.UploadObject(image3.OpenReadStream(), $"dataextraction/{fileUuid}-3.png", image3.ContentType);
+        await profileCloudService.UploadObject(image3.OpenReadStream(), $"dataextraction/{fileUuid}-3.png", image3.ContentType);
 
         // Test
         var result = await controller.GetDataExtractionFileInfo(file.FileId, 1);
@@ -460,9 +460,9 @@ public class BoreholeFileControllerTest
         Assert.AreEqual(3, dataExtractionInfo.Count);
 
         // Reset data
-        await boreholeFileCloudService.DeleteObject($"dataextraction/{fileUuid}-1.png");
-        await boreholeFileCloudService.DeleteObject($"dataextraction/{fileUuid}-2.png");
-        await boreholeFileCloudService.DeleteObject($"dataextraction/{fileUuid}-3.png");
+        await profileCloudService.DeleteObject($"dataextraction/{fileUuid}-1.png");
+        await profileCloudService.DeleteObject($"dataextraction/{fileUuid}-2.png");
+        await profileCloudService.DeleteObject($"dataextraction/{fileUuid}-3.png");
     }
 
     [TestMethod]
@@ -473,7 +473,7 @@ public class BoreholeFileControllerTest
         var labelingFile = GetFormFileByExistingFile("labeling_attachment.pdf");
         var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
         ActionResultAssert.IsOk(uploadResult);
-        var file = (uploadResult as OkObjectResult)?.Value as BoreholeFile;
+        var file = (uploadResult as OkObjectResult)?.Value as Profile;
         var fileUuid = file.File.NameUuid.Replace(".pdf", "");
 
         // Test
@@ -495,7 +495,7 @@ public class BoreholeFileControllerTest
         var labelingFile = GetFormFileByExistingFile("labeling_attachment.pdf");
         var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
         ActionResultAssert.IsOk(uploadResult);
-        var file = (uploadResult as OkObjectResult)?.Value as BoreholeFile;
+        var file = (uploadResult as OkObjectResult)?.Value as Profile;
         var fileUuid = file.File.NameUuid.Replace(".pdf", "");
 
         // Test
@@ -507,7 +507,7 @@ public class BoreholeFileControllerTest
     [TestMethod]
     public async Task GetDataExtractionInfoFileNotFound()
     {
-        var result = await controller.Update(new BoreholeFileUpdate(), 1, 1);
+        var result = await controller.Update(new ProfileUpdate(), 1, 1);
         ActionResultAssert.IsNotFound(result);
     }
 
@@ -519,11 +519,11 @@ public class BoreholeFileControllerTest
         var labelingFile = GetFormFileByExistingFile("labeling_attachment.pdf");
         var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
         ActionResultAssert.IsOk(uploadResult);
-        var file = (uploadResult as OkObjectResult)?.Value as BoreholeFile;
+        var file = (uploadResult as OkObjectResult)?.Value as Profile;
         var fileUuid = file.File.NameUuid.Replace(".pdf", "");
 
         var image1 = GetFormFileByExistingFile("labeling_attachment-1.png");
-        await boreholeFileCloudService.UploadObject(image1.OpenReadStream(), $"dataextraction/{fileUuid}-1.png", image1.ContentType);
+        await profileCloudService.UploadObject(image1.OpenReadStream(), $"dataextraction/{fileUuid}-1.png", image1.ContentType);
 
         // Test
         var response = await controller.GetDataExtractionImage($"{fileUuid}-1.png");
@@ -541,7 +541,7 @@ public class BoreholeFileControllerTest
         CollectionAssert.AreEqual(originalBytes, fileContentResult.FileContents);
 
         // Reset data
-        await boreholeFileCloudService.DeleteObject($"dataextraction/{fileUuid}-1.png");
+        await profileCloudService.DeleteObject($"dataextraction/{fileUuid}-1.png");
     }
 
     private static async Task AssertIsBadRequestResponse(Func<Task<IActionResult>> func) =>

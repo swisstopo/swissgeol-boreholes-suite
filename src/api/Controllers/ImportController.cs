@@ -222,7 +222,7 @@ public class ImportController : ControllerBase
         if (!ModelState.IsValid)
             return ValidationProblem();
 
-        var boreholeFiles = boreholes.Select(b => (b, b.BoreholeFiles?.ToList())).ToList(); // Copy files for re-upload because they are cleared on save.
+        var boreholeFiles = boreholes.Select(b => (b, b.Profiles?.ToList())).ToList(); // Copy files for re-upload because they are cleared on save.
         ActionResult<int> result = await ProcessAndSaveBoreholesAsync(workgroupId, boreholes).ConfigureAwait(false);
         if (!ModelState.IsValid)
             return ValidationProblem();
@@ -264,7 +264,7 @@ public class ImportController : ControllerBase
         foreach (var borehole in boreholes)
         {
             // Attachments are re-uploaded when importing from a zip file.
-            borehole.BoreholeFiles?.Clear();
+            borehole.Profiles?.Clear();
 
             // Add new workflow with status draft.
             borehole.Workflow = new Workflow
@@ -351,7 +351,7 @@ public class ImportController : ControllerBase
     {
         // Files are exported with the original name and the UUID as a prefix to make them unique while preserving the original name
         var referencedAttachments = boreholesFromFile
-            .Select(b => b.BoreholeFiles)
+            .Select(b => b.Profiles)
             .Where(bf => bf != null)
             .SelectMany(bf => bf!)
             .Select(bf => bf.File.NameUuid + "_" + bf.File.Name);

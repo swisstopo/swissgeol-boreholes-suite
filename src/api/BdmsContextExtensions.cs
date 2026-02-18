@@ -235,7 +235,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.TopBedrockWeatheredTvd, _ => null)
            .RuleFor(o => o.Observations, _ => new Collection<Observation>())
            .RuleFor(o => o.BoreholeGeometry, _ => new Collection<BoreholeGeometryElement>())
-           .RuleFor(o => o.BoreholeFiles, _ => new Collection<BoreholeFile>())
+           .RuleFor(o => o.Profiles, _ => new Collection<Profile>())
            .RuleFor(o => o.TopBedrockIntersected, f => f.Random.Bool().OrNull(f, .2f))
            .RuleFor(o => o.Photos, _ => new Collection<Photo>())
            .RuleFor(o => o.Documents, _ => new Collection<Document>())
@@ -326,7 +326,7 @@ public static class BdmsContextExtensions
         context.BulkInsert(fileRange.Select(Seededfiles).ToList(), bulkConfig);
 
         // Seed borehole_files
-        var fakeBoreholeFiles = new Faker<BoreholeFile>()
+        var fakeBoreholeFiles = new Faker<Profile>()
             .StrictMode(true)
             .RuleFor(o => o.FileId, f => f.PickRandom(fileRange))
             .RuleFor(o => o.File, f => default!)
@@ -344,14 +344,14 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Description, f => f.Random.Words().OrNull(f, .5f))
             .RuleFor(o => o.Public, f => f.Random.Bool(.9f));
 
-        BoreholeFile SeededBoreholeFiles(int seed) => fakeBoreholeFiles.UseSeed(seed).Generate();
+        Profile SeededBoreholeFiles(int seed) => fakeBoreholeFiles.UseSeed(seed).Generate();
 
         var filesToInsert = richBoreholeRange
             .Select(SeededBoreholeFiles)
             .GroupBy(bf => new { bf.BoreholeId, bf.FileId })
             .Select(bf => bf.FirstOrDefault())
             .ToList();
-        context.BulkInsert<BoreholeFile>(filesToInsert, bulkConfig);
+        context.BulkInsert<Profile>(filesToInsert, bulkConfig);
 
         // Seed borehole_photo
         var photo_ids = 4_000_000;

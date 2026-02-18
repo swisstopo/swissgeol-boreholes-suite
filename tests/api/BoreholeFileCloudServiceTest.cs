@@ -12,7 +12,7 @@ using static BDMS.Helpers;
 namespace BDMS;
 
 [TestClass]
-public class BoreholeFileCloudServiceTest
+public class ProfileCloudServiceTest
 {
     private AmazonS3Client s3Client;
     private BdmsContext context;

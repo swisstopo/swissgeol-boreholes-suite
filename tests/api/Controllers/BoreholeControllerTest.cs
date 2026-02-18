@@ -132,7 +132,7 @@ public class BoreholeControllerTest
 
         var boreholeToEdit = GetBorehole(id);
         Assert.AreEqual(2, boreholeToEdit.Stratigraphies.Count);
-        Assert.AreEqual(0, boreholeToEdit.BoreholeFiles.Count);
+        Assert.AreEqual(0, boreholeToEdit.Profiles.Count);
         Assert.AreEqual(0, boreholeToEdit.BoreholeGeometry.Count);
         Assert.AreEqual(0, boreholeToEdit.Completions.Count);
         Assert.AreEqual(0, boreholeToEdit.Observations.Count); // Hydrogeology observations
@@ -193,7 +193,7 @@ public class BoreholeControllerTest
 
         // Stratigraphies remain unchanged
         Assert.AreEqual(2, updatedBorehole.Stratigraphies.Count);
-        Assert.AreEqual(0, updatedBorehole.BoreholeFiles.Count);
+        Assert.AreEqual(0, updatedBorehole.Profiles.Count);
         Assert.AreEqual(0, updatedBorehole.BoreholeGeometry.Count);
         Assert.AreEqual(0, updatedBorehole.Completions.Count);
         Assert.AreEqual(0, updatedBorehole.Observations.Count);
@@ -628,9 +628,9 @@ public class BoreholeControllerTest
         Assert.AreEqual(originalStratigraphy.LithostratigraphyLayers.OrderBy(l => l.Id).First().LithostratigraphyId, copiedstratigraphy.LithostratigraphyLayers.OrderBy(l => l.Id).First().LithostratigraphyId);
 
         // Borehole attachments are not copied
-        Assert.AreNotSame(originalBorehole.BoreholeFiles, copiedBorehole.BoreholeFiles);
-        Assert.AreNotEqual(0, originalBorehole.BoreholeFiles.Count);
-        Assert.AreEqual(0, copiedBorehole.BoreholeFiles.Count);
+        Assert.AreNotSame(originalBorehole.Profiles, copiedBorehole.Profiles);
+        Assert.AreNotEqual(0, originalBorehole.Profiles.Count);
+        Assert.AreEqual(0, copiedBorehole.Profiles.Count);
 
         Assert.AreNotSame(originalStratigraphy.Lithologies.First().LithologyRockConditionCodes, copiedstratigraphy.Lithologies.First().LithologyRockConditionCodes);
         Assert.AreEqual(originalStratigraphy.Lithologies.First().LithologyRockConditionCodes.Count, copiedstratigraphy.Lithologies.First().LithologyRockConditionCodes.Count);

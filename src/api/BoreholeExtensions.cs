@@ -153,9 +153,9 @@ public static class BoreholeExtensions
         if (borehole.Geometry != null) borehole.Geometry.SRID = SpatialReferenceConstants.SridLv95;
 
         borehole.Files?.Clear();
-        if (borehole.BoreholeFiles != null)
+        if (borehole.Profiles != null)
         {
-            foreach (var file in borehole.BoreholeFiles)
+            foreach (var file in borehole.Profiles)
             {
                 file.File.MarkAsNew();
             }

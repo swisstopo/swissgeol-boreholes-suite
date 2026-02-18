@@ -51,20 +51,20 @@ public class ImportControllerTest
             ForcePathStyle = true,
             UseHttp = configuration["S3:SECURE"] == "0",
         });
-        var loggerBoreholeFileCloudService = new Mock<ILogger<BoreholeFileCloudService>>(MockBehavior.Strict);
+        var loggerProfileCloudService = new Mock<ILogger<ProfileCloudService>>(MockBehavior.Strict);
         var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
         var testUser = context.Users.FirstOrDefault();
         Assert.IsNotNull(testUser, "Test database must contain at least one user.");
         contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, testUser!.SubjectId) }));
-        var boreholeFileCloudService = new BoreholeFileCloudService(context, configuration, loggerBoreholeFileCloudService.Object, contextAccessorMock.Object, s3ClientMock);
+        var profileCloudService = new ProfileCloudService(context, configuration, loggerProfileCloudService.Object, contextAccessorMock.Object, s3ClientMock);
 
         boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Role>()))
             .ReturnsAsync(true);
 
-        controller = new ImportController(context, loggerMock.Object, locationService, coordinateService, boreholeFileCloudService, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new ImportController(context, loggerMock.Object, locationService, coordinateService, profileCloudService, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -630,7 +630,7 @@ public class ImportControllerTest
         Assert.AreEqual(secondBorehole.Files.Single().Name, "logos.png");
 
         // Assert BoreholeFile description and public attribute
-        var profile = firstBorehole.BoreholeFiles.First();
+        var profile = firstBorehole.Profiles.First();
         Assert.AreEqual(profile.Description, "Describing Incredible Granite");
         Assert.AreEqual(profile.Public, true);
     }

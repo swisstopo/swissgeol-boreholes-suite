@@ -213,7 +213,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         borehole.MarkBoreholeContentAsNew(user, workgroupId);
 
         // Do not copy borehole attachments
-        borehole.BoreholeFiles.Clear();
+        borehole.Profiles.Clear();
         borehole.Photos.Clear();
 
         borehole.OriginalName += " (Copy)";
