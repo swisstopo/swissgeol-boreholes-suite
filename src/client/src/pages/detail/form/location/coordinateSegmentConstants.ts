@@ -36,4 +36,5 @@ export const referenceSystems: { [key: string]: ReferenceSystem } = {
   },
 };
 
+// Default height reference system ID from the `height_reference_system` codelist.
 export const defaultHrsId = 20106001;
