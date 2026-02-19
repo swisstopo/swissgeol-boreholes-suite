@@ -39,7 +39,7 @@ const checkPublicStatus = (text, checked, editingEnabled) => {
 
 function createBoreholeWithDocuments(numberOfDocuments, boreholeAlias) {
   createBorehole({
-    originalName: "Borehole with many log runs",
+    originalName: "Borehole with many documents",
     documents: Array.from({ length: numberOfDocuments }, (_, i) => ({
       description: `test document ${i + 1}`,
       url: `https://localhost/document${i + 1}.pdf`,
