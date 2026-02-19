@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- Included all missing properties from `Lithology`/`LithologyDescription` in borehole JSON import.
+
 ## v2.1.1462 - 2026-02-19
 
 ### Added
