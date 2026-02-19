@@ -86,7 +86,7 @@ export const Table = <T extends GridValidRowModel>({
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
   const internalApiRef = useGridApiRef();
   const [internalPaginationModel, setInternalPaginationModel] = useState({
-    pageSize: 50,
+    pageSize: maxRowsPerPage,
     page: 0,
   });
   const effectiveApiRef = apiRef ?? internalApiRef;
