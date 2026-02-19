@@ -362,7 +362,6 @@ describe("Test for exporting boreholes.", () => {
         CasingId: null,
         Comment: null,
         ConditionsId: null,
-        Duration: null,
         EndTime: null,
         FromDepthM: 0,
         FromDepthMasl: null,
