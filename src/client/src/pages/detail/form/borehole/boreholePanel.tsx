@@ -1,5 +1,6 @@
 import { FC, useMemo } from "react";
 import { useTranslation } from "react-i18next";
+import { Box } from "@mui/system";
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { useBoreholeDataAvailability } from "../../../../hooks/useBoreholeDataAvailability.ts";
 import { BoreholeForm } from "./boreholeForm.tsx";
@@ -34,5 +35,9 @@ export const BoreholePanel: FC<BoreholeProps> = ({ borehole }) => {
     [borehole, hasGeometry, hasSections, t],
   );
 
-  return <TabPanel tabs={tabs} />;
+  return (
+    <Box sx={{ position: "relative" }}>
+      <TabPanel tabs={tabs} />
+    </Box>
+  );
 };
