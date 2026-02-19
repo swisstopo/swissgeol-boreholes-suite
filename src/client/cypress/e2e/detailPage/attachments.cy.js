@@ -40,7 +40,7 @@ function createBoreholeWithDocuments(numberOfDocuments, boreholeAlias) {
   createBorehole({
     originalName: "Borehole with many log runs",
     documents: Array.from({ length: numberOfDocuments }, (_, i) => ({
-      name: `Test Document ${i + 1}`,
+      description: `test document ${i + 1}`,
       url: `https://localhost/document${i + 1}.pdf`,
     })),
   }).as(boreholeAlias);
@@ -333,7 +333,7 @@ describe("Tests for 'Attachments' edit page.", () => {
     verifyPaginationText("1–50 of 53");
     startBoreholeEditing();
     checkAllVisibleRows();
-    unCheckRowWithText("Test Document 2");
+    unCheckRowWithText("test document 2");
     cy.dataCy("delete-button").click();
     cy.get(".MuiTablePagination-displayedRows").should("not.exist");
   });
