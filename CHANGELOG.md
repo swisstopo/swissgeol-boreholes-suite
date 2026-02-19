@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1462 - 2026-02-19
+
 ### Changed
 - Upgraded dataextraction service to version 1.0.144
 - Migrated *swissgeol-boreholes* Helm chart repository to this GitHub repository.
