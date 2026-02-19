@@ -287,9 +287,9 @@ public class ExportControllerTest
                         JsonExportHelper.RequireIncludeInExportAttribute,
                         (typeInfo) =>
                         {
-                            foreach (var property in typeInfo.Properties)
+                            foreach (var property in typeInfo.Properties.Where(p => attributesToIgnore.Contains(p.Name)))
                             {
-                                if (attributesToIgnore.Contains(property.Name)) property.ShouldSerialize = (_, _) => false;
+                                property.ShouldSerialize = (_, _) => false;
                             }
                         },
                     },
