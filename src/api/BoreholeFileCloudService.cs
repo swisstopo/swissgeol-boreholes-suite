@@ -29,7 +29,7 @@ public class BoreholeFileCloudService : CloudServiceBase
     /// <param name="filePublicStatus">The public status of the file to upload.</param>
     /// <param name="contentType">The content type of the file.</param>
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> to link the uploaded file to.</param>
-    public async Task<BoreholeFile> UploadFileAndLinkToBoreholeAsync(Stream fileStream, string fileName, string? fileDescription, bool? filePublicStatus, string contentType, int boreholeId)
+    public async Task<BoreholeFile> UploadFileAndLinkToBoreholeAsync(Stream fileStream, string fileName, string? fileDescription, bool filePublicStatus, string contentType, int boreholeId)
     {
         // Use transaction to ensure data is only stored to db if the file upload was sucessful. Only create a transaction if there is not already one from the calling method.
         using var transaction = context.Database.CurrentTransaction == null ? await context.Database.BeginTransactionAsync().ConfigureAwait(false) : null;

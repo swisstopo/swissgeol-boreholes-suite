@@ -326,7 +326,7 @@ public class ImportController : ControllerBase
         var fileName = boreholeFile.File.Name;
         try
         {
-            await boreholeFileCloudService.UploadFileAndLinkToBoreholeAsync(fileStream, fileName, boreholeFile.Description, boreholeFile.Public, contentType, borehole.Id).ConfigureAwait(false);
+            await boreholeFileCloudService.UploadFileAndLinkToBoreholeAsync(fileStream, fileName, boreholeFile.Description, boreholeFile.Public == true, contentType, borehole.Id).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
