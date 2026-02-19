@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- Upgraded dataextraction service to version 1.0.144
+
 ### Fixed
 - Fixed French translation of codelist entry `casing plugging`.
 - Included all missing properties from `Lithology`/`LithologyDescription` in borehole JSON export.
