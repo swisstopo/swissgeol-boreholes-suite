@@ -324,7 +324,7 @@ describe("Tests for 'Attachments' edit page.", () => {
     });
   });
 
-  it.only("Displays table pagination for more than 100 documents", () => {
+  it("Displays table pagination for more than 100 documents", () => {
     createBoreholeWithDocuments(103, "borehole_id_103");
     cy.get("@borehole_id_103").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/attachments#documents`);
