@@ -4,6 +4,7 @@
 
 ### Changed
 - Upgraded dataextraction service to version 1.0.144
+- Migrated *swissgeol-boreholes* Helm chart repository to this GitHub repository.
 
 ### Fixed
 - Fixed French translation of codelist entry `casing plugging`.
