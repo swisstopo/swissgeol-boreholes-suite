@@ -1,9 +1,38 @@
 import { discardChanges, saveWithSaveBar } from "../helpers/buttonHelpers.js";
-import { checkAllVisibleRows, checkRowWithIndex, checkTwoFirstRows, clickOnRowWithText, sortBy, uncheckAllVisibleRows, unCheckRowWithText, verifyPaginationText, verifyRowContains, verifyRowWithTextCheckState, verifyTableLength } from "../helpers/dataGridHelpers.js";
-import { evaluateCheckbox, evaluateInput, evaluateMultiSelect, evaluateSelect, evaluateTextarea, hasError, setInput, setSelect, toggleCheckbox, toggleMultiSelect } from "../helpers/formHelpers.js";
+import {
+  checkAllVisibleRows,
+  checkRowWithIndex,
+  checkTwoFirstRows,
+  clickOnRowWithText,
+  sortBy,
+  uncheckAllVisibleRows,
+  unCheckRowWithText,
+  verifyPaginationText,
+  verifyRowContains,
+  verifyRowWithTextCheckState,
+  verifyTableLength,
+} from "../helpers/dataGridHelpers.js";
+import {
+  evaluateCheckbox,
+  evaluateInput,
+  evaluateMultiSelect,
+  evaluateSelect,
+  evaluateTextarea,
+  hasError,
+  setInput,
+  setSelect,
+  toggleCheckbox,
+  toggleMultiSelect,
+} from "../helpers/formHelpers.js";
 import { isActiveMenuItem, navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
-import { createBaseSelector, createBorehole, goToDetailRouteAndAcceptTerms, handlePrompt, startBoreholeEditing, stopBoreholeEditing } from "../helpers/testHelpers";
-
+import {
+  createBaseSelector,
+  createBorehole,
+  goToDetailRouteAndAcceptTerms,
+  handlePrompt,
+  startBoreholeEditing,
+  stopBoreholeEditing,
+} from "../helpers/testHelpers";
 
 // TODO: Remove rule once logic is implemented with https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2361
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
