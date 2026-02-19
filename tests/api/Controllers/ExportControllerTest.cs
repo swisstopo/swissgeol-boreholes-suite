@@ -255,7 +255,6 @@ public class ExportControllerTest
         {
             await System.IO.File.WriteAllTextAsync(tempFilePath, jsonToImport).ConfigureAwait(false);
 
-            // Read the file back using GetFormFileByExistingFile
             var jsonFile = GetFormFileByExistingFile(tempFilePath);
 
             var importResult = await importController.UploadJsonFileAsync(workgroupId: 2, jsonFile).ConfigureAwait(false);
@@ -273,7 +272,7 @@ public class ExportControllerTest
             PopulateCodelistCollectionsFromJoinTables(importedBorehole);
             ReorderBoreholeForComparison(importedBorehole);
 
-            // Remove all BoreholeFiles from original borehole, without zip files in the upload no boreholeFiles are created in the imported borehole
+            // Remove all BoreholeFiles from original borehole. Without attached files in the upload no BoreholeFiles are created in the imported borehole.
             originalBorehole.BoreholeFiles = [];
             AssertEntitiesEqualByIncludeInExportAttribute(originalBorehole, importedBorehole, new HashSet<object?>(), true);
 
@@ -284,7 +283,6 @@ public class ExportControllerTest
         }
         finally
         {
-            // Clean up temporary file
             if (System.IO.File.Exists(tempFilePath))
             {
                 System.IO.File.Delete(tempFilePath);
