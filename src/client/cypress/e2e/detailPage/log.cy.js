@@ -147,7 +147,6 @@ describe("Test for the borehole log.", () => {
     sortBy("Comment");
     verifyFullRowContent(["R96", "10.0 - 20.0", "CAL, GYRO, GR", "Other"], 0);
     verifyRowWithTextCheckState("R96", true);
-    verifyRowWithTextCheckState("R96", true);
   });
 
   it("Displays table pagination for more than 50 log runs", () => {
