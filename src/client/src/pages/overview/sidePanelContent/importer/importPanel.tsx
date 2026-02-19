@@ -45,19 +45,36 @@ const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpen }: Im
       setFile(null);
       refresh();
     } else {
-      const responseBody = await response.json();
-      if (response.status === 400) {
-        if (responseBody.errors) {
-          // If response is of type ValidationProblemDetails, open validation error modal.
-          setErrorsResponse(responseBody);
-          setErrorDialogOpen(true);
+      try {
+        const contentType = response.headers.get("content-type");
+        const isJson = contentType && contentType.includes("application/json");
+
+        if (response.status === 400 && isJson) {
+          const responseBody = await response.json();
+          if (responseBody.errors) {
+            // If response is of type ValidationProblemDetails, open validation error modal.
+            setErrorsResponse(responseBody);
+            setErrorDialogOpen(true);
+          } else if (responseBody.messageKey) {
+            // If response has a messageKey, try to translate it, fallback to detail message.
+            const translatedMessage = t(responseBody.messageKey, { defaultValue: responseBody.detail });
+            showAlert(translatedMessage, "error");
+          } else if (responseBody.detail) {
+            // If response is of type ProblemDetails, show error message.
+            showAlert(responseBody.detail, "error");
+          } else {
+            showAlert(t("boreholesImportError"), "error");
+          }
+        } else if (response.status === 504) {
+          showAlert(t("boreholesImportLongRunning"), "error");
+        } else if (isJson) {
+          const responseBody = await response.json();
+          showAlert(responseBody.detail || t("boreholesImportError"), "error");
         } else {
-          // If response is of type ProblemDetails, show error message.
-          showAlert(responseBody.detail, "error");
+          const errorText = await response.text();
+          showAlert(errorText || t("boreholesImportError"), "error");
         }
-      } else if (response.status === 504) {
-        showAlert(t("boreholesImportLongRunning"), "error");
-      } else {
+      } catch (error) {
         showAlert(t("boreholesImportError"), "error");
       }
     }
