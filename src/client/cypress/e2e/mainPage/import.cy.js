@@ -103,9 +103,7 @@ describe("Test for importing boreholes.", () => {
     cy.contains("Blue");
   });
 
-  // Todo reactivate tests when import functionality is reactivated https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
-  it.skip("exports and reimports boreholes with attachments", () => {
-    // add two boreholes with attachments
+  it("exports and reimports boreholes with attachments", () => {
     const boreholeName = "COLDWATERDRINK";
     const boreholeName2 = "COLDWATERBATH";
     createBorehole({
