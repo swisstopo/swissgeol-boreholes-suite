@@ -6,6 +6,8 @@ import {
   clickOnRowWithText,
   sortBy,
   uncheckAllVisibleRows,
+  unCheckRowWithText,
+  verifyPaginationText,
   verifyRowContains,
   verifyRowWithTextCheckState,
   verifyTableLength,
@@ -31,6 +33,12 @@ import {
   startBoreholeEditing,
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
+
+// TODO: Remove rule once logic is implemented with https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2361
+
+// TODO: Remove rule once logic is implemented with https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2361
+
+// TODO: Remove rule once logic is implemented with https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2361
 
 // TODO: Remove rule once logic is implemented with https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2361
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -86,9 +94,28 @@ function removeFile(parent) {
   cy.get(selector).dataCy("iconButton").click();
 }
 
+function createBoreholeWithLogRuns(numberOfRuns, boreholeAlias) {
+  createBorehole({
+    originalName: "Borehole with many log runs",
+    logRuns: Array.from({ length: numberOfRuns }, (_, i) => ({
+      id: i,
+      boreholeId: 0,
+      runNumber: `Run${i + 1}`,
+      fromDepth: i * 10,
+      toDepth: (i + 1) * 10,
+      comment: "Test Log Run",
+      serviceCo: "Test Service Co",
+      runDate: null,
+      bitSize: 34.235,
+      conveyanceMethodId: null,
+      boreholeStatusId: null,
+    })),
+  }).as(boreholeAlias);
+}
+
 describe("Test for the borehole log.", () => {
   it("Correctly displays log run table", () => {
-    goToDetailRouteAndAcceptTerms(`/1000070/log?dev=true`);
+    goToDetailRouteAndAcceptTerms(`/1000070/log`);
     assertExportButtonsDisabled();
     cy.dataCy("delete-button").should("not.exist");
     assertRunCountDisplayed("10 runs");
@@ -126,12 +153,28 @@ describe("Test for the borehole log.", () => {
     sortBy("Comment");
     verifyFullRowContent(["R96", "10.0 - 20.0", "CAL, GYRO, GR", "Other"], 0);
     verifyRowWithTextCheckState("R96", true);
+    verifyRowWithTextCheckState("R96", true);
+  });
+
+  it("Displays table pagination for more than 50 log runs", () => {
+    createBoreholeWithLogRuns(106, "borehole_id_106");
+    cy.get("@borehole_id_106").then(id => {
+      goToDetailRouteAndAcceptTerms(`/${id}/log`);
+      cy.wait(["@borehole"]);
+    });
+    assertRunCountDisplayed("106 runs");
+    verifyPaginationText("1–50 of 106");
+    startBoreholeEditing();
+    checkAllVisibleRows();
+    unCheckRowWithText("Run2");
+    cy.dataCy("delete-button").click();
+    cy.get(".MuiTablePagination-displayedRows").should("not.exist");
   });
 
   it("Adds, edits and deletes logs", () => {
     createBorehole({ originalName: "FANCYPHANTOMFERRY" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToDetailRouteAndAcceptTerms(`/${id}/log?dev=true`);
+      goToDetailRouteAndAcceptTerms(`/${id}/log`);
       cy.wait(["@borehole"]);
     });
     startBoreholeEditing();
@@ -257,7 +300,7 @@ describe("Test for the borehole log.", () => {
   it("can add, update and delete log files", () => {
     createBorehole({ originalName: "FANCYPHANTOMFERRY" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToDetailRouteAndAcceptTerms(`/${id}/log?dev=true`);
+      goToDetailRouteAndAcceptTerms(`/${id}/log`);
       cy.wait(["@borehole"]);
     });
     startBoreholeEditing();
@@ -327,7 +370,7 @@ describe("Test for the borehole log.", () => {
   it("Blocks navigation with unsaved changes", () => {
     createBorehole({ originalName: "BLOCKING TIME!" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToDetailRouteAndAcceptTerms(`/${id}/log?dev=true`);
+      goToDetailRouteAndAcceptTerms(`/${id}/log`);
       cy.wait(["@borehole"]);
     });
     startBoreholeEditing();
@@ -359,7 +402,7 @@ describe("Test for the borehole log.", () => {
   });
 
   it("Filters log runs in table", () => {
-    goToDetailRouteAndAcceptTerms(`/1000070/log?dev=true`);
+    goToDetailRouteAndAcceptTerms(`/1000070/log`);
     assertRunCountDisplayed("10 runs");
     cy.dataCy("filter-button").should("exist");
     cy.dataCy("filter-form").should("not.exist");
@@ -386,7 +429,7 @@ describe("Test for the borehole log.", () => {
   it("filters log files", () => {
     createBorehole({ originalName: "FANCYPHANTOMFERRY" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      goToDetailRouteAndAcceptTerms(`/${id}/log?dev=true`);
+      goToDetailRouteAndAcceptTerms(`/${id}/log`);
       cy.wait(["@borehole"]);
     });
     startBoreholeEditing();

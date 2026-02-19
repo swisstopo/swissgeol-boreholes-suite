@@ -6,6 +6,7 @@ import {
   setTextInRow,
   uncheckAllVisibleRows,
   unCheckRowWithText,
+  verifyPaginationText,
   verifyRowContains,
   verifyRowWithContentAlsoContains,
   verifyRowWithTextCheckState,
@@ -34,6 +35,16 @@ const checkPublicStatus = (text, checked, editingEnabled) => {
       .should(checked ? "exist" : "not.exist");
   }
 };
+
+function createBoreholeWithDocuments(numberOfDocuments, boreholeAlias) {
+  createBorehole({
+    originalName: "Borehole with many log runs",
+    documents: Array.from({ length: numberOfDocuments }, (_, i) => ({
+      name: `Test Document ${i + 1}`,
+      url: `https://localhost/document${i + 1}.pdf`,
+    })),
+  }).as(boreholeAlias);
+}
 
 describe("Tests for 'Attachments' edit page.", () => {
   const photoFilename = "HARDOASIS_10.00-120.00_all.jpg";
@@ -310,6 +321,21 @@ describe("Tests for 'Attachments' edit page.", () => {
       // reset test data
       deleteBorehole(boreholeId);
     });
+  });
+
+  it("Displays table pagination for more than 50 documents", () => {
+    createBoreholeWithDocuments(53, "borehole_id_53");
+    cy.get("@borehole_id_53").then(id => {
+      goToDetailRouteAndAcceptTerms(`/${id}/attachments#documents`);
+      cy.wait(["@borehole"]);
+    });
+
+    verifyPaginationText("1–50 of 53");
+    startBoreholeEditing();
+    checkAllVisibleRows();
+    unCheckRowWithText("Test Document 2");
+    cy.dataCy("delete-button").click();
+    cy.get(".MuiTablePagination-displayedRows").should("not.exist");
   });
 
   it("saves with ctrl s", () => {
