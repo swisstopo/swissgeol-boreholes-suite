@@ -276,9 +276,29 @@ public class ExportControllerTest
             originalBorehole.BoreholeFiles = [];
             AssertEntitiesEqualByIncludeInExportAttribute(originalBorehole, importedBorehole, new HashSet<object?>(), true);
 
+            // Ignore Ids and change tracking attribute when serializing Json to compare
+            var attributesToIgnore = new[] { "Id", "BoreholeId", "StratigraphyId", "LithologyId", "LithologyDescriptionId", "CompletionId", "CreatedById", "Created", "UpdatedById", "Updated", "CreatedAt", "SectionId", "FileId", "LogRunId", "WorkgroupId", "UserId", "User", "Creator", "CasingId", "LockedById", "AssigneeId", "ReviewedTabsId", "PublishedTabsId", "WorkflowId" };
+            var comparableJsonOptions = new JsonSerializerOptions(jsonOptions)
+            {
+                TypeInfoResolver = new DefaultJsonTypeInfoResolver
+                {
+                    Modifiers =
+                    {
+                        JsonExportHelper.RequireIncludeInExportAttribute,
+                        (typeInfo) =>
+                        {
+                            foreach (var property in typeInfo.Properties)
+                            {
+                                if (attributesToIgnore.Contains(property.Name)) property.ShouldSerialize = (_, _) => false;
+                            }
+                        },
+                    },
+                },
+            };
+
             // Compare serialized Json values.
-            var serializedOriginal = SerializeComparableJson(originalBorehole);
-            var serializedImported = SerializeComparableJson(importedBorehole);
+            var serializedOriginal = JsonSerializer.Serialize(originalBorehole, comparableJsonOptions);
+            var serializedImported = JsonSerializer.Serialize(importedBorehole, comparableJsonOptions);
             Assert.AreEqual(serializedOriginal, serializedImported, "Serialized JSON of original and imported borehole differ, indicating a mismatch in the export/import process.");
         }
         finally
@@ -875,16 +895,10 @@ public class ExportControllerTest
         }
     }
 
-    private static string SerializeComparableJson(Borehole borehole)
-    {
-        // Remove ids and change tracking attributes before comparing
-        var attributesToRemove = new[] { "Id", "BoreholeId", "StratigraphyId", "LithologyId", "LithologyDescriptionId", "CompletionId", "Created", "CreatedById", "Updated", "UpdatedById", "CreatedAt", "SectionId", "FileId", "LogRunId", "WorkgroupId", "UserId", "CasingId", "LockedById", "AssigneeId", "ReviewedTabsId", "PublishedTabsId", "WorkflowId" };
-        return Regex.Replace(JsonSerializer.Serialize(borehole, jsonOptions), $"\"({string.Join("|", attributesToRemove)})\"\\s*:\\s*[^,}}]+,?", string.Empty, RegexOptions.IgnoreCase, TimeSpan.FromMilliseconds(100));
-    }
-
     private static void ReorderBoreholeForComparison(Borehole borehole)
     {
         borehole.Observations = borehole.Observations?.Where(o => o.Type != ObservationType.None).OrderBy(o => o.Type).ToList();
+        borehole.Completions = borehole.Completions?.OrderBy(o => o.Name).ToList();
 
         foreach (var completion in borehole.Completions ?? [])
         {
