@@ -35,3 +35,6 @@ export const referenceSystems: { [key: string]: ReferenceSystem } = {
     fieldName: { X: FieldNameDirectionKeys.locationXLV03, Y: FieldNameDirectionKeys.locationYLV03 },
   },
 };
+
+// Default height reference system ID from the `height_reference_system` codelist.
+export const defaultHrsId = 20106001;
