@@ -11,6 +11,7 @@ namespace BDMS.Models;
 public class Completion : IChangeTracking, IIdentifyable
 {
     /// <inheritdoc />
+    [IncludeInExport]
     [Column("id")]
     public int Id { get; set; }
 
