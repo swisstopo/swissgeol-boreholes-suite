@@ -22,7 +22,7 @@ spec:
       labels:
         app: {{ .Release.Name }}-api-legacy
     spec:
-      automountServiceAccountToken: {{ .Values.automountServiceAccountToken }}
+      automountServiceAccountToken: false
       {{- if .Values.podSecurityContext }}
       securityContext:
         {{- toYaml .Values.podSecurityContext | nindent 8 }}

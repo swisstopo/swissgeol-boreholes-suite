@@ -125,11 +125,6 @@
       "default": 1
     },
 
-    "automountServiceAccountToken": {
-      "type": "boolean",
-      "default": false
-    },
-
     "podSecurityContext": {
       "type": "object",
       "default": {},

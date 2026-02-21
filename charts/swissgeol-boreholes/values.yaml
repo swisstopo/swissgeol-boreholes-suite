@@ -91,10 +91,17 @@ database:
 #
 replicaCount: 1
 
-# Pod-level security settings (optional)
-automountServiceAccountToken: false
-podSecurityContext: {}
-securityContext: {}
+# Pod-level security settings
+podSecurityContext:
+  seccompProfile:
+    type: RuntimeDefault
+securityContext:
+  allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
+  seccompProfile:
+    type: RuntimeDefault
 
 # Resource requests and limits per component
 resources:
