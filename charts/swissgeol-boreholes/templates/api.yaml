@@ -22,7 +22,7 @@ spec:
       labels:
         app: {{ .Release.Name }}-api
     spec:
-      automountServiceAccountToken: {{ .Values.automountServiceAccountToken }}
+      automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
         {{- if .Values.podSecurityContext }}

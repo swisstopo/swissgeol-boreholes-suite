@@ -23,11 +23,6 @@
       "required": ["version"]
     },
 
-    "automountServiceAccountToken": {
-      "type": "boolean",
-      "default": false
-    },
-
     "podSecurityContext": {
       "type": "object",
       "default": {},

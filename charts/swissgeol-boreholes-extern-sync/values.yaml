@@ -18,7 +18,6 @@ app:
   schedule:
 
 # Pod-level security settings
-automountServiceAccountToken: false
 podSecurityContext:
   runAsNonRoot: true
   seccompProfile:

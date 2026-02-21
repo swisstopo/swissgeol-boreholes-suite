@@ -92,7 +92,6 @@ database:
 replicaCount: 1
 
 # Pod-level security settings
-automountServiceAccountToken: false
 podSecurityContext:
   seccompProfile:
     type: RuntimeDefault
