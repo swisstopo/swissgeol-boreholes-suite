@@ -3,12 +3,13 @@
 ## [Unreleased]
 
 ### Added
-- Added new GitHub Action workflow to add a release-candidate Docker image tag to a specific version.
+- Added major version Docker image tag (e.g. `:v2`) to the release workflow.
 
 ## v2.1.1462 - 2026-02-19
 
 ### Added
 - Added new GitHub Action workflow to add a release-candidate Docker image tag to a specific version.
+
 
 ### Changed
 - Upgraded dataextraction service to version 1.0.144
