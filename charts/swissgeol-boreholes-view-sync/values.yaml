@@ -22,6 +22,9 @@ automountServiceAccountToken: false
 podSecurityContext: {}
 securityContext:
   allowPrivilegeEscalation: false
+  capabilities:
+    drop:
+      - ALL
   seccompProfile:
     type: RuntimeDefault
 
