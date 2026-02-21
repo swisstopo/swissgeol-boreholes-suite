@@ -274,9 +274,12 @@ export const newUneditableBorehole = () => {
   return id;
 };
 
+const defaultHrsId = 20106001;
+
 const waitForCreation = () => {
   return cy.wait(["@post-borehole"]).then(interception => {
     cy.task("log", "Created new borehole with id:" + interception.response.body.id);
+    cy.wrap(interception.response.body.hrsId).should("eq", defaultHrsId);
     return cy.wrap(interception.response.body.id);
   });
 };
@@ -294,6 +297,7 @@ export const createBorehole = borehole => {
         },
         body: {
           workgroupId: 1,
+          hrsId: defaultHrsId,
           ...borehole,
         },
         auth: bearerAuth(token),

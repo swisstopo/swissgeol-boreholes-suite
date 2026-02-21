@@ -42,7 +42,6 @@ public class Observation : IChangeTracking, IIdentifyable, ICasingReference
     /// <summary>
     /// Gets or sets the <see cref="Observation"/>'s duration.
     /// </summary>
-    [IncludeInExport]
     [Column("duration")]
     public double? Duration { get; set; }
 

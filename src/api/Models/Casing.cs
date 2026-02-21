@@ -18,6 +18,7 @@ public class Casing : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets foreign key for the <see cref="Completion"/> of this <see cref="Casing"/>.
     /// </summary>
+    [IncludeInExport]
     [Column("completion_id")]
     public int CompletionId { get; set; }
 
