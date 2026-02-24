@@ -5,6 +5,9 @@
 ### Added
 - Added major version Docker image tag (e.g. `:v2`) to the release workflow.
 
+### Fixed
+- All tables in the `logs` and `attachments` tab of the borehole detail view were missing pagination.
+
 ## v2.1.1462 - 2026-02-19
 
 ### Added
