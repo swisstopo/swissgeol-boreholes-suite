@@ -322,13 +322,13 @@ export const StratigraphyPanel: FC = () => {
                       label: t("chronostratigraphy"),
                       hash: "#chronostratigraphy",
                       component: <ChronostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
-                      hasContent: hasLithostratigraphy,
+                      hasContent: hasChronostratigraphy,
                     },
                     {
                       label: t("lithostratigraphy"),
                       hash: "#lithostratigraphy",
                       component: <LithostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
-                      hasContent: hasChronostratigraphy,
+                      hasContent: hasLithostratigraphy,
                     },
                   ]}
                 />
