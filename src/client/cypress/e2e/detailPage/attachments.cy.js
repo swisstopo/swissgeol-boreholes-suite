@@ -3,9 +3,11 @@ import {
   checkAllVisibleRows,
   checkRowWithIndex,
   checkRowWithText,
+  clickOnNextPage,
   setTextInRow,
   uncheckAllVisibleRows,
   unCheckRowWithText,
+  verifyPaginationText,
   verifyRowContains,
   verifyRowWithContentAlsoContains,
   verifyRowWithTextCheckState,
@@ -34,6 +36,16 @@ const checkPublicStatus = (text, checked, editingEnabled) => {
       .should(checked ? "exist" : "not.exist");
   }
 };
+
+function createBoreholeWithDocuments(numberOfDocuments, boreholeAlias) {
+  createBorehole({
+    originalName: "Borehole with many documents",
+    documents: Array.from({ length: numberOfDocuments }, (_, i) => ({
+      description: `test document ${i + 1}`,
+      url: `https://localhost/document${i + 1}.pdf`,
+    })),
+  }).as(boreholeAlias);
+}
 
 describe("Tests for 'Attachments' edit page.", () => {
   const photoFilename = "HARDOASIS_10.00-120.00_all.jpg";
@@ -310,6 +322,29 @@ describe("Tests for 'Attachments' edit page.", () => {
       // reset test data
       deleteBorehole(boreholeId);
     });
+  });
+
+  it("Displays table pagination for more than 100 documents", () => {
+    createBoreholeWithDocuments(103, "borehole_id_103");
+    cy.get("@borehole_id_103").then(id => {
+      goToDetailRouteAndAcceptTerms(`/${id}/attachments#documents`);
+      cy.wait(["@borehole"]);
+    });
+
+    verifyPaginationText("1–50 of 103");
+    clickOnNextPage();
+    verifyPaginationText("51–100 of 103");
+    clickOnNextPage();
+    verifyPaginationText("101–103 of 103");
+    cy.contains("test document 103").should("be.visible");
+    startBoreholeEditing();
+    checkAllVisibleRows();
+    unCheckRowWithText("test document 101"); // Can delete a maximum of 100 documents at once, so uncheck 3 of them to be able to delete the rest
+    unCheckRowWithText("test document 102");
+    unCheckRowWithText("test document 103");
+    cy.dataCy("delete-button").click();
+    cy.wait(["@document_DELETE", "@getAllDocuments", "@borehole_by_id"]);
+    cy.get(".MuiTablePagination-displayedRows").should("not.exist");
   });
 
   it("saves with ctrl s", () => {
