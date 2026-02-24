@@ -356,6 +356,10 @@
   "inactive": "Inactif",
   "inner": "intérieur",
   "instrumentation": "Instrumentation",
+  "invalidJsonBoreholeArray": "Le fichier fourni n'est pas un tableau de forages ou n'a pas un format JSON valide.",
+  "invalidOrEmptyCsvFile": "Fichier CSV invalide ou vide téléchargé.",
+  "invalidOrEmptyJsonFile": "Fichier JSON invalide ou vide téléchargé.",
+  "invalidOrEmptyZipFile": "Fichier ZIP invalide ou vide téléchargé.",
   "invertedDepth": "Profondeurs inversées",
   "italian": "Italien",
   "kindBackfill": "Type de remplissage/remblayage",
@@ -685,5 +689,6 @@
   "workgroups": "Groupes de travail",
   "yes": "Oui",
   "you": "Toi",
-  "yourcomments": "Vos commentaires"
+  "yourcomments": "Vos commentaires",
+  "zipMissingJsonFile": "Le fichier ZIP ne contient pas de fichier JSON."
 }

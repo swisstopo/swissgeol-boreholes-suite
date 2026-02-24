@@ -39,7 +39,72 @@ const dropFileIntoImportDropzone = boreholeFile => {
   });
 };
 
+const testBadRequestError = (endpoint, statusCode, responseBody, fileName, fileType, expectedMessage) => {
+  cy.intercept("POST", `**/api/v*/import/${endpoint}`, {
+    statusCode,
+    body: responseBody,
+  });
+  goToRouteAndAcceptTerms("/");
+  cy.dataCy("import-borehole-button").click();
+  const file = new File([fileName.includes("empty") ? "" : "content"], fileName, { type: fileType });
+  const dataTransfer = new DataTransfer();
+  dataTransfer.items.add(file);
+  dropFileIntoImportDropzone(dataTransfer);
+
+  cy.dataCy("import-button").click();
+  cy.contains(expectedMessage);
+};
+
 describe("Test for importing boreholes.", () => {
+  it("displays error for invalid or empty CSV file", () => {
+    testBadRequestError(
+      "csv",
+      400,
+      { detail: "Invalid or empty CSV file uploaded.", messageKey: "invalidOrEmptyCsvFile" },
+      "empty.csv",
+      "text/csv",
+      "Invalid or empty CSV file uploaded.",
+    );
+  });
+
+  it("displays error for invalid or empty JSON file", () => {
+    testBadRequestError(
+      "json",
+      400,
+      { detail: "Invalid or empty JSON file uploaded.", messageKey: "invalidOrEmptyJsonFile" },
+      "empty.json",
+      "application/json",
+      "Invalid or empty JSON file uploaded.",
+    );
+  });
+
+  it("displays error for invalid or empty ZIP file", () => {
+    testBadRequestError(
+      "zip",
+      400,
+      { detail: "Invalid or empty ZIP file uploaded.", messageKey: "invalidOrEmptyZipFile" },
+      "empty.zip",
+      "application/zip",
+      "Invalid or empty ZIP file uploaded.",
+    );
+  });
+
+  it("displays generic error message on request failure", () => {
+    cy.intercept("POST", "api/v2/import/json*", req => req.destroy());
+    goToRouteAndAcceptTerms("/");
+    cy.dataCy("import-borehole-button").click();
+    const fileName = "empty.json";
+    const file = new File([fileName.includes("empty") ? "" : "content"], fileName, { type: "application/json" });
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(file);
+    dropFileIntoImportDropzone(dataTransfer);
+
+    cy.dataCy("import-button").click();
+    cy.contains(
+      "No boreholes could be imported! Please make sure that the uploaded file has the correct format and content.",
+    );
+  });
+
   it("Successfully imports multiple boreholes with CSV.", () => {
     goToRouteAndAcceptTerms("/");
     cy.dataCy("import-borehole-button").click();
