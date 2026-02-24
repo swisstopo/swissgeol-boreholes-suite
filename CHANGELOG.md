@@ -5,6 +5,9 @@
 ### Added
 - Added major version Docker image tag (e.g. `:v2`) to the release workflow.
 
+### Fixed
+- Fixed `Chronostratrigraphy` and `Lithostratigraphy` tabs were not correctly disabled when not containing data.
+
 ## v2.1.1462 - 2026-02-19
 
 ### Added
