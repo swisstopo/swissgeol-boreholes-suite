@@ -24,6 +24,7 @@ jobs:
         run: |
           echo VERSION=${TAG_NAME#v} >> $GITHUB_ENV
           echo BASE_IMAGE_NAME=$REGISTRY/$(echo ${GITHUB_REPOSITORY,,}) >> $GITHUB_ENV
+          echo MAJOR_TAG=v$(echo "${TAG_NAME#v}" | cut -d. -f1) >> $GITHUB_ENV
 
       - name: Log in to the GitHub container registry
         uses: docker/login-action@c94ce9fb468520275223c153574b00df6fe4bcc9 # v3.7.0
@@ -37,7 +38,9 @@ jobs:
           for image in api-legacy api client view-sync extern-sync; do
             docker pull ${BASE_IMAGE_NAME}-${image}:v${VERSION}
             docker tag ${BASE_IMAGE_NAME}-${image}:v${VERSION} ${BASE_IMAGE_NAME}-${image}:latest
+            docker tag ${BASE_IMAGE_NAME}-${image}:v${VERSION} ${BASE_IMAGE_NAME}-${image}:${MAJOR_TAG}
             docker push ${BASE_IMAGE_NAME}-${image}:latest
+            docker push ${BASE_IMAGE_NAME}-${image}:${MAJOR_TAG}
           done
 
   patch-changelog:
