@@ -19,8 +19,6 @@ namespace BDMS.Controllers;
 [TestClass]
 public class ImportControllerTest
 {
-    /*
-     * TODO: Re-add after fixing https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
     private const int MaxBoreholeSeedId = 1002999;
     private const int MaxStratigraphySeedId = 6002999;
     private const int MaxLayerSeedId = 7029999;
@@ -30,8 +28,6 @@ public class ImportControllerTest
     private ImportController controller;
     private Mock<IHttpClientFactory> httpClientFactoryMock;
     private Mock<ILogger<ImportController>> loggerMock;
-    private Mock<ILogger<LocationService>> loggerLocationServiceMock;
-    private Mock<ILogger<CoordinateService>> loggerCoordinateServiceMock;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
@@ -43,10 +39,10 @@ public class ImportControllerTest
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
         loggerMock = new Mock<ILogger<ImportController>>();
 
-        loggerLocationServiceMock = new Mock<ILogger<LocationService>>(MockBehavior.Strict);
+        var loggerLocationServiceMock = new Mock<ILogger<LocationService>>(MockBehavior.Strict);
         var locationService = new LocationService(loggerLocationServiceMock.Object, httpClientFactoryMock.Object);
 
-        loggerCoordinateServiceMock = new Mock<ILogger<CoordinateService>>(MockBehavior.Strict);
+        var loggerCoordinateServiceMock = new Mock<ILogger<CoordinateService>>(MockBehavior.Strict);
         var coordinateService = new CoordinateService(loggerCoordinateServiceMock.Object, httpClientFactoryMock.Object);
 
         var s3ClientMock = new AmazonS3Client(configuration["S3:ACCESS_KEY"], configuration["S3:SECRET_KEY"], new AmazonS3Config()
@@ -58,7 +54,9 @@ public class ImportControllerTest
         var loggerBoreholeFileCloudService = new Mock<ILogger<BoreholeFileCloudService>>(MockBehavior.Strict);
         var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
-        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, context.Users.FirstOrDefault().SubjectId) }));
+        var testUser = context.Users.FirstOrDefault();
+        Assert.IsNotNull(testUser, "Test database must contain at least one user.");
+        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, testUser!.SubjectId) }));
         var boreholeFileCloudService = new BoreholeFileCloudService(context, configuration, loggerBoreholeFileCloudService.Object, contextAccessorMock.Object, s3ClientMock);
 
         boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
@@ -80,7 +78,7 @@ public class ImportControllerTest
         context.Stratigraphies.RemoveRange(addedStratigraphies);
         context.Layers.RemoveRange(addedLayers);
         context.Codelists.RemoveRange(context.Codelists.Where(c => c.Id == TestCodelistId));
-        context.SaveChanges();
+        await context.SaveChangesAsync().ConfigureAwait(false);
 
         await context.DisposeAsync();
         httpClientFactoryMock.Verify();
@@ -193,67 +191,109 @@ public class ImportControllerTest
         Assert.IsNotNull(stratigraphy.Created, nameof(stratigraphy.Created).ShouldNotBeNullMessage());
         Assert.IsNotNull(stratigraphy.CreatedById, nameof(stratigraphy.CreatedById).ShouldNotBeNullMessage());
         Assert.AreEqual("Marjolaine Hegmann", stratigraphy.Name, nameof(stratigraphy.Name));
+        Assert.AreEqual(DateTime.Parse("2021-07-03T22:19:01.256638Z", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal), stratigraphy.Date, nameof(stratigraphy.Date));
 
-        Assert.AreEqual(9003, stratigraphy.QualityId, nameof(stratigraphy.QualityId));
-        Assert.IsNull(stratigraphy.Quality, nameof(stratigraphy.Quality).ShouldBeNullMessage());
-        Assert.AreEqual("My co-worker Ali has one of these. He says it looks towering.", stratigraphy.Notes, nameof(stratigraphy.Notes));
+        // Assert stratigraphy’s lithologies
+        Assert.AreEqual(2, stratigraphy.Lithologies.Count, nameof(stratigraphy.Lithologies.Count));
+        var lithology = stratigraphy.Lithologies.First();
 
-        // Assert stratigraphy’s layers
-        Assert.AreEqual(2, stratigraphy.Layers.Count, nameof(stratigraphy.Layers.Count));
-        var layer = stratigraphy.Layers.First();
-        Assert.IsNotNull(layer.Created, nameof(layer.Created).ShouldNotBeNullMessage());
-        Assert.IsNotNull(layer.CreatedById, nameof(layer.CreatedById).ShouldNotBeNullMessage());
-        Assert.IsNotNull(layer.Updated, nameof(layer.Updated).ShouldNotBeNullMessage());
-        Assert.IsNotNull(layer.UpdatedById, nameof(layer.UpdatedById).ShouldNotBeNullMessage());
-        Assert.IsNotNull(layer.Stratigraphy, nameof(layer.Stratigraphy).ShouldNotBeNullMessage());
-        Assert.IsTrue(layer.IsUndefined, nameof(layer.IsUndefined));
-        Assert.AreEqual(0.1, layer.FromDepth, nameof(layer.FromDepth));
-        Assert.AreEqual(10, layer.ToDepth, nameof(layer.ToDepth));
-        Assert.IsFalse(layer.IsLast, nameof(layer.IsLast));
-        Assert.AreEqual(9002, layer.DescriptionQualityId, nameof(layer.DescriptionQualityId));
-        Assert.IsNull(layer.DescriptionQuality, nameof(layer.DescriptionQuality).ShouldBeNullMessage());
-        Assert.AreEqual(15104888, layer.LithologyId, nameof(layer.LithologyId));
-        Assert.IsNull(layer.Lithology, nameof(layer.Lithology).ShouldBeNullMessage());
-        Assert.AreEqual(21101003, layer.PlasticityId, nameof(layer.PlasticityId));
-        Assert.IsNull(layer.Plasticity, nameof(layer.Plasticity).ShouldBeNullMessage());
-        Assert.AreEqual(21103003, layer.ConsistanceId, nameof(layer.ConsistanceId));
-        Assert.IsNull(layer.Consistance, nameof(layer.Consistance).ShouldBeNullMessage());
-        Assert.IsNull(layer.AlterationId, nameof(layer.AlterationId).ShouldBeNullMessage());
-        Assert.IsNull(layer.Alteration, nameof(layer.Alteration).ShouldBeNullMessage());
-        Assert.AreEqual(21102003, layer.CompactnessId, nameof(layer.CompactnessId));
-        Assert.IsNull(layer.Compactness, nameof(layer.Compactness).ShouldBeNullMessage());
-        Assert.AreEqual(21109002, layer.GrainSize1Id, nameof(layer.GrainSize1Id));
-        Assert.IsNull(layer.GrainSize1, nameof(layer.GrainSize1).ShouldBeNullMessage());
-        Assert.AreEqual(21109002, layer.GrainSize2Id, nameof(layer.GrainSize2Id));
-        Assert.IsNull(layer.GrainSize2, nameof(layer.GrainSize2).ShouldBeNullMessage());
-        Assert.AreEqual(21116003, layer.CohesionId, nameof(layer.CohesionId));
-        Assert.IsNull(layer.Cohesion, nameof(layer.Cohesion).ShouldBeNullMessage());
-        Assert.AreEqual("synergistic", layer.OriginalUscs, nameof(layer.OriginalUscs));
-        Assert.AreEqual(23107001, layer.UscsDeterminationId, nameof(layer.UscsDeterminationId));
-        Assert.IsNull(layer.UscsDetermination, nameof(layer.UscsDetermination).ShouldBeNullMessage());
-        Assert.AreEqual("payment optical copy networks", layer.Notes, nameof(layer.Notes));
-        Assert.AreEqual(15303008, layer.LithostratigraphyId, nameof(layer.LithostratigraphyId));
-        Assert.IsNull(layer.Lithostratigraphy, nameof(layer.Lithostratigraphy).ShouldBeNullMessage());
-        Assert.AreEqual(21105004, layer.HumidityId, nameof(layer.HumidityId));
-        Assert.IsNull(layer.Humidity, nameof(layer.Humidity).ShouldBeNullMessage());
-        Assert.IsTrue(layer.IsStriae, nameof(layer.IsStriae));
-        Assert.AreEqual(30000019, layer.GradationId, nameof(layer.GradationId));
-        Assert.IsNull(layer.Gradation, nameof(layer.Gradation).ShouldBeNullMessage());
-        Assert.AreEqual(15104470, layer.LithologyTopBedrockId, nameof(layer.LithologyTopBedrockId));
-        Assert.IsNull(layer.LithologyTopBedrock, nameof(layer.LithologyTopBedrock).ShouldBeNullMessage());
-        Assert.AreEqual("Handmade connect Data Progressive Danish Krone", layer.OriginalLithology, nameof(layer.OriginalLithology));
-        Assert.IsNotNull(layer.LayerDebrisCodes, nameof(layer.LayerDebrisCodes).ShouldNotBeNullMessage());
-        Assert.IsNotNull(layer.LayerGrainShapeCodes, nameof(layer.LayerGrainShapeCodes).ShouldNotBeNullMessage());
-        Assert.IsNotNull(layer.LayerGrainAngularityCodes, nameof(layer.LayerGrainAngularityCodes).ShouldNotBeNullMessage());
-        Assert.IsNotNull(layer.LayerOrganicComponentCodes, nameof(layer.LayerOrganicComponentCodes).ShouldNotBeNullMessage());
-        Assert.IsNotNull(layer.LayerUscs3Codes, nameof(layer.LayerUscs3Codes).ShouldNotBeNullMessage());
-        Assert.IsNotNull(layer.LayerColorCodes, nameof(layer.LayerColorCodes).ShouldNotBeNullMessage());
-        CollectionAssert.AreEqual(new List<int> { 9104 }, layer.LayerDebrisCodes.Select(code => code.CodelistId).ToList(), nameof(layer.LayerDebrisCodes));
-        CollectionAssert.AreEqual(new List<int> { 21110003 }, layer.LayerGrainShapeCodes.Select(code => code.CodelistId).ToList(), nameof(layer.LayerGrainShapeCodes));
-        CollectionAssert.AreEqual(new List<int> { 21115007 }, layer.LayerGrainAngularityCodes.Select(code => code.CodelistId).ToList(), nameof(layer.LayerGrainAngularityCodes));
-        CollectionAssert.AreEqual(new List<int> { 21108010 }, layer.LayerOrganicComponentCodes.Select(code => code.CodelistId).ToList(), nameof(layer.LayerOrganicComponentCodes));
-        CollectionAssert.AreEqual(new List<int> { 23101010 }, layer.LayerUscs3Codes.Select(code => code.CodelistId).ToList(), nameof(layer.LayerUscs3Codes));
-        CollectionAssert.AreEqual(new List<int> { 21112003 }, layer.LayerColorCodes.Select(code => code.CodelistId).ToList(), nameof(layer.LayerColorCodes));
+        // Assert Lithology base properties
+        Assert.IsNotNull(lithology.Created, nameof(lithology.Created).ShouldNotBeNullMessage());
+        Assert.IsNotNull(lithology.CreatedById, nameof(lithology.CreatedById).ShouldNotBeNullMessage());
+        Assert.IsNotNull(lithology.Updated, nameof(lithology.Updated).ShouldNotBeNullMessage());
+        Assert.IsNotNull(lithology.UpdatedById, nameof(lithology.UpdatedById).ShouldNotBeNullMessage());
+        Assert.IsNotNull(lithology.Stratigraphy, nameof(lithology.Stratigraphy).ShouldNotBeNullMessage());
+        Assert.AreEqual(0.1, lithology.FromDepth, nameof(lithology.FromDepth));
+        Assert.AreEqual(10, lithology.ToDepth, nameof(lithology.ToDepth));
+        Assert.IsTrue(lithology.IsUnconsolidated, nameof(lithology.IsUnconsolidated));
+        Assert.IsTrue(lithology.HasBedding, nameof(lithology.HasBedding));
+        Assert.AreEqual(50, lithology.Share, nameof(lithology.Share));
+        Assert.AreEqual(100000174, lithology.AlterationDegreeId, nameof(lithology.AlterationDegreeId));
+        Assert.IsNull(lithology.AlterationDegree, nameof(lithology.AlterationDegree).ShouldBeNullMessage());
+        Assert.AreEqual("Test lithology notes", lithology.Notes, nameof(lithology.Notes));
+
+        // Assert Lithology unconsolidated properties
+        Assert.AreEqual(21102003, lithology.CompactnessId, nameof(lithology.CompactnessId));
+        Assert.IsNull(lithology.Compactness, nameof(lithology.Compactness).ShouldBeNullMessage());
+        Assert.AreEqual(21116003, lithology.CohesionId, nameof(lithology.CohesionId));
+        Assert.IsNull(lithology.Cohesion, nameof(lithology.Cohesion).ShouldBeNullMessage());
+        Assert.AreEqual(21105004, lithology.HumidityId, nameof(lithology.HumidityId));
+        Assert.IsNull(lithology.Humidity, nameof(lithology.Humidity).ShouldBeNullMessage());
+        Assert.AreEqual(21103003, lithology.ConsistencyId, nameof(lithology.ConsistencyId));
+        Assert.IsNull(lithology.Consistency, nameof(lithology.Consistency).ShouldBeNullMessage());
+        Assert.AreEqual(21101003, lithology.PlasticityId, nameof(lithology.PlasticityId));
+        Assert.IsNull(lithology.Plasticity, nameof(lithology.Plasticity).ShouldBeNullMessage());
+        Assert.IsNotNull(lithology.UscsTypeCodelistIds, nameof(lithology.UscsTypeCodelistIds).ShouldNotBeNullMessage());
+        CollectionAssert.AreEqual(new List<int> { 23101010 }, lithology.UscsTypeCodelistIds.ToList(), nameof(lithology.UscsTypeCodelistIds));
+        Assert.AreEqual(23107001, lithology.UscsDeterminationId, nameof(lithology.UscsDeterminationId));
+        Assert.IsNull(lithology.UscsDetermination, nameof(lithology.UscsDetermination).ShouldBeNullMessage());
+        Assert.IsNotNull(lithology.RockConditionCodelistIds, nameof(lithology.RockConditionCodelistIds).ShouldNotBeNullMessage());
+        CollectionAssert.AreEqual(new List<int> { 30000001, 30000002 }, lithology.RockConditionCodelistIds.ToList(), nameof(lithology.RockConditionCodelistIds));
+
+        // Assert Lithology consolidated properties
+        Assert.IsNotNull(lithology.TextureMetaCodelistIds, nameof(lithology.TextureMetaCodelistIds).ShouldNotBeNullMessage());
+        CollectionAssert.AreEqual(new List<int> { 30000003, 30000004 }, lithology.TextureMetaCodelistIds.ToList(), nameof(lithology.TextureMetaCodelistIds));
+
+        // Assert Lithology's LithologyDescriptions
+        Assert.AreEqual(2, lithology.LithologyDescriptions.Count, nameof(lithology.LithologyDescriptions.Count));
+        var lithologyDescription = lithology.LithologyDescriptions.First();
+
+        // Assert LithologyDescription base properties
+        Assert.IsNotNull(lithologyDescription.Created, nameof(lithologyDescription.Created).ShouldNotBeNullMessage());
+        Assert.IsNotNull(lithologyDescription.CreatedById, nameof(lithologyDescription.CreatedById).ShouldNotBeNullMessage());
+        Assert.IsNotNull(lithologyDescription.Updated, nameof(lithologyDescription.Updated).ShouldNotBeNullMessage());
+        Assert.IsNotNull(lithologyDescription.UpdatedById, nameof(lithologyDescription.UpdatedById).ShouldNotBeNullMessage());
+        Assert.IsNotNull(lithologyDescription.Lithology, nameof(lithologyDescription.Lithology).ShouldNotBeNullMessage());
+        Assert.IsTrue(lithologyDescription.IsFirst, nameof(lithologyDescription.IsFirst));
+        Assert.AreEqual(100000090, lithologyDescription.ColorPrimaryId, nameof(lithologyDescription.ColorPrimaryId));
+        Assert.IsNull(lithologyDescription.ColorPrimary, nameof(lithologyDescription.ColorPrimary).ShouldBeNullMessage());
+        Assert.AreEqual(100000086, lithologyDescription.ColorSecondaryId, nameof(lithologyDescription.ColorSecondaryId));
+        Assert.IsNull(lithologyDescription.ColorSecondary, nameof(lithologyDescription.ColorSecondary).ShouldBeNullMessage());
+
+        // Assert LithologyDescription unconsolidated properties
+        Assert.AreEqual(100000034, lithologyDescription.LithologyUnconMainId, nameof(lithologyDescription.LithologyUnconMainId));
+        Assert.IsNull(lithologyDescription.LithologyUnconMain, nameof(lithologyDescription.LithologyUnconMain).ShouldBeNullMessage());
+        Assert.AreEqual(100000037, lithologyDescription.LithologyUncon2Id, nameof(lithologyDescription.LithologyUncon2Id));
+        Assert.IsNull(lithologyDescription.LithologyUncon2, nameof(lithologyDescription.LithologyUncon2).ShouldBeNullMessage());
+        Assert.AreEqual(100000034, lithologyDescription.LithologyUncon3Id, nameof(lithologyDescription.LithologyUncon3Id));
+        Assert.IsNull(lithologyDescription.LithologyUncon3, nameof(lithologyDescription.LithologyUncon3).ShouldBeNullMessage());
+        Assert.AreEqual(100000039, lithologyDescription.LithologyUncon4Id, nameof(lithologyDescription.LithologyUncon4Id));
+        Assert.IsNull(lithologyDescription.LithologyUncon4, nameof(lithologyDescription.LithologyUncon4).ShouldBeNullMessage());
+        Assert.AreEqual(100000038, lithologyDescription.LithologyUncon5Id, nameof(lithologyDescription.LithologyUncon5Id));
+        Assert.IsNull(lithologyDescription.LithologyUncon5, nameof(lithologyDescription.LithologyUncon5).ShouldBeNullMessage());
+        Assert.AreEqual(100000041, lithologyDescription.LithologyUncon6Id, nameof(lithologyDescription.LithologyUncon6Id));
+        Assert.IsNull(lithologyDescription.LithologyUncon6, nameof(lithologyDescription.LithologyUncon6).ShouldBeNullMessage());
+        Assert.IsNotNull(lithologyDescription.ComponentUnconOrganicCodelistIds, nameof(lithologyDescription.ComponentUnconOrganicCodelistIds).ShouldNotBeNullMessage());
+        CollectionAssert.AreEqual(new List<int> { 21108010 }, lithologyDescription.ComponentUnconOrganicCodelistIds.ToList(), nameof(lithologyDescription.ComponentUnconOrganicCodelistIds));
+        Assert.IsNotNull(lithologyDescription.ComponentUnconDebrisCodelistIds, nameof(lithologyDescription.ComponentUnconDebrisCodelistIds).ShouldNotBeNullMessage());
+        CollectionAssert.AreEqual(new List<int> { 9104 }, lithologyDescription.ComponentUnconDebrisCodelistIds.ToList(), nameof(lithologyDescription.ComponentUnconDebrisCodelistIds));
+        Assert.IsNotNull(lithologyDescription.GrainShapeCodelistIds, nameof(lithologyDescription.GrainShapeCodelistIds).ShouldNotBeNullMessage());
+        CollectionAssert.AreEqual(new List<int> { 21110003 }, lithologyDescription.GrainShapeCodelistIds.ToList(), nameof(lithologyDescription.GrainShapeCodelistIds));
+        Assert.IsNotNull(lithologyDescription.GrainAngularityCodelistIds, nameof(lithologyDescription.GrainAngularityCodelistIds).ShouldNotBeNullMessage());
+        CollectionAssert.AreEqual(new List<int> { 21115007 }, lithologyDescription.GrainAngularityCodelistIds.ToList(), nameof(lithologyDescription.GrainAngularityCodelistIds));
+        Assert.IsTrue(lithologyDescription.HasStriae, nameof(lithologyDescription.HasStriae));
+        Assert.IsNotNull(lithologyDescription.LithologyUnconDebrisCodelistIds, nameof(lithologyDescription.LithologyUnconDebrisCodelistIds).ShouldNotBeNullMessage());
+        CollectionAssert.AreEqual(new List<int> { 15104470 }, lithologyDescription.LithologyUnconDebrisCodelistIds.ToList(), nameof(lithologyDescription.LithologyUnconDebrisCodelistIds));
+
+        // Assert LithologyDescription consolidated properties
+        Assert.AreEqual(100000530, lithologyDescription.LithologyConId, nameof(lithologyDescription.LithologyConId));
+        Assert.IsNull(lithologyDescription.LithologyCon, nameof(lithologyDescription.LithologyCon).ShouldBeNullMessage());
+        Assert.IsNotNull(lithologyDescription.ComponentConParticleCodelistIds, nameof(lithologyDescription.ComponentConParticleCodelistIds).ShouldNotBeNullMessage());
+        CollectionAssert.AreEqual(new List<int> { 30000005, 30000006 }, lithologyDescription.ComponentConParticleCodelistIds.ToList(), nameof(lithologyDescription.ComponentConParticleCodelistIds));
+        Assert.IsNotNull(lithologyDescription.ComponentConMineralCodelistIds, nameof(lithologyDescription.ComponentConMineralCodelistIds).ShouldNotBeNullMessage());
+        CollectionAssert.AreEqual(new List<int> { 30000007, 30000008 }, lithologyDescription.ComponentConMineralCodelistIds.ToList(), nameof(lithologyDescription.ComponentConMineralCodelistIds));
+        Assert.AreEqual(100000498, lithologyDescription.GrainSizeId, nameof(lithologyDescription.GrainSizeId));
+        Assert.IsNull(lithologyDescription.GrainSize, nameof(lithologyDescription.GrainSize).ShouldBeNullMessage());
+        Assert.AreEqual(21115008, lithologyDescription.GrainAngularityId, nameof(lithologyDescription.GrainAngularityId));
+        Assert.IsNull(lithologyDescription.GrainAngularity, nameof(lithologyDescription.GrainAngularity).ShouldBeNullMessage());
+        Assert.AreEqual(30000019, lithologyDescription.GradationId, nameof(lithologyDescription.GradationId));
+        Assert.IsNull(lithologyDescription.Gradation, nameof(lithologyDescription.Gradation).ShouldBeNullMessage());
+        Assert.AreEqual(100000360, lithologyDescription.CementationId, nameof(lithologyDescription.CementationId));
+        Assert.IsNull(lithologyDescription.Cementation, nameof(lithologyDescription.Cementation).ShouldBeNullMessage());
+        Assert.IsNotNull(lithologyDescription.StructureSynGenCodelistIds, nameof(lithologyDescription.StructureSynGenCodelistIds).ShouldNotBeNullMessage());
+        CollectionAssert.AreEqual(new List<int> { 30000009, 30000010 }, lithologyDescription.StructureSynGenCodelistIds.ToList(), nameof(lithologyDescription.StructureSynGenCodelistIds));
+        Assert.IsNotNull(lithologyDescription.StructurePostGenCodelistIds, nameof(lithologyDescription.StructurePostGenCodelistIds).ShouldNotBeNullMessage());
+        CollectionAssert.AreEqual(new List<int> { 30000011, 30000012 }, lithologyDescription.StructurePostGenCodelistIds.ToList(), nameof(lithologyDescription.StructurePostGenCodelistIds));
 
         // Assert stratigraphy’s lithological descriptions
         Assert.AreEqual(2, stratigraphy.LithologicalDescriptions.Count, nameof(stratigraphy.LithologicalDescriptions.Count));
@@ -305,8 +345,8 @@ public class ImportControllerTest
         Assert.AreEqual(0.1, lithostratigraphyLayer.FromDepth, nameof(lithostratigraphyLayer.FromDepth));
         Assert.AreEqual(10, lithostratigraphyLayer.ToDepth, nameof(lithostratigraphyLayer.ToDepth));
 
-    // Assert borehole's completions
-    Assert.AreEqual(2, borehole.Completions.Count, nameof(borehole.Completions.Count));
+        // Assert borehole's completions
+        Assert.AreEqual(2, borehole.Completions.Count, nameof(borehole.Completions.Count));
         var completion = borehole.Completions.First();
         Assert.IsNotNull(completion.Created, nameof(completion.Created).ShouldNotBeNullMessage());
         Assert.IsNotNull(completion.CreatedById, nameof(completion.CreatedById).ShouldNotBeNullMessage());
@@ -407,7 +447,7 @@ public class ImportControllerTest
 
         // Assert section's sectionelements
         Assert.AreEqual(2, section.SectionElements.Count, nameof(section.SectionElements.Count));
-        var sectionElement = section.SectionElements.First();
+        var sectionElement = section.SectionElements[0];
         Assert.IsNotNull(sectionElement.Created, nameof(sectionElement.Created).ShouldNotBeNullMessage());
         Assert.IsNotNull(sectionElement.CreatedById, nameof(sectionElement.CreatedById).ShouldNotBeNullMessage());
         Assert.IsNotNull(sectionElement.Updated, nameof(sectionElement.Updated).ShouldNotBeNullMessage());
@@ -476,6 +516,40 @@ public class ImportControllerTest
         var fieldMeasurement = (FieldMeasurement)borehole.Observations.First(x => x.Type == ObservationType.FieldMeasurement);
         Assert.IsNotNull(fieldMeasurement.FieldMeasurementResults, nameof(fieldMeasurement.FieldMeasurementResults).ShouldNotBeNullMessage());
         Assert.AreNotEqual(0, fieldMeasurement.FieldMeasurementResults.Count, nameof(fieldMeasurement.FieldMeasurementResults));
+
+        // Assert log runs
+        Assert.AreEqual(9, borehole.LogRuns.Count, nameof(borehole.LogRuns.Count));
+        var logRun = borehole.LogRuns.First();
+        Assert.IsNotNull(logRun.Created, nameof(logRun.Created).ShouldNotBeNullMessage());
+        Assert.IsNotNull(logRun.CreatedById, nameof(logRun.CreatedById).ShouldNotBeNullMessage());
+        Assert.IsNotNull(logRun.Updated, nameof(logRun.Updated).ShouldNotBeNullMessage());
+        Assert.IsNotNull(logRun.UpdatedById, nameof(logRun.UpdatedById).ShouldNotBeNullMessage());
+        Assert.IsNotNull(logRun.Borehole, nameof(logRun.Borehole).ShouldNotBeNullMessage());
+        Assert.AreEqual("R27", logRun.RunNumber);
+        Assert.AreEqual(10, logRun.FromDepth);
+        Assert.AreEqual(20, logRun.ToDepth);
+        Assert.AreEqual(8.790664115823184, logRun.BitSize);
+        Assert.AreEqual(100002999, logRun.ConveyanceMethodId);
+        Assert.AreEqual(100003007, logRun.BoreholeStatusId);
+        Assert.AreEqual(new DateOnly(2021, 5, 12), logRun.RunDate);
+
+        // Assert log files
+        Assert.AreEqual(2, logRun.LogFiles.Count, nameof(logRun.LogFiles.Count));
+        var logFile = logRun.LogFiles.First();
+        Assert.IsNotNull(logFile.Created, nameof(logFile.Created).ShouldNotBeNullMessage());
+        Assert.IsNotNull(logFile.CreatedById, nameof(logFile.CreatedById).ShouldNotBeNullMessage());
+        Assert.IsNotNull(logFile.Updated, nameof(logFile.Updated).ShouldNotBeNullMessage());
+        Assert.IsNotNull(logFile.UpdatedById, nameof(logFile.UpdatedById).ShouldNotBeNullMessage());
+        Assert.AreEqual("intangible_calculating.midi", logFile.Name);
+        Assert.AreEqual(100003009, logFile.DataPackageId);
+        Assert.AreEqual(null, logFile.DepthTypeId);
+        Assert.AreEqual(null, logFile.PassTypeId);
+        Assert.AreEqual(new DateOnly(2021, 7, 21), logFile.DeliveryDate);
+        Assert.AreEqual("4023362e-7afc-079a-3c26-1c4ccc75db22", logFile.NameUuid);
+        Assert.AreEqual(true, logFile.Public);
+        Assert.AreEqual(3, logFile.Pass);
+        Assert.AreEqual(2, logFile.ToolTypeCodelistIds.Count);
+        Assert.AreEqual(100003032, logFile.ToolTypeCodelistIds.First());
     }
 
     [TestMethod]
@@ -548,10 +622,17 @@ public class ImportControllerTest
         var uploadedBoreholesWithAttachment = await context.BoreholesWithIncludes.Where(b => b.OriginalName.StartsWith("Carmen Catnip")).ToListAsync();
         Assert.AreEqual(uploadedBoreholesWithAttachment.SelectMany(b => b.Files!).Count(), 3);
 
-        var firstBoreholes = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Cheese");
-        var secondBoreholes = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Fondue");
-        Assert.AreEqual(firstBoreholes.Files.Count, 2);
-        Assert.AreEqual(secondBoreholes.Files.Single().Name, "logos.png");
+        var firstBorehole = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Cheese");
+        var secondBorehole = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Fondue");
+        Assert.IsNotNull(firstBorehole);
+        Assert.IsNotNull(secondBorehole);
+        Assert.AreEqual(firstBorehole.Files.Count, 2);
+        Assert.AreEqual(secondBorehole.Files.Single().Name, "logos.png");
+
+        // Assert BoreholeFile description and public attribute
+        var profile = firstBorehole.BoreholeFiles.First();
+        Assert.AreEqual(profile.Description, "Describing Incredible Granite");
+        Assert.AreEqual(profile.Public, true);
     }
 
     [TestMethod]
@@ -635,7 +716,7 @@ public class ImportControllerTest
     {
         // Add new borehole identifier to test dynamic ID import.
         context.Codelists.Add(new Codelist { Id = TestCodelistId, Schema = "borehole_identifier", Code = "new code", En = "Random New Id", Conf = null });
-        await context.SaveChangesAsync();
+        await context.SaveChangesAsync().ConfigureAwait(false);
 
         httpClientFactoryMock
             .Setup(cf => cf.CreateClient(It.IsAny<string>()))
@@ -651,11 +732,11 @@ public class ImportControllerTest
         Assert.AreEqual(6, okResult.Value);
 
         // Assert imported values
-        var borehole = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_6");
+        var borehole = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_6").ConfigureAwait(false);
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual("Unit_Test_6_a", borehole.Name);
         Assert.AreEqual(null, borehole.IsPublic);
-        Assert.AreEqual(new DateTime(2024, 06, 15), borehole.RestrictionUntil);
+        Assert.AreEqual(new DateTime(2024, 06, 15, 0, 0, 0, DateTimeKind.Utc), borehole.RestrictionUntil);
         Assert.AreEqual(2474.472693, borehole.TotalDepth);
         Assert.AreEqual("Projekt 6", borehole.ProjectName);
         Assert.AreEqual(5, borehole.BoreholeCodelists.Count);
@@ -692,7 +773,7 @@ public class ImportControllerTest
         Assert.AreEqual(6, okResult.Value);
 
         // Assert imported values
-        var borehole = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_2");
+        var borehole = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_2").ConfigureAwait(false);
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual(null, borehole.Name);
         Assert.AreEqual(null, borehole.IsPublic);
@@ -723,7 +804,7 @@ public class ImportControllerTest
         Assert.AreEqual(7, okResult.Value);
 
         // Assert imported values
-        var boreholeLV95 = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_2");
+        var boreholeLV95 = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_2").ConfigureAwait(false);
         Assert.AreEqual(ReferenceSystem.LV95, boreholeLV95.OriginalReferenceSystem);
         Assert.AreEqual(2000010.12, boreholeLV95.LocationX);
         Assert.AreEqual(1000010.1, boreholeLV95.LocationY);
@@ -732,7 +813,7 @@ public class ImportControllerTest
         Assert.AreEqual(2, boreholeLV95.PrecisionLocationXLV03);
         Assert.AreEqual(2, boreholeLV95.PrecisionLocationYLV03);
 
-        var boreholeLV03 = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_6");
+        var boreholeLV03 = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_6").ConfigureAwait(false);
         Assert.AreEqual(ReferenceSystem.LV03, boreholeLV03.OriginalReferenceSystem.Value);
         Assert.AreEqual(20050.12, boreholeLV03.LocationXLV03);
         Assert.AreEqual(10050.12345, boreholeLV03.LocationYLV03);
@@ -741,7 +822,7 @@ public class ImportControllerTest
         Assert.AreEqual(5, boreholeLV03.PrecisionLocationX);
         Assert.AreEqual(5, boreholeLV03.PrecisionLocationY);
 
-        var boreholeWithZeros = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_7");
+        var boreholeWithZeros = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_7").ConfigureAwait(false);
         Assert.AreEqual(ReferenceSystem.LV03, boreholeWithZeros.OriginalReferenceSystem.Value);
         Assert.AreEqual(20060.000, boreholeWithZeros.LocationXLV03);
         Assert.AreEqual(10060.0000, boreholeWithZeros.LocationYLV03);
@@ -768,7 +849,7 @@ public class ImportControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.OrderByDescending(b => b.Id).FirstOrDefault();
+        var borehole = await context.Boreholes.OrderByDescending(b => b.Id).FirstOrDefaultAsync();
         Assert.AreEqual(1, borehole.WorkgroupId);
         Assert.AreEqual("Unit_Test_special_chars_1", borehole.OriginalName);
         Assert.AreEqual("„ÖÄÜöäü-*#%&7{}[]()='~^><\\@¦+Š", borehole.ProjectName);
@@ -805,7 +886,7 @@ public class ImportControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.Single(b => b.OriginalName != null && b.OriginalName.Contains("LV95 - All coordinates set"));
+        var borehole = await context.Boreholes.SingleAsync(b => b.OriginalName != null && b.OriginalName.Contains("LV95 - All coordinates set")).ConfigureAwait(false);
         Assert.AreEqual(ReferenceSystem.LV95, borehole.OriginalReferenceSystem);
         Assert.AreEqual(2631690, borehole.LocationX);
         Assert.AreEqual(1170516, borehole.LocationY);
@@ -834,7 +915,7 @@ public class ImportControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.Single(b => b.OriginalName != null && b.OriginalName.Contains("LV03 - All coordinates set"));
+        var borehole = await context.Boreholes.SingleAsync(b => b.OriginalName != null && b.OriginalName.Contains("LV03 - All coordinates set")).ConfigureAwait(false);
         Assert.AreEqual(ReferenceSystem.LV03, borehole.OriginalReferenceSystem);
         Assert.AreEqual(2649258.1270818082, borehole.LocationX);
         Assert.AreEqual(1131551.4611465326, borehole.LocationY);
@@ -863,7 +944,7 @@ public class ImportControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.Single(b => b.OriginalName != null && b.OriginalName.Contains("LV03 - LV03 x out of range"));
+        var borehole = await context.Boreholes.SingleAsync(b => b.OriginalName != null && b.OriginalName.Contains("LV03 - LV03 x out of range")).ConfigureAwait(false);
         Assert.AreEqual(ReferenceSystem.LV03, borehole.OriginalReferenceSystem);
         Assert.AreEqual(2999999, borehole.LocationX);
         Assert.AreEqual(1, borehole.LocationY);
@@ -1026,7 +1107,7 @@ public class ImportControllerTest
             TotalDepth = 1000,
             WorkgroupId = 1,
         });
-        context.SaveChanges();
+        await context.SaveChangesAsync().ConfigureAwait(false);
 
         var boreholeCsvFile = GetFormFileByExistingFile("duplicateBoreholesInDb.csv");
 
@@ -1048,8 +1129,8 @@ public class ImportControllerTest
            .Returns(() => new HttpClient())
            .Verifiable();
 
-        var maxWorkgroudId = context.Workgroups.Max(w => w.Id);
-        var minWorkgroudId = context.Workgroups.Min(w => w.Id);
+        var maxWorkgroudId = await context.Workgroups.MaxAsync(w => w.Id).ConfigureAwait(false);
+        var minWorkgroudId = await context.Workgroups.MinAsync(w => w.Id).ConfigureAwait(false);
 
         // Create Boreholes with same LocationX, LocationY and TotalDepth as in provided csv, but different WorkgroupId as provided
         context.Boreholes.Add(new Borehole
@@ -1067,7 +1148,7 @@ public class ImportControllerTest
             LocationY = 1500000,
             TotalDepth = null,
         });
-        context.SaveChanges();
+        await context.SaveChangesAsync().ConfigureAwait(false);
 
         var boreholeCsvFile = GetFormFileByExistingFile("duplicateBoreholesInDbButDifferentWorkgroup.csv");
 
@@ -1106,7 +1187,7 @@ public class ImportControllerTest
         Assert.AreEqual(1, okResult.Value);
 
         // Assert imported values
-        var borehole = context.Boreholes.Single(b => b.OriginalName == "ACORNFLEA");
+        var borehole = await context.Boreholes.SingleAsync(b => b.OriginalName == "ACORNFLEA").ConfigureAwait(false);
         Assert.AreEqual(null, borehole.Canton);
         Assert.AreEqual(null, borehole.Country);
         Assert.AreEqual(null, borehole.Municipality);
@@ -1166,5 +1247,4 @@ public class ImportControllerTest
         var boreholeZipFile = GetFormFileByExistingFile(zipPath);
         return boreholeZipFile;
     }
-    */
 }

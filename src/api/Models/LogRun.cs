@@ -14,6 +14,7 @@ public class LogRun : IIdentifyable, IChangeTracking
     /// <inheritdoc />
     [Key]
     [JsonRequired]
+    [IncludeInExport]
     [Column("id")]
     public int Id { get; set; }
 
@@ -21,6 +22,7 @@ public class LogRun : IIdentifyable, IChangeTracking
     /// Gets or sets the <see cref="Borehole"/> id.
     /// </summary>
     [JsonRequired]
+    [IncludeInExport]
     [Column("borehole_id")]
     public int BoreholeId { get; set; }
 

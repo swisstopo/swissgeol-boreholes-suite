@@ -17,11 +17,13 @@ public class Lithology : ILithology, IChangeTracking, IIdentifyable
 
     /// <inheritdoc />
     [JsonRequired]
+    [IncludeInExport]
     [Column("id")]
     public int Id { get; set; }
 
     /// <inheritdoc />
     [JsonRequired]
+    [IncludeInExport]
     [Column("stratigraphy_id")]
     public int StratigraphyId { get; set; }
 

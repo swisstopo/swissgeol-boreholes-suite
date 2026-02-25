@@ -46,7 +46,6 @@ public class BoreholeFile : IChangeTracking, IUserAttached<User?, int?>
     /// <summary>
     /// Gets or sets the timestamp when the <see cref="File"/> was attached to the <see cref="Borehole"/>.
     /// </summary>
-    [IncludeInExport]
     [Column("attached_bfi")]
     public DateTime? Attached { get; set; }
 

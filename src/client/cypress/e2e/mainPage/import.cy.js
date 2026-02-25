@@ -39,9 +39,8 @@ const dropFileIntoImportDropzone = boreholeFile => {
   });
 };
 
-// Todo reactivate tests when import functionality is reactivated https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2174
-describe.skip("Test for importing boreholes.", () => {
-  it("Successfully imports multiple boreholes.", () => {
+describe("Test for importing boreholes.", () => {
+  it("Successfully imports multiple boreholes with CSV.", () => {
     goToRouteAndAcceptTerms("/");
     cy.dataCy("import-borehole-button").click();
 
@@ -63,7 +62,7 @@ describe.skip("Test for importing boreholes.", () => {
     cy.contains("boreholes were imported");
   });
 
-  it("Displays borehole validation errors.", () => {
+  it("Displays borehole validation errors, when importing with CSV.", () => {
     goToRouteAndAcceptTerms("/");
     cy.dataCy("import-borehole-button").click();
 
@@ -105,7 +104,6 @@ describe.skip("Test for importing boreholes.", () => {
   });
 
   it("exports and reimports boreholes with attachments", () => {
-    // add two boreholes with attachments
     const boreholeName = "COLDWATERDRINK";
     const boreholeName2 = "COLDWATERBATH";
     createBorehole({

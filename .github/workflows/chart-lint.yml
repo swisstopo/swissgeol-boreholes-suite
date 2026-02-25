@@ -25,10 +25,13 @@ jobs:
           fetch-depth: 0
 
       - name: Install Helm
-        uses: azure/setup-helm@b7246b12e77f7134dc2d460a3d5bad15bbe29390 # v4.1.0
+        uses: azure/setup-helm@1a275c3b69536ee54be43f2070a358922e12c8d4 # v4.3.1
 
       - name: Set up chart-testing
         uses: helm/chart-testing-action@6ec842c01de15ebb84c8627d2744a0c2f2755c9f # v2.8.0
 
-      - name: Lint charts
-        run: ct lint --config ct.yaml --helm-lint-extra-args "--set app.version=latest --set dataextraction.version=latest --set ocr.version=latest"
+      - name: Lint main chart
+        run: ct lint --config ct.yaml --charts charts/swissgeol-boreholes --helm-lint-extra-args "--set app.version=latest --set dataextraction.version=latest --set ocr.version=latest"
+
+      - name: Lint sync charts
+        run: ct lint --config ct.yaml --charts charts/swissgeol-boreholes-extern-sync,charts/swissgeol-boreholes-view-sync --helm-lint-extra-args "--set app.version=latest"

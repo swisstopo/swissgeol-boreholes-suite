@@ -1,4 +1,5 @@
 ﻿using Amazon.S3;
+using BDMS.Json;
 using BDMS.Models;
 using CsvHelper;
 using Microsoft.AspNetCore.Http;
@@ -7,6 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
+using NetTopologySuite.IO.Converters;
 using System.Diagnostics.CodeAnalysis;
 using System.IO.Compression;
 using System.Reflection;
@@ -14,6 +16,8 @@ using System.Security.Claims;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
+using System.Text.Json.Serialization.Metadata;
+using System.Text.RegularExpressions;
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
@@ -29,10 +33,17 @@ public class ExportControllerTest
     private BdmsContext context;
     private BoreholeFileCloudService boreholeFileCloudService;
     private ExportController controller;
+    private ImportController importController;
     private User adminUser;
-    private static readonly JsonSerializerOptions jsonImportOptions = new()
+    private static readonly JsonSerializerOptions jsonOptions = new()
     {
+        WriteIndented = true,
         ReferenceHandler = ReferenceHandler.IgnoreCycles,
+        Converters = { new DateOnlyJsonConverter(), new LTreeJsonConverter(), new ObservationConverter(), new GeoJsonConverterFactory() },
+        TypeInfoResolver = new DefaultJsonTypeInfoResolver
+        {
+            Modifiers = { JsonExportHelper.RequireIncludeInExportAttribute },
+        },
     };
 
     [TestInitialize]
@@ -77,11 +88,28 @@ public class ExportControllerTest
             .Setup(x => x.CanViewBoreholeAsync(It.IsAny<string>(), It.IsAny<int>()))
             .ReturnsAsync(true);
 
+        boreholePermissionServiceMock
+            .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Role>()))
+            .ReturnsAsync(true);
+
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
 
-        var loggerMock = new Mock<ILogger<ExportController>>();
-        controller = new ExportController(context, boreholeFileCloudService, loggerMock.Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        var exportLoggerMock = new Mock<ILogger<ExportController>>();
+        var importLoggerMock = new Mock<ILogger<ImportController>>();
+
+        var locationServiceLoggerMock = new Mock<ILogger<LocationService>>(MockBehavior.Strict);
+        var httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
+        var locationService = new LocationService(locationServiceLoggerMock.Object, httpClientFactoryMock.Object);
+        var coordinateServiceLoggerMock = new Mock<ILogger<CoordinateService>>(MockBehavior.Strict);
+        var coordinateService = new CoordinateService(coordinateServiceLoggerMock.Object, httpClientFactoryMock.Object);
+
+        importController = new ImportController(context, importLoggerMock.Object, locationService, coordinateService, boreholeFileCloudService, boreholePermissionServiceMock.Object)
+        {
+            ControllerContext = GetControllerContextAdmin(),
+        };
+
+        controller = new ExportController(context, boreholeFileCloudService, exportLoggerMock.Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestMethod]
@@ -97,47 +125,189 @@ public class ExportControllerTest
         Assert.IsTrue(fileContentResult.FileContents.Length > 0);
     }
 
-    // Export 3 seeded boreholes from richBoreholesRange (IDs 1_000_000 - 1_000_100), to increase likelihood, that each attribute is exported at least once.
+    // Export several seeded boreholes from richBoreholesRange (IDs 1_000_000 - 1_000_100), to increase likelihood, that each attribute is exported at least once.
     [TestMethod]
+    [DataRow(1_000_000)]
     [DataRow(1_000_057)]
-    [DataRow(1_000_058)]
-    [DataRow(1_000_059)]
+    [DataRow(1_000_068)]
+    [DataRow(1_000_079)]
     public async Task ExportJson(int boreholeId)
     {
-        var newBorehole = await context.BoreholesWithIncludes.AsNoTracking().SingleAsync(b => b.Id == boreholeId);
+        var originalBorehole = await context.BoreholesWithIncludes.AsNoTracking().SingleAsync(b => b.Id == boreholeId);
+        PopulateCodelistCollectionsFromJoinTables(originalBorehole);
 
-        // Make sure all CodelistId collections are populated so they can be compared, to the export.
-        foreach (var strat in newBorehole.Stratigraphies ?? [])
+        var exportedBorehole = await ExportSingleBoreholeAsync(originalBorehole.Id);
+
+        ReorderBoreholeForComparison(originalBorehole);
+        ReorderBoreholeForComparison(exportedBorehole);
+
+        AssertEntitiesEqualByIncludeInExportAttribute(originalBorehole, exportedBorehole, new HashSet<object?>());
+    }
+
+    [TestMethod]
+    public async Task ExportJsonWithAdditionalObservations()
+    {
+        var newBorehole = GetBoreholeToAdd();
+
+        var fieldMeasurementResult = new FieldMeasurementResult
         {
-            foreach (var lithology in strat.Lithologies)
-            {
-                lithology.RockConditionCodelistIds = lithology.LithologyRockConditionCodes?.Select(c => c.CodelistId).ToList();
-                lithology.UscsTypeCodelistIds = lithology.LithologyUscsTypeCodes?.Select(c => c.CodelistId).ToList();
-                lithology.TextureMetaCodelistIds = lithology.LithologyTextureMetaCodes?.Select(c => c.CodelistId).ToList();
+            ParameterId = (await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementParameterSchema).FirstAsync().ConfigureAwait(false)).Id,
+            SampleTypeId = (await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementSampleTypeSchema).FirstAsync().ConfigureAwait(false)).Id,
+            Value = 10.0,
+        };
 
-                foreach (var lithologyDescription in lithology.LithologyDescriptions)
+        var fieldMeasurement = new FieldMeasurement
+        {
+            Borehole = newBorehole,
+            StartTime = new DateTime(2021, 01, 01, 01, 01, 01, DateTimeKind.Utc),
+            EndTime = new DateTime(2021, 01, 01, 13, 01, 01, DateTimeKind.Utc),
+            Type = ObservationType.FieldMeasurement,
+            Comment = "Field measurement observation for testing",
+            FieldMeasurementResults = [fieldMeasurementResult],
+        };
+
+        var groundwaterLevelMeasurement = new GroundwaterLevelMeasurement
+        {
+            Borehole = newBorehole,
+            StartTime = new DateTime(2021, 01, 01, 01, 01, 01, DateTimeKind.Utc),
+            EndTime = new DateTime(2021, 01, 01, 13, 01, 01, DateTimeKind.Utc),
+            Type = ObservationType.GroundwaterLevelMeasurement,
+            Comment = "Groundwater level measurement observation for testing",
+            LevelM = 10.0,
+            LevelMasl = 11.0,
+            KindId = (await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).FirstAsync().ConfigureAwait(false)).Id,
+        };
+
+        var waterIngress = new WaterIngress
+        {
+            Borehole = newBorehole,
+            IsOpenBorehole = true,
+            Type = ObservationType.WaterIngress,
+            Comment = "Water ingress observation for testing",
+            QuantityId = (await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).FirstAsync().ConfigureAwait(false)).Id,
+            ConditionsId = (await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressConditionsSchema).FirstAsync().ConfigureAwait(false)).Id,
+        };
+
+        var hydroTestResult = new HydrotestResult
+        {
+            ParameterId = 15203191,
+            Value = 10.0,
+            MaxValue = 15.0,
+            MinValue = 5.0,
+        };
+
+        var kindCodelistIds = await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Take(2).Select(c => c.Id).ToListAsync().ConfigureAwait(false);
+        var flowDirectionCodelistIds = await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema).Take(2).Select(c => c.Id).ToListAsync().ConfigureAwait(false);
+        var evaluationMethodCodelistIds = await context.Codelists.Where(c => c.Schema == HydrogeologySchemas.EvaluationMethodSchema).Take(2).Select(c => c.Id).ToListAsync().ConfigureAwait(false);
+
+        var kindCodelists = await GetCodelists(context, kindCodelistIds).ConfigureAwait(false);
+        var flowDirectionCodelists = await GetCodelists(context, flowDirectionCodelistIds).ConfigureAwait(false);
+        var evaluationMethodCodelists = await GetCodelists(context, evaluationMethodCodelistIds).ConfigureAwait(false);
+
+        var hydroTest = new Hydrotest
+        {
+            Borehole = newBorehole,
+            StartTime = new DateTime(2021, 01, 01, 01, 01, 01, DateTimeKind.Utc),
+            EndTime = new DateTime(2021, 01, 01, 13, 01, 01, DateTimeKind.Utc),
+            Type = ObservationType.Hydrotest,
+            Comment = "Hydrotest observation for testing",
+            HydrotestResults = [hydroTestResult],
+            HydrotestFlowDirectionCodes = [new() { CodelistId = flowDirectionCodelists[0].Id }, new() { CodelistId = flowDirectionCodelists[1].Id }],
+            HydrotestKindCodes = [new() { CodelistId = kindCodelists[0].Id }, new() { CodelistId = kindCodelists[1].Id }],
+            HydrotestEvaluationMethodCodes = [new() { CodelistId = evaluationMethodCodelists[0].Id }, new() { CodelistId = evaluationMethodCodelists[1].Id }],
+        };
+
+        newBorehole.Observations = [hydroTest, fieldMeasurement, groundwaterLevelMeasurement, waterIngress];
+        PopulateCodelistCollectionsFromJoinTables(newBorehole);
+
+        context.Add(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var exportedBorehole = await ExportSingleBoreholeAsync(newBorehole.Id);
+
+        ReorderBoreholeForComparison(newBorehole);
+        ReorderBoreholeForComparison(exportedBorehole);
+
+        AssertEntitiesEqualByIncludeInExportAttribute(newBorehole, exportedBorehole, new HashSet<object?>());
+    }
+
+    // Export several seeded boreholes from richBoreholesRange (IDs 1_000_000 - 1_000_100), to increase likelihood, that each attribute is exported at least once.
+    [TestMethod]
+    [DataRow(1_000_000)]
+    [DataRow(1_000_049)]
+    [DataRow(1_000_039)]
+    [DataRow(1_000_029)]
+    public async Task ExportAndReimportJson(int boreholeId)
+    {
+        var originalBorehole = await context.BoreholesWithIncludes.AsNoTracking().SingleAsync(b => b.Id == boreholeId);
+        PopulateCodelistCollectionsFromJoinTables(originalBorehole);
+
+        var exportedBorehole = await ExportSingleBoreholeAsync(originalBorehole.Id);
+
+        ReorderBoreholeForComparison(originalBorehole);
+        ReorderBoreholeForComparison(exportedBorehole);
+        AssertEntitiesEqualByIncludeInExportAttribute(originalBorehole, exportedBorehole, new HashSet<object?>());
+
+        var jsonToImport = JsonSerializer.Serialize(new List<Borehole> { exportedBorehole }, jsonOptions);
+        var tempFilePath = Path.Combine(Path.GetTempPath(), $"borehole_export_{boreholeId}_{Guid.NewGuid()}.json");
+
+        try
+        {
+            await System.IO.File.WriteAllTextAsync(tempFilePath, jsonToImport).ConfigureAwait(false);
+
+            var jsonFile = GetFormFileByExistingFile(tempFilePath);
+
+            var importResult = await importController.UploadJsonFileAsync(workgroupId: 2, jsonFile).ConfigureAwait(false);
+            Assert.IsInstanceOfType(importResult.Result, typeof(OkObjectResult));
+            var okResult = (OkObjectResult)importResult.Result!;
+            Assert.AreEqual(1, okResult.Value);
+
+            // Retrieve the imported borehole and compare
+            var importedBorehole = await context.BoreholesWithIncludes.AsNoTracking()
+                .Where(b => b.OriginalName == originalBorehole.OriginalName)
+                .OrderByDescending(b => b.Id)
+                .FirstAsync()
+                .ConfigureAwait(false);
+
+            PopulateCodelistCollectionsFromJoinTables(importedBorehole);
+            ReorderBoreholeForComparison(importedBorehole);
+
+            // Remove all BoreholeFiles from original borehole. Without attached files in the upload no BoreholeFiles are created in the imported borehole.
+            originalBorehole.BoreholeFiles = [];
+            AssertEntitiesEqualByIncludeInExportAttribute(originalBorehole, importedBorehole, new HashSet<object?>(), true);
+
+            // Ignore Ids and change tracking attribute when serializing Json to compare
+            var attributesToIgnore = new[] { "Id", "BoreholeId", "StratigraphyId", "LithologyId", "LithologyDescriptionId", "CompletionId", "CreatedById", "Created", "UpdatedById", "Updated", "CreatedAt", "SectionId", "FileId", "LogRunId", "WorkgroupId", "UserId", "User", "Creator", "CasingId", "LockedById", "AssigneeId", "ReviewedTabsId", "PublishedTabsId", "WorkflowId" };
+            var comparableJsonOptions = new JsonSerializerOptions(jsonOptions)
+            {
+                TypeInfoResolver = new DefaultJsonTypeInfoResolver
                 {
-                    lithologyDescription.ComponentUnconOrganicCodelistIds = lithologyDescription.LithologyDescriptionComponentUnconOrganicCodes?.Select(c => c.CodelistId).ToList();
-                    lithologyDescription.ComponentConParticleCodelistIds = lithologyDescription.LithologyDescriptionComponentConParticleCodes?.Select(c => c.CodelistId).ToList();
-                    lithologyDescription.ComponentUnconDebrisCodelistIds = lithologyDescription.LithologyDescriptionComponentUnconDebrisCodes?.Select(c => c.CodelistId).ToList();
-                    lithologyDescription.GrainShapeCodelistIds = lithologyDescription.LithologyDescriptionGrainShapeCodes?.Select(c => c.CodelistId).ToList();
-                    lithologyDescription.GrainAngularityCodelistIds = lithologyDescription.LithologyDescriptionGrainAngularityCodes?.Select(c => c.CodelistId).ToList();
-                    lithologyDescription.LithologyUnconDebrisCodelistIds = lithologyDescription.LithologyDescriptionLithologyUnconDebrisCodes?.Select(c => c.CodelistId).ToList();
-                    lithologyDescription.ComponentConMineralCodelistIds = lithologyDescription.LithologyDescriptionComponentConMineralCodes?.Select(c => c.CodelistId).ToList();
-                    lithologyDescription.StructureSynGenCodelistIds = lithologyDescription.LithologyDescriptionStructureSynGenCodes?.Select(c => c.CodelistId).ToList();
-                    lithologyDescription.StructurePostGenCodelistIds = lithologyDescription.LithologyDescriptionStructurePostGenCodes?.Select(c => c.CodelistId).ToList();
-                }
+                    Modifiers =
+                    {
+                        JsonExportHelper.RequireIncludeInExportAttribute,
+                        (typeInfo) =>
+                        {
+                            foreach (var property in typeInfo.Properties.Where(p => attributesToIgnore.Contains(p.Name)))
+                            {
+                                property.ShouldSerialize = (_, _) => false;
+                            }
+                        },
+                    },
+                },
+            };
+
+            // Compare serialized Json values.
+            var serializedOriginal = JsonSerializer.Serialize(originalBorehole, comparableJsonOptions);
+            var serializedImported = JsonSerializer.Serialize(importedBorehole, comparableJsonOptions);
+            Assert.AreEqual(serializedOriginal, serializedImported, "Serialized JSON of original and imported borehole differ, indicating a mismatch in the export/import process.");
+        }
+        finally
+        {
+            if (System.IO.File.Exists(tempFilePath))
+            {
+                System.IO.File.Delete(tempFilePath);
             }
         }
-
-        var response = await controller.ExportJsonAsync([newBorehole.Id]).ConfigureAwait(false);
-        JsonResult jsonResult = (JsonResult)response!;
-        Assert.IsNotNull(jsonResult.Value);
-        List<Borehole> boreholes = (List<Borehole>)jsonResult.Value;
-        Assert.AreEqual(1, boreholes.Count);
-
-        var exported = boreholes.Single();
-        AssertEntitiesEqualByIncludeInExportAttribute(newBorehole, exported, new HashSet<object?>());
     }
 
     [TestMethod]
@@ -151,7 +321,7 @@ public class ExportControllerTest
         var fileName = $"{Guid.NewGuid()}.pdf";
         var content = Guid.NewGuid().ToString();
         var fileBytes = Encoding.UTF8.GetBytes(content);
-        var boreholeFile = await boreholeFileCloudService.UploadFileAndLinkToBoreholeAsync(new MemoryStream(fileBytes), fileName, "application/pdf", newBorehole.Id).ConfigureAwait(false);
+        var boreholeFile = await boreholeFileCloudService.UploadFileAndLinkToBoreholeAsync(new MemoryStream(fileBytes), fileName, null, false, "application/pdf", newBorehole.Id).ConfigureAwait(false);
         context.BoreholeFiles.Add(boreholeFile);
 
         var photoName = $"{Guid.NewGuid()}.tif";
@@ -186,7 +356,7 @@ public class ExportControllerTest
         Assert.IsNotNull(pdfFile, "The ZIP file does not contain a PDF file.");
 
         using var jsonStream = jsonFile.Open();
-        var boreholes = await JsonSerializer.DeserializeAsync<List<Borehole>>(jsonStream, jsonImportOptions).ConfigureAwait(false);
+        var boreholes = await JsonSerializer.DeserializeAsync<List<Borehole>>(jsonStream, jsonOptions).ConfigureAwait(false);
         var borehole = boreholes.Single();
 
         // Check some properties of deserialized borehole
@@ -545,10 +715,9 @@ public class ExportControllerTest
         }
     }
 
-    private static void AssertEntitiesEqualByIncludeInExportAttribute(object? expected, object? actual, ISet<object?> visited)
+    private static void AssertEntitiesEqualByIncludeInExportAttribute(object? expected, object? actual, ISet<object?> visited, bool ignoreNonImportableProps = false)
     {
-        Assert.IsNotNull(expected);
-        Assert.IsNotNull(actual);
+        if (expected == null && actual == null) return;
 
         // Prevent infinite recursion in case of cycles in the object graph.
         if (visited.Contains(expected))
@@ -566,10 +735,15 @@ public class ExportControllerTest
 
         foreach (var prop in properties)
         {
+            if (ignoreNonImportableProps && new string[] { "Created", "Updated", "Id", "BoreholeId", "StratigraphyId", "LithologyId", "LithostratigraphyId", "CompletionId", "ChronostratigraphyId", "CasingId", "LogRunId" }.Contains(prop.Name))
+            {
+                continue;
+            }
+
             var expectedValue = prop.GetValue(expected);
             var actualValue = prop.GetValue(actual);
 
-            AssertPropertyEqual(prop, expectedValue, actualValue, visited);
+            AssertPropertyEqual(prop, expectedValue, actualValue, visited, ignoreNonImportableProps);
         }
     }
 
@@ -578,8 +752,10 @@ public class ExportControllerTest
         return type.GetProperties(BindingFlags.Public | BindingFlags.Instance).Where(p => p.GetCustomAttribute<Json.IncludeInExportAttribute>() != null);
     }
 
-    private static void AssertPropertyEqual(PropertyInfo prop, object? expectedValue, object? actualValue, ISet<object?> visited)
+    private static void AssertPropertyEqual(PropertyInfo prop, object? expectedValue, object? actualValue, ISet<object?> visited, bool ignoreNonImportableProps = false)
     {
+        if (expectedValue == null && actualValue == null) return;
+
         var propertyType = prop.PropertyType;
 
         if (IsDateTime(propertyType))
@@ -590,7 +766,7 @@ public class ExportControllerTest
 
         if (IsCollectionType(propertyType))
         {
-            AssertCollectionEqual(prop, expectedValue, actualValue, visited);
+            AssertCollectionEqual(prop, expectedValue, actualValue, visited, ignoreNonImportableProps);
             return;
         }
 
@@ -601,7 +777,7 @@ public class ExportControllerTest
         }
 
         // Complex nested entity: compare recursively.
-        AssertEntitiesEqualByIncludeInExportAttribute(expectedValue, actualValue, visited);
+        AssertEntitiesEqualByIncludeInExportAttribute(expectedValue, actualValue, visited, ignoreNonImportableProps);
     }
 
     private static bool IsDateTime(Type propertyType)
@@ -627,8 +803,9 @@ public class ExportControllerTest
         Assert.AreEqual(expectedDate?.ToUniversalTime().ToString(), actualDate?.ToUniversalTime().ToString(), $"Date Property {prop.Name} differs between original and exported entity.");
     }
 
-    private static void AssertCollectionEqual(PropertyInfo prop, object? expectedValue, object? actualValue, ISet<object?> visited)
+    private static void AssertCollectionEqual(PropertyInfo prop, object? expectedValue, object? actualValue, ISet<object?> visited, bool ignoreNonImportableProps = false)
     {
+        if (expectedValue == null && actualValue == null) return;
         var expectedEnumerable = ((System.Collections.IEnumerable?)expectedValue)?.Cast<object?>().ToList();
         var actualEnumerable = ((System.Collections.IEnumerable?)actualValue)?.Cast<object?>().ToList();
 
@@ -642,7 +819,12 @@ public class ExportControllerTest
 
         Assert.IsNotNull(expectedEnumerable, $"Expected collection for property {prop.Name} is null.");
         Assert.IsNotNull(actualEnumerable, $"Actual collection for property {prop.Name} is null.");
-        Assert.AreEqual(expectedEnumerable!.Count, actualEnumerable!.Count, $"Collection size for property {prop.Name} differs between original and exported entity.");
+        Assert.AreEqual(expectedEnumerable!.Count, actualEnumerable!.Count, $"Collection size for property {prop.Name} differs between expected and actual entity.");
+
+        var expectedCollectionType = expectedEnumerable.FirstOrDefault()?.GetType()?.Name ?? "Unknown";
+        var actualCollectionType = actualEnumerable.FirstOrDefault()?.GetType()?.Name ?? "Unknown";
+
+        Assert.AreEqual(expectedCollectionType, actualCollectionType, "Entity types do not match.");
 
         for (var i = 0; i < expectedEnumerable.Count; i++)
         {
@@ -655,7 +837,7 @@ public class ExportControllerTest
             }
 
             // Recursively compare each collection element, so nested entities are checked.
-            AssertEntitiesEqualByIncludeInExportAttribute(expectedItem, actualItem, visited);
+            AssertEntitiesEqualByIncludeInExportAttribute(expectedItem, actualItem, visited, ignoreNonImportableProps);
         }
     }
 
@@ -665,6 +847,81 @@ public class ExportControllerTest
         var reader = new StreamReader(memoryStream);
         var csv = new CsvReader(reader, CsvConfigHelper.CsvWriteConfig);
         return csv.GetRecords<dynamic>().ToList();
+    }
+
+    private static void PopulateCodelistCollectionsFromJoinTables(Borehole newBorehole)
+    {
+        // Make sure all CodelistId collections are populated so they can be compared, to the export.
+        foreach (var strat in newBorehole.Stratigraphies ?? [])
+        {
+            foreach (var lithology in strat.Lithologies)
+            {
+                lithology.RockConditionCodelistIds = lithology.LithologyRockConditionCodes?.Select(c => c.CodelistId).ToList();
+                lithology.UscsTypeCodelistIds = lithology.LithologyUscsTypeCodes?.Select(c => c.CodelistId).ToList();
+                lithology.TextureMetaCodelistIds = lithology.LithologyTextureMetaCodes?.Select(c => c.CodelistId).ToList();
+
+                foreach (var lithologyDescription in lithology.LithologyDescriptions)
+                {
+                    lithologyDescription.ComponentUnconOrganicCodelistIds = lithologyDescription.LithologyDescriptionComponentUnconOrganicCodes?.Select(c => c.CodelistId).ToList();
+                    lithologyDescription.ComponentConParticleCodelistIds = lithologyDescription.LithologyDescriptionComponentConParticleCodes?.Select(c => c.CodelistId).ToList();
+                    lithologyDescription.ComponentUnconDebrisCodelistIds = lithologyDescription.LithologyDescriptionComponentUnconDebrisCodes?.Select(c => c.CodelistId).ToList();
+                    lithologyDescription.GrainShapeCodelistIds = lithologyDescription.LithologyDescriptionGrainShapeCodes?.Select(c => c.CodelistId).ToList();
+                    lithologyDescription.GrainAngularityCodelistIds = lithologyDescription.LithologyDescriptionGrainAngularityCodes?.Select(c => c.CodelistId).ToList();
+                    lithologyDescription.LithologyUnconDebrisCodelistIds = lithologyDescription.LithologyDescriptionLithologyUnconDebrisCodes?.Select(c => c.CodelistId).ToList();
+                    lithologyDescription.ComponentConMineralCodelistIds = lithologyDescription.LithologyDescriptionComponentConMineralCodes?.Select(c => c.CodelistId).ToList();
+                    lithologyDescription.StructureSynGenCodelistIds = lithologyDescription.LithologyDescriptionStructureSynGenCodes?.Select(c => c.CodelistId).ToList();
+                    lithologyDescription.StructurePostGenCodelistIds = lithologyDescription.LithologyDescriptionStructurePostGenCodes?.Select(c => c.CodelistId).ToList();
+                }
+            }
+        }
+
+        foreach (var logrun in newBorehole.LogRuns ?? [])
+        {
+            foreach (var logFile in logrun.LogFiles ?? [])
+            {
+                logFile.ToolTypeCodelistIds = logFile.LogFileToolTypeCodes?.Select(c => c.CodelistId).ToList();
+            }
+        }
+
+        foreach (var observation in newBorehole.Observations ?? [])
+        {
+            if (observation.Type == ObservationType.Hydrotest)
+            {
+                var hydroTest = observation as Hydrotest;
+                hydroTest.EvaluationMethodCodelistIds = hydroTest.HydrotestEvaluationMethodCodes?.Select(c => c.CodelistId).ToList();
+                hydroTest.FlowDirectionCodelistIds = hydroTest.HydrotestFlowDirectionCodes?.Select(c => c.CodelistId).ToList();
+                hydroTest.KindCodelistIds = hydroTest.HydrotestKindCodes?.Select(c => c.CodelistId).ToList();
+            }
+        }
+    }
+
+    private static void ReorderBoreholeForComparison(Borehole borehole)
+    {
+        borehole.Observations = borehole.Observations?.Where(o => o.Type != ObservationType.None).OrderBy(o => o.Type).ToList();
+        borehole.Completions = borehole.Completions?.OrderBy(o => o.Name).ToList();
+
+        foreach (var completion in borehole.Completions ?? [])
+        {
+            completion.Casings = completion.Casings?.OrderBy(c => c.Name).ToList();
+        }
+
+        foreach (var logRun in borehole.LogRuns ?? [])
+        {
+            foreach (var logFiles in logRun.LogFiles ?? [])
+            {
+                logFiles.ToolTypeCodelistIds = logFiles.ToolTypeCodelistIds.OrderBy(lf => lf).ToList();
+            }
+        }
+    }
+
+    private async Task<Borehole> ExportSingleBoreholeAsync(int boreholeId)
+    {
+        var response = await controller.ExportJsonAsync([boreholeId]).ConfigureAwait(false);
+        JsonResult jsonResult = (JsonResult)response!;
+        Assert.IsNotNull(jsonResult.Value);
+        List<Borehole> boreholes = (List<Borehole>)jsonResult.Value;
+        Assert.AreEqual(1, boreholes.Count);
+        return boreholes.Single();
     }
 
     private Borehole GetBoreholeToAdd()

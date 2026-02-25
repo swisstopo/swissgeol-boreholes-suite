@@ -2,7 +2,7 @@ import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Codelist } from "../components/codelist.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
-import { referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
+import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 import { LogRun } from "../pages/detail/form/log/log.ts";
 import { Workflow } from "../pages/detail/form/workflow/workflow.ts";
@@ -110,6 +110,7 @@ export const createBorehole = async (workgroupId: number): Promise<BoreholeV2> =
   return await fetchApiV2WithApiError<BoreholeV2>(`borehole`, "POST", {
     workgroupId,
     originalReferenceSystem: referenceSystems.LV95.code,
+    hrsId: defaultHrsId,
   });
 };
 

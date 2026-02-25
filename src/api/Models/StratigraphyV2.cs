@@ -11,6 +11,7 @@ namespace BDMS.Models;
 public class StratigraphyV2 : IChangeTracking, IIdentifyable
 {
     /// <inheritdoc />
+    [IncludeInExport]
     [JsonRequired]
     [Column("id")]
     public int Id { get; set; }
@@ -18,6 +19,7 @@ public class StratigraphyV2 : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the foreign key for the <see cref="Borehole"/> associated  with the <see cref="StratigraphyV2"/>.
     /// </summary>
+    [IncludeInExport]
     [JsonRequired]
     [Column("borehole_id")]
     public int BoreholeId { get; set; }

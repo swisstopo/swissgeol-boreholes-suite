@@ -16,12 +16,14 @@ public class LithologyDescription : IChangeTracking, IIdentifyable
 
     /// <inheritdoc />
     [Column("id")]
+    [IncludeInExport]
     public int Id { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="LithologyDescription"/>'s lithology.
     /// </summary>
     [Column("lithology_id")]
+    [IncludeInExport]
     public int LithologyId { get; set; }
 
     /// <summary>
