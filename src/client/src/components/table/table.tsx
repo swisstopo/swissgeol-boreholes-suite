@@ -100,6 +100,19 @@ export const Table = <T extends GridValidRowModel>({
     }
   }, [apiRef, columnWidths, effectiveApiRef]);
 
+  // Sync internal pagination model with maxRowsPerPage changes.
+  useEffect(() => {
+    setInternalPaginationModel(prev => {
+      if (prev.pageSize === maxRowsPerPage) {
+        return prev;
+      }
+      return {
+        pageSize: maxRowsPerPage,
+        page: 0,
+      };
+    });
+  }, [maxRowsPerPage]);
+
   const handleColumnResize = useCallback(
     (params: GridColumnResizeParams) => {
       const updatedWidths = {
