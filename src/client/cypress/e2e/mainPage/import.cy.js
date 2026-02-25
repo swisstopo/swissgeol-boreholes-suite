@@ -39,14 +39,15 @@ const dropFileIntoImportDropzone = boreholeFile => {
   });
 };
 
-const testBadRequestError = (endpoint, statusCode, responseBody, fileName, fileType, expectedMessage) => {
+const testBadRequestError = (endpoint, statusCode, responseBody, fileName, contentType, expectedMessage) => {
   cy.intercept("POST", `**/api/v*/import/${endpoint}`, {
     statusCode,
     body: responseBody,
+    headers: { "content-type": contentType },
   });
   goToRouteAndAcceptTerms("/");
   cy.dataCy("import-borehole-button").click();
-  const file = new File([fileName.includes("empty") ? "" : "content"], fileName, { type: fileType });
+  const file = new File([fileName.includes("empty") ? "" : "content"], fileName, { type: contentType });
   const dataTransfer = new DataTransfer();
   dataTransfer.items.add(file);
   dropFileIntoImportDropzone(dataTransfer);
