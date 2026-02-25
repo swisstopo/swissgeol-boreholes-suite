@@ -72,12 +72,9 @@ export const isActiveTab = tab => {
   cy.dataCy(tab).should("have.css", "color", activeColor);
 };
 
-export const isInactiveTab = (tab, hasContent) => {
-  if (hasContent === true) {
-    checkElementColorByDataCy(tab, contentColor);
-  } else if (hasContent === false) {
-    checkElementColorByDataCy(tab, noContentColor);
-  }
+export const isInactiveTab = (tab, hasContent = false) => {
+  const expectedColor = hasContent ? contentColor : noContentColor;
+  checkElementColorByDataCy(tab, expectedColor);
 };
 
 export const isActiveBoreholeTab = tab => {
