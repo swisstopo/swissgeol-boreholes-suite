@@ -477,7 +477,7 @@ public class BdmsContext : DbContext
                     .HasOne(bf => bf.Borehole)
                     .WithMany(b => b.BoreholeCodelists)
                     .HasForeignKey(bf => bf.BoreholeId),
-                j => j.HasKey(bf => new { bf.BoreholeId, bf.CodelistId }));
+                j => j.HasKey(bf => bf.Id));
 
         modelBuilder.Entity<Borehole>().HasOne(l => l.ChronostratigraphyTopBedrock).WithMany().HasForeignKey(l => l.ChronostratigraphyTopBedrockId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.Type).WithMany().HasForeignKey(l => l.TypeId);

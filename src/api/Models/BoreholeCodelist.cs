@@ -10,6 +10,9 @@ namespace BDMS.Models;
 [Table("borehole_identifiers_codelist")]
 public class BoreholeCodelist
 {
+    [Column("id")]
+    public int Id { get; set; }
+
     [Column("borehole_id")]
     public int BoreholeId { get; set; }
 

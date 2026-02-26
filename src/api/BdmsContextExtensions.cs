@@ -86,6 +86,7 @@ public static class BdmsContextExtensions
         List<int> statusIds = codelists.Where(c => c.Schema == "extended.status").Select(s => s.Id).ToList();
         List<int> referenceElevationTypeIds = codelists.Where(c => c.Schema == "reference_elevation_type").Select(s => s.Id).ToList();
         List<int> drillingMudTypeIds = codelists.Where(c => c.Schema == "drilling_mud_type").Select(s => s.Id).ToList();
+        List<int> identifierIds = codelists.Where(c => c.Schema == "borehole_identifier").Select(s => s.Id).ToList();
 
         // Lithology codelists (schema without LithologySchemas static class belong to legacy schemas)
         List<int> lithologyTopBedrockIds = codelists.Where(c => c.Schema == "custom.lithology_top_bedrock").Select(s => s.Id).ToList();
@@ -244,6 +245,41 @@ public static class BdmsContextExtensions
 
         Borehole SeededBoreholes(int seed) => fakeBoreholes.UseSeed(seed).Generate();
         context.BulkInsert(boreholeRange.Select(SeededBoreholes).ToList(), bulkConfig);
+
+        // Seed a borehole identifiers for each borehole
+        var boreholeCodelistId = 100_000_000;
+        void SeedIdentifierCodeRelationships(IList<int> identifierIds)
+        {
+            var identifierCodes = new List<BoreholeCodelist>();
+
+            var random = new Random(richBoreholeRange.Count);
+            var bogusRandom = new Bogus.Randomizer(richBoreholeRange.Count);
+
+            var codeListSampleSize = Math.Min(5, identifierIds.Count);
+
+            foreach (var boreholeId in richBoreholeRange)
+            {
+                var numberOfCodes = random.Next(1, codeListSampleSize + 1);
+                var shuffled = identifierIds
+                    .OrderBy(_ => random.Next())
+                    .Take(numberOfCodes);
+
+                foreach (var codeId in shuffled)
+                {
+                    identifierCodes.Add(new BoreholeCodelist
+                    {
+                        Id = boreholeCodelistId++,
+                        BoreholeId = boreholeId,
+                        CodelistId = codeId,
+                        Value = bogusRandom.String2(10, "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789"),
+                    });
+                }
+            }
+
+            context.BulkInsert(identifierCodes, bulkConfig);
+        };
+
+        SeedIdentifierCodeRelationships(identifierIds);
 
         // Seed a workflow for each borehole
         var tabStatus_ids = 3_000_000;
