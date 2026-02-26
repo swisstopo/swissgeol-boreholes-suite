@@ -18,7 +18,7 @@ describe("Tests for filtering data by identifier.", () => {
     goToRouteAndAcceptTerms(`/`);
     newEditableBorehole().as("borehole_id");
 
-    // Add multiple Id value for the same identifier type
+    // Add multiple id values for the same identifier type
     addItem("addIdentifier");
     setSelect("boreholeCodelists.0.codelistId", 1);
     setInput("boreholeCodelists.0.value", 819544732);
