@@ -246,7 +246,7 @@ public static class BdmsContextExtensions
         Borehole SeededBoreholes(int seed) => fakeBoreholes.UseSeed(seed).Generate();
         context.BulkInsert(boreholeRange.Select(SeededBoreholes).ToList(), bulkConfig);
 
-        // Seed a borehole identifiers for rich boreholes
+        // Seed borehole identifiers for rich boreholes
         var boreholeCodelistId = 100_000_000;
         void SeedIdentifierCodeRelationships(IList<int> identifierIds)
         {
