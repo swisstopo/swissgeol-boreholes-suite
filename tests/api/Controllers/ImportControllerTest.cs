@@ -760,6 +760,11 @@ public class ImportControllerTest
         Assert.AreEqual(WorkflowStatus.Draft, borehole.Workflow.Status);
 
         Assert.AreEqual("POINT (2613116 1179127)", borehole.Geometry.ToString());
+
+        // Multiple Ids of the same Id type are supported
+        var boreholeWithTwoIDCantonIdentifiers = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_3").ConfigureAwait(false);
+        var cantonIdentifiers = boreholeWithTwoIDCantonIdentifiers.BoreholeCodelists.Where(bc => bc.CodelistId == 100000005).Select(bc => bc.Value).ToList();
+        Assert.AreEqual(2, cantonIdentifiers.Count);
     }
 
     [TestMethod]
