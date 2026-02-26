@@ -69,7 +69,7 @@ public class ImportController : ControllerBase
 
         InitializeImport(workgroupId, "CSV");
         if (!ValidateFile(boreholesFile, FileTypeChecker.IsCsv))
-            return BadRequest("Invalid or empty CSV file uploaded.");
+            return BadRequest(new { detail = "Invalid or empty CSV file uploaded.", messageKey = "invalidOrEmptyCsvFile" });
 
         try
         {
@@ -178,10 +178,10 @@ public class ImportController : ControllerBase
 
         InitializeImport(workgroupId, "JSON");
         if (!ValidateFile(boreholesFile, FileTypeChecker.IsJson))
-            return BadRequest("Invalid or empty JSON file uploaded.");
+            return BadRequest(new { detail = "Invalid or empty JSON file uploaded.", messageKey = "invalidOrEmptyJsonFile" });
 
         var boreholes = await DeserializeBoreholeDataAsync(boreholesFile.OpenReadStream()).ConfigureAwait(false);
-        if (boreholes == null) return BadRequest("The provided file is not an array of boreholes or is not in a valid JSON format.");
+        if (boreholes == null) return BadRequest(new { detail = "The provided file is not an array of boreholes or is not in a valid JSON format.", messageKey = "invalidJsonBoreholeArray" });
         return await ProcessAndSaveBoreholesAsync(workgroupId, boreholes).ConfigureAwait(false);
     }
 
@@ -205,17 +205,17 @@ public class ImportController : ControllerBase
 
         InitializeImport(workgroupId, "ZIP");
         if (!ValidateFile(boreholesFile, FileTypeChecker.IsZip))
-            return BadRequest("Invalid or empty ZIP file uploaded.");
+            return BadRequest(new { detail = "Invalid or empty ZIP file uploaded.", messageKey = "invalidOrEmptyZipFile" });
 
         var zipStream = boreholesFile.OpenReadStream();
         using var zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read);
         var jsonFile = zipArchive.Entries.FirstOrDefault(e => e.FullName.EndsWith(".json", StringComparison.OrdinalIgnoreCase));
         if (jsonFile == null)
-            return BadRequest("ZIP file does not contain a JSON file.");
+            return BadRequest(new { detail = "ZIP file does not contain a JSON file.", messageKey = "zipMissingJsonFile" });
 
         var boreholes = await DeserializeBoreholeDataAsync(jsonFile.Open()).ConfigureAwait(false);
         if (boreholes == null)
-            return BadRequest("The provided file is not an array of boreholes or is not a valid JSON format.");
+            return BadRequest(new { detail = "The provided file is not an array of boreholes or is not a valid JSON format.", messageKey = "invalidJsonBoreholeArray" });
 
         var attachmentNames = zipArchive.Entries.Where(e => e.FullName != jsonFile.FullName).Select(e => e.FullName);
         ValidateAttachmentsPresent(attachmentNames, boreholes);
