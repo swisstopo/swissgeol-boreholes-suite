@@ -7,12 +7,13 @@
 
 ### Fixed
 - Fixed Chronostratigraphy and Lithostratigraphy tabs not being correctly greyed out when empty.
+- Included all missing properties from `Lithology`/`LithologyDescription` in borehole JSON import.
+- Application would freeze when borehole imports failed.
 
 ## v2.1.1462 - 2026-02-19
 
 ### Added
 - Added new GitHub Action workflow to add a release-candidate Docker image tag to a specific version.
-
 
 ### Changed
 - Upgraded dataextraction service to version 1.0.144

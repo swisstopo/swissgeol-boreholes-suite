@@ -356,6 +356,10 @@
   "inactive": "Inaktiv",
   "inner": "innen",
   "instrumentation": "Instrumentierung",
+  "invalidJsonBoreholeArray": "Die hochgeladene Datei ist kein Bohrungen-Array oder hat kein gültiges JSON-Format.",
+  "invalidOrEmptyCsvFile": "Ungültige oder leere CSV-Datei hochgeladen.",
+  "invalidOrEmptyJsonFile": "Ungültige oder leere JSON-Datei hochgeladen.",
+  "invalidOrEmptyZipFile": "Ungültige oder leere ZIP-Datei hochgeladen.",
   "invertedDepth": "Umgekehrte Tiefen",
   "italian": "Italienisch",
   "kindBackfill": "Verfüllungs-/Hinterfüllungstyp",
@@ -686,5 +690,6 @@
   "workgroups": "Arbeitsgruppen",
   "yes": "Ja",
   "you": "Du",
-  "yourcomments": "Ihre Kommentare"
+  "yourcomments": "Ihre Kommentare",
+  "zipMissingJsonFile": "ZIP-Datei enthält keine JSON-Datei."
 }

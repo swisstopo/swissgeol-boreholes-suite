@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useDispatch } from "react-redux";
 import { Backdrop, Box, Button, CircularProgress, Link, Stack } from "@mui/material";
 import { importBoreholesCsv, importBoreholesJson, importBoreholesZip } from "../../../../api/borehole.ts";
-import { downloadCodelistCsv } from "../../../../api/fetchApiV2.ts";
+import { downloadCodelistCsv, isJsonContentType } from "../../../../api/fetchApiV2.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
@@ -16,7 +16,7 @@ interface ImportPanelProps extends NewBoreholeProps {
   setErrorsResponse: React.Dispatch<React.SetStateAction<ErrorResponse | null>>;
   setErrorDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
-const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpen }: ImportPanelProps) => {
+export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpen }: ImportPanelProps) => {
   const { t } = useTranslation();
   const dispatch = useDispatch();
   const { enabledWorkgroups, currentWorkgroupId } = useUserWorkgroups();
@@ -45,43 +45,54 @@ const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpen }: Im
       setFile(null);
       refresh();
     } else {
-      const responseBody = await response.json();
-      if (response.status === 400) {
+      const contentType = response.headers.get("content-type");
+      const isJson = isJsonContentType(contentType);
+      if (response.status === 400 && isJson) {
+        const responseBody = await response.json();
         if (responseBody.errors) {
-          // If response is of type ValidationProblemDetails, open validation error modal.
           setErrorsResponse(responseBody);
           setErrorDialogOpen(true);
-        } else {
-          // If response is of type ProblemDetails, show error message.
+        } else if (responseBody.messageKey) {
+          const translatedMessage = t(responseBody.messageKey, { defaultValue: responseBody.detail });
+          showAlert(translatedMessage, "error");
+        } else if (responseBody.detail) {
           showAlert(responseBody.detail, "error");
+        } else {
+          showAlert(t("boreholesImportError"), "error");
         }
       } else if (response.status === 504) {
         showAlert(t("boreholesImportLongRunning"), "error");
+      } else if (isJson) {
+        const responseBody = await response.json();
+        showAlert(responseBody.detail || t("boreholesImportError"), "error");
       } else {
-        showAlert(t("boreholesImportError"), "error");
+        const errorText = await response.text();
+        showAlert(errorText || t("boreholesImportError"), "error");
       }
     }
-    setIsLoading(false);
   };
 
-  const handleBoreholeImport = () => {
+  const handleBoreholeImport = async () => {
     setIsLoading(true);
     const combinedFormData = new FormData();
     if (file !== null) {
       combinedFormData.append("boreholesFile", file);
     }
-    if (getFileExtension(file) === "csv") {
-      importBoreholesCsv(currentWorkgroupId, combinedFormData).then(response => {
-        handleImportResponse(response);
-      });
-    } else if (getFileExtension(file) === "json") {
-      importBoreholesJson(currentWorkgroupId, combinedFormData).then(response => {
-        handleImportResponse(response);
-      });
-    } else {
-      importBoreholesZip(currentWorkgroupId, combinedFormData).then(response => {
-        handleImportResponse(response);
-      });
+    try {
+      let response;
+      if (getFileExtension(file) === "csv") {
+        response = await importBoreholesCsv(currentWorkgroupId, combinedFormData);
+      } else if (getFileExtension(file) === "json") {
+        response = await importBoreholesJson(currentWorkgroupId, combinedFormData);
+      } else {
+        response = await importBoreholesZip(currentWorkgroupId, combinedFormData);
+      }
+      await handleImportResponse(response);
+    } catch (error) {
+      console.error("Error during import", error);
+      showAlert(t("boreholesImportError"), "error");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -126,5 +137,3 @@ const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpen }: Im
     </Box>
   );
 };
-
-export default ImportPanel;
