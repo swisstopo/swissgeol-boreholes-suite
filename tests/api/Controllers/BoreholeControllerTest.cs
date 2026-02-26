@@ -208,6 +208,7 @@ public class BoreholeControllerTest
         var boreholeToEdit = await initialContext.Boreholes.SingleAsync(c => c.Id == testBoreholeId);
         Assert.AreEqual(0, boreholeToEdit.BoreholeCodelists.Count);
 
+        // Add two borehole ids for the same identifier type to the borehole
         boreholeToEdit.BoreholeCodelists.Add(new BoreholeCodelist
         {
             BoreholeId = testBoreholeId,
@@ -215,8 +216,15 @@ public class BoreholeControllerTest
             Value = "ID GeoDIN value",
         });
 
+        boreholeToEdit.BoreholeCodelists.Add(new BoreholeCodelist
+        {
+            BoreholeId = testBoreholeId,
+            CodelistId = 100000010,
+            Value = "Another ID GeoDIN value",
+        });
+
         await initialContext.SaveChangesAsync();
-        Assert.AreEqual(1, boreholeToEdit.BoreholeCodelists.Count);
+        Assert.AreEqual(2, boreholeToEdit.BoreholeCodelists.Count);
 
         using var updateContext = ContextFactory.CreateContext();
         var updateController = GetTestController(updateContext);
@@ -235,6 +243,12 @@ public class BoreholeControllerTest
                 new BoreholeCodelist
                 {
                     BoreholeId = testBoreholeId,
+                    CodelistId = 100000010,
+                    Value = "Another ID GeoDIN value",
+                },
+                new BoreholeCodelist
+                {
+                    BoreholeId = testBoreholeId,
                     CodelistId = 100000000,
                     Value = "ID Original value",
                 },
@@ -245,7 +259,7 @@ public class BoreholeControllerTest
         ActionResultAssert.IsOk(updatedResponse.Result);
 
         var updatedBorehole = ActionResultAssert.IsOkObjectResult<Borehole>(updatedResponse.Result);
-        Assert.AreEqual(2, updatedBorehole.BoreholeCodelists.Count);
+        Assert.AreEqual(3, updatedBorehole.BoreholeCodelists.Count);
 
         using var deleteContext = ContextFactory.CreateContext();
         var deleteController = GetTestController(deleteContext);
