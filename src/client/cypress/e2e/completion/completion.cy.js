@@ -9,8 +9,9 @@ import {
   setSelect,
   toggleCheckbox,
 } from "../helpers/formHelpers";
-import { isActiveTab } from "../helpers/navigationHelpers";
+import { activeColor } from "../helpers/navigationHelpers.js";
 import {
+  checkElementColorByDataCy,
   createBorehole,
   createCompletion,
   goToDetailRouteAndAcceptTerms,
@@ -87,7 +88,7 @@ const setHeaderTab = (index, promptHandler) => {
 const isHeaderTabSelected = index => {
   const selector = `completion-header-tab-${index}`;
   cy.dataCy(selector).invoke("attr", "aria-selected").should("eq", "true");
-  isActiveTab(selector);
+  checkElementColorByDataCy(selector, activeColor);
 };
 
 export const setContentTab = (tab, promptHandler) => {
@@ -109,7 +110,7 @@ export const setContentTab = (tab, promptHandler) => {
 export const isContentTabSelected = tabName => {
   const selector = `completion-content-tab-${tabName}`;
   cy.dataCy(selector).invoke("attr", "aria-selected").should("eq", "true");
-  isActiveTab(selector);
+  checkElementColorByDataCy(selector, activeColor);
 };
 
 const assertLocationAndHash = (boreholeId, completionId, hash) => {

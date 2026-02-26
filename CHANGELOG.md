@@ -6,6 +6,7 @@
 - Added major version Docker image tag (e.g. `:v2`) to the release workflow.
 
 ### Fixed
+- Fixed Chronostratigraphy and Lithostratigraphy tabs not being correctly greyed out when empty.
 - Included all missing properties from `Lithology`/`LithologyDescription` in borehole JSON import.
 - Application would freeze when borehole imports failed.
 
