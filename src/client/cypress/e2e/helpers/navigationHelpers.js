@@ -69,19 +69,15 @@ export const navigateToTabWithTitle = (title, parent) => {
 };
 
 export const isActiveTab = tab => {
-  cy.dataCy(tab).should("have.css", "color", activeColor);
+  checkElementColorByDataCy(`${tab}-tab`, activeColor);
 };
 
-export const isInactiveTab = (tab, hasContent = false) => {
-  const expectedColor = hasContent ? contentColor : noContentColor;
-  checkElementColorByDataCy(tab, expectedColor);
+export const isInactiveEmptyTab = tab => {
+  checkElementColorByDataCy(`${tab}-tab`, noContentColor);
 };
 
-export const isActiveBoreholeTab = tab => {
-  isActiveTab(`${tab}-tab`);
-};
-export const isInactiveBoreholeTab = (tab, hasContent) => {
-  isInactiveTab(`${tab}-tab`, hasContent);
+export const isInactiveTabWithContent = tab => {
+  checkElementColorByDataCy(`${tab}-tab`, contentColor);
 };
 
 export const navigateInBorehole = (tab, promptSelector) => {
@@ -109,7 +105,7 @@ export const navigateInBorehole = (tab, promptSelector) => {
     expect(location.hash).to.eq(`#${tab}`);
   });
 
-  isActiveBoreholeTab(tab);
+  isActiveTab(tab);
 };
 
 export const navigateInStratigraphy = tab => {
@@ -186,7 +182,7 @@ export const navigateInSidebar = (menuItem, promptSelector) => {
         expect(location.hash).to.eq("#general");
       });
       cy.dataCy("typeId-formSelect").should("exist");
-      isActiveBoreholeTab(BoreholeTab.general);
+      isActiveTab(BoreholeTab.general);
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.stratigraphy:

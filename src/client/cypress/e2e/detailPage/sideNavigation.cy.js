@@ -4,8 +4,8 @@ import {
   BoreholeTab,
   isActiveMenuItem,
   isActiveTab,
-  isInactiveBoreholeTab,
-  isInactiveTab,
+  isInactiveEmptyTab,
+  isInactiveTabWithContent,
   isMenuItemWithContent,
   isMenuItemWithoutContent,
   navigateInSidebar,
@@ -49,8 +49,8 @@ describe("Test for the detail page side navigation.", () => {
     // Check borehole content tabs
     navigateInSidebar(SidebarMenuItem.borehole);
     cy.wait("@codelist_GET");
-    isInactiveBoreholeTab(BoreholeTab.sections, false);
-    isInactiveBoreholeTab(BoreholeTab.geometry, false);
+    isInactiveEmptyTab(BoreholeTab.sections);
+    isInactiveEmptyTab(BoreholeTab.geometry);
 
     // Check empty Stratigraphy
     navigateInSidebar(SidebarMenuItem.stratigraphy);
@@ -99,29 +99,29 @@ describe("Test for the detail page side navigation.", () => {
     isActiveMenuItem(SidebarMenuItem.completion, true);
     isMenuItemWithContent(SidebarMenuItem.stratigraphy);
     navigateInSidebar(SidebarMenuItem.stratigraphy);
-    isActiveTab(StratigraphyTab.lithology + "-tab");
-    isInactiveTab(StratigraphyTab.chronostratigraphy + "-tab");
-    isInactiveTab(StratigraphyTab.lithostratigraphy + "-tab");
+    isActiveTab(StratigraphyTab.lithology);
+    isInactiveEmptyTab(StratigraphyTab.chronostratigraphy);
+    isInactiveEmptyTab(StratigraphyTab.lithostratigraphy);
 
     // add chronostratigraphy and lithostratigraphy to check if they are enabled when content is present
     navigateToTabWithTitle("Chronostratigraphy");
     addHierarchicalLayer("chronostratigraphy");
-    isInactiveTab(StratigraphyTab.lithology + "-tab");
-    isActiveTab(StratigraphyTab.chronostratigraphy + "-tab");
-    isInactiveTab(StratigraphyTab.lithostratigraphy + "-tab");
+    isInactiveEmptyTab(StratigraphyTab.lithology);
+    isActiveTab(StratigraphyTab.chronostratigraphy);
+    isInactiveEmptyTab(StratigraphyTab.lithostratigraphy);
 
     navigateToTabWithTitle("Lithology");
-    isInactiveTab(StratigraphyTab.chronostratigraphy + "-tab", true);
-    isInactiveTab(StratigraphyTab.lithostratigraphy + "-tab");
+    isInactiveTabWithContent(StratigraphyTab.chronostratigraphy);
+    isInactiveEmptyTab(StratigraphyTab.lithostratigraphy);
 
     navigateToTabWithTitle("Lithostratigraphy");
     addHierarchicalLayer("lithostratigraphy");
-    isInactiveTab(StratigraphyTab.lithology + "-tab");
-    isInactiveTab(StratigraphyTab.chronostratigraphy + "-tab", true);
-    isActiveTab(StratigraphyTab.lithostratigraphy + "-tab");
+    isInactiveEmptyTab(StratigraphyTab.lithology);
+    isInactiveTabWithContent(StratigraphyTab.chronostratigraphy);
+    isActiveTab(StratigraphyTab.lithostratigraphy);
     navigateToTabWithTitle("Lithology");
-    isInactiveTab(StratigraphyTab.chronostratigraphy + "-tab", true);
-    isInactiveTab(StratigraphyTab.lithostratigraphy + "-tab", true);
+    isInactiveTabWithContent(StratigraphyTab.chronostratigraphy);
+    isInactiveTabWithContent(StratigraphyTab.lithostratigraphy);
 
     navigateInSidebar(SidebarMenuItem.hydrogeology);
     navigateInSidebar(SidebarMenuItem.waterIngress);
