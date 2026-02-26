@@ -277,7 +277,7 @@ public static class BdmsContextExtensions
             }
 
             context.BulkInsert(identifierCodes, bulkConfig);
-        };
+        }
 
         SeedIdentifierCodeRelationships(identifierIds);
 
