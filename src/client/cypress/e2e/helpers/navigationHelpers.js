@@ -37,7 +37,7 @@ export const StratigraphyTab = {
 
 const noContentColor = "rgb(130, 142, 154)";
 const contentColor = "rgb(28, 40, 52)";
-const activeColor = "rgb(166, 84, 98)";
+export const activeColor = "rgb(166, 84, 98)";
 
 export const checkTabsByTitles = (tabs, parent, datacy) => {
   const selector = createBaseSelector(parent) + `.MuiTabs-list`;
