@@ -40,7 +40,7 @@ export const Attachments: FC = () => {
     [boreholeId, hasBoreholeFiles, hasDocuments, hasPhotos, t],
   );
   return (
-    <Box sx={{ position: "relative", height: "100%", display: "flex", flexDirection: "column" }}>
+    <Box sx={{ position: "relative" }}>
       <TabPanel tabs={tabs} />
     </Box>
   );
