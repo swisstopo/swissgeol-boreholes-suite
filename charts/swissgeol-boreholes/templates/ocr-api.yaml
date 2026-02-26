@@ -26,10 +26,12 @@ spec:
       serviceAccountName: {{ .Release.Name }}-ocr-api
       {{- end }}
       automountServiceAccountToken: {{ .Values.ocr.automountServiceAccountToken }}
-      {{- if .Values.podSecurityContext }}
       securityContext:
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
-      {{- end }}
+        seccompProfile:
+          type: RuntimeDefault
+      volumes:
+      - name: tmp
+        emptyDir: {}
       containers:
         - name: {{ .Release.Name }}-ocr-api
           image: ghcr.io/swisstopo/swissgeol-ocr-api:{{ required "ocr.version is required" .Values.ocr.version }}
@@ -55,11 +57,25 @@ spec:
             timeoutSeconds: 2
             failureThreshold: 30
           resources:
-            {{- toYaml .Values.resources.ocr | nindent 12 }}
-          {{- if .Values.securityContext }}
+            requests:
+              cpu: 250m
+              memory: 512Mi
+              ephemeral-storage: 1Gi
+            limits:
+              cpu: 1000m
+              memory: 1Gi
+              ephemeral-storage: 2Gi
           securityContext:
-            {{- toYaml .Values.securityContext | nindent 12 }}
-          {{- end }}
+            readOnlyRootFilesystem: true
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            seccompProfile:
+              type: RuntimeDefault
+          volumeMounts:
+          - name: tmp
+            mountPath: /tmp
           env:
             - name: AWS_DEFAULT_REGION
               value: eu-central-1

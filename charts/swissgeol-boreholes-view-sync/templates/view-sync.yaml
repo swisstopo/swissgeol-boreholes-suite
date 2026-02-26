@@ -24,20 +24,33 @@ spec:
             checksum/secret: {{ include (print $.Template.BasePath "/secrets.yaml") . | sha256sum }}
         spec:
           automountServiceAccountToken: false
-          {{- if .Values.podSecurityContext }}
           securityContext:
-            {{- toYaml .Values.podSecurityContext | nindent 12 }}
-          {{- end }}
+            seccompProfile:
+              type: RuntimeDefault
           containers:
             - name: {{ .Release.Name }}
               image: ghcr.io/swisstopo/swissgeol-boreholes-suite-view-sync:{{ required "app.version is required" .Values.app.version }}
               imagePullPolicy: Always
               resources:
-                {{- toYaml .Values.resources | nindent 16 }}
-              {{- if .Values.securityContext }}
+                requests:
+                  cpu: 200m
+                  memory: 512Mi
+                  ephemeral-storage: 1Gi
+                limits:
+                  cpu: 1000m
+                  memory: 1Gi
+                  ephemeral-storage: 2Gi
               securityContext:
-                {{- toYaml .Values.securityContext | nindent 16 }}
-              {{- end }}
+                readOnlyRootFilesystem: true
+                allowPrivilegeEscalation: false
+                capabilities:
+                  drop:
+                    - ALL
+                seccompProfile:
+                  type: RuntimeDefault
+              volumeMounts:
+              - name: tmp
+                mountPath: /tmp
               env:
                 - name: SOURCE_DB_HOST
                   valueFrom:
@@ -94,5 +107,8 @@ spec:
                     secretKeyRef:
                       name: "{{ .Release.Name }}-secrets"
                       key: targetDatabasePassword
+          volumes:
+          - name: tmp
+            emptyDir: {}
           restartPolicy: Never
       backoffLimit: 4

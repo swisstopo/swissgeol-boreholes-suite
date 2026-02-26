@@ -17,27 +17,6 @@ app:
   # -- defaults to "0 0 * * *" which means every day at midnight
   schedule:
 
-# Pod-level security settings
-podSecurityContext: {}
-securityContext:
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-      - ALL
-  seccompProfile:
-    type: RuntimeDefault
-
-# Resource requests and limits
-resources:
-  requests:
-    cpu: 200m
-    memory: 512Mi
-    ephemeral-storage: 1Gi
-  limits:
-    cpu: 1000m
-    memory: 1Gi
-    ephemeral-storage: 2Gi
-
 # Database configuration (source and target)
 db:
   source:

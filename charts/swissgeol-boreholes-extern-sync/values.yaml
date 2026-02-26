@@ -17,32 +17,6 @@ app:
   # -- defaults to "0 0 * * *" which means every day at midnight
   schedule:
 
-# Pod-level security settings
-podSecurityContext:
-  runAsNonRoot: true
-  seccompProfile:
-    type: RuntimeDefault
-securityContext:
-  allowPrivilegeEscalation: false
-  runAsNonRoot: true
-  readOnlyRootFilesystem: true
-  capabilities:
-    drop:
-      - ALL
-  seccompProfile:
-    type: RuntimeDefault
-
-# Resource requests and limits
-resources:
-  requests:
-    cpu: 200m
-    memory: 512Mi
-    ephemeral-storage: 1Gi
-  limits:
-    cpu: 1000m
-    memory: 1Gi
-    ephemeral-storage: 2Gi
-
 configuration:
   # -- The default workgroup name to assign the borehole to if there is no matching workgroup in the target database
   targetDefaultWorkgroupName:

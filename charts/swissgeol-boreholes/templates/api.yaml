@@ -25,9 +25,8 @@ spec:
       automountServiceAccountToken: false
       securityContext:
         runAsNonRoot: true
-        {{- if .Values.podSecurityContext }}
-        {{- toYaml .Values.podSecurityContext | nindent 8 }}
-        {{- end }}
+        seccompProfile:
+          type: RuntimeDefault
       volumes:
       - name: tmp
         emptyDir: {}
@@ -58,13 +57,23 @@ spec:
           timeoutSeconds: 2
           failureThreshold: 30
         resources:
-          {{- toYaml .Values.resources.api | nindent 10 }}
+          requests:
+            cpu: 250m
+            memory: 512Mi
+            ephemeral-storage: 1Gi
+          limits:
+            cpu: 1000m
+            memory: 1Gi
+            ephemeral-storage: 2Gi
         securityContext:
           runAsNonRoot: true
           readOnlyRootFilesystem: true
-          {{- if .Values.securityContext }}
-          {{- toYaml .Values.securityContext | nindent 10 }}
-          {{- end }}
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+              - ALL
+          seccompProfile:
+            type: RuntimeDefault
         volumeMounts:
         - name: tmp
           mountPath: /tmp

@@ -23,27 +23,6 @@
       "required": ["version"]
     },
 
-    "podSecurityContext": {
-      "type": "object",
-      "default": {},
-      "additionalProperties": true
-    },
-
-    "securityContext": {
-      "type": "object",
-      "default": {},
-      "additionalProperties": true
-    },
-
-    "resources": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "requests": { "$ref": "#/definitions/resourceRequestsLimits" },
-        "limits": { "$ref": "#/definitions/resourceRequestsLimits" }
-      }
-    },
-
     "db": {
       "type": "object",
       "additionalProperties": false,
@@ -77,21 +56,6 @@
   "required": ["app"],
 
   "definitions": {
-    "k8sQuantity": {
-      "type": "string",
-      "minLength": 1
-    },
-
-    "resourceRequestsLimits": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "cpu": { "$ref": "#/definitions/k8sQuantity" },
-        "memory": { "$ref": "#/definitions/k8sQuantity" },
-        "ephemeral-storage": { "$ref": "#/definitions/k8sQuantity" }
-      }
-    },
-
     "databaseConnection": {
       "type": "object",
       "additionalProperties": false,

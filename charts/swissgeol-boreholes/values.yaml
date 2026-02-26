@@ -91,66 +91,6 @@ database:
 #
 replicaCount: 1
 
-# Pod-level security settings
-podSecurityContext:
-  seccompProfile:
-    type: RuntimeDefault
-securityContext:
-  allowPrivilegeEscalation: false
-  capabilities:
-    drop:
-      - ALL
-  seccompProfile:
-    type: RuntimeDefault
-
-# Resource requests and limits per component
-resources:
-  api:
-    requests:
-      cpu: 250m
-      memory: 512Mi
-      ephemeral-storage: 1Gi
-    limits:
-      cpu: 1000m
-      memory: 1Gi
-      ephemeral-storage: 2Gi
-  apiLegacy:
-    requests:
-      cpu: 100m
-      memory: 256Mi
-      ephemeral-storage: 1Gi
-    limits:
-      cpu: 500m
-      memory: 512Mi
-      ephemeral-storage: 2Gi
-  client:
-    requests:
-      cpu: 50m
-      memory: 128Mi
-      ephemeral-storage: 1Gi
-    limits:
-      cpu: 250m
-      memory: 256Mi
-      ephemeral-storage: 2Gi
-  dataextraction:
-    requests:
-      cpu: 250m
-      memory: 512Mi
-      ephemeral-storage: 1Gi
-    limits:
-      cpu: 1000m
-      memory: 1Gi
-      ephemeral-storage: 2Gi
-  ocr:
-    requests:
-      cpu: 250m
-      memory: 512Mi
-      ephemeral-storage: 1Gi
-    limits:
-      cpu: 1000m
-      memory: 1Gi
-      ephemeral-storage: 2Gi
-
 # AWS S3 Bucket configuration
 s3:
   # -- The endpoint of the S3 bucket
