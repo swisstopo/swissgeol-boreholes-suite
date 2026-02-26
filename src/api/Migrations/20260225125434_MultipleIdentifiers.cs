@@ -4,6 +4,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 #nullable disable
 
 namespace BDMS.Migrations;
+
     /// <inheritdoc />
     public partial class MultipleIdentifiers : Migration
     {
