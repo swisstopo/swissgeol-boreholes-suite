@@ -6,7 +6,7 @@
 - Added major version Docker image tag (e.g. `:v2`) to the release workflow.
 
 ### Fixed
-- Fixed Chronostratigraphy and Lithostratigraphy tabs not being correctly disabled when empty.
+- Fixed Chronostratigraphy and Lithostratigraphy tabs not being correctly greyed out when empty.
 
 ## v2.1.1462 - 2026-02-19
 
