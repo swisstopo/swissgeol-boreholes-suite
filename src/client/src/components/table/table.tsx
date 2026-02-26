@@ -67,7 +67,7 @@ export const Table = <T extends GridValidRowModel>({
   apiRef,
   isLoading,
   rowCount,
-  maxRowsPerPage = 50,
+  maxRowsPerPage = 100,
   rowSelectionModel,
   onRowSelectionModelChange,
   getRowId,

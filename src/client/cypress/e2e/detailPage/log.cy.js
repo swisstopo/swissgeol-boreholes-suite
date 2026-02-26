@@ -149,14 +149,14 @@ describe("Test for the borehole log.", () => {
     verifyRowWithTextCheckState("R96", true);
   });
 
-  it("Displays table pagination for more than 50 log runs", () => {
+  it("Displays table pagination for more than 100 log runs", () => {
     createBoreholeWithLogRuns(106, "borehole_id_106");
     cy.get("@borehole_id_106").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/log`);
       cy.wait(["@borehole"]);
     });
     assertRunCountDisplayed("106 runs");
-    verifyPaginationText("1–50 of 106");
+    verifyPaginationText("1–100 of 106");
     startBoreholeEditing();
     checkAllVisibleRows();
     unCheckRowWithText("Run2");

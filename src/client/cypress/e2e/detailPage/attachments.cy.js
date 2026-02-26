@@ -331,9 +331,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       cy.wait(["@borehole"]);
     });
 
-    verifyPaginationText("1–50 of 103");
-    clickOnNextPage();
-    verifyPaginationText("51–100 of 103");
+    verifyPaginationText("1–100 of 103");
     clickOnNextPage();
     verifyPaginationText("101–103 of 103");
     cy.contains("test document 103").should("be.visible");
