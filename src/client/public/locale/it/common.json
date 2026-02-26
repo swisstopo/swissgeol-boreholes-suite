@@ -356,6 +356,10 @@
   "inactive": "Inattivo",
   "inner": "interno",
   "instrumentation": "Strumentazione",
+  "invalidJsonBoreholeArray": "Il file fornito non è un array di perforazioni o non ha un formato JSON valido.",
+  "invalidOrEmptyCsvFile": "File CSV non valido o vuoto caricato.",
+  "invalidOrEmptyJsonFile": "File JSON non valido o vuoto caricato.",
+  "invalidOrEmptyZipFile": "File ZIP non valido o vuoto caricato.",
   "invertedDepth": "Profondità invertite",
   "italian": "Italiano",
   "kindBackfill": "Tipo di riempimento/rinterro",
@@ -685,5 +689,6 @@
   "workgroups": "Gruppi di lavoro",
   "yes": "Sì",
   "you": "Tu",
-  "yourcomments": "Commenti"
+  "yourcomments": "Commenti",
+  "zipMissingJsonFile": "Il file ZIP non contiene un file JSON."
 }
