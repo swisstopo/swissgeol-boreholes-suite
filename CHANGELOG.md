@@ -7,6 +7,7 @@
 
 ### Fixed
 - All tables in the `logs` and `attachments` tab of the borehole detail view were missing pagination.
+- Fixed Chronostratigraphy and Lithostratigraphy tabs not being correctly greyed out when empty.
 - Included all missing properties from `Lithology`/`LithologyDescription` in borehole JSON import.
 - Application would freeze when borehole imports failed.
 
