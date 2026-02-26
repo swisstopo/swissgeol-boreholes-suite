@@ -16,6 +16,7 @@ import { Stratigraphy } from "./stratigraphy.ts";
 import { useCurrentUser } from "./user.ts";
 
 export interface BasicIdentifier {
+  id?: number;
   boreholeId: number;
   codelistId: number | null;
   codelist?: Codelist;
