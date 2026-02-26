@@ -103,6 +103,7 @@ Ein Hotfix-Release wird erstellt, indem vom letzten Release-Git-Tag ein neuer Br
 | `:edge` | Neuester Stand aus `main` (letzter Pre-release) |
 | `:v<version>` | Bestimmte Version, z.B. `:v2.1.1427` |
 | `:v<version>-rc` | Release Candidate einer bestimmten Version, z.B. `:v2.1.1427-rc` |
+| `:v<major>` | Stabile Major-Version, z.B. `:v2` (wird beim PROD-Release aktualisiert) |
 | `:latest` | Aktuelle produktive Version (PROD-Release) |
 
 ## Developer best practices

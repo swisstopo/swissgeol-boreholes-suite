@@ -85,6 +85,10 @@ export const Table = <T extends GridValidRowModel>({
   const { t, i18n } = useTranslation();
   const [columnWidths, setColumnWidths] = useState<Record<string, number>>({});
   const internalApiRef = useGridApiRef();
+  const [internalPaginationModel, setInternalPaginationModel] = useState({
+    pageSize: maxRowsPerPage,
+    page: 0,
+  });
   const effectiveApiRef = apiRef ?? internalApiRef;
 
   // Ensure user-defined column widths are persisted when table re-renders
@@ -95,6 +99,19 @@ export const Table = <T extends GridValidRowModel>({
       });
     }
   }, [apiRef, columnWidths, effectiveApiRef]);
+
+  // Sync internal pagination model with maxRowsPerPage changes.
+  useEffect(() => {
+    setInternalPaginationModel(prev => {
+      if (prev.pageSize === maxRowsPerPage) {
+        return prev;
+      }
+      return {
+        pageSize: maxRowsPerPage,
+        page: 0,
+      };
+    });
+  }, [maxRowsPerPage]);
 
   const handleColumnResize = useCallback(
     (params: GridColumnResizeParams) => {
@@ -129,7 +146,7 @@ export const Table = <T extends GridValidRowModel>({
     };
   });
 
-  const actualRowCount = paginationMode === "server" ? (rowCount ?? rows?.length) : 0;
+  const actualRowCount = paginationMode === "server" ? (rowCount ?? rows?.length) : rows.length;
 
   const loadingStyles = isLoading
     ? {
@@ -196,8 +213,8 @@ export const Table = <T extends GridValidRowModel>({
         onFilterModelChange={onFilterModelChange}
         sortModel={sortModel}
         onSortModelChange={onSortModelChange}
-        paginationModel={paginationModel}
-        onPaginationModelChange={onPaginationModelChange}
+        paginationModel={paginationModel ?? internalPaginationModel}
+        onPaginationModelChange={onPaginationModelChange ?? setInternalPaginationModel}
         onColumnResize={handleColumnResize}
         apiRef={apiRef}
         paginationMode={paginationMode}

@@ -95,7 +95,9 @@ public class ImportControllerTest
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual("The provided file is not an array of boreholes or is not in a valid JSON format.", badRequestResult.Value);
+        dynamic value = badRequestResult.Value!;
+        Assert.AreEqual("The provided file is not an array of boreholes or is not in a valid JSON format.", value.detail);
+        Assert.AreEqual("invalidJsonBoreholeArray", value.messageKey);
     }
 
     [TestMethod]
@@ -590,7 +592,9 @@ public class ImportControllerTest
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
         ActionResultAssert.IsBadRequest(result);
-        Assert.AreEqual("ZIP file does not contain a JSON file.", result.Value);
+        dynamic value = result.Value!;
+        Assert.AreEqual("ZIP file does not contain a JSON file.", value.detail);
+        Assert.AreEqual("zipMissingJsonFile", value.messageKey);
     }
 
     [TestMethod]
@@ -666,7 +670,9 @@ public class ImportControllerTest
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual("Invalid or empty JSON file uploaded.", badRequestResult.Value);
+        dynamic value = badRequestResult.Value!;
+        Assert.AreEqual("Invalid or empty JSON file uploaded.", value.detail);
+        Assert.AreEqual("invalidOrEmptyJsonFile", value.messageKey);
     }
 
     [TestMethod]
@@ -965,7 +971,9 @@ public class ImportControllerTest
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual("Invalid or empty CSV file uploaded.", badRequestResult.Value);
+        dynamic value = badRequestResult.Value!;
+        Assert.AreEqual("Invalid or empty CSV file uploaded.", value.detail);
+        Assert.AreEqual("invalidOrEmptyCsvFile", value.messageKey);
     }
 
     [TestMethod]
@@ -977,7 +985,9 @@ public class ImportControllerTest
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual("Invalid or empty CSV file uploaded.", badRequestResult.Value);
+        dynamic value = badRequestResult.Value!;
+        Assert.AreEqual("Invalid or empty CSV file uploaded.", value.detail);
+        Assert.AreEqual("invalidOrEmptyCsvFile", value.messageKey);
     }
 
     [TestMethod]
@@ -1000,7 +1010,9 @@ public class ImportControllerTest
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
-        Assert.AreEqual("Invalid or empty CSV file uploaded.", badRequestResult.Value);
+        dynamic value = badRequestResult.Value!;
+        Assert.AreEqual("Invalid or empty CSV file uploaded.", value.detail);
+        Assert.AreEqual("invalidOrEmptyCsvFile", value.messageKey);
     }
 
     [TestMethod]

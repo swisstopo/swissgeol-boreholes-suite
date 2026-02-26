@@ -48,6 +48,16 @@ export async function fetchApiV2Base(
 }
 
 /**
+ * Checks if the provided content type indicates a JSON response.
+ * @param {string | null} contentType - The content type to check.
+ * @returns {boolean} - Returns `true` if the content type indicates JSON, otherwise `false`.
+ */
+export const isJsonContentType = (contentType: string | null): boolean => {
+  const JSONContentTypes = ["application/json", "application/problem+json"];
+  return JSONContentTypes.some(type => contentType?.includes(type));
+};
+
+/**
  * Reads the response from an API call and parses it based on the content type.
  * @param {Response} response - The HTTP response object.
  * @returns {Promise<any>} - The parsed response content.
@@ -55,8 +65,7 @@ export async function fetchApiV2Base(
 /* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
 async function readApiResponse(response: Response): Promise<any> {
   const contentType = response.headers.get("content-type");
-  const JSONContentTypes = ["application/json", "application/problem+json"];
-  if (JSONContentTypes.some(type => contentType?.includes(type))) {
+  if (isJsonContentType(contentType)) {
     return await response.json();
   } else if (
     contentType &&

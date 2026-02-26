@@ -356,6 +356,10 @@
   "inactive": "Inactive",
   "inner": "inner",
   "instrumentation": "Instrumentation",
+  "invalidJsonBoreholeArray": "The provided file is not an array of boreholes or is not in a valid JSON format.",
+  "invalidOrEmptyCsvFile": "Invalid or empty CSV file uploaded.",
+  "invalidOrEmptyJsonFile": "Invalid or empty JSON file uploaded.",
+  "invalidOrEmptyZipFile": "Invalid or empty ZIP file uploaded.",
   "invertedDepth": "Inverted depths",
   "italian": "Italian",
   "kindBackfill": "Type of sealing/backfilling",
@@ -685,5 +689,6 @@
   "workgroups": "Workgroups",
   "yes": "Yes",
   "you": "You",
-  "yourcomments": "Your comments"
+  "yourcomments": "Your comments",
+  "zipMissingJsonFile": "ZIP file does not contain a JSON file."
 }
