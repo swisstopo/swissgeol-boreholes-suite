@@ -4,6 +4,7 @@
 
 ### Added
 - Added major version Docker image tag (e.g. `:v2`) to the release workflow.
+- Added maintenance tasks admin page with background job infrastructure for location and coordinate migrations, persistent execution log, and auto-polling UI.
 
 ### Fixed
 - All tables in the `logs` and `attachments` tab of the borehole detail view were missing pagination.
