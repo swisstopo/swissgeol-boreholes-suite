@@ -15,6 +15,9 @@ internal static class Helpers
     internal static ControllerContext GetControllerContextAdmin()
         => new() { HttpContext = new DefaultHttpContext().SetAdminClaimsPrincipal() };
 
+    internal static ControllerContext GetControllerContext(string subjectId, string role)
+        => new() { HttpContext = new DefaultHttpContext().SetClaimsPrincipal(subjectId, role) };
+
     internal static HttpContext SetAdminClaimsPrincipal(this HttpContext httpContext)
         => httpContext.SetClaimsPrincipal("sub_admin", PolicyNames.Admin);
 
