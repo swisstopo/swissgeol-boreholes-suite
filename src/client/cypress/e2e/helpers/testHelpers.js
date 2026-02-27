@@ -152,6 +152,10 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/document*", req => {
     return (req.alias = `document_${req.method}`);
   });
+
+  cy.intercept("POST", "/api/v2/maintenance/LocationMigration").as("start-location-migration");
+  cy.intercept("POST", "/api/v2/maintenance/CoordinateMigration").as("start-coordinate-migration");
+  cy.intercept("GET", "/api/v2/maintenance/status").as("get-maintenance-status");
 };
 
 /**
