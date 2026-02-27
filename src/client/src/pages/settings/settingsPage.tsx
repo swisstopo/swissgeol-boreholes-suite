@@ -8,6 +8,7 @@ import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBdmsAuth.tsx";
 import { TabPanel } from "../../components/tabs/tabPanel.tsx";
 import { AboutSettings } from "./aboutSettings.tsx";
+import { MaintenanceTasks } from "./admin/maintenanceTasks.tsx";
 import { UserAdministration } from "./admin/userAdministration.tsx";
 import { UserAdministrationProvider } from "./admin/userAdministrationContext.tsx";
 import { UserDetail } from "./admin/userDetail.tsx";
@@ -33,6 +34,11 @@ export const SettingsPage = () => {
       tabsArray.push({ label: t("terms"), hash: "#terms", component: <TermSettings /> });
     }
     if (isAdminUser) {
+      tabsArray.unshift({
+        label: t("maintenanceTasks"),
+        hash: "#maintenance",
+        component: <MaintenanceTasks />,
+      });
       tabsArray.unshift({
         label: t("workgroups"),
         hash: "#workgroups",
