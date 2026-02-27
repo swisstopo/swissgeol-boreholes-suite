@@ -355,6 +355,8 @@ public class BdmsContext : DbContext
 
     public DbSet<LogFile> LogFiles { get; set; }
 
+    public DbSet<MaintenanceTaskLog> MaintenanceTaskLogs { get; set; }
+
     public IQueryable<LogRun> LogRunsWithIncludes
         => LogRuns
         .Include(lr => lr.LogFiles).ThenInclude(lf => lf.LogFileToolTypeCodes).ThenInclude(tc => tc.Codelist)
