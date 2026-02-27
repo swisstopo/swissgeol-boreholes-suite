@@ -1,0 +1,215 @@
+import { goToRouteAndAcceptTerms, loginAsAdmin, loginAsEditor } from "../helpers/testHelpers.js";
+
+const makeTaskState = (type, overrides = {}) => ({
+  type,
+  status: "Idle",
+  affectedCount: null,
+  message: null,
+  startedAt: null,
+  completedAt: null,
+  ...overrides,
+});
+
+const makeStatusResponse = (locationOverrides = {}, coordinateOverrides = {}) => [
+  makeTaskState("LocationMigration", locationOverrides),
+  makeTaskState("CoordinateMigration", coordinateOverrides),
+];
+
+const makeLogResponse = (logEntries = [], totalCount = null) => ({
+  totalCount: totalCount ?? logEntries.length,
+  pageNumber: 1,
+  pageSize: 6,
+  logEntries,
+});
+
+const makeLogEntry = (overrides = {}) => ({
+  taskType: "LocationMigration",
+  status: "Completed",
+  affectedCount: 0,
+  message: null,
+  parameters: null,
+  isDryRun: false,
+  onlyMissing: true,
+  startedByName: "Test User",
+  startedAt: "2026-02-20T10:00:00Z",
+  completedAt: "2026-02-20T10:00:30Z",
+  ...overrides,
+});
+
+const interceptStatus = (body, alias) => {
+  cy.intercept("GET", "/api/v2/maintenance/status", { body }).as(alias);
+};
+
+const interceptLogs = (body, alias) => {
+  cy.intercept("GET", "/api/v2/maintenance/logs*", { body }).as(alias);
+};
+
+describe("Maintenance Tasks page tests", () => {
+  it("is not visible for non-admin users", () => {
+    loginAsEditor("/setting");
+
+    cy.dataCy("maintenance-tab").should("not.exist");
+    cy.dataCy("users-tab").should("not.exist");
+    cy.dataCy("workgroups-tab").should("not.exist");
+    cy.dataCy("general-tab").should("exist");
+  });
+
+  describe("as admin", () => {
+    beforeEach(() => {
+      loginAsAdmin();
+    });
+
+    describe("with live API", () => {
+      beforeEach(() => {
+        goToRouteAndAcceptTerms("/setting#maintenance");
+      });
+
+      it("displays both migration cards with default state", () => {
+        cy.dataCy("location-migration-card").should("be.visible");
+        cy.dataCy("coordinate-migration-card").should("be.visible");
+
+        ["location-migration", "coordinate-migration"].forEach(prefix => {
+          cy.dataCy(`${prefix}-only-missing`).find("input").should("be.checked");
+          cy.dataCy(`${prefix}-dry-run`).find("input").should("be.checked");
+        });
+      });
+
+      it("displays execution log table", () => {
+        cy.dataCy("execution-log-section").should("be.visible");
+        cy.dataCy("execution-log-table").should("be.visible");
+        cy.dataCy("execution-log-include-dry-run").find("input").should("not.be.checked");
+      });
+
+      it("starts location migration", () => {
+        cy.wait("@get-maintenance-status");
+        cy.dataCy("location-migration-start").click();
+        cy.dataCy("location-migration-start").should("be.disabled");
+        cy.wait("@start-location-migration");
+      });
+
+      it("starts coordinate migration", () => {
+        cy.wait("@get-maintenance-status");
+        cy.dataCy("coordinate-migration-start").click();
+        cy.dataCy("coordinate-migration-start").should("be.disabled");
+        cy.wait("@start-coordinate-migration");
+      });
+
+      it("can toggle checkboxes", () => {
+        ["location-migration-only-missing", "location-migration-dry-run"].forEach(cyName => {
+          cy.dataCy(cyName).find("input").should("be.checked");
+          cy.dataCy(cyName).find("input").uncheck();
+          cy.dataCy(cyName).find("input").should("not.be.checked");
+        });
+      });
+    });
+
+    describe("with stubbed responses", () => {
+      it("disables run button while a task is running", () => {
+        interceptStatus(
+          makeStatusResponse({ status: "Running", startedAt: new Date().toISOString() }),
+          "get-maintenance-status-running",
+        );
+
+        goToRouteAndAcceptTerms("/setting#maintenance");
+        cy.wait("@get-maintenance-status-running");
+
+        cy.dataCy("location-migration-start").should("be.disabled");
+      });
+
+      it("shows log entries in the execution log table", () => {
+        interceptStatus(makeStatusResponse(), "get-maintenance-status-ok");
+        interceptLogs(
+          makeLogResponse([
+            makeLogEntry({ affectedCount: 42 }),
+            makeLogEntry({
+              taskType: "CoordinateMigration",
+              affectedCount: 10,
+              isDryRun: true,
+              startedAt: "2026-02-20T09:00:00Z",
+              completedAt: "2026-02-20T09:02:30Z",
+            }),
+          ]),
+          "get-maintenance-logs",
+        );
+
+        goToRouteAndAcceptTerms("/setting#maintenance");
+        cy.wait("@get-maintenance-logs");
+
+        cy.dataCy("execution-log-table").should("be.visible");
+        cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 2);
+        cy.dataCy("execution-log-table").find(".MuiDataGrid-row").first().should("contain", "42");
+      });
+
+      it("shows failed status with error message in log table", () => {
+        interceptStatus(makeStatusResponse(), "get-maintenance-status-ok");
+        interceptLogs(
+          makeLogResponse([
+            makeLogEntry({
+              taskType: "CoordinateMigration",
+              status: "Failed",
+              affectedCount: null,
+              message: "Connection refused",
+              startedAt: "2026-02-20T10:00:00Z",
+              completedAt: "2026-02-20T10:00:05Z",
+            }),
+          ]),
+          "get-maintenance-logs-failed",
+        );
+
+        goToRouteAndAcceptTerms("/setting#maintenance");
+        cy.wait("@get-maintenance-logs-failed");
+
+        cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("contain", "Connection refused");
+      });
+
+      it("shows empty state when no log entries exist", () => {
+        interceptStatus(makeStatusResponse(), "get-maintenance-status-ok");
+        interceptLogs(makeLogResponse(), "get-maintenance-logs-empty");
+
+        goToRouteAndAcceptTerms("/setting#maintenance");
+        cy.wait("@get-maintenance-logs-empty");
+
+        cy.dataCy("execution-log-table").should("contain", "No rows");
+      });
+
+      it("paginates to the next page", () => {
+        interceptStatus(makeStatusResponse(), "get-maintenance-status-ok");
+
+        const page1Entries = Array.from({ length: 6 }, (_, i) => makeLogEntry({ affectedCount: i + 1 }));
+        const page2Entries = Array.from({ length: 2 }, (_, i) => makeLogEntry({ affectedCount: 100 + i }));
+
+        cy.intercept("GET", "/api/v2/maintenance/logs*", req => {
+          if (req.url.includes("pageNumber=2")) {
+            req.reply({ body: makeLogResponse(page2Entries, 8) });
+          } else {
+            req.reply({ body: makeLogResponse(page1Entries, 8) });
+          }
+        }).as("get-logs-paginated");
+
+        goToRouteAndAcceptTerms("/setting#maintenance");
+        cy.wait("@get-logs-paginated");
+
+        cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 6);
+
+        cy.dataCy("execution-log-table").find('[aria-label="next page"]').click();
+        cy.wait("@get-logs-paginated");
+
+        cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 2);
+      });
+
+      it("shows error alert when migration start fails", () => {
+        cy.intercept("POST", "/api/v2/maintenance/LocationMigration", { statusCode: 500 }).as(
+          "start-location-migration-fail",
+        );
+
+        goToRouteAndAcceptTerms("/setting#maintenance");
+        cy.wait("@get-maintenance-status");
+
+        cy.dataCy("location-migration-start").click();
+        cy.wait("@start-location-migration-fail");
+
+        cy.get(".MuiAlert-message").should("contain", "Failed");
+      });
+    });
+  });
+});
