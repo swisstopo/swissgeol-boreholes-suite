@@ -212,11 +212,11 @@ describe("Maintenance Tasks page tests", () => {
       });
 
       [
-        { lng: "en", header: "Completed", relativeTime: "ago" },
-        { lng: "de", header: "Abgeschlossen", relativeTime: "vor" },
-        { lng: "fr", header: "Terminé", relativeTime: "il y a" },
-        { lng: "it", header: "Completato", relativeTime: "fa" },
-      ].forEach(({ lng, header, relativeTime }) => {
+        { lng: "en", header: "Completed", relativeTime: "ago", duration: "30 seconds" },
+        { lng: "de", header: "Abgeschlossen", relativeTime: "vor", duration: "30 Sekunden" },
+        { lng: "fr", header: "Terminé", relativeTime: "il y a", duration: "30 secondes" },
+        { lng: "it", header: "Completato", relativeTime: "fa", duration: "30 secondi" },
+      ].forEach(({ lng, header, relativeTime, duration }) => {
         it(`renders log table correctly in ${lng}`, () => {
           localStorage.setItem("i18nextLng", lng);
           interceptStatus(makeStatusResponse(), "get-maintenance-status-ok");
@@ -227,6 +227,7 @@ describe("Maintenance Tasks page tests", () => {
 
           cy.dataCy("execution-log-table").find(".MuiDataGrid-columnHeader").should("contain", header);
           cy.dataCy("execution-log-table").find(".MuiDataGrid-row").first().should("contain", relativeTime);
+          cy.dataCy("execution-log-table").find(".MuiDataGrid-row").first().should("contain", duration);
         });
       });
     });

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Box, Checkbox, Chip, FormControlLabel, Stack, Tooltip, Typography } from "@mui/material";
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { CheckIcon, FlaskConical, ScrollText } from "lucide-react";
-import { formatDistanceToNow } from "date-fns";
+import { formatDistanceToNow, formatDuration, intervalToDuration } from "date-fns";
 import { de, enUS, fr, it } from "date-fns/locale";
 import { MaintenanceTaskStatus, MaintenanceTaskType, useMaintenanceLogs } from "../../../api/maintenance.ts";
 import { Table } from "../../../components/table/table.tsx";
@@ -22,16 +22,6 @@ const statusLabelMap: Record<MaintenanceTaskStatus, string> = {
   Running: "taskRunning",
   Completed: "taskCompleted",
   Failed: "taskFailed",
-};
-
-const formatDuration = (startedAt: string, completedAt: string): string => {
-  const ms = new Date(completedAt).getTime() - new Date(startedAt).getTime();
-  if (ms < 1000) return `${ms}ms`;
-  const seconds = Math.floor(ms / 1000);
-  if (seconds < 60) return `${seconds}s`;
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  return `${minutes}m ${remainingSeconds}s`;
 };
 
 // Map API task type values to their existing translation keys.
@@ -101,7 +91,13 @@ export const ExecutionLogTable: FC = () => {
         renderCell: (params: GridRenderCellParams) => {
           const { startedAt, completedAt } = params.row;
           if (!startedAt || !completedAt) return "-";
-          return formatDuration(startedAt, completedAt);
+          const duration = intervalToDuration({ start: new Date(startedAt), end: new Date(completedAt) });
+          return (
+            formatDuration(duration, {
+              format: ["hours", "minutes", "seconds"],
+              locale: dateFnsLocales[i18n.language],
+            }) || "< 1s"
+          );
         },
       },
       {
