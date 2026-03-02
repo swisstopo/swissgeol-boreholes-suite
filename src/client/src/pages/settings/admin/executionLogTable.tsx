@@ -2,7 +2,7 @@ import { FC, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Checkbox, Chip, FormControlLabel, Stack, Tooltip, Typography } from "@mui/material";
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import { CheckIcon, FlaskConical, ScrollText } from "lucide-react";
+import { CheckIcon, ScrollText } from "lucide-react";
 import { formatDistanceToNow, formatDuration, intervalToDuration } from "date-fns";
 import { de, enUS, fr, it } from "date-fns/locale";
 import { MaintenanceTaskStatus, MaintenanceTaskType, useMaintenanceLogs } from "../../../api/maintenance.ts";
@@ -45,21 +45,19 @@ export const ExecutionLogTable: FC = () => {
       {
         field: "taskType",
         headerName: t("taskType"),
-        flex: 2,
+        flex: 2.5,
         renderCell: (params: GridRenderCellParams) => t(taskTypeTranslationMap[params.value] ?? params.value),
       },
       {
         field: "isDryRun",
         headerName: t("dryRun"),
-        width: 100,
-        resizable: false,
+        flex: 1.5,
         renderCell: (params: GridRenderCellParams) => (params.value ? <CheckIcon size={16} /> : null),
       },
       {
         field: "status",
         headerName: t("status"),
-        width: 120,
-        resizable: false,
+        flex: 1.5,
         renderCell: (params: GridRenderCellParams) => (
           <Chip
             label={t(statusLabelMap[params.value])}
@@ -72,22 +70,20 @@ export const ExecutionLogTable: FC = () => {
       {
         field: "affectedCount",
         headerName: t("affected"),
-        width: 100,
-        resizable: false,
+        flex: 1,
         renderCell: (params: GridRenderCellParams) =>
           params.row.status === "Failed" ? (params.row.message ?? "-") : (params.value ?? 0),
       },
       {
         field: "startedByName",
         headerName: t("startedBy"),
-        flex: 1.5,
+        flex: 2,
         renderCell: (params: GridRenderCellParams) => params.value ?? "-",
       },
       {
         field: "duration",
         headerName: t("duration"),
-        width: 100,
-        resizable: false,
+        flex: 1.5,
         renderCell: (params: GridRenderCellParams) => {
           const { startedAt, completedAt } = params.row;
           if (!startedAt || !completedAt) return "-";
@@ -103,7 +99,7 @@ export const ExecutionLogTable: FC = () => {
       {
         field: "completedAt",
         headerName: t("completed"),
-        flex: 1.5,
+        flex: 2,
         renderCell: (params: GridRenderCellParams) => {
           const text = formatDistanceToNow(new Date(params.value), {
             addSuffix: true,
@@ -138,12 +134,7 @@ export const ExecutionLogTable: FC = () => {
               data-cy="execution-log-include-dry-run"
             />
           }
-          label={
-            <Stack direction="row" alignItems="center" gap={0.5}>
-              <FlaskConical size={16} />
-              {t("showDryRuns")}
-            </Stack>
-          }
+          label={t("showDryRuns")}
         />
       </Stack>
       <Table
