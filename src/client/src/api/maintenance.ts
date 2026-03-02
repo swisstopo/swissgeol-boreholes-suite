@@ -1,9 +1,12 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 
+export type MaintenanceTaskType = "LocationMigration" | "CoordinateMigration";
+export type MaintenanceTaskStatus = "Idle" | "Running" | "Completed" | "Failed";
+
 export interface MaintenanceTaskLogEntry {
-  taskType: string;
-  status: string;
+  taskType: MaintenanceTaskType;
+  status: MaintenanceTaskStatus;
   affectedCount: number | null;
   message: string | null;
   parameters: string | null;
@@ -22,8 +25,8 @@ export interface PaginatedLogResponse {
 }
 
 export interface MaintenanceTaskState {
-  type: string;
-  status: "Idle" | "Running" | "Completed" | "Failed";
+  type: MaintenanceTaskType;
+  status: MaintenanceTaskStatus;
   affectedCount: number | null;
   message: string | null;
   startedAt: string | null;
@@ -59,7 +62,7 @@ export const useMaintenanceLogs = (pageNumber: number, pageSize: number, include
     placeholderData: keepPreviousData,
   });
 
-export const useStartMigration = (taskType: string) => {
+export const useStartMigration = (taskType: MaintenanceTaskType) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (params: MigrationParams) => fetchApiV2WithApiError<void>(`maintenance/${taskType}`, "POST", params),

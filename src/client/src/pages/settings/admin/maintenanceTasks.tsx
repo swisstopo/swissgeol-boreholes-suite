@@ -19,6 +19,8 @@ import { formatDistanceToNow } from "date-fns";
 import { de, enUS, fr, it } from "date-fns/locale";
 import {
   MaintenanceTaskState,
+  MaintenanceTaskStatus,
+  MaintenanceTaskType,
   useMaintenanceLogs,
   useMaintenanceStatus,
   useStartMigration,
@@ -29,14 +31,14 @@ import { Table } from "../../../components/table/table.tsx";
 
 const dateFnsLocales: Record<string, Locale> = { de, en: enUS, fr, it };
 
-const statusChipColorMap: Record<string, "default" | "info" | "success" | "error"> = {
+const statusChipColorMap: Record<MaintenanceTaskStatus, "default" | "info" | "success" | "error"> = {
   Idle: "default",
   Running: "info",
   Completed: "success",
   Failed: "error",
 };
 
-const statusLabelMap: Record<string, string> = {
+const statusLabelMap: Record<MaintenanceTaskStatus, string> = {
   Idle: "taskIdle",
   Running: "taskRunning",
   Completed: "taskCompleted",
@@ -54,13 +56,13 @@ const formatDuration = (startedAt: string, completedAt: string): string => {
 };
 
 // Map API task type values to their existing translation keys.
-const taskTypeTranslationMap: Record<string, string> = {
+const taskTypeTranslationMap: Record<MaintenanceTaskType, string> = {
   LocationMigration: "locationMigration",
   CoordinateMigration: "coordinateMigration",
 };
 
 interface MigrationCardConfig {
-  taskType: string;
+  taskType: MaintenanceTaskType;
   title: string;
   description: string;
   hint?: string;
