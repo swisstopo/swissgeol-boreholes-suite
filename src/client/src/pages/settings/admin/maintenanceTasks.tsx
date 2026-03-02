@@ -99,10 +99,10 @@ const MigrationCard: FC<MigrationCardProps> = ({ config, taskState }) => {
   const [onlyMissing, setOnlyMissing] = useState(true);
   const [dryRun, setDryRun] = useState(true);
   const [justStarted, setJustStarted] = useState(false);
-  const mutation = useStartMigration(config.taskType);
+  const { mutate: startMigration, isPending } = useStartMigration(config.taskType);
 
   const status = taskState?.status ?? "Idle";
-  const isRunning = status === "Running" || mutation.isPending || justStarted;
+  const isRunning = status === "Running" || isPending || justStarted;
   const { title, description, hint, icon, dataCyPrefix } = config;
 
   // Clear the optimistic flag once the server status catches up.
@@ -113,7 +113,7 @@ const MigrationCard: FC<MigrationCardProps> = ({ config, taskState }) => {
   }, [justStarted, status]);
 
   const handleStart = () => {
-    mutation.mutate(
+    startMigration(
       { onlyMissing, dryRun },
       {
         onSuccess: () => setJustStarted(true),
@@ -194,14 +194,13 @@ const MigrationCard: FC<MigrationCardProps> = ({ config, taskState }) => {
   );
 };
 
-const pageSize = 6;
-
 const ExecutionLogTable: FC = () => {
   const { t, i18n } = useTranslation();
   const [page, setPage] = useState(0);
   const [includeDryRun, setIncludeDryRun] = useState(false);
 
-  const { data, isLoading } = useMaintenanceLogs(page + 1, pageSize, includeDryRun);
+  const { data, isLoading } = useMaintenanceLogs(page + 1, includeDryRun);
+  const pageSize = data?.pageSize ?? 5;
 
   const rows = useMemo(() => data?.logEntries.map((entry, index) => ({ ...entry, id: index })) ?? [], [data]);
 

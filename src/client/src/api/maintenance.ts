@@ -46,17 +46,17 @@ export const useMaintenanceStatus = () =>
     queryKey: [maintenanceStatusQueryKey],
     queryFn: () => fetchApiV2WithApiError<MaintenanceTaskState[]>("maintenance/status", "GET"),
     refetchInterval: query => {
-      const data = query.state.data;
-      return data?.some(s => s.status === "Running") ? 5000 : false;
+      const maintenanceTaskStates = query.state.data;
+      return maintenanceTaskStates?.some(s => s.status === "Running") ? 5000 : false;
     },
   });
 
-export const useMaintenanceLogs = (pageNumber: number, pageSize: number, includeDryRun: boolean) =>
+export const useMaintenanceLogs = (pageNumber: number, includeDryRun: boolean) =>
   useQuery({
-    queryKey: [maintenanceLogsQueryKey, pageNumber, pageSize, includeDryRun],
+    queryKey: [maintenanceLogsQueryKey, pageNumber, includeDryRun],
     queryFn: () =>
       fetchApiV2WithApiError<PaginatedLogResponse>(
-        `maintenance/logs?pageNumber=${pageNumber}&pageSize=${pageSize}&includeDryRun=${includeDryRun}`,
+        `maintenance/logs?pageNumber=${pageNumber}&includeDryRun=${includeDryRun}`,
         "GET",
       ),
     placeholderData: keepPreviousData,
