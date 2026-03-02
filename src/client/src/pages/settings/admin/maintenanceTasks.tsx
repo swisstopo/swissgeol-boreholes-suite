@@ -141,7 +141,7 @@ const MigrationCard: FC<MigrationCardProps> = ({ config, taskState }) => {
           />
         }
         sx={{ p: 4, pb: 3 }}
-        titleTypographyProps={{ variant: "h5" }}
+        slotProps={{ title: { variant: "h5" } }}
       />
       <CardContent sx={{ pt: 4, px: 3 }}>
         <Typography variant="body1">{t(description)}</Typography>
