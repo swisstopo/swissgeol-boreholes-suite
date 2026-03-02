@@ -636,6 +636,7 @@
   "supplier": "Supplier",
   "sure": "Are you sure?",
   "table": "Table",
+  "taskAlreadyRunning": "Task is already running",
   "taskCompleted": "Completed",
   "taskFailed": "Failed",
   "taskIdle": "Idle",

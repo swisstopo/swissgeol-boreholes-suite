@@ -636,6 +636,7 @@
   "supplier": "Fornitore",
   "sure": "Ne é sicuro?",
   "table": "Tabella",
+  "taskAlreadyRunning": "L'attività è già in esecuzione",
   "taskCompleted": "Completato",
   "taskFailed": "Fallito",
   "taskIdle": "In attesa",

@@ -40,7 +40,8 @@ public class CoordinateMigrationTest : MaintenanceTaskTestBase
 
         var httpMessageHandler = SetupCoordinateHttpMock();
 
-        await Service.TryStartTaskAsync(MaintenanceTaskType.CoordinateMigration, new MigrationParameters { OnlyMissing = false, DryRun = true }, AdminUserId).ConfigureAwait(false);
+        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.CoordinateMigration, new MigrationParameters { OnlyMissing = false, DryRun = true }, AdminUserId));
+        await Service.WaitForCompletionAsync(MaintenanceTaskType.CoordinateMigration).ConfigureAwait(false);
 
         var state = (await Service.GetTaskStatesAsync().ConfigureAwait(false)).Single(s => s.Type == MaintenanceTaskType.CoordinateMigration);
         Assert.AreEqual(MaintenanceTaskStatus.Completed, state.Status);
@@ -77,7 +78,8 @@ public class CoordinateMigrationTest : MaintenanceTaskTestBase
 
         var httpMessageHandler = SetupCoordinateHttpMock();
 
-        await Service.TryStartTaskAsync(MaintenanceTaskType.CoordinateMigration, new MigrationParameters { OnlyMissing = true, DryRun = true }, AdminUserId).ConfigureAwait(false);
+        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.CoordinateMigration, new MigrationParameters { OnlyMissing = true, DryRun = true }, AdminUserId));
+        await Service.WaitForCompletionAsync(MaintenanceTaskType.CoordinateMigration).ConfigureAwait(false);
 
         var state = (await Service.GetTaskStatesAsync().ConfigureAwait(false)).Single(s => s.Type == MaintenanceTaskType.CoordinateMigration);
         Assert.AreEqual(MaintenanceTaskStatus.Completed, state.Status);

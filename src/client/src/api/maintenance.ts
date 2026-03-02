@@ -1,3 +1,4 @@
+import { useEffect, useRef } from "react";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 
@@ -41,15 +42,27 @@ export interface MigrationParams {
 const maintenanceStatusQueryKey = "maintenanceStatus";
 const maintenanceLogsQueryKey = "maintenanceLogs";
 
-export const useMaintenanceStatus = () =>
-  useQuery({
+export const useMaintenanceStatus = () => {
+  const queryClient = useQueryClient();
+  const previouslyRunning = useRef(new Set<MaintenanceTaskType>());
+  const query = useQuery({
     queryKey: [maintenanceStatusQueryKey],
     queryFn: () => fetchApiV2WithApiError<MaintenanceTaskState[]>("maintenance/status", "GET"),
-    refetchInterval: query => {
-      const maintenanceTaskStates = query.state.data;
-      return maintenanceTaskStates?.some(s => s.status === "Running") ? 5000 : false;
-    },
+    refetchInterval: q => (q.state.data?.some(s => s.status === "Running") ? 2000 : false),
   });
+
+  useEffect(() => {
+    if (!query.data) return;
+    const currentlyRunning = new Set(query.data.filter(s => s.status === "Running").map(s => s.type));
+    const anyTaskCompleted = [...previouslyRunning.current].some(type => !currentlyRunning.has(type));
+    previouslyRunning.current = currentlyRunning;
+    if (anyTaskCompleted) {
+      queryClient.invalidateQueries({ queryKey: [maintenanceLogsQueryKey] });
+    }
+  }, [query.data, queryClient]);
+
+  return query;
+};
 
 export const useMaintenanceLogs = (pageNumber: number, includeDryRun: boolean) =>
   useQuery({
@@ -67,8 +80,11 @@ export const useStartMigration = (taskType: MaintenanceTaskType) => {
   return useMutation({
     mutationFn: (params: MigrationParams) => fetchApiV2WithApiError<void>(`maintenance/${taskType}`, "POST", params),
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [maintenanceStatusQueryKey] });
-      queryClient.invalidateQueries({ queryKey: [maintenanceLogsQueryKey] });
+      // Optimistically mark the task as running so the UI updates immediately
+      // without waiting for the next status poll.
+      queryClient.setQueryData<MaintenanceTaskState[]>([maintenanceStatusQueryKey], old =>
+        old?.map(s => (s.type === taskType ? { ...s, status: "Running" as MaintenanceTaskStatus } : s)),
+      );
     },
   });
 };

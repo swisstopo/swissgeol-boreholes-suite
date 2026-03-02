@@ -16,7 +16,7 @@ public class MaintenanceController(BdmsContext context, MaintenanceTaskService m
 {
     /// <summary>
     /// Starts the specified maintenance task in the background.
-    /// The task type is resolved from the route parameter.
+    /// Returns 202 Accepted if the task was started, or 409 Conflict if it is already running.
     /// </summary>
     /// <param name="taskType">The <see cref="MaintenanceTaskType"/> to start.</param>
     /// <param name="parameters">Migration parameters controlling whether to process only missing values and whether to perform a dry run.</param>
@@ -28,14 +28,9 @@ public class MaintenanceController(BdmsContext context, MaintenanceTaskService m
         var subjectId = User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value;
         var user = await context.Users.SingleAsync(u => u.SubjectId == subjectId).ConfigureAwait(false);
 
-        // The "already running" case returns a synchronously completed Task<bool> with value false.
-        // Do not await the result — the background task is intentionally fire-and-forget.
-        var startTask = maintenanceTaskService.TryStartTaskAsync(taskType, parameters, user.Id);
-#pragma warning disable CA1849 // Safe: only accessed after IsCompletedSuccessfully check
-        if (startTask.IsCompletedSuccessfully && !startTask.Result)
-#pragma warning restore CA1849
+        if (!maintenanceTaskService.TryStartTask(taskType, parameters, user.Id))
         {
-            return Conflict("The task is already running.");
+            return Problem(detail: "The task is already running.", statusCode: StatusCodes.Status409Conflict, type: ProblemType.UserError);
         }
 
         return Accepted();

@@ -94,6 +94,36 @@ describe("Maintenance Tasks page tests", () => {
         cy.wait("@start-coordinate-migration");
       });
 
+      it("shows log entry after dry-run migration completes", () => {
+        cy.wait("@get-maintenance-status");
+
+        // Enable "show dry runs" so the log entry will be visible.
+        cy.dataCy("execution-log-include-dry-run").find("input").check();
+
+        // Remember the pagination total before starting (e.g. "1–5 of 12").
+        cy.dataCy("execution-log-table")
+          .find(".MuiTablePagination-displayedRows")
+          .invoke("text")
+          .then(text => {
+            const initialTotal = parseInt(text.split("of").pop().trim());
+
+            // Start the dry-run migration (defaults: dry run + only missing).
+            cy.dataCy("location-migration-start").click();
+            cy.wait("@start-location-migration");
+
+            // Wait for the button to become enabled again (task completed).
+            cy.get("[data-cy=location-migration-start]", { timeout: 30000 }).should("not.be.disabled");
+
+            // Verify the total count increased (new log entry persisted).
+            cy.dataCy("execution-log-table")
+              .find(".MuiTablePagination-displayedRows")
+              .should($el => {
+                const newTotal = parseInt($el.text().split("of").pop().trim());
+                expect(newTotal).to.be.greaterThan(initialTotal);
+              });
+          });
+      });
+
       it("can toggle checkboxes", () => {
         ["location-migration-only-missing", "location-migration-dry-run"].forEach(cyName => {
           cy.dataCy(cyName).find("input").should("be.checked");
@@ -209,6 +239,74 @@ describe("Maintenance Tasks page tests", () => {
         cy.wait("@start-location-migration-fail");
 
         cy.get(".MuiAlert-message").should("contain", "Failed");
+      });
+
+      it("shows already running error on 409 conflict", () => {
+        interceptStatus(makeStatusResponse(), "get-maintenance-status-ok");
+        cy.intercept("POST", "/api/v2/maintenance/LocationMigration", {
+          statusCode: 409,
+          body: { type: "userError", detail: "The task is already running." },
+        }).as("start-location-migration-conflict");
+
+        goToRouteAndAcceptTerms("/setting#maintenance");
+        cy.wait("@get-maintenance-status-ok");
+
+        cy.dataCy("location-migration-start").click();
+        cy.wait("@start-location-migration-conflict");
+
+        cy.get(".MuiAlert-message").should("contain", "Task is already running");
+        cy.dataCy("location-migration-start").should("not.be.disabled");
+      });
+
+      it("updates log table when one task completes while another is still running", () => {
+        let statusCallCount = 0;
+        let logCallCount = 0;
+        const completedLogEntry = makeLogEntry({ affectedCount: 99 });
+
+        // Dynamic status: first call both running, then location finished.
+        cy.intercept("GET", "/api/v2/maintenance/status", req => {
+          statusCallCount++;
+          if (statusCallCount <= 1) {
+            req.reply({
+              body: makeStatusResponse(
+                { status: "Running", startedAt: "2026-02-20T10:00:00Z" },
+                { status: "Running", startedAt: "2026-02-20T10:00:00Z" },
+              ),
+            });
+          } else {
+            req.reply({
+              body: makeStatusResponse(
+                { status: "Completed", startedAt: "2026-02-20T10:00:00Z", completedAt: "2026-02-20T10:00:30Z" },
+                { status: "Running", startedAt: "2026-02-20T10:00:00Z" },
+              ),
+            });
+          }
+        }).as("get-status-partial");
+
+        // Dynamic logs: first call empty, subsequent calls return the new entry.
+        cy.intercept("GET", "/api/v2/maintenance/logs*", req => {
+          logCallCount++;
+          if (logCallCount <= 1) {
+            req.reply({ body: makeLogResponse() });
+          } else {
+            req.reply({ body: makeLogResponse([completedLogEntry]) });
+          }
+        }).as("get-logs");
+
+        goToRouteAndAcceptTerms("/setting#maintenance");
+        cy.wait("@get-status-partial");
+        cy.wait("@get-logs");
+
+        // Table should initially show no rows.
+        cy.dataCy("execution-log-table").should("contain", "No rows");
+
+        // Wait for the next status poll to trigger the log invalidation.
+        cy.wait("@get-status-partial");
+        cy.wait("@get-logs");
+
+        // The log table should now show the entry even though coordinate migration is still running.
+        cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 1);
+        cy.dataCy("execution-log-table").find(".MuiDataGrid-row").first().should("contain", "99");
       });
 
       [

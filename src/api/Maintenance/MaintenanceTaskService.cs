@@ -17,6 +17,7 @@ public class MaintenanceTaskService
     private readonly IServiceScopeFactory serviceScopeFactory;
     private readonly Dictionary<MaintenanceTaskType, IMaintenanceTask> tasks;
     private readonly ConcurrentDictionary<MaintenanceTaskType, MaintenanceTaskState> taskStates = new();
+    private readonly ConcurrentDictionary<MaintenanceTaskType, Task> backgroundTasks = new();
     private readonly object startLock = new();
 
     /// <summary>
@@ -108,15 +109,14 @@ public class MaintenanceTaskService
     }
 
     /// <summary>
-    /// Starts the specified maintenance task in the background if it is not already running.
-    /// Returns <c>null</c> if the task is already running; otherwise returns the background
-    /// task that callers may optionally await (e.g. in tests) or discard for fire-and-forget behavior.
+    /// Attempts to start the specified maintenance task in the background.
+    /// Returns <c>false</c> if the task is already running; <c>true</c> if it was accepted and started.
     /// Uses a lock to ensure the running check and state transition are atomic.
     /// </summary>
     /// <param name="taskType">The type of maintenance task to start.</param>
     /// <param name="parameters">Migration parameters controlling the task behavior.</param>
     /// <param name="startedById">The ID of the user who started the task, used for audit logging.</param>
-    public Task<bool> TryStartTaskAsync(MaintenanceTaskType taskType, MigrationParameters parameters, int startedById)
+    public bool TryStartTask(MaintenanceTaskType taskType, MigrationParameters parameters, int startedById)
     {
         if (!tasks.TryGetValue(taskType, out var task))
         {
@@ -127,14 +127,23 @@ public class MaintenanceTaskService
         {
             if (IsTaskRunning(taskType))
             {
-                return Task.FromResult(false);
+                return false;
             }
 
-            return StartBackgroundTaskAsync(taskType, (scope, ct) => task.ExecuteAsync(scope, parameters, ct), parameters, startedById);
+            backgroundTasks[taskType] = ExecuteInBackgroundAsync(taskType, (scope, ct) => task.ExecuteAsync(scope, parameters, ct), parameters, startedById);
+            return true;
         }
     }
 
-    private async Task<bool> StartBackgroundTaskAsync(MaintenanceTaskType taskType, Func<IServiceScope, CancellationToken, Task<int>> taskAction, MigrationParameters parameters, int startedById)
+    /// <summary>
+    /// Waits for the most recently started instance of the specified task to complete.
+    /// Intended for test scenarios where assertions depend on post-completion state.
+    /// Returns immediately if no task has been started for the given type.
+    /// </summary>
+    internal Task WaitForCompletionAsync(MaintenanceTaskType taskType)
+        => backgroundTasks.TryGetValue(taskType, out var task) ? task : Task.CompletedTask;
+
+    private async Task ExecuteInBackgroundAsync(MaintenanceTaskType taskType, Func<IServiceScope, CancellationToken, Task<int>> taskAction, MigrationParameters parameters, int startedById)
     {
         var state = taskStates[taskType];
 
@@ -194,7 +203,5 @@ public class MaintenanceTaskService
                 logger.LogError(ex, "Failed to persist log entry for maintenance task {TaskType}.", taskType);
             }
         }).ConfigureAwait(false);
-
-        return true;
     }
 }

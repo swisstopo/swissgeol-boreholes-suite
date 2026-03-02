@@ -636,6 +636,7 @@
   "supplier": "Fournisseur",
   "sure": "Êtes-vous sûr?",
   "table": "Tableau",
+  "taskAlreadyRunning": "La tâche est déjà en cours d'exécution",
   "taskCompleted": "Terminé",
   "taskFailed": "Échoué",
   "taskIdle": "En attente",

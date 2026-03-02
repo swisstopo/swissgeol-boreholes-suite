@@ -5,6 +5,7 @@
     <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
     <DockerfileContext>..\..</DockerfileContext>
     <PlatformTarget>x64</PlatformTarget>
+    <InternalsVisibleTo>BDMS.Test</InternalsVisibleTo>
   </PropertyGroup>
   <ItemGroup>
     <PackageReference Include="AWSSDK.S3" Version="3.7.509.11" />

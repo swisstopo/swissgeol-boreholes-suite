@@ -1,4 +1,4 @@
-import { FC, ReactNode, useContext, useEffect, useState } from "react";
+import { FC, ReactNode, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import {
   Box,
@@ -13,6 +13,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Info } from "lucide-react";
+import { ApiError } from "../../../api/apiInterfaces.ts";
 import { MaintenanceTaskState, MaintenanceTaskType, useStartMigration } from "../../../api/maintenance.ts";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { BoreholesButton } from "../../../components/buttons/buttons.tsx";
@@ -36,28 +37,22 @@ export const MigrationCard: FC<MigrationCardProps> = ({ config, taskState }) => 
   const { showAlert } = useContext(AlertContext);
   const [onlyMissing, setOnlyMissing] = useState(true);
   const [dryRun, setDryRun] = useState(true);
-  const [justStarted, setJustStarted] = useState(false);
   const { mutate: startMigration, isPending } = useStartMigration(config.taskType);
 
   const status = taskState?.status ?? "Idle";
-  const isRunning = status === "Running" || isPending || justStarted;
+  const isRunning = status === "Running" || isPending;
   const { title, description, hint, icon, dataCyPrefix } = config;
-
-  // Clear the optimistic flag once the server status catches up.
-  useEffect(() => {
-    if (justStarted && status !== "Idle") {
-      setJustStarted(false);
-    }
-  }, [justStarted, status]);
 
   const handleStart = () => {
     startMigration(
       { onlyMissing, dryRun },
       {
-        onSuccess: () => setJustStarted(true),
-        onError: () => {
-          setJustStarted(false);
-          showAlert(t("taskFailed"), "error");
+        onError: error => {
+          if (error instanceof ApiError && error.status === 409) {
+            showAlert(t("taskAlreadyRunning"), "error");
+          } else {
+            showAlert(t("taskFailed"), "error");
+          }
         },
       },
     );
