@@ -16,7 +16,7 @@ import {
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { FlaskConical, Info, Map, MapPin, ScrollText } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
-import { de, fr, it } from "date-fns/locale";
+import { de, enUS, fr, it } from "date-fns/locale";
 import {
   MaintenanceTaskState,
   useMaintenanceLogs,
@@ -27,7 +27,7 @@ import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { BoreholesButton } from "../../../components/buttons/buttons.tsx";
 import { Table } from "../../../components/table/table.tsx";
 
-const dateFnsLocales: Record<string, Locale> = { de, fr, it };
+const dateFnsLocales: Record<string, Locale> = { de, en: enUS, fr, it };
 
 const statusChipColorMap: Record<string, "default" | "info" | "success" | "error"> = {
   Idle: "default",
@@ -236,7 +236,7 @@ const ExecutionLogTable: FC = () => {
       },
       {
         field: "affectedCount",
-        headerName: t("affectedCount"),
+        headerName: t("affected"),
         width: 100,
         resizable: false,
         renderCell: (params: GridRenderCellParams) =>
@@ -261,7 +261,7 @@ const ExecutionLogTable: FC = () => {
       },
       {
         field: "completedAt",
-        headerName: t("completedAt"),
+        headerName: t("completed"),
         flex: 1.5,
         renderCell: (params: GridRenderCellParams) => {
           const text = formatDistanceToNow(new Date(params.value), {

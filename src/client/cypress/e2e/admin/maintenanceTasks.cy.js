@@ -210,6 +210,25 @@ describe("Maintenance Tasks page tests", () => {
 
         cy.get(".MuiAlert-message").should("contain", "Failed");
       });
+
+      [
+        { lng: "en", header: "Completed", relativeTime: "ago" },
+        { lng: "de", header: "Abgeschlossen", relativeTime: "vor" },
+        { lng: "fr", header: "Terminé", relativeTime: "il y a" },
+        { lng: "it", header: "Completato", relativeTime: "fa" },
+      ].forEach(({ lng, header, relativeTime }) => {
+        it(`renders log table correctly in ${lng}`, () => {
+          localStorage.setItem("i18nextLng", lng);
+          interceptStatus(makeStatusResponse(), "get-maintenance-status-ok");
+          interceptLogs(makeLogResponse([makeLogEntry({ affectedCount: 7 })]), "get-maintenance-logs");
+
+          goToRouteAndAcceptTerms("/setting#maintenance");
+          cy.wait("@get-maintenance-logs");
+
+          cy.dataCy("execution-log-table").find(".MuiDataGrid-columnHeader").should("contain", header);
+          cy.dataCy("execution-log-table").find(".MuiDataGrid-row").first().should("contain", relativeTime);
+        });
+      });
     });
   });
 });
