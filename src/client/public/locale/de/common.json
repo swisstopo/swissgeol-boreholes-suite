@@ -504,6 +504,7 @@
   "oneSelected": "Ein Bohrung ausgewählt",
   "onlyEPSG2056Supported": "Nur EPSG:2056 wird unterstützt.",
   "onlyMissing": "Nur fehlende",
+  "onlyMissingExplanation": "Wenn aktiviert, werden nur Bohrungen mit fehlenden Werten verarbeitet. Wenn deaktiviert, werden alle Bohrungen erneut verarbeitet. Warnung: Die Verarbeitung aller Bohrungen kann lange dauern und es können Fehler bei den externen APIs aufgrund der hohen Anzahl von Anfragen auftreten.",
   "onlyWmsAndWmtsSupported": "Nur Web Map Services (WMS) und Web Map Tile Services (WMTS) werden unterstützt.",
   "openBorehole": "offenes Bohrloch",
   "openSidepanel": "Sidepanel öffnen",

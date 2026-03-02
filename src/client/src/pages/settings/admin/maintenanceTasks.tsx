@@ -14,7 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
-import { FlaskConical, Info, Map, MapPin, ScrollText } from "lucide-react";
+import { CheckIcon, FlaskConical, Info, Map, MapPin, ScrollText } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { de, enUS, fr, it } from "date-fns/locale";
 import {
@@ -161,7 +161,14 @@ const MigrationCard: FC<MigrationCardProps> = ({ config, taskState }) => {
                 data-cy={`${dataCyPrefix}-only-missing`}
               />
             }
-            label={t("onlyMissing")}
+            label={
+              <Stack direction="row" alignItems="center" gap={0.5}>
+                {t("onlyMissing")}
+                <Tooltip title={t("onlyMissingExplanation")}>
+                  <Info size={16} />
+                </Tooltip>
+              </Stack>
+            }
           />
           <Box sx={{ flexGrow: 1 }} />
           <FormControlLabel
@@ -210,16 +217,14 @@ const ExecutionLogTable: FC = () => {
         field: "taskType",
         headerName: t("taskType"),
         flex: 2,
-        renderCell: (params: GridRenderCellParams) => (
-          <Stack direction="row" alignItems="center" gap={0.5}>
-            {t(taskTypeTranslationMap[params.value] ?? params.value)}
-            {params.row.isDryRun && (
-              <Tooltip title={t("dryRun")}>
-                <FlaskConical size={16} />
-              </Tooltip>
-            )}
-          </Stack>
-        ),
+        renderCell: (params: GridRenderCellParams) => t(taskTypeTranslationMap[params.value] ?? params.value),
+      },
+      {
+        field: "isDryRun",
+        headerName: t("dryRun"),
+        width: 100,
+        resizable: false,
+        renderCell: (params: GridRenderCellParams) => (params.value ? <CheckIcon size={16} /> : null),
       },
       {
         field: "status",

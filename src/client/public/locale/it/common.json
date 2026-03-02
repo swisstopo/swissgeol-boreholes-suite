@@ -504,6 +504,7 @@
   "oneSelected": "Una perforazione selezionata",
   "onlyEPSG2056Supported": "È supportato solo EPSG:2056.",
   "onlyMissing": "Solo mancanti",
+  "onlyMissingExplanation": "Quando attivato, verranno elaborati solo i sondaggi con valori mancanti. Quando disattivato, tutti i sondaggi verranno rielaborati. Attenzione: l'elaborazione di tutti i sondaggi può richiedere molto tempo e le API a monte possono restituire errori a causa dell'elevato numero di richieste.",
   "onlyWmsAndWmtsSupported": "Seulement Web Map Services (WMS) et Web Map Tile Services (WMTS) sont pris en charge.",
   "openBorehole": "perforazione aperta",
   "openSidepanel": "Aprire il pannello laterale",

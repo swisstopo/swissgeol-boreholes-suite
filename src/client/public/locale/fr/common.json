@@ -504,6 +504,7 @@
   "oneSelected": "Un forage sélectionné",
   "onlyEPSG2056Supported": "Seulement le système de coordonnées EPSG:2056 est pris en charge.",
   "onlyMissing": "Uniquement manquants",
+  "onlyMissingExplanation": "Lorsque cette option est activée, seuls les forages avec des valeurs manquantes seront traités. Lorsqu'elle est désactivée, tous les forages seront retraités. Attention : le traitement de tous les forages peut prendre beaucoup de temps et les APIs en amont peuvent renvoyer des erreurs en raison du nombre élevé de requêtes.",
   "onlyWmsAndWmtsSupported": "Seulement Web Map Services (WMS) et Web Map Tile Services (WMTS) sont pris en charge.",
   "openBorehole": "forage ouvert",
   "openSidepanel": "Ouvrir le panneau latéral",

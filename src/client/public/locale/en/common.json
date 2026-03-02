@@ -504,6 +504,7 @@
   "oneSelected": "One borehole selected",
   "onlyEPSG2056Supported": "Only EPSG:2056 is supported",
   "onlyMissing": "Only missing",
+  "onlyMissingExplanation": "When enabled, only boreholes with missing values will be processed. When disabled, all boreholes will be reprocessed. Warning: processing all boreholes may take a long time and upstream APIs may return errors due to the high number of requests.",
   "onlyWmsAndWmtsSupported": "Sono supportati solo i servizi WMS (Web Map Services) e WMTS (Web Map Tile Services).",
   "openBorehole": "open hole",
   "openSidepanel": "Open side panel",
