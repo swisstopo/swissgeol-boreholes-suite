@@ -5,7 +5,7 @@ import {
   showTableAndWaitForData,
   verifyPaginationText,
 } from "../helpers/dataGridHelpers";
-import { setInput, setSelect } from "../helpers/formHelpers";
+import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
 import {
   goToRouteAndAcceptTerms,
   newEditableBorehole,
@@ -18,12 +18,22 @@ describe("Tests for filtering data by identifier.", () => {
     goToRouteAndAcceptTerms(`/`);
     newEditableBorehole().as("borehole_id");
 
+    // Add multiple id values for the same identifier type
     addItem("addIdentifier");
     setSelect("boreholeCodelists.0.codelistId", 1);
     setInput("boreholeCodelists.0.value", 819544732);
+
+    addItem("addIdentifier");
+    setSelect("boreholeCodelists.1.codelistId", 1);
+    setInput("boreholeCodelists.1.value", "ABC123456");
     saveWithSaveBar();
 
     stopBoreholeEditing();
+    evaluateSelect("boreholeCodelists.0.codelistId", "ID Original");
+    evaluateInput("boreholeCodelists.0.value", "819544732");
+    evaluateSelect("boreholeCodelists.1.codelistId", "ID Original");
+    evaluateInput("boreholeCodelists.1.value", "ABC123456");
+
     returnToOverview();
     cy.dataCy("show-filter-button").click();
 
