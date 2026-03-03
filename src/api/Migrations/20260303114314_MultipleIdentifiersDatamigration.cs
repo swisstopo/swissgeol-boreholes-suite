@@ -18,7 +18,7 @@ public partial class MultipleIdentifiersDatamigration : Migration
               btrim(x) AS identifier_value
             FROM bdms.borehole_identifiers_codelist
             CROSS JOIN LATERAL unnest(string_to_array(identifier_value, ',')) AS x
-            WHERE identifier_value IS NOT NULL
+            WHERE identifier_value IS NOT NULL AND identifier_value LIKE '%,%'
               AND btrim(identifier_value) <> ''
               AND btrim(x) <> '';
 
