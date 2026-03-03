@@ -46,7 +46,8 @@ export const ExecutionLogTable: FC = () => {
         field: "taskType",
         headerName: t("taskType"),
         flex: 2.5,
-        renderCell: (params: GridRenderCellParams) => t(taskTypeTranslationMap[params.value] ?? params.value),
+        renderCell: (params: GridRenderCellParams) =>
+          t(taskTypeTranslationMap[params.value as MaintenanceTaskType] ?? params.value),
       },
       {
         field: "isDryRun",
@@ -60,9 +61,9 @@ export const ExecutionLogTable: FC = () => {
         flex: 1.5,
         renderCell: (params: GridRenderCellParams) => (
           <Chip
-            label={t(statusLabelMap[params.value])}
+            label={t(statusLabelMap[params.value as MaintenanceTaskStatus])}
             size="small"
-            color={statusChipColorMap[params.value]}
+            color={statusChipColorMap[params.value as MaintenanceTaskStatus]}
             variant="outlined"
           />
         ),
