@@ -105,7 +105,7 @@ describe("Maintenance Tasks page tests", () => {
           .find(".MuiTablePagination-displayedRows")
           .invoke("text")
           .then(text => {
-            const initialTotal = parseInt(text.split("of").pop().trim());
+            const initialTotal = Number.parseInt(text.split("of").pop().trim());
 
             // Start the dry-run migration (defaults: dry run + only missing).
             cy.dataCy("location-migration-start").click();
@@ -118,7 +118,7 @@ describe("Maintenance Tasks page tests", () => {
             cy.dataCy("execution-log-table")
               .find(".MuiTablePagination-displayedRows")
               .should($el => {
-                const newTotal = parseInt($el.text().split("of").pop().trim());
+                const newTotal = Number.parseInt($el.text().split("of").pop().trim());
                 expect(newTotal).to.be.greaterThan(initialTotal);
               });
           });
