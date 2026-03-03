@@ -35,6 +35,12 @@ internal static class ActionResultAssert
     }
 
     /// <summary>
+    /// Asserts that the <see cref="IActionResult"/> is Accepted (202).
+    /// </summary>
+    internal static void IsAccepted(IActionResult? actionResult)
+        => AssertActionResult(actionResult, StatusCodes.Status202Accepted);
+
+    /// <summary>
     /// Asserts that the <see cref="IActionResult"/> is BadRequest (400).
     /// </summary>
     internal static void IsBadRequest(IActionResult? actionResult)
