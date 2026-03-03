@@ -137,10 +137,10 @@ public class Codelist : IIdentifyable
     public ICollection<Borehole>? Boreholes { get; }
 
     /// <summary>
-    /// Gets the <see cref="BoreholeCodelist"/> join table entities.
+    /// Gets the <see cref="BoreholeIdentifier"/> join table entities.
     /// </summary>
     [JsonIgnore]
-    public ICollection<BoreholeCodelist>? BoreholeCodelists { get; }
+    public ICollection<BoreholeIdentifier>? BoreholeIdentifiers { get; }
 
     /// <summary>
     /// Gets the <see cref="Hydrotest"/>s that use this <see cref="Codelist"/>.

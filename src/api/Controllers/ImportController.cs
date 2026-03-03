@@ -613,9 +613,9 @@ public class ImportController : ControllerBase
             Map(m => m.TopBedrockFreshTvd).Ignore();
             Map(m => m.TopBedrockWeatheredTvd).Ignore();
 
-            Map(m => m.BoreholeCodelists).Convert(args =>
+            Map(m => m.BoreholeIdentifiers).Convert(args =>
             {
-                var boreholeCodeLists = new List<BoreholeCodelist>();
+                var boreholeIdentifiers = new List<BoreholeIdentifier>();
 
                 foreach (var (header, index) in (args.Row.HeaderRecord ?? Array.Empty<string>()).Select((h, i) => (Header: h, Index: i)))
                 {
@@ -630,7 +630,7 @@ public class ImportController : ControllerBase
                         var value = args.Row.GetField<string?>(index);
                         if (!string.IsNullOrEmpty(value))
                         {
-                            boreholeCodeLists.Add(new BoreholeCodelist
+                            boreholeIdentifiers.Add(new BoreholeIdentifier
                             {
                                 CodelistId = codelist.Id,
                                 Value = value,
@@ -639,7 +639,7 @@ public class ImportController : ControllerBase
                     }
                 }
 
-                return boreholeCodeLists;
+                return boreholeIdentifiers;
             });
 
             // Set precision to both reference systems

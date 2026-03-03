@@ -173,16 +173,16 @@ describe("Test for exporting boreholes.", () => {
     newEditableBorehole().as("borehole_id");
     setInput("name", firstBoreholeName);
     addItem("addIdentifier");
-    setSelect("boreholeCodelists.0.codelistId", 3);
-    setInput("boreholeCodelists.0.value", 13);
+    setSelect("boreholeIdentifiers.0.codelistId", 3);
+    setInput("boreholeIdentifiers.0.value", 13);
     saveWithSaveBar();
     returnToOverview();
 
     newEditableBorehole().as("borehole_id_2");
     setInput("name", secondBoreholeName);
     addItem("addIdentifier");
-    setSelect("boreholeCodelists.0.codelistId", 4);
-    setInput("boreholeCodelists.0.value", 14);
+    setSelect("boreholeIdentifiers.0.codelistId", 4);
+    setInput("boreholeIdentifiers.0.value", 14);
     saveWithSaveBar();
     returnToOverview();
     showTableAndWaitForData();
@@ -421,12 +421,12 @@ describe("Test for exporting boreholes.", () => {
 
       // set two custom identifiers
       addItem("addIdentifier");
-      setSelect("boreholeCodelists.0.codelistId", 1);
-      setInput("boreholeCodelists.0.value", "w1");
+      setSelect("boreholeIdentifiers.0.codelistId", 1);
+      setInput("boreholeIdentifiers.0.value", "w1");
 
       addItem("addIdentifier");
-      setSelect("boreholeCodelists.1.codelistId", 2);
-      setInput("boreholeCodelists.1.value", "w2");
+      setSelect("boreholeIdentifiers.1.codelistId", 2);
+      setInput("boreholeIdentifiers.1.value", "w2");
 
       // add coordinates
       cy.get('[data-cy="locationX-formCoordinate"] input').type("2646000 ");
@@ -470,8 +470,8 @@ describe("Test for exporting boreholes.", () => {
 
       clickOnRowWithText(boreholeName);
       evaluateInput("name", boreholeName);
-      evaluateInput("boreholeCodelists.1.value", "w1");
-      evaluateInput("boreholeCodelists.0.value", "w2");
+      evaluateInput("boreholeIdentifiers.1.value", "w1");
+      evaluateInput("boreholeIdentifiers.0.value", "w2");
       cy.get('[data-cy="locationX-formCoordinate"] input').should("have.value", `2'646'000`);
       cy.get('[data-cy="locationY-formCoordinate"] input').should("have.value", `1'247'000`);
     });

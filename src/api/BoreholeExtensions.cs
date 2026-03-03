@@ -134,7 +134,7 @@ public static class BoreholeExtensions
         borehole.CreatedBy = null;
 
         borehole.MapCasingReferences();
-        borehole.BoreholeCodelists?.MarkAsNew();
+        borehole.BoreholeIdentifiers?.MarkAsNew();
         borehole.Stratigraphies?.MarkAsNew();
         borehole.Completions?.MarkAsNew();
         borehole.Sections?.MarkAsNew();

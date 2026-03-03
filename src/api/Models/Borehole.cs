@@ -490,8 +490,8 @@ public class Borehole : IChangeTracking, IIdentifyable
     public ICollection<Codelist>? Codelists { get; }
 
     /// <summary>
-    /// Gets the<see cref="BoreholeCodelist"/> join table entities.
+    /// Gets the<see cref="BoreholeIdentifier"/> join table entities.
     /// </summary>
     [IncludeInExport]
-    public IList<BoreholeCodelist>? BoreholeCodelists { get; set; } = new List<BoreholeCodelist>();
+    public IList<BoreholeIdentifier>? BoreholeIdentifiers { get; set; } = new List<BoreholeIdentifier>();
 }

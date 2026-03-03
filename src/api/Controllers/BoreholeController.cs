@@ -71,7 +71,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         }
 
         var existingBorehole = await Context.Boreholes
-            .Include(b => b.BoreholeCodelists)
+            .Include(b => b.BoreholeIdentifiers)
             .Include(b => b.Workflow)
             .SingleOrDefaultAsync(l => l.Id == entity.Id)
             .ConfigureAwait(false);
@@ -101,9 +101,9 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         }
 
         // Update borehole identifiers with borehole
-        if (entity.BoreholeCodelists != null)
+        if (entity.BoreholeIdentifiers != null)
         {
-            existingBorehole.BoreholeCodelists = entity.BoreholeCodelists;
+            existingBorehole.BoreholeIdentifiers = entity.BoreholeIdentifiers;
         }
 
         try

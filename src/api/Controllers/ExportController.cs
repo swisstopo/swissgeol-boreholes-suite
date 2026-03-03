@@ -181,7 +181,7 @@ public class ExportController : ControllerBase
         if (!ValidateIds(ids, out var idList)) return BadRequest(MissingIdsMessage);
 
         var boreholes = await context.Boreholes
-            .Include(b => b.BoreholeCodelists).ThenInclude(bc => bc.Codelist)
+            .Include(b => b.BoreholeIdentifiers).ThenInclude(bc => bc.Codelist)
             .Where(borehole => idList.Contains(borehole.Id))
             .OrderBy(b => idList.IndexOf(b.Id))
             .ToListAsync()
@@ -370,9 +370,9 @@ public class ExportController : ControllerBase
         }
     }
 
-    private static IEnumerable<BoreholeCodelist> GetBoreholeCodelists(Borehole borehole)
+    private static IEnumerable<BoreholeIdentifier> GetBoreholeCodelists(Borehole borehole)
     {
-        return borehole.BoreholeCodelists ?? Enumerable.Empty<BoreholeCodelist>();
+        return borehole.BoreholeIdentifiers ?? Enumerable.Empty<BoreholeIdentifier>();
     }
 
     /// <summary>

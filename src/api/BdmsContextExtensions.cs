@@ -218,7 +218,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.ReferenceElevationTypeId, f => f.PickRandom(referenceElevationTypeIds).OrNull(f, .05f))
            .RuleFor(o => o.ReferenceElevationType, _ => default!)
            .RuleFor(o => o.Workflow, _ => default!)
-           .RuleFor(o => o.BoreholeCodelists, _ => new Collection<BoreholeCodelist>())
+           .RuleFor(o => o.BoreholeIdentifiers, _ => new Collection<BoreholeIdentifier>())
            .RuleFor(o => o.Codelists, _ => new Collection<Codelist>())
            .RuleFor(o => o.Geometry, f =>
            {
@@ -250,7 +250,7 @@ public static class BdmsContextExtensions
         var boreholeCodelistId = 100_000_000;
         void SeedIdentifierCodeRelationships(IList<int> identifierIds)
         {
-            var identifierCodes = new List<BoreholeCodelist>();
+            var identifierCodes = new List<BoreholeIdentifier>();
 
             var random = new Random(richBoreholeRange.Count);
             var bogusRandom = new Bogus.Randomizer(richBoreholeRange.Count);
@@ -266,7 +266,7 @@ public static class BdmsContextExtensions
 
                 foreach (var codeId in shuffled)
                 {
-                    identifierCodes.Add(new BoreholeCodelist
+                    identifierCodes.Add(new BoreholeIdentifier
                     {
                         Id = boreholeCodelistId++,
                         BoreholeId = boreholeId,

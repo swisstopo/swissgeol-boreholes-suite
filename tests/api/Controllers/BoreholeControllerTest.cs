@@ -55,12 +55,12 @@ public class BoreholeControllerTest
         using var cleanupContext = ContextFactory.CreateContext();
 
         var testBoreholeWithIdentifiers = await cleanupContext.Boreholes
-            .Include(b => b.BoreholeCodelists)
+            .Include(b => b.BoreholeIdentifiers)
             .SingleOrDefaultAsync(b => b.Id == testBoreholeId);
 
         if (testBoreholeWithIdentifiers != null)
         {
-            cleanupContext.BoreholeCodelists.RemoveRange(testBoreholeWithIdentifiers.BoreholeCodelists);
+            cleanupContext.BoreholeIdentifiers.RemoveRange(testBoreholeWithIdentifiers.BoreholeIdentifiers);
             await cleanupContext.SaveChangesAsync();
         }
 
@@ -206,17 +206,17 @@ public class BoreholeControllerTest
         using var initialContext = ContextFactory.CreateContext();
 
         var boreholeToEdit = await initialContext.Boreholes.SingleAsync(c => c.Id == testBoreholeId);
-        Assert.AreEqual(0, boreholeToEdit.BoreholeCodelists.Count);
+        Assert.AreEqual(0, boreholeToEdit.BoreholeIdentifiers.Count);
 
         // Add two borehole ids for the same identifier type to the borehole
-        boreholeToEdit.BoreholeCodelists.Add(new BoreholeCodelist
+        boreholeToEdit.BoreholeIdentifiers.Add(new BoreholeIdentifier
         {
             BoreholeId = testBoreholeId,
             CodelistId = 100000010,
             Value = "ID GeoDIN value",
         });
 
-        boreholeToEdit.BoreholeCodelists.Add(new BoreholeCodelist
+        boreholeToEdit.BoreholeIdentifiers.Add(new BoreholeIdentifier
         {
             BoreholeId = testBoreholeId,
             CodelistId = 100000010,
@@ -224,7 +224,7 @@ public class BoreholeControllerTest
         });
 
         await initialContext.SaveChangesAsync();
-        Assert.AreEqual(2, boreholeToEdit.BoreholeCodelists.Count);
+        Assert.AreEqual(2, boreholeToEdit.BoreholeIdentifiers.Count);
 
         using var updateContext = ContextFactory.CreateContext();
         var updateController = GetTestController(updateContext);
@@ -232,21 +232,21 @@ public class BoreholeControllerTest
         var boreholeWithNewIdentifiers = new Borehole
         {
             Id = testBoreholeId,
-            BoreholeCodelists = new List<BoreholeCodelist>
+            BoreholeIdentifiers = new List<BoreholeIdentifier>
             {
-                new BoreholeCodelist
+                new BoreholeIdentifier
                 {
                     BoreholeId = testBoreholeId,
                     CodelistId = 100000010,
                     Value = "ID GeoDIN value",
                 },
-                new BoreholeCodelist
+                new BoreholeIdentifier
                 {
                     BoreholeId = testBoreholeId,
                     CodelistId = 100000010,
                     Value = "Another ID GeoDIN value",
                 },
-                new BoreholeCodelist
+                new BoreholeIdentifier
                 {
                     BoreholeId = testBoreholeId,
                     CodelistId = 100000000,
@@ -259,7 +259,7 @@ public class BoreholeControllerTest
         ActionResultAssert.IsOk(updatedResponse.Result);
 
         var updatedBorehole = ActionResultAssert.IsOkObjectResult<Borehole>(updatedResponse.Result);
-        Assert.AreEqual(3, updatedBorehole.BoreholeCodelists.Count);
+        Assert.AreEqual(3, updatedBorehole.BoreholeIdentifiers.Count);
 
         using var deleteContext = ContextFactory.CreateContext();
         var deleteController = GetTestController(deleteContext);
@@ -267,14 +267,14 @@ public class BoreholeControllerTest
         var boreholeWithNoMoreIdentifiers = new Borehole
         {
             Id = testBoreholeId,
-            BoreholeCodelists = new List<BoreholeCodelist>(),
+            BoreholeIdentifiers = new List<BoreholeIdentifier>(),
         };
 
         var deletedIdentifiersResponse = await deleteController.EditAsync(boreholeWithNoMoreIdentifiers);
         ActionResultAssert.IsOk(deletedIdentifiersResponse.Result);
 
         var boreholeWithDeletedIdentifiers = ActionResultAssert.IsOkObjectResult<Borehole>(deletedIdentifiersResponse.Result);
-        Assert.AreEqual(0, boreholeWithDeletedIdentifiers.BoreholeCodelists.Count);
+        Assert.AreEqual(0, boreholeWithDeletedIdentifiers.BoreholeIdentifiers.Count);
     }
 
     [TestMethod]

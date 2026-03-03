@@ -745,10 +745,10 @@ public class ImportControllerTest
         Assert.AreEqual(new DateTime(2024, 06, 15, 0, 0, 0, DateTimeKind.Utc), borehole.RestrictionUntil);
         Assert.AreEqual(2474.472693, borehole.TotalDepth);
         Assert.AreEqual("Projekt 6", borehole.ProjectName);
-        Assert.AreEqual(5, borehole.BoreholeCodelists.Count);
-        Assert.AreEqual("Id_16", borehole.BoreholeCodelists.Single(x => x.CodelistId == 100000003).Value);
-        Assert.AreEqual("AUTOSTEED", borehole.BoreholeCodelists.Single(x => x.CodelistId == 100000011).Value);
-        Assert.AreEqual("121314", borehole.BoreholeCodelists.Single(x => x.CodelistId == TestCodelistId).Value);
+        Assert.AreEqual(5, borehole.BoreholeIdentifiers.Count);
+        Assert.AreEqual("Id_16", borehole.BoreholeIdentifiers.Single(x => x.CodelistId == 100000003).Value);
+        Assert.AreEqual("AUTOSTEED", borehole.BoreholeIdentifiers.Single(x => x.CodelistId == 100000011).Value);
+        Assert.AreEqual("121314", borehole.BoreholeIdentifiers.Single(x => x.CodelistId == TestCodelistId).Value);
         Assert.AreEqual("Bern", borehole.Canton);
         Assert.AreEqual("Schweiz", borehole.Country);
         Assert.AreEqual("Thun", borehole.Municipality);
@@ -763,7 +763,7 @@ public class ImportControllerTest
 
         // Multiple Ids of the same Id type are supported
         var boreholeWithTwoIDCantonIdentifiers = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_3").ConfigureAwait(false);
-        var cantonIdentifiers = boreholeWithTwoIDCantonIdentifiers.BoreholeCodelists.Where(bc => bc.CodelistId == 100000005).Select(bc => bc.Value).ToList();
+        var cantonIdentifiers = boreholeWithTwoIDCantonIdentifiers.BoreholeIdentifiers.Where(bc => bc.CodelistId == 100000005).Select(bc => bc.Value).ToList();
         Assert.AreEqual(2, cantonIdentifiers.Count);
     }
 
@@ -791,7 +791,7 @@ public class ImportControllerTest
         Assert.AreEqual(null, borehole.RestrictionUntil);
         Assert.AreEqual(null, borehole.TotalDepth);
         Assert.AreEqual(null, borehole.ProjectName);
-        Assert.AreEqual(0, borehole.BoreholeCodelists.Count);
+        Assert.AreEqual(0, borehole.BoreholeIdentifiers.Count);
         Assert.AreEqual(null, borehole.Canton);
         Assert.AreEqual(null, borehole.Country);
         Assert.AreEqual(null, borehole.Municipality);

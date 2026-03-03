@@ -577,7 +577,7 @@ public class ExportControllerTest
         var boreholeWithCustomIds = new Borehole
         {
             Id = firstBoreholeId,
-            BoreholeCodelists =
+            BoreholeIdentifiers =
         [
             new()
             {
@@ -598,7 +598,7 @@ public class ExportControllerTest
         var boreholeWithOtherCustomIds = new Borehole
         {
             Id = secondBoreholeId,
-            BoreholeCodelists =
+            BoreholeIdentifiers =
         [
             new()
             {

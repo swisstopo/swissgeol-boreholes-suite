@@ -45,7 +45,7 @@ public class BdmsContext : DbContext
         .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestEvaluationMethodCodes)
         .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestFlowDirectionCodes)
         .Include(b => b.Observations).ThenInclude(o => (o as Hydrotest)!.HydrotestKindCodes)
-        .Include(b => b.BoreholeCodelists)
+        .Include(b => b.BoreholeIdentifiers)
         .Include(b => b.Workflow).ThenInclude(w => w.Changes)
         .Include(b => b.Workflow).ThenInclude(w => w.ReviewedTabs)
         .Include(b => b.Workflow).ThenInclude(w => w.PublishedTabs)
@@ -345,7 +345,7 @@ public class BdmsContext : DbContext
 
     public DbSet<BoreholeGeometryElement> BoreholeGeometry { get; set; }
 
-    public DbSet<BoreholeCodelist> BoreholeCodelists { get; set; }
+    public DbSet<BoreholeIdentifier> BoreholeIdentifiers { get; set; }
 
     public DbSet<Photo> Photos { get; set; }
 
@@ -468,14 +468,14 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<Borehole>()
             .HasMany(b => b.Codelists)
             .WithMany(f => f.Boreholes)
-            .UsingEntity<BoreholeCodelist>(
+            .UsingEntity<BoreholeIdentifier>(
                 j => j
                     .HasOne(bf => bf.Codelist)
-                    .WithMany(f => f.BoreholeCodelists)
+                    .WithMany(f => f.BoreholeIdentifiers)
                     .HasForeignKey(bf => bf.CodelistId),
                 j => j
                     .HasOne(bf => bf.Borehole)
-                    .WithMany(b => b.BoreholeCodelists)
+                    .WithMany(b => b.BoreholeIdentifiers)
                     .HasForeignKey(bf => bf.BoreholeId),
                 j => j.HasKey(bf => bf.Id));
 

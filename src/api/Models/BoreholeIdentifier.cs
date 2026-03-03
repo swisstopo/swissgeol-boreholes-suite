@@ -8,7 +8,7 @@ namespace BDMS.Models;
 /// Join table entity for a <see cref="Models.Codelist"/> attached to a <see cref="Models.Borehole"/> to store multiple borehole ids.
 /// </summary>
 [Table("borehole_identifiers_codelist")]
-public class BoreholeCodelist : IIdentifyable
+public class BoreholeIdentifier : IIdentifyable
 {
     [Column("id")]
     public int Id { get; set; }
