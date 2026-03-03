@@ -6,7 +6,7 @@ namespace BDMS.Maintenance;
 /// Maintenance task that updates country, canton and municipality for boreholes
 /// using their original coordinates via the swisstopo location API.
 /// </summary>
-public class LocationMigrationTask : MigrationTaskBase
+public sealed class LocationMigrationTask : MigrationTaskBase
 {
     private LocationService locationService = null!;
 

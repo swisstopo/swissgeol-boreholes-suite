@@ -3,7 +3,7 @@
 /// <summary>
 /// Serializable representation of a log entry for the API response.
 /// </summary>
-public class MaintenanceTaskLogEntry
+public sealed class MaintenanceTaskLogEntry
 {
     /// <summary>
     /// Gets or sets the type of maintenance task that was executed.

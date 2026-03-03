@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace BDMS;
 
-public class LocationService
+public sealed class LocationService
 {
     private readonly IHttpClientFactory httpClientFactory;
     private readonly ILogger logger;

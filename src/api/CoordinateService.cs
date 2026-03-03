@@ -5,7 +5,7 @@ using System.Text.Json;
 
 namespace BDMS;
 
-public class CoordinateService
+public sealed class CoordinateService
 {
     private const string Lv95ToLv03 = "lv95tolv03";
     private const string Lv03ToLv95 = "lv03tolv95";

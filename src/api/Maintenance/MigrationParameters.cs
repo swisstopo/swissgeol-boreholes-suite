@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents the parameters for a migration task.
 /// </summary>
-public class MigrationParameters
+public sealed class MigrationParameters
 {
     /// <summary>
     /// Gets or sets a value indicating whether to only process records with missing values.

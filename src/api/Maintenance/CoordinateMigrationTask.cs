@@ -6,7 +6,7 @@ namespace BDMS.Maintenance;
 /// Maintenance task that recalculates LV03/LV95 coordinates for boreholes
 /// based on their original reference system via the swisstopo coordinate API.
 /// </summary>
-public class CoordinateMigrationTask : MigrationTaskBase
+public sealed class CoordinateMigrationTask : MigrationTaskBase
 {
     private CoordinateService coordinateService = null!;
 
