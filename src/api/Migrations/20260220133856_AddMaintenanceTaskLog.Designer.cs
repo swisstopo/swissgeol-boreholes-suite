@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20260220133856_AddMaintenanceTaskLog")]
+    partial class AddMaintenanceTaskLog
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -338,13 +341,6 @@ namespace BDMS.Migrations
 
             modelBuilder.Entity("BDMS.Models.BoreholeCodelist", b =>
                 {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
                     b.Property<int>("BoreholeId")
                         .HasColumnType("integer")
                         .HasColumnName("borehole_id");
@@ -358,9 +354,7 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("identifier_value");
 
-                    b.HasKey("Id");
-
-                    b.HasIndex("BoreholeId");
+                    b.HasKey("BoreholeId", "CodelistId");
 
                     b.HasIndex("CodelistId");
 
@@ -2195,13 +2189,13 @@ namespace BDMS.Migrations
                         .HasColumnType("timestamp with time zone")
                         .HasColumnName("completed_at");
 
-                    b.Property<bool>("IsDryRun")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_dry_run");
-
                     b.Property<string>("Message")
                         .HasColumnType("text")
                         .HasColumnName("message");
+
+                    b.Property<bool>("IsDryRun")
+                        .HasColumnType("boolean")
+                        .HasColumnName("is_dry_run");
 
                     b.Property<bool>("OnlyMissing")
                         .HasColumnType("boolean")
