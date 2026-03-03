@@ -8,18 +8,16 @@ import { de, enUS, fr, it } from "date-fns/locale";
 import { MaintenanceTaskStatus, MaintenanceTaskType, useMaintenanceLogs } from "../../../api/maintenance.ts";
 import { Table } from "../../../components/table/table.tsx";
 
+type LogStatus = Extract<MaintenanceTaskStatus, "Completed" | "Failed">;
+
 const dateFnsLocales: Record<string, Locale> = { de, en: enUS, fr, it };
 
-const statusChipColorMap: Record<MaintenanceTaskStatus, "default" | "info" | "success" | "error"> = {
-  Idle: "default",
-  Running: "info",
+const statusChipColorMap: Record<LogStatus, "success" | "error"> = {
   Completed: "success",
   Failed: "error",
 };
 
-const statusLabelMap: Record<MaintenanceTaskStatus, string> = {
-  Idle: "taskIdle",
-  Running: "taskRunning",
+const statusLabelMap: Record<LogStatus, string> = {
   Completed: "taskCompleted",
   Failed: "taskFailed",
 };
@@ -61,9 +59,9 @@ export const ExecutionLogTable: FC = () => {
         flex: 1.5,
         renderCell: (params: GridRenderCellParams) => (
           <Chip
-            label={t(statusLabelMap[params.value as MaintenanceTaskStatus])}
+            label={t(statusLabelMap[params.value as LogStatus] ?? params.value)}
             size="small"
-            color={statusChipColorMap[params.value as MaintenanceTaskStatus]}
+            color={statusChipColorMap[params.value as LogStatus] ?? "default"}
             variant="outlined"
           />
         ),
