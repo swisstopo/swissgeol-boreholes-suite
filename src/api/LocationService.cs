@@ -56,7 +56,7 @@ public sealed class LocationService
         }
         catch (HttpRequestException ex)
         {
-            logger.LogError($"Failed to query swisstopo identify API ({requestUri})", ex);
+            logger.LogError(ex, "Failed to query swisstopo identify API ({RequestUri}).", requestUri);
             throw;
         }
     }
@@ -77,7 +77,7 @@ public sealed class LocationService
         }
         catch (KeyNotFoundException ex)
         {
-            logger.LogError($"Key <{attributeName}> in layer <{layerName}> not found in swisstopo JSON response.", ex);
+            logger.LogError(ex, "Key <{AttributeName}> in layer <{LayerName}> not found in swisstopo JSON response.", attributeName, layerName);
             return null;
         }
     }
