@@ -2,15 +2,15 @@
 
 #nullable disable
 
-namespace BDMS.Migrations
+namespace BDMS.Migrations;
+
+/// <inheritdoc />
+public partial class MultipleIdentifiersDatamigration : Migration
 {
     /// <inheritdoc />
-    public partial class MultipleIdentifiersDatamigration : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.Sql(@"
+        migrationBuilder.Sql(@"
             INSERT INTO bdms.borehole_identifiers_codelist (borehole_id, identifier_id, identifier_value)
             SELECT
               borehole_id,
@@ -25,6 +25,5 @@ namespace BDMS.Migrations
             DELETE FROM bdms.borehole_identifiers_codelist
             WHERE identifier_value LIKE '%,%';
             ");
-        }
     }
 }
