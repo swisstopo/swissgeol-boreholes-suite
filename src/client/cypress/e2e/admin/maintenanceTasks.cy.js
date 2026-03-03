@@ -100,28 +100,22 @@ describe("Maintenance Tasks page tests", () => {
         // Enable "show dry runs" so the log entry will be visible.
         cy.dataCy("execution-log-include-dry-run").find("input").check();
 
-        // Remember the pagination total before starting (e.g. "1–5 of 12").
-        cy.dataCy("execution-log-table")
-          .find(".MuiTablePagination-displayedRows")
-          .invoke("text")
-          .then(text => {
-            const initialTotal = Number.parseInt(text.split("of").pop().trim());
+        // Count rows before starting the migration (may be zero).
+        cy.dataCy("execution-log-table").then($table => {
+          const initialCount = $table.find(".MuiDataGrid-row").length;
 
-            // Start the dry-run migration (defaults: dry run + only missing).
-            cy.dataCy("location-migration-start").click();
-            cy.wait("@start-location-migration");
+          // Start the dry-run migration (defaults: dry run + only missing).
+          cy.dataCy("location-migration-start").click();
+          cy.wait("@start-location-migration");
 
-            // Wait for the button to become enabled again (task completed).
-            cy.get("[data-cy=location-migration-start]", { timeout: 30000 }).should("not.be.disabled");
+          // Wait for the button to become enabled again (task completed).
+          cy.get("[data-cy=location-migration-start]", { timeout: 30000 }).should("not.be.disabled");
 
-            // Verify the total count increased (new log entry persisted).
-            cy.dataCy("execution-log-table")
-              .find(".MuiTablePagination-displayedRows")
-              .should($el => {
-                const newTotal = Number.parseInt($el.text().split("of").pop().trim());
-                expect(newTotal).to.be.greaterThan(initialTotal);
-              });
-          });
+          // Verify a new row was added.
+          cy.dataCy("execution-log-table")
+            .find(".MuiDataGrid-row", { timeout: 10000 })
+            .should("have.length.greaterThan", initialCount);
+        });
       });
 
       it("can toggle checkboxes", () => {
