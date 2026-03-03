@@ -6,6 +6,7 @@ using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using NetTopologySuite.IO.Converters;
 using System.Globalization;
 using System.IO.Compression;
@@ -616,7 +617,7 @@ public class ImportController : ControllerBase
             {
                 var boreholeCodeLists = new List<BoreholeCodelist>();
 
-                foreach (var header in args.Row.HeaderRecord ?? Array.Empty<string>())
+                foreach (var (header, index) in (args.Row.HeaderRecord ?? Array.Empty<string>()).Select((h, i) => (Header: h, Index: i)))
                 {
                     // Find the corresponding codelist by comparing the header with Codelist.En, ignoring whitespace
                     var codelist = codelists.FirstOrDefault(cl => string.Equals(
@@ -626,7 +627,7 @@ public class ImportController : ControllerBase
 
                     if (codelist != null)
                     {
-                        var value = args.Row.GetField<string?>(header);
+                        var value = args.Row.GetField<string?>(index);
                         if (!string.IsNullOrEmpty(value))
                         {
                             boreholeCodeLists.Add(new BoreholeCodelist

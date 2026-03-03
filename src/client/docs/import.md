@@ -72,6 +72,7 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 ### Ids
 Es können zusätzliche IDs importiert werden. Die dafür zu verwendenden Spaltenüberschriften sind dynamisch und können von Umgebung zu Umgebung variieren. 
 Um die korrekten Spaltenüberschriften zu erhalten, kann eine Bohrung mit einer entsprechenden ID als CSV-Datei exportiert werden.
+Mehrere IDs des gleichen ID Typs können importiert werden, indem mehrere Spalten mit der gleichen Spaltenüberschriften verwendet werden.
 
 ### Koordinaten
 

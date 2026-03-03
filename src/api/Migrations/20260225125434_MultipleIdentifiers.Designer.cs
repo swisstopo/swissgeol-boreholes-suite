@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20260225125434_MultipleIdentifiers")]
+    partial class MultipleIdentifiers
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2176,62 +2179,6 @@ namespace BDMS.Migrations
                     b.HasIndex("UpdatedById");
 
                     b.ToTable("log_run", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.MaintenanceTaskLog", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AffectedCount")
-                        .HasColumnType("integer")
-                        .HasColumnName("affected_count");
-
-                    b.Property<DateTime>("CompletedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("completed_at");
-
-                    b.Property<bool>("IsDryRun")
-                        .HasColumnType("boolean")
-                        .HasColumnName("is_dry_run");
-
-                    b.Property<string>("Message")
-                        .HasColumnType("text")
-                        .HasColumnName("message");
-
-                    b.Property<bool>("OnlyMissing")
-                        .HasColumnType("boolean")
-                        .HasColumnName("only_missing");
-
-                    b.Property<string>("Parameters")
-                        .HasColumnType("jsonb")
-                        .HasColumnName("parameters");
-
-                    b.Property<DateTime>("StartedAt")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("started_at");
-
-                    b.Property<int?>("StartedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("started_by_id");
-
-                    b.Property<int>("Status")
-                        .HasColumnType("integer")
-                        .HasColumnName("status");
-
-                    b.Property<int>("TaskType")
-                        .HasColumnType("integer")
-                        .HasColumnName("task_type");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("StartedById");
-
-                    b.ToTable("maintenance_task_log", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.Observation", b =>
@@ -4440,15 +4387,6 @@ namespace BDMS.Migrations
                     b.Navigation("CreatedBy");
 
                     b.Navigation("UpdatedBy");
-                });
-
-            modelBuilder.Entity("BDMS.Models.MaintenanceTaskLog", b =>
-                {
-                    b.HasOne("BDMS.Models.User", "StartedBy")
-                        .WithMany()
-                        .HasForeignKey("StartedById");
-
-                    b.Navigation("StartedBy");
                 });
 
             modelBuilder.Entity("BDMS.Models.Observation", b =>

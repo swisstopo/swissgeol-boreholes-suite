@@ -6,6 +6,9 @@
 - Added major version Docker image tag (e.g. `:v2`) to the release workflow.
 - Added maintenance tasks admin page with background job infrastructure for location and coordinate migrations, persistent execution log, and auto-polling UI.
 
+### Changed
+- Multiple id values for a `boreholeId`/`identifier type` pair are now supported.
+
 ### Fixed
 - All tables in the `logs` and `attachments` tab of the borehole detail view were missing pagination.
 - Fixed Chronostratigraphy and Lithostratigraphy tabs not being correctly greyed out when empty.

@@ -36,6 +36,7 @@ RUN npx license-checker --json --production \
   --customPath licenseCustomFormat.json \
   --out ./dist/license.json
 
-USER 1000 # UID of user Node in `node:22-bookworm-slim`
+# UID of user Node in `node:22-bookworm-slim`
+USER 1000
 
 ENTRYPOINT ["node", "server.cjs"]

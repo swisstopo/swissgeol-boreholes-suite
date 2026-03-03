@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { Box, Card, IconButton, Stack } from "@mui/material";
 import { Trash2 } from "lucide-react";
 import { BoreholeV2 } from "../../../../api/borehole.ts";
-import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import {
   FormContainer,
@@ -24,7 +23,6 @@ interface IdentifierSegmentProps {
 
 const IdentifierSegment = ({ borehole, formMethods }: IdentifierSegmentProps) => {
   const { t } = useTranslation();
-  const { showAlert } = useContext(AlertContext);
   const { editingEnabled } = useContext(EditStateContext);
 
   const { fields, append, remove } = useFieldArray<LocationFormInputs, "boreholeCodelists">({
@@ -47,12 +45,6 @@ const IdentifierSegment = ({ borehole, formMethods }: IdentifierSegmentProps) =>
                   fieldName={`boreholeCodelists.${index}.codelistId`}
                   label="borehole_identifier"
                   selected={field.codelistId}
-                  onUpdate={e => {
-                    if (fields.some(field => field.codelistId === e)) {
-                      showAlert(t("msgIdentifierAlreadyUsed"), "error");
-                      formMethods.resetField(`boreholeCodelists.${index}.codelistId`);
-                    }
-                  }}
                   schemaName="borehole_identifier"
                 />
                 <FormInput
