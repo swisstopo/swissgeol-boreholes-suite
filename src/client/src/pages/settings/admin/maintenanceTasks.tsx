@@ -1,6 +1,5 @@
 import { FC } from "react";
 import { Box, Divider, Stack } from "@mui/material";
-import { Map, MapPin } from "lucide-react";
 import { useMaintenanceStatus } from "../../../api/maintenance.ts";
 import { ExecutionLogTable } from "./executionLogTable.tsx";
 import { MigrationCard, MigrationCardConfig } from "./migrationCard.tsx";
@@ -11,14 +10,12 @@ const migrationTasks: MigrationCardConfig[] = [
     title: "locationMigration",
     description: "locationMigrationDescription",
     hint: "locationMigrationHint",
-    icon: <Map size={24} />,
     dataCyPrefix: "location-migration",
   },
   {
     taskType: "CoordinateMigration",
     title: "coordinateMigration",
     description: "coordinateMigrationDescription",
-    icon: <MapPin size={24} />,
     dataCyPrefix: "coordinate-migration",
   },
 ];
