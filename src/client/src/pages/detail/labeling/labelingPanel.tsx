@@ -4,12 +4,12 @@ import { Alert, Box, Stack, ToggleButton, ToggleButtonGroup } from "@mui/materia
 import { styled } from "@mui/system";
 import { PanelBottom, PanelRight } from "lucide-react";
 import { BoreholeAttachment, Photo } from "../../../api/apiInterfaces.ts";
-import { getPhotoImageData, getPhotosByBoreholeId, uploadPhoto } from "../../../api/fetchApiV2.ts";
 import { uploadFile } from "../../../api/file/file.ts";
 import { File as FileInterface, FileSizeLimit, maxFileSizeBytes } from "../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
+import { getPhotoImageData, uploadPhoto, usePhotos } from "../attachments/tabs/photo.ts";
 import { useBoreholeFiles, useInvalidateBoreholeFiles } from "../attachments/useBoreholeFiles.tsx";
 import { FloatingExtractionFeedback } from "./floatingExtractionFeedback.tsx";
 import { useLabelingContext } from "./labelingContext.tsx";
@@ -66,7 +66,7 @@ const LabelingPanel: FC = () => {
   const { alertIsOpen, text, severity, autoHideDuration, showAlert, closeAlert } = useAlertManager();
   const { data: boreholeFiles } = useBoreholeFiles(boreholeId);
   const invalidateBoreholeFiles = useInvalidateBoreholeFiles();
-
+  const { data: photos } = usePhotos(Number(boreholeId));
   const expectedFileFormat = labelingFileFormat[panelTab];
   const isPhotoSelected = selectedAttachment && "fromDepth" in selectedAttachment;
   const selectedFile: FileInterface | undefined = isPhotoSelected ? undefined : selectedAttachment;
@@ -82,16 +82,11 @@ const LabelingPanel: FC = () => {
     return () => clearTimeout(timer);
   }, [alertIsOpen, autoHideDuration, closeAlert]);
 
-  const loadPhotos = useCallback(async () => {
-    const photos = await getPhotosByBoreholeId(Number(boreholeId));
-    return photos;
-  }, [boreholeId]);
-
   const loadFiles = useCallback(async () => {
     if (boreholeId) {
       setIsLoadingFiles(true);
       try {
-        const files = panelTab === PanelTab.profile ? boreholeFiles : await loadPhotos();
+        const files = panelTab === PanelTab.profile ? boreholeFiles : photos;
         setFiles(files);
         if (files?.length === 1) {
           setSelectedAttachment(selected => selected ?? files[0]);
@@ -103,7 +98,7 @@ const LabelingPanel: FC = () => {
         setIsLoadingFiles(false);
       }
     }
-  }, [boreholeFiles, boreholeId, loadPhotos, panelTab]);
+  }, [boreholeFiles, boreholeId, panelTab, photos]);
 
   const addFile = useCallback(
     async (file: File) => {

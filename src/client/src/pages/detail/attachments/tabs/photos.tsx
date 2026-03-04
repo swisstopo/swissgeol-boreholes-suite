@@ -2,18 +2,20 @@ import { FC, useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { GridColDef, GridRowId, useGridApiRef } from "@mui/x-data-grid";
 import { Photo } from "../../../../api/apiInterfaces.ts";
+import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
+import { formatDate } from "../../../../utils.ts";
+import { EditStateContext } from "../../editStateContext.tsx";
+import { AttachmentContent } from "../attachmentsContent.tsx";
+import { useAttachments } from "../useAttachments.tsx";
 import {
   deletePhotos,
   exportPhotos,
   getPhotosByBoreholeId,
   updatePhotos,
   uploadPhoto,
-} from "../../../../api/fetchApiV2.ts";
-import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
-import { formatDate } from "../../../../utils.ts";
-import { EditStateContext } from "../../editStateContext.tsx";
-import { AttachmentContent } from "../attachmentsContent.tsx";
-import { useAttachments } from "../useAttachments.tsx";
+  usePhotos,
+  useReloadPhotos,
+} from "./photo.ts";
 
 interface PhotosProps {
   boreholeId: number;
@@ -24,6 +26,8 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
   const { editingEnabled } = useContext(EditStateContext);
   const apiRef = useGridApiRef();
   const showApiErrorAlert = useApiErrorAlert();
+  const { data: photos } = usePhotos(boreholeId);
+  const reloadPhotos = useReloadPhotos(boreholeId);
 
   const loadAttachments = useCallback(() => {
     return getPhotosByBoreholeId(boreholeId);
@@ -61,7 +65,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
     [showApiErrorAlert],
   );
 
-  const { isLoading, rows, onAdd, onDelete, onExport, getPublicColumnHeader, getPublicColumnCell } = useAttachments({
+  const { isLoading, onAdd, onDelete, onExport, getPublicColumnHeader, getPublicColumnCell } = useAttachments({
     apiRef,
     loadAttachments,
     addAttachment,
@@ -69,6 +73,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
     exportAttachments,
     updateAttachments,
     tabStatusToReset: "photos",
+    invalidateQueries: reloadPhotos,
   });
 
   const columns = useMemo<GridColDef<Photo>[]>(
@@ -117,7 +122,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
       apiRef={apiRef}
       isLoading={isLoading}
       columns={columns}
-      rows={rows}
+      rows={photos}
       addAttachment={onAdd}
       acceptedFileTypes="image/*"
       requireFileOnAdd
