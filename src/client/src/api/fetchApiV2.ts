@@ -353,3 +353,19 @@ export const deleteSection = async (id: number): Promise<void> => {
 };
 
 export const downloadCodelistCsv = (): Promise<Response> => download(`codelist/csv`);
+
+export const getDocumentsByBoreholeId = async (boreholeId: number): Promise<Document[]> => {
+  return await fetchApiV2Legacy(`document/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
+};
+
+export const createDocument = async (document: Document): Promise<Document> => {
+  return await fetchApiV2Legacy("document", "POST", document);
+};
+
+export const updateDocuments = async (documents: DocumentUpdate[]): Promise<Document[]> => {
+  return await fetchApiV2WithApiError<Document[]>("document", "PUT", documents);
+};
+
+export const deleteDocuments = async (documentIds: number[]): Promise<Response> => {
+  return await fetchApiV2Legacy(`document?${documentIds.map(id => `documentIds=${id}`).join("&")}`, "DELETE");
+};
