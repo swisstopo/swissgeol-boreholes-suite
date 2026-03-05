@@ -119,6 +119,7 @@ const LabelingPanel: FC = () => {
   }, [files]);
 
   const isExtractionLoading = extractionState === ExtractionState.loading;
+  const isLoadingFiles = panelTab === PanelTab.profile ? isLoadingBoreholeFiles : isLoadingPhotos;
   return (
     <Stack
       sx={{
@@ -222,7 +223,7 @@ const LabelingPanel: FC = () => {
       ) : (
         <LabelingFileSelector
           activeTab={panelTab}
-          isLoadingFiles={isLoadingBoreholeFiles || isLoadingPhotos}
+          isLoadingFiles={isLoadingFiles}
           files={files}
           setSelectedFile={setSelectedAttachment}
           addFile={addFile}

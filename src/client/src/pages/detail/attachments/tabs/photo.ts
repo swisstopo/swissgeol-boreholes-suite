@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { ApiError, NullableDateString, User } from "../../../../api/apiInterfaces.ts";
 import {
@@ -78,7 +79,7 @@ export const usePhotos = (boreholeId?: number): UseQueryResult<Photo[]> =>
 // Necessary as long as the photo mutations are not handled via tanstack-query.
 export const useReloadPhotos = (boreholeId: number) => {
   const queryClient = useQueryClient();
-  return () => {
+  return useCallback(() => {
     queryClient.invalidateQueries({ queryKey: [photoQueryKey, boreholeId] });
-  };
+  }, [queryClient, boreholeId]);
 };

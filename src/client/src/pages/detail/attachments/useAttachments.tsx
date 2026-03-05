@@ -59,10 +59,7 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
     if (invalidateQueries) invalidateQueries();
     setRows(attachments);
     setIsLoading(false);
-    // We cannot include invalidateQueries here as it would cause an infinite loop. In never changes anyway.
-    // Todo: Fix duplicated fetch logic
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [loadAttachments]);
+  }, [invalidateQueries, loadAttachments]);
 
   const onAdd = useCallback(
     async (file?: File) => {
