@@ -27,14 +27,14 @@ export const uploadPhoto = async (boreholeId: number, file: File): Promise<Photo
   const formData = new FormData();
   formData.append("file", file);
   const response = await upload(`photo/upload?boreholeId=${boreholeId}`, "POST", formData);
-  if (!response.ok) {
+  if (response.ok) {
+    return (await response.json()) as Photo;
+  } else {
     if (response.status === 400) {
       throw new ApiError(await response.text(), response.status);
     } else {
       throw new ApiError("errorDuringBoreholeFileUpload", response.status);
     }
-  } else {
-    return (await response.json()) as Photo;
   }
 };
 
@@ -43,11 +43,13 @@ export const getPhotosByBoreholeId = async (boreholeId: number): Promise<Photo[]
 };
 
 export const exportPhotos = async (photoIds: number[]): Promise<Response> => {
-  return await download(`photo/export?${photoIds.map(id => `photoIds=${id}`).join("&")}`);
+  const queryParams = photoIds.map(id => `photoIds=${id}`).join("&");
+  return await download(`photo/export?${queryParams}`);
 };
 
 export const deletePhotos = async (photoIds: number[]): Promise<Response> => {
-  return await fetchApiV2Legacy(`photo?${photoIds.map(id => `photoIds=${id}`).join("&")}`, "DELETE");
+  const queryParams = photoIds.map(id => `photoIds=${id}`).join("&");
+  return await fetchApiV2Legacy(`photo?${queryParams}`, "DELETE");
 };
 
 export const updatePhotos = async (data: { id: number; public: boolean }[]): Promise<Response> => {
