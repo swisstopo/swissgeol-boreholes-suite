@@ -72,11 +72,11 @@ public class ImportControllerTest
     {
         // Remove boreholes that were uploaded.
         var addedBoreholes = context.Boreholes.Where(b => b.Id > MaxBoreholeSeedId);
-        var addedStratigraphies = context.Stratigraphies.Where(s => s.Id > MaxStratigraphySeedId);
-        var addedLayers = context.Layers.Where(l => l.Id > MaxLayerSeedId);
+        var addedStratigraphies = context.StratigraphiesV2.Where(s => s.Id > MaxStratigraphySeedId);
+        var addedLayers = context.Lithologies.Where(l => l.Id > MaxLayerSeedId);
         context.Boreholes.RemoveRange(addedBoreholes);
-        context.Stratigraphies.RemoveRange(addedStratigraphies);
-        context.Layers.RemoveRange(addedLayers);
+        context.StratigraphiesV2.RemoveRange(addedStratigraphies);
+        context.Lithologies.RemoveRange(addedLayers);
         context.Codelists.RemoveRange(context.Codelists.Where(c => c.Id == TestCodelistId));
         await context.SaveChangesAsync().ConfigureAwait(false);
 

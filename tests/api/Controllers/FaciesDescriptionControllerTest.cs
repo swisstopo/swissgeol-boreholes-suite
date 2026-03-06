@@ -31,7 +31,7 @@ public class FaciesDescriptionControllerTest
     {
         controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
 
-        var unauthorizedResponse = await controller.GetAsync(context.Stratigraphies.First().Id).ConfigureAwait(false);
+        var unauthorizedResponse = await controller.GetAsync(context.StratigraphiesV2.First().Id).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 

@@ -38,7 +38,7 @@ public class LithologicalDescriptionControllerTest
     {
         controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
 
-        var unauthorizedResponse = await controller.GetAsync(context.Stratigraphies.First().Id).ConfigureAwait(false);
+        var unauthorizedResponse = await controller.GetAsync(context.StratigraphiesV2.First().Id).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
@@ -202,7 +202,7 @@ public class LithologicalDescriptionControllerTest
     [TestMethod]
     public async Task BulkCreateAsyncCreatesMultipleLithologicalDescriptions()
     {
-        var stratigraphyId = context.Stratigraphies.First().Id;
+        var stratigraphyId = context.StratigraphiesV2.First().Id;
         var lithologicalDescriptions = new List<LithologicalDescription>
         {
             new LithologicalDescription
@@ -314,7 +314,7 @@ public class LithologicalDescriptionControllerTest
             .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
-        var stratigraphyId = context.Stratigraphies.First().Id;
+        var stratigraphyId = context.StratigraphiesV2.First().Id;
         var lithologicalDescriptions = new List<LithologicalDescription>
         {
             new LithologicalDescription
