@@ -95,7 +95,7 @@ class ListEditingBorehole(Action):
                         SELECT
                             purpose_id_cli as purpose
                     ) t
-                ) as extended,
+                ) as extended
 
             FROM
                 bdms.borehole
