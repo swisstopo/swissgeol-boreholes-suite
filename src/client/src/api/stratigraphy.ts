@@ -72,7 +72,7 @@ export const invalidateStratigraphyQueries = (
   }
 };
 
-const stratigraphyController = "stratigraphyv";
+const stratigraphyController = "stratigraphy";
 
 export const useStratigraphiesByBoreholeId = (boreholeId?: number) =>
   useQuery({

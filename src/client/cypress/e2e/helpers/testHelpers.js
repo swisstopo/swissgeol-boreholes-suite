@@ -553,12 +553,12 @@ export const getImportFileFromFixtures = (fileName, encoding, dataSet) => {
   return cy.fixture(filePath, { encoding: encoding });
 };
 
-export const createStratigraphyV2 = (boreholeId, name, isPrimary = true, date = null) => {
+export const createStratigraphy = (boreholeId, name, isPrimary = true, date = null) => {
   return cy.get("@id_token").then(token => {
     return cy
       .request({
         method: "POST",
-        url: "/api/v2/stratigraphyv",
+        url: "/api/v2/stratigraphy",
         body: {
           id: 0,
           boreholeId: boreholeId,
@@ -570,30 +570,6 @@ export const createStratigraphyV2 = (boreholeId, name, isPrimary = true, date = 
         credentials: "same-origin",
         headers: {
           "Content-Type": "application/json",
-        },
-        auth: bearerAuth(token),
-      })
-      .then(res => {
-        return cy.wrap(res.body.id);
-      });
-  });
-};
-
-export const createStratigraphy = boreholeId => {
-  return cy.get("@id_token").then(token => {
-    return cy
-      .request({
-        method: "POST",
-        url: "/api/v2/stratigraphyv",
-        cache: "no-cache",
-        credentials: "same-origin",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: {
-          id: 0,
-          boreholeId: boreholeId,
-          isPrimary: true,
         },
         auth: bearerAuth(token),
       })
