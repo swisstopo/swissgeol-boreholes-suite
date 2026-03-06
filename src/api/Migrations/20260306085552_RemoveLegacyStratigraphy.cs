@@ -1,5 +1,4 @@
-﻿using System;
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
 #nullable disable
@@ -64,7 +63,7 @@ public partial class RemoveLegacyStratigraphy : Migration
                 primary_sty = table.Column<bool>(type: "boolean", nullable: true),
                 name_sty = table.Column<string>(type: "text", nullable: true),
                 notes_sty = table.Column<string>(type: "text", nullable: true),
-                update_sty = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                update_sty = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
             },
             constraints: table =>
             {
@@ -130,7 +129,7 @@ public partial class RemoveLegacyStratigraphy : Migration
                 original_lithology = table.Column<string>(type: "text", nullable: true),
                 uscs_original_lay = table.Column<string>(type: "text", nullable: true),
                 depth_to_lay = table.Column<double>(type: "double precision", nullable: true),
-                update_lay = table.Column<DateTime>(type: "timestamp with time zone", nullable: true)
+                update_lay = table.Column<DateTime>(type: "timestamp with time zone", nullable: true),
             },
             constraints: table =>
             {
@@ -258,7 +257,7 @@ public partial class RemoveLegacyStratigraphy : Migration
             columns: table => new
             {
                 layer_id = table.Column<int>(type: "integer", nullable: false),
-                color_id = table.Column<int>(type: "integer", nullable: false)
+                color_id = table.Column<int>(type: "integer", nullable: false),
             },
             constraints: table =>
             {
@@ -285,7 +284,7 @@ public partial class RemoveLegacyStratigraphy : Migration
             columns: table => new
             {
                 layer_id = table.Column<int>(type: "integer", nullable: false),
-                debris_id = table.Column<int>(type: "integer", nullable: false)
+                debris_id = table.Column<int>(type: "integer", nullable: false),
             },
             constraints: table =>
             {
@@ -312,7 +311,7 @@ public partial class RemoveLegacyStratigraphy : Migration
             columns: table => new
             {
                 layer_id = table.Column<int>(type: "integer", nullable: false),
-                grain_angularity_id = table.Column<int>(type: "integer", nullable: false)
+                grain_angularity_id = table.Column<int>(type: "integer", nullable: false),
             },
             constraints: table =>
             {
@@ -339,7 +338,7 @@ public partial class RemoveLegacyStratigraphy : Migration
             columns: table => new
             {
                 layer_id = table.Column<int>(type: "integer", nullable: false),
-                grain_shape_id = table.Column<int>(type: "integer", nullable: false)
+                grain_shape_id = table.Column<int>(type: "integer", nullable: false),
             },
             constraints: table =>
             {
@@ -366,7 +365,7 @@ public partial class RemoveLegacyStratigraphy : Migration
             columns: table => new
             {
                 layer_id = table.Column<int>(type: "integer", nullable: false),
-                organic_components_id = table.Column<int>(type: "integer", nullable: false)
+                organic_components_id = table.Column<int>(type: "integer", nullable: false),
             },
             constraints: table =>
             {
@@ -393,7 +392,7 @@ public partial class RemoveLegacyStratigraphy : Migration
             columns: table => new
             {
                 layer_id = table.Column<int>(type: "integer", nullable: false),
-                uscs3_id = table.Column<int>(type: "integer", nullable: false)
+                uscs3_id = table.Column<int>(type: "integer", nullable: false),
             },
             constraints: table =>
             {
