@@ -1,6 +1,6 @@
 import { useMemo } from "react";
-import { BaseLayer } from "../../../../../../api/stratigraphy.ts";
-import { LayerDepth, Lithology } from "../../lithology.ts";
+import { BaseLayer } from "../../../../../api/stratigraphy.ts";
+import { LayerDepth, Lithology } from "../lithology.ts";
 
 export function useCompletedLayers(layers: BaseLayer[] = [], layerDepths?: LayerDepth[]) {
   const completedLayers = useMemo(() => {

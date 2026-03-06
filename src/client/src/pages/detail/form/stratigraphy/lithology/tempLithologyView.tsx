@@ -1,10 +1,10 @@
 import { FC, ReactNode, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
-import { BaseLayer } from "../../../../../../api/stratigraphy.ts";
-import { FaciesDescription } from "../../faciesDescription.ts";
-import { LithologicalDescription } from "../../lithologicalDescription.ts";
-import { Lithology } from "../../lithology.ts";
+import { BaseLayer } from "../../../../../api/stratigraphy.ts";
+import { FaciesDescription } from "../faciesDescription.ts";
+import { LithologicalDescription } from "../lithologicalDescription.ts";
+import { Lithology } from "../lithology.ts";
 import {
   StratigraphyTableActionCell,
   StratigraphyTableCell,
@@ -13,7 +13,7 @@ import {
   StratigraphyTableGap,
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
-} from "../../stratigraphyTableComponents.tsx";
+} from "../stratigraphyTableComponents.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";
 import { useLayerDepths } from "./useLayerDepths.tsx";

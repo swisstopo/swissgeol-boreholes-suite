@@ -2,37 +2,35 @@ import { FC, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Stack } from "@mui/material";
-import { BoreholesCard } from "../../../../../../../components/boreholesCard.tsx";
-import { FormContainer } from "../../../../../../../components/form/formContainer.tsx";
-import { FormDialog } from "../../../../../../../components/form/formDialog.tsx";
-import { FormDomainSelect } from "../../../../../../../components/form/formDomainSelect.tsx";
-import { useFormDirty } from "../../../../../../../components/form/useFormDirty.tsx";
-import { FaciesDescription } from "../../../faciesDescription.ts";
+import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
+import { FormContainer } from "../../../../../../components/form/form.ts";
+import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
+import { useFormDirty } from "../../../../../../components/form/useFormDirty.tsx";
+import { LithologicalDescription } from "../../lithologicalDescription.ts";
 import { BasicDataFormSection } from "./basicDataFormSection.tsx";
 import { RemarksFormSection } from "./remarksFormSection.tsx";
 
-interface FaciesDescriptionModalProps {
-  description: FaciesDescription | undefined;
+interface LithologicalDescriptionModalProps {
+  description: LithologicalDescription | undefined;
   fromDepths: number[];
   toDepths: number[];
-  updateFaciesDescription: (description: FaciesDescription, hasChanges: boolean) => void;
+  updateLithologicalDescription: (description: LithologicalDescription, hasChanges: boolean) => void;
 }
 
-export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
+export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps> = ({
   description,
   fromDepths,
   toDepths,
-  updateFaciesDescription,
+  updateLithologicalDescription,
 }) => {
   const { t } = useTranslation();
-  const formMethods = useForm<FaciesDescription>({ mode: "all" });
+  const formMethods = useForm<LithologicalDescription>({ mode: "all" });
   const { formState, getValues } = formMethods;
   const isDirty = useFormDirty({ formState });
 
   useEffect(() => {
     if (description) {
       formMethods.reset(description);
-      formMethods.setValue("faciesId", description?.faciesId ?? null);
     }
   }, [description, formMethods]);
 
@@ -40,11 +38,8 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
     const isValid = await formMethods.trigger();
     if (!isDirty || isValid) {
       const values = getValues();
-      delete values.facies;
-      if (String(values.faciesId) === "") values.faciesId = null;
-
-      updateFaciesDescription(
-        { ...description, ...values } as FaciesDescription,
+      updateLithologicalDescription(
+        { ...description, ...values } as LithologicalDescription,
         isDirty || (Boolean(description?.isGap) && isValid),
       );
     }
@@ -53,17 +48,14 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
   return (
     <FormDialog
       open={description !== undefined}
-      title={t("facies_description")}
+      title={t("lithological_description")}
       onClose={closeDialog}
       isCloseDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
       <FormProvider {...formMethods}>
         <Stack gap={3} flex={"0 1 1040px"} m={7.5}>
-          <BoreholesCard data-cy="facies-description-basic-data" title={t("basicData")}>
+          <BoreholesCard data-cy="lithological-description-basic-data" title={t("basicData")}>
             <FormContainer>
               <BasicDataFormSection fromDepths={fromDepths} toDepths={toDepths} />
-              <FormContainer direction={"row"}>
-                <FormDomainSelect fieldName={"faciesId"} label={"facies"} schemaName={"facies_con"} />
-              </FormContainer>
               <RemarksFormSection fieldName="description" label="remarks" />
             </FormContainer>
           </BoreholesCard>

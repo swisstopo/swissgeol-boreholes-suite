@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { FormContainer, FormSelect } from "../../../../../../../components/form/form.ts";
+import { FormContainer, FormSelect } from "../../../../../../components/form/form.ts";
 
 interface BasicDataFormSectionProps {
   fromDepths: number[];
