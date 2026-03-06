@@ -31,7 +31,7 @@ export const interceptApiCalls = () => {
   // Api V2
   cy.intercept("/api/v2/stratigraphy?boreholeId=**").as("stratigraphy_by_borehole_GET");
   cy.intercept("/api/v2/stratigraphy*", req => {
-    return (req.alias = `stratigraphy_${req.method}`);
+    req.alias = `stratigraphy_${req.method}`;
   });
   cy.intercept("/api/v2/stratigraphy/copy*").as("stratigraphy_COPY");
   cy.intercept("/api/v2/lithology?stratigraphyId=**").as("lithology_by_stratigraphyId_GET");
