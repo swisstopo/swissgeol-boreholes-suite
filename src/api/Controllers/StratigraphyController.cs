@@ -9,9 +9,9 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class StratigraphyV2Controller : BoreholeControllerBase<Stratigraphy>
+public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
 {
-    public StratigraphyV2Controller(BdmsContext context, ILogger<StratigraphyV2Controller> logger, IBoreholePermissionService boreholePermissionService)
+    public StratigraphyController(BdmsContext context, ILogger<StratigraphyController> logger, IBoreholePermissionService boreholePermissionService)
         : base(context, logger, boreholePermissionService)
     {
     }
@@ -36,7 +36,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<Stratigraphy>
 
         if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        var stratigraphies = await Context.StratigraphiesV2
+        var stratigraphies = await Context.Stratigraphies
             .AsNoTracking()
             .Where(x => x.BoreholeId == boreholeId)
             .ToListAsync()
@@ -56,7 +56,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<Stratigraphy>
     {
         try
         {
-            var stratigraphy = await Context.StratigraphiesV2
+            var stratigraphy = await Context.Stratigraphies
                 .Include(s => s.Lithologies).ThenInclude(l => l.LithologyRockConditionCodes)
                 .Include(s => s.Lithologies).ThenInclude(l => l.LithologyUscsTypeCodes)
                 .Include(s => s.Lithologies).ThenInclude(l => l.LithologyTextureMetaCodes)
@@ -131,7 +131,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<Stratigraphy>
     {
         try
         {
-            var stratigraphyToDelete = await Context.StratigraphiesV2.FindAsync(id).ConfigureAwait(false);
+            var stratigraphyToDelete = await Context.Stratigraphies.FindAsync(id).ConfigureAwait(false);
             if (stratigraphyToDelete == null)
             {
                 return NotFound();
@@ -139,7 +139,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<Stratigraphy>
 
             if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphyToDelete.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-            var existingStratigraphyCount = await Context.StratigraphiesV2
+            var existingStratigraphyCount = await Context.Stratigraphies
                 .CountAsync(s => s.BoreholeId == stratigraphyToDelete.BoreholeId)
                 .ConfigureAwait(false);
 
@@ -178,7 +178,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<Stratigraphy>
 
             // If the stratigraphy to create is the first stratigraphy of a borehole,
             // then we need to set it as the primary stratigraphy.
-            var hasBoreholeExistingStratigraphy = await Context.StratigraphiesV2
+            var hasBoreholeExistingStratigraphy = await Context.Stratigraphies
                 .AnyAsync(s => s.BoreholeId == entity.BoreholeId)
                 .ConfigureAwait(false);
 
@@ -245,7 +245,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<Stratigraphy>
 
     private async Task ResetOtherPrimaryStratigraphiesAsync(Stratigraphy entity)
     {
-        var otherPrimaryStratigraphies = await Context.StratigraphiesV2
+        var otherPrimaryStratigraphies = await Context.Stratigraphies
             .Where(s => s.BoreholeId == entity.BoreholeId && s.IsPrimary && s.Id != entity.Id)
             .ToListAsync()
             .ConfigureAwait(false);
@@ -266,7 +266,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<Stratigraphy>
             return true;
         }
 
-        var hasBoreholeStratigraphiesWithSameName = await Context.StratigraphiesV2
+        var hasBoreholeStratigraphiesWithSameName = await Context.Stratigraphies
                 .AnyAsync(s => s.BoreholeId == entity.BoreholeId && s.Id != entity.Id && s.Name == entity.Name)
                 .ConfigureAwait(false);
 

@@ -215,10 +215,10 @@ public class BdmsContext : DbContext
 
     public DbSet<LithologyDescription> LithologyDescriptions { get; set; }
 
-    public DbSet<Stratigraphy> StratigraphiesV2 { get; set; }
+    public DbSet<Stratigraphy> Stratigraphies { get; set; }
 
-    public IQueryable<Stratigraphy> StratigraphiesV2WithIncludes
-        => StratigraphiesV2
+    public IQueryable<Stratigraphy> StratigraphiesWithIncludes
+        => Stratigraphies
         .Include(s => s.CreatedBy)
         .Include(s => s.UpdatedBy)
         .Include(s => s.Lithologies).ThenInclude(l => l.LithologyRockConditionCodes)

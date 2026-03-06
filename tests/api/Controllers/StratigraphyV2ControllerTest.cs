@@ -16,14 +16,14 @@ public class StratigraphyV2ControllerTest
     private const int StratigraphyId = 6_000_003;
 
     private BdmsContext context;
-    private StratigraphyV2Controller controller;
+    private StratigraphyController controller;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
         var boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
-        controller = new StratigraphyV2Controller(context, new Mock<ILogger<StratigraphyV2Controller>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new StratigraphyController(context, new Mock<ILogger<StratigraphyController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -105,7 +105,7 @@ public class StratigraphyV2ControllerTest
     {
         SetupControllerWithAlwaysLockedBorehole();
 
-        var existingStratigraphy = await context.StratigraphiesV2.FirstAsync();
+        var existingStratigraphy = await context.Stratigraphies.FirstAsync();
         var copyResult = await controller.CopyAsync(existingStratigraphy.Id);
         ActionResultAssert.IsUnauthorized(copyResult.Result);
     }
@@ -145,7 +145,7 @@ public class StratigraphyV2ControllerTest
     {
         SetupControllerWithAlwaysLockedBorehole();
 
-        var existingStratigraphy = await context.StratigraphiesV2.FirstAsync();
+        var existingStratigraphy = await context.Stratigraphies.FirstAsync();
         var deleteResult = await controller.DeleteAsync(existingStratigraphy.Id);
         ActionResultAssert.IsUnauthorized(deleteResult);
     }
@@ -233,7 +233,7 @@ public class StratigraphyV2ControllerTest
     [TestMethod]
     public async Task CreateWithExistingName()
     {
-        var baseStratigraphy = await context.StratigraphiesV2.FirstAsync();
+        var baseStratigraphy = await context.Stratigraphies.FirstAsync();
 
         var stratigraphyToCreate = new Stratigraphy
         {
@@ -282,7 +282,7 @@ public class StratigraphyV2ControllerTest
     public async Task Edit()
     {
         var borehole = await context.Boreholes.OrderBy(x => x.CreatedById).LastAsync();
-        var stratigraphyToEdit = await context.StratigraphiesV2.FirstAsync();
+        var stratigraphyToEdit = await context.Stratigraphies.FirstAsync();
         stratigraphyToEdit.BoreholeId = borehole.Id;
         stratigraphyToEdit.IsPrimary = false;
         stratigraphyToEdit.Date = new DateTime(1999, 9, 9).ToUniversalTime();
@@ -368,7 +368,7 @@ public class StratigraphyV2ControllerTest
     {
         SetupControllerWithAlwaysLockedBorehole();
 
-        var existingStratigraphy = await context.StratigraphiesV2.FirstAsync();
+        var existingStratigraphy = await context.Stratigraphies.FirstAsync();
         var editResult = await controller.EditAsync(existingStratigraphy);
         ActionResultAssert.IsUnauthorized(editResult.Result);
     }
@@ -382,7 +382,7 @@ public class StratigraphyV2ControllerTest
 
     private Stratigraphy? GetStratigraphy(int id)
     {
-        return context.StratigraphiesV2WithIncludes.SingleOrDefault(s => s.Id == id);
+        return context.StratigraphiesWithIncludes.SingleOrDefault(s => s.Id == id);
     }
 
     private void SetupControllerWithAlwaysLockedBorehole()
@@ -392,6 +392,6 @@ public class StratigraphyV2ControllerTest
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(false);
 
-        controller = new StratigraphyV2Controller(context, new Mock<ILogger<StratigraphyV2Controller>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new StratigraphyController(context, new Mock<ILogger<StratigraphyController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 }
