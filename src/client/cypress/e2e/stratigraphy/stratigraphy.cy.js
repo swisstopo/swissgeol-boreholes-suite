@@ -29,7 +29,7 @@ describe("Tests for stratigraphy", () => {
     goToRouteAndAcceptTerms(`/?dev=true`);
     newUneditableBorehole().as("borehole_id");
     navigateInSidebar(SidebarMenuItem.stratigraphy);
-    cy.wait("@stratigraphyV2_by_borehole_GET");
+    cy.wait("@stratigraphy_by_borehole_GET");
     cy.contains("No stratigraphies available...");
     startBoreholeEditing();
     cy.contains("button", "Create empty stratigraphy").should("be.visible").and("be.enabled");
@@ -41,7 +41,7 @@ describe("Tests for stratigraphy", () => {
     createBorehole({ originalName: "SCHOOLDIONYSUS" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
       goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy?dev=true`);
-      cy.wait("@stratigraphyV2_by_borehole_GET");
+      cy.wait("@stratigraphy_by_borehole_GET");
       startBoreholeEditing();
       cy.dataCy("extractstratigraphyfromprofile-button").click();
       cy.dataCy("addProfile-button").click();
@@ -58,7 +58,7 @@ describe("Tests for stratigraphy", () => {
     createBorehole({ originalName: "SCHOOLDIONYSUS" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
       goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy?dev=true`);
-      cy.wait("@stratigraphyV2_by_borehole_GET");
+      cy.wait("@stratigraphy_by_borehole_GET");
       startBoreholeEditing();
 
       cy.dataCy("addemptystratigraphy-button").click();
@@ -69,8 +69,8 @@ describe("Tests for stratigraphy", () => {
       cy.dataCy("stratigraphy-header").contains("First Stratigraphy").should("not.exist");
       cy.dataCy("isPrimary-formCheckbox").should("not.exist");
       saveWithSaveBar();
-      cy.wait("@stratigraphyV2_POST").then(interception => {
-        cy.wait("@stratigraphyV2_by_borehole_GET");
+      cy.wait("@stratigraphy_POST").then(interception => {
+        cy.wait("@stratigraphy_by_borehole_GET");
 
         const firstStratigraphy = interception.response.body;
         // Should redirect to the newly created stratigraphy after saving
@@ -109,7 +109,7 @@ describe("Tests for stratigraphy", () => {
         hasError("name", false);
         saveWithSaveBar();
 
-        cy.wait(["@stratigraphyV2_POST", "@stratigraphyV2_by_borehole_GET"]);
+        cy.wait(["@stratigraphy_POST", "@stratigraphy_by_borehole_GET"]);
         cy.location().should(location => {
           expect(location.pathname).not.to.contain(`stratigraphy/new`);
         });
@@ -149,7 +149,7 @@ describe("Tests for stratigraphy", () => {
         setInput("date", "2024-03-20");
         toggleCheckbox("isPrimary");
         saveWithSaveBar();
-        cy.wait(["@stratigraphyV2_POST", "@stratigraphyV2_by_borehole_GET"]);
+        cy.wait(["@stratigraphy_POST", "@stratigraphy_by_borehole_GET"]);
         checkTabsByTitles(
           [
             { title: "Primary Stratigraphy", active: true },
@@ -185,12 +185,12 @@ describe("Tests for stratigraphy", () => {
         setInput("name", "First Stratigraphy updated");
         hasError("name", false);
         saveWithSaveBar();
-        cy.wait(["@stratigraphyV2_PUT", "@stratigraphyV2_by_borehole_GET"]);
+        cy.wait(["@stratigraphy_PUT", "@stratigraphy_by_borehole_GET"]);
         goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy/${firstStratigraphy.id}?dev=true`);
         cy.location().should(location => {
           expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/${firstStratigraphy.id}`);
         });
-        cy.wait("@stratigraphyV2_by_borehole_GET");
+        cy.wait("@stratigraphy_by_borehole_GET");
         checkTabsByTitles(
           [
             { title: "Primary Stratigraphy" },
@@ -213,7 +213,7 @@ describe("Tests for stratigraphy", () => {
       createStratigraphyV2(boreholeId, "OLYMPIAGOAT").as("stratigraphy_id");
       cy.get("@stratigraphy_id").then(stratigraphyId => {
         goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy?dev=true`);
-        cy.wait(["@stratigraphyV2_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
+        cy.wait(["@stratigraphy_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
         startBoreholeEditing();
 
         // Should redirect to primary stratigraphy if no stratigraphy is selected
@@ -223,8 +223,8 @@ describe("Tests for stratigraphy", () => {
 
         // Can duplicate existing stratigraphy
         cy.dataCy("duplicate-button").click();
-        cy.wait("@stratigraphyV2_COPY").then(interception => {
-          cy.wait(["@stratigraphyV2_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
+        cy.wait("@stratigraphy_COPY").then(interception => {
+          cy.wait(["@stratigraphy_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
           const copiedStratigraphyId = interception.response.body;
           // Should redirect to the copied stratigraphy
           cy.location().should(location => {
@@ -250,13 +250,23 @@ describe("Tests for stratigraphy", () => {
         createStratigraphyV2(boreholeId, "GATETRUCK", false).as("stratigraphy_id_2");
         cy.get("@stratigraphy_id_2").then(stratigraphyId2 => {
           goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy?dev=true`);
-          cy.wait(["@stratigraphyV2_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
+          cy.wait(["@stratigraphy_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
 
           // Should redirect to primary stratigraphy if no stratigraphy is selected
           cy.location().should(location => {
             expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/${stratigraphyId1}`);
           });
-          checkTabsByTitles([{ title: "BATONTRUCK", active: true }, { title: "GATETRUCK" }], null, "stratigraphy-tab");
+          checkTabsByTitles(
+            [
+              {
+                title: "BATONTRUCK",
+                active: true,
+              },
+              { title: "GATETRUCK" },
+            ],
+            null,
+            "stratigraphy-tab",
+          );
           startBoreholeEditing();
 
           // Cannot delete primary stratigraphy if multiple stratigraphies are available
@@ -268,14 +278,24 @@ describe("Tests for stratigraphy", () => {
           cy.location().should(location => {
             expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/${stratigraphyId2}`);
           });
-          checkTabsByTitles([{ title: "BATONTRUCK" }, { title: "GATETRUCK", active: true }], null, "stratigraphy-tab");
+          checkTabsByTitles(
+            [
+              { title: "BATONTRUCK" },
+              {
+                title: "GATETRUCK",
+                active: true,
+              },
+            ],
+            null,
+            "stratigraphy-tab",
+          );
           evaluateCheckbox("isPrimary", false);
           cy.dataCy("delete-button").click();
           handlePrompt(
             "Do you really want to delete this entry? The entry will be permanently deleted from the database.",
             "delete",
           );
-          cy.wait(["@stratigraphyV2_DELETE", "@stratigraphyV2_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
+          cy.wait(["@stratigraphy_DELETE", "@stratigraphy_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
           cy.contains("GATETRUCK").should("not.exist");
           cy.location().should(location => {
             expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/${stratigraphyId1}`);
@@ -288,7 +308,7 @@ describe("Tests for stratigraphy", () => {
             "Do you really want to delete this entry? The entry will be permanently deleted from the database.",
             "delete",
           );
-          cy.wait(["@stratigraphyV2_DELETE", "@stratigraphyV2_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
+          cy.wait(["@stratigraphy_DELETE", "@stratigraphy_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
           cy.location().should(location => {
             expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy`);
           });
@@ -304,7 +324,7 @@ describe("Tests for stratigraphy", () => {
     createBorehole("SILVERBIRD").as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
       goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy?dev=true`);
-      cy.wait("@stratigraphyV2_by_borehole_GET");
+      cy.wait("@stratigraphy_by_borehole_GET");
       startBoreholeEditing();
 
       // Can reset new stratigraphy with changes
@@ -328,7 +348,7 @@ describe("Tests for stratigraphy", () => {
       });
       setInput("name", "CHESSCLUSTER");
       saveForm();
-      cy.wait(["@stratigraphyV2_POST", "@stratigraphyV2_by_borehole_GET"]);
+      cy.wait(["@stratigraphy_POST", "@stratigraphy_by_borehole_GET"]);
       cy.dataCy("stratigraphy-header").contains("CHESSCLUSTER").should("exist");
       verifyNoUnsavedChanges();
       setInput("name", "DISHMUTANT");
@@ -346,7 +366,7 @@ describe("Tests for stratigraphy", () => {
       cy.get("@stratigraphy_id").then(stratigraphyId => {
         const invalidStratigraphyId = stratigraphyId + 1111;
         goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy/${invalidStratigraphyId}?dev=true`);
-        cy.wait("@stratigraphyV2_by_borehole_GET");
+        cy.wait("@stratigraphy_by_borehole_GET");
         cy.location().should(location => {
           expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/${stratigraphyId}`);
         });
@@ -360,14 +380,14 @@ describe("Tests for stratigraphy", () => {
       createStratigraphyV2(boreholeId, "JOLLYBOUNCE").as("stratigraphy_id");
       cy.get("@stratigraphy_id").then(stratigraphyId => {
         goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy/${stratigraphyId}?dev=true`);
-        cy.wait("@stratigraphyV2_by_borehole_GET");
+        cy.wait("@stratigraphy_by_borehole_GET");
 
         // Does not show main stratigraphy chip if only one stratigraphy is available
         cy.dataCy("stratigraphy-header").find(".MuiChip-root").should("have.length", 0);
         startBoreholeEditing();
         setInput("date", "2024-03-20");
         saveWithSaveBar();
-        cy.wait(["@stratigraphyV2_PUT", "@stratigraphyV2_by_borehole_GET"]);
+        cy.wait(["@stratigraphy_PUT", "@stratigraphy_by_borehole_GET"]);
         stopBoreholeEditing();
         cy.dataCy("stratigraphy-header").find(".MuiChip-root").should("have.length", 1).and("contain", "20.03.2024");
 
@@ -378,7 +398,7 @@ describe("Tests for stratigraphy", () => {
         });
         setInput("name", "KARMAMAGIC");
         saveWithSaveBar();
-        cy.wait(["@stratigraphyV2_POST", "@stratigraphyV2_by_borehole_GET"]);
+        cy.wait(["@stratigraphy_POST", "@stratigraphy_by_borehole_GET"]);
         stopBoreholeEditing();
         cy.dataCy("stratigraphy-header").should("not.exist");
         navigateToTabWithTitle("JOLLYBOUNCE");
