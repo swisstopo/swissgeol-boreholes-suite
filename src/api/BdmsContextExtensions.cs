@@ -146,7 +146,7 @@ public static class BdmsContextExtensions
         var fakeBoreholes = new Faker<Borehole>()
            .StrictMode(true)
            .RuleFor(o => o.Id, f => borehole_ids++)
-           .RuleFor(o => o.Stratigraphies, _ => new Collection<StratigraphyV2>())
+           .RuleFor(o => o.Stratigraphies, _ => new Collection<Stratigraphy>())
            .RuleFor(o => o.Completions, _ => new Collection<Completion>())
            .RuleFor(o => o.Sections, _ => new Collection<Section>())
            .RuleFor(o => o.Observations, _ => new Collection<Observation>())
@@ -856,7 +856,7 @@ public static class BdmsContextExtensions
         // Seed stratigraphyV2
         var stratigraphyV2_ids = 6_000_000;
         var stratigraphyV2Range = Enumerable.Range(stratigraphyV2_ids, boreholeRange.Count).ToList();
-        var fakeStratigraphiesV2 = new Faker<StratigraphyV2>()
+        var fakeStratigraphiesV2 = new Faker<Stratigraphy>()
             .StrictMode(true)
             .RuleFor(o => o.Id, f => stratigraphyV2_ids++)
             .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
@@ -876,7 +876,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.LithostratigraphyLayers, _ => new Collection<LithostratigraphyLayer>())
             .RuleFor(o => o.ChronostratigraphyLayers, _ => new Collection<ChronostratigraphyLayer>());
 
-        StratigraphyV2 SeededStratigraphysV2(int seed) => fakeStratigraphiesV2.UseSeed(seed).Generate();
+        Stratigraphy SeededStratigraphysV2(int seed) => fakeStratigraphiesV2.UseSeed(seed).Generate();
         var stratigraphiesV2 = stratigraphyV2Range.Select(SeededStratigraphysV2).ToList();
 
         // Group by BoreholeId and set exactly one IsPrimary = true per borehole

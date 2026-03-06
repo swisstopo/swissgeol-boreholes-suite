@@ -1,7 +1,7 @@
 ﻿namespace BDMS.Models;
 
 /// <summary>
-/// Constants containing the names of the code list schemas used in the <see cref="StratigraphyV2"/> module.
+/// Constants containing the names of the code list schemas used in the <see cref="Stratigraphy"/> module.
 /// </summary>
 public static class StratigraphySchemas
 {
