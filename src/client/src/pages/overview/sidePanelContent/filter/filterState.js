@@ -37,6 +37,48 @@ const initialState = {
     last_update: "",
     creation: "",
 
+    // Layers filter
+    layer_depth_from: "",
+    layer_depth_to: "",
+
+    layer_depth_from_from: "",
+    layer_depth_from_to: "",
+
+    layer_depth_to_from: "",
+    layer_depth_to_to: "",
+
+    layer_description: "",
+    layer_geology: "",
+
+    lithology: null,
+
+    color: null,
+    plasticity: null,
+    humidity: null,
+    consistance: null,
+    alteration: null,
+    compactness: null,
+    organic_component: null,
+    striae: -1,
+    grain_size_1: null,
+    grain_size_2: null,
+    grain_shape: null,
+    grain_granularity: null,
+    cohesion: null,
+    layer_further_properties: null,
+    layer_lithology_top_bedrock: null,
+    uscs_1: null,
+    uscs_2: null,
+    uscs_3: null,
+    uscs_determination: null,
+    debris: null,
+
+    // Chronostratigraphy filter
+    chronostratigraphy_id: null,
+
+    // Lithostratigraphy filter
+    lithostratigraphy_id: null,
+
     description_quality: null,
     uscs_original: "",
     original_lithology: "",
