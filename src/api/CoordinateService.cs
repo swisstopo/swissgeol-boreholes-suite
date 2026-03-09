@@ -29,7 +29,7 @@ public sealed class CoordinateService(ILogger<CoordinateService> logger, IHttpCl
     /// Example:
     /// https://example.com/api/v2/coordinate/migrate?onlymissing=true&dryrun=true
     /// ]]>
-    public async Task<bool> MigrateCoordinatesOfBorehole(Borehole borehole, bool onlyMissing = true)
+    public async Task<bool> MigrateCoordinatesAsync(Borehole borehole, bool onlyMissing = true)
     {
         using var httpClient = httpClientFactory.CreateClient(nameof(CoordinateService));
         httpClient.BaseAddress = new Uri("https://geodesy.geo.admin.ch/reframe/");

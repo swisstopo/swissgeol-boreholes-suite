@@ -63,7 +63,7 @@ public class CoordinateServiceTest
         context.Boreholes.Add(borehole);
         context.SaveChanges();
 
-        await service.MigrateCoordinatesOfBorehole(borehole, false);
+        await service.MigrateCoordinatesAsync(borehole, false);
         context.SaveChanges();
 
         var result = context.Boreholes.FirstOrDefault(b => b.Id == LV95BoreholeWithAllCoordinatesSetId);
@@ -93,7 +93,7 @@ public class CoordinateServiceTest
         context.SaveChanges();
 
         // Only calculate missing values.
-        await service.MigrateCoordinatesOfBorehole(borehole, true);
+        await service.MigrateCoordinatesAsync(borehole, true);
         context.SaveChanges();
 
         var result = context.Boreholes.FirstOrDefault(b => b.Id == LV95BoreholeWithAllCoordinatesSetId);
@@ -122,7 +122,7 @@ public class CoordinateServiceTest
         context.Boreholes.Add(borehole);
         context.SaveChanges();
 
-        await service.MigrateCoordinatesOfBorehole(borehole, false);
+        await service.MigrateCoordinatesAsync(borehole, false);
         context.SaveChanges();
 
         var result = context.Boreholes.FirstOrDefault(b => b.Id == LV03BoreholeWithMissingDestCoordinatesId);
@@ -151,7 +151,7 @@ public class CoordinateServiceTest
         context.Boreholes.Add(borehole);
         context.SaveChanges();
 
-        await service.MigrateCoordinatesOfBorehole(borehole, false);
+        await service.MigrateCoordinatesAsync(borehole, false);
         context.SaveChanges();
 
         var result = context.Boreholes.FirstOrDefault(b => b.Id == LV03BoreholeWithMissingSourceCoordinatesId);
@@ -195,6 +195,6 @@ public class CoordinateServiceTest
         };
 
         await Assert.ThrowsExactlyAsync<HttpRequestException>(
-            () => service.MigrateCoordinatesOfBorehole(borehole, false));
+            () => service.MigrateCoordinatesAsync(borehole, false));
     }
 }

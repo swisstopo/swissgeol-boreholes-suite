@@ -22,5 +22,5 @@ public sealed class CoordinateMigrationTask : MigrationTaskBase
 
     /// <inheritdoc/>
     protected override async Task<bool> ProcessBoreholeAsync(Borehole borehole, MigrationParameters parameters, CancellationToken cancellationToken) =>
-        await coordinateService.MigrateCoordinatesOfBorehole(borehole, parameters.OnlyMissing).ConfigureAwait(false);
+        await coordinateService.MigrateCoordinatesAsync(borehole, parameters.OnlyMissing).ConfigureAwait(false);
 }
