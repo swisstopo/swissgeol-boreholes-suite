@@ -5,24 +5,13 @@ using System.Text.Json;
 
 namespace BDMS;
 
-public sealed class CoordinateService
+/// <summary>
+/// Transforms coordinates between LV03 and LV95 reference systems using the swisstopo reframe API.
+/// </summary>
+public sealed class CoordinateService(IHttpClientFactory httpClientFactory)
 {
     private const string Lv95ToLv03 = "lv95tolv03";
     private const string Lv03ToLv95 = "lv03tolv95";
-
-    private readonly IHttpClientFactory httpClientFactory;
-    private readonly ILogger logger;
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="CoordinateService"/> class.
-    /// </summary>
-    /// <param name="logger">The <see cref="ILogger"/>.</param>
-    /// <param name="httpClientFactory">A factory abstraction that can create <see cref="HttpClient"/> instance.</param>
-    public CoordinateService(ILogger<CoordinateService> logger, IHttpClientFactory httpClientFactory)
-    {
-        this.httpClientFactory = httpClientFactory;
-        this.logger = logger;
-    }
 
     /// <summary>
     /// Asynchronously recalculates the LV03/LV95 coordinates for the given <paramref name="borehole"/> depending on whether the original
