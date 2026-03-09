@@ -8,6 +8,7 @@
 
 ### Changed
 - Multiple id values for a `boreholeId`/`identifier type` pair are now supported.
+- Deleted unused translations.
 
 ### Fixed
 - All tables in the `logs` and `attachments` tab of the borehole detail view were missing pagination.
