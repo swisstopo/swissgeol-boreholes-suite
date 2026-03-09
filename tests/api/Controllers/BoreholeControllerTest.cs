@@ -212,15 +212,15 @@ public class BoreholeControllerTest
         boreholeToEdit.BoreholeCodelists.Add(new BoreholeCodelist
         {
             BoreholeId = testBoreholeId,
-            CodelistId = 100000010,
-            Value = "ID GeoDIN value",
+            CodelistId = 100000006,
+            Value = "ID GeoQuat value",
         });
 
         boreholeToEdit.BoreholeCodelists.Add(new BoreholeCodelist
         {
             BoreholeId = testBoreholeId,
-            CodelistId = 100000010,
-            Value = "Another ID GeoDIN value",
+            CodelistId = 100000006,
+            Value = "Another ID GeoQuat value",
         });
 
         await initialContext.SaveChangesAsync();
@@ -237,14 +237,14 @@ public class BoreholeControllerTest
                 new BoreholeCodelist
                 {
                     BoreholeId = testBoreholeId,
-                    CodelistId = 100000010,
-                    Value = "ID GeoDIN value",
+                    CodelistId = 100000006,
+                    Value = "ID GeoQuat value",
                 },
                 new BoreholeCodelist
                 {
                     BoreholeId = testBoreholeId,
-                    CodelistId = 100000010,
-                    Value = "Another ID GeoDIN value",
+                    CodelistId = 100000006,
+                    Value = "Another ID GeoQuat value",
                 },
                 new BoreholeCodelist
                 {
