@@ -8,7 +8,7 @@ namespace BDMS;
 /// <summary>
 /// Transforms coordinates between LV03 and LV95 reference systems using the swisstopo reframe API.
 /// </summary>
-public sealed class CoordinateService(IHttpClientFactory httpClientFactory)
+public sealed class CoordinateService(ILogger<CoordinateService> logger, IHttpClientFactory httpClientFactory)
 {
     private const string Lv95ToLv03 = "lv95tolv03";
     private const string Lv03ToLv95 = "lv03tolv95";
@@ -31,7 +31,7 @@ public sealed class CoordinateService(IHttpClientFactory httpClientFactory)
     /// ]]>
     public async Task<bool> MigrateCoordinatesOfBorehole(Borehole borehole, bool onlyMissing = true)
     {
-        var httpClient = httpClientFactory.CreateClient(nameof(CoordinateService));
+        using var httpClient = httpClientFactory.CreateClient(nameof(CoordinateService));
         httpClient.BaseAddress = new Uri("https://geodesy.geo.admin.ch/reframe/");
 
         var transformDirection = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? Lv95ToLv03 : Lv03ToLv95;
@@ -47,20 +47,29 @@ public sealed class CoordinateService(IHttpClientFactory httpClientFactory)
 
         var reframeOptions = FormattableString.Invariant(
             $"{transformDirection}?easting={sourceLocationX}&northing={sourceLocationY}&format=json");
+        var requestUri = new Uri(reframeOptions, UriKind.Relative);
 
-        using var response = await httpClient.GetAsync(new Uri(reframeOptions, UriKind.Relative)).ConfigureAwait(false);
-        response.EnsureSuccessStatusCode();
+        try
+        {
+            using var response = await httpClient.GetAsync(requestUri).ConfigureAwait(false);
+            response.EnsureSuccessStatusCode();
 
-        var jsonResult = await response.Content.ReadFromJsonAsync<JsonElement>().ConfigureAwait(false);
+            var jsonResult = await response.Content.ReadFromJsonAsync<JsonElement>().ConfigureAwait(false);
 
-        var originalDecimalPlaces = new List<int> { GetDecimalPlaces(sourceLocationX.Value), GetDecimalPlaces(sourceLocationY.Value) }.OrderByDescending(x => x).First();
-        setDestinationLocationX(Math.Round(double.Parse(jsonResult.GetProperty("easting").GetString()!, CultureInfo.InvariantCulture), originalDecimalPlaces, MidpointRounding.AwayFromZero));
-        setDestinationLocationY(Math.Round(double.Parse(jsonResult.GetProperty("northing").GetString()!, CultureInfo.InvariantCulture), originalDecimalPlaces, MidpointRounding.AwayFromZero));
+            var originalDecimalPlaces = new List<int> { GetDecimalPlaces(sourceLocationX.Value), GetDecimalPlaces(sourceLocationY.Value) }.OrderByDescending(x => x).First();
+            setDestinationLocationX(Math.Round(double.Parse(jsonResult.GetProperty("easting").GetString()!, CultureInfo.InvariantCulture), originalDecimalPlaces, MidpointRounding.AwayFromZero));
+            setDestinationLocationY(Math.Round(double.Parse(jsonResult.GetProperty("northing").GetString()!, CultureInfo.InvariantCulture), originalDecimalPlaces, MidpointRounding.AwayFromZero));
 
-        // Update geometry (using LV95 coordinates)
-        borehole.Geometry = new Point(borehole.LocationX!.Value, borehole.LocationY!.Value) { SRID = SpatialReferenceConstants.SridLv95 };
+            // Update geometry (using LV95 coordinates)
+            borehole.Geometry = new Point(borehole.LocationX!.Value, borehole.LocationY!.Value) { SRID = SpatialReferenceConstants.SridLv95 };
 
-        return true;
+            return true;
+        }
+        catch (HttpRequestException ex)
+        {
+            logger.LogError(ex, "Failed to query swisstopo reframe API ({RequestUri}).", requestUri);
+            throw;
+        }
     }
 
     /// <summary>

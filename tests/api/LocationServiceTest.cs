@@ -1,6 +1,7 @@
 ﻿using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Moq.Protected;
+using System.Net;
 
 namespace BDMS;
 
@@ -64,5 +65,30 @@ public class LocationServiceTest
         Assert.AreEqual(country, locationInfo.Country);
         Assert.AreEqual(canton, locationInfo.Canton);
         Assert.AreEqual(municipal, locationInfo.Municipality);
+    }
+
+    [TestMethod]
+    public async Task IdentifyLogsErrorOnHttpFailure()
+    {
+        var httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+        httpMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError))
+            .Verifiable();
+        httpMessageHandler.Protected().Setup("Dispose", ItExpr.IsAny<bool>());
+
+        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient(httpMessageHandler.Object)).Verifiable();
+        loggerMock.Setup(l => l.Log(
+            LogLevel.Error,
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((v, _) => v.ToString()!.Contains("Failed to query swisstopo identify API")),
+            It.IsNotNull<Exception>(),
+            (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable();
+
+        await Assert.ThrowsExactlyAsync<HttpRequestException>(
+            () => service.IdentifyAsync(2646356.69, 1249020.29));
     }
 }
