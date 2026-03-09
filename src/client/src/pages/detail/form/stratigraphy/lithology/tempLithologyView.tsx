@@ -117,8 +117,10 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
             {!depths || depths.length === 0 ? (
               <StratigraphyTableCell>empty</StratigraphyTableCell>
             ) : (
-              depths.map((depth, index) => (
-                <StratigraphyTableCell key={`depth-${index}`} sx={{ height: `${defaultRowHeight}px` }}>
+              depths.map(depth => (
+                <StratigraphyTableCell
+                  key={`${depth.lithologyId}-depth-${depth.fromDepth}-${depth.toDepth}`}
+                  sx={{ height: `${defaultRowHeight}px` }}>
                   <Typography>{`${depth.fromDepth} m MD`}</Typography>
                   <Typography>{`${depth.toDepth} m MD`}</Typography>
                 </StratigraphyTableCell>

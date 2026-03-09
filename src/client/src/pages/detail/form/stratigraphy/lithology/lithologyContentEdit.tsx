@@ -524,12 +524,16 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
             <StratigraphyTableContent>
               <StratigraphyTableColumn sx={{ flex: "0 0 90px" }}>
                 {/* TODO: Add FormInput for depths and update lithology if depth changes. https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2392  Add overlap validation check */}
-                {depths.map((depth, index) => (
-                  <StratigraphyTableCell key={`depth-${index}`} sx={{ height: `${defaultRowHeight}px` }}>
-                    <Typography
-                      color={depth.hasFromDepthError ? "error" : "default"}>{`${depth.fromDepth} m MD`}</Typography>
-                    <Typography
-                      color={depth.hasToDepthError ? "error" : "default"}>{`${depth.toDepth} m MD`}</Typography>
+                {depths.map(depth => (
+                  <StratigraphyTableCell
+                    key={`${depth.lithologyId}-depth-${depth.fromDepth}-${depth.toDepth}`}
+                    sx={{ height: `${defaultRowHeight}px` }}>
+                    <Typography color={depth.hasFromDepthError ? "error" : "default"}>
+                      {`${depth.fromDepth} m MD`}
+                    </Typography>
+                    <Typography color={depth.hasToDepthError ? "error" : "default"}>
+                      {`${depth.toDepth} m MD`}
+                    </Typography>
                   </StratigraphyTableCell>
                 ))}
               </StratigraphyTableColumn>
