@@ -1,5 +1,6 @@
 ﻿using BDMS.Models;
 using System.Globalization;
+using System.Text;
 using System.Text.Json;
 
 namespace BDMS;
@@ -9,10 +10,11 @@ namespace BDMS;
 /// </summary>
 public sealed class LocationService(ILogger<LocationService> logger, IHttpClientFactory httpClientFactory)
 {
-    private const string ApiUri = "https://api3.geo.admin.ch/rest/services/api/MapServer/identify?geometryType=esriGeometryPoint&geometry={0}&tolerance=0&layers=all:{1}&returnGeometry=false&sr={2}";
     private const string CountryLayer = "ch.swisstopo.swissboundaries3d-land-flaeche.fill";
     private const string CantonLayer = "ch.swisstopo.swissboundaries3d-kanton-flaeche.fill";
     private const string MunicipalityLayer = "ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill";
+
+    private static readonly CompositeFormat ApiUri = CompositeFormat.Parse("https://api3.geo.admin.ch/rest/services/api/MapServer/identify?geometryType=esriGeometryPoint&geometry={0}&tolerance=0&layers=all:{1}&returnGeometry=false&sr={2}");
 
     /// <summary>
     /// Asynchronously retrieves location information (country_bho, canton_bho and municipality_bho) for a single location
