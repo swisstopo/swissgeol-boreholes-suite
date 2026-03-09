@@ -745,9 +745,8 @@ public class ImportControllerTest
         Assert.AreEqual(new DateTime(2024, 06, 15, 0, 0, 0, DateTimeKind.Utc), borehole.RestrictionUntil);
         Assert.AreEqual(2474.472693, borehole.TotalDepth);
         Assert.AreEqual("Projekt 6", borehole.ProjectName);
-        Assert.AreEqual(5, borehole.BoreholeCodelists.Count);
+        Assert.AreEqual(4, borehole.BoreholeCodelists.Count);
         Assert.AreEqual("Id_16", borehole.BoreholeCodelists.Single(x => x.CodelistId == 100000003).Value);
-        Assert.AreEqual("AUTOSTEED", borehole.BoreholeCodelists.Single(x => x.CodelistId == 100000011).Value);
         Assert.AreEqual("121314", borehole.BoreholeCodelists.Single(x => x.CodelistId == TestCodelistId).Value);
         Assert.AreEqual("Bern", borehole.Canton);
         Assert.AreEqual("Schweiz", borehole.Country);
@@ -758,6 +757,11 @@ public class ImportControllerTest
         Assert.AreEqual(827.8441205, borehole.TopBedrockFreshMd);
         Assert.AreEqual(759.7574008, borehole.TopBedrockWeatheredMd);
         Assert.AreEqual(WorkflowStatus.Draft, borehole.Workflow.Status);
+
+        // Assert BoreholeIdentifiers without matching codelist (e.g. deprecated IDKernlager, IDGeoDin) are not imported.
+        Assert.IsNull(borehole.BoreholeCodelists.FirstOrDefault(x => x.Value == "kernlager AETHERMAGIC"));
+        Assert.IsNull(borehole.BoreholeCodelists.FirstOrDefault(x => x.Value == "AUTOSTEED"));
+        Assert.IsNull(borehole.BoreholeCodelists.FirstOrDefault(x => x.Value == "ID_15"));
 
         Assert.AreEqual("POINT (2613116 1179127)", borehole.Geometry.ToString());
 

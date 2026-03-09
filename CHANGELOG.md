@@ -8,6 +8,7 @@
 
 ### Changed
 - Multiple id values for a `boreholeId`/`identifier type` pair are now supported.
+- Borehole identifiers `IDKernlager` and `IDGeoDin` are no longer supported.
 - Deleted unused translations.
 
 ### Fixed
