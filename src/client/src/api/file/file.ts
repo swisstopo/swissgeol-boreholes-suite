@@ -7,7 +7,12 @@ import {
   StratigraphyExtractionResponse,
 } from "../../pages/detail/labeling/labelingInterfaces.tsx";
 import { ApiError, BoreholeAttachment } from "../apiInterfaces.ts";
-import { fetchCreatePngs, fetchExtractData, fetchExtractStratigraphy, fetchPageBoundingBoxes } from "../dataextraction";
+import {
+  fetchCreatePngs,
+  fetchExtractData,
+  fetchExtractStratigraphy,
+  fetchPageBoundingBoxes,
+} from "../dataextraction.ts";
 import { download, fetchApiV2Base, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../fetchApiV2.ts";
 import { processFileWithOCR } from "../ocr.ts";
 import { BoreholeFile, DataExtractionResponse, maxFileSizeBytes } from "./fileInterfaces.ts";

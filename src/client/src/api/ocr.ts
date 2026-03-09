@@ -1,5 +1,5 @@
 import { store } from "../api-lib";
-import { getAuthorizationHeader } from "./authentication";
+import { getAuthorizationHeader } from "./authentication.ts";
 
 export async function processFileWithOCR(request: object) {
   // @ts-expect-error redux store will not be typed, as it's going to be removed

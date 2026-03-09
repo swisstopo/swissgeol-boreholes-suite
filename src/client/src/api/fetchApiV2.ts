@@ -11,7 +11,7 @@ import {
   GeometryFormat,
   Instrumentation,
 } from "./apiInterfaces";
-import { getAuthorizationHeader } from "./authentication";
+import { getAuthorizationHeader } from "./authentication.ts";
 import { Section } from "./section.ts";
 
 /**
