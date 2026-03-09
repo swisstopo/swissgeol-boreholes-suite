@@ -28,6 +28,7 @@ const FilterChips = ({ activeFilters, setActiveFilters, setFilter, formMethods }
   return (
     <Box sx={{ marginBottom: activeFilters?.length > 0 ? "14px" : undefined }}>
       {activeFilters?.map((filter, index) => {
+        // TODO: Check if these translations are still used; remove if obsolete https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2547
         const customFilterLabels: { [key: string]: string } = {
           role: "status",
           status: "boreholestatus",

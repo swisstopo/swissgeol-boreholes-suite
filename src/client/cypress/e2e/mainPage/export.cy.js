@@ -165,7 +165,7 @@ describe("Test for exporting boreholes.", () => {
     handlePrompt("Do you really want to delete this borehole? This cannot be undone.", "delete");
   });
 
-  it("exports custom Ids form borehole", () => {
+  it("exports custom Ids from borehole", () => {
     const firstBoreholeName = "AAA_DUCKY";
     const secondBoreholeName = "AAA_SNAKEY";
     deleteDownloadedFile(csvFileName);
@@ -173,7 +173,7 @@ describe("Test for exporting boreholes.", () => {
     newEditableBorehole().as("borehole_id");
     setInput("name", firstBoreholeName);
     addItem("addIdentifier");
-    setSelect("boreholeCodelists.0.codelistId", 3);
+    setSelect("boreholeCodelists.0.codelistId", 5);
     setInput("boreholeCodelists.0.value", 13);
     saveWithSaveBar();
     returnToOverview();
@@ -198,11 +198,11 @@ describe("Test for exporting boreholes.", () => {
       expect(rows[1][3]).to.equal(firstBoreholeName);
       expect(rows[2][3]).to.equal(secondBoreholeName);
 
-      expect(rows[0][34]).to.equal("IDInfoGeol");
+      expect(rows[0][34]).to.equal("IDCanton");
       expect(rows[1][34]).to.equal("");
       expect(rows[2][34]).to.equal("14");
 
-      expect(rows[0][35]).to.equal("IDGeODin\r");
+      expect(rows[0][35]).to.equal("IDGeoQuat\r");
       expect(rows[1][35]).to.equal("13\r");
       expect(rows[2][35]).to.equal("\r");
     });
