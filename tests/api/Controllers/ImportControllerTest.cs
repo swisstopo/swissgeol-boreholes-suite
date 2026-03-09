@@ -21,7 +21,7 @@ public class ImportControllerTest
 {
     private const int MaxBoreholeSeedId = 1002999;
     private const int MaxStratigraphySeedId = 6002999;
-    private const int MaxLayerSeedId = 7029999;
+    private const int MaxLithologySeedId = 23029989;
     private const int TestCodelistId = 955253;
 
     private BdmsContext context;
@@ -73,10 +73,10 @@ public class ImportControllerTest
         // Remove boreholes that were uploaded.
         var addedBoreholes = context.Boreholes.Where(b => b.Id > MaxBoreholeSeedId);
         var addedStratigraphies = context.Stratigraphies.Where(s => s.Id > MaxStratigraphySeedId);
-        var addedLayers = context.Lithologies.Where(l => l.Id > MaxLayerSeedId);
+        var addedLithologies = context.Lithologies.Where(l => l.Id > MaxLithologySeedId);
         context.Boreholes.RemoveRange(addedBoreholes);
         context.Stratigraphies.RemoveRange(addedStratigraphies);
-        context.Lithologies.RemoveRange(addedLayers);
+        context.Lithologies.RemoveRange(addedLithologies);
         context.Codelists.RemoveRange(context.Codelists.Where(c => c.Id == TestCodelistId));
         await context.SaveChangesAsync().ConfigureAwait(false);
 
