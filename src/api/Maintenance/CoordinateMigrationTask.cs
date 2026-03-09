@@ -6,21 +6,12 @@ namespace BDMS.Maintenance;
 /// Maintenance task that recalculates LV03/LV95 coordinates for boreholes
 /// based on their original reference system via the swisstopo coordinate API.
 /// </summary>
-public sealed class CoordinateMigrationTask : MigrationTaskBase
+public sealed class CoordinateMigrationTask : MigrationTaskBase<CoordinateService>
 {
-    private CoordinateService coordinateService = null!;
-
     /// <inheritdoc/>
     public override MaintenanceTaskType TaskType => MaintenanceTaskType.CoordinateMigration;
 
     /// <inheritdoc/>
-    protected override Task InitializeAsync(IServiceProvider services)
-    {
-        coordinateService = services.GetRequiredService<CoordinateService>();
-        return Task.CompletedTask;
-    }
-
-    /// <inheritdoc/>
-    protected override async Task<bool> ProcessBoreholeAsync(Borehole borehole, MigrationParameters parameters, CancellationToken cancellationToken) =>
-        await coordinateService.MigrateCoordinatesAsync(borehole, parameters.OnlyMissing).ConfigureAwait(false);
+    protected override async Task<bool> ProcessBoreholeAsync(CoordinateService service, Borehole borehole, MigrationParameters parameters, CancellationToken cancellationToken) =>
+        await service.MigrateCoordinatesAsync(borehole, parameters.OnlyMissing).ConfigureAwait(false);
 }
