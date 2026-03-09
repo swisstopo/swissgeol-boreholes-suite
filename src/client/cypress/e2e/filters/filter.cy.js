@@ -58,7 +58,7 @@ describe("Search filter tests", () => {
   });
 
   it("filters boreholes national_interest and striae", () => {
-    // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2370
+    // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2547
     // Reactivate all commented code once lithology filter is fixed
     createBorehole({
       originalName: "Borehole 1 with striae: true",
@@ -207,7 +207,7 @@ describe("Search filter tests", () => {
     cy.get('[data-cy="filter-chip-boreholestatus"]').contains("Borehole status");
   });
 
-  // Todo: readd when new filtes are implemented https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2370
+  // Todo: readd when new filtes are implemented https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2547
   it.skip("filters boreholes by color and uscs3", () => {
     goToRouteAndAcceptTerms("/");
     cy.dataCy("show-filter-button").click();
@@ -225,7 +225,7 @@ describe("Search filter tests", () => {
     cy.get(".MuiDataGrid-row").contains("Aisha Thiel").should("exist");
   });
 
-  // Todo: readd when new filtes are implemented https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2370
+  // Todo: readd when new filtes are implemented https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2547
   it.skip("filters boreholes by original lithology in editor mode", () => {
     goToRouteAndAcceptTerms("/");
     cy.dataCy("show-filter-button").click();
