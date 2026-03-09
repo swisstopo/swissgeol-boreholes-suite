@@ -339,6 +339,7 @@
   "msgCasingEmpty": "Nessuna tubatura disponibile",
   "msgCompletionEmpty": "Nessuna architettura di perforazione disponibile",
   "msgDeleteUser": "Volete davvero cancellare questo utente? Non è possibile annullare questa operazione",
+  "msgDeleteWorkgroup": "Volete davvero cancellare questo gruppo di lavoro? Non è possibile annullare questa operazione",
   "msgDisablingUser": "L'utente selezionato non può essere eliminato poiché al momento ci sono tracce di attività nel database",
   "msgDisablingWorkgroup": "Il gruppo di lavoro selezionato non può essere eliminato perché nel database sono assegnati dei fori",
   "msgFieldMeasurementsEmpty": "Nessuna misurazione in campo disponibile",

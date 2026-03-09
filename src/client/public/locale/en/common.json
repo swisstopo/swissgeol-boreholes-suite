@@ -339,6 +339,7 @@
   "msgCasingEmpty": "No casing available",
   "msgCompletionEmpty": "No borehole architecture available",
   "msgDeleteUser": "Do you really want to delete this user? This cannot be undone",
+  "msgDeleteWorkgroup": "Do you really want to delete this workgroup? This cannot be undone",
   "msgDisablingUser": "The selected user cannot be deleted because currently there are some traces of activity in the database",
   "msgDisablingWorkgroup": "The selected workgroup cannot be deleted because some boreholes are assigned to it in the database",
   "msgFieldMeasurementsEmpty": "No field measurement available.",

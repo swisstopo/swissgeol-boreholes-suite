@@ -339,6 +339,7 @@
   "msgCasingEmpty": "Aucun profil de tubage disponible",
   "msgCompletionEmpty": "Aucune architecture de forage disponible",
   "msgDeleteUser": "Voulez-vous vraiment supprimer cet utilisateur? Cela ne peut pas être annulé",
+  "msgDeleteWorkgroup": "Voulez-vous vraiment supprimer ce groupe de travail? Cela ne peut pas être annulé",
   "msgDisablingUser": "L'utilisateur sélectionné ne peut pas être supprimé car il y a actuellement des traces d'activité dans la base de données",
   "msgDisablingWorkgroup": "Le groupe de travail sélectionné ne peut pas être supprimé car des forages lui sont attribués dans la base de données",
   "msgFieldMeasurementsEmpty": "Aucune mesure de terrain disponible.",

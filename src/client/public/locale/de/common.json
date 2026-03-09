@@ -339,6 +339,7 @@
   "msgCasingEmpty": "Kein Verrohrungsprofil verfügbar",
   "msgCompletionEmpty": "Keine Bohrlocharchitektur verfügbar",
   "msgDeleteUser": "Wollen Sie diesen Benutzer wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden",
+  "msgDeleteWorkgroup": "Wollen Sie diese Arbeitsgruppe wirklich löschen? Diese Aktion kann nicht rückgängig gemacht werden",
   "msgDisablingUser": "Der ausgewählte Benutzer kann nicht gelöscht werden, da sich derzeit einige Aktivitäten in der Datenbank befinden",
   "msgDisablingWorkgroup": "Die ausgewählte Arbeitsgruppe kann nicht gelöscht werden, da ihr Bohrungen in der Datenbank zugeordnet sind",
   "msgFieldMeasurementsEmpty": "Keine Feldmessung vorhanden",
