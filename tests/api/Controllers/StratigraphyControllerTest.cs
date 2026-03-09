@@ -1,17 +1,15 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
 
 [TestClass]
-public class StratigraphyV2ControllerTest
+public class StratigraphyControllerTest
 {
     private const int StratigraphyId = 6_000_003;
 
