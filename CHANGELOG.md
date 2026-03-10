@@ -9,6 +9,7 @@
 ### Changed
 - Multiple id values for a `boreholeId`/`identifier type` pair are now supported.
 - Borehole identifiers `IDKernlager` and `IDGeoDin` are no longer supported.
+- Deleted legacy stratigraphy and layer code, and renamed stratigraphyV2 to stratigraphy.
 - Deleted unused translations.
 
 ### Fixed

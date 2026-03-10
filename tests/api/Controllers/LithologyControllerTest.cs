@@ -31,7 +31,7 @@ public class LithologyControllerTest
     {
         controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
 
-        var unauthorizedResponse = await controller.GetAsync(context.StratigraphiesV2.First().Id).ConfigureAwait(false);
+        var unauthorizedResponse = await controller.GetAsync(context.Stratigraphies.First().Id).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(unauthorizedResponse.Result);
     }
 
@@ -58,7 +58,7 @@ public class LithologyControllerTest
     public async Task GetEntriesByStratigraphyIdLithologySorting()
     {
         // Find a stratigraphy to use
-        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var stratigraphyId = context.Stratigraphies.First().Id;
         var createdLithologyIds = new List<int>();
 
         // Create lithologies out of order
@@ -136,7 +136,7 @@ public class LithologyControllerTest
     [TestMethod]
     public async Task CreateAndDeleteAsync()
     {
-        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var stratigraphyId = context.Stratigraphies.First().Id;
         var lithology = GetCompleteLithology(stratigraphyId);
         lithology.HasBedding = false;
 
@@ -208,7 +208,7 @@ public class LithologyControllerTest
     [TestMethod]
     public async Task CreateConsolidatedLithologyAsync()
     {
-        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var stratigraphyId = context.Stratigraphies.First().Id;
         var lithology = GetCompleteLithology(stratigraphyId);
         lithology.IsUnconsolidated = false;
 
@@ -268,7 +268,7 @@ public class LithologyControllerTest
     public async Task DeleteAsyncWithandWithoutPermissions()
     {
         // Create a lithology to delete
-        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var stratigraphyId = context.Stratigraphies.First().Id;
         var lithology = new Lithology
         {
             StratigraphyId = stratigraphyId,
@@ -314,7 +314,7 @@ public class LithologyControllerTest
     [TestMethod]
     public async Task EditLithologyWithCompleteLithology()
     {
-        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var stratigraphyId = context.Stratigraphies.First().Id;
         var existingUnconsolidatedLithology = GetCompleteLithology(stratigraphyId);
         var createResponse = await controller.CreateAsync(existingUnconsolidatedLithology);
         ActionResultAssert.IsOk(createResponse.Result);
@@ -390,7 +390,7 @@ public class LithologyControllerTest
     [TestMethod]
     public async Task EditLithologyLithologyDescription()
     {
-        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var stratigraphyId = context.Stratigraphies.First().Id;
         var existingUnconsolidatedLithology = GetCompleteLithology(stratigraphyId);
         var createResponse = await controller.CreateAsync(existingUnconsolidatedLithology);
         ActionResultAssert.IsOk(createResponse.Result);
@@ -502,7 +502,7 @@ public class LithologyControllerTest
     [TestMethod]
     public async Task BulkCreateAsyncCreatesMultipleLithologies()
     {
-        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var stratigraphyId = context.Stratigraphies.First().Id;
         var lithologies = new List<Lithology>
         {
             new Lithology
@@ -614,7 +614,7 @@ public class LithologyControllerTest
         {
             new Lithology
             {
-                StratigraphyId = context.StratigraphiesV2.First().Id,
+                StratigraphyId = context.Stratigraphies.First().Id,
                 FromDepth = 10,
                 ToDepth = 20,
                 Notes = "Different stratigraphy 1",
@@ -625,7 +625,7 @@ public class LithologyControllerTest
             },
             new Lithology
             {
-                StratigraphyId = context.StratigraphiesV2.Skip(1).First().Id,
+                StratigraphyId = context.Stratigraphies.Skip(1).First().Id,
                 FromDepth = 20,
                 ToDepth = 30,
                 Notes = "Different stratigraphy 2",
@@ -669,7 +669,7 @@ public class LithologyControllerTest
             .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(false);
 
-        var stratigraphyId = context.StratigraphiesV2.First().Id;
+        var stratigraphyId = context.Stratigraphies.First().Id;
         var lithologies = new List<Lithology>
         {
             new Lithology

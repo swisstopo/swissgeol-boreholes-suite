@@ -1,11 +1,11 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress } from "@mui/material";
-import { FullPageCentered } from "../../../../../../components/styledComponents.ts";
-import { EditStateContext } from "../../../../editStateContext.tsx";
-import { useFaciesDescriptions } from "../../faciesDescription.ts";
-import { useLithologicalDescriptions } from "../../lithologicalDescription.ts";
-import { useLithologies } from "../../lithology.ts";
+import { FullPageCentered } from "../../../../../components/styledComponents.ts";
+import { EditStateContext } from "../../../editStateContext.tsx";
+import { useFaciesDescriptions } from "../faciesDescription.ts";
+import { useLithologicalDescriptions } from "../lithologicalDescription.ts";
+import { useLithologies } from "../lithology.ts";
 import { LithologyContentEdit } from "./lithologyContentEdit.tsx";
 import { TempLithologyView } from "./tempLithologyView.tsx";
 

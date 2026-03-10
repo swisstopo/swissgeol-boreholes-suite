@@ -1,5 +1,6 @@
 ﻿using BDMS.Json;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -10,14 +11,18 @@ namespace BDMS.Models;
 public class Stratigraphy : IChangeTracking, IIdentifyable
 {
     /// <inheritdoc />
-    [Column("id_sty")]
+    [IncludeInExport]
+    [JsonRequired]
+    [Column("id")]
     public int Id { get; set; }
 
     /// <summary>
     /// Gets or sets the foreign key for the <see cref="Borehole"/> associated  with the <see cref="Stratigraphy"/>.
     /// </summary>
-    [Column("id_bho_fk")]
-    public int? BoreholeId { get; set; }
+    [IncludeInExport]
+    [JsonRequired]
+    [Column("borehole_id")]
+    public int BoreholeId { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/> associated  with the <see cref="Stratigraphy"/>.
@@ -25,70 +30,76 @@ public class Stratigraphy : IChangeTracking, IIdentifyable
     public Borehole? Borehole { get; set; }
 
     /// <summary>
-    /// Gets or sets whether the <see cref="Stratigraphy"/> is primary.
+    /// Gets or sets the <see cref="Stratigraphy"/>'s name.
     /// </summary>
     [IncludeInExport]
-    [Column("primary_sty")]
-    public bool? IsPrimary { get; set; }
+    [Column("name")]
+    public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Stratigraphy"/>'s date.
     /// </summary>
     [IncludeInExport]
-    [Column("date_sty")]
+    [Column("date")]
     public DateTime? Date { get; set; }
 
+    /// <summary>
+    /// Gets or sets whether the <see cref="Stratigraphy"/> is primary.
+    /// </summary>
+    [IncludeInExport]
+    [JsonRequired]
+    [Column("is_primary")]
+    public bool IsPrimary { get; set; }
+
     /// <inheritdoc />
-    [Column("update_sty")]
+    [Column("update")]
     public DateTime? Updated { get; set; }
 
     /// <inheritdoc />
-    [Column("updater_sty")]
+    [Column("updater")]
     public int? UpdatedById { get; set; }
 
     /// <inheritdoc />
     public User? UpdatedBy { get; set; }
 
     /// <inheritdoc />
-    [Column("creation_sty")]
+    [Column("creation")]
     public DateTime? Created { get; set; }
 
     /// <inheritdoc />
-    [Column("author_sty")]
+    [Column("creator")]
     public int? CreatedById { get; set; }
 
     /// <inheritdoc />
     public User? CreatedBy { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Stratigraphy"/>'s name.
+    /// Gets the <see cref="Lithology"/>s associated with the <see cref="Stratigraphy"/>.
     /// </summary>
     [IncludeInExport]
-    [Column("name_sty")]
-    public string? Name { get; set; }
+    public ICollection<Lithology>? Lithologies { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Stratigraphy"/>'s quality id.
+    /// Gets the <see cref="LithologicalDescription"/>s associated with the <see cref="Stratigraphy"/>.
     /// </summary>
     [IncludeInExport]
-    [Column("quality_id")]
-    public int? QualityId { get; set; }
+    public ICollection<LithologicalDescription>? LithologicalDescriptions { get; set; }
 
     /// <summary>
-    /// Gets or sets the <see cref="Stratigraphy"/>'s quality.
-    /// </summary>
-    public Codelist? Quality { get; set; }
-
-    /// <summary>
-    /// Gets or sets the <see cref="Stratigraphy"/>'s notes.
+    /// Gets the <see cref="FaciesDescription"/>s associated with the <see cref="Stratigraphy"/>.
     /// </summary>
     [IncludeInExport]
-    [Column("notes_sty")]
-    public string? Notes { get; set; }
+    public ICollection<FaciesDescription>? FaciesDescriptions { get; set; }
 
     /// <summary>
-    /// Gets the <see cref="Layer"/>s associated with the <see cref="Stratigraphy"/>.
+    /// Gets the <see cref="ChronostratigraphyLayer"/>s associated with the <see cref="Stratigraphy"/>.
     /// </summary>
     [IncludeInExport]
-    public ICollection<Layer>? Layers { get; set; }
+    public ICollection<ChronostratigraphyLayer>? ChronostratigraphyLayers { get; set; }
+
+    /// <summary>
+    /// Gets the <see cref="LithostratigraphyLayer"/>s associated with the <see cref="Stratigraphy"/>.
+    /// </summary>
+    [IncludeInExport]
+    public ICollection<LithostratigraphyLayer>? LithostratigraphyLayers { get; set; }
 }

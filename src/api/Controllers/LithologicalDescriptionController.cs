@@ -24,7 +24,7 @@ public class LithologicalDescriptionController : BoreholeControllerBase<Litholog
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<IEnumerable<LithologicalDescription>>> GetAsync([FromQuery] int stratigraphyId)
     {
-        var stratigraphy = await Context.StratigraphiesV2
+        var stratigraphy = await Context.Stratigraphies
             .AsNoTracking()
             .SingleOrDefaultAsync(x => x.Id == stratigraphyId)
             .ConfigureAwait(false);
@@ -105,7 +105,7 @@ public class LithologicalDescriptionController : BoreholeControllerBase<Litholog
         }
 
         var stratigraphyId = stratigraphyIds.Single();
-        var stratigraphy = await Context.StratigraphiesV2
+        var stratigraphy = await Context.Stratigraphies
             .AsNoTracking()
             .SingleOrDefaultAsync(x => x.Id == stratigraphyId)
             .ConfigureAwait(false);
@@ -137,7 +137,7 @@ public class LithologicalDescriptionController : BoreholeControllerBase<Litholog
     {
         if (entity == null) return default;
 
-        var stratigraphy = await Context.StratigraphiesV2
+        var stratigraphy = await Context.Stratigraphies
             .AsNoTracking()
             .SingleOrDefaultAsync(d => d.Id == entity.StratigraphyId)
             .ConfigureAwait(false);

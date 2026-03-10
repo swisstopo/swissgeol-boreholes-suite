@@ -17,7 +17,7 @@ export const useBulkAddMutation = () => {
       boreholeId: number;
       lithologicalDescriptions: Omit<LithologicalDescription, "id" | "stratigraphyId">[];
     }) => {
-      const newStratigraphy: Stratigraphy = await fetchApiV2WithApiError("stratigraphyv", "POST", {
+      const newStratigraphy: Stratigraphy = await fetchApiV2WithApiError("stratigraphy", "POST", {
         id: 0,
         name: `Extracted ${new Date().toLocaleString()}`,
         isPrimary: false,

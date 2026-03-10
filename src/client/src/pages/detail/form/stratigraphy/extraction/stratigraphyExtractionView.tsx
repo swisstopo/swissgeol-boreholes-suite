@@ -5,7 +5,7 @@ import { theme } from "../../../../../AppTheme.ts";
 import { ExtractionImageContainer } from "../../../labeling/extractionImageContainer.tsx";
 import { PageSelection } from "../../../labeling/pageSelection.tsx";
 import { ExtractedLithologicalDescription } from "../lithologicalDescription.ts";
-import { useCompletedLayers } from "../stratigraphyV2/lithologyV2/useCompletedLayers.tsx";
+import { useCompletedLayers } from "../lithology/useCompletedLayers.tsx";
 import { ExtractedStratigraphyTable } from "./extractedStratigraphyTable.tsx";
 
 interface StratigraphyExtractionViewProps {

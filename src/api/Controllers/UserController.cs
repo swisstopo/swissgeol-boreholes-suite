@@ -215,8 +215,8 @@ public class UserController : ControllerBase
 
     private bool IsDeletable(User user)
     {
-        return !(context.Layers.Any(x => x.CreatedById == user.Id)
-                || context.Layers.Any(x => x.UpdatedById == user.Id)
+        return !(context.Lithologies.Any(x => x.CreatedById == user.Id)
+                || context.Lithologies.Any(x => x.UpdatedById == user.Id)
                 || context.Boreholes.Any(x => x.UpdatedById == user.Id)
                 || context.Boreholes.Any(x => x.CreatedById == user.Id)
                 || context.Boreholes.Any(x => x.LockedById == user.Id)

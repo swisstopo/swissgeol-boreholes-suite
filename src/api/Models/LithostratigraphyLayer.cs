@@ -9,7 +9,7 @@ namespace BDMS.Models;
 /// Represents a lithostratigraphy entity in the database.
 /// </summary>
 [Table("lithostratigraphy")]
-public class LithostratigraphyLayer : ILithologyLegacy, IChangeTracking, IIdentifyable
+public class LithostratigraphyLayer : IStratigraphyLayerLegacy, IChangeTracking, IIdentifyable
 {
     /// <inheritdoc />
     [Key]
@@ -21,7 +21,7 @@ public class LithostratigraphyLayer : ILithologyLegacy, IChangeTracking, IIdenti
     public int StratigraphyId { get; set; }
 
     /// <inheritdoc />
-    public StratigraphyV2? Stratigraphy { get; set; }
+    public Stratigraphy? Stratigraphy { get; set; }
 
     /// <inheritdoc />
     [Column("creator")]

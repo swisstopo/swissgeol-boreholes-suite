@@ -89,48 +89,6 @@ public class Codelist : IIdentifyable
     public LTree? Path { get; set; }
 
     /// <summary>
-    /// Gets the <see cref="Layer"/>s that use this <see cref="Codelist"/>.
-    /// </summary>
-    [JsonIgnore]
-    public ICollection<Layer>? Layers { get; }
-
-    /// <summary>
-    /// Gets the <see cref="LayerColorCode"/> join table entities.
-    /// </summary>
-    [JsonIgnore]
-    public ICollection<LayerColorCode>? LayerColorCodes { get; }
-
-    /// <summary>
-    /// Gets the <see cref="LayerDebrisCode"/> join table entities.
-    /// </summary>
-    [JsonIgnore]
-    public ICollection<LayerDebrisCode>? LayerDebrisCodes { get; set; }
-
-    /// <summary>
-    /// Gets the <see cref="LayerGrainShapeCode"/> join table entities.
-    /// </summary>
-    [JsonIgnore]
-    public ICollection<LayerGrainShapeCode>? LayerGrainShapeCodes { get; set; }
-
-    /// <summary>
-    /// Gets the <see cref="LayerGrainAngularityCode"/> join table entities.
-    /// </summary>
-    [JsonIgnore]
-    public ICollection<LayerGrainAngularityCode>? LayerGrainAngularityCodes { get; set; }
-
-    /// <summary>
-    /// Gets the <see cref="LayerOrganicComponentCode"/> join table entities.
-    /// </summary>
-    [JsonIgnore]
-    public ICollection<LayerOrganicComponentCode>? LayerOrganicComponentCodes { get; set; }
-
-    /// <summary>
-    /// Gets the <see cref="LayerUscs3Code"/> join table entities.
-    /// </summary>
-    [JsonIgnore]
-    public ICollection<LayerUscs3Code>? LayerUscs3Codes { get; set; }
-
-    /// <summary>
     /// Gets the <see cref="Borehole"/>s that use this <see cref="Codelist"/>.
     /// </summary>
     [JsonIgnore]

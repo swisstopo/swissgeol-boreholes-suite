@@ -1,10 +1,10 @@
 import { FC, ReactNode, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
-import { BaseLayer } from "../../../../../../api/stratigraphy.ts";
-import { FaciesDescription } from "../../faciesDescription.ts";
-import { LithologicalDescription } from "../../lithologicalDescription.ts";
-import { Lithology } from "../../lithology.ts";
+import { BaseLayer } from "../../../../../api/stratigraphy.ts";
+import { FaciesDescription } from "../faciesDescription.ts";
+import { LithologicalDescription } from "../lithologicalDescription.ts";
+import { Lithology } from "../lithology.ts";
 import {
   StratigraphyTableActionCell,
   StratigraphyTableCell,
@@ -13,7 +13,7 @@ import {
   StratigraphyTableGap,
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
-} from "../../stratigraphyTableComponents.tsx";
+} from "../stratigraphyTableComponents.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";
 import { useLayerDepths } from "./useLayerDepths.tsx";
@@ -117,8 +117,10 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
             {!depths || depths.length === 0 ? (
               <StratigraphyTableCell>empty</StratigraphyTableCell>
             ) : (
-              depths.map((depth, index) => (
-                <StratigraphyTableCell key={`depth-${index}`} sx={{ height: `${defaultRowHeight}px` }}>
+              depths.map(depth => (
+                <StratigraphyTableCell
+                  key={`${depth.lithologyId}-depth-${depth.fromDepth}-${depth.toDepth}`}
+                  sx={{ height: `${defaultRowHeight}px` }}>
                   <Typography>{`${depth.fromDepth} m MD`}</Typography>
                   <Typography>{`${depth.toDepth} m MD`}</Typography>
                 </StratigraphyTableCell>

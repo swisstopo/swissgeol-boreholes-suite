@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { FormContainer, FormInput } from "../../../../../../../components/form/form.ts";
+import { FormContainer, FormInput } from "../../../../../../components/form/form.ts";
 
 interface RemarksFormSectionProps {
   fieldName?: string;

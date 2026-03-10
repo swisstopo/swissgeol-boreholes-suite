@@ -21,10 +21,10 @@ import { EditStateContext } from "../../editStateContext";
 import { AddStratigraphyButton } from "./addStratigraphyButton";
 import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel";
 import { StratigraphyExtraction } from "./extraction/stratigraphyExtraction.tsx";
+import { LithologyPanel } from "./lithology/lithologyPanel.tsx";
 import LithostratigraphyPanel from "./lithostratigraphy/lithostratigraphyPanel";
 import { StratigraphyProvider } from "./stratigraphyContext.tsx";
 import { StratigraphyForm } from "./stratigraphyForm.tsx";
-import { LithologyPanel } from "./stratigraphyV2/lithologyV2/lithologyPanel.tsx";
 
 export const StratigraphyPanel: FC = () => {
   const [filePickerOpen, setFilePickerOpen] = useState(false);

@@ -1,13 +1,13 @@
 import { Dispatch, FC, ReactNode, SetStateAction, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
-import { BaseLayer, MinimalLayer } from "../../../../../../api/stratigraphy.ts";
-import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
-import { SaveContext } from "../../../../saveContext.tsx";
-import { FaciesDescription, useFaciesDescriptionMutations } from "../../faciesDescription.ts";
-import { LithologicalDescription, useLithologicalDescriptionMutations } from "../../lithologicalDescription.ts";
-import { LayerDepth, Lithology, useLithologyMutations } from "../../lithology.ts";
-import { StratigraphyContext, StratigraphyContextProps } from "../../stratigraphyContext.tsx";
+import { BaseLayer, MinimalLayer } from "../../../../../api/stratigraphy.ts";
+import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
+import { SaveContext } from "../../../saveContext.tsx";
+import { FaciesDescription, useFaciesDescriptionMutations } from "../faciesDescription";
+import { LithologicalDescription, useLithologicalDescriptionMutations } from "../lithologicalDescription.ts";
+import { LayerDepth, Lithology, useLithologyMutations } from "../lithology.ts";
+import { StratigraphyContext, StratigraphyContextProps } from "../stratigraphyContext";
 import {
   AddRowButton,
   StratigraphyTableActionCell,
@@ -17,8 +17,8 @@ import {
   StratigraphyTableGap,
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
-} from "../../stratigraphyTableComponents.tsx";
-import { BaseLayerChangeTracker, getLayerDepths, getLayersWithGaps } from "../../stratigraphyUtils.ts";
+} from "../stratigraphyTableComponents.tsx";
+import { BaseLayerChangeTracker, getLayerDepths, getLayersWithGaps } from "../stratigraphyUtils.ts";
 import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 import { FaciesDescriptionModal } from "./form/faciesDescriptionModal.tsx";
 import { LithologicalDescriptionModal } from "./form/lithologicalDescriptionModal.tsx";
@@ -524,12 +524,16 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
             <StratigraphyTableContent>
               <StratigraphyTableColumn sx={{ flex: "0 0 90px" }}>
                 {/* TODO: Add FormInput for depths and update lithology if depth changes. https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2392  Add overlap validation check */}
-                {depths.map((depth, index) => (
-                  <StratigraphyTableCell key={`depth-${index}`} sx={{ height: `${defaultRowHeight}px` }}>
-                    <Typography
-                      color={depth.hasFromDepthError ? "error" : "default"}>{`${depth.fromDepth} m MD`}</Typography>
-                    <Typography
-                      color={depth.hasToDepthError ? "error" : "default"}>{`${depth.toDepth} m MD`}</Typography>
+                {depths.map(depth => (
+                  <StratigraphyTableCell
+                    key={`${depth.lithologyId}-depth-${depth.fromDepth}-${depth.toDepth}`}
+                    sx={{ height: `${defaultRowHeight}px` }}>
+                    <Typography color={depth.hasFromDepthError ? "error" : "default"}>
+                      {`${depth.fromDepth} m MD`}
+                    </Typography>
+                    <Typography color={depth.hasToDepthError ? "error" : "default"}>
+                      {`${depth.toDepth} m MD`}
+                    </Typography>
                   </StratigraphyTableCell>
                 ))}
               </StratigraphyTableColumn>
