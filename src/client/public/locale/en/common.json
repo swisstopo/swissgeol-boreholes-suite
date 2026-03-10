@@ -24,6 +24,7 @@
   "addSectionElement": "Add reaming/overcoring",
   "addStratigraphy": "Add stratigraphy",
   "addUser": "Add user",
+  "addUserRole": "Add user role",
   "addWaterIngress": "Add water ingress",
   "addWorkgroup": "Add workgroup",
   "addWorkgroupRole": "Add workgroup role",
@@ -114,6 +115,7 @@
   "created_date_from": "Creation Date (from)",
   "created_date_to": "Creation Date (to)",
   "creationdate": "Creation date",
+  "creationdate_filter_title": "Creation date (from to)",
   "csvCodeListReferenceExplanation": "Download code references",
   "csvFormatExplanation": "The CSV-UTF8 file should contain the following column headings",
   "csvOptionalExplanation": "Column headings in square brackets are optional",
@@ -274,6 +276,7 @@
   "inactive": "Inactive",
   "inner": "inner",
   "instrumentation": "Instrumentation",
+  "invalidJsonBoreholeArray": "The provided file is not an array of boreholes or is not in a valid JSON format.",
   "invalidOrEmptyCsvFile": "Invalid or empty CSV file uploaded.",
   "invalidOrEmptyJsonFile": "Invalid or empty JSON file uploaded.",
   "invalidOrEmptyZipFile": "Invalid or empty ZIP file uploaded.",
@@ -421,6 +424,7 @@
   "restriction": "Restriction",
   "restriction_until": "End of restriction",
   "restriction_until_date": "Restriction end date",
+  "restriction_until_filter_title": "Restriction end date (from to)",
   "restriction_until_from": "Restriction end date (from)",
   "restriction_until_to": "Restriction end date (to)",
   "review": "Review",
@@ -460,7 +464,10 @@
   "status": "Status",
   "statusInstrument": "Instrument status",
   "statuses": {
-    "Reviewed": "Reviewed"
+    "Draft": "Draft",
+    "InReview": "Review",
+    "Reviewed": "Reviewed",
+    "Published": "Published"
   },
   "stratigraphy": "Stratigraphy",
   "stratigraphy_name": "Name/Version",
@@ -527,5 +534,6 @@
   "workgroup": "Workgroup",
   "workgroupWithNameAdded": "Workgroup \"{{name}}\" was added",
   "workgroups": "Workgroups",
-  "yes": "Yes"
+  "yes": "Yes",
+  "zipMissingJsonFile": "ZIP file does not contain a JSON file."
 }

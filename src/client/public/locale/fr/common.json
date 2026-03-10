@@ -24,6 +24,7 @@
   "addSectionElement": "Ajouter alésage/surcarottage",
   "addStratigraphy": "Ajouter une stratigraphie",
   "addUser": "Ajouter un utilisateur",
+  "addUserRole": "Ajouter un rôle d'utilisateur",
   "addWaterIngress": "Ajouter une venue d'eau",
   "addWorkgroup": "Ajouter un groupe de travail",
   "addWorkgroupRole": "Ajouter un rôle de groupe de travail",
@@ -114,6 +115,7 @@
   "created_date_from": "Date de création (de)",
   "created_date_to": "Date de création (à)",
   "creationdate": "Date de création",
+  "creationdate_filter_title": "Date de création (de à)",
   "csvCodeListReferenceExplanation": "Télécharger la référence des codes",
   "csvFormatExplanation": "Le fichier CSV-UTF8 doit contenir les en-têtes de colonne suivants",
   "csvOptionalExplanation": "Les titres de colonnes entre crochets sont facultatifs",
@@ -274,6 +276,7 @@
   "inactive": "Inactif",
   "inner": "intérieur",
   "instrumentation": "Instrumentation",
+  "invalidJsonBoreholeArray": "Le fichier fourni n'est pas un tableau de forages ou n'a pas un format JSON valide.",
   "invalidOrEmptyCsvFile": "Fichier CSV invalide ou vide téléchargé.",
   "invalidOrEmptyJsonFile": "Fichier JSON invalide ou vide téléchargé.",
   "invalidOrEmptyZipFile": "Fichier ZIP invalide ou vide téléchargé.",
@@ -422,6 +425,7 @@
   "restriction": "Restriction",
   "restriction_until": "Fin de restriction",
   "restriction_until_date": "Date fin de restriction",
+  "restriction_until_filter_title": "Date fin de restriction (de à)",
   "restriction_until_from": "Date fin de restriction (de)",
   "restriction_until_to": "Date fin de restriction (à)",
   "result": "Résultat",
@@ -462,7 +466,10 @@
   "status": "Statut",
   "statusInstrument": "Statut de l'instrument",
   "statuses": {
-    "Reviewed": "Révisé"
+    "Draft": "Draft",
+    "InReview": "En révision",
+    "Reviewed": "Révisé",
+    "Published": "Publié"
   },
   "stratigraphy": "Stratigraphie",
   "stratigraphy_name": "Nom/Version",
@@ -529,5 +536,6 @@
   "workgroup": "Groupe de travail",
   "workgroupWithNameAdded": "Groupe de travail \"{{name}}\" ajouté",
   "workgroups": "Groupes de travail",
-  "yes": "Oui"
+  "yes": "Oui",
+  "zipMissingJsonFile": "Le fichier ZIP ne contient pas de fichier JSON."
 }
