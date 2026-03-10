@@ -10,6 +10,7 @@
 - Multiple id values for a `boreholeId`/`identifier type` pair are now supported.
 - Borehole identifiers `IDKernlager` and `IDGeoDin` are no longer supported.
 - Deleted legacy stratigraphy and layer code, and renamed stratigraphyV2 to stratigraphy.
+- Deleted codelist schemas `custom.lithostratigraphy_top_bedrock` and `custom.chronostratigraphy_top_bedrock`.
 
 ### Fixed
 - All tables in the `logs` and `attachments` tab of the borehole detail view were missing pagination.
