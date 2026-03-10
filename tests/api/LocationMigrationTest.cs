@@ -15,7 +15,7 @@ public class LocationMigrationTest : MaintenanceTaskTestBase
     /// <inheritdoc/>
     protected override void ConfigureServices(Mock<IServiceProvider> serviceProviderMock)
     {
-        var loggerMock = new Mock<ILogger<LocationService>>();
+        var loggerMock = new Mock<ILogger<LocationService>>(MockBehavior.Strict);
         var locationService = new LocationService(loggerMock.Object, HttpClientFactoryMock.Object);
         serviceProviderMock.Setup(sp => sp.GetService(typeof(LocationService))).Returns(locationService);
     }
