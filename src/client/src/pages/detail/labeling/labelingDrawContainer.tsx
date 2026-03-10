@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useEffect, useRef } from "react";
+import { FC, useCallback, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Box } from "@mui/material";
 import { MapBrowserEvent } from "ol";
@@ -15,7 +15,6 @@ import { Fill, Stroke, Style } from "ol/style";
 import { useProfileImage } from "../../../api/file/file.ts";
 import { DataExtractionResponse } from "../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
-import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { ExtractionBoundingBox, ExtractionType } from "./labelingInterfaces.tsx";
 import { LabelingView } from "./labelingView.tsx";
 
@@ -56,8 +55,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
   extractionType,
 }) => {
   const { t } = useTranslation();
-  const { showAlert } = useContext(AlertContext);
-  const { data: image, isError } = useProfileImage(fileInfo?.fileName);
+  const { data: image } = useProfileImage(fileInfo?.fileName);
   const mapRef = useRef<Map>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
 
