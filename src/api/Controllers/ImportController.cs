@@ -529,7 +529,7 @@ public class ImportController : ControllerBase
         if (locationX == null || locationY == null) return;
 
         // Set coordinates for missing reference system.
-        await coordinateService.MigrateCoordinatesOfBorehole(borehole, onlyMissing: false).ConfigureAwait(false);
+        await coordinateService.MigrateCoordinatesAsync(borehole, onlyMissing: false).ConfigureAwait(false);
 
         var locationInfo = await locationService.IdentifyAsync(locationX.Value, locationY.Value, srid).ConfigureAwait(false);
         if (locationInfo != null)
