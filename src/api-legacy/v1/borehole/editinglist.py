@@ -17,13 +17,6 @@ class ListEditingBorehole(Action):
 
         paging = ''
 
-        layer_where, layer_params, layer_joins = self.filterProfileLayers(
-            filter)
-
-        chronostratigraphy_where, chronostratigraphy_params, chronostratigraphy_joins = self.filterChronostratigraphy(filter)
-
-        lithostratigraphy_where, lithostratigraphy_params, lithostratigraphy_joins = self.filterLithostratigraphy(filter)
-
         where, params = self.filterBorehole(filter)
 
         rowsSql = f"""
@@ -102,8 +95,7 @@ class ListEditingBorehole(Action):
                         SELECT
                             purpose_id_cli as purpose
                     ) t
-                ) as extended,
-                stratigraphy as stratigraphy
+                ) as extended
 
             FROM
                 bdms.borehole
@@ -132,38 +124,6 @@ class ListEditingBorehole(Action):
                 bdms.users as creator
             ON
                 created_by_bho = creator.id_usr
-
-            LEFT JOIN (
-                SELECT
-                    id_bho_fk,
-                    array_to_json(
-                        array_agg(
-                            json_build_object(
-                                'id', id,
-                                'layers', layers,
-                                'date', date
-                            )
-                        )
-                    ) AS stratigraphy
-                FROM (
-                    SELECT
-                        id_bho_fk,
-                        id_sty AS id,
-                        to_char(
-                            date_sty, 'YYYY-MM-DD'
-                        ) AS date,
-                        COUNT(id_lay) AS layers
-                    FROM
-                        bdms.stratigraphy
-                    LEFT JOIN bdms.layer
-                        ON layer.id_sty_fk = id_sty
-                    GROUP BY id_bho_fk, id_sty, date_sty
-                    ORDER BY date_sty DESC, id_sty DESC
-                ) t
-                GROUP BY id_bho_fk
-            ) AS strt1
-            ON
-                strt1.id_bho_fk = borehole.id_bho
         """
 
         cntSql = """
@@ -189,113 +149,6 @@ class ListEditingBorehole(Action):
             ON
                 created_by_bho = creator.id_usr
         """
-
-        if len(layer_params) > 0:
-            layer_params = [param for param in layer_params if param is not None]
-            joins_string = "\n".join(layer_joins) if len(
-                layer_joins) > 0 else ''
-            where_string = (
-                "AND {}".format(" AND ".join(layer_where))
-                if len(layer_where) > 0
-                else ''
-            )
-
-            strt_sql = """
-                INNER JOIN (
-                    SELECT DISTINCT
-                        id_bho_fk,
-                        name_sty
-
-                    FROM
-                        bdms.stratigraphy
-
-                    INNER JOIN
-                        bdms.layer
-                    ON
-                        id_sty_fk = id_sty
-
-                    {}
-
-                    {}
-
-                ) as strt2
-                ON
-                    borehole.id_bho = strt2.id_bho_fk
-            """.format(
-                joins_string, where_string
-            )
-            rowsSql += strt_sql
-            cntSql += strt_sql
-
-        if len(chronostratigraphy_params) > 0:
-            joins_string = "\n".join(chronostratigraphy_joins) if len(
-                chronostratigraphy_joins) > 0 else ''
-            where_string = (
-                "AND {}".format(" AND ".join(chronostratigraphy_where))
-                if len(chronostratigraphy_where) > 0
-                else ''
-            )
-
-            strt_sql = """
-                INNER JOIN (
-                    SELECT DISTINCT
-                        id_bho_fk
-
-                    FROM
-                        bdms.stratigraphy
-
-                    INNER JOIN
-                        bdms.chronostratigraphy
-                    ON
-                        id_sty_fk = id_sty
-
-                    {}
-
-                    {}
-
-                ) as chronostratigraphy
-                ON
-                    borehole.id_bho = chronostratigraphy.id_bho_fk
-            """.format(
-                joins_string, where_string
-            )
-            rowsSql += strt_sql
-            cntSql += strt_sql
-
-        if len(lithostratigraphy_params) > 0:
-            joins_string = "\n".join(lithostratigraphy_joins) if len(
-                lithostratigraphy_joins) > 0 else ''
-            where_string = (
-                "AND {}".format(" AND ".join(lithostratigraphy_where))
-                if len(lithostratigraphy_where) > 0
-                else ''
-            )
-
-            strt_sql = """
-                INNER JOIN (
-                    SELECT DISTINCT
-                        id_bho_fk
-
-                    FROM
-                        bdms.stratigraphy
-
-                    INNER JOIN
-                        bdms.lithostratigraphy
-                    ON
-                        stratigraphy_id = id_sty
-
-                    {}
-
-                    {}
-
-                ) as lithostratigraphy
-                ON
-                    borehole.id_bho = lithostratigraphy.id_bho_fk
-            """.format(
-                joins_string, where_string
-            )
-            rowsSql += strt_sql
-            cntSql += strt_sql
 
         if len(where) > 0:
             rowsSql += """
@@ -359,7 +212,7 @@ class ListEditingBorehole(Action):
         )
 
         rec = await self.conn.fetchrow(
-            sql, *(layer_params + chronostratigraphy_params + lithostratigraphy_params + params)
+            sql, *(params)
         )
 
         data = self.decode(rec[0]) if rec[0] is not None else []

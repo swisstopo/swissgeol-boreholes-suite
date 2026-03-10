@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20260306085552_RemoveLegacyStratigraphy")]
+    partial class RemoveLegacyStratigraphy
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2266,7 +2269,7 @@ namespace BDMS.Migrations
                     b.ToTable("section_element", "bdms");
                 });
 
-            modelBuilder.Entity("BDMS.Models.Stratigraphy", b =>
+            modelBuilder.Entity("BDMS.Models.StratigraphyV2", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -2315,7 +2318,7 @@ namespace BDMS.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("stratigraphy", "bdms");
+                    b.ToTable("stratigraphy_v2", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.TabStatus", b =>
@@ -3051,7 +3054,7 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
+                    b.HasOne("BDMS.Models.StratigraphyV2", "Stratigraphy")
                         .WithMany("ChronostratigraphyLayers")
                         .HasForeignKey("StratigraphyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -3134,7 +3137,7 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("FaciesId");
 
-                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
+                    b.HasOne("BDMS.Models.StratigraphyV2", "Stratigraphy")
                         .WithMany("FaciesDescriptions")
                         .HasForeignKey("StratigraphyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -3342,7 +3345,7 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
+                    b.HasOne("BDMS.Models.StratigraphyV2", "Stratigraphy")
                         .WithMany("LithologicalDescriptions")
                         .HasForeignKey("StratigraphyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -3389,7 +3392,7 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("PlasticityId");
 
-                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
+                    b.HasOne("BDMS.Models.StratigraphyV2", "Stratigraphy")
                         .WithMany("Lithologies")
                         .HasForeignKey("StratigraphyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -3763,7 +3766,7 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("LithostratigraphyId");
 
-                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
+                    b.HasOne("BDMS.Models.StratigraphyV2", "Stratigraphy")
                         .WithMany("LithostratigraphyLayers")
                         .HasForeignKey("StratigraphyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -4015,7 +4018,7 @@ namespace BDMS.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
-            modelBuilder.Entity("BDMS.Models.Stratigraphy", b =>
+            modelBuilder.Entity("BDMS.Models.StratigraphyV2", b =>
                 {
                     b.HasOne("BDMS.Models.Borehole", "Borehole")
                         .WithMany("Stratigraphies")
@@ -4324,7 +4327,7 @@ namespace BDMS.Migrations
                     b.Navigation("SectionElements");
                 });
 
-            modelBuilder.Entity("BDMS.Models.Stratigraphy", b =>
+            modelBuilder.Entity("BDMS.Models.StratigraphyV2", b =>
                 {
                     b.Navigation("ChronostratigraphyLayers");
 

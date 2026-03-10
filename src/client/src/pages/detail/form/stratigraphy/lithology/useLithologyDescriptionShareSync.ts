@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { Lithology } from "../../lithology.ts";
+import { Lithology } from "../lithology.ts";
 
 export function useLithologyDescriptionShareSync(formMethods: UseFormReturn<Lithology>) {
   const { setValue, watch } = formMethods;

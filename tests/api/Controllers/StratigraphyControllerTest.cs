@@ -1,29 +1,27 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
-using Microsoft.AspNetCore.Cors.Infrastructure;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
 
 [TestClass]
-public class StratigraphyV2ControllerTest
+public class StratigraphyControllerTest
 {
     private const int StratigraphyId = 6_000_003;
 
     private BdmsContext context;
-    private StratigraphyV2Controller controller;
+    private StratigraphyController controller;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
         var boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
-        controller = new StratigraphyV2Controller(context, new Mock<ILogger<StratigraphyV2Controller>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new StratigraphyController(context, new Mock<ILogger<StratigraphyController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -42,7 +40,7 @@ public class StratigraphyV2ControllerTest
         var result = await controller.GetAsync(1002601).ConfigureAwait(false);
         ActionResultAssert.IsOk(result.Result);
 
-        var stratigraphies = ((OkObjectResult?)result.Result)?.Value as List<StratigraphyV2>;
+        var stratigraphies = ((OkObjectResult?)result.Result)?.Value as List<Stratigraphy>;
         Assert.IsNotNull(stratigraphies);
         Assert.AreEqual(2, stratigraphies.Count);
 
@@ -105,7 +103,7 @@ public class StratigraphyV2ControllerTest
     {
         SetupControllerWithAlwaysLockedBorehole();
 
-        var existingStratigraphy = await context.StratigraphiesV2.FirstAsync();
+        var existingStratigraphy = await context.Stratigraphies.FirstAsync();
         var copyResult = await controller.CopyAsync(existingStratigraphy.Id);
         ActionResultAssert.IsUnauthorized(copyResult.Result);
     }
@@ -132,7 +130,7 @@ public class StratigraphyV2ControllerTest
         // Precondition: Find a group of three stratigraphies with one main stratigraphy
         var getResult = await controller.GetAsync(1000005);
         ActionResultAssert.IsOk(getResult.Result);
-        var stratigraphies = ((OkObjectResult?)getResult.Result)?.Value as List<StratigraphyV2>;
+        var stratigraphies = ((OkObjectResult?)getResult.Result)?.Value as List<Stratigraphy>;
         var primaryStratigraphy = stratigraphies.SingleOrDefault(s => s.IsPrimary);
         Assert.IsNotNull(primaryStratigraphy);
 
@@ -145,7 +143,7 @@ public class StratigraphyV2ControllerTest
     {
         SetupControllerWithAlwaysLockedBorehole();
 
-        var existingStratigraphy = await context.StratigraphiesV2.FirstAsync();
+        var existingStratigraphy = await context.Stratigraphies.FirstAsync();
         var deleteResult = await controller.DeleteAsync(existingStratigraphy.Id);
         ActionResultAssert.IsUnauthorized(deleteResult);
     }
@@ -155,7 +153,7 @@ public class StratigraphyV2ControllerTest
     {
         var boreholeWithoutStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => !b.Stratigraphies.Any());
 
-        var stratigraphyToAdd = new StratigraphyV2
+        var stratigraphyToAdd = new Stratigraphy
         {
             BoreholeId = boreholeWithoutStratigraphy.Id,
             Name = "KODACLUSTER",
@@ -164,7 +162,7 @@ public class StratigraphyV2ControllerTest
         var createResult = await controller.CreateAsync(stratigraphyToAdd);
         ActionResultAssert.IsOk(createResult.Result);
 
-        var createdStratigraphy = (StratigraphyV2?)((OkObjectResult)createResult.Result!).Value;
+        var createdStratigraphy = (Stratigraphy?)((OkObjectResult)createResult.Result!).Value;
         createdStratigraphy = GetStratigraphy(createdStratigraphy.Id);
         Assert.AreEqual(stratigraphyToAdd.BoreholeId, createdStratigraphy.BoreholeId);
         Assert.AreEqual(stratigraphyToAdd.Name, createdStratigraphy.Name);
@@ -178,7 +176,7 @@ public class StratigraphyV2ControllerTest
     {
         var boreholeWithExistingStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => b.Stratigraphies.Any());
 
-        var stratigraphyToAdd = new StratigraphyV2
+        var stratigraphyToAdd = new Stratigraphy
         {
             BoreholeId = boreholeWithExistingStratigraphy.Id,
             Name = "STORMSTEED",
@@ -187,7 +185,7 @@ public class StratigraphyV2ControllerTest
         var createResult = await controller.CreateAsync(stratigraphyToAdd);
         ActionResultAssert.IsOk(createResult.Result);
 
-        var createdStratigraphy = (StratigraphyV2?)((OkObjectResult)createResult.Result!).Value;
+        var createdStratigraphy = (Stratigraphy?)((OkObjectResult)createResult.Result!).Value;
         createdStratigraphy = GetStratigraphy(createdStratigraphy.Id);
         Assert.AreEqual(stratigraphyToAdd.BoreholeId, createdStratigraphy.BoreholeId);
         Assert.AreEqual(stratigraphyToAdd.Name, createdStratigraphy.Name);
@@ -201,7 +199,7 @@ public class StratigraphyV2ControllerTest
     {
         var boreholeWithoutStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => !b.Stratigraphies.Any());
 
-        var stratigraphy1 = new StratigraphyV2
+        var stratigraphy1 = new Stratigraphy
         {
             BoreholeId = boreholeWithoutStratigraphy.Id,
             Name = "WINDFOOT",
@@ -209,11 +207,11 @@ public class StratigraphyV2ControllerTest
 
         var createResult1 = await controller.CreateAsync(stratigraphy1);
         ActionResultAssert.IsOk(createResult1.Result);
-        var firstStratigraphy = (StratigraphyV2?)((OkObjectResult)createResult1.Result!).Value;
+        var firstStratigraphy = (Stratigraphy?)((OkObjectResult)createResult1.Result!).Value;
         firstStratigraphy = GetStratigraphy(firstStratigraphy.Id);
         Assert.AreEqual(true, firstStratigraphy.IsPrimary);
 
-        var stratigraphy2 = new StratigraphyV2
+        var stratigraphy2 = new Stratigraphy
         {
             BoreholeId = boreholeWithoutStratigraphy.Id,
             Name = "ECHOGOAT",
@@ -222,7 +220,7 @@ public class StratigraphyV2ControllerTest
 
         var createResult2 = await controller.CreateAsync(stratigraphy2);
         ActionResultAssert.IsOk(createResult2.Result);
-        var secondStratigraphy = (StratigraphyV2?)((OkObjectResult)createResult2.Result!).Value;
+        var secondStratigraphy = (Stratigraphy?)((OkObjectResult)createResult2.Result!).Value;
         secondStratigraphy = GetStratigraphy(secondStratigraphy.Id);
         Assert.AreEqual(true, secondStratigraphy.IsPrimary);
 
@@ -233,9 +231,9 @@ public class StratigraphyV2ControllerTest
     [TestMethod]
     public async Task CreateWithExistingName()
     {
-        var baseStratigraphy = await context.StratigraphiesV2.FirstAsync();
+        var baseStratigraphy = await context.Stratigraphies.FirstAsync();
 
-        var stratigraphyToCreate = new StratigraphyV2
+        var stratigraphyToCreate = new Stratigraphy
         {
             BoreholeId = baseStratigraphy.BoreholeId,
             Name = baseStratigraphy.Name,
@@ -256,7 +254,7 @@ public class StratigraphyV2ControllerTest
     public async Task CreateWithInvalidStratigraphy()
     {
         var inexistentBoreholeId = int.MinValue;
-        var invalidStratigraphy = new StratigraphyV2 { BoreholeId = inexistentBoreholeId };
+        var invalidStratigraphy = new Stratigraphy { BoreholeId = inexistentBoreholeId };
         var createResult = await controller.CreateAsync(invalidStratigraphy);
         ActionResultAssert.IsInternalServerError(createResult.Result);
     }
@@ -282,14 +280,14 @@ public class StratigraphyV2ControllerTest
     public async Task Edit()
     {
         var borehole = await context.Boreholes.OrderBy(x => x.CreatedById).LastAsync();
-        var stratigraphyToEdit = await context.StratigraphiesV2.FirstAsync();
+        var stratigraphyToEdit = await context.Stratigraphies.FirstAsync();
         stratigraphyToEdit.BoreholeId = borehole.Id;
         stratigraphyToEdit.IsPrimary = false;
         stratigraphyToEdit.Date = new DateTime(1999, 9, 9).ToUniversalTime();
         stratigraphyToEdit.Name = "ERRONEOUS";
 
         var editResult = await controller.EditAsync(stratigraphyToEdit);
-        var editedStratigraphy = ActionResultAssert.IsOkObjectResult<StratigraphyV2>(editResult.Result);
+        var editedStratigraphy = ActionResultAssert.IsOkObjectResult<Stratigraphy>(editResult.Result);
         Assert.AreEqual(borehole.Id, editedStratigraphy.BoreholeId);
         Assert.AreEqual(false, editedStratigraphy.IsPrimary);
         Assert.AreEqual(new DateTime(1999, 9, 9).ToUniversalTime(), editedStratigraphy.Date);
@@ -303,27 +301,27 @@ public class StratigraphyV2ControllerTest
         // one of which is the main stratigraphy.
         var boreholeWithoutStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => !b.Stratigraphies.Any());
 
-        var firstStratigraphy = new StratigraphyV2
+        var firstStratigraphy = new Stratigraphy
         {
             IsPrimary = true,
             BoreholeId = boreholeWithoutStratigraphy.Id,
             Name = "FALLOUT-VII",
         };
 
-        var secondStratigraphy = new StratigraphyV2
+        var secondStratigraphy = new Stratigraphy
         {
             IsPrimary = false,
             BoreholeId = boreholeWithoutStratigraphy.Id,
             Name = "KARMACANDID",
         };
 
-        firstStratigraphy = ActionResultAssert.IsOkObjectResult<StratigraphyV2>((await controller.CreateAsync(firstStratigraphy)).Result);
-        secondStratigraphy = ActionResultAssert.IsOkObjectResult<StratigraphyV2>((await controller.CreateAsync(secondStratigraphy)).Result);
+        firstStratigraphy = ActionResultAssert.IsOkObjectResult<Stratigraphy>((await controller.CreateAsync(firstStratigraphy)).Result);
+        secondStratigraphy = ActionResultAssert.IsOkObjectResult<Stratigraphy>((await controller.CreateAsync(secondStratigraphy)).Result);
 
         // Setting the second stratigraphy as the main stratigraphy
         // should set the first stratigraphy as non-main.
         secondStratigraphy.IsPrimary = true;
-        secondStratigraphy = ActionResultAssert.IsOkObjectResult<StratigraphyV2>((await controller.EditAsync(secondStratigraphy)).Result);
+        secondStratigraphy = ActionResultAssert.IsOkObjectResult<Stratigraphy>((await controller.EditAsync(secondStratigraphy)).Result);
         Assert.AreEqual(true, secondStratigraphy.IsPrimary);
         Assert.AreEqual("KARMACANDID", secondStratigraphy.Name);
 
@@ -337,7 +335,7 @@ public class StratigraphyV2ControllerTest
     {
         var boreholeWithoutStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => !b.Stratigraphies.Any());
 
-        var stratigraphy1 = new StratigraphyV2
+        var stratigraphy1 = new Stratigraphy
         {
             BoreholeId = boreholeWithoutStratigraphy.Id,
             Name = "DECKDIXIE",
@@ -346,7 +344,7 @@ public class StratigraphyV2ControllerTest
         var createResult1 = await controller.CreateAsync(stratigraphy1);
         ActionResultAssert.IsOk(createResult1.Result);
 
-        var stratigraphy2 = new StratigraphyV2
+        var stratigraphy2 = new Stratigraphy
         {
             BoreholeId = boreholeWithoutStratigraphy.Id,
             Name = "FOREMANDESPERADO",
@@ -354,7 +352,7 @@ public class StratigraphyV2ControllerTest
 
         var createResult2 = await controller.CreateAsync(stratigraphy2);
         ActionResultAssert.IsOk(createResult2.Result);
-        var secondStratigraphy = (StratigraphyV2?)((OkObjectResult)createResult2.Result!).Value;
+        var secondStratigraphy = (Stratigraphy?)((OkObjectResult)createResult2.Result!).Value;
         secondStratigraphy.Name = "DECKDIXIE";
         var updateResult = await controller.EditAsync(secondStratigraphy);
         ActionResultAssert.IsInternalServerError(updateResult.Result, "Name must be unique");
@@ -368,7 +366,7 @@ public class StratigraphyV2ControllerTest
     {
         SetupControllerWithAlwaysLockedBorehole();
 
-        var existingStratigraphy = await context.StratigraphiesV2.FirstAsync();
+        var existingStratigraphy = await context.Stratigraphies.FirstAsync();
         var editResult = await controller.EditAsync(existingStratigraphy);
         ActionResultAssert.IsUnauthorized(editResult.Result);
     }
@@ -380,9 +378,9 @@ public class StratigraphyV2ControllerTest
         ActionResultAssert.IsBadRequest(editResult.Result);
     }
 
-    private StratigraphyV2? GetStratigraphy(int id)
+    private Stratigraphy? GetStratigraphy(int id)
     {
-        return context.StratigraphiesV2WithIncludes.SingleOrDefault(s => s.Id == id);
+        return context.StratigraphiesWithIncludes.SingleOrDefault(s => s.Id == id);
     }
 
     private void SetupControllerWithAlwaysLockedBorehole()
@@ -392,6 +390,6 @@ public class StratigraphyV2ControllerTest
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(false);
 
-        controller = new StratigraphyV2Controller(context, new Mock<ILogger<StratigraphyV2Controller>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new StratigraphyController(context, new Mock<ILogger<StratigraphyController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 }

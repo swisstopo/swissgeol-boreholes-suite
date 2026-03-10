@@ -10,12 +10,6 @@ class ListGeojson(Action):
         if user is not None:
             permissions = self.filterPermission(user)
 
-        layer_where, layer_params, layer_joins = self.filterProfileLayers(filter)
-
-        chronostratigraphy_where, chronostratigraphy_params, chronostratigraphy_joins = self.filterChronostratigraphy(filter)
-
-        lithostratigraphy_where, lithostratigraphy_params, lithostratigraphy_joins = self.filterLithostratigraphy(filter)
-
         #  filtering by map extent is not relevant for the geoJson Map data and can lead to missing data points.
         filter['extent'] = None
         where, params = self.filterBorehole(filter)
@@ -23,106 +17,6 @@ class ListGeojson(Action):
         wr_strt = ''
         wr = ''
 
-        if len(layer_params) > 0:
-            layer_params = [param for param in layer_params if param is not None]
-
-            joins_string = "\n".join(layer_joins) if len(layer_joins)>0 else ''
-
-            where_string = (
-                "AND {}".format(" AND ".join(layer_where))
-                if len(layer_where) > 0
-                else ''
-            )
-
-            wr_strt += """
-                INNER JOIN (
-                    SELECT DISTINCT
-                        id_bho_fk
-
-                    FROM
-                        bdms.stratigraphy
-
-                    INNER JOIN
-                        bdms.layer
-                    ON
-                        id_sty_fk = id_sty
-
-                    {}
-
-                    {}
-
-                ) as strt
-                ON
-                    borehole.id_bho = strt.id_bho_fk
-            """.format(
-                joins_string, where_string
-            )
-
-        if len(chronostratigraphy_params) > 0:
-
-            joins_string = "\n".join(chronostratigraphy_joins) if len(
-                chronostratigraphy_joins) > 0 else ''
-            where_string = (
-                "AND {}".format(" AND ".join(chronostratigraphy_where))
-                if len(chronostratigraphy_where) > 0
-                else ''
-            )
-
-            wr_strt += """
-                INNER JOIN (
-                    SELECT DISTINCT
-                        id_bho_fk
-
-                    FROM
-                        bdms.stratigraphy
-
-                    INNER JOIN
-                        bdms.chronostratigraphy
-                    ON
-                        id_sty_fk = id_sty
-                    {}
-
-                    {}
-
-                ) as chronostratigraphy
-                ON
-                    borehole.id_bho = chronostratigraphy.id_bho_fk
-            """.format(
-                joins_string, where_string
-            )
-
-        if len(lithostratigraphy_params) > 0:
-
-            joins_string = "\n".join(lithostratigraphy_joins) if len(
-                lithostratigraphy_joins) > 0 else ''
-            where_string = (
-                "AND {}".format(" AND ".join(lithostratigraphy_where))
-                if len(lithostratigraphy_where) > 0
-                else ''
-            )
-
-            wr_strt += """
-                INNER JOIN (
-                    SELECT DISTINCT
-                        id_bho_fk
-
-                    FROM
-                        bdms.stratigraphy
-
-                    INNER JOIN
-                        bdms.lithostratigraphy
-                    ON
-                        stratigraphy_id = id_sty
-                    {}
-
-                    {}
-
-                ) as lithostratigraphy
-                ON
-                    borehole.id_bho = lithostratigraphy.id_bho_fk
-            """.format(
-                joins_string, where_string
-            )
 
         if len(where) > 0:
             wr = """
@@ -210,7 +104,7 @@ class ListGeojson(Action):
                             ), '{}'::json[]
                         ) AS features
                 ) t
-        """ % (wr_strt, wr), *(layer_params + chronostratigraphy_params + lithostratigraphy_params + params))
+        """ % (wr_strt, wr), *(params))
         return {
             "data": self.decode(rec[0])
         }
