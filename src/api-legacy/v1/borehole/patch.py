@@ -150,10 +150,10 @@ class PatchBorehole(Action):
         elif field == 'custom.lithology_top_bedrock':
             column = 'lithology_top_bedrock_id_cli'
 
-        elif field == 'custom.lithostratigraphy_top_bedrock':
+        elif field == 'lithostratigraphy':
             column = 'lithostrat_id_cli'
 
-        elif field == 'custom.chronostratigraphy_top_bedrock':
+        elif field == 'chronostratigraphy':
             column = 'chronostrat_id_cli'
 
         if column is None:

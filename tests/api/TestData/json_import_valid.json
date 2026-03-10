@@ -97,9 +97,9 @@
     "remarks": "This product works too well.",
     "lithologyTopBedrockId": 15104543,
     "lithologyTopBedrock": null,
-    "lithostratigraphyTopBedrockId": 15302037,
+    "lithostratigraphyTopBedrockId": 100001338,
     "lithostratigraphyTopBedrock": null,
-    "chronostratigraphyTopBedrockId": 15001060,
+    "chronostratigraphyTopBedrockId": 100002911,
     "chronostratigraphyTopBedrock": null,
     "referenceElevation": 899.1648284248844,
     "referenceElevationPrecisionId": 20114006,
@@ -120,9 +120,6 @@
         "createdById": 5,
         "createdBy": null,
         "name": "Marjolaine Hegmann",
-        "qualityId": 9003,
-        "quality": null,
-        "notes": "My co-worker Ali has one of these. He says it looks towering.",
         "lithologies": [
           {
             "id": 1,
@@ -303,7 +300,7 @@
             "updated": "2021-05-12T01:45:32.650546Z",
             "fromDepth": 0.1,
             "toDepth": 10,
-            "chronostratigraphyId": 15001134,
+            "chronostratigraphyId": 100002914,
             "chronostratigraphy": null
           },
           {
@@ -318,7 +315,7 @@
             "updated": "2021-06-27T02:24:51.419005Z",
             "fromDepth": 10,
             "toDepth": 20,
-            "chronostratigraphyId": 15001053,
+            "chronostratigraphyId": 100002944,
             "chronostratigraphy": null
           }
         ],
@@ -335,7 +332,7 @@
             "updated": "2021-05-12T01:45:32.650546Z",
             "fromDepth": 0.1,
             "toDepth": 10,
-            "lithostratigraphyId": 15303501,
+            "lithostratigraphyId": 100001328,
             "lithostratigraphy": null
           },
           {
@@ -350,7 +347,7 @@
             "updated": "2021-06-27T02:24:51.419005Z",
             "fromDepth": 10,
             "toDepth": 20,
-            "lithostratigraphyId": 15302074,
+            "lithostratigraphyId": 100001363,
             "lithostratigraphy": null
           }
         ]
@@ -452,7 +449,7 @@
             "updated": "2021-12-06T20:35:26.56566Z",
             "fromDepth": 0.1,
             "toDepth": 10,
-            "chronostratigraphyId": 15001128,
+            "chronostratigraphyId": 100002856,
             "chronostratigraphy": null
           },
           {
@@ -467,7 +464,7 @@
             "updated": "2021-01-21T21:14:45.334119Z",
             "fromDepth": 10,
             "toDepth": 20,
-            "chronostratigraphyId": 15001049,
+            "chronostratigraphyId": 100002868,
             "chronostratigraphy": null
           }
         ],
@@ -484,7 +481,7 @@
             "updated": "2021-12-06T20:35:26.56566Z",
             "fromDepth": 0.1,
             "toDepth": 10,
-            "lithostratigraphyId": 15303363,
+            "lithostratigraphyId": 100001323,
             "lithostratigraphy": null
           },
           {
@@ -499,7 +496,7 @@
             "updated": "2021-01-21T21:14:45.334119Z",
             "fromDepth": 10,
             "toDepth": 20,
-            "lithostratigraphyId": 15302016,
+            "lithostratigraphyId": 100001297,
             "lithostratigraphy": null
           }
         ]
@@ -1739,9 +1736,9 @@
     "remarks": null,
     "lithologyTopBedrockId": 15104543,
     "lithologyTopBedrock": null,
-    "lithostratigraphyTopBedrockId": 15302037,
+    "lithostratigraphyTopBedrockId": 100001550,
     "lithostratigraphyTopBedrock": null,
-    "chronostratigraphyTopBedrockId": 15001060,
+    "chronostratigraphyTopBedrockId": 100002958,
     "chronostratigraphyTopBedrock": null,
     "referenceElevation": 899.1648284248844,
     "referenceElevationPrecisionId": 20114006,
@@ -1846,7 +1843,7 @@
             "updated": "2021-05-12T01:45:32.650546Z",
             "fromDepth": 0.1,
             "toDepth": 10,
-            "chronostratigraphyId": 15001134,
+            "chronostratigraphyId": 100002983,
             "chronostratigraphy": null
           },
           {
@@ -1861,7 +1858,7 @@
             "updated": "2021-06-27T02:24:51.419005Z",
             "fromDepth": 10,
             "toDepth": 20,
-            "chronostratigraphyId": 15001053,
+            "chronostratigraphyId": 100002968,
             "chronostratigraphy": null
           }
         ],
@@ -1878,7 +1875,7 @@
             "updated": "2021-05-12T01:45:32.650546Z",
             "fromDepth": 0.1,
             "toDepth": 10,
-            "lithostratigraphyId": 15303501,
+            "lithostratigraphyId": 100001324,
             "lithostratigraphy": null
           },
           {
@@ -1893,7 +1890,7 @@
             "updated": "2021-06-27T02:24:51.419005Z",
             "fromDepth": 10,
             "toDepth": 20,
-            "lithostratigraphyId": 15302074,
+            "lithostratigraphyId": 100001343,
             "lithostratigraphy": null
           }
         ]
@@ -1995,7 +1992,7 @@
             "updated": "2021-12-06T20:35:26.56566Z",
             "fromDepth": 0.1,
             "toDepth": 10,
-            "chronostratigraphyId": 15001128,
+            "chronostratigraphyId": 100002892,
             "chronostratigraphy": null
           },
           {
@@ -2010,7 +2007,7 @@
             "updated": "2021-01-21T21:14:45.334119Z",
             "fromDepth": 10,
             "toDepth": 20,
-            "chronostratigraphyId": 15001049,
+            "chronostratigraphyId": 100002919,
             "chronostratigraphy": null
           }
         ],
@@ -2027,7 +2024,7 @@
             "updated": "2021-12-06T20:35:26.56566Z",
             "fromDepth": 0.1,
             "toDepth": 10,
-            "lithostratigraphyId": 15303363,
+            "lithostratigraphyId": 100001386,
             "lithostratigraphy": null
           },
           {
@@ -2042,7 +2039,7 @@
             "updated": "2021-01-21T21:14:45.334119Z",
             "fromDepth": 10,
             "toDepth": 20,
-            "lithostratigraphyId": 15302016,
+            "lithostratigraphyId": 100001462,
             "lithostratigraphy": null
           }
         ]

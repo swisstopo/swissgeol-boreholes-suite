@@ -24,7 +24,7 @@ public class LithostratigraphyControllerTest
         Updated = new DateTime(2023, 5, 31, 13, 10, 44).ToUniversalTime(),
         FromDepth = 10,
         ToDepth = 20,
-        LithostratigraphyId = 15_300_284,
+        LithostratigraphyId = 100_001_308,
     };
 
     [TestInitialize]
@@ -79,7 +79,7 @@ public class LithostratigraphyControllerTest
         Assert.AreEqual(14_000_014, lithostratigraphy.Id);
         Assert.AreEqual(40, lithostratigraphy.FromDepth);
         Assert.AreEqual(50, lithostratigraphy.ToDepth);
-        Assert.AreEqual(15_302_431, lithostratigraphy.LithostratigraphyId);
+        Assert.AreEqual(100_002_174, lithostratigraphy.LithostratigraphyId);
         Assert.AreEqual(6_000_001, lithostratigraphy.StratigraphyId);
     }
 
@@ -105,7 +105,7 @@ public class LithostratigraphyControllerTest
 
         lithostratigraphy = await context.LithostratigraphyLayers.FindAsync(lithostratigraphy.Id);
         Assert.IsNotNull(lithostratigraphy);
-        Assert.AreEqual(15_300_284, lithostratigraphy.LithostratigraphyId);
+        Assert.AreEqual(100_001_308, lithostratigraphy.LithostratigraphyId);
     }
 
     [TestMethod]
@@ -139,7 +139,7 @@ public class LithostratigraphyControllerTest
             Updated = new DateTime(2022, 4, 30, 10, 34, 41).ToUniversalTime(),
             FromDepth = 30,
             ToDepth = 40,
-            LithostratigraphyId = 15_300_623,
+            LithostratigraphyId = 100_001_323,
         };
 
         context.Add(lithostratigraphy);
@@ -151,7 +151,7 @@ public class LithostratigraphyControllerTest
 
         lithostratigraphy = context.LithostratigraphyLayers.SingleOrDefault(x => x.Id == lithostratigraphy.Id);
         Assert.IsNotNull(lithostratigraphy);
-        Assert.AreEqual(15_300_623, lithostratigraphy.LithostratigraphyId);
+        Assert.AreEqual(100_001_323, lithostratigraphy.LithostratigraphyId);
     }
 
     [TestMethod]

@@ -161,9 +161,9 @@ public class ImportControllerTest
         Assert.AreEqual("This product works too well.", borehole.Remarks, nameof(Borehole.Remarks));
         Assert.AreEqual(15104543, borehole.LithologyTopBedrockId, nameof(Borehole.LithologyTopBedrockId));
         Assert.IsNull(borehole.LithologyTopBedrock, nameof(Borehole.LithologyTopBedrock).ShouldBeNullMessage());
-        Assert.AreEqual(15302037, borehole.LithostratigraphyTopBedrockId, nameof(Borehole.LithostratigraphyTopBedrockId));
+        Assert.AreEqual(100001338, borehole.LithostratigraphyTopBedrockId, nameof(Borehole.LithostratigraphyTopBedrockId));
         Assert.IsNull(borehole.LithostratigraphyTopBedrock, nameof(Borehole.LithostratigraphyTopBedrock).ShouldBeNullMessage());
-        Assert.AreEqual(15001060, borehole.ChronostratigraphyTopBedrockId, nameof(Borehole.ChronostratigraphyTopBedrockId));
+        Assert.AreEqual(100002911, borehole.ChronostratigraphyTopBedrockId, nameof(Borehole.ChronostratigraphyTopBedrockId));
         Assert.IsNull(borehole.ChronostratigraphyTopBedrock, nameof(Borehole.ChronostratigraphyTopBedrock).ShouldBeNullMessage());
         Assert.AreEqual(899.1648284248844, borehole.ReferenceElevation, nameof(Borehole.ReferenceElevation));
         Assert.AreEqual(20114006, borehole.ReferenceElevationPrecisionId, nameof(Borehole.ReferenceElevationPrecisionId));
@@ -329,7 +329,7 @@ public class ImportControllerTest
         Assert.IsNotNull(chronostratigraphyLayer.Updated, nameof(chronostratigraphyLayer.Updated).ShouldNotBeNullMessage());
         Assert.IsNotNull(chronostratigraphyLayer.UpdatedById, nameof(chronostratigraphyLayer.UpdatedById).ShouldNotBeNullMessage());
         Assert.IsNotNull(chronostratigraphyLayer.Stratigraphy, nameof(chronostratigraphyLayer.Stratigraphy).ShouldNotBeNullMessage());
-        Assert.AreEqual(15001134, chronostratigraphyLayer.ChronostratigraphyId, nameof(chronostratigraphyLayer.ChronostratigraphyId));
+        Assert.AreEqual(100002914, chronostratigraphyLayer.ChronostratigraphyId, nameof(chronostratigraphyLayer.ChronostratigraphyId));
         Assert.IsNull(chronostratigraphyLayer.Chronostratigraphy, nameof(chronostratigraphyLayer.Chronostratigraphy).ShouldBeNullMessage());
         Assert.AreEqual(0.1, chronostratigraphyLayer.FromDepth, nameof(chronostratigraphyLayer.FromDepth));
         Assert.AreEqual(10, chronostratigraphyLayer.ToDepth, nameof(chronostratigraphyLayer.ToDepth));
@@ -342,7 +342,7 @@ public class ImportControllerTest
         Assert.IsNotNull(lithostratigraphyLayer.Updated, nameof(lithostratigraphyLayer.Updated).ShouldNotBeNullMessage());
         Assert.IsNotNull(lithostratigraphyLayer.UpdatedById, nameof(lithostratigraphyLayer.UpdatedById).ShouldNotBeNullMessage());
         Assert.IsNotNull(lithostratigraphyLayer.Stratigraphy, nameof(lithostratigraphyLayer.Stratigraphy).ShouldNotBeNullMessage());
-        Assert.AreEqual(15303501, lithostratigraphyLayer.LithostratigraphyId, nameof(lithostratigraphyLayer.LithostratigraphyId));
+        Assert.AreEqual(100001328, lithostratigraphyLayer.LithostratigraphyId, nameof(lithostratigraphyLayer.LithostratigraphyId));
         Assert.IsNull(lithostratigraphyLayer.Lithostratigraphy, nameof(lithostratigraphyLayer.Lithostratigraphy).ShouldBeNullMessage());
         Assert.AreEqual(0.1, lithostratigraphyLayer.FromDepth, nameof(lithostratigraphyLayer.FromDepth));
         Assert.AreEqual(10, lithostratigraphyLayer.ToDepth, nameof(lithostratigraphyLayer.ToDepth));
