@@ -163,7 +163,7 @@ describe("Test for the borehole log.", () => {
     cy.dataCy("delete-button").click();
     cy.get(".MuiTablePagination-displayedRows").should("not.exist");
     discardChanges();
-    startBoreholeEditing();
+    stopBoreholeEditing();
   });
 
   it("Adds, edits and deletes logs", () => {
