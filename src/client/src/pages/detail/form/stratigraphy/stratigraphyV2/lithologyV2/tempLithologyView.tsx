@@ -14,6 +14,7 @@ import {
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "../../stratigraphyTableComponents.tsx";
+import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";
 import { useLayerDepths } from "./useLayerDepths.tsx";
@@ -155,9 +156,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
               defaultRowHeight,
               computeCellHeight,
               layer => (
-                <Typography variant="body1" fontWeight={700}>
-                  {(layer as FaciesDescription).description}
-                </Typography>
+                <FaciesDescriptionLabels description={layer as FaciesDescription} />
               ),
               "faciesDescription",
             )}

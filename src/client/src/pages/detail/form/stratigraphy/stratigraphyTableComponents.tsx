@@ -214,6 +214,7 @@ export const AddRowButton: FC<AddButtonProps> = ({ onClick }) => {
 
   return (
     <Stack
+      data-cy={"add-row-button"}
       sx={{
         justifyContent: "center",
         alignItems: "center",
