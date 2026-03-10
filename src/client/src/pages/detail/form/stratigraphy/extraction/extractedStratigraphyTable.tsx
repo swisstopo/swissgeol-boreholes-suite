@@ -29,7 +29,7 @@ export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = (
       layer.isGap ? (
         <StratigraphyTableGap
           index={index}
-          key={`${keyPrefix}-${layer.id}`}
+          key={`${keyPrefix}-${layer.id}-${index}`}
           sx={{
             height: `${defaultRowHeight}px`,
           }}
@@ -37,7 +37,7 @@ export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = (
       ) : (
         <StratigraphyTableActionCell
           index={index}
-          key={`${keyPrefix}-${layer.id}`}
+          key={`${keyPrefix}-${layer.id}-${index}`}
           sx={{
             height: `${defaultRowHeight}px`,
           }}
@@ -60,8 +60,8 @@ export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = (
           </StratigraphyTableHeader>
           <StratigraphyTableContent>
             <StratigraphyTableColumn sx={{ flex: "0 0 90px" }}>
-              {lithologicalDescriptions.map(desc => (
-                <StratigraphyTableCell key={`depth-${desc.id}`} sx={{ height: `${defaultRowHeight}px` }}>
+              {lithologicalDescriptions.map((desc, index) => (
+                <StratigraphyTableCell key={`depth-${desc.id}-${index}`} sx={{ height: `${defaultRowHeight}px` }}>
                   <Typography>{`${desc.fromDepth} m MD`}</Typography>
                   <Typography>{`${desc.toDepth} m MD`}</Typography>
                 </StratigraphyTableCell>

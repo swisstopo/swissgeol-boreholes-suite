@@ -8,10 +8,9 @@ import Map from "ol/Map";
 import VectorSource from "ol/source/Vector";
 import { Fill, Stroke, Style } from "ol/style";
 import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
-import { getDataExtractionFileInfo, loadImage } from "../../../api/file/file.ts";
+import { useFileInfo, useProfileImage } from "../../../api/file/file.ts";
 import { theme } from "../../../AppTheme.ts";
 import { ExtractedLithologicalDescription } from "../form/stratigraphy/lithologicalDescription.ts";
-import { useLabelingContext } from "./labelingContext.tsx";
 import { ExtractionBoundingBox } from "./labelingInterfaces.tsx";
 import { LabelingView } from "./labelingView.tsx";
 
@@ -21,7 +20,8 @@ interface ExtractionImageContainerProps {
   selectedFile: BoreholeAttachment | undefined;
   activePage: number;
   setActivePage: (page: number) => void;
-  setPageCount?: (count: number) => void;
+  pageCount?: number;
+  setPageCount: (count: number) => void;
 }
 
 export const ExtractionImageContainer: FC<ExtractionImageContainerProps> = ({
@@ -30,38 +30,24 @@ export const ExtractionImageContainer: FC<ExtractionImageContainerProps> = ({
   selectedFile,
   activePage,
   setActivePage,
+  pageCount,
   setPageCount,
 }) => {
   const [mapInstance, setMapInstance] = useState<Map | null>(null);
-  const [hasImageLoaded, setHasImageLoaded] = useState(false);
-  const { fileInfo, setFileInfo } = useLabelingContext();
   const mapRef = useRef<Map>(null);
+  const { data: fileInfo } = useFileInfo(selectedFile, activePage);
+  const { data: image, isLoading } = useProfileImage(fileInfo?.fileName);
 
+  // Keep page count in sync with file info
   useEffect(() => {
-    if (!selectedFile) return;
-    const fetchExtractionData = async () => {
-      const fileInfoResponse = await getDataExtractionFileInfo(selectedFile.id, activePage);
-      const { fileName, count } = fileInfoResponse;
-      let newActivePage = activePage;
-      if (setPageCount !== undefined) setPageCount(count);
-      if (fileInfo?.count !== count) {
-        newActivePage = 1;
-        setActivePage(newActivePage);
-      }
-      if (fileInfo?.fileName !== fileName) {
-        setFileInfo(fileInfoResponse);
-      }
-    };
+    if (!fileInfo) return;
+    setPageCount(fileInfo.count);
 
-    void fetchExtractionData();
-  }, [activePage, selectedFile, fileInfo?.count, fileInfo?.fileName, setActivePage, setFileInfo, setPageCount]);
-
-  const loadImageFromApi = useCallback(async () => {
-    if (!fileInfo) return null;
-    const imageLoaded = await loadImage(fileInfo.fileName);
-    setHasImageLoaded(true);
-    return imageLoaded;
-  }, [fileInfo]);
+    // Reset to page 1 if count changes
+    if (pageCount !== fileInfo.count) {
+      setActivePage(1);
+    }
+  }, [fileInfo, pageCount, setActivePage, setPageCount]);
 
   const getSourceFromLayerName = useCallback((layers: BaseLayer[], layerName: string) => {
     const layer = layers.find(l => l instanceof VectorLayer && l.get("name") === layerName) as VectorLayer<
@@ -78,6 +64,7 @@ export const ExtractionImageContainer: FC<ExtractionImageContainerProps> = ({
   };
 
   useEffect(() => {
+    const hasImageLoaded = image !== null && !isLoading;
     if (!mapInstance || !extractedDescriptions || extractedDescriptions.length === 0 || !hasImageLoaded) return;
 
     const layers = mapInstance.getLayers().getArray();
@@ -95,9 +82,7 @@ export const ExtractionImageContainer: FC<ExtractionImageContainerProps> = ({
         addBoundingBoxesToSource(description.endDepthBoundingBoxes, highlightDepthSource, currentPageNumber);
       }
     }, 1000); // Add small timeout to ensure the image is fully rendered before adding bounding boxes
-
-    setHasImageLoaded(false);
-  }, [currentPageNumber, extractedDescriptions, mapInstance, hasImageLoaded, getSourceFromLayerName]);
+  }, [currentPageNumber, extractedDescriptions, mapInstance, getSourceFromLayerName, image, isLoading]);
 
   const onMapInitialized = useCallback((map: Map) => {
     mapRef.current = map;
@@ -123,11 +108,14 @@ export const ExtractionImageContainer: FC<ExtractionImageContainerProps> = ({
     map.addLayer(highlightDescriptionsLayer);
   }, []);
 
+  if (!image) return null;
+
   return (
     <LabelingView
+      mapDomId={"extraction-map"}
       fileName={fileInfo?.fileName}
-      imageSize={fileInfo}
-      loadImage={loadImageFromApi}
+      imageSize={fileInfo ?? undefined}
+      image={image}
       onMapInitialized={onMapInitialized}
     />
   );

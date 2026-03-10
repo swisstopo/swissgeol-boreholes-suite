@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useState } from "react";
+import { FC, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box } from "@mui/material";
 import { View } from "ol";
@@ -9,18 +9,7 @@ import ImageLayer from "ol/layer/Image";
 import Map from "ol/Map";
 import Projection from "ol/proj/Projection";
 import Static from "ol/source/ImageStatic";
-import { ApiError } from "../../../api/apiInterfaces.js";
-import { AlertContext } from "../../../components/alert/alertContext.js";
 import MapControls from "../../../components/buttons/mapControls.jsx";
-
-const blobToImage = (blob: Blob): Promise<HTMLImageElement> => {
-  return new Promise<HTMLImageElement>((resolve, reject) => {
-    const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = URL.createObjectURL(blob);
-  });
-};
 
 const createView = (extent?: Extent, currentView?: View): View => {
   const projection = new Projection({
@@ -41,15 +30,16 @@ const createView = (extent?: Extent, currentView?: View): View => {
 };
 
 interface LabelingViewProps {
+  mapDomId: string;
+  image: HTMLImageElement | null;
   fileName?: string;
-  imageSize?: { width: number; height: number };
-  loadImage: () => Promise<Blob | null>;
+  imageSize?: { width: number; height: number } | null;
   onMapInitialized?: (map: Map) => void;
 }
 
-export const LabelingView: FC<LabelingViewProps> = ({ fileName, imageSize, loadImage, onMapInitialized }) => {
+export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName, imageSize, onMapInitialized }) => {
   const [map, setMap] = useState<Map>();
-  const { showAlert } = useContext(AlertContext);
+
   const { t } = useTranslation();
 
   const zoomIn = () => {
@@ -96,70 +86,55 @@ export const LabelingView: FC<LabelingViewProps> = ({ fileName, imageSize, loadI
   }, [map]);
 
   useEffect(() => {
-    if (fileName) {
-      if (map) {
-        const imageLayer = map
-          .getLayers()
-          .getArray()
-          .find(layer => layer instanceof ImageLayer);
-        const currentFileName = imageLayer?.get("name");
-        if (currentFileName === fileName) {
-          return;
-        }
-      }
+    if (!image || !fileName) return;
 
-      if (map) {
-        map.dispose();
-        setMap(undefined);
-      }
-
-      const extent = imageSize ? [0, -imageSize.height, imageSize.width, 0] : undefined;
-
-      const imageLayer = new ImageLayer();
-      imageLayer.set("name", fileName);
-
-      const initMap = new Map({
-        layers: [imageLayer],
-        target: "map",
-        controls: defaultControls({
-          attribution: false,
-          zoom: false,
-          rotate: false,
-        }),
-        view: createView(extent),
-      });
-      initMap
-        .getInteractions()
+    if (map) {
+      const imageLayer = map
+        .getLayers()
         .getArray()
-        .forEach(interaction => {
-          if (interaction instanceof DragRotate || interaction instanceof PinchRotate) {
-            initMap.removeInteraction(interaction);
-          }
-        });
-      setMap(initMap);
-
-      const loadImageSource = async () => {
-        const blob = await loadImage();
-        if (!blob) return;
-
-        const image = await blobToImage(blob);
-
-        const imageExtent = extent ?? [0, -image.naturalHeight, image.naturalWidth, 0];
-        initMap.setView(createView(imageExtent, initMap.getView()));
-
-        const source = new Static({
-          url: image.src,
-          imageExtent,
-        });
-        imageLayer.setSource(source);
-      };
-
-      loadImageSource().catch(error => {
-        const message = error instanceof ApiError ? error.message : "errorLoadingImage";
-        showAlert(t(message), "error");
-      });
+        .find(layer => layer instanceof ImageLayer);
+      const currentFileName = imageLayer?.get("name");
+      if (currentFileName === fileName) {
+        return;
+      }
+      map.dispose();
+      setMap(undefined);
     }
-  }, [fileName, imageSize, loadImage, map, showAlert, t]);
+
+    const extent = imageSize ? [0, -imageSize.height, imageSize.width, 0] : undefined;
+
+    const imageLayer = new ImageLayer();
+    imageLayer.set("name", fileName);
+
+    const initMap = new Map({
+      layers: [imageLayer],
+      target: mapDomId,
+      controls: defaultControls({
+        attribution: false,
+        zoom: false,
+        rotate: false,
+      }),
+      view: createView(extent),
+    });
+    initMap
+      .getInteractions()
+      .getArray()
+      .forEach(interaction => {
+        if (interaction instanceof DragRotate || interaction instanceof PinchRotate) {
+          initMap.removeInteraction(interaction);
+        }
+      });
+    setMap(initMap);
+
+    const imageExtent = extent ?? [0, -image.naturalHeight, image.naturalWidth, 0];
+    initMap.setView(createView(imageExtent, initMap.getView()));
+
+    const source = new Static({
+      url: image.src,
+      imageExtent,
+    });
+    imageLayer.setSource(source);
+  }, [fileName, image, imageSize, map, mapDomId, t]);
 
   useEffect(() => {
     if (map) {
@@ -170,7 +145,7 @@ export const LabelingView: FC<LabelingViewProps> = ({ fileName, imageSize, loadI
   return (
     <>
       <MapControls onZoomIn={zoomIn} onZoomOut={zoomOut} onFitToExtent={fitToExtent} onRotate={rotateImage} />
-      <Box id="map" sx={{ height: "100%", width: "100%", position: "absolute" }} />
+      <Box id={mapDomId} sx={{ height: "100%", width: "100%", position: "absolute" }} />
     </>
   );
 };

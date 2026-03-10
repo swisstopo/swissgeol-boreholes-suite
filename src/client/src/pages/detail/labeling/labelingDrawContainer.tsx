@@ -1,4 +1,4 @@
-import { FC, useCallback, useEffect, useRef } from "react";
+import { FC, useCallback, useContext, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Box } from "@mui/material";
 import { MapBrowserEvent } from "ol";
@@ -12,9 +12,10 @@ import VectorLayer from "ol/layer/Vector";
 import Map from "ol/Map";
 import VectorSource from "ol/source/Vector";
 import { Fill, Stroke, Style } from "ol/style";
-import { loadImage } from "../../../api/file/file.ts";
+import { useProfileImage } from "../../../api/file/file.ts";
 import { DataExtractionResponse } from "../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
+import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { ExtractionBoundingBox, ExtractionType } from "./labelingInterfaces.tsx";
 import { LabelingView } from "./labelingView.tsx";
 
@@ -40,9 +41,9 @@ const transparentBoundingBoxStyle = () =>
   });
 
 interface LabelingDrawContainerProps {
-  fileInfo?: DataExtractionResponse;
+  fileInfo?: DataExtractionResponse | null;
   onDrawEnd: (extent: number[]) => void;
-  boundingBoxes: ExtractionBoundingBox[];
+  boundingBoxes?: ExtractionBoundingBox[] | null;
   drawTooltipLabel?: string;
   extractionType?: ExtractionType;
 }
@@ -55,12 +56,10 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
   extractionType,
 }) => {
   const { t } = useTranslation();
+  const { showAlert } = useContext(AlertContext);
+  const { data: image, isError } = useProfileImage(fileInfo?.fileName);
   const mapRef = useRef<Map>(null);
   const tooltipRef = useRef<HTMLDivElement>(null);
-
-  const loadImageFromApi = useCallback(async () => {
-    return fileInfo ? await loadImage(fileInfo.fileName) : null;
-  }, [fileInfo]);
 
   const updateTooltipPosition = useCallback((x: number, y: number) => {
     if (tooltipRef?.current) {
@@ -168,7 +167,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
           }
           if (extractionType === "text") {
             // Add all transparent bounding boxes to map once the selection starts
-            boundingBoxes.forEach(box => {
+            boundingBoxes?.forEach(box => {
               const bboxExtent = [box.x0, -box.y1, box.x1, -box.y0];
               boundingBoxSource.addFeature(
                 new Feature({
@@ -263,13 +262,16 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
     [onDrawEnd],
   );
 
+  if (!image) return null;
+
   return (
     <>
       <LabelingView
+        mapDomId={"labeling-map"}
         fileName={fileInfo?.fileName}
         imageSize={fileInfo}
-        loadImage={loadImageFromApi}
         onMapInitialized={onMapInitialized}
+        image={image}
       />
       <Box
         data-cy="labeling-draw-tooltip"

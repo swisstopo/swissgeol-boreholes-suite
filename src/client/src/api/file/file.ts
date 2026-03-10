@@ -6,6 +6,7 @@ import {
   ExtractionResponse,
   StratigraphyExtractionResponse,
 } from "../../pages/detail/labeling/labelingInterfaces.tsx";
+import { getImageFromBlob } from "../../utils.ts";
 import { ApiError, BoreholeAttachment } from "../apiInterfaces.ts";
 import {
   fetchCreatePngs,
@@ -13,7 +14,7 @@ import {
   fetchExtractStratigraphy,
   fetchPageBoundingBoxes,
 } from "../dataextraction.ts";
-import { download, fetchApiV2Base, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../fetchApiV2.ts";
+import { download, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../fetchApiV2.ts";
 import { processFileWithOCR } from "../ocr.ts";
 import { BoreholeFile, DataExtractionResponse, maxFileSizeBytes } from "./fileInterfaces.ts";
 
@@ -85,15 +86,6 @@ export async function getDataExtractionFileInfo(boreholeFileId: number, index = 
     return response;
   } else {
     throw new ApiError("errorDataExtractionFileLoading", 500);
-  }
-}
-
-export async function loadImage(fileName: string) {
-  const response = await fetchApiV2Base("boreholefile/dataextraction/" + fileName, "GET");
-  if (!response.ok) {
-    throw new ApiError(response.statusText, response.status);
-  } else {
-    return response.blob();
   }
 }
 
@@ -197,6 +189,44 @@ export function useExtractStratigraphies(file: BoreholeAttachment) {
             })) || []
           : [];
       return cleanUpExtractionData(lithologicalDescriptions);
+    },
+  });
+}
+
+export function useProfileImage(fileName: string | undefined) {
+  return useQuery({
+    queryKey: ["loadImage", fileName],
+    enabled: !!fileName,
+    queryFn: async () => {
+      const blob = await fetchApiV2WithApiError<Blob>("boreholefile/dataextraction/" + fileName, "GET");
+      return getImageFromBlob(blob);
+    },
+  });
+}
+
+export function useFileInfo(selectedFile: BoreholeAttachment | undefined, activePage: number) {
+  return useQuery({
+    queryKey: ["dataExtractionFileInfo", selectedFile, activePage],
+    enabled: !!selectedFile,
+    queryFn: async () => {
+      if (!selectedFile) return null;
+      return await getDataExtractionFileInfo(selectedFile.id, activePage);
+    },
+  });
+}
+
+export function useExtractionBoundingBoxes(
+  fileName: string | undefined,
+  fileInfo: DataExtractionResponse | null | undefined,
+  pageNumber: number,
+) {
+  return useQuery({
+    queryKey: ["extractionBoundingBoxes", fileName, pageNumber],
+    // only fetch bounding boxes if all necessary information is available: if fileInfo is available, we are sure that pngs have been created for newly uploaded files.
+    enabled: !!fileName && !!fileInfo && pageNumber > 0,
+    queryFn: async () => {
+      if (!fileName) return null;
+      return await fetchExtractionBoundingBoxes(fileName, pageNumber);
     },
   });
 }

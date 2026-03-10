@@ -1,4 +1,3 @@
-import { DataExtractionResponse } from "../../../api/file/fileInterfaces.ts";
 import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
 
 export type ExtractionType = "text" | "number" | "coordinates";
@@ -71,8 +70,6 @@ export interface LabelingContextInterface {
   setExtractionObject: (extractionObject: ExtractionObject | undefined) => void;
   extractionState?: ExtractionState;
   setExtractionState: (extractionState: ExtractionState) => void;
-  fileInfo?: DataExtractionResponse;
-  setFileInfo: (fileInfo: DataExtractionResponse) => void;
   setAbortController: (abortController: AbortController | undefined) => void;
   cancelRequest: () => void;
   panelTab: PanelTab;

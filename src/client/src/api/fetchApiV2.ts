@@ -57,6 +57,16 @@ export const isJsonContentType = (contentType: string | null): boolean => {
 };
 
 /**
+ * Checks if the provided content type indicates a Blob response.
+ * @param {string | null} contentType - The content type to check.
+ * @returns {boolean} - Returns `true` if the content type indicates JSON, otherwise `false`.
+ */
+const isBlobContentType = (contentType: string | null): boolean => {
+  const blobContentTypes = ["application/geopackage+sqlite", "application/octet-stream", "image/png"];
+  return blobContentTypes.some(type => contentType?.includes(type));
+};
+
+/**
  * Reads the response from an API call and parses it based on the content type.
  * @param {Response} response - The HTTP response object.
  * @returns {Promise<any>} - The parsed response content.
@@ -66,11 +76,7 @@ async function readApiResponse(response: Response): Promise<any> {
   const contentType = response.headers.get("content-type");
   if (isJsonContentType(contentType)) {
     return await response.json();
-  } else if (
-    contentType &&
-    (contentType.indexOf("application/geopackage+sqlite") !== -1 ||
-      contentType.indexOf("application/octet-stream") !== -1)
-  ) {
+  } else if (isBlobContentType(contentType)) {
     return await response.blob(); // Binary response
   } else {
     return await response.text(); // Fallback for plain text

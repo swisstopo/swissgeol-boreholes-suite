@@ -4,12 +4,12 @@ import { Alert, Box, Stack, ToggleButton, ToggleButtonGroup } from "@mui/materia
 import { styled } from "@mui/system";
 import { PanelBottom, PanelRight } from "lucide-react";
 import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
-import { uploadFile } from "../../../api/file/file.ts";
+import { uploadFile, useFileInfo } from "../../../api/file/file.ts";
 import { File as FileInterface, FileSizeLimit, maxFileSizeBytes } from "../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
-import { getPhotoImageData, Photo, uploadPhoto, usePhotos, useReloadPhotos } from "../attachments/tabs/photo.ts";
+import { Photo, uploadPhoto, usePhotoImage, usePhotos, useReloadPhotos } from "../attachments/tabs/photo.ts";
 import { useBoreholeFiles, useInvalidateBoreholeFiles } from "../attachments/useBoreholeFiles.tsx";
 import { FloatingExtractionFeedback } from "./floatingExtractionFeedback.tsx";
 import { useLabelingContext } from "./labelingContext.tsx";
@@ -57,18 +57,21 @@ export const LabelingAlert = styled(Alert)({
 const LabelingPanel: FC = () => {
   const { t } = useTranslation();
   const { id: boreholeId } = useRequiredParams<{ id: string }>();
-  const { panelPosition, setPanelPosition, extractionState, fileInfo, cancelRequest, panelTab } = useLabelingContext();
+  const { panelPosition, setPanelPosition, extractionState, cancelRequest, panelTab } = useLabelingContext();
   const [selectedAttachment, setSelectedAttachment] = useState<BoreholeAttachment>();
   const [activePage, setActivePage] = useState<number>(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { alertIsOpen, text, severity, autoHideDuration, showAlert, closeAlert } = useAlertManager();
-  const { data: boreholeFiles, isLoading: isLoadingBoreholeFiles } = useBoreholeFiles(boreholeId);
-  const invalidateBoreholeFiles = useInvalidateBoreholeFiles();
-  const { data: photos, isLoading: isLoadingPhotos } = usePhotos(Number(boreholeId));
   const expectedFileFormat = labelingFileFormat[panelTab];
   const isPhotoSelected = selectedAttachment && "fromDepth" in selectedAttachment;
   const selectedFile: FileInterface | undefined = isPhotoSelected ? undefined : selectedAttachment;
   const selectedPhoto: Photo | undefined = isPhotoSelected ? selectedAttachment : undefined;
+  const { data: boreholeFiles, isLoading: isLoadingBoreholeFiles } = useBoreholeFiles(boreholeId);
+  const { data: fileInfo, isLoading: isLoadingFileInfo } = useFileInfo(selectedFile, activePage);
+  const { data: photos, isLoading: isLoadingPhotos } = usePhotos(Number(boreholeId));
+  const { data: image, isLoading: isLoadingImage } = usePhotoImage(selectedPhoto?.id);
+  const invalidateBoreholeFiles = useInvalidateBoreholeFiles();
+
   const reloadPhotos = useReloadPhotos(Number(boreholeId));
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -102,17 +105,10 @@ const LabelingPanel: FC = () => {
     [boreholeId, invalidateBoreholeFiles, panelTab, reloadPhotos, showAlert, t],
   );
 
-  const loadSelectedPhoto = useCallback(async () => {
-    if (selectedPhoto) {
-      return await getPhotoImageData(selectedPhoto.id);
-    }
-    return null;
-  }, [selectedPhoto]);
-
   useEffect(() => {
     if (files?.length === 1) {
-      setSelectedAttachment(selected => selected ?? files[0]);
-    } else if (!files || files.length === 0) {
+      setSelectedAttachment(files[0]);
+    } else if (!files || files.length === 0 || files.length > 1) {
       setSelectedAttachment(undefined);
       setActivePage(1);
     }
@@ -217,13 +213,13 @@ const LabelingPanel: FC = () => {
               closeAlert={closeAlert}
             />
           ) : (
-            <LabelingView fileName={selectedPhoto?.nameUuid} loadImage={loadSelectedPhoto} />
+            <>{!!image && <LabelingView mapDomId={"photo-map"} image={image} fileName={selectedPhoto?.nameUuid} />}</>
           )}
         </Box>
       ) : (
         <LabelingFileSelector
           activeTab={panelTab}
-          isLoadingFiles={isLoadingFiles}
+          isLoadingFiles={isLoadingFiles || isLoadingFileInfo || isLoadingImage}
           files={files}
           setSelectedFile={setSelectedAttachment}
           addFile={addFile}
