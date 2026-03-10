@@ -15,6 +15,7 @@
 - Fixed Chronostratigraphy and Lithostratigraphy tabs not being correctly greyed out when empty.
 - Included all missing properties from `Lithology`/`LithologyDescription` in borehole JSON import.
 - Application would freeze when borehole imports failed.
+- Fixed bug where there was no appropriate overflow when selecting files in the sidepanel.
 
 ## v2.1.1462 - 2026-02-19
 

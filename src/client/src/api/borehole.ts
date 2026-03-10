@@ -1,12 +1,13 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { Codelist } from "../components/codelist.ts";
+import { Photo } from "../pages/detail/attachments/tabs/photo.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 import { LogRun } from "../pages/detail/form/log/log.ts";
 import { Workflow } from "../pages/detail/form/workflow/workflow.ts";
-import { Document, NullableDateString, Photo, User, Workgroup } from "./apiInterfaces.ts";
+import { Document, NullableDateString, User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
 import { download, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";

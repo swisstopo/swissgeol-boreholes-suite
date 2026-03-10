@@ -6,6 +6,7 @@ import { AlertColor, Box, CircularProgress, Divider, Stack, Typography } from "@
 import { ChevronRight, FileImageIcon, FileTextIcon } from "lucide-react";
 import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
 import { FileSizeLimit, maxFileSizeBytes } from "../../../api/file/fileInterfaces.ts";
+import { theme } from "../../../AppTheme.ts";
 import { AddButton, BoreholesBaseButton, FileButton } from "../../../components/buttons/buttons.tsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
@@ -104,6 +105,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
             backgroundColor: "#ffffff",
             padding: 2,
             width: "292px",
+            maxHeight: `calc(100% - ${theme.spacing(2)})`,
             borderRadius: "4px",
             gap: 2,
           }}
@@ -116,7 +118,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
           <Typography variant="h6" color={"text.primary"} fontWeight={"700"}>
             {activeTab === PanelTab.profile ? t("profiles") : t("photos")}
           </Typography>
-          <Stack gap={1}>
+          <Stack gap={1} sx={{ maxHeight: "100%", overflow: "auto" }}>
             {isLoadingFiles ? (
               <Stack direction="row" sx={{ justifyContent: "center" }}>
                 <CircularProgress />
