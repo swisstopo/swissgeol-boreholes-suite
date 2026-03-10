@@ -9,7 +9,7 @@ namespace BDMS.Maintenance;
 /// Singleton service that manages and executes long-running maintenance tasks in the background.
 /// Task implementations are provided via DI as <see cref="IMaintenanceTask"/> instances.
 /// </summary>
-public class MaintenanceTaskService
+public sealed class MaintenanceTaskService
 {
     private static readonly JsonSerializerOptions jsonOptions = new() { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
 
