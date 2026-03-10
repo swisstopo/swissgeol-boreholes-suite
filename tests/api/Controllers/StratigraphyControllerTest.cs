@@ -380,7 +380,10 @@ public class StratigraphyControllerTest
 
     private Stratigraphy? GetStratigraphy(int id)
     {
-        return context.StratigraphiesWithIncludes.SingleOrDefault(s => s.Id == id);
+        return context.StratigraphiesWithIncludes
+            .Include(s => s.CreatedBy)
+            .Include(s => s.UpdatedBy)
+            .SingleOrDefault(s => s.Id == id);
     }
 
     private void SetupControllerWithAlwaysLockedBorehole()
