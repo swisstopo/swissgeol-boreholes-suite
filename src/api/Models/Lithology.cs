@@ -9,7 +9,7 @@ namespace BDMS.Models;
 /// Represents a lithology entity in the database.
 /// </summary>
 [Table("lithology")]
-public class Lithology : ILayerCode, IChangeTracking, IIdentifyable
+public class Lithology : IStratigraphyLayer, IChangeTracking, IIdentifyable
 {
     /*
      * Base properties
