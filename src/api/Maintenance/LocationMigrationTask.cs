@@ -6,22 +6,13 @@ namespace BDMS.Maintenance;
 /// Maintenance task that updates country, canton and municipality for boreholes
 /// using their original coordinates via the swisstopo location API.
 /// </summary>
-public class LocationMigrationTask : MigrationTaskBase
+public sealed class LocationMigrationTask : MigrationTaskBase<LocationService>
 {
-    private LocationService locationService = null!;
-
     /// <inheritdoc/>
     public override MaintenanceTaskType TaskType => MaintenanceTaskType.LocationMigration;
 
     /// <inheritdoc/>
-    protected override Task InitializeAsync(IServiceProvider services)
-    {
-        locationService = services.GetRequiredService<LocationService>();
-        return Task.CompletedTask;
-    }
-
-    /// <inheritdoc/>
-    protected override async Task<bool> ProcessBoreholeAsync(Borehole borehole, MigrationParameters parameters, CancellationToken cancellationToken)
+    protected override async Task<bool> ProcessBoreholeAsync(LocationService service, Borehole borehole, MigrationParameters parameters, CancellationToken cancellationToken)
     {
         var locationX = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationX : borehole.LocationXLV03;
         var locationY = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationY : borehole.LocationYLV03;
@@ -34,7 +25,7 @@ public class LocationMigrationTask : MigrationTaskBase
             !string.IsNullOrWhiteSpace(borehole.Canton) &&
             !string.IsNullOrWhiteSpace(borehole.Municipality)) return false;
 
-        var locationInfo = await locationService.IdentifyAsync(locationX.Value, locationY.Value, srid).ConfigureAwait(false);
+        var locationInfo = await service.IdentifyAsync(locationX.Value, locationY.Value, srid).ConfigureAwait(false);
         borehole.Country = locationInfo.Country;
         borehole.Canton = locationInfo.Canton;
         borehole.Municipality = locationInfo.Municipality;

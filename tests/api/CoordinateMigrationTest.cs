@@ -97,6 +97,7 @@ public class CoordinateMigrationTest : MaintenanceTaskTestBase
     private Mock<HttpMessageHandler> SetupCoordinateHttpMock()
     {
         var httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+        httpMessageHandler.Protected().Setup("Dispose", ItExpr.IsAny<bool>());
         HttpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(() => new HttpClient(httpMessageHandler.Object)).Verifiable();
 
         var jsonContent = () => JsonContent.Create(new { easting = "9876.543543543543543", northing = "1234.56235623562356235623" });
