@@ -1,3 +1,4 @@
+import { Photo } from "../pages/detail/attachments/tabs/photo.ts";
 import { File } from "./file/fileInterfaces";
 
 export class ApiError extends Error {
@@ -109,21 +110,6 @@ export interface Section {
 
 export interface GeometryFormat {
   csvHeader: string;
-}
-
-export interface Photo {
-  id: number;
-  boreholeId: number;
-  name: string;
-  nameUuid: string;
-  fileType: string;
-  fromDepth: number;
-  toDepth: number;
-  public: boolean;
-  createdBy?: User;
-  created?: NullableDateString;
-  updatedBy?: User;
-  updated?: NullableDateString;
 }
 
 export interface Document {
