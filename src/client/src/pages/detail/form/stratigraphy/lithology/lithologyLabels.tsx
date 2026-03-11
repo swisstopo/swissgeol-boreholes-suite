@@ -2,8 +2,8 @@ import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
 import type { TFunction } from "i18next";
-import { useCodelistDisplayValues } from "../../../../../../components/codelist.ts";
-import { Lithology, LithologyDescription } from "../../lithology";
+import { useCodelistDisplayValues } from "../../../../../components/codelist.ts";
+import { Lithology, LithologyDescription } from "../lithology";
 
 const uselessStrings = new Set(["keine Angabe", "sans indication", "senza indicazioni", "not specified"]);
 

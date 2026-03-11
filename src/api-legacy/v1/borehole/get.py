@@ -104,7 +104,6 @@ class GetBorehole(Action):
                             ) as remarks
                     ) t
                 ) as custom,
-                stratigraphy as stratigraphy,
                 (
                     SELECT row_to_json(t)
                     FROM (
@@ -167,46 +166,6 @@ class GetBorehole(Action):
 
             LEFT JOIN bdms.users as locker
                 ON locked_by_bho = locker.id_usr
-
-            LEFT JOIN (
-                SELECT
-                    id_bho_fk,
-                    array_to_json(
-                        array_agg(
-                            json_build_object(
-                                'id', id,
-                                'name', "name",
-                                'primary', "primary",
-                                'layers', layers,
-                                'date', date
-                            )
-                        )
-                    ) AS stratigraphy
-                FROM (
-                    SELECT
-                        id_bho_fk,
-                        id_sty AS id,
-                        name_sty AS "name",
-                        primary_sty as "primary",
-                        to_char(
-                            date_sty, 'YYYY-MM-DD'
-                        ) AS date,
-                        COUNT(id_lay) AS layers
-
-                    FROM
-                        bdms.stratigraphy
-
-                    LEFT JOIN bdms.layer
-                        ON layer.id_sty_fk = id_sty
-
-                    GROUP BY id_bho_fk, id_sty, date_sty
-
-                    ORDER BY date_sty DESC, id_sty DESC
-                ) t
-                GROUP BY id_bho_fk
-            ) AS strt
-                ON strt.id_bho_fk = borehole.id_bho
-
         """
 
     async def execute(self, id, with_lock = True, user=None):

@@ -9,20 +9,20 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
+public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
 {
-    public StratigraphyV2Controller(BdmsContext context, ILogger<StratigraphyV2Controller> logger, IBoreholePermissionService boreholePermissionService)
+    public StratigraphyController(BdmsContext context, ILogger<StratigraphyController> logger, IBoreholePermissionService boreholePermissionService)
         : base(context, logger, boreholePermissionService)
     {
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="StratigraphyV2"/>s, filtered by <paramref name="boreholeId"/>.
+    /// Asynchronously gets the <see cref="Stratigraphy"/>s, filtered by <paramref name="boreholeId"/>.
     /// </summary>
     /// <param name="boreholeId">The id of the borehole containing the stratigraphies to get.</param>
     [HttpGet]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<IEnumerable<StratigraphyV2>>> GetAsync([FromQuery] int boreholeId)
+    public async Task<ActionResult<IEnumerable<Stratigraphy>>> GetAsync([FromQuery] int boreholeId)
     {
         var borehole = await Context.Boreholes
             .AsNoTracking()
@@ -36,7 +36,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
 
         if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        var stratigraphies = await Context.StratigraphiesV2
+        var stratigraphies = await Context.Stratigraphies
             .AsNoTracking()
             .Where(x => x.BoreholeId == boreholeId)
             .ToListAsync()
@@ -46,17 +46,17 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
     }
 
     /// <summary>
-    /// Asynchronously copies a <see cref="StratigraphyV2"/>.
+    /// Asynchronously copies a <see cref="Stratigraphy"/>.
     /// </summary>
-    /// <param name="id">The <see cref="StratigraphyV2.Id"/> of the stratigraphy to copy.</param>
-    /// <returns>The id of the newly created <see cref="StratigraphyV2"/>.</returns>
+    /// <param name="id">The <see cref="Stratigraphy.Id"/> of the stratigraphy to copy.</param>
+    /// <returns>The id of the newly created <see cref="Stratigraphy"/>.</returns>
     [HttpPost("copy")]
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<ActionResult<int>> CopyAsync([Required] int id)
     {
         try
         {
-            var stratigraphy = await Context.StratigraphiesV2
+            var stratigraphy = await Context.Stratigraphies
                 .Include(s => s.Lithologies).ThenInclude(l => l.LithologyRockConditionCodes)
                 .Include(s => s.Lithologies).ThenInclude(l => l.LithologyUscsTypeCodes)
                 .Include(s => s.Lithologies).ThenInclude(l => l.LithologyTextureMetaCodes)
@@ -131,7 +131,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
     {
         try
         {
-            var stratigraphyToDelete = await Context.StratigraphiesV2.FindAsync(id).ConfigureAwait(false);
+            var stratigraphyToDelete = await Context.Stratigraphies.FindAsync(id).ConfigureAwait(false);
             if (stratigraphyToDelete == null)
             {
                 return NotFound();
@@ -139,7 +139,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
 
             if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphyToDelete.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-            var existingStratigraphyCount = await Context.StratigraphiesV2
+            var existingStratigraphyCount = await Context.Stratigraphies
                 .CountAsync(s => s.BoreholeId == stratigraphyToDelete.BoreholeId)
                 .ConfigureAwait(false);
 
@@ -163,7 +163,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override async Task<ActionResult<StratigraphyV2>> CreateAsync(StratigraphyV2 entity)
+    public override async Task<ActionResult<Stratigraphy>> CreateAsync(Stratigraphy entity)
     {
         try
         {
@@ -178,7 +178,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
 
             // If the stratigraphy to create is the first stratigraphy of a borehole,
             // then we need to set it as the primary stratigraphy.
-            var hasBoreholeExistingStratigraphy = await Context.StratigraphiesV2
+            var hasBoreholeExistingStratigraphy = await Context.Stratigraphies
                 .AnyAsync(s => s.BoreholeId == entity.BoreholeId)
                 .ConfigureAwait(false);
 
@@ -203,7 +203,7 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
 
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override async Task<ActionResult<StratigraphyV2>> EditAsync(StratigraphyV2 entity)
+    public override async Task<ActionResult<Stratigraphy>> EditAsync(Stratigraphy entity)
     {
         try
         {
@@ -236,16 +236,16 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
     }
 
     /// <inheritdoc />
-    protected override Task<int?> GetBoreholeId(StratigraphyV2 entity)
+    protected override Task<int?> GetBoreholeId(Stratigraphy entity)
     {
         if (entity == null) return Task.FromResult<int?>(default);
 
         return Task.FromResult<int?>(entity.BoreholeId);
     }
 
-    private async Task ResetOtherPrimaryStratigraphiesAsync(StratigraphyV2 entity)
+    private async Task ResetOtherPrimaryStratigraphiesAsync(Stratigraphy entity)
     {
-        var otherPrimaryStratigraphies = await Context.StratigraphiesV2
+        var otherPrimaryStratigraphies = await Context.Stratigraphies
             .Where(s => s.BoreholeId == entity.BoreholeId && s.IsPrimary && s.Id != entity.Id)
             .ToListAsync()
             .ConfigureAwait(false);
@@ -259,14 +259,14 @@ public class StratigraphyV2Controller : BoreholeControllerBase<StratigraphyV2>
         await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
     }
 
-    private async Task<bool> IsNameUnique(StratigraphyV2 entity)
+    private async Task<bool> IsNameUnique(Stratigraphy entity)
     {
         if (string.IsNullOrEmpty(entity.Name))
         {
             return true;
         }
 
-        var hasBoreholeStratigraphiesWithSameName = await Context.StratigraphiesV2
+        var hasBoreholeStratigraphiesWithSameName = await Context.Stratigraphies
                 .AnyAsync(s => s.BoreholeId == entity.BoreholeId && s.Id != entity.Id && s.Name == entity.Name)
                 .ConfigureAwait(false);
 

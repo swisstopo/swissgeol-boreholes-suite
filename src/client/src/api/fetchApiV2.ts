@@ -10,7 +10,6 @@ import {
   DocumentUpdate,
   GeometryFormat,
   Instrumentation,
-  Photo,
 } from "./apiInterfaces";
 import { getAuthorizationHeader } from "./authentication";
 import { Section } from "./section.ts";
@@ -354,45 +353,6 @@ export const deleteSection = async (id: number): Promise<void> => {
 };
 
 export const downloadCodelistCsv = (): Promise<Response> => download(`codelist/csv`);
-
-export const uploadPhoto = async (boreholeId: number, file: File): Promise<Photo> => {
-  const formData = new FormData();
-  formData.append("file", file);
-  const response = await upload(`photo/upload?boreholeId=${boreholeId}`, "POST", formData);
-  if (!response.ok) {
-    if (response.status === 400) {
-      throw new ApiError(await response.text(), response.status);
-    } else {
-      throw new ApiError("errorDuringBoreholeFileUpload", response.status);
-    }
-  } else {
-    return (await response.json()) as Photo;
-  }
-};
-
-export const getPhotosByBoreholeId = async (boreholeId: number): Promise<Photo[]> => {
-  return await fetchApiV2Legacy(`photo/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
-};
-
-export const exportPhotos = async (photoIds: number[]): Promise<Response> => {
-  return await download(`photo/export?${photoIds.map(id => `photoIds=${id}`).join("&")}`);
-};
-
-export const deletePhotos = async (photoIds: number[]): Promise<Response> => {
-  return await fetchApiV2Legacy(`photo?${photoIds.map(id => `photoIds=${id}`).join("&")}`, "DELETE");
-};
-
-export const updatePhotos = async (data: { id: number; public: boolean }[]): Promise<Response> => {
-  return await fetchApiV2WithApiError("photo", "PUT", data);
-};
-
-export const getPhotoImageData = async (photoId: number): Promise<Blob> => {
-  const response = await fetchApiV2Base(`photo/image?photoId=${photoId}`, "GET");
-  if (!response.ok) {
-    throw new ApiError("errorLoadingImage", response.status);
-  }
-  return await response.blob();
-};
 
 export const getDocumentsByBoreholeId = async (boreholeId: number): Promise<Document[]> => {
   return await fetchApiV2Legacy(`document/getAllForBorehole?boreholeId=${boreholeId}`, "GET");

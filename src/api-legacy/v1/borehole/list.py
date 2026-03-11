@@ -258,9 +258,6 @@ class ListBorehole(Action):
 
         paging = ''
 
-        layer_where, layer_params, layer_joins = self.filterProfileLayers(
-            filter)
-
         where, params = self.filterBorehole(filter)
 
         if limit is not None and page is not None:
@@ -296,42 +293,6 @@ class ListBorehole(Action):
          ON
              ids.borehole_id = id_bho
         """
-
-        if len(layer_params) > 0:
-            joins_string = "\n".join(layer_joins) if len(
-                layer_joins) > 0 else ''
-            where_string = (
-                "AND {}".format(" AND ".join(layer_where))
-                if len(layer_where) > 0
-                else ''
-            )
-
-            strt_sql = """
-                INNER JOIN (
-                    SELECT DISTINCT
-                        id_bho_fk,
-                        name_sty
-
-                    FROM
-                        bdms.stratigraphy
-
-                    INNER JOIN
-                        bdms.layer
-                    ON
-                        id_sty_fk = id_sty
-
-                    {}
-
-                    {}
-
-                ) as strt2
-                ON
-                    borehole.id_bho = strt2.id_bho_fk
-            """.format(
-                joins_string, where_string
-            )
-            rowsSql += strt_sql
-            cntSql += strt_sql
 
         if len(where) > 0:
             rowsSql += """
@@ -383,7 +344,7 @@ class ListBorehole(Action):
         )
 
         rec = await self.conn.fetchrow(
-            sql, *(layer_params + params)
+            sql, *(params)
         )
 
         return {
