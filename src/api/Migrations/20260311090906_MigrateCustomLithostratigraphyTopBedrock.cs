@@ -1,4 +1,4 @@
-using Microsoft.EntityFrameworkCore.Migrations;
+﻿using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
@@ -1625,18 +1625,6 @@ public partial class MigrateCustomLithostratigraphyTopBedrock : Migration
             UPDATE bdms.codelist SET order_cli = '15450' WHERE id_cli = 15306010;
             UPDATE bdms.codelist SET order_cli = '15460' WHERE id_cli = 15306018;
             UPDATE bdms.codelist SET order_cli = '15470' WHERE id_cli = 15306019;
-            UPDATE bdms.codelist SET order_cli = '15480' WHERE id_cli = 15300473;
-            UPDATE bdms.codelist SET order_cli = '15490' WHERE id_cli = 15300475;
-            UPDATE bdms.codelist SET order_cli = '15500' WHERE id_cli = 15300479;
-            UPDATE bdms.codelist SET order_cli = '15510' WHERE id_cli = 15300480;
-            UPDATE bdms.codelist SET order_cli = '15520' WHERE id_cli = 15300483;
-            UPDATE bdms.codelist SET order_cli = '15530' WHERE id_cli = 15300484;
-            UPDATE bdms.codelist SET order_cli = '15540' WHERE id_cli = 15300486;
-            UPDATE bdms.codelist SET order_cli = '15550' WHERE id_cli = 15300487;
-            UPDATE bdms.codelist SET order_cli = '15560' WHERE id_cli = 15300488;
-            UPDATE bdms.codelist SET order_cli = '15570' WHERE id_cli = 15300490;
-            UPDATE bdms.codelist SET order_cli = '15580' WHERE id_cli = 15300491;
-            UPDATE bdms.codelist SET order_cli = '15590' WHERE id_cli = 15300493;
 
             DELETE FROM bdms.codelist WHERE schema_cli = 'lithostratigraphy';
             UPDATE bdms.codelist SET schema_cli = 'lithostratigraphy' WHERE schema_cli = 'custom.lithostratigraphy_top_bedrock';
