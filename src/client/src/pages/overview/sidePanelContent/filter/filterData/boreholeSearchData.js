@@ -129,8 +129,8 @@ export const boreholeSearchData = [
   // {
   //   id: 32,
   //   type: "Dropdown",
-  //   label: "lithostratigraphy",
-  //   value: "lithostratigraphy",
+  //   label: "lithostratigraphy_top_bedrock",
+  //   value: "lithostratigraphy_top_bedrock",
   //   schema: "lithostratigraphy",
   //   levels: {
   //     1: "super",
@@ -144,8 +144,8 @@ export const boreholeSearchData = [
   // {
   //   id: 33,
   //   type: "Dropdown",
-  //   label: "chronostratigraphy",
-  //   value: "chronostratigraphy",
+  //   label: "chronostratigraphy_top_bedrock",
+  //   value: "chronostratigraphy_top_bedrock",
   //   schema: "chronostratigraphy",
   //   levels: {
   //     1: "1st_order_eon",
