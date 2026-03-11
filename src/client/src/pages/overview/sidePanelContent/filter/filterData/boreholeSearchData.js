@@ -129,9 +129,9 @@ export const boreholeSearchData = [
   // {
   //   id: 32,
   //   type: "Dropdown",
-  //   label: "lithostratigraphy_top_bedrock",
-  //   value: "lithostratigraphy_top_bedrock",
-  //   schema: "custom.lithostratigraphy_top_bedrock",
+  //   label: "lithostratigraphy",
+  //   value: "lithostratigraphy",
+  //   schema: "lithostratigraphy",
   //   levels: {
   //     1: "super",
   //     2: "group",
@@ -144,9 +144,9 @@ export const boreholeSearchData = [
   // {
   //   id: 33,
   //   type: "Dropdown",
-  //   label: "chronostratigraphy_top_bedrock",
-  //   value: "chronostratigraphy_top_bedrock",
-  //   schema: "custom.chronostratigraphy_top_bedrock",
+  //   label: "chronostratigraphy",
+  //   value: "chronostratigraphy",
+  //   schema: "chronostratigraphy",
   //   levels: {
   //     1: "1st_order_eon",
   //     2: "2nd_order_era",

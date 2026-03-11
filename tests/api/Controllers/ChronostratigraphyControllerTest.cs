@@ -67,7 +67,7 @@ public class ChronostratigraphyControllerTest
         Assert.AreEqual(11_000_014, chronostratigraphy.Id);
         Assert.AreEqual(40, chronostratigraphy.FromDepth);
         Assert.AreEqual(50, chronostratigraphy.ToDepth);
-        Assert.AreEqual(15_001_080, chronostratigraphy.ChronostratigraphyId);
+        Assert.AreEqual(15_001_081, chronostratigraphy.ChronostratigraphyId);
         Assert.AreEqual(6_000_001, chronostratigraphy.StratigraphyId);
     }
 
@@ -98,7 +98,7 @@ public class ChronostratigraphyControllerTest
             ToDepth = 100,
             Id = 11_000_039,
             Chronostratigraphy = null,
-            ChronostratigraphyId = 15_001_088,
+            ChronostratigraphyId = 15_001_090,
             Updated = new DateTime(2021, 6, 27, 4, 22, 39).ToUniversalTime(),
             UpdatedBy = null,
             UpdatedById = 5,

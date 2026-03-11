@@ -33,7 +33,7 @@ public class CodeListControllerTest
     public async Task GetAllEntriesAsync()
     {
         var codeLists = await controller.GetAsync();
-        Assert.AreEqual(5694, codeLists.Count());
+        Assert.AreEqual(4029, codeLists.Count());
     }
 
     [TestMethod]
@@ -46,20 +46,20 @@ public class CodeListControllerTest
     [TestMethod]
     public async Task GetEntriesBySchema()
     {
-        var codeLists = await controller.GetAsync("custom.chronostratigraphy_top_bedrock");
-        Assert.AreEqual(137, codeLists.Count());
+        var codeLists = await controller.GetAsync("chronostratigraphy");
+        Assert.AreEqual(140, codeLists.Count());
         var codeListToTest = codeLists.Single(c => c.Id == 15001070);
         Assert.AreEqual(15001070, codeListToTest.Id);
         Assert.AreEqual(15001070, codeListToTest.Geolcode);
         Assert.AreEqual("{\"color\":[128,207,216]}", codeListToTest.Conf);
         Assert.AreEqual(false, codeListToTest.IsDefault);
-        Assert.AreEqual("custom.chronostratigraphy_top_bedrock", codeListToTest.Schema);
+        Assert.AreEqual("chronostratigraphy", codeListToTest.Schema);
         Assert.AreEqual("Mittlerer Jura", codeListToTest.De);
         Assert.AreEqual("Middle Jurassic", codeListToTest.En);
         Assert.AreEqual("Jurassique moyen", codeListToTest.Fr);
         Assert.AreEqual("Giurassico Medio", codeListToTest.It);
         Assert.AreEqual(700, codeListToTest.Order);
-        Assert.AreEqual("jm", codeListToTest.Code);
+        Assert.AreEqual("", codeListToTest.Code);
         Assert.AreEqual(new LTree("15001001.15001049.15001065.15001070"), codeListToTest.Path);
     }
 
@@ -236,6 +236,6 @@ public class CodeListControllerTest
         var expectedHeader = "id_cli,schema_cli,code_cli,text_cli_en,text_cli_de,text_cli_fr,text_cli_it,text_cli_ro";
 
         Assert.AreEqual(expectedHeader, response.Content.Split('\n')[0]);
-        Assert.AreEqual(5696, response.Content.Split('\n').Length);
+        Assert.AreEqual(4031, response.Content.Split('\n').Length);
     }
 }

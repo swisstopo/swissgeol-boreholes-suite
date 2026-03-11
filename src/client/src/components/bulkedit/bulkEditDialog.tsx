@@ -71,14 +71,14 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
       // Todo: Reactivate when bulk edit is migrated to new API https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2297
       // { fieldName: "lithology_top_bedrock", type: FormValueType.Domain, api: "custom.lithology_top_bedrock" },
       // {
-      //   fieldName: "lithostratigraphy_top_bedrock",
+      //   fieldName: "lithostratigraphy",
       //   type: FormValueType.Domain,
-      //   api: "custom.lithostratigraphy_top_bedrock",
+      //   api: "lithostratigraphy",
       // },
       // {
-      //   fieldName: "chronostratigraphy_top_bedrock",
+      //   fieldName: "chronostratigraphy",
       //   type: FormValueType.Domain,
-      //   api: "custom.chronostratigraphy_top_bedrock",
+      //   api: "chronostratigraphy",
       // },
     ],
     [],
