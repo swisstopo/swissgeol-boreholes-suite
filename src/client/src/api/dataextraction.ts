@@ -10,7 +10,7 @@ export async function fetchCreatePngs(fileName: string): Promise<Response> {
       "Content-Type": "application/json",
       Authorization: getAuthorizationHeader(reduxUser.authentication),
     },
-    body: JSON.stringify({ filename: fileName + ".pdf" }),
+    body: JSON.stringify({ filename: fileName }),
   });
 }
 

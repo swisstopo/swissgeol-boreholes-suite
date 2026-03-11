@@ -81,11 +81,6 @@ export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName,
   };
 
   useEffect(() => {
-    // @ts-expect-error - Attach map object to window to make it accessible for E2E testing
-    window.labelingImage = map;
-  }, [map]);
-
-  useEffect(() => {
     if (!image || !fileName) return;
 
     if (map) {
@@ -98,6 +93,8 @@ export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName,
         return;
       }
       map.dispose();
+      // @ts-expect-error - Clear window reference when disposing
+      window.labelingImage = undefined;
       setMap(undefined);
     }
 
@@ -134,6 +131,10 @@ export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName,
       imageExtent,
     });
     imageLayer.setSource(source);
+
+    // Set window reference only after everything is initialized
+    // @ts-expect-error - Attach map to window after complete initialization
+    window.labelingImage = initMap;
   }, [fileName, image, imageSize, map, mapDomId, t]);
 
   useEffect(() => {

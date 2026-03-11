@@ -1,9 +1,10 @@
 import { useCallback, useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
+import { AlertColor } from "@mui/material";
 import { ApiError } from "../api/apiInterfaces.ts";
 import { AlertContext } from "../components/alert/alertContext.tsx";
 
-export function useApiErrorAlert() {
+export function useApiErrorAlert(severity: AlertColor = "error") {
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
 
@@ -13,9 +14,9 @@ export function useApiErrorAlert() {
       if (error instanceof ApiError && error.message) {
         errorMessage = t(error.message);
       }
-      showAlert(errorMessage, "error");
+      showAlert(errorMessage, severity);
     },
-    [showAlert, t],
+    [severity, showAlert, t],
   );
 }
 
@@ -24,9 +25,10 @@ export function useApiErrorAlert() {
  *
  * @param isError - Boolean flag indicating if an error occurred
  * @param error - The error object that was thrown
+ * @param severity - Optional severity level for the alert (default is "error")
  */
-export function useShowAlertOnError(isError: boolean, error: unknown) {
-  const showApiErrorAlert = useApiErrorAlert();
+export function useShowAlertOnError(isError: boolean, error: unknown, severity: AlertColor = "error") {
+  const showApiErrorAlert = useApiErrorAlert(severity);
 
   useEffect(() => {
     if (isError) {

@@ -80,7 +80,10 @@ export async function getDataExtractionFileInfo(boreholeFileId: number, index = 
   if (response) {
     response = response as DataExtractionResponse;
     if (response.count === 0) {
-      await createExtractionPngs(response.fileName);
+      const fileNameWithExtension = response.fileName.includes(".") ? response.fileName : response.fileName + ".pdf";
+      if (fileNameWithExtension.includes(".pdf")) {
+        await createExtractionPngs(fileNameWithExtension);
+      }
       return await getDataExtractionFileInfo(boreholeFileId, index);
     }
     return response;
@@ -208,9 +211,35 @@ export function useFileInfo(selectedFile: BoreholeAttachment | undefined, active
   return useQuery({
     queryKey: ["dataExtractionFileInfo", selectedFile, activePage],
     enabled: !!selectedFile,
+    retry: 4, //Increase retries since we intentionally trigger retry after fetching pngs.
     queryFn: async () => {
       if (!selectedFile) return null;
-      return await getDataExtractionFileInfo(selectedFile.id, activePage);
+
+      // potentially use other fetch method here
+      const response = await fetchApiV2Legacy(
+        `boreholefile/getDataExtractionFileInfo?boreholeFileId=${selectedFile.id}&index=${activePage}`,
+        "GET",
+      );
+      if (!response) {
+        throw new ApiError("errorDataExtractionFileLoading", 500);
+      }
+      const dataResponse = response as DataExtractionResponse;
+
+      // Create pngs if not yet available
+      if (dataResponse.count === 0) {
+        const fileNameWithExtension = dataResponse.fileName.includes(".")
+          ? dataResponse.fileName
+          : dataResponse.fileName + ".pdf";
+
+        if (fileNameWithExtension.includes(".pdf")) {
+          await createExtractionPngs(fileNameWithExtension);
+        }
+
+        // Throw error to trigger useQuery's retry mechanism
+        throw new ApiError("pngsNotYetAvailable", 202); // 202 = Processing
+      }
+
+      return dataResponse;
     },
   });
 }

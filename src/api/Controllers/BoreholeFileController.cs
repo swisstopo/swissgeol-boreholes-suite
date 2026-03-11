@@ -116,7 +116,7 @@ public class BoreholeFileController : ControllerBase
                 .ConfigureAwait(false);
 
             // Check if user has permission to view the borehole file.
-            if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeFile.BoreholeId).ConfigureAwait(false))
+            if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeFile?.BoreholeId).ConfigureAwait(false))
             {
                 return Unauthorized("You are missing permissions to view the borehole file.");
             }

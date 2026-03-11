@@ -5,6 +5,7 @@ import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
 import { extractCoordinates, extractText, useExtractionBoundingBoxes, useFileInfo } from "../../../api/file/file.ts";
 import { theme } from "../../../AppTheme.ts";
 import { TextExtractionButton } from "../../../components/buttons/labelingButtons.tsx";
+import { useShowAlertOnError } from "../../../hooks/useShowAlertOnError.tsx";
 import { EditStateContext } from "../editStateContext.tsx";
 import { useLabelingContext } from "./labelingContext.tsx";
 import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
@@ -33,7 +34,12 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
   const [drawTooltipLabel, setDrawTooltipLabel] = useState<string>();
   const { editingEnabled } = useContext(EditStateContext);
   const { data: fileInfo } = useFileInfo(selectedFile, activePage);
-  const { data: pageBoundingBoxes } = useExtractionBoundingBoxes(selectedFile?.nameUuid, fileInfo, activePage);
+  const {
+    data: pageBoundingBoxes,
+    isError,
+    error,
+  } = useExtractionBoundingBoxes(selectedFile?.nameUuid, fileInfo, activePage);
+  useShowAlertOnError(isError, error, "warning");
 
   const setTextToClipboard = useCallback(
     async (text: string) => {

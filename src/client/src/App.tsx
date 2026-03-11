@@ -82,6 +82,9 @@ const QueryClientInitializer: FC<PropsWithChildren> = ({ children }) => {
           queries: {
             retry: isCypress ? false : 3,
             throwOnError: (error, query) => {
+              if (error instanceof ApiError) {
+                return false;
+              }
               // If there is no cached data for a query, we want to throw an error that will be caught by the error boundary.
               // The closest error boundary's FallbackComponent will be displayed.
               return typeof query.state.data === "undefined";

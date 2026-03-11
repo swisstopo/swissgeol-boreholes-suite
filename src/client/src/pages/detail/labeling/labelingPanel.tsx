@@ -107,8 +107,8 @@ const LabelingPanel: FC = () => {
 
   useEffect(() => {
     if (files?.length === 1) {
-      setSelectedAttachment(files[0]);
-    } else if (!files || files.length === 0 || files.length > 1) {
+      setSelectedAttachment(selected => selected ?? files[0]);
+    } else if (!files || files.length === 0) {
       setSelectedAttachment(undefined);
       setActivePage(1);
     }
