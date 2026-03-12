@@ -10,7 +10,7 @@ import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
 import { Photo, uploadPhoto, usePhotoImage, usePhotos, useReloadPhotos } from "../attachments/tabs/photo.ts";
-import { useBoreholeFiles, useInvalidateBoreholeFiles } from "../attachments/useBoreholeFiles.tsx";
+import { useProfiles, useReloadProfiles } from "../attachments/useProfiles.tsx";
 import { FloatingExtractionFeedback } from "./floatingExtractionFeedback.tsx";
 import { useLabelingContext } from "./labelingContext.tsx";
 import { LabelingExtraction } from "./labelingExtraction.tsx";
@@ -66,12 +66,11 @@ const LabelingPanel: FC = () => {
   const isPhotoSelected = selectedAttachment && "fromDepth" in selectedAttachment;
   const selectedFile: FileInterface | undefined = isPhotoSelected ? undefined : selectedAttachment;
   const selectedPhoto: Photo | undefined = isPhotoSelected ? selectedAttachment : undefined;
-  const { data: boreholeFiles, isLoading: isLoadingBoreholeFiles } = useBoreholeFiles(boreholeId);
+  const { data: boreholeFiles, isLoading: isLoadingBoreholeFiles } = useProfiles(boreholeId);
   const { data: fileInfo, isLoading: isLoadingFileInfo } = useFileInfo(selectedFile, activePage);
   const { data: photos, isLoading: isLoadingPhotos } = usePhotos(Number(boreholeId));
   const { data: image, isLoading: isLoadingImage } = usePhotoImage(selectedPhoto?.id);
-  const invalidateBoreholeFiles = useInvalidateBoreholeFiles();
-
+  const reloadProfiles = useReloadProfiles(Number(boreholeId));
   const reloadPhotos = useReloadPhotos(Number(boreholeId));
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -92,7 +91,7 @@ const LabelingPanel: FC = () => {
         if (panelTab === PanelTab.profile) {
           const fileResponse = await uploadFile(Number(boreholeId), file);
           setSelectedAttachment(fileResponse.file);
-          invalidateBoreholeFiles();
+          reloadProfiles();
         } else {
           const photoResponse = await uploadPhoto(Number(boreholeId), file);
           setSelectedAttachment(photoResponse);
@@ -102,7 +101,7 @@ const LabelingPanel: FC = () => {
         showAlert(t((error as Error).message), "error");
       }
     },
-    [boreholeId, invalidateBoreholeFiles, panelTab, reloadPhotos, showAlert, t],
+    [boreholeId, reloadProfiles, panelTab, reloadPhotos, showAlert, t],
   );
 
   useEffect(() => {

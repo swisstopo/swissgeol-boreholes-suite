@@ -9,7 +9,7 @@ import { formatDate } from "../../../../utils.ts";
 import { EditStateContext } from "../../editStateContext";
 import { AttachmentContent } from "../attachmentsContent";
 import { useAttachments } from "../useAttachments.tsx";
-import { useInvalidateBoreholeFiles } from "../useBoreholeFiles.tsx";
+import { useReloadProfiles } from "../useProfiles.tsx";
 
 interface ProfilesProps {
   boreholeId: number;
@@ -20,7 +20,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const { editingEnabled } = useContext(EditStateContext);
   const apiRef = useGridApiRef();
   const showApiErrorAlert = useApiErrorAlert();
-  const invalidateBoreholeFiles = useInvalidateBoreholeFiles();
+  const reloadProfiles = useReloadProfiles(Number(boreholeId));
 
   const loadAttachments = useCallback(async () => {
     const files = await getFiles<BoreholeFile>(boreholeId);
@@ -33,14 +33,14 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const addAttachment = async (file?: File) => {
     if (file) {
       await uploadFile(boreholeId, file);
-      invalidateBoreholeFiles();
+      reloadProfiles();
     }
   };
 
   const deleteAttachments = async (ids: number[]) => {
     const detachPromises = ids.map(id => detachFile(id));
     await Promise.all(detachPromises);
-    invalidateBoreholeFiles();
+    reloadProfiles();
   };
 
   const exportAttachments = async (ids: number[]) => {
@@ -63,7 +63,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         return Promise.resolve();
       });
       const results = await Promise.allSettled(updatePromises);
-      invalidateBoreholeFiles();
+      reloadProfiles();
       const errors = results.filter(r => r.status === "rejected").map(r => r.reason);
       if (errors.length > 0) {
         showApiErrorAlert(errors.map(e => e.message).join(", "));
@@ -71,7 +71,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
       }
       return true;
     },
-    [apiRef, boreholeId, invalidateBoreholeFiles, showApiErrorAlert],
+    [apiRef, boreholeId, reloadProfiles, showApiErrorAlert],
   );
 
   const {
@@ -92,6 +92,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
     exportAttachments,
     updateAttachments,
     tabStatusToReset: "profiles",
+    invalidateQueries: reloadProfiles,
   });
 
   const updateDescription = useCallback(

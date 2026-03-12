@@ -1,12 +1,14 @@
+import { useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getFiles } from "../../../api/file/file";
 import { BoreholeFile } from "../../../api/file/fileInterfaces";
 import { labelingFileFormat, matchesFileFormat, PanelTab } from "../labeling/labelingInterfaces.tsx";
 
-const boreholeFileQueryKey = "boreholeFiles";
-export function useBoreholeFiles(boreholeId?: string) {
+const profileQueryKey = "profiles";
+
+export function useProfiles(boreholeId?: string) {
   return useQuery({
-    queryKey: [boreholeFileQueryKey, boreholeId],
+    queryKey: [profileQueryKey, boreholeId],
     queryFn: async () => {
       if (!boreholeId) return [];
       const response = await getFiles<BoreholeFile>(Number(boreholeId));
@@ -20,10 +22,10 @@ export function useBoreholeFiles(boreholeId?: string) {
   });
 }
 
-// This hook can be used to explicitly invalidate the query where boreholeFiles change without being managed by react-query mutations
-export const useInvalidateBoreholeFiles = () => {
+// Necessary as long as the profile mutations are not handled via tanstack-query.
+export const useReloadProfiles = (boreholeId: number) => {
   const queryClient = useQueryClient();
-  return () => {
-    queryClient.invalidateQueries({ queryKey: [boreholeFileQueryKey] });
-  };
+  return useCallback(() => {
+    queryClient.invalidateQueries({ queryKey: [profileQueryKey, boreholeId] });
+  }, [boreholeId, queryClient]);
 };

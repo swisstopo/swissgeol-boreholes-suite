@@ -192,8 +192,24 @@ function reloadPanel() {
   openPanel();
 }
 
+function waitForMapAnimations() {
+  cy.window().then(win => {
+    return new Cypress.Promise(resolve => {
+      const view = win.labelingImage.getView();
+      const checkAnimation = () => {
+        if (!view.getAnimating()) {
+          resolve();
+        } else {
+          setTimeout(checkAnimation, 50);
+        }
+      };
+      checkAnimation();
+    });
+  });
+}
+
 describe("Test labeling tool", () => {
-  it.skip("can show labeling panel ", () => {
+  it("can show labeling panel ", () => {
     goToRouteAndAcceptTerms("/");
     newUneditableBorehole().as("borehole_id");
 
@@ -251,7 +267,7 @@ describe("Test labeling tool", () => {
     isFileActive("borehole_attachment_3.pdf", true);
 
     selectInputFile("WOLFHEART.pdf", "application/pdf");
-
+    cy.wait(["@getAllAttachments", "@upload-files", "@extraction-file-info"]);
     cy.get('[data-cy="labeling-file-button-select"]').contains("WOLFHEART.pdf");
     cy.get('[data-cy="button-select-popover"] .MuiListItem-root').eq(1).click();
     cy.get('[data-cy="labeling-file-button-select"]').contains("borehole_attachment_3.pdf");
@@ -458,6 +474,7 @@ describe("Test labeling tool", () => {
     waitForLabelingImageLoaded();
     assertPageCount(3, 3);
     cy.wait("@extraction-file-info");
+    waitForMapAnimations();
     cy.dataCy("text-extraction-button").click();
     assertDrawTooltipInvisible();
     moveMouseOntoMap();
