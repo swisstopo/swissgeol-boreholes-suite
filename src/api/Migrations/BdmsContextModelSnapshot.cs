@@ -1182,276 +1182,6 @@ namespace BDMS.Migrations
                     b.ToTable("instrumentation", "bdms");
                 });
 
-            modelBuilder.Entity("BDMS.Models.Layer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id_lay");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("AlterationId")
-                        .HasColumnType("integer")
-                        .HasColumnName("alteration_id_cli");
-
-                    b.Property<int?>("CohesionId")
-                        .HasColumnType("integer")
-                        .HasColumnName("cohesion_id_cli");
-
-                    b.Property<int?>("CompactnessId")
-                        .HasColumnType("integer")
-                        .HasColumnName("compactness_id_cli");
-
-                    b.Property<int?>("ConsistanceId")
-                        .HasColumnType("integer")
-                        .HasColumnName("consistance_id_cli");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_lay");
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("creator_lay");
-
-                    b.Property<int?>("DescriptionQualityId")
-                        .HasColumnType("integer")
-                        .HasColumnName("qt_description_id_cli");
-
-                    b.Property<double?>("FromDepth")
-                        .HasColumnType("double precision")
-                        .HasColumnName("depth_from_lay");
-
-                    b.Property<int?>("GradationId")
-                        .HasColumnType("integer")
-                        .HasColumnName("gradation_id_cli");
-
-                    b.Property<int?>("GrainSize1Id")
-                        .HasColumnType("integer")
-                        .HasColumnName("grain_size_1_id_cli");
-
-                    b.Property<int?>("GrainSize2Id")
-                        .HasColumnType("integer")
-                        .HasColumnName("grain_size_2_id_cli");
-
-                    b.Property<int?>("HumidityId")
-                        .HasColumnType("integer")
-                        .HasColumnName("humidity_id_cli");
-
-                    b.Property<bool?>("IsLast")
-                        .HasColumnType("boolean")
-                        .HasColumnName("last_lay");
-
-                    b.Property<bool?>("IsStriae")
-                        .HasColumnType("boolean")
-                        .HasColumnName("striae_lay");
-
-                    b.Property<bool?>("IsUndefined")
-                        .HasColumnType("boolean")
-                        .HasColumnName("undefined_lay");
-
-                    b.Property<int?>("LithologyId")
-                        .HasColumnType("integer")
-                        .HasColumnName("lithology_id_cli");
-
-                    b.Property<int?>("LithologyTopBedrockId")
-                        .HasColumnType("integer")
-                        .HasColumnName("lithology_top_bedrock_id_cli");
-
-                    b.Property<int?>("LithostratigraphyId")
-                        .HasColumnType("integer")
-                        .HasColumnName("lithostratigraphy_id_cli");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text")
-                        .HasColumnName("notes_lay");
-
-                    b.Property<string>("OriginalLithology")
-                        .HasColumnType("text")
-                        .HasColumnName("original_lithology");
-
-                    b.Property<string>("OriginalUscs")
-                        .HasColumnType("text")
-                        .HasColumnName("uscs_original_lay");
-
-                    b.Property<int?>("PlasticityId")
-                        .HasColumnType("integer")
-                        .HasColumnName("plasticity_id_cli");
-
-                    b.Property<int>("StratigraphyId")
-                        .HasColumnType("integer")
-                        .HasColumnName("id_sty_fk");
-
-                    b.Property<double?>("ToDepth")
-                        .HasColumnType("double precision")
-                        .HasColumnName("depth_to_lay");
-
-                    b.Property<DateTime?>("Updated")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("update_lay");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("updater_lay");
-
-                    b.Property<int?>("Uscs1Id")
-                        .HasColumnType("integer")
-                        .HasColumnName("uscs_1_id_cli");
-
-                    b.Property<int?>("Uscs2Id")
-                        .HasColumnType("integer")
-                        .HasColumnName("uscs_2_id_cli");
-
-                    b.Property<int?>("UscsDeterminationId")
-                        .HasColumnType("integer")
-                        .HasColumnName("uscs_determination_id_cli");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("AlterationId");
-
-                    b.HasIndex("CohesionId");
-
-                    b.HasIndex("CompactnessId");
-
-                    b.HasIndex("ConsistanceId");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("DescriptionQualityId");
-
-                    b.HasIndex("GradationId");
-
-                    b.HasIndex("GrainSize1Id");
-
-                    b.HasIndex("GrainSize2Id");
-
-                    b.HasIndex("HumidityId");
-
-                    b.HasIndex("LithologyId");
-
-                    b.HasIndex("LithologyTopBedrockId");
-
-                    b.HasIndex("LithostratigraphyId");
-
-                    b.HasIndex("PlasticityId");
-
-                    b.HasIndex("StratigraphyId");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.HasIndex("Uscs1Id");
-
-                    b.HasIndex("Uscs2Id");
-
-                    b.HasIndex("UscsDeterminationId");
-
-                    b.ToTable("layer", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerColorCode", b =>
-                {
-                    b.Property<int>("LayerId")
-                        .HasColumnType("integer")
-                        .HasColumnName("layer_id");
-
-                    b.Property<int>("CodelistId")
-                        .HasColumnType("integer")
-                        .HasColumnName("color_id");
-
-                    b.HasKey("LayerId", "CodelistId");
-
-                    b.HasIndex("CodelistId");
-
-                    b.ToTable("layer_color_codelist", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerDebrisCode", b =>
-                {
-                    b.Property<int>("LayerId")
-                        .HasColumnType("integer")
-                        .HasColumnName("layer_id");
-
-                    b.Property<int>("CodelistId")
-                        .HasColumnType("integer")
-                        .HasColumnName("debris_id");
-
-                    b.HasKey("LayerId", "CodelistId");
-
-                    b.HasIndex("CodelistId");
-
-                    b.ToTable("layer_debris_codelist", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerGrainAngularityCode", b =>
-                {
-                    b.Property<int>("LayerId")
-                        .HasColumnType("integer")
-                        .HasColumnName("layer_id");
-
-                    b.Property<int>("CodelistId")
-                        .HasColumnType("integer")
-                        .HasColumnName("grain_angularity_id");
-
-                    b.HasKey("LayerId", "CodelistId");
-
-                    b.HasIndex("CodelistId");
-
-                    b.ToTable("layer_grain_angularity_codelist", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerGrainShapeCode", b =>
-                {
-                    b.Property<int>("LayerId")
-                        .HasColumnType("integer")
-                        .HasColumnName("layer_id");
-
-                    b.Property<int>("CodelistId")
-                        .HasColumnType("integer")
-                        .HasColumnName("grain_shape_id");
-
-                    b.HasKey("LayerId", "CodelistId");
-
-                    b.HasIndex("CodelistId");
-
-                    b.ToTable("layer_grain_shape_codelist", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerOrganicComponentCode", b =>
-                {
-                    b.Property<int>("LayerId")
-                        .HasColumnType("integer")
-                        .HasColumnName("layer_id");
-
-                    b.Property<int>("CodelistId")
-                        .HasColumnType("integer")
-                        .HasColumnName("organic_components_id");
-
-                    b.HasKey("LayerId", "CodelistId");
-
-                    b.HasIndex("CodelistId");
-
-                    b.ToTable("layer_organic_component_codelist", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerUscs3Code", b =>
-                {
-                    b.Property<int>("LayerId")
-                        .HasColumnType("integer")
-                        .HasColumnName("layer_id");
-
-                    b.Property<int>("CodelistId")
-                        .HasColumnType("integer")
-                        .HasColumnName("uscs3_id");
-
-                    b.HasKey("LayerId", "CodelistId");
-
-                    b.HasIndex("CodelistId");
-
-                    b.ToTable("layer_uscs3_codelist", "bdms");
-                });
-
             modelBuilder.Entity("BDMS.Models.LithologicalDescription", b =>
                 {
                     b.Property<int>("Id")
@@ -2541,68 +2271,6 @@ namespace BDMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("id_sty");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<int?>("BoreholeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("id_bho_fk");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_sty");
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("author_sty");
-
-                    b.Property<DateTime?>("Date")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("date_sty");
-
-                    b.Property<bool?>("IsPrimary")
-                        .HasColumnType("boolean")
-                        .HasColumnName("primary_sty");
-
-                    b.Property<string>("Name")
-                        .HasColumnType("text")
-                        .HasColumnName("name_sty");
-
-                    b.Property<string>("Notes")
-                        .HasColumnType("text")
-                        .HasColumnName("notes_sty");
-
-                    b.Property<int?>("QualityId")
-                        .HasColumnType("integer")
-                        .HasColumnName("quality_id");
-
-                    b.Property<DateTime?>("Updated")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("update_sty");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("updater_sty");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BoreholeId");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("QualityId");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("stratigraphy", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.StratigraphyV2", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
                         .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
@@ -2647,7 +2315,7 @@ namespace BDMS.Migrations
 
                     b.HasIndex("UpdatedById");
 
-                    b.ToTable("stratigraphy_v2", "bdms");
+                    b.ToTable("stratigraphy", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.TabStatus", b =>
@@ -3383,7 +3051,7 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.StratigraphyV2", "Stratigraphy")
+                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("ChronostratigraphyLayers")
                         .HasForeignKey("StratigraphyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -3466,7 +3134,7 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("FaciesId");
 
-                    b.HasOne("BDMS.Models.StratigraphyV2", "Stratigraphy")
+                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("FaciesDescriptions")
                         .HasForeignKey("StratigraphyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -3668,246 +3336,13 @@ namespace BDMS.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
-            modelBuilder.Entity("BDMS.Models.Layer", b =>
-                {
-                    b.HasOne("BDMS.Models.Codelist", "Alteration")
-                        .WithMany()
-                        .HasForeignKey("AlterationId");
-
-                    b.HasOne("BDMS.Models.Codelist", "Cohesion")
-                        .WithMany()
-                        .HasForeignKey("CohesionId");
-
-                    b.HasOne("BDMS.Models.Codelist", "Compactness")
-                        .WithMany()
-                        .HasForeignKey("CompactnessId");
-
-                    b.HasOne("BDMS.Models.Codelist", "Consistance")
-                        .WithMany()
-                        .HasForeignKey("ConsistanceId");
-
-                    b.HasOne("BDMS.Models.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("BDMS.Models.Codelist", "DescriptionQuality")
-                        .WithMany()
-                        .HasForeignKey("DescriptionQualityId");
-
-                    b.HasOne("BDMS.Models.Codelist", "Gradation")
-                        .WithMany()
-                        .HasForeignKey("GradationId");
-
-                    b.HasOne("BDMS.Models.Codelist", "GrainSize1")
-                        .WithMany()
-                        .HasForeignKey("GrainSize1Id");
-
-                    b.HasOne("BDMS.Models.Codelist", "GrainSize2")
-                        .WithMany()
-                        .HasForeignKey("GrainSize2Id");
-
-                    b.HasOne("BDMS.Models.Codelist", "Humidity")
-                        .WithMany()
-                        .HasForeignKey("HumidityId");
-
-                    b.HasOne("BDMS.Models.Codelist", "Lithology")
-                        .WithMany()
-                        .HasForeignKey("LithologyId");
-
-                    b.HasOne("BDMS.Models.Codelist", "LithologyTopBedrock")
-                        .WithMany()
-                        .HasForeignKey("LithologyTopBedrockId");
-
-                    b.HasOne("BDMS.Models.Codelist", "Lithostratigraphy")
-                        .WithMany()
-                        .HasForeignKey("LithostratigraphyId");
-
-                    b.HasOne("BDMS.Models.Codelist", "Plasticity")
-                        .WithMany()
-                        .HasForeignKey("PlasticityId");
-
-                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
-                        .WithMany("Layers")
-                        .HasForeignKey("StratigraphyId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.User", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-
-                    b.HasOne("BDMS.Models.Codelist", "Uscs1")
-                        .WithMany()
-                        .HasForeignKey("Uscs1Id");
-
-                    b.HasOne("BDMS.Models.Codelist", "Uscs2")
-                        .WithMany()
-                        .HasForeignKey("Uscs2Id");
-
-                    b.HasOne("BDMS.Models.Codelist", "UscsDetermination")
-                        .WithMany()
-                        .HasForeignKey("UscsDeterminationId");
-
-                    b.Navigation("Alteration");
-
-                    b.Navigation("Cohesion");
-
-                    b.Navigation("Compactness");
-
-                    b.Navigation("Consistance");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("DescriptionQuality");
-
-                    b.Navigation("Gradation");
-
-                    b.Navigation("GrainSize1");
-
-                    b.Navigation("GrainSize2");
-
-                    b.Navigation("Humidity");
-
-                    b.Navigation("Lithology");
-
-                    b.Navigation("LithologyTopBedrock");
-
-                    b.Navigation("Lithostratigraphy");
-
-                    b.Navigation("Plasticity");
-
-                    b.Navigation("Stratigraphy");
-
-                    b.Navigation("UpdatedBy");
-
-                    b.Navigation("Uscs1");
-
-                    b.Navigation("Uscs2");
-
-                    b.Navigation("UscsDetermination");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerColorCode", b =>
-                {
-                    b.HasOne("BDMS.Models.Codelist", "Codelist")
-                        .WithMany("LayerColorCodes")
-                        .HasForeignKey("CodelistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.Layer", "Layer")
-                        .WithMany("LayerColorCodes")
-                        .HasForeignKey("LayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Codelist");
-
-                    b.Navigation("Layer");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerDebrisCode", b =>
-                {
-                    b.HasOne("BDMS.Models.Codelist", "Codelist")
-                        .WithMany("LayerDebrisCodes")
-                        .HasForeignKey("CodelistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.Layer", "Layer")
-                        .WithMany("LayerDebrisCodes")
-                        .HasForeignKey("LayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Codelist");
-
-                    b.Navigation("Layer");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerGrainAngularityCode", b =>
-                {
-                    b.HasOne("BDMS.Models.Codelist", "Codelist")
-                        .WithMany("LayerGrainAngularityCodes")
-                        .HasForeignKey("CodelistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.Layer", "Layer")
-                        .WithMany("LayerGrainAngularityCodes")
-                        .HasForeignKey("LayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Codelist");
-
-                    b.Navigation("Layer");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerGrainShapeCode", b =>
-                {
-                    b.HasOne("BDMS.Models.Codelist", "Codelist")
-                        .WithMany("LayerGrainShapeCodes")
-                        .HasForeignKey("CodelistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.Layer", "Layer")
-                        .WithMany("LayerGrainShapeCodes")
-                        .HasForeignKey("LayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Codelist");
-
-                    b.Navigation("Layer");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerOrganicComponentCode", b =>
-                {
-                    b.HasOne("BDMS.Models.Codelist", "Codelist")
-                        .WithMany("LayerOrganicComponentCodes")
-                        .HasForeignKey("CodelistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.Layer", "Layer")
-                        .WithMany("LayerOrganicComponentCodes")
-                        .HasForeignKey("LayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Codelist");
-
-                    b.Navigation("Layer");
-                });
-
-            modelBuilder.Entity("BDMS.Models.LayerUscs3Code", b =>
-                {
-                    b.HasOne("BDMS.Models.Codelist", "Codelist")
-                        .WithMany("LayerUscs3Codes")
-                        .HasForeignKey("CodelistId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.Layer", "Layer")
-                        .WithMany("LayerUscs3Codes")
-                        .HasForeignKey("LayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Codelist");
-
-                    b.Navigation("Layer");
-                });
-
             modelBuilder.Entity("BDMS.Models.LithologicalDescription", b =>
                 {
                     b.HasOne("BDMS.Models.User", "CreatedBy")
                         .WithMany()
                         .HasForeignKey("CreatedById");
 
-                    b.HasOne("BDMS.Models.StratigraphyV2", "Stratigraphy")
+                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("LithologicalDescriptions")
                         .HasForeignKey("StratigraphyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -3954,7 +3389,7 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("PlasticityId");
 
-                    b.HasOne("BDMS.Models.StratigraphyV2", "Stratigraphy")
+                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("Lithologies")
                         .HasForeignKey("StratigraphyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -4328,7 +3763,7 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("LithostratigraphyId");
 
-                    b.HasOne("BDMS.Models.StratigraphyV2", "Stratigraphy")
+                    b.HasOne("BDMS.Models.Stratigraphy", "Stratigraphy")
                         .WithMany("LithostratigraphyLayers")
                         .HasForeignKey("StratigraphyId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -4583,33 +4018,6 @@ namespace BDMS.Migrations
             modelBuilder.Entity("BDMS.Models.Stratigraphy", b =>
                 {
                     b.HasOne("BDMS.Models.Borehole", "Borehole")
-                        .WithMany()
-                        .HasForeignKey("BoreholeId");
-
-                    b.HasOne("BDMS.Models.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("BDMS.Models.Codelist", "Quality")
-                        .WithMany()
-                        .HasForeignKey("QualityId");
-
-                    b.HasOne("BDMS.Models.User", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-
-                    b.Navigation("Borehole");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("Quality");
-
-                    b.Navigation("UpdatedBy");
-                });
-
-            modelBuilder.Entity("BDMS.Models.StratigraphyV2", b =>
-                {
-                    b.HasOne("BDMS.Models.Borehole", "Borehole")
                         .WithMany("Stratigraphies")
                         .HasForeignKey("BoreholeId")
                         .OnDelete(DeleteBehavior.Cascade)
@@ -4828,18 +4236,6 @@ namespace BDMS.Migrations
 
                     b.Navigation("HydrotestKindCodes");
 
-                    b.Navigation("LayerColorCodes");
-
-                    b.Navigation("LayerDebrisCodes");
-
-                    b.Navigation("LayerGrainAngularityCodes");
-
-                    b.Navigation("LayerGrainShapeCodes");
-
-                    b.Navigation("LayerOrganicComponentCodes");
-
-                    b.Navigation("LayerUscs3Codes");
-
                     b.Navigation("LithologyDescriptionComponentConMineralCodes");
 
                     b.Navigation("LithologyDescriptionComponentConParticleCodes");
@@ -4879,21 +4275,6 @@ namespace BDMS.Migrations
             modelBuilder.Entity("BDMS.Models.File", b =>
                 {
                     b.Navigation("BoreholeFiles");
-                });
-
-            modelBuilder.Entity("BDMS.Models.Layer", b =>
-                {
-                    b.Navigation("LayerColorCodes");
-
-                    b.Navigation("LayerDebrisCodes");
-
-                    b.Navigation("LayerGrainAngularityCodes");
-
-                    b.Navigation("LayerGrainShapeCodes");
-
-                    b.Navigation("LayerOrganicComponentCodes");
-
-                    b.Navigation("LayerUscs3Codes");
                 });
 
             modelBuilder.Entity("BDMS.Models.Lithology", b =>
@@ -4944,11 +4325,6 @@ namespace BDMS.Migrations
                 });
 
             modelBuilder.Entity("BDMS.Models.Stratigraphy", b =>
-                {
-                    b.Navigation("Layers");
-                });
-
-            modelBuilder.Entity("BDMS.Models.StratigraphyV2", b =>
                 {
                     b.Navigation("ChronostratigraphyLayers");
 

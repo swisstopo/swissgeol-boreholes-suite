@@ -11,12 +11,12 @@ describe("Tests for the lithostratigraphy editor.", () => {
     // Add new borehole with stratigraphy
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
-      .then(id => createStratigraphy(id, 3000).as("stratigraphy_id"));
+      .then(boreholeId => createStratigraphy(boreholeId, "TRAFFICNEIGHBOR").as("stratigraphy_id"));
 
     // open lithostratigraphy editor
-    cy.get("@borehole_id").then(id => {
+    cy.get("@borehole_id").then(boreholeId => {
       cy.get("@stratigraphy_id").then(stratigraphyId => {
-        goToDetailRouteAndAcceptTerms(`/${id}/stratigraphy/${stratigraphyId}#lithostratigraphy`);
+        goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy/${stratigraphyId}#lithostratigraphy`);
       });
     });
 
