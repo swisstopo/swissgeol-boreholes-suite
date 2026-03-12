@@ -6,7 +6,7 @@ import { labelingFileFormat, matchesFileFormat, PanelTab } from "../labeling/lab
 
 const profileQueryKey = "profiles";
 
-export function useProfiles(boreholeId?: string) {
+export function useProfiles(boreholeId?: number) {
   return useQuery({
     queryKey: [profileQueryKey, boreholeId],
     queryFn: async () => {
@@ -26,6 +26,7 @@ export function useProfiles(boreholeId?: string) {
 export const useReloadProfiles = (boreholeId: number) => {
   const queryClient = useQueryClient();
   return useCallback(() => {
+    console.log("reload profiles", profileQueryKey, boreholeId);
     queryClient.invalidateQueries({ queryKey: [profileQueryKey, boreholeId] });
   }, [boreholeId, queryClient]);
 };

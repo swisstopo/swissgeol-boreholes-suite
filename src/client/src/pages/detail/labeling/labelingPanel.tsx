@@ -66,7 +66,7 @@ const LabelingPanel: FC = () => {
   const isPhotoSelected = selectedAttachment && "fromDepth" in selectedAttachment;
   const selectedFile: FileInterface | undefined = isPhotoSelected ? undefined : selectedAttachment;
   const selectedPhoto: Photo | undefined = isPhotoSelected ? selectedAttachment : undefined;
-  const { data: profiles, isLoading: isLoadingProfiles } = useProfiles(boreholeId);
+  const { data: profiles, isLoading: isLoadingProfiles } = useProfiles(Number(boreholeId));
   const { data: fileInfo, isLoading: isLoadingFileInfo } = useFileInfo(selectedFile, activePage);
   const { data: photos, isLoading: isLoadingPhotos } = usePhotos(Number(boreholeId));
   const { data: image, isLoading: isLoadingImage } = usePhotoImage(selectedPhoto?.id);

@@ -24,7 +24,7 @@ interface ProfileFilePickerProps {
 
 export const ProfileFilePicker: FC<ProfileFilePickerProps> = ({ boreholeId, open, setOpen, setSelectedFile }) => {
   const { t } = useTranslation();
-  const { data: files, isLoading: isLoadingFiles } = useProfiles(boreholeId);
+  const { data: files, isLoading: isLoadingFiles } = useProfiles(Number(boreholeId));
   const reloadProfiles = useReloadProfiles(Number(boreholeId));
 
   const closeDialog = useCallback(() => {
