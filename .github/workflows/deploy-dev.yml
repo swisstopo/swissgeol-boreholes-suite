@@ -1,0 +1,36 @@
+name: Deploy to Dev
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy to dev cluster
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_DEV }}
+          aws-region: eu-central-1
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name dev --region eu-central-1
+
+      - name: Deploy swissgeol-boreholes
+        run: |
+          helm upgrade swissgeol-boreholes charts/swissgeol-boreholes \
+            -f charts/swissgeol-boreholes/environments/dev.values.yaml \
+            -n swissgeol-boreholes \
+            --install --wait --timeout 5m

@@ -1,0 +1,72 @@
+name: Deploy to Integration
+
+on:
+  workflow_dispatch:
+
+permissions:
+  id-token: write
+  contents: read
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    name: Deploy ${{ matrix.release }} to int
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Main chart — 3 namespaces with different domains
+          - release: swissgeol-boreholes
+            namespace: swissgeol-boreholes
+            chart: charts/swissgeol-boreholes
+            values: charts/swissgeol-boreholes/environments/int.values.yaml
+            domain: "TODO_FILL_IN"
+          - release: swissgeol-boreholes-ext
+            namespace: swissgeol-boreholes-ext
+            chart: charts/swissgeol-boreholes
+            values: charts/swissgeol-boreholes/environments/int.values.yaml
+            domain: "TODO_FILL_IN"
+          - release: swissgeol-boreholes-view
+            namespace: swissgeol-boreholes-view
+            chart: charts/swissgeol-boreholes
+            values: charts/swissgeol-boreholes/environments/int.values.yaml
+            domain: "TODO_FILL_IN"
+          # Sync charts — own namespaces, no domain override
+          - release: swissgeol-boreholes-extern-sync
+            namespace: swissgeol-boreholes-extern-sync
+            chart: charts/swissgeol-boreholes-extern-sync
+            values: charts/swissgeol-boreholes-extern-sync/environments/int.values.yaml
+            domain: ""
+          - release: swissgeol-boreholes-view-sync
+            namespace: swissgeol-boreholes-view-sync
+            chart: charts/swissgeol-boreholes-view-sync
+            values: charts/swissgeol-boreholes-view-sync/environments/int.values.yaml
+            domain: ""
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Configure AWS credentials via OIDC
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          role-to-assume: ${{ secrets.AWS_ROLE_INT }}
+          aws-region: eu-central-1
+
+      - name: Setup Helm
+        uses: azure/setup-helm@v4
+
+      - name: Update kubeconfig
+        run: aws eks update-kubeconfig --name int --region eu-central-1
+
+      - name: Deploy
+        run: |
+          EXTRA_ARGS=""
+          if [ -n "${{ matrix.domain }}" ]; then
+            EXTRA_ARGS="--set app.domain=${{ matrix.domain }}"
+          fi
+          helm upgrade ${{ matrix.release }} ${{ matrix.chart }} \
+            -f ${{ matrix.values }} \
+            -n ${{ matrix.namespace }} \
+            $EXTRA_ARGS \
+            --install --wait --timeout 5m
