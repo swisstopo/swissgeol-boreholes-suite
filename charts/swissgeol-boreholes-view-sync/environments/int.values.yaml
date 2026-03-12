@@ -1,0 +1,32 @@
+# Environment values for INT cluster — view-sync
+# Namespace: swissgeol-boreholes-view-sync
+# Cluster: arn:aws:eks:eu-central-1:779726271945:cluster/int
+
+app:
+  version: # TODO: e.g. v2.1.1431
+  timezone: Europe/Zurich
+  schedule: # TODO: e.g. "0 0 * * *"
+
+resources:
+  requests:
+    cpu: 200m
+    memory: 512Mi
+    ephemeral-storage: 1Gi
+  limits:
+    cpu: 1000m
+    memory: 1Gi
+    ephemeral-storage: 2Gi
+
+db:
+  source:
+    host: # TODO
+    port: "5432"
+    name: # TODO
+    schema: # TODO
+  target:
+    host: # TODO
+    port: "5432"
+    name: # TODO
+
+keel:
+  enabled: false

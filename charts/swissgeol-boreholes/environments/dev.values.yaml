@@ -1,0 +1,98 @@
+# Environment values for DEV cluster
+# Namespace: swissgeol-boreholes
+# Cluster: arn:aws:eks:eu-central-1:779726271945:cluster/dev
+
+app:
+  domain: # TODO: e.g. dev-boreholes.swissgeol.ch
+  timezone: Europe/Zurich
+  version: # TODO: e.g. v2.1.1431
+
+dataextraction:
+  version: # TODO: e.g. v2.1.1431
+
+ocr:
+  version: # TODO: e.g. v2.1.1431
+  confidenceThreshold: # TODO: e.g. 0.45
+  useAggressiveStrategy: # TODO: e.g. "true"
+  skipProcessing: false
+  awsRoleArn: # TODO: if using IRSA
+  automountServiceAccountToken: true
+
+auth:
+  authority: # TODO: e.g. https://cognito-idp.eu-central-1.amazonaws.com/eu-central-1_XXXXXXXX
+  audience: # TODO: client ID
+  scopes: "openid profile email"
+  groupClaimType: "cognito:groups"
+  authorizedGroupName: "boreholes.swissgeol"
+  anonymousModeEnabled: false
+  basicAuthEnabled: false
+
+database:
+  host: # TODO: e.g. boreholes-dev.xxxxxxxxxx.eu-central-1.rds.amazonaws.com
+  port: "5432"
+  name: # TODO: e.g. bdms
+
+replicaCount: 1
+
+resources:
+  api:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+      ephemeral-storage: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+      ephemeral-storage: 2Gi
+  apiLegacy:
+    requests:
+      cpu: 100m
+      memory: 256Mi
+      ephemeral-storage: 1Gi
+    limits:
+      cpu: 500m
+      memory: 512Mi
+      ephemeral-storage: 2Gi
+  client:
+    requests:
+      cpu: 50m
+      memory: 128Mi
+      ephemeral-storage: 1Gi
+    limits:
+      cpu: 250m
+      memory: 256Mi
+      ephemeral-storage: 2Gi
+  dataextraction:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+      ephemeral-storage: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+      ephemeral-storage: 2Gi
+  ocr:
+    requests:
+      cpu: 250m
+      memory: 512Mi
+      ephemeral-storage: 1Gi
+    limits:
+      cpu: 1000m
+      memory: 1Gi
+      ephemeral-storage: 2Gi
+
+s3:
+  endpoint: # TODO: e.g. https://s3.eu-central-1.amazonaws.com
+  bucket: # TODO: e.g. swissgeol-boreholes-dev
+  photosBucket: # TODO
+  logFilesBucket: # TODO
+  secure: "1"
+
+googleAnalytics:
+  trackingId: # TODO: if used
+
+keel:
+  enabled: true    # Keel stays active on dev
+  policy: "force"
+  matchTag: "'true'"
+  trigger: "poll"
