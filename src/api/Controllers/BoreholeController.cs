@@ -193,12 +193,24 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     {
         Logger.LogInformation("Copy borehole with id <{BoreholeId}> to workgroup with id <{WorkgroupId}>", id, workgroupId);
 
+        var subjectId = HttpContext.GetUserSubjectId();
+
         var user = await Context.UsersWithIncludes
             .AsNoTracking()
             .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
             .ConfigureAwait(false);
 
-        if (user == null || user.WorkgroupRoles == null || !user.WorkgroupRoles.Any(w => w.WorkgroupId == workgroupId && w.Role == Role.Editor))
+        var workgroup = await Context.Workgroups
+            .AsNoTracking()
+            .SingleOrDefaultAsync(w => w.Id == workgroupId)
+            .ConfigureAwait(false);
+
+        if (workgroup == null)
+        {
+            return NotFound($"Workgroup with id {workgroupId} not found.");
+        }
+
+        if (user == null || !await BoreholePermissionService.HasUserRoleOnWorkgroupAsync(subjectId, workgroupId, Role.Editor).ConfigureAwait(false))
         {
             return Unauthorized();
         }
