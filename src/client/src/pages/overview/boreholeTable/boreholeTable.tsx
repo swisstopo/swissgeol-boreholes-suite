@@ -303,7 +303,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     // Workaround to restore scroll position see #https://github.com/mui/mui-x/issues/5071 and https://github.com/mui/mui-x/issues/4674
     if (firstRender.current && hasLoaded.current) {
       requestIdleCallback(() => {
-        apiRef.current.scroll(tableScrollPosition);
+        apiRef.current?.scroll(tableScrollPosition);
         firstRender.current = false;
       });
     }

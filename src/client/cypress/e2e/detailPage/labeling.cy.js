@@ -584,15 +584,9 @@ describe("Test labeling tool", () => {
       const view = win.labelingImage.getView();
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
+    cy.dataCy("labeling-panel").find('input[type="file"]').attachFile("import/image_123.0-456.0_all.jpg");
+    cy.wait(["@upload-photo", "@getAllPhotos", "@borehole_by_id"]);
 
-    cy.dataCy("labeling-panel")
-      .find('input[type="file"]')
-      .attachFile({
-        fileContent: new Blob([0]),
-        fileName: "image_123.0-456.0_all.jpg",
-        mimeType: "image/jpeg",
-      });
-    cy.wait(["@upload-photo", "@getAllPhotos"]);
     stopBoreholeEditing();
 
     // can navigate with previous button

@@ -33,7 +33,6 @@ export function useProfiles(boreholeId?: number, forLabeling: boolean = false) {
 export const useReloadProfiles = (boreholeId: number) => {
   const queryClient = useQueryClient();
   return useCallback(() => {
-    console.log("reload profiles", profileQueryKey, boreholeId);
     queryClient.invalidateQueries({ queryKey: [profileQueryKey, boreholeId] });
   }, [boreholeId, queryClient]);
 };
