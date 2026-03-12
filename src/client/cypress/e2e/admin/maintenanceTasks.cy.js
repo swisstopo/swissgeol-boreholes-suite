@@ -292,35 +292,45 @@ describe("Maintenance Tasks page tests", () => {
         cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 2);
       });
 
-      it("shows error alert when migration start fails", () => {
-        cy.intercept("POST", "/api/v2/maintenance/LocationMigration", { statusCode: 500 }).as(
-          "start-location-migration-fail",
-        );
+      [
+        { lng: "en", failed: "Failed", alreadyRunning: "Task is already running" },
+        { lng: "de", failed: "Fehlgeschlagen", alreadyRunning: "Aufgabe wird bereits ausgeführt" },
+        { lng: "fr", failed: "Échoué", alreadyRunning: "La tâche est déjà en cours d'exécution" },
+        { lng: "it", failed: "Fallito", alreadyRunning: "L'attività è già in esecuzione" },
+      ].forEach(({ lng, failed, alreadyRunning }) => {
+        it(`shows localized error alert on 500 in ${lng}`, () => {
+          interceptStatus(makeStatusResponse(), "get-maintenance-status-ok");
+          cy.intercept("POST", "/api/v2/maintenance/LocationMigration", { statusCode: 500 }).as(
+            "start-location-migration-fail",
+          );
 
-        goToRouteAndAcceptTerms("/setting#maintenance");
-        cy.wait("@get-maintenance-status");
+          goToRouteAndAcceptTerms("/setting#maintenance");
+          selectLanguage(lng);
+          cy.wait("@get-maintenance-status-ok");
 
-        cy.dataCy("location-migration-start").click();
-        cy.wait("@start-location-migration-fail");
+          cy.dataCy("location-migration-start").click();
+          cy.wait("@start-location-migration-fail");
 
-        cy.get(".MuiAlert-message").should("contain", "Failed");
-      });
+          cy.get(".MuiAlert-message").should("contain", failed);
+        });
 
-      it("shows already running error on 409 conflict", () => {
-        interceptStatus(makeStatusResponse(), "get-maintenance-status-ok");
-        cy.intercept("POST", "/api/v2/maintenance/LocationMigration", {
-          statusCode: 409,
-          body: { type: "userError", detail: "The task is already running." },
-        }).as("start-location-migration-conflict");
+        it(`shows localized error on 409 conflict in ${lng}`, () => {
+          interceptStatus(makeStatusResponse(), "get-maintenance-status-ok");
+          cy.intercept("POST", "/api/v2/maintenance/LocationMigration", {
+            statusCode: 409,
+            body: { type: "userError", detail: "The task is already running." },
+          }).as("start-location-migration-conflict");
 
-        goToRouteAndAcceptTerms("/setting#maintenance");
-        cy.wait("@get-maintenance-status-ok");
+          goToRouteAndAcceptTerms("/setting#maintenance");
+          selectLanguage(lng);
+          cy.wait("@get-maintenance-status-ok");
 
-        cy.dataCy("location-migration-start").click();
-        cy.wait("@start-location-migration-conflict");
+          cy.dataCy("location-migration-start").click();
+          cy.wait("@start-location-migration-conflict");
 
-        cy.get(".MuiAlert-message").should("contain", "Task is already running");
-        cy.dataCy("location-migration-start").should("not.be.disabled");
+          cy.get(".MuiAlert-message").should("contain", alreadyRunning);
+          cy.dataCy("location-migration-start").should("not.be.disabled");
+        });
       });
 
       it("updates log table when one task completes while another is still running", () => {
