@@ -404,6 +404,7 @@ export const stopBoreholeEditing = discardChanges => {
     cy.dataCy("prompt").find(`[data-cy="discardchanges-button"]`).click();
   }
   cy.wait(["@update-borehole", "@borehole_by_id"]);
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(100); // Small buffer for scroll operations
 };
 
