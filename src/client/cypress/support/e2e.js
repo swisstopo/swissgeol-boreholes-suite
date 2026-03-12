@@ -1,7 +1,10 @@
 import "./commands.js";
 import { interceptApiCalls, login, loginAndResetState } from "../e2e/helpers/testHelpers";
 import "cypress-file-upload";
+import { register as registerCypressGrep } from "@cypress/grep";
 import { stopEditing } from "../e2e/helpers/buttonHelpers.js";
+
+registerCypressGrep();
 
 Cypress.on("uncaught:exception", () => {
   // returning false here prevents Cypress from
