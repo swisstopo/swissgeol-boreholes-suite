@@ -4,7 +4,7 @@ export const lithostratigraphySearchData = [
     type: "HierarchicalData",
     labels: ["formation", "member", "bed"],
     value: "lithostratigraphy_id",
-    schema: "custom.lithostratigraphy_top_bedrock",
+    schema: "lithostratigraphy",
     isVisible: true,
     hideShowAllFields: true,
   },
