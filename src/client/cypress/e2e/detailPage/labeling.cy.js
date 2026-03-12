@@ -584,7 +584,7 @@ describe("Test labeling tool", () => {
       const view = win.labelingImage.getView();
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
-    cy.dataCy("labeling-panel").find('input[type="file"]').attachFile("import/image_123.0-456.0_all.jpg");
+    cy.dataCy("labeling-panel").find('input[type="file"]').attachFile("import/image_123.0-456.0_all.tif");
     cy.wait(["@upload-photo", "@getAllPhotos", "@borehole_by_id"]);
 
     stopBoreholeEditing();
