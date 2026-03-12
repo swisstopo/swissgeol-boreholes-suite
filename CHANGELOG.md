@@ -20,6 +20,7 @@
 - Included all missing properties from `Lithology`/`LithologyDescription` in borehole JSON import.
 - Application would freeze when borehole imports failed.
 - Fixed bug where there was no appropriate overflow when selecting files in the sidepanel.
+- Fixed bug where non admin users could not copy boreholes. Hierarchical user roles had not yet been applied to the copy borehole functionality.
 
 ## v2.1.1462 - 2026-02-19
 
