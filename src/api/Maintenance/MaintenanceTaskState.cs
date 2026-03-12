@@ -3,7 +3,7 @@
 /// <summary>
 /// Represents the current state of a maintenance task.
 /// </summary>
-public class MaintenanceTaskState
+public sealed class MaintenanceTaskState
 {
     /// <summary>
     /// Gets or sets the type of maintenance task.

@@ -4,7 +4,7 @@ export const chronostratigraphySearchData = [
     type: "HierarchicalData",
     labels: ["eon", "era", "period", "epoch", "subepoch", "age", "subage"],
     value: "chronostratigraphy_id",
-    schema: "custom.chronostratigraphy_top_bedrock",
+    schema: "chronostratigraphy",
     isVisible: true,
     hideShowAllFields: true,
   },

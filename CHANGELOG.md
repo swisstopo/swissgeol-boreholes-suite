@@ -10,12 +10,16 @@
 - Multiple id values for a `boreholeId`/`identifier type` pair are now supported.
 - Borehole identifiers `IDKernlager` and `IDGeoDin` are no longer supported.
 - Deleted legacy stratigraphy and layer code, and renamed stratigraphyV2 to stratigraphy.
+- Deleted unused translations.
+- Migrated `custom.lithostratigraphy_top_bedrock` codelist to `lithostratigraphy`.
+- Migrated `custom.chronostratigraphy_top_bedrock` codelist to `chronostratigraphy`.
 
 ### Fixed
 - All tables in the `logs` and `attachments` tab of the borehole detail view were missing pagination.
 - Fixed Chronostratigraphy and Lithostratigraphy tabs not being correctly greyed out when empty.
 - Included all missing properties from `Lithology`/`LithologyDescription` in borehole JSON import.
 - Application would freeze when borehole imports failed.
+- Fixed bug where there was no appropriate overflow when selecting files in the sidepanel.
 
 ## v2.1.1462 - 2026-02-19
 

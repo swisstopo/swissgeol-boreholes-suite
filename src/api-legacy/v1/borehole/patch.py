@@ -150,10 +150,10 @@ class PatchBorehole(Action):
         elif field == 'custom.lithology_top_bedrock':
             column = 'lithology_top_bedrock_id_cli'
 
-        elif field == 'custom.lithostratigraphy_top_bedrock':
+        elif field == 'lithostratigraphy':
             column = 'lithostrat_id_cli'
 
-        elif field == 'custom.chronostratigraphy_top_bedrock':
+        elif field == 'chronostratigraphy':
             column = 'chronostrat_id_cli'
 
         if column is None:
@@ -270,8 +270,8 @@ class PatchBorehole(Action):
                 'custom.qt_depth',
                 'custom.processing_status',
                 'custom.lithology_top_bedrock',
-                'custom.lithostratigraphy_top_bedrock',
-                'custom.chronostratigraphy_top_bedrock',
+                'lithostratigraphy',
+                'chronostratigraphy',
                 'qt_reference_elevation',
                 'reference_elevation_type',
             ]:
@@ -281,11 +281,11 @@ class PatchBorehole(Action):
                 if field == 'custom.lithology_top_bedrock':
                     schema = 'custom.lithology_top_bedrock'
 
-                elif field == 'custom.lithostratigraphy_top_bedrock':
-                    schema = 'custom.lithostratigraphy_top_bedrock'
+                elif field == 'lithostratigraphy':
+                    schema = 'lithostratigraphy'
 
-                elif field == 'custom.chronostratigraphy_top_bedrock':
-                    schema = 'custom.chronostratigraphy_top_bedrock'
+                elif field == 'chronostratigraphy':
+                    schema = 'chronostratigraphy'
 
                 elif field == 'qt_reference_elevation':
                     schema = 'elevation_precision'

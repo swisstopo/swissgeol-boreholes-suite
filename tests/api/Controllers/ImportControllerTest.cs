@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Globalization;
 using System.IO.Compression;
@@ -20,8 +19,6 @@ namespace BDMS.Controllers;
 public class ImportControllerTest
 {
     private const int MaxBoreholeSeedId = 1002999;
-    private const int MaxStratigraphySeedId = 6002999;
-    private const int MaxLithologySeedId = 23029989;
     private const int TestCodelistId = 955253;
 
     private BdmsContext context;
@@ -70,13 +67,8 @@ public class ImportControllerTest
     [TestCleanup]
     public async Task TestCleanup()
     {
-        // Remove boreholes that were uploaded.
-        var addedBoreholes = context.Boreholes.Where(b => b.Id > MaxBoreholeSeedId);
-        var addedStratigraphies = context.Stratigraphies.Where(s => s.Id > MaxStratigraphySeedId);
-        var addedLithologies = context.Lithologies.Where(l => l.Id > MaxLithologySeedId);
-        context.Boreholes.RemoveRange(addedBoreholes);
-        context.Stratigraphies.RemoveRange(addedStratigraphies);
-        context.Lithologies.RemoveRange(addedLithologies);
+        // Remove boreholes that were uploaded. Also deletes attached stratigraphies and lithologies due to cascade delete.
+        context.Boreholes.RemoveRange(context.Boreholes.Where(b => b.Id > MaxBoreholeSeedId));
         context.Codelists.RemoveRange(context.Codelists.Where(c => c.Id == TestCodelistId));
         await context.SaveChangesAsync().ConfigureAwait(false);
 

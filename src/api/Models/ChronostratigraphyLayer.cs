@@ -9,7 +9,7 @@ namespace BDMS.Models;
 /// Represents a chronostratigraphy entity in the database.
 /// </summary>
 [Table("chronostratigraphy")]
-public class ChronostratigraphyLayer : ILithologyLegacy, IChangeTracking, IIdentifyable
+public class ChronostratigraphyLayer : IStratigraphyLayerLegacy, IChangeTracking, IIdentifyable
 {
     /// <inheritdoc />
     [Column("id")]

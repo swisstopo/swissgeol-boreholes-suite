@@ -3,55 +3,55 @@
 /// <summary>
 /// Serializable representation of a log entry for the API response.
 /// </summary>
-public class MaintenanceTaskLogEntry
+public sealed record MaintenanceTaskLogEntry
 {
     /// <summary>
-    /// Gets or sets the type of maintenance task that was executed.
+    /// Gets the type of maintenance task that was executed.
     /// </summary>
-    public MaintenanceTaskType TaskType { get; set; }
+    public MaintenanceTaskType TaskType { get; init; }
 
     /// <summary>
-    /// Gets or sets the final status of the task execution.
+    /// Gets the final status of the task execution.
     /// </summary>
-    public MaintenanceTaskStatus Status { get; set; }
+    public MaintenanceTaskStatus Status { get; init; }
 
     /// <summary>
-    /// Gets or sets the number of records affected by the task execution.
+    /// Gets the number of records affected by the task execution.
     /// </summary>
-    public int? AffectedCount { get; set; }
+    public int? AffectedCount { get; init; }
 
     /// <summary>
-    /// Gets or sets the error message if the task failed.
+    /// Gets the error message if the task failed.
     /// </summary>
-    public string? Message { get; set; }
+    public string? Message { get; init; }
 
     /// <summary>
-    /// Gets or sets the parameters used for this task execution, stored as JSON.
+    /// Gets the parameters used for this task execution, stored as JSON.
     /// </summary>
-    public string? Parameters { get; set; }
+    public string? Parameters { get; init; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether this was a dry-run execution.
+    /// Gets a value indicating whether this was a dry-run execution.
     /// </summary>
-    public bool IsDryRun { get; set; }
+    public bool IsDryRun { get; init; }
 
     /// <summary>
-    /// Gets or sets a value indicating whether only missing values were processed.
+    /// Gets a value indicating whether only missing values were processed.
     /// </summary>
-    public bool OnlyMissing { get; set; }
+    public bool OnlyMissing { get; init; }
 
     /// <summary>
-    /// Gets or sets the display name of the user who started the task.
+    /// Gets the display name of the user who started the task.
     /// </summary>
-    public string? StartedByName { get; set; }
+    public string? StartedByName { get; init; }
 
     /// <summary>
-    /// Gets or sets when the task execution started.
+    /// Gets when the task execution started.
     /// </summary>
-    public DateTime StartedAt { get; set; }
+    public DateTime StartedAt { get; init; }
 
     /// <summary>
-    /// Gets or sets when the task execution completed.
+    /// Gets when the task execution completed.
     /// </summary>
-    public DateTime CompletedAt { get; set; }
+    public DateTime CompletedAt { get; init; }
 }

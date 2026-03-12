@@ -67,7 +67,7 @@ export const AboutSettings: React.FC = () => {
         </Typography>
       </Box>
       <Typography variant="h4" sx={{ my: 2 }}>
-        {t("common:licenseInformation")}
+        {t("licenseInformation")}
       </Typography>
       {Object.keys(license).map(key => (
         <Box key={key} data-cy={`credits-${key}`}>

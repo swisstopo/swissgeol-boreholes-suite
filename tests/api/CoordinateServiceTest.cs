@@ -1,7 +1,8 @@
 ﻿using BDMS.Models;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using Moq.Protected;
+using System.Net;
 
 namespace BDMS;
 
@@ -62,7 +63,7 @@ public class CoordinateServiceTest
         context.Boreholes.Add(borehole);
         context.SaveChanges();
 
-        await service.MigrateCoordinatesOfBorehole(borehole, false);
+        await service.MigrateCoordinatesAsync(borehole, false);
         context.SaveChanges();
 
         var result = context.Boreholes.FirstOrDefault(b => b.Id == LV95BoreholeWithAllCoordinatesSetId);
@@ -92,7 +93,7 @@ public class CoordinateServiceTest
         context.SaveChanges();
 
         // Only calculate missing values.
-        await service.MigrateCoordinatesOfBorehole(borehole, true);
+        await service.MigrateCoordinatesAsync(borehole, true);
         context.SaveChanges();
 
         var result = context.Boreholes.FirstOrDefault(b => b.Id == LV95BoreholeWithAllCoordinatesSetId);
@@ -121,7 +122,7 @@ public class CoordinateServiceTest
         context.Boreholes.Add(borehole);
         context.SaveChanges();
 
-        await service.MigrateCoordinatesOfBorehole(borehole, false);
+        await service.MigrateCoordinatesAsync(borehole, false);
         context.SaveChanges();
 
         var result = context.Boreholes.FirstOrDefault(b => b.Id == LV03BoreholeWithMissingDestCoordinatesId);
@@ -150,7 +151,7 @@ public class CoordinateServiceTest
         context.Boreholes.Add(borehole);
         context.SaveChanges();
 
-        await service.MigrateCoordinatesOfBorehole(borehole, false);
+        await service.MigrateCoordinatesAsync(borehole, false);
         context.SaveChanges();
 
         var result = context.Boreholes.FirstOrDefault(b => b.Id == LV03BoreholeWithMissingSourceCoordinatesId);
@@ -159,5 +160,41 @@ public class CoordinateServiceTest
         Assert.AreEqual(1099464.3374982823, result.LocationY);
         Assert.AreEqual(null, result.LocationXLV03);
         Assert.AreEqual(224735.18581408318, result.LocationYLV03);
+    }
+
+    [TestMethod]
+    public async Task MigrateCoordinatesLogsErrorOnHttpFailure()
+    {
+        var httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+        httpMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.IsAny<HttpRequestMessage>(),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(new HttpResponseMessage(HttpStatusCode.InternalServerError))
+            .Verifiable();
+        httpMessageHandler.Protected().Setup("Dispose", ItExpr.IsAny<bool>());
+
+        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient(httpMessageHandler.Object)).Verifiable();
+        loggerMock.Setup(l => l.Log(
+            LogLevel.Error,
+            It.IsAny<EventId>(),
+            It.Is<It.IsAnyType>((v, _) => v.ToString()!.Contains("Failed to query swisstopo reframe API")),
+            It.IsNotNull<Exception>(),
+            (Func<It.IsAnyType, Exception?, string>)It.IsAny<object>())).Verifiable();
+
+        var borehole = new Borehole
+        {
+            Id = LV95BoreholeWithAllCoordinatesSetId,
+            LocationX = 2626103.1988343936,
+            LocationY = 1125366.3469565178,
+            LocationXLV03 = null,
+            LocationYLV03 = null,
+            OriginalReferenceSystem = ReferenceSystem.LV95,
+            Name = "STORMPELICAN",
+        };
+
+        await Assert.ThrowsExactlyAsync<HttpRequestException>(
+            () => service.MigrateCoordinatesAsync(borehole, false));
     }
 }

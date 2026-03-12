@@ -1,29 +1,20 @@
 ﻿using BDMS.Models;
 using System.Globalization;
+using System.Text;
 using System.Text.Json;
 
 namespace BDMS;
 
-public class LocationService
+/// <summary>
+/// Retrieves location information (country, canton, municipality) from the swisstopo identify API.
+/// </summary>
+public sealed class LocationService(ILogger<LocationService> logger, IHttpClientFactory httpClientFactory)
 {
-    private readonly IHttpClientFactory httpClientFactory;
-    private readonly ILogger logger;
+    private const string CountryLayer = "ch.swisstopo.swissboundaries3d-land-flaeche.fill";
+    private const string CantonLayer = "ch.swisstopo.swissboundaries3d-kanton-flaeche.fill";
+    private const string MunicipalityLayer = "ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill";
 
-    private readonly string apiUri = "https://api3.geo.admin.ch/rest/services/api/MapServer/identify?geometryType=esriGeometryPoint&geometry={0}&tolerance=0&layers=all:{1}&returnGeometry=false&sr={2}";
-    private readonly string countryLayer = "ch.swisstopo.swissboundaries3d-land-flaeche.fill";
-    private readonly string cantonLayer = "ch.swisstopo.swissboundaries3d-kanton-flaeche.fill";
-    private readonly string municipalityLayer = "ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill";
-
-    /// <summary>
-    /// Initializes a new instance of the <see cref="LocationService"/> class.
-    /// </summary>
-    /// <param name="logger">The <see cref="ILogger"/>.</param>
-    /// <param name="httpClientFactory">A factory abstraction that can create <see cref="HttpClient"/> instance.</param>
-    public LocationService(ILogger<LocationService> logger, IHttpClientFactory httpClientFactory)
-    {
-        this.httpClientFactory = httpClientFactory;
-        this.logger = logger;
-    }
+    private static readonly CompositeFormat ApiUri = CompositeFormat.Parse("https://api3.geo.admin.ch/rest/services/api/MapServer/identify?geometryType=esriGeometryPoint&geometry={0}&tolerance=0&layers=all:{1}&returnGeometry=false&sr={2}");
 
     /// <summary>
     /// Asynchronously retrieves location information (country_bho, canton_bho and municipality_bho) for a single location
@@ -38,8 +29,8 @@ public class LocationService
         using var httpClient = httpClientFactory.CreateClient(nameof(LocationService));
 
         var point = string.Join(',', east, north);
-        var layers = string.Join(',', countryLayer, cantonLayer, municipalityLayer);
-        var requestUri = new Uri(string.Format(CultureInfo.InvariantCulture, apiUri, point, layers, srid));
+        var layers = string.Join(',', CountryLayer, CantonLayer, MunicipalityLayer);
+        var requestUri = new Uri(string.Format(CultureInfo.InvariantCulture, ApiUri, point, layers, srid));
 
         try
         {
@@ -50,13 +41,13 @@ public class LocationService
             using var document = await JsonDocument.ParseAsync(contentStream).ConfigureAwait(false);
 
             return new(
-                Country: GetAttributeValueForLayer(document, countryLayer, "bez"),
-                Canton: GetAttributeValueForLayer(document, cantonLayer, "name"),
-                Municipality: GetAttributeValueForLayer(document, municipalityLayer, "gemname"));
+                Country: GetAttributeValueForLayer(document, CountryLayer, "bez"),
+                Canton: GetAttributeValueForLayer(document, CantonLayer, "name"),
+                Municipality: GetAttributeValueForLayer(document, MunicipalityLayer, "gemname"));
         }
         catch (HttpRequestException ex)
         {
-            logger.LogError($"Failed to query swisstopo identify API ({requestUri})", ex);
+            logger.LogError(ex, "Failed to query swisstopo identify API ({RequestUri}).", requestUri);
             throw;
         }
     }
@@ -77,7 +68,7 @@ public class LocationService
         }
         catch (KeyNotFoundException ex)
         {
-            logger.LogError($"Key <{attributeName}> in layer <{layerName}> not found in swisstopo JSON response.", ex);
+            logger.LogError(ex, "Key <{AttributeName}> in layer <{LayerName}> not found in swisstopo JSON response.", attributeName, layerName);
             return null;
         }
     }

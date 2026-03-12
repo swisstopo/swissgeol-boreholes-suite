@@ -73,12 +73,12 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
       // {
       //   fieldName: "lithostratigraphy_top_bedrock",
       //   type: FormValueType.Domain,
-      //   api: "custom.lithostratigraphy_top_bedrock",
+      //   api: "lithostratigraphy",
       // },
       // {
       //   fieldName: "chronostratigraphy_top_bedrock",
       //   type: FormValueType.Domain,
-      //   api: "custom.chronostratigraphy_top_bedrock",
+      //   api: "chronostratigraphy",
       // },
     ],
     [],
