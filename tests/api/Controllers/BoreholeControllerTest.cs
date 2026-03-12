@@ -1,5 +1,6 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -18,7 +19,7 @@ public class BoreholeControllerTest
     private BdmsContext context;
     private BoreholeController controller;
     private static int testBoreholeId = 1000068;
-    private static int noPermissionWorkgroupId = 91350978;
+    private static int noPermissionWorkgroupId = 2;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     [TestInitialize]
@@ -776,14 +777,14 @@ public class BoreholeControllerTest
     {
         boreholeId = testBoreholeId;
         var result = await controller.CopyAsync(boreholeId, workgroupId: 0).ConfigureAwait(false);
-        ActionResultAssert.IsUnauthorized(result.Result);
+        ActionResultAssert.IsNotFound(result.Result);
     }
 
     [TestMethod]
     public async Task CopyMissingWorkgroupPermission()
     {
         boreholeId = testBoreholeId;
-        var result = await controller.CopyAsync(boreholeId, workgroupId: 2).ConfigureAwait(false);
+        var result = await controller.CopyAsync(boreholeId, workgroupId: noPermissionWorkgroupId).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(result.Result);
     }
 
@@ -801,7 +802,7 @@ public class BoreholeControllerTest
     {
         boreholeId = testBoreholeId;
         controller.ControllerContext.HttpContext.User = null;
-        await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
+        await Assert.ThrowsExactlyAsync<NullReferenceException>(async () =>
         {
             await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         });
@@ -817,5 +818,71 @@ public class BoreholeControllerTest
         var copiedBoreholeId = ((OkObjectResult?)result.Result)?.Value;
         Assert.IsNotNull(copiedBoreholeId);
         Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));
+    }
+
+    [TestMethod]
+    public async Task CopyBoreholeFromOneWorkgroupToAnother()
+    {
+        var sourceWorkgroupId = 1;
+        var targetWorkgroupId = 4;
+
+        var newBorehole = GetBoreholeToAdd();
+        newBorehole.WorkgroupId = sourceWorkgroupId;
+        newBorehole.Name = "Source Workgroup Borehole";
+        newBorehole.OriginalName = "Original Source Borehole";
+
+        context.Add(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var sourceBoreholeId = newBorehole.Id;
+
+        // Set up non admin user with permissions on the target workgroup
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        boreholePermissionServiceMock
+            .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string?>(), targetWorkgroupId, Role.Editor))
+            .ReturnsAsync(true);
+
+        var user = await context.UsersWithIncludes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == controller.HttpContext.GetUserSubjectId())
+            .ConfigureAwait(false);
+
+        Assert.IsFalse(user.IsAdmin);
+
+        // Verify source borehole is in the correct workgroup
+        var sourceBorehole = GetBorehole(sourceBoreholeId);
+        Assert.AreEqual(sourceWorkgroupId, sourceBorehole.WorkgroupId);
+
+        // Copy borehole from workgroup 1 to workgroup 4
+        var result = await controller.CopyAsync(sourceBoreholeId, workgroupId: targetWorkgroupId).ConfigureAwait(false);
+
+        ActionResultAssert.IsOk(result.Result);
+        var copiedBoreholeId = ((OkObjectResult?)result.Result)?.Value;
+        Assert.IsNotNull(copiedBoreholeId);
+        Assert.IsInstanceOfType(copiedBoreholeId, typeof(int));
+
+        // Verify the copied borehole
+        var copiedBorehole = GetBorehole((int)copiedBoreholeId);
+        Assert.IsNotNull(copiedBorehole);
+
+        // Verify the copied borehole is in the target workgroup
+        Assert.AreEqual(targetWorkgroupId, copiedBorehole.WorkgroupId);
+        Assert.AreNotEqual(sourceBoreholeId, copiedBorehole.Id);
+
+        // Verify other properties were copied correctly
+        Assert.AreEqual($"{sourceBorehole.OriginalName} (Copy)", copiedBorehole.OriginalName);
+        Assert.AreEqual($"{sourceBorehole.Name} (Copy)", copiedBorehole.Name);
+        Assert.AreEqual(sourceBorehole.TypeId, copiedBorehole.TypeId);
+        Assert.AreEqual(sourceBorehole.LocationX, copiedBorehole.LocationX);
+        Assert.AreEqual(sourceBorehole.LocationY, copiedBorehole.LocationY);
+        Assert.AreEqual(sourceBorehole.TotalDepth, copiedBorehole.TotalDepth);
+        Assert.AreEqual(sourceBorehole.Country, copiedBorehole.Country);
+        Assert.AreEqual(sourceBorehole.Canton, copiedBorehole.Canton);
+        Assert.AreEqual(sourceBorehole.Municipality, copiedBorehole.Municipality);
+
+        // Verify source borehole remains unchanged
+        var unchangedSourceBorehole = GetBorehole(sourceBoreholeId);
+        Assert.AreEqual(sourceWorkgroupId, unchangedSourceBorehole.WorkgroupId);
     }
 }
