@@ -197,7 +197,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
         var user = await Context.UsersWithIncludes
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
+            .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
             .ConfigureAwait(false);
 
         var workgroup = await Context.Workgroups
