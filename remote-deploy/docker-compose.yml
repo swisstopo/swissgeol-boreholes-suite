@@ -1,0 +1,220 @@
+services:
+  traefik:
+    image: traefik:v3.6
+    restart: unless-stopped
+    command:
+      - "--providers.docker=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--entrypoints.websecure.address=:8888"
+      - "--entrypoints.websecure.http.tls=true"
+      - "--entrypoints.oidc.address=:4011"
+      - "--entrypoints.oidc.http.tls=true"
+    ports:
+      - "8888:8888"
+      - "4011:4011"
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  client:
+    image: ghcr.io/swisstopo/swissgeol-boreholes-suite-client:latest
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.client.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.client.entrypoints=websecure"
+      - "traefik.http.routers.client.priority=1"
+      - "traefik.http.routers.client.middlewares=client-headers"
+      - "traefik.http.middlewares.client-headers.headers.customrequestheaders.X-Forwarded-For="
+      - "traefik.http.middlewares.client-headers.headers.customrequestheaders.X-Forwarded-Host="
+      - "traefik.http.middlewares.client-headers.headers.customrequestheaders.X-Forwarded-Proto="
+      - "traefik.http.middlewares.client-headers.headers.customrequestheaders.X-Forwarded-Server="
+      - "traefik.http.middlewares.client-headers.headers.contentSecurityPolicy=default-src 'self'; connect-src 'self' https://${SERVER_HOST}:4011 https://*.geo.admin.ch https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; script-src 'self' 'unsafe-inline' https://*.googletagmanager.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' https://*.geo.admin.ch https://*.google-analytics.com https://*.googletagmanager.com data: blob:; font-src 'self' data: fonts.gstatic.com; frame-ancestors 'none'"
+      - "traefik.http.services.client.loadbalancer.server.port=3000"
+
+  api:
+    image: ghcr.io/swisstopo/swissgeol-boreholes-suite-api:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    healthcheck:
+      test: "curl --fail http://127.0.0.1:8080/health || exit 1"
+      interval: 20s
+      timeout: 10s
+      retries: 30
+      start_period: 120s
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.api.rule=PathPrefix(`/api`) || PathPrefix(`/dataextraction`) || PathPrefix(`/ocr`) || PathPrefix(`/health`)"
+      - "traefik.http.routers.api.entrypoints=websecure"
+      - "traefik.http.routers.api.priority=10"
+      - "traefik.http.services.api.loadbalancer.server.port=8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_HTTP_PORTS: 8080
+      CONNECTIONSTRINGS__BdmsContext: Host=db;Username=SPAWNPLOW;Password=YELLOWSPATULA;Database=bdms;CommandTimeout=300
+      ReverseProxy__Clusters__pythonApi__Destinations__legacyApi__Address: "http://api-legacy:8888/"
+      ReverseProxy__Clusters__dataExtractionApi__Destinations__dataExtractionApi__Address: "http://dataextraction:8000/"
+      ReverseProxy__Clusters__ocrApi__Destinations__ocrApi__Address: "http://ocr:8000/"
+      Auth__Authority: "https://${SERVER_HOST}:4011"
+      Auth__MetadataAddress: "http://oidc-server:80/.well-known/openid-configuration"
+      Auth__Audience: "bdms-client"
+      Auth__GroupClaimType: "local_groups_claim"
+      Auth__AuthorizedGroupName: "boreholes_dev_group"
+      Auth__AnonymousModeEnabled: false
+      S3__ENDPOINT: http://minio:9000
+      S3__SECURE: 1
+      S3__ACCESS_KEY: REDSQUIRREL
+      S3__SECRET_KEY: YELLOWMONKEY
+      S3__BUCKET_NAME: cannonflea
+      S3__PHOTOS_BUCKET_NAME: cannonflea-photos
+      S3__LOGFILES_BUCKET_NAME: cannonflea-logfiles
+
+  api-legacy:
+    image: ghcr.io/swisstopo/swissgeol-boreholes-suite-api-legacy:latest
+    restart: unless-stopped
+    depends_on:
+      db:
+        condition: service_healthy
+    environment:
+      DB_USERNAME: SPAWNPLOW
+      DB_PASSWORD: YELLOWSPATULA
+      DB_DATABASE: bdms
+      DB_HOST: db
+      DB_PORT: 5432
+
+  db:
+    image: postgis/postgis:17-3.5-alpine
+    restart: unless-stopped
+    volumes:
+      - ./db:/docker-entrypoint-initdb.d
+      - remote-postgis-data:/var/lib/postgresql/data
+    environment:
+      POSTGRES_USER: SPAWNPLOW
+      POSTGRES_PASSWORD: YELLOWSPATULA
+      POSTGRES_DB: bdms
+    healthcheck:
+      test: "pg_isready -U SPAWNPLOW -d bdms -h db"
+      interval: 3s
+      timeout: 1s
+      retries: 20
+      start_period: 25s
+
+  pgadmin:
+    image: dpage/pgadmin4
+    restart: unless-stopped
+    ports:
+      - "3001:80"
+    environment:
+      PGADMIN_DEFAULT_EMAIL: pgadmin@example.com
+      PGADMIN_DEFAULT_PASSWORD: PEEVEDWATER
+      PGADMIN_CONFIG_SERVER_MODE: "False"
+      PGADMIN_CONFIG_MASTER_PASSWORD_REQUIRED: "False"
+    volumes:
+      - ./config/pgadmin4-servers.json:/pgadmin4/servers.json
+    entrypoint:
+      - /bin/sh
+      - -c
+      - |
+        /bin/echo '*:*:bdms:SPAWNPLOW:YELLOWSPATULA' > /tmp/.pgpass
+        chmod 0600 /tmp/.pgpass
+        /entrypoint.sh
+    depends_on:
+      db:
+        condition: service_healthy
+
+  minio:
+    image: minio/minio
+    restart: unless-stopped
+    volumes:
+      - remote-minio-data:/data
+    environment:
+      MINIO_ROOT_USER: REDSQUIRREL
+      MINIO_ROOT_PASSWORD: YELLOWMONKEY
+    entrypoint: sh
+    command: -c 'mkdir -p /data/cannonflea /data/cannonflea-photos /data/cannonflea-logfiles && minio server /data --console-address ":9002"'
+
+  dataextraction:
+    image: ghcr.io/swisstopo/swissgeol-boreholes-dataextraction-api:v1.0.144
+    restart: unless-stopped
+    environment:
+      AWS_ENDPOINT: http://minio:9000
+      AWS_ACCESS_KEY_ID: REDSQUIRREL
+      AWS_SECRET_ACCESS_KEY: YELLOWMONKEY
+      AWS_S3_BUCKET: cannonflea
+    healthcheck:
+      test: "curl --fail http://localhost:8000/health || exit 1"
+
+  ocr:
+    image: ghcr.io/swisstopo/swissgeol-ocr-api:1.1.3
+    restart: unless-stopped
+    environment:
+      TMP_PATH: /tmp/ocr/
+      SKIP_PROCESSING: true
+      S3_INPUT_ENDPOINT: http://minio:9000
+      S3_INPUT_BUCKET: cannonflea
+      S3_INPUT_FOLDER: /
+      S3_OUTPUT_ENDPOINT: http://minio:9000
+      S3_OUTPUT_BUCKET: cannonflea
+      S3_OUTPUT_FOLDER: /
+      CONFIDENCE_THRESHOLD: 0.45
+      USE_AGGRESSIVE_STRATEGY: TRUE
+      AWS_ACCESS_KEY_ID: REDSQUIRREL
+      AWS_SECRET_ACCESS_KEY: YELLOWMONKEY
+      AWS_DEFAULT_REGION: us-east-1
+
+  oidc-server:
+    image: soluto/oidc-server-mock
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.oidc.rule=PathPrefix(`/`)"
+      - "traefik.http.routers.oidc.entrypoints=oidc"
+      - "traefik.http.routers.oidc.tls=true"
+      - "traefik.http.services.oidc.loadbalancer.server.port=80"
+    environment:
+      ASPNETCORE_FORWARDEDHEADERS_ENABLED: "true"
+      CLIENTS_CONFIGURATION_INLINE: |
+        [{
+          "ClientId": "bdms-client",
+          "Description": "Client for Authorization Code flow with PKCE",
+          "RequireClientSecret": false,
+          "AlwaysIncludeUserClaimsInIdToken": true,
+          "AllowedGrantTypes": ["authorization_code"],
+          "AllowedResponseTypes": ["code", "id_token"],
+          "RequirePkce": false,
+          "AllowAccessTokensViaBrowser": true,
+          "RedirectUris": ["https://${SERVER_HOST}:8888"],
+          "PostLogoutRedirectUris": ["https://${SERVER_HOST}:8888"],
+          "AllowedScopes": ["openid", "profile", "local_groups_scope", "email"],
+          "AccessTokenType": "JWT",
+          "IdentityTokenLifetime": 3600,
+          "AccessTokenLifetime": 3600
+        }]
+      USERS_CONFIGURATION_PATH: /tmp/config/users-config.json
+      IDENTITY_RESOURCES_INLINE: |
+        [{
+          "Name": "local_groups_scope",
+          "ClaimTypes": ["local_groups_claim"]
+        }]
+      SERVER_OPTIONS_INLINE: |
+        {
+          "IssuerUri": "https://${SERVER_HOST}:4011",
+          "AccessTokenJwtType": "JWT",
+          "Discovery": {
+            "ShowKeySet": true
+          },
+          "Authentication": {
+            "CookieSameSiteMode": "Lax",
+            "CheckSessionCookieSameSiteMode": "Lax"
+          }
+        }
+    volumes:
+      - ./config/oidc-mock-users.json:/tmp/config/users-config.json:ro
+
+volumes:
+  remote-postgis-data:
+  remote-minio-data:
