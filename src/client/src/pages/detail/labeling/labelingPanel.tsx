@@ -66,7 +66,7 @@ const LabelingPanel: FC = () => {
   const isPhotoSelected = selectedAttachment && "fromDepth" in selectedAttachment;
   const selectedFile: FileInterface | undefined = isPhotoSelected ? undefined : selectedAttachment;
   const selectedPhoto: Photo | undefined = isPhotoSelected ? selectedAttachment : undefined;
-  const { data: boreholeFiles, isLoading: isLoadingBoreholeFiles } = useProfiles(boreholeId);
+  const { data: profiles, isLoading: isLoadingProfiles } = useProfiles(boreholeId);
   const { data: fileInfo, isLoading: isLoadingFileInfo } = useFileInfo(selectedFile, activePage);
   const { data: photos, isLoading: isLoadingPhotos } = usePhotos(Number(boreholeId));
   const { data: image, isLoading: isLoadingImage } = usePhotoImage(selectedPhoto?.id);
@@ -83,7 +83,7 @@ const LabelingPanel: FC = () => {
     return () => clearTimeout(timer);
   }, [alertIsOpen, autoHideDuration, closeAlert]);
 
-  const files = panelTab === PanelTab.profile ? boreholeFiles : photos;
+  const files = panelTab === PanelTab.profile ? profiles : photos;
 
   const addFile = useCallback(
     async (file: File) => {
@@ -114,7 +114,7 @@ const LabelingPanel: FC = () => {
   }, [files]);
 
   const isExtractionLoading = extractionState === ExtractionState.loading;
-  const isLoadingFiles = panelTab === PanelTab.profile ? isLoadingBoreholeFiles : isLoadingPhotos;
+  const isLoadingFiles = panelTab === PanelTab.profile ? isLoadingProfiles : isLoadingPhotos;
   return (
     <Stack
       sx={{

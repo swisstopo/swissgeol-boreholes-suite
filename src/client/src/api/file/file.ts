@@ -16,7 +16,7 @@ import {
 } from "../dataextraction.ts";
 import { download, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../fetchApiV2.ts";
 import { processFileWithOCR } from "../ocr.ts";
-import { BoreholeFile, DataExtractionResponse, maxFileSizeBytes } from "./fileInterfaces.ts";
+import { DataExtractionResponse, maxFileSizeBytes, Profile } from "./fileInterfaces.ts";
 
 export async function uploadFile(boreholeId: number, file: File) {
   if (file && file.size <= maxFileSizeBytes) {
@@ -30,7 +30,7 @@ export async function uploadFile(boreholeId: number, file: File) {
         throw new ApiError("errorDuringBoreholeFileUpload", response.status);
       }
     } else {
-      const uploadedFile = (await response.json()) as BoreholeFile;
+      const uploadedFile = (await response.json()) as Profile;
       processFileWithOCR({ file: uploadedFile.file.nameUuid });
       return uploadedFile;
     }
