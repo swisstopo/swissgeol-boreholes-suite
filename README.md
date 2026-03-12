@@ -106,6 +106,20 @@ Ein Hotfix-Release wird erstellt, indem vom letzten Release-Git-Tag ein neuer Br
 | `:v<major>` | Stabile Major-Version, z.B. `:v2` (wird beim PROD-Release aktualisiert) |
 | `:latest` | Aktuelle produktive Version (PROD-Release) |
 
+## Deployment
+
+Deploy-Workflows werden manuell via `workflow_dispatch` ausgelöst:
+
+| Cluster | Workflow |
+| ------- | -------- |
+| Dev | [Deploy to Dev](./.github/workflows/deploy-dev.yml) |
+| Int | [Deploy to Integration](./.github/workflows/deploy-int.yml) |
+| Prod | [Deploy to Production](./.github/workflows/deploy-prod.yml) |
+
+**Version aktualisieren:** Values-Datei unter `charts/<chart>/environments/<env>.values.yaml` anpassen, committen, pushen, Workflow starten.
+
+**Secrets:** Werden nicht in Git gespeichert. Beim Erstdeployment Platzhalter via `kubectl edit secret <release>-secrets -n <namespace>` ersetzen.
+
 ## Developer best practices
 
 #### UI/UX
