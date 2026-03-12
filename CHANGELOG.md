@@ -20,6 +20,7 @@
 - Included all missing properties from `Lithology`/`LithologyDescription` in borehole JSON import.
 - Application would freeze when borehole imports failed.
 - Fixed bug where there was no appropriate overflow when selecting files in the sidepanel.
+- Copy facies and lithological descriptions when copying a stratigraphy.
 
 ## v2.1.1462 - 2026-02-19
 
