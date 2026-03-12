@@ -258,7 +258,6 @@ describe("Test labeling tool", () => {
     cy.dataCy("labeling-panel").find('input[type="file"]').attachFile("import/borehole_attachment_3.pdf", {
       subjectType: "input",
     });
-    cy.wait("@getAllAttachments");
     cy.get('[data-cy="labeling-file-button-select"]').contains("borehole_attachment_3.pdf");
     cy.get('[data-cy="labeling-file-button-select"]').click();
     assertSelectContent(["borehole_attachment_1.pdf", "borehole_attachment_3.pdf", "Add profile"]);
@@ -507,7 +506,6 @@ describe("Test labeling tool", () => {
 
     // can switch between text extraction and coordinate extraction
     clickCoordinateLabelingButton();
-    cy.wait("@extraction-file-info");
     assertDrawTooltipInvisible();
     moveMouseOntoMap();
     assertDrawTooltip("Draw box around north & east coordinates");
