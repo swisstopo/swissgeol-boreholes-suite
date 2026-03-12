@@ -76,6 +76,15 @@ public class StratigraphyControllerTest
         Assert.AreEqual(originalStratigraphy.Lithologies.First().LithologyDescriptions.Count, copiedStratigraphy.Lithologies.First().LithologyDescriptions.Count);
         Assert.AreNotEqual(originalStratigraphy.Lithologies.First().LithologyDescriptions.First().Id, copiedStratigraphy.Lithologies.First().LithologyDescriptions.First().Id);
         Assert.AreEqual(originalStratigraphy.Lithologies.First().LithologyDescriptions.First().ColorPrimaryId, copiedStratigraphy.Lithologies.First().LithologyDescriptions.First().ColorPrimaryId);
+        Assert.AreEqual(originalStratigraphy.LithologicalDescriptions.Count, copiedStratigraphy.LithologicalDescriptions.Count);
+        Assert.AreEqual(originalStratigraphy.LithologicalDescriptions.First().FromDepth, copiedStratigraphy.LithologicalDescriptions.First().FromDepth);
+        Assert.AreEqual(originalStratigraphy.LithologicalDescriptions.First().ToDepth, copiedStratigraphy.LithologicalDescriptions.First().ToDepth);
+        Assert.AreEqual(originalStratigraphy.LithologicalDescriptions.First().Description, copiedStratigraphy.LithologicalDescriptions.First().Description);
+        Assert.AreEqual(originalStratigraphy.FaciesDescriptions.Count, copiedStratigraphy.FaciesDescriptions.Count);
+        Assert.AreEqual(originalStratigraphy.FaciesDescriptions.First().FromDepth, copiedStratigraphy.FaciesDescriptions.First().FromDepth);
+        Assert.AreEqual(originalStratigraphy.FaciesDescriptions.First().ToDepth, copiedStratigraphy.FaciesDescriptions.First().ToDepth);
+        Assert.AreEqual(originalStratigraphy.FaciesDescriptions.First().Description, copiedStratigraphy.FaciesDescriptions.First().Description);
+        Assert.AreEqual(originalStratigraphy.FaciesDescriptions.First().FaciesId, copiedStratigraphy.FaciesDescriptions.First().FaciesId);
     }
 
     [TestMethod]
