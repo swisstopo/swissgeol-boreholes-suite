@@ -6,19 +6,26 @@ import { labelingFileFormat, matchesFileFormat, PanelTab } from "../labeling/lab
 
 const profileQueryKey = "profiles";
 
-export function useProfiles(boreholeId?: number) {
+export function useProfiles(boreholeId?: number, forLabeling: boolean = false) {
   return useQuery({
-    queryKey: [profileQueryKey, boreholeId],
+    enabled: !!boreholeId,
+    queryKey: [profileQueryKey, boreholeId, forLabeling],
     queryFn: async () => {
       if (!boreholeId) return [];
       const response = await getFiles<Profile>(Number(boreholeId));
-      return response
-        .filter((fileResponse: Profile) =>
+
+      const profiles = response.map(profile => ({
+        id: profile.fileId,
+        ...profile,
+      }));
+
+      if (forLabeling) {
+        return profiles.filter((fileResponse: Profile) =>
           matchesFileFormat(labelingFileFormat[PanelTab.profile], fileResponse.file.type),
-        )
-        .map((fileResponse: Profile) => fileResponse.file);
+        );
+      }
+      return profiles;
     },
-    enabled: !!boreholeId,
   });
 }
 

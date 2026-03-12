@@ -9,7 +9,7 @@ import { formatDate } from "../../../../utils.ts";
 import { EditStateContext } from "../../editStateContext";
 import { AttachmentContent } from "../attachmentsContent";
 import { useAttachments } from "../useAttachments.tsx";
-import { useReloadProfiles } from "../useProfiles.tsx";
+import { useProfiles, useReloadProfiles } from "../useProfiles.tsx";
 
 interface ProfilesProps {
   boreholeId: number;
@@ -20,6 +20,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const { editingEnabled } = useContext(EditStateContext);
   const apiRef = useGridApiRef();
   const showApiErrorAlert = useApiErrorAlert();
+  const { data: profiles, isLoading: isLoadingProfiles } = useProfiles(Number(boreholeId));
   const reloadProfiles = useReloadProfiles(Number(boreholeId));
 
   const loadAttachments = useCallback(async () => {
@@ -76,7 +77,6 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
 
   const {
     isLoading,
-    rows,
     onAdd,
     onDelete,
     onExport,
@@ -174,9 +174,9 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   return (
     <AttachmentContent<Profile>
       apiRef={apiRef}
-      isLoading={isLoading}
+      isLoading={isLoading || isLoadingProfiles}
       columns={columns}
-      rows={rows}
+      rows={profiles}
       addAttachment={onAdd}
       requireFileOnAdd
       deleteAttachments={onDelete}

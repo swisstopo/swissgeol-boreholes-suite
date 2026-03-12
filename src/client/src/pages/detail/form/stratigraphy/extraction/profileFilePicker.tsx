@@ -24,7 +24,7 @@ interface ProfileFilePickerProps {
 
 export const ProfileFilePicker: FC<ProfileFilePickerProps> = ({ boreholeId, open, setOpen, setSelectedFile }) => {
   const { t } = useTranslation();
-  const { data: files, isLoading: isLoadingFiles } = useProfiles(Number(boreholeId));
+  const { data: profiles, isLoading: isLoadingFiles } = useProfiles(Number(boreholeId), true);
   const reloadProfiles = useReloadProfiles(Number(boreholeId));
 
   const closeDialog = useCallback(() => {
@@ -53,9 +53,14 @@ export const ProfileFilePicker: FC<ProfileFilePickerProps> = ({ boreholeId, open
   );
 
   const getFilesButtons = () => {
-    return files && files?.length > 0 ? (
-      files.map(file => (
-        <FileButton key={file.name} label={file.name} icon={<FileTextIcon />} onClick={() => selectFile(file)} />
+    return profiles && profiles?.length > 0 ? (
+      profiles.map(profile => (
+        <FileButton
+          key={profile.file.name}
+          label={profile.file.name}
+          icon={<FileTextIcon />}
+          onClick={() => selectFile(profile.file)}
+        />
       ))
     ) : (
       <Typography variant="body1">{t("noProfilesUploaded")}</Typography>
