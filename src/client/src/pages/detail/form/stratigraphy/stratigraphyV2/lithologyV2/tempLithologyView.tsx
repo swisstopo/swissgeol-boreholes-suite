@@ -60,6 +60,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
   ) => (
     <StratigraphyTableGap
       key={`${keyPrefix}-${layer.id}`}
+      dataCy={`${keyPrefix}-${layer.id}`}
       sx={{
         height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
       }}
@@ -77,6 +78,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
   ) => (
     <StratigraphyTableActionCell
       key={`${keyPrefix}-${layer.id}`}
+      dataCy={`${keyPrefix}-${index}`}
       sx={{
         height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
       }}
@@ -94,7 +96,14 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
     keyPrefix: string,
   ) => {
     if (!layers || layers.length === 0) {
-      return <StratigraphyTableGap key={`${keyPrefix}-new`} sx={{ height: `${defaultRowHeight}px` }} index={-1} />;
+      return (
+        <StratigraphyTableGap
+          key={`${keyPrefix}-new`}
+          dataCy={`${keyPrefix}-new`}
+          sx={{ height: `${defaultRowHeight}px` }}
+          index={-1}
+        />
+      );
     }
 
     return layers.map((layer, index) =>
