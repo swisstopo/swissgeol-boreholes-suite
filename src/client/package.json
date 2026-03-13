@@ -76,6 +76,7 @@
   },
   "devDependencies": {
     "@babel/plugin-transform-private-property-in-object": "^7.24.7",
+    "@cypress/grep": "^5.1.0",
     "@eslint/compat": "^1.2.7",
     "@hookform/devtools": "^4.3.3",
     "@ianvs/prettier-plugin-sort-imports": "^4.3.1",
