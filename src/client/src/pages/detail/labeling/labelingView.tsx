@@ -94,7 +94,7 @@ export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName,
       }
       map.dispose();
       // @ts-expect-error - Clear window reference when disposing
-      window.labelingImage = undefined;
+      window[mapDomId] = undefined;
       setMap(undefined);
     }
 
@@ -134,7 +134,7 @@ export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName,
 
     // Set window reference only after everything is initialized
     // @ts-expect-error - Attach map to window after complete initialization
-    window.labelingImage = initMap;
+    window["labeling-map"] = initMap;
   }, [fileName, image, imageSize, map, mapDomId, t]);
 
   useEffect(() => {

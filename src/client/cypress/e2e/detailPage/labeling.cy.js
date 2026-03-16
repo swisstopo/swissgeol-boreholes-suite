@@ -50,7 +50,7 @@ const drawBox = (x1, y1, x2, y2) => {
   cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x2, y: y2 });
 
   cy.window().then(win => {
-    const interactions = win.labelingImage.getInteractions().getArray();
+    const interactions = win["labeling-map"].getInteractions().getArray();
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(
       interactions.some(interaction => {
@@ -66,7 +66,7 @@ const drawBox = (x1, y1, x2, y2) => {
   cy.wait("@extract-data");
   cy.get('[data-cy="labeling-draw-tooltip"]').should("not.be.visible");
   cy.window().then(win => {
-    const interactions = win.labelingImage.getInteractions().getArray();
+    const interactions = win["labeling-map"].getInteractions().getArray();
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(
       interactions.some(interaction => {
@@ -82,10 +82,10 @@ const waitForLabelingImageLoaded = () => {
   // Wait for the map element to exist in the DOM
   cy.window().should(win => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(win.labelingImage).to.exist;
+    expect(win["labeling-map"]).to.exist;
   });
   cy.window().then(win => {
-    cy.wrap(win.labelingImage.getLayers().getArray()).then(layers => {
+    cy.wrap(win["labeling-map"].getLayers().getArray()).then(layers => {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       expect(
         layers.some(layer => {
@@ -137,7 +137,7 @@ function assertLabelingAlertText(expectedText) {
 
 function assertBoundingBoxes(totalCount, highlightedArea) {
   cy.window().then(win => {
-    const layers = win.labelingImage.getLayers().getArray();
+    const layers = win["labeling-map"].getLayers().getArray();
     const boundingBoxLayer = layers.find(layer => layer.get("name") === "boundingBoxLayer");
     const highlightsLayer = layers.find(layer => layer.get("name") === "highlightsLayer");
     const invisibleBoundingBoxes = boundingBoxLayer.getSource().getFeatures();
@@ -195,7 +195,7 @@ function reloadPanel() {
 function waitForMapAnimations() {
   cy.window().then(win => {
     return new Cypress.Promise(resolve => {
-      const view = win.labelingImage.getView();
+      const view = win["labeling-map"].getView();
       const checkAnimation = () => {
         if (!view.getAnimating()) {
           resolve();
@@ -274,7 +274,7 @@ describe("Test labeling tool", () => {
     // Cannot draw if the panel was opened with the panel toggle button
     waitForLabelingImageLoaded();
     cy.window().then(win => {
-      const interactions = win.labelingImage.getInteractions().getArray();
+      const interactions = win["labeling-map"].getInteractions().getArray();
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       expect(interactions.some(interaction => interaction.constructor.name === "Draw")).to.be.false;
     });
@@ -290,7 +290,7 @@ describe("Test labeling tool", () => {
     cy.get('[data-cy="labeling-panel"] [data-cy="zoom-in-button"]').click();
     cy.get('[data-cy="rotate-button"]').click();
     cy.window().then(win => {
-      const view = win.labelingImage.getView();
+      const view = win["labeling-map"].getView();
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
 
@@ -428,12 +428,12 @@ describe("Test labeling tool", () => {
     assertPageCount(2, 3);
 
     cy.window().then(win => {
-      const view = win.labelingImage.getView();
+      const view = win["labeling-map"].getView();
       expect(view.getRotation()).to.equal(0);
     });
     cy.get('[data-cy="rotate-button"]').click();
     cy.window().then(win => {
-      const view = win.labelingImage.getView();
+      const view = win["labeling-map"].getView();
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
     // eslint-disable-next-line cypress/no-unnecessary-waiting
@@ -581,7 +581,7 @@ describe("Test labeling tool", () => {
     cy.dataCy("zoom-in-button").click();
     cy.dataCy("rotate-button").click();
     cy.window().then(win => {
-      const view = win.labelingImage.getView();
+      const view = win["labeling-map"].getView();
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
     cy.dataCy("labeling-panel").find('input[type="file"]').attachFile("import/image_123.0-456.0_all.tif");
