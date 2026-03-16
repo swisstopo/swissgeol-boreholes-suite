@@ -21,6 +21,7 @@
 - Application would freeze when borehole imports failed.
 - Fixed bug where there was no appropriate overflow when selecting files in the sidepanel.
 - Fixed bug where non-admin users could not copy boreholes. Hierarchical user roles are now applied to the copy-borehole functionality.
+- Copy facies and lithological descriptions when copying a stratigraphy.
 
 ## v2.1.1462 - 2026-02-19
 
