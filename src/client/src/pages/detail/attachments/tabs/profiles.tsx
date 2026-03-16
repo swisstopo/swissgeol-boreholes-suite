@@ -75,25 +75,17 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
     [apiRef, boreholeId, reloadProfiles, showApiErrorAlert],
   );
 
-  const {
-    isLoading,
-    onAdd,
-    onDelete,
-    onExport,
-    getPublicColumnHeader,
-    getPublicColumnCell,
-    updatedRows,
-    setUpdatedRows,
-  } = useAttachments<Profile>({
-    apiRef,
-    loadAttachments,
-    addAttachment,
-    deleteAttachments,
-    exportAttachments,
-    updateAttachments,
-    tabStatusToReset: "profiles",
-    invalidateQueries: reloadProfiles,
-  });
+  const { onAdd, onDelete, onExport, getPublicColumnHeader, getPublicColumnCell, updatedRows, setUpdatedRows } =
+    useAttachments<Profile>({
+      apiRef,
+      loadAttachments,
+      addAttachment,
+      deleteAttachments,
+      exportAttachments,
+      updateAttachments,
+      tabStatusToReset: "profiles",
+      invalidateQueries: reloadProfiles,
+    });
 
   const updateDescription = useCallback(
     (id: GridRowId, description: string) => {
@@ -174,7 +166,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   return (
     <AttachmentContent<Profile>
       apiRef={apiRef}
-      isLoading={isLoading || isLoadingProfiles}
+      isLoading={isLoadingProfiles}
       columns={columns}
       rows={profiles}
       addAttachment={onAdd}
