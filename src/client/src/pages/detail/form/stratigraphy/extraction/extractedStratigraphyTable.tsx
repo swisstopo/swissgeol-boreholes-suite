@@ -38,6 +38,7 @@ export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = (
         <StratigraphyTableActionCell
           index={index}
           key={`${keyPrefix}-${layer.id}-${index}`}
+          dataCy={`${keyPrefix}-${index}`}
           sx={{
             height: `${defaultRowHeight}px`,
           }}
@@ -75,7 +76,7 @@ export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = (
                     {(layer as LithologicalDescription).description}
                   </Typography>
                 ),
-                "lithologicalDescription",
+                "extracted_lithologicalDescription",
               )}
             </StratigraphyTableColumn>
           </StratigraphyTableContent>

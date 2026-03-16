@@ -65,6 +65,7 @@ interface StratigraphyTableLayerCellProps {
   onHoverClick?: (index: number) => void;
   onClick?: (index: number) => void;
   sx?: SxProps;
+  dataCy?: string;
 }
 
 export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = ({
@@ -74,6 +75,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
   onHoverClick,
   onClick,
   sx,
+  dataCy,
 }) => {
   const stackRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
@@ -88,6 +90,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
 
   return (
     <StratigraphyTableCell
+      data-cy={dataCy}
       sx={{
         justifyContent: "center",
 

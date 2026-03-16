@@ -50,6 +50,8 @@ export const interceptApiCalls = () => {
   cy.intercept("POST", "/api/v2/workflow/tabstatuschange").as("tabstatuschange");
   cy.intercept("GET", "/api/v2/workflow/**").as("workflow_by_id");
   cy.intercept("/api/v2/lithologicaldescription*").as("lithological_description");
+  cy.intercept("/api/v2/lithologicaldescription?stratigraphyId=**").as("lithologicaldescription_by_stratigraphyId_GET");
+
   cy.intercept("/api/v2/faciesdescription*").as("facies_description");
 
   cy.intercept("/api/v2/chronostratigraphy*", req => {
