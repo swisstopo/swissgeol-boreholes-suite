@@ -609,9 +609,4 @@ public partial class CleanupLegacyStratigraphyCodelists : Migration
             DELETE FROM bdms.codelist WHERE schema_cli = 'custom.lithology_top_bedrock';
         ");
     }
-
-    /// <inheritdoc />
-    protected override void Down(MigrationBuilder migrationBuilder)
-    {
-    }
 }
