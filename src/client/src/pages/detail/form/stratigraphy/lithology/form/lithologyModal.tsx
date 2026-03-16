@@ -9,7 +9,6 @@ import { FormContainer } from "../../../../../../components/form/formContainer.t
 import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
 import { FormInput } from "../../../../../../components/form/formInput.tsx";
 import { validateDepths } from "../../../../../../components/form/formUtils.ts";
-import { useFormDirty } from "../../../../../../components/form/useFormDirty.tsx";
 import { Lithology } from "../../lithology.ts";
 import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
 import { LithologyUnconsolidatedForm } from "./lithologyUnconsolidatedForm.tsx";
@@ -33,7 +32,6 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
     },
   });
   const { formState, getValues } = formMethods;
-  const isDirty = useFormDirty({ formState });
 
   useEffect(() => {
     if (lithology) {
@@ -58,11 +56,12 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
   const isUnconsolidated = formMethods.watch("isUnconsolidated");
 
   const closeDialog = async () => {
+    const values = getValues();
     const isValid = await formMethods.trigger();
-    if (!isDirty || isValid) {
-      const values = getValues();
+    const hasChanges = JSON.stringify(lithology) !== JSON.stringify(values);
+    if (!hasChanges || isValid) {
       prepareLithologyForSubmit(values);
-      updateLithology({ ...lithology, ...values } as Lithology, isDirty || (Boolean(lithology?.isGap) && isValid));
+      updateLithology({ ...lithology, ...values } as Lithology, hasChanges || (Boolean(lithology?.isGap) && isValid));
     }
   };
 
