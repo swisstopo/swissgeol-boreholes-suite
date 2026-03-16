@@ -195,24 +195,29 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
         var subjectId = HttpContext.GetUserSubjectId();
 
+        if (subjectId == null)
+        {
+            if (subjectId == null) throw new InvalidOperationException($"No user with subject_id <{subjectId}> found.");
+        }
+
         var user = await Context.UsersWithIncludes
             .AsNoTracking()
             .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
             .ConfigureAwait(false);
 
-        var workgroup = await Context.Workgroups
-            .AsNoTracking()
-            .SingleOrDefaultAsync(w => w.Id == workgroupId)
-            .ConfigureAwait(false);
-
-        if (workgroup == null)
-        {
-            return NotFound($"Workgroup with id {workgroupId} not found.");
-        }
-
         if (user == null || !await BoreholePermissionService.HasUserRoleOnWorkgroupAsync(subjectId, workgroupId, Role.Editor).ConfigureAwait(false))
         {
             return Unauthorized();
+        }
+
+        var workgroupExists = await Context.Workgroups
+            .AsNoTracking()
+            .AnyAsync(w => w.Id == workgroupId)
+            .ConfigureAwait(false);
+
+        if (!workgroupExists)
+        {
+            return NotFound($"Workgroup with id {workgroupId} not found.");
         }
 
         var borehole = await Context.BoreholesWithIncludes
