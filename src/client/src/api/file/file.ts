@@ -72,26 +72,6 @@ export const updateFile = async (
   );
 };
 
-export async function getDataExtractionFileInfo(boreholeFileId: number, index = 1): Promise<DataExtractionResponse> {
-  let response = await fetchApiV2Legacy(
-    `boreholefile/getDataExtractionFileInfo?boreholeFileId=${boreholeFileId}&index=${index}`,
-    "GET",
-  );
-  if (response) {
-    response = response as DataExtractionResponse;
-    if (response.count === 0) {
-      const fileNameWithExtension = response.fileName.includes(".") ? response.fileName : response.fileName + ".pdf";
-      if (fileNameWithExtension.includes(".pdf")) {
-        await createExtractionPngs(fileNameWithExtension);
-      }
-      return await getDataExtractionFileInfo(boreholeFileId, index);
-    }
-    return response;
-  } else {
-    throw new ApiError("errorDataExtractionFileLoading", 500);
-  }
-}
-
 export async function createExtractionPngs(fileName: string) {
   const response = await fetchCreatePngs(fileName);
   if (!response.ok) {
@@ -169,13 +149,13 @@ const cleanUpExtractionData = (
     }, []);
 };
 
-export function useExtractStratigraphies(file: BoreholeAttachment) {
+export function useExtractStratigraphies(file: BoreholeAttachment, activePage: number) {
+  const { data: fileInfo } = useFileInfo(file, activePage);
   return useQuery({
-    queryKey: ["extractStratigraphies", file],
-    enabled: !!file,
+    queryKey: ["extractStratigraphies", file.nameUuid],
+    enabled: !!file && !!fileInfo,
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes => Extraction for the same file doesn't need to be refetched.
     queryFn: async ({ signal }) => {
-      await getDataExtractionFileInfo(file.id);
       const response = await extractStratigraphies(file.nameUuid, signal);
       const lithologicalDescriptions: ExtractedLithologicalDescription[] =
         // Todo: The extraction currently only supports a single borehole per file https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2146
