@@ -50,10 +50,10 @@ const interceptLogs = (body, alias) => {
  */
 const interceptMigrationProgress = (taskType, logEntry, { runningPolls = 2 } = {}) => {
   let statusCallCount = 0;
-  let postReceived = false;
+  let isIdle = true;
 
   cy.intercept("POST", `/api/v2/maintenance/${taskType}`, req => {
-    postReceived = true;
+    isIdle = false;
     req.reply({ statusCode: 202 });
   }).as(`start-${taskType}`);
 
@@ -67,7 +67,7 @@ const interceptMigrationProgress = (taskType, logEntry, { runningPolls = 2 } = {
   };
 
   cy.intercept("GET", "/api/v2/maintenance/status", req => {
-    if (!postReceived) {
+    if (isIdle) {
       req.reply({ body: makeStatusResponse() });
     } else {
       statusCallCount++;
@@ -76,7 +76,7 @@ const interceptMigrationProgress = (taskType, logEntry, { runningPolls = 2 } = {
   }).as("get-status");
 
   cy.intercept("GET", "/api/v2/maintenance/logs*", req => {
-    if (!postReceived || statusCallCount <= runningPolls) {
+    if (isIdle || statusCallCount <= runningPolls) {
       req.reply({ body: makeLogResponse() });
     } else {
       req.reply({ body: makeLogResponse([logEntry]) });
