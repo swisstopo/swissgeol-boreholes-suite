@@ -197,10 +197,10 @@ function waitForMapAnimations() {
     return new Cypress.Promise(resolve => {
       const view = win["labeling-map"].getView();
       const checkAnimation = () => {
-        if (!view.getAnimating()) {
-          resolve();
-        } else {
+        if (view.getAnimating()) {
           setTimeout(checkAnimation, 50);
+        } else {
+          resolve();
         }
       };
       checkAnimation();

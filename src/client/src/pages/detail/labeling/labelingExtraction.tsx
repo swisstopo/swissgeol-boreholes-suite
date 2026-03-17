@@ -14,7 +14,6 @@ import { ExtractionRequest, ExtractionState } from "./labelingInterfaces.tsx";
 interface LabelingExtractionProps {
   selectedFile: BoreholeAttachment | undefined;
   activePage: number;
-  setActivePage: (page: number) => void;
   showAlert: (text: string, severity?: AlertColor, allowAutoHide?: boolean) => void;
   closeAlert: () => void;
   isReadonly?: boolean;
