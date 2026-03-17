@@ -23,6 +23,10 @@
 - Fixed display conflicts in sidepanel and stratigraphy extraction view.
 - Copy facies and lithological descriptions when copying a stratigraphy.
 
+### Changed
+- Added pod and container security context hardening across all Helm charts (seccomp profiles, privilege escalation prevention, capability dropping, read-only root filesystems).
+- Changed client Dockerfile to use numeric UID instead of named user for Kubernetes `runAsNonRoot` compatibility.
+
 ## v2.1.1462 - 2026-02-19
 
 ### Added
