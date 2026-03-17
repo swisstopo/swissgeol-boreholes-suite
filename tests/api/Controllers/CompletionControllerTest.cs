@@ -366,7 +366,7 @@ public class CompletionControllerTest
     {
         controller.ControllerContext.HttpContext.User = null;
         var result = await controller.CopyAsync(CompletionId).ConfigureAwait(false);
-        ActionResultAssert.IsInternalServerError(result.Result);
+        ActionResultAssert.IsUnauthorized(result.Result);
     }
 
     [TestMethod]

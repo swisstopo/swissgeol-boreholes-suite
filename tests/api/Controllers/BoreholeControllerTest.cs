@@ -801,12 +801,9 @@ public class BoreholeControllerTest
     public async Task CopyWithUserNotSet()
     {
         boreholeId = testBoreholeId;
-
         controller.ControllerContext.HttpContext.User = null;
-        await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
-        {
-            await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
-        });
+        var result = await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
+        ActionResultAssert.IsUnauthorized(result.Result);
     }
 
     [TestMethod]

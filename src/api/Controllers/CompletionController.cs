@@ -179,7 +179,7 @@ public class CompletionController : BoreholeControllerBase<Completion>
             // Check if associated borehole is locked
             if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), completion.BoreholeId).ConfigureAwait(false))
             {
-                return Problem("The borehole is locked by another user or you are missing permissions.");
+                return Unauthorized("The borehole is locked by another user or you are missing permissions.");
             }
 
             // Set ids of copied entities to zero. Entities with an id of zero are added as new entities to the DB.
