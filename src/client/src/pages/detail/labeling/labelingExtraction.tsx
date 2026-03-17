@@ -32,7 +32,7 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
   const [extractionExtent, setExtractionExtent] = useState<number[]>([]);
   const [drawTooltipLabel, setDrawTooltipLabel] = useState<string>();
   const { editingEnabled } = useContext(EditStateContext);
-  const { data: fileInfo } = useFileInfo(selectedFile, activePage);
+  const { data: fileInfo } = useFileInfo(selectedFile?.id, activePage);
   const {
     data: pageBoundingBoxes,
     isError,

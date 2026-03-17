@@ -32,7 +32,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   const { t } = useTranslation();
   const [abortController, setAbortController] = useState<AbortController>();
   const { data: lithologicalDescriptions = [], isLoading } = useExtractStratigraphies(file, 1);
-  const { isLoading: isLoadingFileInfo } = useFileInfo(file, 1);
+  const { isLoading: isLoadingFileInfo } = useFileInfo(file?.id, 1);
   const { mutateAsync: bulkAddLithologicalDescriptionsWithLithologies } = useBulkAddMutation();
   const { id } = useRequiredParams<{ id: string }>();
   const { navigateTo } = useBoreholesNavigate();

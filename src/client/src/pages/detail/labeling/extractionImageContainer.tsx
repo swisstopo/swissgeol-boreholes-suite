@@ -35,7 +35,7 @@ export const ExtractionImageContainer: FC<ExtractionImageContainerProps> = ({
 }) => {
   const [mapInstance, setMapInstance] = useState<Map | null>(null);
   const mapRef = useRef<Map>(null);
-  const { data: fileInfo } = useFileInfo(selectedFile, activePage);
+  const { data: fileInfo } = useFileInfo(selectedFile?.id, activePage);
   const { data: image, isLoading } = useProfileImage(fileInfo?.fileName);
 
   // Keep page count in sync with file info

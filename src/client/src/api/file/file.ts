@@ -150,7 +150,7 @@ const cleanUpExtractionData = (
 };
 
 export function useExtractStratigraphies(file: BoreholeAttachment, activePage: number) {
-  const { data: fileInfo } = useFileInfo(file, activePage);
+  const { data: fileInfo } = useFileInfo(file?.id, activePage);
   return useQuery({
     queryKey: ["extractStratigraphies", file.nameUuid],
     enabled: !!file && !!fileInfo,
@@ -187,17 +187,17 @@ export function useProfileImage(fileName: string | undefined) {
   });
 }
 
-export function useFileInfo(selectedFile: BoreholeAttachment | undefined, activePage: number) {
+export function useFileInfo(fileId: number | undefined, activePage: number) {
   return useQuery({
-    queryKey: ["dataExtractionFileInfo", selectedFile, activePage],
-    enabled: !!selectedFile,
+    queryKey: ["dataExtractionFileInfo", fileId, activePage],
+    enabled: !!fileId,
     retry: 4, //Increase retries since we intentionally trigger retry after fetching pngs.
     queryFn: async () => {
-      if (!selectedFile) return null;
+      if (!fileId) return null;
 
       // potentially use other fetch method here
       const response = await fetchApiV2Legacy(
-        `boreholefile/getDataExtractionFileInfo?boreholeFileId=${selectedFile.id}&index=${activePage}`,
+        `boreholefile/getDataExtractionFileInfo?boreholeFileId=${fileId}&index=${activePage}`,
         "GET",
       );
       if (!response) {

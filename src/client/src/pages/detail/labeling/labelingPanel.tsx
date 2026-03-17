@@ -67,7 +67,7 @@ const LabelingPanel: FC = () => {
   const selectedFile: FileInterface | undefined = isPhotoSelected ? undefined : selectedAttachment;
   const selectedPhoto: Photo | undefined = isPhotoSelected ? selectedAttachment : undefined;
   const { data: profiles, isLoading: isLoadingProfiles } = useProfiles(Number(boreholeId), true);
-  const { data: fileInfo, isLoading: isLoadingFileInfo } = useFileInfo(selectedFile, activePage);
+  const { data: fileInfo, isLoading: isLoadingFileInfo } = useFileInfo(selectedFile?.id, activePage);
   const { data: photos, isLoading: isLoadingPhotos } = usePhotos(Number(boreholeId));
   const { data: image, isLoading: isLoadingImage } = usePhotoImage(selectedPhoto?.id);
   const reloadProfiles = useReloadProfiles(Number(boreholeId));
@@ -207,7 +207,6 @@ const LabelingPanel: FC = () => {
             <LabelingExtraction
               selectedFile={selectedFile}
               activePage={activePage}
-              setActivePage={setActivePage}
               showAlert={showAlert}
               closeAlert={closeAlert}
             />
