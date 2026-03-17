@@ -78,11 +78,10 @@ const QueryClientInitializer: FC<PropsWithChildren> = ({ children }) => {
   // Use refs so the QueryClient callbacks always access the latest values
   // without recreating the QueryClient on every language change.
   const showAlertRef = useRef(showAlert);
+  showAlertRef.current = showAlert;
+
   const tRef = useRef(t);
-  useEffect(() => {
-    showAlertRef.current = showAlert;
-    tRef.current = t;
-  }, [showAlert, t]);
+  tRef.current = t;
 
   const queryClient = useMemo(
     () =>
