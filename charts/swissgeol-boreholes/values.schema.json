@@ -125,35 +125,6 @@
       "default": 1
     },
 
-    "automountServiceAccountToken": {
-      "type": "boolean",
-      "default": false
-    },
-
-    "podSecurityContext": {
-      "type": "object",
-      "default": {},
-      "additionalProperties": true
-    },
-
-    "securityContext": {
-      "type": "object",
-      "default": {},
-      "additionalProperties": true
-    },
-
-    "resources": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "api": { "$ref": "#/definitions/componentResources" },
-        "apiLegacy": { "$ref": "#/definitions/componentResources" },
-        "client": { "$ref": "#/definitions/componentResources" },
-        "dataextraction": { "$ref": "#/definitions/componentResources" },
-        "ocr": { "$ref": "#/definitions/componentResources" }
-      }
-    },
-
     "s3": {
       "type": "object",
       "additionalProperties": false,
@@ -206,29 +177,5 @@
 
   "required": ["app", "dataextraction", "ocr"],
 
-  "definitions": {
-    "k8sQuantity": {
-      "type": "string",
-      "minLength": 1
-    },
-
-    "resourceRequestsLimits": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "cpu": { "$ref": "#/definitions/k8sQuantity" },
-        "memory": { "$ref": "#/definitions/k8sQuantity" },
-        "ephemeral-storage": { "$ref": "#/definitions/k8sQuantity" }
-      }
-    },
-
-    "componentResources": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "requests": { "$ref": "#/definitions/resourceRequestsLimits" },
-        "limits": { "$ref": "#/definitions/resourceRequestsLimits" }
-      }
-    }
-  }
+  "definitions": {}
 }
