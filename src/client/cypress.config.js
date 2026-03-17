@@ -1,4 +1,5 @@
 import fs from "fs";
+import { plugin as cypressGrepPlugin } from "@cypress/grep/plugin";
 import { defineConfig } from "cypress";
 import vitePreprocessor from "cypress-vite";
 
@@ -13,6 +14,7 @@ export default defineConfig({
     experimentalMemoryManagement: true,
 
     setupNodeEvents(on, config) {
+      cypressGrepPlugin(config);
       on("file:preprocessor", vitePreprocessor());
 
       on("task", {

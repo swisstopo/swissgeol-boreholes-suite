@@ -1,4 +1,4 @@
-import { FC, PropsWithChildren, useContext, useEffect, useMemo } from "react";
+import { FC, PropsWithChildren, useContext, useEffect, useMemo, useRef } from "react";
 import { ErrorBoundary } from "react-error-boundary";
 import { useTranslation } from "react-i18next";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
@@ -75,6 +75,14 @@ const QueryClientInitializer: FC<PropsWithChildren> = ({ children }) => {
   const { t } = useTranslation();
   const isCypress = !!globalThis.Cypress;
 
+  // Use refs so the QueryClient callbacks always access the latest values
+  // without recreating the QueryClient on every language change.
+  const showAlertRef = useRef(showAlert);
+  showAlertRef.current = showAlert;
+
+  const tRef = useRef(t);
+  tRef.current = t;
+
   const queryClient = useMemo(
     () =>
       new QueryClient({
@@ -96,7 +104,7 @@ const QueryClientInitializer: FC<PropsWithChildren> = ({ children }) => {
             if (typeof query.state.data !== "undefined" && !(error instanceof ApiError)) {
               // If there is cached data available for a query, we want to show the cached data to the user.
               // An alert will be shown to inform the user that the data is not up-to-date.
-              showAlert(t("dataNotUpToDateError"), "error");
+              showAlertRef.current(tRef.current("dataNotUpToDateError"), "error");
             }
           },
         }),
@@ -104,12 +112,12 @@ const QueryClientInitializer: FC<PropsWithChildren> = ({ children }) => {
           onError: error => {
             if (!(error instanceof ApiError)) {
               // An alert will be shown to inform the user that the action was not successful.
-              showAlert(t("errorMutationNotSuccessfull"), "error");
+              showAlertRef.current(tRef.current("errorMutationNotSuccessfull"), "error");
             }
           },
         }),
       }),
-    [showAlert, t, isCypress],
+    [isCypress],
   );
 
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;
