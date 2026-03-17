@@ -309,6 +309,15 @@ describe("Test labeling tool", () => {
     cy.dataCy("file-button").contains("WOLFHEART.pdf");
     cy.dataCy("file-button").contains("borehole_attachment_3.pdf").click();
     waitForLabelingImageLoaded();
+
+    // still displays profile list after returning from photos tab.
+    selectEmptyPhotoTab();
+    cy.dataCy("labeling-tab-profile").click();
+    cy.dataCy("labeling-file-selector").contains("Profiles").should("exist");
+    cy.dataCy("addfile-button").should("not.exist");
+    cy.dataCy("file-button").contains("borehole_attachment_1.pdf");
+    cy.dataCy("file-button").contains("borehole_attachment_3.pdf");
+    cy.dataCy("file-button").contains("WOLFHEART.pdf");
   });
 
   it("can extract coordinates and reference system from image", () => {
