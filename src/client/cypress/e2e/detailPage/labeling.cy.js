@@ -581,7 +581,7 @@ describe("Test labeling tool", () => {
     cy.dataCy("zoom-in-button").click();
     cy.dataCy("rotate-button").click();
     cy.window().then(win => {
-      const view = win["labeling-map"].getView();
+      const view = win["photo-map"].getView();
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
     cy.dataCy("labeling-panel").find('input[type="file"]').attachFile("import/image_123.0-456.0_all.tif");
