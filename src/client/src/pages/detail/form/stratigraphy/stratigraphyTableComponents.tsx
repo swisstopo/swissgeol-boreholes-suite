@@ -65,6 +65,7 @@ interface StratigraphyTableLayerCellProps {
   onHoverClick?: (index: number) => void;
   onClick?: (index: number) => void;
   sx?: SxProps;
+  dataCy?: string;
 }
 
 export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = ({
@@ -74,6 +75,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
   onHoverClick,
   onClick,
   sx,
+  dataCy,
 }) => {
   const stackRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
@@ -88,11 +90,10 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
 
   return (
     <StratigraphyTableCell
+      data-cy={dataCy}
       sx={{
         justifyContent: "center",
-
         "& .hover-content": { visibility: "hidden" },
-
         "&:hover": {
           justifyContent: "space-between",
           backgroundColor: theme.palette.background.grey,
@@ -150,9 +151,10 @@ interface StratigraphyTableGapProps {
   index: number;
   onClick?: (index: number) => void;
   sx?: SxProps;
+  dataCy?: string;
 }
 
-export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ index, onClick, sx }) => {
+export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ index, onClick, sx, dataCy }) => {
   const { t } = useTranslation();
   return (
     <StratigraphyTableCell
@@ -179,7 +181,7 @@ export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ index, onC
       </StratigraphyTableCellRow>
       {onClick && (
         <Stack direction="row" justifyContent="center" alignItems="center">
-          <LayerAddButton />
+          <LayerAddButton dataCy={`${dataCy}-add-button`} />
         </Stack>
       )}
       <StratigraphyTableCellRow />
@@ -187,13 +189,15 @@ export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ index, onC
   );
 };
 
-interface AddButtonProps {
+interface LayerAddButtonProps {
   onClick?: () => void;
+  dataCy?: string;
 }
 
-export const LayerAddButton: FC<AddButtonProps> = ({ onClick }) => (
+export const LayerAddButton: FC<LayerAddButtonProps> = ({ onClick, dataCy }) => (
   <IconButton
     onClick={onClick}
+    data-cy={dataCy}
     sx={{
       borderRadius: "50%",
       backgroundColor: theme.palette.primary.main,
@@ -207,6 +211,10 @@ export const LayerAddButton: FC<AddButtonProps> = ({ onClick }) => (
     <Plus />
   </IconButton>
 );
+
+interface AddButtonProps {
+  onClick?: () => void;
+}
 
 export const AddRowButton: FC<AddButtonProps> = ({ onClick }) => {
   const dashedOutlineImage = `url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%23C6D3DA' stroke-width='1' stroke-dasharray='9%2C9' stroke-dashoffset='0' stroke-linecap='square'/%3E%3C/svg%3E")`;
@@ -230,7 +238,7 @@ export const AddRowButton: FC<AddButtonProps> = ({ onClick }) => {
           },
         },
       }}>
-      <LayerAddButton onClick={onClick} />
+      <LayerAddButton onClick={onClick} dataCy="add-row-button" />
     </Stack>
   );
 };
