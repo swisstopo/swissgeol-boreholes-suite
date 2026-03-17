@@ -21,10 +21,17 @@ export const downloadDataFromBlob = (blob: Blob, fileName: string) => {
 
 export const getImageFromBlob = (blob: Blob) => {
   return new Promise<HTMLImageElement>((resolve, reject) => {
+    const url = URL.createObjectURL(blob);
     const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = URL.createObjectURL(blob);
+    img.onload = () => {
+      URL.revokeObjectURL(url);
+      resolve(img);
+    };
+    img.onerror = error => {
+      URL.revokeObjectURL(url);
+      reject(error);
+    };
+    img.src = url;
   });
 };
 
