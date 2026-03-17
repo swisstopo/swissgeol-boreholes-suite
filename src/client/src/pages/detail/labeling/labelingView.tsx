@@ -40,8 +40,6 @@ interface LabelingViewProps {
 export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName, imageSize, onMapInitialized }) => {
   const [map, setMap] = useState<Map>();
 
-  const { t } = useTranslation();
-
   const zoomIn = () => {
     if (map) {
       const view = map.getView();
@@ -135,7 +133,7 @@ export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName,
     // Set window reference only after everything is initialized
     // @ts-expect-error - Attach map to window after complete initialization
     window[mapDomId] = initMap;
-  }, [fileName, image, imageSize, map, mapDomId, t]);
+  }, [fileName, image, imageSize, map, mapDomId]);
 
   useEffect(() => {
     if (map) {
