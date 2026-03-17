@@ -1,5 +1,6 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -800,11 +801,22 @@ public class BoreholeControllerTest
     public async Task CopyWithUserNotSet()
     {
         boreholeId = testBoreholeId;
-        controller.ControllerContext.HttpContext.User = null;
-        await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
+
+        // Create a new controller with no user context
+        var emptyHttpContext = new DefaultHttpContext();
+        emptyHttpContext.User = null;
+
+        var testController = new BoreholeController(context, new Mock<ILogger<BoreholeController>>().Object, boreholePermissionServiceMock.Object)
         {
-            await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
+            ControllerContext = new ControllerContext { HttpContext = emptyHttpContext },
+        };
+
+        var exception = await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
+        {
+            await testController.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         });
+
+        Assert.IsTrue(exception.Message.Contains("No user with subject_id"), $"Unexpected exception message: {exception.Message}");
     }
 
     [TestMethod]
