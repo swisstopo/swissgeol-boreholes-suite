@@ -3,7 +3,7 @@ import { createBorehole, goToDetailRouteAndAcceptTerms, startBoreholeEditing } f
 function assertBoundingBoxesOnLayer(mapDomId, layerName, shouldExist = true) {
   cy.window().should(win => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(win["extraction-map"]).to.exist;
+    expect(win[mapDomId], `Map "${mapDomId}" should exist`).to.exist;
   });
 
   cy.window().then(win => {
