@@ -195,8 +195,7 @@ export function useFileInfo(fileId: number | undefined, activePage: number) {
     queryFn: async () => {
       if (!fileId) return null;
 
-      // potentially use other fetch method here
-      const response = await fetchApiV2Legacy(
+      const response = await fetchApiV2WithApiError(
         `boreholefile/getDataExtractionFileInfo?boreholeFileId=${fileId}&index=${activePage}`,
         "GET",
       );
