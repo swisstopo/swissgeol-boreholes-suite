@@ -219,8 +219,6 @@ public class BdmsContext : DbContext
 
     public IQueryable<Stratigraphy> StratigraphiesWithIncludes
         => Stratigraphies
-        .Include(s => s.CreatedBy)
-        .Include(s => s.UpdatedBy)
         .Include(s => s.Lithologies).ThenInclude(l => l.LithologyRockConditionCodes)
         .Include(s => s.Lithologies).ThenInclude(l => l.LithologyUscsTypeCodes)
         .Include(s => s.Lithologies).ThenInclude(l => l.LithologyTextureMetaCodes)
