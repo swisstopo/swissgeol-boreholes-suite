@@ -195,7 +195,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
         var subjectId = HttpContext.GetUserSubjectId();
 
-        if (subjectId == null) throw new InvalidOperationException($"No user with subject_id <{subjectId}> found.");
+        if (subjectId == null) throw new InvalidOperationException("Invalid subjectId.");
 
         var user = await Context.UsersWithIncludes
             .AsNoTracking()
