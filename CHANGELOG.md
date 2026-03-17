@@ -22,6 +22,7 @@
 - Fixed bug where there was no appropriate overflow when selecting files in the sidepanel.
 - Fixed display conflicts in sidepanel and stratigraphy extraction view.
 - Copy facies and lithological descriptions when copying a stratigraphy.
+- Fixed display of facies when not editing a borehole.
 
 ### Changed
 - Added pod and container security context hardening across all Helm charts (seccomp profiles, privilege escalation prevention, capability dropping, read-only root filesystems).
