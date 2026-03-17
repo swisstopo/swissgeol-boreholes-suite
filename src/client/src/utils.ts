@@ -21,13 +21,20 @@ export const downloadDataFromBlob = (blob: Blob, fileName: string) => {
 
 export const getImageFromBlob = (blob: Blob) => {
   return new Promise<HTMLImageElement>((resolve, reject) => {
+    const url = URL.createObjectURL(blob);
     const img = new Image();
-    img.onload = () => resolve(img);
-    img.onerror = reject;
-    img.src = URL.createObjectURL(blob);
+    img.onload = () => {
+      resolve(img);
+      // Defer revocation so the browser finishes rendering first
+      setTimeout(() => URL.revokeObjectURL(url), 100);
+    };
+    img.onerror = error => {
+      URL.revokeObjectURL(url);
+      reject(new Error(`Failed to load image: ${error}`));
+    };
+    img.src = url;
   });
 };
-
 export const formatDate = (date: string | Date | null | undefined, withTime = false) => {
   if (!date) return "";
   const options: Intl.DateTimeFormatOptions = {
