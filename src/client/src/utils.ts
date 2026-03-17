@@ -29,7 +29,7 @@ export const getImageFromBlob = (blob: Blob) => {
     };
     img.onerror = error => {
       URL.revokeObjectURL(url);
-      reject(error);
+      reject(new Error(`Failed to load image: ${error}`));
     };
     img.src = url;
   });
