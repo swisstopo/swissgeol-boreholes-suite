@@ -483,6 +483,8 @@ describe("Test labeling tool", () => {
     assertPageCount(3, 3);
     cy.wait("@extraction-file-info");
     waitForMapAnimations();
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(1000);
     cy.dataCy("text-extraction-button").click();
     assertDrawTooltipInvisible();
     moveMouseOntoMap();

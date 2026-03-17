@@ -123,10 +123,6 @@ export const interceptApiCalls = () => {
   cy.intercept({
     method: "GET",
     url: "/api/v2/boreholefile/dataextraction/*",
-  }).as("dataextraction");
-  cy.intercept({
-    method: "GET",
-    url: "/api/v2/boreholefile/dataextraction/*",
   }).as("load-extraction-file");
 
   cy.intercept("/api/v2/log?boreholeId=**").as("logrun_by_borehole_GET");
