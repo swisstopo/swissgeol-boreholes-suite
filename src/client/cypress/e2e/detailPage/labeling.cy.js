@@ -86,6 +86,7 @@ const waitForLabelingImageLoaded = () => {
   });
   cy.window().should(win => {
     const layers = win["labeling-map"].getLayers().getArray();
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(layers.some(layer => layer.constructor.name === "ImageLayer")).to.be.true;
   });
 };
@@ -187,6 +188,7 @@ function reloadPanel() {
 function waitForMapAnimations() {
   cy.window().should(win => {
     const view = win["labeling-map"].getView();
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(view.getAnimating()).to.be.false;
   });
 }
