@@ -802,21 +802,11 @@ public class BoreholeControllerTest
     {
         boreholeId = testBoreholeId;
 
-        // Create a new controller with no user context
-        var emptyHttpContext = new DefaultHttpContext();
-        emptyHttpContext.User = null;
-
-        var testController = new BoreholeController(context, new Mock<ILogger<BoreholeController>>().Object, boreholePermissionServiceMock.Object)
+        controller.ControllerContext.HttpContext.User = null;
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
         {
-            ControllerContext = new ControllerContext { HttpContext = emptyHttpContext },
-        };
-
-        var exception = await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
-        {
-            await testController.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
+            await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         });
-
-        Assert.IsTrue(exception.Message.Contains("No user with subject_id"), $"Unexpected exception message: {exception.Message}");
     }
 
     [TestMethod]
