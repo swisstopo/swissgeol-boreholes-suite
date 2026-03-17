@@ -59,7 +59,7 @@ export const isJsonContentType = (contentType: string | null): boolean => {
 /**
  * Checks if the provided content type indicates a Blob response.
  * @param {string | null} contentType - The content type to check.
- * @returns {boolean} - Returns `true` if the content type indicates JSON, otherwise `false`.
+ * @returns {boolean} - Returns `true` if the content type indicates a Blob/binary response, otherwise `false`.
  */
 const isBlobContentType = (contentType: string | null): boolean => {
   const blobContentTypes = ["application/geopackage+sqlite", "application/octet-stream", "image/png"];
