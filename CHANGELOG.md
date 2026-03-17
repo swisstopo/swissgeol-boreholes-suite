@@ -22,6 +22,11 @@
 - Fixed bug where there was no appropriate overflow when selecting files in the sidepanel.
 - Fixed bug where non-admin users could not copy boreholes. Hierarchical user roles are now applied to the copy-borehole functionality.
 - Copy facies and lithological descriptions when copying a stratigraphy.
+- Fixed display of facies when not editing a borehole.
+
+### Changed
+- Added pod and container security context hardening across all Helm charts (seccomp profiles, privilege escalation prevention, capability dropping, read-only root filesystems).
+- Changed client Dockerfile to use numeric UID instead of named user for Kubernetes `runAsNonRoot` compatibility.
 
 ## v2.1.1462 - 2026-02-19
 
