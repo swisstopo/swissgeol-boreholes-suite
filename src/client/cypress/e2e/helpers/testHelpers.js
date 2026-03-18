@@ -50,6 +50,8 @@ export const interceptApiCalls = () => {
   cy.intercept("POST", "/api/v2/workflow/tabstatuschange").as("tabstatuschange");
   cy.intercept("GET", "/api/v2/workflow/**").as("workflow_by_id");
   cy.intercept("/api/v2/lithologicaldescription*").as("lithological_description");
+  cy.intercept("/api/v2/lithologicaldescription?stratigraphyId=**").as("lithologicaldescription_by_stratigraphyId_GET");
+
   cy.intercept("/api/v2/faciesdescription*").as("facies_description");
 
   cy.intercept("/api/v2/chronostratigraphy*", req => {
@@ -118,10 +120,6 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/boreholegeometry/getDepthTVD?**").as("get-depth-tvd");
 
   cy.intercept("/api/v2/boreholefile/getDataExtractionFileInfo*").as("extraction-file-info");
-  cy.intercept({
-    method: "GET",
-    url: "/api/v2/boreholefile/dataextraction/*",
-  }).as("dataextraction");
   cy.intercept({
     method: "GET",
     url: "/api/v2/boreholefile/dataextraction/*",
@@ -399,6 +397,8 @@ export const stopBoreholeEditing = discardChanges => {
     cy.dataCy("prompt").find(`[data-cy="discardchanges-button"]`).click();
   }
   cy.wait(["@update-borehole", "@borehole_by_id"]);
+  // eslint-disable-next-line cypress/no-unnecessary-waiting
+  cy.wait(100); // Small buffer for scroll operations
 };
 
 export const returnToOverview = () => {

@@ -19,6 +19,15 @@ export const downloadDataFromBlob = (blob: Blob, fileName: string) => {
   URL.revokeObjectURL(url);
 };
 
+export const getImageFromBlob = (blob: Blob) => {
+  return new Promise<HTMLImageElement>((resolve, reject) => {
+    const img = new Image();
+    img.onload = () => resolve(img);
+    img.onerror = reject;
+    img.src = URL.createObjectURL(blob);
+  });
+};
+
 export const formatDate = (date: string | Date | null | undefined, withTime = false) => {
   if (!date) return "";
   const options: Intl.DateTimeFormatOptions = {

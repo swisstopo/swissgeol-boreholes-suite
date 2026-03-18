@@ -20,7 +20,7 @@ export interface File {
   created: string;
 }
 
-export interface BoreholeFile {
+export interface Profile {
   boreholeId: number;
   fileId: number;
   file: File;

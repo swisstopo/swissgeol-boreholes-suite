@@ -53,7 +53,7 @@ export const WorkflowView = () => {
     hasHydroTest,
     hasFieldMeasurement,
     hasAttachments,
-    hasBoreholeFiles,
+    hasProfiles,
     hasPhotos,
     hasDocuments,
     hasCasings,
@@ -124,7 +124,7 @@ export const WorkflowView = () => {
       {
         name: () => t("attachments"),
         isDisabled: !hasAttachments,
-        fields: [field("profiles", !hasBoreholeFiles), field("photos", !hasPhotos), field("documents", !hasDocuments)],
+        fields: [field("profiles", !hasProfiles), field("photos", !hasPhotos), field("documents", !hasDocuments)],
       },
     ];
   };

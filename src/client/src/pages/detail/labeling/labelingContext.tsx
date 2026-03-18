@@ -8,7 +8,6 @@ import {
   useLayoutEffect,
   useState,
 } from "react";
-import { DataExtractionResponse } from "../../../api/file/fileInterfaces.ts";
 import {
   ExtractionObject,
   ExtractionState,
@@ -26,8 +25,6 @@ export const LabelingContext = createContext<LabelingContextInterface>({
   setExtractionObject: () => {},
   extractionState: undefined,
   setExtractionState: () => {},
-  fileInfo: undefined,
-  setFileInfo: () => {},
   setAbortController: () => {},
   cancelRequest: () => {},
   panelTab: PanelTab.profile,
@@ -39,7 +36,6 @@ export const LabelingProvider: FC<PropsWithChildren> = ({ children }) => {
   const [panelOpen, setPanelOpen] = useState(false);
   const [extractionObject, setExtractionObject] = useState<ExtractionObject>();
   const [extractionState, setExtractionState] = useState<ExtractionState>();
-  const [fileInfo, setFileInfo] = useState<DataExtractionResponse>();
   const [abortController, setAbortController] = useState<AbortController>();
   const [panelTab, setPanelTab] = useState<PanelTab>(PanelTab.profile);
 
@@ -92,8 +88,6 @@ export const LabelingProvider: FC<PropsWithChildren> = ({ children }) => {
         setExtractionObject,
         extractionState,
         setExtractionState,
-        fileInfo,
-        setFileInfo,
         setAbortController,
         cancelRequest,
         panelTab,
