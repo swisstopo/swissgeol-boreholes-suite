@@ -187,6 +187,9 @@ export function useProfileImage(fileName: string | undefined) {
   });
 }
 
+// Track which files have already had PNG creation triggered, to avoid duplicate work across retries.
+const pngCreationStartedForFiles = new Set<string>();
+
 export function useFileInfo(fileId: number | undefined, activePage: number) {
   return useQuery({
     queryKey: ["dataExtractionFileInfo", fileId, activePage],
@@ -210,8 +213,11 @@ export function useFileInfo(fileId: number | undefined, activePage: number) {
           ? dataResponse.fileName
           : dataResponse.fileName + ".pdf";
 
-        if (fileNameWithExtension.includes(".pdf")) {
-          await createExtractionPngs(fileNameWithExtension);
+        if (!pngCreationStartedForFiles.has(fileNameWithExtension)) {
+          pngCreationStartedForFiles.add(fileNameWithExtension);
+          if (fileNameWithExtension.includes(".pdf")) {
+            await createExtractionPngs(fileNameWithExtension);
+          }
         }
 
         // Throw error to trigger useQuery's retry mechanism
