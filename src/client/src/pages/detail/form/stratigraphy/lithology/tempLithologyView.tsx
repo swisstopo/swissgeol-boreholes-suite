@@ -14,6 +14,7 @@ import {
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "../stratigraphyTableComponents.tsx";
+import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";
 import { useLayerDepths } from "./useLayerDepths.tsx";
@@ -59,6 +60,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
   ) => (
     <StratigraphyTableGap
       key={`${keyPrefix}-${layer.id}`}
+      dataCy={`${keyPrefix}-${layer.id}`}
       sx={{
         height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
       }}
@@ -76,6 +78,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
   ) => (
     <StratigraphyTableActionCell
       key={`${keyPrefix}-${layer.id}`}
+      dataCy={`${keyPrefix}-${index}`}
       sx={{
         height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
       }}
@@ -93,7 +96,14 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
     keyPrefix: string,
   ) => {
     if (!layers || layers.length === 0) {
-      return <StratigraphyTableGap key={`${keyPrefix}-new`} sx={{ height: `${defaultRowHeight}px` }} index={-1} />;
+      return (
+        <StratigraphyTableGap
+          key={`${keyPrefix}-new`}
+          dataCy={`${keyPrefix}-new`}
+          sx={{ height: `${defaultRowHeight}px` }}
+          index={-1}
+        />
+      );
     }
 
     return layers.map((layer, index) =>
@@ -157,9 +167,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
               defaultRowHeight,
               computeCellHeight,
               layer => (
-                <Typography variant="body1" fontWeight={700}>
-                  {(layer as FaciesDescription).description}
-                </Typography>
+                <FaciesDescriptionLabels description={layer as FaciesDescription} />
               ),
               "faciesDescription",
             )}

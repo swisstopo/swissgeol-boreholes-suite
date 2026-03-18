@@ -13,6 +13,7 @@
 - Deleted unused translations.
 - Migrated `custom.lithostratigraphy_top_bedrock` codelist to `lithostratigraphy`.
 - Migrated `custom.chronostratigraphy_top_bedrock` codelist to `chronostratigraphy`.
+- Deleted legacy codelists `colour`, `alteration`, `description_quality` and `custom.lithology_top_bedrock` (migrated to `lithology_con`).
 
 ### Fixed
 - All tables in the `logs` and `attachments` tab of the borehole detail view were missing pagination.
@@ -20,7 +21,13 @@
 - Included all missing properties from `Lithology`/`LithologyDescription` in borehole JSON import.
 - Application would freeze when borehole imports failed.
 - Fixed bug where there was no appropriate overflow when selecting files in the sidepanel.
+- Fixed bug where non-admin users could not copy boreholes. Hierarchical user roles are now applied to the copy-borehole functionality.
 - Copy facies and lithological descriptions when copying a stratigraphy.
+- Fixed display of facies when not editing a borehole.
+
+### Changed
+- Added pod and container security context hardening across all Helm charts (seccomp profiles, privilege escalation prevention, capability dropping, read-only root filesystems).
+- Changed client Dockerfile to use numeric UID instead of named user for Kubernetes `runAsNonRoot` compatibility.
 
 ## v2.1.1462 - 2026-02-19
 

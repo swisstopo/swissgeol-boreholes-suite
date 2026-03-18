@@ -54,6 +54,9 @@ internal static class Helpers
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync("sub_unauthorized", It.IsAny<int?>()))
             .ReturnsAsync(false);
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync(null, It.IsAny<int?>()))
+            .ReturnsAsync(false);
 
         return boreholePermissionServiceMock;
     }
