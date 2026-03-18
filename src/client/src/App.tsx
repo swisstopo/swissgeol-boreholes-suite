@@ -168,7 +168,7 @@ const App = () => {
                           <BasemapProvider>
                             <FilterProvider>
                               <OverviewProvider>
-                                <ReactQueryDevtools buttonPosition={"top-right"} initialIsOpen={false} />
+                                <ReactQueryDevtools buttonPosition={"top-left"} initialIsOpen={false} />
                                 <AppBox>
                                   <HeaderComponent />
                                   <RouterProvider router={router} />
