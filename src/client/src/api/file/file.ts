@@ -194,7 +194,7 @@ export function useFileInfo(fileId: number | undefined, activePage: number) {
   return useQuery({
     queryKey: ["dataExtractionFileInfo", fileId, activePage],
     enabled: !!fileId,
-    retry: 4, //Increase retries since we intentionally trigger retry after fetching pngs.
+    retry: 4, // Increase retries since we intentionally trigger retry after fetching pngs.
     queryFn: async () => {
       if (!fileId) return null;
 
