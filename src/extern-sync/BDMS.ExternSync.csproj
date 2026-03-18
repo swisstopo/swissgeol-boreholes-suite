@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <PackageReference Include="Magick.NET-Q8-AnyCPU" Version="14.11.0" />
     <PackageReference Include="Npgsql.DependencyInjection" Version="8.0.8" />
   </ItemGroup>
 
