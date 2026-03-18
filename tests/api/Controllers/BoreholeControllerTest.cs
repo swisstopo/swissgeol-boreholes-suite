@@ -755,7 +755,7 @@ public class BoreholeControllerTest
             HasGroundwater = true,
             Geometry = null,
             Remarks = "Test borehole for project",
-            LithologyTopBedrockId = 15104934,
+            LithologyTopBedrockId = 100000731,
             LithostratigraphyTopBedrockId = 15300259,
             ChronostratigraphyTopBedrockId = 15001141,
             ReferenceElevation = 500.0,

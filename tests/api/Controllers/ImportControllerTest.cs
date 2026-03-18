@@ -151,7 +151,7 @@ public class ImportControllerTest
         Assert.AreEqual(1.338392690447342, borehole.TopBedrockWeatheredMd, nameof(Borehole.TopBedrockWeatheredMd));
         Assert.IsFalse(borehole.HasGroundwater, nameof(Borehole.HasGroundwater));
         Assert.AreEqual("This product works too well.", borehole.Remarks, nameof(Borehole.Remarks));
-        Assert.AreEqual(15104543, borehole.LithologyTopBedrockId, nameof(Borehole.LithologyTopBedrockId));
+        Assert.AreEqual(100000650, borehole.LithologyTopBedrockId, nameof(Borehole.LithologyTopBedrockId));
         Assert.IsNull(borehole.LithologyTopBedrock, nameof(Borehole.LithologyTopBedrock).ShouldBeNullMessage());
         Assert.AreEqual(15302037, borehole.LithostratigraphyTopBedrockId, nameof(Borehole.LithostratigraphyTopBedrockId));
         Assert.IsNull(borehole.LithostratigraphyTopBedrock, nameof(Borehole.LithostratigraphyTopBedrock).ShouldBeNullMessage());
@@ -267,7 +267,7 @@ public class ImportControllerTest
         CollectionAssert.AreEqual(new List<int> { 21115007 }, lithologyDescription.GrainAngularityCodelistIds.ToList(), nameof(lithologyDescription.GrainAngularityCodelistIds));
         Assert.IsTrue(lithologyDescription.HasStriae, nameof(lithologyDescription.HasStriae));
         Assert.IsNotNull(lithologyDescription.LithologyUnconDebrisCodelistIds, nameof(lithologyDescription.LithologyUnconDebrisCodelistIds).ShouldNotBeNullMessage());
-        CollectionAssert.AreEqual(new List<int> { 15104470 }, lithologyDescription.LithologyUnconDebrisCodelistIds.ToList(), nameof(lithologyDescription.LithologyUnconDebrisCodelistIds));
+        CollectionAssert.AreEqual(new List<int> { 100001141 }, lithologyDescription.LithologyUnconDebrisCodelistIds.ToList(), nameof(lithologyDescription.LithologyUnconDebrisCodelistIds));
 
         // Assert LithologyDescription consolidated properties
         Assert.AreEqual(100000530, lithologyDescription.LithologyConId, nameof(lithologyDescription.LithologyConId));
