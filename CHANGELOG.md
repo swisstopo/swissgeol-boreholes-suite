@@ -13,6 +13,7 @@
 - Deleted unused translations.
 - Migrated `custom.lithostratigraphy_top_bedrock` codelist to `lithostratigraphy`.
 - Migrated `custom.chronostratigraphy_top_bedrock` codelist to `chronostratigraphy`.
+- Deleted legacy codelists `colour`, `alteration`, `description_quality` and `custom.lithology_top_bedrock` (migrated to `lithology_con`).
 
 ### Fixed
 - All tables in the `logs` and `attachments` tab of the borehole detail view were missing pagination.
@@ -20,6 +21,7 @@
 - Included all missing properties from `Lithology`/`LithologyDescription` in borehole JSON import.
 - Application would freeze when borehole imports failed.
 - Fixed bug where there was no appropriate overflow when selecting files in the sidepanel.
+- Fixed bug where non-admin users could not copy boreholes. Hierarchical user roles are now applied to the copy-borehole functionality.
 - Copy facies and lithological descriptions when copying a stratigraphy.
 - Fixed display of facies when not editing a borehole.
 

@@ -147,7 +147,7 @@ class PatchBorehole(Action):
         elif field == 'custom.top_bedrock_weathered_md':
             column = 'top_bedrock_weathered_md'
 
-        elif field == 'custom.lithology_top_bedrock':
+        elif field == 'lithology_con':
             column = 'lithology_top_bedrock_id_cli'
 
         elif field == 'lithostratigraphy':
@@ -269,7 +269,7 @@ class PatchBorehole(Action):
                 'extended.status',
                 'custom.qt_depth',
                 'custom.processing_status',
-                'custom.lithology_top_bedrock',
+                'lithology_con',
                 'lithostratigraphy',
                 'chronostratigraphy',
                 'qt_reference_elevation',
@@ -278,8 +278,8 @@ class PatchBorehole(Action):
 
                 schema = field
 
-                if field == 'custom.lithology_top_bedrock':
-                    schema = 'custom.lithology_top_bedrock'
+                if field == 'lithology_con':
+                    schema = 'lithology_con'
 
                 elif field == 'lithostratigraphy':
                     schema = 'lithostratigraphy'

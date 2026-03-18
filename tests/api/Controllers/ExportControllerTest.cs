@@ -966,7 +966,7 @@ public class ExportControllerTest
             HasGroundwater = true,
             Geometry = null,
             Remarks = "Test borehole for project",
-            LithologyTopBedrockId = 15104934,
+            LithologyTopBedrockId = 100000659,
             LithostratigraphyTopBedrockId = 15300259,
             ChronostratigraphyTopBedrockId = 15001141,
             ReferenceElevation = 500.0,
