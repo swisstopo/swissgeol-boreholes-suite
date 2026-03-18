@@ -95,7 +95,7 @@
       ]
     },
     "remarks": "This product works too well.",
-    "lithologyTopBedrockId": 15104543,
+    "lithologyTopBedrockId": 100000650,
     "lithologyTopBedrock": null,
     "lithostratigraphyTopBedrockId": 15302037,
     "lithostratigraphyTopBedrock": null,
@@ -178,7 +178,7 @@
                 ],
                 "hasStriae": true,
                 "lithologyUnconDebrisCodelistIds": [
-                  15104470
+                  100001141
                 ],
                 "lithologyConId": 100000530,
                 "componentConParticleCodelistIds": [
@@ -1737,7 +1737,7 @@
     "topBedrockWeatheredMd": 1.338392690447342,
     "hasGroundwater": false,
     "remarks": null,
-    "lithologyTopBedrockId": 15104543,
+    "lithologyTopBedrockId": 100001099,
     "lithologyTopBedrock": null,
     "lithostratigraphyTopBedrockId": 15302037,
     "lithostratigraphyTopBedrock": null,

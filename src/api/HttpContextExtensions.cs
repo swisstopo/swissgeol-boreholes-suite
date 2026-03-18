@@ -12,6 +12,6 @@ internal static class HttpContextExtensions
     /// </summary>
     /// <param name="httpContext">The current <see cref="HttpContext"/>.</param>
     /// <returns>The SubjectId or <c>null</c>, if the users SubjectId cannot be read.</returns>
-    internal static string GetUserSubjectId(this HttpContext httpContext)
-        => httpContext.User.FindFirst(ClaimTypes.NameIdentifier).Value;
+    internal static string? GetUserSubjectId(this HttpContext httpContext)
+        => httpContext.User?.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 }
