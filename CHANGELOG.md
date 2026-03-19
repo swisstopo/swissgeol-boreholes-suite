@@ -25,7 +25,7 @@
 - Fixed bug where non-admin users could not copy boreholes. Hierarchical user roles are now applied to the copy-borehole functionality.
 - Copy facies and lithological descriptions when copying a stratigraphy.
 - Fixed display of facies when not editing a borehole.
-- Fixed bug, where topbedrock intersected default value could not be overwritten.
+- Fixed bug where the top bedrock intersected default value could not be overwritten.
 
 ### Changed
 - Added pod and container security context hardening across all Helm charts (seccomp profiles, privilege escalation prevention, capability dropping, read-only root filesystems).
