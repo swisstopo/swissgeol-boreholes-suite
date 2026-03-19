@@ -12,6 +12,7 @@ import {
 } from "../helpers/formHelpers";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
+  createBaseSelector,
   createBorehole,
   goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
@@ -129,6 +130,39 @@ describe("Test for the borehole form.", () => {
       navigateInSidebar(SidebarMenuItem.borehole);
       evaluateSelect("lithostratigraphyTopBedrockId", "Bodensee-Nagelfluh"); //15300583
       evaluateSelect("chronostratigraphyTopBedrockId", "Phanerozoic"); //15001001
+    });
+  });
+
+  it("Can overwrite topBedrock intersected default value", () => {
+    createBorehole({
+      originalName: "Test borehole with top bedrock values",
+      topBedrockWeatheredMd: 100,
+      topBedrockFreshMd: 50000,
+    }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
+      startBoreholeEditing();
+      evaluateInput("topBedrockWeatheredMd", "100");
+      evaluateInput("topBedrockFreshMd", "50'000");
+      setInput("topBedrockWeatheredMd", 700);
+      evaluateInput("topBedrockWeatheredMd", "700");
+      evaluateInput("topBedrockFreshMd", "50'000");
+      evaluateSelect("topBedrockIntersected", "Yes");
+
+      // clear top bedrock inputs
+      cy.get(`[data-cy="topBedrockFreshMd-formInput"]`).click();
+      cy.focused().clear();
+      cy.get(`[data-cy="topBedrockWeatheredMd-formInput"]`).click();
+      cy.focused().clear();
+
+      evaluateSelect("topBedrockIntersected", "Not specified");
+      setSelect("topBedrockIntersected", 1); // "No"
+      saveWithSaveBar();
+      evaluateSelect("topBedrockIntersected", "No");
+      // navigate away and return
+      navigateInSidebar(SidebarMenuItem.location);
+      navigateInSidebar(SidebarMenuItem.borehole);
+      evaluateSelect("topBedrockIntersected", "No");
     });
   });
 
