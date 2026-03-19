@@ -12,7 +12,6 @@ import {
 } from "../helpers/formHelpers";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import {
-  createBaseSelector,
   createBorehole,
   goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
