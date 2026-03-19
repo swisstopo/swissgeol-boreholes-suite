@@ -59,6 +59,8 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
     const values = getValues();
     const isValid = await formMethods.trigger();
     const hasChanges = JSON.stringify(lithology) !== JSON.stringify(values);
+
+    // Close dialog if no changes have been made or the form is valid
     if (!hasChanges || isValid) {
       prepareLithologyForSubmit(values);
       updateLithology({ ...lithology, ...values } as Lithology, hasChanges || (Boolean(lithology?.isGap) && isValid));
