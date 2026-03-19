@@ -53,6 +53,7 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
             selectedFile={file}
             activePage={activePage}
             setActivePage={setActivePage}
+            pageCount={pageCount}
             setPageCount={setPageCount}
           />
           <Box p={2} sx={{ zIndex: 500 }}>

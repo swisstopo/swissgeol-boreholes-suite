@@ -81,6 +81,7 @@ export const LabelingHeader: FC<{
         value={panelTab}
         onChange={(event, nextTab: PanelTab) => {
           if (nextTab) {
+            setSelectedAttachment(undefined);
             setPanelTab(nextTab);
           }
         }}

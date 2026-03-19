@@ -1,53 +1,44 @@
 import { FC, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertColor, Box } from "@mui/material";
-import { ApiError, BoreholeAttachment } from "../../../api/apiInterfaces.ts";
-import {
-  extractCoordinates,
-  extractText,
-  fetchExtractionBoundingBoxes,
-  getDataExtractionFileInfo,
-} from "../../../api/file/file.ts";
+import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
+import { extractCoordinates, extractText, useExtractionBoundingBoxes, useFileInfo } from "../../../api/file/file.ts";
 import { theme } from "../../../AppTheme.ts";
 import { TextExtractionButton } from "../../../components/buttons/labelingButtons.tsx";
+import { useShowAlertOnError } from "../../../hooks/useShowAlertOnError.tsx";
 import { EditStateContext } from "../editStateContext.tsx";
 import { useLabelingContext } from "./labelingContext.tsx";
 import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
-import { ExtractionBoundingBox, ExtractionRequest, ExtractionState } from "./labelingInterfaces.tsx";
+import { ExtractionRequest, ExtractionState } from "./labelingInterfaces.tsx";
 
 interface LabelingExtractionProps {
   selectedFile: BoreholeAttachment | undefined;
   activePage: number;
-  setActivePage: (page: number) => void;
   showAlert: (text: string, severity?: AlertColor, allowAutoHide?: boolean) => void;
   closeAlert: () => void;
   isReadonly?: boolean;
-  setPageCount?: (count: number) => void;
 }
 
 export const LabelingExtraction: FC<LabelingExtractionProps> = ({
   selectedFile,
   activePage,
-  setActivePage,
   showAlert,
   closeAlert,
   isReadonly = false,
-  setPageCount,
 }) => {
   const { t } = useTranslation();
-  const {
-    extractionObject,
-    setExtractionObject,
-    setExtractionState,
-    extractionState,
-    fileInfo,
-    setFileInfo,
-    setAbortController,
-  } = useLabelingContext();
-  const [pageBoundingBoxes, setPageBoundingBoxes] = useState<ExtractionBoundingBox[]>([]);
+  const { extractionObject, setExtractionObject, setExtractionState, extractionState, setAbortController } =
+    useLabelingContext();
   const [extractionExtent, setExtractionExtent] = useState<number[]>([]);
   const [drawTooltipLabel, setDrawTooltipLabel] = useState<string>();
   const { editingEnabled } = useContext(EditStateContext);
+  const { data: fileInfo } = useFileInfo(selectedFile?.id, activePage);
+  const {
+    data: pageBoundingBoxes,
+    isError,
+    error,
+  } = useExtractionBoundingBoxes(selectedFile?.nameUuid, fileInfo, activePage);
+  useShowAlertOnError(isError, error, "warning");
 
   const setTextToClipboard = useCallback(
     async (text: string) => {
@@ -137,47 +128,6 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
     }
   }, [closeAlert, extractionObject, extractionState, setExtractionObject, setExtractionState]);
 
-  useEffect(() => {
-    if (!selectedFile) return;
-
-    const fetchExtractionData = async () => {
-      const fileInfoResponse = await getDataExtractionFileInfo(selectedFile.id, activePage);
-      const { fileName, count } = fileInfoResponse;
-      let newActivePage = activePage;
-      if (setPageCount !== undefined) setPageCount(count);
-      if (fileInfo?.count !== count) {
-        newActivePage = 1;
-        setActivePage(newActivePage);
-      }
-      if (fileInfo?.fileName !== fileName) {
-        setFileInfo(fileInfoResponse);
-        try {
-          const boundingBoxResponse = await fetchExtractionBoundingBoxes(selectedFile.nameUuid, newActivePage);
-          setPageBoundingBoxes(boundingBoxResponse.bounding_boxes);
-        } catch (error) {
-          if (error instanceof ApiError) {
-            showAlert(t(error.message), "warning");
-          } else {
-            showAlert(t("errorDataExtractionFetchBoundingBoxes"), "warning");
-          }
-        }
-      }
-    };
-
-    void fetchExtractionData();
-  }, [
-    activePage,
-    selectedFile,
-    fileInfo?.count,
-    fileInfo?.fileName,
-    showAlert,
-    t,
-    editingEnabled,
-    setActivePage,
-    setFileInfo,
-    setPageCount,
-  ]);
-
   return (
     <>
       <Box
@@ -202,7 +152,7 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
         fileInfo={fileInfo}
         onDrawEnd={setExtractionExtent}
         drawTooltipLabel={drawTooltipLabel}
-        boundingBoxes={pageBoundingBoxes}
+        boundingBoxes={pageBoundingBoxes?.bounding_boxes}
         extractionType={extractionObject?.type}
       />
     </>

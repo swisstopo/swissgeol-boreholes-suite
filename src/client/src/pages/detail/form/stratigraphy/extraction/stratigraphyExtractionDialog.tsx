@@ -4,7 +4,7 @@ import { useLocation } from "react-router";
 import { Dialog, DialogProps, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
-import { useExtractStratigraphies } from "../../../../../api/file/file.ts";
+import { useExtractStratigraphies, useFileInfo } from "../../../../../api/file/file.ts";
 import { BoreholesButton, CancelButton } from "../../../../../components/buttons/buttons.tsx";
 import {
   DialogFooterContainer,
@@ -31,7 +31,8 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
 }) => {
   const { t } = useTranslation();
   const [abortController, setAbortController] = useState<AbortController>();
-  const { data: lithologicalDescriptions = [], isLoading } = useExtractStratigraphies(file);
+  const { data: lithologicalDescriptions = [], isLoading } = useExtractStratigraphies(file, 1);
+  const { isLoading: isLoadingFileInfo } = useFileInfo(file?.id, 1);
   const { mutateAsync: bulkAddLithologicalDescriptionsWithLithologies } = useBulkAddMutation();
   const { id } = useRequiredParams<{ id: string }>();
   const { navigateTo } = useBoreholesNavigate();
@@ -83,7 +84,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
         <StratigraphyExtractionView
           file={file}
           lithologicalDescriptions={lithologicalDescriptions}
-          isLoading={isLoading}
+          isLoading={isLoading || isLoadingFileInfo}
         />
       </DialogMainContent>
       <DialogFooterContainer>
