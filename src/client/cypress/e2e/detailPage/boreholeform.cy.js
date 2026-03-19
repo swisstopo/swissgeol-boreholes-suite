@@ -1,6 +1,7 @@
 import { discardChanges, saveWithSaveBar } from "../helpers/buttonHelpers";
 import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
 import {
+  clearInput,
   evaluateInput,
   evaluateSelect,
   evaluateTextarea,
@@ -149,10 +150,8 @@ describe("Test for the borehole form.", () => {
       evaluateSelect("topBedrockIntersected", "Yes");
 
       // clear top bedrock inputs
-      cy.get(`[data-cy="topBedrockFreshMd-formInput"]`).click();
-      cy.focused().clear();
-      cy.get(`[data-cy="topBedrockWeatheredMd-formInput"]`).click();
-      cy.focused().clear();
+      clearInput("topBedrockFreshMd");
+      clearInput("topBedrockWeatheredMd");
 
       evaluateSelect("topBedrockIntersected", "Not specified");
       setSelect("topBedrockIntersected", 1); // "No"
