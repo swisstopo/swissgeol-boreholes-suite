@@ -6,11 +6,17 @@ import {
   ExtractionResponse,
   StratigraphyExtractionResponse,
 } from "../../pages/detail/labeling/labelingInterfaces.tsx";
+import { getImageFromBlob } from "../../utils.ts";
 import { ApiError, BoreholeAttachment } from "../apiInterfaces.ts";
-import { fetchCreatePngs, fetchExtractData, fetchExtractStratigraphy, fetchPageBoundingBoxes } from "../dataextraction";
-import { download, fetchApiV2Base, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../fetchApiV2.ts";
+import {
+  fetchCreatePngs,
+  fetchExtractData,
+  fetchExtractStratigraphy,
+  fetchPageBoundingBoxes,
+} from "../dataextraction.ts";
+import { download, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../fetchApiV2.ts";
 import { processFileWithOCR } from "../ocr.ts";
-import { BoreholeFile, DataExtractionResponse, maxFileSizeBytes } from "./fileInterfaces.ts";
+import { DataExtractionResponse, maxFileSizeBytes, Profile } from "./fileInterfaces.ts";
 
 export async function uploadFile(boreholeId: number, file: File) {
   if (file && file.size <= maxFileSizeBytes) {
@@ -24,7 +30,7 @@ export async function uploadFile(boreholeId: number, file: File) {
         throw new ApiError("errorDuringBoreholeFileUpload", response.status);
       }
     } else {
-      const uploadedFile = (await response.json()) as BoreholeFile;
+      const uploadedFile = (await response.json()) as Profile;
       processFileWithOCR({ file: uploadedFile.file.nameUuid });
       return uploadedFile;
     }
@@ -65,32 +71,6 @@ export const updateFile = async (
     },
   );
 };
-
-export async function getDataExtractionFileInfo(boreholeFileId: number, index = 1): Promise<DataExtractionResponse> {
-  let response = await fetchApiV2Legacy(
-    `boreholefile/getDataExtractionFileInfo?boreholeFileId=${boreholeFileId}&index=${index}`,
-    "GET",
-  );
-  if (response) {
-    response = response as DataExtractionResponse;
-    if (response.count === 0) {
-      await createExtractionPngs(response.fileName);
-      return await getDataExtractionFileInfo(boreholeFileId, index);
-    }
-    return response;
-  } else {
-    throw new ApiError("errorDataExtractionFileLoading", 500);
-  }
-}
-
-export async function loadImage(fileName: string) {
-  const response = await fetchApiV2Base("boreholefile/dataextraction/" + fileName, "GET");
-  if (!response.ok) {
-    throw new ApiError(response.statusText, response.status);
-  } else {
-    return response.blob();
-  }
-}
 
 export async function createExtractionPngs(fileName: string) {
   const response = await fetchCreatePngs(fileName);
@@ -169,13 +149,13 @@ const cleanUpExtractionData = (
     }, []);
 };
 
-export function useExtractStratigraphies(file: BoreholeAttachment) {
+export function useExtractStratigraphies(file: BoreholeAttachment, activePage: number) {
+  const { data: fileInfo } = useFileInfo(file?.id, activePage);
   return useQuery({
-    queryKey: ["extractStratigraphies", file],
-    enabled: !!file,
+    queryKey: ["extractStratigraphies", file.nameUuid],
+    enabled: !!file && !!fileInfo,
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes => Extraction for the same file doesn't need to be refetched.
     queryFn: async ({ signal }) => {
-      await getDataExtractionFileInfo(file.id);
       const response = await extractStratigraphies(file.nameUuid, signal);
       const lithologicalDescriptions: ExtractedLithologicalDescription[] =
         // Todo: The extraction currently only supports a single borehole per file https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2146
@@ -192,6 +172,75 @@ export function useExtractStratigraphies(file: BoreholeAttachment) {
             })) || []
           : [];
       return cleanUpExtractionData(lithologicalDescriptions);
+    },
+  });
+}
+
+export function useProfileImage(fileName: string | undefined) {
+  return useQuery({
+    queryKey: ["loadImage", fileName],
+    enabled: !!fileName,
+    queryFn: async () => {
+      const blob = await fetchApiV2WithApiError<Blob>("boreholefile/dataextraction/" + fileName, "GET");
+      return getImageFromBlob(blob);
+    },
+  });
+}
+
+// Track which files have already had PNG creation triggered, to avoid duplicate work across retries.
+const pngCreationStartedForFiles = new Set<string>();
+
+export function useFileInfo(fileId: number | undefined, activePage: number) {
+  return useQuery({
+    queryKey: ["dataExtractionFileInfo", fileId, activePage],
+    enabled: !!fileId,
+    retry: 4, // Increase retries since we intentionally trigger retry after fetching pngs.
+    queryFn: async () => {
+      if (!fileId) return null;
+
+      const response = await fetchApiV2WithApiError(
+        `boreholefile/getDataExtractionFileInfo?boreholeFileId=${fileId}&index=${activePage}`,
+        "GET",
+      );
+      if (!response) {
+        throw new ApiError("errorDataExtractionFileLoading", 500);
+      }
+      const dataResponse = response as DataExtractionResponse;
+
+      // Create pngs if not yet available
+      if (dataResponse.count === 0) {
+        const fileNameWithExtension = dataResponse.fileName.includes(".")
+          ? dataResponse.fileName
+          : dataResponse.fileName + ".pdf";
+
+        if (!pngCreationStartedForFiles.has(fileNameWithExtension)) {
+          pngCreationStartedForFiles.add(fileNameWithExtension);
+          if (fileNameWithExtension.includes(".pdf")) {
+            await createExtractionPngs(fileNameWithExtension);
+          }
+        }
+
+        // Throw error to trigger useQuery's retry mechanism
+        throw new ApiError("pngsNotYetAvailable", 202); // 202 = Processing
+      }
+
+      return dataResponse;
+    },
+  });
+}
+
+export function useExtractionBoundingBoxes(
+  fileName: string | undefined,
+  fileInfo: DataExtractionResponse | null | undefined,
+  pageNumber: number,
+) {
+  return useQuery({
+    queryKey: ["extractionBoundingBoxes", fileName, pageNumber],
+    // only fetch bounding boxes if all necessary information is available: if fileInfo is available, we are sure that pngs have been created for newly uploaded files.
+    enabled: !!fileName && !!fileInfo && pageNumber > 0,
+    queryFn: async () => {
+      if (!fileName) return null;
+      return await fetchExtractionBoundingBoxes(fileName, pageNumber);
     },
   });
 }

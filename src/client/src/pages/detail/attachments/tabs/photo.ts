@@ -8,6 +8,7 @@ import {
   fetchApiV2WithApiError,
   upload,
 } from "../../../../api/fetchApiV2.ts";
+import { getImageFromBlob } from "../../../../utils.ts";
 
 export interface Photo {
   id: number;
@@ -81,3 +82,15 @@ export const useReloadPhotos = (boreholeId: number) => {
     queryClient.invalidateQueries({ queryKey: [photoQueryKey, boreholeId] });
   }, [queryClient, boreholeId]);
 };
+
+export function usePhotoImage(photoId?: number) {
+  return useQuery({
+    queryKey: ["photoImage", photoId],
+    enabled: !!photoId,
+    queryFn: async () => {
+      if (!photoId) return;
+      const blob = await getPhotoImageData(photoId);
+      return getImageFromBlob(blob);
+    },
+  });
+}

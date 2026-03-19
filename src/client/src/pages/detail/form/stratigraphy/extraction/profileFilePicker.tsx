@@ -12,7 +12,7 @@ import {
   DialogHeaderContainer,
   DialogMainContent,
 } from "../../../../../components/styledComponents.ts";
-import { useBoreholeFiles, useInvalidateBoreholeFiles } from "../../../attachments/useBoreholeFiles.tsx";
+import { useProfiles, useReloadProfiles } from "../../../attachments/useProfiles.tsx";
 import { labelingFileFormat } from "../../../labeling/labelingInterfaces.tsx";
 
 interface ProfileFilePickerProps {
@@ -24,8 +24,8 @@ interface ProfileFilePickerProps {
 
 export const ProfileFilePicker: FC<ProfileFilePickerProps> = ({ boreholeId, open, setOpen, setSelectedFile }) => {
   const { t } = useTranslation();
-  const { data: files, isLoading: isLoadingFiles } = useBoreholeFiles(boreholeId);
-  const invalidateBoreholeFiles = useInvalidateBoreholeFiles();
+  const { data: profiles, isLoading: isLoadingFiles } = useProfiles(Number(boreholeId), true);
+  const reloadProfiles = useReloadProfiles(Number(boreholeId));
 
   const closeDialog = useCallback(() => {
     setOpen(false);
@@ -47,15 +47,20 @@ export const ProfileFilePicker: FC<ProfileFilePickerProps> = ({ boreholeId, open
     async (file: File) => {
       const fileResponse = await uploadFile(Number(boreholeId), file);
       selectFile(fileResponse.file);
-      invalidateBoreholeFiles();
+      reloadProfiles();
     },
-    [boreholeId, invalidateBoreholeFiles, selectFile],
+    [boreholeId, reloadProfiles, selectFile],
   );
 
   const getFilesButtons = () => {
-    return files && files?.length > 0 ? (
-      files.map(file => (
-        <FileButton key={file.name} label={file.name} icon={<FileTextIcon />} onClick={() => selectFile(file)} />
+    return profiles && profiles?.length > 0 ? (
+      profiles.map(profile => (
+        <FileButton
+          key={profile.file.name}
+          label={profile.file.name}
+          icon={<FileTextIcon />}
+          onClick={() => selectFile(profile.file)}
+        />
       ))
     ) : (
       <Typography variant="body1">{t("noProfilesUploaded")}</Typography>

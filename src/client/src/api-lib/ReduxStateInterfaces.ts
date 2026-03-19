@@ -33,6 +33,10 @@ export type Role = "PUBLIC" | "VIEW" | "VALID" | "EDIT" | "CONTROL";
 
 export interface User {
   data: UserData;
+  authentication: {
+    token_type: string;
+    id_token: string;
+  };
 }
 
 export interface UserData {

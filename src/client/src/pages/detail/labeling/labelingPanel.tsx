@@ -4,13 +4,13 @@ import { Alert, Box, Stack, ToggleButton, ToggleButtonGroup } from "@mui/materia
 import { styled } from "@mui/system";
 import { PanelBottom, PanelRight } from "lucide-react";
 import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
-import { uploadFile } from "../../../api/file/file.ts";
+import { uploadFile, useFileInfo } from "../../../api/file/file.ts";
 import { File as FileInterface, FileSizeLimit, maxFileSizeBytes } from "../../../api/file/fileInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
-import { getPhotoImageData, Photo, uploadPhoto, usePhotos, useReloadPhotos } from "../attachments/tabs/photo.ts";
-import { useBoreholeFiles, useInvalidateBoreholeFiles } from "../attachments/useBoreholeFiles.tsx";
+import { Photo, uploadPhoto, usePhotoImage, usePhotos, useReloadPhotos } from "../attachments/tabs/photo.ts";
+import { useProfiles, useReloadProfiles } from "../attachments/useProfiles.tsx";
 import { FloatingExtractionFeedback } from "./floatingExtractionFeedback.tsx";
 import { useLabelingContext } from "./labelingContext.tsx";
 import { LabelingExtraction } from "./labelingExtraction.tsx";
@@ -57,18 +57,20 @@ export const LabelingAlert = styled(Alert)({
 const LabelingPanel: FC = () => {
   const { t } = useTranslation();
   const { id: boreholeId } = useRequiredParams<{ id: string }>();
-  const { panelPosition, setPanelPosition, extractionState, fileInfo, cancelRequest, panelTab } = useLabelingContext();
+  const { panelPosition, setPanelPosition, extractionState, cancelRequest, panelTab } = useLabelingContext();
   const [selectedAttachment, setSelectedAttachment] = useState<BoreholeAttachment>();
   const [activePage, setActivePage] = useState<number>(1);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { alertIsOpen, text, severity, autoHideDuration, showAlert, closeAlert } = useAlertManager();
-  const { data: boreholeFiles, isLoading: isLoadingBoreholeFiles } = useBoreholeFiles(boreholeId);
-  const invalidateBoreholeFiles = useInvalidateBoreholeFiles();
-  const { data: photos, isLoading: isLoadingPhotos } = usePhotos(Number(boreholeId));
   const expectedFileFormat = labelingFileFormat[panelTab];
   const isPhotoSelected = selectedAttachment && "fromDepth" in selectedAttachment;
   const selectedFile: FileInterface | undefined = isPhotoSelected ? undefined : selectedAttachment;
   const selectedPhoto: Photo | undefined = isPhotoSelected ? selectedAttachment : undefined;
+  const { data: profiles, isLoading: isLoadingProfiles } = useProfiles(Number(boreholeId), true);
+  const { data: fileInfo, isLoading: isLoadingFileInfo } = useFileInfo(selectedFile?.id, activePage);
+  const { data: photos, isLoading: isLoadingPhotos } = usePhotos(Number(boreholeId));
+  const { data: image, isLoading: isLoadingImage } = usePhotoImage(selectedPhoto?.id);
+  const reloadProfiles = useReloadProfiles(Number(boreholeId));
   const reloadPhotos = useReloadPhotos(Number(boreholeId));
   useEffect(() => {
     let timer: NodeJS.Timeout;
@@ -81,7 +83,7 @@ const LabelingPanel: FC = () => {
     return () => clearTimeout(timer);
   }, [alertIsOpen, autoHideDuration, closeAlert]);
 
-  const files = panelTab === PanelTab.profile ? boreholeFiles : photos;
+  const files = panelTab === PanelTab.profile ? profiles?.map(p => p.file) : photos;
 
   const addFile = useCallback(
     async (file: File) => {
@@ -89,7 +91,7 @@ const LabelingPanel: FC = () => {
         if (panelTab === PanelTab.profile) {
           const fileResponse = await uploadFile(Number(boreholeId), file);
           setSelectedAttachment(fileResponse.file);
-          invalidateBoreholeFiles();
+          reloadProfiles();
         } else {
           const photoResponse = await uploadPhoto(Number(boreholeId), file);
           setSelectedAttachment(photoResponse);
@@ -99,15 +101,8 @@ const LabelingPanel: FC = () => {
         showAlert(t((error as Error).message), "error");
       }
     },
-    [boreholeId, invalidateBoreholeFiles, panelTab, reloadPhotos, showAlert, t],
+    [boreholeId, reloadProfiles, panelTab, reloadPhotos, showAlert, t],
   );
-
-  const loadSelectedPhoto = useCallback(async () => {
-    if (selectedPhoto) {
-      return await getPhotoImageData(selectedPhoto.id);
-    }
-    return null;
-  }, [selectedPhoto]);
 
   useEffect(() => {
     if (files?.length === 1) {
@@ -119,7 +114,7 @@ const LabelingPanel: FC = () => {
   }, [files]);
 
   const isExtractionLoading = extractionState === ExtractionState.loading;
-  const isLoadingFiles = panelTab === PanelTab.profile ? isLoadingBoreholeFiles : isLoadingPhotos;
+  const isLoadingFiles = panelTab === PanelTab.profile ? isLoadingProfiles : isLoadingPhotos;
   return (
     <Stack
       sx={{
@@ -212,18 +207,17 @@ const LabelingPanel: FC = () => {
             <LabelingExtraction
               selectedFile={selectedFile}
               activePage={activePage}
-              setActivePage={setActivePage}
               showAlert={showAlert}
               closeAlert={closeAlert}
             />
           ) : (
-            <LabelingView fileName={selectedPhoto?.nameUuid} loadImage={loadSelectedPhoto} />
+            <>{!!image && <LabelingView mapDomId={"photo-map"} image={image} fileName={selectedPhoto?.nameUuid} />}</>
           )}
         </Box>
       ) : (
         <LabelingFileSelector
           activeTab={panelTab}
-          isLoadingFiles={isLoadingFiles}
+          isLoadingFiles={isLoadingFiles || isLoadingFileInfo || isLoadingImage}
           files={files}
           setSelectedFile={setSelectedAttachment}
           addFile={addFile}

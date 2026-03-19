@@ -1,5 +1,5 @@
 import axios from "axios";
-import { getAuthorizationHeader } from "../../api/authentication";
+import { getAuthorizationHeader } from "../../api/authentication.ts";
 import store from "../reducers";
 
 function getAuthorizationHeaders(headers = {}) {

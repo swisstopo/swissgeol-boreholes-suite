@@ -49,8 +49,8 @@ const drawBox = (x1, y1, x2, y2) => {
   cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x1, y: y1 });
   cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x2, y: y2 });
 
-  cy.window().then(win => {
-    const interactions = win.labelingImage.getInteractions().getArray();
+  cy.window().should(win => {
+    const interactions = win["labeling-map"].getInteractions().getArray();
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(
       interactions.some(interaction => {
@@ -65,8 +65,8 @@ const drawBox = (x1, y1, x2, y2) => {
 
   cy.wait("@extract-data");
   cy.get('[data-cy="labeling-draw-tooltip"]').should("not.be.visible");
-  cy.window().then(win => {
-    const interactions = win.labelingImage.getInteractions().getArray();
+  cy.window().should(win => {
+    const interactions = win["labeling-map"].getInteractions().getArray();
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(
       interactions.some(interaction => {
@@ -79,15 +79,15 @@ const drawBox = (x1, y1, x2, y2) => {
 const waitForLabelingImageLoaded = () => {
   cy.wait("@extraction-file-info");
   cy.wait("@load-extraction-file");
-  cy.window().then(win => {
-    cy.wrap(win.labelingImage.getLayers().getArray()).then(layers => {
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      expect(
-        layers.some(layer => {
-          return layer.constructor.name === "ImageLayer";
-        }),
-      ).to.be.true;
-    });
+  // Wait for the map element to exist in the DOM
+  cy.window().should(win => {
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    expect(win["labeling-map"]).to.exist;
+  });
+  cy.window().should(win => {
+    const layers = win["labeling-map"].getLayers().getArray();
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    expect(layers.some(layer => layer.constructor.name === "ImageLayer")).to.be.true;
   });
 };
 
@@ -131,8 +131,8 @@ function assertLabelingAlertText(expectedText) {
 }
 
 function assertBoundingBoxes(totalCount, highlightedArea) {
-  cy.window().then(win => {
-    const layers = win.labelingImage.getLayers().getArray();
+  cy.window().should(win => {
+    const layers = win["labeling-map"].getLayers().getArray();
     const boundingBoxLayer = layers.find(layer => layer.get("name") === "boundingBoxLayer");
     const highlightsLayer = layers.find(layer => layer.get("name") === "highlightsLayer");
     const invisibleBoundingBoxes = boundingBoxLayer.getSource().getFeatures();
@@ -146,11 +146,9 @@ function assertBoundingBoxes(totalCount, highlightedArea) {
 }
 
 function assertClipboardContent(expectedText) {
-  cy.window().should(win =>
-    win.navigator.clipboard.readText().then(text => {
-      expect(text).to.equal(expectedText);
-    }),
-  );
+  cy.window()
+    .then(win => win.navigator.clipboard.readText())
+    .should("equal", expectedText);
 }
 
 function moveMouseOntoMap() {
@@ -185,6 +183,14 @@ function uploadPhoto() {
 function reloadPanel() {
   closePanel();
   openPanel();
+}
+
+function waitForMapAnimations() {
+  cy.window().should(win => {
+    const view = win["labeling-map"].getView();
+    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    expect(view.getAnimating()).to.be.false;
+  });
 }
 
 describe("Test labeling tool", () => {
@@ -237,7 +243,6 @@ describe("Test labeling tool", () => {
     cy.dataCy("labeling-panel").find('input[type="file"]').attachFile("import/borehole_attachment_3.pdf", {
       subjectType: "input",
     });
-    cy.wait("@getAllAttachments");
     cy.get('[data-cy="labeling-file-button-select"]').contains("borehole_attachment_3.pdf");
     cy.get('[data-cy="labeling-file-button-select"]').click();
     assertSelectContent(["borehole_attachment_1.pdf", "borehole_attachment_3.pdf", "Add profile"]);
@@ -246,15 +251,15 @@ describe("Test labeling tool", () => {
     isFileActive("borehole_attachment_3.pdf", true);
 
     selectInputFile("WOLFHEART.pdf", "application/pdf");
-
+    cy.wait(["@getAllAttachments", "@upload-files", "@extraction-file-info"]);
     cy.get('[data-cy="labeling-file-button-select"]').contains("WOLFHEART.pdf");
     cy.get('[data-cy="button-select-popover"] .MuiListItem-root').eq(1).click();
     cy.get('[data-cy="labeling-file-button-select"]').contains("borehole_attachment_3.pdf");
 
     // Cannot draw if the panel was opened with the panel toggle button
     waitForLabelingImageLoaded();
-    cy.window().then(win => {
-      const interactions = win.labelingImage.getInteractions().getArray();
+    cy.window().should(win => {
+      const interactions = win["labeling-map"].getInteractions().getArray();
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
       expect(interactions.some(interaction => interaction.constructor.name === "Draw")).to.be.false;
     });
@@ -269,8 +274,8 @@ describe("Test labeling tool", () => {
     //can zoom and rotate
     cy.get('[data-cy="labeling-panel"] [data-cy="zoom-in-button"]').click();
     cy.get('[data-cy="rotate-button"]').click();
-    cy.window().then(win => {
-      const view = win.labelingImage.getView();
+    cy.window().should(win => {
+      const view = win["labeling-map"].getView();
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
 
@@ -289,6 +294,15 @@ describe("Test labeling tool", () => {
     cy.dataCy("file-button").contains("WOLFHEART.pdf");
     cy.dataCy("file-button").contains("borehole_attachment_3.pdf").click();
     waitForLabelingImageLoaded();
+
+    // still displays profile list after returning from photos tab.
+    selectEmptyPhotoTab();
+    cy.dataCy("labeling-tab-profile").click();
+    cy.dataCy("labeling-file-selector").contains("Profiles").should("exist");
+    cy.dataCy("addfile-button").should("not.exist");
+    cy.dataCy("file-button").contains("borehole_attachment_1.pdf");
+    cy.dataCy("file-button").contains("borehole_attachment_3.pdf");
+    cy.dataCy("file-button").contains("WOLFHEART.pdf");
   });
 
   it("can extract coordinates and reference system from image", () => {
@@ -362,13 +376,9 @@ describe("Test labeling tool", () => {
     evaluateCoordinate("locationYLV03", "249'017.66");
 
     // wait for end of map animation before proceeding
-    cy.window().then(win => {
+    cy.window().should(win => {
       const view = win.pointOlMap.getView();
-      const resolution = view.getResolution();
-      cy.wrap(resolution).as("resolution");
-    });
-    cy.get("@resolution").then(resolution => {
-      expect(resolution).to.equal(1);
+      expect(view.getResolution()).to.equal(1);
     });
 
     // can reset the form
@@ -407,13 +417,13 @@ describe("Test labeling tool", () => {
     waitForLabelingImageLoaded();
     assertPageCount(2, 3);
 
-    cy.window().then(win => {
-      const view = win.labelingImage.getView();
+    cy.window().should(win => {
+      const view = win["labeling-map"].getView();
       expect(view.getRotation()).to.equal(0);
     });
     cy.get('[data-cy="rotate-button"]').click();
-    cy.window().then(win => {
-      const view = win.labelingImage.getView();
+    cy.window().should(win => {
+      const view = win["labeling-map"].getView();
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
     // eslint-disable-next-line cypress/no-unnecessary-waiting
@@ -453,6 +463,9 @@ describe("Test labeling tool", () => {
     waitForLabelingImageLoaded();
     assertPageCount(3, 3);
     cy.wait("@extraction-file-info");
+    waitForMapAnimations();
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(1000);
     cy.dataCy("text-extraction-button").click();
     assertDrawTooltipInvisible();
     moveMouseOntoMap();
@@ -485,7 +498,6 @@ describe("Test labeling tool", () => {
 
     // can switch between text extraction and coordinate extraction
     clickCoordinateLabelingButton();
-    cy.wait("@extraction-file-info");
     assertDrawTooltipInvisible();
     moveMouseOntoMap();
     assertDrawTooltip("Draw box around north & east coordinates");
@@ -524,7 +536,10 @@ describe("Test labeling tool", () => {
   });
 
   it("displays warning message when fetching bounding boxes fails.", () => {
-    cy.intercept("POST", "/dataextraction/api/V1/bounding_boxes", req => req.destroy());
+    cy.intercept("POST", "/dataextraction/api/V1/bounding_boxes", {
+      statusCode: 500,
+      body: { error: "Internal Server Error" },
+    });
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutProfiles();
@@ -557,19 +572,13 @@ describe("Test labeling tool", () => {
     // can zoom and rotate
     cy.dataCy("zoom-in-button").click();
     cy.dataCy("rotate-button").click();
-    cy.window().then(win => {
-      const view = win.labelingImage.getView();
+    cy.window().should(win => {
+      const view = win["photo-map"].getView();
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
+    cy.dataCy("labeling-panel").find('input[type="file"]').attachFile("import/image_123.0-456.0_all.tif");
+    cy.wait(["@upload-photo", "@getAllPhotos", "@borehole_by_id"]);
 
-    cy.dataCy("labeling-panel")
-      .find('input[type="file"]')
-      .attachFile({
-        fileContent: new Blob([0]),
-        fileName: "image_123.0-456.0_all.jpg",
-        mimeType: "image/jpeg",
-      });
-    cy.wait(["@upload-photo", "@getAllPhotos"]);
     stopBoreholeEditing();
 
     // can navigate with previous button
