@@ -273,7 +273,7 @@ public class StratigraphyControllerTest
     {
         controller.ControllerContext.HttpContext.User = null;
         var createResult = await controller.CreateAsync(new());
-        ActionResultAssert.IsInternalServerError(createResult.Result);
+        ActionResultAssert.IsUnauthorized(createResult.Result);
     }
 
     [TestMethod]

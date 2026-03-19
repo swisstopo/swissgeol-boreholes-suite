@@ -33,7 +33,7 @@ public class CodeListControllerTest
     public async Task GetAllEntriesAsync()
     {
         var codeLists = await controller.GetAsync();
-        Assert.AreEqual(4029, codeLists.Count());
+        Assert.AreEqual(3396, codeLists.Count());
     }
 
     [TestMethod]
@@ -135,19 +135,19 @@ public class CodeListControllerTest
     [TestMethod]
     public async Task EditCodelistWithCompleteCodelist()
     {
-        var id = 9004;
+        var id = 100000172;
         var originalCodeList = new Codelist
         {
             Id = id,
-            Code = "5",
+            Code = "",
             Conf = null,
-            Geolcode = 9004,
-            Order = 5,
-            Schema = "description_quality",
-            De = "sehr gut",
-            En = "very good",
-            Fr = "très bonne",
-            It = "molto buono",
+            Geolcode = null,
+            Order = 10,
+            Schema = "alteration_degree",
+            De = "frisch",
+            En = "fresh",
+            Fr = "sain",
+            It = "fresco",
             Ro = null,
         };
 
@@ -167,34 +167,34 @@ public class CodeListControllerTest
         };
 
         var codeListToEdit = context.Codelists.Single(c => c.Id == id);
-        Assert.AreEqual("5", codeListToEdit.Code);
-        Assert.AreEqual(null, codeListToEdit.Conf);
-        Assert.AreEqual(9004, codeListToEdit.Geolcode);
-        Assert.AreEqual(5, codeListToEdit.Order);
-        Assert.AreEqual("description_quality", codeListToEdit.Schema);
-        Assert.AreEqual("sehr gut", codeListToEdit.De);
-        Assert.AreEqual("very good", codeListToEdit.En);
-        Assert.AreEqual("très bonne", codeListToEdit.Fr);
-        Assert.AreEqual("molto buono", codeListToEdit.It);
-        Assert.AreEqual(null, codeListToEdit.Ro);
+        Assert.AreEqual(originalCodeList.Code, codeListToEdit.Code);
+        Assert.AreEqual(originalCodeList.Conf, codeListToEdit.Conf);
+        Assert.AreEqual(originalCodeList.Geolcode, codeListToEdit.Geolcode);
+        Assert.AreEqual(originalCodeList.Order, codeListToEdit.Order);
+        Assert.AreEqual(originalCodeList.Schema, codeListToEdit.Schema);
+        Assert.AreEqual(originalCodeList.De, codeListToEdit.De);
+        Assert.AreEqual(originalCodeList.En, codeListToEdit.En);
+        Assert.AreEqual(originalCodeList.Fr, codeListToEdit.Fr);
+        Assert.AreEqual(originalCodeList.It, codeListToEdit.It);
+        Assert.AreEqual(originalCodeList.Ro, codeListToEdit.Ro);
 
-        // Upate CodeList
+        // Update CodeList
         var response = await controller.EditAsync(codeList);
         ActionResultAssert.IsOk(response);
 
         // Assert Updates and unchanged values
         var updatedCodelist = context.Codelists.Single(c => c.Id == id);
 
-        Assert.AreEqual("5", updatedCodelist.Code);
-        Assert.AreEqual(null, updatedCodelist.Conf);
-        Assert.AreEqual(9004, updatedCodelist.Geolcode);
-        Assert.AreEqual(5, updatedCodelist.Order);
-        Assert.AreEqual("new_schema_name", updatedCodelist.Schema);
-        Assert.AreEqual("sehr gut", updatedCodelist.De);
-        Assert.AreEqual("very good", updatedCodelist.En);
-        Assert.AreEqual("très bonne", updatedCodelist.Fr);
-        Assert.AreEqual("molto buono", updatedCodelist.It);
-        Assert.AreEqual(null, updatedCodelist.Ro);
+        Assert.AreEqual(codeList.Code, updatedCodelist.Code);
+        Assert.AreEqual(codeList.Conf, updatedCodelist.Conf);
+        Assert.AreEqual(codeList.Geolcode, updatedCodelist.Geolcode);
+        Assert.AreEqual(codeList.Order, updatedCodelist.Order);
+        Assert.AreEqual(codeList.Schema, updatedCodelist.Schema);
+        Assert.AreEqual(codeList.De, updatedCodelist.De);
+        Assert.AreEqual(codeList.En, updatedCodelist.En);
+        Assert.AreEqual(codeList.Fr, updatedCodelist.Fr);
+        Assert.AreEqual(codeList.It, updatedCodelist.It);
+        Assert.AreEqual(codeList.Ro, updatedCodelist.Ro);
     }
 
     [TestMethod]
@@ -236,6 +236,6 @@ public class CodeListControllerTest
         var expectedHeader = "id_cli,schema_cli,code_cli,text_cli_en,text_cli_de,text_cli_fr,text_cli_it,text_cli_ro";
 
         Assert.AreEqual(expectedHeader, response.Content.Split('\n')[0]);
-        Assert.AreEqual(4031, response.Content.Split('\n').Length);
+        Assert.AreEqual(3398, response.Content.Split('\n').Length);
     }
 }
