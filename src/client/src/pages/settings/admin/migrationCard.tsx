@@ -14,6 +14,7 @@ export interface MigrationCardConfig {
   description: string;
   hint?: string;
   dataCyPrefix: string;
+  showOnlyMissing?: boolean;
 }
 
 interface MigrationCardProps {
@@ -24,7 +25,8 @@ interface MigrationCardProps {
 export const MigrationCard: FC<MigrationCardProps> = ({ config, taskState }) => {
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
-  const [onlyMissing, setOnlyMissing] = useState(true);
+  const showOnlyMissing = config.showOnlyMissing !== false;
+  const [onlyMissing, setOnlyMissing] = useState(showOnlyMissing);
   const [dryRun, setDryRun] = useState(true);
   const { mutate: startMigration, isPending } = useStartMigration(config.taskType);
 
@@ -66,23 +68,25 @@ export const MigrationCard: FC<MigrationCardProps> = ({ config, taskState }) => 
         </Typography>
       )}
       <Stack direction="row" alignItems="center" gap={2} sx={{ mt: 2 }}>
-        <FormControlLabel
-          control={
-            <Checkbox
-              checked={onlyMissing}
-              onChange={e => setOnlyMissing(e.target.checked)}
-              data-cy={`${dataCyPrefix}-only-missing`}
-            />
-          }
-          label={
-            <Stack direction="row" alignItems="center" gap={0.5}>
-              {t("onlyMissing")}
-              <Tooltip title={t("onlyMissingExplanation")}>
-                <Info size={16} />
-              </Tooltip>
-            </Stack>
-          }
-        />
+        {showOnlyMissing && (
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={onlyMissing}
+                onChange={e => setOnlyMissing(e.target.checked)}
+                data-cy={`${dataCyPrefix}-only-missing`}
+              />
+            }
+            label={
+              <Stack direction="row" alignItems="center" gap={0.5}>
+                {t("onlyMissing")}
+                <Tooltip title={t("onlyMissingExplanation")}>
+                  <Info size={16} />
+                </Tooltip>
+              </Stack>
+            }
+          />
+        )}
         <Box sx={{ flexGrow: 1 }} />
         <FormControlLabel
           control={
