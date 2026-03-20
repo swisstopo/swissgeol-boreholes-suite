@@ -73,7 +73,7 @@ public class MaintenanceControllerTest
     public async Task StartTaskReturnsAccepted()
     {
         controller.ControllerContext = Helpers.GetControllerContextAdmin();
-        var result = await controller.StartTaskAsync(MaintenanceTaskType.LocationMigration, new MigrationParameters { OnlyMissing = true, DryRun = true }).ConfigureAwait(false);
+        var result = await controller.StartTaskAsync(MaintenanceTaskType.LocationMigration, new MaintenanceTaskParameters { OnlyMissing = true, DryRun = true }).ConfigureAwait(false);
         ActionResultAssert.IsAccepted(result);
     }
 
@@ -83,10 +83,10 @@ public class MaintenanceControllerTest
         controller.ControllerContext = Helpers.GetControllerContextAdmin();
 
         // Start the task once to put it in Running state.
-        await controller.StartTaskAsync(MaintenanceTaskType.LocationMigration, new MigrationParameters { OnlyMissing = true, DryRun = true }).ConfigureAwait(false);
+        await controller.StartTaskAsync(MaintenanceTaskType.LocationMigration, new MaintenanceTaskParameters { OnlyMissing = true, DryRun = true }).ConfigureAwait(false);
 
         // Attempt to start it again while it's still running.
-        var result = await controller.StartTaskAsync(MaintenanceTaskType.LocationMigration, new MigrationParameters { OnlyMissing = true, DryRun = true }).ConfigureAwait(false);
+        var result = await controller.StartTaskAsync(MaintenanceTaskType.LocationMigration, new MaintenanceTaskParameters { OnlyMissing = true, DryRun = true }).ConfigureAwait(false);
         ActionResultAssert.IsConflict(result);
     }
 
@@ -116,7 +116,7 @@ public class MaintenanceControllerTest
         using var client = CreateNonAdminClient();
         var response = await client.PostAsJsonAsync(
             "/api/v2/maintenance/LocationMigration",
-            new MigrationParameters()).ConfigureAwait(false);
+            new MaintenanceTaskParameters()).ConfigureAwait(false);
         Assert.AreEqual(HttpStatusCode.Forbidden, response.StatusCode);
     }
 
@@ -126,7 +126,7 @@ public class MaintenanceControllerTest
         using var client = CreateAdminClient();
         var response = await client.PostAsJsonAsync(
             "/api/v2/maintenance/InvalidTaskType",
-            new MigrationParameters()).ConfigureAwait(false);
+            new MaintenanceTaskParameters()).ConfigureAwait(false);
         Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode);
     }
 

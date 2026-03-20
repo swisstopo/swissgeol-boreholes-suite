@@ -19,11 +19,11 @@ public class MaintenanceController(BdmsContext context, MaintenanceTaskService m
     /// Returns 202 Accepted if the task was started, or 409 Conflict if it is already running.
     /// </summary>
     /// <param name="taskType">The <see cref="MaintenanceTaskType"/> to start.</param>
-    /// <param name="parameters">Migration parameters controlling whether to process only missing values and whether to perform a dry run.</param>
+    /// <param name="parameters">Parameters controlling whether to process only missing values and whether to perform a dry run.</param>
     [HttpPost("{taskType}")]
     [SwaggerResponse(StatusCodes.Status202Accepted, "The maintenance task was accepted and started in the background.")]
     [SwaggerResponse(StatusCodes.Status409Conflict, "The task is already running.")]
-    public async Task<IActionResult> StartTaskAsync(MaintenanceTaskType taskType, [FromBody] MigrationParameters parameters)
+    public async Task<IActionResult> StartTaskAsync(MaintenanceTaskType taskType, [FromBody] MaintenanceTaskParameters parameters)
     {
         var subjectId = User.Claims.Single(c => c.Type == ClaimTypes.NameIdentifier).Value;
         var user = await context.Users.SingleAsync(u => u.SubjectId == subjectId).ConfigureAwait(false);

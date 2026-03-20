@@ -12,7 +12,7 @@ public sealed class LocationMigrationTask : MigrationTaskBase<LocationService>
     public override MaintenanceTaskType TaskType => MaintenanceTaskType.LocationMigration;
 
     /// <inheritdoc/>
-    protected override async Task<bool> ProcessBoreholeAsync(LocationService service, Borehole borehole, MigrationParameters parameters, CancellationToken cancellationToken)
+    protected override async Task<bool> ProcessBoreholeAsync(LocationService service, Borehole borehole, MaintenanceTaskParameters parameters, CancellationToken cancellationToken)
     {
         var locationX = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationX : borehole.LocationXLV03;
         var locationY = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? borehole.LocationY : borehole.LocationYLV03;
