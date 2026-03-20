@@ -17,7 +17,7 @@ const makeStatusResponse = (overridesByType = {}) => TASK_TYPES.map(type => make
 const makeLogResponse = (logEntries = [], totalCount = null) => ({
   totalCount: totalCount ?? logEntries.length,
   pageNumber: 1,
-  pageSize: 5,
+  pageSize: 10,
   logEntries,
 });
 
@@ -270,21 +270,21 @@ describe("Maintenance Tasks page tests", () => {
       it("paginates to the next page", () => {
         interceptStatus(makeStatusResponse(), "get-maintenance-status-ok");
 
-        const page1Entries = Array.from({ length: 5 }, (_, i) => makeLogEntry({ affectedCount: i + 1 }));
+        const page1Entries = Array.from({ length: 10 }, (_, i) => makeLogEntry({ affectedCount: i + 1 }));
         const page2Entries = Array.from({ length: 2 }, (_, i) => makeLogEntry({ affectedCount: 100 + i }));
 
         cy.intercept("GET", "/api/v2/maintenance/logs*", req => {
           if (req.url.includes("pageNumber=2")) {
-            req.reply({ body: makeLogResponse(page2Entries, 7) });
+            req.reply({ body: makeLogResponse(page2Entries, 12) });
           } else {
-            req.reply({ body: makeLogResponse(page1Entries, 7) });
+            req.reply({ body: makeLogResponse(page1Entries, 12) });
           }
         }).as("get-logs-paginated");
 
         goToRouteAndAcceptTerms("/setting#maintenance");
         cy.wait("@get-logs-paginated");
 
-        cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 5);
+        cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 10);
 
         cy.dataCy("execution-log-table").find('[aria-label="next page"]').click();
         cy.wait("@get-logs-paginated");
