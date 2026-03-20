@@ -75,7 +75,7 @@ export const useMaintenanceLogs = (pageNumber: number, includeDryRun: boolean) =
     placeholderData: keepPreviousData,
   });
 
-export const useStartMigration = (taskType: MaintenanceTaskType) => {
+export const useStartMaintenanceTask = (taskType: MaintenanceTaskType) => {
   const queryClient = useQueryClient();
   return useMutation({
     mutationFn: (params: MaintenanceTaskParams) =>

@@ -3,12 +3,12 @@ import { useTranslation } from "react-i18next";
 import { Box, Checkbox, Chip, FormControlLabel, Stack, Tooltip, Typography } from "@mui/material";
 import { Info } from "lucide-react";
 import { ApiError } from "../../../api/apiInterfaces.ts";
-import { MaintenanceTaskState, MaintenanceTaskType, useStartMigration } from "../../../api/maintenance.ts";
+import { MaintenanceTaskState, MaintenanceTaskType, useStartMaintenanceTask } from "../../../api/maintenance.ts";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { BoreholesCard } from "../../../components/boreholesCard.tsx";
 import { BoreholesButton } from "../../../components/buttons/buttons.tsx";
 
-export interface MigrationCardConfig {
+export interface MaintenanceTaskCardConfig {
   taskType: MaintenanceTaskType;
   title: string;
   description: string;
@@ -17,25 +17,25 @@ export interface MigrationCardConfig {
   showOnlyMissing?: boolean;
 }
 
-interface MigrationCardProps {
-  config: MigrationCardConfig;
+interface MaintenanceTaskCardProps {
+  config: MaintenanceTaskCardConfig;
   taskState: MaintenanceTaskState | undefined;
 }
 
-export const MigrationCard: FC<MigrationCardProps> = ({ config, taskState }) => {
+export const MaintenanceTaskCard: FC<MaintenanceTaskCardProps> = ({ config, taskState }) => {
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
   const showOnlyMissing = config.showOnlyMissing !== false;
   const [onlyMissing, setOnlyMissing] = useState(showOnlyMissing);
   const [dryRun, setDryRun] = useState(true);
-  const { mutate: startMigration, isPending } = useStartMigration(config.taskType);
+  const { mutate: startTask, isPending } = useStartMaintenanceTask(config.taskType);
 
   const status = taskState?.status ?? "Idle";
   const isRunning = status === "Running" || isPending;
   const { title, description, hint, dataCyPrefix } = config;
 
   const handleStart = () => {
-    startMigration(
+    startTask(
       { onlyMissing, dryRun },
       {
         onError: error => {
