@@ -1,6 +1,6 @@
 import { goToRouteAndAcceptTerms, loginAsAdmin, loginAsEditor, selectLanguage } from "../helpers/testHelpers.js";
 
-const TASK_TYPES = ["LocationMigration", "CoordinateMigration"];
+const TASK_TYPES = ["LocationMigration", "CoordinateMigration", "UserMerge"];
 
 const makeTaskState = (type, overrides = {}) => ({
   type,
@@ -144,6 +144,34 @@ describe("Maintenance Tasks page tests", () => {
           cy.dataCy(cyName).find("input").uncheck();
           cy.dataCy(cyName).find("input").should("not.be.checked");
         });
+      });
+
+      it("renders the user merge card without onlyMissing checkbox", () => {
+        cy.dataCy("user-merge-card").should("be.visible");
+        cy.dataCy("user-merge-dry-run").find("input").should("be.checked");
+        cy.dataCy("user-merge-only-missing").should("not.exist");
+        cy.dataCy("user-merge-start").should("be.visible").and("not.be.disabled");
+      });
+
+      it("executes a user merge dry run and shows log entry", () => {
+        cy.wait("@get-maintenance-status");
+        cy.dataCy("user-merge-dry-run").find("input").should("be.checked");
+        cy.dataCy("user-merge-start").click();
+        cy.dataCy("user-merge-start").should("be.disabled");
+        cy.wait("@start-user-merge");
+
+        // Wait for task to complete.
+        cy.get("[data-cy=user-merge-start]", { timeout: 30000 }).should("not.be.disabled");
+
+        // Show dry runs in the log table and wait for the API response.
+        cy.intercept("GET", "/api/v2/maintenance/logs*includeDryRun=true*").as("get-dry-run-logs");
+        cy.dataCy("execution-log-include-dry-run").find("input").check();
+        cy.wait("@get-dry-run-logs");
+
+        // Verify the log entry exists with correct task type.
+        cy.dataCy("execution-log-table")
+          .contains(/merge duplicate users/i)
+          .should("be.visible");
       });
     });
 
