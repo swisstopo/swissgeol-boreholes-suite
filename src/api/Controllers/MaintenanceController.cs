@@ -54,7 +54,7 @@ public class MaintenanceController(BdmsContext context, MaintenanceTaskService m
     [SwaggerResponse(StatusCodes.Status200OK, "Returns a paginated list of log entries.", typeof(PaginatedLogResponse))]
     public async Task<ActionResult<PaginatedLogResponse>> GetLogsAsync(
         [FromQuery][Range(1, int.MaxValue)] int pageNumber = 1,
-        [FromQuery][Range(1, 100)] int pageSize = 5,
+        [FromQuery][Range(1, 100)] int pageSize = 10,
         [FromQuery] bool includeDryRun = false)
     {
         pageSize = Math.Min(100, Math.Max(1, pageSize));

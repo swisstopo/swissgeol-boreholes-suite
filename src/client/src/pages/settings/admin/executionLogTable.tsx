@@ -35,7 +35,7 @@ export const ExecutionLogTable: FC = () => {
   const [includeDryRun, setIncludeDryRun] = useState(false);
 
   const { data, isLoading } = useMaintenanceLogs(page + 1, includeDryRun);
-  const pageSize = data?.pageSize ?? 5;
+  const pageSize = data?.pageSize ?? 10;
 
   const rows = useMemo(() => data?.logEntries.map((entry, index) => ({ ...entry, id: index })) ?? [], [data]);
 

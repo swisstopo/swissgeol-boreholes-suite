@@ -64,9 +64,9 @@ public class MaintenanceControllerTest
         var result = await controller.GetLogsAsync().ConfigureAwait(false);
         var okResult = ActionResultAssert.IsOkObjectResult<PaginatedLogResponse>(result.Result);
         Assert.AreEqual(1, okResult.PageNumber);
-        Assert.AreEqual(5, okResult.PageSize);
+        Assert.AreEqual(10, okResult.PageSize);
         Assert.IsTrue(okResult.TotalCount >= 0);
-        Assert.IsTrue(okResult.LogEntries.Count <= 5);
+        Assert.IsTrue(okResult.LogEntries.Count <= 10);
     }
 
     [TestMethod]
