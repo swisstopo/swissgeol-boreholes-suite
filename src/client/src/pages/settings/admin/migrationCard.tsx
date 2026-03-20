@@ -53,6 +53,12 @@ export const MigrationCard: FC<MigrationCardProps> = ({ config, taskState }) => 
     <BoreholesCard
       data-cy={`${dataCyPrefix}-card`}
       title={t(title)}
+      sx={{
+        flex: 1,
+        display: "flex",
+        flexDirection: "column",
+        "& .MuiCardContent-root": { flex: 1, display: "flex", flexDirection: "column" },
+      }}
       action={
         <Chip
           label={t(isRunning ? "taskRunning" : "taskIdle")}
@@ -67,7 +73,7 @@ export const MigrationCard: FC<MigrationCardProps> = ({ config, taskState }) => 
           {t(hint)}
         </Typography>
       )}
-      <Stack direction="row" alignItems="center" gap={2} sx={{ mt: 2 }}>
+      <Stack direction="row" alignItems="center" gap={2} sx={{ mt: "auto", pt: 2 }}>
         {showOnlyMissing && (
           <FormControlLabel
             control={

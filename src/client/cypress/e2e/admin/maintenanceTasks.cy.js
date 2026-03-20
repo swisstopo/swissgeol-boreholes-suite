@@ -222,7 +222,7 @@ describe("Maintenance Tasks page tests", () => {
 
         cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 1);
         cy.dataCy("execution-log-table").find(".MuiDataGrid-row").first().should("contain", "Abgeschlossen");
-        cy.dataCy("execution-log-table").find(".MuiDataGrid-row").first().should("contain", "Koordinaten-Migration");
+        cy.dataCy("execution-log-table").find(".MuiDataGrid-row").first().should("contain", "Koordinaten migrieren");
 
         selectLanguage("en");
       });
