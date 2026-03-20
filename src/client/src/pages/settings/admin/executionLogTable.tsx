@@ -49,12 +49,6 @@ export const ExecutionLogTable: FC = () => {
           t(taskTypeTranslationMap[params.value as MaintenanceTaskType] ?? params.value),
       },
       {
-        field: "isDryRun",
-        headerName: t("dryRun"),
-        flex: 1.5,
-        renderCell: (params: GridRenderCellParams) => (params.value ? <CheckIcon size={16} /> : null),
-      },
-      {
         field: "status",
         headerName: t("status"),
         flex: 1.5,
@@ -73,6 +67,12 @@ export const ExecutionLogTable: FC = () => {
         flex: 1,
         renderCell: (params: GridRenderCellParams) =>
           params.row.status === "Failed" ? (params.row.message ?? "-") : (params.value ?? 0),
+      },
+      {
+        field: "isDryRun",
+        headerName: t("dryRun"),
+        flex: 1,
+        renderCell: (params: GridRenderCellParams) => (params.value ? <CheckIcon size={16} /> : null),
       },
       {
         field: "startedByName",
