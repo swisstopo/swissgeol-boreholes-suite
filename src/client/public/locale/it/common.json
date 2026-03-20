@@ -524,6 +524,8 @@
   "uscsTyping": "Classificazione USCS",
   "uscs_determination": "Metodo di determinazione USCS",
   "user": "Utente",
+  "userMerge": "Unisci utenti duplicati",
+  "userMergeDescription": "Unisce gli utenti duplicati che condividono lo stesso indirizzo e-mail. Tutti i dati degli utenti più vecchi vengono riassegnati e i ruoli del gruppo di lavoro vengono uniti all'utente più recente. Gli utenti più vecchi vengono quindi disattivati e possono essere eliminati manualmente nella scheda Utenti.",
   "userUnauthorized": "Non si dispone dei privilegi sufficienti per utilizzare l'applicazione. Si prega di contattare l'amministratore.",
   "users": "Utenti",
   "usersMap": "Mappe dell'utente",

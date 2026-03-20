@@ -524,6 +524,8 @@
   "uscsTyping": "Classification USCS",
   "uscs_determination": "Méthode de détermination USCS",
   "user": "Utilisateur",
+  "userMerge": "Fusionner les utilisateurs en double",
+  "userMergeDescription": "Fusionne les utilisateurs en double partageant la même adresse e-mail. Toutes les données des anciens utilisateurs sont réattribuées et les rôles de groupe de travail sont fusionnés avec l'utilisateur le plus récent. Les anciens utilisateurs sont ensuite désactivés et peuvent être supprimés manuellement dans l'onglet Utilisateurs.",
   "userUnauthorized": "Vous n'avez pas les privilèges suffisants pour utiliser l'application. Veuillez contacter l'administrateur.",
   "users": "Utilisateurs",
   "usersMap": "Cartes pour les utilisateurs",

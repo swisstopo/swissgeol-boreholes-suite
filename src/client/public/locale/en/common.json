@@ -522,6 +522,8 @@
   "uscsTyping": "USCS classification",
   "uscs_determination": "USCS way of determination",
   "user": "User",
+  "userMerge": "Merge Duplicate Users",
+  "userMergeDescription": "Merges duplicate users that share the same email address. All data from obsolete users is reassigned and workgroup roles are merged into the newest user. Obsolete users are then disabled and can be deleted manually in the Users tab.",
   "userUnauthorized": "You do not have sufficient privileges to use the application. Please contact the administrator.",
   "users": "Users",
   "usersMap": "Maps for users",
