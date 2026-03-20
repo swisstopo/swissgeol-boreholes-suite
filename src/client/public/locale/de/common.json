@@ -524,6 +524,8 @@
   "uscsTyping": "USCS-Klassifikation",
   "uscs_determination": "USCS Bestimmungsmethode",
   "user": "Benutzer",
+  "userMerge": "Doppelte Benutzer zusammenführen",
+  "userMergeDescription": "Führt Benutzer mit derselben E-Mail-Adresse zusammen. Alle Daten älterer Benutzer werden neu zugewiesen und Arbeitsgruppen-Rollen werden mit dem neuesten Benutzer zusammengeführt. Ältere Benutzer werden anschliessend deaktiviert und können im Tab Benutzer manuell gelöscht werden.",
   "userUnauthorized": "Sie verfügen nicht über ausreichende Rechte, um die Applikation zu benutzen. Bitte melden Sie sich beim Administrator.",
   "users": "Benutzer",
   "usersMap": "Karten für Benutzer",

@@ -26,6 +26,7 @@ const statusLabelMap: Record<LogStatus, string> = {
 const taskTypeTranslationMap: Record<MaintenanceTaskType, string> = {
   LocationMigration: "locationMigration",
   CoordinateMigration: "coordinateMigration",
+  UserMerge: "userMerge",
 };
 
 export const ExecutionLogTable: FC = () => {

@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 
-export type MaintenanceTaskType = "LocationMigration" | "CoordinateMigration";
+export type MaintenanceTaskType = "LocationMigration" | "CoordinateMigration" | "UserMerge";
 export type MaintenanceTaskStatus = "Idle" | "Running" | "Completed" | "Failed";
 
 export interface MaintenanceTaskLogEntry {

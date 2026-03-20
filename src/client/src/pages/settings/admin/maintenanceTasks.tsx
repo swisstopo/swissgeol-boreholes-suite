@@ -1,5 +1,5 @@
 import { FC } from "react";
-import { Box, Divider, Stack } from "@mui/material";
+import { Divider, Stack } from "@mui/material";
 import { useMaintenanceStatus } from "../../../api/maintenance.ts";
 import { ExecutionLogTable } from "./executionLogTable.tsx";
 import { MigrationCard, MigrationCardConfig } from "./migrationCard.tsx";
@@ -20,6 +20,14 @@ const migrationTasks: MigrationCardConfig[] = [
   },
 ];
 
+const userMergeTask: MigrationCardConfig = {
+  taskType: "UserMerge",
+  title: "userMerge",
+  description: "userMergeDescription",
+  dataCyPrefix: "user-merge",
+  showOnlyMissing: false,
+};
+
 export const MaintenanceTasks: FC = () => {
   const { data: taskStates } = useMaintenanceStatus();
 
@@ -35,9 +43,10 @@ export const MaintenanceTasks: FC = () => {
         ))}
       </Stack>
       <Divider orientation="vertical" flexItem />
-      <Box sx={{ flex: 1, minWidth: 0 }}>
+      <Stack spacing={3} sx={{ flex: 1, minWidth: 0 }}>
+        <MigrationCard config={userMergeTask} taskState={taskStates?.find(s => s.type === userMergeTask.taskType)} />
         <ExecutionLogTable />
-      </Box>
+      </Stack>
     </Stack>
   );
 };
