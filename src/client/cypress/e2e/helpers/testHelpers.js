@@ -148,6 +148,7 @@ export const interceptApiCalls = () => {
 
   cy.intercept("POST", "/api/v2/maintenance/LocationMigration").as("start-location-migration");
   cy.intercept("POST", "/api/v2/maintenance/CoordinateMigration").as("start-coordinate-migration");
+  cy.intercept("POST", "/api/v2/maintenance/UserMerge").as("start-user-merge");
   cy.intercept("GET", "/api/v2/maintenance/status").as("get-maintenance-status");
 };
 
