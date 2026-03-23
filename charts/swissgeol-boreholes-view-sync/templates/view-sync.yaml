@@ -41,11 +41,14 @@ spec:
                   memory: 1Gi
                   ephemeral-storage: 2Gi
               securityContext:
-                readOnlyRootFilesystem: true
                 allowPrivilegeEscalation: false
                 capabilities:
                   drop:
                     - ALL
+                  add:
+                    - CHOWN
+                    - SETGID
+                    - SETUID
                 seccompProfile:
                   type: RuntimeDefault
               volumeMounts:
