@@ -529,6 +529,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
                 {depths.map(depth => (
                   <StratigraphyTableCell
                     key={`${depth.lithologyId}-depth-${depth.fromDepth}-${depth.toDepth}`}
+                    data-cy={`depth-${depth.fromDepth}-${depth.toDepth}`}
                     sx={{ height: `${defaultRowHeight}px` }}>
                     <Typography color={depth.hasFromDepthError ? "error" : "default"}>
                       {`${depth.fromDepth} m MD`}
