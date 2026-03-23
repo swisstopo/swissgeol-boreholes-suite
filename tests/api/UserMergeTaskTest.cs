@@ -270,17 +270,18 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     }
 
     [TestMethod]
-    public async Task HandlesNullCreatedAtInTargetSelection()
+    public async Task KeepsUserWithHighestId()
     {
-        var nullCreated = CreateUser("sub_GHOSTPULSE_null", "ghostpulse@test.com", "GHOSTPULSE", "Null", nullCreatedAt: true);
-        var withDate = CreateUser("sub_GHOSTPULSE_date", "ghostpulse@test.com", "GHOSTPULSE", "WithDate", DateTime.UtcNow);
+        var older = CreateUser("sub_GHOSTPULSE_old", "ghostpulse@test.com", "GHOSTPULSE", "Old");
+        var newer = CreateUser("sub_GHOSTPULSE_new", "ghostpulse@test.com", "GHOSTPULSE", "New");
+        Assert.IsTrue(newer.Id > older.Id);
 
         Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.UserMerge, new MaintenanceTaskParameters(OnlyMissing: false, DryRun: false), AdminUserId));
         await Service.WaitForCompletionAsync(MaintenanceTaskType.UserMerge);
 
-        // User with null CreatedAt should be treated as oldest and get disabled.
-        Assert.IsNotNull((await Context.Users.AsNoTracking().SingleAsync(u => u.Id == nullCreated.Id)).DisabledAt);
-        Assert.IsNull((await Context.Users.AsNoTracking().SingleAsync(u => u.Id == withDate.Id)).DisabledAt);
+        // User with lower Id should be treated as oldest and get disabled.
+        Assert.IsNotNull((await Context.Users.AsNoTracking().SingleAsync(u => u.Id == older.Id)).DisabledAt);
+        Assert.IsNull((await Context.Users.AsNoTracking().SingleAsync(u => u.Id == newer.Id)).DisabledAt);
     }
 
     [TestMethod]

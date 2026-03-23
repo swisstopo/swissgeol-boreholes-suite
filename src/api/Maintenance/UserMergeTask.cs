@@ -7,8 +7,8 @@ namespace BDMS.Maintenance;
 
 /// <summary>
 /// Maintenance task that merges duplicate users sharing the same email address.
-/// Groups all users by email (case-insensitive), keeps the newest user (latest
-/// <see cref="User.CreatedAt"/>), reassigns all foreign key references from older
+/// Groups all users by email (case-insensitive), keeps the newest user (highest
+/// <see cref="User.Id"/>), reassigns all foreign key references from older
 /// duplicates to the target, and disables the duplicates.
 /// </summary>
 public sealed class UserMergeTask : IMaintenanceTask
@@ -54,7 +54,7 @@ public sealed class UserMergeTask : IMaintenanceTask
 
         foreach (var group in duplicateGroups)
         {
-            var target = group.OrderByDescending(u => u.CreatedAt ?? DateTime.MinValue).First();
+            var target = group.OrderByDescending(u => u.Id).First();
             var sourceIds = group.Where(u => u.Id != target.Id).Select(u => u.Id).ToArray();
 
             await ReassignForeignKeysAsync(context, userForeignKeys, target.Id, sourceIds, cancellationToken).ConfigureAwait(false);
