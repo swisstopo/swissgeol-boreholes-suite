@@ -6,6 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using NetTopologySuite.Geometries;
+using System.ComponentModel.DataAnnotations;
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
@@ -21,11 +23,13 @@ public class BoreholeControllerTest
     private static int testBoreholeId = 1000068;
     private static int noPermissionWorkgroupId = 2;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
+    private Mock<IFilterService> filterServiceMock;
 
     [TestInitialize]
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
+        filterServiceMock = new Mock<IFilterService>(MockBehavior.Strict);
         controller = GetTestController(context);
     }
 
@@ -44,7 +48,7 @@ public class BoreholeControllerTest
         boreholePermissionServiceMock
             .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string?>(), It.IsNotIn(noPermissionWorkgroupId), It.IsAny<Role>()))
             .ReturnsAsync(true);
-        return new BoreholeController(testContext, new Mock<ILogger<BoreholeController>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        return new BoreholeController(testContext, new Mock<ILogger<BoreholeController>>().Object, boreholePermissionServiceMock.Object, filterServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -66,61 +70,6 @@ public class BoreholeControllerTest
         }
 
         await cleanupContext.DisposeAsync();
-    }
-
-    [TestMethod]
-    public async Task GetAsyncFiltersBoreholesBasedOnWorkgroupPermissions()
-    {
-        // Add a new borehole with workgroup that is not default
-        var newBorehole = new Borehole()
-        {
-            Name = "Test Borehole",
-            WorkgroupId = 4,
-        };
-        await context.Boreholes.AddAsync(newBorehole);
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var response = await controller.GetAllAsync([newBorehole.Id], 1, 100);
-
-        ActionResultAssert.IsOk(response.Result);
-        OkObjectResult okResult = (OkObjectResult)response.Result!;
-        PaginatedBoreholeResponse paginatedResponse = (PaginatedBoreholeResponse)okResult.Value!;
-        Assert.IsNotNull(paginatedResponse.Boreholes);
-        Assert.AreEqual(1, paginatedResponse.Boreholes.Count());
-
-        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
-
-        var responseForEditor = await controller.GetAllAsync([newBorehole.Id], 1, 100);
-
-        ActionResultAssert.IsOk(responseForEditor.Result);
-        OkObjectResult okResultForEditor = (OkObjectResult)responseForEditor.Result!;
-        PaginatedBoreholeResponse paginatedResponseForEditor = (PaginatedBoreholeResponse)okResultForEditor.Value!;
-        Assert.IsNotNull(paginatedResponseForEditor.Boreholes);
-        Assert.AreEqual(0, paginatedResponseForEditor.Boreholes.Count());
-    }
-
-    [TestMethod]
-    public async Task GetAllAsyncWithFilterIds()
-    {
-        var ids = new List<int> { 1_000_100, 1_000_200, 1_000_300, 1_000_400 };
-        var pageNumber = 1;
-        var pageSize = 3;
-
-        var response = await controller.GetAllAsync(ids, pageNumber, pageSize);
-
-        ActionResultAssert.IsOk(response.Result);
-        OkObjectResult okResult = (OkObjectResult)response.Result!;
-        PaginatedBoreholeResponse paginatedResponse = (PaginatedBoreholeResponse)okResult.Value!;
-        Assert.AreEqual(3, paginatedResponse.Boreholes.Count());
-        Assert.AreEqual(100, paginatedResponse.MaxPageSize);
-        Assert.AreEqual(1, paginatedResponse.PageNumber);
-        Assert.AreEqual(3, paginatedResponse.PageSize);
-        Assert.AreEqual(4, paginatedResponse.TotalCount);
-
-        foreach (var item in paginatedResponse.Boreholes)
-        {
-            Assert.IsTrue(ids.Contains(item.Id), $"Borehole.Id {item.Id} is not in the provided list of ids.");
-        }
     }
 
     [TestMethod]
@@ -882,5 +831,165 @@ public class BoreholeControllerTest
         // Verify source borehole remains unchanged
         var unchangedSourceBorehole = GetBorehole(sourceBoreholeId);
         Assert.AreEqual(sourceWorkgroupId, unchangedSourceBorehole.WorkgroupId);
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesAsyncReturnsOkResult()
+    {
+        var filterRequest = new FilterRequest
+        {
+            PageNumber = 1,
+            PageSize = 10,
+        };
+
+        var expectedResponse = new FilterResponse(
+            100,
+            1,
+            10,
+            10,
+            new List<BoreholeListItem>(),
+            null,
+            new List<int>());
+
+        filterServiceMock
+            .Setup(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), It.IsAny<string?>()))
+            .ReturnsAsync(expectedResponse);
+
+        var result = await controller.FilterAsync(filterRequest);
+
+        ActionResultAssert.IsOk(result.Result);
+        var okResult = (OkObjectResult)result.Result!;
+        var response = (FilterResponse)okResult.Value!;
+
+        Assert.IsNotNull(response);
+        Assert.AreEqual(100, response.TotalCount);
+        Assert.AreEqual(1, response.PageNumber);
+        Assert.AreEqual(10, response.PageSize);
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesAsyncWithInvalidUserReturnsUnauthorized()
+    {
+        var filterRequest = new FilterRequest
+        {
+            PageNumber = 1,
+            PageSize = 10,
+        };
+
+        filterServiceMock
+            .Setup(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), It.IsAny<string?>()))
+            .ThrowsAsync(new UnauthorizedAccessException($"User with subject ID not found."));
+
+        var result = await controller.FilterAsync(filterRequest);
+
+        ActionResultAssert.IsUnauthorized(result.Result);
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesAsyncWithExceptionReturnsProblem()
+    {
+        var filterRequest = new FilterRequest
+        {
+            PageNumber = 1,
+            PageSize = 10,
+        };
+
+        filterServiceMock
+            .Setup(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), It.IsAny<string?>()))
+            .ThrowsAsync(new InvalidOperationException("Unexpected error"));
+
+        var result = await controller.FilterAsync(filterRequest);
+
+        Assert.IsInstanceOfType(result.Result, typeof(ObjectResult));
+        var objectResult = (ObjectResult)result.Result!;
+        Assert.AreEqual(500, objectResult.StatusCode);
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesAsyncWithComplexFiltersCallsServiceWithCorrectParameters()
+    {
+        var polygon = new Polygon(new LinearRing(new[]
+        {
+            new Coordinate(2600000, 1200000),
+            new Coordinate(2650000, 1200000),
+            new Coordinate(2650000, 1250000),
+            new Coordinate(2600000, 1250000),
+            new Coordinate(2600000, 1200000),
+        }))
+        { SRID = 2056 };
+
+        var filterRequest = new FilterRequest
+        {
+            Polygon = polygon,
+            OriginalName = "Test",
+            StatusId = new List<int> { 1 },
+            TotalDepthMin = 100,
+            TotalDepthMax = 500,
+            HasLogs = true,
+            PageNumber = 2,
+            PageSize = 25,
+            OrderBy = "TotalDepth",
+            Direction = "desc",
+        };
+
+        var expectedResponse = new FilterResponse(
+            50,
+            2,
+            25,
+            2,
+            new List<BoreholeListItem>(),
+            null,
+            new List<int>());
+
+        FilterRequest? capturedRequest = null;
+        filterServiceMock
+            .Setup(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), It.IsAny<string?>()))
+            .Callback<FilterRequest, string?>((req, subId) => capturedRequest = req)
+            .ReturnsAsync(expectedResponse);
+
+        var result = await controller.FilterAsync(filterRequest);
+
+        ActionResultAssert.IsOk(result.Result);
+
+        Assert.IsNotNull(capturedRequest);
+        Assert.AreEqual(filterRequest.OriginalName, capturedRequest.OriginalName);
+        Assert.AreEqual(filterRequest.StatusId, capturedRequest.StatusId);
+        Assert.AreEqual(filterRequest.TotalDepthMin, capturedRequest.TotalDepthMin);
+        Assert.AreEqual(filterRequest.TotalDepthMax, capturedRequest.TotalDepthMax);
+        Assert.AreEqual(filterRequest.HasLogs, capturedRequest.HasLogs);
+        Assert.AreEqual(filterRequest.PageNumber, capturedRequest.PageNumber);
+        Assert.AreEqual(filterRequest.PageSize, capturedRequest.PageSize);
+        Assert.AreEqual(filterRequest.OrderBy, capturedRequest.OrderBy);
+        Assert.AreEqual(filterRequest.Direction, capturedRequest.Direction);
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesAsyncWithViewerRoleReturnsOkResult()
+    {
+        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        var filterRequest = new FilterRequest
+        {
+            PageNumber = 1,
+            PageSize = 10,
+        };
+
+        var expectedResponse = new FilterResponse(
+            10,
+            1,
+            10,
+            1,
+            new List<BoreholeListItem>(),
+            null,
+            new List<int>());
+
+        filterServiceMock
+            .Setup(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), "sub_editor"))
+            .ReturnsAsync(expectedResponse);
+
+        var result = await controller.FilterAsync(filterRequest);
+
+        ActionResultAssert.IsOk(result.Result);
+        filterServiceMock.Verify(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), "sub_editor"), Times.Once);
     }
 }

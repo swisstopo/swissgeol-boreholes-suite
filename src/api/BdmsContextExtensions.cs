@@ -211,11 +211,15 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.Workflow, _ => default!)
            .RuleFor(o => o.BoreholeCodelists, _ => new Collection<BoreholeCodelist>())
            .RuleFor(o => o.Codelists, _ => new Collection<Codelist>())
-           .RuleFor(o => o.Geometry, f =>
+           .RuleFor(o => o.Geometry, (f, b) =>
            {
-               var point = new Point(f.Random.Int(2477750, 2830750), f.Random.Int(1066750, 1310750));
-               point.SRID = SpatialReferenceConstants.SridLv95;
-               return point.OrNull(f, .05f);
+               if (b.LocationX.HasValue && b.LocationY.HasValue)
+               {
+                   var point = new Point(b.LocationX.Value, b.LocationY.Value);
+                   point.SRID = SpatialReferenceConstants.SridLv95;
+                   return point;
+               };
+               return null;
            })
            .RuleFor(o => o.NationalInterest, f => borehole_ids % 10 == 9)
            .RuleFor(o => o.PrecisionLocationX, f => f.PickRandom(Enumerable.Range(0, 10)))

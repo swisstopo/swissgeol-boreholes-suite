@@ -1,4 +1,5 @@
-﻿using BDMS.Authentication;
+﻿using Amazon.Runtime.Internal.Util;
+using BDMS.Authentication;
 using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -14,13 +15,12 @@ namespace BDMS.Controllers;
 [Route("api/v2/[controller]")]
 public class BoreholeController : BoreholeControllerBase<Borehole>
 {
-    // Limit the maximum number of items per request to 100.
-    // This also applies to the number of filtered ids to ensure the URL length does not exceed the maximum allowed length.
-    private const int MaxPageSize = 100;
+    private readonly IFilterService filterService;
 
-    public BoreholeController(BdmsContext context, ILogger<BoreholeController> logger, IBoreholePermissionService boreholePermissionService)
+    public BoreholeController(BdmsContext context, ILogger<BoreholeController> logger, IBoreholePermissionService boreholePermissionService, IFilterService filterService)
     : base(context, logger, boreholePermissionService)
     {
+        this.filterService = filterService;
     }
 
     /// <inheritdoc />
@@ -120,42 +120,32 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     }
 
     /// <summary>
-    /// Asynchronously gets all <see cref="Borehole"/> records with optional filtering by ids and pagination.
+    /// Filters boreholes based on the provided criteria.
     /// </summary>
-    /// <param name="ids">The optional list of borehole ids to filter by.</param>
-    /// <param name="pageNumber">The page number for pagination.</param>
-    /// <param name="pageSize">The page size for pagination.</param>
-    [HttpGet]
+    /// <param name="filterRequest">The filter request with filtering criteria.</param>
+    /// <returns>A paginated response with filtered boreholes, GeoJSON for map display, and all filtered IDs.</returns>
+    [HttpPost("filter")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<PaginatedBoreholeResponse>> GetAllAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int>? ids = null, [FromQuery][Range(1, int.MaxValue)] int pageNumber = 1, [FromQuery][Range(1, MaxPageSize)] int pageSize = 100)
+    public async Task<ActionResult<FilterResponse>> FilterAsync([FromBody] FilterRequest filterRequest)
     {
-        var user = await Context.UsersWithIncludes
-            .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId())
-            .ConfigureAwait(false);
-
-        var boreholes = Context.BoreholesWithIncludes.AsNoTracking();
-
-        if (!user.IsAdmin)
+        try
         {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            boreholes = boreholes.Where(b => b.WorkgroupId.HasValue && allowedWorkgroupIds.Contains(b.WorkgroupId.Value));
+            var subjectId = HttpContext.GetUserSubjectId();
+            if (string.IsNullOrEmpty(subjectId)) return Unauthorized();
+
+            var result = await filterService.FilterBoreholesAsync(filterRequest, subjectId).ConfigureAwait(false);
+            return Ok(result);
         }
-
-        pageSize = Math.Min(MaxPageSize, Math.Max(1, pageSize));
-
-        var skip = (pageNumber - 1) * pageSize;
-
-        if (ids != null && ids.Any())
+        catch (UnauthorizedAccessException ex)
         {
-            boreholes = boreholes.Where(borehole => ids.Contains(borehole.Id));
+            Logger.LogError(ex, "User not found in database");
+            return Unauthorized("User not found.");
         }
-
-        var totalCount = await boreholes.CountAsync().ConfigureAwait(false);
-        var paginatedBoreholes = await boreholes.Skip(skip).Take(pageSize).ToListAsync().ConfigureAwait(false);
-        var paginatedResponse = new PaginatedBoreholeResponse(totalCount, pageNumber, pageSize, MaxPageSize, paginatedBoreholes);
-
-        return Ok(paginatedResponse);
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Unexpected error filtering boreholes");
+            return Problem("An unexpected error occurred while filtering boreholes.");
+        }
     }
 
     /// <summary>
