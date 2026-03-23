@@ -207,7 +207,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     cy.dataCy("lithologicalDescription-0").should("exist");
     cy.dataCy("lithologicalDescription-1").should("exist");
     cy.dataCy("faciesDescription-0-0-gap").should("not.exist");
-    cy.dataCy("faciesDescription-0").should("contains", "alluvial");
+    cy.dataCy("faciesDescription-0").should("contain", "alluvial");
     cy.dataCy("faciesDescription-1").should("exist");
 
     saveWithSaveBar();
@@ -222,7 +222,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     cy.dataCy("lithology-2").should("contain", "breccia, well sorted");
     cy.dataCy("lithologicalDescription-0").should("exist");
     cy.dataCy("lithologicalDescription-1").should("exist");
-    cy.dataCy("faciesDescription-0").should("contains", "alluvial");
+    cy.dataCy("faciesDescription-0").should("contain", "alluvial");
     cy.dataCy("faciesDescription-1").should("exist");
   });
 
