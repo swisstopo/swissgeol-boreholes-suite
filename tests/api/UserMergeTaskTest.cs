@@ -12,7 +12,7 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
 {
     protected override IEnumerable<IMaintenanceTask> CreateMaintenanceTasks() => [new UserMergeTask()];
 
-    private User CreateUser(string subjectId, string email, string firstName, string lastName, DateTime? createdAt = null, DateTime? disabledAt = null, bool nullCreatedAt = false)
+    private User CreateUser(string subjectId, string email, string firstName, string lastName, DateTime? createdAt = null, DateTime? disabledAt = null, bool nullCreatedAt = false, bool isAdmin = false)
     {
         var user = new User
         {
@@ -23,6 +23,7 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
             Name = firstName.ToLowerInvariant(),
             CreatedAt = nullCreatedAt ? null : createdAt ?? DateTime.UtcNow,
             DisabledAt = disabledAt,
+            IsAdmin = isAdmin,
         };
         Context.Users.Add(user);
         Context.SaveChanges();
@@ -189,6 +190,19 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
         var target = await Context.Users.AsNoTracking().SingleAsync(u => u.Id == newUser.Id);
         Assert.IsNotNull(target.DisabledAt);
         Assert.AreEqual(disabledAt.Date, target.DisabledAt.Value.Date);
+    }
+
+    [TestMethod]
+    public async Task PreservesTargetAdminFlag()
+    {
+        CreateUser("sub_SOLARFLINT_old", "solarflint@test.com", "SOLARFLINT", "Old", DateTime.UtcNow.AddDays(-10), isAdmin: true);
+        var newUser = CreateUser("sub_SOLARFLINT_new", "solarflint@test.com", "SOLARFLINT", "New", DateTime.UtcNow, isAdmin: false);
+
+        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.UserMerge, new MaintenanceTaskParameters(OnlyMissing: false, DryRun: false), AdminUserId));
+        await Service.WaitForCompletionAsync(MaintenanceTaskType.UserMerge);
+
+        var target = await Context.Users.AsNoTracking().SingleAsync(u => u.Id == newUser.Id);
+        Assert.IsFalse(target.IsAdmin);
     }
 
     [TestMethod]
