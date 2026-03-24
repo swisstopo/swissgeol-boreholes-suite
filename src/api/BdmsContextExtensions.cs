@@ -218,7 +218,8 @@ public static class BdmsContextExtensions
                    var point = new Point(b.LocationX.Value, b.LocationY.Value);
                    point.SRID = SpatialReferenceConstants.SridLv95;
                    return point;
-               };
+               }
+
                return null;
            })
            .RuleFor(o => o.NationalInterest, f => borehole_ids % 10 == 9)
