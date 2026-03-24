@@ -673,4 +673,28 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     stopBoreholeEditing();
     checkLayerCardContent(LayerType.faciesDescription, 1, 134, ["terrestrial"]);
   });
+
+  it("should inherit previous rock type", () => {
+    openNewStratigraphy();
+    addLithology();
+
+    // By default initial rock type is unconsolidated but can be switched
+    isUnconsolidatedForm(true);
+    switchRockType(RockType.consolidated, "Continue");
+    switchRockType(RockType.unconsolidated, "Continue");
+    setInput("fromDepth", 0);
+    setInput("toDepth", 10);
+    closeLayerModal();
+    addLithology();
+
+    // If previous layer was unconsolidated, new layer is also unconsolidated
+    isUnconsolidatedForm(true);
+    switchRockType(RockType.consolidated, "Continue");
+    setInput("toDepth", 20);
+    closeLayerModal();
+    addLithology();
+
+    // If previous layer was consolidated, new layer is also consolidated
+    isUnconsolidatedForm(false);
+  });
 });
