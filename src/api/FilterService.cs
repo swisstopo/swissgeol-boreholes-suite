@@ -95,8 +95,6 @@ public class FilterService : IFilterService
                 TotalDepth = b.TotalDepth,
                 Created = b.Created,
                 Updated = b.Updated,
-                CreatedByUsername = b.CreatedBy != null ? b.CreatedBy.Name : null,
-                UpdatedByUsername = b.UpdatedBy != null ? b.UpdatedBy.Name : null,
                 IsPublic = b.IsPublic,
                 Locked = b.Locked != null && b.Locked >= lockExpiryTime ? b.Locked : null,
             })
