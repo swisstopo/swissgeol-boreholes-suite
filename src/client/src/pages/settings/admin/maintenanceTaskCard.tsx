@@ -12,8 +12,8 @@ export interface MaintenanceTaskCardConfig {
   taskType: MaintenanceTaskType;
   title: string;
   description: string;
-  hint?: string;
   dataCyPrefix: string;
+  hint?: string;
   showOnlyMissing?: boolean;
 }
 
