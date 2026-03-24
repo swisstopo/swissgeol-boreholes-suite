@@ -10,11 +10,6 @@ namespace BDMS;
 [TestClass]
 public class UserMergeTaskTest : MaintenanceTaskTestBase
 {
-    protected override void ConfigureServices(Mock<IServiceProvider> serviceProviderMock)
-    {
-        // UserMergeTask does not require additional scoped services.
-    }
-
     protected override IEnumerable<IMaintenanceTask> CreateMaintenanceTasks() => [new UserMergeTask()];
 
     [TestInitialize]

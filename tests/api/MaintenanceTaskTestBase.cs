@@ -39,7 +39,9 @@ public abstract class MaintenanceTaskTestBase
     /// on the mock service provider. Called during <see cref="TestInitialize"/> so each subclass
     /// only wires up what its tasks actually need.
     /// </summary>
-    protected abstract void ConfigureServices(Mock<IServiceProvider> serviceProviderMock);
+    protected virtual void ConfigureServices(Mock<IServiceProvider> serviceProviderMock)
+    {
+    }
 
     /// <summary>
     /// Returns the <see cref="IMaintenanceTask"/> implementations to register with the service.
