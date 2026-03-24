@@ -10,6 +10,8 @@ namespace BDMS.Maintenance;
 /// Groups all users by email (case-insensitive), keeps the newest user (highest
 /// <see cref="User.Id"/>), reassigns all foreign key references from older
 /// duplicates to the target, and disables the duplicates.
+/// The <see cref="MaintenanceTaskParameters.OnlyMissing"/> parameter is not applicable
+/// for this task - it always processes all duplicate groups.
 /// </summary>
 public sealed class UserMergeTask : IMaintenanceTask
 {
@@ -31,7 +33,6 @@ public sealed class UserMergeTask : IMaintenanceTask
     {
         var context = scope.ServiceProvider.GetRequiredService<BdmsContext>();
 
-        // OnlyMissing is not applicable for user merge - always processes all duplicate groups.
         var existingTransaction = context.Database.CurrentTransaction;
         var transaction = existingTransaction == null
             ? await context.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false)
