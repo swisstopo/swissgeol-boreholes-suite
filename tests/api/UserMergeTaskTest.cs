@@ -12,19 +12,6 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
 {
     protected override IEnumerable<IMaintenanceTask> CreateMaintenanceTasks() => [new UserMergeTask()];
 
-    [TestInitialize]
-    public async Task EnsureUniqueSeededEmails()
-    {
-        // Give each pre-seeded user a unique email so they don't form duplicate
-        // groups and interfere with test-specific assertions.
-        foreach (var user in await Context.Users.ToListAsync())
-        {
-            user.Email = $"seeded-{user.Id}@unique.test";
-        }
-
-        await Context.SaveChangesAsync().ConfigureAwait(false);
-    }
-
     private User CreateUser(string subjectId, string email, string firstName, string lastName, DateTime? createdAt = null, DateTime? disabledAt = null, bool nullCreatedAt = false)
     {
         var user = new User

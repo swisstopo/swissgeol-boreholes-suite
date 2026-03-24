@@ -93,7 +93,7 @@ describe("User administration settings tests", () => {
     // User table should contain 1 entry
     verifyTableLength(1);
     verifyRowContains("publisher", 0);
-    verifyRowContains("example@example.com", 0);
+    verifyRowContains("publisher@example.com", 0);
     verifyRowContains("Active", 0);
 
     // Admin user should have role editor in workgroup World
