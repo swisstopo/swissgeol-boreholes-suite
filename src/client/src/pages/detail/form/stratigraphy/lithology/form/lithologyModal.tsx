@@ -10,6 +10,7 @@ import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
 import { FormInput } from "../../../../../../components/form/formInput.tsx";
 import { validateDepths } from "../../../../../../components/form/formUtils.ts";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
+import { capitalizeFirstLetter } from "../../../../../../utils.ts";
 import { Lithology } from "../../lithology.ts";
 import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
 import { LithologyUnconsolidatedForm } from "./lithologyUnconsolidatedForm.tsx";
@@ -127,10 +128,10 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
                       border: `1px solid ${theme.palette.border.light}`,
                     }}>
                     <ToggleButton value={true}>
-                      <Typography sx={{ textTransform: "capitalize" }}>{t("unconsolidated")}</Typography>
+                      <Typography>{capitalizeFirstLetter(t("unconsolidated"))}</Typography>
                     </ToggleButton>
                     <ToggleButton value={false}>
-                      <Typography sx={{ textTransform: "capitalize" }}>{t("consolidated")}</Typography>
+                      <Typography>{capitalizeFirstLetter(t("consolidated"))}</Typography>
                     </ToggleButton>
                   </ToggleButtonGroup>
                 )}
