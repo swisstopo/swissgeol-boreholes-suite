@@ -11,6 +11,7 @@ import {
   toggleCheckbox,
   toggleMultiSelect,
 } from "../helpers/formHelpers.js";
+import { navigateInStratigraphy, StratigraphyTab } from "../helpers/navigationHelpers.js";
 import { handlePrompt, stopBoreholeEditing } from "../helpers/testHelpers.js";
 import {
   addLithology,
@@ -27,6 +28,7 @@ const checkHasBedding = (hasBedding, share) => {
   if (hasBedding) {
     evaluateCheckbox("hasBedding", true);
     cy.dataCy("lithologyDescriptions.1").should("exist");
+    isDisabled("shareInverse");
 
     if (share) {
       evaluateInput("share", share);
@@ -100,15 +102,11 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     evaluateInput("fromDepth", 35);
     setInput("toDepth", 79);
 
-    cy.dataCy("shareInverse-formInput").should("not.exist");
-    isDisabled("share");
+    checkHasBedding(false);
     toggleCheckbox("hasBedding");
-    isDisabled("share", false);
-    cy.dataCy("shareInverse-formInput").should("exist");
-    isDisabled("shareInverse");
-
     setInput("share", 70);
-    evaluateInput("shareInverse", 30);
+    checkHasBedding(true, 70);
+
     setSelect("lithologyDescriptions.0.lithologyUnconMainId", 2);
     setSelect("lithologyDescriptions.0.lithologyUncon2Id", 2);
     evaluateSelect("lithologyDescriptions.0.lithologyUnconMainId", "boulder (Bo)");
@@ -192,6 +190,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     setSelect("toDepth", 0, 3);
     evaluateSelect("fromDepth", 0);
     evaluateSelect("toDepth", 35);
+    setInput("description", "lithological description 0 - 35");
     closeLayerModal();
 
     checkDepthColumn([
@@ -205,10 +204,8 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       "30% [Co-gr]: cobbles, gravelly",
     ]);
     checkLayerCardContent(LayerType.lithology, 79, 86, ["breccia, well sorted"]);
-    hasLayer(LayerType.lithologicalDescription, 0, null, true, false);
-    hasLayer(LayerType.lithologicalDescription, 0, 35);
+    checkLayerCardContent(LayerType.lithologicalDescription, 0, 35, ["lithological description 0 - 35"]);
     hasLayer(LayerType.lithologicalDescription, 35, null, true);
-    hasLayer(LayerType.lithologicalDescription, 79, null, true, false);
     hasLayer(LayerType.faciesDescription, 0, null, true);
     hasLayer(LayerType.faciesDescription, 35, null, true, false);
     hasLayer(LayerType.faciesDescription, 79, null, true, false);
@@ -220,6 +217,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     setSelect("toDepth", 1, 2);
     evaluateSelect("fromDepth", 35);
     evaluateSelect("toDepth", 86);
+    setInput("description", "lithological description 35 - 86");
     closeLayerModal();
 
     checkDepthColumn([
@@ -233,10 +231,8 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       "30% [Co-gr]: cobbles, gravelly",
     ]);
     checkLayerCardContent(LayerType.lithology, 79, 86, ["breccia, well sorted"]);
-    hasLayer(LayerType.lithologicalDescription, 0, null, true, false);
-    hasLayer(LayerType.lithologicalDescription, 0, 35);
-    hasLayer(LayerType.lithologicalDescription, 35, null, true, false);
-    hasLayer(LayerType.lithologicalDescription, 35, 86);
+    checkLayerCardContent(LayerType.lithologicalDescription, 0, 35, ["lithological description 0 - 35"]);
+    checkLayerCardContent(LayerType.lithologicalDescription, 35, 86, ["lithological description 35 - 86"]);
     hasLayer(LayerType.faciesDescription, 0, null, true);
     hasLayer(LayerType.faciesDescription, 35, null, true, false);
     hasLayer(LayerType.faciesDescription, 79, null, true, false);
@@ -248,6 +244,9 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     setSelect("toDepth", 2, 3);
     evaluateSelect("fromDepth", 35);
     evaluateSelect("toDepth", 86);
+    setSelect("faciesId", 1);
+    evaluateSelect("faciesId", "terrestrial");
+    setInput("description", "facies description 35 - 86");
     closeLayerModal();
 
     checkDepthColumn([
@@ -261,10 +260,10 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       "30% [Co-gr]: cobbles, gravelly",
     ]);
     checkLayerCardContent(LayerType.lithology, 79, 86, ["breccia, well sorted"]);
-    hasLayer(LayerType.lithologicalDescription, 0, 35);
-    hasLayer(LayerType.lithologicalDescription, 35, 86);
+    checkLayerCardContent(LayerType.lithologicalDescription, 0, 35, ["lithological description 0 - 35"]);
+    checkLayerCardContent(LayerType.lithologicalDescription, 35, 86, ["lithological description 35 - 86"]);
     hasLayer(LayerType.faciesDescription, 0, null, true);
-    hasLayer(LayerType.faciesDescription, 35, 86);
+    checkLayerCardContent(LayerType.faciesDescription, 35, 86, ["terrestrial", "facies description 35 - 86"]);
 
     openLayer(LayerType.faciesDescription, 0, null, true);
     evaluateSelect("fromDepth", 0);
@@ -288,15 +287,14 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       "30% [Co-gr]: cobbles, gravelly",
     ]);
     checkLayerCardContent(LayerType.lithology, 79, 86, ["breccia, well sorted"]);
-    hasLayer(LayerType.lithologicalDescription, 0, 35);
-    hasLayer(LayerType.lithologicalDescription, 35, 86);
-    hasLayer(LayerType.faciesDescription, 0, null, true, false);
+    checkLayerCardContent(LayerType.lithologicalDescription, 0, 35, ["lithological description 0 - 35"]);
+    checkLayerCardContent(LayerType.lithologicalDescription, 35, 86, ["lithological description 35 - 86"]);
     checkLayerCardContent(LayerType.faciesDescription, 0, 35, ["alluvial"]);
-    hasLayer(LayerType.faciesDescription, 35, 86);
+    checkLayerCardContent(LayerType.faciesDescription, 35, 86, ["terrestrial", "facies description 35 - 86"]);
 
     saveWithSaveBar();
-    cy.dataCy("chronostratigraphy-tab").click();
-    cy.dataCy("lithology-tab").click();
+    navigateInStratigraphy(StratigraphyTab.chronostratigraphy);
+    navigateInStratigraphy(StratigraphyTab.lithology);
     checkDepthColumn([
       [0, 35],
       [35, 79],
@@ -308,10 +306,27 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       "30% [Co-gr]: cobbles, gravelly",
     ]);
     checkLayerCardContent(LayerType.lithology, 79, 86, ["breccia, well sorted"]);
-    hasLayer(LayerType.lithologicalDescription, 0, 35);
-    hasLayer(LayerType.lithologicalDescription, 35, 86);
+    checkLayerCardContent(LayerType.lithologicalDescription, 0, 35, ["lithological description 0 - 35"]);
+    checkLayerCardContent(LayerType.lithologicalDescription, 35, 86, ["lithological description 35 - 86"]);
     checkLayerCardContent(LayerType.faciesDescription, 0, 35, ["alluvial"]);
-    hasLayer(LayerType.faciesDescription, 35, 86);
+    checkLayerCardContent(LayerType.faciesDescription, 35, 86, ["terrestrial", "facies description 35 - 86"]);
+
+    stopBoreholeEditing();
+    checkDepthColumn([
+      [0, 35],
+      [35, 79],
+      [79, 86],
+    ]);
+    checkLayerCardContent(LayerType.lithology, 0, 35, ["[MGr-co]: medium gravel, stony / with stones"]);
+    checkLayerCardContent(LayerType.lithology, 35, 79, [
+      "70% [Bo-bo]: boulder, blocky / with blocks",
+      "30% [Co-gr]: cobbles, gravelly",
+    ]);
+    checkLayerCardContent(LayerType.lithology, 79, 86, ["breccia, well sorted"]);
+    checkLayerCardContent(LayerType.lithologicalDescription, 0, 35, ["lithological description 0 - 35"]);
+    checkLayerCardContent(LayerType.lithologicalDescription, 35, 86, ["lithological description 35 - 86"]);
+    checkLayerCardContent(LayerType.faciesDescription, 0, 35, ["alluvial"]);
+    checkLayerCardContent(LayerType.lithologicalDescription, 35, 86, ["terrestrial", "facies description 35 - 86"]);
   });
 
   it("resets form when switching between unconsolidated and consolidated rock", () => {
