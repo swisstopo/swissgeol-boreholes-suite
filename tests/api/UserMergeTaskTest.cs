@@ -12,19 +12,18 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
 {
     protected override IEnumerable<IMaintenanceTask> CreateMaintenanceTasks() => [new UserMergeTask()];
 
-    private User CreateUser(string subjectId, string email, string firstName, string lastName, DateTime? createdAt = null, DateTime? disabledAt = null, bool nullCreatedAt = false, bool isAdmin = false)
+    private User CreateUser(string firstName, string lastName, DateTime? createdAt = null, Action<User>? customize = null)
     {
         var user = new User
         {
-            SubjectId = subjectId,
-            Email = email,
+            SubjectId = $"sub_{firstName}_{lastName}".ToLowerInvariant(),
+            Email = $"{firstName.ToLowerInvariant()}@test.com",
             FirstName = firstName,
             LastName = lastName,
             Name = firstName.ToLowerInvariant(),
-            CreatedAt = nullCreatedAt ? null : createdAt ?? DateTime.UtcNow,
-            DisabledAt = disabledAt,
-            IsAdmin = isAdmin,
+            CreatedAt = createdAt ?? DateTime.UtcNow,
         };
+        customize?.Invoke(user);
         Context.Users.Add(user);
         Context.SaveChanges();
         return user;
@@ -33,8 +32,8 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     [TestMethod]
     public async Task MergesDuplicateUsersAndReassignsAllForeignKeys()
     {
-        var oldUser = CreateUser("sub_BLAZEVAULT_old", "blazevault@test.com", "BLAZEVAULT", "Old", DateTime.UtcNow.AddDays(-10));
-        var newUser = CreateUser("sub_BLAZEVAULT_new", "blazevault@test.com", "BLAZEVAULT", "New", DateTime.UtcNow);
+        var oldUser = CreateUser("BLAZEVAULT", "AMBER", DateTime.UtcNow.AddDays(-10));
+        var newUser = CreateUser("BLAZEVAULT", "RIDGE", DateTime.UtcNow);
 
         var borehole = new Borehole { CreatedBy = oldUser, UpdatedBy = oldUser, LockedBy = oldUser };
         Context.Boreholes.Add(borehole);
@@ -55,8 +54,8 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     [TestMethod]
     public async Task MergesUserWorkgroupRoleWithoutDuplicates()
     {
-        var oldUser = CreateUser("sub_NIGHTPRISM_old", "nightprism@test.com", "NIGHTPRISM", "Old", DateTime.UtcNow.AddDays(-10));
-        var newUser = CreateUser("sub_NIGHTPRISM_new", "nightprism@test.com", "NIGHTPRISM", "New", DateTime.UtcNow);
+        var oldUser = CreateUser("NIGHTPRISM", "DUSK", DateTime.UtcNow.AddDays(-10));
+        var newUser = CreateUser("NIGHTPRISM", "DAWN", DateTime.UtcNow);
 
         var workgroup = await Context.Workgroups.FirstAsync();
         Context.UserWorkgroupRoles.Add(new UserWorkgroupRole { UserId = oldUser.Id, WorkgroupId = workgroup.Id, Role = Role.Editor });
@@ -72,8 +71,8 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     [TestMethod]
     public async Task MergesUserWorkgroupRoleWithOverlappingRoles()
     {
-        var oldUser = CreateUser("sub_STORMQUILL_old", "stormquill@test.com", "STORMQUILL", "Old", DateTime.UtcNow.AddDays(-10));
-        var newUser = CreateUser("sub_STORMQUILL_new", "stormquill@test.com", "STORMQUILL", "New", DateTime.UtcNow);
+        var oldUser = CreateUser("STORMQUILL", "FROST", DateTime.UtcNow.AddDays(-10));
+        var newUser = CreateUser("STORMQUILL", "FLARE", DateTime.UtcNow);
 
         var workgroup = await Context.Workgroups.FirstAsync();
         Context.UserWorkgroupRoles.Add(new UserWorkgroupRole { UserId = oldUser.Id, WorkgroupId = workgroup.Id, Role = Role.Editor });
@@ -97,8 +96,8 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     [TestMethod]
     public async Task MergesTermsAcceptedWithOverlappingEntries()
     {
-        var oldUser = CreateUser("sub_FROSTPEAK_old", "frostpeak@test.com", "FROSTPEAK", "Old", DateTime.UtcNow.AddDays(-10));
-        var newUser = CreateUser("sub_FROSTPEAK_new", "frostpeak@test.com", "FROSTPEAK", "New", DateTime.UtcNow);
+        var oldUser = CreateUser("FROSTPEAK", "SHADOW", DateTime.UtcNow.AddDays(-10));
+        var newUser = CreateUser("FROSTPEAK", "BLAZE", DateTime.UtcNow);
 
         var term = new Term { TextEn = "FROSTPEAK test term", Creation = DateTime.UtcNow };
         Context.Terms.Add(term);
@@ -121,11 +120,11 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     [TestMethod]
     public async Task HandlesMultipleDuplicateGroups()
     {
-        var oldUserA = CreateUser("sub_SILENTDRIFT_old", "silentdrift@test.com", "SILENTDRIFT", "Old", DateTime.UtcNow.AddDays(-10));
-        CreateUser("sub_SILENTDRIFT_new", "silentdrift@test.com", "SILENTDRIFT", "New", DateTime.UtcNow);
+        var oldUserA = CreateUser("SILENTDRIFT", "EMBER", DateTime.UtcNow.AddDays(-10));
+        CreateUser("SILENTDRIFT", "SPARK", DateTime.UtcNow);
 
-        var oldUserB = CreateUser("sub_CORALSPIRE_old", "coralspire@test.com", "CORALSPIRE", "Old", DateTime.UtcNow.AddDays(-10));
-        CreateUser("sub_CORALSPIRE_new", "coralspire@test.com", "CORALSPIRE", "New", DateTime.UtcNow);
+        var oldUserB = CreateUser("CORALSPIRE", "STEEL", DateTime.UtcNow.AddDays(-10));
+        CreateUser("CORALSPIRE", "CHROME", DateTime.UtcNow);
 
         Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.UserMerge, new MaintenanceTaskParameters(OnlyMissing: false, DryRun: false), AdminUserId));
         await Service.WaitForCompletionAsync(MaintenanceTaskType.UserMerge);
@@ -140,8 +139,8 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     [TestMethod]
     public async Task DryRunMakesNoChanges()
     {
-        var oldUser = CreateUser("sub_VOIDEMBER_old", "voidember@test.com", "VOIDEMBER", "Old", DateTime.UtcNow.AddDays(-10));
-        CreateUser("sub_VOIDEMBER_new", "voidember@test.com", "VOIDEMBER", "New", DateTime.UtcNow);
+        var oldUser = CreateUser("VOIDEMBER", "COBALT", DateTime.UtcNow.AddDays(-10));
+        CreateUser("VOIDEMBER", "COPPER", DateTime.UtcNow);
 
         var borehole = new Borehole { CreatedBy = oldUser };
         Context.Boreholes.Add(borehole);
@@ -164,7 +163,7 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     [TestMethod]
     public async Task SkipsSingleUserEmails()
     {
-        var uniqueUser = CreateUser("sub_ASHWEAVER", "ashweaver@test.com", "ASHWEAVER", "Unique", DateTime.UtcNow);
+        var uniqueUser = CreateUser("ASHWEAVER", "SOLO", DateTime.UtcNow);
 
         Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.UserMerge, new MaintenanceTaskParameters(OnlyMissing: false, DryRun: false), AdminUserId));
         await Service.WaitForCompletionAsync(MaintenanceTaskType.UserMerge);
@@ -181,8 +180,8 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     public async Task PreservesTargetDisabledState()
     {
         var disabledAt = DateTime.UtcNow.AddDays(-1);
-        CreateUser("sub_IRONBLOOM_old", "ironbloom@test.com", "IRONBLOOM", "Old", DateTime.UtcNow.AddDays(-10));
-        var newUser = CreateUser("sub_IRONBLOOM_new", "ironbloom@test.com", "IRONBLOOM", "New", DateTime.UtcNow, disabledAt: disabledAt);
+        CreateUser("IRONBLOOM", "GRANITE", DateTime.UtcNow.AddDays(-10));
+        var newUser = CreateUser("IRONBLOOM", "MARBLE", DateTime.UtcNow, u => u.DisabledAt = disabledAt);
 
         Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.UserMerge, new MaintenanceTaskParameters(OnlyMissing: false, DryRun: false), AdminUserId));
         await Service.WaitForCompletionAsync(MaintenanceTaskType.UserMerge);
@@ -195,8 +194,8 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     [TestMethod]
     public async Task PreservesTargetAdminFlag()
     {
-        CreateUser("sub_SOLARFLINT_old", "solarflint@test.com", "SOLARFLINT", "Old", DateTime.UtcNow.AddDays(-10), isAdmin: true);
-        var newUser = CreateUser("sub_SOLARFLINT_new", "solarflint@test.com", "SOLARFLINT", "New", DateTime.UtcNow, isAdmin: false);
+        CreateUser("SOLARFLINT", "ZENITH", DateTime.UtcNow.AddDays(-10), u => u.IsAdmin = true);
+        var newUser = CreateUser("SOLARFLINT", "NADIR", DateTime.UtcNow);
 
         Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.UserMerge, new MaintenanceTaskParameters(OnlyMissing: false, DryRun: false), AdminUserId));
         await Service.WaitForCompletionAsync(MaintenanceTaskType.UserMerge);
@@ -208,9 +207,9 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     [TestMethod]
     public async Task HandlesThreeOrMoreDuplicatesInGroup()
     {
-        var oldest = CreateUser("sub_BLAZERIFT_oldest", "blazerift@test.com", "BLAZERIFT", "Oldest", DateTime.UtcNow.AddDays(-20));
-        var middle = CreateUser("sub_BLAZERIFT_middle", "blazerift@test.com", "BLAZERIFT", "Middle", DateTime.UtcNow.AddDays(-10));
-        var newest = CreateUser("sub_BLAZERIFT_newest", "blazerift@test.com", "BLAZERIFT", "Newest", DateTime.UtcNow);
+        var oldest = CreateUser("BLAZERIFT", "IRON", DateTime.UtcNow.AddDays(-20));
+        var middle = CreateUser("BLAZERIFT", "SILVER", DateTime.UtcNow.AddDays(-10));
+        var newest = CreateUser("BLAZERIFT", "GOLD", DateTime.UtcNow);
 
         Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.UserMerge, new MaintenanceTaskParameters(OnlyMissing: false, DryRun: false), AdminUserId));
         await Service.WaitForCompletionAsync(MaintenanceTaskType.UserMerge);
@@ -226,8 +225,8 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     [TestMethod]
     public async Task GroupsEmailsCaseInsensitively()
     {
-        var lower = CreateUser("sub_ECLIPSEFANG_lower", "eclipsefang@test.com", "ECLIPSEFANG", "Lower", DateTime.UtcNow.AddDays(-10));
-        var upper = CreateUser("sub_ECLIPSEFANG_upper", "ECLIPSEFANG@TEST.COM", "ECLIPSEFANG", "Upper", DateTime.UtcNow);
+        var lower = CreateUser("ECLIPSEFANG", "LUNAR", DateTime.UtcNow.AddDays(-10));
+        var upper = CreateUser("ECLIPSEFANG", "SOLAR", DateTime.UtcNow, u => u.Email = "ECLIPSEFANG@TEST.COM");
 
         Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.UserMerge, new MaintenanceTaskParameters(OnlyMissing: false, DryRun: false), AdminUserId));
         await Service.WaitForCompletionAsync(MaintenanceTaskType.UserMerge);
@@ -242,8 +241,8 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     [TestMethod]
     public async Task HandlesBoreholeFileTripleFkReassignment()
     {
-        var oldUser = CreateUser("sub_PRISMVOLT_old", "prismvolt@test.com", "PRISMVOLT", "Old", DateTime.UtcNow.AddDays(-10));
-        var newUser = CreateUser("sub_PRISMVOLT_new", "prismvolt@test.com", "PRISMVOLT", "New", DateTime.UtcNow);
+        var oldUser = CreateUser("PRISMVOLT", "QUARTZ", DateTime.UtcNow.AddDays(-10));
+        var newUser = CreateUser("PRISMVOLT", "OPAL", DateTime.UtcNow);
 
         var borehole = new Borehole { CreatedBy = newUser, UpdatedBy = newUser };
         Context.Boreholes.Add(borehole);
@@ -268,8 +267,8 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     [TestMethod]
     public async Task KeepsUserWithHighestId()
     {
-        var older = CreateUser("sub_GHOSTPULSE_old", "ghostpulse@test.com", "GHOSTPULSE", "Old");
-        var newer = CreateUser("sub_GHOSTPULSE_new", "ghostpulse@test.com", "GHOSTPULSE", "New");
+        var older = CreateUser("GHOSTPULSE", "DAGGER");
+        var newer = CreateUser("GHOSTPULSE", "LANCE");
         Assert.IsTrue(newer.Id > older.Id);
 
         Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.UserMerge, new MaintenanceTaskParameters(OnlyMissing: false, DryRun: false), AdminUserId));
@@ -283,8 +282,8 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     [TestMethod]
     public async Task StartUserMergeReturns202AndConflictReturns409()
     {
-        CreateUser("sub_CRIMSONTIDE_old", "crimsontide@test.com", "CRIMSONTIDE", "Old", DateTime.UtcNow.AddDays(-10));
-        CreateUser("sub_CRIMSONTIDE_new", "crimsontide@test.com", "CRIMSONTIDE", "New", DateTime.UtcNow);
+        CreateUser("CRIMSONTIDE", "RAVEN", DateTime.UtcNow.AddDays(-10));
+        CreateUser("CRIMSONTIDE", "HAWK", DateTime.UtcNow);
 
         // First start should succeed.
         Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.UserMerge, new MaintenanceTaskParameters(OnlyMissing: false, DryRun: false), AdminUserId));
@@ -332,8 +331,8 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     [TestMethod]
     public async Task SourceUserIsDeletableAfterMerge()
     {
-        var oldUser = CreateUser("sub_DAWNFORGE_old", "dawnforge@test.com", "DAWNFORGE", "Old", DateTime.UtcNow.AddDays(-10));
-        var newUser = CreateUser("sub_DAWNFORGE_new", "dawnforge@test.com", "DAWNFORGE", "New", DateTime.UtcNow);
+        var oldUser = CreateUser("DAWNFORGE", "ANVIL", DateTime.UtcNow.AddDays(-10));
+        var newUser = CreateUser("DAWNFORGE", "FORGE", DateTime.UtcNow);
 
         // Standard FK: borehole with CreatedBy/UpdatedBy
         var borehole = new Borehole { CreatedBy = oldUser, UpdatedBy = oldUser };
