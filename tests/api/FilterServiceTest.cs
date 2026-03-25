@@ -291,7 +291,7 @@ public class FilterServiceTest
 
         Assert.IsNotNull(result);
         Assert.IsNotNull(result.GeoJson);
-        Assert.IsTrue(result.GeoJson.Count >= 0);
+        Assert.IsTrue(result.GeoJson.Count() >= 0);
 
         // GeoJSON contains all filtered boreholes with geometry, not just the paginated ones
         Assert.AreEqual(2426, result.GeoJson.Count);
