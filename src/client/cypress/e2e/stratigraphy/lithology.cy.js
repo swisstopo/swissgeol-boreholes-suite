@@ -32,7 +32,7 @@ import {
 } from "./lithologyHelpers.js";
 
 describe("Lithology, Lithology descriptions, Facies descriptions tests", () => { 
-  it.only("adds and displays lithologies, lithological descriptions and facies descriptions", () => {
+  it("adds and displays lithologies, lithological descriptions and facies descriptions", () => {
     openNewStratigraphy();
     
     // Add unconsolidated lithology with one lithology description
