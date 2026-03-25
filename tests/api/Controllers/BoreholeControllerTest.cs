@@ -153,9 +153,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task AddEditAndDeleteBoreholeIdentifiers()
     {
-        using var initialContext = ContextFactory.CreateContext();
-
-        var boreholeToEdit = await initialContext.Boreholes.SingleAsync(c => c.Id == testBoreholeId);
+        var boreholeToEdit = await context.Boreholes.SingleAsync(c => c.Id == testBoreholeId);
         Assert.AreEqual(0, boreholeToEdit.BoreholeCodelists.Count);
 
         // Add two borehole ids for the same identifier type to the borehole
@@ -173,11 +171,10 @@ public class BoreholeControllerTest
             Value = "Another ID GeoQuat value",
         });
 
-        await initialContext.SaveChangesAsync();
+        await context.SaveChangesAsync();
         Assert.AreEqual(2, boreholeToEdit.BoreholeCodelists.Count);
 
-        using var updateContext = ContextFactory.CreateContext();
-        var updateController = GetTestController(updateContext);
+        var updateController = GetTestController(context);
 
         var boreholeWithNewIdentifiers = new Borehole
         {
@@ -211,8 +208,7 @@ public class BoreholeControllerTest
         var updatedBorehole = ActionResultAssert.IsOkObjectResult<Borehole>(updatedResponse.Result);
         Assert.AreEqual(3, updatedBorehole.BoreholeCodelists.Count);
 
-        using var deleteContext = ContextFactory.CreateContext();
-        var deleteController = GetTestController(deleteContext);
+        var deleteController = GetTestController(context);
 
         var boreholeWithNoMoreIdentifiers = new Borehole
         {
