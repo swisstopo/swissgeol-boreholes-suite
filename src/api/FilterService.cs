@@ -247,11 +247,11 @@ public class FilterService : IFilterService
         {
             if (filterRequest.HasGeometry.Value)
             {
-                query = query.Where(b => b.Geometry != null);
+                query = query.Where(b => b.BoreholeGeometry.Count > 0);
             }
             else
             {
-                query = query.Where(b => b.Geometry == null);
+                query = query.Where(b => b.BoreholeGeometry == null || b.BoreholeGeometry.Count < 1);
             }
         }
 
