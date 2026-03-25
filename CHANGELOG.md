@@ -14,6 +14,7 @@
 - Migrated `custom.lithostratigraphy_top_bedrock` codelist to `lithostratigraphy`.
 - Migrated `custom.chronostratigraphy_top_bedrock` codelist to `chronostratigraphy`.
 - Deleted legacy codelists `colour`, `alteration`, `description_quality` and `custom.lithology_top_bedrock` (migrated to `lithology_con`).
+- Restriction until now has the data type `DateOnly` instead of `DateTime`.
 
 ### Fixed
 - All tables in the `logs` and `attachments` tab of the borehole detail view were missing pagination.
