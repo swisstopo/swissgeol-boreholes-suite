@@ -1,5 +1,5 @@
 import { saveWithSaveBar } from "../helpers/buttonHelpers.js";
-import { setInput } from "../helpers/formHelpers.js";
+import { formatWithThousandsSeparator, setInput } from "../helpers/formHelpers.js";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
 import { goToRouteAndAcceptTerms, newEditableBorehole } from "../helpers/testHelpers.js";
 
@@ -8,7 +8,7 @@ const layerSelector = (layerType, fromDepth, toDepth, isGap = false) => {
     return cy.dataCy(`${layerType}-${fromDepth}-0-gap`);
   }
   return cy.get(
-    `[data-cy^="${layerType}-"]:not([data-cy$="-gap"]):contains("${fromDepth} m MD"):contains("${toDepth} m MD")`,
+    `[data-cy^="${layerType}-"]:not([data-cy$="-gap"]):contains("${formatWithThousandsSeparator(fromDepth)} m MD"):contains("${formatWithThousandsSeparator(toDepth)} m MD")`,
   );
 };
 
