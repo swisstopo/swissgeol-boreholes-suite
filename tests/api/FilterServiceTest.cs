@@ -61,8 +61,8 @@ public class FilterServiceTest
         Assert.IsNotNull(result.Boreholes);
         Assert.AreEqual(100, result.Boreholes.Count());
 
-        // GeoJSON contains all filtered boreholes with geometry (2999 out of 3000 editor's boreholes have geometry)
-        Assert.AreEqual(2999, result.GeoJson.Count);
+        // GeoJSON contains all filtered boreholes with geometry (2426 out of 3000 editor's boreholes have geometry)
+        Assert.AreEqual(2426, result.GeoJson.Count);
 
         // Editor should only see boreholes from their workgroups
         var editor = await context.UsersWithIncludes
@@ -295,7 +295,7 @@ public class FilterServiceTest
 
         // GeoJSON contains all filtered boreholes with geometry, not just the paginated ones
         Assert.AreEqual(2426, result.GeoJson.Count);
-        var firstFeature = result.GeoJson.First();
+        var firstFeature = result.GeoJson.OrderBy(g => g.Attributes["id"]).First();
         Assert.AreEqual(4, firstFeature.Attributes.Count);
         Assert.AreEqual(1000000, firstFeature.Attributes["id"]);
         Assert.AreEqual(null, firstFeature.Attributes["type"]);

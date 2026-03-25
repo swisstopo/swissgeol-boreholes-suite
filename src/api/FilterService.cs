@@ -307,25 +307,26 @@ public class FilterService : IFilterService
 
         if (string.IsNullOrWhiteSpace(orderBy))
         {
-            // Default ordering by Id
-            return isDescending ? query.OrderByDescending(b => b.Id) : query.OrderBy(b => b.Id);
+            // Default ordering by Name
+            return isDescending ? query.OrderByDescending(b => b.Name) : query.OrderBy(b => b.Name);
         }
 
+         // Todo: improve orderExpression, do not reset to first page when order changes!
         // Orderby relevant properties.
-        Expression<Func<Borehole, object>> orderExpression = orderBy switch
+        Expression<Func<Borehole, object>> orderExpression = orderBy.ToUpperInvariant() switch
         {
-            nameof(Borehole.Id) => b => b.Id,
-            nameof(Borehole.OriginalName) => b => b.OriginalName ?? string.Empty,
-            nameof(Borehole.Name) => b => b.Name ?? string.Empty,
-            nameof(Borehole.ProjectName) => b => b.ProjectName ?? string.Empty,
-            nameof(Borehole.WorkgroupId) => b => b.WorkgroupId ?? 0,
-            nameof(Borehole.StatusId) => b => b.StatusId ?? 0,
-            nameof(Borehole.TypeId) => b => b.TypeId ?? 0,
-            nameof(Borehole.PurposeId) => b => b.PurposeId ?? 0,
-            nameof(Borehole.TotalDepth) => b => b.TotalDepth ?? 0,
-            nameof(Borehole.ElevationZ) => b => b.ElevationZ ?? 0,
-            nameof(Borehole.LocationX) => b => b.LocationX ?? 0,
-            nameof(Borehole.LocationY) => b => b.LocationY ?? 0,
+            "ID" => b => b.Id,
+            "ORIGINALNAME" => b => b.OriginalName ?? string.Empty,
+            "NAME" => b => b.Name ?? string.Empty,
+            "PROJECTNAME" => b => b.ProjectName ?? string.Empty,
+            "WORKGROUPID" => b => b.WorkgroupId ?? 0,
+            "STATUSID" => b => b.StatusId ?? 0,
+            "TYPEID" => b => b.TypeId ?? 0,
+            "PURPOSEID" => b => b.PurposeId ?? 0,
+            "TOTALDEPTH" => b => b.TotalDepth ?? 0,
+            "ELEVATIONZ" => b => b.ElevationZ ?? 0,
+            "LOCATIONX" => b => b.LocationX ?? 0,
+            "LOCATIONY" => b => b.LocationY ?? 0,
             _ => b => b.Id,
         };
 
