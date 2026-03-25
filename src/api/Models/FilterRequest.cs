@@ -48,6 +48,11 @@ public class FilterRequest
     public IEnumerable<int>? PurposeId { get; set; }
 
     /// <summary>
+    /// Gets or sets the workflow status filter.
+    /// </summary>
+    public WorkflowStatus? WorkflowStatus { get; set; }
+
+    /// <summary>
     /// Gets or sets the workgroup ID filter.
     /// </summary>
     [MaxLength(100)]

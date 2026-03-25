@@ -1125,4 +1125,66 @@ public class FilterServiceTest
         Assert.AreEqual(3000, result.FilteredBoreholeIds.Count());
         Assert.AreEqual(2426, result.GeoJson.Count()); // not all test boreholes have a geometry, so GeoJson count is less than total count
     }
+
+    [TestMethod]
+    public async Task FilterBoreholesWithWorkflowStatusReturnsMatchingBoreholes()
+    {
+        var testBoreholes = new List<Borehole>();
+        var statusCounts = new Dictionary<WorkflowStatus, int>
+        {
+            { WorkflowStatus.Draft, 3000 }, // from seeddata
+            { WorkflowStatus.InReview, 3 },
+            { WorkflowStatus.Reviewed, 4 },
+            { WorkflowStatus.Published, 2 },
+        };
+
+        foreach (var status in new[] { WorkflowStatus.InReview, WorkflowStatus.Reviewed, WorkflowStatus.Published })
+        {
+            for (int i = 1; i <= statusCounts[status]; i++)
+            {
+                testBoreholes.Add(new Borehole
+                {
+                    OriginalName = $"{status} Borehole {i}",
+                    WorkgroupId = 1,
+                    Workflow = new Workflow
+                    {
+                        Status = status,
+                        ReviewedTabs = new(),
+                        PublishedTabs = new(),
+                    },
+                });
+            }
+        }
+
+        await context.Boreholes.AddRangeAsync(testBoreholes);
+        await context.SaveChangesAsync();
+
+        // Test filtering by each workflow status
+        foreach (var status in Enum.GetValues<WorkflowStatus>())
+        {
+            var filterRequest = new FilterRequest
+            {
+                WorkflowStatus = status,
+                PageNumber = 1,
+                PageSize = 100,
+            };
+
+            var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+
+            Assert.IsNotNull(result);
+            Assert.AreEqual(statusCounts[status], result.TotalCount, $"Expected {statusCounts[status]} boreholes with status {status}");
+
+            // Verify that all returned boreholes have the correct status
+            var originalBoreholes = await context.Boreholes
+                .Include(b => b.Workflow)
+                .Where(b => result.Boreholes.Select(rb => rb.Id).Contains(b.Id))
+                .ToListAsync();
+
+            foreach (var borehole in originalBoreholes)
+            {
+                Assert.IsNotNull(borehole.Workflow);
+                Assert.AreEqual(status, borehole.Workflow.Status, $"Borehole {borehole.Id} should have status {status}");
+            }
+        }
+    }
 }
