@@ -60,7 +60,7 @@ export const StatusBadges = ({ borehole }: StatusBadgesProps) => {
         restrictionLabel = t("restricted");
         break;
       case restrictionUntilCode:
-        restrictionLabel = `${t("restriction_until")} ${borehole?.restrictionUntil ? new Date(borehole.restrictionUntil).toLocaleDateString("de-CH") : "-"}`;
+        restrictionLabel = `${t("restriction_until")} ${borehole?.restrictionUntil ? new Date(`${borehole.restrictionUntil}T00:00:00`).toLocaleDateString("de-CH") : "-"}`;
         break;
       default:
         return;
