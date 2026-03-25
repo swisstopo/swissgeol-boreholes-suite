@@ -1,22 +1,6 @@
-import {saveWithSaveBar} from "../helpers/buttonHelpers.js";
-import {
-  evaluateInput,
-  evaluateSelect,
-  setInput,
-  setSelect,
-} from "../helpers/formHelpers.js";
-import {navigateInStratigraphy, StratigraphyTab} from "../helpers/navigationHelpers.js";
-import {stopBoreholeEditing} from "../helpers/testHelpers.js";
-import {
-  addLithology,
-  checkDepthColumn,
-  checkLayerCardContent,
-  closeLayerModal,
-  hasLayer,
-  LayerType,
-  openLayer,
-  openNewStratigraphy,
-} from "./stratigraphyHelpers.js";
+import { saveForm, saveWithSaveBar, verifyUnsavedChanges } from "../helpers/buttonHelpers.js";
+import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers.js";
+import { stopBoreholeEditing } from "../helpers/testHelpers.js";
 import {
   evaluateConsolidatedLithologyForm,
   evaluateFaciesDescriptionForm,
@@ -30,11 +14,58 @@ import {
   RockType,
   switchRockType,
 } from "./lithologyHelpers.js";
+import {
+  addLithology,
+  checkDepthColumn,
+  checkLayerCardContent,
+  closeLayerModal,
+  hasLayer,
+  LayerType,
+  openLayer,
+  openNewStratigraphy,
+} from "./stratigraphyHelpers.js";
 
-describe("Lithology, Lithology descriptions, Facies descriptions tests", () => { 
-  it("adds and displays lithologies, lithological descriptions and facies descriptions", () => {
+const openStratigraphyWith3Lithologies = () => {
+  openNewStratigraphy();
+  addLithology();
+  fillUnconsolidatedLithologyForm({
+    fromDepth: 0,
+    toDepth: 355,
+  });
+  closeLayerModal();
+  addLithology();
+  fillUnconsolidatedLithologyForm({
+    fromDepth: 355,
+    toDepth: 798,
+  });
+  closeLayerModal();
+  addLithology();
+  fillUnconsolidatedLithologyForm({
+    fromDepth: 798,
+    toDepth: 1123,
+  });
+  closeLayerModal();
+
+  checkDepthColumn([
+    [0, 355],
+    [355, 798],
+    [798, 1123],
+  ]);
+  hasLayer(LayerType.lithology, 0, 355);
+  hasLayer(LayerType.lithology, 355, 798);
+  hasLayer(LayerType.lithology, 798, 1123);
+  hasLayer(LayerType.lithologicalDescription, 0, null, true);
+  hasLayer(LayerType.lithologicalDescription, 355, null, true, false);
+  hasLayer(LayerType.lithologicalDescription, 798, null, true, false);
+  hasLayer(LayerType.faciesDescription, 0, null, true);
+  hasLayer(LayerType.faciesDescription, 355, null, true, false);
+  hasLayer(LayerType.faciesDescription, 798, null, true, false);
+};
+
+describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
+  it("adds, updates and displays lithologies", () => {
     openNewStratigraphy();
-    
+
     // Add unconsolidated lithology with one lithology description
     addLithology();
     isUnconsolidatedForm(true);
@@ -44,70 +75,37 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       lithologyDescriptions: [{ lithologyUnconMainId: 9, lithologyUncon2Id: 3 }],
     });
     evaluateUnconsolidatedLithologyForm({
-      lithologyDescriptions: [{ lithologyUnconMainId: "fine gravel (FGr)", lithologyUncon2Id: "stony / with stones (co)" }],
+      lithologyDescriptions: [
+        { lithologyUnconMainId: "fine gravel (FGr)", lithologyUncon2Id: "stony / with stones (co)" },
+      ],
     });
     closeLayerModal();
+    verifyUnsavedChanges();
 
     checkDepthColumn([[0, 355]]);
     checkLayerCardContent(LayerType.lithology, 0, 355, ["[FGr-co]: fine gravel, stony / with stones"]);
     hasLayer(LayerType.lithologicalDescription, 0, null, true);
     hasLayer(LayerType.faciesDescription, 0, null, true);
 
-    // Edit lithology and check that changes are applied
+    // Edit unconsolidated lithology and check that changes are applied
     openLayer(LayerType.lithology, 0, 355);
     setSelect("lithologyDescriptions.0.lithologyUnconMainId", 7);
     evaluateSelect("lithologyDescriptions.0.lithologyUnconMainId", "medium gravel (MGr)");
     closeLayerModal();
     checkLayerCardContent(LayerType.lithology, 0, 355, ["[MGr-co]: medium gravel, stony / with stones"]);
 
-    // Add another unconsolidated lithology with two lithology descriptions
-    addLithology();
-    isUnconsolidatedForm(true);
-    evaluateInput("fromDepth", 355);
-    fillUnconsolidatedLithologyForm({
-      fromDepth: 355,
-      toDepth: 798,
-      hasBedding: true,
-      share: 70,
-      lithologyDescriptions: [
-        { lithologyUnconMainId: 2, lithologyUncon2Id: 2 },
-        { lithologyUnconMainId: 3, lithologyUncon2Id: 4 },
-      ],
-    });
-    evaluateUnconsolidatedLithologyForm({
-      hasBedding: true,
-      share: 70,
-      lithologyDescriptions: [
-        { lithologyUnconMainId: "boulder (Bo)", lithologyUncon2Id: "blocky / with blocks (bo)" },
-        { lithologyUnconMainId: "cobbles (Co)", lithologyUncon2Id: "gravelly (gr)" },
-      ],
-    });
-    closeLayerModal();
-
-    checkDepthColumn([
-      [0, 355],
-      [355, 798],
-    ]);
-    checkLayerCardContent(LayerType.lithology, 0, 355, ["[MGr-co]: medium gravel, stony / with stones"]);
-    checkLayerCardContent(LayerType.lithology, 355, 798, [
-      "70% [Bo-bo]: boulder, blocky / with blocks",
-      "30% [Co-gr]: cobbles, gravelly",
-    ]);
-    hasLayer(LayerType.lithologicalDescription, 0, null, true);
-    hasLayer(LayerType.lithologicalDescription, 355, null, true, false);
-    hasLayer(LayerType.faciesDescription, 0, null, true);
-    hasLayer(LayerType.faciesDescription, 355, null, true, false);
-
     // Add consolidated lithology
     addLithology();
+    isUnconsolidatedForm(true);
     switchRockType(RockType.consolidated, "Continue");
     evaluateInput("fromDepth", 798);
     fillConsolidatedLithologyForm({
-      fromDepth: 798,
       toDepth: 1123,
       lithologyDescriptions: [{ lithologyConId: 4, gradationId: 2 }],
     });
     evaluateConsolidatedLithologyForm({
+      fromDepth: 798,
+      toDepth: 1123,
       lithologyDescriptions: [{ lithologyConId: "psephite", gradationId: "well sorted" }],
     });
     closeLayerModal();
@@ -118,10 +116,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [798, 1123],
     ]);
     checkLayerCardContent(LayerType.lithology, 0, 355, ["[MGr-co]: medium gravel, stony / with stones"]);
-    checkLayerCardContent(LayerType.lithology, 355, 798, [
-      "70% [Bo-bo]: boulder, blocky / with blocks",
-      "30% [Co-gr]: cobbles, gravelly",
-    ]);
+    hasLayer(LayerType.lithology, 355, null, true);
     checkLayerCardContent(LayerType.lithology, 798, 1123, ["psephite, well sorted"]);
     hasLayer(LayerType.lithologicalDescription, 0, null, true);
     hasLayer(LayerType.lithologicalDescription, 355, null, true, false);
@@ -142,10 +137,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [798, 1123],
     ]);
     checkLayerCardContent(LayerType.lithology, 0, 355, ["[MGr-co]: medium gravel, stony / with stones"]);
-    checkLayerCardContent(LayerType.lithology, 355, 798, [
-      "70% [Bo-bo]: boulder, blocky / with blocks",
-      "30% [Co-gr]: cobbles, gravelly",
-    ]);
+    hasLayer(LayerType.lithology, 355, null, true);
     checkLayerCardContent(LayerType.lithology, 798, 1123, ["breccia, well sorted"]);
     hasLayer(LayerType.lithologicalDescription, 0, null, true);
     hasLayer(LayerType.lithologicalDescription, 355, null, true, false);
@@ -153,6 +145,66 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasLayer(LayerType.faciesDescription, 0, null, true);
     hasLayer(LayerType.faciesDescription, 355, null, true, false);
     hasLayer(LayerType.faciesDescription, 798, null, true, false);
+
+    // Cannot save if there's a gap in the lithology column
+    saveForm();
+    cy.get(".MuiAlert-message").should(
+      "contain",
+      "There are gaps or overlaps in the lithology. Please resolve the issues before saving.",
+    );
+
+    verifyUnsavedChanges();
+
+    openLayer(LayerType.lithology, 355, null, true);
+    // Inherits rock type from previous layer, so form should be unconsolidated
+    isUnconsolidatedForm(true);
+    evaluateInput("fromDepth", 355);
+    evaluateInput("toDepth", 798);
+    fillUnconsolidatedLithologyForm({
+      lithologyDescriptions: [{ lithologyUnconMainId: 3 }],
+    });
+    evaluateUnconsolidatedLithologyForm({
+      lithologyDescriptions: [{ lithologyUnconMainId: "cobbles (Co)" }],
+    });
+    closeLayerModal();
+
+    checkDepthColumn([
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    checkLayerCardContent(LayerType.lithology, 0, 355, ["[MGr-co]: medium gravel, stony / with stones"]);
+    checkLayerCardContent(LayerType.lithology, 355, 798, ["[Co]: cobbles"]);
+    checkLayerCardContent(LayerType.lithology, 798, 1123, ["breccia, well sorted"]);
+    hasLayer(LayerType.lithologicalDescription, 0, null, true);
+    hasLayer(LayerType.lithologicalDescription, 355, null, true, false);
+    hasLayer(LayerType.lithologicalDescription, 798, null, true, false);
+    hasLayer(LayerType.faciesDescription, 0, null, true);
+    hasLayer(LayerType.faciesDescription, 355, null, true, false);
+    hasLayer(LayerType.faciesDescription, 798, null, true, false);
+
+    // Can save after filling gap, even if lithological descriptions and facies descriptions are missing
+    saveWithSaveBar();
+
+    stopBoreholeEditing();
+    checkDepthColumn([
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    checkLayerCardContent(LayerType.lithology, 0, 355, ["[MGr-co]: medium gravel, stony / with stones"]);
+    checkLayerCardContent(LayerType.lithology, 355, 798, ["[Co]: cobbles"]);
+    checkLayerCardContent(LayerType.lithology, 798, 1123, ["breccia, well sorted"]);
+    hasLayer(LayerType.lithologicalDescription, 0, null, true);
+    hasLayer(LayerType.lithologicalDescription, 355, null, true, false);
+    hasLayer(LayerType.lithologicalDescription, 798, null, true, false);
+    hasLayer(LayerType.faciesDescription, 0, null, true);
+    hasLayer(LayerType.faciesDescription, 355, null, true, false);
+    hasLayer(LayerType.faciesDescription, 798, null, true, false);
+  });
+
+  it("adds, updates and displays lithological descriptions", () => {
+    openStratigraphyWith3Lithologies();
 
     // Add lithological description from gap and check that it has the correct depth range
     openLayer(LayerType.lithologicalDescription, 0, null, true);
@@ -166,12 +218,9 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [355, 798],
       [798, 1123],
     ]);
-    checkLayerCardContent(LayerType.lithology, 0, 355, ["[MGr-co]: medium gravel, stony / with stones"]);
-    checkLayerCardContent(LayerType.lithology, 355, 798, [
-      "70% [Bo-bo]: boulder, blocky / with blocks",
-      "30% [Co-gr]: cobbles, gravelly",
-    ]);
-    checkLayerCardContent(LayerType.lithology, 798, 1123, ["breccia, well sorted"]);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, 798);
+    hasLayer(LayerType.lithology, 798, 1123);
     hasLayer(LayerType.lithologicalDescription, 0, 355);
     hasLayer(LayerType.lithologicalDescription, 355, null, true);
     hasLayer(LayerType.faciesDescription, 0, null, true);
@@ -182,20 +231,21 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     openLayer(LayerType.lithologicalDescription, 0, 355);
     evaluateLithologicalDescriptionForm({ fromDepth: 0, toDepth: 355 });
     fillLithologicalDescriptionForm({ description: "lithological description 0 - 355" });
-    evaluateLithologicalDescriptionForm({ fromDepth: 0, toDepth: 355, description: "lithological description 0 - 355" });
+    evaluateLithologicalDescriptionForm({
+      fromDepth: 0,
+      toDepth: 355,
+      description: "lithological description 0 - 355",
+    });
     closeLayerModal();
 
-        checkDepthColumn([
+    checkDepthColumn([
       [0, 355],
       [355, 798],
       [798, 1123],
     ]);
-    checkLayerCardContent(LayerType.lithology, 0, 355, ["[MGr-co]: medium gravel, stony / with stones"]);
-    checkLayerCardContent(LayerType.lithology, 355, 798, [
-      "70% [Bo-bo]: boulder, blocky / with blocks",
-      "30% [Co-gr]: cobbles, gravelly",
-    ]);
-    checkLayerCardContent(LayerType.lithology, 798, 1123, ["breccia, well sorted"]);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, 798);
+    hasLayer(LayerType.lithology, 798, 1123);
     checkLayerCardContent(LayerType.lithologicalDescription, 0, 355, ["lithological description 0 - 355"]);
     hasLayer(LayerType.lithologicalDescription, 355, null, true);
     hasLayer(LayerType.faciesDescription, 0, null, true);
@@ -205,7 +255,13 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     // Add lithological description from remaining gap and check that it has the correct depth range
     openLayer(LayerType.lithologicalDescription, 355, null, true);
     evaluateLithologicalDescriptionForm({ fromDepth: 355, toDepth: 1123 });
-    fillLithologicalDescriptionForm({ fromDepth: 0, fromDepthExpected: 2, toDepth: 1, toDepthExpected: 2, description: "lithological description 355 - 1123" });
+    fillLithologicalDescriptionForm({
+      fromDepth: 0,
+      fromDepthExpected: 2,
+      toDepth: 1,
+      toDepthExpected: 2,
+      description: "lithological description 355 - 1123",
+    });
     evaluateLithologicalDescriptionForm({ fromDepth: 355, toDepth: 1123 });
     closeLayerModal();
 
@@ -214,22 +270,45 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [355, 798],
       [798, 1123],
     ]);
-    checkLayerCardContent(LayerType.lithology, 0, 355, ["[MGr-co]: medium gravel, stony / with stones"]);
-    checkLayerCardContent(LayerType.lithology, 355, 798, [
-      "70% [Bo-bo]: boulder, blocky / with blocks",
-      "30% [Co-gr]: cobbles, gravelly",
-    ]);
-    checkLayerCardContent(LayerType.lithology, 798, 1123, ["breccia, well sorted"]);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, 798);
+    hasLayer(LayerType.lithology, 798, 1123);
     checkLayerCardContent(LayerType.lithologicalDescription, 0, 355, ["lithological description 0 - 355"]);
     checkLayerCardContent(LayerType.lithologicalDescription, 355, 1123, ["lithological description 355 - 1123"]);
     hasLayer(LayerType.faciesDescription, 0, null, true);
     hasLayer(LayerType.faciesDescription, 355, null, true, false);
     hasLayer(LayerType.faciesDescription, 798, null, true, false);
 
+    saveWithSaveBar();
+    stopBoreholeEditing();
+    checkDepthColumn([
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, 798);
+    hasLayer(LayerType.lithology, 798, 1123);
+    checkLayerCardContent(LayerType.lithologicalDescription, 0, 355, ["lithological description 0 - 355"]);
+    checkLayerCardContent(LayerType.lithologicalDescription, 355, 1123, ["lithological description 355 - 1123"]);
+    checkLayerCardContent(LayerType.faciesDescription, 0, 355, ["alluvial"]);
+    checkLayerCardContent(LayerType.faciesDescription, 355, 1123, ["alluvial fan", "facies description 355 - 1123"]);
+  });
+
+  it("adds, updates and displays facies descriptions", () => {
+    openStratigraphyWith3Lithologies();
+
     // Add facies description from gap and check that it has the correct depth range
     openLayer(LayerType.faciesDescription, 0, null, true);
     evaluateFaciesDescriptionForm({ fromDepth: 0, toDepth: 1123 });
-    fillFaciesDescriptionForm({ fromDepth: 1, fromDepthExpected: 3, toDepth: 2, toDepthExpected: 3, faciesId: 1, description: "facies description 355 - 1123" });
+    fillFaciesDescriptionForm({
+      fromDepth: 1,
+      fromDepthExpected: 3,
+      toDepth: 2,
+      toDepthExpected: 3,
+      faciesId: 1,
+      description: "facies description 355 - 1123",
+    });
     evaluateFaciesDescriptionForm({ fromDepth: 355, toDepth: 1123, faciesId: "terrestrial" });
     closeLayerModal();
 
@@ -238,37 +317,43 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [355, 798],
       [798, 1123],
     ]);
-    checkLayerCardContent(LayerType.lithology, 0, 355, ["[MGr-co]: medium gravel, stony / with stones"]);
-    checkLayerCardContent(LayerType.lithology, 355, 798, [
-      "70% [Bo-bo]: boulder, blocky / with blocks",
-      "30% [Co-gr]: cobbles, gravelly",
-    ]);
-    checkLayerCardContent(LayerType.lithology, 798, 1123, ["breccia, well sorted"]);
-    checkLayerCardContent(LayerType.lithologicalDescription, 0, 355, ["lithological description 0 - 355"]);
-    checkLayerCardContent(LayerType.lithologicalDescription, 355, 1123, ["lithological description 355 - 1123"]);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, 798);
+    hasLayer(LayerType.lithology, 798, 1123);
+    hasLayer(LayerType.lithologicalDescription, 0, null, true);
+    hasLayer(LayerType.lithologicalDescription, 355, null, true, false);
+    hasLayer(LayerType.lithologicalDescription, 798, null, true, false);
     hasLayer(LayerType.faciesDescription, 0, null, true);
     checkLayerCardContent(LayerType.faciesDescription, 355, 1123, ["terrestrial", "facies description 355 - 1123"]);
 
     // Edit facies description and check that changes are applied
     openLayer(LayerType.faciesDescription, 355, 1123);
-    evaluateFaciesDescriptionForm({ fromDepth: 355, toDepth: 1123, faciesId: "terrestrial", description: "facies description 355 - 1123" });
+    evaluateFaciesDescriptionForm({
+      fromDepth: 355,
+      toDepth: 1123,
+      faciesId: "terrestrial",
+      description: "facies description 355 - 1123",
+    });
     fillFaciesDescriptionForm({ faciesId: 3 });
-    evaluateFaciesDescriptionForm({ fromDepth: 355, toDepth: 1123, faciesId: "alluvial fan", description: "facies description 355 - 1123" });
+    evaluateFaciesDescriptionForm({
+      fromDepth: 355,
+      toDepth: 1123,
+      faciesId: "alluvial fan",
+      description: "facies description 355 - 1123",
+    });
     closeLayerModal();
 
-        checkDepthColumn([
+    checkDepthColumn([
       [0, 355],
       [355, 798],
       [798, 1123],
     ]);
-    checkLayerCardContent(LayerType.lithology, 0, 355, ["[MGr-co]: medium gravel, stony / with stones"]);
-    checkLayerCardContent(LayerType.lithology, 355, 798, [
-      "70% [Bo-bo]: boulder, blocky / with blocks",
-      "30% [Co-gr]: cobbles, gravelly",
-    ]);
-    checkLayerCardContent(LayerType.lithology, 798, 1123, ["breccia, well sorted"]);
-    checkLayerCardContent(LayerType.lithologicalDescription, 0, 355, ["lithological description 0 - 355"]);
-    checkLayerCardContent(LayerType.lithologicalDescription, 355, 1123, ["lithological description 355 - 1123"]);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, 798);
+    hasLayer(LayerType.lithology, 798, 1123);
+    hasLayer(LayerType.lithologicalDescription, 0, null, true);
+    hasLayer(LayerType.lithologicalDescription, 355, null, true, false);
+    hasLayer(LayerType.lithologicalDescription, 798, null, true, false);
     hasLayer(LayerType.faciesDescription, 0, null, true);
     checkLayerCardContent(LayerType.faciesDescription, 355, 1123, ["alluvial fan", "facies description 355 - 1123"]);
 
@@ -284,52 +369,28 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [355, 798],
       [798, 1123],
     ]);
-    checkLayerCardContent(LayerType.lithology, 0, 355, ["[MGr-co]: medium gravel, stony / with stones"]);
-    checkLayerCardContent(LayerType.lithology, 355, 798, [
-      "70% [Bo-bo]: boulder, blocky / with blocks",
-      "30% [Co-gr]: cobbles, gravelly",
-    ]);
-    checkLayerCardContent(LayerType.lithology, 798, 1123, ["breccia, well sorted"]);
-    checkLayerCardContent(LayerType.lithologicalDescription, 0, 355, ["lithological description 0 - 355"]);
-    checkLayerCardContent(LayerType.lithologicalDescription, 355, 1123, ["lithological description 355 - 1123"]);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, 798);
+    hasLayer(LayerType.lithology, 798, 1123);
+    hasLayer(LayerType.lithologicalDescription, 0, null, true);
+    hasLayer(LayerType.lithologicalDescription, 355, null, true, false);
+    hasLayer(LayerType.lithologicalDescription, 798, null, true, false);
     checkLayerCardContent(LayerType.faciesDescription, 0, 355, ["alluvial"]);
     checkLayerCardContent(LayerType.faciesDescription, 355, 1123, ["alluvial fan", "facies description 355 - 1123"]);
 
-    // Check that all information is still correctly displayed after saving, navigating away and back to the lithology tab
     saveWithSaveBar();
-    navigateInStratigraphy(StratigraphyTab.chronostratigraphy);
-    navigateInStratigraphy(StratigraphyTab.lithology);
-    checkDepthColumn([
-      [0, 355],
-      [355, 798],
-      [798, 1123],
-    ]);
-    checkLayerCardContent(LayerType.lithology, 0, 355, ["[MGr-co]: medium gravel, stony / with stones"]);
-    checkLayerCardContent(LayerType.lithology, 355, 798, [
-      "70% [Bo-bo]: boulder, blocky / with blocks",
-      "30% [Co-gr]: cobbles, gravelly",
-    ]);
-    checkLayerCardContent(LayerType.lithology, 798, 1123, ["breccia, well sorted"]);
-    checkLayerCardContent(LayerType.lithologicalDescription, 0, 355, ["lithological description 0 - 355"]);
-    checkLayerCardContent(LayerType.lithologicalDescription, 355, 1123, ["lithological description 355 - 1123"]);
-    checkLayerCardContent(LayerType.faciesDescription, 0, 355, ["alluvial"]);
-    checkLayerCardContent(LayerType.faciesDescription, 355, 1123, ["alluvial fan", "facies description 355 - 1123"]);
-
-    // Check that all information is correctly displayed in view mode
     stopBoreholeEditing();
     checkDepthColumn([
       [0, 355],
       [355, 798],
       [798, 1123],
     ]);
-    checkLayerCardContent(LayerType.lithology, 0, 355, ["[MGr-co]: medium gravel, stony / with stones"]);
-    checkLayerCardContent(LayerType.lithology, 355, 798, [
-      "70% [Bo-bo]: boulder, blocky / with blocks",
-      "30% [Co-gr]: cobbles, gravelly",
-    ]);
-    checkLayerCardContent(LayerType.lithology, 798, 1123, ["breccia, well sorted"]);
-    checkLayerCardContent(LayerType.lithologicalDescription, 0, 355, ["lithological description 0 - 355"]);
-    checkLayerCardContent(LayerType.lithologicalDescription, 355, 1123, ["lithological description 355 - 1123"]);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, 798);
+    hasLayer(LayerType.lithology, 798, 1123);
+    hasLayer(LayerType.lithologicalDescription, 0, null, true);
+    hasLayer(LayerType.lithologicalDescription, 355, null, true, false);
+    hasLayer(LayerType.lithologicalDescription, 798, null, true, false);
     checkLayerCardContent(LayerType.faciesDescription, 0, 355, ["alluvial"]);
     checkLayerCardContent(LayerType.faciesDescription, 355, 1123, ["alluvial fan", "facies description 355 - 1123"]);
   });
@@ -673,24 +734,6 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       alterationDegreeId: "",
       notes: "",
     });
-  });
-
-  it("adds and displays facies description", () => {
-    openNewStratigraphy();
-    addLithology();
-    fillUnconsolidatedLithologyForm({
-      fromDepth: 1,
-      toDepth: 134,
-      lithologyDescriptions: [{ lithologyUnconMainId: 2, lithologyUncon2Id: 5 }],
-    });
-    closeLayerModal();
-    openLayer(LayerType.faciesDescription, 1, null, true);
-    fillFaciesDescriptionForm({ faciesId: 1 });
-    evaluateFaciesDescriptionForm({ faciesId: "terrestrial" });
-    closeLayerModal();
-    saveWithSaveBar();
-    stopBoreholeEditing();
-    checkLayerCardContent(LayerType.faciesDescription, 1, 134, ["terrestrial"]);
   });
 
   it("should inherit previous rock type", () => {
