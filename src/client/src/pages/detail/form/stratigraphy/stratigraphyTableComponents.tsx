@@ -141,7 +141,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
       </Stack>
       <StratigraphyTableCellRow className="hover-content">
         {layer?.toDepth !== null && layer?.toDepth !== undefined && (
-          <Typography variant="body1">{ formatNumberForDisplay(layer?.toDepth)} m MD</Typography>
+          <Typography variant="body1">{formatNumberForDisplay(layer?.toDepth)} m MD</Typography>
         )}
       </StratigraphyTableCellRow>
     </StratigraphyTableCell>

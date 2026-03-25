@@ -80,7 +80,15 @@ const descriptionMultiSelectFields = [
   "lithologyUnconDebrisCodelistIds",
 ];
 
-const topLevelSelectFields = ["compactnessId", "cohesionId", "humidityId", "consistencyId", "plasticityId", "uscsDeterminationId", "alterationDegreeId"];
+const topLevelSelectFields = [
+  "compactnessId",
+  "cohesionId",
+  "humidityId",
+  "consistencyId",
+  "plasticityId",
+  "uscsDeterminationId",
+  "alterationDegreeId",
+];
 
 const topLevelMultiSelectFields = ["uscsTypeCodelistIds", "rockConditionCodelistIds"];
 
@@ -380,7 +388,13 @@ export const evaluateConsolidatedLithologyForm = ({
  * @param {number} [values.toDepth] - Index of the end depth option in the dropdown.
  * @param {string} [values.description] - Description text.
  */
-export const fillLithologicalDescriptionForm = ({ fromDepth, fromDepthExpected, toDepth, toDepthExpected, description }) => {
+export const fillLithologicalDescriptionForm = ({
+  fromDepth,
+  fromDepthExpected,
+  toDepth,
+  toDepthExpected,
+  description,
+}) => {
   if (fromDepth !== undefined) setSelect("fromDepth", fromDepth, fromDepthExpected);
   if (toDepth !== undefined) setSelect("toDepth", toDepth, toDepthExpected);
   if (description !== undefined) setInput("description", description);
@@ -407,7 +421,14 @@ export const evaluateLithologicalDescriptionForm = ({ fromDepth, toDepth, descri
  * @param {number} [values.faciesId] - Index of the facies option in the dropdown.
  * @param {string} [values.description] - Description text.
  */
-export const fillFaciesDescriptionForm = ({ fromDepth, fromDepthExpected, toDepth, toDepthExpected, faciesId, description }) => {
+export const fillFaciesDescriptionForm = ({
+  fromDepth,
+  fromDepthExpected,
+  toDepth,
+  toDepthExpected,
+  faciesId,
+  description,
+}) => {
   if (fromDepth !== undefined) setSelect("fromDepth", fromDepth, fromDepthExpected);
   if (toDepth !== undefined) setSelect("toDepth", toDepth, toDepthExpected);
   if (faciesId !== undefined) setSelect("faciesId", faciesId);

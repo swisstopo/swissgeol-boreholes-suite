@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { BaseLayer, MinimalLayer } from "../../../../../api/stratigraphy.ts";
 import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
+import { formatNumberForDisplay } from "../../../../../components/form/formUtils.ts";
 import { SaveContext } from "../../../saveContext.tsx";
 import { FaciesDescription, useFaciesDescriptionMutations } from "../faciesDescription";
 import { LithologicalDescription, useLithologicalDescriptionMutations } from "../lithologicalDescription.ts";
@@ -24,7 +25,6 @@ import { FaciesDescriptionModal } from "./form/faciesDescriptionModal.tsx";
 import { LithologicalDescriptionModal } from "./form/lithologicalDescriptionModal.tsx";
 import { LithologyModal } from "./form/lithologyModal.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";
-import { formatNumberForDisplay } from "../../../../../components/form/formUtils.ts";
 
 interface LithologyContentEditProps {
   stratigraphyId: number;

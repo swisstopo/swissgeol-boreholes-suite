@@ -2,6 +2,7 @@ import { FC, ReactNode, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { BaseLayer } from "../../../../../api/stratigraphy.ts";
+import { formatNumberForDisplay } from "../../../../../components/form/formUtils.ts";
 import { FaciesDescription } from "../faciesDescription.ts";
 import { LithologicalDescription } from "../lithologicalDescription.ts";
 import { Lithology } from "../lithology.ts";
@@ -18,7 +19,6 @@ import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";
 import { useLayerDepths } from "./useLayerDepths.tsx";
-import { formatNumberForDisplay } from "../../../../../components/form/formUtils.ts";
 
 interface LithologyContentEditProps {
   lithologies: Lithology[];
