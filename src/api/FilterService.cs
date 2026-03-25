@@ -179,6 +179,12 @@ public class FilterService : IFilterService
             query = query.Where(b => b.RestrictionId.HasValue && filterRequest.RestrictionId.Contains(b.RestrictionId.Value));
         }
 
+        // Workflow status filter
+        if (filterRequest.WorkflowStatus.HasValue)
+        {
+            query = query.Where(b => b.Workflow != null && b.Workflow.Status == filterRequest.WorkflowStatus.Value);
+        }
+
         // Date range filters
         if (filterRequest.RestrictionUntilFrom.HasValue)
         {
@@ -311,7 +317,7 @@ public class FilterService : IFilterService
             return isDescending ? query.OrderByDescending(b => b.Name) : query.OrderBy(b => b.Name);
         }
 
-         // Todo: improve orderExpression, do not reset to first page when order changes!
+        // Todo: improve orderExpression, do not reset to first page when order changes!
         // Orderby relevant properties.
         Expression<Func<Borehole, object>> orderExpression = orderBy.ToUpperInvariant() switch
         {
