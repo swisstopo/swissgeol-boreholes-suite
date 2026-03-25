@@ -39,9 +39,9 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(result.TotalCount, 3002);
+        Assert.AreEqual(3002, result.TotalCount);
         Assert.IsNotNull(result.Boreholes);
-        Assert.AreEqual(result.Boreholes.Count(), 100);
+        Assert.AreEqual(100, result.Boreholes.Count());
     }
 
     [TestMethod]
