@@ -723,15 +723,18 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
 
         Assert.IsNotNull(result);
-        Assert.IsTrue(result.TotalCount > 0);
+        Assert.AreEqual(100, result.TotalCount); // rich boreholes with boreholeGeometry
 
-        // Verify that boreholes have geometry (Point with coordinates) in GeoJson
-        Assert.IsNotNull(result.GeoJson);
-        Assert.IsTrue(result.GeoJson.Count > 0);
-        foreach (var feature in result.GeoJson)
+        // Verify that all returned boreholes have a boreholeGeometry
+        var originalBoreholes = await context.Boreholes
+            .Include(b => b.BoreholeGeometry)
+            .Where(b => result.Boreholes.Select(rb => rb.Id).Contains(b.Id))
+            .ToListAsync();
+
+        foreach (var borehole in originalBoreholes)
         {
-            Assert.IsNotNull(feature.Geometry);
-            Assert.IsTrue(feature.Geometry is NetTopologySuite.Geometries.Point);
+            Assert.IsNotNull(borehole.BoreholeGeometry);
+            Assert.IsGreaterThan(0, borehole.BoreholeGeometry.Count());
         }
     }
 
