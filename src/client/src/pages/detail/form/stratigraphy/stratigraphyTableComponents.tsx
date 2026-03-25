@@ -170,6 +170,7 @@ export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ index, onC
         }),
         ...sx,
       }}
+      data-cy={`${dataCy}-gap`}
       onClick={() => {
         if (onClick) {
           onClick(index);
