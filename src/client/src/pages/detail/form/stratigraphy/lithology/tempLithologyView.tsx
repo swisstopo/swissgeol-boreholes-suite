@@ -18,6 +18,7 @@ import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";
 import { useLayerDepths } from "./useLayerDepths.tsx";
+import { formatNumberForDisplay } from "../../../../../components/form/formUtils.ts";
 
 interface LithologyContentEditProps {
   lithologies: Lithology[];
@@ -132,8 +133,8 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
                   data-cy={`depth-${depth.fromDepth}-${depth.toDepth}`}
                   key={`${depth.lithologyId}-depth-${depth.fromDepth}-${depth.toDepth}`}
                   sx={{ height: `${defaultRowHeight}px` }}>
-                  <Typography>{`${depth.fromDepth} m MD`}</Typography>
-                  <Typography>{`${depth.toDepth} m MD`}</Typography>
+                  <Typography>{`${formatNumberForDisplay(depth.fromDepth)} m MD`}</Typography>
+                  <Typography>{`${formatNumberForDisplay(depth.toDepth)} m MD`}</Typography>
                 </StratigraphyTableCell>
               ))
             )}

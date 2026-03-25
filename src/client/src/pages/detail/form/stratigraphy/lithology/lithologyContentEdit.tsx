@@ -24,6 +24,7 @@ import { FaciesDescriptionModal } from "./form/faciesDescriptionModal.tsx";
 import { LithologicalDescriptionModal } from "./form/lithologicalDescriptionModal.tsx";
 import { LithologyModal } from "./form/lithologyModal.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";
+import { formatNumberForDisplay } from "../../../../../components/form/formUtils.ts";
 
 interface LithologyContentEditProps {
   stratigraphyId: number;
@@ -532,10 +533,10 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
                     data-cy={`depth-${depth.fromDepth}-${depth.toDepth}`}
                     sx={{ height: `${defaultRowHeight}px` }}>
                     <Typography color={depth.hasFromDepthError ? "error" : "default"}>
-                      {`${depth.fromDepth} m MD`}
+                      {`${formatNumberForDisplay(depth.fromDepth)} m MD`}
                     </Typography>
                     <Typography color={depth.hasToDepthError ? "error" : "default"}>
-                      {`${depth.toDepth} m MD`}
+                      {`${formatNumberForDisplay(depth.toDepth)} m MD`}
                     </Typography>
                   </StratigraphyTableCell>
                 ))}

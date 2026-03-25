@@ -6,6 +6,7 @@ import { Copy, Plus, Trash2, TriangleAlert } from "lucide-react";
 import { BaseLayer } from "../../../../api/stratigraphy.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
+import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
 
 export const StratigraphyTableHeader = styled(Stack)(() => ({
   flexDirection: "row",
@@ -114,7 +115,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
           justifyContent: layer?.fromDepth !== null && layer?.fromDepth !== undefined ? "space-between" : "flex-end",
         }}>
         {layer?.fromDepth !== null && layer?.fromDepth !== undefined && (
-          <Typography variant="body1">{layer?.fromDepth} m MD</Typography>
+          <Typography variant="body1">{formatNumberForDisplay(layer?.fromDepth)} m MD</Typography>
         )}
         {onHoverClick && (
           <StandaloneIconButton
@@ -140,7 +141,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
       </Stack>
       <StratigraphyTableCellRow className="hover-content">
         {layer?.toDepth !== null && layer?.toDepth !== undefined && (
-          <Typography variant="body1">{layer?.toDepth} m MD</Typography>
+          <Typography variant="body1">{ formatNumberForDisplay(layer?.toDepth)} m MD</Typography>
         )}
       </StratigraphyTableCellRow>
     </StratigraphyTableCell>
