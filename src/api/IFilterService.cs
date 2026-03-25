@@ -13,5 +13,5 @@ public interface IFilterService
     /// <param name="filterRequest">The filter request containing filter criteria.</param>
     /// <param name="subjectId">The subject ID of the user making the request.</param>
     /// <returns>A <see cref="FilterResponse"/> containing the filtered and paginated results.</returns>
-    Task<FilterResponse> FilterBoreholesAsync(FilterRequest filterRequest, string? subjectId);
+    Task<FilterResponse> FilterBoreholesAsync(FilterRequest? filterRequest, string? subjectId);
 }
