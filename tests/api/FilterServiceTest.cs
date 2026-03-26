@@ -178,9 +178,10 @@ public class FilterServiceTest
         var existingBorehole = await context.Boreholes
             .Where(b => b.LocationX != null && b.LocationY != null)
             .FirstOrDefaultAsync();
+        Assert.IsNotNull(existingBorehole);
 
         // Create a polygon that covers the borehole's location with a large buffer
-        var coordX = existingBorehole.LocationX.Value;
+        var coordX = existingBorehole!.LocationX.Value;
         var coordY = existingBorehole.LocationY.Value;
         var buffer = 10000; // 10km buffer to ensure it covers the point
 
