@@ -47,7 +47,6 @@ public class FilterService : IFilterService
         }
 
         // Default pagination
-        var paginatedQuery = query;
         var pageSize = MaxPageSize;
         var skip = 0;
 
@@ -68,7 +67,7 @@ public class FilterService : IFilterService
             .ToListAsync()
             .ConfigureAwait(false);
 
-        paginatedQuery = query.Skip(skip).Take(pageSize);
+        var paginatedQuery = query.Skip(skip).Take(pageSize);
 
         // Execute query and map to list items
         var boreholes = await paginatedQuery

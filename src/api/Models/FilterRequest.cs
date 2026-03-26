@@ -67,12 +67,12 @@ public class FilterRequest
     /// <summary>
     /// Gets or sets the restriction until date start filter.
     /// </summary>
-    public DateTime? RestrictionUntilFrom { get; set; }
+    public DateOnly? RestrictionUntilFrom { get; set; }
 
     /// <summary>
     /// Gets or sets the restriction until date end filter.
     /// </summary>
-    public DateTime? RestrictionUntilTo { get; set; }
+    public DateOnly? RestrictionUntilTo { get; set; }
 
     /// <summary>
     /// Gets or sets the minimum total depth filter.

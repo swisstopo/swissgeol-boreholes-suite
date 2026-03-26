@@ -53,7 +53,7 @@ public class BoreholeListItem
     public int? RestrictionId { get; set; }
 
     /// <inheritdoc cref="Borehole.RestrictionUntil"/>
-    public DateTime? RestrictionUntil { get; set; }
+    public DateOnly? RestrictionUntil { get; set; }
 
     /// <inheritdoc cref="Borehole.NationalInterest"/>
     public bool? NationalInterest { get; set; }
