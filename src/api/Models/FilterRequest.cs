@@ -163,9 +163,9 @@ public class FilterRequest
     public int PageSize { get; set; } = 100;
 
     /// <summary>
-    /// Gets or sets the field name to order by.
+    /// Gets or sets the field to order by.
     /// </summary>
-    public string? OrderBy { get; set; }
+    public BoreholeOrderBy? OrderBy { get; set; }
 
     /// <summary>
     /// Gets or sets the sort direction (asc or desc).
