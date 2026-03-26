@@ -2,11 +2,13 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Chip, Stack } from "@mui/material";
 import { WorkflowStatus } from "@swissgeol/ui-core";
+import { NullableDateString } from "../../api/apiInterfaces.ts";
 import { BoreholeV2 } from "../../api/borehole.ts";
 import { useCurrentUser } from "../../api/user.ts";
 import { theme } from "../../AppTheme.ts";
 import { EditButton } from "../../components/buttons/buttons.tsx";
 import { restrictionCode, restrictionFreeCode, restrictionUntilCode } from "../../components/codelist.ts";
+import { formatDate } from "../../utils.ts";
 import { colorStatusMap } from "./form/workflow/statusColorMap.ts";
 import { useWorkflowMutation, WorkflowChangeRequest } from "./form/workflow/workflow.ts";
 
@@ -50,6 +52,8 @@ export const StatusBadges = ({ borehole }: StatusBadgesProps) => {
     />
   );
 
+  const getDateString = (date?: NullableDateString) => (date ? formatDate(date) : "-");
+
   const getRestrictionLabel = () => {
     let restrictionLabel;
     switch (borehole?.restrictionId) {
@@ -60,7 +64,7 @@ export const StatusBadges = ({ borehole }: StatusBadgesProps) => {
         restrictionLabel = t("restricted");
         break;
       case restrictionUntilCode:
-        restrictionLabel = `${t("restriction_until")} ${borehole?.restrictionUntil ? new Date(`${borehole.restrictionUntil}T00:00:00`).toLocaleDateString("de-CH") : "-"}`;
+        restrictionLabel = `${t("restriction_until")} ${getDateString(borehole?.restrictionUntil)}`;
         break;
       default:
         return;
