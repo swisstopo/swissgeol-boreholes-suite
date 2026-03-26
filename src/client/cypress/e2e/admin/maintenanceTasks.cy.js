@@ -115,7 +115,6 @@ describe("Maintenance Tasks page tests", () => {
       });
 
       it("displays execution log table", () => {
-        cy.dataCy("execution-log-section").should("be.visible");
         cy.dataCy("execution-log-table").should("be.visible");
         cy.dataCy("execution-log-include-dry-run").find("input").should("not.be.checked");
       });

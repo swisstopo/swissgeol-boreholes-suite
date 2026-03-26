@@ -117,7 +117,7 @@ export const ExecutionLogTable: FC = () => {
   );
 
   return (
-    <Box data-cy="execution-log-section">
+    <Box>
       <Stack direction="row" alignItems="center" justifyContent="space-between">
         <Stack direction="row" alignItems="center" gap={1}>
           <ScrollText size={24} />
