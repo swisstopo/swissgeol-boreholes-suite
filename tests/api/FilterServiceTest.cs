@@ -1,8 +1,5 @@
-﻿using BDMS.Migrations;
-using BDMS.Models;
+﻿using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
-using Moq;
 using NetTopologySuite.Geometries;
 
 namespace BDMS;
@@ -19,8 +16,7 @@ public class FilterServiceTest
     public void TestInitialize()
     {
         context = ContextFactory.GetTestContext();
-        var logger = new Mock<ILogger<FilterService>>().Object;
-        filterService = new FilterService(context, logger);
+        filterService = new FilterService(context);
     }
 
     [TestCleanup]

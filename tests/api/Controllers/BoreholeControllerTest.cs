@@ -7,7 +7,6 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NetTopologySuite.Geometries;
-using System.ComponentModel.DataAnnotations;
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;

@@ -15,12 +15,10 @@ public class FilterService : IFilterService
     private const int MaxPageSize = 100;
     private const int LockTimeoutMinutes = 120;
     private readonly BdmsContext context;
-    private readonly ILogger<FilterService> logger;
 
-    public FilterService(BdmsContext context, ILogger<FilterService> logger)
+    public FilterService(BdmsContext context)
     {
         this.context = context;
-        this.logger = logger;
     }
 
     /// <inheritdoc />
@@ -39,7 +37,6 @@ public class FilterService : IFilterService
         // Base query
         var query = context.Boreholes
             .Include(b => b.Workgroup)
-            .Include(b => b.BoreholeCodelists)
             .AsNoTracking();
 
         // Apply permission filtering by workgroup
