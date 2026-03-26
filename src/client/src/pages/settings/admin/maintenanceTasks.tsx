@@ -1,10 +1,10 @@
 import { FC } from "react";
-import { Box, Divider, Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { useMaintenanceStatus } from "../../../api/maintenance.ts";
 import { ExecutionLogTable } from "./executionLogTable.tsx";
-import { MigrationCard, MigrationCardConfig } from "./migrationCard.tsx";
+import { MaintenanceTaskCard, MaintenanceTaskCardConfig } from "./maintenanceTaskCard.tsx";
 
-const migrationTasks: MigrationCardConfig[] = [
+const maintenanceTaskConfigs: MaintenanceTaskCardConfig[] = [
   {
     taskType: "LocationMigration",
     title: "locationMigration",
@@ -20,24 +20,30 @@ const migrationTasks: MigrationCardConfig[] = [
   },
 ];
 
+const allTasks: MaintenanceTaskCardConfig[] = [
+  ...maintenanceTaskConfigs,
+  {
+    taskType: "UserMerge",
+    title: "userMerge",
+    description: "userMergeDescription",
+    dataCyPrefix: "user-merge",
+    showOnlyMissing: false,
+  },
+];
+
 export const MaintenanceTasks: FC = () => {
   const { data: taskStates } = useMaintenanceStatus();
 
   return (
-    <Stack direction="row" gap={3} pb={3}>
-      <Stack spacing={3} sx={{ flex: 1, minWidth: 0 }}>
-        {migrationTasks.map(config => (
-          <MigrationCard
-            key={config.taskType}
-            config={config}
-            taskState={taskStates?.find(s => s.type === config.taskType)}
-          />
+    <Stack spacing={3} pb={3}>
+      <Stack direction="row" gap={3} sx={{ flexWrap: "wrap" }}>
+        {allTasks.map(config => (
+          <Box key={config.taskType} sx={{ flex: "1 1 450px", display: "flex" }}>
+            <MaintenanceTaskCard config={config} taskState={taskStates?.find(s => s.type === config.taskType)} />
+          </Box>
         ))}
       </Stack>
-      <Divider orientation="vertical" flexItem />
-      <Box sx={{ flex: 1, minWidth: 0 }}>
-        <ExecutionLogTable />
-      </Box>
+      <ExecutionLogTable />
     </Stack>
   );
 };

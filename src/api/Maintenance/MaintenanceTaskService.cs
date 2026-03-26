@@ -114,9 +114,9 @@ public sealed class MaintenanceTaskService
     /// Uses a lock to ensure the running check and state transition are atomic.
     /// </summary>
     /// <param name="taskType">The type of maintenance task to start.</param>
-    /// <param name="parameters">Migration parameters controlling the task behavior.</param>
+    /// <param name="parameters">Parameters controlling the task behavior.</param>
     /// <param name="startedById">The ID of the user who started the task, used for audit logging.</param>
-    public bool TryStartTask(MaintenanceTaskType taskType, MigrationParameters parameters, int startedById)
+    public bool TryStartTask(MaintenanceTaskType taskType, MaintenanceTaskParameters parameters, int startedById)
     {
         if (!tasks.TryGetValue(taskType, out var task))
         {
@@ -143,7 +143,7 @@ public sealed class MaintenanceTaskService
     internal Task WaitForCompletionAsync(MaintenanceTaskType taskType)
         => backgroundTasks.TryGetValue(taskType, out var task) ? task : Task.CompletedTask;
 
-    private async Task ExecuteInBackgroundAsync(MaintenanceTaskType taskType, Func<IServiceScope, CancellationToken, Task<int>> taskAction, MigrationParameters parameters, int startedById)
+    private async Task ExecuteInBackgroundAsync(MaintenanceTaskType taskType, Func<IServiceScope, CancellationToken, Task<int>> taskAction, MaintenanceTaskParameters parameters, int startedById)
     {
         var state = taskStates[taskType];
 

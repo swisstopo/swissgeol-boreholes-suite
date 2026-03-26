@@ -682,7 +682,7 @@ public class BoreholeControllerTest
             HrsId = 20106001,
             TotalDepth = 100.0,
             RestrictionId = 20111003,
-            RestrictionUntil = DateTime.UtcNow.AddYears(1),
+            RestrictionUntil = DateOnly.FromDateTime(DateTime.UtcNow.AddYears(1)),
             NationalInterest = false,
             OriginalName = "BH-257",
             Name = "Borehole 257",
