@@ -4,7 +4,7 @@ import { Badge, Stack } from "@mui/material";
 import { Filter, Layers, Plus, Settings } from "lucide-react";
 import HelpIcon from "../../../assets/icons/help.svg?react";
 import UploadIcon from "../../../assets/icons/upload.svg?react";
-import { useAuth } from "../../../auth/useBdmsAuth.tsx";
+import { useAuth } from "../../../auth/useBoreholesAuth.tsx";
 import { NavButton } from "../../../components/buttons/navButton.tsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { DrawerContentTypes } from "../overviewPageInterfaces.ts";

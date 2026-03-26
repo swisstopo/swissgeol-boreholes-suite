@@ -9,7 +9,7 @@ import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@ta
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { ApiError } from "./api/apiInterfaces.ts";
 import { theme } from "./AppTheme";
-import { BdmsAuthProvider } from "./auth/BdmsAuthProvider.tsx";
+import { BoreholesAuthProvider } from "./auth/BoreholesAuthProvider.tsx";
 import { AlertBanner } from "./components/alert/alertBanner";
 import { AlertContext, AlertProvider } from "./components/alert/alertContext";
 import { BasemapProvider } from "./components/basemapSelector/basemapContext";

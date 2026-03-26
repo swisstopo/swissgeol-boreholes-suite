@@ -5,7 +5,7 @@ import { Route, Routes } from "react-router";
 import { Stack } from "@mui/material";
 import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../AppTheme.ts";
-import { useAuth } from "../../auth/useBdmsAuth.tsx";
+import { useAuth } from "../../auth/useBoreholesAuth.tsx";
 import { TabPanel } from "../../components/tabs/tabPanel.tsx";
 import { AboutSettings } from "./aboutSettings.tsx";
 import { MaintenanceTasks } from "./admin/maintenanceTasks.tsx";

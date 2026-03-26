@@ -32,7 +32,7 @@ import { LockKeyhole } from "lucide-react";
 import _ from "lodash";
 import { BoreholeAttributes, Boreholes } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
-import { useAuth } from "../../../auth/useBdmsAuth.tsx";
+import { useAuth } from "../../../auth/useBoreholesAuth.tsx";
 import { useCodelists } from "../../../components/codelist.ts";
 import { formatNumberForDisplay } from "../../../components/form/formUtils.ts";
 import { FullPageCentered } from "../../../components/styledComponents.ts";

@@ -7,7 +7,7 @@ import { ChevronDown } from "lucide-react";
 import Polygon from "../../../../assets/icons/polygon.svg?react";
 import { Filters, ReduxRootState } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../../../AppTheme.ts";
-import { useAuth } from "../../../../auth/useBdmsAuth.tsx";
+import { useAuth } from "../../../../auth/useBoreholesAuth.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 import FilterChips from "./FilterChips.tsx";
 import { FilterContext } from "./filterContext.tsx";

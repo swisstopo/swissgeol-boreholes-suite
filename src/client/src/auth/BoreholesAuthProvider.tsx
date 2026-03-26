@@ -2,23 +2,26 @@ import { FC, PropsWithChildren, useEffect, useState } from "react";
 import { AuthProviderProps, AuthProvider as OidcAuthProvider } from "react-oidc-context";
 import { DataRouter } from "react-router";
 import { CircularProgress } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 import { User, WebStorageStateStore } from "oidc-client-ts";
+import { boreholeQueryKey, filterBoreholes, FilterRequest } from "../api/borehole.ts";
 import { useSettings } from "../api/useSettings";
 import { AuthenticationStoreSync } from "./AuthenticationStoreSync.js";
 import { AuthOverlay } from "./AuthOverlay";
-import { BdmsAuthContext, BdmsAuthContextProps } from "./BdmsAuthContext";
+import { BoreholesAuthContext, BoreholesAuthContextProps } from "./BoreholesAuthContext.tsx";
 import { CognitoUserManager } from "./CognitoUserManager";
 import { SplashScreen } from "./SplashScreen";
+import { useAuth } from "./useBoreholesAuth.tsx";
 
-interface BdmsAuthProviderProps {
+interface BoreholeAuthProviderProps {
   router: DataRouter;
 }
 
 type OidcConfig = AuthProviderProps & {
-  customSettings: BdmsAuthContextProps;
+  customSettings: BoreholesAuthContextProps;
 };
 
-export const BdmsAuthProvider: FC<PropsWithChildren<BdmsAuthProviderProps>> = ({ router, children }) => {
+export const BoreholesAuthProvider: FC<PropsWithChildren<BoreholeAuthProviderProps>> = ({ router, children }) => {
   const [oidcConfig, setOidcConfig] = useState<OidcConfig | undefined>(undefined);
   const settings = useSettings();
 
@@ -60,13 +63,30 @@ export const BdmsAuthProvider: FC<PropsWithChildren<BdmsAuthProviderProps>> = ({
       </SplashScreen>
     );
   }
+  const PrefetchBoreholes: FC = () => {
+    const queryClient = useQueryClient();
+    const auth = useAuth();
+
+    useEffect(() => {
+      if (auth.isAuthenticated) {
+        const defaultFilterRequest: FilterRequest = {};
+        queryClient.prefetchQuery({
+          queryKey: [boreholeQueryKey, defaultFilterRequest],
+          queryFn: () => filterBoreholes(defaultFilterRequest),
+        });
+      }
+    }, [auth.isAuthenticated, queryClient]);
+
+    return null;
+  };
 
   return (
     <OidcAuthProvider {...oidcConfig}>
-      <BdmsAuthContext.Provider value={oidcConfig.customSettings}>
+      <BoreholesAuthContext.Provider value={oidcConfig.customSettings}>
         <AuthenticationStoreSync />
+        <PrefetchBoreholes />
         <AuthOverlay>{children}</AuthOverlay>
-      </BdmsAuthContext.Provider>
+      </BoreholesAuthContext.Provider>
     </OidcAuthProvider>
   );
 };

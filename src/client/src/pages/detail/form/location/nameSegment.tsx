@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card } from "@mui/material";
-import { useAuth } from "../../../../auth/useBdmsAuth.tsx";
+import { useAuth } from "../../../../auth/useBoreholesAuth.tsx";
 import { FormContainer, FormInput, FormInputDisplayOnly } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";

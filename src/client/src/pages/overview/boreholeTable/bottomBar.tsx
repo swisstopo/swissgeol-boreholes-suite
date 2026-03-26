@@ -7,7 +7,7 @@ import { ArrowDownToLine, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import CopyIcon from "../../../assets/icons/copy.svg?react";
 import { Boreholes, Filters, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
-import { useAuth } from "../../../auth/useBdmsAuth.tsx";
+import { useAuth } from "../../../auth/useBoreholesAuth.tsx";
 import { BulkEditButton, CopyButton, DeleteButton, ExportButton } from "../../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
