@@ -116,7 +116,7 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(result.TotalCount, 6);
+        Assert.AreEqual(6, result.TotalCount);
 
         foreach (var borehole in result.Boreholes)
         {
@@ -138,7 +138,7 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(result.TotalCount, 2);
+        Assert.AreEqual(2, result.TotalCount);
 
         foreach (var borehole in result.Boreholes)
         {
@@ -160,7 +160,7 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(result.TotalCount, 600);
+        Assert.AreEqual(600, result.TotalCount);
         foreach (var borehole in result.Boreholes)
         {
             if (borehole.TotalDepth.HasValue)
@@ -205,7 +205,7 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(result.TotalCount, 10);
+        Assert.AreEqual(10, result.TotalCount);
 
         // Verify that the borehole we used to create the polygon is in the results
         CollectionAssert.Contains(result.Boreholes.Select(b => b.Id).ToList(), existingBorehole.Id, $"Expected borehole with ID {existingBorehole.Id} to be in the filtered results");
