@@ -66,6 +66,10 @@ public static class BdmsContextExtensions
         Workgroup SeededWorkgroups(int seed) => fakeWorkgroups.UseSeed(seed).Generate();
         context.BulkInsert(workgroupRange.Select(SeededWorkgroups).ToList(), bulkConfig);
 
+        // Assign unique emails to seeded users. Users are created in db/03-data.sql
+        // where the email column doesn't exist yet (added by migration with default value).
+        context.Database.ExecuteSqlInterpolated($"UPDATE bdms.users SET email = LOWER(firstname) || '@example.com'");
+
         // ranges for existing tables
         var userRange = Enumerable.Range(1, 5);
 
