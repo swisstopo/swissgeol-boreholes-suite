@@ -791,6 +791,7 @@ public class FilterServiceTest
                 && !string.IsNullOrEmpty(b.OriginalName))
             .FirstOrDefaultAsync();
 
+        Assert.IsNotNull(existingBorehole);
         var filterRequest = new FilterRequest
         {
             TotalDepthMin = 100,
