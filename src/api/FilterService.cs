@@ -246,11 +246,11 @@ public class FilterService : IFilterService
         {
             if (filterRequest.HasGeometry.Value)
             {
-                query = query.Where(b => b.BoreholeGeometry.Any());
+                query = query.Where(b => b.BoreholeGeometry != null && b.BoreholeGeometry.Any());
             }
             else
             {
-                query = query.Where(b => !b.BoreholeGeometry.Any());
+                query = query.Where(b => b.BoreholeGeometry == null || !b.BoreholeGeometry.Any());
             }
         }
 
