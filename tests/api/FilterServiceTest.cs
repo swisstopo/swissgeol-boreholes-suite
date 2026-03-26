@@ -235,7 +235,7 @@ public class FilterServiceTest
     {
         var filterRequest = new FilterRequest
         {
-            OrderBy = "TotalDepth",
+            OrderBy = BoreholeOrderBy.TotalDepth,
             Direction = "asc",
             PageNumber = 1,
             PageSize = 10,
@@ -798,7 +798,7 @@ public class FilterServiceTest
             TotalDepthMax = 500,
             TypeId = existingBorehole.TypeId.HasValue ? new List<int> { existingBorehole.TypeId.Value } : null,
             NationalInterest = true,
-            OrderBy = "TotalDepth",
+            OrderBy = BoreholeOrderBy.TotalDepth,
             Direction = "asc",
             PageNumber = 1,
             PageSize = 100,
@@ -882,6 +882,33 @@ public class FilterServiceTest
             Assert.AreEqual(originalBorehole.Geometry.X, point.X);
             Assert.AreEqual(originalBorehole.Geometry.Y, point.Y);
             Assert.AreEqual(originalBorehole.Geometry.SRID, point.SRID);
+        }
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesWithUnsupportedOrderByValueFallsBackToDefaultOrdering()
+    {
+        var filterRequest = new FilterRequest
+        {
+            OrderBy = (BoreholeOrderBy)999,
+            PageNumber = 1,
+            PageSize = 10,
+        };
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(10, result.Boreholes.Count());
+
+        // Verify fallback to default ordering by Name ascending
+        var boreholesList = result.Boreholes.ToList();
+        for (int i = 1; i < boreholesList.Count; i++)
+        {
+            var prev = boreholesList[i - 1].Name ?? string.Empty;
+            var current = boreholesList[i].Name ?? string.Empty;
+            Assert.IsTrue(
+                string.Compare(prev, current, StringComparison.OrdinalIgnoreCase) <= 0,
+                $"Expected default ordering by Name ascending, but found '{prev}' > '{current}'");
         }
     }
 

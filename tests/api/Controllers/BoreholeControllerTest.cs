@@ -925,7 +925,7 @@ public class BoreholeControllerTest
             HasLogs = true,
             PageNumber = 2,
             PageSize = 25,
-            OrderBy = "TotalDepth",
+            OrderBy = BoreholeOrderBy.TotalDepth,
             Direction = "desc",
         };
 

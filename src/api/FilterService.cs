@@ -299,33 +299,29 @@ public class FilterService : IFilterService
         return query;
     }
 
-    private static IQueryable<Borehole> ApplyOrdering(IQueryable<Borehole> query, string? orderBy, string? direction)
+    private static IQueryable<Borehole> ApplyOrdering(IQueryable<Borehole> query, BoreholeOrderBy? orderBy, string? direction)
     {
         var isDescending = !string.IsNullOrWhiteSpace(direction) && direction.Equals("desc", StringComparison.OrdinalIgnoreCase);
 
-        if (string.IsNullOrWhiteSpace(orderBy))
+        if (orderBy is null)
         {
-            // Default ordering by Name
             return isDescending ? query.OrderByDescending(b => b.Name) : query.OrderBy(b => b.Name);
         }
 
-        // Todo: improve orderExpression, do not reset to first page when order changes!
-        // Orderby relevant properties.
-        Expression<Func<Borehole, object>> orderExpression = orderBy.ToUpperInvariant() switch
+        Expression<Func<Borehole, object>> orderExpression = orderBy switch
         {
-            "ID" => b => b.Id,
-            "ORIGINALNAME" => b => b.OriginalName ?? string.Empty,
-            "NAME" => b => b.Name ?? string.Empty,
-            "PROJECTNAME" => b => b.ProjectName ?? string.Empty,
-            "WORKGROUPID" => b => b.WorkgroupId ?? 0,
-            "STATUSID" => b => b.StatusId ?? 0,
-            "TYPEID" => b => b.TypeId ?? 0,
-            "PURPOSEID" => b => b.PurposeId ?? 0,
-            "TOTALDEPTH" => b => b.TotalDepth ?? 0,
-            "ELEVATIONZ" => b => b.ElevationZ ?? 0,
-            "LOCATIONX" => b => b.LocationX ?? 0,
-            "LOCATIONY" => b => b.LocationY ?? 0,
-            _ => b => b.Id,
+            BoreholeOrderBy.Id => b => b.Id,
+            BoreholeOrderBy.OriginalName => b => b.OriginalName ?? string.Empty,
+            BoreholeOrderBy.Name => b => b.Name ?? string.Empty,
+            BoreholeOrderBy.WorkgroupId => b => b.WorkgroupId ?? 0,
+            BoreholeOrderBy.StatusId => b => b.StatusId ?? 0,
+            BoreholeOrderBy.TypeId => b => b.TypeId ?? 0,
+            BoreholeOrderBy.PurposeId => b => b.PurposeId ?? 0,
+            BoreholeOrderBy.LocationX => b => b.LocationX ?? 0,
+            BoreholeOrderBy.LocationY => b => b.LocationY ?? 0,
+            BoreholeOrderBy.ElevationZ => b => b.ElevationZ ?? 0,
+            BoreholeOrderBy.TotalDepth => b => b.TotalDepth ?? 0,
+            _ => b => b.Name ?? string.Empty,
         };
 
         return isDescending ? query.OrderByDescending(orderExpression) : query.OrderBy(orderExpression);
