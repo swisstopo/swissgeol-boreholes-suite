@@ -140,9 +140,6 @@ public class FilterService : IFilterService
             query = query.Where(b => b.Name != null && EF.Functions.ILike(b.Name, $"%{filterRequest.Name}%"));
         }
 
-        // ID filters
-
-        // Todo: enhance with all ID Types
         if (filterRequest.Ids != null && filterRequest.Ids.Any())
         {
             query = query.Where(b => filterRequest.Ids.Contains(b.Id));
@@ -302,7 +299,7 @@ public class FilterService : IFilterService
         return query;
     }
 
-    private IQueryable<Borehole> ApplyOrdering(IQueryable<Borehole> query, string? orderBy, string? direction)
+    private static IQueryable<Borehole> ApplyOrdering(IQueryable<Borehole> query, string? orderBy, string? direction)
     {
         var isDescending = !string.IsNullOrWhiteSpace(direction) && direction.Equals("desc", StringComparison.OrdinalIgnoreCase);
 
@@ -334,7 +331,7 @@ public class FilterService : IFilterService
         return isDescending ? query.OrderByDescending(orderExpression) : query.OrderBy(orderExpression);
     }
 
-    private async Task<FeatureCollection> BuildGeoJsonAsync(IQueryable<Borehole> query)
+    private static async Task<FeatureCollection> BuildGeoJsonAsync(IQueryable<Borehole> query)
     {
         // Get all filtered boreholes' location data for GeoJSON
         var boreholes = await query.Select(b => new

@@ -14,6 +14,8 @@ namespace BDMS.Controllers;
 [TestClass]
 public class BoreholeControllerTest
 {
+    private const string AdminSubjectId = "sub_admin";
+    private const string EditorSubjectId = "sub_editor";
     private const int DefaultWorkgroupId = 1;
     private int boreholeId;
 
@@ -226,7 +228,7 @@ public class BoreholeControllerTest
     public async Task GetByIdReturnsUnauthorizedWithInsufficientPermissions()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .Setup(x => x.CanViewBoreholeAsync(AdminSubjectId, It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var response = await controller.GetByIdAsync(testBoreholeId);
@@ -754,7 +756,7 @@ public class BoreholeControllerTest
     public async Task CopyWithNonAdminUser()
     {
         boreholeId = testBoreholeId;
-        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+        controller.HttpContext.SetClaimsPrincipal(EditorSubjectId, PolicyNames.Viewer);
         var result = await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         ActionResultAssert.IsOk(result.Result);
         var copiedBoreholeId = ((OkObjectResult?)result.Result)?.Value;
@@ -779,7 +781,7 @@ public class BoreholeControllerTest
         var sourceBoreholeId = newBorehole.Id;
 
         // Set up non admin user with permissions on the target workgroup
-        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+        controller.HttpContext.SetClaimsPrincipal(EditorSubjectId, PolicyNames.Viewer);
 
         boreholePermissionServiceMock
             .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string?>(), targetWorkgroupId, Role.Editor))
@@ -961,7 +963,7 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task FilterBoreholesAsyncWithViewerRoleReturnsOkResult()
     {
-        controller.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+        controller.HttpContext.SetClaimsPrincipal(EditorSubjectId, PolicyNames.Viewer);
 
         var filterRequest = new FilterRequest
         {
@@ -979,12 +981,12 @@ public class BoreholeControllerTest
             new List<int>());
 
         filterServiceMock
-            .Setup(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), "sub_editor"))
+            .Setup(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), EditorSubjectId))
             .ReturnsAsync(expectedResponse);
 
         var result = await controller.FilterAsync(filterRequest);
 
         ActionResultAssert.IsOk(result.Result);
-        filterServiceMock.Verify(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), "sub_editor"), Times.Once);
+        filterServiceMock.Verify(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), EditorSubjectId), Times.Once);
     }
 }
