@@ -147,6 +147,7 @@ builder.Services.AddScoped<IBoreholePermissionService, BoreholePermissionService
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<IMaintenanceTask, LocationMigrationTask>();
 builder.Services.AddSingleton<IMaintenanceTask, CoordinateMigrationTask>();
+builder.Services.AddSingleton<IMaintenanceTask, UserMergeTask>();
 builder.Services.AddSingleton<MaintenanceTaskService>();
 
 builder.Services
