@@ -1,6 +1,6 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { Feature, FeatureCollection } from "geojson";
+import { FeatureCollection, Geometry } from "geojson";
 import { Codelist } from "../components/codelist.ts";
 import { Photo } from "../pages/detail/attachments/tabs/photo.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
@@ -248,14 +248,12 @@ export interface BoreholeListItem {
   totalDepth: number | null;
   created: NullableDateString;
   updated: NullableDateString;
-  createdByUsername: string | null;
-  updatedByUsername: string | null;
   isPublic: boolean | null;
   locked: NullableDateString;
 }
 
 export interface FilterRequest {
-  polygon?: Feature | null;
+  polygon?: Geometry | null;
   originalName?: string | null;
   projectName?: string | null;
   name?: string | null;
