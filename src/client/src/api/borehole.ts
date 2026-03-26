@@ -293,6 +293,7 @@ export interface FilterResponse {
   boreholes: BoreholeListItem[];
   geoJson: FeatureCollection | null;
   filteredBoreholeIds: number[];
+  selectableBoreholeIds: number[];
 }
 
 // ---- Filter API ----
