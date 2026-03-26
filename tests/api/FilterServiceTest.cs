@@ -300,8 +300,18 @@ public class FilterServiceTest
     }
 
     [TestMethod]
-    public async Task FilterBoreholesAsyncReturnsFilteredBoreholeIds()
+    public async Task FilterBoreholesAsyncReturnsSelectableAndFilteredBoreholeIds()
     {
+        // Add locked borehole
+        var lockedBorehole = new Borehole
+        {
+            OriginalName = "Locked borehole",
+            Locked = DateTime.UtcNow,
+        };
+
+        await context.Boreholes.AddAsync(lockedBorehole);
+        await context.SaveChangesAsync();
+
         var filterRequest = new FilterRequest
         {
             PageNumber = 1,
@@ -316,7 +326,8 @@ public class FilterServiceTest
         Assert.AreEqual(5, result.Boreholes.Count());
 
         // should contain all results, not just paginated ones
-        Assert.AreEqual(3000, result.FilteredBoreholeIds.Count());
+        Assert.AreEqual(3001, result.FilteredBoreholeIds.Count()); // all boreholes
+        Assert.AreEqual(3000, result.SelectableBoreholeIds.Count()); // unlocked boreholes
     }
 
     [TestMethod]

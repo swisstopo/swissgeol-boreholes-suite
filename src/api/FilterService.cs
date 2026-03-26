@@ -62,6 +62,11 @@ public class FilterService : IFilterService
 
         // Get all filtered borehole IDs (unlocked only) before pagination for client-side use (e.g., bulk selection in table)
         var allFilteredBoreholeIds = await query
+            .Select(b => b.Id)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var allSelectableBoreholeIds = await query
             .Where(b => b.Locked == null || b.Locked < lockExpiryTime)
             .Select(b => b.Id)
             .ToListAsync()
@@ -109,7 +114,8 @@ public class FilterService : IFilterService
             totalPages,
             boreholes,
             geoJson,
-            allFilteredBoreholeIds);
+            allFilteredBoreholeIds,
+            allSelectableBoreholeIds);
     }
 
     private IQueryable<Borehole> ApplyFilters(IQueryable<Borehole> query, FilterRequest filterRequest)

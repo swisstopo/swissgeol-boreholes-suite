@@ -846,6 +846,7 @@ public class BoreholeControllerTest
             10,
             new List<BoreholeListItem>(),
             null,
+            new List<int>(),
             new List<int>());
 
         filterServiceMock
@@ -936,6 +937,7 @@ public class BoreholeControllerTest
             2,
             new List<BoreholeListItem>(),
             null,
+            new List<int>(),
             new List<int>());
 
         FilterRequest? capturedRequest = null;
@@ -978,6 +980,7 @@ public class BoreholeControllerTest
             1,
             new List<BoreholeListItem>(),
             null,
+            new List<int>(),
             new List<int>());
 
         filterServiceMock
