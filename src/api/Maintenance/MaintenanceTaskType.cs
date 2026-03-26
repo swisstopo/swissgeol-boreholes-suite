@@ -17,4 +17,11 @@ public enum MaintenanceTaskType
     /// Recalculates LV03/LV95 coordinates for boreholes using the swisstopo coordinate API.
     /// </summary>
     CoordinateMigration,
+
+    /// <summary>
+    /// Merges duplicate users that share the same email address.
+    /// The most recently created user is kept; older duplicates are disabled
+    /// after all foreign key references are reassigned.
+    /// </summary>
+    UserMerge,
 }

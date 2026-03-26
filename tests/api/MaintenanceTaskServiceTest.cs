@@ -38,7 +38,7 @@ public class MaintenanceTaskServiceTest : MaintenanceTaskTestBase
     {
         SetupSuccessfulHttpMock();
 
-        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MigrationParameters(), AdminUserId));
+        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MaintenanceTaskParameters(), AdminUserId));
         Assert.IsTrue(Service.IsTaskRunning(MaintenanceTaskType.LocationMigration));
 
         var runningState = (await Service.GetTaskStatesAsync().ConfigureAwait(false)).Single(s => s.Type == MaintenanceTaskType.LocationMigration);
@@ -65,7 +65,7 @@ public class MaintenanceTaskServiceTest : MaintenanceTaskTestBase
             return new HttpClient(handler.Object);
         });
 
-        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MigrationParameters(), AdminUserId));
+        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MaintenanceTaskParameters(), AdminUserId));
         await Service.WaitForCompletionAsync(MaintenanceTaskType.LocationMigration).ConfigureAwait(false);
 
         var status = await Service.GetTaskStatesAsync().ConfigureAwait(false);
@@ -81,7 +81,7 @@ public class MaintenanceTaskServiceTest : MaintenanceTaskTestBase
     {
         SetupSuccessfulHttpMock();
 
-        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MigrationParameters(), AdminUserId));
+        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MaintenanceTaskParameters(), AdminUserId));
         await Service.WaitForCompletionAsync(MaintenanceTaskType.LocationMigration).ConfigureAwait(false);
 
         var logEntry = Context.MaintenanceTaskLogs
@@ -106,7 +106,7 @@ public class MaintenanceTaskServiceTest : MaintenanceTaskTestBase
             return new HttpClient(handler.Object);
         });
 
-        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MigrationParameters(), AdminUserId));
+        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MaintenanceTaskParameters(), AdminUserId));
         await Service.WaitForCompletionAsync(MaintenanceTaskType.LocationMigration).ConfigureAwait(false);
 
         var logEntry = Context.MaintenanceTaskLogs
@@ -124,7 +124,7 @@ public class MaintenanceTaskServiceTest : MaintenanceTaskTestBase
 
         var adminUser = Context.Users.Single(u => u.Id == AdminUserId);
 
-        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MigrationParameters(), AdminUserId));
+        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MaintenanceTaskParameters(), AdminUserId));
         await Service.WaitForCompletionAsync(MaintenanceTaskType.LocationMigration).ConfigureAwait(false);
 
         var logEntry = Context.MaintenanceTaskLogs
@@ -142,11 +142,11 @@ public class MaintenanceTaskServiceTest : MaintenanceTaskTestBase
         SetupSuccessfulHttpMock();
 
         // Run location migration three times.
-        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MigrationParameters(), AdminUserId));
+        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MaintenanceTaskParameters(), AdminUserId));
         await Service.WaitForCompletionAsync(MaintenanceTaskType.LocationMigration).ConfigureAwait(false);
-        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MigrationParameters { OnlyMissing = true, DryRun = false }, AdminUserId));
+        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MaintenanceTaskParameters { OnlyMissing = true, DryRun = false }, AdminUserId));
         await Service.WaitForCompletionAsync(MaintenanceTaskType.LocationMigration).ConfigureAwait(false);
-        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MigrationParameters { OnlyMissing = true, DryRun = true }, AdminUserId));
+        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MaintenanceTaskParameters { OnlyMissing = true, DryRun = true }, AdminUserId));
         await Service.WaitForCompletionAsync(MaintenanceTaskType.LocationMigration).ConfigureAwait(false);
 
         // First page with size 2 should return 2 entries.
@@ -173,9 +173,9 @@ public class MaintenanceTaskServiceTest : MaintenanceTaskTestBase
         SetupSuccessfulHttpMock();
 
         // Run with dryRun=true, then dryRun=false.
-        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MigrationParameters { DryRun = true }, AdminUserId));
+        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MaintenanceTaskParameters { DryRun = true }, AdminUserId));
         await Service.WaitForCompletionAsync(MaintenanceTaskType.LocationMigration).ConfigureAwait(false);
-        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MigrationParameters { DryRun = false }, AdminUserId));
+        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.LocationMigration, new MaintenanceTaskParameters { DryRun = false }, AdminUserId));
         await Service.WaitForCompletionAsync(MaintenanceTaskType.LocationMigration).ConfigureAwait(false);
 
         // With includeDryRun=true, both entries should be returned.

@@ -26,6 +26,7 @@ const statusLabelMap: Record<LogStatus, string> = {
 const taskTypeTranslationMap: Record<MaintenanceTaskType, string> = {
   LocationMigration: "locationMigration",
   CoordinateMigration: "coordinateMigration",
+  UserMerge: "userMerge",
 };
 
 export const ExecutionLogTable: FC = () => {
@@ -34,7 +35,7 @@ export const ExecutionLogTable: FC = () => {
   const [includeDryRun, setIncludeDryRun] = useState(false);
 
   const { data, isLoading } = useMaintenanceLogs(page + 1, includeDryRun);
-  const pageSize = data?.pageSize ?? 5;
+  const pageSize = data?.pageSize ?? 10;
 
   const rows = useMemo(() => data?.logEntries.map((entry, index) => ({ ...entry, id: index })) ?? [], [data]);
 
@@ -46,12 +47,6 @@ export const ExecutionLogTable: FC = () => {
         flex: 2.5,
         renderCell: (params: GridRenderCellParams) =>
           t(taskTypeTranslationMap[params.value as MaintenanceTaskType] ?? params.value),
-      },
-      {
-        field: "isDryRun",
-        headerName: t("dryRun"),
-        flex: 1.5,
-        renderCell: (params: GridRenderCellParams) => (params.value ? <CheckIcon size={16} /> : null),
       },
       {
         field: "status",
@@ -72,6 +67,12 @@ export const ExecutionLogTable: FC = () => {
         flex: 1,
         renderCell: (params: GridRenderCellParams) =>
           params.row.status === "Failed" ? (params.row.message ?? "-") : (params.value ?? 0),
+      },
+      {
+        field: "isDryRun",
+        headerName: t("dryRun"),
+        flex: 1,
+        renderCell: (params: GridRenderCellParams) => (params.value ? <CheckIcon size={16} /> : null),
       },
       {
         field: "startedByName",
