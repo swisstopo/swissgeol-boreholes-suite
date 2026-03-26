@@ -60,12 +60,12 @@ public class FilterService : IFilterService
             skip = (filterRequest.PageNumber - 1) * pageSize;
         }
 
-        // Get all filtered borehole IDs (unlocked only) before pagination for client-side use (e.g., bulk selection in table)
         var allFilteredBoreholeIds = await query
             .Select(b => b.Id)
             .ToListAsync()
             .ConfigureAwait(false);
 
+        // Get all selectable borehole IDs (unlocked only) for client-side use (e.g., bulk selection in table)
         var allSelectableBoreholeIds = await query
             .Where(b => b.Locked == null || b.Locked < lockExpiryTime)
             .Select(b => b.Id)
