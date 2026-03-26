@@ -116,7 +116,7 @@ describe("Maintenance Tasks page tests", () => {
 
       it("displays execution log table", () => {
         cy.dataCy("execution-log-table").should("be.visible");
-        cy.dataCy("execution-log-include-dry-run").find("input").should("not.be.checked");
+        cy.dataCy("execution-log-include-dry-run").find("input").should("be.checked");
       });
 
       it("starts location migration", () => {
@@ -162,11 +162,6 @@ describe("Maintenance Tasks page tests", () => {
         // Wait for task to complete.
         cy.get("[data-cy=user-merge-start]", { timeout: 30000 }).should("not.be.disabled");
 
-        // Show dry runs in the log table and wait for the API response.
-        cy.intercept("GET", "/api/v2/maintenance/logs*includeDryRun=true*").as("get-dry-run-logs");
-        cy.dataCy("execution-log-include-dry-run").find("input").check();
-        cy.wait("@get-dry-run-logs");
-
         // Verify the log entry exists with correct task type.
         cy.dataCy("execution-log-table")
           .contains(/merge duplicate users/i)
@@ -181,7 +176,6 @@ describe("Maintenance Tasks page tests", () => {
 
         goToRouteAndAcceptTerms("/setting#maintenance");
 
-        cy.dataCy("execution-log-include-dry-run").find("input").check();
         cy.dataCy("execution-log-table").should("contain", "No rows");
 
         cy.dataCy("location-migration-start").click();
@@ -260,6 +254,43 @@ describe("Maintenance Tasks page tests", () => {
         cy.dataCy("execution-log-table").should("be.visible");
         cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 2);
         cy.dataCy("execution-log-table").find(".MuiDataGrid-row").first().should("contain", "42");
+      });
+
+      it("toggles dry run entries in execution log", () => {
+        const dryRunEntry = makeLogEntry({ affectedCount: 5, isDryRun: true, taskType: "LocationMigration" });
+        const realEntry = makeLogEntry({ affectedCount: 42, isDryRun: false, taskType: "CoordinateMigration" });
+
+        interceptStatus(makeStatusResponse(), "get-maintenance-status-ok");
+
+        cy.intercept("GET", "/api/v2/maintenance/logs*", req => {
+          if (req.url.includes("includeDryRun=true")) {
+            req.reply({ body: makeLogResponse([dryRunEntry, realEntry]) });
+          } else {
+            req.reply({ body: makeLogResponse([realEntry]) });
+          }
+        }).as("get-logs");
+
+        goToRouteAndAcceptTerms("/setting#maintenance");
+        cy.wait("@get-logs");
+
+        cy.dataCy("execution-log-include-dry-run").find("input").should("be.checked");
+        cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 2);
+        cy.dataCy("execution-log-table").should("contain", "5");
+        cy.dataCy("execution-log-table").should("contain", "42");
+
+        cy.dataCy("execution-log-include-dry-run").find("input").uncheck();
+        cy.wait("@get-logs");
+
+        cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 1);
+        cy.dataCy("execution-log-table").should("contain", "42");
+        cy.dataCy("execution-log-table").should("not.contain", "5");
+
+        cy.dataCy("execution-log-include-dry-run").find("input").check();
+        cy.wait("@get-logs");
+
+        cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 2);
+        cy.dataCy("execution-log-table").should("contain", "5");
+        cy.dataCy("execution-log-table").should("contain", "42");
       });
 
       it("shows failed status with error message in log table", () => {

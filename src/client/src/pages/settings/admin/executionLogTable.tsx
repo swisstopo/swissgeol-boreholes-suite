@@ -32,7 +32,7 @@ const taskTypeTranslationMap: Record<MaintenanceTaskType, string> = {
 export const ExecutionLogTable: FC = () => {
   const { t, i18n } = useTranslation();
   const [page, setPage] = useState(0);
-  const [includeDryRun, setIncludeDryRun] = useState(false);
+  const [includeDryRun, setIncludeDryRun] = useState(true);
 
   const { data, isLoading } = useMaintenanceLogs(page + 1, includeDryRun);
   const pageSize = data?.pageSize ?? 10;
