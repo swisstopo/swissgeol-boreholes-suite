@@ -436,7 +436,7 @@ public class FilterServiceTest
 
         // Get original Boreholes since ProjectName is not present in result BoreholeListItem.
         var originalBoreholes = context.Boreholes.Where(ob => result.Boreholes.Select(b => b.Id).Contains(ob.Id));
-        Assert.AreEqual(result.Boreholes.Count(), originalBoreholes.Count());
+        Assert.AreEqual(result.Boreholes.Count(), await originalBoreholes.CountAsync());
 
         foreach (var borehole in originalBoreholes)
         {
@@ -616,7 +616,7 @@ public class FilterServiceTest
 
         // Get original Boreholes since TopBedrockFreshMd is not present in result BoreholeListItem.
         var originalBoreholes = context.Boreholes.Where(ob => result.Boreholes.Select(b => b.Id).Contains(ob.Id));
-        Assert.AreEqual(result.Boreholes.Count(), originalBoreholes.Count());
+        Assert.AreEqual(result.Boreholes.Count(), await originalBoreholes.CountAsync());
 
         foreach (var borehole in originalBoreholes)
         {
@@ -643,7 +643,7 @@ public class FilterServiceTest
 
         // Get original Boreholes since TopBedrockWeatheredMd is not present in result BoreholeListItem.
         var originalBoreholes = context.Boreholes.Where(ob => result.Boreholes.Select(b => b.Id).Contains(ob.Id));
-        Assert.AreEqual(result.Boreholes.Count(), originalBoreholes.Count());
+        Assert.AreEqual(result.Boreholes.Count(), await originalBoreholes.CountAsync());
 
         foreach (var borehole in originalBoreholes)
         {
@@ -672,7 +672,7 @@ public class FilterServiceTest
 
         // Get original Boreholes since TopBedrockIntersected is not present in result BoreholeListItem.
         var originalBoreholes = context.Boreholes.Where(ob => result.Boreholes.Select(b => b.Id).Contains(ob.Id));
-        Assert.AreEqual(result.Boreholes.Count(), originalBoreholes.Count());
+        Assert.AreEqual(result.Boreholes.Count(), await originalBoreholes.CountAsync());
 
         foreach (var borehole in originalBoreholes)
         {
@@ -697,7 +697,7 @@ public class FilterServiceTest
 
         // Get original Boreholes since HasGroundwater is not present in result BoreholeListItem.
         var originalBoreholes = context.Boreholes.Where(ob => result.Boreholes.Select(b => b.Id).Contains(ob.Id));
-        Assert.AreEqual(result.Boreholes.Count(), originalBoreholes.Count());
+        Assert.AreEqual(result.Boreholes.Count(), await originalBoreholes.CountAsync());
 
         foreach (var borehole in originalBoreholes)
         {
