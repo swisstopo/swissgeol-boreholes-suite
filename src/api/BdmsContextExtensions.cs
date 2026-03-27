@@ -176,7 +176,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.TotalDepth, f => f.Random.Double(0, 2000))
            .RuleFor(o => o.RestrictionId, f => f.PickRandom(restrictionIds).OrNull(f, .5f))
            .RuleFor(o => o.Restriction, _ => default!)
-           .RuleFor(o => o.RestrictionUntil, f => f.Date.Future().ToUniversalTime().OrNull(f, .9f))
+           .RuleFor(o => o.RestrictionUntil, f => f.Date.FutureDateOnly().OrNull(f, .5f))
            .RuleFor(o => o.OriginalName, f => f.Name.FullName())
            .RuleFor(o => o.Name, f => "")
            .RuleFor(o => o.LocationPrecisionId, f => f.PickRandom(locationPrecisionIds).OrNull(f, .1f))
