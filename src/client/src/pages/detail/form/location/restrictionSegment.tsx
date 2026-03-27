@@ -26,8 +26,7 @@ const RestrictionSegment = ({ borehole, formMethods }: RestrictionSegmentProps) 
   const restriction = formMethods.watch("restrictionId");
 
   useEffect(() => {
-    //TODO: Adapt data type on backend to Date instead of slicing the returned DateTime
-    formMethods.setValue("restrictionUntil", borehole.restrictionUntil?.toString().slice(0, 10) ?? "");
+    formMethods.setValue("restrictionUntil", borehole.restrictionUntil?.toString() ?? "");
   }, [borehole.restrictionUntil, formMethods]);
 
   useEffect(() => {
@@ -66,7 +65,5 @@ const RestrictionSegment = ({ borehole, formMethods }: RestrictionSegmentProps) 
     </Card>
   );
 };
-
-// 2016-06-03T23:15:33.008Z"
 
 export default RestrictionSegment;

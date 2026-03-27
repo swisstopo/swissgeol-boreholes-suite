@@ -1,6 +1,6 @@
 import { goToRouteAndAcceptTerms, loginAsAdmin, loginAsEditor, selectLanguage } from "../helpers/testHelpers.js";
 
-const TASK_TYPES = ["LocationMigration", "CoordinateMigration"];
+const TASK_TYPES = ["LocationMigration", "CoordinateMigration", "UserMerge"];
 
 const makeTaskState = (type, overrides = {}) => ({
   type,
@@ -17,7 +17,7 @@ const makeStatusResponse = (overridesByType = {}) => TASK_TYPES.map(type => make
 const makeLogResponse = (logEntries = [], totalCount = null) => ({
   totalCount: totalCount ?? logEntries.length,
   pageNumber: 1,
-  pageSize: 5,
+  pageSize: 10,
   logEntries,
 });
 
@@ -145,6 +145,34 @@ describe("Maintenance Tasks page tests", () => {
           cy.dataCy(cyName).find("input").should("not.be.checked");
         });
       });
+
+      it("renders the user merge card without onlyMissing checkbox", () => {
+        cy.dataCy("user-merge-card").should("be.visible");
+        cy.dataCy("user-merge-dry-run").find("input").should("be.checked");
+        cy.dataCy("user-merge-only-missing").should("not.exist");
+        cy.dataCy("user-merge-start").should("be.visible").and("not.be.disabled");
+      });
+
+      it("executes a user merge dry run and shows log entry", () => {
+        cy.wait("@get-maintenance-status");
+        cy.dataCy("user-merge-dry-run").find("input").should("be.checked");
+        cy.dataCy("user-merge-start").click();
+        cy.dataCy("user-merge-start").should("be.disabled");
+        cy.wait("@start-user-merge");
+
+        // Wait for task to complete.
+        cy.get("[data-cy=user-merge-start]", { timeout: 30000 }).should("not.be.disabled");
+
+        // Show dry runs in the log table and wait for the API response.
+        cy.intercept("GET", "/api/v2/maintenance/logs*includeDryRun=true*").as("get-dry-run-logs");
+        cy.dataCy("execution-log-include-dry-run").find("input").check();
+        cy.wait("@get-dry-run-logs");
+
+        // Verify the log entry exists with correct task type.
+        cy.dataCy("execution-log-table")
+          .contains(/merge duplicate users/i)
+          .should("be.visible");
+      });
     });
 
     describe("with stubbed responses", () => {
@@ -194,7 +222,7 @@ describe("Maintenance Tasks page tests", () => {
 
         cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 1);
         cy.dataCy("execution-log-table").find(".MuiDataGrid-row").first().should("contain", "Abgeschlossen");
-        cy.dataCy("execution-log-table").find(".MuiDataGrid-row").first().should("contain", "Koordinaten-Migration");
+        cy.dataCy("execution-log-table").find(".MuiDataGrid-row").first().should("contain", "Koordinaten migrieren");
 
         selectLanguage("en");
       });
@@ -270,21 +298,21 @@ describe("Maintenance Tasks page tests", () => {
       it("paginates to the next page", () => {
         interceptStatus(makeStatusResponse(), "get-maintenance-status-ok");
 
-        const page1Entries = Array.from({ length: 5 }, (_, i) => makeLogEntry({ affectedCount: i + 1 }));
+        const page1Entries = Array.from({ length: 10 }, (_, i) => makeLogEntry({ affectedCount: i + 1 }));
         const page2Entries = Array.from({ length: 2 }, (_, i) => makeLogEntry({ affectedCount: 100 + i }));
 
         cy.intercept("GET", "/api/v2/maintenance/logs*", req => {
           if (req.url.includes("pageNumber=2")) {
-            req.reply({ body: makeLogResponse(page2Entries, 7) });
+            req.reply({ body: makeLogResponse(page2Entries, 12) });
           } else {
-            req.reply({ body: makeLogResponse(page1Entries, 7) });
+            req.reply({ body: makeLogResponse(page1Entries, 12) });
           }
         }).as("get-logs-paginated");
 
         goToRouteAndAcceptTerms("/setting#maintenance");
         cy.wait("@get-logs-paginated");
 
-        cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 5);
+        cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 10);
 
         cy.dataCy("execution-log-table").find('[aria-label="next page"]').click();
         cy.wait("@get-logs-paginated");

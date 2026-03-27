@@ -18,5 +18,5 @@ public interface IMaintenanceTask
     /// Executes the maintenance task using services resolved from the provided <paramref name="scope"/>.
     /// </summary>
     /// <returns>The number of affected records.</returns>
-    Task<int> ExecuteAsync(IServiceScope scope, MigrationParameters parameters, CancellationToken cancellationToken);
+    Task<int> ExecuteAsync(IServiceScope scope, MaintenanceTaskParameters parameters, CancellationToken cancellationToken);
 }

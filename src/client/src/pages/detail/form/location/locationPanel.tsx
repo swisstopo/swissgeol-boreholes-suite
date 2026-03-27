@@ -4,7 +4,6 @@ import { Stack } from "@mui/material";
 import { Identifier } from "../../../../api/borehole.ts";
 import {
   convertValueToBoolean,
-  ensureDatetime,
   getDecimalsFromNumericString,
   parseFloatWithThousandsSeparator,
 } from "../../../../components/form/formUtils.ts";
@@ -58,7 +57,7 @@ export const LocationPanel: FC<LocationPanelProps> = ({ borehole, labelingPanelO
         .filter(c => c.codelistId && c.value && c.boreholeId);
     };
 
-    data.restrictionUntil = data?.restrictionUntil ? ensureDatetime(data.restrictionUntil.toString()) : null;
+    data.restrictionUntil = data?.restrictionUntil ? data.restrictionUntil.toString() : null;
     data.elevationZ = parseFloatWithThousandsSeparator(data?.elevationZ);
     data.referenceElevation = parseFloatWithThousandsSeparator(data?.referenceElevation);
     data.nationalInterest = convertValueToBoolean(data?.nationalInterest);

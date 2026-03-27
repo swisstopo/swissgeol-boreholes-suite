@@ -182,11 +182,11 @@ public class Borehole : IChangeTracking, IIdentifyable
     public Codelist? Restriction { get; set; }
 
     /// <summary>
-    /// Gets or sets the timestamp until when a <see cref="Borehole"/> is restricted.
+    /// Gets or sets the date until when a <see cref="Borehole"/> is restricted.
     /// </summary>
     [IncludeInExport]
     [Column("restriction_until_bho")]
-    public DateTime? RestrictionUntil { get; set; }
+    public DateOnly? RestrictionUntil { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s national interest.

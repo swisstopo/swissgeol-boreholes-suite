@@ -105,8 +105,6 @@ public class ImportController : ControllerBase
                     HasRequestedChanges = false,
                 };
 
-                // Set DateTime kind to UTC, since PSQL type 'timestamp with timezone' requires UTC as DateTime.Kind
-                borehole.RestrictionUntil = borehole.RestrictionUntil != null ? DateTime.SpecifyKind(borehole.RestrictionUntil.Value, DateTimeKind.Utc) : null;
                 borehole.WorkgroupId = workgroupId;
 
                 // Detect coordinate reference system and set according coordinate properties of borehole.

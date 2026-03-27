@@ -2,7 +2,7 @@ import { useEffect, useRef } from "react";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 
-export type MaintenanceTaskType = "LocationMigration" | "CoordinateMigration";
+export type MaintenanceTaskType = "LocationMigration" | "CoordinateMigration" | "UserMerge";
 export type MaintenanceTaskStatus = "Idle" | "Running" | "Completed" | "Failed";
 
 export interface MaintenanceTaskLogEntry {
@@ -34,7 +34,7 @@ export interface MaintenanceTaskState {
   completedAt: string | null;
 }
 
-export interface MigrationParams {
+export interface MaintenanceTaskParams {
   onlyMissing: boolean;
   dryRun: boolean;
 }
@@ -75,10 +75,11 @@ export const useMaintenanceLogs = (pageNumber: number, includeDryRun: boolean) =
     placeholderData: keepPreviousData,
   });
 
-export const useStartMigration = (taskType: MaintenanceTaskType) => {
+export const useStartMaintenanceTask = (taskType: MaintenanceTaskType) => {
   const queryClient = useQueryClient();
   return useMutation({
-    mutationFn: (params: MigrationParams) => fetchApiV2WithApiError<void>(`maintenance/${taskType}`, "POST", params),
+    mutationFn: (params: MaintenanceTaskParams) =>
+      fetchApiV2WithApiError<void>(`maintenance/${taskType}`, "POST", params),
     onSuccess: () => {
       // Optimistically mark the task as running so the UI updates immediately
       // without waiting for the next status poll.

@@ -5,6 +5,7 @@
 ### Added
 - Added major version Docker image tag (e.g. `:v2`) to the release workflow.
 - Added maintenance tasks admin page with background job infrastructure for location and coordinate migrations, persistent execution log, and auto-polling UI.
+- Added a new maintenance task to merge duplicate users sharing the same email address by reassigning all data from obsolete accounts to the newest user.
 
 ### Changed
 - Multiple id values for a `boreholeId`/`identifier type` pair are now supported.
@@ -14,6 +15,7 @@
 - Migrated `custom.lithostratigraphy_top_bedrock` codelist to `lithostratigraphy`.
 - Migrated `custom.chronostratigraphy_top_bedrock` codelist to `chronostratigraphy`.
 - Deleted legacy codelists `colour`, `alteration`, `description_quality` and `custom.lithology_top_bedrock` (migrated to `lithology_con`).
+- Restriction until now has the data type `DateOnly` instead of `DateTime`.
 
 ### Fixed
 - All tables in the `logs` and `attachments` tab of the borehole detail view were missing pagination.

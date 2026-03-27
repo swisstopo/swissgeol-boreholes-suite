@@ -12,6 +12,6 @@ public sealed class CoordinateMigrationTask : MigrationTaskBase<CoordinateServic
     public override MaintenanceTaskType TaskType => MaintenanceTaskType.CoordinateMigration;
 
     /// <inheritdoc/>
-    protected override async Task<bool> ProcessBoreholeAsync(CoordinateService service, Borehole borehole, MigrationParameters parameters, CancellationToken cancellationToken) =>
+    protected override async Task<bool> ProcessBoreholeAsync(CoordinateService service, Borehole borehole, MaintenanceTaskParameters parameters, CancellationToken cancellationToken) =>
         await service.MigrateCoordinatesAsync(borehole, parameters.OnlyMissing).ConfigureAwait(false);
 }
