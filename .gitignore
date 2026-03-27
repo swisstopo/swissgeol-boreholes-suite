@@ -438,5 +438,3 @@ src/client/npm-debug.log*
 src/client/tmp/*
 
 !src/client/src/pages/detail/form/log/
-/CLAUDE.md
-/.claude/*
