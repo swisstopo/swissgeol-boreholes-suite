@@ -98,8 +98,9 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     addLithology();
     isUnconsolidatedForm(true);
     switchRockType(RockType.consolidated, "Continue");
-    evaluateInput("fromDepth", 798);
+    evaluateInput("fromDepth", 355);
     fillConsolidatedLithologyForm({
+      fromDepth: 798,
       toDepth: 1123,
       lithologyDescriptions: [{ lithologyConId: 4, gradationId: 2 }],
     });
@@ -262,7 +263,11 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       toDepthExpected: 2,
       description: "lithological description 355 - 1123",
     });
-    evaluateLithologicalDescriptionForm({ fromDepth: 355, toDepth: 1123 });
+    evaluateLithologicalDescriptionForm({
+      fromDepth: 355,
+      toDepth: 1123,
+      description: "lithological description 355 - 1123",
+    });
     closeLayerModal();
 
     checkDepthColumn([
@@ -291,8 +296,9 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasLayer(LayerType.lithology, 798, 1123);
     checkLayerCardContent(LayerType.lithologicalDescription, 0, 355, ["lithological description 0 - 355"]);
     checkLayerCardContent(LayerType.lithologicalDescription, 355, 1123, ["lithological description 355 - 1123"]);
-    checkLayerCardContent(LayerType.faciesDescription, 0, 355, ["alluvial"]);
-    checkLayerCardContent(LayerType.faciesDescription, 355, 1123, ["alluvial fan", "facies description 355 - 1123"]);
+    hasLayer(LayerType.faciesDescription, 0, null, true);
+    hasLayer(LayerType.faciesDescription, 355, null, true, false);
+    hasLayer(LayerType.faciesDescription, 798, null, true, false);
   });
 
   it("adds, updates and displays facies descriptions", () => {
