@@ -6,85 +6,63 @@
 #
 app:
   # -- The fully qualified domain name the application gets accessed by
-  # -- defaults to "boreholes.swissgeol.ch"
   domain:
   # -- The timezone which will be used in the application
-  # -- defaults to "Europe/Zurich"
-  timezone:
-  # -- The tag name of the Docker image tag to be deployed
-  # -- e.g. v2.0.506
-  # -- required
-  version:
+  timezone: Europe/Zurich
+  # -- The tag name of the Docker image tag to be deployed (updated by release workflow)
+  version: v2.1.1462
 
 dataextraction:
-  # -- The tag name of the Docker image tag to be deployed
-  # -- e.g. v2.0.506
-  # -- required
-  version:
+  # -- The tag name of the Docker image tag to be deployed (updated by release workflow)
+  version: v1.0.144
 
 ocr:
-  # -- The tag name of the Docker image tag to be deployed
-  # -- e.g. v2.0.506
-  # -- required
-  version:
+  # -- The tag name of the Docker image tag to be deployed (updated by release workflow)
+  version: 1.1.3
   # -- The OCR confidence score threshold to be used.
-  # -- defaults to 0.45
-  confidenceThreshold:
+  confidenceThreshold: 0.45
   # -- Applies OCR more aggressively, also e.g. to images inside
   # -- digitally-born PDF documents, as long as the newly detected
   # -- text does not overlap with any pre-existing digital text.
-  # -- defaults to "true"
-  useAggressiveStrategy:
+  useAggressiveStrategy: true
   # -- Skip OCR processing entirely.
-  # -- defaults to "false"
   skipProcessing: false
-  # -- The AWS role ARN to be used for the OCR API.
+  # -- The AWS role ARN to be used for the OCR API (needed for IRSA) (stored as secret)
   awsRoleArn:
-  # -- Whether to automount the service account token for the OCR API (needed for IRSA).
-  automountServiceAccountToken: true
 
 # OpenID Connect configuration
 auth:
-  # -- The issuer URL of the OpenID Connect provider
+  # -- The issuer URL of the OpenID Connect provider (stored as secret)
   # -- e.g. https://cognito-idp.<region>.amazonaws.com/<user_pool_id>
   authority:
-  # -- The client ID of the application
+  # -- The client ID of the application (stored as secret)
   audience:
   # -- The required scopes needed by the application
-  # -- defaults to "openid profile email"
-  scopes:
+  scopes: openid profile email
   # -- The claim type to be used to get the user's groups
-  # -- defaults to "cognito:groups"
   groupClaimType:
   # -- The name of the group the user must be a member of
-  # -- defaults to "boreholes.swissgeol"
   authorizedGroupName:
   # -- Enables anonymous mode for the application.
-  # -- In this mode, the application does not require authentication.
-  # -- defaults to false
-  anonymousModeEnabled:
+  anonymousModeEnabled: false
   # -- Enables basic authentication on the Traefik IngressRoute.
-  # -- When enabled, requires basicAuthUsername and basicAuthPassword.
-  # -- defaults to false
+  # -- When enabled, set credentials via: kubectl edit secret <release>-basic-auth-secret
   basicAuthEnabled: false
-  # -- The username for basic authentication
-  basicAuthUsername:
-  # -- The password for basic authentication
-  basicAuthPassword:
 
 # Database configuration
 database:
-  # -- The hostname of the database server
+  # -- The hostname of the database server (stored as secret)
   host:
   # -- The port of the database server
-  # -- defaults to "5432"
-  port:
-  # -- The name of the database
+  port: 5432
+  # -- The name of the database (stored as secret)
   name:
-  # -- The username to connect to the database
+  # -- The database username (stored as secret)
   username:
-  # -- The password to connect to the database
+  # -- The database password (stored as secret)
   password:
+  # -- The full database connection string (stored as secret)
+  connectionString:
 
 #
 # Desired number of replicas for the application
@@ -94,21 +72,19 @@ replicaCount: 1
 # AWS S3 Bucket configuration
 s3:
   # -- The endpoint of the S3 bucket
-  # -- If a region is used it must be part of the endpoint
   # -- e.g. https://s3.<region>.amazonaws.com
   endpoint:
-  # -- The name of the S3 bucket
+  # -- The name of the S3 bucket (stored as secret)
   bucket:
-  # -- The name of the S3 bucket for the photos
+  # -- The name of the S3 bucket for the photos (stored as secret)
   photosBucket:
-  # -- The name of the S3 bucket for the log files
+  # -- The name of the S3 bucket for the log files (stored as secret)
   logFilesBucket:
-  # -- The access key to connect to the S3 bucket
+  # -- The S3 access key (stored as secret)
   accessKey:
-  # -- The secret key to connect to the S3 bucket
+  # -- The S3 secret key (stored as secret)
   secretKey:
   # -- Set to 0 to use an insecure connection
-  # -- defaults to 1 (secure connection)
   secure: "1"
 
 # Google Analytics configuration

@@ -51,23 +51,23 @@ spec:
               env:
                 - name: SOURCE_DB_HOST
                   valueFrom:
-                    configMapKeyRef:
-                      name: "{{ .Release.Name }}-config"
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-secrets"
                       key: sourceDatabaseHost
                 - name: SOURCE_DB_PORT
                   valueFrom:
-                    configMapKeyRef:
-                      name: "{{ .Release.Name }}-config"
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-secrets"
                       key: sourceDatabasePort
                 - name: SOURCE_DB_NAME
                   valueFrom:
-                    configMapKeyRef:
-                      name: "{{ .Release.Name }}-config"
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-secrets"
                       key: sourceDatabaseName
                 - name: SOURCE_DB_SCHEMA
                   valueFrom:
-                    configMapKeyRef:
-                      name: "{{ .Release.Name }}-config"
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-secrets"
                       key: sourceDatabaseSchema
                 - name: SOURCE_DB_USERNAME
                   valueFrom:
@@ -81,18 +81,18 @@ spec:
                       key: sourceDatabasePassword
                 - name: TARGET_DB_HOST
                   valueFrom:
-                    configMapKeyRef:
-                      name: "{{ .Release.Name }}-config"
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-secrets"
                       key: targetDatabaseHost
                 - name: TARGET_DB_PORT
                   valueFrom:
-                    configMapKeyRef:
-                      name: "{{ .Release.Name }}-config"
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-secrets"
                       key: targetDatabasePort
                 - name: TARGET_DB_NAME
                   valueFrom:
-                    configMapKeyRef:
-                      name: "{{ .Release.Name }}-config"
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-secrets"
                       key: targetDatabaseName
                 - name: TARGET_DB_USERNAME
                   valueFrom:

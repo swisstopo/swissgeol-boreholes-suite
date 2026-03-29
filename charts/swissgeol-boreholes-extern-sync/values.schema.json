@@ -40,9 +40,10 @@
         "target": { "$ref": "#/definitions/databaseConnection" }
       }
     }
+
   },
 
-  "required": ["app"],
+  "required": [],
 
   "definitions": {
     "databaseConnection": {
@@ -59,8 +60,8 @@
           "default": 5432
         },
         "name": { "type": ["string", "null"], "minLength": 1 },
-        "username": { "type": ["string", "null"], "minLength": 1 },
-        "password": { "type": ["string", "null"], "minLength": 1 }
+        "username": { "type": ["string", "null"] },
+        "password": { "type": ["string", "null"] }
       }
     }
   }

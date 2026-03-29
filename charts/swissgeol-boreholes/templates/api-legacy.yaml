@@ -70,8 +70,8 @@ spec:
           env:
             - name: DB_HOST
               valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-config
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
                   key: databaseHost
             - name: DB_PORT
               valueFrom:
@@ -81,8 +81,8 @@ spec:
                   optional: true
             - name: DB_DATABASE
               valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-config
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
                   key: databaseName
             - name: DB_USERNAME
               valueFrom:

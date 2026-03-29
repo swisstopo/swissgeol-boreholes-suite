@@ -85,8 +85,8 @@ spec:
                   key: s3SecretKey
             - name: AWS_S3_BUCKET
               valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-config
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
                   key: s3Bucket
             - name: AWS_ENDPOINT
               valueFrom:
