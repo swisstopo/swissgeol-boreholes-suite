@@ -3,12 +3,6 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-api
   namespace: {{ .Release.Namespace }}
-  {{- if ne .Values.keel.enabled false }}
-  annotations:
-    keel.sh/policy: {{ .Values.keel.policy | default "force" }}
-    keel.sh/match-tag: {{ .Values.keel.matchTag | default "'true'" }}
-    keel.sh/trigger: {{ .Values.keel.trigger | default "poll" }}
-  {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:

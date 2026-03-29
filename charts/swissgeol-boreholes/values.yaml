@@ -115,18 +115,3 @@ s3:
 googleAnalytics:
   # -- The tracking ID of the Google Analytics account
   trackingId:
-
-# Keel deployment automation configuration
-keel:
-  # -- Enables Keel deployment automation for the deployment
-  # -- defaults to true
-  enabled:
-  # -- The policy for Keel to use for updates
-  # -- defaults to "force"
-  policy:
-  # -- Whether to match tags for updates
-  # -- defaults to "'true'"
-  matchTag:
-  # -- The trigger type for Keel
-  # -- defaults to "poll"
-  trigger:
