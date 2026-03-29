@@ -28,6 +28,20 @@ This chart bootstraps the [swissgeol-boreholes](https://github.com/swisstopo/swi
 - Kubernetes 1.23+
 - Helm 3.8.0+
 
+### Secrets
+
+This chart uses a **three-tier secret resolution pattern** for sensitive values:
+
+1. **`--set` override** — values passed via `helm install --set` or `helm upgrade --set` take highest priority
+2. **Existing secret** — on upgrade, existing values in the `<release>-secrets` Secret are preserved automatically via `lookup`
+3. **CHANGE_ME placeholder** — on first deploy without `--set`, placeholder values are used
+
+On first deploy, either pass all secret values via `--set`, or edit the secret manually afterward:
+
+```bash
+kubectl edit secret <release>-secrets -n <namespace>
+```
+
 ## Installing the Chart
 
 To install the chart with the release name `swissgeol-boreholes`:
@@ -36,54 +50,82 @@ To install the chart with the release name `swissgeol-boreholes`:
 helm install swissgeol-boreholes swissgeol-boreholes/swissgeol-boreholes
 ```
 
-## Configuring the Chart
-
-The following table lists the configurable parameters of the swissgeol-boreholes chart and their default/required values.
-
-| Parameter                    | Description                    | Default / Required       |
-| ---------------------------- | ------------------------------ | ------------------------ |
-| `replicaCount`               | Number of replicas             | `1`                      |
-| `app.domain`                 | Base domain name               | `boreholes.swissgeol.ch` |
-| `app.version`                | Docker image tag               | **required**             |
-| `dataextraction.version`     | Data extraction API version    | **required**             |
-| `auth.authority`             | Issuer URL                     | `""`                     |
-| `auth.audience`              | Client id                      | `""`                     |
-| `auth.anonymousModeEnabled`  | Enable anonymous mode          | `false`                  |
-| `database.host`              | Database host                  | `""`                     |
-| `database.name`              | Database name                  | `""`                     |
-| `database.username`          | Database username              | `""`                     |
-| `database.password`          | Database password              | `""`                     |
-| `s3.endpoint`                | S3 endpoint                    | `""`                     |
-| `s3.bucket`                  | S3 bucket name                 | `""`                     |
-| `s3.photosBucket`            | S3 photos bucket name          | `""`                     |
-| `s3.logFilesBucket`          | S3 log files bucket name       | `""`                     |
-| `s3.accessKey`               | S3 access key                  | `""`                     |
-| `s3.secretKey`               | S3 secret key                  | `""`                     |
-| `ocr.version`                | OCR API version                | **required**             |
-| `ocr.confidenceThreshold`    | OCR confidence score threshold | `0.45`                   |
-| `ocr.useAggressiveStrategy`  | OCR processing strategy        | `true`                   |
-| `ocr.awsRoleArn`             | OCR API AWS role ARN           | `""`                     |
-| `googleAnalytics.trackingId` | Google Analytics Tracking ID   | `""`                     |
-
-Specify each parameter using the `--set key=value` argument to `helm install`. For example, for a dev install:
+### First deploy example
 
 ```bash
 helm install swissgeol-boreholes swissgeol-boreholes/swissgeol-boreholes \
   --namespace 'swissgeol-boreholes' \
   --create-namespace \
-  --set app.domain="dev-boreholes.swissgeol.ch" \
-  --set app.version="edge"
+  --set app.domain="boreholes.example.com" \
+  --set app.version="v2.1.1462" \
+  --set database.host="db.example.com" \
+  --set database.name="bdms" \
+  --set database.username="dbuser" \
+  --set database.password="dbpass" \
+  --set database.connectionString="Host=db.example.com;Port=5432;Database=bdms;Username=dbuser;Password=dbpass" \
+  --set s3.endpoint="https://s3.eu-central-1.amazonaws.com" \
+  --set s3.bucket="my-profiles" \
+  --set s3.photosBucket="my-photos" \
+  --set s3.logFilesBucket="my-logs" \
+  --set s3.accessKey="AKIA..." \
+  --set s3.secretKey="secret..." \
+  --set auth.authority="https://cognito-idp.region.amazonaws.com/pool-id" \
+  --set auth.audience="client-id" \
+  --set ocr.awsRoleArn="arn:aws:iam::123456789:role/my-role"
 ```
 
-For a full list of values, you can check the `values.yaml` file or use the `helm show values swissgeol-boreholes/swissgeol-boreholes` command. Refer to the corresponding Helm [documentation](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing) for more information on how to override settings in a YAML formatted file.
+## Configuring the Chart
+
+### Configuration parameters (ConfigMap)
+
+| Parameter                     | Description                    | Default                  |
+| ----------------------------- | ------------------------------ | ------------------------ |
+| `replicaCount`                | Number of replicas             | `1`                      |
+| `app.domain`                  | Base domain name               | `""`                     |
+| `app.version`                 | Docker image tag               | baked in (see Chart.yaml)|
+| `app.timezone`                | Application timezone           | `Europe/Zurich`          |
+| `dataextraction.version`      | Data extraction API version    | baked in (see Chart.yaml)|
+| `ocr.version`                 | OCR API version                | baked in (see Chart.yaml)|
+| `ocr.confidenceThreshold`     | OCR confidence score threshold | `0.45`                   |
+| `ocr.useAggressiveStrategy`   | OCR processing strategy        | `true`                   |
+| `ocr.skipProcessing`          | Skip OCR processing entirely   | `false`                  |
+| `auth.scopes`                 | Required OIDC scopes           | `openid profile email`   |
+| `auth.anonymousModeEnabled`   | Enable anonymous mode          | `false`                  |
+| `auth.basicAuthEnabled`       | Enable basic auth on ingress   | `false`                  |
+| `database.port`               | Database port                  | `5432`                   |
+| `s3.endpoint`                 | S3 endpoint URL                | `""`                     |
+| `s3.secure`                   | Use HTTPS for S3               | `"1"`                    |
+| `googleAnalytics.trackingId`  | Google Analytics tracking ID   | `""`                     |
+
+### Secret parameters
+
+These values are stored in a Kubernetes Secret. Pass via `--set` on first deploy.
+
+| Parameter                  | Description                       | Secret Key                 |
+| -------------------------- | --------------------------------- | -------------------------- |
+| `database.host`            | Database hostname                 | `databaseHost`             |
+| `database.name`            | Database name                     | `databaseName`             |
+| `database.username`        | Database username                 | `databaseUsername`         |
+| `database.password`        | Database password                 | `databasePassword`         |
+| `database.connectionString`| Full connection string            | `databaseConnectionString` |
+| `s3.bucket`                | S3 bucket name                    | `s3Bucket`                 |
+| `s3.photosBucket`          | S3 photos bucket name             | `s3PhotosBucket`           |
+| `s3.logFilesBucket`        | S3 log files bucket name          | `s3LogFilesBucket`         |
+| `s3.accessKey`             | S3 access key                     | `s3AccessKey`              |
+| `s3.secretKey`             | S3 secret key                     | `s3SecretKey`              |
+| `auth.authority`           | OIDC issuer URL                   | `authAuthority`            |
+| `auth.audience`            | OIDC client ID                    | `authAudience`             |
+| `ocr.awsRoleArn`           | AWS IAM Role ARN for OCR (IRSA)   | `awsRoleArn`               |
+
+### Upgrade / Migration
+
+If upgrading from a version where these values were in the ConfigMap, no action is needed. The three-tier pattern will pick up existing secret values on `helm upgrade`. For values that were previously only in the ConfigMap (database host/name, S3 buckets, auth, ARN), set them once via `--set` or `kubectl edit secret` after the first upgrade.
+
+Specify each parameter using the `--set key=value` argument to `helm install`. For a full list of values, you can check the `values.yaml` file or use the `helm show values swissgeol-boreholes/swissgeol-boreholes` command. Refer to the corresponding Helm [documentation](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing) for more information on how to override settings in a YAML formatted file.
 
 ## Additional commands
 
 Refer to the [Helm documentation](https://helm.sh/docs/helm/helm/) for more information on how to install, upgrade, or delete a Helm chart.
-
-## Automated updates using Keel (optional)
-
-This chart is configured to work with [Keel](https://keel.sh/), a tool that scans Kubernetes and Helm releases for outdated images and performs automated updates according the specified `app.version` setting. To enable Keel, you need to deploy it in your cluster using kubectl or Helm. Refer to the [Keel documentation](https://keel.sh/docs/#introduction) for more information on how to do that.
 
 ## Validating the Chart
 

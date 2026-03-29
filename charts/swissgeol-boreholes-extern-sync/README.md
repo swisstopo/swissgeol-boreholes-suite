@@ -28,6 +28,20 @@ This chart creates the [swissgeol-boreholes](https://github.com/swisstopo/swissg
 - Kubernetes 1.23+
 - Helm 3.8.0+
 
+### Secrets
+
+This chart uses a **three-tier secret resolution pattern** for database connection strings:
+
+1. **`--set` override** — when `db.source.host` or `db.target.host` are provided, connection strings are built from the individual values
+2. **Existing secret** — on upgrade, existing connection strings in the `<release>-secrets` Secret are preserved automatically via `lookup`
+3. **CHANGE_ME placeholder** — on first deploy without `--set`, placeholder connection strings are used
+
+On first deploy, either pass all database values via `--set`, or edit the secret manually afterward:
+
+```bash
+kubectl edit secret <release>-secrets -n <namespace>
+```
+
 ## Installing the Chart
 
 To install the chart with the release name `swissgeol-boreholes-extern-sync`:
@@ -36,55 +50,62 @@ To install the chart with the release name `swissgeol-boreholes-extern-sync`:
 helm install swissgeol-boreholes-extern-sync swissgeol-boreholes/swissgeol-boreholes-extern-sync
 ```
 
-## Configuring the Chart
-
-The following table lists the configurable parameters of the swissgeol-boreholes chart and their default/required values.
-
-| Parameter                                  | Description                            | Type   | Default / Required |
-| ------------------------------------------ | -------------------------------------- | ------ | ------------------ |
-| `app.version`                              | Docker image tag                       | config | **required**       |
-| `configuration.targetDefaultWorkgroupName` | Default target workgroup name          | config | `""`    |
-| `configuration.targetDefaultUserSub`       | Default target user subject/identifier | config | `""`    |
-| `db.source.host`                           | Database host                          | config | `""`    |
-| `db.source.port`                           | Database port                          | config | `5432`  |
-| `db.source.name`                           | Database name                          | config | `""`    |
-| `db.source.username`                       | Database username                      | secret | `""`    |
-| `db.source.password`                       | Database password                      | secret | `""`    |
-| `db.target.host`                           | Database host                          | config | `""`    |
-| `db.target.port`                           | Database port                          | config | `5432`  |
-| `db.target.name`                           | Database name                          | config | `""`    |
-| `db.target.username`                       | Database username                      | secret | `""`    |
-| `db.target.password`                       | Database password                      | secret | `""`    |
-
-Specify each parameter using the `--set key=value` argument to `helm install`. For example, for a dev install:
+### First deploy example
 
 ```bash
 helm install swissgeol-boreholes-extern-sync swissgeol-boreholes/swissgeol-boreholes-extern-sync \
   --namespace 'swissgeol-boreholes-extern-sync' \
   --create-namespace \
-  --set app.version="edge" \
-  --set app.schedule="*/10 * * * *" \
-  --set configuration.targetDefaultWorkgroupName="default_workgroup" \
-  --set configuration.targetDefaultUserSub="default_user" \
-  --set db.source.host="source.example.com" \
+  --set configuration.targetDefaultWorkgroupName="Sync" \
+  --set configuration.targetDefaultUserSub="sub_admin" \
+  --set db.source.host="source-db.example.com" \
   --set db.source.name="source_db" \
-  --set db.source.username="source_user" \
-  --set db.source.password="source_password" \
-  --set db.target.host="target.example.com" \
+  --set db.source.username="srcuser" \
+  --set db.source.password="srcpass" \
+  --set db.target.host="target-db.example.com" \
   --set db.target.name="target_db" \
-  --set db.target.username="target_user" \
-  --set db.target.password="target_password"  
+  --set db.target.username="tgtuser" \
+  --set db.target.password="tgtpass"
 ```
+
+## Configuring the Chart
+
+### Configuration parameters (ConfigMap)
+
+| Parameter                                  | Description                            | Default          |
+| ------------------------------------------ | -------------------------------------- | ---------------- |
+| `app.version`                              | Docker image tag                       | baked in (see Chart.yaml) |
+| `app.timezone`                             | Application timezone                   | `Europe/Zurich`  |
+| `app.schedule`                             | Cron schedule                          | `0 0 * * *`      |
+| `configuration.targetDefaultWorkgroupName` | Default target workgroup name          | `Sync`           |
+| `configuration.targetDefaultUserSub`       | Default target user subject/identifier | `sub_admin`      |
+
+### Secret parameters
+
+Database values are assembled into connection strings and stored in a Kubernetes Secret.
+
+| Parameter            | Description              | Used in Secret Key                  |
+| -------------------- | ------------------------ | ----------------------------------- |
+| `db.source.host`     | Source database host     | `sourceDatabaseConnectionString`    |
+| `db.source.port`     | Source database port     | `sourceDatabaseConnectionString`    |
+| `db.source.name`     | Source database name     | `sourceDatabaseConnectionString`    |
+| `db.source.username` | Source database username | `sourceDatabaseConnectionString`    |
+| `db.source.password` | Source database password | `sourceDatabaseConnectionString`    |
+| `db.target.host`     | Target database host     | `targetDatabaseConnectionString`    |
+| `db.target.port`     | Target database port     | `targetDatabaseConnectionString`    |
+| `db.target.name`     | Target database name     | `targetDatabaseConnectionString`    |
+| `db.target.username` | Target database username | `targetDatabaseConnectionString`    |
+| `db.target.password` | Target database password | `targetDatabaseConnectionString`    |
+
+### Upgrade / Migration
+
+If upgrading from a version where database host/name were in the ConfigMap, set them once via `--set` or `kubectl edit secret` after the first upgrade. The three-tier pattern will preserve them on subsequent upgrades.
 
 For a full list of values, you can check the `values.yaml` file or use the `helm show values swissgeol-boreholes/swissgeol-boreholes-extern-sync` command. Refer to the corresponding Helm [documentation](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing) for more information on how to override settings in a YAML formatted file.
 
 ## Additional commands
 
 Refer to the [Helm documentation](https://helm.sh/docs/helm/helm/) for more information on how to install, upgrade, or delete a Helm chart.
-
-## Automated updates using Keel (optional)
-
-This chart is configured to work with [Keel](https://keel.sh/), a tool that scans Kubernetes and Helm releases for outdated images and performs automated updates according the specified `app.version` setting. To enable Keel, you need to deploy it in your cluster using kubectl or Helm. Refer to the [Keel documentation](https://keel.sh/docs/#introduction) for more information on how to do that.
 
 ## Validating the Chart
 

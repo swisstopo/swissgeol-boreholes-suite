@@ -1,0 +1,14 @@
+swissgeol-boreholes has been installed/upgraded.
+
+IMPORTANT: The following secret keys must be configured in {{ .Release.Name }}-secrets:
+
+  Database:     databaseHost, databaseName, databaseUsername, databasePassword, databaseConnectionString
+  S3:           s3Bucket, s3PhotosBucket, s3LogFilesBucket, s3AccessKey, s3SecretKey
+  Auth:         authAuthority, authAudience
+  OCR:          awsRoleArn
+
+Verify secret configuration:
+  kubectl get secret {{ .Release.Name }}-secrets -n {{ .Release.Namespace }} -o jsonpath='{.data}' | jq 'to_entries[] | {key: .key, value: (.value | @base64d)}'
+
+If any values show CHANGE_ME, update them:
+  kubectl edit secret {{ .Release.Name }}-secrets -n {{ .Release.Namespace }}
