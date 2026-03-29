@@ -14,14 +14,18 @@ jobs:
   create-pre-release:
     runs-on: ubuntu-latest
     name: Build and push Docker image and create a new GitHub pre-release
+    outputs:
+      version: ${{ steps.set-version.outputs.version }}
 
     steps:
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
       - name: Set environment variables
+        id: set-version
         run: |
           echo VERSION=$(cat VERSION).$GITHUB_RUN_NUMBER >> $GITHUB_ENV
+          echo "version=v$(cat VERSION).$GITHUB_RUN_NUMBER" >> $GITHUB_OUTPUT
           echo BASE_IMAGE_NAME=$REGISTRY/$(echo ${GITHUB_REPOSITORY,,}) >> $GITHUB_ENV
           echo COMMITED_AT=$(git show -s --format=%cI `git rev-parse HEAD`) >> $GITHUB_ENV
           echo REVISION=$(git rev-parse --short HEAD) >> $GITHUB_ENV
@@ -186,3 +190,9 @@ jobs:
             -f target_commitish='main' \
             -f name='${{ env.VERSION }}' \
             -F prerelease=true \
+
+  deploy-dev:
+    needs: create-pre-release
+    uses: ./.github/workflows/deploy-dev.yml
+    with:
+      version: ${{ needs.create-pre-release.outputs.version }}
