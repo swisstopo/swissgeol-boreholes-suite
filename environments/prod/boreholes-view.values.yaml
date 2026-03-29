@@ -1,0 +1,4 @@
+# PROD overrides for swissgeol-boreholes-view namespace.
+# Applied on top of boreholes.values.yaml.
+app:
+  domain: boreholes.swissgeol.ch

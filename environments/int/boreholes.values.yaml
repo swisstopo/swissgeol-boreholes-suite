@@ -1,0 +1,11 @@
+# INT environment values — swissgeol-boreholes namespace.
+# Also serves as the base for boreholes-ext and boreholes-view namespaces.
+app:
+  domain: int-boreholes.swissgeol.ch
+  version: v2.1.1462
+dataextraction:
+  version: v1.0.144
+ocr:
+  version: 1.1.3
+s3:
+  endpoint: https://s3.eu-central-1.amazonaws.com
