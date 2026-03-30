@@ -1,7 +1,7 @@
-import { saveWithSaveBar } from "../helpers/buttonHelpers.js";
-import { formatWithThousandsSeparator, setInput } from "../helpers/formHelpers.js";
-import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
-import { goToRouteAndAcceptTerms, newEditableBorehole } from "../helpers/testHelpers.js";
+import {saveWithSaveBar} from "../helpers/buttonHelpers.js";
+import {formatWithThousandsSeparator, setInput} from "../helpers/formHelpers.js";
+import {navigateInSidebar, SidebarMenuItem} from "../helpers/navigationHelpers.js";
+import {goToRouteAndAcceptTerms, newEditableBorehole} from "../helpers/testHelpers.js";
 
 const layerSelector = (layerType, fromDepth, toDepth, isGap = false) => {
   if (isGap) {
@@ -54,4 +54,17 @@ export const checkDepthColumn = depths => {
   depths.forEach(([fromDepth, toDepth]) => {
     cy.dataCy(`depth-${fromDepth}-${toDepth}`).should("exist");
   });
+};
+
+export const hasDepthError = (fromDepth, toDepth, startError, endError) => {
+  if (startError) {
+    cy.dataCy(`depth-${fromDepth}-${toDepth}`)
+      .contains(`${fromDepth} m MD`)
+      .should("have.css", "color", "rgb(191, 31, 37)");
+  }
+  if (endError) {
+    cy.dataCy(`depth-${fromDepth}-${toDepth}`)
+      .contains(`${toDepth} m MD`)
+      .should("have.css", "color", "rgb(191, 31, 37)");
+  }
 };

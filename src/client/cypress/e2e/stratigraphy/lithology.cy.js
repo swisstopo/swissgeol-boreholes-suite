@@ -1,5 +1,5 @@
 import { saveForm, saveWithSaveBar, verifyUnsavedChanges } from "../helpers/buttonHelpers.js";
-import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers.js";
+import { evaluateInput, evaluateSelect, hasError, setInput, setSelect } from "../helpers/formHelpers.js";
 import { stopBoreholeEditing } from "../helpers/testHelpers.js";
 import {
   evaluateConsolidatedLithologyForm,
@@ -19,6 +19,7 @@ import {
   checkDepthColumn,
   checkLayerCardContent,
   closeLayerModal,
+  hasDepthError,
   hasLayer,
   LayerType,
   openLayer,
@@ -764,5 +765,257 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
 
     // If previous layer was consolidated, new layer is also consolidated
     isUnconsolidatedForm(false);
+  });
+
+  it("creates correct layer card label based on lithology form values", () => {
+    openNewStratigraphy();
+
+    addLithology();
+    isUnconsolidatedForm(true);
+    fillUnconsolidatedLithologyForm({
+      fromDepth: 0,
+      toDepth: 35,
+      lithologyDescriptions: [
+        {
+          lithologyUnconMainId: 4,
+          lithologyUncon2Id: 2,
+          lithologyUncon3Id: 10,
+          lithologyUncon4Id: 4,
+          lithologyUncon5Id: 5,
+          lithologyUncon6Id: 9,
+          componentUnconOrganicCodelistIds: [2, 4],
+          componentUnconDebrisCodelistIds: [2],
+          colorPrimaryId: 4,
+          colorSecondaryId: 1,
+          grainShapeCodelistIds: [1],
+          grainAngularityCodelistIds: [2, 5],
+          lithologyUnconDebrisCodelistIds: [1, 4],
+          hasStriae: true,
+        },
+      ],
+      compactnessId: 2,
+      cohesionId: 3,
+      humidityId: 4,
+      consistencyId: 2,
+      plasticityId: 3,
+      uscsTypeCodelistIds: [2, 3],
+      uscsDeterminationId: 1,
+      rockConditionCodelistIds: [3, 5],
+      alterationDegreeId: 1,
+      notes: "Test label",
+    });
+    evaluateUnconsolidatedLithologyForm({
+      lithologyDescriptions: [
+        {
+          lithologyUnconMainId: "gravel (Gr)",
+          lithologyUncon2Id: "blocky / with blocks (bo)",
+          lithologyUncon3Id: "sandy (sa)",
+          lithologyUncon4Id: "gravelly (gr)",
+          lithologyUncon5Id: "fine gravelly (fgr)",
+          lithologyUncon6Id: "coarse gravelly (cgr)",
+          componentUnconOrganicCodelistIds: ["humus", "roots"],
+          componentUnconDebrisCodelistIds: ["rubble"],
+          colorPrimaryId: "grey",
+          colorSecondaryId: "black",
+          grainShapeCodelistIds: ["cubic"],
+          grainAngularityCodelistIds: ["angular", "rounded"],
+          lithologyUnconDebrisCodelistIds: ["rock", "psephite"],
+          hasStriae: true,
+        },
+      ],
+      compactnessId: "loose",
+      cohesionId: "cohesive",
+      humidityId: "wet",
+      consistencyId: "soft",
+      plasticityId: "low plasticity",
+      uscsTypeCodelistIds: ["lean clay", "silty clay"],
+      uscsDeterminationId: "field",
+      rockConditionCodelistIds: ["subsided", "glided"],
+      alterationDegreeId: "fresh",
+      notes: "Test label",
+    });
+    closeLayerModal();
+
+    checkLayerCardContent(LayerType.lithology, 0, 35, [
+      "[Gr-bo-sa-gr-fgr-cgr]: gravel, blocky / with blocks, sandy, gravelly, fine gravelly, coarse gravelly, humus, roots, rubble, grey, black, Coarse components: rock, psephite, cubic, angular, rounded, Striations",
+      "loose, soft, cohesive, low plasticity, wet, USCS classes: lean clay, silty clay (field)",
+      "subsided, glided, fresh",
+      "Test label",
+    ]);
+
+    addLithology();
+    isUnconsolidatedForm(true);
+    fillUnconsolidatedLithologyForm({
+      fromDepth: 35,
+      toDepth: 46,
+      hasBedding: true,
+      share: 70,
+      lithologyDescriptions: [
+        {
+          lithologyUnconMainId: 2,
+          lithologyUncon2Id: 4,
+          lithologyUncon3Id: 5,
+          componentUnconOrganicCodelistIds: [1, 2],
+          componentUnconDebrisCodelistIds: [1],
+          hasStriae: true,
+        },
+        {
+          lithologyUnconMainId: 1,
+          lithologyUncon2Id: 3,
+          colorPrimaryId: 2,
+          grainAngularityCodelistIds: [3],
+          lithologyUnconDebrisCodelistIds: [2],
+        },
+      ],
+    });
+    evaluateUnconsolidatedLithologyForm({
+      lithologyDescriptions: [
+        {
+          lithologyUnconMainId: "boulder (Bo)",
+          lithologyUncon2Id: "gravelly (gr)",
+          lithologyUncon3Id: "fine gravelly (fgr)",
+          componentUnconOrganicCodelistIds: ["earth", "humus"],
+          componentUnconDebrisCodelistIds: ["erratic block"],
+          hasStriae: true,
+        },
+        {
+          lithologyUnconMainId: "large boulder (LBo)",
+          lithologyUncon2Id: "stony / with stones (co)",
+          colorPrimaryId: "blackish grey",
+          grainAngularityCodelistIds: ["sub-angular"],
+          lithologyUnconDebrisCodelistIds: ["rock: sedimentary"],
+          hasStriae: false,
+        },
+      ],
+    });
+    closeLayerModal();
+
+    checkLayerCardContent(LayerType.lithology, 35, 46, [
+      "70% [Bo-gr-fgr]: boulder, gravelly, fine gravelly, earth, humus, erratic block, Coarse component: Striations",
+      "30% [LBo-co]: large boulder, stony / with stones, blackish grey, Coarse components: rock: sedimentary, sub-angular",
+    ]);
+
+    addLithology();
+    isUnconsolidatedForm(true);
+    switchRockType(RockType.consolidated, "Continue");
+    fillConsolidatedLithologyForm({
+      fromDepth: 46,
+      toDepth: 78,
+      lithologyDescriptions: [
+        {
+          lithologyConId: 5,
+          colorPrimaryId: 1,
+          colorSecondaryId: 5,
+          componentConParticleCodelistIds: [1, 4],
+          componentConMineralCodelistIds: [2],
+          grainSizeId: 3,
+          grainAngularityId: 1,
+          gradationId: 4,
+          cementationId: 7,
+          structureSynGenCodelistIds: [2],
+          structurePostGenCodelistIds: [4, 8],
+        },
+      ],
+      textureMetaCodelistIds: [4, 5],
+      alterationDegreeId: 1,
+      notes: "Test label",
+    });
+    evaluateConsolidatedLithologyForm({
+      lithologyDescriptions: [
+        {
+          lithologyConId: "breccia",
+          colorPrimaryId: "black",
+          colorSecondaryId: "light grey",
+          componentConParticleCodelistIds: ["algae", "aptychi"],
+          componentConMineralCodelistIds: ["adularia"],
+          grainSizeId: "medium",
+          grainAngularityId: "very angular",
+          gradationId: "poorly sorted",
+          cementationId: "not specified",
+          structureSynGenCodelistIds: ["nodular"],
+          structurePostGenCodelistIds: ["vugs", "caliche"],
+        },
+      ],
+      textureMetaCodelistIds: ["phyllitic", "schistose"],
+      alterationDegreeId: "fresh",
+      notes: "Test label",
+    });
+    closeLayerModal();
+
+    // Should not display "uncemented" if cementation is not specified
+    checkLayerCardContent(LayerType.lithology, 46, 78, [
+      "breccia, algae, aptychi, adularia, black, light grey, medium, very angular, poorly sorted, nodular, vugs, caliche",
+      "phyllitic, schistose, fresh",
+      "Test label",
+    ]);
+
+    addLithology();
+    isUnconsolidatedForm(false);
+    fillConsolidatedLithologyForm({
+      fromDepth: 78,
+      toDepth: 96,
+      hasBedding: true,
+      share: 65,
+      lithologyDescriptions: [
+        {
+          lithologyConId: 3,
+          colorPrimaryId: 3,
+          grainSizeId: 6,
+          grainAngularityId: 8,
+        },
+        {
+          lithologyConId: 2,
+          componentConParticleCodelistIds: [6],
+          componentConMineralCodelistIds: [4],
+        },
+      ],
+    });
+    evaluateConsolidatedLithologyForm({
+      lithologyDescriptions: [
+        {
+          lithologyConId: "rock: clastic",
+          colorPrimaryId: "dark grey",
+          grainSizeId: "other",
+          grainAngularityId: "not specified",
+        },
+        {
+          lithologyConId: "rock: sedimentary",
+          componentConParticleCodelistIds: ["bioclasts"],
+          componentConMineralCodelistIds: ["almandine"],
+        },
+      ],
+    });
+    closeLayerModal();
+
+    // Should not display "not specified" if angularity is not specified
+    checkLayerCardContent(LayerType.lithology, 78, 96, [
+      "65%: rock: clastic, dark grey, other",
+      "35%: rock: sedimentary, bioclasts, almandine",
+    ]);
+  });
+
+  it("shows error for gaps and overlapping lithologies in depth column", () => {
+    openNewStratigraphy();
+
+    addLithology();
+    setInput("fromDepth", 46);
+    setInput("toDepth", 78);
+    closeLayerModal();
+
+    hasDepthError(0, 46, true, true); // Gaps show start and end errors
+
+    addLithology();
+    evaluateInput("fromDepth", 78);
+    setInput("toDepth", 60);
+    hasError("toDepth", true);
+    setInput("toDepth", 96);
+    hasError("toDepth", false);
+    setInput("fromDepth", 60);
+    hasError("fromDepth", false); // Form does not check whether lithologies overlap
+    closeLayerModal();
+
+    // Overlaps show errors for the overlapping values
+    hasDepthError(46, 78, false, true);
+    hasDepthError(60, 96, true, false);
   });
 });
