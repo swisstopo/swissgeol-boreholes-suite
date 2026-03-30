@@ -1,4 +1,4 @@
-import { saveForm, saveWithSaveBar, verifyUnsavedChanges } from "../helpers/buttonHelpers.js";
+import { discardChanges, saveForm, saveWithSaveBar, verifyUnsavedChanges } from "../helpers/buttonHelpers.js";
 import { evaluateInput, evaluateSelect, hasError, setInput, setSelect } from "../helpers/formHelpers.js";
 import { stopBoreholeEditing } from "../helpers/testHelpers.js";
 import {
@@ -19,6 +19,7 @@ import {
   checkDepthColumn,
   checkLayerCardContent,
   closeLayerModal,
+  deleteLayer,
   hasDepthError,
   hasLayer,
   LayerType,
@@ -61,6 +62,38 @@ const openStratigraphyWith3Lithologies = () => {
   hasLayer(LayerType.faciesDescription, 0, null, true);
   hasLayer(LayerType.faciesDescription, 355, null, true, false);
   hasLayer(LayerType.faciesDescription, 798, null, true, false);
+};
+
+const createCompleteLayerGrid = () => {
+  openStratigraphyWith3Lithologies();
+  openLayer(LayerType.lithologicalDescription, 0, null, true);
+  fillLithologicalDescriptionForm({ fromDepth: 0, toDepth: 0 });
+  closeLayerModal();
+  openLayer(LayerType.lithologicalDescription, 355, null, true);
+  fillLithologicalDescriptionForm({ fromDepth: 0, toDepth: 0 });
+  closeLayerModal();
+  openLayer(LayerType.lithologicalDescription, 798, null, true);
+  fillLithologicalDescriptionForm({ fromDepth: 0, toDepth: 0 });
+  closeLayerModal();
+  openLayer(LayerType.faciesDescription, 0, null, true);
+  fillFaciesDescriptionForm({ fromDepth: 0, toDepth: 0 });
+  closeLayerModal();
+  openLayer(LayerType.faciesDescription, 355, null, true);
+  fillFaciesDescriptionForm({ fromDepth: 0, toDepth: 0 });
+  closeLayerModal();
+  openLayer(LayerType.faciesDescription, 798, null, true);
+  fillFaciesDescriptionForm({ fromDepth: 0, toDepth: 0 });
+  closeLayerModal();
+
+  hasLayer(LayerType.lithology, 0, 355);
+  hasLayer(LayerType.lithology, 355, 798);
+  hasLayer(LayerType.lithology, 798, 1123);
+  hasLayer(LayerType.lithologicalDescription, 0, 355);
+  hasLayer(LayerType.lithologicalDescription, 355, 798);
+  hasLayer(LayerType.lithologicalDescription, 798, 1123);
+  hasLayer(LayerType.faciesDescription, 0, 355);
+  hasLayer(LayerType.faciesDescription, 355, 798);
+  hasLayer(LayerType.faciesDescription, 798, 1123);
 };
 
 describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
@@ -1033,5 +1066,238 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasDepthError(46, 78, false, false);
     hasDepthError(78, 85, true, true);
     hasDepthError(85, 96, false, false);
+  });
+
+  it("keeps rows with deleted lithologies if either matching lithological or facies descriptions exist", () => {
+    createCompleteLayerGrid();
+
+    deleteLayer(LayerType.lithology, 355, 798);
+    checkDepthColumn([
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasDepthError(0, 355, false, false);
+    hasDepthError(355, 798, true, true);
+    hasDepthError(798, 1123, false, false);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, null, true);
+    hasLayer(LayerType.lithology, 798, 1123);
+    hasLayer(LayerType.lithologicalDescription, 0, 355);
+    hasLayer(LayerType.lithologicalDescription, 355, 798);
+    hasLayer(LayerType.lithologicalDescription, 798, 1123);
+    hasLayer(LayerType.faciesDescription, 0, 355);
+    hasLayer(LayerType.faciesDescription, 355, 798);
+    hasLayer(LayerType.faciesDescription, 798, 1123);
+
+    deleteLayer(LayerType.lithology, 798, 1123);
+    checkDepthColumn([
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasDepthError(0, 355, false, false);
+    hasDepthError(355, 798, true, true);
+    hasDepthError(798, 1123, true, true);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, null, true);
+    hasLayer(LayerType.lithology, 798, null, true);
+    hasLayer(LayerType.lithologicalDescription, 0, 355);
+    hasLayer(LayerType.lithologicalDescription, 355, 798);
+    hasLayer(LayerType.lithologicalDescription, 798, 1123);
+    hasLayer(LayerType.faciesDescription, 0, 355);
+    hasLayer(LayerType.faciesDescription, 355, 798);
+    hasLayer(LayerType.faciesDescription, 798, 1123);
+
+    // Doesn't merge lithology gap layers
+    deleteLayer(LayerType.lithologicalDescription, 798, 1123);
+    checkDepthColumn([
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasDepthError(0, 355, false, false);
+    hasDepthError(355, 798, true, true);
+    hasDepthError(798, 1123, true, true);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, null, true);
+    hasLayer(LayerType.lithology, 798, null, true);
+    hasLayer(LayerType.lithologicalDescription, 0, 355);
+    hasLayer(LayerType.lithologicalDescription, 355, 798);
+    hasLayer(LayerType.lithologicalDescription, 798, null, true);
+    hasLayer(LayerType.faciesDescription, 0, 355);
+    hasLayer(LayerType.faciesDescription, 355, 798);
+    hasLayer(LayerType.faciesDescription, 798, 1123);
+
+    deleteLayer(LayerType.faciesDescription, 798, 1123);
+    checkDepthColumn([
+      [0, 355],
+      [355, 798],
+    ]);
+    hasDepthError(0, 355, false, false);
+    hasDepthError(355, 798, true, true);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, null, true);
+    hasLayer(LayerType.lithology, 798, null, true, false);
+    hasLayer(LayerType.lithologicalDescription, 0, 355);
+    hasLayer(LayerType.lithologicalDescription, 355, 798);
+    hasLayer(LayerType.lithologicalDescription, 798, null, true, false);
+    hasLayer(LayerType.faciesDescription, 0, 355);
+    hasLayer(LayerType.faciesDescription, 355, 798);
+    hasLayer(LayerType.faciesDescription, 798, null, true, false);
+  });
+
+  it("merges gap layers in lithological and facies descriptions", () => {
+    createCompleteLayerGrid();
+
+    deleteLayer(LayerType.lithologicalDescription, 798, 1123);
+    checkDepthColumn([
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasDepthError(0, 355, false, false);
+    hasDepthError(355, 798, false, false);
+    hasDepthError(798, 1123, false, false);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, 798);
+    hasLayer(LayerType.lithology, 798, 1123);
+    hasLayer(LayerType.lithologicalDescription, 0, 355);
+    hasLayer(LayerType.lithologicalDescription, 355, 798);
+    hasLayer(LayerType.lithologicalDescription, 798, null, true);
+    hasLayer(LayerType.faciesDescription, 0, 355);
+    hasLayer(LayerType.faciesDescription, 355, 798);
+    hasLayer(LayerType.faciesDescription, 798, 1123);
+
+    deleteLayer(LayerType.lithologicalDescription, 355, 798);
+    checkDepthColumn([
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasDepthError(0, 355, false, false);
+    hasDepthError(355, 798, false, false);
+    hasDepthError(798, 1123, false, false);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, 798);
+    hasLayer(LayerType.lithology, 798, 1123);
+    hasLayer(LayerType.lithologicalDescription, 0, 355);
+    hasLayer(LayerType.lithologicalDescription, 355, null, true);
+    hasLayer(LayerType.lithologicalDescription, 798, null, true, false);
+    hasLayer(LayerType.faciesDescription, 0, 355);
+    hasLayer(LayerType.faciesDescription, 355, 798);
+    hasLayer(LayerType.faciesDescription, 798, 1123);
+
+    deleteLayer(LayerType.faciesDescription, 798, 1123);
+    checkDepthColumn([
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasDepthError(0, 355, false, false);
+    hasDepthError(355, 798, false, false);
+    hasDepthError(798, 1123, false, false);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, 798);
+    hasLayer(LayerType.lithology, 798, 1123);
+    hasLayer(LayerType.lithologicalDescription, 0, 355);
+    hasLayer(LayerType.lithologicalDescription, 355, null, true);
+    hasLayer(LayerType.lithologicalDescription, 798, null, true, false);
+    hasLayer(LayerType.faciesDescription, 0, 355);
+    hasLayer(LayerType.faciesDescription, 355, 798);
+    hasLayer(LayerType.faciesDescription, 798, null, true);
+
+    deleteLayer(LayerType.lithology, 798, 1123);
+    checkDepthColumn([
+      [0, 355],
+      [355, 798],
+    ]);
+    hasDepthError(0, 355, false, false);
+    hasDepthError(355, 798, false, false);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, 798);
+    hasLayer(LayerType.lithology, 798, 1123, false, false);
+    hasLayer(LayerType.lithologicalDescription, 0, 355);
+    hasLayer(LayerType.lithologicalDescription, 355, null, true);
+    hasLayer(LayerType.lithologicalDescription, 798, null, true, false);
+    hasLayer(LayerType.faciesDescription, 0, 355);
+    hasLayer(LayerType.faciesDescription, 355, 798);
+    hasLayer(LayerType.faciesDescription, 798, null, true, false);
+
+    discardChanges();
+
+    deleteLayer(LayerType.faciesDescription, 0, 355);
+    checkDepthColumn([
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasDepthError(0, 355, false, false);
+    hasDepthError(355, 798, false, false);
+    hasDepthError(798, 1123, false, false);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, 798);
+    hasLayer(LayerType.lithology, 798, 1123);
+    hasLayer(LayerType.lithologicalDescription, 0, 355);
+    hasLayer(LayerType.lithologicalDescription, 355, 798);
+    hasLayer(LayerType.lithologicalDescription, 798, 1123);
+    hasLayer(LayerType.faciesDescription, 0, null, true);
+    hasLayer(LayerType.faciesDescription, 355, 798);
+    hasLayer(LayerType.faciesDescription, 798, 1123);
+
+    deleteLayer(LayerType.faciesDescription, 355, 798);
+    checkDepthColumn([
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasDepthError(0, 355, false, false);
+    hasDepthError(355, 798, false, false);
+    hasDepthError(798, 1123, false, false);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, 798);
+    hasLayer(LayerType.lithology, 798, 1123);
+    hasLayer(LayerType.lithologicalDescription, 0, 355);
+    hasLayer(LayerType.lithologicalDescription, 355, 798);
+    hasLayer(LayerType.lithologicalDescription, 798, 1123);
+    hasLayer(LayerType.faciesDescription, 0, null, true);
+    hasLayer(LayerType.faciesDescription, 355, null, true, false);
+    hasLayer(LayerType.faciesDescription, 798, 1123);
+
+    deleteLayer(LayerType.lithologicalDescription, 0, 355);
+    checkDepthColumn([
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasDepthError(0, 355, false, false);
+    hasDepthError(355, 798, false, false);
+    hasDepthError(798, 1123, false, false);
+    hasLayer(LayerType.lithology, 0, 355);
+    hasLayer(LayerType.lithology, 355, 798);
+    hasLayer(LayerType.lithology, 798, 1123);
+    hasLayer(LayerType.lithologicalDescription, 0, null, true);
+    hasLayer(LayerType.lithologicalDescription, 355, 798);
+    hasLayer(LayerType.lithologicalDescription, 798, 1123);
+    hasLayer(LayerType.faciesDescription, 0, null, true);
+    hasLayer(LayerType.faciesDescription, 355, null, true, false);
+    hasLayer(LayerType.faciesDescription, 798, 1123);
+
+    deleteLayer(LayerType.lithology, 0, 355);
+    checkDepthColumn([
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasDepthError(355, 798, false, false);
+    hasDepthError(798, 1123, false, false);
+    hasLayer(LayerType.lithology, 0, 355, false, false);
+    hasLayer(LayerType.lithology, 355, 798);
+    hasLayer(LayerType.lithology, 798, 1123);
+    hasLayer(LayerType.lithologicalDescription, 0, null, true, false);
+    hasLayer(LayerType.lithologicalDescription, 355, 798);
+    hasLayer(LayerType.lithologicalDescription, 798, 1123);
+    hasLayer(LayerType.faciesDescription, 0, null, true, false);
+    hasLayer(LayerType.faciesDescription, 355, null, true);
+    hasLayer(LayerType.faciesDescription, 798, 1123);
   });
 });

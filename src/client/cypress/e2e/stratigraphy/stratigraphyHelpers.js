@@ -5,11 +5,9 @@ import { goToRouteAndAcceptTerms, newEditableBorehole } from "../helpers/testHel
 
 const layerSelector = (layerType, fromDepth, toDepth, isGap = false) => {
   if (isGap) {
-    return cy.dataCy(`${layerType}-${fromDepth}-0-gap`);
+    return `[data-cy="${layerType}-${fromDepth}-0-gap"]`;
   }
-  return cy.get(
-    `[data-cy^="${layerType}-"]:not([data-cy$="-gap"]):contains("${formatWithThousandsSeparator(fromDepth)} m MD"):contains("${formatWithThousandsSeparator(toDepth)} m MD")`,
-  );
+  return `[data-cy^="${layerType}-"]:not([data-cy$="-gap"]):contains("${formatWithThousandsSeparator(fromDepth)} m MD"):contains("${formatWithThousandsSeparator(toDepth)} m MD")`;
 };
 
 export const LayerType = {
@@ -33,11 +31,23 @@ export const addLithology = () => {
 };
 
 export const hasLayer = (layerType, fromDepth, toDepth, isGap = false, exists = true) => {
-  layerSelector(layerType, fromDepth, toDepth, isGap).should(exists ? "exist" : "not.exist");
+  const selector = layerSelector(layerType, fromDepth, toDepth, isGap);
+  if (exists) {
+    cy.get(selector).should("exist");
+  } else {
+    cy.get("body").find(selector).should("not.exist");
+  }
+};
+
+export const deleteLayer = (layerType, fromDepth, toDepth) => {
+  cy.get(layerSelector(layerType, fromDepth, toDepth))
+    .realHover()
+    .dataCy("deleteLayer-button")
+    .click();
 };
 
 export const openLayer = (layerType, fromDepth, toDepth, isGap = false) => {
-  layerSelector(layerType, fromDepth, toDepth, isGap).click();
+  cy.get(layerSelector(layerType, fromDepth, toDepth, isGap)).click();
 };
 
 export const closeLayerModal = () => {
@@ -46,7 +56,7 @@ export const closeLayerModal = () => {
 
 export const checkLayerCardContent = (layerType, fromDepth, toDepth, content) => {
   content.forEach(text => {
-    layerSelector(layerType, fromDepth, toDepth).contains(text);
+    cy.get(layerSelector(layerType, fromDepth, toDepth)).contains(text);
   });
 };
 
@@ -59,12 +69,12 @@ export const checkDepthColumn = depths => {
 export const hasDepthError = (fromDepth, toDepth, startError, endError) => {
   if (startError) {
     cy.dataCy(`depth-${fromDepth}-${toDepth}`)
-      .contains(`${fromDepth} m MD`)
+      .contains(`${formatWithThousandsSeparator(fromDepth)} m MD`)
       .should("have.css", "color", "rgb(191, 31, 37)");
   }
   if (endError) {
     cy.dataCy(`depth-${fromDepth}-${toDepth}`)
-      .contains(`${toDepth} m MD`)
+      .contains(`${formatWithThousandsSeparator(toDepth)} m MD`)
       .should("have.css", "color", "rgb(191, 31, 37)");
   }
 };

@@ -120,6 +120,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
         {onHoverClick && (
           <StandaloneIconButton
             icon={isEditing ? <Trash2 /> : <Copy />}
+            dataCy={isEditing ? "deleteLayer-button" : "copyLayer-button"}
             onClick={e => {
               e.stopPropagation();
               onHoverClick(index);
