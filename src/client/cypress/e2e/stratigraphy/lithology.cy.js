@@ -1149,6 +1149,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
 
   it("merges gap layers in lithological and facies descriptions", () => {
     createCompleteLayerGrid();
+    saveWithSaveBar();
 
     deleteLayer(LayerType.lithologicalDescription, 798, 1123);
     checkDepthColumn([
