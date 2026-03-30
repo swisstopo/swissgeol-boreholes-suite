@@ -1,7 +1,7 @@
-import {saveWithSaveBar} from "../helpers/buttonHelpers.js";
-import {formatWithThousandsSeparator, setInput} from "../helpers/formHelpers.js";
-import {navigateInSidebar, SidebarMenuItem} from "../helpers/navigationHelpers.js";
-import {goToRouteAndAcceptTerms, newEditableBorehole} from "../helpers/testHelpers.js";
+import { saveWithSaveBar } from "../helpers/buttonHelpers.js";
+import { formatWithThousandsSeparator, setInput } from "../helpers/formHelpers.js";
+import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.js";
+import { goToRouteAndAcceptTerms, newEditableBorehole } from "../helpers/testHelpers.js";
 
 const layerSelector = (layerType, fromDepth, toDepth, isGap = false) => {
   if (isGap) {
