@@ -996,13 +996,11 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
 
   it("shows error for gaps and overlapping lithologies in depth column", () => {
     openNewStratigraphy();
-
     addLithology();
     setInput("fromDepth", 46);
     setInput("toDepth", 78);
     closeLayerModal();
-
-    hasDepthError(0, 46, true, true); // Gaps show start and end errors
+    checkDepthColumn([[46, 78]]);
 
     addLithology();
     evaluateInput("fromDepth", 78);
@@ -1014,8 +1012,26 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasError("fromDepth", false); // Form does not check whether lithologies overlap
     closeLayerModal();
 
-    // Overlaps show errors for the overlapping values
+    // Overlaps show errors for the overlapping values but don't add a row
+    checkDepthColumn([
+      [46, 78],
+      [60, 96],
+    ]);
     hasDepthError(46, 78, false, true);
     hasDepthError(60, 96, true, false);
+
+    openLayer(LayerType.lithology, 60, 96);
+    setInput("fromDepth", 85);
+    closeLayerModal();
+
+    // Gaps show start and end error and add new row
+    checkDepthColumn([
+      [46, 78],
+      [78, 85],
+      [85, 96],
+    ]);
+    hasDepthError(46, 78, false, false);
+    hasDepthError(78, 85, true, true);
+    hasDepthError(85, 96, false, false);
   });
 });
