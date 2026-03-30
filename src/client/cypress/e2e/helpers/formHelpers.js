@@ -72,7 +72,7 @@ export const setInput = (fieldName, value, parent) => {
 };
 
 export const formatWithThousandsSeparator = value =>
-  value > 999 ? value.toLocaleString("de-CH").replace(/\u2019/g, "'") : value;
+  value > 999 ? value.toLocaleString("de-CH").replaceAll("\u2019", "'") : value;
 
 /**
  * Evaluates the state of an input form element
