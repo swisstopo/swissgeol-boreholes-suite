@@ -42,13 +42,13 @@ const NameSegment = ({ borehole, formMethods }: NameSegmentProps) => {
         <FormContainer>
           {!auth.anonymousModeEnabled && (
             <FormContainer direction="row">
-              <FormInput fieldName={"originalName"} label={"original_name"} value={borehole?.originalName} />
+              <FormInput fieldName={"originalName"} label={"originalName"} value={borehole?.originalName} />
               <FormInputDisplayOnly label={"workgroup"} value={borehole?.workgroup?.name} />
             </FormContainer>
           )}
           <FormContainer direction="row">
             <FormInput fieldName={"name"} label={"alternate_name"} value={borehole?.name} />
-            <FormInput fieldName={"projectName"} label={"project_name"} value={borehole?.projectName} />
+            <FormInput fieldName={"projectName"} label={"projectName"} value={borehole?.projectName} />
           </FormContainer>
         </FormContainer>
       </FormSegmentBox>

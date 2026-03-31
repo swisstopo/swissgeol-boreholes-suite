@@ -1,8 +1,13 @@
 import React, { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
 import { Backdrop, Box, Button, CircularProgress, Link, Stack } from "@mui/material";
-import { importBoreholesCsv, importBoreholesJson, importBoreholesZip } from "../../../../api/borehole.ts";
+import { useQueryClient } from "@tanstack/react-query";
+import {
+  boreholeQueryKey,
+  importBoreholesCsv,
+  importBoreholesJson,
+  importBoreholesZip,
+} from "../../../../api/borehole.ts";
 import { downloadCodelistCsv, isJsonContentType } from "../../../../api/fetchApiV2.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
@@ -18,15 +23,16 @@ interface ImportPanelProps extends NewBoreholeProps {
 }
 export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpen }: ImportPanelProps) => {
   const { t } = useTranslation();
-  const dispatch = useDispatch();
+  const queryClient = useQueryClient();
   const { enabledWorkgroups, currentWorkgroupId } = useUserWorkgroups();
 
   const { showAlert } = useContext(AlertContext);
 
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+
   const refresh = () => {
-    dispatch({ type: "SEARCH_EDITOR_FILTER_REFRESH" });
+    queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
   };
 
   const getFileExtension = (file: File | null) => {

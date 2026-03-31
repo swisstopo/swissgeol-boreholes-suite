@@ -4,7 +4,12 @@ import { DataRouter } from "react-router";
 import { CircularProgress } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { User, WebStorageStateStore } from "oidc-client-ts";
-import { boreholeQueryKey, filterBoreholes, FilterRequest } from "../api/borehole.ts";
+import {
+  boreholeQueryKey,
+  filterBoreholes,
+  getDefaultFilterRequestFromSession,
+  toFilterRequestSubmission,
+} from "../api/borehole.ts";
 import { useSettings } from "../api/useSettings";
 import { AuthenticationStoreSync } from "./AuthenticationStoreSync.js";
 import { AuthOverlay } from "./AuthOverlay";
@@ -69,10 +74,10 @@ export const BoreholesAuthProvider: FC<PropsWithChildren<BoreholeAuthProviderPro
 
     useEffect(() => {
       if (auth.isAuthenticated) {
-        const defaultFilterRequest: FilterRequest = {};
+        const filterRequestSubmission = toFilterRequestSubmission(getDefaultFilterRequestFromSession());
         queryClient.prefetchQuery({
-          queryKey: [boreholeQueryKey, defaultFilterRequest],
-          queryFn: () => filterBoreholes(defaultFilterRequest),
+          queryKey: [boreholeQueryKey, filterRequestSubmission],
+          queryFn: () => filterBoreholes(filterRequestSubmission),
         });
       }
     }, [auth.isAuthenticated, queryClient]);

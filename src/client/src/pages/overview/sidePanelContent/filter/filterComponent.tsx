@@ -1,60 +1,52 @@
-import { FC, useContext, useEffect, useState } from "react";
+import { FC, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { Accordion, AccordionDetails, AccordionSummary, Badge, Box, Button, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { ChevronDown } from "lucide-react";
 import Polygon from "../../../../assets/icons/polygon.svg?react";
-import { Filters, ReduxRootState } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import { ReduxRootState } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { useAuth } from "../../../../auth/useBoreholesAuth.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
+import { useBoreholeUrlParams } from "../../useBoreholeUrlParams.ts";
 import FilterChips from "./FilterChips.tsx";
-import { FilterContext } from "./filterContext.tsx";
+import { attachmentSearchData } from "./filterData/attachmentSearchData.ts";
 import { boreholeSearchData } from "./filterData/boreholeSearchData.js";
-import { chronostratigraphySearchData } from "./filterData/chronostratigraphySearchData.js";
-import { Filter, FilterComponentProps, FilterInputConfig } from "./filterData/filterInterfaces.ts";
-import { lithostratigraphySearchData } from "./filterData/lithostratigraphySearchData.js";
-import { LocationSearchData } from "./filterData/LocationSearchData.js";
-import { registrationSearchData } from "./filterData/registrationSearchData.js";
+import { FilterComponentProps, FilterInputConfig } from "./filterData/filterInterfaces.ts";
+import { LocationSearchData } from "./filterData/locationSearchData.js";
+import { logSearchData } from "./filterData/logSearchData.ts";
 import { FilterReset } from "./filterReset.tsx";
 import { ListFilter } from "./listFilter.tsx";
+import { PolygonFilterContext } from "./polygonFilterContext.tsx";
 import { StatusFilter } from "./statusFilter.tsx";
 import { WorkgroupFilter } from "./workgroupFilter.tsx";
 
 export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMethods }) => {
-  const dispatch = useDispatch();
   const { t } = useTranslation();
-  const {
-    filterPolygon,
-    polygonSelectionEnabled,
-    setPolygonSelectionEnabled,
-    setFeatureIds,
-    setFilterPolygon,
-    setActiveFilterLength,
-  } = useContext(FilterContext);
+  const { filterPolygon, polygonSelectionEnabled, setPolygonSelectionEnabled, setFeatureIds, setFilterPolygon } =
+    useContext(PolygonFilterContext);
 
-  const filters = useSelector((state: ReduxRootState) => state.filters);
+  const { filterParams, setFilterField, resetFilter, setTableParams } = useBoreholeUrlParams();
+
   const user = useSelector((state: ReduxRootState) => state.core_user);
-  const settings = useSelector((state: ReduxRootState) => state.setting);
   const auth = useAuth();
 
-  const [activeFilters, setActiveFilters] = useState<Filter[]>();
   const [searchList, setSearchList] = useState<FilterInputConfig[]>([
     {
       id: 0,
       name: "workgroup",
       translationId: "workgroup",
       isSelected: false,
-      searchData: [{ value: "workgroup", hideShowAllFields: true }],
+      searchData: [{ value: "workgroupId", hideShowAllFields: true }],
       isHidden: auth.anonymousModeEnabled,
     },
     {
       id: 1,
-      name: "status",
-      translationId: "status",
+      name: "workflowStatus",
+      translationId: "workflowStatus",
       isSelected: false,
-      searchData: [{ value: "workflow", hideShowAllFields: true }],
+      searchData: [{ value: "workflowStatus", hideShowAllFields: true }],
       isHidden: auth.anonymousModeEnabled,
     },
     {
@@ -71,47 +63,22 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
       isSelected: false,
       searchData: boreholeSearchData,
     },
+
+    {
+      id: 4,
+      name: "log",
+      translationId: "log",
+      isSelected: false,
+      searchData: logSearchData,
+    },
     {
       id: 5,
-      name: "chronostratigraphy",
-      translationId: "chronostratigraphy",
+      name: "attachments",
+      translationId: "attachments",
       isSelected: false,
-      searchData: chronostratigraphySearchData,
-    },
-    {
-      id: 6,
-      name: "lithostratigraphy",
-      translationId: "lithostratigraphy",
-      isSelected: false,
-      searchData: lithostratigraphySearchData,
-    },
-    {
-      id: 7,
-      name: "registration",
-      translationId: "registration",
-      isSelected: false,
-      searchData: registrationSearchData,
-      isHidden: auth.anonymousModeEnabled,
+      searchData: attachmentSearchData,
     },
   ]);
-
-  useEffect(() => {
-    const getActiveFilters = (filters: Filters) => {
-      const af = Object.entries(filters.filter)
-        .filter(
-          ([key, value]) =>
-            (value != null && value !== "" && value !== -1 && !["refresh"].includes(key) && value !== "all") ||
-            (["national_interest", "groundwater", "striae"].includes(key) && value === null),
-        )
-        .map(([key, value]): { key: string; value: number | boolean | string | null } => ({
-          key: key,
-          value: value as number | boolean | string | null,
-        }));
-      setActiveFilterLength(af.length);
-      setActiveFilters(af);
-    };
-    getActiveFilters(filters);
-  }, [filters, setActiveFilterLength]);
 
   const StyledAccordion = styled(Accordion)(() => ({
     marginBottom: "6px",
@@ -137,21 +104,14 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
     setFilterPolygon(null);
     setFeatureIds([]);
     formMethods.reset();
-    dispatch({ type: "SEARCH_EDITOR_FILTER_RESET" });
+    resetFilter();
+    setTableParams({ page: 0 });
   };
-
-  const setFilter = (key: string, value: string | number | boolean | null) =>
-    dispatch({ type: "SEARCH_EDITOR_FILTER_CHANGED", key, value });
 
   return (
     <Stack direction="column" sx={{ height: "100%" }}>
       <SideDrawerHeader title={t("searchfilters")} toggleDrawer={toggleDrawer} />
-      <FilterChips
-        activeFilters={activeFilters}
-        setFilter={setFilter}
-        setActiveFilters={setActiveFilters}
-        formMethods={formMethods}
-      />
+      <FilterChips formMethods={formMethods} />
       <Box sx={{ flexGrow: 1, overflow: "auto", scrollbarGutter: "stable" }}>
         <Button
           onClick={() => {
@@ -198,8 +158,8 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
         </Button>
         {searchList?.map(filter => {
           const currentFilterInputConfig = searchList.find(l => l.name === filter.name);
-          const activeFilterLength = activeFilters?.filter(f =>
-            currentFilterInputConfig?.searchData.some(d => d.value === f.key),
+          const activeFilterLength = Object.entries(filterParams).filter(([key, value]) =>
+            currentFilterInputConfig?.searchData.some(d => d.value === key && value != null),
           )?.length;
           return filter.isHidden ? null : (
             <StyledAccordion key={filter.id} expanded={filter?.isSelected}>
@@ -219,26 +179,25 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
                 <StyledAccordionDetails>
                   <WorkgroupFilter
                     onChange={workgroup => {
-                      setFilter("workgroup", workgroup);
+                      setFilterField("workgroupId", workgroup === "all" ? null : [Number(workgroup)]);
+                      setTableParams({ page: 0 });
                     }}
                     workgroups={user.data.workgroups}
-                    selectedWorkgroup={filters.filter.workgroup as string}
+                    selectedWorkgroup={filterParams.workgroupId != null ? String(filterParams.workgroupId) : "all"}
                   />
                 </StyledAccordionDetails>
               )}
-              {filter?.name === "status" && filter?.isSelected && (
+              {filter?.name === "workflowStatus" && filter?.isSelected && (
                 <StyledAccordionDetails>
-                  <StatusFilter selectedRole={filters.filter.workflow as string} setFilter={setFilter} />
+                  <StatusFilter
+                    selectedRole={filterParams.workflowStatus != null ? String(filterParams.workflowStatus) : "all"}
+                    setFilterField={setFilterField}
+                  />
                 </StyledAccordionDetails>
               )}
               <StyledAccordionDetails>
                 {!!currentFilterInputConfig && filter?.isSelected && (
-                  <ListFilter
-                    inputConfig={currentFilterInputConfig}
-                    filters={filters}
-                    setFilter={setFilter}
-                    settings={settings.data.efilter}
-                  />
+                  <ListFilter inputConfig={currentFilterInputConfig} />
                 )}
               </StyledAccordionDetails>
             </StyledAccordion>

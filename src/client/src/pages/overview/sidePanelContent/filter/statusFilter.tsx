@@ -3,12 +3,13 @@ import { useTranslation } from "react-i18next";
 import { FormControl, FormControlLabel, Radio, RadioGroup } from "@mui/material";
 import { WorkflowStatus } from "@swissgeol/ui-core";
 import { capitalizeFirstLetter } from "../../../../utils";
+import { filterParsers } from "../../useBoreholeUrlParams.ts";
 
 interface StatusFilterProps {
   selectedRole?: string;
-  setFilter: (key: string, value: string) => void;
+  setFilterField: (key: keyof typeof filterParsers, value: unknown) => void;
 }
-export const StatusFilter: FC<StatusFilterProps> = ({ selectedRole, setFilter }) => {
+export const StatusFilter: FC<StatusFilterProps> = ({ selectedRole, setFilterField }) => {
   const { t } = useTranslation();
 
   const workflowStatus = [
@@ -19,7 +20,11 @@ export const StatusFilter: FC<StatusFilterProps> = ({ selectedRole, setFilter })
   ];
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    setFilter("workflow", event.target.value);
+    if (event.target.value === "all") {
+      setFilterField("workflowStatus", null);
+    } else {
+      setFilterField("workflowStatus", event.target.value);
+    }
   };
 
   return (

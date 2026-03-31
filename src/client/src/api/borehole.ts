@@ -1,6 +1,5 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { WorkflowStatus } from "@swissgeol/ui-core";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FeatureCollection, Geometry } from "geojson";
 import { Codelist } from "../components/codelist.ts";
 import { Photo } from "../pages/detail/attachments/tabs/photo.ts";
@@ -9,6 +8,7 @@ import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/co
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 import { LogRun } from "../pages/detail/form/log/log.ts";
 import { Workflow } from "../pages/detail/form/workflow/workflow.ts";
+import { SessionKeys } from "../pages/overview/SessionKey.ts";
 import { Document, NullableDateString, User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
@@ -253,7 +253,15 @@ export interface BoreholeListItem {
   locked: NullableDateString;
 }
 
-export interface FilterRequest {
+export enum TriStateBooleanFilter {
+  false,
+  true,
+  null,
+}
+
+export type TriStateBoolean = "true" | "false" | "null" | undefined;
+
+interface BaseFilterRequest {
   polygon?: Geometry | null;
   originalName?: string | null;
   projectName?: string | null;
@@ -272,19 +280,33 @@ export interface FilterRequest {
   topBedrockFreshMdMax?: number | null;
   topBedrockWeatheredMdMin?: number | null;
   topBedrockWeatheredMdMax?: number | null;
-  nationalInterest?: boolean | null;
-  topBedrockIntersected?: boolean | null;
-  hasGroundwater?: boolean | null;
-  hasGeometry?: boolean | null;
-  hasLogs?: boolean | null;
-  hasProfiles?: boolean | null;
-  hasPhotos?: boolean | null;
-  hasDocuments?: boolean | null;
-  workflowStatus?: WorkflowStatus | null;
   pageNumber?: number;
   pageSize?: number;
   orderBy?: string | null;
   direction?: string | null;
+  workflowStatusId?: number | null;
+}
+
+export interface FilterRequest extends BaseFilterRequest {
+  nationalInterest?: TriStateBoolean;
+  topBedrockIntersected?: TriStateBoolean;
+  hasGroundwater?: TriStateBoolean;
+  hasGeometry?: TriStateBoolean;
+  hasLogs?: TriStateBoolean;
+  hasProfiles?: TriStateBoolean;
+  hasPhotos?: TriStateBoolean;
+  hasDocuments?: TriStateBoolean;
+}
+
+export interface FilterRequestSubmission extends BaseFilterRequest {
+  nationalInterest?: TriStateBooleanFilter;
+  topBedrockIntersected?: TriStateBooleanFilter;
+  hasGroundwater?: TriStateBooleanFilter;
+  hasGeometry?: TriStateBooleanFilter;
+  hasLogs?: TriStateBooleanFilter;
+  hasProfiles?: TriStateBooleanFilter;
+  hasPhotos?: TriStateBooleanFilter;
+  hasDocuments?: TriStateBooleanFilter;
 }
 
 export interface FilterResponse {
@@ -299,13 +321,89 @@ export interface FilterResponse {
 }
 
 // ---- Filter API ----
-export const filterBoreholes = async (filterRequest: FilterRequest): Promise<FilterResponse> => {
+export const filterBoreholes = async (filterRequest: FilterRequestSubmission): Promise<FilterResponse> => {
   return await fetchApiV2WithApiError<FilterResponse>("borehole/filter", "POST", filterRequest);
 };
 
-export const useFilterBoreholes = (filterRequest: FilterRequest) => {
+export const parseTriStateBoolean = (
+  value: "true" | "false" | "null" | undefined | null,
+): TriStateBooleanFilter | undefined => {
+  if (value === "true") return TriStateBooleanFilter.true;
+  if (value === "false") return TriStateBooleanFilter.false;
+  if (value === "null") return TriStateBooleanFilter.null;
+  return undefined;
+};
+
+export const toFilterRequestSubmission = (filterRequest: FilterRequest): FilterRequestSubmission => ({
+  ...filterRequest,
+  hasGeometry: parseTriStateBoolean(filterRequest.hasGeometry),
+  hasGroundwater: parseTriStateBoolean(filterRequest.hasGroundwater),
+  hasLogs: parseTriStateBoolean(filterRequest.hasLogs),
+  hasProfiles: parseTriStateBoolean(filterRequest.hasProfiles),
+  hasPhotos: parseTriStateBoolean(filterRequest.hasPhotos),
+  hasDocuments: parseTriStateBoolean(filterRequest.hasDocuments),
+  topBedrockIntersected: parseTriStateBoolean(filterRequest.topBedrockIntersected),
+  nationalInterest: parseTriStateBoolean(filterRequest.nationalInterest),
+});
+
+/**
+ * Reads filter values from sessionStorage and constructs a FilterRequestSubmission object.
+ */
+export function getDefaultFilterRequestFromSession(): FilterRequest {
+  const get = (key: string) => sessionStorage.getItem(key);
+
+  const getInt = (key: string) => {
+    const n = parseInt(get(key) ?? "");
+    return isNaN(n) ? undefined : n;
+  };
+
+  const getFloat = (key: string) => {
+    const n = parseFloat(get(key) ?? "");
+    return isNaN(n) ? undefined : n;
+  };
+
+  const toArray = (n: number | undefined) => (n !== undefined ? [n] : undefined);
+
+  const allFilterParams = {
+    pageNumber: (getInt(SessionKeys.page) ?? 0) + 1,
+    pageSize: getInt(SessionKeys.pageSize) ?? 100,
+    orderBy: get(SessionKeys.orderBy) ?? "name",
+    direction: get(SessionKeys.direction) ?? "ASC",
+    originalName: get(SessionKeys.originalName) ?? undefined,
+    projectName: get(SessionKeys.projectName) ?? undefined,
+    name: get(SessionKeys.name) ?? undefined,
+    statusId: toArray(getInt(SessionKeys.statusId)),
+    typeId: toArray(getInt(SessionKeys.typeId)),
+    purposeId: toArray(getInt(SessionKeys.purposeId)),
+    workgroupId: toArray(getInt(SessionKeys.workgroupId)),
+    restrictionId: toArray(getInt(SessionKeys.restrictionId)),
+    restrictionUntilFrom: get(SessionKeys.restrictionUntilFrom) ?? undefined,
+    restrictionUntilTo: get(SessionKeys.restrictionUntilTo) ?? undefined,
+    totalDepthMin: getFloat(SessionKeys.totalDepthMin),
+    totalDepthMax: getFloat(SessionKeys.totalDepthMax),
+    topBedrockFreshMdMin: getFloat(SessionKeys.topBedrockFreshMdMin),
+    topBedrockFreshMdMax: getFloat(SessionKeys.topBedrockFreshMdMax),
+    topBedrockWeatheredMdMin: getFloat(SessionKeys.topBedrockWeatheredMdMin),
+    topBedrockWeatheredMdMax: getFloat(SessionKeys.topBedrockWeatheredMdMax),
+    nationalInterest: get(SessionKeys.nationalInterest) as TriStateBoolean,
+    topBedrockIntersected: get(SessionKeys.topBedrockIntersected) as TriStateBoolean,
+    hasGroundwater: get(SessionKeys.hasGroundwater) as TriStateBoolean,
+    hasGeometry: get(SessionKeys.hasGeometry) as TriStateBoolean,
+    hasLogs: get(SessionKeys.hasLogs) as TriStateBoolean,
+    hasProfiles: get(SessionKeys.hasProfiles) as TriStateBoolean,
+    hasPhotos: get(SessionKeys.hasPhotos) as TriStateBoolean,
+    hasDocuments: get(SessionKeys.hasDocuments) as TriStateBoolean,
+  };
+  return Object.fromEntries(Object.entries(allFilterParams).filter(([, value]) => value != null));
+}
+
+export const useFilterBoreholes = (filterRequest: FilterRequest, enabled = true) => {
+  const filterRequestSubmission = toFilterRequestSubmission(filterRequest);
+
   return useQuery({
-    queryKey: [boreholeQueryKey, filterRequest],
-    queryFn: () => filterBoreholes(filterRequest),
+    queryKey: [boreholeQueryKey, filterRequestSubmission],
+    queryFn: () => filterBoreholes(filterRequestSubmission),
+    enabled,
+    placeholderData: keepPreviousData,
   });
 };

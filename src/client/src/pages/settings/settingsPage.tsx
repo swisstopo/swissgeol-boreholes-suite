@@ -30,7 +30,7 @@ export const SettingsPage = () => {
     const tabsArray = [{ label: t("about"), hash: "#about", component: <AboutSettings /> }];
 
     if (!isAnonymousUser) {
-      tabsArray.unshift({ label: t("general"), hash: "#general", component: <GeneralSettings /> });
+      tabsArray.unshift({ label: t("map"), hash: "#map", component: <GeneralSettings /> });
       tabsArray.push({ label: t("terms"), hash: "#terms", component: <TermSettings /> });
     }
     if (isAdminUser) {

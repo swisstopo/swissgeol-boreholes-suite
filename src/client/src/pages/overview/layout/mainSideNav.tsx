@@ -9,8 +9,9 @@ import { NavButton } from "../../../components/buttons/navButton.tsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { DrawerContentTypes } from "../overviewPageInterfaces.ts";
 import { ErrorResponse } from "../sidePanelContent/commons/actionsInterfaces.ts";
-import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
+import { PolygonFilterContext } from "../sidePanelContent/filter/polygonFilterContext.tsx";
 import { ImportErrorDialog } from "../sidePanelContent/importer/importErrorDialog.tsx";
+import { useBoreholeUrlParams } from "../useBoreholeUrlParams.ts";
 import { useUserWorkgroups } from "../UserWorkgroupsContext.tsx";
 
 export interface MainSideNavProps {
@@ -36,8 +37,9 @@ const MainSideNav = ({
   const menuRef = useRef(null);
   const { t } = useTranslation();
   const auth = useAuth();
-  const filterContext = useContext(FilterContext);
+  const { filterPolygon } = useContext(PolygonFilterContext);
   const { enabledWorkgroups } = useUserWorkgroups();
+  const { activeFilterLength } = useBoreholeUrlParams();
 
   const handleToggleFilter = () => {
     handleDrawer(DrawerContentTypes.Filters);
@@ -72,7 +74,7 @@ const MainSideNav = ({
   const isLayersPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.CustomLayers;
   const isUploadPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.Import;
   const editingDisabled = enabledWorkgroups.length === 0;
-  const activeFilterCount = filterContext.activeFilterLength + (filterContext.filterPolygon === null ? 0 : 1);
+  const activeFilterCount = activeFilterLength + (filterPolygon === null ? 0 : 1);
 
   return (
     <Stack
