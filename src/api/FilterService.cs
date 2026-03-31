@@ -305,9 +305,9 @@ public class FilterService : IFilterService
         return query;
     }
 
-    private static IQueryable<Borehole> ApplyOrdering(IQueryable<Borehole> query, BoreholeOrderBy? orderBy, string? direction)
+    private static IQueryable<Borehole> ApplyOrdering(IQueryable<Borehole> query, BoreholeOrderBy? orderBy, OrderDirection? direction)
     {
-        var isDescending = !string.IsNullOrWhiteSpace(direction) && direction.Equals("desc", StringComparison.OrdinalIgnoreCase);
+        var isDescending = direction == OrderDirection.Desc;
 
         if (orderBy is null)
         {

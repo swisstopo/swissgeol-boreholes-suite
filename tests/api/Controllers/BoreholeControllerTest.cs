@@ -927,7 +927,7 @@ public class BoreholeControllerTest
             PageNumber = 2,
             PageSize = 25,
             OrderBy = BoreholeOrderBy.TotalDepth,
-            Direction = "desc",
+            Direction = OrderDirection.Desc,
         };
 
         var expectedResponse = new FilterResponse(
