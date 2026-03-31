@@ -256,6 +256,31 @@ public class FilterServiceTest
     }
 
     [TestMethod]
+    public async Task FilterBoreholesWithDescendingOrderingReturnsOrderedResults()
+    {
+        var filterRequest = new FilterRequest
+        {
+            OrderBy = BoreholeOrderBy.TotalDepth,
+            Direction = OrderDirection.Desc,
+            PageNumber = 1,
+            PageSize = 10,
+        };
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(10, result.Boreholes.Count());
+
+        var boreholesList = result.Boreholes.ToList();
+        for (int i = 1; i < boreholesList.Count; i++)
+        {
+            var prev = boreholesList[i - 1].TotalDepth ?? 0;
+            var current = boreholesList[i].TotalDepth ?? 0;
+            Assert.IsTrue(prev >= current);
+        }
+    }
+
+    [TestMethod]
     public async Task FilterBoreholesWithBooleanFiltersReturnsMatchingBoreholes()
     {
         var filterRequest = new FilterRequest
@@ -368,6 +393,32 @@ public class FilterServiceTest
     }
 
     [TestMethod]
+    public async Task FilterBoreholesWithHasLogsFilterFalseReturnsMatchingBoreholes()
+    {
+        var expectedCount = await context.Boreholes
+            .CountAsync(b => !context.LogRuns.Any(lr => lr.BoreholeId == b.Id));
+
+        var filterRequest = new FilterRequest
+        {
+            HasLogs = false,
+            PageNumber = 1,
+            PageSize = 100,
+        };
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(expectedCount, result.TotalCount);
+
+        // Verify that no returned borehole has log runs
+        foreach (var borehole in result.Boreholes)
+        {
+            var hasLogs = await context.LogRuns.AnyAsync(lr => lr.BoreholeId == borehole.Id);
+            Assert.IsFalse(hasLogs);
+        }
+    }
+
+    [TestMethod]
     public async Task FilterBoreholesWithHasProfilesFiltersReturnsMatchingBoreholes()
     {
         var filterRequest = new FilterRequest
@@ -387,6 +438,32 @@ public class FilterServiceTest
         {
             var hasProfiles = await context.BoreholeFiles.AnyAsync(s => s.BoreholeId == borehole.Id);
             Assert.IsTrue(hasProfiles);
+        }
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesWithHasProfilesFilterFalseReturnsMatchingBoreholes()
+    {
+        var expectedCount = await context.Boreholes
+            .CountAsync(b => !context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id));
+
+        var filterRequest = new FilterRequest
+        {
+            HasProfiles = false,
+            PageNumber = 1,
+            PageSize = 100,
+        };
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(expectedCount, result.TotalCount);
+
+        // Verify that no returned borehole has profiles (boreholefiles)
+        foreach (var borehole in result.Boreholes)
+        {
+            var hasProfiles = await context.BoreholeFiles.AnyAsync(bf => bf.BoreholeId == borehole.Id);
+            Assert.IsFalse(hasProfiles);
         }
     }
 
@@ -746,6 +823,36 @@ public class FilterServiceTest
     }
 
     [TestMethod]
+    public async Task FilterBoreholesWithHasGeometryFilterFalseReturnsMatchingBoreholes()
+    {
+        var expectedCount = await context.Boreholes
+            .CountAsync(b => b.BoreholeGeometry == null || !b.BoreholeGeometry.Any());
+
+        var filterRequest = new FilterRequest
+        {
+            HasGeometry = false,
+            PageNumber = 1,
+            PageSize = 100,
+        };
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(expectedCount, result.TotalCount);
+
+        // Verify that no returned borehole has borehole geometry
+        var originalBoreholes = await context.Boreholes
+            .Include(b => b.BoreholeGeometry)
+            .Where(b => result.Boreholes.Select(rb => rb.Id).Contains(b.Id))
+            .ToListAsync();
+
+        foreach (var borehole in originalBoreholes)
+        {
+            Assert.IsTrue(borehole.BoreholeGeometry == null || !borehole.BoreholeGeometry.Any());
+        }
+    }
+
+    [TestMethod]
     public async Task FilterBoreholesWithHasPhotosFilterReturnsMatchingBoreholes()
     {
         var filterRequest = new FilterRequest
@@ -769,6 +876,32 @@ public class FilterServiceTest
     }
 
     [TestMethod]
+    public async Task FilterBoreholesWithHasPhotosFilterFalseReturnsMatchingBoreholes()
+    {
+        var expectedCount = await context.Boreholes
+            .CountAsync(b => !context.Photos.Any(p => p.BoreholeId == b.Id));
+
+        var filterRequest = new FilterRequest
+        {
+            HasPhotos = false,
+            PageNumber = 1,
+            PageSize = 100,
+        };
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(expectedCount, result.TotalCount);
+
+        // Verify that no returned borehole has photos
+        foreach (var borehole in result.Boreholes)
+        {
+            var hasPhotos = await context.Photos.AnyAsync(p => p.BoreholeId == borehole.Id);
+            Assert.IsFalse(hasPhotos);
+        }
+    }
+
+    [TestMethod]
     public async Task FilterBoreholesWithHasDocumentsFilterReturnsMatchingBoreholes()
     {
         var filterRequest = new FilterRequest
@@ -788,6 +921,32 @@ public class FilterServiceTest
         {
             var hasDocuments = await context.Documents.AnyAsync(d => d.BoreholeId == borehole.Id);
             Assert.IsTrue(hasDocuments);
+        }
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesWithHasDocumentsFilterFalseReturnsMatchingBoreholes()
+    {
+        var expectedCount = await context.Boreholes
+            .CountAsync(b => !context.Documents.Any(d => d.BoreholeId == b.Id));
+
+        var filterRequest = new FilterRequest
+        {
+            HasDocuments = false,
+            PageNumber = 1,
+            PageSize = 100,
+        };
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(expectedCount, result.TotalCount);
+
+        // Verify that no returned borehole has documents
+        foreach (var borehole in result.Boreholes)
+        {
+            var hasDocuments = await context.Documents.AnyAsync(d => d.BoreholeId == borehole.Id);
+            Assert.IsFalse(hasDocuments);
         }
     }
 
