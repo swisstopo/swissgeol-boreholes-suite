@@ -76,7 +76,7 @@ describe("Viewer tests", () => {
     navigateInStratigraphy(StratigraphyTab.chronostratigraphy);
     cy.contains("Phanerozoic").should("exist");
     navigateInStratigraphy(StratigraphyTab.lithostratigraphy);
-    cy.contains("Fanez-Formation").should("exist");
+    cy.contains("Kössen-Formation").should("exist");
     navigateInSidebar(SidebarMenuItem.completion);
     cy.wait("@completion_GET");
     cy.contains("No borehole architecture available").should("exist");
