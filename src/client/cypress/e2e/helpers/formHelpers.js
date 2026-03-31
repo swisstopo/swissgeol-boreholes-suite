@@ -187,7 +187,7 @@ export const evaluateYesNoSelect = (fieldName, expectedValue, parent) => {
  * @param {boolean} editable (optional) Defines whether the select is being evaluated in the editable or uneditable state.
  * @param {boolean} checkThousandSeparator (optional) Defines whether the value should be displayed with the thousand separator.
  */
-export const evaluateSelect = (fieldName, expectedText, parent = null, editable = true, checkThousandSeparator = false) => {
+export const evaluateSelect = (fieldName, expectedText, parent = null, editable = true, checkThousandSeparator) => {
   if (checkThousandSeparator) {
     expectedText = formatWithThousandsSeparator(expectedText);
   }
