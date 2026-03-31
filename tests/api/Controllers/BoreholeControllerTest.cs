@@ -850,7 +850,7 @@ public class BoreholeControllerTest
             new List<int>());
 
         filterServiceMock
-            .Setup(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), It.IsAny<string?>()))
+            .Setup(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), It.IsAny<User>()))
             .ReturnsAsync(expectedResponse);
 
         var result = await controller.FilterAsync(filterRequest);
@@ -868,15 +868,13 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task FilterBoreholesAsyncWithInvalidUserReturnsUnauthorized()
     {
+        controller.HttpContext.SetClaimsPrincipal("unknown_subject_id", PolicyNames.Viewer);
+
         var filterRequest = new FilterRequest
         {
             PageNumber = 1,
             PageSize = 10,
         };
-
-        filterServiceMock
-            .Setup(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), It.IsAny<string?>()))
-            .ThrowsAsync(new UnauthorizedAccessException($"User with subject ID not found."));
 
         var result = await controller.FilterAsync(filterRequest);
 
@@ -893,7 +891,7 @@ public class BoreholeControllerTest
         };
 
         filterServiceMock
-            .Setup(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), It.IsAny<string?>()))
+            .Setup(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), It.IsAny<User>()))
             .ThrowsAsync(new InvalidOperationException("Unexpected error"));
 
         var result = await controller.FilterAsync(filterRequest);
@@ -942,8 +940,8 @@ public class BoreholeControllerTest
 
         FilterRequest? capturedRequest = null;
         filterServiceMock
-            .Setup(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), It.IsAny<string?>()))
-            .Callback<FilterRequest, string?>((req, subId) => capturedRequest = req)
+            .Setup(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), It.IsAny<User>()))
+            .Callback<FilterRequest, User>((req, user) => capturedRequest = req)
             .ReturnsAsync(expectedResponse);
 
         var result = await controller.FilterAsync(filterRequest);
@@ -984,12 +982,12 @@ public class BoreholeControllerTest
             new List<int>());
 
         filterServiceMock
-            .Setup(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), EditorSubjectId))
+            .Setup(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), It.Is<User>(u => u.SubjectId == EditorSubjectId)))
             .ReturnsAsync(expectedResponse);
 
         var result = await controller.FilterAsync(filterRequest);
 
         ActionResultAssert.IsOk(result.Result);
-        filterServiceMock.Verify(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), EditorSubjectId), Times.Once);
+        filterServiceMock.Verify(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), It.Is<User>(u => u.SubjectId == EditorSubjectId)), Times.Once);
     }
 }

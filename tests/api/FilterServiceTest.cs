@@ -11,12 +11,16 @@ public class FilterServiceTest
     private const string EditorSubjectId = "sub_editor";
     private BdmsContext context;
     private FilterService filterService;
+    private User adminUser;
+    private User editorUser;
 
     [TestInitialize]
-    public void TestInitialize()
+    public async Task TestInitialize()
     {
         context = ContextFactory.GetTestContext();
         filterService = new FilterService(context);
+        adminUser = await context.UsersWithIncludes.AsNoTracking().SingleAsync(u => u.SubjectId == AdminSubjectId);
+        editorUser = await context.UsersWithIncludes.AsNoTracking().SingleAsync(u => u.SubjectId == EditorSubjectId);
     }
 
     [TestCleanup]
@@ -32,7 +36,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(3002, result.TotalCount);
@@ -50,7 +54,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, EditorSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, editorUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(3000, result.TotalCount);
@@ -86,7 +90,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(testIds.Count, result.TotalCount);
@@ -113,7 +117,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(6, result.TotalCount);
@@ -135,7 +139,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(2, result.TotalCount);
@@ -157,7 +161,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(600, result.TotalCount);
@@ -203,7 +207,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(10, result.TotalCount);
@@ -221,7 +225,7 @@ public class FilterServiceTest
             PageSize = 5,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(5, result.Boreholes.Count());
@@ -241,7 +245,7 @@ public class FilterServiceTest
             PageSize = 10,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(10, result.Boreholes.Count());
@@ -266,7 +270,7 @@ public class FilterServiceTest
             PageSize = 10,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(10, result.Boreholes.Count());
@@ -290,7 +294,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
 
@@ -309,7 +313,7 @@ public class FilterServiceTest
             PageSize = 10,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.IsNotNull(result.GeoJson);
@@ -343,7 +347,7 @@ public class FilterServiceTest
             PageSize = 5,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.IsNotNull(result.FilteredBoreholeIds);
@@ -356,20 +360,6 @@ public class FilterServiceTest
     }
 
     [TestMethod]
-    public async Task FilterBoreholesWithInvalidUserThrowsException()
-    {
-        var filterRequest = new FilterRequest
-        {
-            PageNumber = 1,
-            PageSize = 100,
-        };
-        await Assert.ThrowsExactlyAsync<UnauthorizedAccessException>(async () =>
-        {
-            await filterService.FilterBoreholesAsync(filterRequest, "invalid_subject_id");
-        });
-    }
-
-    [TestMethod]
     public async Task FilterBoreholesWithHasLogsFilterReturnsMatchingBoreholes()
     {
         var filterRequest = new FilterRequest
@@ -379,7 +369,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(101, result.TotalCount);
@@ -405,7 +395,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(expectedCount, result.TotalCount);
@@ -428,7 +418,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(88, result.TotalCount);
@@ -454,7 +444,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(expectedCount, result.TotalCount);
@@ -487,7 +477,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.TotalCount > 0);
@@ -518,7 +508,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.TotalCount > 0);
@@ -551,7 +541,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.TotalCount > 0);
@@ -580,7 +570,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.TotalCount > 0);
@@ -609,7 +599,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.TotalCount > 0);
@@ -638,7 +628,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.TotalCount > 0);
@@ -672,7 +662,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.TotalCount > 0);
@@ -698,7 +688,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(273, result.TotalCount);
@@ -725,7 +715,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.TotalCount > 0);
@@ -754,7 +744,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.TotalCount > 0);
@@ -779,7 +769,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.TotalCount > 0);
@@ -804,7 +794,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(100, result.TotalCount); // rich boreholes with boreholeGeometry
@@ -835,7 +825,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(expectedCount, result.TotalCount);
@@ -862,7 +852,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.TotalCount > 0);
@@ -888,7 +878,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(expectedCount, result.TotalCount);
@@ -911,7 +901,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.IsTrue(result.TotalCount > 0);
@@ -937,7 +927,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(expectedCount, result.TotalCount);
@@ -974,7 +964,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(5, result.TotalCount);
@@ -1011,7 +1001,7 @@ public class FilterServiceTest
             PageSize = 1,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(1, result.TotalCount);
@@ -1065,7 +1055,7 @@ public class FilterServiceTest
             PageSize = 10,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(10, result.Boreholes.Count());
@@ -1120,7 +1110,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(626, result.TotalCount);
@@ -1149,7 +1139,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(521, result.TotalCount);
@@ -1180,7 +1170,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(233, result.TotalCount);
@@ -1227,7 +1217,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(2, result.TotalCount);
@@ -1260,7 +1250,7 @@ public class FilterServiceTest
             PageSize = 100,
         };
 
-        var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
         Assert.AreEqual(750, result.TotalCount);
@@ -1293,7 +1283,7 @@ public class FilterServiceTest
         };
 
         // Admin can see the borehole
-        var adminResult = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+        var adminResult = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(adminResult);
         Assert.IsNotNull(adminResult.Boreholes);
@@ -1301,7 +1291,7 @@ public class FilterServiceTest
         Assert.AreEqual(newBorehole.Id, adminResult.Boreholes.First().Id);
 
         // Editor cannot see the borehole (not in their workgroups)
-        var editorResult = await filterService.FilterBoreholesAsync(filterRequest, EditorSubjectId);
+        var editorResult = await filterService.FilterBoreholesAsync(filterRequest, editorUser);
 
         Assert.IsNotNull(editorResult);
         Assert.IsNotNull(editorResult.Boreholes);
@@ -1312,7 +1302,7 @@ public class FilterServiceTest
     [TestMethod]
     public async Task ReturnsAllBoreholesForFilterRequestWithoutParameters()
     {
-        var result = await filterService.FilterBoreholesAsync(null, AdminSubjectId);
+        var result = await filterService.FilterBoreholesAsync(null, adminUser);
 
         // Verify result with default pagination
         Assert.AreEqual(100, result.Boreholes.Count());
@@ -1366,7 +1356,7 @@ public class FilterServiceTest
                 PageSize = 100,
             };
 
-            var result = await filterService.FilterBoreholesAsync(filterRequest, AdminSubjectId);
+            var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
             Assert.IsNotNull(result);
             Assert.AreEqual(statusCounts[status], result.TotalCount, $"Expected {statusCounts[status]} boreholes with status {status}");

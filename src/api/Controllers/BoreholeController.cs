@@ -128,15 +128,17 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     public async Task<ActionResult<FilterResponse>> FilterAsync([FromBody] FilterRequest filterRequest)
     {
         try
-        {
+            {
             var subjectId = HttpContext.GetUserSubjectId();
-            var result = await filterService.FilterBoreholesAsync(filterRequest, subjectId).ConfigureAwait(false);
+            var user = await Context.UsersWithIncludes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
+            .ConfigureAwait(false);
+
+            if (user == null) return Unauthorized($"No user with subject_id <{subjectId}> found.");
+
+            var result = await filterService.FilterBoreholesAsync(filterRequest, user).ConfigureAwait(false);
             return Ok(result);
-        }
-        catch (UnauthorizedAccessException ex)
-        {
-            Logger.LogError(ex, "User not found in database");
-            return Unauthorized("User not found.");
         }
         catch (Exception ex)
         {
