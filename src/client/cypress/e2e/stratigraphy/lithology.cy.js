@@ -96,6 +96,252 @@ const createCompleteLayerGrid = () => {
   hasLayer(LayerType.faciesDescription, 798, 1123);
 };
 
+const fillCompleteUnconsolidatedLithologyForm = () => {
+  fillUnconsolidatedLithologyForm({
+    fromDepth: 0,
+    toDepth: 56,
+    hasBedding: true,
+    share: 80,
+    lithologyDescriptions: [
+      {
+        lithologyUnconMainId: 2,
+        lithologyUncon2Id: 2,
+        lithologyUncon3Id: 2,
+        lithologyUncon4Id: 2,
+        lithologyUncon5Id: 2,
+        lithologyUncon6Id: 2,
+        componentUnconOrganicCodelistIds: [2, 3],
+        componentUnconDebrisCodelistIds: [2, 3],
+        colorPrimaryId: 2,
+        colorSecondaryId: 2,
+        grainShapeCodelistIds: [2, 3],
+        grainAngularityCodelistIds: [2, 3],
+        lithologyUnconDebrisCodelistIds: [2, 3],
+        hasStriae: true,
+      },
+      {
+        lithologyUnconMainId: 3,
+        lithologyUncon2Id: 3,
+        lithologyUncon3Id: 3,
+        lithologyUncon4Id: 3,
+        lithologyUncon5Id: 3,
+        lithologyUncon6Id: 3,
+        componentUnconOrganicCodelistIds: [3, 4],
+        componentUnconDebrisCodelistIds: [3, 4],
+        colorPrimaryId: 3,
+        colorSecondaryId: 3,
+        grainShapeCodelistIds: [3, 4],
+        grainAngularityCodelistIds: [3, 4],
+        lithologyUnconDebrisCodelistIds: [3, 4],
+      },
+    ],
+    compactnessId: 2,
+    cohesionId: 2,
+    humidityId: 2,
+    consistencyId: 2,
+    plasticityId: 2,
+    uscsTypeCodelistIds: [2, 3],
+    uscsDeterminationId: 2,
+    rockConditionCodelistIds: [2, 3],
+    alterationDegreeId: 2,
+    notes: "A unconsolidated rock note.",
+  });
+};
+
+const evaluateCompleteUnconsolidatedLithologyForm = () => {
+  evaluateUnconsolidatedLithologyForm({
+    fromDepth: 0,
+    toDepth: 56,
+    hasBedding: true,
+    share: 80,
+    lithologyDescriptions: [
+      {
+        lithologyUnconMainId: "boulder (Bo)",
+        lithologyUncon2Id: "blocky / with blocks (bo)",
+        lithologyUncon3Id: "blocky / with blocks (bo)",
+        lithologyUncon4Id: "blocky / with blocks (bo)",
+        lithologyUncon5Id: "blocky / with blocks (bo)",
+        lithologyUncon6Id: "blocky / with blocks (bo)",
+        componentUnconOrganicCodelistIds: ["humus", "undifferenciated organic material"],
+        componentUnconDebrisCodelistIds: ["rubble", "bed load"],
+        colorPrimaryId: "blackish grey",
+        colorSecondaryId: "blackish grey",
+        grainShapeCodelistIds: ["platy", "elongated"],
+        grainAngularityCodelistIds: ["angular", "sub-angular"],
+        lithologyUnconDebrisCodelistIds: ["rock: sedimentary", "rock: clastic"],
+        hasStriae: true,
+      },
+      {
+        lithologyUnconMainId: "cobbles (Co)",
+        lithologyUncon2Id: "stony / with stones (co)",
+        lithologyUncon3Id: "stony / with stones (co)",
+        lithologyUncon4Id: "stony / with stones (co)",
+        lithologyUncon5Id: "stony / with stones (co)",
+        lithologyUncon6Id: "stony / with stones (co)",
+        componentUnconOrganicCodelistIds: ["undifferenciated organic material", "roots"],
+        componentUnconDebrisCodelistIds: ["bed load", "fragments, splitters"],
+        colorPrimaryId: "dark grey",
+        colorSecondaryId: "dark grey",
+        grainShapeCodelistIds: ["elongated", "other"],
+        grainAngularityCodelistIds: ["sub-angular", "sub-rounded"],
+        lithologyUnconDebrisCodelistIds: ["rock: clastic", "psephite"],
+      },
+    ],
+    compactnessId: "loose",
+    cohesionId: "slightly cohesive",
+    humidityId: "earth-moist",
+    consistencyId: "soft",
+    plasticityId: "slight plasticity",
+    uscsTypeCodelistIds: ["lean clay", "silty clay"],
+    uscsDeterminationId: "laboratory",
+    rockConditionCodelistIds: ["decomposed", "subsided"],
+    alterationDegreeId: "weathered",
+    notes: "A unconsolidated rock note.",
+  });
+};
+
+const evaluateUnconsolidatedLithologyFormHasOnlyDepths = (fromDepth, toDepth) => {
+  evaluateUnconsolidatedLithologyForm({
+    fromDepth: fromDepth,
+    toDepth: toDepth,
+    hasBedding: false,
+    lithologyDescriptions: [
+      {
+        lithologyUnconMainId: "",
+        lithologyUncon2Id: "",
+        lithologyUncon3Id: "",
+        lithologyUncon4Id: "",
+        lithologyUncon5Id: "",
+        lithologyUncon6Id: "",
+        componentUnconOrganicCodelistIds: [],
+        componentUnconDebrisCodelistIds: [],
+        colorPrimaryId: "",
+        colorSecondaryId: "",
+        grainShapeCodelistIds: [],
+        grainAngularityCodelistIds: [],
+        lithologyUnconDebrisCodelistIds: [],
+        hasStriae: false,
+      },
+    ],
+    compactnessId: "",
+    cohesionId: "",
+    humidityId: "",
+    consistencyId: "",
+    plasticityId: "",
+    uscsTypeCodelistIds: [],
+    uscsDeterminationId: "",
+    rockConditionCodelistIds: [],
+    alterationDegreeId: "",
+    notes: "",
+  });
+};
+
+const fillCompleteConsolidatedLithologyForm = () => {
+  fillConsolidatedLithologyForm({
+    fromDepth: 0,
+    toDepth: 56,
+    hasBedding: true,
+    share: 65,
+    lithologyDescriptions: [
+      {
+        lithologyConId: 1,
+        colorPrimaryId: 1,
+        colorSecondaryId: 1,
+        componentConParticleCodelistIds: [1, 2],
+        componentConMineralCodelistIds: [1, 2],
+        grainSizeId: 1,
+        grainAngularityId: 1,
+        gradationId: 1,
+        cementationId: 1,
+        structureSynGenCodelistIds: [1, 2],
+        structurePostGenCodelistIds: [1, 2],
+      },
+      {
+        lithologyConId: 1,
+        colorPrimaryId: 1,
+        colorSecondaryId: 1,
+        componentConParticleCodelistIds: [2, 3],
+        componentConMineralCodelistIds: [2, 3],
+        grainSizeId: 1,
+        grainAngularityId: 1,
+        gradationId: 1,
+        cementationId: 1,
+        structureSynGenCodelistIds: [2, 3],
+        structurePostGenCodelistIds: [2, 3],
+      },
+    ],
+    textureMetaCodelistIds: [1, 2],
+    alterationDegreeId: 1,
+    notes: "A consolidated rock note.",
+  });
+};
+
+const evaluateCompleteConsolidatedLithologyForm = () => {
+  evaluateConsolidatedLithologyForm({
+    fromDepth: 0,
+    toDepth: 56,
+    hasBedding: true,
+    share: 65,
+    lithologyDescriptions: [
+      {
+        lithologyConId: "rock",
+        colorPrimaryId: "black",
+        colorSecondaryId: "black",
+        componentConParticleCodelistIds: ["algae", "algal mats"],
+        componentConMineralCodelistIds: ["actinolite", "adularia"],
+        grainSizeId: "very fine",
+        grainAngularityId: "very angular",
+        gradationId: "very well-sorted",
+        cementationId: "uncemented",
+        structureSynGenCodelistIds: ["structureless", "nodular"],
+        structurePostGenCodelistIds: ["birdseye structure", "fenestral structure"],
+      },
+      {
+        lithologyConId: "rock",
+        colorPrimaryId: "black",
+        colorSecondaryId: "black",
+        componentConParticleCodelistIds: ["algal mats", "ammonites"],
+        componentConMineralCodelistIds: ["adularia", "albite"],
+        grainSizeId: "very fine",
+        grainAngularityId: "very angular",
+        gradationId: "very well-sorted",
+        cementationId: "uncemented",
+        structureSynGenCodelistIds: ["nodular", "varves"],
+        structurePostGenCodelistIds: ["fenestral structure", "keystone vugs"],
+      },
+    ],
+    textureMetaCodelistIds: ["massive", "layered"],
+    alterationDegreeId: "fresh",
+    notes: "A consolidated rock note.",
+  });
+};
+
+const evaluateConsolidatedLithologyFormHasOnlyDepths = (fromDepth, toDepth) => {
+  evaluateConsolidatedLithologyForm({
+    fromDepth: fromDepth,
+    toDepth: toDepth,
+    hasBedding: false,
+    lithologyDescriptions: [
+      {
+        lithologyConId: "",
+        colorPrimaryId: "",
+        colorSecondaryId: "",
+        componentConParticleCodelistIds: [],
+        componentConMineralCodelistIds: [],
+        grainSizeId: "",
+        grainAngularityId: "",
+        gradationId: "",
+        cementationId: "",
+        structureSynGenCodelistIds: [],
+        structurePostGenCodelistIds: [],
+      },
+    ],
+    textureMetaCodelistIds: [],
+    alterationDegreeId: "",
+    notes: "",
+  });
+};
+
 describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
   it("adds, updates and displays lithologies", () => {
     openNewStratigraphy();
@@ -445,341 +691,35 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     openNewStratigraphy();
     addLithology();
 
-    fillUnconsolidatedLithologyForm({
-      fromDepth: 0,
-      toDepth: 56,
-      hasBedding: true,
-      share: 80,
-      lithologyDescriptions: [
-        {
-          lithologyUnconMainId: 2,
-          lithologyUncon2Id: 2,
-          lithologyUncon3Id: 2,
-          lithologyUncon4Id: 2,
-          lithologyUncon5Id: 2,
-          lithologyUncon6Id: 2,
-          componentUnconOrganicCodelistIds: [2, 3],
-          componentUnconDebrisCodelistIds: [2, 3],
-          colorPrimaryId: 2,
-          colorSecondaryId: 2,
-          grainShapeCodelistIds: [2, 3],
-          grainAngularityCodelistIds: [2, 3],
-          lithologyUnconDebrisCodelistIds: [2, 3],
-          hasStriae: true,
-        },
-        {
-          lithologyUnconMainId: 3,
-          lithologyUncon2Id: 3,
-          lithologyUncon3Id: 3,
-          lithologyUncon4Id: 3,
-          lithologyUncon5Id: 3,
-          lithologyUncon6Id: 3,
-          componentUnconOrganicCodelistIds: [3, 4],
-          componentUnconDebrisCodelistIds: [3, 4],
-          colorPrimaryId: 3,
-          colorSecondaryId: 3,
-          grainShapeCodelistIds: [3, 4],
-          grainAngularityCodelistIds: [3, 4],
-          lithologyUnconDebrisCodelistIds: [3, 4],
-        },
-      ],
-      compactnessId: 2,
-      cohesionId: 2,
-      humidityId: 2,
-      consistencyId: 2,
-      plasticityId: 2,
-      uscsTypeCodelistIds: [2, 3],
-      uscsDeterminationId: 2,
-      rockConditionCodelistIds: [2, 3],
-      alterationDegreeId: 2,
-      notes: "A unconsolidated rock note.",
-    });
-    evaluateUnconsolidatedLithologyForm({
-      fromDepth: 0,
-      toDepth: 56,
-      hasBedding: true,
-      share: 80,
-      lithologyDescriptions: [
-        {
-          lithologyUnconMainId: "boulder (Bo)",
-          lithologyUncon2Id: "blocky / with blocks (bo)",
-          lithologyUncon3Id: "blocky / with blocks (bo)",
-          lithologyUncon4Id: "blocky / with blocks (bo)",
-          lithologyUncon5Id: "blocky / with blocks (bo)",
-          lithologyUncon6Id: "blocky / with blocks (bo)",
-          componentUnconOrganicCodelistIds: ["humus", "undifferenciated organic material"],
-          componentUnconDebrisCodelistIds: ["rubble", "bed load"],
-          colorPrimaryId: "blackish grey",
-          colorSecondaryId: "blackish grey",
-          grainShapeCodelistIds: ["platy", "elongated"],
-          grainAngularityCodelistIds: ["angular", "sub-angular"],
-          lithologyUnconDebrisCodelistIds: ["rock: sedimentary", "rock: clastic"],
-          hasStriae: true,
-        },
-        {
-          lithologyUnconMainId: "cobbles (Co)",
-          lithologyUncon2Id: "stony / with stones (co)",
-          lithologyUncon3Id: "stony / with stones (co)",
-          lithologyUncon4Id: "stony / with stones (co)",
-          lithologyUncon5Id: "stony / with stones (co)",
-          lithologyUncon6Id: "stony / with stones (co)",
-          componentUnconOrganicCodelistIds: ["undifferenciated organic material", "roots"],
-          componentUnconDebrisCodelistIds: ["bed load", "fragments, splitters"],
-          colorPrimaryId: "dark grey",
-          colorSecondaryId: "dark grey",
-          grainShapeCodelistIds: ["elongated", "other"],
-          grainAngularityCodelistIds: ["sub-angular", "sub-rounded"],
-          lithologyUnconDebrisCodelistIds: ["rock: clastic", "psephite"],
-        },
-      ],
-      compactnessId: "loose",
-      cohesionId: "slightly cohesive",
-      humidityId: "earth-moist",
-      consistencyId: "soft",
-      plasticityId: "slight plasticity",
-      uscsTypeCodelistIds: ["lean clay", "silty clay"],
-      uscsDeterminationId: "laboratory",
-      rockConditionCodelistIds: ["decomposed", "subsided"],
-      alterationDegreeId: "weathered",
-      notes: "A unconsolidated rock note.",
-    });
+    fillCompleteUnconsolidatedLithologyForm();
+    evaluateCompleteUnconsolidatedLithologyForm();
 
     // Should not change form when canceling switch
     switchRockType(RockType.consolidated, "Cancel");
-    evaluateUnconsolidatedLithologyForm({
-      fromDepth: 0,
-      toDepth: 56,
-      hasBedding: true,
-      share: 80,
-      lithologyDescriptions: [
-        {
-          lithologyUnconMainId: "boulder (Bo)",
-          lithologyUncon2Id: "blocky / with blocks (bo)",
-          lithologyUncon3Id: "blocky / with blocks (bo)",
-          lithologyUncon4Id: "blocky / with blocks (bo)",
-          lithologyUncon5Id: "blocky / with blocks (bo)",
-          lithologyUncon6Id: "blocky / with blocks (bo)",
-          componentUnconOrganicCodelistIds: ["humus", "undifferenciated organic material"],
-          componentUnconDebrisCodelistIds: ["rubble", "bed load"],
-          colorPrimaryId: "blackish grey",
-          colorSecondaryId: "blackish grey",
-          grainShapeCodelistIds: ["platy", "elongated"],
-          grainAngularityCodelistIds: ["angular", "sub-angular"],
-          lithologyUnconDebrisCodelistIds: ["rock: sedimentary", "rock: clastic"],
-          hasStriae: true,
-        },
-        {
-          lithologyUnconMainId: "cobbles (Co)",
-          lithologyUncon2Id: "stony / with stones (co)",
-          lithologyUncon3Id: "stony / with stones (co)",
-          lithologyUncon4Id: "stony / with stones (co)",
-          lithologyUncon5Id: "stony / with stones (co)",
-          lithologyUncon6Id: "stony / with stones (co)",
-          componentUnconOrganicCodelistIds: ["undifferenciated organic material", "roots"],
-          componentUnconDebrisCodelistIds: ["bed load", "fragments, splitters"],
-          colorPrimaryId: "dark grey",
-          colorSecondaryId: "dark grey",
-          grainShapeCodelistIds: ["elongated", "other"],
-          grainAngularityCodelistIds: ["sub-angular", "sub-rounded"],
-          lithologyUnconDebrisCodelistIds: ["rock: clastic", "psephite"],
-        },
-      ],
-      compactnessId: "loose",
-      cohesionId: "slightly cohesive",
-      humidityId: "earth-moist",
-      consistencyId: "soft",
-      plasticityId: "slight plasticity",
-      uscsTypeCodelistIds: ["lean clay", "silty clay"],
-      uscsDeterminationId: "laboratory",
-      rockConditionCodelistIds: ["decomposed", "subsided"],
-      alterationDegreeId: "weathered",
-      notes: "A unconsolidated rock note.",
-    });
+    evaluateCompleteUnconsolidatedLithologyForm();
 
     // Should reset form when continuing with switch
     switchRockType(RockType.consolidated, "Continue");
-    evaluateConsolidatedLithologyForm({ fromDepth: 0, toDepth: 56, hasBedding: false });
+    evaluateConsolidatedLithologyFormHasOnlyDepths(0, 56);
 
     switchRockType(RockType.unconsolidated, "Continue");
-    evaluateUnconsolidatedLithologyForm({
-      fromDepth: 0,
-      toDepth: 56,
-      hasBedding: false,
-      lithologyDescriptions: [
-        {
-          lithologyUnconMainId: "",
-          lithologyUncon2Id: "",
-          lithologyUncon3Id: "",
-          lithologyUncon4Id: "",
-          lithologyUncon5Id: "",
-          lithologyUncon6Id: "",
-          componentUnconOrganicCodelistIds: [],
-          componentUnconDebrisCodelistIds: [],
-          colorPrimaryId: "",
-          colorSecondaryId: "",
-          grainShapeCodelistIds: [],
-          grainAngularityCodelistIds: [],
-          lithologyUnconDebrisCodelistIds: [],
-          hasStriae: false,
-        },
-      ],
-      compactnessId: "",
-      cohesionId: "",
-      humidityId: "",
-      consistencyId: "",
-      plasticityId: "",
-      uscsTypeCodelistIds: [],
-      uscsDeterminationId: "",
-      rockConditionCodelistIds: [],
-      alterationDegreeId: "",
-      notes: "",
-    });
+    evaluateUnconsolidatedLithologyFormHasOnlyDepths(0, 56);
 
     switchRockType(RockType.consolidated, "Continue");
-    evaluateConsolidatedLithologyForm({ fromDepth: 0, toDepth: 56, hasBedding: false });
+    evaluateConsolidatedLithologyFormHasOnlyDepths(0, 56);
 
-    fillConsolidatedLithologyForm({
-      fromDepth: 0,
-      toDepth: 56,
-      hasBedding: true,
-      share: 65,
-      lithologyDescriptions: [
-        {
-          lithologyConId: 1,
-          colorPrimaryId: 1,
-          colorSecondaryId: 1,
-          componentConParticleCodelistIds: [1, 2],
-          componentConMineralCodelistIds: [1, 2],
-          grainSizeId: 1,
-          grainAngularityId: 1,
-          gradationId: 1,
-          cementationId: 1,
-          structureSynGenCodelistIds: [1, 2],
-          structurePostGenCodelistIds: [1, 2],
-        },
-        {
-          lithologyConId: 1,
-          colorPrimaryId: 1,
-          colorSecondaryId: 1,
-          componentConParticleCodelistIds: [2, 3],
-          componentConMineralCodelistIds: [2, 3],
-          grainSizeId: 1,
-          grainAngularityId: 1,
-          gradationId: 1,
-          cementationId: 1,
-          structureSynGenCodelistIds: [2, 3],
-          structurePostGenCodelistIds: [2, 3],
-        },
-      ],
-      textureMetaCodelistIds: [1, 2],
-      alterationDegreeId: 1,
-      notes: "A consolidated rock note.",
-    });
-    evaluateConsolidatedLithologyForm({
-      fromDepth: 0,
-      toDepth: 56,
-      hasBedding: true,
-      share: 65,
-      lithologyDescriptions: [
-        {
-          lithologyConId: "rock",
-          colorPrimaryId: "black",
-          colorSecondaryId: "black",
-          componentConParticleCodelistIds: ["algae", "algal mats"],
-          componentConMineralCodelistIds: ["actinolite", "adularia"],
-          grainSizeId: "very fine",
-          grainAngularityId: "very angular",
-          gradationId: "very well-sorted",
-          cementationId: "uncemented",
-          structureSynGenCodelistIds: ["structureless", "nodular"],
-          structurePostGenCodelistIds: ["birdseye structure", "fenestral structure"],
-        },
-        {
-          lithologyConId: "rock",
-          colorPrimaryId: "black",
-          colorSecondaryId: "black",
-          componentConParticleCodelistIds: ["algal mats", "ammonites"],
-          componentConMineralCodelistIds: ["adularia", "albite"],
-          grainSizeId: "very fine",
-          grainAngularityId: "very angular",
-          gradationId: "very well-sorted",
-          cementationId: "uncemented",
-          structureSynGenCodelistIds: ["nodular", "varves"],
-          structurePostGenCodelistIds: ["fenestral structure", "keystone vugs"],
-        },
-      ],
-      textureMetaCodelistIds: ["massive", "layered"],
-      alterationDegreeId: "fresh",
-      notes: "A consolidated rock note.",
-    });
+    fillCompleteConsolidatedLithologyForm();
+    evaluateCompleteConsolidatedLithologyForm();
 
     // Should not change form when canceling switch
     switchRockType(RockType.unconsolidated, "Cancel");
-    evaluateConsolidatedLithologyForm({
-      fromDepth: 0,
-      toDepth: 56,
-      hasBedding: true,
-      share: 65,
-      lithologyDescriptions: [
-        {
-          lithologyConId: "rock",
-          colorPrimaryId: "black",
-          colorSecondaryId: "black",
-          componentConParticleCodelistIds: ["algae", "algal mats"],
-          componentConMineralCodelistIds: ["actinolite", "adularia"],
-          grainSizeId: "very fine",
-          grainAngularityId: "very angular",
-          gradationId: "very well-sorted",
-          cementationId: "uncemented",
-          structureSynGenCodelistIds: ["structureless", "nodular"],
-          structurePostGenCodelistIds: ["birdseye structure", "fenestral structure"],
-        },
-        {
-          lithologyConId: "rock",
-          colorPrimaryId: "black",
-          colorSecondaryId: "black",
-          componentConParticleCodelistIds: ["algal mats", "ammonites"],
-          componentConMineralCodelistIds: ["adularia", "albite"],
-          grainSizeId: "very fine",
-          grainAngularityId: "very angular",
-          gradationId: "very well-sorted",
-          cementationId: "uncemented",
-          structureSynGenCodelistIds: ["nodular", "varves"],
-          structurePostGenCodelistIds: ["fenestral structure", "keystone vugs"],
-        },
-      ],
-      textureMetaCodelistIds: ["massive", "layered"],
-      alterationDegreeId: "fresh",
-      notes: "A consolidated rock note.",
-    });
+    evaluateCompleteConsolidatedLithologyForm();
 
     switchRockType(RockType.unconsolidated, "Continue");
-    evaluateUnconsolidatedLithologyForm({ fromDepth: 0, toDepth: 56, hasBedding: false });
+    evaluateUnconsolidatedLithologyFormHasOnlyDepths(0, 56);
 
     switchRockType(RockType.consolidated, "Continue");
-    evaluateConsolidatedLithologyForm({
-      fromDepth: 0,
-      toDepth: 56,
-      hasBedding: false,
-      lithologyDescriptions: [
-        {
-          lithologyConId: "",
-          colorPrimaryId: "",
-          colorSecondaryId: "",
-          componentConParticleCodelistIds: [],
-          componentConMineralCodelistIds: [],
-          grainSizeId: "",
-          grainAngularityId: "",
-          gradationId: "",
-          cementationId: "",
-          structureSynGenCodelistIds: [],
-          structurePostGenCodelistIds: [],
-        },
-      ],
-      textureMetaCodelistIds: [],
-      alterationDegreeId: "",
-      notes: "",
-    });
+    evaluateConsolidatedLithologyFormHasOnlyDepths(0, 56);
   });
 
   it("should inherit previous rock type", () => {
