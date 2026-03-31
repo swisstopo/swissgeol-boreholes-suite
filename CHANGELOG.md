@@ -6,6 +6,7 @@
 - Added major version Docker image tag (e.g. `:v2`) to the release workflow.
 - Added maintenance tasks admin page with background job infrastructure for location and coordinate migrations, persistent execution log, and auto-polling UI.
 - Added a new maintenance task to merge duplicate users sharing the same email address by reassigning all data from obsolete accounts to the newest user.
+- Added additional lithostratigraphy codes.
 
 ### Changed
 - Multiple id values for a `boreholeId`/`identifier type` pair are now supported.
