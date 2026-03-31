@@ -8,9 +8,11 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NetTopologySuite.IO.Converters;
 using System.Reflection;
+using System.Security.Claims;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,8 +27,39 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<UserInfoService>();
+
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options => builder.Configuration.Bind("Auth", options));
+    .AddJwtBearer(options =>
+    {
+        builder.Configuration.Bind("Auth", options);
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateAudience = false, // Cognito access tokens use client_id, not aud
+            ValidateIssuer = true,
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                var userInfoService = context.HttpContext.RequestServices
+                    .GetRequiredService<UserInfoService>();
+                var sub = context.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+                var token = context.Request.Headers.Authorization
+                    .ToString().Replace("Bearer ", "");
+
+                if (sub != null)
+                {
+                    var claims = await userInfoService.GetUserInfoClaimsAsync(sub, token);
+                    if (claims != null)
+                    {
+                        (context.Principal?.Identity as ClaimsIdentity)?.AddClaims(claims);
+                    }
+                }
+            },
+        };
+    });
 
 builder.Services.AddTransient<IClaimsTransformation, DatabaseAuthenticationClaimsTransformation>();
 
