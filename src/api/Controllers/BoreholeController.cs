@@ -130,8 +130,6 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         try
         {
             var subjectId = HttpContext.GetUserSubjectId();
-            if (string.IsNullOrEmpty(subjectId)) return Unauthorized();
-
             var result = await filterService.FilterBoreholesAsync(filterRequest, subjectId).ConfigureAwait(false);
             return Ok(result);
         }
@@ -183,7 +181,6 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         Logger.LogInformation("Copy borehole with id <{BoreholeId}> to workgroup with id <{WorkgroupId}>", id, workgroupId);
 
         var subjectId = HttpContext.GetUserSubjectId();
-        if (subjectId == null) return Unauthorized();
 
         var user = await Context.UsersWithIncludes
             .AsNoTracking()
