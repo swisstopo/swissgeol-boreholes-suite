@@ -22,16 +22,8 @@ public class FilterService : IFilterService
     }
 
     /// <inheritdoc />
-    public async Task<FilterResponse> FilterBoreholesAsync(FilterRequest? filterRequest, string? subjectId)
+    public async Task<FilterResponse> FilterBoreholesAsync(FilterRequest? filterRequest, User user)
     {
-        // Get user and their permissions
-        var user = await context.UsersWithIncludes
-            .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
-            .ConfigureAwait(false);
-
-        if (user == null) throw new UnauthorizedAccessException($"User with subject ID '{subjectId}' not found.");
-
         var lockExpiryTime = DateTime.UtcNow.AddMinutes(-LockTimeoutMinutes);
 
         // Base query
