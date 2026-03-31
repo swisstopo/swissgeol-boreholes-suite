@@ -3,7 +3,6 @@ name: boreholes.swissgeol.ch
 applicationSuite: swissgeol.ch
 url: https://github.com/swisstopo/swissgeol-boreholes-suite
 landingURL: https://www.swissgeol.ch/
-softwareVersion: 2.1.1462
 releaseDate: 2026-02-19
 platforms:
   - web
