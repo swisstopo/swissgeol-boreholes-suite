@@ -21,7 +21,7 @@ export const LithologyDescriptionForm: FC<LithologyDescriptionFormProps> = ({
   const { getValues, setValue } = formMethods;
 
   return (
-    <FormContainer>
+    <FormContainer dataCy={`lithologyDescriptions.${isFirst ? "0" : "1"}`}>
       {fields.map((row, rowIndex) => (
         <FormContainer direction={"row"} key={rowIndex}>
           {rowIndex === 0 && isFirst && hasBedding !== undefined && (

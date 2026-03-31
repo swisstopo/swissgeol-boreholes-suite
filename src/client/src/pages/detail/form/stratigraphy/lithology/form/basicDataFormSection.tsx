@@ -1,5 +1,6 @@
 import { FC } from "react";
 import { FormContainer, FormSelect } from "../../../../../../components/form/form.ts";
+import { formatNumberForDisplay } from "../../../../../../components/form/formUtils.ts";
 
 interface BasicDataFormSectionProps {
   fromDepths: number[];
@@ -13,13 +14,13 @@ export const BasicDataFormSection: FC<BasicDataFormSectionProps> = ({ fromDepths
       <FormSelect
         fieldName={"fromDepth"}
         label={"fromdepth"}
-        values={fromDepths.map(d => ({ key: d, name: d.toString() }))}
+        values={fromDepths.map(d => ({ key: d, name: formatNumberForDisplay(d) }))}
         required={true}
       />
       <FormSelect
         fieldName={"toDepth"}
         label={"todepth"}
-        values={toDepths.map(d => ({ key: d, name: d.toString() }))}
+        values={toDepths.map(d => ({ key: d, name: formatNumberForDisplay(d) }))}
         required={true}
       />
     </FormContainer>

@@ -28,6 +28,7 @@
 - Copy facies and lithological descriptions when copying a stratigraphy.
 - Fixed display of facies when not editing a borehole.
 - Fixed bug where the top bedrock intersected default value could not be overwritten.
+- Reset form when switching between unconsolidated and consolidated rock in lithology.
 
 ### Changed
 - Added pod and container security context hardening across all Helm charts (seccomp profiles, privilege escalation prevention, capability dropping, read-only root filesystems).
