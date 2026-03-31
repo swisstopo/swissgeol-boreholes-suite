@@ -52,16 +52,30 @@ public class DatabaseAuthenticationClaimsTransformation : IClaimsTransformation
         if (subjectId is null)
             return null;
 
-        var user = dbContext.Users.SingleOrDefault(u => u.SubjectId == subjectId) ?? new User { SubjectId = subjectId };
-        user.FirstName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value ?? user.FirstName;
-        user.LastName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value ?? user.LastName;
-        user.Name = $"{user.FirstName[0]}. {user.LastName}";
+        var user = dbContext.Users.SingleOrDefault(u => u.SubjectId == subjectId);
 
-        var emailClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
+        if (user == null)
+        {
+            var email = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
+                ?? throw new InvalidOperationException(
+                    "Cannot provision new user: email claim is missing. The UserInfo endpoint may be unreachable.");
 
-        if (emailClaim == null) throw new InvalidOperationException("The email claim is missing.");
-
-        user.Email = emailClaim.Value;
+            user = new User
+            {
+                SubjectId = subjectId,
+                FirstName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value ?? "",
+                LastName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value ?? "",
+                Email = email,
+            };
+            user.Name = $"{user.FirstName[0]}. {user.LastName}";
+        }
+        else
+        {
+            user.FirstName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value ?? user.FirstName;
+            user.LastName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value ?? user.LastName;
+            user.Name = $"{user.FirstName[0]}. {user.LastName}";
+            user.Email = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value ?? user.Email;
+        }
 
         dbContext.Update(user);
 
