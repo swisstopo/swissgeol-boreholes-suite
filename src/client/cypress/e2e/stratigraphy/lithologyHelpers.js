@@ -4,6 +4,7 @@ import {
   evaluateMultiSelect,
   evaluateSelect,
   evaluateTextarea,
+  formatWithThousandsSeparator,
   isDisabled,
   setInput,
   setSelect,
@@ -193,8 +194,8 @@ export const evaluateUnconsolidatedLithologyForm = ({
   notes,
   ...rest
 }) => {
-  if (fromDepth !== undefined) evaluateInput("fromDepth", fromDepth, null, true);
-  if (toDepth !== undefined) evaluateInput("toDepth", toDepth, null, true);
+  if (fromDepth !== undefined) evaluateInput("fromDepth", formatWithThousandsSeparator(fromDepth));
+  if (toDepth !== undefined) evaluateInput("toDepth", formatWithThousandsSeparator(toDepth));
 
   if (hasBedding !== undefined) {
     checkHasBedding(hasBedding, hasBedding ? share : undefined);
@@ -341,8 +342,8 @@ export const evaluateConsolidatedLithologyForm = ({
   notes,
   ...rest
 }) => {
-  if (fromDepth !== undefined) evaluateInput("fromDepth", fromDepth, null, true);
-  if (toDepth !== undefined) evaluateInput("toDepth", toDepth, null, true);
+  if (fromDepth !== undefined) evaluateInput("fromDepth", formatWithThousandsSeparator(fromDepth));
+  if (toDepth !== undefined) evaluateInput("toDepth", formatWithThousandsSeparator(toDepth));
 
   if (hasBedding !== undefined) {
     checkHasBedding(hasBedding, hasBedding ? share : undefined);
@@ -409,8 +410,8 @@ export const fillLithologicalDescriptionForm = ({
  * @param {string} [values.description] - Expected description text.
  */
 export const evaluateLithologicalDescriptionForm = ({ fromDepth, toDepth, description }) => {
-  if (fromDepth !== undefined) evaluateSelect("fromDepth", fromDepth, null, true, true);
-  if (toDepth !== undefined) evaluateSelect("toDepth", toDepth, null, true, true);
+  if (fromDepth !== undefined) evaluateSelect("fromDepth", formatWithThousandsSeparator(fromDepth));
+  if (toDepth !== undefined) evaluateSelect("toDepth", formatWithThousandsSeparator(toDepth));
   if (description !== undefined) evaluateTextarea("description", description);
 };
 
@@ -447,8 +448,8 @@ export const fillFaciesDescriptionForm = ({
  * @param {string} [values.description] - Expected description text.
  */
 export const evaluateFaciesDescriptionForm = ({ fromDepth, toDepth, faciesId, description }) => {
-  if (fromDepth !== undefined) evaluateSelect("fromDepth", fromDepth, null, true, true);
-  if (toDepth !== undefined) evaluateSelect("toDepth", toDepth, null, true, true);
+  if (fromDepth !== undefined) evaluateSelect("fromDepth", formatWithThousandsSeparator(fromDepth));
+  if (toDepth !== undefined) evaluateSelect("toDepth", formatWithThousandsSeparator(toDepth));
   if (faciesId !== undefined) evaluateSelect("faciesId", faciesId);
   if (description !== undefined) evaluateTextarea("description", description);
 };

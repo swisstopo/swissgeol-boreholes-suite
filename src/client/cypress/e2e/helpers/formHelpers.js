@@ -79,12 +79,8 @@ export const formatWithThousandsSeparator = value =>
  * @param {string} fieldName The name of the input field.
  * @param {number} expectedValue The expected value.
  * @param {string} parent (optional) The parent of the form element.
- * @param {boolean} checkThousandSeparator (optional) Defines whether the value should be displayed with the thousand separator.
  */
-export const evaluateInput = (fieldName, expectedValue, parent, checkThousandSeparator) => {
-  if (checkThousandSeparator) {
-    expectedValue = formatWithThousandsSeparator(expectedValue);
-  }
+export const evaluateInput = (fieldName, expectedValue, parent) => {
   const selector = `${createBaseSelector(parent)}[data-cy="${fieldName}-formInput"] input`;
   cy.get(selector).should("have.value", expectedValue);
 };
@@ -185,12 +181,8 @@ export const evaluateYesNoSelect = (fieldName, expectedValue, parent) => {
  * @param {string} expectedText The text that should be displayed in the select.
  * @param {string} parent (optional) The parent of the form element.
  * @param {boolean} editable (optional) Defines whether the select is being evaluated in the editable or uneditable state.
- * @param {boolean} checkThousandSeparator (optional) Defines whether the value should be displayed with the thousand separator.
  */
-export const evaluateSelect = (fieldName, expectedText, parent = null, editable = true, checkThousandSeparator) => {
-  if (checkThousandSeparator) {
-    expectedText = formatWithThousandsSeparator(expectedText);
-  }
+export const evaluateSelect = (fieldName, expectedText, parent = null, editable = true) => {
   if (editable) {
     const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"] input`;
     cy.get(selector).should("have.value", expectedText, `Expected ${fieldName} to have value ${expectedText}`);
