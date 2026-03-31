@@ -77,10 +77,13 @@ export const formatWithThousandsSeparator = value =>
 /**
  * Evaluates the state of an input form element
  * @param {string} fieldName The name of the input field.
- * @param {number} expectedValue The expected value.
+ * @param {string | number} expectedValue The expected value.
  * @param {string} parent (optional) The parent of the form element.
  */
 export const evaluateInput = (fieldName, expectedValue, parent) => {
+  if (typeof expectedValue === "number" && expectedValue > 999) {
+    expectedValue = formatWithThousandsSeparator(expectedValue);
+  }
   const selector = `${createBaseSelector(parent)}[data-cy="${fieldName}-formInput"] input`;
   cy.get(selector).should("have.value", expectedValue);
 };
