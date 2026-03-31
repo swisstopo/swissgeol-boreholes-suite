@@ -1,4 +1,5 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
+import { WorkflowStatus } from "@swissgeol/ui-core";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FeatureCollection, Geometry } from "geojson";
 import { Codelist } from "../components/codelist.ts";
@@ -279,6 +280,7 @@ export interface FilterRequest {
   hasProfiles?: boolean | null;
   hasPhotos?: boolean | null;
   hasDocuments?: boolean | null;
+  workflowStatus?: WorkflowStatus | null;
   pageNumber?: number;
   pageSize?: number;
   orderBy?: string | null;
