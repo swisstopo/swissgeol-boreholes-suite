@@ -718,6 +718,175 @@ public class FilterServiceTest
     }
 
     [TestMethod]
+    public async Task FilterBoreholesWithRestrictionUntilFromOnlyReturnsMatchingBoreholes()
+    {
+        // Test filtering with only RestrictionUntilFrom (no upper bound)
+        var testDate = new DateOnly(2025, 1, 1);
+
+        // Add test boreholes with specific dates
+        var testBoreholes = new List<Borehole>
+        {
+            new Borehole
+            {
+                OriginalName = "Test Borehole Before Date",
+                WorkgroupId = 1,
+                RestrictionUntil = new DateOnly(2024, 12, 31),
+                Workflow = new Workflow { ReviewedTabs = new(), PublishedTabs = new() },
+            },
+            new Borehole
+            {
+                OriginalName = "Test Borehole On Date",
+                WorkgroupId = 1,
+                RestrictionUntil = testDate,
+                Workflow = new Workflow { ReviewedTabs = new(), PublishedTabs = new() },
+            },
+            new Borehole
+            {
+                OriginalName = "Test Borehole After Date",
+                WorkgroupId = 1,
+                RestrictionUntil = new DateOnly(2025, 6, 1),
+                Workflow = new Workflow { ReviewedTabs = new(), PublishedTabs = new() },
+            },
+        };
+
+        await context.Boreholes.AddRangeAsync(testBoreholes);
+        await context.SaveChangesAsync();
+
+        var filterRequest = new FilterRequest
+        {
+            RestrictionUntilFrom = testDate,
+            PageNumber = 1,
+            PageSize = 100,
+        };
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
+
+        Assert.IsNotNull(result);
+        Assert.AreEqual(2, result.TotalCount);
+
+        // Verify that all returned boreholes have restriction date on or after testDate
+        foreach (var borehole in result.Boreholes)
+        {
+            if (borehole.RestrictionUntil.HasValue)
+            {
+                Assert.IsTrue(borehole.RestrictionUntil.Value >= testDate, $"Borehole {borehole.Id} has RestrictionUntil {borehole.RestrictionUntil.Value} which is before {testDate}");
+            }
+        }
+
+        // Verify our test boreholes
+        var returnedIds = result.Boreholes.Select(b => b.Id).ToList();
+        Assert.IsFalse(returnedIds.Contains(testBoreholes[0].Id), "Borehole before date should not be included");
+        Assert.IsTrue(returnedIds.Contains(testBoreholes[1].Id), "Borehole on date should be included");
+        Assert.IsTrue(returnedIds.Contains(testBoreholes[2].Id), "Borehole after date should be included");
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesWithRestrictionUntilToOnlyReturnsMatchingBoreholes()
+    {
+        // Test filtering with only RestrictionUntilTo (no lower bound)
+        var testDate = new DateOnly(2025, 3, 1);
+
+        // Add test boreholes with specific dates
+        var testBoreholes = new List<Borehole>
+        {
+            new Borehole
+            {
+                OriginalName = "Test Borehole Before Limit",
+                WorkgroupId = 1,
+                RestrictionUntil = new DateOnly(2025, 1, 1),
+                Workflow = new Workflow { ReviewedTabs = new(), PublishedTabs = new() },
+            },
+            new Borehole
+            {
+                OriginalName = "Test Borehole On Limit",
+                WorkgroupId = 1,
+                RestrictionUntil = testDate,
+                Workflow = new Workflow { ReviewedTabs = new(), PublishedTabs = new() },
+            },
+            new Borehole
+            {
+                OriginalName = "Test Borehole After Limit",
+                WorkgroupId = 1,
+                RestrictionUntil = new DateOnly(2025, 12, 31),
+                Workflow = new Workflow { ReviewedTabs = new(), PublishedTabs = new() },
+            },
+        };
+
+        await context.Boreholes.AddRangeAsync(testBoreholes);
+        await context.SaveChangesAsync();
+
+        var filterRequest = new FilterRequest
+        {
+            RestrictionUntilTo = testDate,
+            PageNumber = 1,
+            PageSize = 100,
+        };
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
+
+        Assert.IsNotNull(result);
+        Assert.IsTrue(result.TotalCount >= 2);
+
+        // Verify that all returned boreholes have restriction date on or before testDate
+        foreach (var borehole in result.Boreholes)
+        {
+            if (borehole.RestrictionUntil.HasValue)
+            {
+                Assert.IsTrue(borehole.RestrictionUntil.Value <= testDate, $"Borehole {borehole.Id} has RestrictionUntil {borehole.RestrictionUntil.Value} which is after {testDate}");
+            }
+        }
+
+        // Verify our test boreholes
+        var returnedIds = result.FilteredBoreholeIds;
+        Assert.IsTrue(returnedIds.Contains(testBoreholes[0].Id), "Borehole before limit should be included");
+        Assert.IsTrue(returnedIds.Contains(testBoreholes[1].Id), "Borehole on limit should be included");
+        Assert.IsFalse(returnedIds.Contains(testBoreholes[2].Id), "Borehole after limit should not be included");
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesWithExactRestrictionUntilDateReturnsMatchingBoreholes()
+    {
+        // Test filtering with exact date match (both from and to are the same)
+        var exactDate = new DateOnly(2025, 5, 15);
+
+        // Add test borehole with exact date
+        var testBorehole = new Borehole
+        {
+            OriginalName = "Test Borehole Exact Date",
+            WorkgroupId = 1,
+            RestrictionUntil = exactDate,
+            Workflow = new Workflow { ReviewedTabs = new(), PublishedTabs = new() },
+        };
+
+        await context.Boreholes.AddAsync(testBorehole);
+        await context.SaveChangesAsync();
+
+        var filterRequest = new FilterRequest
+        {
+            RestrictionUntilFrom = exactDate,
+            RestrictionUntilTo = exactDate,
+            PageNumber = 1,
+            PageSize = 100,
+        };
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
+
+        Assert.IsNotNull(result);
+        Assert.IsTrue(result.TotalCount > 0);
+
+        // Verify that all returned boreholes have exactly this restriction date
+        foreach (var borehole in result.Boreholes)
+        {
+            if (borehole.RestrictionUntil.HasValue)
+            {
+                Assert.AreEqual(exactDate, borehole.RestrictionUntil.Value, $"Borehole {borehole.Id} should have RestrictionUntil exactly {exactDate}");
+            }
+        }
+
+        Assert.IsTrue(result.Boreholes.Any(b => b.Id == testBorehole.Id), "Test borehole with exact date should be in results");
+    }
+
+    [TestMethod]
     public async Task FilterBoreholesWithTopBedrockFreshMdRangeReturnsMatchingBoreholes()
     {
         var filterRequest = new FilterRequest
