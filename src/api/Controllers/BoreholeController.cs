@@ -140,7 +140,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Unexpected error filtering boreholes");
+            Logger.LogWarning(ex, "Unexpected error filtering boreholes");
             return Problem("An unexpected error occurred while filtering boreholes.");
         }
     }
