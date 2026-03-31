@@ -127,7 +127,7 @@ export const exportCSVItem = () => {
  * Clicks on the ZIP-export button.
  */
 export const exportZipItem = () => {
-  exportFileType("exportJsonProfile");
+  exportFileType("exportjsonprofile");
 };
 
 /**
