@@ -209,6 +209,7 @@
   "export": "Exporter",
   "export100Boreholes": "Exporter 100 forages",
   "exportData": "Exporter données",
+  "exportJsonProfile": "JSON + profil",
   "exportTable": "Exporter tableau",
   "extension": "Extension",
   "extractCoordinates": "Extraire les coordonnées",

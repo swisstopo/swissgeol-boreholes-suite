@@ -49,14 +49,14 @@ describe("Viewer tests", () => {
     cy.dataCy("export-button").click();
     cy.dataCy("csv-button").should("exist");
     cy.dataCy("json-button").should("exist");
-    cy.dataCy("json + pdf-button").should("exist");
+    cy.dataCy("exportJsonProfile-button").should("exist");
     cy.dataCy("cancel-button").click();
     clickOnRowWithText("Aaron Rempel");
     cy.dataCy("edit-button").should("not.exist");
     cy.dataCy("export-button").click();
     cy.dataCy("csv-button").should("exist");
     cy.dataCy("json-button").should("exist");
-    cy.dataCy("json + pdf-button").should("exist");
+    cy.dataCy("exportJsonProfile-button").should("exist");
   });
 
   it("Assures viewer can click on all borehole menu items and see something", () => {
