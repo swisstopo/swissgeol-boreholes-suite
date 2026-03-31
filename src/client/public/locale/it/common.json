@@ -210,6 +210,7 @@
   "export": "Esportare",
   "export100Boreholes": "Esportare 100 perforazioni",
   "exportData": "Esportare dati",
+  "exportJsonProfile": "JSON + profilo",
   "exportTable": "Esportare tabella",
   "extractCoordinates": "Estrarre le coordinate",
   "extractStratigraphyFromProfile": "Estrarre la stratigrafia dal profilo",
