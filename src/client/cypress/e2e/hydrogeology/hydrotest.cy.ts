@@ -43,7 +43,6 @@ describe("Tests for the hydrotest editor.", () => {
         });
       });
       goToDetailRouteAndAcceptTerms(`/${id}`);
-      cy.wait(["@borehole"]);
     });
     startBoreholeEditing();
 
@@ -134,9 +133,8 @@ describe("Tests for the hydrotest editor.", () => {
         fromDepthM: 0,
         toDepthM: 12,
       });
-      goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/hydrotest`);
-      cy.wait(["@borehole"]);
-    });
+        goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/hydrotest`);
+      });
     startBoreholeEditing();
 
     cy.get('[data-cy="hydrotest-card.0"] [data-cy="todepth-formDisplay"]').contains("10");
@@ -167,7 +165,6 @@ describe("Tests for the hydrotest editor.", () => {
     createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/hydrotest`);
-      cy.wait(["@borehole"]);
     });
     startBoreholeEditing();
     cy.wait("@hydrotest_GET");

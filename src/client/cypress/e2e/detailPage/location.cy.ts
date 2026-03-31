@@ -61,7 +61,7 @@ describe("Tests for 'Location' edit page.", () => {
 
     cy.get('[data-cy="delete-button"]').click();
     cy.get('.MuiButton-containedPrimary[data-cy="delete-button"]').click();
-    cy.wait(["@edit_deletelist", "@edit_list"]);
+    cy.wait(["@edit_deletelist"]);
     cy.get('[data-cy="borehole-table"]').contains("AAA_SCATORPS").should("not.exist");
   });
 

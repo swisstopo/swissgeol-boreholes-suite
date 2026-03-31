@@ -14,7 +14,8 @@ import {
 } from "../helpers/testHelpers";
 
 describe("Tests for filtering data by identifier.", () => {
-  it("can filter by identifier", () => {
+  // Todo: reactivate once the identifier filter is implemented. For now, the filter is hidden and not functional.
+  it.skip("can filter by identifier", () => {
     goToRouteAndAcceptTerms(`/`);
     newEditableBorehole().as("borehole_id");
 
@@ -50,7 +51,7 @@ describe("Tests for filtering data by identifier.", () => {
     verifyPaginationText("1–100 of 3001");
   });
 
-  it("can bulk edit boreholes while filter by identifier is set", () => {
+  it.skip("can bulk edit boreholes while filter by identifier is set", () => {
     goToRouteAndAcceptTerms(`/`);
     newEditableBorehole().as("borehole_id");
     addItem("addIdentifier");

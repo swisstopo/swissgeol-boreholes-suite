@@ -63,11 +63,13 @@ describe("Test the borehole bulk edit feature.", () => {
     createBoreholes();
     goToRouteAndAcceptTerms(`/`);
     showTableAndWaitForData();
-    cy.wait("@borehole");
     startBulkEditing();
 
     // select all bulk edit fields and insert values
-    cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
+    cy.get('[data-cy="bulk-edit-accordion"] .MuiAccordionSummary-expandIconWrapper').click({
+      multiple: true,
+      force: true,
+    });
 
     cy.get('[data-cy$="-formInput"] input[type=text]').should("have.length", 1);
     cy.get('[data-cy$="-formInput"] input[type=text]').each(($input, index) => {
@@ -96,17 +98,20 @@ describe("Test the borehole bulk edit feature.", () => {
     });
 
     cy.get('[role="combobox"]').each(el => {
+      cy.wrap(el).scrollIntoView();
       cy.wrap(el).click();
       cy.get('li[role="option"]').last().click();
     });
 
     saveForm();
     cy.wait("@edit_multipatch").its("response.body.success").should("eq", true);
-    cy.wait("@edit_list");
 
     // check if form was reset after saving
     startBulkEditing();
-    cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
+    cy.get('[data-cy="bulk-edit-accordion"] .MuiAccordionSummary-expandIconWrapper').click({
+      multiple: true,
+      force: true,
+    });
 
     cy.get('[data-cy$="-formInput"] input[type=text]').should("have.length", 1);
     cy.get('[data-cy$="-formInput"] input[type=text]').each($input => {
@@ -138,7 +143,6 @@ describe("Test the borehole bulk edit feature.", () => {
     giveAdminUser2workgroups();
     goToRouteAndAcceptTerms(`/`);
     showTableAndWaitForData();
-    cy.wait("@borehole");
     startBulkEditing();
 
     cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });

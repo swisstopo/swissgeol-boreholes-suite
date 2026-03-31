@@ -136,9 +136,14 @@ describe("Search filter tests", () => {
     cy.dataCy("show-filter-button").click();
     cy.contains("Location").click();
     setInput("restrictionUntilFrom", "2021-01-01");
+    cy.wait("@borehole_filter");
+    cy.location().its("search").should("contain", "2021-01-01");
     cy.dataCy("filter-chip-restrictionUntilFrom").should("exist");
     cy.dataCy("boreholes-number-preview").should("exist");
+
     setInput("restrictionUntilTo", "2022-01-31");
+    cy.wait("@borehole_filter");
+    cy.location().its("search").should("contain", "2022-01-31");
     cy.dataCy("filter-chip-restrictionUntilTo").should("exist");
     cy.dataCy("boreholes-number-preview").should("exist");
     cy.dataCy("boreholes-number-preview").should("have.text", "126");
@@ -200,14 +205,15 @@ describe("Search filter tests", () => {
     cy.dataCy("show-filter-button").click();
     cy.contains("Borehole").click();
     setInput("totalDepthMin", "800");
+    cy.focused().blur();
     cy.dataCy("filter-chip-totalDepthMin").should("exist");
     cy.dataCy("boreholes-number-preview").should("have.text", "1'800");
     cy.dataCy("filter-chip-totalDepthMin").within(() => {
       cy.get("svg").click();
     });
     cy.dataCy("filter-chip-totalDepthMin").should("not.exist");
-
     setInput("totalDepthMax", "1000");
+    cy.focused().blur();
     cy.dataCy("filter-chip-totalDepthMax").should("exist");
     cy.dataCy("boreholes-number-preview").should("have.text", "1'499");
     cy.dataCy("filter-chip-totalDepthMax").within(() => {
@@ -221,10 +227,11 @@ describe("Search filter tests", () => {
     cy.dataCy("show-filter-button").click();
     cy.contains("Borehole").click();
     setInput("topBedrockFreshMdMin", "700");
+    cy.focused().blur();
     cy.dataCy("filter-chip-topBedrockFreshMdMin").should("exist");
     cy.dataCy("boreholes-number-preview").should("have.text", "851");
-    cy.wait("@borehole_filter");
     setInput("topBedrockFreshMdMax", "710");
+    cy.focused().blur();
     cy.dataCy("filter-chip-topBedrockFreshMdMax").should("exist");
     cy.dataCy("boreholes-number-preview").should("have.text", "30");
     cy.dataCy("filter-chip-topBedrockFreshMdMax").within(() => {

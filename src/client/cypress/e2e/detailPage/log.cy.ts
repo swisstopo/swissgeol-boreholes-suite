@@ -150,7 +150,6 @@ describe("Test for the borehole log.", () => {
     createBoreholeWithLogRuns(106, "borehole_id_106");
     cy.get("@borehole_id_106").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/log`);
-      cy.wait(["@borehole"]);
     });
     assertRunCountDisplayed("106 runs");
     verifyPaginationText("1–100 of 106");
@@ -167,7 +166,6 @@ describe("Test for the borehole log.", () => {
     createBorehole({ originalName: "FANCYPHANTOMFERRY" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/log`);
-      cy.wait(["@borehole"]);
     });
     startBoreholeEditing();
 
@@ -293,7 +291,6 @@ describe("Test for the borehole log.", () => {
     createBorehole({ originalName: "FANCYPHANTOMFERRY" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/log`);
-      cy.wait(["@borehole"]);
     });
     startBoreholeEditing();
     addMinimalLogRun(100, 110, "R01");
@@ -363,7 +360,6 @@ describe("Test for the borehole log.", () => {
     createBorehole({ originalName: "BLOCKING TIME!" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/log`);
-      cy.wait(["@borehole"]);
     });
     startBoreholeEditing();
 
@@ -422,7 +418,6 @@ describe("Test for the borehole log.", () => {
     createBorehole({ originalName: "FANCYPHANTOMFERRY" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/log`);
-      cy.wait(["@borehole"]);
     });
     startBoreholeEditing();
     addMinimalLogRun(100, 110, "R01");

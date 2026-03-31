@@ -65,7 +65,6 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const dispatch = useDispatch();
 
   // MUI DataGrid uses 0-based page, FilterRequest uses 1-based pageNumber
-  //Todo check if its working correctly
   const paginationModel: GridPaginationModel = {
     page: tableParams.page,
     pageSize: tableParams.pageSize,

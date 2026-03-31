@@ -99,7 +99,7 @@ describe("Test for the borehole form.", () => {
     createBorehole({ originalName: "AAA_Ferret", name: "AAA_Ferret" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
-      cy.wait("@borehole_by_id");
+      cy.wait(["@borehole_by_id"]);
       evaluateInput("totalDepth", "");
       cy.dataCy("save-bar").should("not.exist");
       startBoreholeEditing();
@@ -282,7 +282,6 @@ describe("Test for the borehole form.", () => {
     cy.get("@borehole_id").then(id => {
       boreholeId = id;
       goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
-      cy.wait(["@borehole"]);
     });
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
@@ -444,6 +443,7 @@ describe("Test for the borehole form.", () => {
       startBoreholeEditing();
       ensureEditingEnabled();
       returnToOverview(); // navigating with swissgeol back button stops editing
+      cy.wait("@update-borehole");
       showTableAndWaitForData();
       clickOnRowWithText("AAA_HIPPOPOTHAMUS");
       ensureEditingDisabled();

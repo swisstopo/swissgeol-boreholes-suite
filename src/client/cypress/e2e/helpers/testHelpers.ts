@@ -29,6 +29,7 @@ export const interceptApiCalls = () => {
   cy.intercept("api/v1/borehole/codes").as("codes");
 
   // Api V2
+  cy.intercept("/api/v2/borehole/filter").as("borehole_filter");
   cy.intercept("/api/v2/stratigraphy?boreholeId=**").as("stratigraphy_by_borehole_GET");
   cy.intercept("/api/v2/stratigraphy*", req => {
     req.alias = `stratigraphy_${req.method}`;
@@ -404,7 +405,6 @@ export const stopBoreholeEditing = (discardChanges?: boolean) => {
 
 export const returnToOverview = () => {
   cy.dataCy("backButton").click();
-  cy.wait(["@edit_list", "@borehole"]);
 };
 
 export const checkElementColorByDataCy = (attribute: string, expectedColor: string) => {
@@ -414,16 +414,12 @@ export const checkElementColorByDataCy = (attribute: string, expectedColor: stri
 export const deleteBorehole = (id: number | string) => {
   cy.get("@id_token").then(token => {
     cy.request({
-      method: "POST",
-      url: "/api/v1/borehole/edit",
-      body: {
-        action: "DELETE",
-        id: id,
-      },
+      method: "DELETE",
+      url: `/api/v2/borehole?id=${id}`,
       auth: bearerAuth(token as string),
-    })
-      .its("body.success")
-      .should("eq", true);
+    }).then(response => {
+      expect(response.status).to.eq(200);
+    });
   });
 };
 
@@ -433,13 +429,11 @@ export const loginAndResetState = () => {
     // Reset boreholes
     cy.request({
       method: "POST",
-      url: "/api/v1/borehole/edit",
-      body: {
-        action: "IDS",
-      },
+      url: "/api/V2/borehole/filter",
+      body: {},
       auth: bearerAuth(token as string),
     }).then(response => {
-      response.body.data
+      response.body.filteredBoreholeIds
         .filter((id: number) => id > 1002999) // max id in seed data.
         .forEach((id: number) => {
           deleteBorehole(id);

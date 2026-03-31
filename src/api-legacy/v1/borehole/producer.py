@@ -108,6 +108,8 @@ class BoreholeProducerHandler(Producer):
                         ]['eboreholetable']['direction']
 
                 request.pop('lang', None)
+                request.pop('orderby', None)
+                request.pop('direction', None)
 
                 if exe is not None:
                     return (

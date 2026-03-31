@@ -4,7 +4,7 @@ import { WindowWithMaps } from "../helpers/window.ts";
 describe("Map tests", () => {
   it("map preserves zoom level and center", () => {
     loginAsEditor();
-    cy.wait("@borehole_geojson");
+    cy.wait("@borehole_filter");
     cy.get(".ol-viewport");
 
     // zoom in twice
