@@ -9,8 +9,6 @@ export const DataLoader = ({ children }) => {
   const isReady = useStore(state => state.dataLoaderState.isReady);
 
   useEffect(() => {
-
-    // Todo load without new api
     dispatch(loadSettings());
   });
 

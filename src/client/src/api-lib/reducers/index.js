@@ -84,65 +84,11 @@ export function user() {
   };
 }
 
-export function boreholeEditorList() {
-  const initialState = {
-    isFetching: false,
-    fetchTime: 0,
-    fetchCount: 0,
-    length: 0,
-    data: [],
-    direction: null,
-    orderby: null,
-    page: 1,
-    pages: 0,
-  };
-  return function boreholesEditor(state = initialState, action) {
-    const { path } = action;
-    if (path !== "/borehole/edit") {
-      return state;
-    }
-    switch (action.type) {
-      case "LIST": {
-        return {
-          ...initialState,
-          fetchTime: new Date().getTime(),
-          page: state.page,
-          pages: state.pages,
-          direction: state.direction,
-          orderby: state.orderby,
-          isFetching: true,
-        };
-      }
-      case "LIST_OK": {
-        let copy = {
-          ...state,
-          fetchCount: state.fetchCount + 1,
-          length: action.json.rows,
-          isFetching: false,
-          fetchTime: new Date().getTime() - state.fetchTime,
-          data: action.json.data,
-          filtered_borehole_ids: action.json.filtered_borehole_ids,
-          // eslint-disable-next-line no-prototype-builtins
-          pages: action.json.hasOwnProperty("pages") ? action.json.pages : null,
-          page: Object.prototype.hasOwnProperty.call(action.json, "page") ? action.json.page : null,
-          direction: Object.prototype.hasOwnProperty.call(action.json, "direction") ? action.json.direction : null,
-          orderby: Object.prototype.hasOwnProperty.call(action.json, "orderby") ? action.json.orderby : null,
-        };
-        return copy;
-      }
-      default: {
-        return state;
-      }
-    }
-  };
-}
-
 // Function that add dynamically reducers to the store
 // Inspired by: https://stackoverflow.com/a/33044701
 export function createReducer(pluginsReducers) {
   const combinedReducers = combineReducers({
     core_user: user(),
-    core_borehole_editor_list: boreholeEditorList(),
     ...pluginsReducers,
   });
   return combinedReducers;
