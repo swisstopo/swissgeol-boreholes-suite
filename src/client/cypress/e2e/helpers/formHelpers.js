@@ -139,15 +139,15 @@ export const evaluateDropdownOptionsLength = length => {
  * Sets the value for a select form element.
  * @param {string} fieldName The name of the select field.
  * @param {number} index The index of the option to select.
- * @param {number} expected The expected number of options in the dropdown.
+ * @param {number} optionsLength The expected number of options in the dropdown.
  * @param {string} parent (optional) The parent of the form element.
  */
-export const setSelect = (fieldName, index, expected, parent) => {
+export const setSelect = (fieldName, index, optionsLength, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"]`;
   scrollIntoView(selector);
   openDropdown(selector);
-  if (expected != null) {
-    evaluateDropdownOptionsLength(expected);
+  if (optionsLength != null) {
+    evaluateDropdownOptionsLength(optionsLength);
   }
   selectDropdownOption(index);
 };

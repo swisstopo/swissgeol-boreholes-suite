@@ -244,7 +244,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     // Add lithological description from gap and check that it has the correct depth range
     openLayer(LayerType.lithologicalDescription, 0, null, true);
     evaluateLithologicalDescriptionForm({ fromDepth: 0, toDepth: 1123 });
-    fillLithologicalDescriptionForm({ fromDepth: 0, fromDepthExpected: 3, toDepth: 0, toDepthExpected: 3 });
+    fillLithologicalDescriptionForm({ fromDepth: 0, fromDepthOptionsLength: 3, toDepth: 0, toDepthOptionsLength: 3 });
     evaluateLithologicalDescriptionForm({ fromDepth: 0, toDepth: 355 });
     closeLayerModal();
 
@@ -292,9 +292,9 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     evaluateLithologicalDescriptionForm({ fromDepth: 355, toDepth: 1123 });
     fillLithologicalDescriptionForm({
       fromDepth: 0,
-      fromDepthExpected: 2,
+      fromDepthOptionsLength: 2,
       toDepth: 1,
-      toDepthExpected: 2,
+      toDepthOptionsLength: 2,
       description: "lithological description 355 - 1123",
     });
     evaluateLithologicalDescriptionForm({
@@ -343,9 +343,9 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     evaluateFaciesDescriptionForm({ fromDepth: 0, toDepth: 1123 });
     fillFaciesDescriptionForm({
       fromDepth: 1,
-      fromDepthExpected: 3,
+      fromDepthOptionsLength: 3,
       toDepth: 2,
-      toDepthExpected: 3,
+      toDepthOptionsLength: 3,
       faciesId: 1,
       description: "facies description 355 - 1123",
     });
@@ -400,7 +400,13 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     // Add facies description from remaining gap and check that it has the correct depth range
     openLayer(LayerType.faciesDescription, 0, null, true);
     evaluateFaciesDescriptionForm({ fromDepth: 0, toDepth: 355 });
-    fillFaciesDescriptionForm({ fromDepth: 0, fromDepthExpected: 1, toDepth: 0, toDepthExpected: 1, faciesId: 2 });
+    fillFaciesDescriptionForm({
+      fromDepth: 0,
+      fromDepthOptionsLength: 1,
+      toDepth: 0,
+      toDepthOptionsLength: 1,
+      faciesId: 2,
+    });
     evaluateFaciesDescriptionForm({ fromDepth: 0, toDepth: 355, faciesId: "alluvial" });
     closeLayerModal();
 

@@ -385,18 +385,20 @@ export const evaluateConsolidatedLithologyForm = ({
  * Fills the lithological description form with the given values.
  * @param {object} values
  * @param {number} [values.fromDepth] - Index of the start depth option in the dropdown.
+ * @param {number} [values.fromDepthOptionsLength] - Expected number of options in the dropdown.
  * @param {number} [values.toDepth] - Index of the end depth option in the dropdown.
+ * @param {number} [values.toDepthOptionsLength] - Expected number of options in the dropdown.
  * @param {string} [values.description] - Description text.
  */
 export const fillLithologicalDescriptionForm = ({
   fromDepth,
-  fromDepthExpected,
+  fromDepthOptionsLength,
   toDepth,
-  toDepthExpected,
+  toDepthOptionsLength,
   description,
 }) => {
-  if (fromDepth !== undefined) setSelect("fromDepth", fromDepth, fromDepthExpected);
-  if (toDepth !== undefined) setSelect("toDepth", toDepth, toDepthExpected);
+  if (fromDepth !== undefined) setSelect("fromDepth", fromDepth, fromDepthOptionsLength);
+  if (toDepth !== undefined) setSelect("toDepth", toDepth, toDepthOptionsLength);
   if (description !== undefined) setInput("description", description);
 };
 
@@ -417,20 +419,22 @@ export const evaluateLithologicalDescriptionForm = ({ fromDepth, toDepth, descri
  * Fills the facies description form with the given values.
  * @param {object} values
  * @param {number} [values.fromDepth] - Index of the start depth option in the dropdown.
+ * @param {number} [values.fromDepthOptionsLength] - Expected number of options in the dropdown.
  * @param {number} [values.toDepth] - Index of the end depth option in the dropdown.
+ * @param {number} [values.toDepthOptionsLength] - Expected number of options in the dropdown.
  * @param {number} [values.faciesId] - Index of the facies option in the dropdown.
  * @param {string} [values.description] - Description text.
  */
 export const fillFaciesDescriptionForm = ({
   fromDepth,
-  fromDepthExpected,
+  fromDepthOptionsLength,
   toDepth,
-  toDepthExpected,
+  toDepthOptionsLength,
   faciesId,
   description,
 }) => {
-  if (fromDepth !== undefined) setSelect("fromDepth", fromDepth, fromDepthExpected);
-  if (toDepth !== undefined) setSelect("toDepth", toDepth, toDepthExpected);
+  if (fromDepth !== undefined) setSelect("fromDepth", fromDepth, fromDepthOptionsLength);
+  if (toDepth !== undefined) setSelect("toDepth", toDepth, toDepthOptionsLength);
   if (faciesId !== undefined) setSelect("faciesId", faciesId);
   if (description !== undefined) setInput("description", description);
 };
