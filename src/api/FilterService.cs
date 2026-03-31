@@ -218,80 +218,69 @@ public class FilterService : IFilterService
         }
 
         // Boolean filters
-        if (filterRequest.NationalInterest.HasValue)
+        if (filterRequest.NationalInterest != null)
         {
-            query = query.Where(b => b.NationalInterest == filterRequest.NationalInterest.Value);
-        }
-
-        if (filterRequest.TopBedrockIntersected.HasValue)
-        {
-            query = query.Where(b => b.TopBedrockIntersected == filterRequest.TopBedrockIntersected.Value);
-        }
-
-        if (filterRequest.HasGroundwater.HasValue)
-        {
-            query = query.Where(b => b.HasGroundwater == filterRequest.HasGroundwater.Value);
-        }
-
-        if (filterRequest.HasGeometry.HasValue)
-        {
-            if (filterRequest.HasGeometry.Value)
-            {
-                query = query.Where(b => b.BoreholeGeometry != null && b.BoreholeGeometry.Any());
-            }
+            if (filterRequest.NationalInterest == TriStateBooleanFilter.Null)
+                query = query.Where(b => b.NationalInterest == null);
             else
-            {
+                query = query.Where(b => b.NationalInterest == (filterRequest.NationalInterest == TriStateBooleanFilter.True));
+        }
+
+        if (filterRequest.TopBedrockIntersected != null)
+        {
+            if (filterRequest.TopBedrockIntersected == TriStateBooleanFilter.Null)
+                query = query.Where(b => b.TopBedrockIntersected == null);
+            else
+                query = query.Where(b => b.TopBedrockIntersected == (filterRequest.TopBedrockIntersected == TriStateBooleanFilter.True));
+        }
+
+        if (filterRequest.HasGroundwater != null)
+        {
+            if (filterRequest.HasGroundwater == TriStateBooleanFilter.Null)
+                query = query.Where(b => b.HasGroundwater == null);
+            else
+                query = query.Where(b => b.HasGroundwater == (filterRequest.HasGroundwater == TriStateBooleanFilter.True));
+        }
+
+        if (filterRequest.HasGeometry != null)
+        {
+            if (filterRequest.HasGeometry == BooleanFilter.True)
+                query = query.Where(b => b.BoreholeGeometry != null && b.BoreholeGeometry.Any());
+            else
                 query = query.Where(b => b.BoreholeGeometry == null || !b.BoreholeGeometry.Any());
-            }
         }
 
         // Availability filters (requires joining with related tables)
-        if (filterRequest.HasLogs.HasValue)
+        if (filterRequest.HasLogs != null)
         {
-            if (filterRequest.HasLogs.Value)
-            {
+            if (filterRequest.HasLogs == BooleanFilter.True)
                 query = query.Where(b => context.LogRuns.Any(lr => lr.BoreholeId == b.Id));
-            }
             else
-            {
                 query = query.Where(b => !context.LogRuns.Any(lr => lr.BoreholeId == b.Id));
-            }
         }
 
-        if (filterRequest.HasProfiles.HasValue)
+        if (filterRequest.HasProfiles != null)
         {
-            if (filterRequest.HasProfiles.Value)
-            {
+            if (filterRequest.HasProfiles == BooleanFilter.True)
                 query = query.Where(b => context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id));
-            }
             else
-            {
                 query = query.Where(b => !context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id));
-            }
         }
 
-        if (filterRequest.HasPhotos.HasValue)
+        if (filterRequest.HasPhotos != null)
         {
-            if (filterRequest.HasPhotos.Value)
-            {
+            if (filterRequest.HasPhotos == BooleanFilter.True)
                 query = query.Where(b => context.Photos.Any(p => p.BoreholeId == b.Id));
-            }
             else
-            {
                 query = query.Where(b => !context.Photos.Any(p => p.BoreholeId == b.Id));
-            }
         }
 
-        if (filterRequest.HasDocuments.HasValue)
+        if (filterRequest.HasDocuments != null)
         {
-            if (filterRequest.HasDocuments.Value)
-            {
+            if (filterRequest.HasDocuments == BooleanFilter.True)
                 query = query.Where(b => context.Documents.Any(d => d.BoreholeId == b.Id));
-            }
             else
-            {
                 query = query.Where(b => !context.Documents.Any(d => d.BoreholeId == b.Id));
-            }
         }
 
         return query;
@@ -329,14 +318,14 @@ public class FilterService : IFilterService
     {
         // Get all filtered boreholes' location data for GeoJSON
         var boreholes = await query.Select(b => new
-            {
-                b.Id,
-                b.Name,
-                b.TypeId,
-                b.RestrictionId,
-                b.LocationX,
-                b.LocationY,
-            })
+        {
+            b.Id,
+            b.Name,
+            b.TypeId,
+            b.RestrictionId,
+            b.LocationX,
+            b.LocationY,
+        })
             .ToListAsync()
             .ConfigureAwait(false);
 

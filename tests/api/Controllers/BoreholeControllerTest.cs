@@ -1,10 +1,8 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using NetTopologySuite.Geometries;
 using static BDMS.Helpers;
@@ -42,6 +40,9 @@ public class BoreholeControllerTest
             .ReturnsAsync(true);
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .ReturnsAsync(true);
+        boreholePermissionServiceMock
+            .Setup(x => x.CanChangeBoreholeStatusAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
         boreholePermissionServiceMock
             .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string?>(), noPermissionWorkgroupId, It.IsAny<Role>()))
@@ -281,6 +282,20 @@ public class BoreholeControllerTest
 
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ActionResultAssert.IsInternalServerError(response.Result, "You cannot create a new borehole with a defined Id.");
+    }
+
+    [TestMethod]
+    public async Task Delete()
+    {
+        var borehole = new Borehole
+        {
+            Id = 123,
+            WorkgroupId = DefaultWorkgroupId,
+        };
+
+        await context.AddAsync(borehole);
+
+        var response = await controller.DeleteAsync(borehole.Id);
     }
 
     [TestMethod]
@@ -921,7 +936,7 @@ public class BoreholeControllerTest
             StatusId = new List<int> { 1 },
             TotalDepthMin = 100,
             TotalDepthMax = 500,
-            HasLogs = true,
+            HasLogs = BooleanFilter.True,
             PageNumber = 2,
             PageSize = 25,
             OrderBy = BoreholeOrderBy.TotalDepth,
@@ -958,6 +973,118 @@ public class BoreholeControllerTest
         Assert.AreEqual(filterRequest.PageSize, capturedRequest.PageSize);
         Assert.AreEqual(filterRequest.OrderBy, capturedRequest.OrderBy);
         Assert.AreEqual(filterRequest.Direction, capturedRequest.Direction);
+    }
+
+    [TestMethod]
+    public async Task DeleteBoreholeInDraftStatusAsAdmin()
+    {
+        var borehole = GetBoreholeToAdd();
+        borehole.Workflow = new Workflow { ReviewedTabs = new TabStatus(), PublishedTabs = new TabStatus() };
+        context.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        Assert.AreEqual(WorkflowStatus.Draft, borehole.Workflow.Status);
+
+        var result = await controller.DeleteAsync(borehole.Id).ConfigureAwait(false);
+        ActionResultAssert.IsOk(result);
+        Assert.IsFalse(await context.Boreholes.AnyAsync(b => b.Id == borehole.Id));
+    }
+
+    [TestMethod]
+    public async Task DeleteBoreholeInReviewedStatusAsAdmin()
+    {
+        var borehole = GetBoreholeToAdd();
+        borehole.Workflow = new Workflow { ReviewedTabs = new TabStatus(), PublishedTabs = new TabStatus(), Status = WorkflowStatus.Reviewed };
+        context.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        Assert.AreEqual(WorkflowStatus.Reviewed, borehole.Workflow.Status);
+
+        // Admin controller context is set by default
+        var result = await controller.DeleteAsync(borehole.Id).ConfigureAwait(false);
+        ActionResultAssert.IsOk(result);
+        Assert.IsFalse(await context.Boreholes.AnyAsync(b => b.Id == borehole.Id));
+    }
+
+    [TestMethod]
+    public async Task DeleteBoreholeInPublishedStatusAsAdmin()
+    {
+        var borehole = GetBoreholeToAdd();
+        borehole.Workflow = new Workflow { ReviewedTabs = new TabStatus(), PublishedTabs = new TabStatus(), Status = WorkflowStatus.Published };
+        context.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        Assert.AreEqual(WorkflowStatus.Published, borehole.Workflow.Status);
+
+        // Admin controller context is set by default
+        var result = await controller.DeleteAsync(borehole.Id).ConfigureAwait(false);
+        ActionResultAssert.IsOk(result);
+        Assert.IsFalse(await context.Boreholes.AnyAsync(b => b.Id == borehole.Id));
+    }
+
+    [TestMethod]
+    public async Task DeleteBoreholeInReviewedStatusAsNonAdminReturnsProblem()
+    {
+        var borehole = GetBoreholeToAdd();
+        borehole.Workflow = new Workflow { ReviewedTabs = new TabStatus(), PublishedTabs = new TabStatus(), Status = WorkflowStatus.Reviewed };
+        context.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        // Switch to non-admin user
+        controller.HttpContext.SetClaimsPrincipal(EditorSubjectId, PolicyNames.Viewer);
+
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync(EditorSubjectId, borehole.Id))
+            .ReturnsAsync(false);
+
+        var result = await controller.DeleteAsync(borehole.Id).ConfigureAwait(false);
+        ActionResultAssert.IsInternalServerError(result, "The borehole is locked by another user or you are missing permissions.");
+        Assert.IsTrue(await context.Boreholes.AnyAsync(b => b.Id == borehole.Id));
+    }
+
+    [TestMethod]
+    public async Task DeleteBoreholeInPublishedStatusAsNonAdminReturnsProblem()
+    {
+        var borehole = GetBoreholeToAdd();
+        borehole.Workflow = new Workflow { ReviewedTabs = new TabStatus(), PublishedTabs = new TabStatus(), Status = WorkflowStatus.Published };
+        context.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        // Switch to non-admin user
+        controller.HttpContext.SetClaimsPrincipal(EditorSubjectId, PolicyNames.Viewer);
+
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync(EditorSubjectId, borehole.Id))
+            .ReturnsAsync(false);
+
+        var result = await controller.DeleteAsync(borehole.Id).ConfigureAwait(false);
+        ActionResultAssert.IsInternalServerError(result, "The borehole is locked by another user or you are missing permissions.");
+        Assert.IsTrue(await context.Boreholes.AnyAsync(b => b.Id == borehole.Id));
+    }
+
+    [TestMethod]
+    public async Task DeleteBoreholeInDraftStatusAsNonAdmin()
+    {
+        var borehole = GetBoreholeToAdd();
+        borehole.Workflow = new Workflow { ReviewedTabs = new TabStatus(), PublishedTabs = new TabStatus() };
+        context.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        Assert.AreEqual(WorkflowStatus.Draft, borehole.Workflow.Status);
+
+        // Switch to non-admin user — CanEditBoreholeAsync returns true by default from mock
+        controller.HttpContext.SetClaimsPrincipal(EditorSubjectId, PolicyNames.Viewer);
+
+        var result = await controller.DeleteAsync(borehole.Id).ConfigureAwait(false);
+        ActionResultAssert.IsOk(result);
+        Assert.IsFalse(await context.Boreholes.AnyAsync(b => b.Id == borehole.Id));
+    }
+
+    [TestMethod]
+    public async Task DeleteNonExistentBoreholeReturnsNotFound()
+    {
+        var result = await controller.DeleteAsync(int.MaxValue).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(result);
     }
 
     [TestMethod]
