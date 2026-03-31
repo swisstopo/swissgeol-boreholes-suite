@@ -232,45 +232,6 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     }
 
     /// <inheritdoc />
-    /// <remarks>
-    /// Admins can delete boreholes regardless of their workflow status (including Reviewed/Published).
-    /// Non-admin users still go through the normal <see cref="IBoreholePermissionService.CanEditBoreholeAsync"/> check.
-    /// </remarks>
-    [Authorize(Policy = PolicyNames.Viewer)]
-    public override async Task<IActionResult> DeleteAsync(int id)
-    {
-        var subjectId = HttpContext.GetUserSubjectId();
-        var borehole = await Context.Boreholes
-            .Include(b => b.Workflow)
-            .SingleOrDefaultAsync(b => b.Id == id)
-            .ConfigureAwait(false);
-
-        if (borehole == null) return NotFound();
-
-        var user = await Context.Users
-            .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
-            .ConfigureAwait(false);
-
-        if (user == null) return Unauthorized();
-
-        // Admins can delete regardless of workflow status (e.g. Reviewed/Published).
-        // Non-admins go through the normal edit permission check.
-        var canDelete = user.IsAdmin
-            ? await BoreholePermissionService.CanChangeBoreholeStatusAsync(subjectId, id).ConfigureAwait(false)
-            : await BoreholePermissionService.CanEditBoreholeAsync(subjectId, id).ConfigureAwait(false);
-
-        if (!canDelete)
-        {
-            return Problem("The borehole is locked by another user or you are missing permissions.");
-        }
-
-        Context.Remove(borehole);
-        await Context.SaveChangesAsync().ConfigureAwait(false);
-        return Ok();
-    }
-
-    /// <inheritdoc />
     protected override async Task<int?> GetBoreholeId(Borehole entity)
     {
         if (entity == null) return default;
