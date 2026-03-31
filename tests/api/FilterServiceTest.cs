@@ -236,7 +236,7 @@ public class FilterServiceTest
         var filterRequest = new FilterRequest
         {
             OrderBy = BoreholeOrderBy.TotalDepth,
-            Direction = "asc",
+            Direction = OrderDirection.Asc,
             PageNumber = 1,
             PageSize = 10,
         };
@@ -810,7 +810,7 @@ public class FilterServiceTest
             TypeId = existingBorehole.TypeId.HasValue ? new List<int> { existingBorehole.TypeId.Value } : null,
             NationalInterest = true,
             OrderBy = BoreholeOrderBy.TotalDepth,
-            Direction = "asc",
+            Direction = OrderDirection.Asc,
             PageNumber = 1,
             PageSize = 100,
         };
