@@ -15,12 +15,17 @@ beforeEach(() => {
   createBorehole({ originalName: "INTEADAL" })
     .as("borehole_id")
     .then(id =>
-      createCompletion("test fieldmeasurement", id, 16000002, true)
+      createCompletion("test fieldmeasurement", id as unknown as number, 16000002, true)
         .as("completion_id")
         .then(completionId => {
-          createCasing("casing-1", id, completionId, "2021-01-01", "2021-01-02", [
-            { fromDepth: 0, toDepth: 10, kindId: 25000103 },
-          ]);
+          createCasing(
+            "casing-1",
+            id as unknown as number,
+            completionId as unknown as number,
+            "2021-01-01",
+            "2021-01-02",
+            [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
+          );
         }),
     );
 });
@@ -89,8 +94,28 @@ describe("Tests for the field measurement editor.", () => {
   it("sorts fieldmeasurement", () => {
     // Create borehole with completion and casings
     cy.get("@borehole_id").then(id => {
-      createFieldMeasurement(id, "2012-11-14T12:06Z", 15203157, 15203209, 15203219, 10, null, 0, 10);
-      createFieldMeasurement(id, "2012-11-14T12:07Z", 15203157, 15203209, 15203219, 10, null, 0, 12);
+      createFieldMeasurement(
+        id as unknown as number,
+        "2012-11-14T12:06Z",
+        15203157,
+        15203209,
+        15203219,
+        10,
+        null,
+        0,
+        10,
+      );
+      createFieldMeasurement(
+        id as unknown as number,
+        "2012-11-14T12:07Z",
+        15203157,
+        15203209,
+        15203219,
+        10,
+        null,
+        0,
+        12,
+      );
       goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/fieldmeasurement`);
 
       startBoreholeEditing();

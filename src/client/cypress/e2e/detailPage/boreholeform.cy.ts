@@ -277,10 +277,10 @@ describe("Test for the borehole form.", () => {
   });
 
   it("switches tabs", () => {
-    let boreholeId;
+    let boreholeId: number;
     createBorehole({ originalName: "LSENALZE" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      boreholeId = id;
+      boreholeId = id as unknown as number;
       goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
       cy.wait(["@borehole"]);
     });

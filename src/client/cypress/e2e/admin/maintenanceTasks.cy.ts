@@ -49,11 +49,7 @@ const interceptLogs = (body: unknown, alias: string) => {
  * Idle -> POST 202 -> Running (runningPolls status polls) -> Completed.
  * Logs are empty while running and return the given entry after completion.
  */
-const interceptMigrationProgress = (
-  taskType: string,
-  logEntry: Record<string, unknown>,
-  { runningPolls = 2 } = {},
-) => {
+const interceptMigrationProgress = (taskType: string, logEntry: Record<string, unknown>, { runningPolls = 2 } = {}) => {
   let statusCallCount = 0;
   let isIdle = true;
 

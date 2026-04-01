@@ -41,7 +41,7 @@ describe("Test copying of boreholes", () => {
 
     cy.get('[data-cy="prompt"]').should("be.visible");
     cy.get('[data-cy="prompt"]').contains("Select a workgroup to create a copy.");
-    setSelect("workgroup", 1, null, "prompt");
+    setSelect("workgroup", 1, undefined, "prompt");
     cy.get('[data-cy="prompt"]').find(`[data-cy="copy-button"]`).click();
     cy.wait("@borehole_copy");
     cy.wait("@borehole_by_id");

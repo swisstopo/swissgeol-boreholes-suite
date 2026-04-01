@@ -19,7 +19,7 @@ import {
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
-const addMinimalAttachment = (boreholeIdentifier, fileName) => {
+const addMinimalAttachment = (boreholeIdentifier: string, fileName: string) => {
   cy.get(boreholeIdentifier).then(id => {
     goToDetailRouteAndAcceptTerms(`/${id}/attachments`);
     startBoreholeEditing();
@@ -30,16 +30,23 @@ const addMinimalAttachment = (boreholeIdentifier, fileName) => {
   });
 };
 
-const dropFileIntoImportDropzone = boreholeFile => {
+const dropFileIntoImportDropzone = (boreholeFile: DataTransfer) => {
   cy.dataCy("import-boreholeFile-input").within(() => {
-    cy.get("input[type=file]", { force: true }).then(input => {
-      input[0].files = boreholeFile.files;
+    cy.get("input[type=file]").then(input => {
+      (input[0] as HTMLInputElement).files = boreholeFile.files;
       input[0].dispatchEvent(new Event("change", { bubbles: true }));
     });
   });
 };
 
-const testBadRequestError = (endpoint, statusCode, responseBody, fileName, fileType, expectedMessage) => {
+const testBadRequestError = (
+  endpoint: string,
+  statusCode: number,
+  responseBody: object,
+  fileName: string,
+  fileType: string,
+  expectedMessage: string,
+) => {
   cy.intercept("POST", `**/api/v*/import/${endpoint}`, {
     statusCode,
     body: responseBody,

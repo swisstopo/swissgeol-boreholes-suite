@@ -5,7 +5,6 @@ import editorUser from "../../fixtures/editorUser.json";
 import viewerUser from "../../fixtures/viewerUser.json";
 import { startEditing, stopEditing } from "./buttonHelpers";
 
-
 export const bearerAuth = (token: string) => ({ bearer: token });
 
 export const interceptApiCalls = () => {
@@ -552,7 +551,7 @@ export const getImportFileFromFixtures = (fileName: string, encoding: string | n
     }
   }
 
-  return cy.fixture(filePath, { encoding: encoding as BufferEncoding | null });
+  return encoding ? cy.fixture(filePath, encoding as Cypress.Encodings) : cy.fixture(filePath);
 };
 
 export const createStratigraphy = (boreholeId: number, name: string, isPrimary = true, date: string | null = null) => {
@@ -840,7 +839,7 @@ export const selectLanguage = (language: string) => {
 };
 
 export const selectInputFile = (fileName: string, mimeType: string) => {
-  const crypto = window.crypto || (window as Record<string, Crypto | undefined>).msCrypto;
+  const crypto = window.crypto || (window as unknown as Record<string, Crypto | undefined>).msCrypto;
   const content = crypto.getRandomValues(new Uint32Array(1)).toString();
 
   cy.get("input[type=file]").selectFile(

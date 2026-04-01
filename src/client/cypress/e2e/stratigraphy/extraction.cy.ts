@@ -1,14 +1,15 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import { createBorehole, goToDetailRouteAndAcceptTerms, startBoreholeEditing } from "../helpers/testHelpers";
 
-function assertBoundingBoxesOnLayer(mapDomId, layerName, shouldExist = true) {
+function assertBoundingBoxesOnLayer(mapDomId: string, layerName: string, shouldExist = true) {
   cy.window().should(win => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(win[mapDomId], `Map "${mapDomId}" should exist`).to.exist;
+    expect((win as Record<string, any>)[mapDomId], `Map "${mapDomId}" should exist`).to.exist;
   });
 
   cy.window().then(win => {
-    const layers = win[mapDomId].getLayers().getArray();
-    const layer = layers.find(layer => layer.get("name") === layerName);
+    const layers = (win as Record<string, any>)[mapDomId].getLayers().getArray();
+    const layer = layers.find((layer: any) => layer.get("name") === layerName);
     if (shouldExist) {
       const features = layer.getSource().getFeatures();
       expect(features.length, `${layerName} should have features`).to.be.greaterThan(0);
@@ -23,7 +24,7 @@ describe("Tests for stratigraphy extraction", () => {
   it("Extracts stratigraphy and shows bounding boxes", () => {
     createBorehole({ originalName: "SCHOOLDIONYSUS" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
-      goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy`);
+      goToDetailRouteAndAcceptTerms(`/${boreholeId as unknown as number}/stratigraphy`);
       cy.wait("@stratigraphy_by_borehole_GET");
       startBoreholeEditing();
       cy.dataCy("extractstratigraphyfromprofile-button").click();
@@ -35,7 +36,7 @@ describe("Tests for stratigraphy extraction", () => {
       cy.wait(["@getAllAttachments", "@upload-files"]);
     });
     cy.wait("@extract-stratigraphy", { timeout: 240000 }).then(interception => {
-      expect(interception.response.statusCode).to.eq(200);
+      expect(interception.response!.statusCode).to.eq(200);
       cy.dataCy("extracted_lithologicalDescription-0").should("contain", "Humus");
       cy.get(`#extraction-map`).within(() => {
         cy.get("canvas, svg").should("exist");

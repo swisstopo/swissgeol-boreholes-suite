@@ -171,7 +171,7 @@ describe("Tests for 'Location' edit page.", () => {
   it("blocks navigating away and stop editing with unsaved changes", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
-    let boreholeId;
+    let boreholeId: unknown;
     cy.get("@borehole_id").then(id => {
       boreholeId = id;
     });

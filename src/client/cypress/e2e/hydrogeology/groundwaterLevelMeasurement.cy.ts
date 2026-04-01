@@ -17,12 +17,17 @@ describe("Tests for the groundwater level measurement editor.", () => {
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id =>
-        createCompletion("test groundwaterlevel measurement", id, 16000002, true)
+        createCompletion("test groundwaterlevel measurement", id as unknown as number, 16000002, true)
           .as("completion_id")
           .then(completionId => {
-            createCasing("casing-1", id, completionId, "2021-01-01", "2021-01-02", [
-              { fromDepth: 0, toDepth: 10, kindId: 25000103 },
-            ]);
+            createCasing(
+              "casing-1",
+              id as unknown as number,
+              completionId as unknown as number,
+              "2021-01-01",
+              "2021-01-02",
+              [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
+            );
           }),
       );
 

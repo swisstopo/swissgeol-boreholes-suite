@@ -42,15 +42,15 @@ function assertExportButtonsDisabled(isDisabled = true) {
   // cy.dataCy("exporttable-button").should(isDisabled ? "have.attr" : "not.have.attr", "disabled");
 }
 
-function assertRunCountDisplayed(textContent) {
+function assertRunCountDisplayed(textContent: string) {
   cy.dataCy("log-run-count").should("contain", textContent);
 }
 
-function assertFileCountDisplayed(textContent) {
+function assertFileCountDisplayed(textContent: string) {
   cy.dataCy("log-file-count").should("contain", textContent);
 }
 
-function verifyFullRowContent(cellContents, index) {
+function verifyFullRowContent(cellContents: string[], index: number) {
   for (const content of cellContents) {
     verifyRowContains(content, index);
   }
@@ -72,23 +72,20 @@ function addMinimalLogRun(fromDepth = 0, toDepth = 10, runNumber = "R01") {
   closeLogRunEditor();
 }
 
-function selectFile(filePath, parent) {
+function selectFile(filePath: string, parent: string) {
   const selector = createBaseSelector(parent) + `[data-cy="file-dropzone"]`;
-  cy.get(selector).selectFile(`cypress/fixtures/${filePath}`, {
-    force: true,
-    fileName: filePath,
-  });
+  cy.get(selector).selectFile({ contents: `cypress/fixtures/${filePath}`, fileName: filePath }, { force: true });
 
-  cy.get(selector).contains(filePath.split("/").pop());
+  cy.get(selector).contains(filePath.split("/").pop()!);
   cy.get(selector).dataCy("iconButton").should("exist");
 }
 
-function removeFile(parent) {
+function removeFile(parent: string) {
   const selector = createBaseSelector(parent) + `[data-cy="file-dropzone"]`;
   cy.get(selector).dataCy("iconButton").click();
 }
 
-function createBoreholeWithLogRuns(numberOfRuns, boreholeAlias) {
+function createBoreholeWithLogRuns(numberOfRuns: number, boreholeAlias: string) {
   createBorehole({
     originalName: "Borehole with many log runs",
     logRuns: Array.from({ length: numberOfRuns }, (_, i) => ({

@@ -16,15 +16,25 @@ describe("Backfill crud tests", () => {
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id =>
-        createCompletion("test backfill", id, 16000002, true)
+        createCompletion("test backfill", id as unknown as number, 16000002, true)
           .as("completion_id")
           .then(completionId => {
-            createCasing("casing-1", id, completionId, "2021-01-01", "2021-01-02", [
-              { fromDepth: 0, toDepth: 10, kindId: 25000103 },
-            ]).as("casing1_id");
-            createCasing("casing-2", id, completionId, "2021-01-03", "2021-01-04", [
-              { fromDepth: 5, toDepth: 12, kindId: 25000105 },
-            ]).as("casing2_id");
+            createCasing(
+              "casing-1",
+              id as unknown as number,
+              completionId as unknown as number,
+              "2021-01-01",
+              "2021-01-02",
+              [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
+            ).as("casing1_id");
+            createCasing(
+              "casing-2",
+              id as unknown as number,
+              completionId as unknown as number,
+              "2021-01-03",
+              "2021-01-04",
+              [{ fromDepth: 5, toDepth: 12, kindId: 25000105 }],
+            ).as("casing2_id");
           }),
       );
   });
@@ -92,10 +102,10 @@ describe("Backfill crud tests", () => {
   it("sorts backfills", () => {
     cy.get("@completion_id").then(id => {
       cy.get("@casing1_id").then(casingId => {
-        createBackfill(id, casingId, 25000112, 25000100, 0, 12, "Lorem.");
+        createBackfill(id as unknown as number, casingId as unknown as number, 25000112, 25000100, 0, 12, "Lorem.");
       });
       cy.get("@casing2_id").then(casingId => {
-        createBackfill(id, casingId, 25000109, 25000102, 0, 10, "Lorem.");
+        createBackfill(id as unknown as number, casingId as unknown as number, 25000109, 25000102, 0, 10, "Lorem.");
       });
     });
 

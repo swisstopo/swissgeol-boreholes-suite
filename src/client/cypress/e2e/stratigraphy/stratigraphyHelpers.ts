@@ -7,7 +7,7 @@ const layerSelector = (layerType: string, fromDepth: number, toDepth: number | n
   if (isGap) {
     return `[data-cy="${layerType}-${fromDepth}-0-gap"]`;
   }
-  return `[data-cy^="${layerType}-"]:not([data-cy$="-gap"]):contains("${formatWithThousandsSeparator(fromDepth)} m MD"):contains("${formatWithThousandsSeparator(toDepth)} m MD")`;
+  return `[data-cy^="${layerType}-"]:not([data-cy$="-gap"]):contains("${formatWithThousandsSeparator(fromDepth)} m MD"):contains("${formatWithThousandsSeparator(toDepth!)} m MD")`;
 };
 
 export const LayerType = {
