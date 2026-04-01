@@ -11,7 +11,8 @@
     "moduleResolution": "node",
     "types": [
       "vite/client",
-      "vite-plugin-svgr/client"
+      "vite-plugin-svgr/client",
+      "cypress"
     ],
     "allowImportingTsExtensions": true,
     "allowJs": true,
@@ -23,6 +24,6 @@
     "skipLibCheck": true
   },
   "exclude": [
-    "src/client/cypress"
+    "cypress.config.ts"
   ]
 }
