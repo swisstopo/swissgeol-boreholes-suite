@@ -4,8 +4,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using Moq.Protected;
+using System.Net;
+using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using File = System.IO.File;
 
 namespace BDMS;
@@ -146,4 +150,92 @@ internal static class Helpers
 
     internal static string ShouldNotBeNullMessage(this string propertyName)
         => $"{propertyName} should not be null.";
+
+    /// <summary>
+    /// Creates a mocked <see cref="HttpClient"/> that handles swisstopo reframe API calls and returns the given coordinates.
+    /// </summary>
+    internal static HttpClient CreateReframeHttpClient(string easting, string northing)
+    {
+        var httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+        httpMessageHandler.Protected().Setup("Dispose", ItExpr.IsAny<bool>());
+        httpMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(m => Regex.IsMatch(
+                    m.RequestUri!.AbsoluteUri,
+                    "easting=\\d+\\.?\\d*&northing=[-]?\\d+\\.?\\d*&format=json$")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = JsonContent.Create(new { easting, northing }),
+            });
+        return new HttpClient(httpMessageHandler.Object);
+    }
+
+    /// <summary>
+    /// Creates a mocked <see cref="HttpClient"/> that handles swisstopo identify API calls and returns the given location.
+    /// Pass <see langword="null"/> for all parameters to return an empty result (no location found).
+    /// </summary>
+    internal static HttpClient CreateLocationHttpClient(string? country, string? canton, string? municipality)
+    {
+        var httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+        httpMessageHandler.Protected().Setup("Dispose", ItExpr.IsAny<bool>());
+        var content = () => JsonContent.Create(new
+        {
+            results = new object[]
+            {
+                new { layerBodId = "ch.swisstopo.swissboundaries3d-land-flaeche.fill", attributes = new { bez = country, name = string.Empty, gemname = string.Empty } },
+                new { layerBodId = "ch.swisstopo.swissboundaries3d-kanton-flaeche.fill", attributes = new { bez = string.Empty, name = canton, gemname = string.Empty } },
+                new { layerBodId = "ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill", attributes = new { bez = string.Empty, name = string.Empty, gemname = municipality } },
+            },
+        });
+        httpMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(m => m.RequestUri!.AbsoluteUri.Contains("api3.geo.admin.ch")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = content() });
+        return new HttpClient(httpMessageHandler.Object);
+    }
+
+    /// <summary>
+    /// Creates a mocked <see cref="HttpClient"/> that handles both the swisstopo reframe and identify API calls
+    /// on a single handler, for services that share the same <see cref="IHttpClientFactory"/>.
+    /// </summary>
+    internal static HttpClient CreateReframeAndLocationHttpClient(
+        string coordEasting,
+        string coordNorthing,
+        string? country,
+        string? canton,
+        string? municipality)
+    {
+        var httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+        httpMessageHandler.Protected().Setup("Dispose", ItExpr.IsAny<bool>());
+
+        var coordContent = () => JsonContent.Create(new { easting = coordEasting, northing = coordNorthing });
+        httpMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(m => m.RequestUri!.AbsoluteUri.Contains("geodesy.geo.admin.ch")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = coordContent() });
+
+        var locationContent = () => JsonContent.Create(new
+        {
+            results = new object[]
+            {
+                new { layerBodId = "ch.swisstopo.swissboundaries3d-land-flaeche.fill", attributes = new { bez = country, name = string.Empty, gemname = string.Empty } },
+                new { layerBodId = "ch.swisstopo.swissboundaries3d-kanton-flaeche.fill", attributes = new { bez = string.Empty, name = canton, gemname = string.Empty } },
+                new { layerBodId = "ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill", attributes = new { bez = string.Empty, name = string.Empty, gemname = municipality } },
+            },
+        });
+        httpMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(m => m.RequestUri!.AbsoluteUri.Contains("api3.geo.admin.ch")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = locationContent() });
+
+        return new HttpClient(httpMessageHandler.Object);
+    }
 }

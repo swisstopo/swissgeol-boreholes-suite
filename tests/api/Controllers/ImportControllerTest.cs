@@ -6,11 +6,8 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Moq.Protected;
 using System.Globalization;
 using System.IO.Compression;
-using System.Net;
-using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using static BDMS.Helpers;
@@ -1218,41 +1215,11 @@ public class ImportControllerTest
         string coordNorthing,
         string? country,
         string? canton,
-        string? municipality)
-    {
-        var httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-        httpMessageHandler.Protected().Setup("Dispose", ItExpr.IsAny<bool>());
-
-        var coordContent = () => JsonContent.Create(new { easting = coordEasting, northing = coordNorthing });
-        httpMessageHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.Is<HttpRequestMessage>(m => m.RequestUri!.AbsoluteUri.Contains("geodesy.geo.admin.ch")),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = coordContent() });
-
-        var locationResults = new
-        {
-            results = new object[]
-            {
-                new { layerBodId = "ch.swisstopo.swissboundaries3d-land-flaeche.fill", attributes = new { bez = country, name = string.Empty, gemname = string.Empty } },
-                new { layerBodId = "ch.swisstopo.swissboundaries3d-kanton-flaeche.fill", attributes = new { bez = string.Empty, name = canton, gemname = string.Empty } },
-                new { layerBodId = "ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill", attributes = new { bez = string.Empty, name = string.Empty, gemname = municipality } },
-            },
-        };
-        var locationContent = () => JsonContent.Create(locationResults);
-        httpMessageHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.Is<HttpRequestMessage>(m => m.RequestUri!.AbsoluteUri.Contains("api3.geo.admin.ch")),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = locationContent() });
-
+        string? municipality) =>
         httpClientFactoryMock
             .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-            .Returns(() => new HttpClient(httpMessageHandler.Object))
+            .Returns(() => CreateReframeAndLocationHttpClient(coordEasting, coordNorthing, country, canton, municipality))
             .Verifiable();
-    }
 
     private static async Task<FormFile> GetZipFileFromExistingFileAsync(string fileName)
     {
