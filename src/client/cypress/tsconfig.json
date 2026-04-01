@@ -1,8 +1,7 @@
 {
   "extends": "../tsconfig.json",
   "compilerOptions": {
-    "types": ["cypress"],
-    "isolatedModules": false
+    "types": ["cypress"]
   },
   "include": ["**/*.ts"]
 }
