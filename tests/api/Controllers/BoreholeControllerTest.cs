@@ -919,7 +919,7 @@ public class BoreholeControllerTest
             StatusId = new List<int> { 1 },
             TotalDepthMin = 100,
             TotalDepthMax = 500,
-            HasLogs = BooleanFilter.True,
+            HasLogs = BooleanFilterValue.True,
             PageNumber = 2,
             PageSize = 25,
             OrderBy = BoreholeOrderBy.TotalDepth,

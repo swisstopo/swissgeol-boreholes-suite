@@ -220,31 +220,31 @@ public class FilterService : IFilterService
         // Boolean filters
         if (filterRequest.NationalInterest != null)
         {
-            if (filterRequest.NationalInterest == TriStateBooleanFilter.Null)
+            if (filterRequest.NationalInterest == NullableBooleanFilterValue.Null)
                 query = query.Where(b => b.NationalInterest == null);
             else
-                query = query.Where(b => b.NationalInterest == (filterRequest.NationalInterest == TriStateBooleanFilter.True));
+                query = query.Where(b => b.NationalInterest == (filterRequest.NationalInterest == NullableBooleanFilterValue.True));
         }
 
         if (filterRequest.TopBedrockIntersected != null)
         {
-            if (filterRequest.TopBedrockIntersected == TriStateBooleanFilter.Null)
+            if (filterRequest.TopBedrockIntersected == NullableBooleanFilterValue.Null)
                 query = query.Where(b => b.TopBedrockIntersected == null);
             else
-                query = query.Where(b => b.TopBedrockIntersected == (filterRequest.TopBedrockIntersected == TriStateBooleanFilter.True));
+                query = query.Where(b => b.TopBedrockIntersected == (filterRequest.TopBedrockIntersected == NullableBooleanFilterValue.True));
         }
 
         if (filterRequest.HasGroundwater != null)
         {
-            if (filterRequest.HasGroundwater == TriStateBooleanFilter.Null)
+            if (filterRequest.HasGroundwater == NullableBooleanFilterValue.Null)
                 query = query.Where(b => b.HasGroundwater == null);
             else
-                query = query.Where(b => b.HasGroundwater == (filterRequest.HasGroundwater == TriStateBooleanFilter.True));
+                query = query.Where(b => b.HasGroundwater == (filterRequest.HasGroundwater == NullableBooleanFilterValue.True));
         }
 
         if (filterRequest.HasGeometry != null)
         {
-            if (filterRequest.HasGeometry == BooleanFilter.True)
+            if (filterRequest.HasGeometry == BooleanFilterValue.True)
                 query = query.Where(b => b.BoreholeGeometry != null && b.BoreholeGeometry.Any());
             else
                 query = query.Where(b => b.BoreholeGeometry == null || !b.BoreholeGeometry.Any());
@@ -253,7 +253,7 @@ public class FilterService : IFilterService
         // Availability filters (requires joining with related tables)
         if (filterRequest.HasLogs != null)
         {
-            if (filterRequest.HasLogs == BooleanFilter.True)
+            if (filterRequest.HasLogs == BooleanFilterValue.True)
                 query = query.Where(b => context.LogRuns.Any(lr => lr.BoreholeId == b.Id));
             else
                 query = query.Where(b => !context.LogRuns.Any(lr => lr.BoreholeId == b.Id));
@@ -261,7 +261,7 @@ public class FilterService : IFilterService
 
         if (filterRequest.HasProfiles != null)
         {
-            if (filterRequest.HasProfiles == BooleanFilter.True)
+            if (filterRequest.HasProfiles == BooleanFilterValue.True)
                 query = query.Where(b => context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id));
             else
                 query = query.Where(b => !context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id));
@@ -269,7 +269,7 @@ public class FilterService : IFilterService
 
         if (filterRequest.HasPhotos != null)
         {
-            if (filterRequest.HasPhotos == BooleanFilter.True)
+            if (filterRequest.HasPhotos == BooleanFilterValue.True)
                 query = query.Where(b => context.Photos.Any(p => p.BoreholeId == b.Id));
             else
                 query = query.Where(b => !context.Photos.Any(p => p.BoreholeId == b.Id));
@@ -277,7 +277,7 @@ public class FilterService : IFilterService
 
         if (filterRequest.HasDocuments != null)
         {
-            if (filterRequest.HasDocuments == BooleanFilter.True)
+            if (filterRequest.HasDocuments == BooleanFilterValue.True)
                 query = query.Where(b => context.Documents.Any(d => d.BoreholeId == b.Id));
             else
                 query = query.Where(b => !context.Documents.Any(d => d.BoreholeId == b.Id));
