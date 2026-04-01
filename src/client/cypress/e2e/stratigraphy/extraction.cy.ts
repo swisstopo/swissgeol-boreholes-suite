@@ -1,17 +1,19 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import Layer from "ol/layer/Layer";
+import OlMap from "ol/Map";
+import VectorSource from "ol/source/Vector";
 import { createBorehole, goToDetailRouteAndAcceptTerms, startBoreholeEditing } from "../helpers/testHelpers";
 
 function assertBoundingBoxesOnLayer(mapDomId: string, layerName: string, shouldExist = true) {
   cy.window().should(win => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect((win as Record<string, any>)[mapDomId], `Map "${mapDomId}" should exist`).to.exist;
+    expect((win as unknown as Record<string, OlMap>)[mapDomId], `Map "${mapDomId}" should exist`).to.exist;
   });
 
   cy.window().then(win => {
-    const layers = (win as Record<string, any>)[mapDomId].getLayers().getArray();
-    const layer = layers.find((layer: any) => layer.get("name") === layerName);
+    const layers = (win as unknown as Record<string, OlMap>)[mapDomId].getLayers().getArray();
+    const layer = layers.find(l => l.get("name") === layerName) as Layer<VectorSource> | undefined;
     if (shouldExist) {
-      const features = layer.getSource().getFeatures();
+      const features = layer!.getSource()!.getFeatures();
       expect(features.length, `${layerName} should have features`).to.be.greaterThan(0);
     } else {
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions

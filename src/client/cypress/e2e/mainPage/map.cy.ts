@@ -1,4 +1,4 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
+import OlMap from "ol/Map";
 import { loginAsEditor, returnToOverview } from "../helpers/testHelpers";
 
 describe("Map tests", () => {
@@ -18,7 +18,7 @@ describe("Map tests", () => {
     canvas().trigger("pointerup", { x: 500, y: 500 });
 
     cy.window().then(win => {
-      const view = (win as Record<string, any>).olMap.getView();
+      const view = (win as unknown as { olMap: OlMap }).olMap.getView();
       const resolution = view.getResolution();
       const mapCenter = view.getCenter();
       cy.wrap(resolution).as("resolution");
@@ -33,7 +33,7 @@ describe("Map tests", () => {
 
     // verify resolution and map center
     cy.window().then(win => {
-      const view = (win as Record<string, any>).olMap.getView();
+      const view = (win as unknown as { olMap: OlMap }).olMap.getView();
       const resetResolution = view.getResolution();
       const resetMapCenter = view.getCenter();
       cy.get("@resolution").then(resolution => {
