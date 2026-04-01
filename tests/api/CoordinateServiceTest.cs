@@ -3,8 +3,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
 using System.Net;
-using System.Net.Http.Json;
-using System.Text.RegularExpressions;
+using static BDMS.Helpers;
 
 namespace BDMS;
 
@@ -47,28 +46,10 @@ public class CoordinateServiceTest
         Assert.AreEqual(0, CoordinateService.GetDecimalPlaces(1000000));
     }
 
-    private static HttpClient CreateReframeHttpClient(string easting, string northing)
-    {
-        var httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
-        httpMessageHandler.Protected().Setup("Dispose", ItExpr.IsAny<bool>());
-        httpMessageHandler.Protected()
-            .Setup<Task<HttpResponseMessage>>(
-                "SendAsync",
-                ItExpr.Is<HttpRequestMessage>(m => Regex.IsMatch(
-                    m.RequestUri!.AbsoluteUri,
-                    "easting=\\d+\\.?\\d*&northing=[-]?\\d+\\.?\\d*&format=json$")),
-                ItExpr.IsAny<CancellationToken>())
-            .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK)
-            {
-                Content = JsonContent.Create(new { easting, northing }),
-            });
-        return new HttpClient(httpMessageHandler.Object);
-    }
-
     [TestMethod]
     public async Task MigrateCoordinatesOfLV95BoreholeWithAllCoordinatesSet()
     {
-        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(CreateReframeHttpClient("626103.56923180178", "125366.57802526229")).Verifiable();
+        SetupCoordinateHttpMock("626103.56923180178", "125366.57802526229");
 
         var borehole = new Borehole
         {
@@ -97,7 +78,7 @@ public class CoordinateServiceTest
     [TestMethod]
     public async Task DoesNotMigrateCoordinatesOfLV95BoreholeWithAllCoordinatesSet()
     {
-        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
+        SetupCoordinateHttpMock(string.Empty, string.Empty);
 
         var borehole = new Borehole
         {
@@ -127,7 +108,7 @@ public class CoordinateServiceTest
     [TestMethod]
     public async Task MigrateCoordinatesOfLV03BoreholeWithMissingDestCoordinates()
     {
-        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(CreateReframeHttpClient("2655270", "1297874")).Verifiable();
+        SetupCoordinateHttpMock("2655270", "1297874");
 
         var borehole = new Borehole
         {
@@ -156,7 +137,7 @@ public class CoordinateServiceTest
     [TestMethod]
     public async Task DoesNotMigrateCoordinatesOfLV03BoreholeWithMissingSourceCoordinates()
     {
-        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
+        SetupCoordinateHttpMock(string.Empty, string.Empty);
 
         var borehole = new Borehole
         {
@@ -217,4 +198,8 @@ public class CoordinateServiceTest
         await Assert.ThrowsExactlyAsync<HttpRequestException>(
             () => service.MigrateCoordinatesAsync(borehole, false));
     }
+
+    private void SetupCoordinateHttpMock(string easting, string northing) =>
+        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>()))
+            .Returns(CreateReframeHttpClient(easting, northing)).Verifiable();
 }
