@@ -128,12 +128,12 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     public async Task<ActionResult<FilterResponse>> FilterAsync([FromBody] FilterRequest filterRequest)
     {
         try
-            {
+        {
             var subjectId = HttpContext.GetUserSubjectId();
             var user = await Context.UsersWithIncludes
-            .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
-            .ConfigureAwait(false);
+                .AsNoTracking()
+                .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
+                .ConfigureAwait(false);
 
             if (user == null) return Unauthorized($"No user with subject_id <{subjectId}> found.");
 
