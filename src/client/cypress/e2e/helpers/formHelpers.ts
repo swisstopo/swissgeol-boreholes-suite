@@ -185,12 +185,7 @@ export const evaluateYesNoSelect = (fieldName: string, expectedValue: string, pa
  * @param {string} parent (optional) The parent of the form element.
  * @param {boolean} editable (optional) Defines whether the select is being evaluated in the editable or uneditable state.
  */
-export const evaluateSelect = (
-  fieldName: string,
-  expectedText: string | number,
-  parent?: string,
-  editable = true,
-) => {
+export const evaluateSelect = (fieldName: string, expectedText: string | number, parent?: string, editable = true) => {
   if (editable) {
     const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"] input`;
     cy.get(selector).should("have.value", expectedText, `Expected ${fieldName} to have value ${expectedText}`);
