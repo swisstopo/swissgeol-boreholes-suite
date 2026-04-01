@@ -200,7 +200,7 @@ const evaluateCompleteUnconsolidatedLithologyForm = () => {
   });
 };
 
-const evaluateUnconsolidatedLithologyFormHasOnlyDepths = (fromDepth, toDepth) => {
+const evaluateUnconsolidatedLithologyFormHasOnlyDepths = (fromDepth: number, toDepth: number) => {
   evaluateUnconsolidatedLithologyForm({
     fromDepth: fromDepth,
     toDepth: toDepth,
@@ -316,7 +316,7 @@ const evaluateCompleteConsolidatedLithologyForm = () => {
   });
 };
 
-const evaluateConsolidatedLithologyFormHasOnlyDepths = (fromDepth, toDepth) => {
+const evaluateConsolidatedLithologyFormHasOnlyDepths = (fromDepth: number, toDepth: number) => {
   evaluateConsolidatedLithologyForm({
     fromDepth: fromDepth,
     toDepth: toDepth,

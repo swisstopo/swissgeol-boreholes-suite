@@ -20,7 +20,7 @@ import {
   startBoreholeEditing,
 } from "../helpers/testHelpers";
 
-function addHierarchicalLayer(stratigraphyType) {
+function addHierarchicalLayer(stratigraphyType: string) {
   cy.get('[data-cy="add-layer-button"]').click({ force: true });
   cy.wait(`@${stratigraphyType}_POST`);
   cy.get('[data-cy="layer-card"] [data-testid="EditIcon"]').click();

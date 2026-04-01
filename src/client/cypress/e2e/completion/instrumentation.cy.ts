@@ -16,12 +16,17 @@ describe("Instrumentation crud tests", () => {
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id =>
-        createCompletion("test instruments", id, 16000002, true)
+        createCompletion("test instruments", id as unknown as number, 16000002, true)
           .as("completion_id")
           .then(completionId => {
-            createCasing("casing-1", id, completionId, "2021-01-01", "2021-01-02", [
-              { fromDepth: 0, toDepth: 10, kindId: 25000103 },
-            ]).as("casing1_id");
+            createCasing(
+              "casing-1",
+              id as unknown as number,
+              completionId as unknown as number,
+              "2021-01-01",
+              "2021-01-02",
+              [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
+            ).as("casing1_id");
           }),
       );
 
@@ -96,8 +101,26 @@ describe("Instrumentation crud tests", () => {
   it("sorts instrumentation", () => {
     cy.get("@completion_id").then(id => {
       cy.get("@casing1_id").then(casingId => {
-        createInstrument(id, casingId, "Inst-1", 25000212, 25000102, 0, 10, "Lorem.");
-        createInstrument(id, casingId, "Inst-2", 25000215, 25000100, 0, 12, "Lorem.");
+        createInstrument(
+          id as unknown as number,
+          casingId as unknown as number,
+          "Inst-1",
+          25000212,
+          25000102,
+          0,
+          10,
+          "Lorem.",
+        );
+        createInstrument(
+          id as unknown as number,
+          casingId as unknown as number,
+          "Inst-2",
+          25000215,
+          25000100,
+          0,
+          12,
+          "Lorem.",
+        );
       });
     });
 

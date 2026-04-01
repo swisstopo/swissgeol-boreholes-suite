@@ -37,17 +37,17 @@ import {
 const jsonFileName = `bulkexport_${new Date().toISOString().split("T")[0]}.json`;
 const csvFileName = `bulkexport_${new Date().toISOString().split("T")[0]}.csv`;
 
-const splitFileContent = fileContent => {
+const splitFileContent = (fileContent: string) => {
   const lines = fileContent.split("\n");
   const rows = lines.map(row => row.split(";"));
   return { lines, rows };
 };
 
 const verifyTVDContentInCSVFile = (
-  fileName,
-  expectedTotalDepthVD,
-  expectedTopBedrockFreshTVD,
-  expectedTopBedrockWeatheredTVD,
+  fileName: string,
+  expectedTotalDepthVD: string,
+  expectedTopBedrockFreshTVD: string,
+  expectedTopBedrockWeatheredTVD: string,
 ) => {
   cy.readFile(prepareDownloadPath(fileName)).then(fileContent => {
     const { lines, rows } = splitFileContent(fileContent);
@@ -137,8 +137,8 @@ describe("Test for exporting boreholes.", () => {
       geometryFile.items.add(file);
     });
     cy.dataCy("import-geometry-input").within(() => {
-      cy.get("input[type=file]", { force: true }).then(input => {
-        input[0].files = geometryFile.files;
+      cy.get("input[type=file]").then(input => {
+        (input[0] as HTMLInputElement).files = geometryFile.files;
         input[0].dispatchEvent(new Event("change", { bubbles: true }));
       });
     });
@@ -349,7 +349,7 @@ describe("Test for exporting boreholes.", () => {
     }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {
-      createWateringress(id, "2012-11-14T12:06Z", 15203157, 15203161, null, 0, 10);
+      createWateringress(id as unknown as number, "2012-11-14T12:06Z", 15203157, 15203161, null, 0, 10);
       goToRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
 
       exportItem("detail-header");
@@ -459,8 +459,8 @@ describe("Test for exporting boreholes.", () => {
         boreholeFile.items.add(file);
 
         cy.dataCy("import-boreholeFile-input").within(() => {
-          cy.get("input[type=file]", { force: true }).then(input => {
-            input[0].files = boreholeFile.files; // Attach the file
+          cy.get("input[type=file]").then(input => {
+            (input[0] as HTMLInputElement).files = boreholeFile.files; // Attach the file
             input[0].dispatchEvent(new Event("change", { bubbles: true }));
           });
         });

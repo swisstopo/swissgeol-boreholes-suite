@@ -10,11 +10,11 @@ import {
   returnToOverview,
 } from "../helpers/testHelpers";
 
-function checkDecimalPlaces(inputAlias, expectedDecimalPlaces) {
+function checkDecimalPlaces(inputAlias: string, expectedDecimalPlaces: number) {
   cy.get(inputAlias)
     .invoke("val")
     .then(val => {
-      const parts = val.split(".");
+      const parts = (val as string).split(".");
       expect(parts[1]).to.have.length(expectedDecimalPlaces);
     });
 }

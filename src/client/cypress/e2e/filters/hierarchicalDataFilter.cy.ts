@@ -57,7 +57,10 @@ describe("Hierachical data filter tests", () => {
     cy.wait(["@edit_list", "@borehole_geojson"]);
     cy.dataCy("filter-chip-chronostratigraphy_id").should("exist");
     cy.wrap(filterValues).each(filter => {
-      return evaluateSelect(filter.period, filter.value);
+      return evaluateSelect(
+        (filter as unknown as { period: string; value: string }).period,
+        (filter as unknown as { period: string; value: string }).value,
+      );
     });
     cy.then(() => {
       // Reset age select
@@ -78,7 +81,10 @@ describe("Hierachical data filter tests", () => {
     ];
     // Verify that 2 levels are removed
     cy.wrap(filterValues).each(filter => {
-      return evaluateSelect(filter.period, filter.value);
+      return evaluateSelect(
+        (filter as unknown as { period: string; value: string }).period,
+        (filter as unknown as { period: string; value: string }).value,
+      );
     });
     cy.then(() => {
       // Reset period select
@@ -98,7 +104,10 @@ describe("Hierachical data filter tests", () => {
     ];
     // Verify that 4 levels are removed
     cy.wrap(filterValues).each(filter => {
-      return evaluateSelect(filter.period, filter.value);
+      return evaluateSelect(
+        (filter as unknown as { period: string; value: string }).period,
+        (filter as unknown as { period: string; value: string }).value,
+      );
     });
     cy.then(() => {
       // Reset all filters and verify they're cleared

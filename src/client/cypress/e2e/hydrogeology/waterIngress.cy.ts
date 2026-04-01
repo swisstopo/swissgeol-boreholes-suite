@@ -18,12 +18,17 @@ describe("Tests for the wateringress editor.", () => {
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id =>
-        createCompletion("test wateringress", id, 16000002, true)
+        createCompletion("test wateringress", id as unknown as number, 16000002, true)
           .as("completion_id")
           .then(completionId => {
-            createCasing("casing-1", id, completionId, "2021-01-01", "2021-01-02", [
-              { fromDepth: 0, toDepth: 10, kindId: 25000103 },
-            ]);
+            createCasing(
+              "casing-1",
+              id as unknown as number,
+              completionId as unknown as number,
+              "2021-01-01",
+              "2021-01-02",
+              [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
+            );
           }),
       );
 
@@ -75,8 +80,8 @@ describe("Tests for the wateringress editor.", () => {
   it("sorts wateringress", () => {
     createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
-      createWateringress(id, "2012-11-14T12:06Z", 15203157, 15203161, null, 0, 10);
-      createWateringress(id, "2012-11-14T12:07Z", 15203157, 15203162, null, 0, 12);
+      createWateringress(id as unknown as number, "2012-11-14T12:06Z", 15203157, 15203161, null, 0, 10);
+      createWateringress(id as unknown as number, "2012-11-14T12:07Z", 15203157, 15203162, null, 0, 12);
       goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
     });
     startBoreholeEditing();

@@ -8,7 +8,7 @@ import {
   startBoreholeEditing,
 } from "../helpers/testHelpers";
 
-const saveSection = method => {
+const saveSection = (method: string) => {
   saveForm();
   cy.wait(`@section_${method}`);
   cy.wait("@section_GET");

@@ -32,8 +32,8 @@ const toggleHeaderOpen = () => {
 const createBoreholeWithTwoCompletions = () => {
   return createBorehole({ originalName: "INTEADAL" }).then(boreholeId => {
     cy.wrap(boreholeId).as("boreholeId");
-    createCompletion("Compl-1", boreholeId, 16000002, true).as("completion1Id");
-    createCompletion("Compl-2", boreholeId, 16000002, false).as("completion2Id");
+    createCompletion("Compl-1", boreholeId as unknown as number, 16000002, true).as("completion1Id");
+    createCompletion("Compl-2", boreholeId as unknown as number, 16000002, false).as("completion2Id");
   });
 };
 
@@ -57,7 +57,7 @@ const copyCompletion = () => {
   copyItem("completion-header");
 };
 
-const deleteCompletion = isLastCompletion => {
+const deleteCompletion = (isLastCompletion?: boolean) => {
   toggleHeaderOpen();
   deleteItem("completion-header");
   handlePrompt("Do you really want to delete this borehole architecture?", "delete");
@@ -68,7 +68,7 @@ const deleteCompletion = isLastCompletion => {
   }
 };
 
-const setHeaderTab = (index, promptHandler) => {
+const setHeaderTab = (index: number, promptHandler?: string) => {
   const selector = '[data-cy="completion-header-tab-' + index + '"]';
   cy.get(selector).focus();
   cy.get(selector).click({ force: true });
@@ -85,13 +85,13 @@ const setHeaderTab = (index, promptHandler) => {
   }
 };
 
-const isHeaderTabSelected = index => {
+const isHeaderTabSelected = (index: number) => {
   const selector = `completion-header-tab-${index}`;
   cy.dataCy(selector).invoke("attr", "aria-selected").should("eq", "true");
   checkElementColorByDataCy(selector, activeColor);
 };
 
-export const setContentTab = (tab, promptHandler) => {
+export const setContentTab = (tab: string, promptHandler?: string) => {
   const selector = `[data-cy="completion-content-tab-${tab}"]`;
   cy.get(selector).focus();
   cy.get(selector).click({ force: true });
@@ -107,20 +107,20 @@ export const setContentTab = (tab, promptHandler) => {
   }
 };
 
-export const isContentTabSelected = tabName => {
+export const isContentTabSelected = (tabName: string) => {
   const selector = `completion-content-tab-${tabName}`;
   cy.dataCy(selector).invoke("attr", "aria-selected").should("eq", "true");
   checkElementColorByDataCy(selector, activeColor);
 };
 
-const assertLocationAndHash = (boreholeId, completionId, hash) => {
+const assertLocationAndHash = (boreholeId: unknown, completionId: unknown, hash: string) => {
   cy.location().should(location => {
     expect(location.pathname).to.eq(`/${boreholeId}/completion/${completionId}`);
     expect(location.hash).to.eq(hash);
   });
 };
 
-const assertNewCompletionCreated = boreholeId => {
+const assertNewCompletionCreated = (boreholeId: unknown) => {
   assertLocationAndHash(boreholeId, "new", "");
   cy.contains("Not specified").should("be.visible");
 };
@@ -192,7 +192,7 @@ describe("completion crud tests", () => {
       saveChanges();
       cy.contains("Compl-2");
       startEditHeader();
-      evaluateCheckbox("isPrimary", "true");
+      evaluateCheckbox("isPrimary", true);
       cancelEditing();
 
       // delete completion
@@ -392,7 +392,7 @@ describe("completion crud tests", () => {
   it.skip("checks completion content validation", () => {
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
-      .then(id => createCompletion("Compl-1", id, 16000001, true))
+      .then(id => createCompletion("Compl-1", id as unknown as number, 16000001, true))
       .then(response => {
         expect(response).to.be.above(0);
       });
@@ -613,8 +613,8 @@ describe("completion crud tests", () => {
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id => {
-        createCompletion("test hash 1", id, 16000002, true).as("completion1_id");
-        createCompletion("test hash 2", id, 16000002, false).as("completion2_id");
+        createCompletion("test hash 1", id as unknown as number, 16000002, true).as("completion1_id");
+        createCompletion("test hash 2", id as unknown as number, 16000002, false).as("completion2_id");
       });
 
     const forceReload = true;

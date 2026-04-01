@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import {
   evaluateCoordinate,
   evaluateSelect,
@@ -19,7 +20,7 @@ import { getArea } from "ol/sphere.js";
 import { discardChanges, saveForm } from "../helpers/buttonHelpers";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers";
 
-const isFileActive = (fileName, isActive) => {
+const isFileActive = (fileName: string, isActive: boolean) => {
   cy.contains("span", fileName)
     .parents("div")
     .siblings(".MuiListItemIcon-root")
@@ -27,14 +28,14 @@ const isFileActive = (fileName, isActive) => {
     .should(isActive ? "exist" : "not.exist");
 };
 
-const assertSelectContent = fileNames => {
+const assertSelectContent = (fileNames: string[]) => {
   cy.get('[data-cy*="button-select-item"]').should("have.length", fileNames.length);
   fileNames.forEach(fileName => {
     cy.get('[data-cy*="button-select-item"]').contains(fileName).should("exist");
   });
 };
 
-function assertDrawTooltip(content) {
+function assertDrawTooltip(content: string) {
   cy.get('[data-cy="labeling-draw-tooltip"]').should("be.visible");
   cy.get('[data-cy="labeling-draw-tooltip"]').contains(content);
 }
@@ -43,17 +44,17 @@ function assertDrawTooltipInvisible() {
   cy.get('[data-cy="labeling-draw-tooltip"]').should("not.be.visible");
 }
 
-const drawBox = (x1, y1, x2, y2) => {
+const drawBox = (x1: number, y1: number, x2: number, y2: number) => {
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(1000);
   cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x1, y: y1 });
   cy.get('[data-cy="labeling-panel"]').trigger("pointerdown", { x: x2, y: y2 });
 
   cy.window().should(win => {
-    const interactions = win["labeling-map"].getInteractions().getArray();
+    const interactions = (win as Record<string, any>)["labeling-map"].getInteractions().getArray();
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(
-      interactions.some(interaction => {
+      interactions.some((interaction: any) => {
         return interaction.constructor.name === "DragBox";
       }),
     ).to.be.true;
@@ -66,10 +67,10 @@ const drawBox = (x1, y1, x2, y2) => {
   cy.wait("@extract-data");
   cy.get('[data-cy="labeling-draw-tooltip"]').should("not.be.visible");
   cy.window().should(win => {
-    const interactions = win["labeling-map"].getInteractions().getArray();
+    const interactions = (win as Record<string, any>)["labeling-map"].getInteractions().getArray();
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(
-      interactions.some(interaction => {
+      interactions.some((interaction: any) => {
         return interaction.constructor.name === "DragBox";
       }),
     ).to.be.false;
@@ -82,16 +83,16 @@ const waitForLabelingImageLoaded = () => {
   // Wait for the map element to exist in the DOM
   cy.window().should(win => {
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(win["labeling-map"]).to.exist;
+    expect((win as Record<string, any>)["labeling-map"]).to.exist;
   });
   cy.window().should(win => {
-    const layers = win["labeling-map"].getLayers().getArray();
+    const layers = (win as Record<string, any>)["labeling-map"].getLayers().getArray();
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(layers.some(layer => layer.constructor.name === "ImageLayer")).to.be.true;
+    expect(layers.some((layer: any) => layer.constructor.name === "ImageLayer")).to.be.true;
   });
 };
 
-function assertPageCount(currentPage, totalPages) {
+function assertPageCount(currentPage: number, totalPages: number) {
   cy.get('[data-cy="labeling-page-count"]').contains(`${currentPage} / ${totalPages}`);
   const previousPageDisabled = currentPage === 1;
   const nextPageDisabled = currentPage === totalPages;
@@ -106,11 +107,14 @@ function toggleLabelingPanelWithoutProfiles() {
 }
 
 function selectLabelingAttachment() {
-  cy.get('[data-cy="labeling-file-dropzone"]').selectFile("cypress/fixtures/labeling_attachment.pdf", {
-    force: true,
-    mimeType: "application/pdf",
-    fileName: "labeling_attachment.pdf",
-  });
+  cy.get('[data-cy="labeling-file-dropzone"]').selectFile(
+    {
+      contents: "cypress/fixtures/labeling_attachment.pdf",
+      mimeType: "application/pdf",
+      fileName: "labeling_attachment.pdf",
+    },
+    { force: true },
+  );
 
   cy.wait("@getAllAttachments");
   waitForLabelingImageLoaded();
@@ -121,7 +125,7 @@ function clickCoordinateLabelingButton() {
   cy.get('[data-cy="coordinate-segment"] [data-cy="labeling-button"]').click();
 }
 
-function assertLabelingAlertText(expectedText) {
+function assertLabelingAlertText(expectedText: string) {
   cy.dataCy("labeling-alert")
     .invoke("text")
     .then(actualText => {
@@ -130,11 +134,11 @@ function assertLabelingAlertText(expectedText) {
     });
 }
 
-function assertBoundingBoxes(totalCount, highlightedArea) {
+function assertBoundingBoxes(totalCount: number, highlightedArea: number) {
   cy.window().should(win => {
-    const layers = win["labeling-map"].getLayers().getArray();
-    const boundingBoxLayer = layers.find(layer => layer.get("name") === "boundingBoxLayer");
-    const highlightsLayer = layers.find(layer => layer.get("name") === "highlightsLayer");
+    const layers = (win as Record<string, any>)["labeling-map"].getLayers().getArray();
+    const boundingBoxLayer = layers.find((layer: any) => layer.get("name") === "boundingBoxLayer");
+    const highlightsLayer = layers.find((layer: any) => layer.get("name") === "highlightsLayer");
     const invisibleBoundingBoxes = boundingBoxLayer.getSource().getFeatures();
     const highlights = highlightsLayer.getSource().getFeatures();
     expect(invisibleBoundingBoxes.length).to.equal(totalCount); // layer always contains all bounding boxes, even if they are not visible
@@ -145,7 +149,7 @@ function assertBoundingBoxes(totalCount, highlightedArea) {
   });
 }
 
-function assertClipboardContent(expectedText) {
+function assertClipboardContent(expectedText: string) {
   cy.window()
     .then(win => win.navigator.clipboard.readText())
     .should("equal", expectedText);
@@ -187,7 +191,7 @@ function reloadPanel() {
 
 function waitForMapAnimations() {
   cy.window().should(win => {
-    const view = win["labeling-map"].getView();
+    const view = (win as Record<string, any>)["labeling-map"].getView();
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(view.getAnimating()).to.be.false;
   });
@@ -259,9 +263,9 @@ describe("Test labeling tool", () => {
     // Cannot draw if the panel was opened with the panel toggle button
     waitForLabelingImageLoaded();
     cy.window().should(win => {
-      const interactions = win["labeling-map"].getInteractions().getArray();
+      const interactions = (win as Record<string, any>)["labeling-map"].getInteractions().getArray();
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      expect(interactions.some(interaction => interaction.constructor.name === "Draw")).to.be.false;
+      expect(interactions.some((interaction: any) => interaction.constructor.name === "Draw")).to.be.false;
     });
     stopBoreholeEditing();
     cy.dataCy("editingstop-button").should("not.exist");
@@ -275,7 +279,7 @@ describe("Test labeling tool", () => {
     cy.get('[data-cy="labeling-panel"] [data-cy="zoom-in-button"]').click();
     cy.get('[data-cy="rotate-button"]').click();
     cy.window().should(win => {
-      const view = win["labeling-map"].getView();
+      const view = (win as Record<string, any>)["labeling-map"].getView();
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
 
@@ -377,7 +381,7 @@ describe("Test labeling tool", () => {
 
     // wait for end of map animation before proceeding
     cy.window().should(win => {
-      const view = win.pointOlMap.getView();
+      const view = (win as Record<string, any>).pointOlMap.getView();
       expect(view.getResolution()).to.equal(1);
     });
 
@@ -418,12 +422,12 @@ describe("Test labeling tool", () => {
     assertPageCount(2, 3);
 
     cy.window().should(win => {
-      const view = win["labeling-map"].getView();
+      const view = (win as Record<string, any>)["labeling-map"].getView();
       expect(view.getRotation()).to.equal(0);
     });
     cy.get('[data-cy="rotate-button"]').click();
     cy.window().should(win => {
-      const view = win["labeling-map"].getView();
+      const view = (win as Record<string, any>)["labeling-map"].getView();
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
     // eslint-disable-next-line cypress/no-unnecessary-waiting
@@ -573,7 +577,7 @@ describe("Test labeling tool", () => {
     cy.dataCy("zoom-in-button").click();
     cy.dataCy("rotate-button").click();
     cy.window().should(win => {
-      const view = win["photo-map"].getView();
+      const view = (win as Record<string, any>)["photo-map"].getView();
       expect(view.getRotation()).to.equal(Math.PI / 2);
     });
     cy.dataCy("labeling-panel").find('input[type="file"]').attachFile("import/image_123.0-456.0_all.tif");

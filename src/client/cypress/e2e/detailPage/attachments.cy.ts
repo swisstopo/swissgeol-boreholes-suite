@@ -27,7 +27,7 @@ import {
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
-const checkPublicStatus = (text, checked, editingEnabled) => {
+const checkPublicStatus = (text: string, checked: boolean, editingEnabled: boolean) => {
   if (editingEnabled) {
     verifyRowWithTextCheckState(text, checked, "public");
   } else {
@@ -37,7 +37,7 @@ const checkPublicStatus = (text, checked, editingEnabled) => {
   }
 };
 
-function createBoreholeWithDocuments(numberOfDocuments, boreholeAlias) {
+function createBoreholeWithDocuments(numberOfDocuments: number, boreholeAlias: string) {
   createBorehole({
     originalName: "Borehole with many documents",
     documents: Array.from({ length: numberOfDocuments }, (_, i) => ({
@@ -173,7 +173,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       verifyTableLength(0);
 
       // reset test data
-      deleteBorehole(boreholeId);
+      deleteBorehole(boreholeId as unknown as number);
       stopBoreholeEditing();
     });
   });
@@ -229,7 +229,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       verifyTableLength(0);
 
       // reset test data
-      deleteBorehole(boreholeId);
+      deleteBorehole(boreholeId as unknown as number);
       stopBoreholeEditing();
     });
   });
@@ -320,14 +320,14 @@ describe("Tests for 'Attachments' edit page.", () => {
       verifyTableLength(2);
 
       // reset test data
-      deleteBorehole(boreholeId);
+      deleteBorehole(boreholeId as unknown as number);
     });
   });
 
   it("Displays table pagination for more than 100 documents", () => {
     createBoreholeWithDocuments(103, "borehole_id_103");
     cy.get("@borehole_id_103").then(id => {
-      goToDetailRouteAndAcceptTerms(`/${id}/attachments#documents`);
+      goToDetailRouteAndAcceptTerms(`/${id as unknown as number}/attachments#documents`);
       cy.wait(["@borehole"]);
     });
 

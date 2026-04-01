@@ -45,7 +45,7 @@ function manuallyResetStatusToDraft() {
 }
 
 describe("Tests the publication workflow.", () => {
-  function navigateToWorkflowAndStartEditing(id) {
+  function navigateToWorkflowAndStartEditing(id: unknown) {
     goToDetailRouteAndAcceptTerms(`/${id}/status`);
     cy.wait("@borehole_by_id");
     startBoreholeEditing();
@@ -260,7 +260,12 @@ describe("Tests the publication workflow.", () => {
     });
   });
 
-  function AssertHeaderChips(status, assignee, hasRequestedChanges = false, restrictionStatus = null) {
+  function AssertHeaderChips(
+    status: WorkflowStatus,
+    assignee?: string | null,
+    hasRequestedChanges = false,
+    restrictionStatus: string | null = null,
+  ) {
     // Special case where enum value does not match translation
     if (status === WorkflowStatus.InReview) {
       cy.dataCy("workflow-status-chip").should("contain", "Review");
@@ -269,7 +274,7 @@ describe("Tests the publication workflow.", () => {
     }
     cy.dataCy("workflow-status-chip").should(
       "have.class",
-      `MuiChip-color${capitalizeFirstLetter(colorStatusMap[status])}`,
+      `MuiChip-color${capitalizeFirstLetter(colorStatusMap[status as WorkflowStatus])}`,
     );
     if (assignee != null) {
       cy.dataCy("workflow-assignee-chip").should("contain", assignee);
@@ -283,7 +288,7 @@ describe("Tests the publication workflow.", () => {
     }
   }
 
-  function ClickInteractionAndAssignNewUser(buttonLabel, newAssignee) {
+  function ClickInteractionAndAssignNewUser(buttonLabel: string, newAssignee: string) {
     clickSgcButtonWithContent(buttonLabel);
     cy.get(".select-trigger").click();
     cy.get(".select-option").contains(newAssignee).click();
@@ -291,7 +296,7 @@ describe("Tests the publication workflow.", () => {
     cy.wait(["@workflow_by_id", "@borehole_by_id"]);
   }
 
-  function AssignNewUser(newAssignee) {
+  function AssignNewUser(newAssignee: string) {
     ClickInteractionAndAssignNewUser("Assign new person", newAssignee);
   }
 
@@ -333,7 +338,7 @@ describe("Tests the publication workflow.", () => {
     });
   });
 
-  function assertAllMenuItemsHaveReviewStatus(status) {
+  function assertAllMenuItemsHaveReviewStatus(status: string) {
     cy.dataCy("location-menu-item").should("have.attr", "reviewed", status);
     cy.dataCy("borehole-menu-item").should("have.attr", "reviewed", status);
     cy.dataCy("stratigraphy-menu-item").should("have.attr", "reviewed", status);

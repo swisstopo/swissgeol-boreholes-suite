@@ -25,12 +25,17 @@ describe("Tests for the hydrotest editor.", () => {
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id =>
-        createCompletion("test hydrotest", id, 16000002, true)
+        createCompletion("test hydrotest", id as unknown as number, 16000002, true)
           .as("completion_id")
           .then(completionId => {
-            createCasing("casing-1", id, completionId, "2021-01-01", "2021-01-02", [
-              { fromDepth: 0, toDepth: 10, kindId: 25000103 },
-            ]);
+            createCasing(
+              "casing-1",
+              id as unknown as number,
+              completionId as unknown as number,
+              "2021-01-01",
+              "2021-01-02",
+              [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
+            );
           }),
       );
 
@@ -111,8 +116,8 @@ describe("Tests for the hydrotest editor.", () => {
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id => {
-        createHydrotest(id, "2012-11-14T12:06Z", 15203157, [15203175], null, 0, 10);
-        createHydrotest(id, "2012-11-14T12:07Z", 15203157, [15203174], null, 0, 12);
+        createHydrotest(id as unknown as number, "2012-11-14T12:06Z", 15203157, [15203175], null, 0, 10);
+        createHydrotest(id as unknown as number, "2012-11-14T12:07Z", 15203157, [15203174], null, 0, 12);
         goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/hydrotest`);
         cy.wait(["@borehole"]);
       });
