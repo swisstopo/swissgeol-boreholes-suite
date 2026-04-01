@@ -6,8 +6,11 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
+using Moq.Protected;
 using System.Globalization;
 using System.IO.Compression;
+using System.Net;
+using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text.RegularExpressions;
 using static BDMS.Helpers;
@@ -716,10 +719,7 @@ public class ImportControllerTest
         context.Codelists.Add(new Codelist { Id = TestCodelistId, Schema = "borehole_identifier", Code = "new code", En = "Random New Id", Conf = null });
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        httpClientFactoryMock
-            .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-            .Returns(() => new HttpClient())
-            .Verifiable();
+        SetupHttpClientFactoryMock("600000", "100000", "Schweiz", "Bern", "Thun");
 
         var boreholeCsvFile = GetFormFileByExistingFile("testdata.csv");
 
@@ -766,10 +766,7 @@ public class ImportControllerTest
     [TestMethod]
     public async Task UploadShouldSaveMinimalDatasetAsync()
     {
-        httpClientFactoryMock
-           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-           .Returns(() => new HttpClient())
-           .Verifiable();
+        SetupHttpClientFactoryMock("600000", "100000", null, null, null);
 
         var boreholeCsvFile = GetFormFileByExistingFile("minimal_testdata.csv");
 
@@ -797,10 +794,7 @@ public class ImportControllerTest
     [TestMethod]
     public async Task UploadShouldSavePrecisionDatasetAsync()
     {
-        httpClientFactoryMock
-           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-           .Returns(() => new HttpClient())
-           .Verifiable();
+        SetupHttpClientFactoryMock("600000", "100000", null, null, null);
 
         var boreholeCsvFile = GetFormFileByExistingFile("precision_testdata.csv");
 
@@ -842,10 +836,7 @@ public class ImportControllerTest
     [TestMethod]
     public async Task UploadShouldSaveSpecialCharsDatasetAsync()
     {
-        httpClientFactoryMock
-           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-           .Returns(() => new HttpClient())
-           .Verifiable();
+        SetupHttpClientFactoryMock("600000", "100000", null, null, null);
 
         var boreholeCsvFile = GetFormFileByExistingFile("special_chars_testdata.csv");
 
@@ -879,10 +870,7 @@ public class ImportControllerTest
     [TestMethod]
     public async Task UploadBoreholeWithLV95CoordinatesAsync()
     {
-        httpClientFactoryMock
-            .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-            .Returns(() => new HttpClient())
-            .Verifiable();
+        SetupHttpClientFactoryMock("631690", "170516", "Schweiz", "Bern", "Aarmühle");
 
         var boreholeCsvFile = GetFormFileByExistingFile("lv95_coordinates_provided_testdata.csv");
 
@@ -908,10 +896,7 @@ public class ImportControllerTest
     [TestMethod]
     public async Task UploadBoreholeWithLV03CoordinatesAsync()
     {
-        httpClientFactoryMock
-            .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-            .Returns(() => new HttpClient())
-            .Verifiable();
+        SetupHttpClientFactoryMock("2649258.1270818082", "1131551.4611465326", "Schweiz", "Valais", "Filet");
 
         var boreholeCsvFile = GetFormFileByExistingFile("lv03_coordinates_provided_testdata.csv");
 
@@ -937,10 +922,7 @@ public class ImportControllerTest
     [TestMethod]
     public async Task UploadBoreholeWithLV03OutOfRangeCoordinatesAsync()
     {
-        httpClientFactoryMock
-            .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-            .Returns(() => new HttpClient())
-            .Verifiable();
+        SetupHttpClientFactoryMock("2999999", "1", null, null, null);
 
         var boreholeCsvFile = GetFormFileByExistingFile("lv03_out_of_range_coordinates_provided_testdata.csv");
 
@@ -1137,10 +1119,7 @@ public class ImportControllerTest
     [TestMethod]
     public async Task UploadDuplicateBoreholesInDbButDifferentWorkgroupShouldUploadBoreholes()
     {
-        httpClientFactoryMock
-           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-           .Returns(() => new HttpClient())
-           .Verifiable();
+        SetupHttpClientFactoryMock("600000", "100000", null, null, null);
 
         var maxWorkgroudId = await context.Workgroups.MaxAsync(w => w.Id).ConfigureAwait(false);
         var minWorkgroudId = await context.Workgroups.MinAsync(w => w.Id).ConfigureAwait(false);
@@ -1186,10 +1165,7 @@ public class ImportControllerTest
     [TestMethod]
     public async Task UploadShouldIgnoreLocationFields()
     {
-        httpClientFactoryMock
-           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-           .Returns(() => new HttpClient())
-           .Verifiable();
+        SetupHttpClientFactoryMock("2000000", "1000000", null, null, null);
 
         var boreholeCsvFile = GetFormFileByExistingFile("borehole_and_location_data.csv");
 
@@ -1235,6 +1211,47 @@ public class ImportControllerTest
 
         var response = await controller.UploadZipFileAsync(workgroupId: 1, boreholeCsvFile);
         ActionResultAssert.IsUnauthorized(response.Result);
+    }
+
+    private void SetupHttpClientFactoryMock(
+        string coordEasting,
+        string coordNorthing,
+        string? country,
+        string? canton,
+        string? municipality)
+    {
+        var httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+        httpMessageHandler.Protected().Setup("Dispose", ItExpr.IsAny<bool>());
+
+        var coordContent = () => JsonContent.Create(new { easting = coordEasting, northing = coordNorthing });
+        httpMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(m => m.RequestUri!.AbsoluteUri.Contains("geodesy.geo.admin.ch")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = coordContent() });
+
+        var locationResults = new
+        {
+            results = new object[]
+            {
+                new { layerBodId = "ch.swisstopo.swissboundaries3d-land-flaeche.fill", attributes = new { bez = country, name = string.Empty, gemname = string.Empty } },
+                new { layerBodId = "ch.swisstopo.swissboundaries3d-kanton-flaeche.fill", attributes = new { bez = string.Empty, name = canton, gemname = string.Empty } },
+                new { layerBodId = "ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill", attributes = new { bez = string.Empty, name = string.Empty, gemname = municipality } },
+            },
+        };
+        var locationContent = () => JsonContent.Create(locationResults);
+        httpMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(m => m.RequestUri!.AbsoluteUri.Contains("api3.geo.admin.ch")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = locationContent() });
+
+        httpClientFactoryMock
+            .Setup(cf => cf.CreateClient(It.IsAny<string>()))
+            .Returns(() => new HttpClient(httpMessageHandler.Object))
+            .Verifiable();
     }
 
     private static async Task<FormFile> GetZipFileFromExistingFileAsync(string fileName)
