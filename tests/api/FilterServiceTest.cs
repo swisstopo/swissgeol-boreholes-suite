@@ -289,7 +289,7 @@ public class FilterServiceTest
     {
         var filterRequest = new FilterRequest
         {
-            NationalInterest = TriStateBooleanFilter.True,
+            NationalInterest = NullableBooleanFilterValue.True,
             PageNumber = 1,
             PageSize = 100,
         };
@@ -309,7 +309,7 @@ public class FilterServiceTest
     {
         var filterRequest = new FilterRequest
         {
-            NationalInterest = TriStateBooleanFilter.False,
+            NationalInterest = NullableBooleanFilterValue.False,
             PageNumber = 1,
             PageSize = 100,
         };
@@ -329,7 +329,7 @@ public class FilterServiceTest
     {
         var filterRequest = new FilterRequest
         {
-            NationalInterest = TriStateBooleanFilter.Null,
+            NationalInterest = NullableBooleanFilterValue.Null,
             PageNumber = 1,
             PageSize = 100,
         };
@@ -404,7 +404,7 @@ public class FilterServiceTest
     {
         var filterRequest = new FilterRequest
         {
-            HasLogs = BooleanFilter.True,
+            HasLogs = BooleanFilterValue.True,
             PageNumber = 1,
             PageSize = 100,
         };
@@ -430,7 +430,7 @@ public class FilterServiceTest
 
         var filterRequest = new FilterRequest
         {
-            HasLogs = BooleanFilter.False,
+            HasLogs = BooleanFilterValue.False,
             PageNumber = 1,
             PageSize = 100,
         };
@@ -453,7 +453,7 @@ public class FilterServiceTest
     {
         var filterRequest = new FilterRequest
         {
-            HasProfiles = BooleanFilter.True,
+            HasProfiles = BooleanFilterValue.True,
             PageNumber = 1,
             PageSize = 100,
         };
@@ -479,7 +479,7 @@ public class FilterServiceTest
 
         var filterRequest = new FilterRequest
         {
-            HasProfiles = BooleanFilter.False,
+            HasProfiles = BooleanFilterValue.False,
             PageNumber = 1,
             PageSize = 100,
         };
@@ -948,7 +948,7 @@ public class FilterServiceTest
     {
         var filterRequest = new FilterRequest
         {
-            TopBedrockIntersected = TriStateBooleanFilter.True,
+            TopBedrockIntersected = NullableBooleanFilterValue.True,
             PageNumber = 1,
             PageSize = 100,
         };
@@ -973,7 +973,7 @@ public class FilterServiceTest
     {
         var filterRequest = new FilterRequest
         {
-            HasGroundwater = TriStateBooleanFilter.True,
+            HasGroundwater = NullableBooleanFilterValue.True,
             PageNumber = 1,
             PageSize = 100,
         };
@@ -998,7 +998,7 @@ public class FilterServiceTest
     {
         var filterRequest = new FilterRequest
         {
-            HasGeometry = BooleanFilter.True,
+            HasGeometry = BooleanFilterValue.True,
             PageNumber = 1,
             PageSize = 100,
         };
@@ -1029,7 +1029,7 @@ public class FilterServiceTest
 
         var filterRequest = new FilterRequest
         {
-            HasGeometry = BooleanFilter.False,
+            HasGeometry = BooleanFilterValue.False,
             PageNumber = 1,
             PageSize = 100,
         };
@@ -1056,7 +1056,7 @@ public class FilterServiceTest
     {
         var filterRequest = new FilterRequest
         {
-            HasPhotos = BooleanFilter.True,
+            HasPhotos = BooleanFilterValue.True,
             PageNumber = 1,
             PageSize = 100,
         };
@@ -1082,7 +1082,7 @@ public class FilterServiceTest
 
         var filterRequest = new FilterRequest
         {
-            HasPhotos = BooleanFilter.False,
+            HasPhotos = BooleanFilterValue.False,
             PageNumber = 1,
             PageSize = 100,
         };
@@ -1105,7 +1105,7 @@ public class FilterServiceTest
     {
         var filterRequest = new FilterRequest
         {
-            HasDocuments = BooleanFilter.True,
+            HasDocuments = BooleanFilterValue.True,
             PageNumber = 1,
             PageSize = 100,
         };
@@ -1131,7 +1131,7 @@ public class FilterServiceTest
 
         var filterRequest = new FilterRequest
         {
-            HasDocuments = BooleanFilter.False,
+            HasDocuments = BooleanFilterValue.False,
             PageNumber = 1,
             PageSize = 100,
         };
@@ -1166,7 +1166,7 @@ public class FilterServiceTest
             TotalDepthMin = 100,
             TotalDepthMax = 500,
             TypeId = existingBorehole.TypeId.HasValue ? new List<int> { existingBorehole.TypeId.Value } : null,
-            NationalInterest = TriStateBooleanFilter.True,
+            NationalInterest = NullableBooleanFilterValue.True,
             OrderBy = BoreholeOrderBy.TotalDepth,
             Direction = OrderDirection.Asc,
             PageNumber = 1,

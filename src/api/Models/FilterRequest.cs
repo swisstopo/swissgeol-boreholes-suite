@@ -113,42 +113,42 @@ public class FilterRequest
     /// <summary>
     /// Gets or sets the national interest filter.
     /// </summary>
-    public TriStateBooleanFilter? NationalInterest { get; set; }
+    public NullableBooleanFilterValue? NationalInterest { get; set; }
 
     /// <summary>
     /// Gets or sets the top bedrock intersected filter.
     /// </summary>
-    public TriStateBooleanFilter? TopBedrockIntersected { get; set; }
+    public NullableBooleanFilterValue? TopBedrockIntersected { get; set; }
 
     /// <summary>
     /// Gets or sets the has groundwater filter.
     /// </summary>
-    public TriStateBooleanFilter? HasGroundwater { get; set; }
+    public NullableBooleanFilterValue? HasGroundwater { get; set; }
 
     /// <summary>
     /// Gets or sets whether to filter for boreholes with geometry available.
     /// </summary>
-    public BooleanFilter? HasGeometry { get; set; }
+    public BooleanFilterValue? HasGeometry { get; set; }
 
     /// <summary>
     /// Gets or sets whether to filter for boreholes with log runs.
     /// </summary>
-    public BooleanFilter? HasLogs { get; set; }
+    public BooleanFilterValue? HasLogs { get; set; }
 
     /// <summary>
     /// Gets or sets whether to filter for boreholes with attached profiles.
     /// </summary>
-    public BooleanFilter? HasProfiles { get; set; }
+    public BooleanFilterValue? HasProfiles { get; set; }
 
     /// <summary>
     /// Gets or sets whether to filter for boreholes with photos.
     /// </summary>
-    public BooleanFilter? HasPhotos { get; set; }
+    public BooleanFilterValue? HasPhotos { get; set; }
 
     /// <summary>
     /// Gets or sets whether to filter for boreholes with documents.
     /// </summary>
-    public BooleanFilter? HasDocuments { get; set; }
+    public BooleanFilterValue? HasDocuments { get; set; }
 
     /// <summary>
     /// Gets or sets the page number for pagination.
