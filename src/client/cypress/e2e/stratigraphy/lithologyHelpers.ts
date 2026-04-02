@@ -250,7 +250,7 @@ const evaluateUnconsoldiateLithologyDescriptionForm = (
 export const evaluateUnconsolidatedLithologyForm = (values: UnconsolidatedLithologyFormValues) => {
   if (values.fromDepth !== undefined) evaluateInput("fromDepth", values.fromDepth);
   if (values.toDepth !== undefined) evaluateInput("toDepth", values.toDepth);
-  checkHasBedding(!!values.hasBedding, values.share);
+  if (values.hasBedding !== undefined) checkHasBedding(values.hasBedding, values.share);
   if (values.lithologyDescriptions) {
     values.lithologyDescriptions.forEach((desc, i) => evaluateUnconsoldiateLithologyDescriptionForm(desc, i));
   }
@@ -364,7 +364,7 @@ const evaluateConsoldiateLithologyDescriptionForm = (values: ConsolidatedLitholo
 export const evaluateConsolidatedLithologyForm = (values: ConsolidatedLithologyFormValues) => {
   if (values.fromDepth !== undefined) evaluateInput("fromDepth", values.fromDepth);
   if (values.toDepth !== undefined) evaluateInput("toDepth", values.toDepth);
-  checkHasBedding(!!values.hasBedding, values.share);
+  if (values.hasBedding !== undefined) checkHasBedding(values.hasBedding, values.share);
   if (values.lithologyDescriptions) {
     values.lithologyDescriptions.forEach((desc, i) => evaluateConsoldiateLithologyDescriptionForm(desc, i));
   }
