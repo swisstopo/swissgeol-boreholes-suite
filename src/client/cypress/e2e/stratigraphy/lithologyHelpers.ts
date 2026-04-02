@@ -13,19 +13,74 @@ import {
 } from "../helpers/formHelpers";
 import { handlePrompt } from "../helpers/testHelpers";
 
-// TODO: Fix this interface, it's a mix between unconsolidated and consolidated lithologies, lithological descriptions and facies descriptions
 interface LithologyFormValues {
+  fromDepth?: number;
+  toDepth?: number;
+  hasBedding?: boolean;
+  share?: number;
+  notes?: string;
+}
+
+interface UnconsolidatedLithologyDescriptionValues {
+  lithologyUnconMainId?: number | string;
+  lithologyUncon2Id?: number | string;
+  lithologyUncon3Id?: number | string;
+  lithologyUncon4Id?: number | string;
+  lithologyUncon5Id?: number | string;
+  lithologyUncon6Id?: number | string;
+  componentUnconOrganicCodelistIds?: Array<number | string>;
+  componentUnconDebrisCodelistIds?: Array<number | string>;
+  colorPrimaryId?: number | string;
+  colorSecondaryId?: number | string;
+  grainShapeCodelistIds?: Array<number | string>;
+  grainAngularityCodelistIds?: Array<number | string>;
+  lithologyUnconDebrisCodelistIds?: Array<number | string>;
+  hasStriae?: boolean;
+}
+
+interface UnconsolidatedLithologyFormValues extends LithologyFormValues {
+  lithologyDescriptions?: UnconsolidatedLithologyDescriptionValues[];
+  compactnessId?: number | string;
+  cohesionId?: number | string;
+  humidityId?: number | string;
+  consistencyId?: number | string;
+  plasticityId?: number | string;
+  uscsTypeCodelistIds?: Array<number | string>;
+  uscsDeterminationId?: number | string;
+  rockConditionCodelistIds?: Array<number | string>;
+  alterationDegreeId?: number | string;
+}
+
+interface ConsolidatedLithologyDescriptionValues {
+  lithologyConId?: number | string;
+  colorPrimaryId?: number | string;
+  colorSecondaryId?: number | string;
+  componentConParticleCodelistIds?: Array<number | string>;
+  componentConMineralCodelistIds?: Array<number | string>;
+  grainSizeId?: number | string;
+  grainAngularityId?: number | string;
+  gradationId?: number | string;
+  cementationId?: number | string;
+  structureSynGenCodelistIds?: Array<number | string>;
+  structurePostGenCodelistIds?: Array<number | string>;
+}
+
+interface ConsolidatedLithologyFormValues extends LithologyFormValues {
+  lithologyDescriptions?: ConsolidatedLithologyDescriptionValues[];
+  textureMetaCodelistIds?: Array<number | string>;
+  alterationDegreeId?: number | string;
+}
+
+interface LithologicalDescriptionFormValues {
   fromDepth?: number;
   toDepth?: number;
   fromDepthOptionsLength?: number;
   toDepthOptionsLength?: number;
-  hasBedding?: boolean;
-  share?: number;
-  lithologyDescriptions?: Record<string, unknown>[];
-  notes?: string;
   description?: string;
+}
+
+interface FaciesDescriptionFormValues extends LithologicalDescriptionFormValues {
   faciesId?: number | string;
-  [key: string]: unknown;
 }
 
 export const checkHasBedding = (hasBedding: boolean, share?: number) => {
@@ -76,395 +131,273 @@ export const switchRockType = (newRockType: string, action: string) => {
   isUnconsolidatedForm((action === "Continue" && isUnconsolidated) || (action !== "Continue" && !isUnconsolidated));
 };
 
-const descriptionSelectFields = [
-  "lithologyUnconMainId",
-  "lithologyUncon2Id",
-  "lithologyUncon3Id",
-  "lithologyUncon4Id",
-  "lithologyUncon5Id",
-  "lithologyUncon6Id",
-  "colorPrimaryId",
-  "colorSecondaryId",
-];
+const fillUnconsoldiateLithologyDescriptionForm = (values: UnconsolidatedLithologyDescriptionValues, index: number) => {
+  if (values.lithologyUnconMainId !== undefined)
+    setSelect(`lithologyDescriptions.${index}.lithologyUnconMainId`, values.lithologyUnconMainId as number);
+  if (values.lithologyUncon2Id !== undefined)
+    setSelect(`lithologyDescriptions.${index}.lithologyUncon2Id`, values.lithologyUncon2Id as number);
+  if (values.lithologyUncon3Id !== undefined)
+    setSelect(`lithologyDescriptions.${index}.lithologyUncon3Id`, values.lithologyUncon3Id as number);
+  if (values.lithologyUncon4Id !== undefined)
+    setSelect(`lithologyDescriptions.${index}.lithologyUncon4Id`, values.lithologyUncon4Id as number);
+  if (values.lithologyUncon5Id !== undefined)
+    setSelect(`lithologyDescriptions.${index}.lithologyUncon5Id`, values.lithologyUncon5Id as number);
+  if (values.lithologyUncon6Id !== undefined)
+    setSelect(`lithologyDescriptions.${index}.lithologyUncon6Id`, values.lithologyUncon6Id as number);
+  if (values.componentUnconOrganicCodelistIds !== undefined)
+    toggleMultiSelect(
+      `lithologyDescriptions.${index}.componentUnconOrganicCodelistIds`,
+      values.componentUnconOrganicCodelistIds as number[],
+    );
+  if (values.componentUnconDebrisCodelistIds !== undefined)
+    toggleMultiSelect(
+      `lithologyDescriptions.${index}.componentUnconDebrisCodelistIds`,
+      values.componentUnconDebrisCodelistIds as number[],
+    );
+  if (values.colorPrimaryId !== undefined)
+    setSelect(`lithologyDescriptions.${index}.colorPrimaryId`, values.colorPrimaryId as number);
+  if (values.colorSecondaryId !== undefined)
+    setSelect(`lithologyDescriptions.${index}.colorSecondaryId`, values.colorSecondaryId as number);
+  if (values.grainShapeCodelistIds !== undefined)
+    toggleMultiSelect(`lithologyDescriptions.${index}.grainShapeCodelistIds`, values.grainShapeCodelistIds as number[]);
+  if (values.grainAngularityCodelistIds !== undefined)
+    toggleMultiSelect(
+      `lithologyDescriptions.${index}.grainAngularityCodelistIds`,
+      values.grainAngularityCodelistIds as number[],
+    );
+  if (values.lithologyUnconDebrisCodelistIds !== undefined)
+    toggleMultiSelect(
+      `lithologyDescriptions.${index}.lithologyUnconDebrisCodelistIds`,
+      values.lithologyUnconDebrisCodelistIds as number[],
+    );
+  if (values.hasStriae) toggleCheckbox(`lithologyDescriptions.${index}.hasStriae`);
+};
 
-const descriptionMultiSelectFields = [
-  "componentUnconOrganicCodelistIds",
-  "componentUnconDebrisCodelistIds",
-  "grainShapeCodelistIds",
-  "grainAngularityCodelistIds",
-  "lithologyUnconDebrisCodelistIds",
-];
-
-const topLevelSelectFields = [
-  "compactnessId",
-  "cohesionId",
-  "humidityId",
-  "consistencyId",
-  "plasticityId",
-  "uscsDeterminationId",
-  "alterationDegreeId",
-];
-
-const topLevelMultiSelectFields = ["uscsTypeCodelistIds", "rockConditionCodelistIds"];
-
-/**
- * Fills the unconsolidated lithology form with the given values.
- * @param {object} values
- * @param {number} [values.fromDepth] - The start depth.
- * @param {number} [values.toDepth] - The end depth.
- * @param {boolean} [values.hasBedding] - Whether bedding is enabled. Assumes form starts with hasBedding unchecked.
- * @param {number} [values.share] - The bedding share (0-100). Only applied when hasBedding is true.
- * @param {object[]} [values.lithologyDescriptions] - Array of description objects.
- * @param {number} [values.compactnessId] - Index for the compactness dropdown.
- * @param {number} [values.cohesionId] - Index for the cohesion dropdown.
- * @param {number} [values.humidityId] - Index for the humidity dropdown.
- * @param {number} [values.consistencyId] - Index for the consistency dropdown.
- * @param {number} [values.plasticityId] - Index for the plasticity dropdown.
- * @param {number[]} [values.uscsTypeCodelistIds] - Indices for the USCS type multi-select.
- * @param {number} [values.uscsDeterminationId] - Index for the USCS determination dropdown.
- * @param {number[]} [values.rockConditionCodelistIds] - Indices for the rock condition multi-select.
- * @param {number} [values.alterationDegreeId] - Index for the alteration degree dropdown.
- * @param {string} [values.notes] - Notes text.
- */
-export const fillUnconsolidatedLithologyForm = ({
-  fromDepth,
-  toDepth,
-  hasBedding,
-  share,
-  lithologyDescriptions,
-  notes,
-  ...rest
-}: LithologyFormValues) => {
-  if (fromDepth !== undefined) setInput("fromDepth", fromDepth);
-  if (toDepth !== undefined) setInput("toDepth", toDepth);
-
-  if (hasBedding === true) {
+export const fillUnconsolidatedLithologyForm = (values: UnconsolidatedLithologyFormValues) => {
+  if (values.fromDepth !== undefined) setInput("fromDepth", values.fromDepth);
+  if (values.toDepth !== undefined) setInput("toDepth", values.toDepth);
+  if (values.hasBedding !== undefined) {
     toggleCheckbox("hasBedding");
-    if (share !== undefined) {
-      setInput("share", share);
+    if (values.share !== undefined) {
+      setInput("share", values.share);
     }
   }
-
-  if (lithologyDescriptions) {
-    lithologyDescriptions.forEach((desc, i) => {
-      descriptionSelectFields.forEach(field => {
-        if (desc[field] !== undefined) {
-          setSelect(`lithologyDescriptions.${i}.${field}`, desc[field] as number);
-        }
-      });
-      descriptionMultiSelectFields.forEach(field => {
-        if (desc[field] !== undefined) {
-          toggleMultiSelect(`lithologyDescriptions.${i}.${field}`, desc[field] as number[]);
-        }
-      });
-      if (desc.hasStriae) {
-        toggleCheckbox(`lithologyDescriptions.${i}.hasStriae`);
-      }
-    });
+  if (values.lithologyDescriptions) {
+    values.lithologyDescriptions.forEach((desc, i) => fillUnconsoldiateLithologyDescriptionForm(desc, i));
   }
-
-  topLevelSelectFields.forEach(field => {
-    if (rest[field] !== undefined) {
-      setSelect(field, rest[field] as number);
-    }
-  });
-
-  topLevelMultiSelectFields.forEach(field => {
-    if (rest[field] !== undefined) {
-      toggleMultiSelect(field, rest[field] as number[]);
-    }
-  });
-
-  if (notes !== undefined) {
-    setInput("notes", notes);
-  }
+  if (values.compactnessId !== undefined) setSelect("compactnessId", values.compactnessId as number);
+  if (values.cohesionId !== undefined) setSelect("cohesionId", values.cohesionId as number);
+  if (values.humidityId !== undefined) setSelect("humidityId", values.humidityId as number);
+  if (values.consistencyId !== undefined) setSelect("consistencyId", values.consistencyId as number);
+  if (values.plasticityId !== undefined) setSelect("plasticityId", values.plasticityId as number);
+  if (values.uscsTypeCodelistIds) toggleMultiSelect("uscsTypeCodelistIds", values.uscsTypeCodelistIds as number[]);
+  if (values.uscsDeterminationId !== undefined) setSelect("uscsDeterminationId", values.uscsDeterminationId as number);
+  if (values.rockConditionCodelistIds)
+    toggleMultiSelect("rockConditionCodelistIds", values.rockConditionCodelistIds as number[]);
+  if (values.alterationDegreeId !== undefined) setSelect("alterationDegreeId", values.alterationDegreeId as number);
+  if (values.notes !== undefined) setInput("description", values.notes);
 };
 
-/**
- * Evaluates the state of the unconsolidated lithology form against the given values.
- * Select fields expect the displayed text value, multi-select fields expect an array of chip label strings.
- * @param {object} values
- * @param {number} [values.fromDepth] - Expected start depth.
- * @param {number} [values.toDepth] - Expected end depth.
- * @param {boolean} [values.hasBedding] - Expected bedding state.
- * @param {number} [values.share] - Expected share value. Only evaluated when hasBedding is true.
- * @param {object[]} [values.lithologyDescriptions] - Array of expected description values.
- * @param {number} [values.compactnessId] - Expected compactness text.
- * @param {number} [values.cohesionId] - Expected cohesion text.
- * @param {number} [values.humidityId] - Expected humidity text.
- * @param {number} [values.consistencyId] - Expected consistency text.
- * @param {number} [values.plasticityId] - Expected plasticity text.
- * @param {string[]} [values.uscsTypeCodelistIds] - Expected USCS type chip labels.
- * @param {string} [values.uscsDeterminationId] - Expected USCS determination text.
- * @param {string[]} [values.rockConditionCodelistIds] - Expected rock condition chip labels.
- * @param {string} [values.alterationDegreeId] - Expected alteration degree text.
- * @param {string} [values.notes] - Expected notes text.
- */
-export const evaluateUnconsolidatedLithologyForm = ({
-  fromDepth,
-  toDepth,
-  hasBedding,
-  share,
-  lithologyDescriptions,
-  notes,
-  ...rest
-}: LithologyFormValues) => {
-  if (fromDepth !== undefined) evaluateInput("fromDepth", formatWithThousandsSeparator(fromDepth));
-  if (toDepth !== undefined) evaluateInput("toDepth", formatWithThousandsSeparator(toDepth));
-
-  if (hasBedding !== undefined) {
-    checkHasBedding(hasBedding, hasBedding ? share : undefined);
-  }
-
-  if (lithologyDescriptions) {
-    lithologyDescriptions.forEach((desc, i) => {
-      descriptionSelectFields.forEach(field => {
-        if (desc[field] !== undefined) {
-          evaluateSelect(`lithologyDescriptions.${i}.${field}`, desc[field] as string | number);
-        }
-      });
-      descriptionMultiSelectFields.forEach(field => {
-        if (desc[field] !== undefined) {
-          evaluateMultiSelect(`lithologyDescriptions.${i}.${field}`, desc[field] as string[]);
-        }
-      });
-      if (desc.hasStriae !== undefined) {
-        evaluateCheckbox(`lithologyDescriptions.${i}.hasStriae`, desc.hasStriae as boolean);
-      }
-    });
-  }
-
-  topLevelSelectFields.forEach(field => {
-    if (rest[field] !== undefined) {
-      evaluateSelect(field, rest[field] as string | number);
-    }
-  });
-
-  topLevelMultiSelectFields.forEach(field => {
-    if (rest[field] !== undefined) {
-      evaluateMultiSelect(field, rest[field] as string[]);
-    }
-  });
-
-  if (notes !== undefined) {
-    evaluateTextarea("notes", notes);
-  }
+const evaluateUnconsoldiateLithologyDescriptionForm = (
+  values: UnconsolidatedLithologyDescriptionValues,
+  index: number,
+) => {
+  if (values.lithologyUnconMainId !== undefined)
+    evaluateSelect(`lithologyDescriptions.${index}.lithologyUnconMainId`, values.lithologyUnconMainId as string);
+  if (values.lithologyUncon2Id !== undefined)
+    evaluateSelect(`lithologyDescriptions.${index}.lithologyUncon2Id`, values.lithologyUncon2Id as string);
+  if (values.lithologyUncon3Id !== undefined)
+    evaluateSelect(`lithologyDescriptions.${index}.lithologyUncon3Id`, values.lithologyUncon3Id as string);
+  if (values.lithologyUncon4Id !== undefined)
+    evaluateSelect(`lithologyDescriptions.${index}.lithologyUncon4Id`, values.lithologyUncon4Id as string);
+  if (values.lithologyUncon5Id !== undefined)
+    evaluateSelect(`lithologyDescriptions.${index}.lithologyUncon5Id`, values.lithologyUncon5Id as string);
+  if (values.lithologyUncon6Id !== undefined)
+    evaluateSelect(`lithologyDescriptions.${index}.lithologyUncon6Id`, values.lithologyUncon6Id as string);
+  if (values.componentUnconOrganicCodelistIds !== undefined)
+    evaluateMultiSelect(
+      `lithologyDescriptions.${index}.componentUnconOrganicCodelistIds`,
+      values.componentUnconOrganicCodelistIds as string[],
+    );
+  if (values.componentUnconDebrisCodelistIds !== undefined)
+    evaluateMultiSelect(
+      `lithologyDescriptions.${index}.componentUnconDebrisCodelistIds`,
+      values.componentUnconDebrisCodelistIds as string[],
+    );
+  if (values.colorPrimaryId !== undefined)
+    evaluateSelect(`lithologyDescriptions.${index}.colorPrimaryId`, values.colorPrimaryId as string);
+  if (values.colorSecondaryId !== undefined)
+    evaluateSelect(`lithologyDescriptions.${index}.colorSecondaryId`, values.colorSecondaryId as string);
+  if (values.grainShapeCodelistIds !== undefined)
+    evaluateMultiSelect(
+      `lithologyDescriptions.${index}.grainShapeCodelistIds`,
+      values.grainShapeCodelistIds as string[],
+    );
+  if (values.grainAngularityCodelistIds !== undefined)
+    evaluateMultiSelect(
+      `lithologyDescriptions.${index}.grainAngularityCodelistIds`,
+      values.grainAngularityCodelistIds as string[],
+    );
+  if (values.lithologyUnconDebrisCodelistIds !== undefined)
+    evaluateMultiSelect(
+      `lithologyDescriptions.${index}.lithologyUnconDebrisCodelistIds`,
+      values.lithologyUnconDebrisCodelistIds as string[],
+    );
+  if (values.hasStriae !== undefined)
+    evaluateCheckbox(`lithologyDescriptions.${index}.hasStriae`, values.hasStriae as boolean);
 };
 
-const consolidatedDescriptionSelectFields = [
-  "lithologyConId",
-  "colorPrimaryId",
-  "colorSecondaryId",
-  "grainSizeId",
-  "grainAngularityId",
-  "gradationId",
-  "cementationId",
-];
+export const evaluateUnconsolidatedLithologyForm = (values: UnconsolidatedLithologyFormValues) => {
+  if (values.fromDepth !== undefined) evaluateInput("fromDepth", values.fromDepth);
+  if (values.toDepth !== undefined) evaluateInput("toDepth", values.toDepth);
+  checkHasBedding(!!values.hasBedding, values.share);
+  if (values.lithologyDescriptions) {
+    values.lithologyDescriptions.forEach((desc, i) => evaluateUnconsoldiateLithologyDescriptionForm(desc, i));
+  }
+  if (values.compactnessId !== undefined) evaluateSelect("compactnessId", values.compactnessId as string);
+  if (values.cohesionId !== undefined) evaluateSelect("cohesionId", values.cohesionId as string);
+  if (values.humidityId !== undefined) evaluateSelect("humidityId", values.humidityId as string);
+  if (values.consistencyId !== undefined) evaluateSelect("consistencyId", values.consistencyId as string);
+  if (values.plasticityId !== undefined) evaluateSelect("plasticityId", values.plasticityId as string);
+  if (values.uscsTypeCodelistIds) evaluateMultiSelect("uscsTypeCodelistIds", values.uscsTypeCodelistIds as string[]);
+  if (values.uscsDeterminationId !== undefined)
+    evaluateSelect("uscsDeterminationId", values.uscsDeterminationId as string);
+  if (values.rockConditionCodelistIds)
+    evaluateMultiSelect("rockConditionCodelistIds", values.rockConditionCodelistIds as string[]);
+  if (values.alterationDegreeId !== undefined)
+    evaluateSelect("alterationDegreeId", values.alterationDegreeId as string);
+  if (values.notes !== undefined) evaluateTextarea("description", values.notes);
+};
 
-const consolidatedDescriptionMultiSelectFields = [
-  "componentConParticleCodelistIds",
-  "componentConMineralCodelistIds",
-  "structureSynGenCodelistIds",
-  "structurePostGenCodelistIds",
-];
+const fillConsoldiateLithologyDescriptionForm = (values: ConsolidatedLithologyDescriptionValues, index: number) => {
+  if (values.lithologyConId !== undefined)
+    setSelect(`lithologyDescriptions.${index}.lithologyConId`, values.lithologyConId as number);
+  if (values.colorPrimaryId !== undefined)
+    setSelect(`lithologyDescriptions.${index}.colorPrimaryId`, values.colorPrimaryId as number);
+  if (values.colorSecondaryId !== undefined)
+    setSelect(`lithologyDescriptions.${index}.colorSecondaryId`, values.colorSecondaryId as number);
+  if (values.componentConParticleCodelistIds)
+    toggleMultiSelect(
+      `lithologyDescriptions.${index}.componentConParticleCodelistIds`,
+      values.componentConParticleCodelistIds as number[],
+    );
+  if (values.componentConMineralCodelistIds)
+    toggleMultiSelect(
+      `lithologyDescriptions.${index}.componentConMineralCodelistIds`,
+      values.componentConMineralCodelistIds as number[],
+    );
+  if (values.grainSizeId !== undefined)
+    setSelect(`lithologyDescriptions.${index}.grainSizeId`, values.grainSizeId as number);
+  if (values.grainAngularityId !== undefined)
+    setSelect(`lithologyDescriptions.${index}.grainAngularityId`, values.grainAngularityId as number);
+  if (values.gradationId !== undefined)
+    setSelect(`lithologyDescriptions.${index}.gradationId`, values.gradationId as number);
+  if (values.cementationId !== undefined)
+    setSelect(`lithologyDescriptions.${index}.cementationId`, values.cementationId as number);
+  if (values.structureSynGenCodelistIds)
+    toggleMultiSelect(
+      `lithologyDescriptions.${index}.structureSynGenCodelistIds`,
+      values.structureSynGenCodelistIds as number[],
+    );
+  if (values.structurePostGenCodelistIds)
+    toggleMultiSelect(
+      `lithologyDescriptions.${index}.structurePostGenCodelistIds`,
+      values.structurePostGenCodelistIds as number[],
+    );
+};
 
-const consolidatedTopLevelSelectFields = ["alterationDegreeId"];
-
-const consolidatedTopLevelMultiSelectFields = ["textureMetaCodelistIds"];
-
-/**
- * Fills the consolidated lithology form with the given values.
- * @param {object} values
- * @param {number} [values.fromDepth] - The start depth.
- * @param {number} [values.toDepth] - The end depth.
- * @param {boolean} [values.hasBedding] - Whether bedding is enabled. Assumes form starts with hasBedding unchecked.
- * @param {number} [values.share] - The bedding share (0-100). Only applied when hasBedding is true.
- * @param {object[]} [values.lithologyDescriptions] - Array of description objects.
- * @param {string} [values.alterationDegreeId] - Index for the alteration degree dropdown.
- * @param {number[]} [values.textureMetaCodelistIds] - Indices for the texture meta multi-select.
- * @param {string} [values.notes] - Notes text.
- */
-export const fillConsolidatedLithologyForm = ({
-  fromDepth,
-  toDepth,
-  hasBedding,
-  share,
-  lithologyDescriptions,
-  notes,
-  ...rest
-}: LithologyFormValues) => {
-  if (fromDepth !== undefined) setInput("fromDepth", fromDepth);
-  if (toDepth !== undefined) setInput("toDepth", toDepth);
-
-  if (hasBedding === true) {
+export const fillConsolidatedLithologyForm = (values: ConsolidatedLithologyFormValues) => {
+  if (values.fromDepth !== undefined) setInput("fromDepth", values.fromDepth);
+  if (values.toDepth !== undefined) setInput("toDepth", values.toDepth);
+  if (values.hasBedding) {
     toggleCheckbox("hasBedding");
-    if (share !== undefined) {
-      setInput("share", share);
+    if (values.share !== undefined) {
+      setInput("share", values.share);
     }
   }
-
-  if (lithologyDescriptions) {
-    lithologyDescriptions.forEach((desc, i) => {
-      consolidatedDescriptionSelectFields.forEach(field => {
-        if (desc[field] !== undefined) {
-          setSelect(`lithologyDescriptions.${i}.${field}`, desc[field] as number);
-        }
-      });
-      consolidatedDescriptionMultiSelectFields.forEach(field => {
-        if (desc[field] !== undefined) {
-          toggleMultiSelect(`lithologyDescriptions.${i}.${field}`, desc[field] as number[]);
-        }
-      });
-    });
+  if (values.lithologyDescriptions) {
+    values.lithologyDescriptions.forEach((desc, i) => fillConsoldiateLithologyDescriptionForm(desc, i));
   }
-
-  consolidatedTopLevelSelectFields.forEach(field => {
-    if (rest[field] !== undefined) {
-      setSelect(field, rest[field] as number);
-    }
-  });
-
-  consolidatedTopLevelMultiSelectFields.forEach(field => {
-    if (rest[field] !== undefined) {
-      toggleMultiSelect(field, rest[field] as number[]);
-    }
-  });
-
-  if (notes !== undefined) {
-    setInput("notes", notes);
-  }
+  if (values.textureMetaCodelistIds !== undefined)
+    toggleMultiSelect("textureMetaCodelistIds", values.textureMetaCodelistIds as number[]);
+  if (values.alterationDegreeId !== undefined) setSelect("alterationDegreeId", values.alterationDegreeId as number);
+  if (values.notes !== undefined) setInput("description", values.notes);
 };
 
-/**
- * Evaluates the state of the consolidated lithology form against the given values.
- * Select fields expect the displayed text value, multi-select fields expect an array of chip label strings.
- * @param {object} values
- * @param {number} [values.fromDepth] - Expected start depth.
- * @param {number} [values.toDepth] - Expected end depth.
- * @param {boolean} [values.hasBedding] - Expected bedding state.
- * @param {number} [values.share] - Expected share value. Only evaluated when hasBedding is true.
- * @param {object[]} [values.lithologyDescriptions] - Array of expected description values.
- * @param {string} [values.alterationDegreeId] - Expected alteration degree text.
- * @param {string[]} [values.textureMetaCodelistIds] - Expected texture meta chip labels.
- * @param {string} [values.notes] - Expected notes text.
- */
-export const evaluateConsolidatedLithologyForm = ({
-  fromDepth,
-  toDepth,
-  hasBedding,
-  share,
-  lithologyDescriptions,
-  notes,
-  ...rest
-}: LithologyFormValues) => {
-  if (fromDepth !== undefined) evaluateInput("fromDepth", formatWithThousandsSeparator(fromDepth));
-  if (toDepth !== undefined) evaluateInput("toDepth", formatWithThousandsSeparator(toDepth));
+const evaluateConsoldiateLithologyDescriptionForm = (values: ConsolidatedLithologyDescriptionValues, index: number) => {
+  if (values.lithologyConId !== undefined)
+    evaluateSelect(`lithologyDescriptions.${index}.lithologyConId`, values.lithologyConId as string);
+  if (values.colorPrimaryId !== undefined)
+    evaluateSelect(`lithologyDescriptions.${index}.colorPrimaryId`, values.colorPrimaryId as string);
+  if (values.colorSecondaryId !== undefined)
+    evaluateSelect(`lithologyDescriptions.${index}.colorSecondaryId`, values.colorSecondaryId as string);
+  if (values.componentConParticleCodelistIds)
+    evaluateMultiSelect(
+      `lithologyDescriptions.${index}.componentConParticleCodelistIds`,
+      values.componentConParticleCodelistIds as string[],
+    );
+  if (values.componentConMineralCodelistIds)
+    evaluateMultiSelect(
+      `lithologyDescriptions.${index}.componentConMineralCodelistIds`,
+      values.componentConMineralCodelistIds as string[],
+    );
+  if (values.grainSizeId !== undefined)
+    evaluateSelect(`lithologyDescriptions.${index}.grainSizeId`, values.grainSizeId as string);
+  if (values.grainAngularityId !== undefined)
+    evaluateSelect(`lithologyDescriptions.${index}.grainAngularityId`, values.grainAngularityId as string);
+  if (values.gradationId !== undefined)
+    evaluateSelect(`lithologyDescriptions.${index}.gradationId`, values.gradationId as string);
+  if (values.cementationId !== undefined)
+    evaluateSelect(`lithologyDescriptions.${index}.cementationId`, values.cementationId as string);
+  if (values.structureSynGenCodelistIds)
+    evaluateMultiSelect(
+      `lithologyDescriptions.${index}.structureSynGenCodelistIds`,
+      values.structureSynGenCodelistIds as string[],
+    );
+  if (values.structurePostGenCodelistIds)
+    evaluateMultiSelect(
+      `lithologyDescriptions.${index}.structurePostGenCodelistIds`,
+      values.structurePostGenCodelistIds as string[],
+    );
+};
 
-  if (hasBedding !== undefined) {
-    checkHasBedding(hasBedding, hasBedding ? share : undefined);
+export const evaluateConsolidatedLithologyForm = (values: ConsolidatedLithologyFormValues) => {
+  if (values.fromDepth !== undefined) evaluateInput("fromDepth", values.fromDepth);
+  if (values.toDepth !== undefined) evaluateInput("toDepth", values.toDepth);
+  checkHasBedding(!!values.hasBedding, values.share);
+  if (values.lithologyDescriptions) {
+    values.lithologyDescriptions.forEach((desc, i) => evaluateConsoldiateLithologyDescriptionForm(desc, i));
   }
+  if (values.textureMetaCodelistIds !== undefined)
+    evaluateMultiSelect("textureMetaCodelistIds", values.textureMetaCodelistIds as string[]);
+  if (values.alterationDegreeId !== undefined)
+    evaluateSelect("alterationDegreeId", values.alterationDegreeId as string);
 
-  if (lithologyDescriptions) {
-    lithologyDescriptions.forEach((desc, i) => {
-      consolidatedDescriptionSelectFields.forEach(field => {
-        if (desc[field] !== undefined) {
-          evaluateSelect(`lithologyDescriptions.${i}.${field}`, desc[field] as string | number);
-        }
-      });
-      consolidatedDescriptionMultiSelectFields.forEach(field => {
-        if (desc[field] !== undefined) {
-          evaluateMultiSelect(`lithologyDescriptions.${i}.${field}`, desc[field] as string[]);
-        }
-      });
-    });
-  }
-
-  consolidatedTopLevelSelectFields.forEach(field => {
-    if (rest[field] !== undefined) {
-      evaluateSelect(field, rest[field] as string | number);
-    }
-  });
-
-  consolidatedTopLevelMultiSelectFields.forEach(field => {
-    if (rest[field] !== undefined) {
-      evaluateMultiSelect(field, rest[field] as string[]);
-    }
-  });
-
-  if (notes !== undefined) {
-    evaluateTextarea("notes", notes);
-  }
+  if (values.notes !== undefined) evaluateTextarea("description", values.notes);
 };
 
-/**
- * Fills the lithological description form with the given values.
- * @param {object} values
- * @param {number} [values.fromDepth] - Index of the start depth option in the dropdown.
- * @param {number} [values.fromDepthOptionsLength] - Expected number of options in the dropdown.
- * @param {number} [values.toDepth] - Index of the end depth option in the dropdown.
- * @param {number} [values.toDepthOptionsLength] - Expected number of options in the dropdown.
- * @param {string} [values.description] - Description text.
- */
-export const fillLithologicalDescriptionForm = ({
-  fromDepth,
-  fromDepthOptionsLength,
-  toDepth,
-  toDepthOptionsLength,
-  description,
-}: LithologyFormValues) => {
-  if (fromDepth !== undefined) setSelect("fromDepth", fromDepth, fromDepthOptionsLength);
-  if (toDepth !== undefined) setSelect("toDepth", toDepth, toDepthOptionsLength);
-  if (description !== undefined) setInput("description", description);
+export const fillLithologicalDescriptionForm = (values: LithologicalDescriptionFormValues) => {
+  if (values.fromDepth !== undefined) setSelect("fromDepth", values.fromDepth, values.fromDepthOptionsLength);
+  if (values.toDepth !== undefined) setSelect("toDepth", values.toDepth, values.toDepthOptionsLength);
+  if (values.description !== undefined) setInput("description", values.description);
 };
 
-/**
- * Evaluates the state of the lithological description form against the given values.
- * @param {object} values
- * @param {number|string} [values.fromDepth] - Expected start depth value shown in the dropdown.
- * @param {number|string} [values.toDepth] - Expected end depth value shown in the dropdown.
- * @param {string} [values.description] - Expected description text.
- */
-export const evaluateLithologicalDescriptionForm = ({ fromDepth, toDepth, description }: LithologyFormValues) => {
-  if (fromDepth !== undefined) evaluateSelect("fromDepth", formatWithThousandsSeparator(fromDepth));
-  if (toDepth !== undefined) evaluateSelect("toDepth", formatWithThousandsSeparator(toDepth));
-  if (description !== undefined) evaluateTextarea("description", description);
+export const evaluateLithologicalDescriptionForm = (values: LithologicalDescriptionFormValues) => {
+  if (values.fromDepth !== undefined) evaluateSelect("fromDepth", formatWithThousandsSeparator(values.fromDepth));
+  if (values.toDepth !== undefined) evaluateSelect("toDepth", formatWithThousandsSeparator(values.toDepth));
+  if (values.description !== undefined) evaluateTextarea("description", values.description);
 };
 
-/**
- * Fills the facies description form with the given values.
- * @param {object} values
- * @param {number} [values.fromDepth] - Index of the start depth option in the dropdown.
- * @param {number} [values.fromDepthOptionsLength] - Expected number of options in the dropdown.
- * @param {number} [values.toDepth] - Index of the end depth option in the dropdown.
- * @param {number} [values.toDepthOptionsLength] - Expected number of options in the dropdown.
- * @param {number} [values.faciesId] - Index of the facies option in the dropdown.
- * @param {string} [values.description] - Description text.
- */
-export const fillFaciesDescriptionForm = ({
-  fromDepth,
-  fromDepthOptionsLength,
-  toDepth,
-  toDepthOptionsLength,
-  faciesId,
-  description,
-}: LithologyFormValues) => {
-  if (fromDepth !== undefined) setSelect("fromDepth", fromDepth, fromDepthOptionsLength);
-  if (toDepth !== undefined) setSelect("toDepth", toDepth, toDepthOptionsLength);
-  if (faciesId !== undefined) setSelect("faciesId", faciesId as number);
-  if (description !== undefined) setInput("description", description);
+export const fillFaciesDescriptionForm = (values: FaciesDescriptionFormValues) => {
+  if (values.fromDepth !== undefined) setSelect("fromDepth", values.fromDepth, values.fromDepthOptionsLength);
+  if (values.toDepth !== undefined) setSelect("toDepth", values.toDepth, values.toDepthOptionsLength);
+  if (values.faciesId !== undefined) setSelect("faciesId", values.faciesId as number);
+  if (values.description !== undefined) setInput("description", values.description);
 };
 
-/**
- * Evaluates the state of the facies description form against the given values.
- * @param {object} values
- * @param {number|string} [values.fromDepth] - Expected start depth value shown in the dropdown.
- * @param {number|string} [values.toDepth] - Expected end depth value shown in the dropdown.
- * @param {string} [values.faciesId] - Expected facies text value.
- * @param {string} [values.description] - Expected description text.
- */
-export const evaluateFaciesDescriptionForm = ({ fromDepth, toDepth, faciesId, description }: LithologyFormValues) => {
-  if (fromDepth !== undefined) evaluateSelect("fromDepth", formatWithThousandsSeparator(fromDepth));
-  if (toDepth !== undefined) evaluateSelect("toDepth", formatWithThousandsSeparator(toDepth));
-  if (faciesId !== undefined) evaluateSelect("faciesId", faciesId);
-  if (description !== undefined) evaluateTextarea("description", description);
+export const evaluateFaciesDescriptionForm = (values: FaciesDescriptionFormValues) => {
+  if (values.fromDepth !== undefined) evaluateSelect("fromDepth", formatWithThousandsSeparator(values.fromDepth));
+  if (values.toDepth !== undefined) evaluateSelect("toDepth", formatWithThousandsSeparator(values.toDepth));
+  if (values.faciesId !== undefined) evaluateSelect("faciesId", values.faciesId);
+  if (values.description !== undefined) evaluateTextarea("description", values.description);
 };

@@ -10,11 +10,11 @@ const layerSelector = (layerType: string, fromDepth: number, toDepth: number | n
   return `[data-cy^="${layerType}-"]:not([data-cy$="-gap"]):contains("${formatWithThousandsSeparator(fromDepth)} m MD"):contains("${formatWithThousandsSeparator(toDepth!)} m MD")`;
 };
 
-export const LayerType = {
-  lithology: "lithology",
-  lithologicalDescription: "lithologicalDescription",
-  faciesDescription: "faciesDescription",
-};
+export enum LayerType {
+  lithology = "lithology",
+  lithologicalDescription = "lithologicalDescription",
+  faciesDescription = "faciesDescription",
+}
 
 export const openNewStratigraphy = () => {
   goToRouteAndAcceptTerms(`/`);
