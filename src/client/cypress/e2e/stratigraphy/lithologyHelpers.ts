@@ -195,7 +195,7 @@ export const fillUnconsolidatedLithologyForm = (values: UnconsolidatedLithologyF
   if (values.rockConditionCodelistIds)
     toggleMultiSelect("rockConditionCodelistIds", values.rockConditionCodelistIds as number[]);
   if (values.alterationDegreeId !== undefined) setSelect("alterationDegreeId", values.alterationDegreeId as number);
-  if (values.notes !== undefined) setInput("description", values.notes);
+  if (values.notes !== undefined) setInput("notes", values.notes);
 };
 
 const evaluateUnconsoldiateLithologyDescriptionForm = (
@@ -266,7 +266,7 @@ export const evaluateUnconsolidatedLithologyForm = (values: UnconsolidatedLithol
     evaluateMultiSelect("rockConditionCodelistIds", values.rockConditionCodelistIds as string[]);
   if (values.alterationDegreeId !== undefined)
     evaluateSelect("alterationDegreeId", values.alterationDegreeId as string);
-  if (values.notes !== undefined) evaluateTextarea("description", values.notes);
+  if (values.notes !== undefined) evaluateTextarea("notes", values.notes);
 };
 
 const fillConsoldiateLithologyDescriptionForm = (values: ConsolidatedLithologyDescriptionValues, index: number) => {
@@ -321,7 +321,7 @@ export const fillConsolidatedLithologyForm = (values: ConsolidatedLithologyFormV
   if (values.textureMetaCodelistIds !== undefined)
     toggleMultiSelect("textureMetaCodelistIds", values.textureMetaCodelistIds as number[]);
   if (values.alterationDegreeId !== undefined) setSelect("alterationDegreeId", values.alterationDegreeId as number);
-  if (values.notes !== undefined) setInput("description", values.notes);
+  if (values.notes !== undefined) setInput("notes", values.notes);
 };
 
 const evaluateConsoldiateLithologyDescriptionForm = (values: ConsolidatedLithologyDescriptionValues, index: number) => {
@@ -373,7 +373,7 @@ export const evaluateConsolidatedLithologyForm = (values: ConsolidatedLithologyF
   if (values.alterationDegreeId !== undefined)
     evaluateSelect("alterationDegreeId", values.alterationDegreeId as string);
 
-  if (values.notes !== undefined) evaluateTextarea("description", values.notes);
+  if (values.notes !== undefined) evaluateTextarea("notes", values.notes);
 };
 
 export const fillLithologicalDescriptionForm = (values: LithologicalDescriptionFormValues) => {
