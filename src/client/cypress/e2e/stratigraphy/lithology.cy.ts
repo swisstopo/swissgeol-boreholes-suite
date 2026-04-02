@@ -797,6 +797,10 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     addLithology();
 
     fillCompleteUnconsolidatedLithologyForm();
+    closeLayerModal();
+    saveWithSaveBar();
+
+    openLayer(LayerType.lithology, 0, 56);
     evaluateCompleteUnconsolidatedLithologyForm();
 
     // Should not change form when canceling switch
@@ -814,6 +818,10 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     evaluateConsolidatedLithologyFormHasOnlyDepths(0, 56);
 
     fillCompleteConsolidatedLithologyForm();
+    closeLayerModal();
+    saveWithSaveBar();
+
+    openLayer(LayerType.lithology, 0, 56);
     evaluateCompleteConsolidatedLithologyForm();
 
     // Should not change form when canceling switch
