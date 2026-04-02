@@ -11,7 +11,9 @@ describe("Tests for the chronostratigraphy editor.", () => {
     // Add new borehole with stratigraphy
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
-      .then(boreholeId => createStratigraphy(boreholeId as unknown as number, "GLOBALMAGIC").as("stratigraphy_id"));
+      .then(boreholeId =>
+        createStratigraphy({ boreholeId: boreholeId as unknown as number, name: "GLOBALMAGIC" }).as("stratigraphy_id"),
+      );
 
     // open chronostratigraphy editor
     cy.get("@borehole_id").then(boreholeId => {

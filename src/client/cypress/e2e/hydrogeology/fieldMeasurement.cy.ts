@@ -15,17 +15,22 @@ beforeEach(() => {
   createBorehole({ originalName: "INTEADAL" })
     .as("borehole_id")
     .then(id =>
-      createCompletion("test fieldmeasurement", id as unknown as number, 16000002, true)
+      createCompletion({
+        name: "test fieldmeasurement",
+        boreholeId: id as unknown as number,
+        kindId: 16000002,
+        isPrimary: true,
+      })
         .as("completion_id")
         .then(completionId => {
-          createCasing(
-            "casing-1",
-            id as unknown as number,
-            completionId as unknown as number,
-            "2021-01-01",
-            "2021-01-02",
-            [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
-          );
+          createCasing({
+            name: "casing-1",
+            boreholeId: id as unknown as number,
+            completionId: completionId as unknown as number,
+            dateStart: "2021-01-01",
+            dateFinish: "2021-01-02",
+            casingElements: [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
+          });
         }),
     );
 });
@@ -94,28 +99,26 @@ describe("Tests for the field measurement editor.", () => {
   it("sorts fieldmeasurement", () => {
     // Create borehole with completion and casings
     cy.get("@borehole_id").then(id => {
-      createFieldMeasurement(
-        id as unknown as number,
-        "2012-11-14T12:06Z",
-        15203157,
-        15203209,
-        15203219,
-        10,
-        null,
-        0,
-        10,
-      );
-      createFieldMeasurement(
-        id as unknown as number,
-        "2012-11-14T12:07Z",
-        15203157,
-        15203209,
-        15203219,
-        10,
-        null,
-        0,
-        12,
-      );
+      createFieldMeasurement({
+        boreholeId: id as unknown as number,
+        startTime: "2012-11-14T12:06Z",
+        reliabilityId: 15203157,
+        sampleTypeId: 15203209,
+        parameterId: 15203219,
+        value: 10,
+        fromDepthM: 0,
+        toDepthM: 10,
+      });
+      createFieldMeasurement({
+        boreholeId: id as unknown as number,
+        startTime: "2012-11-14T12:07Z",
+        reliabilityId: 15203157,
+        sampleTypeId: 15203209,
+        parameterId: 15203219,
+        value: 10,
+        fromDepthM: 0,
+        toDepthM: 12,
+      });
       goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/fieldmeasurement`);
 
       startBoreholeEditing();

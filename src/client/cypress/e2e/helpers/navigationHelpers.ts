@@ -39,7 +39,11 @@ const noContentColor = "rgb(130, 142, 154)";
 const contentColor = "rgb(28, 40, 52)";
 export const activeColor = "rgb(166, 84, 98)";
 
-export const checkTabsByTitles = (tabs: { title: string; active?: boolean }[], parent?: string, datacy?: string) => {
+export const checkTabsByTitles = (
+  tabs: { title: string; active?: boolean }[],
+  options?: { parent?: string; datacy?: string },
+) => {
+  const { parent, datacy } = options ?? {};
   const selector = createBaseSelector(parent) + `.MuiTabs-list`;
   let tabSelector = ".MuiTab-root";
   if (datacy) {

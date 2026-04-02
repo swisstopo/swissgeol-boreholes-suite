@@ -25,17 +25,22 @@ describe("Tests for the hydrotest editor.", () => {
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id =>
-        createCompletion("test hydrotest", id as unknown as number, 16000002, true)
+        createCompletion({
+          name: "test hydrotest",
+          boreholeId: id as unknown as number,
+          kindId: 16000002,
+          isPrimary: true,
+        })
           .as("completion_id")
           .then(completionId => {
-            createCasing(
-              "casing-1",
-              id as unknown as number,
-              completionId as unknown as number,
-              "2021-01-01",
-              "2021-01-02",
-              [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
-            );
+            createCasing({
+              name: "casing-1",
+              boreholeId: id as unknown as number,
+              completionId: completionId as unknown as number,
+              dateStart: "2021-01-01",
+              dateFinish: "2021-01-02",
+              casingElements: [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
+            });
           }),
       );
 
@@ -116,8 +121,22 @@ describe("Tests for the hydrotest editor.", () => {
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id => {
-        createHydrotest(id as unknown as number, "2012-11-14T12:06Z", 15203157, [15203175], null, 0, 10);
-        createHydrotest(id as unknown as number, "2012-11-14T12:07Z", 15203157, [15203174], null, 0, 12);
+        createHydrotest({
+          boreholeId: id as unknown as number,
+          startTime: "2012-11-14T12:06Z",
+          reliabilityId: 15203157,
+          kindCodelistIds: [15203175],
+          fromDepthM: 0,
+          toDepthM: 10,
+        });
+        createHydrotest({
+          boreholeId: id as unknown as number,
+          startTime: "2012-11-14T12:07Z",
+          reliabilityId: 15203157,
+          kindCodelistIds: [15203174],
+          fromDepthM: 0,
+          toDepthM: 12,
+        });
         goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/hydrotest`);
         cy.wait(["@borehole"]);
       });

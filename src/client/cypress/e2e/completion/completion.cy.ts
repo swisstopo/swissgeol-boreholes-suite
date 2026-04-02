@@ -32,8 +32,18 @@ const toggleHeaderOpen = () => {
 const createBoreholeWithTwoCompletions = () => {
   return createBorehole({ originalName: "INTEADAL" }).then(boreholeId => {
     cy.wrap(boreholeId).as("boreholeId");
-    createCompletion("Compl-1", boreholeId as unknown as number, 16000002, true).as("completion1Id");
-    createCompletion("Compl-2", boreholeId as unknown as number, 16000002, false).as("completion2Id");
+    createCompletion({
+      name: "Compl-1",
+      boreholeId: boreholeId as unknown as number,
+      kindId: 16000002,
+      isPrimary: true,
+    }).as("completion1Id");
+    createCompletion({
+      name: "Compl-2",
+      boreholeId: boreholeId as unknown as number,
+      kindId: 16000002,
+      isPrimary: false,
+    }).as("completion2Id");
   });
 };
 
@@ -392,7 +402,9 @@ describe("completion crud tests", () => {
   it.skip("checks completion content validation", () => {
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
-      .then(id => createCompletion("Compl-1", id as unknown as number, 16000001, true))
+      .then(id =>
+        createCompletion({ name: "Compl-1", boreholeId: id as unknown as number, kindId: 16000001, isPrimary: true }),
+      )
       .then(response => {
         expect(response).to.be.above(0);
       });
@@ -613,8 +625,18 @@ describe("completion crud tests", () => {
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id => {
-        createCompletion("test hash 1", id as unknown as number, 16000002, true).as("completion1_id");
-        createCompletion("test hash 2", id as unknown as number, 16000002, false).as("completion2_id");
+        createCompletion({
+          name: "test hash 1",
+          boreholeId: id as unknown as number,
+          kindId: 16000002,
+          isPrimary: true,
+        }).as("completion1_id");
+        createCompletion({
+          name: "test hash 2",
+          boreholeId: id as unknown as number,
+          kindId: 16000002,
+          isPrimary: false,
+        }).as("completion2_id");
       });
 
     const forceReload = true;

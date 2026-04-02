@@ -3,7 +3,22 @@ import { formatWithThousandsSeparator, setInput } from "../helpers/formHelpers";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers";
 import { goToRouteAndAcceptTerms, newEditableBorehole } from "../helpers/testHelpers";
 
-const layerSelector = (layerType: string, fromDepth: number, toDepth: number | null, isGap = false) => {
+export interface LayerInput {
+  layerType: string;
+  fromDepth: number;
+  toDepth?: number | null;
+  isGap?: boolean;
+}
+
+export interface HasLayerInput extends LayerInput {
+  exists?: boolean;
+}
+
+export interface CheckLayerCardInput extends LayerInput {
+  content: string[];
+}
+
+const layerSelector = ({ layerType, fromDepth, toDepth, isGap }: LayerInput) => {
   if (isGap) {
     return `[data-cy="${layerType}-${fromDepth}-0-gap"]`;
   }
@@ -30,14 +45,8 @@ export const addLithology = () => {
   cy.dataCy("add-row-button").click();
 };
 
-export const hasLayer = (
-  layerType: string,
-  fromDepth: number,
-  toDepth: number | null,
-  isGap = false,
-  exists = true,
-) => {
-  const selector = layerSelector(layerType, fromDepth, toDepth, isGap);
+export const hasLayer = ({ layerType, fromDepth, toDepth, isGap, exists = true }: HasLayerInput) => {
+  const selector = layerSelector({ layerType, fromDepth, toDepth, isGap });
   if (exists) {
     cy.get(selector).should("exist");
   } else {
@@ -45,29 +54,21 @@ export const hasLayer = (
   }
 };
 
-export const deleteLayer = (layerType: string, fromDepth: number, toDepth: number | null) => {
-  cy.get(layerSelector(layerType, fromDepth, toDepth))
-    .realHover()
-    .dataCy("deleteLayer-button")
-    .click();
+export const deleteLayer = ({ layerType, fromDepth, toDepth }: LayerInput) => {
+  cy.get(layerSelector({ layerType, fromDepth, toDepth })).realHover().dataCy("deleteLayer-button").click();
 };
 
-export const openLayer = (layerType: string, fromDepth: number, toDepth: number | null, isGap = false) => {
-  cy.get(layerSelector(layerType, fromDepth, toDepth, isGap)).click();
+export const openLayer = ({ layerType, fromDepth, toDepth, isGap }: LayerInput) => {
+  cy.get(layerSelector({ layerType, fromDepth, toDepth, isGap })).click();
 };
 
 export const closeLayerModal = () => {
   cy.dataCy("close-button").click();
 };
 
-export const checkLayerCardContent = (
-  layerType: string,
-  fromDepth: number,
-  toDepth: number | null,
-  content: string[],
-) => {
+export const checkLayerCardContent = ({ layerType, fromDepth, toDepth, content }: CheckLayerCardInput) => {
   content.forEach((text: string) => {
-    cy.get(layerSelector(layerType, fromDepth, toDepth)).contains(text);
+    cy.get(layerSelector({ layerType, fromDepth, toDepth })).contains(text);
   });
 };
 
