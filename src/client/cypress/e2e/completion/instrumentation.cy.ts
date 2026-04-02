@@ -16,17 +16,22 @@ describe("Instrumentation crud tests", () => {
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id =>
-        createCompletion("test instruments", id as unknown as number, 16000002, true)
+        createCompletion({
+          name: "test instruments",
+          boreholeId: id as unknown as number,
+          kindId: 16000002,
+          isPrimary: true,
+        })
           .as("completion_id")
           .then(completionId => {
-            createCasing(
-              "casing-1",
-              id as unknown as number,
-              completionId as unknown as number,
-              "2021-01-01",
-              "2021-01-02",
-              [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
-            ).as("casing1_id");
+            createCasing({
+              name: "casing-1",
+              boreholeId: id as unknown as number,
+              completionId: completionId as unknown as number,
+              dateStart: "2021-01-01",
+              dateFinish: "2021-01-02",
+              casingElements: [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
+            }).as("casing1_id");
           }),
       );
 
@@ -101,26 +106,26 @@ describe("Instrumentation crud tests", () => {
   it("sorts instrumentation", () => {
     cy.get("@completion_id").then(id => {
       cy.get("@casing1_id").then(casingId => {
-        createInstrument(
-          id as unknown as number,
-          casingId as unknown as number,
-          "Inst-1",
-          25000212,
-          25000102,
-          0,
-          10,
-          "Lorem.",
-        );
-        createInstrument(
-          id as unknown as number,
-          casingId as unknown as number,
-          "Inst-2",
-          25000215,
-          25000100,
-          0,
-          12,
-          "Lorem.",
-        );
+        createInstrument({
+          completionId: id as unknown as number,
+          casingId: casingId as unknown as number,
+          name: "Inst-1",
+          statusId: 25000212,
+          kindId: 25000102,
+          fromDepth: 0,
+          toDepth: 10,
+          notes: "Lorem.",
+        });
+        createInstrument({
+          completionId: id as unknown as number,
+          casingId: casingId as unknown as number,
+          name: "Inst-2",
+          statusId: 25000215,
+          kindId: 25000100,
+          fromDepth: 0,
+          toDepth: 12,
+          notes: "Lorem.",
+        });
       });
     });
 

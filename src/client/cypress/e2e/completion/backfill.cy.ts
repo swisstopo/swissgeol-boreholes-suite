@@ -16,25 +16,30 @@ describe("Backfill crud tests", () => {
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
       .then(id =>
-        createCompletion("test backfill", id as unknown as number, 16000002, true)
+        createCompletion({
+          name: "test backfill",
+          boreholeId: id as unknown as number,
+          kindId: 16000002,
+          isPrimary: true,
+        })
           .as("completion_id")
           .then(completionId => {
-            createCasing(
-              "casing-1",
-              id as unknown as number,
-              completionId as unknown as number,
-              "2021-01-01",
-              "2021-01-02",
-              [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
-            ).as("casing1_id");
-            createCasing(
-              "casing-2",
-              id as unknown as number,
-              completionId as unknown as number,
-              "2021-01-03",
-              "2021-01-04",
-              [{ fromDepth: 5, toDepth: 12, kindId: 25000105 }],
-            ).as("casing2_id");
+            createCasing({
+              name: "casing-1",
+              boreholeId: id as unknown as number,
+              completionId: completionId as unknown as number,
+              dateStart: "2021-01-01",
+              dateFinish: "2021-01-02",
+              casingElements: [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
+            }).as("casing1_id");
+            createCasing({
+              name: "casing-2",
+              boreholeId: id as unknown as number,
+              completionId: completionId as unknown as number,
+              dateStart: "2021-01-03",
+              dateFinish: "2021-01-04",
+              casingElements: [{ fromDepth: 5, toDepth: 12, kindId: 25000105 }],
+            }).as("casing2_id");
           }),
       );
   });
@@ -102,10 +107,26 @@ describe("Backfill crud tests", () => {
   it("sorts backfills", () => {
     cy.get("@completion_id").then(id => {
       cy.get("@casing1_id").then(casingId => {
-        createBackfill(id as unknown as number, casingId as unknown as number, 25000112, 25000100, 0, 12, "Lorem.");
+        createBackfill({
+          completionId: id as unknown as number,
+          casingId: casingId as unknown as number,
+          materialId: 25000112,
+          kindId: 25000100,
+          fromDepth: 0,
+          toDepth: 12,
+          notes: "Lorem.",
+        });
       });
       cy.get("@casing2_id").then(casingId => {
-        createBackfill(id as unknown as number, casingId as unknown as number, 25000109, 25000102, 0, 10, "Lorem.");
+        createBackfill({
+          completionId: id as unknown as number,
+          casingId: casingId as unknown as number,
+          materialId: 25000109,
+          kindId: 25000102,
+          fromDepth: 0,
+          toDepth: 10,
+          notes: "Lorem.",
+        });
       });
     });
 

@@ -11,7 +11,11 @@ describe("Tests for the lithostratigraphy editor.", () => {
     // Add new borehole with stratigraphy
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
-      .then(boreholeId => createStratigraphy(boreholeId as unknown as number, "TRAFFICNEIGHBOR").as("stratigraphy_id"));
+      .then(boreholeId =>
+        createStratigraphy({ boreholeId: boreholeId as unknown as number, name: "TRAFFICNEIGHBOR" }).as(
+          "stratigraphy_id",
+        ),
+      );
 
     // open lithostratigraphy editor
     cy.get("@borehole_id").then(boreholeId => {

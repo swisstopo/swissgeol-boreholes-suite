@@ -71,18 +71,14 @@ describe("Tests for stratigraphy", () => {
           expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/new`);
         });
         cy.dataCy("stratigraphy-header").should("not.exist");
-        checkTabsByTitles(
-          [{ title: "First Stratigraphy" }, { title: "Not specified", active: true }],
-          undefined,
-          "stratigraphy-tab",
-        );
+        checkTabsByTitles([{ title: "First Stratigraphy" }, { title: "Not specified", active: true }], {
+          datacy: "stratigraphy-tab",
+        });
 
         setInput("name", "First Stratigraphy");
-        checkTabsByTitles(
-          [{ title: "First Stratigraphy" }, { title: "Not specified", active: true }],
-          undefined,
-          "stratigraphy-tab",
-        );
+        checkTabsByTitles([{ title: "First Stratigraphy" }, { title: "Not specified", active: true }], {
+          datacy: "stratigraphy-tab",
+        });
         evaluateCheckbox("isPrimary", false);
         saveForm();
         verifyUnsavedChanges();
@@ -95,22 +91,18 @@ describe("Tests for stratigraphy", () => {
         cy.location().should(location => {
           expect(location.pathname).not.to.contain(`stratigraphy/new`);
         });
-        checkTabsByTitles(
-          [{ title: "First Stratigraphy" }, { title: "Another Stratigraphy", active: true }],
-          undefined,
-          "stratigraphy-tab",
-        );
+        checkTabsByTitles([{ title: "First Stratigraphy" }, { title: "Another Stratigraphy", active: true }], {
+          datacy: "stratigraphy-tab",
+        });
         evaluateInput("name", "Another Stratigraphy");
         evaluateCheckbox("isPrimary", false);
         navigateToTabWithTitle("First Stratigraphy");
         cy.location().should(location => {
           expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/${firstStratigraphy.id}`);
         });
-        checkTabsByTitles(
-          [{ title: "First Stratigraphy", active: true }, { title: "Another Stratigraphy" }],
-          undefined,
-          "stratigraphy-tab",
-        );
+        checkTabsByTitles([{ title: "First Stratigraphy", active: true }, { title: "Another Stratigraphy" }], {
+          datacy: "stratigraphy-tab",
+        });
         evaluateInput("name", "First Stratigraphy");
         evaluateCheckbox("isPrimary", true);
 
@@ -121,8 +113,7 @@ describe("Tests for stratigraphy", () => {
             { title: "Another Stratigraphy" },
             { title: "Not specified", active: true },
           ],
-          undefined,
-          "stratigraphy-tab",
+          { datacy: "stratigraphy-tab" },
         );
         cy.location().should(location => {
           expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/new`);
@@ -138,8 +129,7 @@ describe("Tests for stratigraphy", () => {
             { title: "Another Stratigraphy" },
             { title: "First Stratigraphy" },
           ],
-          undefined,
-          "stratigraphy-tab",
+          { datacy: "stratigraphy-tab" },
         );
         evaluateInput("name", "Primary Stratigraphy");
         evaluateInput("date", "2024-03-20");
@@ -155,8 +145,7 @@ describe("Tests for stratigraphy", () => {
             { title: "Another Stratigraphy" },
             { title: "First Stratigraphy", active: true },
           ],
-          undefined,
-          "stratigraphy-tab",
+          { datacy: "stratigraphy-tab" },
         );
         evaluateCheckbox("isPrimary", false);
         setInput("date", "2025-01-01");
@@ -179,8 +168,7 @@ describe("Tests for stratigraphy", () => {
             { title: "Another Stratigraphy" },
             { title: "First Stratigraphy updated", active: true },
           ],
-          undefined,
-          "stratigraphy-tab",
+          { datacy: "stratigraphy-tab" },
         );
         evaluateInput("name", "First Stratigraphy updated");
         evaluateInput("date", "2025-01-01");
@@ -192,7 +180,7 @@ describe("Tests for stratigraphy", () => {
   it("can copy existing stratigraphy", () => {
     createBorehole({ originalName: "OLYMPIAGOAT" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
-      createStratigraphy(boreholeId as unknown as number, "OLYMPIAGOAT").as("stratigraphy_id");
+      createStratigraphy({ boreholeId: boreholeId as unknown as number, name: "OLYMPIAGOAT" }).as("stratigraphy_id");
       cy.get("@stratigraphy_id").then(stratigraphyId => {
         goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy?dev=true`);
         cy.wait(["@stratigraphy_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
@@ -212,11 +200,9 @@ describe("Tests for stratigraphy", () => {
           cy.location().should(location => {
             expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/${copiedStratigraphyId}`);
           });
-          checkTabsByTitles(
-            [{ title: "OLYMPIAGOAT" }, { title: "OLYMPIAGOAT (Clone)", active: true }],
-            undefined,
-            "stratigraphy-tab",
-          );
+          checkTabsByTitles([{ title: "OLYMPIAGOAT" }, { title: "OLYMPIAGOAT (Clone)", active: true }], {
+            datacy: "stratigraphy-tab",
+          });
           evaluateInput("name", "OLYMPIAGOAT (Clone)");
           evaluateCheckbox("isPrimary", false);
         });
@@ -227,9 +213,11 @@ describe("Tests for stratigraphy", () => {
   it("can delete stratigraphies", () => {
     createBorehole({ originalName: "AIRGIRAFFE" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
-      createStratigraphy(boreholeId as unknown as number, "BATONTRUCK").as("stratigraphy_id_1");
+      createStratigraphy({ boreholeId: boreholeId as unknown as number, name: "BATONTRUCK" }).as("stratigraphy_id_1");
       cy.get("@stratigraphy_id_1").then(stratigraphyId1 => {
-        createStratigraphy(boreholeId as unknown as number, "GATETRUCK", false).as("stratigraphy_id_2");
+        createStratigraphy({ boreholeId: boreholeId as unknown as number, name: "GATETRUCK", isPrimary: false }).as(
+          "stratigraphy_id_2",
+        );
         cy.get("@stratigraphy_id_2").then(stratigraphyId2 => {
           goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy?dev=true`);
           cy.wait(["@stratigraphy_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
@@ -246,8 +234,7 @@ describe("Tests for stratigraphy", () => {
               },
               { title: "GATETRUCK" },
             ],
-            undefined,
-            "stratigraphy-tab",
+            { datacy: "stratigraphy-tab" },
           );
           startBoreholeEditing();
 
@@ -268,8 +255,7 @@ describe("Tests for stratigraphy", () => {
                 active: true,
               },
             ],
-            undefined,
-            "stratigraphy-tab",
+            { datacy: "stratigraphy-tab" },
           );
           evaluateCheckbox("isPrimary", false);
           cy.dataCy("delete-button").click();
@@ -344,7 +330,7 @@ describe("Tests for stratigraphy", () => {
   it("navigates to primary stratigraphy if the id is invalid", () => {
     createBorehole({ originalName: "TRAILTOPPER" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
-      createStratigraphy(boreholeId as unknown as number, "TRAILTOPPER").as("stratigraphy_id");
+      createStratigraphy({ boreholeId: boreholeId as unknown as number, name: "TRAILTOPPER" }).as("stratigraphy_id");
       cy.get("@stratigraphy_id").then(stratigraphyId => {
         const invalidStratigraphyId = (stratigraphyId as unknown as number) + 1111;
         goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy/${invalidStratigraphyId}?dev=true`);
@@ -359,7 +345,7 @@ describe("Tests for stratigraphy", () => {
   it("shows chips for stratigraphy in view mode", () => {
     createBorehole({ originalName: "HEART" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
-      createStratigraphy(boreholeId as unknown as number, "JOLLYBOUNCE").as("stratigraphy_id");
+      createStratigraphy({ boreholeId: boreholeId as unknown as number, name: "JOLLYBOUNCE" }).as("stratigraphy_id");
       cy.get("@stratigraphy_id").then(stratigraphyId => {
         goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy/${stratigraphyId}?dev=true`);
         cy.wait("@stratigraphy_by_borehole_GET");

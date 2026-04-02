@@ -13,7 +13,14 @@ describe("Casing crud tests", () => {
   beforeEach(() => {
     createBorehole({ originalName: "INTEADAL" })
       .as("borehole_id")
-      .then(id => createCompletion("test casing", id as unknown as number, 16000002, true))
+      .then(id =>
+        createCompletion({
+          name: "test casing",
+          boreholeId: id as unknown as number,
+          kindId: 16000002,
+          isPrimary: true,
+        }),
+      )
       .as("completion_id")
       .then(response => {
         expect(response).to.be.above(0);
@@ -124,25 +131,25 @@ describe("Casing crud tests", () => {
   it("sorts casings", () => {
     cy.get("@borehole_id").then(id => {
       cy.get("@completion_id").then(completionId => {
-        createCasing(
-          "casing-1",
-          id as unknown as number,
-          completionId as unknown as number,
-          "2021-01-01",
-          "2021-01-02",
-          [
+        createCasing({
+          name: "casing-1",
+          boreholeId: id as unknown as number,
+          completionId: completionId as unknown as number,
+          dateStart: "2021-01-01",
+          dateFinish: "2021-01-02",
+          casingElements: [
             { fromDepth: 5, toDepth: 10, kindId: 25000103 },
             { fromDepth: 0, toDepth: 5, kindId: 25000103 },
           ],
-        );
-        createCasing(
-          "casing-2",
-          id as unknown as number,
-          completionId as unknown as number,
-          "2021-01-01",
-          "2021-01-02",
-          [{ fromDepth: 0, toDepth: 12, kindId: 25000103 }],
-        );
+        });
+        createCasing({
+          name: "casing-2",
+          boreholeId: id as unknown as number,
+          completionId: completionId as unknown as number,
+          dateStart: "2021-01-01",
+          dateFinish: "2021-01-02",
+          casingElements: [{ fromDepth: 0, toDepth: 12, kindId: 25000103 }],
+        });
       });
       goToDetailRouteAndAcceptTerms(`/${id}/completion`);
       cy.wait(["@borehole"]);

@@ -411,7 +411,7 @@ export const checkElementColorByDataCy = (attribute: string, expectedColor: stri
   cy.dataCy(attribute).should("have.css", "color", expectedColor);
 };
 
-export const deleteBorehole = (id: number) => {
+export const deleteBorehole = (id: number | string) => {
   cy.get("@id_token").then(token => {
     cy.request({
       method: "POST",
@@ -554,7 +554,14 @@ export const getImportFileFromFixtures = (fileName: string, encoding: string | n
   return encoding ? cy.fixture(filePath, encoding as Cypress.Encodings) : cy.fixture(filePath);
 };
 
-export const createStratigraphy = (boreholeId: number, name: string, isPrimary = true, date: string | null = null) => {
+export interface StratigraphyInput {
+  boreholeId: number | string;
+  name: string;
+  isPrimary?: boolean;
+  date?: string | null;
+}
+
+export const createStratigraphy = ({ boreholeId, name, isPrimary = true, date = null }: StratigraphyInput) => {
   return cy.get("@id_token").then(token => {
     return cy
       .request({
@@ -580,7 +587,14 @@ export const createStratigraphy = (boreholeId: number, name: string, isPrimary =
   });
 };
 
-export const createCompletion = (name: string, boreholeId: number, kindId: number, isPrimary: boolean) => {
+export interface CompletionInput {
+  name: string;
+  boreholeId: number | string;
+  kindId: number;
+  isPrimary: boolean;
+}
+
+export const createCompletion = ({ name, boreholeId, kindId, isPrimary }: CompletionInput) => {
   return cy.get("@id_token").then(token => {
     return cy
       .request({
@@ -602,14 +616,23 @@ export const createCompletion = (name: string, boreholeId: number, kindId: numbe
   });
 };
 
-export const createCasing = (
-  name: string,
-  boreholeId: number,
-  completionId: number,
-  dateStart: string | null,
-  dateFinish: string | null,
-  casingElements: unknown[],
-) => {
+export interface CasingInput {
+  name: string;
+  boreholeId: number | string;
+  completionId: number | string;
+  dateStart?: string | null;
+  dateFinish?: string | null;
+  casingElements: unknown[];
+}
+
+export const createCasing = ({
+  name,
+  boreholeId,
+  completionId,
+  dateStart = null,
+  dateFinish = null,
+  casingElements,
+}: CasingInput) => {
   return cy.get("@id_token").then(token => {
     return cy
       .request({
@@ -633,17 +656,32 @@ export const createCasing = (
   });
 };
 
-export const createFieldMeasurement = (
-  boreholeId: number,
-  startTime: string,
-  reliabilityId: number,
-  sampleTypeId: number,
-  parameterId: number,
-  value: number,
-  casingId: number | null = null,
-  fromDepthM: number | null = null,
-  toDepthM: number | null = null,
-) => {
+export interface ObservationInput {
+  boreholeId: number | string;
+  startTime: string;
+  reliabilityId: number;
+  casingId?: number | string | null;
+  fromDepthM?: number | null;
+  toDepthM?: number | null;
+}
+
+export interface FieldMeasurementInput extends ObservationInput {
+  sampleTypeId: number;
+  parameterId: number;
+  value: number;
+}
+
+export const createFieldMeasurement = ({
+  boreholeId,
+  startTime,
+  reliabilityId,
+  sampleTypeId,
+  parameterId,
+  value,
+  casingId = null,
+  fromDepthM = null,
+  toDepthM = null,
+}: FieldMeasurementInput) => {
   return cy.get("@id_token").then(token => {
     return cy.request({
       method: "POST",
@@ -665,15 +703,19 @@ export const createFieldMeasurement = (
   });
 };
 
-export const createWateringress = (
-  boreholeId: number,
-  startTime: string,
-  reliabilityId: number,
-  quantityId: number,
-  casingId: number | null = null,
-  fromDepthM: number | null = null,
-  toDepthM: number | null = null,
-) => {
+export interface WaterIngressInput extends ObservationInput {
+  quantityId: number;
+}
+
+export const createWateringress = ({
+  boreholeId,
+  startTime,
+  reliabilityId,
+  quantityId,
+  casingId = null,
+  fromDepthM = null,
+  toDepthM = null,
+}: WaterIngressInput) => {
   return cy.get("@id_token").then(token => {
     return cy.request({
       method: "POST",
@@ -695,15 +737,19 @@ export const createWateringress = (
   });
 };
 
-export const createGroundwaterLevelMeasurement = (
-  boreholeId: number,
-  startTime: string,
-  reliabilityId: number,
-  kindId: number,
-  casingId: number | null = null,
-  fromDepthM: number | null = null,
-  toDepthM: number | null = null,
-) => {
+export interface GroundwaterLevelMeasurementInput extends ObservationInput {
+  kindId: number;
+}
+
+export const createGroundwaterLevelMeasurement = ({
+  boreholeId,
+  startTime,
+  reliabilityId,
+  kindId,
+  casingId = null,
+  fromDepthM = null,
+  toDepthM = null,
+}: GroundwaterLevelMeasurementInput) => {
   return cy.get("@id_token").then(token => {
     return cy.request({
       method: "POST",
@@ -725,15 +771,19 @@ export const createGroundwaterLevelMeasurement = (
   });
 };
 
-export const createHydrotest = (
-  boreholeId: number,
-  startTime: string,
-  reliabilityId: number,
-  kindCodelistIds: number[],
-  casingId: number | null = null,
-  fromDepthM: number | null = null,
-  toDepthM: number | null = null,
-) => {
+export interface HydrotestInput extends ObservationInput {
+  kindCodelistIds: number[];
+}
+
+export const createHydrotest = ({
+  boreholeId,
+  startTime,
+  reliabilityId,
+  kindCodelistIds,
+  casingId = null,
+  fromDepthM = null,
+  toDepthM = null,
+}: HydrotestInput) => {
   return cy.get("@id_token").then(token => {
     return cy.request({
       method: "POST",
@@ -755,15 +805,25 @@ export const createHydrotest = (
   });
 };
 
-export const createBackfill = (
-  completionId: number,
-  casingId: number | null,
-  materialId: number | null,
-  kindId: number | null,
-  fromDepth: number,
-  toDepth: number,
-  notes: string | null,
-) => {
+export interface BackfillInput {
+  completionId: number | string;
+  casingId?: number | string | null;
+  materialId?: number | null;
+  kindId?: number | null;
+  fromDepth: number;
+  toDepth: number;
+  notes?: string | null;
+}
+
+export const createBackfill = ({
+  completionId,
+  casingId = null,
+  materialId = null,
+  kindId = null,
+  fromDepth,
+  toDepth,
+  notes = null,
+}: BackfillInput) => {
   cy.get("@id_token").then(token => {
     return cy.request({
       method: "POST",
@@ -784,16 +844,27 @@ export const createBackfill = (
   });
 };
 
-export const createInstrument = (
-  completionId: number,
-  casingId: number | null,
-  name: string,
-  statusId: number | null,
-  kindId: number | null,
-  fromDepth: number,
-  toDepth: number,
-  notes: string | null,
-) => {
+export interface InstrumentInput {
+  completionId: number | string;
+  casingId?: number | string | null;
+  name: string;
+  statusId?: number | null;
+  kindId?: number | null;
+  fromDepth: number;
+  toDepth: number;
+  notes?: string | null;
+}
+
+export const createInstrument = ({
+  completionId,
+  casingId = null,
+  name,
+  statusId = null,
+  kindId = null,
+  fromDepth,
+  toDepth,
+  notes = null,
+}: InstrumentInput) => {
   cy.get("@id_token").then(token => {
     return cy.request({
       method: "POST",

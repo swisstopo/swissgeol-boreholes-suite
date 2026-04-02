@@ -349,7 +349,14 @@ describe("Test for exporting boreholes.", () => {
     }).as("borehole_id");
 
     cy.get("@borehole_id").then(id => {
-      createWateringress(id as unknown as number, "2012-11-14T12:06Z", 15203157, 15203161, null, 0, 10);
+      createWateringress({
+        boreholeId: id as unknown as number,
+        startTime: "2012-11-14T12:06Z",
+        reliabilityId: 15203157,
+        quantityId: 15203161,
+        fromDepthM: 0,
+        toDepthM: 10,
+      });
       goToRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
 
       exportItem("detail-header");
