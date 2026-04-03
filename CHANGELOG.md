@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1530 - 2026-04-02
+
 ### Added
 - Added major version Docker image tag (e.g. `:v2`) to the release workflow.
 - Added maintenance tasks admin page with background job infrastructure for location and coordinate migrations, persistent execution log, and auto-polling UI.
