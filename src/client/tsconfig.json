@@ -24,7 +24,4 @@
     "skipLibCheck": true,
     "resolveJsonModule": true
   },
-  "exclude": [
-    "cypress.config.ts"
-  ]
 }

@@ -1,4 +1,5 @@
-import fs from "fs";
+import * as fs from "fs";
+// @ts-expect-error - @cypress/grep uses exports map incompatible with moduleResolution:node
 import { plugin as cypressGrepPlugin } from "@cypress/grep/plugin";
 import { defineConfig } from "cypress";
 import vitePreprocessor from "cypress-vite";
