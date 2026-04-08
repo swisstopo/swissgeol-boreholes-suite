@@ -12,27 +12,26 @@ import {
 } from "../helpers/testHelpers";
 
 beforeEach(() => {
-  createBorehole({ originalName: "INTEADAL" })
-    .as("borehole_id")
-    .then(id =>
-      createCompletion({
-        name: "test fieldmeasurement",
-        boreholeId: id as unknown as number,
-        kindId: 16000002,
-        isPrimary: true,
-      })
-        .as("completion_id")
-        .then(completionId => {
-          createCasing({
-            name: "casing-1",
-            boreholeId: id as unknown as number,
-            completionId: completionId as unknown as number,
-            dateStart: "2021-01-01",
-            dateFinish: "2021-01-02",
-            casingElements: [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
-          });
-        }),
-    );
+  createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
+  cy.get("@borehole_id").then(id => {
+    createCompletion({
+      name: "test fieldmeasurement",
+      boreholeId: id,
+      kindId: 16000002,
+      isPrimary: true,
+    }).as("completion_id");
+
+    cy.get("@completion_id").then(completionId => {
+      createCasing({
+        name: "casing-1",
+        boreholeId: id,
+        completionId: completionId,
+        dateStart: "2021-01-01",
+        dateFinish: "2021-01-02",
+        casingElements: [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
+      });
+    });
+  });
 });
 
 describe("Tests for the field measurement editor.", () => {
@@ -100,7 +99,7 @@ describe("Tests for the field measurement editor.", () => {
     // Create borehole with completion and casings
     cy.get("@borehole_id").then(id => {
       createFieldMeasurement({
-        boreholeId: id as unknown as number,
+        boreholeId: id,
         startTime: "2012-11-14T12:06Z",
         reliabilityId: 15203157,
         sampleTypeId: 15203209,
@@ -110,7 +109,7 @@ describe("Tests for the field measurement editor.", () => {
         toDepthM: 10,
       });
       createFieldMeasurement({
-        boreholeId: id as unknown as number,
+        boreholeId: id,
         startTime: "2012-11-14T12:07Z",
         reliabilityId: 15203157,
         sampleTypeId: 15203209,

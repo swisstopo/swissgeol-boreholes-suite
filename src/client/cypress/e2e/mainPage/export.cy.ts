@@ -350,7 +350,7 @@ describe("Test for exporting boreholes.", () => {
 
     cy.get("@borehole_id").then(id => {
       createWateringress({
-        boreholeId: id as unknown as number,
+        boreholeId: id,
         startTime: "2012-11-14T12:06Z",
         reliabilityId: 15203157,
         quantityId: 15203161,

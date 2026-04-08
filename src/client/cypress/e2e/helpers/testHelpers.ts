@@ -301,7 +301,7 @@ export const createBorehole = (borehole: Record<string, unknown>) => {
         auth: bearerAuth(token as unknown as string),
       })
       .then(res => {
-        return cy.wrap(res.body.id);
+        return cy.wrap(res.body.id as number);
       });
   });
 };

@@ -26,7 +26,7 @@ describe("Tests for stratigraphy extraction", () => {
   it("Extracts stratigraphy and shows bounding boxes", () => {
     createBorehole({ originalName: "SCHOOLDIONYSUS" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
-      goToDetailRouteAndAcceptTerms(`/${boreholeId as unknown as number}/stratigraphy`);
+      goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy`);
       cy.wait("@stratigraphy_by_borehole_GET");
       startBoreholeEditing();
       cy.dataCy("extractstratigraphyfromprofile-button").click();

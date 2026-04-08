@@ -9,11 +9,10 @@ import {
 describe("Tests for the chronostratigraphy editor.", () => {
   beforeEach(function () {
     // Add new borehole with stratigraphy
-    createBorehole({ originalName: "INTEADAL" })
-      .as("borehole_id")
-      .then(boreholeId =>
-        createStratigraphy({ boreholeId: boreholeId as unknown as number, name: "GLOBALMAGIC" }).as("stratigraphy_id"),
-      );
+    createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
+    cy.get("@borehole_id").then(boreholeId =>
+      createStratigraphy({ boreholeId: boreholeId, name: "GLOBALMAGIC" }).as("stratigraphy_id"),
+    );
 
     // open chronostratigraphy editor
     cy.get("@borehole_id").then(boreholeId => {

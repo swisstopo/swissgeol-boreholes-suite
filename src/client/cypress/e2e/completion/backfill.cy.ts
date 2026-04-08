@@ -13,35 +13,34 @@ import {
 describe("Backfill crud tests", () => {
   beforeEach(() => {
     // Create borehole with completion and casings
-    createBorehole({ originalName: "INTEADAL" })
-      .as("borehole_id")
-      .then(id =>
-        createCompletion({
-          name: "test backfill",
-          boreholeId: id as unknown as number,
-          kindId: 16000002,
-          isPrimary: true,
-        })
-          .as("completion_id")
-          .then(completionId => {
-            createCasing({
-              name: "casing-1",
-              boreholeId: id as unknown as number,
-              completionId: completionId as unknown as number,
-              dateStart: "2021-01-01",
-              dateFinish: "2021-01-02",
-              casingElements: [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
-            }).as("casing1_id");
-            createCasing({
-              name: "casing-2",
-              boreholeId: id as unknown as number,
-              completionId: completionId as unknown as number,
-              dateStart: "2021-01-03",
-              dateFinish: "2021-01-04",
-              casingElements: [{ fromDepth: 5, toDepth: 12, kindId: 25000105 }],
-            }).as("casing2_id");
-          }),
-      );
+    createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      createCompletion({
+        name: "test backfill",
+        boreholeId: id,
+        kindId: 16000002,
+        isPrimary: true,
+      }).as("completion_id");
+
+      cy.get("@completion_id").then(completionId => {
+        createCasing({
+          name: "casing-1",
+          boreholeId: id,
+          completionId: completionId,
+          dateStart: "2021-01-01",
+          dateFinish: "2021-01-02",
+          casingElements: [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
+        }).as("casing1_id");
+        createCasing({
+          name: "casing-2",
+          boreholeId: id,
+          completionId: completionId,
+          dateStart: "2021-01-03",
+          dateFinish: "2021-01-04",
+          casingElements: [{ fromDepth: 5, toDepth: 12, kindId: 25000105 }],
+        }).as("casing2_id");
+      });
+    });
   });
 
   it("adds, edits and deletes backfills", () => {
@@ -108,8 +107,8 @@ describe("Backfill crud tests", () => {
     cy.get("@completion_id").then(id => {
       cy.get("@casing1_id").then(casingId => {
         createBackfill({
-          completionId: id as unknown as number,
-          casingId: casingId as unknown as number,
+          completionId: id,
+          casingId: casingId,
           materialId: 25000112,
           kindId: 25000100,
           fromDepth: 0,
@@ -119,8 +118,8 @@ describe("Backfill crud tests", () => {
       });
       cy.get("@casing2_id").then(casingId => {
         createBackfill({
-          completionId: id as unknown as number,
-          casingId: casingId as unknown as number,
+          completionId: id,
+          casingId: casingId,
           materialId: 25000109,
           kindId: 25000102,
           fromDepth: 0,

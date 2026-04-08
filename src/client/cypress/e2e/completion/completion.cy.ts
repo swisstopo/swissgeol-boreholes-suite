@@ -34,13 +34,13 @@ const createBoreholeWithTwoCompletions = () => {
     cy.wrap(boreholeId).as("boreholeId");
     createCompletion({
       name: "Compl-1",
-      boreholeId: boreholeId as unknown as number,
+      boreholeId: boreholeId,
       kindId: 16000002,
       isPrimary: true,
     }).as("completion1Id");
     createCompletion({
       name: "Compl-2",
-      boreholeId: boreholeId as unknown as number,
+      boreholeId: boreholeId,
       kindId: 16000002,
       isPrimary: false,
     }).as("completion2Id");
@@ -400,11 +400,9 @@ describe("completion crud tests", () => {
   // Skip currently very flaky test
   // Todo reactivate and resolve flakyness issue https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2390
   it.skip("checks completion content validation", () => {
-    createBorehole({ originalName: "INTEADAL" })
-      .as("borehole_id")
-      .then(id =>
-        createCompletion({ name: "Compl-1", boreholeId: id as unknown as number, kindId: 16000001, isPrimary: true }),
-      )
+    createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
+    cy.get("@borehole_id")
+      .then(id => createCompletion({ name: "Compl-1", boreholeId: id, kindId: 16000001, isPrimary: true }))
       .then(response => {
         expect(response).to.be.above(0);
       });
@@ -622,22 +620,21 @@ describe("completion crud tests", () => {
   });
 
   it("checks if hash is preserved when reloading", () => {
-    createBorehole({ originalName: "INTEADAL" })
-      .as("borehole_id")
-      .then(id => {
-        createCompletion({
-          name: "test hash 1",
-          boreholeId: id as unknown as number,
-          kindId: 16000002,
-          isPrimary: true,
-        }).as("completion1_id");
-        createCompletion({
-          name: "test hash 2",
-          boreholeId: id as unknown as number,
-          kindId: 16000002,
-          isPrimary: false,
-        }).as("completion2_id");
-      });
+    createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      createCompletion({
+        name: "test hash 1",
+        boreholeId: id,
+        kindId: 16000002,
+        isPrimary: true,
+      }).as("completion1_id");
+      createCompletion({
+        name: "test hash 2",
+        boreholeId: id,
+        kindId: 16000002,
+        isPrimary: false,
+      }).as("completion2_id");
+    });
 
     const forceReload = true;
 
