@@ -204,6 +204,41 @@ function waitForMapAnimations() {
     expect(view?.getAnimating()).to.be.false;
   });
 }
+function assertInputsHaveAiStyle() {
+  hasAiStyle("originalReferenceSystem");
+  hasAiStyle("locationX");
+  hasAiStyle("locationY");
+  hasAiStyle("locationXLV03");
+  hasAiStyle("locationYLV03");
+}
+
+function assertInputsHaveNormalStyle() {
+  hasAiStyle("originalReferenceSystem", false);
+  hasAiStyle("locationX", false);
+  hasAiStyle("locationY", false);
+  hasAiStyle("locationXLV03", false);
+  hasAiStyle("locationYLV03", false);
+}
+
+function assertInputsHaveNoError() {
+  hasError("originalReferenceSystem", false);
+  hasError("locationX", false);
+  hasError("locationY", false);
+  hasError("locationXLV03", false);
+  hasError("locationYLV03", false);
+}
+
+function assertEmptyInputsForLV95HaveError() {
+  hasError("locationX", true);
+  hasError("locationY", true);
+}
+
+function assertLV03InputsAreDisabled() {
+  isDisabled("locationXLV03", true);
+  isDisabled("locationYLV03", true);
+  isDisabled("locationX", false);
+  isDisabled("locationY", false);
+}
 
 describe("Test labeling tool", () => {
   it("can show labeling panel ", () => {
@@ -320,42 +355,6 @@ describe("Test labeling tool", () => {
   });
 
   it("can extract coordinates and reference system from image", () => {
-    function assertInputsHaveAiStyle() {
-      hasAiStyle("originalReferenceSystem");
-      hasAiStyle("locationX");
-      hasAiStyle("locationY");
-      hasAiStyle("locationXLV03");
-      hasAiStyle("locationYLV03");
-    }
-
-    function assertInputsHaveNormalStyle() {
-      hasAiStyle("originalReferenceSystem", false);
-      hasAiStyle("locationX", false);
-      hasAiStyle("locationY", false);
-      hasAiStyle("locationXLV03", false);
-      hasAiStyle("locationYLV03", false);
-    }
-
-    function assertInputsHaveNoError() {
-      hasError("originalReferenceSystem", false);
-      hasError("locationX", false);
-      hasError("locationY", false);
-      hasError("locationXLV03", false);
-      hasError("locationYLV03", false);
-    }
-
-    function assertEmptyInputsForLV95HaveError() {
-      hasError("locationX", true);
-      hasError("locationY", true);
-    }
-
-    function assertLV03InputsAreDisabled() {
-      isDisabled("locationXLV03", true);
-      isDisabled("locationYLV03", true);
-      isDisabled("locationX", false);
-      isDisabled("locationY", false);
-    }
-
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutProfiles();

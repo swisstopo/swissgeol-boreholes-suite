@@ -243,8 +243,7 @@ const evaluateUnconsoldiateLithologyDescriptionForm = (
       `lithologyDescriptions.${index}.lithologyUnconDebrisCodelistIds`,
       values.lithologyUnconDebrisCodelistIds as string[],
     );
-  if (values.hasStriae !== undefined)
-    evaluateCheckbox(`lithologyDescriptions.${index}.hasStriae`, values.hasStriae as boolean);
+  if (values.hasStriae !== undefined) evaluateCheckbox(`lithologyDescriptions.${index}.hasStriae`, values.hasStriae);
 };
 
 export const evaluateUnconsolidatedLithologyForm = (values: UnconsolidatedLithologyFormValues) => {

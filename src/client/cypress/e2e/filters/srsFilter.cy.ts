@@ -8,13 +8,13 @@ import {
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
-describe("Tests for filtering data by reference system.", () => {
-  function goToEditorLocationFilter() {
-    cy.dataCy("settings-button").click();
-    cy.dataCy("general-tab").click();
-    cy.contains("div", "Location filters").click();
-  }
+function goToEditorLocationFilter() {
+  cy.dataCy("settings-button").click();
+  cy.dataCy("general-tab").click();
+  cy.contains("div", "Location filters").click();
+}
 
+describe("Tests for filtering data by reference system.", () => {
   it("can set filters as editor", () => {
     goToRouteAndAcceptTerms("/");
     cy.get('[data-cy="show-filter-button"]').click();
