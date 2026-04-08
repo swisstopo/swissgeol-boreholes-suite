@@ -1,5 +1,5 @@
-import OlMap from "ol/Map";
 import { loginAsEditor, returnToOverview } from "../helpers/testHelpers";
+import { WindowWithMaps } from "../helpers/window.ts";
 
 describe("Map tests", () => {
   it("map preserves zoom level and center", () => {
@@ -18,9 +18,10 @@ describe("Map tests", () => {
     canvas().trigger("pointerup", { x: 500, y: 500 });
 
     cy.window().then(win => {
-      const view = (win as unknown as { olMap: OlMap }).olMap.getView();
-      const resolution = view.getResolution();
-      const mapCenter = view.getCenter();
+      const window = win as WindowWithMaps;
+      const view = window.olMap?.getView();
+      const resolution = view?.getResolution();
+      const mapCenter = view?.getCenter();
       cy.wrap(resolution).as("resolution");
       cy.wrap(mapCenter).as("mapCenter");
     });
@@ -33,9 +34,10 @@ describe("Map tests", () => {
 
     // verify resolution and map center
     cy.window().then(win => {
-      const view = (win as unknown as { olMap: OlMap }).olMap.getView();
-      const resetResolution = view.getResolution();
-      const resetMapCenter = view.getCenter();
+      const window = win as WindowWithMaps;
+      const view = window.olMap?.getView();
+      const resetResolution = view?.getResolution();
+      const resetMapCenter = view?.getCenter();
       cy.get("@resolution").then(resolution => {
         expect(resolution).to.equal(resetResolution);
       });

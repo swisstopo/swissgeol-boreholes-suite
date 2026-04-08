@@ -1,17 +1,20 @@
 import Layer from "ol/layer/Layer";
-import OlMap from "ol/Map";
 import VectorSource from "ol/source/Vector";
 import { createBorehole, goToDetailRouteAndAcceptTerms, startBoreholeEditing } from "../helpers/testHelpers";
+import { mapDomId, WindowWithMaps } from "../helpers/window.ts";
 
-function assertBoundingBoxesOnLayer(mapDomId: string, layerName: string, shouldExist = true) {
+function assertBoundingBoxesOnLayer(mapDomId: mapDomId, layerName: string, shouldExist = true) {
   cy.window().should(win => {
+    const window = win as WindowWithMaps;
+
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect((win as unknown as Record<string, OlMap>)[mapDomId], `Map "${mapDomId}" should exist`).to.exist;
+    expect(window[mapDomId], `Map "${mapDomId}" should exist`).to.exist;
   });
 
   cy.window().then(win => {
-    const layers = (win as unknown as Record<string, OlMap>)[mapDomId].getLayers().getArray();
-    const layer = layers.find(l => l.get("name") === layerName) as Layer<VectorSource> | undefined;
+    const window = win as WindowWithMaps;
+    const layers = window[mapDomId]?.getLayers().getArray();
+    const layer = layers?.find(l => l.get("name") === layerName) as Layer<VectorSource> | undefined;
     if (shouldExist) {
       const features = layer!.getSource()!.getFeatures();
       expect(features.length, `${layerName} should have features`).to.be.greaterThan(0);
