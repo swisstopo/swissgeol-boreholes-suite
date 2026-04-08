@@ -511,6 +511,7 @@ describe("Test labeling tool", () => {
     assertDrawTooltip("Draw box around any text");
     drawBox(200, 120, 250, 400);
     assertBoundingBoxes(4, 3957);
+    assertLabelingAlertText('Copied to clipboard: "Some"');
     assertClipboardContent("Some");
 
     // can switch between text extraction and coordinate extraction
