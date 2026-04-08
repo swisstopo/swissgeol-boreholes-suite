@@ -168,7 +168,7 @@ public class FilterRequest
     public BoreholeOrderBy? OrderBy { get; set; }
 
     /// <summary>
-    /// Gets or sets the sort direction.
+    /// Gets or sets the order direction.
     /// </summary>
     public OrderDirection? Direction { get; set; }
 }

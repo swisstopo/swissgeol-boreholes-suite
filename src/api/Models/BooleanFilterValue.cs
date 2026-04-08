@@ -3,7 +3,7 @@
 namespace BDMS.Models;
 
 /// <summary>
-/// Represents a tri-state boolean filter value for nullable boolean fields.
+/// Represents a boolean filter value for non-nullable boolean fields.
 /// </summary>
 [JsonConverter(typeof(JsonStringEnumConverter))]
 public enum BooleanFilterValue
