@@ -27,6 +27,16 @@ import {
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
+function saveFormAndReturnToOverview() {
+  saveWithSaveBar();
+  returnToOverview();
+}
+
+function returnToFormAndStartEditing() {
+  clickOnRowWithText("AAA_FELIX_THE_PANDA");
+  startBoreholeEditing();
+}
+
 describe("Tests for 'Location' edit page.", () => {
   it("creates and deletes a borehole.", () => {
     goToRouteAndAcceptTerms("/");
@@ -203,16 +213,6 @@ describe("Tests for 'Location' edit page.", () => {
 
     setOriginalName("AAA_FELIX_THE_PANDA");
     evaluateInput("name", "AAA_FELIX_THE_PANDA");
-
-    function saveFormAndReturnToOverview() {
-      saveWithSaveBar();
-      returnToOverview();
-    }
-
-    function returnToFormAndStartEditing() {
-      clickOnRowWithText("AAA_FELIX_THE_PANDA");
-      startBoreholeEditing();
-    }
 
     // add Identifiers
     addItem("addIdentifier");

@@ -168,7 +168,7 @@ export const login = (user: string) => {
       });
       cy.wait("@token")
         .then(interception => interception.response!.body.id_token)
-        .then(token => window.localStorage.setItem("id_token", token));
+        .then(token => globalThis.localStorage.setItem("id_token", token));
     },
     {
       validate() {
@@ -245,7 +245,7 @@ export function giveAdminUser1workgroup() {
 }
 
 export function giveAdminUser2workgroups() {
-  const adminUser2Workgroups = Object.assign({}, adminUser);
+  const adminUser2Workgroups = { ...adminUser };
   adminUser2Workgroups.data.workgroups.push({
     id: 6,
     workgroup: "Blue",
@@ -910,7 +910,7 @@ export const selectLanguage = (language: string) => {
 };
 
 export const selectInputFile = (fileName: string, mimeType: string) => {
-  const crypto = window.crypto || (window as unknown as Record<string, Crypto | undefined>).msCrypto;
+  const crypto = globalThis.crypto || (globalThis as unknown as Record<string, Crypto | undefined>).msCrypto;
   const content = crypto.getRandomValues(new Uint32Array(1)).toString();
 
   cy.get("input[type=file]").selectFile(

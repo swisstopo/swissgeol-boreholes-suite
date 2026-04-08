@@ -30,6 +30,59 @@ import {
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
+function AssertHeaderChips(
+  status: WorkflowStatus,
+  assignee?: string | null,
+  hasRequestedChanges = false,
+  restrictionStatus: string | null = null,
+) {
+  // Special case where enum value does not match translation
+  if (status === WorkflowStatus.InReview) {
+    cy.dataCy("workflow-status-chip").should("contain", "Review");
+  } else {
+    cy.dataCy("workflow-status-chip").should("contain", status);
+  }
+  cy.dataCy("workflow-status-chip").should(
+    "have.class",
+    `MuiChip-color${capitalizeFirstLetter(colorStatusMap[status])}`,
+  );
+  if (assignee != null) {
+    cy.dataCy("workflow-assignee-chip").should("contain", assignee);
+  }
+  if (hasRequestedChanges) {
+    cy.dataCy("workflow-changes-requested-chip").should("be.visible");
+  }
+  if (restrictionStatus != null) {
+    cy.dataCy("restricted-chip").should("be.visible");
+    cy.dataCy("restricted-chip").should("contain", restrictionStatus);
+  }
+}
+
+function assertAllMenuItemsHaveReviewStatus(status: string) {
+  cy.dataCy("location-menu-item").should("have.attr", "reviewed", status);
+  cy.dataCy("borehole-menu-item").should("have.attr", "reviewed", status);
+  cy.dataCy("stratigraphy-menu-item").should("have.attr", "reviewed", status);
+  cy.dataCy("completion-menu-item").should("have.attr", "reviewed", status);
+  cy.dataCy("hydrogeology-menu-item").should("have.attr", "reviewed", status);
+  cy.dataCy("wateringress-menu-item").should("have.attr", "reviewed", status);
+  cy.dataCy("groundwaterlevelmeasurement-menu-item").should("have.attr", "reviewed", status);
+  cy.dataCy("hydrotest-menu-item").should("have.attr", "reviewed", status);
+  cy.dataCy("fieldmeasurement-menu-item").should("have.attr", "reviewed", status);
+  cy.dataCy("attachments-menu-item").should("have.attr", "reviewed", status);
+}
+
+function ClickInteractionAndAssignNewUser(buttonLabel: string, newAssignee: string) {
+  clickSgcButtonWithContent(buttonLabel);
+  cy.get(".select-trigger").click();
+  cy.get(".select-option").contains(newAssignee).click();
+  cy.get("sgc-modal-wrapper").find("sgc-button").contains(buttonLabel).click();
+  cy.wait(["@workflow_by_id", "@borehole_by_id"]);
+}
+
+function AssignNewUser(newAssignee: string) {
+  ClickInteractionAndAssignNewUser("Assign new person", newAssignee);
+}
+
 function manuallyResetStatusToDraft() {
   clickSgcButtonWithContent("Change status manually");
   cy.get(".select-trigger").eq(0).click();
@@ -44,33 +97,33 @@ function manuallyResetStatusToDraft() {
   cy.wait(["@workflow_by_id", "@borehole_by_id"]);
 }
 
+function navigateToWorkflowAndStartEditing(id: unknown) {
+  goToDetailRouteAndAcceptTerms(`/${id}/status`);
+  cy.wait("@borehole_by_id");
+  startBoreholeEditing();
+  cy.dataCy("workflow-status-chip").should("contain", "Draft");
+  assertWorkflowSteps("Draft");
+}
+
+function requestReviewFromValidator() {
+  clickSgcButtonWithContent("Request review");
+  cy.get(".select-trigger").click();
+  assertEmptyRequestReviewModal();
+  cy.get(".select-option").contains("validator user").click();
+  cy.get("sgc-modal-wrapper").find("sgc-button").contains("Request review").click();
+  cy.wait(["@workflow_by_id", "@borehole_by_id"]);
+  assertWorkflowSteps("In review");
+}
+
+function finishReview() {
+  clickSgcButtonWithContent("Complete review");
+  cy.get("sgc-modal-wrapper").find("sgc-button").contains("Complete review").click();
+  AssertHeaderChips(WorkflowStatus.Reviewed);
+  cy.wait(["@workflow_by_id", "@borehole_by_id"]);
+  assertWorkflowSteps("Reviewed");
+}
+
 describe("Tests the publication workflow.", () => {
-  function navigateToWorkflowAndStartEditing(id: unknown) {
-    goToDetailRouteAndAcceptTerms(`/${id}/status`);
-    cy.wait("@borehole_by_id");
-    startBoreholeEditing();
-    cy.dataCy("workflow-status-chip").should("contain", "Draft");
-    assertWorkflowSteps("Draft");
-  }
-
-  function requestReviewFromValidator() {
-    clickSgcButtonWithContent("Request review");
-    cy.get(".select-trigger").click();
-    assertEmptyRequestReviewModal();
-    cy.get(".select-option").contains("validator user").click();
-    cy.get("sgc-modal-wrapper").find("sgc-button").contains("Request review").click();
-    cy.wait(["@workflow_by_id", "@borehole_by_id"]);
-    assertWorkflowSteps("In review");
-  }
-
-  function finishReview() {
-    clickSgcButtonWithContent("Complete review");
-    cy.get("sgc-modal-wrapper").find("sgc-button").contains("Complete review").click();
-    AssertHeaderChips(WorkflowStatus.Reviewed);
-    cy.wait(["@workflow_by_id", "@borehole_by_id"]);
-    assertWorkflowSteps("Reviewed");
-  }
-
   it("Can request review from users with controller privilege", () => {
     createBorehole({
       originalName: "Flinchy clown fish",
@@ -260,46 +313,6 @@ describe("Tests the publication workflow.", () => {
     });
   });
 
-  function AssertHeaderChips(
-    status: WorkflowStatus,
-    assignee?: string | null,
-    hasRequestedChanges = false,
-    restrictionStatus: string | null = null,
-  ) {
-    // Special case where enum value does not match translation
-    if (status === WorkflowStatus.InReview) {
-      cy.dataCy("workflow-status-chip").should("contain", "Review");
-    } else {
-      cy.dataCy("workflow-status-chip").should("contain", status);
-    }
-    cy.dataCy("workflow-status-chip").should(
-      "have.class",
-      `MuiChip-color${capitalizeFirstLetter(colorStatusMap[status as WorkflowStatus])}`,
-    );
-    if (assignee != null) {
-      cy.dataCy("workflow-assignee-chip").should("contain", assignee);
-    }
-    if (hasRequestedChanges) {
-      cy.dataCy("workflow-changes-requested-chip").should("be.visible");
-    }
-    if (restrictionStatus != null) {
-      cy.dataCy("restricted-chip").should("be.visible");
-      cy.dataCy("restricted-chip").should("contain", restrictionStatus);
-    }
-  }
-
-  function ClickInteractionAndAssignNewUser(buttonLabel: string, newAssignee: string) {
-    clickSgcButtonWithContent(buttonLabel);
-    cy.get(".select-trigger").click();
-    cy.get(".select-option").contains(newAssignee).click();
-    cy.get("sgc-modal-wrapper").find("sgc-button").contains(buttonLabel).click();
-    cy.wait(["@workflow_by_id", "@borehole_by_id"]);
-  }
-
-  function AssignNewUser(newAssignee: string) {
-    ClickInteractionAndAssignNewUser("Assign new person", newAssignee);
-  }
-
   it("Displays correct badges in detail header", () => {
     createBorehole({
       originalName: "Waterslide",
@@ -337,19 +350,6 @@ describe("Tests the publication workflow.", () => {
       cy.dataCy("review-button").should("exist");
     });
   });
-
-  function assertAllMenuItemsHaveReviewStatus(status: string) {
-    cy.dataCy("location-menu-item").should("have.attr", "reviewed", status);
-    cy.dataCy("borehole-menu-item").should("have.attr", "reviewed", status);
-    cy.dataCy("stratigraphy-menu-item").should("have.attr", "reviewed", status);
-    cy.dataCy("completion-menu-item").should("have.attr", "reviewed", status);
-    cy.dataCy("hydrogeology-menu-item").should("have.attr", "reviewed", status);
-    cy.dataCy("wateringress-menu-item").should("have.attr", "reviewed", status);
-    cy.dataCy("groundwaterlevelmeasurement-menu-item").should("have.attr", "reviewed", status);
-    cy.dataCy("hydrotest-menu-item").should("have.attr", "reviewed", status);
-    cy.dataCy("fieldmeasurement-menu-item").should("have.attr", "reviewed", status);
-    cy.dataCy("attachments-menu-item").should("have.attr", "reviewed", status);
-  }
 
   it("Displays checkmarks on side menu", () => {
     createBoreholeWithCompleteDataset().as("borehole_id");
