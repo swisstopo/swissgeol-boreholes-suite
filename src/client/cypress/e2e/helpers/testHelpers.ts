@@ -182,7 +182,7 @@ export const login = (user: string) => {
             body: {
               action: "GET",
             },
-            auth: bearerAuth(token as unknown as string),
+            auth: bearerAuth(token as string),
           }),
         );
       },
@@ -298,7 +298,7 @@ export const createBorehole = (borehole: Record<string, unknown>) => {
           hrsId: defaultHrsId,
           ...borehole,
         },
-        auth: bearerAuth(token as unknown as string),
+        auth: bearerAuth(token as string),
       })
       .then(res => {
         return cy.wrap(res.body.id as number);
@@ -420,7 +420,7 @@ export const deleteBorehole = (id: number | string) => {
         action: "DELETE",
         id: id,
       },
-      auth: bearerAuth(token as unknown as string),
+      auth: bearerAuth(token as string),
     })
       .its("body.success")
       .should("eq", true);
@@ -437,7 +437,7 @@ export const loginAndResetState = () => {
       body: {
         action: "IDS",
       },
-      auth: bearerAuth(token as unknown as string),
+      auth: bearerAuth(token as string),
     }).then(response => {
       response.body.data
         .filter((id: number) => id > 1002999) // max id in seed data.
@@ -467,7 +467,7 @@ export const loginAndResetState = () => {
       url: "/api/v2/user/resetAllSettings",
       cache: "no-cache",
       credentials: "same-origin",
-      auth: bearerAuth(token as unknown as string),
+      auth: bearerAuth(token as string),
       headers: {
         "Content-Type": "application/json",
       },
@@ -579,7 +579,7 @@ export const createStratigraphy = ({ boreholeId, name, isPrimary = true, date = 
         headers: {
           "Content-Type": "application/json",
         },
-        auth: bearerAuth(token as unknown as string),
+        auth: bearerAuth(token as string),
       })
       .then(res => {
         return cy.wrap(res.body.id);
@@ -608,7 +608,7 @@ export const createCompletion = ({ name, boreholeId, kindId, isPrimary }: Comple
         },
         cache: "no-cache",
         credentials: "same-origin",
-        auth: bearerAuth(token as unknown as string),
+        auth: bearerAuth(token as string),
       })
       .then(res => {
         return cy.wrap(res.body.id);
@@ -648,7 +648,7 @@ export const createCasing = ({
         },
         cache: "no-cache",
         credentials: "same-origin",
-        auth: bearerAuth(token as unknown as string),
+        auth: bearerAuth(token as string),
       })
       .then(res => {
         return cy.wrap(res.body.id);
@@ -698,7 +698,7 @@ export const createFieldMeasurement = ({
       },
       cache: "no-cache",
       credentials: "same-origin",
-      auth: bearerAuth(token as unknown as string),
+      auth: bearerAuth(token as string),
     });
   });
 };
@@ -732,7 +732,7 @@ export const createWateringress = ({
       },
       cache: "no-cache",
       credentials: "same-origin",
-      auth: bearerAuth(token as unknown as string),
+      auth: bearerAuth(token as string),
     });
   });
 };
@@ -766,7 +766,7 @@ export const createGroundwaterLevelMeasurement = ({
       },
       cache: "no-cache",
       credentials: "same-origin",
-      auth: bearerAuth(token as unknown as string),
+      auth: bearerAuth(token as string),
     });
   });
 };
@@ -800,7 +800,7 @@ export const createHydrotest = ({
       },
       cache: "no-cache",
       credentials: "same-origin",
-      auth: bearerAuth(token as unknown as string),
+      auth: bearerAuth(token as string),
     });
   });
 };
@@ -839,7 +839,7 @@ export const createBackfill = ({
       },
       cache: "no-cache",
       credentials: "same-origin",
-      auth: bearerAuth(token as unknown as string),
+      auth: bearerAuth(token as string),
     });
   });
 };
@@ -881,7 +881,7 @@ export const createInstrument = ({
       },
       cache: "no-cache",
       credentials: "same-origin",
-      auth: bearerAuth(token as unknown as string),
+      auth: bearerAuth(token as string),
     });
   });
 };
