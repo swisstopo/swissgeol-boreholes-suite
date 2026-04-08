@@ -1,6 +1,11 @@
 import { evaluateDropdownOptionsLength, evaluateSelect, setSelect } from "../helpers/formHelpers";
 import { goToRouteAndAcceptTerms } from "../helpers/testHelpers";
 
+interface FilterValue {
+  period: string;
+  value: string;
+}
+
 describe("Hierachical data filter tests", () => {
   it("check visible filters", () => {
     goToRouteAndAcceptTerms("/");
@@ -41,7 +46,7 @@ describe("Hierachical data filter tests", () => {
   });
 
   it("check hierarchical filtering", () => {
-    let filterValues = [
+    let filterValues: FilterValue[] = [
       { period: "eon", value: "Phanerozoic" },
       { period: "era", value: "Cenozoic" },
       { period: "period", value: "Neogene" },
@@ -56,11 +61,8 @@ describe("Hierachical data filter tests", () => {
     setSelect("subage", 1); //  "late Burdigalian",
     cy.wait(["@edit_list", "@borehole_geojson"]);
     cy.dataCy("filter-chip-chronostratigraphy_id").should("exist");
-    cy.wrap(filterValues).each(filter => {
-      return evaluateSelect(
-        (filter as unknown as { period: string; value: string }).period,
-        (filter as unknown as { period: string; value: string }).value,
-      );
+    cy.wrap<FilterValue[]>(filterValues).each((filter: FilterValue) => {
+      return evaluateSelect(filter.period, filter.value);
     });
     cy.then(() => {
       // Reset age select
@@ -80,11 +82,8 @@ describe("Hierachical data filter tests", () => {
       { period: "subage", value: "" },
     ];
     // Verify that 2 levels are removed
-    cy.wrap(filterValues).each(filter => {
-      return evaluateSelect(
-        (filter as unknown as { period: string; value: string }).period,
-        (filter as unknown as { period: string; value: string }).value,
-      );
+    cy.wrap<FilterValue[]>(filterValues).each((filter: FilterValue) => {
+      return evaluateSelect(filter.period, filter.value);
     });
     cy.then(() => {
       // Reset period select
@@ -103,11 +102,8 @@ describe("Hierachical data filter tests", () => {
       { period: "subage", value: "" },
     ];
     // Verify that 4 levels are removed
-    cy.wrap(filterValues).each(filter => {
-      return evaluateSelect(
-        (filter as unknown as { period: string; value: string }).period,
-        (filter as unknown as { period: string; value: string }).value,
-      );
+    cy.wrap<FilterValue[]>(filterValues).each((filter: FilterValue) => {
+      return evaluateSelect(filter.period, filter.value);
     });
     cy.then(() => {
       // Reset all filters and verify they're cleared
