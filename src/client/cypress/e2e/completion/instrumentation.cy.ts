@@ -13,30 +13,26 @@ import {
 describe("Instrumentation crud tests", () => {
   beforeEach(() => {
     // Create borehole with completion and casing
-    createBorehole({ originalName: "INTEADAL" })
-      .as("borehole_id")
-      .then(id =>
-        createCompletion({
-          name: "test instruments",
-          boreholeId: id as unknown as number,
-          kindId: 16000002,
-          isPrimary: true,
-        })
-          .as("completion_id")
-          .then(completionId => {
-            createCasing({
-              name: "casing-1",
-              boreholeId: id as unknown as number,
-              completionId: completionId as unknown as number,
-              dateStart: "2021-01-01",
-              dateFinish: "2021-01-02",
-              casingElements: [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
-            }).as("casing1_id");
-          }),
-      );
+    createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
 
-    // open completion editor
     cy.get("@borehole_id").then(id => {
+      createCompletion({
+        name: "test instruments",
+        boreholeId: id,
+        kindId: 16000002,
+        isPrimary: true,
+      }).as("completion_id");
+      cy.get("@completion_id").then(completionId => {
+        createCasing({
+          name: "casing-1",
+          boreholeId: id,
+          completionId: completionId,
+          dateStart: "2021-01-01",
+          dateFinish: "2021-01-02",
+          casingElements: [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
+        }).as("casing1_id");
+      });
+      // open completion editor
       goToDetailRouteAndAcceptTerms(`/${id}/completion`);
     });
 
@@ -107,8 +103,8 @@ describe("Instrumentation crud tests", () => {
     cy.get("@completion_id").then(id => {
       cy.get("@casing1_id").then(casingId => {
         createInstrument({
-          completionId: id as unknown as number,
-          casingId: casingId as unknown as number,
+          completionId: id,
+          casingId: casingId,
           name: "Inst-1",
           statusId: 25000212,
           kindId: 25000102,
@@ -117,8 +113,8 @@ describe("Instrumentation crud tests", () => {
           notes: "Lorem.",
         });
         createInstrument({
-          completionId: id as unknown as number,
-          casingId: casingId as unknown as number,
+          completionId: id,
+          casingId: casingId,
           name: "Inst-2",
           statusId: 25000215,
           kindId: 25000100,

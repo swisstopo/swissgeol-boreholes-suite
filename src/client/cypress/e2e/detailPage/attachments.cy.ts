@@ -173,7 +173,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       verifyTableLength(0);
 
       // reset test data
-      deleteBorehole(boreholeId as unknown as number);
+      deleteBorehole(boreholeId);
       stopBoreholeEditing();
     });
   });
@@ -229,7 +229,7 @@ describe("Tests for 'Attachments' edit page.", () => {
       verifyTableLength(0);
 
       // reset test data
-      deleteBorehole(boreholeId as unknown as number);
+      deleteBorehole(boreholeId);
       stopBoreholeEditing();
     });
   });
@@ -320,14 +320,14 @@ describe("Tests for 'Attachments' edit page.", () => {
       verifyTableLength(2);
 
       // reset test data
-      deleteBorehole(boreholeId as unknown as number);
+      deleteBorehole(boreholeId);
     });
   });
 
   it("Displays table pagination for more than 100 documents", () => {
     createBoreholeWithDocuments(103, "borehole_id_103");
     cy.get("@borehole_id_103").then(id => {
-      goToDetailRouteAndAcceptTerms(`/${id as unknown as number}/attachments#documents`);
+      goToDetailRouteAndAcceptTerms(`/${id}/attachments#documents`);
       cy.wait(["@borehole"]);
     });
 
