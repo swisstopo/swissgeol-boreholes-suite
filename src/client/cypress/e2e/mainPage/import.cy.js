@@ -133,9 +133,9 @@ describe("Test for importing boreholes.", () => {
     cy.dataCy("import-borehole-button").click();
 
     // Select borehole csv file
-    getImportFileFromFixtures("boreholes-missing-fields-and-duplicates.csv", null)
+    getImportFileFromFixtures("boreholes-missing-required-fields.csv", null)
       .then(fileContent => {
-        const file = new File([fileContent], "boreholes-missing-fields-and-duplicates.csv", {
+        const file = new File([fileContent], "boreholes-missing-required-fields.csv", {
           type: "text/csv",
         });
         let boreholeFile = new DataTransfer();
