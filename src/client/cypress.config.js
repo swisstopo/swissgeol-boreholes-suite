@@ -12,6 +12,10 @@ export default defineConfig({
     viewportHeight: 1080,
     supportFile: "cypress/support/e2e.js",
     experimentalMemoryManagement: true,
+    env: {
+      grepFilterSpecs: true,
+      grepOmitFiltered: true,
+    },
 
     setupNodeEvents(on, config) {
       cypressGrepPlugin(config);
