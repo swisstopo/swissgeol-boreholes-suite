@@ -135,26 +135,6 @@ describe("Search filter tests", () => {
     verifyPaginationText("1–100 of 2703");
     cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
 
-    // cy.contains("Lithology").click();
-    // cy.dataCy("show-all-fields-switch").click();
-    // setYesNoSelect("striae", "Yes");
-    // cy.wait("@edit_list");
-    // verifyPaginationText("1–100 of 2567");
-    // cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
-    // cy.get('[data-cy="filter-chip-striae"]').should("exist");
-    //
-    // setYesNoSelect("striae", "No");
-    // cy.wait("@edit_list");
-    // verifyPaginationText("1–100 of 2568");
-    // cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
-    // cy.get('[data-cy="filter-chip-striae"]').should("exist");
-    //
-    // setYesNoSelect("striae", "Not Specified");
-    // cy.wait("@edit_list");
-    // hasPagination(false);
-    // cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
-    // cy.get('[data-cy="filter-chip-striae"]').should("exist");
-
     // reset national interest filter
     cy.get('[data-cy="filter-chip-national_interest"]')
       .should("exist")
@@ -164,23 +144,6 @@ describe("Search filter tests", () => {
 
     cy.wait("@edit_list");
     cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
-    // cy.get('[data-cy="filter-chip-striae"]').should("exist");
-    //
-    // setYesNoSelect("striae", "No");
-    // cy.wait("@edit_list");
-    // verifyPaginationText("1–100 of 2854");
-    // cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
-    // cy.get('[data-cy="filter-chip-striae"]').should("exist");
-    //
-    // // reset striae filter
-    // cy.get('[data-cy="filter-chip-striae"]')
-    //   .should("exist")
-    //   .within(() => {
-    //     cy.get("svg").click();
-    //   });
-    //
-    // cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
-    // cy.get('[data-cy="filter-chip-striae"]').should("not.exist");
     verifyPaginationText("1–100 of 3004");
   });
 

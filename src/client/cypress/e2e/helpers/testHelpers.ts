@@ -11,19 +11,19 @@ export const interceptApiCalls = () => {
   // Api V1
   cy.intercept("/api/v1/borehole").as("borehole");
   cy.intercept("/api/v1/borehole", req => {
-    return (req.alias = `borehole_${req.body.action.toLowerCase()}`);
+    req.alias = `borehole_${req.body.action.toLowerCase()}`;
   });
   cy.intercept("/api/v1/borehole/edit", req => {
-    return (req.alias = `edit_${req.body.action.toLowerCase()}`);
+    req.alias = `edit_${req.body.action.toLowerCase()}`;
   });
   cy.intercept("/api/v1/user/edit", req => {
-    return (req.alias = `user_edit_${req.body.action.toLowerCase()}`);
+    req.alias = `user_edit_${req.body.action.toLowerCase()}`;
   });
   cy.intercept("/api/v1/user", req => {
-    return (req.alias = `user_${req.body.action.toLowerCase()}`);
+    req.alias = `user_${req.body.action.toLowerCase()}`;
   });
   cy.intercept("/api/v1/workflow/edit", req => {
-    return (req.alias = `workflow_edit_${req.body.action.toLowerCase()}`);
+    req.alias = `workflow_edit_${req.body.action.toLowerCase()}`;
   });
   cy.intercept("/api/v1/setting").as("setting");
   cy.intercept("api/v1/borehole/codes").as("codes");
@@ -55,27 +55,27 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/faciesdescription*").as("facies_description");
 
   cy.intercept("/api/v2/chronostratigraphy*", req => {
-    return (req.alias = `chronostratigraphy_${req.method}`);
+    req.alias = `chronostratigraphy_${req.method}`;
   });
 
   cy.intercept("/api/v2/lithostratigraphy*", req => {
-    return (req.alias = `lithostratigraphy_${req.method}`);
+    req.alias = `lithostratigraphy_${req.method}`;
   });
 
   cy.intercept("/api/v2/wateringress*", req => {
-    return (req.alias = `wateringress_${req.method}`);
+    req.alias = `wateringress_${req.method}`;
   });
 
   cy.intercept("/api/v2/groundwaterlevelmeasurement*", req => {
-    return (req.alias = `groundwaterlevelmeasurement_${req.method}`);
+    req.alias = `groundwaterlevelmeasurement_${req.method}`;
   });
 
   cy.intercept("/api/v2/fieldmeasurement*", req => {
-    return (req.alias = `fieldmeasurement_${req.method}`);
+    req.alias = `fieldmeasurement_${req.method}`;
   });
 
   cy.intercept("/api/v2/hydrotest*", req => {
-    return (req.alias = `hydrotest_${req.method}`);
+    req.alias = `hydrotest_${req.method}`;
   });
 
   cy.intercept("/api/v2/completion?boreholeId=**").as("completion_GET");
@@ -84,23 +84,23 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/casing?completionId=**").as("casing_by_completion_GET");
   cy.intercept("/api/v2/casing?boreholeId=**").as("casing_by_borehole_GET");
   cy.intercept("/api/v2/casing*", req => {
-    return (req.alias = `casing_${req.method}`);
+    req.alias = `casing_${req.method}`;
   });
 
   cy.intercept("/api/v2/instrumentation?completionId=**").as("instrumentation_by_completion_GET");
   cy.intercept("/api/v2/instrumentation*", req => {
-    return (req.alias = `instrumentation_${req.method}`);
+    req.alias = `instrumentation_${req.method}`;
   });
 
   cy.intercept("/api/v2/backfill?completionId=**").as("backfill_by_completion_GET");
   cy.intercept("/api/v2/backfill*", req => {
-    return (req.alias = `backfill_${req.method}`);
+    req.alias = `backfill_${req.method}`;
   });
 
   cy.intercept("/api/v2/codelist?schema=**").as("codelist_by_schema_GET");
   cy.intercept("/api/v2/codelist?testKindIds=**").as("codelist_by_testKindIds_GET");
   cy.intercept("/api/v2/codelist*", req => {
-    return (req.alias = `codelist_${req.method}`);
+    req.alias = `codelist_${req.method}`;
   });
 
   cy.intercept("/api/v2/section?boreholeId=**").as("section_GET");
@@ -109,10 +109,10 @@ export const interceptApiCalls = () => {
   cy.intercept("DELETE", "/api/v2/section?id=**").as("section_DELETE");
 
   cy.intercept("/api/v2/boreholegeometry?boreholeId=**", req => {
-    return (req.alias = `boreholegeometry_${req.method}`);
+    req.alias = `boreholegeometry_${req.method}`;
   });
   cy.intercept("/api/v2/boreholegeometry/geometryformats", req => {
-    return (req.alias = `boreholegeometry_formats`);
+    req.alias = `boreholegeometry_formats`;
   });
 
   cy.intercept("/api/v2/boreholegeometry/getDepthInMasl?**").as("get-boreholegeometry-depth-masl");
@@ -143,7 +143,7 @@ export const interceptApiCalls = () => {
   cy.intercept("DELETE", "/api/v2/photo?photoIds=**").as("delete-photos");
   cy.intercept("GET", "/api/v2/document/getAllForBorehole?boreholeId=**").as("getAllDocuments");
   cy.intercept("/api/v2/document*", req => {
-    return (req.alias = `document_${req.method}`);
+    req.alias = `document_${req.method}`;
   });
 
   cy.intercept("POST", "/api/v2/maintenance/LocationMigration").as("start-location-migration");
@@ -656,11 +656,13 @@ export const createCasing = ({
   });
 };
 
+type NullableId = number | string | null;
+
 export interface ObservationInput {
   boreholeId: number | string;
   startTime: string;
   reliabilityId: number;
-  casingId?: number | string | null;
+  casingId?: NullableId;
   fromDepthM?: number | null;
   toDepthM?: number | null;
 }

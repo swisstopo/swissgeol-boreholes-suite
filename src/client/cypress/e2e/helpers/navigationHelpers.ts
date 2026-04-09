@@ -193,12 +193,12 @@ export const navigateInSidebar = (menuItem: string, promptSelector?: string) => 
       isActiveMenuItem(menuItem);
       cy.get(".MuiCircularProgress-root").should("not.exist");
       cy.location().should(location => {
-        if (!location.hash) {
-          // No stratigraphy
-          expect(location.pathname).to.match(/^\/\d+\/stratigraphy$/);
-        } else {
+        if (location.hash) {
           expect(location.pathname).to.match(/^\/\d+\/stratigraphy\/\d+$/);
           expect(location.hash).to.eq("#lithology");
+        } else {
+          // No stratigraphy
+          expect(location.pathname).to.match(/^\/\d+\/stratigraphy$/);
         }
       });
       break;

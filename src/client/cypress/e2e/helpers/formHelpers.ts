@@ -163,7 +163,15 @@ export const setSelect = (fieldName: string, index: number, optionsLength?: numb
  * @param {string} parent (optional) The parent of the form element.
  */
 export const setYesNoSelect = (fieldName: string, option: string, optionsLength?: number, parent?: string) => {
-  const listIndex = option.toLowerCase() === "yes" ? 0 : option.toLowerCase() === "no" ? 1 : 2; // order of options in dropdown list is Yes, No, Not Specified
+  // order of options in dropdown list is Yes, No, Not Specified
+  let listIndex: number;
+  if (option.toLowerCase() === "yes") {
+    listIndex = 0;
+  } else if (option.toLowerCase() === "no") {
+    listIndex = 1;
+  } else {
+    listIndex = 2;
+  }
   setSelect(fieldName, listIndex, optionsLength, parent);
 };
 
@@ -189,10 +197,10 @@ export const evaluateSelect = (fieldName: string, expectedText: string | number,
   if (editable) {
     const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"] input`;
     cy.get(selector).should("have.value", expectedText, `Expected ${fieldName} to have value ${expectedText}`);
-  } else if (!expectedText) {
-    cy.dataCy(`${fieldName}-formSelect`).find(".MuiOutlinedInput-input").should("be.empty");
-  } else {
+  } else if (expectedText) {
     cy.dataCy(`${fieldName}-formSelect`).find(".MuiOutlinedInput-input").should("have.value", expectedText);
+  } else {
+    cy.dataCy(`${fieldName}-formSelect`).find(".MuiOutlinedInput-input").should("be.empty");
   }
 };
 
