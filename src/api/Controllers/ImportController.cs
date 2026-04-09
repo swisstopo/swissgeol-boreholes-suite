@@ -465,8 +465,6 @@ public class ImportController : ControllerBase
     private void ValidateBorehole(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int workgroupId, int boreholeIndex, ValidationErrorType errorType)
     {
         ValidateRequiredFields(borehole, boreholeIndex, errorType);
-        ValidateDuplicateInFile(borehole, boreholesFromFile, boreholeIndex, errorType);
-        ValidateDuplicateInDb(borehole, workgroupId, boreholeIndex, errorType);
         ValidateCasingReferences(borehole, boreholeIndex);
     }
 
@@ -475,27 +473,6 @@ public class ImportController : ControllerBase
         if (string.IsNullOrEmpty(borehole.OriginalName)) AddValidationErrorToModelState(processingIndex, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "original_name"), errorType);
         if (borehole.LocationX == null && borehole.LocationXLV03 == null) AddValidationErrorToModelState(processingIndex, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_x"), errorType);
         if (borehole.LocationY == null && borehole.LocationYLV03 == null) AddValidationErrorToModelState(processingIndex, string.Format(CultureInfo.InvariantCulture, nullOrEmptyMsg, "location_y"), errorType);
-    }
-
-    private void ValidateDuplicateInFile(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int processingIndex, ValidationErrorType errorType)
-    {
-        if (boreholesFromFile.Count(b =>
-            BoreholeExtensions.CompareToWithTolerance(b.TotalDepth, borehole.TotalDepth, 0) &&
-            BoreholeExtensions.CompareToWithTolerance(b.LocationX, borehole.LocationX, 2) &&
-            BoreholeExtensions.CompareToWithTolerance(b.LocationY, borehole.LocationY, 2)) > 1)
-        {
-            AddValidationErrorToModelState(processingIndex, $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", errorType);
-        }
-    }
-
-    private void ValidateDuplicateInDb(Borehole borehole, int workgroupId, int processingIndex, ValidationErrorType errorType)
-    {
-        var boreholesFromDb = context.Boreholes.Where(b => b.WorkgroupId == workgroupId).AsNoTracking();
-
-        if (borehole.IsWithinPredefinedTolerance(boreholesFromDb))
-        {
-            AddValidationErrorToModelState(processingIndex, $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", errorType);
-        }
     }
 
     private void ValidateCasingReferences(Borehole borehole, int processingIndex)
