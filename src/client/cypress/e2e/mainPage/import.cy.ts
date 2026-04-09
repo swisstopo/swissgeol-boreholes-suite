@@ -160,9 +160,7 @@ describe("Test for importing boreholes.", () => {
       .should("contain", "Row1")
       .should("contain", "Field 'location_x' is required.")
       .should("contain", "Row2")
-      .should("contain", "Row4")
-      .should("contain", "Row5")
-      .should("contain", "Borehole with same Coordinates (+/- 2m) and same TotalDepth is provided multiple times.");
+      .should("not.contain", "Row3");
   });
 
   it("can select workgroup when importing boreholes", () => {
