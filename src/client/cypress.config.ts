@@ -33,9 +33,9 @@ export default defineConfig({
         //Optimize test execution for electron
         if (browser.name === "electron") {
           launchOptions.preferences = {
-            ...(launchOptions.preferences || {}),
+            ...launchOptions.preferences,
             webPreferences: {
-              ...(launchOptions.preferences?.webPreferences || {}),
+              ...launchOptions.preferences?.webPreferences,
               backgroundThrottling: false,
               nodeIntegration: true,
               contextIsolation: false,

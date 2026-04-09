@@ -310,10 +310,10 @@ describe("Test for the borehole form.", () => {
       originalName: "AAA_RINO",
       name: "AAA_RINO",
       totalDepth: 0,
-      topBedrockFreshMd: 0.0,
-      topBedrockWeatheredMd: 0.0,
+      topBedrockFreshMd: 0,
+      topBedrockWeatheredMd: 0,
       elevationZ: 0,
-      referenceElevation: 0.0,
+      referenceElevation: 0,
     }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/location`);
