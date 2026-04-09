@@ -1,29 +1,8 @@
-import {
-  createBorehole,
-  createStratigraphy,
-  goToDetailRouteAndAcceptTerms,
-  startBoreholeEditing,
-  stopBoreholeEditing,
-} from "../helpers/testHelpers";
+import { openStratigraphyEditorTab, stopBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Tests for the chronostratigraphy editor.", () => {
   beforeEach(function () {
-    // Add new borehole with stratigraphy
-    createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
-    cy.get("@borehole_id").then(boreholeId =>
-      createStratigraphy({ boreholeId: boreholeId, name: "GLOBALMAGIC" }).as("stratigraphy_id"),
-    );
-
-    // open chronostratigraphy editor
-    cy.get("@borehole_id").then(boreholeId => {
-      cy.get("@stratigraphy_id").then(stratigraphyId => {
-        goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy/${stratigraphyId}#chronostratigraphy`);
-      });
-    });
-
-    // start editing session
-    startBoreholeEditing();
-    cy.wait("@chronostratigraphy_GET");
+    openStratigraphyEditorTab("GLOBALMAGIC", "chronostratigraphy", "@chronostratigraphy_GET");
   });
 
   it("Creates, updates and deletes chronostratigraphy layers", () => {

@@ -5,6 +5,7 @@ import {
   createBorehole,
   createCasing,
   createCompletion,
+  createTestCasing,
   goToDetailRouteAndAcceptTerms,
   handlePrompt,
   startBoreholeEditing,
@@ -23,14 +24,7 @@ describe("Backfill crud tests", () => {
       }).as("completion_id");
 
       cy.get("@completion_id").then(completionId => {
-        createCasing({
-          name: "casing-1",
-          boreholeId: id,
-          completionId: completionId,
-          dateStart: "2021-01-01",
-          dateFinish: "2021-01-02",
-          casingElements: [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
-        }).as("casing1_id");
+        createTestCasing(id, completionId).as("casing1_id");
         createCasing({
           name: "casing-2",
           boreholeId: id,

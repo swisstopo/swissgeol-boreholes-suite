@@ -2,9 +2,9 @@ import { addItem, deleteItem, saveForm, startEditing } from "../helpers/buttonHe
 import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelpers";
 import {
   createBorehole,
-  createCasing,
   createCompletion,
   createFieldMeasurement,
+  createTestCasing,
   goToDetailRouteAndAcceptTerms,
   handlePrompt,
   selectLanguage,
@@ -22,14 +22,7 @@ beforeEach(() => {
     }).as("completion_id");
 
     cy.get("@completion_id").then(completionId => {
-      createCasing({
-        name: "casing-1",
-        boreholeId: id,
-        completionId: completionId,
-        dateStart: "2021-01-01",
-        dateFinish: "2021-01-02",
-        casingElements: [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
-      });
+      createTestCasing(id, completionId);
     });
   });
 });
