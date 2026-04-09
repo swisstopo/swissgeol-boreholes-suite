@@ -82,7 +82,7 @@ public class ImportController : ControllerBase
                 .ConfigureAwait(false);
 
             var boreholeImports = ReadBoreholesFromCsv(boreholesFile, identifierCodelists);
-            ValidateBoreholeImports(workgroupId, boreholeImports, ValidationErrorType.Csv);
+            ValidateBoreholeImports(boreholeImports, ValidationErrorType.Csv);
 
             // If any validation error occured, return a bad request.
             if (!ModelState.IsValid) return ValidationProblem();
@@ -256,7 +256,7 @@ public class ImportController : ControllerBase
         if (user == null)
             return Unauthorized();
 
-        ValidateBoreholeImports(workgroupId, boreholes, ValidationErrorType.Json);
+        ValidateBoreholeImports(boreholes, ValidationErrorType.Json);
         if (!ModelState.IsValid)
             return ValidationProblem();
 
@@ -454,15 +454,15 @@ public class ImportController : ControllerBase
         return 0;
     }
 
-    private void ValidateBoreholeImports(int workgroupId, List<BoreholeImport> boreholesFromFile, ValidationErrorType errorType)
+    private void ValidateBoreholeImports(List<BoreholeImport> boreholesFromFile, ValidationErrorType errorType)
     {
         foreach (var borehole in boreholesFromFile.Select((value, index) => (value, index)))
         {
-            ValidateBorehole(borehole.value, boreholesFromFile, workgroupId, borehole.index, errorType);
+            ValidateBorehole(borehole.value, borehole.index, errorType);
         }
     }
 
-    private void ValidateBorehole(BoreholeImport borehole, List<BoreholeImport> boreholesFromFile, int workgroupId, int boreholeIndex, ValidationErrorType errorType)
+    private void ValidateBorehole(BoreholeImport borehole, int boreholeIndex, ValidationErrorType errorType)
     {
         ValidateRequiredFields(borehole, boreholeIndex, errorType);
         ValidateCasingReferences(borehole, boreholeIndex);
