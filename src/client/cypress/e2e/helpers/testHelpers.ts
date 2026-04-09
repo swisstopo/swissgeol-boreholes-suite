@@ -658,6 +658,28 @@ export const createCasing = ({
 
 type NullableId = number | string | null;
 
+export const createTestCasing = (boreholeId: number | string, completionId: number | string) =>
+  createCasing({
+    name: "casing-1",
+    boreholeId,
+    completionId,
+    dateStart: "2021-01-01",
+    dateFinish: "2021-01-02",
+    casingElements: [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
+  });
+
+export const openStratigraphyEditorTab = (stratigraphyName: string, hash: string, waitAlias: string) => {
+  createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
+  cy.get("@borehole_id").then(boreholeId => {
+    createStratigraphy({ boreholeId: boreholeId as number, name: stratigraphyName }).as("stratigraphy_id");
+    cy.get("@stratigraphy_id").then(stratigraphyId => {
+      goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy/${stratigraphyId}#${hash}`);
+    });
+  });
+  startBoreholeEditing();
+  cy.wait(waitAlias);
+};
+
 export interface ObservationInput {
   boreholeId: number | string;
   startTime: string;

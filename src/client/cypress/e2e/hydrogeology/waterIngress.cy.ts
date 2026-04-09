@@ -3,8 +3,8 @@ import { evaluateDisplayValue, setInput, setSelect } from "../helpers/formHelper
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers";
 import {
   createBorehole,
-  createCasing,
   createCompletion,
+  createTestCasing,
   createWateringress,
   goToDetailRouteAndAcceptTerms,
   handlePrompt,
@@ -25,14 +25,7 @@ describe("Tests for the wateringress editor.", () => {
         isPrimary: true,
       }).as("completion_id");
       cy.get("@completion_id").then(completionId => {
-        createCasing({
-          name: "casing-1",
-          boreholeId: id,
-          completionId: completionId,
-          dateStart: "2021-01-01",
-          dateFinish: "2021-01-02",
-          casingElements: [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
-        });
+        createTestCasing(id, completionId);
       });
 
       // open completion editor

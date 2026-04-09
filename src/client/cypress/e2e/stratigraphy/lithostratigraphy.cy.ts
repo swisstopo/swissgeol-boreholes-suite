@@ -1,26 +1,8 @@
-import {
-  createBorehole,
-  createStratigraphy,
-  goToDetailRouteAndAcceptTerms,
-  startBoreholeEditing,
-  stopBoreholeEditing,
-} from "../helpers/testHelpers";
+import { openStratigraphyEditorTab, stopBoreholeEditing } from "../helpers/testHelpers";
 
 describe("Tests for the lithostratigraphy editor.", () => {
   beforeEach(function () {
-    // Add new borehole with stratigraphy
-    createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
-    cy.get("@borehole_id").then(boreholeId => {
-      createStratigraphy({ boreholeId: boreholeId, name: "TRAFFICNEIGHBOR" }).as("stratigraphy_id");
-      // open lithostratigraphy editor
-      cy.get("@stratigraphy_id").then(stratigraphyId => {
-        goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy/${stratigraphyId}#lithostratigraphy`);
-      });
-    });
-
-    // start editing session
-    startBoreholeEditing();
-    cy.wait("@lithostratigraphy_GET");
+    openStratigraphyEditorTab("TRAFFICNEIGHBOR", "lithostratigraphy", "@lithostratigraphy_GET");
   });
 
   it("Creates, updates and deletes lithostratigraphy layers", () => {
