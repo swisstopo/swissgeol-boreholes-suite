@@ -144,6 +144,7 @@ builder.Services
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 builder.Services.AddScoped<IBoreholePermissionService, BoreholePermissionService>();
+builder.Services.AddScoped<IFilterService, FilterService>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<IMaintenanceTask, LocationMigrationTask>();
 builder.Services.AddSingleton<IMaintenanceTask, CoordinateMigrationTask>();

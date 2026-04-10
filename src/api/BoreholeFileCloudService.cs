@@ -42,7 +42,7 @@ public class BoreholeFileCloudService : CloudServiceBase
                 .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
                 .ConfigureAwait(false);
 
-            if (user == null || subjectId == null) throw new InvalidOperationException($"No user with subject_id <{subjectId}> found.");
+            if (user == null) throw new InvalidOperationException($"No user with subject_id <{subjectId}> found.");
 
             // Register the new file in the boreholes database.
             var fileExtension = Path.GetExtension(fileName);
