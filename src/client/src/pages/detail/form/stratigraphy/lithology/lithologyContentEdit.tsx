@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { BaseLayer, MinimalLayer } from "../../../../../api/stratigraphy.ts";
 import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
+import { formatNumberForDisplay } from "../../../../../components/form/formUtils.ts";
 import { SaveContext } from "../../../saveContext.tsx";
 import { FaciesDescription, useFaciesDescriptionMutations } from "../faciesDescription";
 import { LithologicalDescription, useLithologicalDescriptionMutations } from "../lithologicalDescription.ts";
@@ -529,12 +530,13 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
                 {depths.map(depth => (
                   <StratigraphyTableCell
                     key={`${depth.lithologyId}-depth-${depth.fromDepth}-${depth.toDepth}`}
+                    data-cy={`depth-${depth.fromDepth}-${depth.toDepth}`}
                     sx={{ height: `${defaultRowHeight}px` }}>
                     <Typography color={depth.hasFromDepthError ? "error" : "default"}>
-                      {`${depth.fromDepth} m MD`}
+                      {`${formatNumberForDisplay(depth.fromDepth)} m MD`}
                     </Typography>
                     <Typography color={depth.hasToDepthError ? "error" : "default"}>
-                      {`${depth.toDepth} m MD`}
+                      {`${formatNumberForDisplay(depth.toDepth)} m MD`}
                     </Typography>
                   </StratigraphyTableCell>
                 ))}

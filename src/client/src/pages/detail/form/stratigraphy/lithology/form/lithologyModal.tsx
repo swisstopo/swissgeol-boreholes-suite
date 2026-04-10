@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useContext, useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
@@ -9,7 +9,8 @@ import { FormContainer } from "../../../../../../components/form/formContainer.t
 import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
 import { FormInput } from "../../../../../../components/form/formInput.tsx";
 import { validateDepths } from "../../../../../../components/form/formUtils.ts";
-import { useFormDirty } from "../../../../../../components/form/useFormDirty.tsx";
+import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
+import { capitalizeFirstLetter } from "../../../../../../utils.ts";
 import { Lithology } from "../../lithology.ts";
 import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
 import { LithologyUnconsolidatedForm } from "./lithologyUnconsolidatedForm.tsx";
@@ -33,7 +34,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
     },
   });
   const { formState, getValues } = formMethods;
-  const isDirty = useFormDirty({ formState });
+  const { showPrompt } = useContext(PromptContext);
 
   useEffect(() => {
     if (lithology) {
@@ -58,11 +59,14 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
   const isUnconsolidated = formMethods.watch("isUnconsolidated");
 
   const closeDialog = async () => {
+    const values = getValues();
     const isValid = await formMethods.trigger();
-    if (!isDirty || isValid) {
-      const values = getValues();
+    const hasChanges = JSON.stringify(lithology) !== JSON.stringify(values);
+
+    // Close dialog if no changes have been made or the form is valid
+    if (!hasChanges || isValid) {
       prepareLithologyForSubmit(values);
-      updateLithology({ ...lithology, ...values } as Lithology, isDirty || (Boolean(lithology?.isGap) && isValid));
+      updateLithology({ ...lithology, ...values } as Lithology, hasChanges || (Boolean(lithology?.isGap) && isValid));
     }
   };
 
@@ -85,17 +89,49 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
                 render={({ field }) => (
                   <ToggleButtonGroup
                     value={field.value}
-                    onChange={(_, value) => field.onChange(value)}
+                    onChange={(_, value) => {
+                      const currentLabel = field.value ? "unconsolidated" : "consolidated";
+                      const newLabel = field.value ? "consolidated" : "unconsolidated";
+                      showPrompt(t("switchUnconsolidatedMessage", { current: t(currentLabel), new: t(newLabel) }), [
+                        {
+                          label: "cancel",
+                          action: () => {},
+                        },
+                        {
+                          label: "continue",
+                          variant: "contained",
+                          action: () => {
+                            const currentValues = formMethods.getValues();
+                            formMethods.reset({
+                              id: currentValues.id,
+                              stratigraphyId: currentValues.stratigraphyId,
+                              fromDepth: currentValues.fromDepth,
+                              toDepth: currentValues.toDepth,
+                              isUnconsolidated: value,
+                              hasBedding: false,
+                              lithologyDescriptions: [
+                                {
+                                  id: 0,
+                                  lithologyId: currentValues.id,
+                                  isFirst: true,
+                                },
+                              ],
+                              notes: "",
+                            } as Lithology);
+                          },
+                        },
+                      ]);
+                    }}
                     exclusive
                     sx={{
                       boxShadow: "none",
                       border: `1px solid ${theme.palette.border.light}`,
                     }}>
                     <ToggleButton value={true}>
-                      <Typography>{t("unconsolidated")}</Typography>
+                      <Typography>{capitalizeFirstLetter(t("unconsolidated"))}</Typography>
                     </ToggleButton>
                     <ToggleButton value={false}>
-                      <Typography>{t("consolidated")}</Typography>
+                      <Typography>{capitalizeFirstLetter(t("consolidated"))}</Typography>
                     </ToggleButton>
                   </ToggleButtonGroup>
                 )}

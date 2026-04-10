@@ -2,6 +2,7 @@ import { FC, ReactNode, useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { BaseLayer } from "../../../../../api/stratigraphy.ts";
+import { formatNumberForDisplay } from "../../../../../components/form/formUtils.ts";
 import { FaciesDescription } from "../faciesDescription.ts";
 import { LithologicalDescription } from "../lithologicalDescription.ts";
 import { Lithology } from "../lithology.ts";
@@ -59,8 +60,8 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
     computeCellHeight: ((fromDepth: number, toDepth: number) => number) | null,
   ) => (
     <StratigraphyTableGap
-      key={`${keyPrefix}-${layer.id}`}
-      dataCy={`${keyPrefix}-${layer.id}`}
+      key={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
+      dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
       sx={{
         height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
       }}
@@ -129,10 +130,11 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
             ) : (
               depths.map(depth => (
                 <StratigraphyTableCell
+                  data-cy={`depth-${depth.fromDepth}-${depth.toDepth}`}
                   key={`${depth.lithologyId}-depth-${depth.fromDepth}-${depth.toDepth}`}
                   sx={{ height: `${defaultRowHeight}px` }}>
-                  <Typography>{`${depth.fromDepth} m MD`}</Typography>
-                  <Typography>{`${depth.toDepth} m MD`}</Typography>
+                  <Typography>{`${formatNumberForDisplay(depth.fromDepth)} m MD`}</Typography>
+                  <Typography>{`${formatNumberForDisplay(depth.toDepth)} m MD`}</Typography>
                 </StratigraphyTableCell>
               ))
             )}

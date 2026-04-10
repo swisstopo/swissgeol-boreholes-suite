@@ -5,6 +5,7 @@ interface FormContainerProps extends StackProps {
   children?: ReactNode;
   width?: string;
   ref?: Ref<HTMLDivElement>;
+  dataCy?: string;
 }
 
 export const FormContainer: FC<FormContainerProps> = props => {
@@ -13,6 +14,7 @@ export const FormContainer: FC<FormContainerProps> = props => {
     <Stack
       component={props.component ?? "div"}
       ref={props.ref}
+      data-cy={props.dataCy}
       {...props}
       rowGap={3}
       columnGap={2}

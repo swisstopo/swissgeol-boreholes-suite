@@ -71,13 +71,19 @@ export const setInput = (fieldName, value, parent) => {
   });
 };
 
+export const formatWithThousandsSeparator = value =>
+  value > 999 ? value.toLocaleString("de-CH").replaceAll("\u2019", "'") : value;
+
 /**
  * Evaluates the state of an input form element
  * @param {string} fieldName The name of the input field.
- * @param {number} expectedValue The expected value.
+ * @param {string | number} expectedValue The expected value.
  * @param {string} parent (optional) The parent of the form element.
  */
 export const evaluateInput = (fieldName, expectedValue, parent) => {
+  if (typeof expectedValue === "number" && expectedValue > 999) {
+    expectedValue = formatWithThousandsSeparator(expectedValue);
+  }
   const selector = `${createBaseSelector(parent)}[data-cy="${fieldName}-formInput"] input`;
   cy.get(selector).should("have.value", expectedValue);
 };
@@ -136,15 +142,15 @@ export const evaluateDropdownOptionsLength = length => {
  * Sets the value for a select form element.
  * @param {string} fieldName The name of the select field.
  * @param {number} index The index of the option to select.
- * @param {number} expected The expected number of options in the dropdown.
+ * @param {number} optionsLength The expected number of options in the dropdown.
  * @param {string} parent (optional) The parent of the form element.
  */
-export const setSelect = (fieldName, index, expected, parent) => {
+export const setSelect = (fieldName, index, optionsLength, parent) => {
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formSelect"]`;
   scrollIntoView(selector);
   openDropdown(selector);
-  if (expected != null) {
-    evaluateDropdownOptionsLength(expected);
+  if (optionsLength != null) {
+    evaluateDropdownOptionsLength(optionsLength);
   }
   selectDropdownOption(index);
 };

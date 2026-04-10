@@ -6,6 +6,7 @@ import { Copy, Plus, Trash2, TriangleAlert } from "lucide-react";
 import { BaseLayer } from "../../../../api/stratigraphy.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
+import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
 
 export const StratigraphyTableHeader = styled(Stack)(() => ({
   flexDirection: "row",
@@ -114,11 +115,12 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
           justifyContent: layer?.fromDepth !== null && layer?.fromDepth !== undefined ? "space-between" : "flex-end",
         }}>
         {layer?.fromDepth !== null && layer?.fromDepth !== undefined && (
-          <Typography variant="body1">{layer?.fromDepth} m MD</Typography>
+          <Typography variant="body1">{formatNumberForDisplay(layer?.fromDepth)} m MD</Typography>
         )}
         {onHoverClick && (
           <StandaloneIconButton
             icon={isEditing ? <Trash2 /> : <Copy />}
+            dataCy={isEditing ? "deleteLayer-button" : "copyLayer-button"}
             onClick={e => {
               e.stopPropagation();
               onHoverClick(index);
@@ -140,7 +142,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
       </Stack>
       <StratigraphyTableCellRow className="hover-content">
         {layer?.toDepth !== null && layer?.toDepth !== undefined && (
-          <Typography variant="body1">{layer?.toDepth} m MD</Typography>
+          <Typography variant="body1">{formatNumberForDisplay(layer?.toDepth)} m MD</Typography>
         )}
       </StratigraphyTableCellRow>
     </StratigraphyTableCell>
@@ -170,6 +172,7 @@ export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ index, onC
         }),
         ...sx,
       }}
+      data-cy={`${dataCy}-gap`}
       onClick={() => {
         if (onClick) {
           onClick(index);

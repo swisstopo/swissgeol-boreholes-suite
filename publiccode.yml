@@ -1,0 +1,66 @@
+publiccodeYmlVersion: 0.5.0
+name: boreholes.swissgeol.ch
+applicationSuite: swissgeol.ch
+url: https://github.com/swisstopo/swissgeol-boreholes-suite
+landingURL: https://www.swissgeol.ch/
+releaseDate: 2026-02-19
+platforms:
+  - web
+categories:
+  - data-collection
+  - geographic-information-systems
+  - document-management
+  - data-visualization
+usedBy:
+  - swisstopo
+developmentStatus: stable
+softwareType: standalone/web
+organisation:
+  uri: https://ld.admin.ch/office/IV.1.5a
+  name: Bundesamt für Landestopografie (swisstopo)
+description:
+  en:
+    localisedName: boreholes.swissgeol.ch
+    shortDescription: A web-based application designed for the efficient,
+      structured, and standardized collection of geological drilling data.
+    longDescription: >-
+      Borehole data is essential for understanding the subsurface and provides a
+      critical foundation for geological analysis and decision-making. At
+      swisstopo, borehole data of national relevance is managed within a
+      centralized database and made accessible to users online, in accordance
+      with defined access rights.
+
+
+      The open-source platform boreholes.swissgeol.ch enables the structured,
+      standardized, and harmonized capture of borehole data across stakeholders.
+      By applying common data models and controlled vocabularies, the platform
+      ensures interoperability and facilitates the integration of data from
+      different sources and jurisdictions.
+
+
+      A role-based quality assurance workflow supports multi-stage validation
+      and verification processes, ensuring that new datasets meet defined
+      quality standards before publication. This approach strengthens
+      consistency, reliability, and reusability of borehole data, and
+      contributes to a sustainable, interoperable geological data ecosystem.
+    documentation: https://www.swissgeol.ch/
+    features:
+      - data access
+      - borehole data
+      - drilling data
+      - web mapping
+      - document management
+legal:
+  license: MIT
+maintenance:
+  type: internal
+  contacts:
+    - name: team swissgeol
+      email: swissgeol@swisstopo.ch
+localisation:
+  localisationReady: true
+  availableLanguages:
+    - en
+    - de
+    - fr
+    - it

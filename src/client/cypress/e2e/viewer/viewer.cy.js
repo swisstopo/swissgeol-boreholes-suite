@@ -49,14 +49,14 @@ describe("Viewer tests", () => {
     cy.dataCy("export-button").click();
     cy.dataCy("csv-button").should("exist");
     cy.dataCy("json-button").should("exist");
-    cy.dataCy("json + pdf-button").should("exist");
+    cy.dataCy("exportjsonprofile-button").should("exist");
     cy.dataCy("cancel-button").click();
     clickOnRowWithText("Aaron Rempel");
     cy.dataCy("edit-button").should("not.exist");
     cy.dataCy("export-button").click();
     cy.dataCy("csv-button").should("exist");
     cy.dataCy("json-button").should("exist");
-    cy.dataCy("json + pdf-button").should("exist");
+    cy.dataCy("exportjsonprofile-button").should("exist");
   });
 
   it("Assures viewer can click on all borehole menu items and see something", () => {
@@ -76,7 +76,7 @@ describe("Viewer tests", () => {
     navigateInStratigraphy(StratigraphyTab.chronostratigraphy);
     cy.contains("Phanerozoic").should("exist");
     navigateInStratigraphy(StratigraphyTab.lithostratigraphy);
-    cy.contains("Fanez-Formation").should("exist");
+    cy.contains("Kössen-Formation").should("exist");
     navigateInSidebar(SidebarMenuItem.completion);
     cy.wait("@completion_GET");
     cy.contains("No borehole architecture available").should("exist");

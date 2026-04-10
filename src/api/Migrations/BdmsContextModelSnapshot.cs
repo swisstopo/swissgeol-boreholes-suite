@@ -257,8 +257,8 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("restriction_id_cli");
 
-                    b.Property<DateTime?>("RestrictionUntil")
-                        .HasColumnType("timestamp with time zone")
+                    b.Property<DateOnly?>("RestrictionUntil")
+                        .HasColumnType("date")
                         .HasColumnName("restriction_until_bho");
 
                     b.Property<int?>("StatusId")

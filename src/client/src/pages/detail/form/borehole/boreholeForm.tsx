@@ -89,19 +89,12 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
 
   // update topBedrockintersected when editing topBedrockFreshMd or topBedrockWeatheredMD
   useEffect(() => {
-    const topBedrockFreshMdUpdated = topBedrockFreshMd != borehole.topBedrockFreshMd;
-    const topBedrockWeatheredMdUpdated = topBedrockWeatheredMd != borehole.topBedrockWeatheredMd;
-    if (topBedrockFreshMdUpdated || topBedrockWeatheredMdUpdated) {
+    const { dirtyFields } = formMethods.formState;
+    if (dirtyFields.topBedrockFreshMd || dirtyFields.topBedrockWeatheredMd) {
       const intersectedValue = topBedrockFreshMd || topBedrockWeatheredMd ? 1 : 2; // 1:yes, 2: not defined
       formMethods.setValue("topBedrockIntersected", intersectedValue);
     }
-  }, [
-    borehole.topBedrockFreshMd,
-    borehole.topBedrockWeatheredMd,
-    formMethods,
-    topBedrockFreshMd,
-    topBedrockWeatheredMd,
-  ]);
+  }, [formMethods, topBedrockFreshMd, topBedrockWeatheredMd]);
 
   useEffect(() => {
     const fetchAndSetTotalDepthTVD = async () => {
