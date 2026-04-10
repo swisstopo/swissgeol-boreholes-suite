@@ -1,5 +1,7 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
+import { WorkflowStatus } from "@swissgeol/ui-core";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { FeatureCollection, Geometry } from "geojson";
 import { Codelist } from "../components/codelist.ts";
 import { Photo } from "../pages/detail/attachments/tabs/photo.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
@@ -226,4 +228,84 @@ export const useReloadBoreholes = () => {
   return () => {
     queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
   };
+};
+
+// ---- Filter interfaces ----
+export interface BoreholeListItem {
+  id: number;
+  originalName: string | null;
+  name: string | null;
+  workgroupId: number | null;
+  workgroupName: string | null;
+  statusId: number | null;
+  typeId: number | null;
+  purposeId: number | null;
+  restrictionId: number | null;
+  restrictionUntil: NullableDateString;
+  nationalInterest: boolean | null;
+  locationX: number | null;
+  locationY: number | null;
+  elevationZ: number | null;
+  totalDepth: number | null;
+  created: NullableDateString;
+  updated: NullableDateString;
+  isPublic: boolean | null;
+  locked: NullableDateString;
+}
+
+export interface FilterRequest {
+  polygon?: Geometry | null;
+  originalName?: string | null;
+  projectName?: string | null;
+  name?: string | null;
+  statusId?: number[] | null;
+  typeId?: number[] | null;
+  purposeId?: number[] | null;
+  workgroupId?: number[] | null;
+  ids?: number[] | null;
+  restrictionId?: number[] | null;
+  restrictionUntilFrom?: string | null;
+  restrictionUntilTo?: string | null;
+  totalDepthMin?: number | null;
+  totalDepthMax?: number | null;
+  topBedrockFreshMdMin?: number | null;
+  topBedrockFreshMdMax?: number | null;
+  topBedrockWeatheredMdMin?: number | null;
+  topBedrockWeatheredMdMax?: number | null;
+  nationalInterest?: boolean | null;
+  topBedrockIntersected?: boolean | null;
+  hasGroundwater?: boolean | null;
+  hasGeometry?: boolean | null;
+  hasLogs?: boolean | null;
+  hasProfiles?: boolean | null;
+  hasPhotos?: boolean | null;
+  hasDocuments?: boolean | null;
+  workflowStatus?: WorkflowStatus | null;
+  pageNumber?: number;
+  pageSize?: number;
+  orderBy?: string | null;
+  direction?: string | null;
+}
+
+export interface FilterResponse {
+  totalCount: number;
+  pageNumber: number;
+  pageSize: number;
+  totalPages: number;
+  boreholes: BoreholeListItem[];
+  geoJson: FeatureCollection | null;
+  filteredBoreholeIds: number[];
+  selectableBoreholeIds: number[];
+}
+
+// ---- Filter API ----
+export const filterBoreholes = async (filterRequest: FilterRequest): Promise<FilterResponse> => {
+  return await fetchApiV2WithApiError<FilterResponse>("borehole/filter", "POST", filterRequest);
+};
+
+export const useFilterBoreholes = (filterRequest: FilterRequest) => {
+  return useQuery({
+    queryKey: [boreholeQueryKey, filterRequest],
+    queryFn: () => filterBoreholes(filterRequest),
+  });
 };
