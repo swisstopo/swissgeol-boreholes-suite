@@ -20,7 +20,7 @@ public class AuthenticationTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    public async Task CreateOrUpdateUser_ShouldThrowException_ForMissingEmailClaims()
+    public async Task CreateOrUpdateUser_ShouldFallBackToDbValues_ForExistingUser_WithMissingClaims()
     {
         var user = new User
         {
@@ -39,8 +39,13 @@ public class AuthenticationTest
         var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "TestAuthentication"));
         var transformation = new DatabaseAuthenticationClaimsTransformation(context);
 
-        await Assert.ThrowsExactlyAsync<InvalidOperationException>(
-            () => transformation.CreateOrUpdateUser(principal));
+        var updatedUser = await transformation.CreateOrUpdateUser(principal);
+
+        Assert.IsNotNull(updatedUser);
+        Assert.AreEqual("RED", updatedUser.FirstName);
+        Assert.AreEqual("RABBIT", updatedUser.LastName);
+        Assert.AreEqual("R. RABBIT", updatedUser.Name);
+        Assert.AreEqual("RABBIT@example.com", updatedUser.Email);
     }
 
     [TestMethod]
@@ -112,7 +117,7 @@ public class AuthenticationTest
     }
 
     [TestMethod]
-    public async Task CreateOrUpdateUser_ShouldThrowException_WhenUserDoesNotExist_AndMissingGivenNameClaim()
+    public async Task CreateOrUpdateUser_ShouldThrowInvalidOperationException_WhenNewUser_MissingEmail()
     {
         var subjectId = "12345";
         var surName = "WHITE";
@@ -126,7 +131,7 @@ public class AuthenticationTest
         var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "TestAuthentication"));
         var transformation = new DatabaseAuthenticationClaimsTransformation(context);
 
-        await Assert.ThrowsExactlyAsync<NullReferenceException>(
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(
             () => transformation.CreateOrUpdateUser(principal));
     }
 }
