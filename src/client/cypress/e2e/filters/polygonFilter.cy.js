@@ -34,8 +34,6 @@ function assertPolygonFilterActive() {
 describe("Polygon filter tests", () => {
   it("draws polygon and asserts filtering", () => {
     goToRouteAndAcceptTerms("/");
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(5000);
     cy.wait("@borehole_geojson");
     cy.get('[data-cy="show-filter-button"]').click();
 
