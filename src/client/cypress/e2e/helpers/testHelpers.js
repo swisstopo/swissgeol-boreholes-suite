@@ -167,15 +167,15 @@ export const login = user => {
         cy.contains("button", "Login").click({ force: true });
       });
       cy.wait("@token")
-        .then(interception => interception.response.body.id_token)
-        .then(token => window.localStorage.setItem("id_token", token));
+        .then(interception => interception.response.body.access_token)
+        .then(token => window.localStorage.setItem("access_token", token));
     },
     {
       validate() {
         cy.window()
-          .then(win => win.localStorage.getItem("id_token"))
-          .as("id_token");
-        cy.get("@id_token").then(token =>
+          .then(win => win.localStorage.getItem("access_token"))
+          .as("access_token");
+        cy.get("@access_token").then(token =>
           cy.request({
             method: "POST",
             url: "/api/v1/user",
@@ -283,7 +283,7 @@ const waitForCreation = () => {
 };
 
 export const createBorehole = borehole => {
-  return cy.get("@id_token").then(token => {
+  return cy.get("@access_token").then(token => {
     return cy
       .request({
         method: "POST",
@@ -412,7 +412,7 @@ export const checkElementColorByDataCy = (attribute, expectedColor) => {
 };
 
 export const deleteBorehole = id => {
-  cy.get("@id_token").then(token => {
+  cy.get("@access_token").then(token => {
     cy.request({
       method: "POST",
       url: "/api/v1/borehole/edit",
@@ -429,7 +429,7 @@ export const deleteBorehole = id => {
 
 export const loginAndResetState = () => {
   loginAsAdmin();
-  cy.get("@id_token").then(token => {
+  cy.get("@access_token").then(token => {
     // Reset boreholes
     cy.request({
       method: "POST",
@@ -555,7 +555,7 @@ export const getImportFileFromFixtures = (fileName, encoding, dataSet) => {
 };
 
 export const createStratigraphy = (boreholeId, name, isPrimary = true, date = null) => {
-  return cy.get("@id_token").then(token => {
+  return cy.get("@access_token").then(token => {
     return cy
       .request({
         method: "POST",
@@ -581,7 +581,7 @@ export const createStratigraphy = (boreholeId, name, isPrimary = true, date = nu
 };
 
 export const createCompletion = (name, boreholeId, kindId, isPrimary) => {
-  return cy.get("@id_token").then(token => {
+  return cy.get("@access_token").then(token => {
     return cy
       .request({
         method: "POST",
@@ -603,7 +603,7 @@ export const createCompletion = (name, boreholeId, kindId, isPrimary) => {
 };
 
 export const createCasing = (name, boreholeId, completionId, dateStart, dateFinish, casingElements) => {
-  return cy.get("@id_token").then(token => {
+  return cy.get("@access_token").then(token => {
     return cy
       .request({
         method: "POST",
@@ -637,7 +637,7 @@ export const createFieldMeasurement = (
   fromDepthM = null,
   toDepthM = null,
 ) => {
-  return cy.get("@id_token").then(token => {
+  return cy.get("@access_token").then(token => {
     return cy.request({
       method: "POST",
       url: "/api/v2/fieldmeasurement",
@@ -667,7 +667,7 @@ export const createWateringress = (
   fromDepthM = null,
   toDepthM = null,
 ) => {
-  return cy.get("@id_token").then(token => {
+  return cy.get("@access_token").then(token => {
     return cy.request({
       method: "POST",
       url: "/api/v2/wateringress",
@@ -697,7 +697,7 @@ export const createGroundwaterLevelMeasurement = (
   fromDepthM = null,
   toDepthM = null,
 ) => {
-  return cy.get("@id_token").then(token => {
+  return cy.get("@access_token").then(token => {
     return cy.request({
       method: "POST",
       url: "/api/v2/groundwaterlevelmeasurement",
@@ -727,7 +727,7 @@ export const createHydrotest = (
   fromDepthM = null,
   toDepthM = null,
 ) => {
-  return cy.get("@id_token").then(token => {
+  return cy.get("@access_token").then(token => {
     return cy.request({
       method: "POST",
       url: "/api/v2/hydrotest",
@@ -749,7 +749,7 @@ export const createHydrotest = (
 };
 
 export const createBackfill = (completionId, casingId, materialId, kindId, fromDepth, toDepth, notes) => {
-  cy.get("@id_token").then(token => {
+  cy.get("@access_token").then(token => {
     return cy.request({
       method: "POST",
       url: "/api/v2/backfill",
@@ -770,7 +770,7 @@ export const createBackfill = (completionId, casingId, materialId, kindId, fromD
 };
 
 export const createInstrument = (completionId, casingId, name, statusId, kindId, fromDepth, toDepth, notes) => {
-  cy.get("@id_token").then(token => {
+  cy.get("@access_token").then(token => {
     return cy.request({
       method: "POST",
       url: "/api/v2/instrumentation",
