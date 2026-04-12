@@ -17,6 +17,14 @@ jobs:
         with:
           dotnet-version: 8.0.x
 
+      - name: Cache NuGet packages
+        uses: actions/cache@v4
+        with:
+          path: ~/.nuget/packages
+          key: ${{ runner.os }}-nuget-${{ hashFiles('**/*.csproj') }}
+          restore-keys: |
+            ${{ runner.os }}-nuget-
+
       - name: Build solution
         run: dotnet build BDMS.sln -c Release /warnaserror
 
@@ -37,6 +45,8 @@ jobs:
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
         with:
           node-version: 22
+          cache: 'npm'
+          cache-dependency-path: src/client/package-lock.json
 
       - working-directory: ./src/client
         run: npm ci
@@ -55,20 +65,18 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Setup .NET
-        uses: actions/setup-dotnet@c2fa09f4bde5ebb9d1777cf28262a3eb3db3ced7 # v5.2.0
-        with:
-          dotnet-version: 8.0.x
-
-      - name: Build solution
-        run: dotnet build BDMS.sln -c Release /warnaserror
-
       - name: Start db and api's
         run: docker compose up --wait minio db api-legacy api oidc-server dataextraction
 
-      - working-directory: ./src/client
-        run: npm ci
+      - name: Setup Node.js 22
+        uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
+        with:
+          node-version: 22
+          cache: 'npm'
+          cache-dependency-path: src/client/package-lock.json
 
+      # The cypress-io/github-action already caches ~/.cache/Cypress and handles
+      # `npm ci` internally. We let it own that so we avoid doing install twice.
       - name: Cypress run
         uses: cypress-io/github-action@783cb3f07983868532cabaedaa1e6c00ff4786a8 # v7.1.9
         with:
