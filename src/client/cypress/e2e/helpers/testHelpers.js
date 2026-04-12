@@ -191,15 +191,29 @@ export const login = user => {
   );
 };
 
+const setConsentCookie = () => {
+  cy.setCookie("boreholes_consent", encodeURIComponent(JSON.stringify({ v: 1, analytics: true })));
+};
+
+const clickAcceptIfPresent = () => {
+  cy.get("body").then($body => {
+    if ($body.find('[data-cy="accept-button"]').length) {
+      cy.dataCy("accept-button").click();
+    }
+  });
+};
+
 export const goToDetailRouteAndAcceptTerms = route => {
+  setConsentCookie();
   cy.visit(route);
-  cy.dataCy("accept-button").click();
+  clickAcceptIfPresent();
   cy.wait(["@borehole_by_id", "@get-current-user"]);
 };
 
 export const goToRouteAndAcceptTerms = route => {
+  setConsentCookie();
   cy.visit(route);
-  cy.dataCy("accept-button").click();
+  clickAcceptIfPresent();
 };
 
 /**
