@@ -26,7 +26,7 @@ This chart creates the [swissgeol-boreholes](https://github.com/swisstopo/swissg
 ## Prerequisites
 
 - Kubernetes 1.23+
-- Helm 3.8.0+
+- Helm 3.14+
 
 ### Secrets
 
@@ -34,13 +34,9 @@ This chart uses a **three-tier secret resolution pattern** for database connecti
 
 1. **`--set` override** — when `db.source.host` or `db.target.host` are provided, connection strings are built from the individual values
 2. **Existing secret** — on upgrade, existing connection strings in the `<release>-secrets` Secret are preserved automatically via `lookup`
-3. **CHANGE_ME placeholder** — on first deploy without `--set`, placeholder connection strings are used
+3. **Fail-loud** — on first deploy without `--set`, required keys trigger a clear error message telling you which value to provide
 
-On first deploy, either pass all database values via `--set`, or edit the secret manually afterward:
-
-```bash
-kubectl edit secret <release>-secrets -n <namespace>
-```
+On first deploy, pass all required secret values via `--set`:
 
 ## Installing the Chart
 

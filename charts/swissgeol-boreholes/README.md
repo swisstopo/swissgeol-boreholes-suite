@@ -26,7 +26,7 @@ This chart bootstraps the [swissgeol-boreholes](https://github.com/swisstopo/swi
 ## Prerequisites
 
 - Kubernetes 1.23+
-- Helm 3.8.0+
+- Helm 3.14+
 
 ### Secrets
 
@@ -34,13 +34,9 @@ This chart uses a **three-tier secret resolution pattern** for sensitive values:
 
 1. **`--set` override** — values passed via `helm install --set` or `helm upgrade --set` take highest priority
 2. **Existing secret** — on upgrade, existing values in the `<release>-secrets` Secret are preserved automatically via `lookup`
-3. **CHANGE_ME placeholder** — on first deploy without `--set`, placeholder values are used
+3. **Fail-loud** — on first deploy without `--set`, required keys trigger a clear error message telling you which value to provide
 
-On first deploy, either pass all secret values via `--set`, or edit the secret manually afterward:
-
-```bash
-kubectl edit secret <release>-secrets -n <namespace>
-```
+On first deploy, pass all required secret values via `--set`:
 
 ## Installing the Chart
 
