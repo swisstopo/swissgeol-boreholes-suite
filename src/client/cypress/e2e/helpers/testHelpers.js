@@ -429,50 +429,16 @@ export const deleteBorehole = id => {
 
 export const loginAndResetState = () => {
   loginAsAdmin();
-  cy.get("@id_token").then(token => {
-    // Reset boreholes
+  // Single round-trip: deletes every test-created borehole and dependent row and
+  // resets admin/codelist settings inside one DB transaction. See
+  // src/api/Controllers/TestResetController.cs.
+  cy.get("@id_token").then(token =>
     cy.request({
       method: "POST",
-      url: "/api/v1/borehole/edit",
-      body: {
-        action: "IDS",
-      },
+      url: "/api/v2/testreset",
       auth: bearerAuth(token),
-    }).then(response => {
-      response.body.data
-        .filter(id => id > 1002999) // max id in seed data.
-        .forEach(id => {
-          deleteBorehole(id);
-        });
-    });
-
-    // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2371
-    //  Check if we still need this when we add new tests
-    // // Reset stratigraphies
-    // cy.request({
-    //   method: "GET",
-    //   url: "/api/v2/stratigraphy/getall",
-    //   auth: bearerAuth(token),
-    // }).then(response => {
-    //   response.body
-    //     .filter(st => st.id > 6002999) // max id in seed data.
-    //     .forEach(st => {
-    //       deleteStratigraphy(st.id);
-    //     });
-    // });
-
-    // Reset user settings (i.e. table ordering)
-    cy.request({
-      method: "POST",
-      url: "/api/v2/user/resetAllSettings",
-      cache: "no-cache",
-      credentials: "same-origin",
-      auth: bearerAuth(token),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
-  });
+    }),
+  );
 };
 
 export const delayedType = (element, string) => {
