@@ -2,6 +2,7 @@
 using Amazon.S3;
 using BDMS;
 using BDMS.Authentication;
+using BDMS.Controllers;
 using BDMS.Json;
 using BDMS.Maintenance;
 using Microsoft.AspNetCore.Authentication;
@@ -145,6 +146,7 @@ builder.Services
 
 builder.Services.AddScoped<IBoreholePermissionService, BoreholePermissionService>();
 builder.Services.AddScoped<IFilterService, FilterService>();
+builder.Services.AddScoped<UserSettingsResetService>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<IMaintenanceTask, LocationMigrationTask>();
 builder.Services.AddSingleton<IMaintenanceTask, CoordinateMigrationTask>();

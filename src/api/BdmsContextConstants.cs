@@ -14,4 +14,10 @@ public static class BdmsContextConstants
     /// The name of the boreholes database schema.
     /// </summary>
     public const string BoreholesDatabaseSchemaName = "bdms";
+
+    /// <summary>
+    /// The highest borehole id produced by the dev seed data. Test state resets
+    /// only remove boreholes with an id greater than this value.
+    /// </summary>
+    public const int MaxSeedBoreholeId = 1002999;
 }

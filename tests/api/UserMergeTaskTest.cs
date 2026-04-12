@@ -366,7 +366,7 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
         await Service.WaitForCompletionAsync(MaintenanceTaskType.UserMerge);
 
         // After merge, the source user should have zero FK references and be deletable.
-        var controller = new UserController(Context, new Mock<ILogger<UserController>>().Object, Helpers.CreateBoreholePermissionServiceMock().Object);
+        var controller = new UserController(Context, new Mock<ILogger<UserController>>().Object, Helpers.CreateBoreholePermissionServiceMock().Object, new UserSettingsResetService(Context));
         controller.ControllerContext = Helpers.GetControllerContextAdmin();
         var result = await controller.Delete(oldUser.Id);
         ActionResultAssert.IsOk(result);
