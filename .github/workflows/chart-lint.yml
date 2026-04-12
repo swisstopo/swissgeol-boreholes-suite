@@ -52,4 +52,4 @@ jobs:
           helm lint charts/swissgeol-boreholes -f environments/prod/boreholes.values.yaml -f environments/prod/boreholes-ext.values.yaml
           helm lint charts/swissgeol-boreholes -f environments/prod/boreholes.values.yaml -f environments/prod/boreholes-view.values.yaml
           helm lint charts/swissgeol-boreholes-extern-sync -f environments/prod/extern-sync.values.yaml
-          helm lint charts/swissgeol-boreholes-view-sync -f environments/prod/view-sync.values.yaml
+          helm lint charts/swissgeol-boreholes-view-sync
