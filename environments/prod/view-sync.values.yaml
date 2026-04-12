@@ -1,3 +1,0 @@
-# Environment-specific overrides for PROD — swissgeol-boreholes-view-sync namespace.
-app:
-  version: v2.1.1462
