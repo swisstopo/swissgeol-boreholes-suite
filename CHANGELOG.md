@@ -2,10 +2,13 @@
 
 ## [Unreleased]
 
+## v2.1.1530 - 2026-04-02
+
 ### Added
 - Added major version Docker image tag (e.g. `:v2`) to the release workflow.
 - Added maintenance tasks admin page with background job infrastructure for location and coordinate migrations, persistent execution log, and auto-polling UI.
 - Added a new maintenance task to merge duplicate users sharing the same email address by reassigning all data from obsolete accounts to the newest user.
+- Added additional lithostratigraphy codes.
 
 ### Changed
 - Multiple id values for a `boreholeId`/`identifier type` pair are now supported.
@@ -28,6 +31,7 @@
 - Copy facies and lithological descriptions when copying a stratigraphy.
 - Fixed display of facies when not editing a borehole.
 - Fixed bug where the top bedrock intersected default value could not be overwritten.
+- Reset form when switching between unconsolidated and consolidated rock in lithology.
 
 ### Changed
 - Added pod and container security context hardening across all Helm charts (seccomp profiles, privilege escalation prevention, capability dropping, read-only root filesystems).
