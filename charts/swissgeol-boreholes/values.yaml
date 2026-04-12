@@ -65,8 +65,6 @@ database:
   username:
   # -- The database password (stored as secret)
   password:
-  # -- The full database connection string (stored as secret)
-  connectionString:
 
 #
 # Desired number of replicas for the application

@@ -58,7 +58,6 @@ helm install swissgeol-boreholes swissgeol-boreholes/swissgeol-boreholes \
   --set database.name="bdms" \
   --set database.username="dbuser" \
   --set database.password="dbpass" \
-  --set database.connectionString="Host=db.example.com;Port=5432;Database=bdms;Username=dbuser;Password=dbpass" \
   --set s3.endpoint="https://s3.eu-central-1.amazonaws.com" \
   --set s3.bucket="my-profiles" \
   --set s3.photosBucket="my-photos" \
@@ -103,7 +102,6 @@ These values are stored in a Kubernetes Secret. Pass via `--set` on first deploy
 | `database.name`            | Database name                     | `databaseName`             |
 | `database.username`        | Database username                 | `databaseUsername`         |
 | `database.password`        | Database password                 | `databasePassword`         |
-| `database.connectionString`| Full connection string            | `databaseConnectionString` |
 | `s3.bucket`                | S3 bucket name                    | `s3Bucket`                 |
 | `s3.photosBucket`          | S3 photos bucket name             | `s3PhotosBucket`           |
 | `s3.logFilesBucket`        | S3 log files bucket name          | `s3LogFilesBucket`         |

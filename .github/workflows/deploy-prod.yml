@@ -39,7 +39,6 @@ jobs:
           - release: swissgeol-boreholes-view-sync
             chart: swissgeol-boreholes-view-sync
             namespace: swissgeol-boreholes-view-sync
-            values: -f environments/prod/view-sync.values.yaml
 
     steps:
       - name: Checkout repository

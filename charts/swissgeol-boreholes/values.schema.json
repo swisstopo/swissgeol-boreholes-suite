@@ -119,8 +119,7 @@
         },
         "name": { "type": ["string", "null"], "minLength": 1 },
         "username": { "type": ["string", "null"] },
-        "password": { "type": ["string", "null"] },
-        "connectionString": { "type": ["string", "null"] }
+        "password": { "type": ["string", "null"] }
       }
     },
 
