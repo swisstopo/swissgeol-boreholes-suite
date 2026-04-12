@@ -44,6 +44,7 @@ jobs:
           VERSION: ${{ inputs.version }}
         run: |
           helm upgrade swissgeol-boreholes ./charts/swissgeol-boreholes \
+            -f environments/dev/boreholes.values.yaml \
             --set app.version="$VERSION" \
             -n swissgeol-boreholes \
             --install --wait --timeout 5m
