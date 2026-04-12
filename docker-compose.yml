@@ -173,11 +173,11 @@ services:
     environment:
       CLIENTS_CONFIGURATION_PATH: /tmp/config/clients-config.json
       USERS_CONFIGURATION_PATH: /tmp/config/users-config.json
-      IDENTITY_RESOURCES_INLINE: |
+      API_SCOPES_INLINE: |
         [
           {
             "Name": "local_groups_scope",
-            "ClaimTypes": [
+            "UserClaims": [
               "local_groups_claim"
             ]
           }
