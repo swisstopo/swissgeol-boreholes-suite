@@ -104,6 +104,11 @@ spec:
                     secretKeyRef:
                       name: "{{ .Release.Name }}-secrets"
                       key: targetDatabasePassword
+                - name: TZ
+                  valueFrom:
+                    configMapKeyRef:
+                      name: "{{ .Release.Name }}-config"
+                      key: timezone
           volumes:
           - name: tmp
             emptyDir: {}
