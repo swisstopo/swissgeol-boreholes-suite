@@ -48,6 +48,10 @@ auth:
   # -- Enables basic authentication on the Traefik IngressRoute.
   # -- When enabled, set credentials via: kubectl edit secret <release>-basic-auth-secret
   basicAuthEnabled: false
+  # -- Username for basic auth (required when basicAuthEnabled is true)
+  basicAuthUsername:
+  # -- Password for basic auth (required when basicAuthEnabled is true)
+  basicAuthPassword:
 
 # Database configuration
 database:
