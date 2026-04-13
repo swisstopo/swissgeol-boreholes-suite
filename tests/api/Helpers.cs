@@ -191,7 +191,8 @@ internal static class Helpers
             results.Add(new { layerBodId = "ch.swisstopo.swissboundaries3d-kanton-flaeche.fill", attributes = new { bez = string.Empty, name = canton, gemname = string.Empty } });
         }
 
-        if (municipality != null) {
+        if (municipality != null)
+        {
             results.Add(new { layerBodId = "ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill", attributes = new { bez = string.Empty, name = string.Empty, gemname = municipality } });
         }
 
