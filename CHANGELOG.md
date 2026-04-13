@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- Duplicate boreholes (matching coordinates and total depth within the same workgroup or within the imported file) can now be imported.
+
 ## v2.1.1530 - 2026-04-02
 
 ### Added
