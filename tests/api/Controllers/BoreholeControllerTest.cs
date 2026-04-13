@@ -42,6 +42,9 @@ public class BoreholeControllerTest
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
         boreholePermissionServiceMock
+            .Setup(x => x.CanChangeBoreholeStatusAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .ReturnsAsync(true);
+        boreholePermissionServiceMock
             .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string?>(), noPermissionWorkgroupId, It.IsAny<Role>()))
             .ReturnsAsync(false);
         boreholePermissionServiceMock
@@ -987,5 +990,66 @@ public class BoreholeControllerTest
 
         ActionResultAssert.IsOk(result.Result);
         filterServiceMock.Verify(x => x.FilterBoreholesAsync(It.IsAny<FilterRequest>(), It.Is<User>(u => u.SubjectId == EditorSubjectId)), Times.Once);
+    }
+
+    [TestMethod]
+    public async Task DeleteBoreholeReturnsOkAndRemovesEntity()
+    {
+        var borehole = GetBoreholeToAdd();
+        context.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+        var idToDelete = borehole.Id;
+
+        var result = await controller.DeleteAsync(idToDelete).ConfigureAwait(false);
+
+        ActionResultAssert.IsOk(result);
+        Assert.IsFalse(await context.Boreholes.AsNoTracking().AnyAsync(b => b.Id == idToDelete).ConfigureAwait(false));
+    }
+
+    [TestMethod]
+    public async Task DeleteInexistentBoreholeReturnsNotFound()
+    {
+        var result = await controller.DeleteAsync(9111794).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(result);
+    }
+
+    [TestMethod]
+    public async Task DeleteBoreholeWithoutPermissionReturnsUnauthorized()
+    {
+        var borehole = GetBoreholeToAdd();
+        context.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+        var idToDelete = borehole.Id;
+
+        boreholePermissionServiceMock
+            .Setup(x => x.CanChangeBoreholeStatusAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var result = await controller.DeleteAsync(idToDelete).ConfigureAwait(false);
+
+        ActionResultAssert.IsUnauthorized(result);
+        Assert.IsTrue(await context.Boreholes.AsNoTracking().AnyAsync(b => b.Id == idToDelete).ConfigureAwait(false));
+    }
+
+    [TestMethod]
+    public async Task DeleteBoreholeAdminsCanDeleteLockedBoreholes()
+    {
+        // Set up a borehole locked by a different user — a lock that would normally block CanEditBoreholeAsync.
+        var borehole = GetBoreholeToAdd();
+        borehole.Locked = DateTime.UtcNow;
+        borehole.LockedById = 4; // sub_editor id; anyone other than the admin acting here
+        context.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+        var idToDelete = borehole.Id;
+
+        var result = await controller.DeleteAsync(idToDelete).ConfigureAwait(false);
+
+        ActionResultAssert.IsOk(result);
+        boreholePermissionServiceMock.Verify(
+            x => x.CanChangeBoreholeStatusAsync(It.IsAny<string?>(), idToDelete),
+            Times.Once);
+        boreholePermissionServiceMock.Verify(
+            x => x.CanEditBoreholeAsync(It.IsAny<string?>(), idToDelete),
+            Times.Never);
     }
 }
