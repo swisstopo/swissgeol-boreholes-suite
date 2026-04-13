@@ -1,34 +1,33 @@
 import { SearchData } from "./filterInterfaces.ts";
 
 export const LocationSearchData: SearchData[] = [
-  // missing here IDs
   {
-    id: 2,
+    id: 0,
     type: "Input",
     label: "originalName",
     value: "originalName",
   },
   {
-    id: 3,
+    id: 1,
     type: "Input",
     label: "projectName",
     value: "projectName",
   },
   {
-    id: 4,
+    id: 2,
     type: "Input",
     label: "alternate_name",
     value: "name",
   },
   {
-    id: 5,
+    id: 3,
     type: "Dropdown",
     label: "restriction",
     value: "restrictionId",
     schema: "restriction",
   },
   {
-    id: 6,
+    id: 4,
     type: "Date",
     label: "restriction_until",
     value: "restrictionUntilFrom",
@@ -36,7 +35,7 @@ export const LocationSearchData: SearchData[] = [
     hasTwoFields: true,
   },
   {
-    id: 7,
+    id: 5,
     type: "Date",
     label: "",
     value: "restrictionUntilTo",
@@ -44,7 +43,7 @@ export const LocationSearchData: SearchData[] = [
     hasTwoFields: true,
   },
   {
-    id: 8,
+    id: 6,
     type: "TriStateBoolean",
     label: "national_interest",
     value: "nationalInterest",

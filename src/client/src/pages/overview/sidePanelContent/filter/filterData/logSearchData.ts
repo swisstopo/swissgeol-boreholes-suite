@@ -4,6 +4,5 @@ export const logSearchData = [
     type: "Boolean",
     label: "hasLogs",
     value: "hasLogs",
-    hasUnknown: true,
   },
 ];

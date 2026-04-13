@@ -92,8 +92,6 @@ export const boreholeSearchData = [
     type: "TriStateBoolean",
     label: "hasGroundwater",
     value: "hasGroundwater",
-    hasUnknown: true,
-    to: false,
   },
 
   {
@@ -101,15 +99,11 @@ export const boreholeSearchData = [
     type: "Boolean",
     label: "topBedrockIntersected",
     value: "topBedrockIntersected",
-    hasUnknown: true,
-    to: false,
   },
   {
     id: 11,
     type: "Boolean",
     label: "hasGeometry",
     value: "hasGeometry",
-    hasUnknown: true,
-    to: false,
   },
 ];
