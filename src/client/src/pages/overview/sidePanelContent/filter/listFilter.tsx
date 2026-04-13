@@ -16,7 +16,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
   const updateChange = useCallback(
     (attribute: string, value: string | boolean | number | null | number[] | undefined) => {
       setFilterField(attribute as never, value as never);
-      void setTableParams({ page: 0 });
+      setTableParams({ page: 0 });
     },
     [setFilterField, setTableParams],
   );

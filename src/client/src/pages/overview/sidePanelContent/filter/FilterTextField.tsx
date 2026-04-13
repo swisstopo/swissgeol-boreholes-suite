@@ -44,7 +44,7 @@ export const FilterTextField: FC<FilterTextFieldProps> = ({
     // For date inputs, validate the date before updating
     if (type === "date" && value) {
       const date = new Date(value);
-      if (isNaN(date.getTime()) || date.getFullYear() <= 1800) return; // Skip update for invalid dates or year <= 1800
+      if (Number.isNaN(date.getTime()) || date.getFullYear() <= 1800) return; // Skip update for invalid dates or year <= 1800
     }
 
     lastCommittedRef.current = value;

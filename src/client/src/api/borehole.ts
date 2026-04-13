@@ -353,16 +353,16 @@ export function getDefaultFilterRequestFromSession(): FilterRequest {
   const get = (key: string) => sessionStorage.getItem(key);
 
   const getInt = (key: string) => {
-    const n = parseInt(get(key) ?? "");
-    return isNaN(n) ? undefined : n;
+    const n = Number.parseInt(get(key) ?? "");
+    return Number.isNaN(n) ? undefined : n;
   };
 
   const getFloat = (key: string) => {
-    const n = parseFloat(get(key) ?? "");
-    return isNaN(n) ? undefined : n;
+    const n = Number.parseFloat(get(key) ?? "");
+    return Number.isNaN(n) ? undefined : n;
   };
 
-  const toArray = (n: number | undefined) => (n !== undefined ? [n] : undefined);
+  const toArray = (n: number | undefined) => (n === undefined ? undefined : [n]);
 
   const allFilterParams = {
     pageNumber: (getInt(SessionKeys.page) ?? 0) + 1,

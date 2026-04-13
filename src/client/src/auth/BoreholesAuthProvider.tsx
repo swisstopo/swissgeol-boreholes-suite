@@ -39,9 +39,9 @@ export const BoreholesAuthProvider: FC<PropsWithChildren<BoreholeAuthProviderPro
       authority: serverConfig.authority,
       client_id: serverConfig.audience,
       scope: serverConfig.scopes,
-      redirect_uri: window.location.origin,
-      post_logout_redirect_uri: window.location.origin,
-      userStore: new WebStorageStateStore({ store: window.localStorage }),
+      redirect_uri: globalThis.location.origin,
+      post_logout_redirect_uri: globalThis.location.origin,
+      userStore: new WebStorageStateStore({ store: globalThis.localStorage }),
     };
 
     const userManager = new CognitoUserManager(oidcClientSettings);

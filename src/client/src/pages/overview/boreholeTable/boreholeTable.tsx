@@ -294,9 +294,9 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       requestIdleCallback(
         () => {
           const scrollPosition =
-            sessionStorage.getItem(SessionKeys.tableScrollPosition) !== null
-              ? JSON.parse(sessionStorage.getItem(SessionKeys.tableScrollPosition) as string)
-              : { top: 0, left: 0 };
+            sessionStorage.getItem(SessionKeys.tableScrollPosition) === null
+              ? { top: 0, left: 0 }
+              : JSON.parse(sessionStorage.getItem(SessionKeys.tableScrollPosition) as string);
           apiRef.current?.scroll(scrollPosition);
           scrollPositionRef.current = scrollPosition;
           firstRender.current = false;
