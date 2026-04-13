@@ -560,21 +560,6 @@ public class ImportControllerTest
     }
 
     [TestMethod]
-    public async Task UploadZipWithInvalidJsonReturnValidationErrorsAsync()
-    {
-        // Create a ZIP archive with Json file containing duplicates
-        FormFile boreholeZipFile = await GetZipFileFromExistingFileAsync("json_import_duplicated_by_location.json");
-
-        ActionResult<int> response = await controller.UploadZipFileAsync(workgroupId: 1, boreholeZipFile);
-
-        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
-        Assert.AreEqual(2, problemDetails.Errors.Count);
-
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Borehole0"]);
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Borehole1"]);
-    }
-
-    [TestMethod]
     public async Task UploadZipWithoutJsonReturnsBadRequestAsync()
     {
         // Create a ZIP archive without a JSON file
@@ -680,33 +665,6 @@ public class ImportControllerTest
         CollectionAssert.AreEquivalent(new[] { $"Some {nameof(ICasingReference.CasingId)} in {nameof(Borehole.Observations)}/{nameof(Completion.Backfills)}/{nameof(Completion.Instrumentations)} do not exist in the borehole's casings.", }, problemDetails.Errors["Borehole0"]);
         CollectionAssert.AreEquivalent(new[] { $"Some {nameof(ICasingReference.CasingId)} in {nameof(Borehole.Observations)}/{nameof(Completion.Backfills)}/{nameof(Completion.Instrumentations)} do not exist in the borehole's casings.", }, problemDetails.Errors["Borehole1"]);
         CollectionAssert.AreEquivalent(new[] { $"Some {nameof(ICasingReference.CasingId)} in {nameof(Borehole.Observations)}/{nameof(Completion.Backfills)}/{nameof(Completion.Instrumentations)} do not exist in the borehole's casings.", }, problemDetails.Errors["Borehole2"]);
-    }
-
-    [TestMethod]
-    public async Task UploadJsonWithDuplicateBoreholesByLocationShouldReturnError()
-    {
-        var boreholeJsonFile = GetFormFileByExistingFile("json_import_duplicated_by_location.json");
-
-        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
-
-        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
-        Assert.AreEqual(2, problemDetails.Errors.Count);
-
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Borehole0"]);
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Borehole1"]);
-    }
-
-    [TestMethod]
-    public async Task UploadJsonWithDuplicatesExistingBoreholeShouldReturnError()
-    {
-        var boreholeJsonFile = GetFormFileByExistingFile("json_import_duplicates_existing.json");
-
-        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
-
-        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
-        Assert.AreEqual(1, problemDetails.Errors.Count);
-
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", }, problemDetails.Errors["Borehole0"]);
     }
 
     [TestMethod]
@@ -1077,61 +1035,20 @@ public class ImportControllerTest
     }
 
     [TestMethod]
-    public async Task UploadDuplicateBoreholesInFileShouldReturnError()
+    public async Task CanUploadDuplicateBoreholesInFile()
     {
+        httpClientFactoryMock
+           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
+           .Returns(() => new HttpClient())
+           .Verifiable();
+
         var boreholeCsvFile = GetFormFileByExistingFile("duplicateBoreholesInFile.csv");
 
         ActionResult<int> response = await controller.UploadCsvFileAsync(workgroupId: 1, boreholeCsvFile);
 
-        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
-        Assert.AreEqual(2, problemDetails.Errors.Count);
-
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Row1"]);
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Row2"]);
-    }
-
-    [TestMethod]
-    public async Task UploadDuplicateBoreholesInDbShouldReturnError()
-    {
-        // Create Boreholes with same LocationX, LocationY and TotalDepth as in provided csv and with the same WorkgroupId as provided
-        context.Boreholes.Add(new Borehole
-        {
-            Id = 2100000,
-            LocationX = 2100000,
-            LocationY = 1100000,
-            TotalDepth = 855,
-            WorkgroupId = 1,
-        });
-        context.Boreholes.Add(new Borehole
-        {
-            Id = 2100001,
-            LocationX = 2500000,
-            LocationY = 1500000,
-            TotalDepth = null,
-            WorkgroupId = 1,
-        });
-        context.Boreholes.Add(new Borehole
-        {
-            Id = 2100002,
-            LocationX = 2676701,
-            LocationY = 1185081,
-            LocationXLV03 = 676700,
-            LocationYLV03 = 185081,
-            TotalDepth = 1000,
-            WorkgroupId = 1,
-        });
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var boreholeCsvFile = GetFormFileByExistingFile("duplicateBoreholesInDb.csv");
-
-        ActionResult<int> response = await controller.UploadCsvFileAsync(workgroupId: 1, boreholeCsvFile);
-
-        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
-        Assert.AreEqual(3, problemDetails.Errors.Count);
-
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", }, problemDetails.Errors["Row1"]);
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", }, problemDetails.Errors["Row2"]);
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", }, problemDetails.Errors["Row3"]);
+        ActionResultAssert.IsOk(response.Result);
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(2, okResult.Value);
     }
 
     [TestMethod]
