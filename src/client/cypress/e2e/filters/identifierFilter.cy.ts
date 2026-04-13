@@ -51,6 +51,7 @@ describe("Tests for filtering data by identifier.", () => {
     verifyPaginationText("1–100 of 3001");
   });
 
+  // TODO: Rewrite once the identifier filter is re-implemented.
   it.skip("can bulk edit boreholes while filter by identifier is set", () => {
     goToRouteAndAcceptTerms(`/`);
     newEditableBorehole().as("borehole_id");
