@@ -1,7 +1,7 @@
 import { FC, useCallback } from "react";
 import { Box } from "@mui/material";
 import { FormBooleanSelect, FormContainer, FormDomainSelect } from "../../../../components/form/form.ts";
-import { useBoreholeUrlParams } from "../../useBoreholeUrlParams.ts";
+import { filterParsers, useBoreholeUrlParams } from "../../useBoreholeUrlParams.ts";
 import { FilterInputConfig } from "./filterData/filterInterfaces.ts";
 import { FilterTextField } from "./FilterTextField.tsx";
 
@@ -22,7 +22,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
 
   const updateChange = useCallback(
     (attribute: string, value: string | boolean | number | null | number[] | undefined) => {
-      setFilterField(attribute as never, value as never);
+      setFilterField(attribute as keyof typeof filterParsers, value as never);
       setTableParams({ page: 0 });
     },
     [setFilterField, setTableParams],
@@ -36,14 +36,14 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
             {item.type === "Input" && (
               <FilterTextField
                 item={item}
-                filterValue={(filterParams?.[item.value as never] as string) ?? null}
+                filterValue={(filterParams?.[item.value as keyof typeof filterParsers] as string) ?? null}
                 onUpdate={value => updateChange(item.value, value)}
               />
             )}
             {item.type === "Date" && (
               <FilterTextField
                 item={item}
-                filterValue={(filterParams?.[item.value as never] as string) ?? null}
+                filterValue={(filterParams?.[item.value as keyof typeof filterParsers] as string) ?? null}
                 onUpdate={value => updateChange(item.value, value)}
                 type="date"
                 labelKeySuffix="_filter_title"
@@ -55,7 +55,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
                 fieldName={item.value}
                 label={item?.label || item.value}
                 readonly={false}
-                selected={(filterParams?.[item.value as never] as number[] | undefined)?.[0]} // only support single select for now, change later
+                selected={(filterParams?.[item.value as keyof typeof filterParsers] as number[] | undefined)?.[0]} // only support single select for now, change later
                 canReset={false}
                 schemaName={item.schema}
                 additionalValues={item.additionalValues}
@@ -69,7 +69,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
                 readonly={false}
                 canReset={false}
                 allowUndefined={item.type === "TriStateBoolean"}
-                selected={parseBooleanFilterValue(filterParams?.[item.value as never])}
+                selected={parseBooleanFilterValue(filterParams?.[item.value as keyof typeof filterParsers])}
                 fieldName={item.value}
                 label={item?.label ?? item.value}
                 onUpdate={value => {
