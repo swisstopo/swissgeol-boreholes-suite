@@ -133,8 +133,8 @@ describe("Tests for the hydrotest editor.", () => {
         fromDepthM: 0,
         toDepthM: 12,
       });
-        goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/hydrotest`);
-      });
+      goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/hydrotest`);
+    });
     startBoreholeEditing();
 
     cy.get('[data-cy="hydrotest-card.0"] [data-cy="todepth-formDisplay"]').contains("10");

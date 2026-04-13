@@ -1,4 +1,4 @@
-import { createContext, Dispatch, FC, PropsWithChildren, SetStateAction, useState } from "react";
+import { createContext, Dispatch, FC, PropsWithChildren, SetStateAction, useMemo, useState } from "react";
 import Polygon from "ol/geom/Polygon";
 
 interface PolygonFilterContextInterface {
@@ -17,17 +17,17 @@ export const PolygonFilterProvider: FC<PropsWithChildren> = ({ children }) => {
   const [polygonSelectionEnabled, setPolygonSelectionEnabled] = useState(false);
   const [featureIds, setFeatureIds] = useState<number[]>([]);
 
-  return (
-    <PolygonFilterContext.Provider
-      value={{
-        filterPolygon,
-        setFilterPolygon,
-        polygonSelectionEnabled,
-        setPolygonSelectionEnabled,
-        featureIds,
-        setFeatureIds,
-      }}>
-      {children}
-    </PolygonFilterContext.Provider>
+  const value = useMemo(
+    () => ({
+      filterPolygon,
+      setFilterPolygon,
+      polygonSelectionEnabled,
+      setPolygonSelectionEnabled,
+      featureIds,
+      setFeatureIds,
+    }),
+    [filterPolygon, polygonSelectionEnabled, featureIds],
   );
+
+  return <PolygonFilterContext.Provider value={value}>{children}</PolygonFilterContext.Provider>;
 };

@@ -183,14 +183,16 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
                       setTableParams({ page: 0 });
                     }}
                     workgroups={user.data.workgroups}
-                    selectedWorkgroup={filterParams.workgroupId == null ? "all" : String(filterParams.workgroupId)}
+                    selectedWorkgroup={
+                      filterParams.workgroupId != null ? String((filterParams.workgroupId as number[])[0]) : "all"
+                    }
                   />
                 </StyledAccordionDetails>
               )}
               {filter?.name === "workflowStatus" && filter?.isSelected && (
                 <StyledAccordionDetails>
                   <StatusFilter
-                    selectedRole={filterParams.workflowStatus == null ? "all" : String(filterParams.workflowStatus)}
+                    selectedRole={filterParams.workflowStatus != null ? String(filterParams.workflowStatus) : "all"}
                     setFilterField={setFilterField}
                   />
                 </StyledAccordionDetails>

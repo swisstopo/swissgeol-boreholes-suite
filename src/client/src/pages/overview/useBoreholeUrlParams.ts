@@ -70,13 +70,13 @@ export const useBoreholeUrlParams = () => {
   const setFilterField = useCallback(
     (key: keyof typeof filterParsers, value: unknown) => {
       if (value === undefined) {
-        void setFilterParams({ [key]: "null" });
+        setFilterParams({ [key]: "null" });
       } else if (value === false) {
-        void setFilterParams({ [key]: "false" });
+        setFilterParams({ [key]: "false" });
       } else if (value === true) {
-        void setFilterParams({ [key]: "true" });
+        setFilterParams({ [key]: "true" });
       } else {
-        void setFilterParams({ [key]: value ?? null });
+        setFilterParams({ [key]: value ?? null });
       }
     },
     [setFilterParams],
@@ -93,7 +93,7 @@ export const useBoreholeUrlParams = () => {
   const resetFilter = () => {
     // Set all filter keys to null to remove them from the URL
     const nulled = Object.fromEntries(Object.keys(filterParsers).map(k => [k, null]));
-    void setFilterParams(nulled as Parameters<typeof setFilterParams>[0]);
+    setFilterParams(nulled as Parameters<typeof setFilterParams>[0]);
   };
 
   const saveFilterParamsInSession = useCallback(() => {
@@ -132,7 +132,7 @@ export const useBoreholeUrlParams = () => {
       }
     });
     if (Object.keys(updates).length > 0) {
-      void setTableParams(updates as Parameters<typeof setTableParams>[0]);
+      setTableParams(updates as Parameters<typeof setTableParams>[0]);
     }
   }, [setTableParams]);
 
@@ -146,7 +146,7 @@ export const useBoreholeUrlParams = () => {
       }
     });
     if (Object.keys(updates).length > 0) {
-      void setFilterParams(updates as Parameters<typeof setFilterParams>[0]);
+      setFilterParams(updates as Parameters<typeof setFilterParams>[0]);
     }
   }, [setFilterParams]);
 
@@ -160,7 +160,7 @@ export const useBoreholeUrlParams = () => {
       }
     });
     if (Object.keys(updates).length > 0) {
-      void setMapParams(updates as Parameters<typeof setMapParams>[0]);
+      setMapParams(updates as Parameters<typeof setMapParams>[0]);
     }
   }, [setMapParams]);
 

@@ -9,6 +9,13 @@ interface ListFilterProps {
   inputConfig: FilterInputConfig;
 }
 
+const parseBooleanFilterValue = (value: unknown): boolean | null | undefined => {
+  if (value === "true") return true;
+  if (value === "false") return false;
+  if (value === "null") return null;
+  return undefined;
+};
+
 export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
   const { filterParams, setFilterField, setTableParams } = useBoreholeUrlParams();
   const searchData = inputConfig?.searchData;
@@ -62,15 +69,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
                 readonly={false}
                 canReset={false}
                 allowUndefined={item.type === "TriStateBoolean"}
-                selected={
-                  filterParams?.[item.value as never] === "true"
-                    ? true
-                    : filterParams?.[item.value as never] === "false"
-                      ? false
-                      : filterParams?.[item.value as never] === "null"
-                        ? null
-                        : undefined
-                }
+                selected={parseBooleanFilterValue(filterParams?.[item.value as never])}
                 fieldName={item.value}
                 label={item?.label ?? item.value}
                 onUpdate={value => {

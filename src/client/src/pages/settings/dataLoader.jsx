@@ -10,7 +10,7 @@ export const DataLoader = ({ children }) => {
 
   useEffect(() => {
     dispatch(loadSettings());
-  }, []);
+  }, [dispatch]);
 
   return isReady ? (
     children
