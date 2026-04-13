@@ -32,7 +32,3 @@ export interface FilterInputConfig {
   /* eslint-disable  @typescript-eslint/no-explicit-any */ // legacy data structure
   [key: string]: any;
 }
-
-export interface FilterChipsProps {
-  formMethods: UseFormReturn;
-}

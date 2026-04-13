@@ -4,10 +4,9 @@ import { Box, Chip, Tooltip } from "@mui/material";
 import { CircleX } from "lucide-react";
 import PolygonIcon from "../../../../assets/icons/polygon.svg?react";
 import { filterParsers, useBoreholeUrlParams } from "../../useBoreholeUrlParams.ts";
-import { FilterChipsProps } from "./filterData/filterInterfaces.ts";
 import { PolygonFilterContext } from "./polygonFilterContext.tsx";
 
-const FilterChips = ({ formMethods }: FilterChipsProps) => {
+const FilterChips = () => {
   const { t } = useTranslation();
   const { filterPolygon, setFilterPolygon, setFeatureIds, setPolygonSelectionEnabled } =
     useContext(PolygonFilterContext);
@@ -17,7 +16,6 @@ const FilterChips = ({ formMethods }: FilterChipsProps) => {
   if (!activeFilters) return;
 
   const onRemoveFilter = (filterKey: string) => {
-    formMethods.resetField(filterKey);
     setFilterField(filterKey as keyof typeof filterParsers, null);
     setTableParams({ page: 0 });
   };
