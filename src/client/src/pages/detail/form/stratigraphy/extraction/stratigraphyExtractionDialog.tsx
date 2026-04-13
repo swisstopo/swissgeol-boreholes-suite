@@ -1,10 +1,20 @@
-import { FC, useCallback, useState } from "react";
+import { FC, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
-import { Dialog, DialogProps, Typography } from "@mui/material";
+import {
+  Checkbox,
+  Dialog,
+  DialogProps,
+  FormControlLabel,
+  ToggleButton,
+  ToggleButtonGroup,
+  Typography,
+} from "@mui/material";
 import { Stack } from "@mui/system";
 import { BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
 import { useExtractStratigraphies, useFileInfo } from "../../../../../api/file/file.ts";
+import { theme } from "../../../../../AppTheme.ts";
+import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
 import { BoreholesButton, CancelButton } from "../../../../../components/buttons/buttons.tsx";
 import {
   DialogFooterContainer,
@@ -23,6 +33,11 @@ interface StratigraphyExtractionDialogProps {
   setOpen: (open: boolean) => void;
 }
 
+const getStratigraphyName = (file: BoreholeAttachment, index: number): string => {
+  const baseName = file.name.replace(/\.[^/.]+$/, "");
+  return `Extracted_${baseName}_${index + 1}`;
+};
+
 export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps> = ({
   file,
   setSelectedFile,
@@ -30,13 +45,23 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   setOpen,
 }) => {
   const { t } = useTranslation();
+  const { showAlert } = useContext(AlertContext);
   const [abortController, setAbortController] = useState<AbortController>();
-  const { data: lithologicalDescriptions = [], isLoading } = useExtractStratigraphies(file, 1);
+  const { data: allExtractedStratigraphies = [], isLoading } = useExtractStratigraphies(file, 1);
   const { isLoading: isLoadingFileInfo } = useFileInfo(file?.id, 1);
-  const { mutateAsync: bulkAddLithologicalDescriptionsWithLithologies } = useBulkAddMutation();
+  const { mutateAsync: bulkAdd } = useBulkAddMutation();
   const { id } = useRequiredParams<{ id: string }>();
   const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
+
+  const [selectedIndex, setSelectedIndex] = useState<number>(0);
+  const [checkedIndices, setCheckedIndices] = useState<Set<number>>(new Set());
+
+  useEffect(() => {
+    if (allExtractedStratigraphies.length > 0) {
+      setCheckedIndices(new Set(allExtractedStratigraphies.map((_, i) => i)));
+    }
+  }, [allExtractedStratigraphies, allExtractedStratigraphies.length]);
 
   const closeDialog = useCallback(() => {
     if (abortController) {
@@ -52,51 +77,91 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
     closeDialog();
   };
 
-  const addStratigraphy = useCallback(async () => {
-    const bulkAddResult = await bulkAddLithologicalDescriptionsWithLithologies({
-      boreholeId: Number(id),
-      lithologicalDescriptions: lithologicalDescriptions.map(ld => ({ ...ld, id: 0 })),
-    });
+  const addStratigraphies = useCallback(async () => {
+    const stratigraphiesToSave = [...checkedIndices]
+      .sort((a, b) => a - b)
+      .map(i => ({
+        name: getStratigraphyName(file, i),
+        lithologicalDescriptions: allExtractedStratigraphies[i].map(ld => ({ ...ld, id: 0 })),
+      }));
+
+    const results = await bulkAdd({ boreholeId: Number(id), stratigraphies: stratigraphiesToSave });
+    showAlert(t("stratigraphySaved"), "success");
     closeDialog();
     navigateTo({
-      path: `/${id}/stratigraphy/${bulkAddResult.stratigraphy.id}`,
+      path: `/${id}/stratigraphy/${results[0].stratigraphy.id}`,
       hash: location.hash,
     });
   }, [
-    bulkAddLithologicalDescriptionsWithLithologies,
+    allExtractedStratigraphies,
+    bulkAdd,
+    checkedIndices,
     closeDialog,
+    file,
     id,
-    lithologicalDescriptions,
     location.hash,
     navigateTo,
+    showAlert,
+    t,
   ]);
+
+  const currentDescriptions = allExtractedStratigraphies[selectedIndex] ?? [];
+  const hasMultiple = allExtractedStratigraphies.length > 1;
 
   return (
     <Dialog open={open} onClose={handleClose} fullScreen>
       <DialogHeaderContainer>
-        <Stack direction="row" pt={0.5}>
+        <Stack direction="row" pt={0.5} alignItems="center" justifyContent={"space-between"} gap={2}>
           <Typography variant="h4" sx={{ flexGrow: 1 }}>
             {t("extractStratigraphyFromProfile")}
           </Typography>
+          {hasMultiple && (
+            <ToggleButtonGroup
+              value={selectedIndex}
+              onChange={(_, value) => setSelectedIndex(value)}
+              exclusive
+              sx={{
+                boxShadow: "none",
+                border: `1px solid ${theme.palette.border.light}`,
+              }}>
+              {allExtractedStratigraphies.map((_, index) => (
+                <ToggleButton
+                  key={getStratigraphyName(file, index)}
+                  value={index}
+                  data-cy={`stratigraphy-toggle-item-${index}`}>
+                  <Typography>{`${t("stratigraphy")} ${index + 1}`}</Typography>
+                </ToggleButton>
+              ))}
+            </ToggleButtonGroup>
+          )}
         </Stack>
       </DialogHeaderContainer>
       <DialogMainContent>
         <StratigraphyExtractionView
           file={file}
-          lithologicalDescriptions={lithologicalDescriptions}
+          lithologicalDescriptions={currentDescriptions}
           isLoading={isLoading || isLoadingFileInfo}
         />
       </DialogMainContent>
       <DialogFooterContainer>
-        <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={0.75}>
-          <CancelButton onClick={closeDialog} />
-          <BoreholesButton
-            disabled={lithologicalDescriptions?.length < 1}
-            variant="contained"
-            color="primary"
-            label={t("addStratigraphy", { count: 1 })}
-            onClick={addStratigraphy}
+        <Stack direction="row" justifyContent="space-between" alignItems="center">
+          <FormControlLabel
+            control={<Checkbox data-cy={`add-stratigraphy-checkbox-${selectedIndex + 1}`} checked={false} />}
+            label={`${t("stratigraphy")} ${selectedIndex + 1}`}
           />
+          <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={0.75}>
+            <CancelButton onClick={closeDialog} />
+            <BoreholesButton
+              dataCy="add-stratigraphy-button"
+              disabled={checkedIndices.size === 0 || allExtractedStratigraphies.length === 0}
+              variant="contained"
+              color="primary"
+              label={
+                checkedIndices.size === 0 ? t("addStratigraphy") : t("addStratigraphy", { count: checkedIndices.size })
+              }
+              onClick={addStratigraphies}
+            />
+          </Stack>
         </Stack>
       </DialogFooterContainer>
     </Dialog>

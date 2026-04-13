@@ -46,7 +46,7 @@ describe("Tests for stratigraphy extraction", () => {
       assertBoundingBoxesOnLayer("extraction-map", "highlightDescriptionsLayer", true);
       assertBoundingBoxesOnLayer("extraction-map", "highlightDepthLayer", true);
     });
-    cy.dataCy("add stratigraphy-button").click();
+    cy.dataCy("add-stratigraphy-button").click();
     cy.wait([
       "@stratigraphy_by_borehole_GET",
       "@lithology_by_stratigraphyId_GET",
@@ -65,6 +65,85 @@ describe("Tests for stratigraphy extraction", () => {
     cy.wait(2000);
     assertBoundingBoxesOnLayer("labeling-map", "highlightDescriptionsLayer", false);
     assertBoundingBoxesOnLayer("labeling-map", "highlightDepthLayer", false);
+  });
+
+  it("supports selecting and saving multiple extracted stratigraphies", () => {
+    const twoBoreholeResponse = {
+      boreholes: [
+        {
+          id: "borehole-1",
+          layers: [
+            {
+              start: { depth: 0, bounding_boxes: [] },
+              end: { depth: 1.5, bounding_boxes: [] },
+              material_description: { text: "Humus", bounding_boxes: [] },
+            },
+          ],
+        },
+        {
+          id: "borehole-2",
+          layers: [
+            {
+              start: { depth: 0, bounding_boxes: [] },
+              end: { depth: 2.0, bounding_boxes: [] },
+              material_description: { text: "Sand", bounding_boxes: [] },
+            },
+          ],
+        },
+      ],
+    };
+
+    cy.intercept("POST", "dataextraction/api/V1/extract_stratigraphy", {
+      statusCode: 200,
+      body: twoBoreholeResponse,
+    }).as("extract-stratigraphy-multi");
+
+    createBorehole({ originalName: "SCHOOLDIONYSUS" }).as("borehole_id");
+    cy.get("@borehole_id").then(boreholeId => {
+      goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy`);
+      cy.wait("@stratigraphy_by_borehole_GET");
+      startBoreholeEditing();
+      cy.dataCy("extractstratigraphyfromprofile-button").click();
+
+      cy.get('[data-cy="addProfile-button"]')
+        .find('input[type="file"]')
+        .attachFile({ filePath: "test_profile.pdf", encoding: "binary" }, { subjectType: "input" });
+
+      cy.wait(["@getAllAttachments", "@upload-files"]);
+    });
+
+    cy.wait("@extract-stratigraphy-multi");
+
+    // dropdown is visible when multiple stratigraphies are extracted
+    cy.dataCy("stratigraphy-selector").should("exist");
+
+    // both checkboxes are checked by default
+    cy.dataCy("stratigraphy-selector").click();
+    cy.dataCy("stratigraphy-selector-checkbox-0").find('input[type="checkbox"]').should("be.checked");
+    cy.dataCy("stratigraphy-selector-checkbox-1").find('input[type="checkbox"]').should("be.checked");
+
+    // button label reflects total count
+    cy.dataCy("add-stratigraphy-button").should("contain", "2");
+
+    // uncheck the second stratigraphy
+    cy.dataCy("stratigraphy-selector-checkbox-1").click();
+    cy.get("body").type("{esc}"); // close the dropdown
+    cy.dataCy("add-stratigraphy-button").should("contain", "stratigraphy").and("not.contain", "2");
+
+    // save: only one stratigraphy POST should be made
+    cy.dataCy("add-stratigraphy-button").click();
+    cy.wait("@stratigraphy_POST").then(interception => {
+      expect(interception.request.body.name).to.match(/^Extracted_test_profile_1$/);
+    });
+
+    cy.wait([
+      "@stratigraphy_by_borehole_GET",
+      "@lithology_by_stratigraphyId_GET",
+      "@lithologicaldescription_by_stratigraphyId_GET",
+    ]);
+
+    // snackbar confirmation is shown
+    cy.get(".MuiAlert-message").should("contain", "Stratigraphy successfully saved.");
   });
 
   it("displays message if nothing could be extracted from file", () => {
