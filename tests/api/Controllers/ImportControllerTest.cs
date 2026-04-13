@@ -1132,11 +1132,17 @@ public class ImportControllerTest
         string coordNorthing,
         string? country,
         string? canton,
-        string? municipality) =>
+        string? municipality)
+    {
         httpClientFactoryMock
-            .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-            .Returns(() => CreateReframeAndLocationHttpClient(coordEasting, coordNorthing, country, canton, municipality))
+            .Setup(cf => cf.CreateClient(nameof(CoordinateService)))
+            .Returns(() => CreateReframeHttpClient(coordEasting, coordNorthing))
             .Verifiable();
+        httpClientFactoryMock
+            .Setup(cf => cf.CreateClient(nameof(LocationService)))
+            .Returns(() => CreateLocationHttpClient(country, canton, municipality))
+            .Verifiable();
+    }
 
     private static async Task<FormFile> GetZipFileFromExistingFileAsync(string fileName)
     {
