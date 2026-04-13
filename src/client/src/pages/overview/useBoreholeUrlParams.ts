@@ -101,7 +101,7 @@ export const useBoreholeUrlParams = () => {
       if (value !== null && value !== undefined) {
         sessionStorage.setItem(
           SessionKeys[key as keyof typeof SessionKeys],
-          Array.isArray(value) ? value.join(",") : `${value}`,
+          Array.isArray(value) ? value.join(",") : String(value),
         );
       } else {
         sessionStorage.removeItem(SessionKeys[key as keyof typeof SessionKeys]);
@@ -114,7 +114,7 @@ export const useBoreholeUrlParams = () => {
       if (value !== null && value !== undefined) {
         sessionStorage.setItem(
           SessionKeys[key as keyof typeof SessionKeys],
-          Array.isArray(value) ? value.join(",") : `${value}`,
+          Array.isArray(value) ? value.join(",") : String(value),
         );
       } else {
         sessionStorage.removeItem(SessionKeys[key as keyof typeof SessionKeys]);
