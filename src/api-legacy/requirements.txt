@@ -1,4 +1,4 @@
-pytest==5.4.2
+pytest==9.0.3
 pylint==2.5.2
 asyncpg==0.24.0
 dateutils==0.6.8
