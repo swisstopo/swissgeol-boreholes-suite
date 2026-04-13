@@ -58,8 +58,13 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
       saveFilterParamsInSession();
       saveTableParamsInSession();
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [
+    restoreTableParamsFromSession,
+    restoreFilterParamsFromSession,
+    restoreMapParamsFromSession,
+    saveFilterParamsInSession,
+    saveTableParamsInSession,
+  ]);
 
   const setting: Setting = useSelector((state: ReduxRootState) => state.setting);
   const editorStore: EditorStore = useSelector((state: ReduxRootState) => state.editor);
