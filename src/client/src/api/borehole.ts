@@ -284,7 +284,7 @@ interface BaseFilterRequest {
   pageSize?: number;
   orderBy?: string | null;
   direction?: string | null;
-  workflowStatusId?: number | null;
+  workflowStatus?: string | null;
 }
 
 export interface FilterRequest extends BaseFilterRequest {
@@ -393,7 +393,7 @@ export function getDefaultFilterRequestFromSession(): FilterRequest {
     hasProfiles: get(SessionKeys.hasProfiles) as TriStateBoolean,
     hasPhotos: get(SessionKeys.hasPhotos) as TriStateBoolean,
     hasDocuments: get(SessionKeys.hasDocuments) as TriStateBoolean,
-    workflowStatus: getInt(SessionKeys.workflowStatus),
+    workflowStatus: get(SessionKeys.workflowStatus) ?? undefined,
   };
   return Object.fromEntries(Object.entries(allFilterParams).filter(([, value]) => value != null));
 }
