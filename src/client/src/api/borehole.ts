@@ -347,7 +347,7 @@ export const toFilterRequestSubmission = (filterRequest: FilterRequest): FilterR
 });
 
 /**
- * Reads filter values from sessionStorage and constructs a FilterRequestSubmission object.
+ * Reads filter values from sessionStorage and constructs a FilterRequest object.
  */
 export function getDefaultFilterRequestFromSession(): FilterRequest {
   const get = (key: string) => sessionStorage.getItem(key);
@@ -393,6 +393,7 @@ export function getDefaultFilterRequestFromSession(): FilterRequest {
     hasProfiles: get(SessionKeys.hasProfiles) as TriStateBoolean,
     hasPhotos: get(SessionKeys.hasPhotos) as TriStateBoolean,
     hasDocuments: get(SessionKeys.hasDocuments) as TriStateBoolean,
+    workflowStatus: getInt(SessionKeys.workflowStatus),
   };
   return Object.fromEntries(Object.entries(allFilterParams).filter(([, value]) => value != null));
 }

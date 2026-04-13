@@ -3,7 +3,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { Stack } from "@mui/material";
 import { GridPaginationModel, GridRowSelectionModel, GridSortModel } from "@mui/x-data-grid";
 import { EditorStore, ReduxRootState, Setting } from "../../../api-lib/ReduxStateInterfaces.ts";
-import { FilterRequest, FilterResponse, useFilterBoreholes } from "../../../api/borehole.ts";
+import { FilterRequest, FilterResponse, useFilterBoreholes, useReloadBoreholes } from "../../../api/borehole.ts";
 import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
 import { ExportDialog } from "../../../components/export/exportDialog.tsx";
 import MapComponent from "../../../components/map/mapComponent.jsx";
@@ -22,6 +22,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const [isExporting, setIsExporting] = useState(false);
   const [sessionRestored, setSessionRestored] = useState(false);
+  const reloadBoreholes = useReloadBoreholes();
   const { navigateTo } = useBoreholesNavigate();
   const {
     filterPolygon,
@@ -122,7 +123,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     <Stack direction="column" sx={{ flex: "1 1.5 100%" }}>
       <BulkEditDialog
         isOpen={Array.isArray(editorStore.mselected)}
-        loadBoreholes={() => {}}
+        loadBoreholes={reloadBoreholes}
         selected={selectionModel}
       />
       <ExportDialog

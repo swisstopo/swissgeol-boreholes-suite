@@ -429,7 +429,7 @@ export const loginAndResetState = () => {
     // Reset boreholes
     cy.request({
       method: "POST",
-      url: "/api/V2/borehole/filter",
+      url: "/api/v2/borehole/filter",
       body: {},
       auth: bearerAuth(token as string),
     }).then(response => {

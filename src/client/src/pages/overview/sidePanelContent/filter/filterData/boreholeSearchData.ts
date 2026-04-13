@@ -9,7 +9,7 @@ export const boreholeSearchData = [
     search: false,
   },
   {
-    id: 2,
+    id: 1,
     type: "Dropdown",
     label: "purpose",
     value: "purposeId",
@@ -27,7 +27,7 @@ export const boreholeSearchData = [
     search: false,
   },
   {
-    id: 16,
+    id: 3,
     type: "Input",
     label: "totaldepth",
     value: "totalDepthMin",
@@ -37,7 +37,7 @@ export const boreholeSearchData = [
     placeholder: "from",
   },
   {
-    id: 17,
+    id: 4,
     type: "Input",
     label: "",
     value: "totalDepthMax",
@@ -47,7 +47,7 @@ export const boreholeSearchData = [
     placeholder: "to",
   },
   {
-    id: 20,
+    id: 5,
     type: "Input",
     label: "top_bedrock_fresh_md",
     value: "topBedrockFreshMdMin",
@@ -57,7 +57,7 @@ export const boreholeSearchData = [
     placeholder: "from",
   },
   {
-    id: 21,
+    id: 6,
     type: "Input",
     label: "",
     value: "topBedrockFreshMdMax",
@@ -67,7 +67,7 @@ export const boreholeSearchData = [
     placeholder: "to",
   },
   {
-    id: 26,
+    id: 7,
     type: "Input",
     label: "top_bedrock_weathered_md",
     value: "topBedrockWeatheredMdMin",
@@ -77,7 +77,7 @@ export const boreholeSearchData = [
     placeholder: "from",
   },
   {
-    id: 27,
+    id: 8,
     type: "Input",
     label: "",
     value: "topBedrockWeatheredMdMax",
@@ -88,7 +88,7 @@ export const boreholeSearchData = [
   },
 
   {
-    id: 29,
+    id: 9,
     type: "TriStateBoolean",
     label: "hasGroundwater",
     value: "hasGroundwater",
@@ -97,7 +97,7 @@ export const boreholeSearchData = [
   },
 
   {
-    id: 30,
+    id: 10,
     type: "Boolean",
     label: "topBedrockIntersected",
     value: "topBedrockIntersected",
@@ -105,7 +105,7 @@ export const boreholeSearchData = [
     to: false,
   },
   {
-    id: 31,
+    id: 11,
     type: "Boolean",
     label: "hasGeometry",
     value: "hasGeometry",
