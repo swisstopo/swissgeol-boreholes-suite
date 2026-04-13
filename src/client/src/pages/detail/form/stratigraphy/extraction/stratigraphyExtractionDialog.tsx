@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useEffect, useState } from "react";
+import { FC, MouseEvent, useCallback, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import {
@@ -6,6 +6,9 @@ import {
   Dialog,
   DialogProps,
   FormControlLabel,
+  MenuItem,
+  Select,
+  SelectChangeEvent,
   ToggleButton,
   ToggleButtonGroup,
   Typography,
@@ -35,7 +38,7 @@ interface StratigraphyExtractionDialogProps {
 
 const getStratigraphyName = (file: BoreholeAttachment, index: number): string => {
   const baseName = file.name.replace(/\.[^/.]+$/, "");
-  return `Extracted_${baseName}_${index + 1}`;
+  return `${baseName}_${index + 1}`;
 };
 
 export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps> = ({
@@ -53,15 +56,25 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   const { id } = useRequiredParams<{ id: string }>();
   const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
-
+  const [activePage, setActivePage] = useState<number>(1);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [checkedIndices, setCheckedIndices] = useState<Set<number>>(new Set());
 
-  useEffect(() => {
-    if (allExtractedStratigraphies.length > 0) {
-      setCheckedIndices(new Set(allExtractedStratigraphies.map((_, i) => i)));
-    }
-  }, [allExtractedStratigraphies, allExtractedStratigraphies.length]);
+  // Auto-check the only stratigraphy when there is exactly one
+  if (allExtractedStratigraphies.length === 1 && !checkedIndices.has(0)) {
+    setCheckedIndices(new Set([0]));
+  }
+
+  const handleStratigraphyChange = (_: MouseEvent, value: number) => {
+    setSelectedIndex(value);
+    setActivePage(allExtractedStratigraphies[value]?.pageNumbers[0] ?? 1);
+  };
+
+  const handleStratigraphySelectChange = (event: SelectChangeEvent<number>) => {
+    const value = Number(event.target.value);
+    setSelectedIndex(value);
+    setActivePage(allExtractedStratigraphies[value]?.pageNumbers[0] ?? 1);
+  };
 
   const closeDialog = useCallback(() => {
     if (abortController) {
@@ -82,11 +95,11 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
       .sort((a, b) => a - b)
       .map(i => ({
         name: getStratigraphyName(file, i),
-        lithologicalDescriptions: allExtractedStratigraphies[i].map(ld => ({ ...ld, id: 0 })),
+        lithologicalDescriptions: allExtractedStratigraphies[i].descriptions.map(ld => ({ ...ld, id: 0 })),
       }));
 
     const results = await bulkAdd({ boreholeId: Number(id), stratigraphies: stratigraphiesToSave });
-    showAlert(t("stratigraphySaved"), "success");
+    showAlert(t("stratigraphySaved", { count: checkedIndices.size }), "success");
     closeDialog();
     navigateTo({
       path: `/${id}/stratigraphy/${results[0].stratigraphy.id}`,
@@ -105,20 +118,27 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
     t,
   ]);
 
-  const currentDescriptions = allExtractedStratigraphies[selectedIndex] ?? [];
+  const currentDescriptions = allExtractedStratigraphies[selectedIndex]?.descriptions ?? [];
   const hasMultiple = allExtractedStratigraphies.length > 1;
+  const useDropdown = allExtractedStratigraphies.length > 3;
 
   return (
     <Dialog open={open} onClose={handleClose} fullScreen>
       <DialogHeaderContainer>
-        <Stack direction="row" pt={0.5} alignItems="center" justifyContent={"space-between"} gap={2}>
+        <Stack
+          direction="row"
+          pt={0.5}
+          alignItems="center"
+          justifyContent={"space-between"}
+          gap={2}
+          sx={{ width: "100%" }}>
           <Typography variant="h4" sx={{ flexGrow: 1 }}>
             {t("extractStratigraphyFromProfile")}
           </Typography>
-          {hasMultiple && (
+          {hasMultiple && !useDropdown && (
             <ToggleButtonGroup
               value={selectedIndex}
-              onChange={(_, value) => setSelectedIndex(value)}
+              onChange={handleStratigraphyChange}
               exclusive
               sx={{
                 boxShadow: "none",
@@ -134,20 +154,60 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
               ))}
             </ToggleButtonGroup>
           )}
+          {useDropdown && (
+            <Select
+              value={selectedIndex}
+              onChange={handleStratigraphySelectChange}
+              data-cy="stratigraphy-select"
+              size="small"
+              sx={{
+                minWidth: 200,
+                backgroundColor: theme.palette.background.default,
+              }}>
+              {allExtractedStratigraphies.map((_, index) => (
+                <MenuItem
+                  key={getStratigraphyName(file, index)}
+                  value={index}
+                  data-cy={`stratigraphy-select-item-${index}`}>
+                  {`${t("stratigraphy")} ${index + 1}`}
+                </MenuItem>
+              ))}
+            </Select>
+          )}
         </Stack>
       </DialogHeaderContainer>
       <DialogMainContent>
         <StratigraphyExtractionView
           file={file}
+          activePage={activePage}
+          setActivePage={setActivePage}
           lithologicalDescriptions={currentDescriptions}
           isLoading={isLoading || isLoadingFileInfo}
+          currentPageRange={allExtractedStratigraphies[selectedIndex]?.pageNumbers}
         />
       </DialogMainContent>
       <DialogFooterContainer>
-        <Stack direction="row" justifyContent="space-between" alignItems="center">
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ width: "100%" }}>
           <FormControlLabel
-            control={<Checkbox data-cy={`add-stratigraphy-checkbox-${selectedIndex + 1}`} checked={false} />}
-            label={`${t("stratigraphy")} ${selectedIndex + 1}`}
+            sx={{ visibility: hasMultiple ? "visible" : "hidden" }}
+            control={
+              <Checkbox
+                data-cy={`add-stratigraphy-checkbox-${selectedIndex + 1}`}
+                checked={checkedIndices.has(selectedIndex)}
+                onChange={(_, checked) => {
+                  setCheckedIndices(prev => {
+                    const next = new Set(prev);
+                    if (checked) {
+                      next.add(selectedIndex);
+                    } else {
+                      next.delete(selectedIndex);
+                    }
+                    return next;
+                  });
+                }}
+              />
+            }
+            label={t("addStratigraphyNumber", { number: selectedIndex + 1 })}
           />
           <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={0.75}>
             <CancelButton onClick={closeDialog} />

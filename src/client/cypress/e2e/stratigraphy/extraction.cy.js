@@ -67,35 +67,32 @@ describe("Tests for stratigraphy extraction", () => {
     assertBoundingBoxesOnLayer("labeling-map", "highlightDepthLayer", false);
   });
 
-  it("supports selecting and saving multiple extracted stratigraphies", () => {
-    const twoBoreholeResponse = {
+  it("shows dropdown and supports check/uncheck for multiple extracted stratigraphies", () => {
+    // Build a mock response with 4 boreholes to trigger the dropdown UI (threshold is > 3).
+    const makeBorehole = (index, materialText, endDepth) => ({
+      id: `borehole-${index}`,
+      page_numbers: [1],
+      layers: [
+        {
+          start: { depth: 0, bounding_boxes: [] },
+          end: { depth: endDepth, bounding_boxes: [] },
+          material_description: { text: materialText, bounding_boxes: [] },
+        },
+      ],
+    });
+
+    const fourBoreholeResponse = {
       boreholes: [
-        {
-          id: "borehole-1",
-          layers: [
-            {
-              start: { depth: 0, bounding_boxes: [] },
-              end: { depth: 1.5, bounding_boxes: [] },
-              material_description: { text: "Humus", bounding_boxes: [] },
-            },
-          ],
-        },
-        {
-          id: "borehole-2",
-          layers: [
-            {
-              start: { depth: 0, bounding_boxes: [] },
-              end: { depth: 2.0, bounding_boxes: [] },
-              material_description: { text: "Sand", bounding_boxes: [] },
-            },
-          ],
-        },
+        makeBorehole(1, "Humus", 1.5),
+        makeBorehole(2, "Sand", 2.0),
+        makeBorehole(3, "Kies", 3.0),
+        makeBorehole(4, "Ton", 4.0),
       ],
     };
 
     cy.intercept("POST", "dataextraction/api/V1/extract_stratigraphy", {
       statusCode: 200,
-      body: twoBoreholeResponse,
+      body: fourBoreholeResponse,
     }).as("extract-stratigraphy-multi");
 
     createBorehole({ originalName: "SCHOOLDIONYSUS" }).as("borehole_id");
@@ -107,43 +104,106 @@ describe("Tests for stratigraphy extraction", () => {
 
       cy.get('[data-cy="addProfile-button"]')
         .find('input[type="file"]')
-        .attachFile({ filePath: "test_profile.pdf", encoding: "binary" }, { subjectType: "input" });
+        .attachFile({ filePath: "2-Bohrungen.pdf", encoding: "binary" }, { subjectType: "input" });
 
       cy.wait(["@getAllAttachments", "@upload-files"]);
     });
 
-    cy.wait("@extract-stratigraphy-multi");
+    cy.wait("@extract-stratigraphy-multi", { timeout: 240000 });
 
-    // dropdown is visible when multiple stratigraphies are extracted
-    cy.dataCy("stratigraphy-selector").should("exist");
+    // With >3 stratigraphies the dropdown is shown instead of the ToggleButtonGroup.
+    cy.dataCy("stratigraphy-select").should("exist");
+    cy.dataCy("stratigraphy-toggle-item-0").should("not.exist");
 
-    // both checkboxes are checked by default
-    cy.dataCy("stratigraphy-selector").click();
-    cy.dataCy("stratigraphy-selector-checkbox-0").find('input[type="checkbox"]').should("be.checked");
-    cy.dataCy("stratigraphy-selector-checkbox-1").find('input[type="checkbox"]').should("be.checked");
+    // First stratigraphy is selected by default; its description is visible.
+    cy.dataCy("extracted_lithologicalDescription-0").should("contain", "Humus");
 
-    // button label reflects total count
+    // Footer checkbox targets the currently selected stratigraphy and starts unchecked.
+    cy.dataCy("add-stratigraphy-checkbox-1").find('input[type="checkbox"]').should("not.be.checked");
+    cy.dataCy("add-stratigraphy-button").should("be.disabled");
+
+    // Check stratigraphy 1.
+    cy.dataCy("add-stratigraphy-checkbox-1").click();
+    cy.dataCy("add-stratigraphy-checkbox-1").find('input[type="checkbox"]').should("be.checked");
+    cy.dataCy("add-stratigraphy-button").should("not.be.disabled");
+
+    // Switch to stratigraphy 3 via the dropdown; preview and checkbox update.
+    cy.dataCy("stratigraphy-select").click();
+    cy.dataCy("stratigraphy-select-item-2").click();
+    cy.dataCy("extracted_lithologicalDescription-0").should("contain", "Kies");
+    cy.dataCy("add-stratigraphy-checkbox-3").find('input[type="checkbox"]').should("not.be.checked");
+
+    // Check stratigraphy 3; button count should reflect two checked.
+    cy.dataCy("add-stratigraphy-checkbox-3").click();
+    cy.dataCy("add-stratigraphy-checkbox-3").find('input[type="checkbox"]').should("be.checked");
     cy.dataCy("add-stratigraphy-button").should("contain", "2");
 
-    // uncheck the second stratigraphy
-    cy.dataCy("stratigraphy-selector-checkbox-1").click();
-    cy.get("body").type("{esc}"); // close the dropdown
-    cy.dataCy("add-stratigraphy-button").should("contain", "stratigraphy").and("not.contain", "2");
+    // Uncheck stratigraphy 3; count goes back to one.
+    cy.dataCy("add-stratigraphy-checkbox-3").click();
+    cy.dataCy("add-stratigraphy-checkbox-3").find('input[type="checkbox"]').should("not.be.checked");
+    cy.dataCy("add-stratigraphy-button").should("not.contain", "2");
+    cy.dataCy("add-stratigraphy-button").should("not.be.disabled");
 
-    // save: only one stratigraphy POST should be made
-    cy.dataCy("add-stratigraphy-button").click();
-    cy.wait("@stratigraphy_POST").then(interception => {
-      expect(interception.request.body.name).to.match(/^Extracted_test_profile_1$/);
+    // Switching back to stratigraphy 1 still shows it as checked (per-index state persists).
+    cy.dataCy("stratigraphy-select").click();
+    cy.dataCy("stratigraphy-select-item-0").click();
+    cy.dataCy("add-stratigraphy-checkbox-1").find('input[type="checkbox"]').should("be.checked");
+  });
+
+  it("extracts two stratigraphies from a real profile, saves both, and shows the success alert", () => {
+    cy.intercept("POST", "/api/v2/stratigraphy").as("stratigraphy_POST");
+
+    createBorehole({ originalName: "SCHOOLDIONYSUS" }).as("borehole_id");
+    cy.get("@borehole_id").then(boreholeId => {
+      goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy`);
+      cy.wait("@stratigraphy_by_borehole_GET");
+      startBoreholeEditing();
+      cy.dataCy("extractstratigraphyfromprofile-button").click();
+
+      cy.get('[data-cy="addProfile-button"]')
+        .find('input[type="file"]')
+        .attachFile({ filePath: "2-Bohrungen.pdf", encoding: "binary" }, { subjectType: "input" });
+
+      cy.wait(["@getAllAttachments", "@upload-files"]);
     });
 
-    cy.wait([
-      "@stratigraphy_by_borehole_GET",
-      "@lithology_by_stratigraphyId_GET",
-      "@lithologicaldescription_by_stratigraphyId_GET",
-    ]);
+    cy.wait("@extract-stratigraphy", { timeout: 240000 }).then(interception => {
+      expect(interception.response.statusCode).to.eq(200);
+    });
 
-    // snackbar confirmation is shown
-    cy.get(".MuiAlert-message").should("contain", "Stratigraphy successfully saved.");
+    // With exactly 2 stratigraphies the ToggleButtonGroup (not the dropdown) is rendered.
+    cy.dataCy("stratigraphy-toggle-item-0").should("exist");
+    cy.dataCy("stratigraphy-toggle-item-1").should("exist");
+    cy.dataCy("stratigraphy-toggle-item-2").should("not.exist");
+    cy.dataCy("stratigraphy-select").should("not.exist");
+
+    // Check the first stratigraphy (selected by default).
+    cy.dataCy("add-stratigraphy-checkbox-1").click();
+    cy.dataCy("add-stratigraphy-checkbox-1").find('input[type="checkbox"]').should("be.checked");
+
+    // Switch to the second stratigraphy and check it.
+    cy.dataCy("stratigraphy-toggle-item-1").click();
+    cy.dataCy("add-stratigraphy-checkbox-2").find('input[type="checkbox"]').should("not.be.checked");
+    cy.dataCy("add-stratigraphy-checkbox-2").click();
+    cy.dataCy("add-stratigraphy-checkbox-2").find('input[type="checkbox"]').should("be.checked");
+
+    // Button label reflects both being checked.
+    cy.dataCy("add-stratigraphy-button").should("contain", "2");
+
+    // Save — two stratigraphy POSTs should fire, one per selected stratigraphy.
+    cy.dataCy("add-stratigraphy-button").click();
+
+    // Pluralized success alert confirms both were saved; asserting the alert also
+    // implicitly waits for both POSTs to finish (bulkAdd calls them sequentially).
+    cy.get(".MuiAlert-message", { timeout: 60000 }).should("contain", "2 stratigraphies successfully saved.");
+
+    // Verify both POSTs were made with the expected per-index names.
+    cy.get("@stratigraphy_POST.all").then(interceptions => {
+      const names = interceptions.map(i => i.request.body?.name).filter(Boolean);
+      cy.log("Observed stratigraphy POST names: " + JSON.stringify(names));
+      expect(names).to.include("2-Bohrungen_1");
+      expect(names).to.include("2-Bohrungen_2");
+    });
   });
 
   it("displays message if nothing could be extracted from file", () => {

@@ -149,6 +149,11 @@ const cleanUpExtractionData = (
     }, []);
 };
 
+export interface ExtractedStratigraphy {
+  descriptions: ExtractedLithologicalDescription[];
+  pageNumbers: number[];
+}
+
 export function useExtractStratigraphies(file: BoreholeAttachment, activePage: number) {
   const { data: fileInfo } = useFileInfo(file?.id, activePage);
   return useQuery({
@@ -158,8 +163,8 @@ export function useExtractStratigraphies(file: BoreholeAttachment, activePage: n
     queryFn: async ({ signal }) => {
       const response = await extractStratigraphies(file.nameUuid, signal);
       if (!Array.isArray(response.boreholes) || response.boreholes.length === 0) return [];
-      return response.boreholes.map(borehole =>
-        cleanUpExtractionData(
+      return response.boreholes.map(borehole => {
+        const descriptions = cleanUpExtractionData(
           borehole.layers?.map(({ start, end, material_description }, idx) => ({
             id: idx,
             fromDepth: start?.depth,
@@ -170,8 +175,10 @@ export function useExtractStratigraphies(file: BoreholeAttachment, activePage: n
             descriptionBoundingBoxes: material_description.bounding_boxes,
             stratigraphyId: 0,
           })) || [],
-        ),
-      );
+        );
+
+        return { descriptions, pageNumbers: borehole.page_numbers } as ExtractedStratigraphy;
+      });
     },
   });
 }
