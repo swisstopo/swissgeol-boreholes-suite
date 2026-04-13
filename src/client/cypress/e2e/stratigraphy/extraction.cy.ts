@@ -1,9 +1,9 @@
 import Layer from "ol/layer/Layer";
 import VectorSource from "ol/source/Vector";
 import { createBorehole, goToDetailRouteAndAcceptTerms, startBoreholeEditing } from "../helpers/testHelpers";
-import { mapDomId, WindowWithMaps } from "../helpers/window.ts";
+import { MapDomId, WindowWithMaps } from "../helpers/window.ts";
 
-function assertBoundingBoxesOnLayer(mapDomId: mapDomId, layerName: string, shouldExist = true) {
+function assertBoundingBoxesOnLayer(mapDomId: MapDomId, layerName: string, shouldExist = true) {
   cy.window().should(win => {
     const window = win as WindowWithMaps;
 
