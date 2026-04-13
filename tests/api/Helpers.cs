@@ -161,9 +161,9 @@ internal static class Helpers
         httpMessageHandler.Protected()
             .Setup<Task<HttpResponseMessage>>(
                 "SendAsync",
-                ItExpr.Is<HttpRequestMessage>(m => Regex.IsMatch(
-                    m.RequestUri!.AbsoluteUri,
-                    "easting=\\d+\\.?\\d*&northing=[-]?\\d+\\.?\\d*&format=json$")),
+                ItExpr.Is<HttpRequestMessage>(m =>
+                    m.RequestUri!.AbsoluteUri.Contains("geodesy.geo.admin.ch") &&
+                    Regex.IsMatch(m.RequestUri!.AbsoluteUri, "easting=\\d+\\.?\\d*&northing=-?\\d+\\.?\\d*&format=json$")),
                 ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK)
             {
