@@ -5,6 +5,17 @@ import { useResetTabStatus } from "../../../../../hooks/useResetTabStatus.ts";
 import { LithologicalDescription } from "../lithologicalDescription.ts";
 import { Lithology } from "../lithology.ts";
 
+export interface StratigraphyInput {
+  name: string;
+  lithologicalDescriptions: Omit<LithologicalDescription, "id" | "stratigraphyId">[];
+}
+
+export interface BulkAddResult {
+  stratigraphy: Stratigraphy;
+  lithologies: Lithology[];
+  lithologicalDescriptions: LithologicalDescription[];
+}
+
 export const useBulkAddMutation = () => {
   const queryClient = useQueryClient();
   const resetTabStatus = useResetTabStatus(["lithology"]);
@@ -12,62 +23,69 @@ export const useBulkAddMutation = () => {
   return useMutation({
     mutationFn: async ({
       boreholeId,
-      lithologicalDescriptions,
+      stratigraphies,
     }: {
       boreholeId: number;
-      lithologicalDescriptions: Omit<LithologicalDescription, "id" | "stratigraphyId">[];
-    }) => {
-      const newStratigraphy: Stratigraphy = await fetchApiV2WithApiError("stratigraphy", "POST", {
-        id: 0,
-        name: `Extracted ${new Date().toLocaleString()}`,
-        isPrimary: false,
-        boreholeId: boreholeId,
-      });
+      stratigraphies: StratigraphyInput[];
+    }): Promise<BulkAddResult[]> => {
+      const results: BulkAddResult[] = [];
 
-      const lithologiesPromise = fetchApiV2WithApiError(
-        "lithology/bulk",
-        "POST",
+      for (const { name, lithologicalDescriptions } of stratigraphies) {
+        const newStratigraphy: Stratigraphy = await fetchApiV2WithApiError("stratigraphy", "POST", {
+          id: 0,
+          name,
+          isPrimary: false,
+          boreholeId,
+        });
 
-        lithologicalDescriptions.map(
-          ld =>
-            ({
-              id: 0,
-              toDepth: ld.toDepth,
-              fromDepth: ld.fromDepth,
-              isUnconsolidated: true,
-              hasBedding: false,
-              stratigraphyId: newStratigraphy.id,
-              lithologyDescriptions: [
-                {
-                  id: 0,
-                  lithologyId: 0,
-                  isFirst: true,
-                },
-              ],
-            }) as Lithology,
-        ),
-      );
+        const lithologiesPromise = fetchApiV2WithApiError(
+          "lithology/bulk",
+          "POST",
+          lithologicalDescriptions.map(
+            ld =>
+              ({
+                id: 0,
+                toDepth: ld.toDepth,
+                fromDepth: ld.fromDepth,
+                isUnconsolidated: true,
+                hasBedding: false,
+                stratigraphyId: newStratigraphy.id,
+                lithologyDescriptions: [
+                  {
+                    id: 0,
+                    lithologyId: 0,
+                    isFirst: true,
+                  },
+                ],
+              }) as Lithology,
+          ),
+        );
 
-      const lithologicalDescriptionsPromise = fetchApiV2WithApiError(
-        "lithologicaldescription/bulk",
-        "POST",
-        lithologicalDescriptions.map(l => ({ ...l, stratigraphyId: newStratigraphy.id })),
-      );
+        const lithologicalDescriptionsPromise = fetchApiV2WithApiError(
+          "lithologicaldescription/bulk",
+          "POST",
+          lithologicalDescriptions.map(l => ({ ...l, stratigraphyId: newStratigraphy.id })),
+        );
 
-      const [addedLithologies, addedLithologicalDescriptions] = await Promise.all([
-        lithologiesPromise,
-        lithologicalDescriptionsPromise,
-      ]);
+        const [addedLithologies, addedLithologicalDescriptions] = await Promise.all([
+          lithologiesPromise,
+          lithologicalDescriptionsPromise,
+        ]);
 
-      return {
-        stratigraphy: newStratigraphy,
-        lithologies: addedLithologies,
-        lithologicalDescriptions: addedLithologicalDescriptions,
-      };
+        results.push({
+          stratigraphy: newStratigraphy,
+          lithologies: addedLithologies,
+          lithologicalDescriptions: addedLithologicalDescriptions,
+        });
+      }
+
+      return results;
     },
     onSuccess: values => {
       resetTabStatus();
-      queryClient.invalidateQueries({ queryKey: [stratigraphiesQueryKey, values.stratigraphy.boreholeId] });
+      if (values.length > 0) {
+        queryClient.invalidateQueries({ queryKey: [stratigraphiesQueryKey, values[0].stratigraphy.boreholeId] });
+      }
     },
   });
 };
