@@ -17,6 +17,51 @@ function checkFilterChipExistsAndRemove(filterName: string) {
   cy.dataCy(`filter-chip-${filterName}`).should("not.exist");
 }
 
+function testYesNoFilter(
+  title: string,
+  filterSection: string,
+  fieldName: string,
+  option: string,
+  expectedCount: string,
+) {
+  it(`filters boreholes by ${title}`, () => {
+    openFilter(filterSection);
+    setYesNoSelect(fieldName, option);
+    cy.dataCy("boreholes-number-preview").should("have.text", expectedCount);
+    checkFilterChipExistsAndRemove(fieldName);
+  });
+}
+
+function testInputFilter(
+  title: string,
+  filterSection: string,
+  fieldName: string,
+  value: string,
+  expectedCount: string,
+) {
+  it(`filters boreholes by ${title}`, () => {
+    openFilter(filterSection);
+    setInput(fieldName, value);
+    cy.dataCy("boreholes-number-preview").should("have.text", expectedCount);
+    checkFilterChipExistsAndRemove(fieldName);
+  });
+}
+
+function testSelectFilter(
+  title: string,
+  filterSection: string,
+  fieldName: string,
+  optionIndex: number,
+  expectedCount: string,
+) {
+  it(`filters boreholes by ${title}`, () => {
+    openFilter(filterSection);
+    setSelect(fieldName, optionIndex);
+    cy.dataCy("boreholes-number-preview").should("have.text", expectedCount);
+    checkFilterChipExistsAndRemove(fieldName);
+  });
+}
+
 describe("Search filter tests", () => {
   it("has search filters", () => {
     goToRouteAndAcceptTerms("/");
@@ -81,33 +126,11 @@ describe("Search filter tests", () => {
     cy.dataCy("boreholes-number-preview").should("have.text", "3'004");
   });
 
-  it("filters boreholes by original name", () => {
-    openFilter("Location");
-    setInput("originalName", "Abigail");
-    cy.dataCy("boreholes-number-preview").should("have.text", "7");
-    checkFilterChipExistsAndRemove("originalName");
-  });
+  testInputFilter("original name", "Location", "originalName", "Abigail", "7");
+  testInputFilter("project name", "Location", "projectName", "engin", "106");
+  testInputFilter("alternate name", "Location", "name", "Eric", "26");
 
-  it("filters boreholes by project name", () => {
-    openFilter("Location");
-    setInput("projectName", "engin");
-    cy.dataCy("boreholes-number-preview").should("have.text", "106");
-    checkFilterChipExistsAndRemove("projectName");
-  });
-
-  it("filters boreholes by alternate name", () => {
-    openFilter("Location");
-    setInput("name", "Eric");
-    cy.dataCy("boreholes-number-preview").should("have.text", "26");
-    checkFilterChipExistsAndRemove("name");
-  });
-
-  it("filters boreholes by restriction", () => {
-    openFilter("Location");
-    setSelect("restrictionId", 0);
-    cy.dataCy("boreholes-number-preview").should("have.text", "376");
-    checkFilterChipExistsAndRemove("restrictionId");
-  });
+  testSelectFilter("restriction", "Location", "restrictionId", 0, "376");
 
   it("filters boreholes by restriction date range", () => {
     openFilter("Location");
@@ -126,28 +149,6 @@ describe("Search filter tests", () => {
   });
 
   // ─── BOREHOLE FILTERS ──────────────────────────────────────────────────────
-
-  it("filters boreholes by borehole type", () => {
-    openFilter("Borehole");
-    setSelect("typeId", 0);
-    cy.dataCy("boreholes-number-preview").should("have.text", "171");
-    checkFilterChipExistsAndRemove("typeId");
-  });
-
-  it("filters boreholes by purpose", () => {
-    openFilter("Borehole");
-    setSelect("purposeId", 0);
-    cy.dataCy("boreholes-number-preview").should("have.text", "112");
-    checkFilterChipExistsAndRemove("purposeId");
-  });
-
-  it("filters boreholes by borehole status", () => {
-    openFilter("Borehole");
-    setSelect("statusId", 2);
-    cy.dataCy("boreholes-number-preview").should("have.text", "314");
-    checkFilterChipExistsAndRemove("statusId");
-  });
-
   it("filters boreholes by total depth range", () => {
     openFilter("Borehole");
     setInput("totalDepthMin", "800");
@@ -183,51 +184,22 @@ describe("Search filter tests", () => {
     cy.dataCy("boreholes-number-preview").should("have.text", "2'855");
   });
 
-  it("filters boreholes by groundwater", () => {
-    openFilter("Borehole");
-    setYesNoSelect("hasGroundwater", "Not specified");
-    cy.dataCy("boreholes-number-preview").should("have.text", "601");
-    checkFilterChipExistsAndRemove("hasGroundwater");
-  });
+  testSelectFilter("borehole type", "Borehole", "typeId", 0, "171");
+  testSelectFilter("purpose", "Borehole", "purposeId", 0, "112");
+  testSelectFilter("borehole status", "Borehole", "statusId", 2, "314");
 
-  it("filters boreholes by top bedrock intersected", () => {
-    openFilter("Borehole");
-    setYesNoSelect("topBedrockIntersected", "No");
-    cy.dataCy("boreholes-number-preview").should("have.text", "1'209");
-    checkFilterChipExistsAndRemove("topBedrockIntersected");
-  });
-
-  it("filters boreholes by geometry available", () => {
-    openFilter("Borehole");
-    setYesNoSelect("hasGeometry", "Yes");
-    cy.dataCy("boreholes-number-preview").should("have.text", "100");
-    checkFilterChipExistsAndRemove("hasGeometry");
-  });
+  testYesNoFilter("groundwater", "Borehole", "hasGroundwater", "Not specified", "601");
+  testYesNoFilter("top bedrock intersected", "Borehole", "topBedrockIntersected", "No", "1'209");
+  testYesNoFilter("geometry available", "Borehole", "hasGeometry", "Yes", "100");
 
   // ─── LOG FILTER ────────────────────────────────────────────────────────────
 
-  it("filters boreholes by logs available", () => {
-    openFilter("LOG");
-    setYesNoSelect("hasLogs", "Yes");
-    cy.dataCy("boreholes-number-preview").should("have.text", "101");
-    checkFilterChipExistsAndRemove("hasLogs");
-  });
+  testYesNoFilter("logs available", "LOG", "hasLogs", "Yes", "101");
 
   // ─── ATTACHMENT FILTERS ────────────────────────────────────────────────────
 
-  it("filters boreholes by profiles available", () => {
-    openFilter("Attachments");
-    setYesNoSelect("hasProfiles", "No");
-    cy.dataCy("boreholes-number-preview").should("have.text", "2'912");
-    checkFilterChipExistsAndRemove("hasProfiles");
-  });
-
-  it("filters boreholes by photos available", () => {
-    openFilter("Attachments");
-    setYesNoSelect("hasPhotos", "Yes");
-    cy.dataCy("boreholes-number-preview").should("have.text", "71");
-    checkFilterChipExistsAndRemove("hasPhotos");
-  });
+  testYesNoFilter("profiles available", "Attachments", "hasProfiles", "No", "2'912");
+  testYesNoFilter("photos available", "Attachments", "hasPhotos", "Yes", "71");
 
   it("filters boreholes by documents available and resets filters", () => {
     openFilter("Attachments");
