@@ -692,7 +692,7 @@ public class ImportControllerTest
         Assert.AreEqual(new DateOnly(2024, 06, 15), borehole.RestrictionUntil);
         Assert.AreEqual(2474.472693, borehole.TotalDepth);
         Assert.AreEqual("Projekt 6", borehole.ProjectName);
-        Assert.AreEqual(2, borehole.BoreholeCodelists.Count);
+        Assert.AreEqual(4, borehole.BoreholeCodelists.Count);
         Assert.AreEqual("Id_16", borehole.BoreholeCodelists.Single(x => x.CodelistId == 100000003).Value);
         Assert.AreEqual("121314", borehole.BoreholeCodelists.Single(x => x.CodelistId == TestCodelistId).Value);
         Assert.AreEqual("Bern", borehole.Canton);
