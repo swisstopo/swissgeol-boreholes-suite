@@ -7,7 +7,7 @@ export const PagesBadge = ({ currentPageRange }: { currentPageRange?: number[] }
   const { t } = useTranslation();
   const pageRangeText =
     currentPageRange && currentPageRange.length > 1
-      ? t("pageRange", { start: currentPageRange[0], end: currentPageRange[currentPageRange.length - 1] })
+      ? t("pageRange", { start: currentPageRange[0], end: currentPageRange.at(-1) })
       : null;
 
   return (

@@ -94,9 +94,9 @@ describe("Tests for stratigraphy extraction", () => {
     const fourBoreholeResponse = {
       boreholes: [
         makeBorehole(1, "Humus", 1.5),
-        makeBorehole(2, "Sand", 2.0),
-        makeBorehole(3, "Kies", 3.0),
-        makeBorehole(4, "Ton", 4.0),
+        makeBorehole(2, "Sand", 2),
+        makeBorehole(3, "Kies", 3),
+        makeBorehole(4, "Ton", 4),
       ],
     };
 
