@@ -64,7 +64,7 @@ class MapComponent extends React.Component {
     this.draw = null;
 
     this.srs = "EPSG:2056";
-    _.forEach(projections, function (proj, srs) {
+    _.forEach(projections, function(proj, srs) {
       proj4.defs(srs, proj);
     });
     register(proj4);
@@ -80,6 +80,7 @@ class MapComponent extends React.Component {
   //////  INITIALIZE BOREHOLE FEATURE LAYERS //////
   displayGeoJson(geoJson) {
     if (!geoJson) return;
+    // Todo check if initializeMapLayers and handleMapInteractions need to be called every time or only once on map initialization https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2007
     this.initializeMapLayers();
     this.handleMapInteractions();
     let features = new GeoJSON().readFeatures(geoJson);
