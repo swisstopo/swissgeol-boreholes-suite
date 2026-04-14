@@ -38,7 +38,7 @@ export const useBulkAddMutation = () => {
           boreholeId,
         });
 
-        const lithologiesPromise = fetchApiV2WithApiError(
+        const lithologiesPromise = fetchApiV2WithApiError<Lithology[]>(
           "lithology/bulk",
           "POST",
           lithologicalDescriptions.map(
@@ -61,7 +61,7 @@ export const useBulkAddMutation = () => {
           ),
         );
 
-        const lithologicalDescriptionsPromise = fetchApiV2WithApiError(
+        const lithologicalDescriptionsPromise = fetchApiV2WithApiError<LithologicalDescription[]>(
           "lithologicaldescription/bulk",
           "POST",
           lithologicalDescriptions.map(l => ({ ...l, stratigraphyId: newStratigraphy.id })),
