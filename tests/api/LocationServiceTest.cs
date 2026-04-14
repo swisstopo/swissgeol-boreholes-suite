@@ -2,6 +2,7 @@
 using Moq;
 using Moq.Protected;
 using System.Net;
+using static BDMS.Helpers;
 
 namespace BDMS;
 
@@ -41,7 +42,7 @@ public class LocationServiceTest
     [DataRow(-1, -2, null, null, null)]
     public async Task IdentifyLv03(double east, double north, string country, string canton, string municipal)
     {
-        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
+        SetupLocationHttpMock(country, canton, municipal);
 
         var locationInfo = await service.IdentifyAsync(east, north, 21781);
         Assert.AreEqual(country, locationInfo.Country);
@@ -59,7 +60,7 @@ public class LocationServiceTest
     [DataRow(-1, -2, null, null, null)]
     public async Task IdentifyLv95(double east, double north, string country, string canton, string municipal)
     {
-        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
+        SetupLocationHttpMock(country, canton, municipal);
 
         var locationInfo = await service.IdentifyAsync(east, north);
         Assert.AreEqual(country, locationInfo.Country);
@@ -91,4 +92,7 @@ public class LocationServiceTest
         await Assert.ThrowsExactlyAsync<HttpRequestException>(
             () => service.IdentifyAsync(2646356.69, 1249020.29));
     }
+
+    private void SetupLocationHttpMock(string country, string canton, string municipal) =>
+        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(CreateLocationHttpClient(country, canton, municipal)).Verifiable();
 }
