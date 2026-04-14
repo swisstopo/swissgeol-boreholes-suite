@@ -75,7 +75,7 @@ describe("Tests for stratigraphy extraction", () => {
 
   it("shows dropdown and supports check/uncheck for multiple extracted stratigraphies", () => {
     // Build a mock response with 4 boreholes to trigger the dropdown UI (threshold is > 3).
-    const makeBorehole = (index, materialText, endDepth) => ({
+    const makeBorehole = (index: number, materialText: string, endDepth: number) => ({
       id: `borehole-${index}`,
       page_numbers: [1],
       layers: [
@@ -174,7 +174,7 @@ describe("Tests for stratigraphy extraction", () => {
     });
 
     cy.wait("@extract-stratigraphy", { timeout: 240000 }).then(interception => {
-      expect(interception.response.statusCode).to.eq(200);
+      expect(interception.response!.statusCode).to.eq(200);
     });
 
     // With exactly 2 stratigraphies the ToggleButtonGroup (not the dropdown) is rendered.
@@ -205,6 +205,7 @@ describe("Tests for stratigraphy extraction", () => {
 
     // Verify both POSTs were made with the expected per-index names.
     cy.get("@stratigraphy_POST.all").then(interceptions => {
+      // @ts-expect-error - unknown type for interception
       const names = interceptions.map(i => i.request.body?.name).filter(Boolean);
       cy.log("Observed stratigraphy POST names: " + JSON.stringify(names));
       expect(names).to.include("2-Bohrungen_1");
