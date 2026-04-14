@@ -9,6 +9,7 @@ import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/co
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 import { LogRun } from "../pages/detail/form/log/log.ts";
 import { Workflow } from "../pages/detail/form/workflow/workflow.ts";
+import { downloadData } from "../utils.ts";
 import { Document, NullableDateString, User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
@@ -94,8 +95,10 @@ export interface BoreholeV2 {
 
 const getIdQuery = (ids: number[] | GridRowSelectionModel) => ids.map(id => `ids=${id}`).join("&");
 
-export const exportJsonBoreholes = async (boreholeIds: number[] | GridRowSelectionModel) => {
-  return await fetchApiV2Legacy(`export/json?${getIdQuery(boreholeIds)}`, "GET");
+export const exportJsonBoreholes = async (boreholeIds: number[] | GridRowSelectionModel, fileName: string) => {
+  const exportJsonResponse = await fetchApiV2Legacy(`boreholeexport/json?${getIdQuery(boreholeIds)}`, "GET");
+  const jsonString = JSON.stringify(exportJsonResponse);
+  downloadData(jsonString, `${fileName}.json`, "application/json");
 };
 
 export const importBoreholesCsv = async (workgroupId: number | null, combinedFormData: FormData) => {
@@ -122,12 +125,13 @@ export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupI
   return await fetchApiV2Legacy(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
 };
 
-export const exportCSVBorehole = async (boreholeIds: GridRowSelectionModel) => {
-  return await fetchApiV2Legacy(`export/csv?${getIdQuery(boreholeIds)}`, "GET");
+export const exportCSVBorehole = async (boreholeIds: GridRowSelectionModel, fileName: string) => {
+  const csvData = await fetchApiV2Legacy(`boreholeexport/csv?${getIdQuery(boreholeIds)}`, "GET");
+  downloadData(csvData, `${fileName}.csv`, "text/csv");
 };
 
 export const exportJsonWithAttachmentsBorehole = async (boreholeIds: number[] | GridRowSelectionModel) => {
-  return await download(`export/zip?${getIdQuery(boreholeIds)}`);
+  return await download(`boreholeexport/zip?${getIdQuery(boreholeIds)}`);
 };
 
 export const fetchBoreholeById = async (id: number): Promise<BoreholeV2> => {

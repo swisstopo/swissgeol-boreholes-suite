@@ -5,15 +5,16 @@ import { Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { GridColDef, GridRowId, GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
 import Filter2Icon from "../../../../assets/icons/filter2.svg?react";
-import { ToggleButton } from "../../../../components/buttons/buttons.tsx";
+import { ExportButton, ToggleButton } from "../../../../components/buttons/buttons.tsx";
 import { CodelistLabelStyle, useCodelists } from "../../../../components/codelist.ts";
+import { ExportDialog } from "../../../../components/export/exportDialog.tsx";
 import { FormBooleanSelect } from "../../../../components/form/formBooleanSelect.tsx";
 import { FormContainer } from "../../../../components/form/formContainer.tsx";
 import { FormDomainMultiSelect } from "../../../../components/form/formDomainMultiSelect.tsx";
 import { FormMultiSelect, FormMultiSelectValue } from "../../../../components/form/formMultiSelect.tsx";
 import { Table } from "../../../../components/table/table.tsx";
 import { usePublicColumn } from "../../../../components/table/usePublicColumn.tsx";
-import { LogFile } from "./log.ts";
+import { exportLogFiles, LogFile, useLogExport } from "./log.ts";
 import { getFileExtension } from "./logUtils.ts";
 
 interface LogFileFilter {
@@ -36,6 +37,7 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
   const [filterVisible, setFilterVisible] = useState(false);
   const [extensionsFilters, setExtensionsFilters] = useState<FormMultiSelectValue[]>();
   const { data: codelists } = useCodelists();
+  const { isExporting, setIsExporting, startExport, exportItems } = useLogExport(exportLogFiles, selectionModel, files);
 
   const formMethods = useForm<LogFileFilter>({ mode: "onChange" });
   const toolTypeFilter = formMethods.watch("toolTypes");
@@ -209,6 +211,7 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
               ? t("selectedCount", { count: selectionModel.length })
               : t("fileCount", { count: filteredFiles.length })}
           </Typography>
+          {selectionModel.length > 0 && <ExportButton label="export" onClick={startExport} />}
         </Stack>
         <Stack direction="row" alignItems="center" gap={1}>
           <ToggleButton label={"filter"} icon={<Filter2Icon />} active={filterVisible} onToggle={setFilterVisible} />
@@ -255,6 +258,7 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
         rowAutoHeight={true}
         noRowsLabel={hasActiveFilter ? "noFilterResult" : "noLogFile"}
       />
+      <ExportDialog isExporting={isExporting} setIsExporting={setIsExporting} exportItems={exportItems} />
     </Stack>
   );
 };

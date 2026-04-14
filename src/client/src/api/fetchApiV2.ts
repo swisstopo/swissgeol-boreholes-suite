@@ -173,15 +173,9 @@ export async function download(url: string): Promise<Response> {
   if (!response.ok) {
     throw new ApiError("errorOccurredWhileFetchingFileFromCloudStorage", response.status);
   }
-  let fileName =
+  const fileName =
     response.headers.get("content-disposition")?.split("; ")[1]?.replace("filename=", "") ?? getFallbackFileName(url);
 
-  // Explicitly add zip extension
-  // By default if a fileName includes a dot, everything following the dot is treated as the extension and no zip extension is added.
-  if (url.includes("/zip?")) {
-    fileName = fileName.replace(/"/g, "");
-    fileName += ".zip";
-  }
   const blob = await response.blob();
   const downLoadUrl = window.URL.createObjectURL(blob);
   const link = document.createElement("a");

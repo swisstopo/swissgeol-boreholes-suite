@@ -37,8 +37,8 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/lithology?stratigraphyId=**").as("lithology_by_stratigraphyId_GET");
   cy.intercept("/api/v2/location/identify**").as("location");
   cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
-  cy.intercept("/api/v2/export/csv**").as("borehole_export_csv");
-  cy.intercept("/api/v2/export/json**").as("borehole_export_json");
+  cy.intercept("/api/v2/boreholeexport/csv**").as("borehole_export_csv");
+  cy.intercept("/api/v2/boreholeexport/json**").as("borehole_export_json");
   cy.intercept("/api/v2/borehole/**").as("borehole_by_id");
   cy.intercept("PUT", "/api/v2/borehole").as("update-borehole");
   cy.intercept("POST", "/api/v2/borehole").as("post-borehole");

@@ -25,14 +25,14 @@ namespace BDMS.Controllers;
 [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1010:Opening square brackets should be spaced correctly", Justification = "False positive for collection initializers.")]
 [DeploymentItem("TestData")]
 [TestClass]
-public class ExportControllerTest
+public class BoreholeExportControllerTest
 {
     private const string TestCsvString = "text/csv";
     private const string ExportFileName = "boreholes_export";
     private const int TestBoreholeId = 1000068;
     private BdmsContext context;
     private BoreholeFileCloudService boreholeFileCloudService;
-    private ExportController controller;
+    private BoreholeExportController controller;
     private ImportController importController;
     private User adminUser;
     private static readonly JsonSerializerOptions jsonOptions = new()
@@ -95,7 +95,7 @@ public class ExportControllerTest
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
 
-        var exportLoggerMock = new Mock<ILogger<ExportController>>();
+        var exportLoggerMock = new Mock<ILogger<BoreholeExportController>>();
         var importLoggerMock = new Mock<ILogger<ImportController>>();
 
         var locationServiceLoggerMock = new Mock<ILogger<LocationService>>(MockBehavior.Strict);
@@ -109,7 +109,7 @@ public class ExportControllerTest
             ControllerContext = GetControllerContextAdmin(),
         };
 
-        controller = new ExportController(context, boreholeFileCloudService, exportLoggerMock.Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new BoreholeExportController(context, boreholeFileCloudService, exportLoggerMock.Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestMethod]
@@ -690,11 +690,11 @@ public class ExportControllerTest
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
 
-        var loggerMock = new Mock<ILogger<ExportController>>();
-        controller = new ExportController(context, boreholeFileCloudService, loggerMock.Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        var loggerMock = new Mock<ILogger<BoreholeExportController>>();
+        controller = new BoreholeExportController(context, boreholeFileCloudService, loggerMock.Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
 
         // Get all export methods from ExportController
-        var exportMethods = typeof(ExportController)
+        var exportMethods = typeof(BoreholeExportController)
             .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Where(m => !m.IsConstructor && m.Name.Contains("export", StringComparison.OrdinalIgnoreCase))
             .ToList();
