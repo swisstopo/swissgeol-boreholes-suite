@@ -174,7 +174,6 @@ internal static class Helpers
 
     /// <summary>
     /// Creates a mocked <see cref="HttpClient"/> that handles swisstopo identify API calls and returns the given location.
-    /// Pass <see langword="null"/> for all parameters to return an empty result (no location found).
     /// </summary>
     internal static HttpClient CreateLocationHttpClient(string? country, string? canton, string? municipality)
     {
