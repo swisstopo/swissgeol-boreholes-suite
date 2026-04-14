@@ -1,4 +1,4 @@
-import { FC, useEffect, useRef, useState } from "react";
+import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { TextField } from "@mui/material";
 import { useDebounce } from "@uidotdev/usehooks";
@@ -37,19 +37,25 @@ export const FilterTextField: FC<FilterTextFieldProps> = ({
     lastCommittedRef.current = filterValue || null;
   }, [filterValue]);
 
+  const isValidDate = useCallback(
+    (value: string | null): boolean => {
+      if (type !== "date" || !value) return true;
+      const date = new Date(value);
+      return !Number.isNaN(date.getTime()) && date.getFullYear() > 1800;
+    },
+    [type],
+  );
+
   useEffect(() => {
     const value = debouncedValue || null;
     if (value === lastCommittedRef.current) return;
 
     // For date inputs, validate the date before updating
-    if (type === "date" && value) {
-      const date = new Date(value);
-      if (Number.isNaN(date.getTime()) || date.getFullYear() <= 1800) return; // Skip update for invalid dates or year <= 1800
-    }
+    if (!isValidDate(value)) return;
 
     lastCommittedRef.current = value;
     onUpdateRef.current(value);
-  }, [debouncedValue, type]);
+  }, [debouncedValue, type, isValidDate]);
 
   return (
     <TextField
@@ -63,6 +69,7 @@ export const FilterTextField: FC<FilterTextFieldProps> = ({
       onBlur={() => {
         const value = localValue || null;
         if (value === lastCommittedRef.current) return;
+        if (!isValidDate(value)) return;
         lastCommittedRef.current = value;
         onUpdateRef.current(value);
       }}
