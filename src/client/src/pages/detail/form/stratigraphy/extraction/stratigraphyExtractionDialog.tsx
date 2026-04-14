@@ -65,15 +65,18 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
     setCheckedIndices(new Set([0]));
   }
 
-  const handleStratigraphyChange = (_: MouseEvent, value: number) => {
+  const setSelectedIndexAndPage = (value: number) => {
     setSelectedIndex(value);
     setActivePage(allExtractedStratigraphies[value]?.pageNumbers[0] ?? 1);
   };
 
+  const handleStratigraphyToggleChange = (_: MouseEvent, value: number) => {
+    setSelectedIndexAndPage(value);
+  };
+
   const handleStratigraphySelectChange = (event: SelectChangeEvent<number>) => {
     const value = Number(event.target.value);
-    setSelectedIndex(value);
-    setActivePage(allExtractedStratigraphies[value]?.pageNumbers[0] ?? 1);
+    setSelectedIndexAndPage(value);
   };
 
   const closeDialog = useCallback(() => {
@@ -138,7 +141,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
           {hasMultiple && !useDropdown && (
             <ToggleButtonGroup
               value={selectedIndex}
-              onChange={handleStratigraphyChange}
+              onChange={handleStratigraphyToggleChange}
               exclusive
               sx={{
                 boxShadow: "none",

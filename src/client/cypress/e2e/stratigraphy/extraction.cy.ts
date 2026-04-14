@@ -25,21 +25,25 @@ function assertBoundingBoxesOnLayer(mapDomId: MapDomId, layerName: string, shoul
   });
 }
 
+function createBoreholeAndStartExtraction(boreholeName: string, filePath: string) {
+  createBorehole({ originalName: boreholeName }).as("borehole_id");
+  cy.get("@borehole_id").then(boreholeId => {
+    goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy`);
+    cy.wait("@stratigraphy_by_borehole_GET");
+    startBoreholeEditing();
+    cy.dataCy("extractstratigraphyfromprofile-button").click();
+
+    cy.get('[data-cy="addProfile-button"]')
+      .find('input[type="file"]')
+      .attachFile({ filePath: filePath, encoding: "binary" }, { subjectType: "input" });
+
+    cy.wait(["@getAllAttachments", "@upload-files"]);
+  });
+}
+
 describe("Tests for stratigraphy extraction", () => {
   it("Extracts stratigraphy and shows bounding boxes", () => {
-    createBorehole({ originalName: "SCHOOLDIONYSUS" }).as("borehole_id");
-    cy.get("@borehole_id").then(boreholeId => {
-      goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy`);
-      cy.wait("@stratigraphy_by_borehole_GET");
-      startBoreholeEditing();
-      cy.dataCy("extractstratigraphyfromprofile-button").click();
-
-      cy.get('[data-cy="addProfile-button"]')
-        .find('input[type="file"]')
-        .attachFile({ filePath: "test_profile.pdf", encoding: "binary" }, { subjectType: "input" });
-
-      cy.wait(["@getAllAttachments", "@upload-files"]);
-    });
+    createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "test_profile.pdf");
     cy.wait("@extract-stratigraphy", { timeout: 240000 }).then(interception => {
       expect(interception.response!.statusCode).to.eq(200);
       cy.dataCy("extracted_lithologicalDescription-0").should("contain", "Humus");
@@ -101,20 +105,7 @@ describe("Tests for stratigraphy extraction", () => {
       body: fourBoreholeResponse,
     }).as("extract-stratigraphy-multi");
 
-    createBorehole({ originalName: "SCHOOLDIONYSUS" }).as("borehole_id");
-    cy.get("@borehole_id").then(boreholeId => {
-      goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy`);
-      cy.wait("@stratigraphy_by_borehole_GET");
-      startBoreholeEditing();
-      cy.dataCy("extractstratigraphyfromprofile-button").click();
-
-      cy.get('[data-cy="addProfile-button"]')
-        .find('input[type="file"]')
-        .attachFile({ filePath: "2-Bohrungen.pdf", encoding: "binary" }, { subjectType: "input" });
-
-      cy.wait(["@getAllAttachments", "@upload-files"]);
-    });
-
+    createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "2-Bohrungen.pdf");
     cy.wait("@extract-stratigraphy-multi", { timeout: 240000 });
 
     // With >3 stratigraphies the dropdown is shown instead of the ToggleButtonGroup.
@@ -158,21 +149,7 @@ describe("Tests for stratigraphy extraction", () => {
 
   it("extracts two stratigraphies from a real profile, saves both, and shows the success alert", () => {
     cy.intercept("POST", "/api/v2/stratigraphy").as("stratigraphy_POST");
-
-    createBorehole({ originalName: "SCHOOLDIONYSUS" }).as("borehole_id");
-    cy.get("@borehole_id").then(boreholeId => {
-      goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy`);
-      cy.wait("@stratigraphy_by_borehole_GET");
-      startBoreholeEditing();
-      cy.dataCy("extractstratigraphyfromprofile-button").click();
-
-      cy.get('[data-cy="addProfile-button"]')
-        .find('input[type="file"]')
-        .attachFile({ filePath: "2-Bohrungen.pdf", encoding: "binary" }, { subjectType: "input" });
-
-      cy.wait(["@getAllAttachments", "@upload-files"]);
-    });
-
+    createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "2-Bohrungen.pdf");
     cy.wait("@extract-stratigraphy", { timeout: 240000 }).then(interception => {
       expect(interception.response!.statusCode).to.eq(200);
     });
@@ -214,20 +191,8 @@ describe("Tests for stratigraphy extraction", () => {
   });
 
   it("displays message if nothing could be extracted from file", () => {
-    createBorehole({ originalName: "SCHOOLDIONYSUS" }).as("borehole_id");
-    cy.get("@borehole_id").then(boreholeId => {
-      goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy?dev=true`);
-      cy.wait("@stratigraphy_by_borehole_GET");
-      startBoreholeEditing();
-      cy.dataCy("extractstratigraphyfromprofile-button").click();
-      cy.dataCy("addProfile-button").click();
-
-      cy.get('[data-cy="addProfile-button"]')
-        .find('input[type="file"]')
-        .attachFile({ filePath: "import/borehole_attachment_3.pdf", encoding: "binary" }, { subjectType: "input" });
-
-      cy.wait(["@getAllAttachments", "@upload-files", "@extraction-file-info"]);
-      cy.contains("No valid stratigraphy could be extracted from the profile");
-    });
+    createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "import/borehole_attachment_3.pdf");
+    cy.wait(["@extraction-file-info"]);
+    cy.contains("No valid stratigraphy could be extracted from the profile");
   });
 });
