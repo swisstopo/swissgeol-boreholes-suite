@@ -156,6 +156,9 @@ internal static class Helpers
     /// </summary>
     internal static HttpClient CreateReframeHttpClient(string easting, string northing)
     {
+        easting = easting.Contains('.') ? easting : easting + ".0";
+        northing = northing.Contains('.') ? northing : northing + ".0";
+
         var httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
         httpMessageHandler.Protected().Setup("Dispose", ItExpr.IsAny<bool>());
         httpMessageHandler.Protected()
