@@ -14,11 +14,12 @@ export const useBlockNavigation = () => {
       currentLocation,
       nextLocation,
     }: {
-      currentLocation: { pathname: string };
-      nextLocation: { pathname: string };
+      currentLocation: { pathname: string; hash: string };
+      nextLocation: { pathname: string; hash: string };
     }) => {
       // Only block when the navigation actually leaves the current page.
-      if (currentLocation.pathname === nextLocation.pathname) return false;
+      if (currentLocation.pathname === nextLocation.pathname && currentLocation.hash === nextLocation.hash)
+        return false;
       return hasChanges;
     },
     [hasChanges],
