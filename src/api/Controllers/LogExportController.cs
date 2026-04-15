@@ -237,10 +237,12 @@ public class LogExportController : ControllerBase
 
         foreach (var lf in logFiles)
         {
+            var fileNameWithoutExtension = string.IsNullOrEmpty(lf.Name) ? string.Empty : Path.GetFileNameWithoutExtension(lf.Name);
+            var extension = string.IsNullOrEmpty(lf.Name) ? string.Empty : Path.GetExtension(lf.Name).TrimStart('.');
             csvWriter.WriteField(lf.LogRun!.RunNumber);
-            csvWriter.WriteField(Path.GetFileNameWithoutExtension(lf.Name));
+            csvWriter.WriteField(fileNameWithoutExtension);
             csvWriter.WriteField(string.Join(",", lf.LogFileToolTypeCodes?.Select(tc => tc.Codelist.Code).Order().ToArray() ?? []));
-            csvWriter.WriteField(Path.GetExtension(lf.Name)?.TrimStart('.'));
+            csvWriter.WriteField(extension);
             csvWriter.WriteField(lf.Pass);
             csvWriter.WriteField(GetCodelistText(lf.PassType, locale));
             csvWriter.WriteField(GetCodelistText(lf.DataPackage, locale));
