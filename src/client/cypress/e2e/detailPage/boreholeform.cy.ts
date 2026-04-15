@@ -141,6 +141,7 @@ describe("Test for the borehole form.", () => {
     }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
+      cy.wait(["@borehole_by_id"]);
       startBoreholeEditing();
       evaluateInput("topBedrockWeatheredMd", "100");
       evaluateInput("topBedrockFreshMd", "50'000");
