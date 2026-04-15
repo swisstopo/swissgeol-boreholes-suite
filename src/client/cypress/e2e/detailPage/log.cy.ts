@@ -297,6 +297,8 @@ describe("Test for the borehole log.", () => {
     startBoreholeEditing();
     addMinimalLogRun(100, 110, "R01");
     verifyRowContains("R01", 0);
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(1000);
 
     // can add new file
     clickOnRowWithText("R01");
