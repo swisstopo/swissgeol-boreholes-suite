@@ -97,15 +97,28 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   };
 
   const addStratigraphies = useCallback(async () => {
-    const stratigraphiesToSave = [...checkedIndices]
-      .sort((a, b) => a - b)
-      .map(i => ({
-        name: getStratigraphyName(file, i),
-        lithologicalDescriptions: allExtractedStratigraphies[i].descriptions.map(ld => ({ ...ld, id: 0 })),
-      }));
+    const validIndices = [...checkedIndices]
+      .filter(i => i >= 0 && i < allExtractedStratigraphies.length)
+      .sort((a, b) => a - b);
+
+    if (validIndices.length === 0) {
+      showAlert(t("errorStratigraphySaving"), "error");
+      return;
+    }
+
+    const stratigraphiesToSave = validIndices.map(i => ({
+      name: getStratigraphyName(file, i),
+      lithologicalDescriptions: allExtractedStratigraphies[i].descriptions.map(ld => ({ ...ld, id: 0 })),
+    }));
 
     const results = await bulkAdd({ boreholeId: Number(id), stratigraphies: stratigraphiesToSave });
-    showAlert(t("stratigraphySaved", { count: checkedIndices.size }), "success");
+
+    if (!results || results.length === 0) {
+      showAlert(t("errorStratigraphySaving"), "error");
+      return;
+    }
+
+    showAlert(t("stratigraphySaved", { count: validIndices.length }), "success");
     closeDialog();
     navigateTo({
       path: `/${id}/stratigraphy/${results[0].stratigraphy.id}`,

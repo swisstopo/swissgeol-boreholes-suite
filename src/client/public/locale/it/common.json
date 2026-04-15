@@ -207,6 +207,7 @@
   "errorLoadingImage": "Si è verificato un errore durante il caricamento dell'immagine.",
   "errorMutationNotSuccessfull": "Errore imprevisto. L'azione che hai attivato non è riuscita.",
   "errorOccurredWhileFetchingFileFromCloudStorage": "Si è verificato un errore durante il caricamento di un file dall'archiviazione cloud.",
+  "errorStratigraphySaving": "Si è verificato un errore durante il salvataggio della stratigrafia.",
   "errorToDepthTooHigh": "la profondità è troppo alta",
   "errorWhileFetchingData": "Si è verificato un errore durante il recupero o l'attualizzazione dei dati.",
   "evaluationMethod": "Metodo di valutazione",

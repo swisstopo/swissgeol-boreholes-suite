@@ -206,6 +206,7 @@
   "errorLoadingImage": "An error occured while loading the image.",
   "errorMutationNotSuccessfull": "Unexpected error. The action you triggered was not successful.",
   "errorOccurredWhileFetchingFileFromCloudStorage": "An error occurred while fetching a file from the cloud storage.",
+  "errorStratigraphySaving": "An error occurred while saving the stratigraphy.",
   "errorToDepthTooHigh": "to depth is too high",
   "errorWhileFetchingData": "An error occurred while fetching or updating data",
   "evaluationMethod": "Evaluation method",
