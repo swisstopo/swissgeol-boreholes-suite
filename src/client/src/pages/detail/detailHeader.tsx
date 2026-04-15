@@ -183,11 +183,11 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
         exportItems={[
           {
             label: "CSV",
-            exportFunction: () => exportCSVBorehole([borehole.id], borehole.name?.replace(/\s/g, "_") ?? "export"),
+            exportFunction: () => exportCSVBorehole([borehole.id], borehole.name?.replaceAll(/\s/g, "_") ?? "export"),
           },
           {
             label: "JSON",
-            exportFunction: () => exportJsonBoreholes([borehole.id], borehole.name?.replace(/\s/g, "_") ?? "export"),
+            exportFunction: () => exportJsonBoreholes([borehole.id], borehole.name?.replaceAll(/\s/g, "_") ?? "export"),
           },
           { label: "exportJsonProfile", exportFunction: () => exportJsonWithAttachmentsBorehole([borehole.id]) },
         ]}

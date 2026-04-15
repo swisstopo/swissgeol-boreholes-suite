@@ -115,7 +115,7 @@ public class LogExportController : ControllerBase
         var logRunIds = logFiles.Select(lf => lf.LogRunId).Distinct().ToList();
         if (logRunIds.Count != 1) return BadRequest("All log files must belong to the same log run.");
 
-        var logRun = logFiles.First().LogRun!;
+        var logRun = logFiles[0].LogRun!;
         if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), logRun.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
         // Also load ToolTypeCodes for the LogRun CSV (via its LogFiles)
