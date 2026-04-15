@@ -21,7 +21,7 @@ import {
   createBorehole,
   createWateringress,
   deleteDownloadedFile,
-  getImportFileFromFixtures,
+  dropGeometryCSVFile,
   goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   handlePrompt,
@@ -130,19 +130,7 @@ describe("Test for exporting boreholes.", () => {
     cy.dataCy("boreholegeometryimport-button").should("be.disabled");
 
     // upload geometry csv file
-    const geometryFile = new DataTransfer();
-    getImportFileFromFixtures("geometry_azimuth_inclination.csv", null).then(fileContent => {
-      const file = new File([fileContent], "geometry_azimuth_inclination.csv", {
-        type: "text/csv",
-      });
-      geometryFile.items.add(file);
-    });
-    cy.dataCy("import-geometry-input").within(() => {
-      cy.get("input[type=file]").then(input => {
-        (input[0] as HTMLInputElement).files = geometryFile.files;
-        input[0].dispatchEvent(new Event("change", { bubbles: true }));
-      });
-    });
+    dropGeometryCSVFile();
 
     cy.dataCy("boreholegeometryimport-button").should("be.enabled");
     setSelect("geometryFormat", 1);
