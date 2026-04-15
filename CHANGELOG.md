@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Export functionality for LOG.
+
 ### Changed
 - Duplicate boreholes (matching coordinates and total depth within the same workgroup or within the imported file) can now be imported.
 
