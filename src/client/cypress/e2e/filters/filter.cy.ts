@@ -179,6 +179,8 @@ describe("Search filter tests", () => {
     setInput("topBedrockWeatheredMdMin", "1");
     cy.dataCy("boreholes-number-preview").should("have.text", "1'448");
     checkFilterChipExistsAndRemove("topBedrockWeatheredMdMin");
+    // click anywhere to reliably shift focus away from the input
+    cy.contains("h4", "Filter").click();
     setInput("topBedrockWeatheredMdMax", "920");
     cy.dataCy("filter-chip-topBedrockWeatheredMdMax").should("exist");
     cy.dataCy("boreholes-number-preview").should("have.text", "2'855");
