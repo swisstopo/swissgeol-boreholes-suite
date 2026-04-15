@@ -170,7 +170,7 @@ const getFallbackFileName = (url: string): string => {
   if (boreholeExportMatch) return `export.${boreholeExportMatch[1]}`;
 
   // logexport/* and photo/export — always ZIP
-  if (/^logexport\//.test(path) || path === "photo/export") return "export.zip";
+  if (path.startsWith("logexport/") || path === "photo/export") return "export.zip";
 
   // codelist/csv
   if (path === "codelist/csv") return "export.csv";
