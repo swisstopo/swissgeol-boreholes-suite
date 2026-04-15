@@ -19,11 +19,13 @@ export const useBoreholesNavigate = () => {
       } else if (searchFromHash) {
         searchParams = `${searchFromHash}`;
       }
+      const normalizedSearch = searchParams ?? "";
+      const normalizedLocationSearch = location.search ?? "";
 
       if (
         pathname !== location.pathname ||
         hashValue !== location.hash.split("?")[0] ||
-        searchParams !== location.search
+        normalizedSearch !== normalizedLocationSearch
       ) {
         navigate(
           {
