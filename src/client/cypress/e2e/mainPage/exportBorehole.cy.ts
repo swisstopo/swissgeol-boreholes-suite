@@ -401,7 +401,7 @@ describe("Test for exporting boreholes.", () => {
     exportItem();
 
     // Fake Api error as returned from API
-    cy.intercept("GET", "/api/v2/export/zip?**", {
+    cy.intercept("GET", "/api/v2/boreholeexport/zip?**", {
       statusCode: 500,
       body: {
         title: "NoSuchKey",
