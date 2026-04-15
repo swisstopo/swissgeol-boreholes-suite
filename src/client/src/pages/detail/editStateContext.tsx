@@ -14,7 +14,7 @@ export const EditStateContext = createContext<EditStateContextProps>({
 
 export const EditStateProvider: FC<PropsWithChildren> = ({ children }) => {
   const { id } = useRequiredParams<{ id: string }>();
-  const { data: editableByCurrentUser } = useBoreholeEditable(parseInt(id));
+  const { data: editableByCurrentUser } = useBoreholeEditable(Number.parseInt(id));
   const [editingEnabled, setEditingEnabled] = useState<boolean>(false);
 
   const contextValue = useMemo(
