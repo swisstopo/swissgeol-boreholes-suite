@@ -277,6 +277,7 @@
   "hydrotestResult": "Hydrotest results",
   "hydrotestResultsWillBeDeleted": "Attention! If you delete a type of hydrotest, incompatible test results will be deleted.",
   "identifier_value": "ID Code",
+  "ids": "IDs",
   "import": "Import",
   "inactive": "Inactive",
   "inner": "inner",

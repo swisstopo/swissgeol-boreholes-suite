@@ -14,18 +14,18 @@ import {
 } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 import { EditStateContext } from "../../editStateContext.tsx";
-import { LocationFormInputs } from "./locationPanelInterfaces.tsx";
+import { IdentifiersFormInputs } from "./identifiersPanelInterfaces.ts";
 
 interface IdentifierSegmentProps {
   borehole: BoreholeV2;
-  formMethods: UseFormReturn<LocationFormInputs>;
+  formMethods: UseFormReturn<IdentifiersFormInputs>;
 }
 
 const IdentifierSegment = ({ borehole, formMethods }: IdentifierSegmentProps) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
 
-  const { fields, append, remove } = useFieldArray<LocationFormInputs, "boreholeCodelists">({
+  const { fields, append, remove } = useFieldArray<IdentifiersFormInputs, "boreholeCodelists">({
     name: "boreholeCodelists",
     control: formMethods.control,
   });
@@ -53,6 +53,12 @@ const IdentifierSegment = ({ borehole, formMethods }: IdentifierSegmentProps) =>
                   value={field.value}
                   type={FormValueType.Text}
                 />
+                <FormInput
+                  fieldName={`boreholeCodelists.${index}.comment`}
+                  label="comment"
+                  value={field.comment ?? ""}
+                  type={FormValueType.Text}
+                />
                 {editingEnabled && (
                   <Box sx={{ visibility: editingEnabled ? "visible" : "hidden", mr: "-52px" }} alignItems="flex-end">
                     <IconButton
@@ -71,7 +77,7 @@ const IdentifierSegment = ({ borehole, formMethods }: IdentifierSegmentProps) =>
               <AddButton
                 label="addIdentifier"
                 onClick={() => {
-                  append({ boreholeId: borehole.id, codelistId: null, value: "" });
+                  append({ boreholeId: borehole.id, codelistId: null, value: "", comment: null });
                 }}
               />
             </Stack>

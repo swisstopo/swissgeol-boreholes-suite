@@ -1,14 +1,12 @@
 import { FC, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import { Stack } from "@mui/material";
-import { Identifier } from "../../../../api/borehole.ts";
 import {
   convertValueToBoolean,
   getDecimalsFromNumericString,
   parseFloatWithThousandsSeparator,
 } from "../../../../components/form/formUtils.ts";
 import { BaseForm } from "../baseForm.tsx";
-import IdentifierSegment from "./identifierSegment.tsx";
 import { LocationFormInputs, LocationFormSubmission, LocationPanelProps } from "./locationPanelInterfaces.tsx";
 import LocationSegment from "./locationSegment.tsx";
 import NameSegment from "./nameSegment.tsx";
@@ -40,22 +38,11 @@ export const LocationPanel: FC<LocationPanelProps> = ({ borehole, labelingPanelO
       locationYLV03: borehole.locationYLV03?.toFixed(borehole.precisionLocationYLV03) ?? "",
       locationPrecisionId: borehole.locationPrecisionId,
       originalReferenceSystem: borehole.originalReferenceSystem,
-      boreholeCodelists: borehole?.boreholeCodelists,
     },
   });
 
   const prepareLocationDataForSubmit = useCallback((formInputs: LocationFormInputs) => {
     const data = { ...formInputs } as LocationFormSubmission;
-
-    const getCompleteCodelists = (codelists: Identifier[]) => {
-      return codelists
-        .map(c => {
-          delete c.borehole;
-          delete c.codelist;
-          return c;
-        })
-        .filter(c => c.codelistId && c.value && c.boreholeId);
-    };
 
     data.restrictionUntil = data?.restrictionUntil ? data.restrictionUntil.toString() : null;
     data.elevationZ = parseFloatWithThousandsSeparator(data?.elevationZ);
@@ -75,7 +62,6 @@ export const LocationPanel: FC<LocationPanelProps> = ({ borehole, labelingPanelO
     data.locationY = parseFloatWithThousandsSeparator(data?.locationY);
     data.locationXLV03 = parseFloatWithThousandsSeparator(data?.locationXLV03);
     data.locationYLV03 = parseFloatWithThousandsSeparator(data?.locationYLV03);
-    data.boreholeCodelists = getCompleteCodelists(data.boreholeCodelists);
     data.boreholeFiles = null;
     data.workflow = null;
     return data;
@@ -93,7 +79,6 @@ export const LocationPanel: FC<LocationPanelProps> = ({ borehole, labelingPanelO
         onReset={onReset}
         tabStatusToReset="location">
         <Stack gap={3} mr={2}>
-          <IdentifierSegment borehole={borehole} formMethods={formMethods}></IdentifierSegment>
           <NameSegment borehole={borehole} formMethods={formMethods}></NameSegment>
           <RestrictionSegment borehole={borehole} formMethods={formMethods}></RestrictionSegment>
           <LocationSegment

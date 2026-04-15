@@ -9,6 +9,7 @@ import { FieldMeasurement } from "./form/hydrogeology/fieldMeasurement/fieldMeas
 import GroundwaterLevelMeasurement from "./form/hydrogeology/groundwaterLevelMeasurement/groundwaterLevelMeasurement.tsx";
 import Hydrotest from "./form/hydrogeology/hydrotest/hydrotest.tsx";
 import WaterIngress from "./form/hydrogeology/waterIngress/waterIngress.tsx";
+import { IdentifiersPanel } from "./form/identifiers/identifiersPanel.tsx";
 import { LocationPanel } from "./form/location/locationPanel.tsx";
 import { LogPanel } from "./form/log/logPanel.tsx";
 import { StratigraphyPanel } from "./form/stratigraphy/stratigraphyPanel.tsx";
@@ -41,6 +42,7 @@ export const DetailPageContent = ({ borehole, panelOpen }: DetailPageContentProp
           }}>
           <Routes>
             <Route path="location" element={<LocationPanel borehole={borehole} labelingPanelOpen={panelOpen} />} />
+            <Route path="identifiers" element={<IdentifiersPanel />} />
             <Route path="borehole" element={<BoreholePanel borehole={borehole} />} />
             <Route path="stratigraphy/:stratigraphyId" element={<StratigraphyPanel />} />
             <Route path="stratigraphy" element={<StratigraphyPanel />} />
