@@ -128,22 +128,20 @@ public class LogExportControllerTest : TestControllerBase
         var logRunCsv = ReadEntryAsText(logRunCsvEntry);
         var lines = logRunCsv.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
 
-        Assert.AreEqual("Id;BoreholeId;RunNumber;FromDepth;ToDepth;ToolType;BoreholeStatus;RunDate;BitSize;ConveyanceMethod;ServiceCo;Comment", lines[0]);
+        Assert.AreEqual("RunNumber;FromDepth;ToDepth;ToolType;BoreholeStatus;RunDate;BitSize;ConveyanceMethod;ServiceCo;Comment", lines[0]);
         Assert.AreEqual(2, lines.Length);
 
         var fields = lines[1].Split(';');
-        Assert.AreEqual(logRun.Id.ToString(), fields[0]);
-        Assert.AreEqual(borehole.Id.ToString(), fields[1]);
-        Assert.AreEqual("RUN-CSV", fields[2]);
-        Assert.AreEqual("10", fields[3]);
-        Assert.AreEqual("20", fields[4]);
-        Assert.AreEqual("CAL,GYRO", fields[5]); // Tool types have to be alphabetically sorted by Codelist.Code
-        Assert.AreEqual("CH", fields[6]);
-        Assert.AreEqual("01/06/2023", fields[7]); // RunDate dd/MM/yyyy (uses InvariantCulture "/" separator)
-        Assert.AreEqual("80.970", fields[8]); // BitSize "F3"
-        Assert.AreEqual("LWD", fields[9]);
-        Assert.AreEqual("TestCo", fields[10]);
-        Assert.AreEqual("Export test log run", fields[11]);
+        Assert.AreEqual("RUN-CSV", fields[0]);
+        Assert.AreEqual("10", fields[1]);
+        Assert.AreEqual("20", fields[2]);
+        Assert.AreEqual("CAL,GYRO", fields[3]); // Tool types have to be alphabetically sorted by Codelist.Code
+        Assert.AreEqual("CH", fields[4]);
+        Assert.AreEqual("01/06/2023", fields[5]); // RunDate dd/MM/yyyy (uses InvariantCulture "/" separator)
+        Assert.AreEqual("80.970", fields[6]); // BitSize "F3"
+        Assert.AreEqual("LWD", fields[7]);
+        Assert.AreEqual("TestCo", fields[8]);
+        Assert.AreEqual("Export test log run", fields[9]);
     }
 
     [TestMethod]
@@ -250,9 +248,8 @@ public class LogExportControllerTest : TestControllerBase
 
         var fields = csv.Split("\r\n", StringSplitOptions.RemoveEmptyEntries)[1].Split(';');
 
-        // BoreholeStatus is column 6, ConveyanceMethod is column 9
-        Assert.AreEqual(expectedBoreholeStatus, fields[6]);
-        Assert.AreEqual(expectedConveyanceMethod, fields[9]);
+        Assert.AreEqual(expectedBoreholeStatus, fields[4]);
+        Assert.AreEqual(expectedConveyanceMethod, fields[7]);
     }
 
     [TestMethod]
@@ -344,22 +341,20 @@ public class LogExportControllerTest : TestControllerBase
         var logFileCsv = ReadEntryAsText(archive.Entries.Single(e => e.FullName.StartsWith("log_files_")));
 
         var lines = logFileCsv.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
-        Assert.AreEqual("Id;BoreholeId;RunNumber;Name;LogFileToolTypeCodes;Extension;Pass;PassType;DataPackage;DepthType;DeliveryDate;Public", lines[0]);
+        Assert.AreEqual("RunNumber;Name;LogFileToolTypeCodes;Extension;Pass;PassType;DataPackage;DepthType;DeliveryDate;Public", lines[0]);
         Assert.AreEqual(2, lines.Length);
 
         var fields = lines[1].Split(';');
-        Assert.AreEqual(logFile.Id.ToString(), fields[0]);
-        Assert.AreEqual(borehole.Id.ToString(), fields[1]);
-        Assert.AreEqual("LF-CSV", fields[2]);
-        Assert.AreEqual("test_logfile", fields[3]);
-        Assert.AreEqual("CAL,GYRO", fields[4]); // Tool codes alphabetically sorted
-        Assert.AreEqual("las", fields[5]);
-        Assert.AreEqual("3", fields[6]);
-        Assert.AreEqual("Main & repeat", fields[7]); // PassType 100003022
-        Assert.AreEqual("Memory data (LWD)", fields[8]); // DataPackage 100003013
-        Assert.AreEqual("TVD", fields[9]); // DepthType 100003028
-        Assert.AreEqual("15/03/2024", fields[10]);
-        Assert.AreEqual("Yes", fields[11]);
+        Assert.AreEqual("LF-CSV", fields[0]);
+        Assert.AreEqual("test_logfile", fields[1]);
+        Assert.AreEqual("CAL,GYRO", fields[2]); // Tool codes alphabetically sorted
+        Assert.AreEqual("las", fields[3]);
+        Assert.AreEqual("3", fields[4]);
+        Assert.AreEqual("Main & repeat", fields[5]); // PassType 100003022
+        Assert.AreEqual("Memory data (LWD)", fields[6]); // DataPackage 100003013
+        Assert.AreEqual("TVD", fields[7]); // DepthType 100003028
+        Assert.AreEqual("15/03/2024", fields[8]);
+        Assert.AreEqual("Yes", fields[9]);
     }
 
     [TestMethod]
@@ -388,7 +383,7 @@ public class LogExportControllerTest : TestControllerBase
         using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
         var csv = ReadEntryAsText(archive.Entries.Single(e => e.FullName.StartsWith("log_files_")));
         var fields = csv.Split("\r\n", StringSplitOptions.RemoveEmptyEntries)[1].Split(';');
-        Assert.AreEqual(expected, fields[11]);
+        Assert.AreEqual(expected, fields[9]);
     }
 
     [TestMethod]

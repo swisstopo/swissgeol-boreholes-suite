@@ -146,7 +146,6 @@ public class LogExportController : ControllerBase
 
     private async Task<byte[]> BuildExportZipAsync(List<LogRun> logRuns, List<LogFile> logFiles, bool withAttachments, string locale)
     {
-
         using var memoryStream = new MemoryStream();
         using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
         {
@@ -187,8 +186,6 @@ public class LogExportController : ControllerBase
         using var stringWriter = new StringWriter();
         using var csvWriter = new CsvWriter(stringWriter, CsvConfigHelper.CsvWriteConfig);
 
-        csvWriter.WriteField(nameof(LogRun.Id));
-        csvWriter.WriteField(nameof(LogRun.BoreholeId));
         csvWriter.WriteField(nameof(LogRun.RunNumber));
         csvWriter.WriteField(nameof(LogRun.FromDepth));
         csvWriter.WriteField(nameof(LogRun.ToDepth));
@@ -204,8 +201,6 @@ public class LogExportController : ControllerBase
         foreach (var lr in logRuns)
         {
             var toolTypes = lr.LogFiles?.SelectMany(lf => lf.LogFileToolTypeCodes?.Select(tc => tc.Codelist.Code) ?? []).Distinct().Order().ToArray() ?? [];
-            csvWriter.WriteField(lr.Id);
-            csvWriter.WriteField(lr.BoreholeId);
             csvWriter.WriteField(lr.RunNumber);
             csvWriter.WriteField(lr.FromDepth);
             csvWriter.WriteField(lr.ToDepth);
@@ -228,8 +223,6 @@ public class LogExportController : ControllerBase
         using var stringWriter = new StringWriter();
         using var csvWriter = new CsvWriter(stringWriter, CsvConfigHelper.CsvWriteConfig);
 
-        csvWriter.WriteField(nameof(LogFile.Id));
-        csvWriter.WriteField(nameof(LogRun.BoreholeId));
         csvWriter.WriteField(nameof(LogRun.RunNumber));
         csvWriter.WriteField(nameof(LogFile.Name));
         csvWriter.WriteField(nameof(LogFile.LogFileToolTypeCodes));
@@ -244,8 +237,6 @@ public class LogExportController : ControllerBase
 
         foreach (var lf in logFiles)
         {
-            csvWriter.WriteField(lf.Id);
-            csvWriter.WriteField(lf.LogRun!.BoreholeId);
             csvWriter.WriteField(lf.LogRun!.RunNumber);
             csvWriter.WriteField(Path.GetFileNameWithoutExtension(lf.Name));
             csvWriter.WriteField(string.Join(",", lf.LogFileToolTypeCodes?.Select(tc => tc.Codelist.Code).Order().ToArray() ?? []));
