@@ -32,6 +32,7 @@ import {
   handlePrompt,
   startBoreholeEditing,
   stopBoreholeEditing,
+  stubCloudStorageError,
 } from "../helpers/testHelpers";
 
 function assertExportButtonsDisabled(isDisabled = true) {
@@ -619,14 +620,7 @@ describe("Test for the borehole log.", () => {
     checkTwoFirstRows();
 
     // Override the passthrough intercept with a stubbed S3 failure
-    cy.intercept("GET", "/api/v2/logexport/logruns**", {
-      statusCode: 500,
-      body: {
-        title: "NoSuchKey",
-        status: 500,
-        detail: "An error occurred while fetching a file from the cloud storage.",
-      },
-    }).as("logexport_error");
+    stubCloudStorageError("/api/v2/logexport/logruns**", "logexport_error");
 
     exportItem("log-runs");
     cy.dataCy("withattachments-button").click();

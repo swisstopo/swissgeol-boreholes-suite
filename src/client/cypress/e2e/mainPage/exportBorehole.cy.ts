@@ -32,6 +32,7 @@ import {
   selectInputFile,
   startBoreholeEditing,
   stopBoreholeEditing,
+  stubCloudStorageError,
 } from "../helpers/testHelpers";
 
 const jsonFileName = `bulkexport_${new Date().toISOString().split("T")[0]}.json`;
@@ -400,15 +401,7 @@ describe("Test for exporting boreholes.", () => {
     checkTwoFirstRows();
     exportItem();
 
-    // Fake Api error as returned from API
-    cy.intercept("GET", "/api/v2/boreholeexport/zip?**", {
-      statusCode: 500,
-      body: {
-        title: "NoSuchKey",
-        status: 500,
-        detail: "An error occurred while fetching a file from the cloud storage.",
-      },
-    }).as("exportZipError");
+    stubCloudStorageError("/api/v2/boreholeexport/zip?**", "exportZipError");
 
     exportZipItem();
     cy.get(".MuiAlert-message").contains("An error occurred while fetching a file from the cloud storage.");

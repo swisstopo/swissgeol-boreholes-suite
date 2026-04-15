@@ -912,6 +912,21 @@ export const createInstrument = ({
   });
 };
 
+/**
+ * Stubs a cloud storage (S3) fetch failure for the given URL pattern.
+ * Used in export tests to simulate a missing object in the cloud.
+ */
+export const stubCloudStorageError = (urlPattern: string, alias: string) => {
+  cy.intercept("GET", urlPattern, {
+    statusCode: 500,
+    body: {
+      title: "NoSuchKey",
+      status: 500,
+      detail: "An error occurred while fetching a file from the cloud storage.",
+    },
+  }).as(alias);
+};
+
 export const handlePrompt = (message: string | null, action: string) => {
   cy.dataCy("prompt").should("be.visible");
   if (message && message.length > 0) {
