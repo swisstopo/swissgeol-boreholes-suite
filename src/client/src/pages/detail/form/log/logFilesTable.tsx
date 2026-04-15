@@ -211,7 +211,7 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
               ? t("selectedCount", { count: selectionModel.length })
               : t("fileCount", { count: filteredFiles.length })}
           </Typography>
-          {selectionModel.length > 0 && <ExportButton label="export" onClick={startExport} />}
+          <ExportButton label="export" onClick={startExport} disabled={selectionModel.length === 0} />
         </Stack>
         <Stack direction="row" alignItems="center" gap={1}>
           <ToggleButton label={"filter"} icon={<Filter2Icon />} active={filterVisible} onToggle={setFilterVisible} />

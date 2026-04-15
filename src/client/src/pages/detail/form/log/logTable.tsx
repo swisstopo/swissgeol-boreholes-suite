@@ -211,14 +211,10 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
               ? t("selectedCount", { count: selectionModel.length })
               : t("runCount", { count: filteredRuns.length })}
           </Typography>
-          {selectionModel.length > 0 && (
-            <>
-              {editingEnabled && (
-                <DeleteButton disabled={selectionModel.length === 0} onClick={() => deleteLogRun(selectionModel)} />
-              )}
-              <ExportButton label="export" onClick={startExport} />
-            </>
+          {editingEnabled && (
+            <DeleteButton disabled={selectionModel.length === 0} onClick={() => deleteLogRun(selectionModel)} />
           )}
+          <ExportButton label="export" onClick={startExport} disabled={selectionModel.length === 0} />
         </Stack>
         <Stack direction="row" alignItems="center" gap={1}>
           <ToggleButton label={"filter"} icon={<Filter2Icon />} active={filterVisible} onToggle={setFilterVisible} />
