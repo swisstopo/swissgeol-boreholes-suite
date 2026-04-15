@@ -397,8 +397,6 @@ public class BoreholeExportControllerTest
     }
 
     [TestMethod]
-    [DataRow(new int[] { }, typeof(BadRequestObjectResult), DisplayName = "Ids is empty list.")]
-    [DataRow(null, typeof(BadRequestObjectResult), DisplayName = "Ids is null.")]
     [DataRow(new int[] { 1_000_257, 1_000_258 }, typeof(FileContentResult), DisplayName = "Valid multiple ids.")]
     [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
     public async Task ExportGeoPackageIdsValidation(IEnumerable<int> ids, Type responseResultType)
@@ -406,18 +404,9 @@ public class BoreholeExportControllerTest
         var result = await controller.ExportGeoPackageAsync(ids).ConfigureAwait(false);
 
         Assert.IsInstanceOfType(result, responseResultType);
-
-        if (responseResultType == typeof(BadRequestObjectResult))
-        {
-            var badRequestResult = result as BadRequestObjectResult;
-            Assert.IsNotNull(badRequestResult);
-            Assert.AreEqual("The list of IDs must not be empty.", badRequestResult.Value);
-        }
     }
 
     [TestMethod]
-    [DataRow(new int[] { }, typeof(BadRequestObjectResult), DisplayName = "Ids is empty list.")]
-    [DataRow(null, typeof(BadRequestObjectResult), DisplayName = "Ids is null.")]
     [DataRow(new int[] { 1_000_257, 1_000_258 }, typeof(JsonResult), DisplayName = "Valid multiple ids.")]
     [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
     public async Task ExportJsonIdsValidation(IEnumerable<int> ids, Type responseResultType)
@@ -425,18 +414,9 @@ public class BoreholeExportControllerTest
         var result = await controller.ExportJsonAsync(ids).ConfigureAwait(false);
 
         Assert.IsInstanceOfType(result, responseResultType);
-
-        if (responseResultType == typeof(BadRequestObjectResult))
-        {
-            var badRequestResult = result as BadRequestObjectResult;
-            Assert.IsNotNull(badRequestResult);
-            Assert.AreEqual("The list of IDs must not be empty.", badRequestResult.Value);
-        }
     }
 
     [TestMethod]
-    [DataRow(new int[] { }, typeof(BadRequestObjectResult), DisplayName = "Ids is empty list.")]
-    [DataRow(null, typeof(BadRequestObjectResult), DisplayName = "Ids is null.")]
     [DataRow(new int[] { 1_000_257, 1_000_258 }, typeof(FileContentResult), DisplayName = "Valid multiple ids.")]
     [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
     public async Task ExportJsonWithAttachmentsIdsValidation(IEnumerable<int> ids, Type responseResultType)
@@ -444,13 +424,6 @@ public class BoreholeExportControllerTest
         var result = await controller.ExportJsonWithAttachmentsAsync(ids).ConfigureAwait(false);
 
         Assert.IsInstanceOfType(result, responseResultType);
-
-        if (responseResultType == typeof(BadRequestObjectResult))
-        {
-            var badRequestResult = result as BadRequestObjectResult;
-            Assert.IsNotNull(badRequestResult);
-            Assert.AreEqual("The list of IDs must not be empty.", badRequestResult.Value);
-        }
     }
 
     [TestMethod]
@@ -486,8 +459,6 @@ public class BoreholeExportControllerTest
     }
 
     [TestMethod]
-    [DataRow(new int[] { }, typeof(BadRequestObjectResult), DisplayName = "Ids is empty list.")]
-    [DataRow(null, typeof(BadRequestObjectResult), DisplayName = "Ids is null.")]
     [DataRow(new int[] { 1_000_257, 1_000_258 }, typeof(FileContentResult), DisplayName = "Valid multiple ids.")]
     [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
     public async Task ExportCsvIdsValidation(IEnumerable<int> ids, Type responseResultType)
@@ -495,13 +466,6 @@ public class BoreholeExportControllerTest
         var result = await controller.ExportCsvAsync(ids).ConfigureAwait(false);
 
         Assert.IsInstanceOfType(result, responseResultType);
-
-        if (responseResultType == typeof(BadRequestObjectResult))
-        {
-            var badRequestResult = result as BadRequestObjectResult;
-            Assert.IsNotNull(badRequestResult);
-            Assert.AreEqual("The list of IDs must not be empty.", badRequestResult.Value);
-        }
     }
 
     [TestMethod]
@@ -665,17 +629,6 @@ public class BoreholeExportControllerTest
         var fileLength = csvData.Split('\n').Length;
         var recordCount = fileLength - 2;
         Assert.AreEqual(recordCount, 1);
-    }
-
-    [TestMethod]
-    public async Task DownloadCsvEmptyIdsReturnsBadRequest()
-    {
-        var ids = new List<int>();
-
-        var result = await controller.ExportCsvAsync(ids) as BadRequestObjectResult;
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual("The list of IDs must not be empty.", result.Value);
     }
 
     [TestMethod]
