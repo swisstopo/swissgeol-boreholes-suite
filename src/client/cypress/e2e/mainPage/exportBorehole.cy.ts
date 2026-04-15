@@ -220,10 +220,10 @@ describe("Test for exporting boreholes.", () => {
     exportItem();
 
     const moreThan100SelectedPrompt =
-      "You have selected more than 100 boreholes and a maximum of 100 boreholes can be exported. Do you want to continue?";
+      "You have selected more than 100 entries and a maximum of 100 entries can be exported. Do you want to continue?";
     handlePrompt(moreThan100SelectedPrompt, "cancel");
     exportItem();
-    handlePrompt(moreThan100SelectedPrompt, "export100Boreholes");
+    handlePrompt(moreThan100SelectedPrompt, "exportFirst100");
     exportItem();
     exportCSVItem();
     cy.wait("@borehole_export_csv").its("response.statusCode").should("eq", 200);

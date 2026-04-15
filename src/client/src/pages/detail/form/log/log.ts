@@ -195,7 +195,7 @@ export const useLogExport = (
 
   const startExport = useCallback(() => {
     if (selectionModel.length > 100) {
-      showPrompt("logExportMoreThan100", [
+      showPrompt("exportMoreThan100", [
         {
           label: "cancel",
           icon: createElement(X),
