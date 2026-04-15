@@ -336,7 +336,7 @@
   "measuredDepth": "Measured Depth [m MD]",
   "member": "Member",
   "messageDiscardUnsavedChanges": "There are unsaved changes. Do you want to discard all changes?",
-  "messageUnsavedChangesAtExport": "There are unsaved changes. Do you want to export the borehole without saving?",
+  "messageUnsavedChangesAtExport": "There are unsaved changes. Do you want to export without saving?",
   "metersAboveSeaLevel": "Meters above sea level [m a.s.l.]",
   "minValue": "Minimum",
   "minute": "minute",

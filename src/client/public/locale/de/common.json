@@ -336,7 +336,7 @@
   "measuredDepth": "Measured Depth [m MD]",
   "member": "Member",
   "messageDiscardUnsavedChanges": "Es gibt ungespeicherte Änderungen. Möchten Sie alle Änderungen verwerfen?",
-  "messageUnsavedChangesAtExport": "Es gibt ungespeicherte Änderungen. Möchten Sie das Bohrloch ohne Speichern exportieren?",
+  "messageUnsavedChangesAtExport": "Es gibt ungespeicherte Änderungen. Möchten Sie ohne Speichern exportieren?",
   "metersAboveSeaLevel": "Meter über Meer [m ü. M.]",
   "minValue": "Minimalwert",
   "minute": "Minute",

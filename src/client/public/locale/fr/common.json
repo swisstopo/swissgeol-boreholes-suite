@@ -336,7 +336,7 @@
   "measuredDepth": "Profondeur mesurée [m MD]",
   "member": "Membre",
   "messageDiscardUnsavedChanges": "Il y a des modifications non enregistrées. Voulez-vous annuler toutes les modifications?",
-  "messageUnsavedChangesAtExport": "Il y a des modifications non enregistrées. Voulez-vous exporter le forage sans enregistrer?",
+  "messageUnsavedChangesAtExport": "Il y a des modifications non enregistrées. Voulez-vous exporter sans enregistrer?",
   "metersAboveSeaLevel": "Mètres au-dessus du niveau de la mer [m ü. M.]",
   "minValue": "Valeur minimale",
   "minute": "minute",
