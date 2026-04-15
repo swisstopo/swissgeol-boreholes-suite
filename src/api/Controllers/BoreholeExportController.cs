@@ -342,8 +342,9 @@ public class BoreholeExportController : ControllerBase
                 {
                     var fileBytes = await boreholeFileCloudService.GetObject(file.NameUuid!).ConfigureAwait(false);
 
-                    // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name
-                    var zipEntry = archive.CreateEntry($"{file.NameUuid}_{file.Name}", CompressionLevel.Fastest);
+                    // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name.
+                    // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the original file name.
+                    var zipEntry = archive.CreateEntry($"{file.NameUuid}_{FileHelper.SanitizeZipEntryFileName(file.Name!)}", CompressionLevel.Fastest);
                     using var zipEntryStream = zipEntry.Open();
                     await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
                 }

@@ -171,7 +171,10 @@ public class LogExportController : ControllerBase
                 foreach (var logFile in logFiles.Where(lf => lf.NameUuid != null && lf.Name != null))
                 {
                     var fileBytes = await logFileCloudService.GetObject(logFile.NameUuid!).ConfigureAwait(false);
-                    var zipEntry = archive.CreateEntry(logFile.Name!, CompressionLevel.Fastest);
+                    // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name.
+                    // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the original file name.
+                    var entryName = $"{logFile.NameUuid}_{FileHelper.SanitizeZipEntryFileName(logFile.Name!)}";
+                    var zipEntry = archive.CreateEntry(entryName, CompressionLevel.Fastest);
                     using var zipEntryStream = zipEntry.Open();
                     await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
                 }
