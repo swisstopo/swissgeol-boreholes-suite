@@ -203,7 +203,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
   );
 
   return (
-    <Stack height={"100%"}>
+    <Stack height={"100%"} data-cy="log-runs">
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
         <Stack direction="row" alignItems="center" gap={1}>
           <Typography data-cy="log-run-count">

@@ -126,6 +126,8 @@ export const interceptApiCalls = () => {
   }).as("load-extraction-file");
 
   cy.intercept("/api/v2/log?boreholeId=**").as("logrun_by_borehole_GET");
+  cy.intercept("/api/v2/logexport/logruns**").as("logexport_logruns");
+  cy.intercept("/api/v2/logexport/logfiles**").as("logexport_logfiles");
 
   cy.intercept("dataextraction/api/V1/extract_data").as("extract-data");
   cy.intercept("dataextraction/api/V1/extract_stratigraphy").as("extract-stratigraphy");

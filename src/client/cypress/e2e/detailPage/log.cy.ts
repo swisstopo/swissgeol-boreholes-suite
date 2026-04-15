@@ -1,4 +1,4 @@
-import { discardChanges, saveWithSaveBar } from "../helpers/buttonHelpers";
+import { discardChanges, exportItem, saveWithSaveBar } from "../helpers/buttonHelpers";
 import {
   checkAllVisibleRows,
   checkRowWithIndex,
@@ -34,12 +34,10 @@ import {
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
-// TODO: Remove rule once logic is implemented with https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2361
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 function assertExportButtonsDisabled(isDisabled = true) {
-  // TODO: Re-add once logic is implemented with https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2361
-  // cy.dataCy("exportdata-button").should(isDisabled ? "have.attr" : "not.have.attr", "disabled");
-  // cy.dataCy("exporttable-button").should(isDisabled ? "have.attr" : "not.have.attr", "disabled");
+  cy.dataCy("log-runs")
+    .dataCy("export-button")
+    .should(isDisabled ? "have.attr" : "not.have.attr", "disabled");
 }
 
 function assertRunCountDisplayed(textContent: string) {
@@ -298,8 +296,6 @@ describe("Test for the borehole log.", () => {
     startBoreholeEditing();
     addMinimalLogRun(100, 110, "R01");
     verifyRowContains("R01", 0);
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(1000);
 
     // can add new file
     clickOnRowWithText("R01");
@@ -348,8 +344,6 @@ describe("Test for the borehole log.", () => {
     // can delete existing file
     clickOnRowWithText("R01");
     cy.dataCy("logRun-file-0").find(".MuiCardHeader-title").contains("COLDWATER.zip");
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(1000);
     cy.dataCy("logRun-file-0").dataCy("delete-file-button").click();
     cy.dataCy("logRun-files").contains("No file added yet...");
     closeLogRunEditor();
@@ -498,5 +492,146 @@ describe("Test for the borehole log.", () => {
     evaluateMultiSelect("passTypes", [], "logRun-files");
     evaluateMultiSelect("dataPackages", [], "logRun-files");
     evaluateSelect("public", "", "logRun-files");
+  });
+
+  it("exports log runs without attachments", () => {
+    goToDetailRouteAndAcceptTerms(`/1000070/log`);
+    startBoreholeEditing();
+    checkTwoFirstRows();
+    assertExportButtonsDisabled(false);
+
+    exportItem("log-runs");
+    cy.dataCy("withoutattachments-button").click();
+
+    cy.wait("@logexport_logruns").then(interception => {
+      expect(interception.response?.statusCode).to.equal(200);
+      expect(interception.request.url).to.include("withAttachments=false");
+      expect(interception.request.url).to.match(/ids=\d+/);
+      expect(interception.response?.headers["content-type"]).to.include("application/zip");
+    });
+  });
+
+  it("exports log runs with attachments", () => {
+    createBorehole({ originalName: "EXPORT WITH ATTACHMENTS" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      goToDetailRouteAndAcceptTerms(`/${id}/log`);
+    });
+    startBoreholeEditing();
+    addMinimalLogRun(100, 110, "R01");
+
+    clickOnRowWithText("R01");
+    cy.dataCy("addfile-button").click();
+    selectFile("labeling_attachment.pdf", "logRun-file-0");
+    closeLogRunEditor();
+    saveWithSaveBar();
+
+    checkAllVisibleRows();
+    exportItem("log-runs");
+    cy.dataCy("withattachments-button").click();
+
+    cy.wait("@logexport_logruns").then(interception => {
+      expect(interception.response?.statusCode).to.equal(200);
+      expect(interception.request.url).to.include("withAttachments=true");
+      expect(interception.response?.headers["content-type"]).to.include("application/zip");
+    });
+  });
+
+  it("prompts to discard unsaved changes before exporting log runs", () => {
+    goToDetailRouteAndAcceptTerms(`/1000070/log`);
+    startBoreholeEditing();
+    checkTwoFirstRows();
+    addMinimalLogRun(200, 210, "UNSAVED");
+
+    const unsavedExportPrompt = "There are unsaved changes. Do you want to export without saving?";
+
+    exportItem("log-runs");
+    handlePrompt(unsavedExportPrompt, "cancel");
+    cy.dataCy("withoutattachments-button").should("not.exist");
+
+    exportItem("log-runs");
+    handlePrompt(unsavedExportPrompt, "export");
+    cy.dataCy("withoutattachments-button").should("be.visible");
+    cy.dataCy("cancel-button").click();
+  });
+
+  it("warns when exporting more than 100 log runs and exports the first 100", () => {
+    createBoreholeWithLogRuns(106, "borehole_id_106_export");
+    cy.get("@borehole_id_106_export").then(id => {
+      goToDetailRouteAndAcceptTerms(`/${id}/log`);
+      cy.wait(["@borehole"]);
+    });
+    assertRunCountDisplayed("106 runs");
+    verifyPaginationText("1–100 of 106");
+    startBoreholeEditing();
+
+    checkAllVisibleRows();
+    assertRunCountDisplayed("106 selected");
+
+    const moreThan100Prompt = "You have selected more than 100";
+
+    exportItem("log-runs");
+    handlePrompt(moreThan100Prompt, "cancel");
+    cy.dataCy("withoutattachments-button").should("not.exist");
+
+    exportItem("log-runs");
+    handlePrompt(moreThan100Prompt, "exportFirst100");
+    cy.dataCy("withoutattachments-button").click();
+
+    cy.wait("@logexport_logruns").then(interception => {
+      expect(interception.response?.statusCode).to.equal(200);
+      const idsCount = (interception.request.url.match(/ids=/g) ?? []).length;
+      expect(idsCount).to.equal(100);
+    });
+  });
+
+  it("exports log files from the log run modal", () => {
+    createBorehole({ originalName: "EXPORT LOG FILE" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      goToDetailRouteAndAcceptTerms(`/${id}/log`);
+    });
+    startBoreholeEditing();
+    addMinimalLogRun(100, 110, "R01");
+
+    clickOnRowWithText("R01");
+    cy.dataCy("addfile-button").click();
+    selectFile("labeling_attachment.pdf", "logRun-file-0");
+    closeLogRunEditor();
+    saveWithSaveBar();
+
+    stopBoreholeEditing();
+
+    clickOnRowWithText("R01");
+    assertFileCountDisplayed("1 file");
+    checkRowWithIndex(0, "logRun-files");
+    exportItem("logRun-files");
+    cy.dataCy("withoutattachments-button").click();
+
+    cy.wait("@logexport_logfiles").then(interception => {
+      expect(interception.response?.statusCode).to.equal(200);
+      expect(interception.request.url).to.include("withAttachments=false");
+      expect(interception.request.url).to.match(/ids=\d+/);
+    });
+  });
+
+  it("shows an error message when log export fails on cloud storage", () => {
+    goToDetailRouteAndAcceptTerms(`/1000070/log`);
+    startBoreholeEditing();
+    checkTwoFirstRows();
+
+    // Override the passthrough intercept with a stubbed S3 failure
+    cy.intercept("GET", "/api/v2/logexport/logruns**", {
+      statusCode: 500,
+      body: {
+        title: "NoSuchKey",
+        status: 500,
+        detail: "An error occurred while fetching a file from the cloud storage.",
+      },
+    }).as("logexport_error");
+
+    exportItem("log-runs");
+    cy.dataCy("withattachments-button").click();
+
+    cy.wait("@logexport_error");
+    cy.get(".MuiAlert-message").should("be.visible");
   });
 });
