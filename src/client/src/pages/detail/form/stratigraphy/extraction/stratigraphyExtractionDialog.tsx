@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useCallback, useContext, useState } from "react";
+import { FC, MouseEvent, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import {
@@ -60,17 +60,20 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [checkedIndices, setCheckedIndices] = useState<Set<number>>(new Set());
 
-  // Auto-check the only stratigraphy when there is exactly one
-  if (allExtractedStratigraphies.length === 1 && !checkedIndices.has(0)) {
-    setCheckedIndices(new Set([0]));
-  }
+  useEffect(() => {
+    // Auto-check the only stratigraphy when there is exactly one
+    if (allExtractedStratigraphies.length === 1 && !checkedIndices.has(0)) {
+      setCheckedIndices(new Set([0]));
+    }
+  }, [allExtractedStratigraphies.length, checkedIndices]);
 
   const setSelectedIndexAndPage = (value: number) => {
     setSelectedIndex(value);
     setActivePage(allExtractedStratigraphies[value]?.pageNumbers[0] ?? 1);
   };
 
-  const handleStratigraphyToggleChange = (_: MouseEvent, value: number) => {
+  const handleStratigraphyToggleChange = (_: MouseEvent, value: number | null) => {
+    if (value === null) return;
     setSelectedIndexAndPage(value);
   };
 
