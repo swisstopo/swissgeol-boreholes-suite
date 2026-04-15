@@ -146,22 +146,25 @@ public class LogExportController : ControllerBase
 
     private async Task<byte[]> BuildExportZipAsync(List<LogRun> logRuns, List<LogFile> logFiles, bool withAttachments, string locale)
     {
-        var logRunCsvBytes = await WriteLogRunCsvBytesAsync(logRuns, locale).ConfigureAwait(false);
-        var logFileCsvBytes = await WriteLogFileCsvBytesAsync(logFiles, locale).ConfigureAwait(false);
 
         using var memoryStream = new MemoryStream();
         using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
         {
+            var logRunCsvBytes = await WriteLogRunCsvBytesAsync(logRuns, locale).ConfigureAwait(false);
             var logRunCsvEntry = archive.CreateEntry($"{LogRunExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}.csv", CompressionLevel.Fastest);
             using (var logRunCsvStream = logRunCsvEntry.Open())
             {
                 await logRunCsvStream.WriteAsync(logRunCsvBytes.AsMemory(0, logRunCsvBytes.Length)).ConfigureAwait(false);
             }
 
-            var logFileCsvEntry = archive.CreateEntry($"{LogFileExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}.csv", CompressionLevel.Fastest);
-            using (var logFileCsvStream = logFileCsvEntry.Open())
+            if (logFiles.Count > 0)
             {
-                await logFileCsvStream.WriteAsync(logFileCsvBytes.AsMemory(0, logFileCsvBytes.Length)).ConfigureAwait(false);
+                var logFileCsvBytes = await WriteLogFileCsvBytesAsync(logFiles, locale).ConfigureAwait(false);
+                var logFileCsvEntry = archive.CreateEntry($"{LogFileExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}.csv", CompressionLevel.Fastest);
+                using (var logFileCsvStream = logFileCsvEntry.Open())
+                {
+                    await logFileCsvStream.WriteAsync(logFileCsvBytes.AsMemory(0, logFileCsvBytes.Length)).ConfigureAwait(false);
+                }
             }
 
             if (withAttachments)
