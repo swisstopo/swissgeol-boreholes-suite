@@ -29,11 +29,7 @@ import { BasemapSelector } from "../basemapSelector/basemapSelector.tsx";
 import MapControls from "../buttons/mapControls.jsx";
 import { ClickablePopup } from "./clickablePopup.tsx";
 import { projections } from "./mapProjections.js";
-import {
-  clusterStyleFunction,
-  drawStyle,
-  styleFunction,
-} from "./mapStyleFunctions.js";
+import { clusterStyleFunction, drawStyle, styleFunction } from "./mapStyleFunctions.js";
 
 class MapComponent extends React.Component {
   static contextType = BasemapContext;
@@ -68,7 +64,7 @@ class MapComponent extends React.Component {
     this.draw = null;
 
     this.srs = "EPSG:2056";
-    _.forEach(projections, function (proj, srs) {
+    Object.entries(projections).forEach(([srs, proj]) => {
       proj4.defs(srs, proj);
     });
     register(proj4);
@@ -110,8 +106,7 @@ class MapComponent extends React.Component {
         source: clusterSource,
         name: "clusters",
         zIndex: this.calculateLayerZIndex(),
-        style: (features) =>
-          this.clusterStyleFunction(features.get("features").length),
+        style: features => this.clusterStyleFunction(features.get("features").length),
         minResolution: 20,
       });
 
@@ -120,7 +115,7 @@ class MapComponent extends React.Component {
         name: "points",
         zIndex: this.calculateLayerZIndex(),
         source: this.points,
-        style: (feature) => {
+        style: feature => {
           return this.styleFunction(feature, this.props.highlighted);
         },
         maxResolution: 20,
@@ -141,9 +136,9 @@ class MapComponent extends React.Component {
   }
 
   //////  ADD MAP INTERACTIONS //////
-  zoomToCluster = (clusterMembers) => {
+  zoomToCluster = clusterMembers => {
     const extent = createEmpty();
-    clusterMembers.forEach((feature) => {
+    clusterMembers.forEach(feature => {
       if (feature.getGeometry()) {
         extend(extent, feature.getGeometry().getExtent());
       }
@@ -156,14 +151,14 @@ class MapComponent extends React.Component {
     }
   };
 
-  zoomToPoint = (feature) => {
+  zoomToPoint = feature => {
     const coordinates = feature.getGeometry().getCoordinates();
     const view = this.map.getView();
     view.setCenter(coordinates);
     view.setResolution(15);
   };
 
-  zoomToFeatures = (features) => {
+  zoomToFeatures = features => {
     const clusterMembers = features[0].get("features");
     if (clusterMembers.length > 1) {
       this.zoomToCluster(clusterMembers);
@@ -172,9 +167,9 @@ class MapComponent extends React.Component {
     }
   };
 
-  getFeaturesAtPixel = (pixel) => {
+  getFeaturesAtPixel = pixel => {
     return this.map.getFeaturesAtPixel(pixel, {
-      layerFilter: (layer) => layer.get("name") === "clusters",
+      layerFilter: layer => layer.get("name") === "clusters",
     });
   };
 
@@ -186,7 +181,7 @@ class MapComponent extends React.Component {
 
     this.selectClick = new Select({
       condition: click,
-      layers: (layer) => layer.get("name") === "points",
+      layers: layer => layer.get("name") === "points",
       style: this.styleFunction.bind(this),
     });
     this.selectClick.on("select", this.onSelected);
@@ -216,7 +211,7 @@ class MapComponent extends React.Component {
     }
 
     // Zoom to cluster extent if clicked on cluster.
-    this.map.on("click", (event) => {
+    this.map.on("click", event => {
       if (this.points && !this.props.polygonSelectionEnabled) {
         const features = this.getFeaturesAtPixel(event.pixel);
         if (features?.length > 0) {
@@ -279,7 +274,7 @@ class MapComponent extends React.Component {
       this.map
         .getLayers()
         .getArray()
-        .map((layer) => layer.get("name")),
+        .map(layer => layer.get("name")),
     );
 
     // Add user layers if they not yet exist on the map
@@ -363,7 +358,7 @@ class MapComponent extends React.Component {
       const drawLayer = this.map
         .getLayers()
         .getArray()
-        .find((layer) => layer.get("name") === "draw");
+        .find(layer => layer.get("name") === "draw");
       if (drawLayer) {
         const drawSource = drawLayer.getSource();
 
@@ -378,17 +373,13 @@ class MapComponent extends React.Component {
             drawSource.clear();
           });
 
-          this.draw.on("drawend", (event) => {
+          this.draw.on("drawend", event => {
             const drawnFeature = event.feature;
 
             // Get the features from the points layer that intersect with the drawn polygon
             const intersectingFeatures = [];
-            this.points.forEachFeature((feature) => {
-              if (
-                drawnFeature
-                  .getGeometry()
-                  .intersectsExtent(feature.getGeometry().getExtent())
-              ) {
+            this.points.forEachFeature(feature => {
+              if (drawnFeature.getGeometry().intersectsExtent(feature.getGeometry().getExtent())) {
                 intersectingFeatures.push(feature);
               }
             });
@@ -397,22 +388,16 @@ class MapComponent extends React.Component {
               this.points.addFeatures(intersectingFeatures);
               this.props.setFilterPolygon(drawnFeature);
               // Zoom to the extent of the drawn feature
-              this.map
-                .getView()
-                .fit(drawnFeature.getGeometry().getExtent(), {
-                  padding: [10, 10, 10, 10],
-                });
+              this.map.getView().fit(drawnFeature.getGeometry().getExtent(), {
+                padding: [10, 10, 10, 10],
+              });
             } else {
-              this.props.displayErrorMessage(
-                this.props.t("msgNoBoreholesInSelection"),
-              );
+              this.props.displayErrorMessage(this.props.t("msgNoBoreholesInSelection"));
               this.props.setFilterPolygon(null);
               drawSource.clear();
             }
             this.props.setPolygonSelectionEnabled(false);
-            this.props.setFeatureIds(
-              intersectingFeatures.map((f) => f.get("id")),
-            );
+            this.props.setFeatureIds(intersectingFeatures.map(f => f.get("id")));
           });
         }
 
@@ -443,7 +428,7 @@ class MapComponent extends React.Component {
     const drawLayer = this.map
       .getLayers()
       .getArray()
-      .find((layer) => layer.get("name") === "draw");
+      .find(layer => layer.get("name") === "draw");
     if (drawLayer) {
       const drawSource = drawLayer.getSource();
       if (drawSource.getFeatures().length === 0) {
@@ -473,23 +458,14 @@ class MapComponent extends React.Component {
     });
     const intersectingVectorSource = new VectorSource();
 
-    originalVectorSources.forEachFeature((feature) => {
-      if (
-        this.props.filterPolygon
-          .getGeometry()
-          .intersectsExtent(feature.getGeometry().getExtent())
-      ) {
+    originalVectorSources.forEachFeature(feature => {
+      if (this.props.filterPolygon.getGeometry().intersectsExtent(feature.getGeometry().getExtent())) {
         intersectingVectorSource.addFeature(feature);
       }
     });
     const intersectingFeatures = intersectingVectorSource.getFeatures();
-    const intersectingFeatureIds = intersectingFeatures.map((f) => f.get("id"));
-    if (
-      !_.isEqual(
-        _.sortBy(intersectingFeatureIds),
-        _.sortBy(this.props.featureIds),
-      )
-    ) {
+    const intersectingFeatureIds = intersectingFeatures.map(f => f.get("id"));
+    if (!_.isEqual(_.sortBy(intersectingFeatureIds), _.sortBy(this.props.featureIds))) {
       this.props.setFeatureIds(intersectingFeatureIds);
     }
     return intersectingFeatures;
@@ -504,10 +480,8 @@ class MapComponent extends React.Component {
 
   updateLayerProperties(layers) {
     const keys = Object.keys(layers);
-    keys.forEach((identifier) => {
-      const overlay = this.overlays.find(
-        (overlay) => overlay.get("name") === identifier,
-      );
+    keys.forEach(identifier => {
+      const overlay = this.overlays.find(overlay => overlay.get("name") === identifier);
       if (overlay) {
         overlay.setVisible(layers[identifier].visibility);
         overlay.setOpacity(1 - layers[identifier].transparency / 100);
@@ -553,10 +527,7 @@ class MapComponent extends React.Component {
     }
 
     if (
-      !_.isEqual(
-        prevProps.polygonSelectionEnabled,
-        this.props.polygonSelectionEnabled,
-      ) ||
+      !_.isEqual(prevProps.polygonSelectionEnabled, this.props.polygonSelectionEnabled) ||
       !_.isEqual(prevProps.filterPolygon, this.props.filterPolygon)
     ) {
       this.handlePolygonSelection();
@@ -598,7 +569,7 @@ class MapComponent extends React.Component {
       for (let dx = -tolerance; dx <= tolerance; dx++) {
         for (let dy = -tolerance; dy <= tolerance; dy++) {
           const nearbyPixel = [pixel[0] + dx, pixel[1] + dy];
-          this.map.forEachFeatureAtPixel(nearbyPixel, (feature) => {
+          this.map.forEachFeatureAtPixel(nearbyPixel, feature => {
             if (feature.getGeometry().getType() !== "Polygon") {
               featureSet.add(feature);
             }
@@ -630,7 +601,7 @@ class MapComponent extends React.Component {
       this.setState({ hover: features }, () => {
         const coordinate = features[0].getGeometry().getCoordinates();
         this.popup.setPosition(coordinate);
-        this.props.hover?.(features.map((f) => f.get("id")));
+        this.props.hover?.(features.map(f => f.get("id")));
       });
     }
   }
@@ -683,8 +654,7 @@ class MapComponent extends React.Component {
           display: "flex",
           flexDirection: "row",
           backgroundColor: theme.palette.background.lightgrey,
-        }}
-      >
+        }}>
         <Box
           id="map"
           sx={{
@@ -696,11 +666,7 @@ class MapComponent extends React.Component {
         />
         <ClickablePopup features={this.state.hover} />
         <BasemapSelector marginBottom={"30px"} />
-        <MapControls
-          onZoomIn={this.onZoomIn}
-          onZoomOut={this.onZoomOut}
-          onFitToExtent={this.onFitToExtent}
-        />
+        <MapControls onZoomIn={this.onZoomIn} onZoomOut={this.onZoomOut} onFitToExtent={this.onFitToExtent} />
       </Box>
     );
   }
