@@ -89,7 +89,7 @@ export const boreholeSearchData = [
 
   {
     id: 9,
-    type: "TriStateBoolean",
+    type: "NullableBoolean",
     label: "hasGroundwater",
     value: "hasGroundwater",
   },

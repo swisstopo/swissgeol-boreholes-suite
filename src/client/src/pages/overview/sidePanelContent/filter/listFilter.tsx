@@ -64,11 +64,11 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
                 }}
               />
             )}
-            {(item.type === "TriStateBoolean" || item.type === "Boolean") && (
+            {(item.type === "NullableBoolean" || item.type === "Boolean") && (
               <FormBooleanSelect
                 readonly={false}
                 canReset={false}
-                allowUndefined={item.type === "TriStateBoolean"}
+                allowUndefined={item.type === "NullableBoolean"}
                 selected={parseBooleanFilterValue(filterParams?.[item.value as keyof typeof filterParsers])}
                 fieldName={item.value}
                 label={item?.label ?? item.value}

@@ -253,13 +253,13 @@ export interface BoreholeListItem {
   locked: NullableDateString;
 }
 
-export enum TriStateBooleanFilter {
+export enum NullableBooleanFilter {
   false,
   true,
   null,
 }
 
-export type TriStateBoolean = "true" | "false" | "null" | undefined;
+export type NullableBooleanFilterValue = "true" | "false" | "null" | undefined;
 
 interface BaseFilterRequest {
   polygon?: Geometry | null;
@@ -288,25 +288,25 @@ interface BaseFilterRequest {
 }
 
 export interface FilterRequest extends BaseFilterRequest {
-  nationalInterest?: TriStateBoolean;
-  topBedrockIntersected?: TriStateBoolean;
-  hasGroundwater?: TriStateBoolean;
-  hasGeometry?: TriStateBoolean;
-  hasLogs?: TriStateBoolean;
-  hasProfiles?: TriStateBoolean;
-  hasPhotos?: TriStateBoolean;
-  hasDocuments?: TriStateBoolean;
+  nationalInterest?: NullableBooleanFilterValue;
+  topBedrockIntersected?: NullableBooleanFilterValue;
+  hasGroundwater?: NullableBooleanFilterValue;
+  hasGeometry?: NullableBooleanFilterValue;
+  hasLogs?: NullableBooleanFilterValue;
+  hasProfiles?: NullableBooleanFilterValue;
+  hasPhotos?: NullableBooleanFilterValue;
+  hasDocuments?: NullableBooleanFilterValue;
 }
 
 export interface FilterRequestSubmission extends BaseFilterRequest {
-  nationalInterest?: TriStateBooleanFilter;
-  topBedrockIntersected?: TriStateBooleanFilter;
-  hasGroundwater?: TriStateBooleanFilter;
-  hasGeometry?: TriStateBooleanFilter;
-  hasLogs?: TriStateBooleanFilter;
-  hasProfiles?: TriStateBooleanFilter;
-  hasPhotos?: TriStateBooleanFilter;
-  hasDocuments?: TriStateBooleanFilter;
+  nationalInterest?: NullableBooleanFilter;
+  topBedrockIntersected?: NullableBooleanFilter;
+  hasGroundwater?: NullableBooleanFilter;
+  hasGeometry?: NullableBooleanFilter;
+  hasLogs?: NullableBooleanFilter;
+  hasProfiles?: NullableBooleanFilter;
+  hasPhotos?: NullableBooleanFilter;
+  hasDocuments?: NullableBooleanFilter;
 }
 
 export interface FilterResponse {
@@ -325,25 +325,25 @@ export const filterBoreholes = async (filterRequest: FilterRequestSubmission): P
   return await fetchApiV2WithApiError<FilterResponse>("borehole/filter", "POST", filterRequest);
 };
 
-export const parseTriStateBoolean = (
+export const parseNullableBooleanFilter = (
   value: "true" | "false" | "null" | undefined | null,
-): TriStateBooleanFilter | undefined => {
-  if (value === "true") return TriStateBooleanFilter.true;
-  if (value === "false") return TriStateBooleanFilter.false;
-  if (value === "null") return TriStateBooleanFilter.null;
+): NullableBooleanFilter | undefined => {
+  if (value === "true") return NullableBooleanFilter.true;
+  if (value === "false") return NullableBooleanFilter.false;
+  if (value === "null") return NullableBooleanFilter.null;
   return undefined;
 };
 
 export const toFilterRequestSubmission = (filterRequest: FilterRequest): FilterRequestSubmission => ({
   ...filterRequest,
-  hasGeometry: parseTriStateBoolean(filterRequest.hasGeometry),
-  hasGroundwater: parseTriStateBoolean(filterRequest.hasGroundwater),
-  hasLogs: parseTriStateBoolean(filterRequest.hasLogs),
-  hasProfiles: parseTriStateBoolean(filterRequest.hasProfiles),
-  hasPhotos: parseTriStateBoolean(filterRequest.hasPhotos),
-  hasDocuments: parseTriStateBoolean(filterRequest.hasDocuments),
-  topBedrockIntersected: parseTriStateBoolean(filterRequest.topBedrockIntersected),
-  nationalInterest: parseTriStateBoolean(filterRequest.nationalInterest),
+  hasGeometry: parseNullableBooleanFilter(filterRequest.hasGeometry),
+  hasGroundwater: parseNullableBooleanFilter(filterRequest.hasGroundwater),
+  hasLogs: parseNullableBooleanFilter(filterRequest.hasLogs),
+  hasProfiles: parseNullableBooleanFilter(filterRequest.hasProfiles),
+  hasPhotos: parseNullableBooleanFilter(filterRequest.hasPhotos),
+  hasDocuments: parseNullableBooleanFilter(filterRequest.hasDocuments),
+  topBedrockIntersected: parseNullableBooleanFilter(filterRequest.topBedrockIntersected),
+  nationalInterest: parseNullableBooleanFilter(filterRequest.nationalInterest),
 });
 
 /**
@@ -385,14 +385,14 @@ export function getDefaultFilterRequestFromSession(): FilterRequest {
     topBedrockFreshMdMax: getFloat(SessionKeys.topBedrockFreshMdMax),
     topBedrockWeatheredMdMin: getFloat(SessionKeys.topBedrockWeatheredMdMin),
     topBedrockWeatheredMdMax: getFloat(SessionKeys.topBedrockWeatheredMdMax),
-    nationalInterest: get(SessionKeys.nationalInterest) as TriStateBoolean,
-    topBedrockIntersected: get(SessionKeys.topBedrockIntersected) as TriStateBoolean,
-    hasGroundwater: get(SessionKeys.hasGroundwater) as TriStateBoolean,
-    hasGeometry: get(SessionKeys.hasGeometry) as TriStateBoolean,
-    hasLogs: get(SessionKeys.hasLogs) as TriStateBoolean,
-    hasProfiles: get(SessionKeys.hasProfiles) as TriStateBoolean,
-    hasPhotos: get(SessionKeys.hasPhotos) as TriStateBoolean,
-    hasDocuments: get(SessionKeys.hasDocuments) as TriStateBoolean,
+    nationalInterest: get(SessionKeys.nationalInterest) as NullableBooleanFilterValue,
+    topBedrockIntersected: get(SessionKeys.topBedrockIntersected) as NullableBooleanFilterValue,
+    hasGroundwater: get(SessionKeys.hasGroundwater) as NullableBooleanFilterValue,
+    hasGeometry: get(SessionKeys.hasGeometry) as NullableBooleanFilterValue,
+    hasLogs: get(SessionKeys.hasLogs) as NullableBooleanFilterValue,
+    hasProfiles: get(SessionKeys.hasProfiles) as NullableBooleanFilterValue,
+    hasPhotos: get(SessionKeys.hasPhotos) as NullableBooleanFilterValue,
+    hasDocuments: get(SessionKeys.hasDocuments) as NullableBooleanFilterValue,
     workflowStatus: get(SessionKeys.workflowStatus) ?? undefined,
   };
   return Object.fromEntries(Object.entries(allFilterParams).filter(([, value]) => value != null));
