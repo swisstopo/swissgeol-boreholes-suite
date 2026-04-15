@@ -50,9 +50,9 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
   const [abortController, setAbortController] = useState<AbortController>();
-  const { data: allExtractedStratigraphies = [], isLoading } = useExtractStratigraphies(file, 1);
+  const { data: allExtractedStratigraphies = [], isLoading: isLoadingExtraction } = useExtractStratigraphies(file, 1);
   const { isLoading: isLoadingFileInfo } = useFileInfo(file?.id, 1);
-  const { mutateAsync: bulkAdd } = useBulkAddMutation();
+  const { mutateAsync: bulkAdd, isPending: isLoadingBulkAdd } = useBulkAddMutation();
   const { id } = useRequiredParams<{ id: string }>();
   const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
@@ -111,19 +111,23 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
       lithologicalDescriptions: allExtractedStratigraphies[i].descriptions.map(ld => ({ ...ld, id: 0 })),
     }));
 
-    const results = await bulkAdd({ boreholeId: Number(id), stratigraphies: stratigraphiesToSave });
+    try {
+      const results = await bulkAdd({ boreholeId: Number(id), stratigraphies: stratigraphiesToSave });
 
-    if (!results || results.length === 0) {
+      if (!results || results.length === 0) {
+        showAlert(t("errorStratigraphySaving"), "error");
+        return;
+      }
+
+      showAlert(t("stratigraphySaved", { count: validIndices.length }), "success");
+      closeDialog();
+      navigateTo({
+        path: `/${id}/stratigraphy/${results[0].stratigraphy.id}`,
+        hash: location.hash,
+      });
+    } catch {
       showAlert(t("errorStratigraphySaving"), "error");
-      return;
     }
-
-    showAlert(t("stratigraphySaved", { count: validIndices.length }), "success");
-    closeDialog();
-    navigateTo({
-      path: `/${id}/stratigraphy/${results[0].stratigraphy.id}`,
-      hash: location.hash,
-    });
   }, [
     allExtractedStratigraphies,
     bulkAdd,
@@ -201,7 +205,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
           activePage={activePage}
           setActivePage={setActivePage}
           lithologicalDescriptions={currentDescriptions}
-          isLoading={isLoading || isLoadingFileInfo}
+          isLoading={isLoadingExtraction || isLoadingFileInfo || isLoadingBulkAdd}
           currentPageRange={allExtractedStratigraphies[selectedIndex]?.pageNumbers}
         />
       </DialogMainContent>
@@ -232,7 +236,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
             <CancelButton onClick={closeDialog} />
             <BoreholesButton
               dataCy="add-stratigraphy-button"
-              disabled={checkedIndices.size === 0 || allExtractedStratigraphies.length === 0}
+              disabled={checkedIndices.size === 0 || allExtractedStratigraphies.length === 0 || isLoadingBulkAdd}
               variant="contained"
               color="primary"
               label={
