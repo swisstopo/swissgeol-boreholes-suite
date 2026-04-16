@@ -94,7 +94,8 @@ export const IdentifiersPanel: FC = () => {
       <BaseForm
         formMethods={formMethods}
         prepareDataForSubmit={prepareIdentifiersDataForSubmit}
-        tabStatusToReset="identifiers">
+        tabStatusToReset="identifiers"
+        triggerValidationBeforeSave={true}>
         <Stack gap={3} mr={2}>
           <BoreholesCard title={editingEnabled ? t("borehole_technical_id") : undefined}>
             <FormSegmentBox>
@@ -190,7 +191,7 @@ export const IdentifiersPanel: FC = () => {
                                 comment: null,
                               });
                             }}
-                            data-cy="add-id-button"
+                            data-cy={`${watchedCodelists?.[firstIndex]?.codelistId}-add-id-button`}
                             sx={{ color: theme.palette.primary.main }}>
                             <Plus />
                             <Typography variant="body2">{"ID Code und Kommentar hinzufügen"}</Typography>
