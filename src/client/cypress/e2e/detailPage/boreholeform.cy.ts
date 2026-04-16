@@ -1,5 +1,5 @@
 import { discardChanges, saveWithSaveBar } from "../helpers/buttonHelpers";
-import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
+import { clickOnRowWithText, showTableAndWaitForData, sortBy, waitForTableData } from "../helpers/dataGridHelpers";
 import {
   clearInput,
   evaluateInput,
@@ -244,6 +244,7 @@ describe("Test for the borehole form.", () => {
     showTableAndWaitForData();
     // sort by Name descending
     sortBy("Name");
+    cy.wait("@borehole_filter");
     clickOnRowWithText("Zena Rath");
 
     evaluateInput("originalName", "Zena Rath");

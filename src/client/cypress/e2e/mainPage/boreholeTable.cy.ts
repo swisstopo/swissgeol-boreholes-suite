@@ -13,6 +13,21 @@ import {
 import { setInput } from "../helpers/formHelpers.js";
 import { goToRouteAndAcceptTerms, returnToOverview } from "../helpers/testHelpers";
 
+function nextPage() {
+  clickOnNextPage();
+  cy.wait("@borehole_filter");
+}
+
+function lastPage() {
+  clickOnLastPage();
+  cy.wait("@borehole_filter");
+}
+
+function sortByColumnHeader(headerTextContent: string) {
+  sortBy(headerTextContent);
+  cy.wait("@borehole_filter");
+}
+
 describe("Borehole editor table tests", () => {
   it("Boreholes are displayed in correct order with admin login", () => {
     goToRouteAndAcceptTerms("/");
@@ -29,34 +44,34 @@ describe("Borehole editor table tests", () => {
     verifyRowContains("1'283'998.00", 3);
 
     // sort by Name descending
-    sortBy("Name");
+    sortByColumnHeader("Name");
     verifyRowContains("Zena Tillman", 0);
     verifyRowContains("Zena Rolfson", 1);
     verifyRowContains("Zena Rath", 2);
 
     // sort by borehole length descending
-    sortBy("Borehole length");
-    sortBy("Borehole length");
+    sortByColumnHeader("Borehole length");
+    sortByColumnHeader("Borehole length");
     verifyRowContains("1'999.36", 0);
     verifyRowContains("1'999.07", 1);
     verifyRowContains("1'998.07", 2);
 
     // sort by reference elevation
-    sortBy("Reference elevation");
+    sortByColumnHeader("Reference elevation");
     verifyRowContains("1.83", 0);
     verifyRowContains("1.98", 1);
     verifyRowContains("2.13", 2);
 
     // sort by borehole type descending
-    sortBy("Borehole type");
-    sortBy("Borehole type");
+    sortByColumnHeader("Borehole type");
+    sortByColumnHeader("Borehole type");
     verifyRowContains("virtual borehole", 0);
     verifyRowContains("virtual borehole", 1);
     verifyRowContains("virtual borehole", 2);
 
     // sort by drilling purpose descending
-    sortBy("Drilling purpose");
-    sortBy("Drilling purpose");
+    sortByColumnHeader("Drilling purpose");
+    sortByColumnHeader("Drilling purpose");
     verifyRowContains("scientific exploration", 0);
     verifyRowContains("scientific exploration", 1);
     verifyRowContains("scientific exploration", 2);
@@ -67,14 +82,14 @@ describe("Borehole editor table tests", () => {
     showTableAndWaitForData();
 
     // sort by name descending
-    sortBy("Name");
+    sortByColumnHeader("Name");
     verifyRowContains("Zena Rath", 2);
 
     // navigate to page 4
-    clickOnNextPage();
-    clickOnNextPage();
-    clickOnNextPage();
-    clickOnNextPage();
+    nextPage();
+    nextPage();
+    nextPage();
+    nextPage();
 
     // verify current page is 4
     verifyPaginationText("401–500 of 3000");
@@ -92,7 +107,7 @@ describe("Borehole editor table tests", () => {
     verifyRowContains("Samson Hayes", 0);
 
     //navigate to last page
-    clickOnLastPage();
+    lastPage();
     verifyPaginationText("2901–3000 of 3000");
   });
 
@@ -112,7 +127,7 @@ describe("Borehole editor table tests", () => {
     cy.contains("2999 selected").should("be.visible");
 
     // navigate to next page
-    clickOnNextPage();
+    nextPage();
     cy.contains("2999 selected").should("be.visible");
 
     // uncheck another row
@@ -150,7 +165,7 @@ describe("Borehole editor table tests", () => {
     cy.contains("2549 selected").should("be.visible");
 
     // navigate to next page
-    clickOnNextPage();
+    nextPage();
     cy.contains("2549 selected").should("be.visible");
   });
 });
