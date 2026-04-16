@@ -123,6 +123,19 @@ function finishReview() {
   assertWorkflowSteps("Reviewed");
 }
 
+function assertBoreholeNotEditable(id: number) {
+  goToDetailRouteAndAcceptTerms(`/${id}/location`);
+  cy.wait("@borehole_by_id");
+  cy.dataCy("edit-button").should("not.exist");
+  cy.dataCy("editingstop-button").should("not.exist");
+  // Verify all text inputs are readonly
+  cy.get(".MuiFormControl-root")
+    .should("have.length", 24)
+    .each(i => {
+      cy.wrap(i).should("have.class", "readonly", "readonly");
+    });
+}
+
 describe("Tests the publication workflow.", () => {
   it("Can request review from users with controller privilege", () => {
     createBorehole({
@@ -280,6 +293,9 @@ describe("Tests the publication workflow.", () => {
       cy.get(`#review`).find("sgc-checkbox").should("have.class", "is-checked");
 
       finishReview();
+      assertBoreholeNotEditable(id);
+      goToDetailRouteAndAcceptTerms(`/${id}/status`);
+
       AssertHeaderChips(WorkflowStatus.Reviewed, null, false, "Free");
 
       cy.get("sgc-tab").contains("Approval").click();
@@ -311,17 +327,7 @@ describe("Tests the publication workflow.", () => {
       cy.get("sgc-tab").contains("History").click();
       checkWorkflowChangeContent("Admin User", "Status changed from Reviewed to Published", "I published a borehole!");
 
-      // Borehole should not be editable
-      goToDetailRouteAndAcceptTerms(`/${id}/location`);
-      cy.wait("@borehole_by_id");
-      cy.dataCy("edit-button").should("not.exist");
-      cy.dataCy("editingstop-button").should("not.exist");
-      // Verify all text inputs are readonly
-      cy.get(".MuiFormControl-root")
-        .should("have.length", 24)
-        .each(i => {
-          cy.wrap(i).should("have.class", "readonly", "readonly");
-        });
+      assertBoreholeNotEditable(id);
     });
   });
 
