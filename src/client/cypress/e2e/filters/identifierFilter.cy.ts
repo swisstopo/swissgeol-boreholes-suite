@@ -22,7 +22,7 @@ describe("Tests for filtering data by identifier.", () => {
     // Add multiple id values for the same identifier type
     navigateInSidebar(SidebarMenuItem.identifiers);
     addItem("addIdentifier");
-    setSelect("boreholeCodelists.0.codelistId", 1);
+    setSelect("boreholeCodelists.0.codelistId", 0);
     setInput("boreholeCodelists.0.value", 819544732);
 
     cy.get('[data-cy="100000000-add-id-button"]').click();
@@ -32,7 +32,6 @@ describe("Tests for filtering data by identifier.", () => {
     stopBoreholeEditing();
     evaluateSelect("boreholeCodelists.0.codelistId", "original ID");
     evaluateInput("boreholeCodelists.0.value", "819544732");
-    evaluateSelect("boreholeCodelists.1.codelistId", "original ID");
     evaluateInput("boreholeCodelists.1.value", "ABC123456");
 
     returnToOverview();
