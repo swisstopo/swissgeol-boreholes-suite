@@ -5,7 +5,9 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="BitMiracle.LibTiff.NET" Version="2.4.649" />
     <PackageReference Include="Microsoft.EntityFrameworkCore.InMemory" Version="8.0.23" />
+    <PackageReference Include="SkiaSharp" Version="3.116.1" />
     <PackageReference Include="Testcontainers.PostgreSql" Version="4.10.0" />
   </ItemGroup>
 
