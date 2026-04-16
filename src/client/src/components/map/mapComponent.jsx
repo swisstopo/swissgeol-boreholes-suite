@@ -66,7 +66,7 @@ class MapComponent extends React.Component {
     this.draw = null;
 
     this.srs = "EPSG:2056";
-    _.forEach(projections, function (proj, srs) {
+    _.forEach(projections, function(proj, srs) {
       proj4.defs(srs, proj);
     });
     register(proj4);
@@ -458,17 +458,10 @@ class MapComponent extends React.Component {
   filterByPolygon(features) {
     if (this.props.filterPolygon === null) return features;
 
-    const originalVectorSources = new VectorSource({
-      features: features,
-    });
-    const intersectingVectorSource = new VectorSource();
-
-    originalVectorSources.forEachFeature(feature => {
-      if (this.props.filterPolygon.getGeometry().intersectsExtent(feature.getGeometry().getExtent())) {
-        intersectingVectorSource.addFeature(feature);
-      }
-    });
-    const intersectingFeatures = intersectingVectorSource.getFeatures();
+    const polygonGeometry = this.props.filterPolygon.getGeometry();
+    const intersectingFeatures = features.filter(feature =>
+      polygonGeometry.intersectsExtent(feature.getGeometry().getExtent()),
+    );
     const intersectingFeatureIds = intersectingFeatures.map(f => f.getId());
     if (!_.isEqual(_.sortBy(intersectingFeatureIds), _.sortBy(this.props.featureIds))) {
       this.props.setFeatureIds(intersectingFeatureIds);
@@ -483,7 +476,7 @@ class MapComponent extends React.Component {
     this.timeoutFilter = setTimeout(() => {
       getGeojson(searchState.filter)
         .then(
-          function (response) {
+          function(response) {
             if (response.data.success) {
               let features = new GeoJSON().readFeatures(response.data.data);
               features = this.filterByPolygon(features);
@@ -493,7 +486,7 @@ class MapComponent extends React.Component {
             }
           }.bind(this),
         )
-        .catch(function (error) {
+        .catch(function(error) {
           console.log(error);
         });
     }, 500);
@@ -551,6 +544,8 @@ class MapComponent extends React.Component {
     }
     if (!_.isEqual(searchState.filter, prevProps.searchState.filter)) {
       this.handleFilter(searchState, prevProps.searchState, view);
+    } else if (!_.isEqual(prevProps.filterPolygon, this.props.filterPolygon) && this.props.filterPolygon === null) {
+      this.handleFilter(searchState, prevProps.searchState, view);
     }
 
     if (
@@ -558,12 +553,6 @@ class MapComponent extends React.Component {
       !_.isEqual(prevProps.filterPolygon, this.props.filterPolygon)
     ) {
       this.handlePolygonSelection();
-    }
-
-    if (!_.isEqual(prevProps.filterPolygon, this.props.filterPolygon)) {
-      if (this.props.filterPolygon === null) {
-        this.handleFilter(searchState, prevProps.searchState, view);
-      }
     }
   }
 
@@ -594,18 +583,16 @@ class MapComponent extends React.Component {
     // If popup is not open, search for features around the pixel
     let features = [];
     if (!popupOpen) {
-      const tolerance = 3;
       const featureSet = new Set();
-      for (let dx = -tolerance; dx <= tolerance; dx++) {
-        for (let dy = -tolerance; dy <= tolerance; dy++) {
-          const nearbyPixel = [pixel[0] + dx, pixel[1] + dy];
-          this.map.forEachFeatureAtPixel(nearbyPixel, feature => {
-            if (feature.getGeometry().getType() !== "Polygon") {
-              featureSet.add(feature);
-            }
-          });
-        }
-      }
+      this.map.forEachFeatureAtPixel(
+        pixel,
+        feature => {
+          if (feature.getGeometry().getType() !== "Polygon") {
+            featureSet.add(feature);
+          }
+        },
+        { hitTolerance: 3 },
+      );
       features = Array.from(featureSet);
     }
 
