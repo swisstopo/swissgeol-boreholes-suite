@@ -1,15 +1,13 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
+using BitMiracle.LibJpeg;
 using BitMiracle.LibTiff.Classic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using NetTopologySuite.Algorithm;
-using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO.Compression;
-using System.Runtime.InteropServices;
 
 namespace BDMS.Controllers;
 
@@ -118,9 +116,9 @@ public class PhotoController : ControllerBase
         }
 
         // Tiff files are not supported by any modern browser.
-        // Decode TIFF with LibTiff.NET, then encode to JPEG with SkiaSharp.
-        using var ms = new MemoryStream(imageData);
-        using var tiff = Tiff.ClientOpen("memory", "r", ms, new TiffStream());
+        // Decode TIFF with LibTiff.NET, then encode to JPEG with LibJpeg.NET (both pure managed, no native deps).
+        using var tiffStream = new MemoryStream(imageData);
+        using var tiff = Tiff.ClientOpen("memory", "r", tiffStream, new TiffStream());
         if (tiff == null) return BadRequest("Failed to decode TIFF image.");
 
         var width = tiff.GetField(TiffTag.IMAGEWIDTH)[0].ToInt();
@@ -131,14 +129,27 @@ public class PhotoController : ControllerBase
             return BadRequest("Failed to read TIFF image data.");
         }
 
-        // LibTiff RGBA pixels are laid out as R, G, B, A bytes (RGBA8888 on little-endian).
-        var info = new SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Unpremul);
-        using var skBitmap = new SKBitmap(info);
-        Marshal.Copy(raster, 0, skBitmap.GetPixels(), raster.Length);
-        using var skImage = SKImage.FromBitmap(skBitmap);
-        using var jpegData = skImage.Encode(SKEncodedImageFormat.Jpeg, 90);
+        // Convert RGBA int[] to RGB byte rows for LibJpeg.
+        var rows = new SampleRow[height];
+        for (var y = 0; y < height; y++)
+        {
+            var rowBytes = new byte[width * 3];
+            for (var x = 0; x < width; x++)
+            {
+                var pixel = raster[(y * width) + x];
+                rowBytes[(x * 3) + 0] = (byte)(pixel & 0xFF);         // R
+                rowBytes[(x * 3) + 1] = (byte)((pixel >> 8) & 0xFF);  // G
+                rowBytes[(x * 3) + 2] = (byte)((pixel >> 16) & 0xFF); // B
+            }
 
-        return File(jpegData.ToArray(), "image/jpeg");
+            rows[y] = new SampleRow(rowBytes, width, 8, 3);
+        }
+
+        using var jpegStream = new MemoryStream();
+        using var jpeg = new JpegImage(rows, Colorspace.RGB);
+        jpeg.WriteJpeg(jpegStream, new CompressionParameters { Quality = 90 });
+
+        return File(jpegStream.ToArray(), "image/jpeg");
     }
 
     /// <summary>
