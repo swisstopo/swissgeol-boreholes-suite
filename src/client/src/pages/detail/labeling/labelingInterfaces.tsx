@@ -46,6 +46,7 @@ export type ExtractionResponse = {
 export interface StratigraphyExtractionResponse {
   boreholes: {
     id: string;
+    page_numbers: number[];
     layers: {
       start: { depth: number; bounding_boxes: ExtractionBoundingBox[] };
       end: { depth: number; bounding_boxes: ExtractionBoundingBox[] };
