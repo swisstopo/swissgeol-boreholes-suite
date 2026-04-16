@@ -114,10 +114,10 @@ class MapComponent extends React.Component {
         name: "clusters",
         zIndex: this.calculateLayerZIndex(),
         style: features => this.clusterStyleFunction(features.get("features").length),
-        minResolution: 20,
+        minResolution: 10,
       });
 
-      // Display original point layer for resolutions <= 20.
+      // Display original point layer for resolutions <= 10.
       const pointLayer = new VectorLayer({
         name: "points",
         zIndex: this.calculateLayerZIndex(),
@@ -125,7 +125,7 @@ class MapComponent extends React.Component {
         style: feature => {
           return this.styleFunction(feature, this.props.highlighted);
         },
-        maxResolution: 20,
+        maxResolution: 10,
       });
 
       // Layer to draw selection polygon
@@ -162,7 +162,7 @@ class MapComponent extends React.Component {
     const coordinates = feature.getGeometry().getCoordinates();
     const view = this.map.getView();
     view.setCenter(coordinates);
-    view.setResolution(15);
+    view.setResolution(5);
   };
 
   zoomToFeatures = features => {
