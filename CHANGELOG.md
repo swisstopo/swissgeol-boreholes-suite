@@ -6,6 +6,9 @@
 - Duplicate boreholes (matching coordinates and total depth within the same workgroup or within the imported file) can now be imported.
 - Extracting multiple stratigraphies from a single PDF document is now supported.
 
+### Fixed
+- Boreholes could be edited after being published.
+
 ## v2.1.1530 - 2026-04-02
 
 ### Added
