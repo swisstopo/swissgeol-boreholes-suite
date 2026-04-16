@@ -1,5 +1,5 @@
 import { discardChanges, saveWithSaveBar } from "../helpers/buttonHelpers";
-import { clickOnRowWithText, showTableAndWaitForData, sortBy, waitForTableData } from "../helpers/dataGridHelpers";
+import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
 import {
   clearInput,
   evaluateInput,
