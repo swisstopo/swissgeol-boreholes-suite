@@ -30,9 +30,9 @@ describe("Tests for filtering data by identifier.", () => {
     saveWithSaveBar();
 
     stopBoreholeEditing();
-    evaluateSelect("boreholeCodelists.0.codelistId", "ID Original");
+    evaluateSelect("boreholeCodelists.0.codelistId", "original ID");
     evaluateInput("boreholeCodelists.0.value", "819544732");
-    evaluateSelect("boreholeCodelists.1.codelistId", "ID Original");
+    evaluateSelect("boreholeCodelists.1.codelistId", "original ID");
     evaluateInput("boreholeCodelists.1.value", "ABC123456");
 
     returnToOverview();
