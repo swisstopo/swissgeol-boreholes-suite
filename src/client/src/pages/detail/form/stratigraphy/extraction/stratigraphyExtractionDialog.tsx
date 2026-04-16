@@ -230,7 +230,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
                 }}
               />
             }
-            label={t("addStratigraphyNumber", { number: selectedIndex + 1 })}
+            label={t("applyStratigraphy", { number: selectedIndex + 1 })}
           />
           <Stack direction="row" justifyContent="flex-end" alignItems="center" gap={0.75}>
             <CancelButton onClick={closeDialog} />
@@ -239,9 +239,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
               disabled={checkedIndices.size === 0 || allExtractedStratigraphies.length === 0 || isLoadingBulkAdd}
               variant="contained"
               color="primary"
-              label={
-                checkedIndices.size === 0 ? t("addStratigraphy") : t("addStratigraphy", { count: checkedIndices.size })
-              }
+              label={t("addStratigraphy", { count: checkedIndices.size > 1 ? checkedIndices.size : 1 })}
               onClick={addStratigraphies}
             />
           </Stack>
