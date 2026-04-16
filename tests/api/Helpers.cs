@@ -4,8 +4,12 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
+using Moq.Protected;
+using System.Net;
+using System.Net.Http.Json;
 using System.Security.Claims;
 using System.Text;
+using System.Text.RegularExpressions;
 using File = System.IO.File;
 
 namespace BDMS;
@@ -146,4 +150,60 @@ internal static class Helpers
 
     internal static string ShouldNotBeNullMessage(this string propertyName)
         => $"{propertyName} should not be null.";
+
+    /// <summary>
+    /// Creates a mocked <see cref="HttpClient"/> that handles swisstopo reframe API calls and returns the given coordinates.
+    /// </summary>
+    internal static HttpClient CreateReframeHttpClient(string easting, string northing)
+    {
+        easting = easting.Contains('.') ? easting : easting + ".0";
+        northing = northing.Contains('.') ? northing : northing + ".0";
+
+        var httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+        httpMessageHandler.Protected().Setup("Dispose", ItExpr.IsAny<bool>());
+        httpMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(m =>
+                    m.RequestUri!.AbsoluteUri.Contains("geodesy.geo.admin.ch") &&
+                    Regex.IsMatch(m.RequestUri!.AbsoluteUri, "easting=\\d+\\.?\\d*&northing=-?\\d+\\.?\\d*&format=json$")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK)
+            {
+                Content = JsonContent.Create(new { easting, northing }),
+            });
+        return new HttpClient(httpMessageHandler.Object);
+    }
+
+    /// <summary>
+    /// Creates a mocked <see cref="HttpClient"/> that handles swisstopo identify API calls and returns the given location.
+    /// </summary>
+    internal static HttpClient CreateLocationHttpClient(string? country, string? canton, string? municipality)
+    {
+        var httpMessageHandler = new Mock<HttpMessageHandler>(MockBehavior.Strict);
+        httpMessageHandler.Protected().Setup("Dispose", ItExpr.IsAny<bool>());
+        var results = new List<object>();
+        if (country != null)
+        {
+            results.Add(new { layerBodId = "ch.swisstopo.swissboundaries3d-land-flaeche.fill", attributes = new { bez = country, name = string.Empty, gemname = string.Empty } });
+        }
+
+        if (canton != null)
+        {
+            results.Add(new { layerBodId = "ch.swisstopo.swissboundaries3d-kanton-flaeche.fill", attributes = new { bez = string.Empty, name = canton, gemname = string.Empty } });
+        }
+
+        if (municipality != null)
+        {
+            results.Add(new { layerBodId = "ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill", attributes = new { bez = string.Empty, name = string.Empty, gemname = municipality } });
+        }
+
+        httpMessageHandler.Protected()
+            .Setup<Task<HttpResponseMessage>>(
+                "SendAsync",
+                ItExpr.Is<HttpRequestMessage>(m => m.RequestUri!.AbsoluteUri.Contains("api3.geo.admin.ch")),
+                ItExpr.IsAny<CancellationToken>())
+            .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = JsonContent.Create(new { results }) });
+        return new HttpClient(httpMessageHandler.Object);
+    }
 }
