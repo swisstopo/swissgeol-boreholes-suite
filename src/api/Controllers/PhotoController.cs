@@ -1,12 +1,15 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
-using ImageMagick;
+using BitMiracle.LibTiff.Classic;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using NetTopologySuite.Algorithm;
+using SkiaSharp;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.IO.Compression;
+using System.Runtime.InteropServices;
 
 namespace BDMS.Controllers;
 
@@ -115,10 +118,27 @@ public class PhotoController : ControllerBase
         }
 
         // Tiff files are not supported by any modern browser.
-        using var image = new MagickImage(imageData);
-        image.Format = MagickFormat.Jpeg;
+        // Decode TIFF with LibTiff.NET, then encode to JPEG with SkiaSharp.
+        using var ms = new MemoryStream(imageData);
+        using var tiff = Tiff.ClientOpen("memory", "r", ms, new TiffStream());
+        if (tiff == null) return BadRequest("Failed to decode TIFF image.");
 
-        return File(image.ToByteArray(), "image/jpeg");
+        var width = tiff.GetField(TiffTag.IMAGEWIDTH)[0].ToInt();
+        var height = tiff.GetField(TiffTag.IMAGELENGTH)[0].ToInt();
+        var raster = new int[width * height];
+        if (!tiff.ReadRGBAImageOriented(width, height, raster, Orientation.TOPLEFT))
+        {
+            return BadRequest("Failed to read TIFF image data.");
+        }
+
+        // LibTiff RGBA pixels are laid out as R, G, B, A bytes (RGBA8888 on little-endian).
+        var info = new SKImageInfo(width, height, SKColorType.Rgba8888, SKAlphaType.Unpremul);
+        using var skBitmap = new SKBitmap(info);
+        Marshal.Copy(raster, 0, skBitmap.GetPixels(), raster.Length);
+        using var skImage = SKImage.FromBitmap(skBitmap);
+        using var jpegData = skImage.Encode(SKEncodedImageFormat.Jpeg, 90);
+
+        return File(jpegData.ToArray(), "image/jpeg");
     }
 
     /// <summary>
