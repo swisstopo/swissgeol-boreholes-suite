@@ -44,7 +44,7 @@ export const AcceptTerms = ({ children }: { children: React.ReactNode }) => {
   const { i18n } = useTranslation();
 
   // Re-runs when setAnalyticsEnabled re-identifies after settings load,
-  // so the stored choice is correctly ANDed with googleAnalyticsTrackingId.
+  // so the stored choice only enables analytics when googleAnalyticsTrackingId is also configured.
   useEffect(() => {
     if (storedConsent) setAnalyticsEnabled(storedConsent.analytics);
   }, [storedConsent, setAnalyticsEnabled]);
