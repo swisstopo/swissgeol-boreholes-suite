@@ -25,7 +25,7 @@ describe("Tests for filtering data by identifier.", () => {
     setSelect("boreholeCodelists.0.codelistId", 0);
     setInput("boreholeCodelists.0.value", 819544732);
 
-    cy.get('[data-cy="100000000-add-id-button"]').click();
+    cy.get('[data-cy="100000004-add-id-button"]').click();
     setInput("boreholeCodelists.1.value", "ABC123456");
     saveWithSaveBar();
 
