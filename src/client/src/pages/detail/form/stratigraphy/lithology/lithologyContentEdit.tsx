@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { BaseLayer, MinimalLayer } from "../../../../../api/stratigraphy.ts";
 import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
+import { AddRowButton } from "../../../../../components/buttons/buttons.tsx";
 import { formatNumberForDisplay } from "../../../../../components/form/formUtils.ts";
 import { SaveContext } from "../../../saveContext.tsx";
 import { FaciesDescription, useFaciesDescriptionMutations } from "../faciesDescription";
@@ -10,7 +11,7 @@ import { LithologicalDescription, useLithologicalDescriptionMutations } from "..
 import { LayerDepth, Lithology, useLithologyMutations } from "../lithology.ts";
 import { StratigraphyContext, StratigraphyContextProps } from "../stratigraphyContext";
 import {
-  AddRowButton,
+  LayerAddButton,
   StratigraphyTableActionCell,
   StratigraphyTableCell,
   StratigraphyTableColumn,
@@ -585,7 +586,9 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
             </StratigraphyTableContent>
           )}
         </Stack>
-        <AddRowButton onClick={() => handleEditLithology(-1)} />
+        <AddRowButton
+          buttonContent={<LayerAddButton onClick={() => handleEditLithology(-1)} dataCy="add-row-button" />}
+        />
       </Stack>
       <LithologyModal lithology={selectedLithology} updateLithology={updateTmpLithology} />
       <LithologicalDescriptionModal

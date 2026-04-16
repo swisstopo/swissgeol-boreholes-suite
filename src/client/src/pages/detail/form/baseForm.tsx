@@ -54,12 +54,14 @@ export const BaseForm = <T extends FieldValues>({
   );
 
   const resetAndSubmitForm = useCallback(async () => {
+    const isValid = await formMethods.trigger();
+    if (!isValid) return false;
     const currentValues = getValues();
     reset(currentValues);
     setExtractionObject(undefined);
     resetTabStatus();
     return await onSubmit(currentValues);
-  }, [getValues, onSubmit, reset, resetTabStatus, setExtractionObject]);
+  }, [formMethods, getValues, onSubmit, reset, resetTabStatus, setExtractionObject]);
 
   const resetWithoutSave = useCallback(() => {
     reset();
