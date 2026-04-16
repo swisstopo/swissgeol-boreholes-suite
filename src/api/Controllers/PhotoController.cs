@@ -126,7 +126,7 @@ public class PhotoController : ControllerBase
         var width = tiff.GetField(TiffTag.IMAGEWIDTH)[0].ToInt();
         var height = tiff.GetField(TiffTag.IMAGELENGTH)[0].ToInt();
         var raster = new int[width * height];
-        if (!tiff.ReadRGBAImageOriented(width, height, raster, Orientation.TOPLEFT))
+        if (!tiff.ReadRGBAImageOriented(width, height, raster, BitMiracle.LibTiff.Classic.Orientation.TOPLEFT))
         {
             return BadRequest("Failed to read TIFF image data.");
         }
