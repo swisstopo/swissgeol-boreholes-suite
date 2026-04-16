@@ -66,7 +66,7 @@ class MapComponent extends React.Component {
     this.draw = null;
 
     this.srs = "EPSG:2056";
-    _.forEach(projections, function(proj, srs) {
+    _.forEach(projections, function (proj, srs) {
       proj4.defs(srs, proj);
     });
     register(proj4);
@@ -476,7 +476,7 @@ class MapComponent extends React.Component {
     this.timeoutFilter = setTimeout(() => {
       getGeojson(searchState.filter)
         .then(
-          function(response) {
+          function (response) {
             if (response.data.success) {
               let features = new GeoJSON().readFeatures(response.data.data);
               features = this.filterByPolygon(features);
@@ -486,7 +486,7 @@ class MapComponent extends React.Component {
             }
           }.bind(this),
         )
-        .catch(function(error) {
+        .catch(function (error) {
           console.log(error);
         });
     }, 500);
