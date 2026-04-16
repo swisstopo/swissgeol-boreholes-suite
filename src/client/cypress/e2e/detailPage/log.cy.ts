@@ -349,7 +349,7 @@ describe("Test for the borehole log.", () => {
     cy.dataCy("logRun-file-0").find(".MuiCardHeader-title").contains("COLDWATER.zip");
 
     // Needed to ensure file is fully loaded before attempting to delete
-    // eslint-disable-next-line cypress/no-unnecessary-waiting 
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     cy.dataCy("logRun-file-0").dataCy("delete-file-button").click();
     cy.dataCy("logRun-files").contains("No file added yet...");
