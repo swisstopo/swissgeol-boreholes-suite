@@ -560,21 +560,6 @@ public class ImportControllerTest
     }
 
     [TestMethod]
-    public async Task UploadZipWithInvalidJsonReturnValidationErrorsAsync()
-    {
-        // Create a ZIP archive with Json file containing duplicates
-        FormFile boreholeZipFile = await GetZipFileFromExistingFileAsync("json_import_duplicated_by_location.json");
-
-        ActionResult<int> response = await controller.UploadZipFileAsync(workgroupId: 1, boreholeZipFile);
-
-        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
-        Assert.AreEqual(2, problemDetails.Errors.Count);
-
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Borehole0"]);
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Borehole1"]);
-    }
-
-    [TestMethod]
     public async Task UploadZipWithoutJsonReturnsBadRequestAsync()
     {
         // Create a ZIP archive without a JSON file
@@ -683,43 +668,13 @@ public class ImportControllerTest
     }
 
     [TestMethod]
-    public async Task UploadJsonWithDuplicateBoreholesByLocationShouldReturnError()
-    {
-        var boreholeJsonFile = GetFormFileByExistingFile("json_import_duplicated_by_location.json");
-
-        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
-
-        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
-        Assert.AreEqual(2, problemDetails.Errors.Count);
-
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Borehole0"]);
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Borehole1"]);
-    }
-
-    [TestMethod]
-    public async Task UploadJsonWithDuplicatesExistingBoreholeShouldReturnError()
-    {
-        var boreholeJsonFile = GetFormFileByExistingFile("json_import_duplicates_existing.json");
-
-        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
-
-        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
-        Assert.AreEqual(1, problemDetails.Errors.Count);
-
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", }, problemDetails.Errors["Borehole0"]);
-    }
-
-    [TestMethod]
     public async Task UploadShouldSaveDataToDatabaseAsync()
     {
         // Add new borehole identifier to test dynamic ID import.
         context.Codelists.Add(new Codelist { Id = TestCodelistId, Schema = "borehole_identifier", Code = "new code", En = "Random New Id", Conf = null });
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        httpClientFactoryMock
-            .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-            .Returns(() => new HttpClient())
-            .Verifiable();
+        SetupHttpClientFactoryMock("600000", "100000", "Schweiz", "Bern", "Thun");
 
         var boreholeCsvFile = GetFormFileByExistingFile("testdata.csv");
 
@@ -766,10 +721,7 @@ public class ImportControllerTest
     [TestMethod]
     public async Task UploadShouldSaveMinimalDatasetAsync()
     {
-        httpClientFactoryMock
-           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-           .Returns(() => new HttpClient())
-           .Verifiable();
+        SetupHttpClientFactoryMock("600000", "100000", null, null, null);
 
         var boreholeCsvFile = GetFormFileByExistingFile("minimal_testdata.csv");
 
@@ -797,10 +749,7 @@ public class ImportControllerTest
     [TestMethod]
     public async Task UploadShouldSavePrecisionDatasetAsync()
     {
-        httpClientFactoryMock
-           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-           .Returns(() => new HttpClient())
-           .Verifiable();
+        SetupHttpClientFactoryMock("600000", "100000", null, null, null);
 
         var boreholeCsvFile = GetFormFileByExistingFile("precision_testdata.csv");
 
@@ -842,10 +791,7 @@ public class ImportControllerTest
     [TestMethod]
     public async Task UploadShouldSaveSpecialCharsDatasetAsync()
     {
-        httpClientFactoryMock
-           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-           .Returns(() => new HttpClient())
-           .Verifiable();
+        SetupHttpClientFactoryMock("600000", "100000", null, null, null);
 
         var boreholeCsvFile = GetFormFileByExistingFile("special_chars_testdata.csv");
 
@@ -879,10 +825,7 @@ public class ImportControllerTest
     [TestMethod]
     public async Task UploadBoreholeWithLV95CoordinatesAsync()
     {
-        httpClientFactoryMock
-            .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-            .Returns(() => new HttpClient())
-            .Verifiable();
+        SetupHttpClientFactoryMock("631690", "170516", "Schweiz", "Bern", "Aarmühle");
 
         var boreholeCsvFile = GetFormFileByExistingFile("lv95_coordinates_provided_testdata.csv");
 
@@ -908,10 +851,7 @@ public class ImportControllerTest
     [TestMethod]
     public async Task UploadBoreholeWithLV03CoordinatesAsync()
     {
-        httpClientFactoryMock
-            .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-            .Returns(() => new HttpClient())
-            .Verifiable();
+        SetupHttpClientFactoryMock("2649258.1270818082", "1131551.4611465326", "Schweiz", "Valais", "Filet");
 
         var boreholeCsvFile = GetFormFileByExistingFile("lv03_coordinates_provided_testdata.csv");
 
@@ -937,10 +877,7 @@ public class ImportControllerTest
     [TestMethod]
     public async Task UploadBoreholeWithLV03OutOfRangeCoordinatesAsync()
     {
-        httpClientFactoryMock
-            .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-            .Returns(() => new HttpClient())
-            .Verifiable();
+        SetupHttpClientFactoryMock("2999999", "1", null, null, null);
 
         var boreholeCsvFile = GetFormFileByExistingFile("lv03_out_of_range_coordinates_provided_testdata.csv");
 
@@ -1077,70 +1014,26 @@ public class ImportControllerTest
     }
 
     [TestMethod]
-    public async Task UploadDuplicateBoreholesInFileShouldReturnError()
-    {
-        var boreholeCsvFile = GetFormFileByExistingFile("duplicateBoreholesInFile.csv");
-
-        ActionResult<int> response = await controller.UploadCsvFileAsync(workgroupId: 1, boreholeCsvFile);
-
-        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
-        Assert.AreEqual(2, problemDetails.Errors.Count);
-
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Row1"]);
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} is provided multiple times.", }, problemDetails.Errors["Row2"]);
-    }
-
-    [TestMethod]
-    public async Task UploadDuplicateBoreholesInDbShouldReturnError()
-    {
-        // Create Boreholes with same LocationX, LocationY and TotalDepth as in provided csv and with the same WorkgroupId as provided
-        context.Boreholes.Add(new Borehole
-        {
-            Id = 2100000,
-            LocationX = 2100000,
-            LocationY = 1100000,
-            TotalDepth = 855,
-            WorkgroupId = 1,
-        });
-        context.Boreholes.Add(new Borehole
-        {
-            Id = 2100001,
-            LocationX = 2500000,
-            LocationY = 1500000,
-            TotalDepth = null,
-            WorkgroupId = 1,
-        });
-        context.Boreholes.Add(new Borehole
-        {
-            Id = 2100002,
-            LocationX = 2676701,
-            LocationY = 1185081,
-            LocationXLV03 = 676700,
-            LocationYLV03 = 185081,
-            TotalDepth = 1000,
-            WorkgroupId = 1,
-        });
-        await context.SaveChangesAsync().ConfigureAwait(false);
-
-        var boreholeCsvFile = GetFormFileByExistingFile("duplicateBoreholesInDb.csv");
-
-        ActionResult<int> response = await controller.UploadCsvFileAsync(workgroupId: 1, boreholeCsvFile);
-
-        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
-        Assert.AreEqual(3, problemDetails.Errors.Count);
-
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", }, problemDetails.Errors["Row1"]);
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", }, problemDetails.Errors["Row2"]);
-        CollectionAssert.AreEquivalent(new[] { $"Borehole with same Coordinates (+/- 2m) and same {nameof(Borehole.TotalDepth)} already exists in database.", }, problemDetails.Errors["Row3"]);
-    }
-
-    [TestMethod]
-    public async Task UploadDuplicateBoreholesInDbButDifferentWorkgroupShouldUploadBoreholes()
+    public async Task CanUploadDuplicateBoreholesInFile()
     {
         httpClientFactoryMock
            .Setup(cf => cf.CreateClient(It.IsAny<string>()))
            .Returns(() => new HttpClient())
            .Verifiable();
+
+        var boreholeCsvFile = GetFormFileByExistingFile("duplicateBoreholesInFile.csv");
+
+        ActionResult<int> response = await controller.UploadCsvFileAsync(workgroupId: 1, boreholeCsvFile);
+
+        ActionResultAssert.IsOk(response.Result);
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(2, okResult.Value);
+    }
+
+    [TestMethod]
+    public async Task UploadDuplicateBoreholesInDbButDifferentWorkgroupShouldUploadBoreholes()
+    {
+        SetupHttpClientFactoryMock("600000", "100000", null, null, null);
 
         var maxWorkgroudId = await context.Workgroups.MaxAsync(w => w.Id).ConfigureAwait(false);
         var minWorkgroudId = await context.Workgroups.MinAsync(w => w.Id).ConfigureAwait(false);
@@ -1186,10 +1079,7 @@ public class ImportControllerTest
     [TestMethod]
     public async Task UploadShouldIgnoreLocationFields()
     {
-        httpClientFactoryMock
-           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-           .Returns(() => new HttpClient())
-           .Verifiable();
+        SetupHttpClientFactoryMock("2000000", "1000000", null, null, null);
 
         var boreholeCsvFile = GetFormFileByExistingFile("borehole_and_location_data.csv");
 
@@ -1235,6 +1125,23 @@ public class ImportControllerTest
 
         var response = await controller.UploadZipFileAsync(workgroupId: 1, boreholeCsvFile);
         ActionResultAssert.IsUnauthorized(response.Result);
+    }
+
+    private void SetupHttpClientFactoryMock(
+        string coordEasting,
+        string coordNorthing,
+        string? country,
+        string? canton,
+        string? municipality)
+    {
+        httpClientFactoryMock
+            .Setup(cf => cf.CreateClient(nameof(CoordinateService)))
+            .Returns(() => CreateReframeHttpClient(coordEasting, coordNorthing))
+            .Verifiable();
+        httpClientFactoryMock
+            .Setup(cf => cf.CreateClient(nameof(LocationService)))
+            .Returns(() => CreateLocationHttpClient(country, canton, municipality))
+            .Verifiable();
     }
 
     private static async Task<FormFile> GetZipFileFromExistingFileAsync(string fileName)
