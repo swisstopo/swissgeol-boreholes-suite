@@ -187,11 +187,11 @@ describe("Test for exporting boreholes.", () => {
       expect(rows[1][3]).to.equal(firstBoreholeName);
       expect(rows[2][3]).to.equal(secondBoreholeName);
 
-      expect(rows[0][34]).to.equal("IDCanton");
+      expect(rows[0][34]).to.equal("cantonID");
       expect(rows[1][34]).to.equal("");
       expect(rows[2][34]).to.equal("14");
 
-      expect(rows[0][35]).to.equal("IDGeoQuat\r");
+      expect(rows[0][35]).to.equal("GeoQuatID\r");
       expect(rows[1][35]).to.equal("13\r");
       expect(rows[2][35]).to.equal("\r");
     });

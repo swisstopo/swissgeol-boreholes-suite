@@ -535,7 +535,7 @@ public class BoreholeExportControllerTest
     public async Task DownloadCsvWithCustomIds()
     {
         string idInfoGeolValue = "ID InfoGeol value";
-        string idTopFelsValue = "ID TopFels value";
+        string idGeoQuatValue = "ID GeoQuat value";
         string idCantonValue = "ID Canton value";
         var firstBoreholeId = 1_009_068;
         var boreholeWithCustomIds = new Borehole
@@ -573,8 +573,8 @@ public class BoreholeExportControllerTest
             new()
             {
                 BoreholeId = secondBoreholeId,
-                CodelistId = 100000009,
-                Value = idTopFelsValue,
+                CodelistId = 100000006,
+                Value = idGeoQuatValue,
             },
         ],
         };
@@ -593,15 +593,15 @@ public class BoreholeExportControllerTest
 
         var firstBorehole = records.Find(r => r.Id == firstBoreholeId.ToString());
         Assert.IsNotNull(firstBorehole);
-        Assert.AreEqual(idInfoGeolValue, firstBorehole.IDInfoGeol);
-        Assert.AreEqual(idCantonValue, firstBorehole.IDCanton);
-        Assert.AreEqual("", firstBorehole.IDTopFels);
+        Assert.AreEqual(idInfoGeolValue, firstBorehole.InfoGeolID);
+        Assert.AreEqual(idCantonValue, firstBorehole.cantonID);
+        Assert.AreEqual("", firstBorehole.GeoQuatID);
 
         var secondBorehole = records.Find(r => r.Id == secondBoreholeId.ToString());
         Assert.IsNotNull(secondBorehole);
-        Assert.AreEqual(idInfoGeolValue, secondBorehole.IDInfoGeol);
-        Assert.AreEqual("", secondBorehole.IDCanton);
-        Assert.AreEqual(idTopFelsValue, secondBorehole.IDTopFels);
+        Assert.AreEqual(idInfoGeolValue, secondBorehole.InfoGeolID);
+        Assert.AreEqual("", secondBorehole.cantonID);
+        Assert.AreEqual(idGeoQuatValue, secondBorehole.GeoQuatID);
     }
 
     [TestMethod]
