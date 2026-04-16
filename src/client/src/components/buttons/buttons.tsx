@@ -5,7 +5,6 @@ import { IconButtonProps } from "@mui/material/IconButton/IconButton";
 import { ArrowDownToLine, Check, ChevronLeft, Pencil, Plus, Save, Trash2 } from "lucide-react";
 import CopyIcon from "../../assets/icons/copy.svg?react";
 import { theme } from "../../AppTheme.ts";
-import { LayerAddButton } from "../../pages/detail/form/stratigraphy/stratigraphyTableComponents.tsx";
 import { capitalizeFirstLetter } from "../../utils.ts";
 import { ButtonProps } from "./buttonsInterface";
 
