@@ -347,6 +347,8 @@ describe("Test for the borehole log.", () => {
     // can delete existing file
     clickOnRowWithText("R01");
     cy.dataCy("logRun-file-0").find(".MuiCardHeader-title").contains("COLDWATER.zip");
+    // eslint-disable-next-line cypress/no-unnecessary-waiting Needed to ensure file is fully loaded before attempting to delete
+    cy.wait(1000);
     cy.dataCy("logRun-file-0").dataCy("delete-file-button").click();
     cy.dataCy("logRun-files").contains("No file added yet...");
     closeLogRunEditor();
