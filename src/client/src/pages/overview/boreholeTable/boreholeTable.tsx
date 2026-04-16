@@ -28,7 +28,6 @@ import {
   useGridApiRef,
 } from "@mui/x-data-grid";
 import { LockKeyhole } from "lucide-react";
-import _ from "lodash";
 import { BoreholeListItem } from "../../../api/borehole.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBoreholesAuth.tsx";
@@ -80,10 +79,12 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
 
   // This useEffect makes sure that the table selection model is only updated when the
   // selectableBoreholeIds have changed and not whenever the boreholes change,
-  // which also happens on every pagination event (server side pagination).
+  // which also happens on every pagination and order event (server side pagination/ordering).
   useEffect(() => {
     if (selectableBoreholeIds && filteredIds) {
-      if (!_.isEqual(selectableBoreholeIds, filteredIds)) {
+      const a = new Set(selectableBoreholeIds);
+      const b = new Set(filteredIds);
+      if (a.size !== b.size || selectableBoreholeIds.some(id => !b.has(id))) {
         setFilteredIds(selectableBoreholeIds);
         setSelectionModel([]);
       }
