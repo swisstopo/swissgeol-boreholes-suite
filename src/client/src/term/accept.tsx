@@ -13,7 +13,6 @@ interface Terms {
   it: string;
 }
 
-// Bump to force all users to re-accept (e.g. if terms change materially).
 const CONSENT_COOKIE_NAME = "boreholes_consent";
 const CONSENT_SCHEMA_VERSION = 1;
 const CONSENT_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
@@ -32,7 +31,7 @@ const readConsent = (): { analytics: boolean } | null => {
 
 const writeConsent = (analytics: boolean): void => {
   const payload = encodeURIComponent(JSON.stringify({ v: CONSENT_SCHEMA_VERSION, analytics }));
-  const secure = window.location.protocol === "https:" ? "; Secure" : "";
+  const secure = globalThis.location.protocol === "https:" ? "; Secure" : "";
   document.cookie = `${CONSENT_COOKIE_NAME}=${payload}; Max-Age=${CONSENT_MAX_AGE_SECONDS}; Path=/; SameSite=Lax${secure}`;
 };
 
