@@ -12,6 +12,7 @@ export const hasPagination = (exists: boolean) => {
 
 export const sortBy = (headerTextContent: string) => {
   cy.get(".MuiDataGrid-columnHeader").contains(headerTextContent).click();
+  cy.wait("@borehole_filter");
   waitForTableData();
 };
 
@@ -36,12 +37,14 @@ export const verifyRowWithContentAlsoContains = (rowContent: string, alsoContain
 export const clickOnNextPage = () => {
   cy.get('[aria-label="next page"]').scrollIntoView();
   cy.get('[aria-label="next page"]').click();
+  cy.wait("@borehole_filter");
   waitForTableData();
 };
 
 export const clickOnLastPage = () => {
   cy.get('[aria-label="last page"]').scrollIntoView();
   cy.get('[aria-label="last page"]').click();
+  cy.wait("@borehole_filter");
   waitForTableData();
 };
 
