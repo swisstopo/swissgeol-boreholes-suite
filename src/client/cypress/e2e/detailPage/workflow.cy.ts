@@ -130,7 +130,7 @@ function assertBoreholeNotEditable(id: number) {
   cy.dataCy("editingstop-button").should("not.exist");
   // Verify all text inputs are readonly
   cy.get(".MuiFormControl-root")
-    .should("have.length", 24)
+    .should("have.length", 22)
     .each(i => {
       cy.wrap(i).should("have.class", "readonly", "readonly");
     });

@@ -116,7 +116,7 @@ describe("Tests for the borehole 'IDs' edit page.", () => {
     setInput("boreholeCodelists.0.comment", "first comment");
 
     // add a second row within the same identifier type card
-    cy.get('[data-cy="add-id-button"]').click();
+    cy.get('[data-cy="100000000-add-id-button"]').click();
     setInput("boreholeCodelists.1.value", "second_code");
     setInput("boreholeCodelists.1.comment", "second comment");
 
