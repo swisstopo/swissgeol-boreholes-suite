@@ -105,7 +105,7 @@ public class LogExportControllerTest : TestControllerBase
         Assert.AreEqual(3, archive.Entries.Count);
         Assert.IsTrue(archive.Entries.Any(e => e.FullName.StartsWith("log_runs_") && e.FullName.EndsWith(".csv")));
         Assert.IsTrue(archive.Entries.Any(e => e.FullName.StartsWith("log_files_") && e.FullName.EndsWith(".csv")));
-        Assert.IsTrue(archive.Entries.Any(e => e.FullName == uploadedFile.Name));
+        Assert.IsTrue(archive.Entries.Any(e => e.FullName == $"{uploadedFile.NameUuid}_{uploadedFile.Name}"));
     }
 
     [TestMethod]
@@ -311,7 +311,7 @@ public class LogExportControllerTest : TestControllerBase
         using var zipStream = new MemoryStream(fileResult.FileContents);
         using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
         Assert.AreEqual(3, archive.Entries.Count);
-        Assert.IsNotNull(archive.Entries.SingleOrDefault(e => e.FullName == logFile.Name));
+        Assert.IsNotNull(archive.Entries.SingleOrDefault(e => e.FullName == $"{logFile.NameUuid}_{logFile.Name}"));
     }
 
     [TestMethod]
