@@ -3,6 +3,7 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using Moq.Protected;
 using System.Net;
+using static BDMS.Helpers;
 
 namespace BDMS;
 
@@ -48,7 +49,7 @@ public class CoordinateServiceTest
     [TestMethod]
     public async Task MigrateCoordinatesOfLV95BoreholeWithAllCoordinatesSet()
     {
-        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
+        SetupCoordinateHttpMock("626103.56923180178", "125366.57802526229");
 
         var borehole = new Borehole
         {
@@ -77,7 +78,7 @@ public class CoordinateServiceTest
     [TestMethod]
     public async Task DoesNotMigrateCoordinatesOfLV95BoreholeWithAllCoordinatesSet()
     {
-        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
+        SetupCoordinateHttpMock(string.Empty, string.Empty);
 
         var borehole = new Borehole
         {
@@ -107,7 +108,7 @@ public class CoordinateServiceTest
     [TestMethod]
     public async Task MigrateCoordinatesOfLV03BoreholeWithMissingDestCoordinates()
     {
-        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
+        SetupCoordinateHttpMock("2655270", "1297874");
 
         var borehole = new Borehole
         {
@@ -136,7 +137,7 @@ public class CoordinateServiceTest
     [TestMethod]
     public async Task DoesNotMigrateCoordinatesOfLV03BoreholeWithMissingSourceCoordinates()
     {
-        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(new HttpClient()).Verifiable();
+        SetupCoordinateHttpMock(string.Empty, string.Empty);
 
         var borehole = new Borehole
         {
@@ -197,4 +198,8 @@ public class CoordinateServiceTest
         await Assert.ThrowsExactlyAsync<HttpRequestException>(
             () => service.MigrateCoordinatesAsync(borehole, false));
     }
+
+    private void SetupCoordinateHttpMock(string easting, string northing) =>
+        httpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>()))
+            .Returns(CreateReframeHttpClient(easting, northing)).Verifiable();
 }

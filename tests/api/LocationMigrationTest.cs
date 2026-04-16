@@ -2,10 +2,7 @@
 using BDMS.Models;
 using Microsoft.Extensions.Logging;
 using Moq;
-using Moq.Protected;
-using System.Net;
-using System.Net.Http.Json;
-using System.Text.RegularExpressions;
+using static BDMS.Helpers;
 
 namespace BDMS;
 
@@ -88,28 +85,9 @@ public class LocationMigrationTest : MaintenanceTaskTestBase
 
     private void SetupLocationHttpMock()
     {
-        var jsonResponse = () => JsonContent.Create(new
-        {
-            results = new[]
-            {
-                new { layerBodId = "ch.swisstopo.swissboundaries3d-land-flaeche.fill", attributes = new { bez = "DARKFALCON", name = string.Empty, gemname = string.Empty } },
-                new { layerBodId = "ch.swisstopo.swissboundaries3d-kanton-flaeche.fill", attributes = new { bez = string.Empty, name = "OCEANMUTANT", gemname = string.Empty } },
-                new { layerBodId = "ch.swisstopo.swissboundaries3d-gemeinde-flaeche.fill", attributes = new { bez = string.Empty, name = string.Empty, gemname = "FIRESHARK" } },
-            },
-        });
-
-        HttpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>())).Returns(() =>
-        {
-            var httpMessageHandler = new Mock<HttpMessageHandler>();
-            httpMessageHandler.Protected()
-                .Setup<Task<HttpResponseMessage>>(
-                    "SendAsync",
-                    ItExpr.Is<HttpRequestMessage>(m => Regex.IsMatch(m.RequestUri!.AbsoluteUri, "\\d{1,}\\.?\\d*,\\d{1,}\\.?\\d*.*&sr=\\d{4,}$")),
-                    ItExpr.IsAny<CancellationToken>())
-                .ReturnsAsync(() => new HttpResponseMessage(HttpStatusCode.OK) { Content = jsonResponse() })
-                .Verifiable();
-            return new HttpClient(httpMessageHandler.Object);
-        }).Verifiable();
+        HttpClientFactoryMock.Setup(cf => cf.CreateClient(It.IsAny<string>()))
+            .Returns(() => CreateLocationHttpClient("DARKFALCON", "OCEANMUTANT", "FIRESHARK"))
+            .Verifiable();
     }
 
     private Borehole CreateBoreholeWithAllLocationAttributes()
