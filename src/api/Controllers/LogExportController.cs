@@ -38,10 +38,10 @@ public class LogExportController : ControllerBase
     /// </summary>
     /// <param name="ids">The IDs of the log runs to export. All must belong to the same borehole.</param>
     /// <param name="withAttachments">Whether to include file attachments in the ZIP.</param>
-    /// <param name="locale">The locale for codelist translations (e.g., "de", "en", "fr", "it").</param>
+    /// <param name="locale">The locale for codelist translations (e.g., "de", "en", "fr", "it"). Defaults to "en".</param>
     [HttpGet("logruns")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> ExportLogRunsAsync([FromQuery][MinLength(1)][MaxLength(MaxExportItems)] IReadOnlyList<int> ids, [FromQuery] bool withAttachments, [FromQuery] string locale)
+    public async Task<IActionResult> ExportLogRunsAsync([FromQuery][MinLength(1)][MaxLength(MaxExportItems)] IReadOnlyList<int> ids, [FromQuery] bool withAttachments, [FromQuery] string locale = "en")
     {
         var logRuns = await context.LogRuns
             .AsNoTracking()
@@ -93,10 +93,10 @@ public class LogExportController : ControllerBase
     /// </summary>
     /// <param name="ids">The IDs of the log files to export. All must belong to the same log run.</param>
     /// <param name="withAttachments">Whether to include file attachments in the ZIP.</param>
-    /// <param name="locale">The locale for codelist translations (e.g., "de", "en", "fr", "it").</param>
+    /// <param name="locale">The locale for codelist translations (e.g., "de", "en", "fr", "it"). Defaults to "en".</param>
     [HttpGet("logfiles")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> ExportLogFilesAsync([FromQuery][MinLength(1)][MaxLength(MaxExportItems)] IReadOnlyList<int> ids, [FromQuery] bool withAttachments, [FromQuery] string locale)
+    public async Task<IActionResult> ExportLogFilesAsync([FromQuery][MinLength(1)][MaxLength(MaxExportItems)] IReadOnlyList<int> ids, [FromQuery] bool withAttachments, [FromQuery] string locale = "en")
     {
         var logFiles = await context.LogFiles
             .AsNoTracking()
