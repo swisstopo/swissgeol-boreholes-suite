@@ -239,7 +239,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
               disabled={checkedIndices.size === 0 || allExtractedStratigraphies.length === 0 || isLoadingBulkAdd}
               variant="contained"
               color="primary"
-              label={t("addStratigraphy", { count: checkedIndices.size > 1 ? checkedIndices.size : 1 })}
+              label={t("addStratigraphy", { count: Math.max(checkedIndices.size, 1) })}
               onClick={addStratigraphies}
             />
           </Stack>
