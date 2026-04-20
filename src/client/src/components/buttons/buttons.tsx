@@ -222,7 +222,15 @@ export const AddRowButton: FC<AddButtonProps> = ({ buttonContent, onClick, dataC
 
   return (
     <Stack
+      role="button"
+      tabIndex={0}
       onClick={onClick}
+      onKeyDown={e => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
       data-cy={dataCy}
       sx={{
         justifyContent: "center",
@@ -232,7 +240,7 @@ export const AddRowButton: FC<AddButtonProps> = ({ buttonContent, onClick, dataC
         padding: 1.5,
         borderRadius: "8px",
         backgroundImage: dashedOutlineImage,
-        "&:hover": {
+        "&:hover, &:focus-visible": {
           backgroundImage: dashedOutlineImageHover,
           cursor: "pointer",
           "& .MuiIconButton-root": {
