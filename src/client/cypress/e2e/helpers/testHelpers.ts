@@ -186,7 +186,7 @@ export const mockGeodesyIntercept = (
 
 /**
  * Mocks the location API.
- * If no fixed response is provided, dynamically computes LV03 from LV95 by subtracting offsets.
+ * If no fixed response is provided, a default body is returned.
  */
 export const mockLocationIntercept = (
   fixedResponse?: { country: string; canton: string; municipality: string },
