@@ -632,6 +632,6 @@ describe("Test for the borehole log.", () => {
     cy.dataCy("withattachments-button").click();
 
     cy.wait("@logexport_error");
-    cy.get(".MuiAlert-message").should("be.visible");
+    cy.get(".MuiAlert-message").contains("An error occurred while fetching a file from the cloud storage.");
   });
 });
