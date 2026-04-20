@@ -32,7 +32,7 @@ describe("Tests for the borehole 'IDs' edit page.", () => {
     evaluateSelect("boreholeCodelists.1.codelistId", "original ID");
 
     // edit identifier (value, codelist and comment)
-    setSelect("boreholeCodelists.0.codelistId", 1); // InfoGeol ID
+    setSelect("boreholeCodelists.0.codelistId", 1); // GeODin ID (100000000)
     setInput("boreholeCodelists.0.value", "we_must_stop_felix");
     setInput("boreholeCodelists.0.comment", "S.2; updated comment");
 
@@ -74,7 +74,6 @@ describe("Tests for the borehole 'IDs' edit page.", () => {
     cy.get('[data-cy="boreholeCodelists.0.deleteCard"]').click();
 
     // only the second identifier should remain (now at index 0)
-    evaluateInput("boreholeCodelists.0.value", "card_value_2");
     evaluateInput("boreholeCodelists.0.value", "card_value_2");
 
     // first card should not exist anymore
