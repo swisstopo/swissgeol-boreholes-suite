@@ -163,63 +163,9 @@ export async function upload(url: string, method: string, payload: FormData): Pr
 }
 
 const getFallbackFileName = (url: string): string => {
-  const path = url.split("?")[0];
-
-  // boreholeexport/{format} — json, csv, or zip
-  const boreholeExportMatch = /^boreholeexport\/(\w+)$/.exec(path);
-  if (boreholeExportMatch) return `export.${boreholeExportMatch[1]}`;
-
-  // logexport/* and photo/export — always ZIP
-  if (path.startsWith("logexport/") || path === "photo/export") return "export.zip";
-
-  // codelist/csv
-  if (path === "codelist/csv") return "export.csv";
-
-  return "export";
-};
-
-const stripSurroundingQuotes = (value: string): string => {
-  const trimmed = value.trim();
-  if (trimmed.length >= 2 && trimmed.startsWith('"') && trimmed.endsWith('"')) {
-    return trimmed.slice(1, -1);
-  }
-  return trimmed;
-};
-
-const decodeRfc5987Value = (value: string): string => {
-  // RFC 5987 format: charset'language'percent-encoded-value (e.g., UTF-8''foo%20bar.zip)
-  const match = /^[^']*'[^']*'(.*)$/.exec(value);
-  if (!match) return value;
-  try {
-    return decodeURIComponent(match[1]);
-  } catch {
-    return match[1];
-  }
-};
-
-/**
- * Extracts a filename from a Content-Disposition header.
- * Prefers the RFC 5987 `filename*=` variant (with proper UTF-8 decoding) over the plain `filename=`,
- * and strips surrounding double quotes.
- */
-const parseContentDispositionFilename = (header: string | null): string | null => {
-  if (!header) return null;
-  const parts = header.split(";").map(p => p.trim());
-
-  const filenameStar = parts.find(p => /^filename\*\s*=/i.test(p));
-  if (filenameStar) {
-    const value = filenameStar.replace(/^filename\*\s*=\s*/i, "");
-    const decoded = decodeRfc5987Value(stripSurroundingQuotes(value));
-    if (decoded) return decoded;
-  }
-
-  const filename = parts.find(p => /^filename\s*=/i.test(p));
-  if (filename) {
-    const value = stripSurroundingQuotes(filename.replace(/^filename\s*=\s*/i, ""));
-    if (value) return value;
-  }
-
-  return null;
+  const match = /export\/(\w+)\?/.exec(url);
+  if (!match) return "export";
+  return `export.${match[1]}`;
 };
 
 export async function download(url: string): Promise<Response> {
@@ -228,7 +174,7 @@ export async function download(url: string): Promise<Response> {
     throw new ApiError("errorOccurredWhileFetchingFileFromCloudStorage", response.status);
   }
   const fileName =
-    parseContentDispositionFilename(response.headers.get("content-disposition")) ?? getFallbackFileName(url);
+    response.headers.get("content-disposition")?.split("; ")[1]?.replace("filename=", "") ?? getFallbackFileName(url);
 
   const blob = await response.blob();
   const downLoadUrl = window.URL.createObjectURL(blob);
