@@ -442,6 +442,7 @@
   "restrictionUntilTo": "Restriction end date (to)",
   "restriction_until": "End of restriction",
   "restriction_until_date": "Restriction end date",
+  "restriction_until_filter_title": "Restriction end date (from to)",
   "restriction_until_from": "Restriction end date (from)",
   "restriction_until_to": "Restriction end date (to)",
   "review": "Review",
