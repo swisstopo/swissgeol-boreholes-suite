@@ -79,9 +79,9 @@ export const MapSettings = ({ setting, i18n, rmExplorerMap, addExplorerMap, hand
       const identifier = layerType === "WMS" ? layer.Name : layer.Identifier;
 
       return search === "" ||
-        (Object.prototype.hasOwnProperty.call(layer, "Title") && layer.Title.toLowerCase().search(search) >= 0) ||
-        (Object.prototype.hasOwnProperty.call(layer, "Abstract") && layer.Abstract.toLowerCase().search(search) >= 0) ||
-        (Object.prototype.hasOwnProperty.call(layer, "Name") && identifier.toLowerCase().search(search) >= 0) ? (
+      (Object.prototype.hasOwnProperty.call(layer, "Title") && layer.Title.toLowerCase().search(search) >= 0) ||
+      (Object.prototype.hasOwnProperty.call(layer, "Abstract") && layer.Abstract.toLowerCase().search(search) >= 0) ||
+      (Object.prototype.hasOwnProperty.call(layer, "Name") && identifier.toLowerCase().search(search) >= 0) ? (
         <Box className="selectable unselectable" key={`${layerType.toLowerCase()}-list-${idx}`} sx={{ p: "0.5em" }}>
           <Stack
             data-cy={`${layerType.toLowerCase()}-list-box`}
@@ -95,7 +95,7 @@ export const MapSettings = ({ setting, i18n, rmExplorerMap, addExplorerMap, hand
           </Stack>
           <Box
             sx={{
-              color: "#787878",
+              color: theme.palette.background.darkgrey,
               fontSize: "0.8em",
             }}>
             <Stack direction="row" spacing={1}>
@@ -202,7 +202,7 @@ export const MapSettings = ({ setting, i18n, rmExplorerMap, addExplorerMap, hand
                 sx={{
                   height: state.wms || state.wmts ? "300px" : 0,
                   overflowY: "auto",
-                  border: state.wms === null && state.wmts === null ? null : "thin solid #cecece",
+                  border: state.wms === null && state.wmts === null ? null : `thin solid ${theme.palette.border.darker}`,
                   marginTop: state.wms === null && state.wmts === null ? null : "1em",
                 }}>
                 {state.wms &&
@@ -229,7 +229,7 @@ export const MapSettings = ({ setting, i18n, rmExplorerMap, addExplorerMap, hand
               sx={{
                 height: "300px",
                 overflowY: "auto",
-                border: "thin solid #cecece",
+                border: `thin solid ${theme.palette.border.darker}`,
               }}>
               {mapSettings &&
                 Object.entries(mapSettings).map(([key, layer], index) => {
@@ -258,7 +258,7 @@ export const MapSettings = ({ setting, i18n, rmExplorerMap, addExplorerMap, hand
                       </Stack>
                       <div
                         style={{
-                          color: "#787878",
+                          color: theme.palette.background.darkgrey,
                           fontSize: "0.8em",
                         }}>
                         <Highlighter searchWords={[state.searchWmtsUser]} textToHighlight={layer.Identifier} />
