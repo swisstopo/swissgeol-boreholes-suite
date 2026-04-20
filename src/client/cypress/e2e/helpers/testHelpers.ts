@@ -157,8 +157,10 @@ export const interceptApiCalls = () => {
  * Mocks the geodesy coordinate transformation API.
  * If no fixed response is provided, dynamically computes LV03 from LV95 by subtracting offsets.
  */
-export const mockGeodesyIntercept = (fixedResponse?: { easting: number; northing: number }, direction?: string) => {
-  direction = direction ?? "lv95tolv03";
+export const mockGeodesyIntercept = (
+  fixedResponse?: { easting: number; northing: number },
+  direction: string = "lv95tolv03",
+) => {
   const url = `https://geodesy.geo.admin.ch/reframe/${direction}?easting=*&northing=*&altitude=0.0&format=json`;
   if (fixedResponse) {
     cy.intercept(url, {
@@ -169,8 +171,8 @@ export const mockGeodesyIntercept = (fixedResponse?: { easting: number; northing
     const offset = direction === "lv95tolv03" ? -1 : 1;
     cy.intercept(url, req => {
       const params = new URL(req.url).searchParams;
-      const easting = parseFloat(params.get("easting")!);
-      const northing = parseFloat(params.get("northing")!);
+      const easting = Number.parseFloat(params.get("easting")!);
+      const northing = Number.parseFloat(params.get("northing")!);
       req.reply({
         statusCode: 200,
         body: {
