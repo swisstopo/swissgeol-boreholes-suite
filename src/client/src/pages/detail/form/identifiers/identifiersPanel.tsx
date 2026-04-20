@@ -24,7 +24,7 @@ import { IdentifiersFormInputs, IdentifiersFormSubmission } from "./identifiersP
 export const IdentifiersPanel: FC = () => {
   const { id } = useRequiredParams<{ id: string }>();
   const { t, i18n } = useTranslation();
-  const { data: borehole } = useBorehole(parseInt(id, 10));
+  const { data: borehole } = useBorehole(Number.parseInt(id, 10));
   const { editingEnabled } = useContext(EditStateContext);
   const { data: codelists } = useCodelists();
 

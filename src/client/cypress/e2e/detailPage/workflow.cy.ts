@@ -136,6 +136,48 @@ function assertBoreholeNotEditable(id: number) {
     });
 }
 
+function testTabReviewandReset(
+  reviewSection: string,
+  reviewSubSection: string,
+  menuItem: (typeof SidebarMenuItem)[keyof typeof SidebarMenuItem],
+  changeTabCallback: () => void,
+) {
+  cy.get("@borehole_id").then(id => {
+    navigateToWorkflowAndStartEditing(id);
+    requestReviewFromValidator();
+    cy.get("sgc-tab").contains("Review").click();
+    isUncheckedTabStatusBox("review", reviewSection);
+    isUncheckedTabStatusBox("review", reviewSubSection);
+    clickTabStatusCheckbox("review", reviewSubSection);
+    isCheckedTabStatusBox("review", reviewSubSection);
+    navigateInSidebar(menuItem);
+    changeTabCallback();
+    navigateInSidebar(SidebarMenuItem.status);
+    cy.get("sgc-tab").contains("Review").click();
+
+    // log was reset to unchecked
+    isUncheckedTabStatusBox("review", reviewSection);
+    isUncheckedTabStatusBox("review", reviewSubSection);
+  });
+}
+
+function changeLogPanel() {
+  verifyTableLength(1);
+  verifyRowContains("Run 111", 0); // log run from complete borehole
+  checkRowWithIndex(0);
+  cy.dataCy("delete-button").click();
+  verifyTableLength(0);
+  saveWithSaveBar();
+}
+
+function changeIdentifiersPanel() {
+  addItem("addIdentifier");
+  setSelect("boreholeCodelists.0.codelistId", 1); // GeODin ID (100000000)
+  setInput("boreholeCodelists.0.value", "AA_PANDAs_for_life");
+  setInput("boreholeCodelists.0.comment", "primary id");
+  saveWithSaveBar();
+}
+
 describe("Tests the publication workflow.", () => {
   it("Can request review from users with controller privilege", () => {
     createBorehole({
@@ -596,52 +638,10 @@ describe("Tests the publication workflow.", () => {
     });
   });
 
-  function testTabReviewandReset(
-    reviewSection: string,
-    reviewSubSection: string,
-    menuItem: (typeof SidebarMenuItem)[keyof typeof SidebarMenuItem],
-    changeTabCallback: () => void,
-  ) {
-    cy.get("@borehole_id").then(id => {
-      navigateToWorkflowAndStartEditing(id);
-      requestReviewFromValidator();
-      cy.get("sgc-tab").contains("Review").click();
-      isUncheckedTabStatusBox("review", reviewSection);
-      isUncheckedTabStatusBox("review", reviewSubSection);
-      clickTabStatusCheckbox("review", reviewSubSection);
-      isCheckedTabStatusBox("review", reviewSubSection);
-      navigateInSidebar(menuItem);
-      changeTabCallback();
-      navigateInSidebar(SidebarMenuItem.status);
-      cy.get("sgc-tab").contains("Review").click();
-
-      // log was reset to unchecked
-      isUncheckedTabStatusBox("review", reviewSection);
-      isUncheckedTabStatusBox("review", reviewSubSection);
-    });
-  }
-
-  function changeLogPanel() {
-    verifyTableLength(1);
-    verifyRowContains("Run 111", 0); // log run from complete borehole
-    checkRowWithIndex(0);
-    cy.dataCy("delete-button").click();
-    verifyTableLength(0);
-    saveWithSaveBar();
-  }
-
   it("Can review and reset log tab", () => {
     createBoreholeWithCompleteDataset().as("borehole_id");
     testTabReviewandReset("LOG", "Log runs", SidebarMenuItem.log, changeLogPanel);
   });
-
-  function changeIdentifiersPanel() {
-    addItem("addIdentifier");
-    setSelect("boreholeCodelists.0.codelistId", 1); // GeODin ID (100000000)
-    setInput("boreholeCodelists.0.value", "AA_PANDAs_for_life");
-    setInput("boreholeCodelists.0.comment", "primary id");
-    saveWithSaveBar();
-  }
 
   it("Can review and reset Identifiers tab", () => {
     createBoreholeWithCompleteDataset().as("borehole_id");
