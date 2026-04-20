@@ -45,7 +45,7 @@ export const LocationSearchData: SearchData[] = [
   {
     id: 6,
     type: "NullableBoolean",
-    label: "national_interest",
+    label: "nationalInterest",
     value: "nationalInterest",
   },
 ];
