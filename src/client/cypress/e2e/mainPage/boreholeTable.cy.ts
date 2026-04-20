@@ -113,8 +113,10 @@ describe("Borehole editor table tests", () => {
 
   it("Verifies all rows are selected on header checkbox click", () => {
     goToRouteAndAcceptTerms("/");
+    cy.wait("@borehole_filter");
     cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "3'000");
     showTableAndWaitForData();
+    cy.wait("@borehole_filter");
     cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "3'000");
 
     // check all rows
@@ -146,6 +148,7 @@ describe("Borehole editor table tests", () => {
     cy.get('[aria-label="previous page"]').scrollIntoView();
     cy.get('[aria-label="previous page"]').click();
     waitForTableData();
+    cy.wait("@borehole_filter");
     cy.contains("1 selected").should("be.visible");
 
     // check all, then uncheck all from page where single selection is not visible
@@ -157,6 +160,8 @@ describe("Borehole editor table tests", () => {
     cy.dataCy("show-filter-button").click();
     cy.contains("Borehole").click();
     setInput("totalDepthMin", "301");
+    cy.focused().blur();
+    cy.wait("@borehole_filter");
     verifyPaginationText("1–100 of 2549");
 
     // check all rows
@@ -164,6 +169,8 @@ describe("Borehole editor table tests", () => {
     cy.contains("3'000").should("not.exist");
     cy.contains("2549 selected").should("be.visible");
 
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(500);
     // navigate to next page
     nextPage();
     cy.contains("2549 selected").should("be.visible");

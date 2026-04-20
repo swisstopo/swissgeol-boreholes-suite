@@ -5,6 +5,7 @@ import { createBorehole, goToRouteAndAcceptTerms } from "../helpers/testHelpers"
 
 function openFilter(filterTitle: string) {
   goToRouteAndAcceptTerms("/");
+  cy.wait("@borehole_filter");
   cy.dataCy("show-filter-button").click();
   cy.contains(filterTitle).click();
 }
@@ -135,12 +136,18 @@ describe("Search filter tests", () => {
   it("filters boreholes by restriction date range", () => {
     openFilter("Location");
     setInput("restrictionUntilFrom", "2021-01-01");
+    // click anywhere to reliably shift focus away from the input
+    cy.contains("h4", "Filter").click();
     cy.wait("@borehole_filter");
     cy.location().its("search").should("contain", "2021-01-01");
     cy.dataCy("filter-chip-restrictionUntilFrom").should("exist");
     cy.dataCy("boreholes-number-preview").should("exist");
 
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(500);
     setInput("restrictionUntilTo", "2022-01-31");
+    // click anywhere to reliably shift focus away from the input
+    cy.contains("h4", "Filter").click();
     cy.wait("@borehole_filter");
     cy.location().its("search").should("contain", "2022-01-31");
     cy.dataCy("boreholes-number-preview").should("have.text", "126");
