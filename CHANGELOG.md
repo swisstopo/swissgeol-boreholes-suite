@@ -8,6 +8,7 @@
 - Extracting multiple stratigraphies from a single PDF document is now supported.
 - Additional borehole identifiers are now administered on a separate detail page.
 - Optional comments to  additional identifiers can now be added.
+- The cluster layer on the map is now displayed at higher zoom levels still.
 
 ### Fixed
 - Boreholes could be edited after being published.
