@@ -356,8 +356,8 @@ describe("Test labeling tool", () => {
   });
 
   it("can extract coordinates and reference system from image", () => {
-    mockGeodesyIntercept({easting: 646358.97, northing: 249017.66});
-    
+    mockGeodesyIntercept({ easting: 646358.97, northing: 249017.66 });
+
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     toggleLabelingPanelWithoutProfiles();
