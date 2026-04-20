@@ -198,8 +198,8 @@ public class LogExportController : ControllerBase
         {
             var toolTypes = lr.LogFiles?.SelectMany(lf => lf.LogFileToolTypeCodes?.Select(tc => tc.Codelist.Code) ?? []).Distinct().Order().ToArray() ?? [];
             csvWriter.WriteField(lr.RunNumber);
-            csvWriter.WriteField(lr.FromDepth);
-            csvWriter.WriteField(lr.ToDepth);
+            csvWriter.WriteField(lr.FromDepth.ToString("F2", CultureInfo.InvariantCulture));
+            csvWriter.WriteField(lr.ToDepth.ToString("F2", CultureInfo.InvariantCulture));
             csvWriter.WriteField(string.Join(",", toolTypes));
             csvWriter.WriteField(GetCodelistText(lr.BoreholeStatus, locale));
             csvWriter.WriteField(lr.RunDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
