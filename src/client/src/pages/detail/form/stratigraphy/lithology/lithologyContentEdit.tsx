@@ -587,7 +587,9 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
           )}
         </Stack>
         <AddRowButton
-          buttonContent={<LayerAddButton onClick={() => handleEditLithology(-1)} dataCy="add-row-button" />}
+          onClick={() => handleEditLithology(-1)}
+          dataCy="add-row-button"
+          buttonContent={<LayerAddButton />}
         />
       </Stack>
       <LithologyModal lithology={selectedLithology} updateLithology={updateTmpLithology} />

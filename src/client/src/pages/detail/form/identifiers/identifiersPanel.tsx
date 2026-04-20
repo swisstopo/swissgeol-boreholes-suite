@@ -178,20 +178,20 @@ export const IdentifiersPanel: FC = () => {
                     ))}
                     {editingEnabled && (
                       <AddRowButton
+                        dataCy={`${watchedCodelists?.[firstIndex]?.codelistId}-add-id-button`}
+                        onClick={() => {
+                          append({
+                            boreholeId: borehole.id,
+                            codelistId: watchedCodelists?.[firstIndex]?.codelistId ?? firstField.codelistId,
+                            value: "",
+                            comment: null,
+                          });
+                        }}
                         buttonContent={
                           <Stack
                             direction={"row"}
                             gap={1}
                             justifyContent={"space-between"}
-                            onClick={() => {
-                              append({
-                                boreholeId: borehole.id,
-                                codelistId: watchedCodelists?.[firstIndex]?.codelistId ?? firstField.codelistId,
-                                value: "",
-                                comment: null,
-                              });
-                            }}
-                            data-cy={`${watchedCodelists?.[firstIndex]?.codelistId}-add-id-button`}
                             sx={{ color: theme.palette.primary.main }}>
                             <Plus />
                             <Typography variant="body2">{t("addIDCodeAndComment")}</Typography>
