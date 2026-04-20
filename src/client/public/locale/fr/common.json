@@ -15,6 +15,7 @@
   "addGroundwaterLevelMeasurement": "Ajouter une mesure des eaux souterraines",
   "addHydrotest": "Ajouter un hydro-test",
   "addHydrotestResult": "Ajouter un résultat",
+  "addIDCodeAndComment": "Ajouter code d'ID et commentaire",
   "addIdentifier": "Ajouter ID",
   "addInstrument": "Ajouter un instrument",
   "addLogRun": "Ajouter un run",

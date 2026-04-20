@@ -194,7 +194,7 @@ export const IdentifiersPanel: FC = () => {
                             data-cy={`${watchedCodelists?.[firstIndex]?.codelistId}-add-id-button`}
                             sx={{ color: theme.palette.primary.main }}>
                             <Plus />
-                            <Typography variant="body2">{"ID Code und Kommentar hinzufügen"}</Typography>
+                            <Typography variant="body2">{t("addIDCodeAndComment")}</Typography>
                           </Stack>
                         }
                       />
