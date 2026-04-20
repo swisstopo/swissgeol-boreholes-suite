@@ -67,7 +67,7 @@ export const IdentifiersPanel: FC = () => {
           delete c.codelist;
           return c;
         })
-        .filter(c => c.codelistId && c.value && c.boreholeId);
+        .filter(c => c.codelistId != null && c.value && c.boreholeId != null);
     };
 
     data.boreholeCodelists = getCompleteCodelists(data.boreholeCodelists);
