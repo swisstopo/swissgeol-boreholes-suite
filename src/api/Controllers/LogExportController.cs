@@ -33,6 +33,20 @@ public class LogExportController : ControllerBase
         this.boreholePermissionService = boreholePermissionService;
     }
 
+    private IQueryable<LogRun> LogRunsForExport => context.LogRuns
+        .AsNoTracking()
+        .Include(lr => lr.ConveyanceMethod)
+        .Include(lr => lr.BoreholeStatus)
+        .Include(lr => lr.LogFiles).ThenInclude(lf => lf.LogFileToolTypeCodes).ThenInclude(tc => tc.Codelist);
+
+    private IQueryable<LogFile> LogFilesForExport => context.LogFiles
+        .AsNoTracking()
+        .Include(lf => lf.LogRun)
+        .Include(lf => lf.PassType)
+        .Include(lf => lf.DataPackage)
+        .Include(lf => lf.DepthType)
+        .Include(lf => lf.LogFileToolTypeCodes).ThenInclude(tc => tc.Codelist);
+
     /// <summary>
     /// Exports log runs and their associated log files as a ZIP archive containing CSV files and optionally the file attachments.
     /// </summary>
@@ -43,11 +57,7 @@ public class LogExportController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> ExportLogRunsAsync([FromQuery][MinLength(1)][MaxLength(MaxExportItems)] IReadOnlyList<int> ids, [FromQuery] bool withAttachments, [FromQuery] string locale = "en")
     {
-        var logRuns = await context.LogRuns
-            .AsNoTracking()
-            .Include(lr => lr.ConveyanceMethod)
-            .Include(lr => lr.BoreholeStatus)
-            .Include(lr => lr.LogFiles).ThenInclude(lf => lf.LogFileToolTypeCodes).ThenInclude(tc => tc.Codelist)
+        var logRuns = await LogRunsForExport
             .Where(lr => ids.Contains(lr.Id))
             .ToListAsync()
             .ConfigureAwait(false);
@@ -60,13 +70,7 @@ public class LogExportController : ControllerBase
         var boreholeId = boreholeIds.Single();
         if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        var logFiles = await context.LogFiles
-            .AsNoTracking()
-            .Include(lf => lf.LogRun)
-            .Include(lf => lf.PassType)
-            .Include(lf => lf.DataPackage)
-            .Include(lf => lf.DepthType)
-            .Include(lf => lf.LogFileToolTypeCodes).ThenInclude(tc => tc.Codelist)
+        var logFiles = await LogFilesForExport
             .Where(lf => ids.Contains(lf.LogRunId))
             .ToListAsync()
             .ConfigureAwait(false);
@@ -98,14 +102,7 @@ public class LogExportController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> ExportLogFilesAsync([FromQuery][MinLength(1)][MaxLength(MaxExportItems)] IReadOnlyList<int> ids, [FromQuery] bool withAttachments, [FromQuery] string locale = "en")
     {
-        var logFiles = await context.LogFiles
-            .AsNoTracking()
-            .Include(lf => lf.LogRun).ThenInclude(lr => lr.ConveyanceMethod)
-            .Include(lf => lf.LogRun).ThenInclude(lr => lr.BoreholeStatus)
-            .Include(lf => lf.PassType)
-            .Include(lf => lf.DataPackage)
-            .Include(lf => lf.DepthType)
-            .Include(lf => lf.LogFileToolTypeCodes).ThenInclude(tc => tc.Codelist)
+        var logFiles = await LogFilesForExport
             .Where(lf => ids.Contains(lf.Id))
             .ToListAsync()
             .ConfigureAwait(false);
@@ -118,12 +115,7 @@ public class LogExportController : ControllerBase
         var logRun = logFiles[0].LogRun!;
         if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), logRun.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        // Also load ToolTypeCodes for the LogRun CSV (via its LogFiles)
-        var logRunWithFiles = await context.LogRuns
-            .AsNoTracking()
-            .Include(lr => lr.ConveyanceMethod)
-            .Include(lr => lr.BoreholeStatus)
-            .Include(lr => lr.LogFiles).ThenInclude(lf => lf.LogFileToolTypeCodes).ThenInclude(tc => tc.Codelist)
+        var logRunWithFiles = await LogRunsForExport
             .SingleOrDefaultAsync(lr => lr.Id == logRun.Id)
             .ConfigureAwait(false);
 
