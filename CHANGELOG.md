@@ -4,6 +4,12 @@
 
 ### Changed
 - Duplicate boreholes (matching coordinates and total depth within the same workgroup or within the imported file) can now be imported.
+- Translations for borehole identifier codelist entries were streamlined.
+- Extracting multiple stratigraphies from a single PDF document is now supported.
+- The cluster layer on the map is now displayed at higher zoom levels still.
+
+### Fixed
+- Boreholes could be edited after being published.
 
 ## v2.1.1530 - 2026-04-02
 
