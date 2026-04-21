@@ -50,10 +50,10 @@ export const ExtractionImageContainer: FC<ExtractionImageContainerProps> = ({
   }, [fileInfo, pageCount, setActivePage, setPageCount]);
 
   const getSourceFromLayerName = useCallback((layers: BaseLayer[], layerName: string) => {
-    const layer = layers.find(l => l instanceof VectorLayer && l.get("name") === layerName) as VectorLayer<
-      Feature<Geometry>
-    >;
-    return layer?.getSource();
+    const layer = layers.find(l => l instanceof VectorLayer && l.get("name") === layerName) as
+      | VectorLayer<VectorSource<Feature<Geometry>>>
+      | undefined;
+    return layer?.getSource() as VectorSource | undefined;
   }, []);
 
   const addBoundingBoxesToSource = (boxes: ExtractionBoundingBox[], source: VectorSource, page: number) => {

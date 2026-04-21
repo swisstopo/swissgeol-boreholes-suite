@@ -63,6 +63,7 @@ export const WorkflowView = () => {
     hasLithostratigraphy,
     hasChronostratigraphy,
     hasLogRuns,
+    hasIdentifiers,
   } = useBoreholeDataAvailability(borehole);
 
   const {
@@ -86,7 +87,13 @@ export const WorkflowView = () => {
     return [
       {
         name: () => t("borehole"),
-        fields: [field("location"), field("general"), field("sections", !hasSections), field("geometry", !hasGeometry)],
+        fields: [
+          field("location"),
+          field("identifiers", !hasIdentifiers, "ids"),
+          field("general"),
+          field("sections", !hasSections),
+          field("geometry", !hasGeometry),
+        ],
       },
       {
         name: () => t("stratigraphy"),

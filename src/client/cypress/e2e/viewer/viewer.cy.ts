@@ -22,7 +22,7 @@ describe("Viewer tests", () => {
     clickOnRowWithText("Aaron Rempel");
     // // verify all text inputs are readonly on Location tab
     cy.get(".MuiFormControl-root")
-      .should("have.length", 24)
+      .should("have.length", 22)
       .each(i => {
         cy.wrap(i).should("have.class", "readonly", "readonly");
       });

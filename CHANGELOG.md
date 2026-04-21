@@ -6,7 +6,10 @@
 - Duplicate boreholes (matching coordinates and total depth within the same workgroup or within the imported file) can now be imported.
 - Translations for borehole identifier codelist entries were streamlined.
 - Extracting multiple stratigraphies from a single PDF document is now supported.
+- Additional borehole identifiers are now administered on a separate detail page.
+- Optional comments to additional identifiers can now be added.
 - The cluster layer on the map is now displayed at higher zoom levels still.
+- Openlayers was upgraded to version 10.9.0.
 
 ### Fixed
 - Boreholes could be edited after being published.
