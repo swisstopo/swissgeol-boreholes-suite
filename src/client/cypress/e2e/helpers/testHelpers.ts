@@ -252,8 +252,14 @@ export const login = (user: string) => {
   );
 };
 
-const setConsentCookie = () => {
-  cy.setCookie("boreholes_consent", encodeURIComponent(JSON.stringify({ v: 1, analytics: true })));
+const CONSENT_COOKIE_VALUE = encodeURIComponent(JSON.stringify({ v: 1, analytics: true }));
+
+const visitWithConsent = (route: string) => {
+  cy.visit(route, {
+    onBeforeLoad(win) {
+      win.document.cookie = `boreholes_consent=${CONSENT_COOKIE_VALUE}; path=/; SameSite=Lax`;
+    },
+  });
 };
 
 export const clickAcceptIfPresent = () => {
@@ -265,15 +271,13 @@ export const clickAcceptIfPresent = () => {
 };
 
 export const goToDetailRouteAndAcceptTerms = (route: string) => {
-  setConsentCookie();
-  cy.visit(route);
+  visitWithConsent(route);
   clickAcceptIfPresent();
   cy.wait(["@borehole_by_id", "@get-current-user"]);
 };
 
 export const goToRouteAndAcceptTerms = (route: string) => {
-  setConsentCookie();
-  cy.visit(route);
+  visitWithConsent(route);
   clickAcceptIfPresent();
 };
 
