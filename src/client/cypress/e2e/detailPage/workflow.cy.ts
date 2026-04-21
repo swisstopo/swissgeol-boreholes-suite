@@ -136,7 +136,7 @@ function assertBoreholeNotEditable(id: number) {
     });
 }
 
-function testTabReviewandReset(
+function testTabReviewAndReset(
   reviewSection: string,
   reviewSubSection: string,
   menuItem: (typeof SidebarMenuItem)[keyof typeof SidebarMenuItem],
@@ -640,11 +640,11 @@ describe("Tests the publication workflow.", () => {
 
   it("Can review and reset log tab", () => {
     createBoreholeWithCompleteDataset().as("borehole_id");
-    testTabReviewandReset("LOG", "Log runs", SidebarMenuItem.log, changeLogPanel);
+    testTabReviewAndReset("LOG", "Log runs", SidebarMenuItem.log, changeLogPanel);
   });
 
   it("Can review and reset Identifiers tab", () => {
     createBoreholeWithCompleteDataset().as("borehole_id");
-    testTabReviewandReset("Borehole", "IDs", SidebarMenuItem.identifiers, changeIdentifiersPanel);
+    testTabReviewAndReset("Borehole", "IDs", SidebarMenuItem.identifiers, changeIdentifiersPanel);
   });
 });
