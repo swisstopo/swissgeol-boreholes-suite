@@ -162,47 +162,6 @@ export async function upload(url: string, method: string, payload: FormData): Pr
   return await fetchApiV2Base(url, method, payload);
 }
 
-const getFallbackFileName = (url: string): string => {
-  const match = /export\/(\w+)\?/.exec(url);
-  if (!match) return "export";
-  return `export.${match[1]}`;
-};
-
-export async function download(url: string): Promise<Response> {
-  const response = await fetchApiV2Base(url, "GET", null);
-  if (!response.ok) {
-    throw new ApiError("errorOccurredWhileFetchingFileFromCloudStorage", response.status);
-  }
-  const fileName =
-    response.headers.get("content-disposition")?.split("; ")[1]?.replace("filename=", "") ?? getFallbackFileName(url);
-
-  const blob = await response.blob();
-  const downLoadUrl = window.URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = downLoadUrl;
-  link.setAttribute("download", fileName);
-  document.body.appendChild(link);
-  link.click();
-  return response;
-}
-
-export async function downloadPost(url: string, body: object): Promise<Response> {
-  const response = await fetchApiV2Base(url, "POST", JSON.stringify(body), "application/json");
-  if (!response.ok) {
-    throw new ApiError("errorOccurredWhileFetchingFileFromCloudStorage", response.status);
-  }
-  const fileName = response.headers.get("content-disposition")?.split("; ")[1]?.replace("filename=", "") ?? "export";
-
-  const blob = await response.blob();
-  const downLoadUrl = window.URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = downLoadUrl;
-  link.setAttribute("download", fileName);
-  document.body.appendChild(link);
-  link.click();
-  return response;
-}
-
 // Enable using react-query outputs across the application.
 
 const staleTime10Min = 10 * 60 * 1000;
@@ -368,8 +327,6 @@ export const updateSection = async (section: Section): Promise<Section> => {
 export const deleteSection = async (id: number): Promise<void> => {
   return await fetchApiV2Legacy(`section?id=${id}`, "DELETE");
 };
-
-export const downloadCodelistCsv = (): Promise<Response> => download(`codelist/csv`);
 
 export const getDocumentsByBoreholeId = async (boreholeId: number): Promise<Document[]> => {
   return await fetchApiV2Legacy(`document/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
