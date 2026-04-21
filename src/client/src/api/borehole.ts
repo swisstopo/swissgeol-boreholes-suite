@@ -25,6 +25,7 @@ export interface BasicIdentifier {
   codelistId: number | null;
   codelist?: Codelist;
   value: string;
+  comment?: string | null;
 }
 
 // Avoids circular reference for BoreholeV2

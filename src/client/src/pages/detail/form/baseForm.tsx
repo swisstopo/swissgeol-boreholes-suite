@@ -17,6 +17,7 @@ interface BaseFormProps<T extends FieldValues> {
   onReset?: () => void;
   tabStatusToReset: TabName;
   children: ReactNode;
+  triggerValidationBeforeSave?: boolean;
 }
 
 export const BaseForm = <T extends FieldValues>({
@@ -25,6 +26,7 @@ export const BaseForm = <T extends FieldValues>({
   onReset,
   tabStatusToReset,
   children,
+  triggerValidationBeforeSave = false,
 }: BaseFormProps<T>) => {
   const { registerSaveHandler, registerResetHandler, unMount } = useContext(SaveContext);
   const { setExtractionObject } = useLabelingContext();
@@ -54,12 +56,16 @@ export const BaseForm = <T extends FieldValues>({
   );
 
   const resetAndSubmitForm = useCallback(async () => {
+    if (triggerValidationBeforeSave) {
+      const isValid = await formMethods.trigger();
+      if (!isValid) return false;
+    }
     const currentValues = getValues();
     reset(currentValues);
     setExtractionObject(undefined);
     resetTabStatus();
     return await onSubmit(currentValues);
-  }, [getValues, onSubmit, reset, resetTabStatus, setExtractionObject]);
+  }, [formMethods, getValues, onSubmit, reset, resetTabStatus, setExtractionObject, triggerValidationBeforeSave]);
 
   const resetWithoutSave = useCallback(() => {
     reset();
