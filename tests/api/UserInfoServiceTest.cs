@@ -1,4 +1,4 @@
-using BDMS.Authentication;
+﻿using BDMS.Authentication;
 using Microsoft.Extensions.Caching.Memory;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
