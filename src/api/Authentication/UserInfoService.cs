@@ -24,11 +24,12 @@ public class UserInfoService
     /// </summary>
     internal const int CacheTimeToLiveInMinutes = 60;
 
+    private const string DiscoveryCacheKey = "userinfo-endpoint";
+
     private readonly IMemoryCache cache;
     private readonly HttpClient httpClient;
     private readonly IConfiguration configuration;
     private readonly ILogger<UserInfoService> logger;
-    private string? userInfoEndpoint;
 
     public UserInfoService(IMemoryCache cache, IHttpClientFactory httpClientFactory, IConfiguration configuration, ILogger<UserInfoService> logger)
     {
@@ -44,8 +45,9 @@ public class UserInfoService
     /// </summary>
     /// <param name="sub">The user's subject identifier.</param>
     /// <param name="accessToken">The access token to authenticate with the UserInfo endpoint.</param>
+    /// <param name="cancellationToken">Token to cancel the operation.</param>
     /// <returns>The user's profile claims, or <c>null</c> if the UserInfo endpoint is unreachable.</returns>
-    public async Task<IEnumerable<Claim>?> GetUserInfoClaimsAsync(string sub, string accessToken)
+    public async Task<IEnumerable<Claim>?> GetUserInfoClaimsAsync(string sub, string accessToken, CancellationToken cancellationToken = default)
     {
         var cacheKey = $"userinfo:{sub}";
 
@@ -54,24 +56,24 @@ public class UserInfoService
 
         try
         {
-            var endpoint = await GetUserInfoEndpointAsync().ConfigureAwait(false);
+            var endpoint = await GetUserInfoEndpointAsync(cancellationToken).ConfigureAwait(false);
             var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
-            var response = await httpClient.SendAsync(request).ConfigureAwait(false);
+            var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
 
-            var userInfo = await response.Content.ReadFromJsonAsync<Dictionary<string, JsonElement>>().ConfigureAwait(false);
+            var userInfo = await response.Content.ReadFromJsonAsync<Dictionary<string, JsonElement>>(cancellationToken).ConfigureAwait(false);
 
             var claims = new List<Claim>();
             if (userInfo != null)
             {
-                if (userInfo.TryGetValue("email", out var email))
-                    claims.Add(new Claim(ClaimTypes.Email, email.GetString()!));
-                if (userInfo.TryGetValue("given_name", out var givenName))
-                    claims.Add(new Claim(ClaimTypes.GivenName, givenName.GetString()!));
-                if (userInfo.TryGetValue("family_name", out var familyName))
-                    claims.Add(new Claim(ClaimTypes.Surname, familyName.GetString()!));
+                if (userInfo.TryGetValue("email", out var email) && email.GetString() is string emailValue)
+                    claims.Add(new Claim(ClaimTypes.Email, emailValue));
+                if (userInfo.TryGetValue("given_name", out var givenName) && givenName.GetString() is string givenNameValue)
+                    claims.Add(new Claim(ClaimTypes.GivenName, givenNameValue));
+                if (userInfo.TryGetValue("family_name", out var familyName) && familyName.GetString() is string familyNameValue)
+                    claims.Add(new Claim(ClaimTypes.Surname, familyNameValue));
             }
 
             var cacheOptions = new MemoryCacheEntryOptions()
@@ -87,22 +89,27 @@ public class UserInfoService
         }
     }
 
-    private async Task<string> GetUserInfoEndpointAsync()
+    private async Task<string> GetUserInfoEndpointAsync(CancellationToken cancellationToken)
     {
-        if (userInfoEndpoint != null)
-            return userInfoEndpoint;
+        if (cache.TryGetValue(DiscoveryCacheKey, out string? cachedEndpoint) && cachedEndpoint is not null)
+            return cachedEndpoint;
 
         var authority = configuration["Auth:Authority"]?.TrimEnd('/');
         var discoveryUrl = $"{authority}/.well-known/openid-configuration";
 
-        var response = await httpClient.GetAsync(discoveryUrl).ConfigureAwait(false);
+        var response = await httpClient.GetAsync(discoveryUrl, cancellationToken).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
 
-        var discovery = await response.Content.ReadFromJsonAsync<Dictionary<string, JsonElement>>().ConfigureAwait(false);
+        var discovery = await response.Content.ReadFromJsonAsync<Dictionary<string, JsonElement>>(cancellationToken).ConfigureAwait(false);
 
-        userInfoEndpoint = discovery!["userinfo_endpoint"].GetString()
-            ?? throw new InvalidOperationException("UserInfo endpoint not found in OIDC discovery document.");
+        if (discovery is null
+            || !discovery.TryGetValue("userinfo_endpoint", out var element)
+            || element.GetString() is not string url)
+        {
+            throw new InvalidOperationException("UserInfo endpoint not found in OIDC discovery document.");
+        }
 
-        return userInfoEndpoint;
+        cache.Set(DiscoveryCacheKey, url, TimeSpan.FromMinutes(CacheTimeToLiveInMinutes));
+        return url;
     }
 }
