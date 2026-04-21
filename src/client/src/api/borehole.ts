@@ -259,7 +259,13 @@ export enum NullableBooleanFilter {
   null,
 }
 
-export type NullableBooleanFilterValue = "true" | "false" | "null" | undefined;
+export enum BooleanFilter {
+  false,
+  true,
+}
+
+export type BooleanFilterValue = "true" | "false" | undefined;
+export type NullableBooleanFilterValue = BooleanFilterValue | "null";
 
 interface BaseFilterRequest {
   polygon?: Geometry | null;
@@ -291,22 +297,22 @@ export interface FilterRequest extends BaseFilterRequest {
   nationalInterest?: NullableBooleanFilterValue;
   topBedrockIntersected?: NullableBooleanFilterValue;
   hasGroundwater?: NullableBooleanFilterValue;
-  hasGeometry?: NullableBooleanFilterValue;
-  hasLogs?: NullableBooleanFilterValue;
-  hasProfiles?: NullableBooleanFilterValue;
-  hasPhotos?: NullableBooleanFilterValue;
-  hasDocuments?: NullableBooleanFilterValue;
+  hasGeometry?: BooleanFilterValue;
+  hasLogs?: BooleanFilterValue;
+  hasProfiles?: BooleanFilterValue;
+  hasPhotos?: BooleanFilterValue;
+  hasDocuments?: BooleanFilterValue;
 }
 
 export interface FilterRequestSubmission extends BaseFilterRequest {
   nationalInterest?: NullableBooleanFilter;
   topBedrockIntersected?: NullableBooleanFilter;
   hasGroundwater?: NullableBooleanFilter;
-  hasGeometry?: NullableBooleanFilter;
-  hasLogs?: NullableBooleanFilter;
-  hasProfiles?: NullableBooleanFilter;
-  hasPhotos?: NullableBooleanFilter;
-  hasDocuments?: NullableBooleanFilter;
+  hasGeometry?: BooleanFilter;
+  hasLogs?: BooleanFilter;
+  hasProfiles?: BooleanFilter;
+  hasPhotos?: BooleanFilter;
+  hasDocuments?: BooleanFilter;
 }
 
 export interface FilterResponse {
@@ -325,6 +331,12 @@ export const filterBoreholes = async (filterRequest: FilterRequestSubmission): P
   return await fetchApiV2WithApiError<FilterResponse>("borehole/filter", "POST", filterRequest);
 };
 
+export const parseBooleanFilter = (value: "true" | "false" | undefined | null): BooleanFilter | undefined => {
+  if (value === "true") return BooleanFilter.true;
+  if (value === "false") return BooleanFilter.false;
+  return undefined;
+};
+
 export const parseNullableBooleanFilter = (
   value: "true" | "false" | "null" | undefined | null,
 ): NullableBooleanFilter | undefined => {
@@ -336,14 +348,14 @@ export const parseNullableBooleanFilter = (
 
 export const toFilterRequestSubmission = (filterRequest: FilterRequest): FilterRequestSubmission => ({
   ...filterRequest,
-  hasGeometry: parseNullableBooleanFilter(filterRequest.hasGeometry),
   hasGroundwater: parseNullableBooleanFilter(filterRequest.hasGroundwater),
-  hasLogs: parseNullableBooleanFilter(filterRequest.hasLogs),
-  hasProfiles: parseNullableBooleanFilter(filterRequest.hasProfiles),
-  hasPhotos: parseNullableBooleanFilter(filterRequest.hasPhotos),
-  hasDocuments: parseNullableBooleanFilter(filterRequest.hasDocuments),
   topBedrockIntersected: parseNullableBooleanFilter(filterRequest.topBedrockIntersected),
   nationalInterest: parseNullableBooleanFilter(filterRequest.nationalInterest),
+  hasGeometry: parseBooleanFilter(filterRequest.hasGeometry),
+  hasLogs: parseBooleanFilter(filterRequest.hasLogs),
+  hasProfiles: parseBooleanFilter(filterRequest.hasProfiles),
+  hasPhotos: parseBooleanFilter(filterRequest.hasPhotos),
+  hasDocuments: parseBooleanFilter(filterRequest.hasDocuments),
 });
 
 /**
@@ -388,11 +400,11 @@ export function getDefaultFilterRequestFromSession(): FilterRequest {
     nationalInterest: get(SessionKeys.nationalInterest) as NullableBooleanFilterValue,
     topBedrockIntersected: get(SessionKeys.topBedrockIntersected) as NullableBooleanFilterValue,
     hasGroundwater: get(SessionKeys.hasGroundwater) as NullableBooleanFilterValue,
-    hasGeometry: get(SessionKeys.hasGeometry) as NullableBooleanFilterValue,
-    hasLogs: get(SessionKeys.hasLogs) as NullableBooleanFilterValue,
-    hasProfiles: get(SessionKeys.hasProfiles) as NullableBooleanFilterValue,
-    hasPhotos: get(SessionKeys.hasPhotos) as NullableBooleanFilterValue,
-    hasDocuments: get(SessionKeys.hasDocuments) as NullableBooleanFilterValue,
+    hasGeometry: get(SessionKeys.hasGeometry) as BooleanFilterValue,
+    hasLogs: get(SessionKeys.hasLogs) as BooleanFilterValue,
+    hasProfiles: get(SessionKeys.hasProfiles) as BooleanFilterValue,
+    hasPhotos: get(SessionKeys.hasPhotos) as BooleanFilterValue,
+    hasDocuments: get(SessionKeys.hasDocuments) as BooleanFilterValue,
     workflowStatus: get(SessionKeys.workflowStatus) ?? undefined,
   };
   return Object.fromEntries(Object.entries(allFilterParams).filter(([, value]) => value != null));

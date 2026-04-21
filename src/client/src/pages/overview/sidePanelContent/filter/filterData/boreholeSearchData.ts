@@ -96,7 +96,7 @@ export const boreholeSearchData = [
 
   {
     id: 10,
-    type: "Boolean",
+    type: "NullableBoolean",
     label: "topBedrockIntersected",
     value: "topBedrockIntersected",
   },
