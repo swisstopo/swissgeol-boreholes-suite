@@ -186,6 +186,23 @@ export async function download(url: string): Promise<Response> {
   return response;
 }
 
+export async function downloadPost(url: string, body: object): Promise<Response> {
+  const response = await fetchApiV2Base(url, "POST", JSON.stringify(body), "application/json");
+  if (!response.ok) {
+    throw new ApiError("errorOccurredWhileFetchingFileFromCloudStorage", response.status);
+  }
+  const fileName = response.headers.get("content-disposition")?.split("; ")[1]?.replace("filename=", "") ?? "export";
+
+  const blob = await response.blob();
+  const downLoadUrl = window.URL.createObjectURL(blob);
+  const link = document.createElement("a");
+  link.href = downLoadUrl;
+  link.setAttribute("download", fileName);
+  document.body.appendChild(link);
+  link.click();
+  return response;
+}
+
 // Enable using react-query outputs across the application.
 
 const staleTime10Min = 10 * 60 * 1000;

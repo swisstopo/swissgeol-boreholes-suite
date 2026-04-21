@@ -5,7 +5,7 @@ import { ArrowDownToLine, X } from "lucide-react";
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { NullableDateString, User } from "../../../../api/apiInterfaces.ts";
 import { boreholeQueryKey } from "../../../../api/borehole.ts";
-import { download, fetchApiV2WithApiError, uploadWithApiError } from "../../../../api/fetchApiV2.ts";
+import { downloadPost, fetchApiV2WithApiError, uploadWithApiError } from "../../../../api/fetchApiV2.ts";
 import { Codelist } from "../../../../components/codelist.ts";
 import { ExportItem } from "../../../../components/export/exportDialog.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
@@ -137,19 +137,11 @@ export const useLogRunMutations = () => {
 };
 
 export const exportLogRuns = async (ids: number[], withAttachments: boolean, locale: string): Promise<Response> => {
-  const params = new URLSearchParams();
-  ids.forEach(id => params.append("ids", id.toString()));
-  params.append("withAttachments", withAttachments.toString());
-  params.append("locale", locale);
-  return await download(`logexport/logruns?${params.toString()}`);
+  return await downloadPost("log/export", { logRunIds: ids, withAttachments, locale });
 };
 
 export const exportLogFiles = async (ids: number[], withAttachments: boolean, locale: string): Promise<Response> => {
-  const params = new URLSearchParams();
-  ids.forEach(id => params.append("ids", id.toString()));
-  params.append("withAttachments", withAttachments.toString());
-  params.append("locale", locale);
-  return await download(`logexport/logfiles?${params.toString()}`);
+  return await downloadPost("log/export", { logFileIds: ids, withAttachments, locale });
 };
 
 /**
@@ -169,8 +161,7 @@ export const useLogExport = (
   const getSelectedIds = useCallback((): number[] => {
     return selectionModel
       .map(selectedId => rows.find(r => r.tmpId === String(selectedId) || r.id === selectedId)?.id)
-      .filter((id): id is number => id !== undefined && id > 0)
-      .slice(0, 100);
+      .filter((id): id is number => id !== undefined && id > 0);
   }, [selectionModel, rows]);
 
   const beginExport = useCallback(() => {
@@ -194,24 +185,8 @@ export const useLogExport = (
   }, [hasChanges, showPrompt]);
 
   const startExport = useCallback(() => {
-    if (selectionModel.length > 100) {
-      showPrompt("exportMoreThan100", [
-        {
-          label: "cancel",
-          icon: createElement(X),
-          variant: "outlined",
-        },
-        {
-          label: "exportFirst100",
-          icon: createElement(ArrowDownToLine),
-          variant: "contained",
-          action: () => beginExport(),
-        },
-      ]);
-    } else {
-      beginExport();
-    }
-  }, [selectionModel.length, showPrompt, beginExport]);
+    beginExport();
+  }, [beginExport]);
 
   const exportItems: ExportItem[] = useMemo(
     () => [

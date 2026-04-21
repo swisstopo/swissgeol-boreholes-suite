@@ -125,8 +125,7 @@ export const interceptApiCalls = () => {
   }).as("load-extraction-file");
 
   cy.intercept("/api/v2/log?boreholeId=**").as("logrun_by_borehole_GET");
-  cy.intercept("/api/v2/logexport/logruns**").as("logexport_logruns");
-  cy.intercept("/api/v2/logexport/logfiles**").as("logexport_logfiles");
+  cy.intercept("POST", "/api/v2/log/export").as("log_export");
 
   cy.intercept("dataextraction/api/V1/extract_data").as("extract-data");
   cy.intercept("dataextraction/api/V1/extract_stratigraphy").as("extract-stratigraphy");
@@ -976,8 +975,8 @@ export const createInstrument = ({
  * Stubs a cloud storage (S3) fetch failure for the given URL pattern.
  * Used in export tests to simulate a missing object in the cloud.
  */
-export const stubCloudStorageError = (urlPattern: string, alias: string) => {
-  cy.intercept("GET", urlPattern, {
+export const stubCloudStorageError = (urlPattern: string, alias: string, method: "GET" | "POST" = "GET") => {
+  cy.intercept(method, urlPattern, {
     statusCode: 500,
     body: {
       title: "NoSuchKey",

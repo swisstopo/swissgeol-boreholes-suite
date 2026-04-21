@@ -510,10 +510,10 @@ describe("Test for the borehole log.", () => {
     exportItem("log-runs");
     cy.dataCy("withoutattachments-button").click();
 
-    cy.wait("@logexport_logruns").then(interception => {
+    cy.wait("@log_export").then(interception => {
       expect(interception.response?.statusCode).to.equal(200);
-      expect(interception.request.url).to.include("withAttachments=false");
-      expect(interception.request.url).to.match(/ids=\d+/);
+      expect(interception.request.body).to.have.property("withAttachments", false);
+      expect(interception.request.body.logRunIds).to.be.an("array").and.have.length.greaterThan(0);
       expect(interception.response?.headers["content-type"]).to.include("application/zip");
     });
   });
@@ -536,9 +536,9 @@ describe("Test for the borehole log.", () => {
     exportItem("log-runs");
     cy.dataCy("withattachments-button").click();
 
-    cy.wait("@logexport_logruns").then(interception => {
+    cy.wait("@log_export").then(interception => {
       expect(interception.response?.statusCode).to.equal(200);
-      expect(interception.request.url).to.include("withAttachments=true");
+      expect(interception.request.body).to.have.property("withAttachments", true);
       expect(interception.response?.headers["content-type"]).to.include("application/zip");
     });
   });
@@ -561,7 +561,7 @@ describe("Test for the borehole log.", () => {
     cy.dataCy("cancel-button").click();
   });
 
-  it("warns when exporting more than 100 log runs and exports the first 100", () => {
+  it("exports more than 100 log runs", () => {
     createBoreholeWithLogRuns(106, "borehole_id_106_export");
     cy.get("@borehole_id_106_export").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/log`);
@@ -574,20 +574,12 @@ describe("Test for the borehole log.", () => {
     checkAllVisibleRows();
     assertRunCountDisplayed("106 selected");
 
-    const moreThan100Prompt = "You have selected more than 100";
-
     exportItem("log-runs");
-    handlePrompt(moreThan100Prompt, "cancel");
-    cy.dataCy("withoutattachments-button").should("not.exist");
-
-    exportItem("log-runs");
-    handlePrompt(moreThan100Prompt, "exportFirst100");
     cy.dataCy("withoutattachments-button").click();
 
-    cy.wait("@logexport_logruns").then(interception => {
+    cy.wait("@log_export").then(interception => {
       expect(interception.response?.statusCode).to.equal(200);
-      const idsCount = (interception.request.url.match(/ids=/g) ?? []).length;
-      expect(idsCount).to.equal(100);
+      expect(interception.request.body.logRunIds).to.be.an("array").and.have.lengthOf(106);
     });
   });
 
@@ -613,10 +605,10 @@ describe("Test for the borehole log.", () => {
     exportItem("logRun-files");
     cy.dataCy("withoutattachments-button").click();
 
-    cy.wait("@logexport_logfiles").then(interception => {
+    cy.wait("@log_export").then(interception => {
       expect(interception.response?.statusCode).to.equal(200);
-      expect(interception.request.url).to.include("withAttachments=false");
-      expect(interception.request.url).to.match(/ids=\d+/);
+      expect(interception.request.body).to.have.property("withAttachments", false);
+      expect(interception.request.body.logFileIds).to.be.an("array").and.have.length.greaterThan(0);
     });
   });
 
@@ -626,7 +618,7 @@ describe("Test for the borehole log.", () => {
     checkTwoFirstRows();
 
     // Override the passthrough intercept with a stubbed S3 failure
-    stubCloudStorageError("/api/v2/logexport/logruns**", "logexport_error");
+    stubCloudStorageError("/api/v2/log/export", "logexport_error", "POST");
 
     exportItem("log-runs");
     cy.dataCy("withattachments-button").click();
