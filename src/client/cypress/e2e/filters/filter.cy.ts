@@ -136,8 +136,6 @@ describe("Search filter tests", () => {
   it("filters boreholes by restriction date range", () => {
     openFilter("Location");
     setInput("restrictionUntilFrom", "2021-01-01");
-    // click anywhere to reliably shift focus away from the input
-    cy.contains("h4", "Filter").click();
     cy.wait("@borehole_filter");
     cy.location().its("search").should("contain", "2021-01-01");
     cy.dataCy("filter-chip-restrictionUntilFrom").should("exist");
@@ -146,8 +144,6 @@ describe("Search filter tests", () => {
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(500);
     setInput("restrictionUntilTo", "2022-01-31");
-    // click anywhere to reliably shift focus away from the input
-    cy.contains("h4", "Filter").click();
     cy.wait("@borehole_filter");
     cy.location().its("search").should("contain", "2022-01-31");
     cy.dataCy("boreholes-number-preview").should("have.text", "126");
@@ -186,8 +182,6 @@ describe("Search filter tests", () => {
     setInput("topBedrockWeatheredMdMin", "1");
     cy.dataCy("boreholes-number-preview").should("have.text", "1'448");
     checkFilterChipExistsAndRemove("topBedrockWeatheredMdMin");
-    // click anywhere to reliably shift focus away from the input
-    cy.contains("h4", "Filter").click();
     setInput("topBedrockWeatheredMdMax", "920");
     cy.dataCy("filter-chip-topBedrockWeatheredMdMax").should("exist");
     cy.dataCy("boreholes-number-preview").should("have.text", "2'855");
