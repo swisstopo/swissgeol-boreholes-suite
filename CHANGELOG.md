@@ -9,6 +9,7 @@
 - Additional borehole identifiers are now administered on a separate detail page.
 - Optional comments to additional identifiers can now be added.
 - The cluster layer on the map is now displayed at higher zoom levels still.
+- Openlayers was upgraded to version 10.9.0.
 
 ### Fixed
 - Boreholes could be edited after being published.
