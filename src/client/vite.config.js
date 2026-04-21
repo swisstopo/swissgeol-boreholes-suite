@@ -48,16 +48,4 @@ export default defineConfig({
       "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
     },
   },
-  preview: {
-    port: 3000,
-    proxy: {
-      "/api": { target: "http://127.0.0.1:5000/", changeOrigin: true },
-      "/dataextraction": {
-        target: "http://127.0.0.1:8000/",
-        changeOrigin: true,
-        rewrite: p => p.replace(/^\/dataextraction/, ""),
-      },
-      "/ocr": { target: "http://127.0.0.1:5052/", changeOrigin: true, rewrite: p => p.replace(/^\/ocr/, "") },
-    },
-  },
 });
