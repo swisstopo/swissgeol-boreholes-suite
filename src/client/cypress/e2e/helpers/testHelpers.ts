@@ -36,8 +36,8 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/stratigraphy/copy*").as("stratigraphy_COPY");
   cy.intercept("/api/v2/lithology?stratigraphyId=**").as("lithology_by_stratigraphyId_GET");
   cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
-  cy.intercept("/api/v2/export/csv**").as("borehole_export_csv");
-  cy.intercept("/api/v2/export/json**").as("borehole_export_json");
+  cy.intercept("/api/v2/boreholeexport/csv**").as("borehole_export_csv");
+  cy.intercept("/api/v2/boreholeexport/json**").as("borehole_export_json");
   cy.intercept("/api/v2/borehole/**").as("borehole_by_id");
   cy.intercept("PUT", "/api/v2/borehole").as("update-borehole");
   cy.intercept("POST", "/api/v2/borehole").as("post-borehole");
@@ -125,6 +125,7 @@ export const interceptApiCalls = () => {
   }).as("load-extraction-file");
 
   cy.intercept("/api/v2/log?boreholeId=**").as("logrun_by_borehole_GET");
+  cy.intercept("POST", "/api/v2/log/export").as("log_export");
 
   cy.intercept("dataextraction/api/V1/extract_data").as("extract-data");
   cy.intercept("dataextraction/api/V1/extract_stratigraphy").as("extract-stratigraphy");
@@ -982,6 +983,21 @@ export const createInstrument = ({
       auth: bearerAuth(token as string),
     });
   });
+};
+
+/**
+ * Stubs a cloud storage (S3) fetch failure for the given URL pattern.
+ * Used in export tests to simulate a missing object in the cloud.
+ */
+export const stubCloudStorageError = (urlPattern: string, alias: string, method: "GET" | "POST" = "GET") => {
+  cy.intercept(method, urlPattern, {
+    statusCode: 500,
+    body: {
+      title: "NoSuchKey",
+      status: 500,
+      detail: "An error occurred while fetching a file from the cloud storage.",
+    },
+  }).as(alias);
 };
 
 export const handlePrompt = (message: string | null, action: string) => {

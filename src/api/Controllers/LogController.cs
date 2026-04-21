@@ -1,9 +1,15 @@
-﻿using BDMS.Authentication;
+﻿using Amazon.S3;
+using BDMS.Authentication;
 using BDMS.Models;
+using CsvHelper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Globalization;
+using System.IO.Compression;
+using System.Text;
 
 namespace BDMS.Controllers;
 
@@ -12,6 +18,9 @@ namespace BDMS.Controllers;
 public class LogController : BoreholeControllerBase<LogRun>
 {
     private const long MaxFileSize = 5_000_000_000; // ~5 GB max file size
+    private const string LogRunExportFileName = "log_runs";
+    private const string LogFileExportFileName = "log_files";
+    private const string LogExportFileName = "log_export";
     private readonly LogFileCloudService logFileCloudService;
 
     public LogController(BdmsContext context, ILogger<LogController> logger, IBoreholePermissionService boreholePermissionService, LogFileCloudService logFileCloudService)
@@ -272,6 +281,228 @@ public class LogController : BoreholeControllerBase<LogRun>
             .SingleOrDefaultAsync(l => l.Id == entity.Id).ConfigureAwait(false);
         return Ok(updatedLogRun);
     }
+
+    private IQueryable<LogRun> LogRunsForExport => Context.LogRuns
+        .AsNoTracking()
+        .Include(lr => lr.ConveyanceMethod)
+        .Include(lr => lr.BoreholeStatus)
+        .Include(lr => lr.LogFiles).ThenInclude(lf => lf.LogFileToolTypeCodes).ThenInclude(tc => tc.Codelist);
+
+    private IQueryable<LogFile> LogFilesForExport => Context.LogFiles
+        .AsNoTracking()
+        .Include(lf => lf.LogRun)
+        .Include(lf => lf.PassType)
+        .Include(lf => lf.DataPackage)
+        .Include(lf => lf.DepthType)
+        .Include(lf => lf.LogFileToolTypeCodes).ThenInclude(tc => tc.Codelist);
+
+    /// <summary>
+    /// Exports log runs or log files as a ZIP archive containing CSV files and optionally the file attachments.
+    /// </summary>
+    [HttpPost("export")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> ExportAsync([FromBody] LogExportRequest request)
+    {
+        var (logRuns, logFiles, error) = await LoadLogExportDataAsync(request).ConfigureAwait(false);
+        if (error != null) return error;
+
+        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), logRuns[0].BoreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        try
+        {
+            var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
+            using var memoryStream = new MemoryStream();
+            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            {
+                var logRunCsvBytes = await WriteLogRunCsvBytesAsync(logRuns, request.Locale).ConfigureAwait(false);
+                var logRunCsvEntry = archive.CreateEntry($"{LogRunExportFileName}_{timestamp}.csv", CompressionLevel.Fastest);
+                using (var logRunCsvStream = logRunCsvEntry.Open())
+                {
+                    await logRunCsvStream.WriteAsync(logRunCsvBytes.AsMemory(0, logRunCsvBytes.Length)).ConfigureAwait(false);
+                }
+
+                if (logFiles.Count > 0)
+                {
+                    var logFileCsvBytes = await WriteLogFileCsvBytesAsync(logFiles, request.Locale).ConfigureAwait(false);
+                    var logFileCsvEntry = archive.CreateEntry($"{LogFileExportFileName}_{timestamp}.csv", CompressionLevel.Fastest);
+                    using (var logFileCsvStream = logFileCsvEntry.Open())
+                    {
+                        await logFileCsvStream.WriteAsync(logFileCsvBytes.AsMemory(0, logFileCsvBytes.Length)).ConfigureAwait(false);
+                    }
+                }
+
+                if (request.WithAttachments == true)
+                {
+                    foreach (var logFile in logFiles.Where(lf => lf.NameUuid != null && lf.Name != null))
+                    {
+                        var fileBytes = await logFileCloudService.GetObject(logFile.NameUuid!).ConfigureAwait(false);
+
+                        // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name.
+                        // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the original file name.
+                        var entryName = $"{logFile.NameUuid}_{FileHelper.SanitizeZipEntryFileName(logFile.Name!, "export")}";
+                        var zipEntry = archive.CreateEntry(entryName, CompressionLevel.Fastest);
+                        using var zipEntryStream = zipEntry.Open();
+                        await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
+                    }
+                }
+            }
+
+            return File(memoryStream.ToArray(), "application/zip", $"{LogExportFileName}_{timestamp}.zip");
+        }
+        catch (AmazonS3Exception ex)
+        {
+            Logger.LogError(ex, "Amazon S3 Store threw an exception.");
+            return Problem("An error occurred while fetching a file from the cloud storage.");
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to prepare ZIP file.");
+            return Problem("An error occurred while preparing the ZIP file.");
+        }
+    }
+
+    private async Task<(List<LogRun> LogRuns, List<LogFile> LogFiles, IActionResult? Error)> LoadLogExportDataAsync(LogExportRequest request)
+    {
+        if (request.LogRunIds.Count == 0 && request.LogFileIds.Count == 0)
+            return ([], [], BadRequest("No ids were provided."));
+
+        if (request.LogRunIds.Count > 0 && request.LogFileIds.Count > 0)
+            return ([], [], BadRequest("LogRunIds and LogFileIds should not be provided together."));
+
+        if (request.LogRunIds.Count > 0)
+        {
+            var logRuns = await LogRunsForExport
+                .Where(lr => request.LogRunIds.Contains(lr.Id))
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            if (logRuns.Count == 0) return ([], [], NotFound());
+
+            var boreholeIds = logRuns.Select(lr => lr.BoreholeId).Distinct().ToList();
+            if (boreholeIds.Count != 1) return ([], [], BadRequest("All log runs must belong to the same borehole."));
+
+            var logFiles = await LogFilesForExport
+                .Where(lf => request.LogRunIds.Contains(lf.LogRunId))
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            return (logRuns, logFiles, null);
+        }
+
+        var logFilesResult = await LogFilesForExport
+            .Where(lf => request.LogFileIds.Contains(lf.Id))
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        if (logFilesResult.Count == 0) return ([], [], NotFound());
+
+        var logRunIds = logFilesResult.Select(lf => lf.LogRunId).Distinct().ToList();
+        if (logRunIds.Count != 1) return ([], [], BadRequest("All log files must belong to the same log run."));
+
+        var logRunsResult = await LogRunsForExport
+            .Where(lr => lr.Id == logRunIds[0])
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        if (logRunsResult.Count == 0) return ([], [], NotFound());
+
+        return (logRunsResult, logFilesResult, null);
+    }
+
+    private static async Task<byte[]> WriteLogRunCsvBytesAsync(List<LogRun> logRuns, string locale)
+    {
+        using var stringWriter = new StringWriter();
+        using var csvWriter = new CsvWriter(stringWriter, CsvConfigHelper.CsvWriteConfig);
+
+        csvWriter.WriteField(nameof(LogRun.RunNumber));
+        csvWriter.WriteField(nameof(LogRun.FromDepth));
+        csvWriter.WriteField(nameof(LogRun.ToDepth));
+        csvWriter.WriteField("ToolType");
+        csvWriter.WriteField(nameof(LogRun.BoreholeStatus));
+        csvWriter.WriteField(nameof(LogRun.RunDate));
+        csvWriter.WriteField(nameof(LogRun.BitSize));
+        csvWriter.WriteField(nameof(LogRun.ConveyanceMethod));
+        csvWriter.WriteField(nameof(LogRun.ServiceCo));
+        csvWriter.WriteField(nameof(LogRun.Comment));
+        await csvWriter.NextRecordAsync().ConfigureAwait(false);
+
+        foreach (var lr in logRuns)
+        {
+            var toolTypes = lr.LogFiles?.SelectMany(lf => lf.LogFileToolTypeCodes?.Select(tc => tc.Codelist.Code) ?? []).Distinct().Order().ToArray() ?? [];
+            csvWriter.WriteField(lr.RunNumber);
+            csvWriter.WriteField(lr.FromDepth);
+            csvWriter.WriteField(lr.ToDepth);
+            csvWriter.WriteField(string.Join(",", toolTypes));
+            csvWriter.WriteField(GetCodelistText(lr.BoreholeStatus, locale));
+            csvWriter.WriteField(lr.RunDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
+            csvWriter.WriteField(lr.BitSize);
+            csvWriter.WriteField(GetCodelistText(lr.ConveyanceMethod, locale));
+            csvWriter.WriteField(lr.ServiceCo);
+            csvWriter.WriteField(lr.Comment);
+            await csvWriter.NextRecordAsync().ConfigureAwait(false);
+        }
+
+        await csvWriter.FlushAsync().ConfigureAwait(false);
+        return Encoding.UTF8.GetBytes(stringWriter.ToString());
+    }
+
+    private static async Task<byte[]> WriteLogFileCsvBytesAsync(List<LogFile> logFiles, string locale)
+    {
+        using var stringWriter = new StringWriter();
+        using var csvWriter = new CsvWriter(stringWriter, CsvConfigHelper.CsvWriteConfig);
+
+        csvWriter.WriteField(nameof(LogRun.RunNumber));
+        csvWriter.WriteField(nameof(LogFile.Name));
+        csvWriter.WriteField(nameof(LogFile.LogFileToolTypeCodes));
+        csvWriter.WriteField("Extension");
+        csvWriter.WriteField(nameof(LogFile.Pass));
+        csvWriter.WriteField(nameof(LogFile.PassType));
+        csvWriter.WriteField(nameof(LogFile.DataPackage));
+        csvWriter.WriteField(nameof(LogFile.DepthType));
+        csvWriter.WriteField(nameof(LogFile.DeliveryDate));
+        csvWriter.WriteField(nameof(LogFile.Public));
+        await csvWriter.NextRecordAsync().ConfigureAwait(false);
+
+        foreach (var lf in logFiles)
+        {
+            var fileNameWithoutExtension = string.IsNullOrEmpty(lf.Name) ? string.Empty : Path.GetFileNameWithoutExtension(lf.Name);
+            var extension = string.IsNullOrEmpty(lf.Name) ? string.Empty : Path.GetExtension(lf.Name).TrimStart('.');
+            csvWriter.WriteField(lf.LogRun!.RunNumber);
+            csvWriter.WriteField(fileNameWithoutExtension);
+            csvWriter.WriteField(string.Join(",", lf.LogFileToolTypeCodes?.Select(tc => tc.Codelist.Code).Order().ToArray() ?? []));
+            csvWriter.WriteField(extension);
+            csvWriter.WriteField(lf.Pass);
+            csvWriter.WriteField(GetCodelistText(lf.PassType, locale));
+            csvWriter.WriteField(GetCodelistText(lf.DataPackage, locale));
+            csvWriter.WriteField(GetCodelistText(lf.DepthType, locale));
+            csvWriter.WriteField(lf.DeliveryDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
+            csvWriter.WriteField(GetLocalizedYesNoBoolean(lf.Public, locale));
+            await csvWriter.NextRecordAsync().ConfigureAwait(false);
+        }
+
+        await csvWriter.FlushAsync().ConfigureAwait(false);
+        return Encoding.UTF8.GetBytes(stringWriter.ToString());
+    }
+
+    private static string? GetCodelistText(Codelist? codelist, string locale) => locale switch
+    {
+        "de" => codelist?.De,
+        "fr" => codelist?.Fr,
+        "it" => codelist?.It,
+        _ => codelist?.En,
+    };
+
+    private static string GetLocalizedYesNoBoolean(bool value, string locale) => (value, locale) switch
+    {
+        (true, "de") => "Ja",
+        (false, "de") => "Nein",
+        (true, "fr") => "Oui",
+        (false, "fr") => "Non",
+        (true, "it") => "Sì",
+        (false, "it") => "No",
+        (true, _) => "Yes",
+        (false, _) => "No",
+    };
 
     private async Task UpdateLogFileToolTypeCodes(int logFileId, IList<LogFileToolTypeCodes>? existingCodes, ICollection<int>? newCodelistIds)
     {

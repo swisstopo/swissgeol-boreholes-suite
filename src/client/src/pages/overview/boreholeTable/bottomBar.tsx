@@ -73,12 +73,12 @@ const BottomBar = ({
   }
 
   const showPromptExportMoreThan100 = (callback: () => void) => {
-    showPrompt("bulkExportMoreThan100", [
+    showPrompt("exportMoreThan100", [
       {
         label: "cancel",
       },
       {
-        label: "export100Boreholes",
+        label: "exportFirst100",
         icon: <ArrowDownToLine />,
         variant: "contained",
         action: callback,

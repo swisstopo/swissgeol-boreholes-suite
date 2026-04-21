@@ -29,4 +29,8 @@ public class BoreholeCodelist : IIdentifyable
     [IncludeInExport]
     [Column("identifier_value")]
     public string Value { get; set; }
+
+    [IncludeInExport]
+    [Column("comment")]
+    public string? Comment { get; set; }
 }
