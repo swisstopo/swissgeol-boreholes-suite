@@ -155,11 +155,9 @@ describe("Search filter tests", () => {
   it("filters boreholes by total depth range", () => {
     openFilter("Borehole");
     setInput("totalDepthMin", "800");
-    cy.focused().blur();
     cy.dataCy("boreholes-number-preview").should("have.text", "1'800");
     checkFilterChipExistsAndRemove("totalDepthMin");
     setInput("totalDepthMax", "1000");
-    cy.focused().blur();
     cy.dataCy("boreholes-number-preview").should("have.text", "1'499");
     checkFilterChipExistsAndRemove("totalDepthMax");
   });
@@ -167,11 +165,9 @@ describe("Search filter tests", () => {
   it("filters boreholes by top bedrock fresh md range", () => {
     openFilter("Borehole");
     setInput("topBedrockFreshMdMin", "700");
-    cy.focused().blur();
     cy.dataCy("filter-chip-topBedrockFreshMdMin").should("exist");
     cy.dataCy("boreholes-number-preview").should("have.text", "851");
     setInput("topBedrockFreshMdMax", "710");
-    cy.focused().blur();
     cy.dataCy("boreholes-number-preview").should("have.text", "30");
     checkFilterChipExistsAndRemove("topBedrockFreshMdMax");
     cy.dataCy("boreholes-number-preview").should("have.text", "851");

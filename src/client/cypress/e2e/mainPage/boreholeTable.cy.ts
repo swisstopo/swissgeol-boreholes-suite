@@ -160,7 +160,6 @@ describe("Borehole editor table tests", () => {
     cy.dataCy("show-filter-button").click();
     cy.contains("Borehole").click();
     setInput("totalDepthMin", "301");
-    cy.focused().blur();
     cy.wait("@borehole_filter");
     verifyPaginationText("1–100 of 2549");
 
