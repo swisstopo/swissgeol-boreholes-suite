@@ -7,7 +7,7 @@ import { filterParsers } from "../../useBoreholeUrlParams.ts";
 
 interface StatusFilterProps {
   selectedRole?: string;
-  setFilterField: (key: keyof typeof filterParsers, value: string | string[] | boolean | null) => void;
+  setFilterField: (key: keyof typeof filterParsers, value: string | string[] | number[] | boolean | null) => void;
 }
 export const StatusFilter: FC<StatusFilterProps> = ({ selectedRole, setFilterField }) => {
   const { t } = useTranslation();
