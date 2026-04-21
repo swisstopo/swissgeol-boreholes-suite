@@ -11,6 +11,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NetTopologySuite.IO.Converters;
+using System.Net.Http.Headers;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text.Json.Serialization;
@@ -46,12 +47,12 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 var userInfoService = context.HttpContext.RequestServices
                     .GetRequiredService<UserInfoService>();
                 var sub = context.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
-                var token = context.Request.Headers.Authorization
-                    .ToString().Replace("Bearer ", "");
+                var authHeader = context.Request.Headers.Authorization.ToString();
+                var token = AuthenticationHeaderValue.TryParse(authHeader, out var parsed) ? parsed.Parameter : null;
 
-                if (sub != null)
+                if (sub != null && token != null)
                 {
-                    var claims = await userInfoService.GetUserInfoClaimsAsync(sub, token);
+                    var claims = await userInfoService.GetUserInfoClaimsAsync(sub, token, context.HttpContext.RequestAborted);
                     if (claims != null)
                     {
                         (context.Principal?.Identity as ClaimsIdentity)?.AddClaims(claims);
