@@ -1,4 +1,4 @@
-import { selectLanguage } from "./helpers/testHelpers";
+import { loginAsAdmin, selectLanguage } from "./helpers/testHelpers";
 
 describe("General app tests", () => {
   it("Displays the login page in the correct language", () => {
@@ -22,5 +22,25 @@ describe("General app tests", () => {
     // italian
     selectLanguage("it");
     cy.contains("Benvenuti su");
+  });
+
+  it("Persists the consent choice so the disclaimer does not reappear on reload", () => {
+    loginAsAdmin();
+    // Start from a clean state so the dialog renders on the first visit.
+    cy.clearCookie("boreholes_consent");
+
+    cy.visit("/");
+    cy.dataCy("accept-button").should("be.visible").click();
+    cy.dataCy("accept-button").should("not.exist");
+
+    cy.getCookie("boreholes_consent")
+      .should("exist")
+      .then(cookie => {
+        const parsed = JSON.parse(decodeURIComponent(cookie!.value));
+        expect(parsed).to.deep.include({ v: 1, analytics: true });
+      });
+
+    cy.reload();
+    cy.dataCy("accept-button").should("not.exist");
   });
 });
