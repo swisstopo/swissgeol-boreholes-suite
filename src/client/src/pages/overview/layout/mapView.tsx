@@ -4,6 +4,7 @@ import { Stack } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { loadEditingBoreholes } from "../../../api-lib";
 import { Boreholes, EditorStore, Filters, ReduxRootState, Setting } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { exportCSVBorehole, exportJsonBoreholes, exportJsonWithAttachmentsBorehole } from "../../../api/borehole.ts";
 import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
 import { ExportDialog } from "../../../components/export/exportDialog.tsx";
 import MapComponent from "../../../components/map/mapComponent.jsx";
@@ -92,8 +93,22 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
       <ExportDialog
         isExporting={isExporting}
         setIsExporting={setIsExporting}
-        selectionModel={selectionModel}
-        fileName={`bulkexport_${new Date().toISOString().split("T")[0]}`}
+        exportItems={[
+          {
+            label: "CSV",
+            exportFunction: () =>
+              exportCSVBorehole(selectionModel.slice(0, 100), `bulkexport_${new Date().toISOString().split("T")[0]}`),
+          },
+          {
+            label: "JSON",
+            exportFunction: () =>
+              exportJsonBoreholes(selectionModel.slice(0, 100), `bulkexport_${new Date().toISOString().split("T")[0]}`),
+          },
+          {
+            label: "exportJsonProfile",
+            exportFunction: () => exportJsonWithAttachmentsBorehole(selectionModel.slice(0, 100)),
+          },
+        ]}
       />
       <MapComponent
         searchState={{
