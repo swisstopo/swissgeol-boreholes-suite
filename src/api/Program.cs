@@ -52,7 +52,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
 
                 if (sub != null && token != null)
                 {
-                    var claims = await userInfoService.GetUserInfoClaimsAsync(sub, token, context.HttpContext.RequestAborted);
+                    var claims = await userInfoService.GetUserInfoClaimsAsync(sub, token, context.HttpContext.RequestAborted).ConfigureAwait(false);
                     if (claims != null)
                     {
                         (context.Principal?.Identity as ClaimsIdentity)?.AddClaims(claims);

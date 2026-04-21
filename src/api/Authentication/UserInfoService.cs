@@ -1,4 +1,4 @@
-using Microsoft.Extensions.Caching.Memory;
+﻿using Microsoft.Extensions.Caching.Memory;
 using System.Net.Http.Headers;
 using System.Security.Claims;
 using System.Text.Json;
@@ -57,7 +57,7 @@ public class UserInfoService
         try
         {
             var endpoint = await GetUserInfoEndpointAsync(cancellationToken).ConfigureAwait(false);
-            var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
+            using var request = new HttpRequestMessage(HttpMethod.Get, endpoint);
             request.Headers.Authorization = new AuthenticationHeaderValue("Bearer", accessToken);
 
             var response = await httpClient.SendAsync(request, cancellationToken).ConfigureAwait(false);
@@ -95,7 +95,7 @@ public class UserInfoService
             return cachedEndpoint;
 
         var authority = configuration["Auth:Authority"]?.TrimEnd('/');
-        var discoveryUrl = $"{authority}/.well-known/openid-configuration";
+        var discoveryUrl = new Uri($"{authority}/.well-known/openid-configuration");
 
         var response = await httpClient.GetAsync(discoveryUrl, cancellationToken).ConfigureAwait(false);
         response.EnsureSuccessStatusCode();
