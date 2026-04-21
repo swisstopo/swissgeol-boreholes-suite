@@ -575,12 +575,12 @@ public class LogControllerTest : TestControllerBase
 
         var fields = lines[1].Split(';');
         Assert.AreEqual("RUN-CSV", fields[0]);
-        Assert.AreEqual("10.00", fields[1]);
-        Assert.AreEqual("20.00", fields[2]);
+        Assert.AreEqual("10", fields[1]);
+        Assert.AreEqual("20", fields[2]);
         Assert.AreEqual("CAL,GYRO", fields[3]); // Tool types have to be alphabetically sorted by Codelist.Code
         Assert.AreEqual("CH", fields[4]);
         Assert.AreEqual("01/06/2023", fields[5]);
-        Assert.AreEqual("80.970", fields[6]);
+        Assert.AreEqual("80.97", fields[6]);
         Assert.AreEqual("LWD", fields[7]);
         Assert.AreEqual("TestCo", fields[8]);
         Assert.AreEqual("Export test log run", fields[9]);
