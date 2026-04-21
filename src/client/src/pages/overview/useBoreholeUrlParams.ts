@@ -68,7 +68,7 @@ export const useBoreholeUrlParams = () => {
   tableParamsRef.current = tableParams;
 
   const setFilterField = useCallback(
-    (key: keyof typeof filterParsers, value: unknown) => {
+    (key: keyof typeof filterParsers, value: string | string[] | boolean | null) => {
       if (value === undefined) {
         setFilterParams({ [key]: "null" });
       } else if (value === false) {
