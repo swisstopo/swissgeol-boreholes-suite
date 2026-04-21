@@ -170,6 +170,7 @@ describe("Test for exporting boreholes.", () => {
     returnToOverview();
 
     newEditableBorehole().as("borehole_id_2");
+    navigateInSidebar(SidebarMenuItem.borehole);
     setInput("name", secondBoreholeName);
     saveWithSaveBar();
     navigateInSidebar(SidebarMenuItem.identifiers);
