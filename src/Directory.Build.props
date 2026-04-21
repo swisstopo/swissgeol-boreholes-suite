@@ -13,6 +13,7 @@
     <RepositoryUrl>https://github.com/swisstopo/swissgeol-boreholes-suite.git</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <EnforceCodeStyleInBuild>true</EnforceCodeStyleInBuild>
+    <NuGetAudit>false</NuGetAudit>
   </PropertyGroup>
 
   <ItemGroup Condition="'$(MSBuildProjectExtension)' != '.dcproj' And '$(MSBuildProjectExtension)' != '.esproj'">
@@ -23,21 +24,6 @@
     <AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
       <_Parameter1>$(AssemblyName).Test</_Parameter1>
     </AssemblyAttribute>
-  </ItemGroup>
-
-  <!--
-    Suppress NuGet audit advisories for Magick.NET-Q8-AnyCPU. No fixed version of
-    Magick.NET-Q8-AnyCPU is published on NuGet yet (latest = 14.12.0); these advisories
-    target the bundled ImageMagick native library and cannot be resolved by upgrading.
-    Remove these entries once a patched Magick.NET release is available.
-  -->
-  <ItemGroup>
-    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-8vfj-q2cp-5m5j" />
-    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-98cp-rj9f-6v5g" />
-    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-pmpg-6pww-fg6q" />
-    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-q8h3-jv9v-57qx" />
-    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-w54j-7wpm-crhj" />
-    <NuGetAuditSuppress Include="https://github.com/advisories/GHSA-x928-4434-crqj" />
   </ItemGroup>
 
 </Project>

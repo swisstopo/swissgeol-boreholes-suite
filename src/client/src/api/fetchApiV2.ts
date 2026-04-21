@@ -162,36 +162,6 @@ export async function upload(url: string, method: string, payload: FormData): Pr
   return await fetchApiV2Base(url, method, payload);
 }
 
-const getFallbackFileName = (url: string): string => {
-  const match = /export\/(\w+)\?/.exec(url);
-  if (!match) return "export";
-  return `export.${match[1]}`;
-};
-
-export async function download(url: string): Promise<Response> {
-  const response = await fetchApiV2Base(url, "GET", null);
-  if (!response.ok) {
-    throw new ApiError("errorOccurredWhileFetchingFileFromCloudStorage", response.status);
-  }
-  let fileName =
-    response.headers.get("content-disposition")?.split("; ")[1]?.replace("filename=", "") ?? getFallbackFileName(url);
-
-  // Explicitly add zip extension
-  // By default if a fileName includes a dot, everything following the dot is treated as the extension and no zip extension is added.
-  if (url.includes("/zip?")) {
-    fileName = fileName.replace(/"/g, "");
-    fileName += ".zip";
-  }
-  const blob = await response.blob();
-  const downLoadUrl = window.URL.createObjectURL(blob);
-  const link = document.createElement("a");
-  link.href = downLoadUrl;
-  link.setAttribute("download", fileName);
-  document.body.appendChild(link);
-  link.click();
-  return response;
-}
-
 // Enable using react-query outputs across the application.
 
 const staleTime10Min = 10 * 60 * 1000;
@@ -357,8 +327,6 @@ export const updateSection = async (section: Section): Promise<Section> => {
 export const deleteSection = async (id: number): Promise<void> => {
   return await fetchApiV2Legacy(`section?id=${id}`, "DELETE");
 };
-
-export const downloadCodelistCsv = (): Promise<Response> => download(`codelist/csv`);
 
 export const getDocumentsByBoreholeId = async (boreholeId: number): Promise<Document[]> => {
   return await fetchApiV2Legacy(`document/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
