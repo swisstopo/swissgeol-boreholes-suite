@@ -537,6 +537,7 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Photos).HasDefaultValue(false);
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Documents).HasDefaultValue(false);
         modelBuilder.Entity<TabStatus>().Property(ts => ts.Log).HasDefaultValue(false);
+        modelBuilder.Entity<TabStatus>().Property(ts => ts.Identifiers).HasDefaultValue(false);
 
         // Configure delete behavior for all non-nullable foreign keys for Codelists.
         modelBuilder.Entity<CasingElement>()

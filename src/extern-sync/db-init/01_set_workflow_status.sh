@@ -47,7 +47,8 @@ psql \
               hydrotest = true,
               profile = true,
               photo = true,
-              \"document\" = true
+              \"document\" = true,
+              identifiers = true
           FROM $SOURCE_DB_SCHEMA.workflow w
           WHERE (w.reviewed_tabs_id = ts.tab_status_id OR w.published_tabs_id = ts.tab_status_id)
           AND w.borehole_id = ANY(bho_ids);

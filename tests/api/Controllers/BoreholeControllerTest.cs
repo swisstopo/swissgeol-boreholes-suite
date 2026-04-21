@@ -197,6 +197,7 @@ public class BoreholeControllerTest
                     BoreholeId = testBoreholeId,
                     CodelistId = 100000000,
                     Value = "ID Original value",
+                    Comment = "Initial registration entry",
                 },
             },
         };
@@ -206,6 +207,8 @@ public class BoreholeControllerTest
 
         var updatedBorehole = ActionResultAssert.IsOkObjectResult<Borehole>(updatedResponse.Result);
         Assert.AreEqual(3, updatedBorehole.BoreholeCodelists.Count);
+        var identifierWithComment = updatedBorehole.BoreholeCodelists.Single(bc => bc.CodelistId == 100000000);
+        Assert.AreEqual("Initial registration entry", identifierWithComment.Comment);
 
         var deleteController = GetTestController(context);
 
