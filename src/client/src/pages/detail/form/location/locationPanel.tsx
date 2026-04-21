@@ -1,6 +1,5 @@
 import { FC, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
-import { Stack } from "@mui/material";
 import {
   convertValueToBoolean,
   getDecimalsFromNumericString,
@@ -9,20 +8,12 @@ import {
 import { BaseForm } from "../baseForm.tsx";
 import { LocationFormInputs, LocationFormSubmission, LocationPanelProps } from "./locationPanelInterfaces.tsx";
 import LocationSegment from "./locationSegment.tsx";
-import NameSegment from "./nameSegment.tsx";
-import RestrictionSegment from "./restrictionSegment.tsx";
 
 export const LocationPanel: FC<LocationPanelProps> = ({ borehole, labelingPanelOpen }) => {
   const [resetKey, setResetKey] = useState(0);
   const formMethods = useForm<LocationFormInputs>({
     mode: "onChange",
     defaultValues: {
-      name: borehole.name,
-      originalName: borehole.originalName,
-      projectName: borehole.projectName,
-      restrictionId: borehole.restrictionId,
-      restrictionUntil: borehole.restrictionUntil,
-      nationalInterest: borehole.nationalInterest === true ? 1 : borehole.nationalInterest === false ? 0 : 2,
       elevationZ: borehole.elevationZ,
       elevationPrecisionId: borehole.elevationPrecisionId,
       referenceElevation: borehole.referenceElevation,
@@ -43,17 +34,12 @@ export const LocationPanel: FC<LocationPanelProps> = ({ borehole, labelingPanelO
 
   const prepareLocationDataForSubmit = useCallback((formInputs: LocationFormInputs) => {
     const data = { ...formInputs } as LocationFormSubmission;
-
-    data.restrictionUntil = data?.restrictionUntil ? data.restrictionUntil.toString() : null;
     data.elevationZ = parseFloatWithThousandsSeparator(data?.elevationZ);
     data.referenceElevation = parseFloatWithThousandsSeparator(data?.referenceElevation);
-    data.nationalInterest = convertValueToBoolean(data?.nationalInterest);
-    data.restrictionId = data.restrictionId ?? null;
     data.referenceElevationTypeId = data.referenceElevationTypeId ?? null;
     data.elevationPrecisionId = data.elevationPrecisionId ?? null;
     data.locationPrecisionId = data.locationPrecisionId ?? null;
     data.referenceElevationPrecisionId = data.referenceElevationPrecisionId ?? null;
-    data.name = data?.name ?? data.originalName;
     data.precisionLocationX = data?.locationX ? getDecimalsFromNumericString(formInputs.locationX) : null;
     data.precisionLocationY = data?.locationY ? getDecimalsFromNumericString(formInputs.locationY) : null;
     data.precisionLocationXLV03 = data?.locationXLV03 ? getDecimalsFromNumericString(formInputs.locationXLV03) : null;
@@ -78,16 +64,12 @@ export const LocationPanel: FC<LocationPanelProps> = ({ borehole, labelingPanelO
         prepareDataForSubmit={prepareLocationDataForSubmit}
         onReset={onReset}
         tabStatusToReset="location">
-        <Stack gap={3} mr={2}>
-          <NameSegment borehole={borehole} formMethods={formMethods}></NameSegment>
-          <RestrictionSegment borehole={borehole} formMethods={formMethods}></RestrictionSegment>
-          <LocationSegment
-            borehole={borehole}
-            formMethods={formMethods}
-            labelingPanelOpen={labelingPanelOpen}
-            key={resetKey}
-          />
-        </Stack>
+        <LocationSegment
+          borehole={borehole}
+          formMethods={formMethods}
+          labelingPanelOpen={labelingPanelOpen}
+          key={resetKey}
+        />
       </BaseForm>
     );
 };

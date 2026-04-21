@@ -1,3 +1,4 @@
+import { NullableDateString } from "../../../../api/apiInterfaces.ts";
 import { BoreholeV2 } from "../../../../api/borehole.ts";
 import { Profile } from "../../../../api/file/fileInterfaces.ts";
 import { Workflow } from "../workflow/workflow.ts";
@@ -7,6 +8,12 @@ export interface BoreholeProps {
 }
 
 export interface BoreholeFormInputs {
+  name: string;
+  originalName: string;
+  projectName: number;
+  restrictionId: number | null;
+  restrictionUntil: NullableDateString;
+  nationalInterest: number | boolean | null; // Number as select options parsed to boolean
   totalDepth: number | null;
   depthPrecisionId: number;
   typeId: number;
