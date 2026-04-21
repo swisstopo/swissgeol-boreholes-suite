@@ -1,3 +1,5 @@
+import { createBaseSelector } from "./testHelpers";
+
 export const verifyPaginationText = (text: string) => {
   cy.get(".MuiTablePagination-displayedRows").should("have.text", text);
 };
@@ -99,8 +101,9 @@ export const checkTwoFirstRows = () => {
   checkRowWithIndex(1);
 };
 
-export const checkRowWithIndex = (index: number) => {
-  cy.get(".MuiDataGrid-row").eq(index).find('.MuiDataGrid-cellCheckbox input[type="checkbox"]').check({ force: true });
+export const checkRowWithIndex = (index: number, parent?: string) => {
+  const selector = createBaseSelector(parent) + ".MuiDataGrid-row";
+  cy.get(selector).eq(index).find('.MuiDataGrid-cellCheckbox input[type="checkbox"]').check({ force: true });
 };
 
 export const clickOnRowWithText = (text: string) => {

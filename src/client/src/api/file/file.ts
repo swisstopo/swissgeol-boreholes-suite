@@ -14,7 +14,8 @@ import {
   fetchExtractStratigraphy,
   fetchPageBoundingBoxes,
 } from "../dataextraction.ts";
-import { download, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../fetchApiV2.ts";
+import { download } from "../download.ts";
+import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../fetchApiV2.ts";
 import { processFileWithOCR } from "../ocr.ts";
 import { DataExtractionResponse, maxFileSizeBytes, Profile } from "./fileInterfaces.ts";
 

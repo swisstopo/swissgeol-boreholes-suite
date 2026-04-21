@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Export functionality for LOG.
+
 ### Changed
 - Duplicate boreholes (matching coordinates and total depth within the same workgroup or within the imported file) can now be imported.
 - Translations for borehole identifier codelist entries were streamlined.
@@ -33,7 +36,7 @@
 - Restriction until now has the data type `DateOnly` instead of `DateTime`.
 - Added pod and container security context hardening across all Helm charts (seccomp profiles, privilege escalation prevention, capability dropping, read-only root filesystems).
 - Changed client Dockerfile to use numeric UID instead of named user for Kubernetes `runAsNonRoot` compatibility.
-- 
+
 ### Fixed
 - All tables in the `logs` and `attachments` tab of the borehole detail view were missing pagination.
 - Fixed Chronostratigraphy and Lithostratigraphy tabs not being correctly greyed out when empty.
