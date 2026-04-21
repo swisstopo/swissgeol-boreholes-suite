@@ -4,25 +4,18 @@ public static class FileHelper
 {
     /// <summary>
     /// Returns a safe ZIP entry file name that cannot traverse directories.
-    /// Strips any path components (both Unix and Windows separators), rejects
-    /// '.'/'..' segments, and replaces invalid file-name characters with '_'.
+    /// Uses <see cref="Path.GetFileName(string?)"/> to strip path components and rejects '.'/'..' segments.
     /// </summary>
     /// <param name="name">The original file name (may include path separators).</param>
+    /// <param name="fallback">A fallback file name to use if the sanitized name is invalid (e.g., empty or reserved).</param>
     /// <returns>A sanitized base file name safe to use as a ZIP entry.</returns>
-    public static string SanitizeZipEntryFileName(string name)
+    public static string SanitizeZipEntryFileName(string name, string fallback)
     {
-        // Normalize both Unix and Windows separators; keep only the basename.
-        var lastSlash = name.LastIndexOfAny(['/', '\\']);
-        var baseName = lastSlash >= 0 ? name[(lastSlash + 1)..] : name;
+        var baseName = Path.GetFileName(name);
 
         if (baseName == "." || baseName == ".." || string.IsNullOrWhiteSpace(baseName))
         {
-            return "export";
-        }
-
-        foreach (var invalid in Path.GetInvalidFileNameChars())
-        {
-            baseName = baseName.Replace(invalid, '_');
+            return fallback;
         }
 
         return baseName;
