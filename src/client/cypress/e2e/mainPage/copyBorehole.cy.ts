@@ -1,5 +1,6 @@
 import { showTableAndWaitForData } from "../helpers/dataGridHelpers";
 import { setSelect } from "../helpers/formHelpers";
+import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.ts";
 import {
   createBorehole,
   giveAdminUser2workgroups,
@@ -20,7 +21,7 @@ describe("Test copying of boreholes", () => {
     handlePrompt("Select a workgroup to create a copy.", "copy");
     cy.wait("@borehole_copy");
     cy.wait("@borehole_by_id");
-
+    navigateInSidebar(SidebarMenuItem.borehole);
     cy.contains("label", "Original name").next().children("input").should("contain.value", " (Copy)");
 
     startBoreholeEditing();
@@ -46,6 +47,7 @@ describe("Test copying of boreholes", () => {
     cy.wait("@borehole_copy");
     cy.wait("@borehole_by_id");
 
+    navigateInSidebar(SidebarMenuItem.borehole);
     cy.contains("label", "Original name").next().children("input").should("contain.value", " (Copy)");
 
     startBoreholeEditing();

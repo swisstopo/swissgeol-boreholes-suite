@@ -54,8 +54,6 @@ describe("Test for the borehole form.", () => {
     setSelect("referenceElevationPrecisionId", 2);
     setSelect("referenceElevationTypeId", 4);
 
-    evaluateSelect("restrictionId", "restricted until"); //20111003
-    evaluateYesNoSelect("nationalInterest", "Not specified");
     evaluateSelect("originalReferenceSystem", "LV95"); //20104001
     evaluateSelect("locationPrecisionId", "50"); //20113002
     evaluateSelect("elevationPrecisionId", "5"); //20114002
@@ -84,6 +82,8 @@ describe("Test for the borehole form.", () => {
     setSelect("depthPrecisionId", 1);
     setSelect("statusId", 1);
 
+    evaluateSelect("restrictionId", "restricted until"); //20111003
+    evaluateYesNoSelect("nationalInterest", "Not specified");
     evaluateSelect("restrictionId", "restricted until"); //20111003
     evaluateYesNoSelect("nationalInterest", "Not specified");
     evaluateSelect("purposeId", "geotechnics"); //22103001
