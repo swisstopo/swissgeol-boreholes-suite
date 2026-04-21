@@ -5,6 +5,8 @@ import {
   delayedType,
   goToRouteAndAcceptTerms,
   handlePrompt,
+  mockGeodesyIntercept,
+  mockLocationIntercept,
   newEditableBorehole,
   newUneditableBorehole,
   returnToOverview,
@@ -35,6 +37,9 @@ describe("Tests for editing coordinates of a borehole.", () => {
   });
 
   it("creates new borehole and adds coordinates", () => {
+    mockGeodesyIntercept({ easting: 645122, northing: 245794 });
+    mockLocationIntercept({ country: "Schweiz", canton: "Aargau", municipality: "Oberentfelden" });
+
     // fill inputs for LV95
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
@@ -213,6 +218,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
   it("updates canton and municipality when changing coordinates", () => {
     // Type coordinates for Samaden in LV95
+    mockLocationIntercept(
+      { country: "Schweiz", canton: "Graubünden", municipality: "Samaden" },
+      { east: 2789000, north: 1155000 },
+    );
     cy.get("@LV95X-input").type("2789000");
     cy.get("@LV95Y-input").type("1155000");
     cy.wait("@location");
@@ -224,6 +233,10 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("have.value", "Samaden");
 
     // Type coordinates for Unterentfelden in LV95
+    mockLocationIntercept(
+      { country: "Schweiz", canton: "Aargau", municipality: "Unterentfelden" },
+      { east: 2646000, north: 1247000 },
+    );
     cy.get("@LV95X-input").clear();
     cy.get("@LV95X-input").type("2646000");
     cy.get("@LV95Y-input").clear();
@@ -238,20 +251,32 @@ describe("Tests for editing coordinates of a borehole.", () => {
     handlePrompt("Changing the coordinate system will reset the coordinates. Do you want to continue?", "confirm");
 
     // Type coordinates for Samaden in LV03
+    mockGeodesyIntercept({ easting: 2789001.0503481925, northing: 1154999.7028534363 }, "lv03tolv95");
+    mockLocationIntercept(
+      { country: "Schweiz", canton: "Graubünden", municipality: "Samaden" },
+      { east: 2789001.0503481925, north: 1154999.7028534363 },
+    );
     cy.get("@LV03X-input").clear();
     cy.get("@LV03X-input").type("789000");
     cy.get("@LV03Y-input").clear();
     cy.get("@LV03Y-input").type("155000");
+    cy.wait(["@geodesy", "@location"]);
 
     cy.get("@country").should("have.value", "Schweiz");
     cy.get("@canton").should("have.value", "Graubünden");
     cy.get("@municipality").should("have.value", "Samaden");
 
     // Type coordinates for Unterentfelden in LV03
+    mockGeodesyIntercept({ easting: 2646000.7361525623, northing: 1247000.1389829044 }, "lv03tolv95");
+    mockLocationIntercept(
+      { country: "Schweiz", canton: "Aargau", municipality: "Unterentfelden" },
+      { east: 2646000.7361525623, north: 1247000.1389829044 },
+    );
     cy.get("@LV03X-input").clear();
     cy.get("@LV03X-input").type("646000");
     cy.get("@LV03Y-input").clear();
     cy.get("@LV03Y-input").type("247000");
+    cy.wait(["@geodesy", "@location"]);
 
     cy.get("@country").should("have.value", "Schweiz");
     cy.get("@canton").should("have.value", "Aargau");
