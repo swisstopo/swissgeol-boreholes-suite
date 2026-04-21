@@ -17,6 +17,8 @@ namespace BDMS.Controllers;
 public class LogControllerTest : TestControllerBase
 {
     private const string TestFileName = "test_logfile.las";
+    private const string LogRunCsvPrefix = "log_runs_";
+    private const string LogFileCsvPrefix = "log_files_";
     private User adminUser;
     private LogController controller;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
@@ -524,8 +526,8 @@ public class LogControllerTest : TestControllerBase
 
         // Expect exactly 2 entries (log_runs CSV + log_files CSV), no attachment
         Assert.AreEqual(2, archive.Entries.Count);
-        Assert.IsTrue(archive.Entries.Any(e => e.FullName.StartsWith("log_runs_") && e.FullName.EndsWith(".csv")));
-        Assert.IsTrue(archive.Entries.Any(e => e.FullName.StartsWith("log_files_") && e.FullName.EndsWith(".csv")));
+        Assert.IsTrue(archive.Entries.Any(e => e.FullName.StartsWith(LogRunCsvPrefix) && e.FullName.EndsWith(".csv")));
+        Assert.IsTrue(archive.Entries.Any(e => e.FullName.StartsWith(LogFileCsvPrefix) && e.FullName.EndsWith(".csv")));
     }
 
     [TestMethod]
@@ -545,8 +547,8 @@ public class LogControllerTest : TestControllerBase
 
         // 2 CSVs + 1 attachment
         Assert.AreEqual(3, archive.Entries.Count);
-        Assert.IsTrue(archive.Entries.Any(e => e.FullName.StartsWith("log_runs_") && e.FullName.EndsWith(".csv")));
-        Assert.IsTrue(archive.Entries.Any(e => e.FullName.StartsWith("log_files_") && e.FullName.EndsWith(".csv")));
+        Assert.IsTrue(archive.Entries.Any(e => e.FullName.StartsWith(LogRunCsvPrefix) && e.FullName.EndsWith(".csv")));
+        Assert.IsTrue(archive.Entries.Any(e => e.FullName.StartsWith(LogFileCsvPrefix) && e.FullName.EndsWith(".csv")));
         Assert.IsTrue(archive.Entries.Any(e => e.FullName == $"{uploadedFile.NameUuid}_{uploadedFile.Name}"));
     }
 
@@ -566,7 +568,7 @@ public class LogControllerTest : TestControllerBase
         using var zipStream = new MemoryStream(fileResult.FileContents);
         using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
 
-        var logRunCsvEntry = archive.Entries.Single(e => e.FullName.StartsWith("log_runs_"));
+        var logRunCsvEntry = archive.Entries.Single(e => e.FullName.StartsWith(LogRunCsvPrefix));
         var logRunCsv = ReadEntryAsText(logRunCsvEntry);
         var lines = logRunCsv.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
 
@@ -598,7 +600,7 @@ public class LogControllerTest : TestControllerBase
         var fileResult = (FileContentResult)response;
         using var zipStream = new MemoryStream(fileResult.FileContents);
         using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
-        var logRunCsvEntry = archive.Entries.Single(e => e.FullName.StartsWith("log_runs_"));
+        var logRunCsvEntry = archive.Entries.Single(e => e.FullName.StartsWith(LogRunCsvPrefix));
         var logRunCsv = ReadEntryAsText(logRunCsvEntry);
 
         var lines = logRunCsv.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
@@ -618,8 +620,8 @@ public class LogControllerTest : TestControllerBase
         using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
 
         Assert.AreEqual(1, archive.Entries.Count);
-        Assert.IsTrue(archive.Entries.Single().FullName.StartsWith("log_runs_"));
-        Assert.IsFalse(archive.Entries.Any(e => e.FullName.StartsWith("log_files_")));
+        Assert.IsTrue(archive.Entries.Single().FullName.StartsWith(LogRunCsvPrefix));
+        Assert.IsFalse(archive.Entries.Any(e => e.FullName.StartsWith(LogFileCsvPrefix)));
     }
 
     [TestMethod]
@@ -685,7 +687,7 @@ public class LogControllerTest : TestControllerBase
 
         using var zipStream = new MemoryStream(fileResult.FileContents);
         using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
-        var logRunCsvEntry = archive.Entries.Single(e => e.FullName.StartsWith("log_runs_"));
+        var logRunCsvEntry = archive.Entries.Single(e => e.FullName.StartsWith(LogRunCsvPrefix));
         var csv = ReadEntryAsText(logRunCsvEntry);
 
         var fields = csv.Split("\r\n", StringSplitOptions.RemoveEmptyEntries)[1].Split(';');
@@ -735,8 +737,8 @@ public class LogControllerTest : TestControllerBase
         using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
 
         Assert.AreEqual(2, archive.Entries.Count);
-        Assert.IsTrue(archive.Entries.Any(e => e.FullName.StartsWith("log_runs_") && e.FullName.EndsWith(".csv")));
-        Assert.IsTrue(archive.Entries.Any(e => e.FullName.StartsWith("log_files_") && e.FullName.EndsWith(".csv")));
+        Assert.IsTrue(archive.Entries.Any(e => e.FullName.StartsWith(LogRunCsvPrefix) && e.FullName.EndsWith(".csv")));
+        Assert.IsTrue(archive.Entries.Any(e => e.FullName.StartsWith(LogFileCsvPrefix) && e.FullName.EndsWith(".csv")));
     }
 
     [TestMethod]
@@ -779,7 +781,7 @@ public class LogControllerTest : TestControllerBase
         var fileResult = (FileContentResult)response;
         using var zipStream = new MemoryStream(fileResult.FileContents);
         using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
-        var logFileCsv = ReadEntryAsText(archive.Entries.Single(e => e.FullName.StartsWith("log_files_")));
+        var logFileCsv = ReadEntryAsText(archive.Entries.Single(e => e.FullName.StartsWith(LogFileCsvPrefix)));
 
         var lines = logFileCsv.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
         Assert.AreEqual("RunNumber;Name;LogFileToolTypeCodes;Extension;Pass;PassType;DataPackage;DepthType;DeliveryDate;Public", lines[0]);
@@ -822,7 +824,7 @@ public class LogControllerTest : TestControllerBase
         var fileResult = (FileContentResult)response;
         using var zipStream = new MemoryStream(fileResult.FileContents);
         using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
-        var csv = ReadEntryAsText(archive.Entries.Single(e => e.FullName.StartsWith("log_files_")));
+        var csv = ReadEntryAsText(archive.Entries.Single(e => e.FullName.StartsWith(LogFileCsvPrefix)));
         var fields = csv.Split("\r\n", StringSplitOptions.RemoveEmptyEntries)[1].Split(';');
         Assert.AreEqual(expected, fields[9]);
     }

@@ -303,55 +303,8 @@ public class LogController : BoreholeControllerBase<LogRun>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> ExportAsync([FromBody] LogExportRequest request)
     {
-        if (request.LogRunIds.Count == 0 && request.LogFileIds.Count == 0)
-        {
-            return BadRequest("No ids were provided.");
-        }
-
-        if (request.LogRunIds.Count > 0 && request.LogFileIds.Count > 0)
-        {
-            return BadRequest("LogRunIds and LogFileIds should not be provided together.");
-        }
-
-        var logRuns = new List<LogRun>();
-        var logFiles = new List<LogFile>();
-
-        if (request.LogRunIds.Count > 0)
-        {
-            logRuns = await LogRunsForExport
-            .Where(lr => request.LogRunIds.Contains(lr.Id))
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-            if (logRuns.Count == 0) return NotFound();
-
-            var boreholeIds = logRuns.Select(lr => lr.BoreholeId).Distinct().ToList();
-            if (boreholeIds.Count != 1) return BadRequest("All log runs must belong to the same borehole.");
-
-            logFiles = await LogFilesForExport
-            .Where(lf => request.LogRunIds.Contains(lf.LogRunId))
-            .ToListAsync()
-            .ConfigureAwait(false);
-        }
-        else if (request.LogFileIds.Count > 0)
-        {
-            logFiles = await LogFilesForExport
-            .Where(lf => request.LogFileIds.Contains(lf.Id))
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-            if (logFiles.Count == 0) return NotFound();
-
-            var logRunIds = logFiles.Select(lf => lf.LogRunId).Distinct().ToList();
-            if (logRunIds.Count != 1) return BadRequest("All log files must belong to the same log run.");
-
-            logRuns = await LogRunsForExport
-                .Where(lr => lr.Id == logRunIds[0])
-                .ToListAsync()
-                .ConfigureAwait(false);
-
-            if (logRuns.Count == 0) return NotFound();
-        }
+        var (logRuns, logFiles, error) = await LoadLogExportDataAsync(request).ConfigureAwait(false);
+        if (error != null) return error;
 
         if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), logRuns[0].BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
@@ -378,7 +331,7 @@ public class LogController : BoreholeControllerBase<LogRun>
                     }
                 }
 
-                if (request.WithAttachments)
+                if (request.WithAttachments == true)
                 {
                     foreach (var logFile in logFiles.Where(lf => lf.NameUuid != null && lf.Name != null))
                     {
@@ -405,6 +358,57 @@ public class LogController : BoreholeControllerBase<LogRun>
         {
             Logger.LogError(ex, "Failed to prepare ZIP file.");
             return Problem("An error occurred while preparing the ZIP file.");
+        }
+    }
+
+    private async Task<(List<LogRun> LogRuns, List<LogFile> LogFiles, IActionResult? Error)> LoadLogExportDataAsync(LogExportRequest request)
+    {
+        if (request.LogRunIds.Count == 0 && request.LogFileIds.Count == 0)
+            return ([], [], BadRequest("No ids were provided."));
+
+        if (request.LogRunIds.Count > 0 && request.LogFileIds.Count > 0)
+            return ([], [], BadRequest("LogRunIds and LogFileIds should not be provided together."));
+
+        if (request.LogRunIds.Count > 0)
+        {
+            var logRuns = await LogRunsForExport
+                .Where(lr => request.LogRunIds.Contains(lr.Id))
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            if (logRuns.Count == 0) return ([], [], NotFound());
+
+            var boreholeIds = logRuns.Select(lr => lr.BoreholeId).Distinct().ToList();
+            if (boreholeIds.Count != 1) return ([], [], BadRequest("All log runs must belong to the same borehole."));
+
+            var logFiles = await LogFilesForExport
+                .Where(lf => request.LogRunIds.Contains(lf.LogRunId))
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            return (logRuns, logFiles, null);
+        }
+        else
+        {
+
+            var logFilesResult = await LogFilesForExport
+                .Where(lf => request.LogFileIds.Contains(lf.Id))
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            if (logFilesResult.Count == 0) return ([], [], NotFound());
+
+            var logRunIds = logFilesResult.Select(lf => lf.LogRunId).Distinct().ToList();
+            if (logRunIds.Count != 1) return ([], [], BadRequest("All log files must belong to the same log run."));
+
+            var logRunsResult = await LogRunsForExport
+                .Where(lr => lr.Id == logRunIds[0])
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            if (logRunsResult.Count == 0) return ([], [], NotFound());
+
+            return (logRunsResult, logFilesResult, null);
         }
     }
 

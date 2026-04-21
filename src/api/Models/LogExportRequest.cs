@@ -18,7 +18,7 @@ public class LogExportRequest
     /// <summary>
     /// Whether to include attachments in the exported log files. If true, any attachments associated with the specified log files will be included in the export. If false, attachments will be excluded. Default is false.
     /// </summary>
-    public bool WithAttachments { get; set; }
+    public bool? WithAttachments { get; set; } = false;
 
     /// <summary>
     /// The locale to use for any localized content in the exported log files. This can affect the language of any messages, labels, or other localized content included in the export. Default is "en" (English).
