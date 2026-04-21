@@ -7,6 +7,7 @@
 - Translations for borehole identifier codelist entries were streamlined.
 - Extracting multiple stratigraphies from a single PDF document is now supported.
 - The cluster layer on the map is now displayed at higher zoom levels still.
+- The consent banner choice is now remembered for a year, so users no longer have to accept the terms again on every visit.
 
 ### Fixed
 - Boreholes could be edited after being published.
