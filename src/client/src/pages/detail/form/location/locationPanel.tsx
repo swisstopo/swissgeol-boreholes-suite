@@ -1,7 +1,6 @@
 import { FC, useCallback, useState } from "react";
 import { useForm } from "react-hook-form";
 import {
-  convertValueToBoolean,
   getDecimalsFromNumericString,
   parseFloatWithThousandsSeparator,
 } from "../../../../components/form/formUtils.ts";
