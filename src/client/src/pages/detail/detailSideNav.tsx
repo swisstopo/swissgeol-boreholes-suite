@@ -72,6 +72,15 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             {capitalizeFirstLetter(t("location"))}
           </SgcMenuItem>
           <SgcMenuItem
+            active={location.pathname === `/${id}/identifiers`}
+            data-cy="identifiers-menu-item"
+            isReviewed={!auth.anonymousModeEnabled && isReviewed(["identifiers"])}
+            onClick={() => {
+              navigateTo({ path: `/${id}/identifiers` });
+            }}>
+            {capitalizeFirstLetter(t("ids"))}
+          </SgcMenuItem>
+          <SgcMenuItem
             active={location.pathname === `/${id}/borehole`}
             data-cy="borehole-menu-item"
             isReviewed={!auth.anonymousModeEnabled && isReviewed(["general", "sections", "geometry"])}

@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, Button, IconButton } from "@mui/material";
+import { Box, Button, IconButton, Stack } from "@mui/material";
 import { IconButtonProps } from "@mui/material/IconButton/IconButton";
 import { ArrowDownToLine, Check, ChevronLeft, Pencil, Plus, Save, Trash2 } from "lucide-react";
 import CopyIcon from "../../assets/icons/copy.svg?react";
@@ -135,13 +135,14 @@ interface StandaloneIconButtonsProps extends IconButtonProps {
   dataCy?: string;
 }
 
-export const StandaloneIconButton: FC<StandaloneIconButtonsProps> = ({ icon, onClick, color, dataCy, ...rest }) => {
+export const StandaloneIconButton: FC<StandaloneIconButtonsProps> = ({ icon, onClick, color, dataCy, sx, ...rest }) => {
   return (
     <IconButton
       color={color ?? "primary"}
       data-cy={dataCy ?? "iconButton"}
       onClick={onClick}
       sx={{
+        ...sx,
         width: "36px",
         height: "36px",
         borderRadius: theme.spacing(0.5),
@@ -206,5 +207,48 @@ export const ToggleButton: FC<ToggleButtonProps> = ({ label, icon, active, onTog
       }
       icon={icon}
     />
+  );
+};
+
+interface AddButtonProps {
+  buttonContent: ReactNode;
+  onClick?: () => void;
+  dataCy?: string;
+}
+
+export const AddRowButton: FC<AddButtonProps> = ({ buttonContent, onClick, dataCy }) => {
+  const dashedOutlineImage = `url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%23C6D3DA' stroke-width='1' stroke-dasharray='9%2C9' stroke-dashoffset='0' stroke-linecap='square'/%3E%3C/svg%3E")`;
+  const dashedOutlineImageHover = `url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' fill='none' rx='8' ry='8' stroke='%23ACB4BD' stroke-width='1' stroke-dasharray='9%2C9' stroke-dashoffset='0' stroke-linecap='square'/%3E%3C/svg%3E")`;
+
+  return (
+    <Stack
+      role="button"
+      tabIndex={0}
+      onClick={onClick}
+      onKeyDown={e => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          onClick?.();
+        }
+      }}
+      data-cy={dataCy}
+      sx={{
+        justifyContent: "center",
+        alignItems: "center",
+        height: "100%",
+        width: "100%",
+        padding: 1.5,
+        borderRadius: "8px",
+        backgroundImage: dashedOutlineImage,
+        "&:hover, &:focus-visible": {
+          backgroundImage: dashedOutlineImageHover,
+          cursor: "pointer",
+          "& .MuiIconButton-root": {
+            backgroundColor: theme.palette.buttonStates.contained.hoverOrFocus.backgroundColor,
+          },
+        },
+      }}>
+      {buttonContent}
+    </Stack>
   );
 };

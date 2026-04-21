@@ -3,6 +3,7 @@ import "cypress-real-events/support";
 
 export const SidebarMenuItem = {
   location: "location",
+  identifiers: "identifiers",
   borehole: "borehole",
   stratigraphy: "stratigraphy",
   completion: "completion",
@@ -176,6 +177,13 @@ export const navigateInSidebar = (menuItem: string, promptSelector?: string) => 
     case SidebarMenuItem.location:
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/location$/);
+      });
+      cy.dataCy("originalName-formInput").should("exist");
+      isActiveMenuItem(menuItem);
+      break;
+    case SidebarMenuItem.identifiers:
+      cy.location().should(location => {
+        expect(location.pathname).to.match(/^\/\d+\/identifiers$/);
       });
       cy.dataCy("borehole_identifier-formInput").should("exist");
       isActiveMenuItem(menuItem);
