@@ -3,7 +3,6 @@ import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, SxProps, TextField } from "@mui/material";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
-import { getFormFieldError } from "./form";
 import { getFieldBorderColor } from "./formUtils.ts";
 import { useLabelOverflow } from "./useLabelOverflow.tsx";
 
@@ -83,8 +82,8 @@ export const FormSelect: FC<FormSelectProps> = ({
       name={fieldName}
       control={control}
       defaultValue={selected ?? ""}
-      rules={{ required: required ?? false }}
-      render={({ field, formState }) => {
+      rules={{ required: required ? "required" : false }}
+      render={({ field, fieldState }) => {
         // Display FormSelect as a standard TextField in readonly mode, so that text becomes selectable
         if (isReadOnly) {
           const selectedLabel = menuItems.find(option => option.value === field.value)?.label ?? "";
@@ -132,14 +131,13 @@ export const FormSelect: FC<FormSelectProps> = ({
               }
             }}
             renderInput={params => {
-              const formFieldError = getFormFieldError(fieldName, formState.errors);
               return (
                 <TextField
                   {...params}
                   label={ignoreOverlow ? translatedLabel : labelWithTooltip}
                   required={required}
-                  error={!!formFieldError}
-                  helperText={formFieldError?.message ? t(formFieldError.message) : ""}
+                  error={!!fieldState.error}
+                  helperText={fieldState.error?.message ? t(fieldState.error.message) : ""}
                   sx={{ ...sx, ...getFieldBorderColor(isReadOnly) }}
                   className={className}
                   data-cy={fieldName + "-formSelect"}
