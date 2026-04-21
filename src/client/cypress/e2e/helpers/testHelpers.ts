@@ -256,7 +256,7 @@ const setConsentCookie = () => {
   cy.setCookie("boreholes_consent", encodeURIComponent(JSON.stringify({ v: 1, analytics: true })));
 };
 
-const clickAcceptIfPresent = () => {
+export const clickAcceptIfPresent = () => {
   cy.get("body").then($body => {
     if ($body.find('[data-cy="accept-button"]').length) {
       cy.dataCy("accept-button").click();
@@ -1017,8 +1017,8 @@ export const createBaseSelector = (parent?: string) => {
 };
 
 export const selectLanguage = (language: string) => {
-  cy.dataCy("language-button-select").click({ force: true });
-  cy.dataCy(`${language.toLowerCase()}-button-select-item`).click({ force: true });
+  cy.dataCy("language-button-select").should("be.visible").click({ force: true });
+  cy.dataCy(`${language.toLowerCase()}-button-select-item`).should("be.visible").click({ force: true });
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(1000);
 };
