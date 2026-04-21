@@ -14,7 +14,7 @@ import {
 } from "../helpers/testHelpers";
 
 describe("Tests for filtering data by identifier.", () => {
-  // Todo: reactivate once the identifier filter is implemented. For now, the filter is hidden and not functional.
+  // Todo: reactivate once the identifier filter is implemented. For now, the filter is hidden and not functional (https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2547)
   it.skip("can filter by identifier", () => {
     goToRouteAndAcceptTerms(`/`);
     newEditableBorehole().as("borehole_id");
@@ -29,6 +29,7 @@ describe("Tests for filtering data by identifier.", () => {
     setInput("boreholeCodelists.1.value", "ABC123456");
     saveWithSaveBar();
 
+    stopBoreholeEditing();
     stopBoreholeEditing();
     evaluateSelect("boreholeCodelists.0.codelistId", "original ID");
     evaluateInput("boreholeCodelists.0.value", "819544732");
@@ -51,7 +52,7 @@ describe("Tests for filtering data by identifier.", () => {
     verifyPaginationText("1–100 of 3001");
   });
 
-  // TODO: Rewrite once the identifier filter is re-implemented.
+  // TODO: Rewrite once the identifier filter is re-implemented (https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2547).
   it.skip("can bulk edit boreholes while filter by identifier is set", () => {
     goToRouteAndAcceptTerms(`/`);
     newEditableBorehole().as("borehole_id");
