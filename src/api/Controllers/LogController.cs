@@ -388,28 +388,25 @@ public class LogController : BoreholeControllerBase<LogRun>
 
             return (logRuns, logFiles, null);
         }
-        else
-        {
 
-            var logFilesResult = await LogFilesForExport
-                .Where(lf => request.LogFileIds.Contains(lf.Id))
-                .ToListAsync()
-                .ConfigureAwait(false);
+        var logFilesResult = await LogFilesForExport
+            .Where(lf => request.LogFileIds.Contains(lf.Id))
+            .ToListAsync()
+            .ConfigureAwait(false);
 
-            if (logFilesResult.Count == 0) return ([], [], NotFound());
+        if (logFilesResult.Count == 0) return ([], [], NotFound());
 
-            var logRunIds = logFilesResult.Select(lf => lf.LogRunId).Distinct().ToList();
-            if (logRunIds.Count != 1) return ([], [], BadRequest("All log files must belong to the same log run."));
+        var logRunIds = logFilesResult.Select(lf => lf.LogRunId).Distinct().ToList();
+        if (logRunIds.Count != 1) return ([], [], BadRequest("All log files must belong to the same log run."));
 
-            var logRunsResult = await LogRunsForExport
-                .Where(lr => lr.Id == logRunIds[0])
-                .ToListAsync()
-                .ConfigureAwait(false);
+        var logRunsResult = await LogRunsForExport
+            .Where(lr => lr.Id == logRunIds[0])
+            .ToListAsync()
+            .ConfigureAwait(false);
 
-            if (logRunsResult.Count == 0) return ([], [], NotFound());
+        if (logRunsResult.Count == 0) return ([], [], NotFound());
 
-            return (logRunsResult, logFilesResult, null);
-        }
+        return (logRunsResult, logFilesResult, null);
     }
 
     private static async Task<byte[]> WriteLogRunCsvBytesAsync(List<LogRun> logRuns, string locale)
