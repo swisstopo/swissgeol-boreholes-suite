@@ -20,17 +20,16 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class ExportController : ControllerBase
+public class BoreholeExportController : ControllerBase
 {
     // Limit the maximum number of items per request to 100.
     // This also applies to the number of filtered ids to ensure the URL length does not exceed the maximum allowed length.
     private const int MaxPageSize = 100;
     private const string ExportFileName = "boreholes_export";
-    private const string MissingIdsMessage = "The list of IDs must not be empty.";
     private const string NoBoreholesFoundMessage = "No borehole(s) found for the provided id(s).";
     private const string UserLacksPermissionsMessage = "The user lacks permissions to export the borehole(s).";
     private readonly BdmsContext context;
-    private readonly ILogger logger;
+    private readonly ILogger<BoreholeExportController> logger;
     private readonly BoreholeFileCloudService boreholeFileCloudService;
     private readonly IBoreholePermissionService boreholePermissionService;
 
@@ -45,7 +44,7 @@ public class ExportController : ControllerBase
         },
     };
 
-    public ExportController(BdmsContext context, BoreholeFileCloudService boreholeFileCloudService, ILogger<ExportController> logger, IBoreholePermissionService boreholePermissionService)
+    public BoreholeExportController(BdmsContext context, BoreholeFileCloudService boreholeFileCloudService, ILogger<BoreholeExportController> logger, IBoreholePermissionService boreholePermissionService)
     {
         this.context = context;
         this.logger = logger;
@@ -59,11 +58,9 @@ public class ExportController : ControllerBase
     /// <param name="ids">The required list of borehole ids to filter by.</param>
     [HttpGet("json")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult> ExportJsonAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
+    public async Task<ActionResult> ExportJsonAsync([FromQuery][MinLength(1)][MaxLength(MaxPageSize)] IEnumerable<int> ids)
     {
-        if (!ValidateIds(ids, out var idList)) return BadRequest(MissingIdsMessage);
-
-        var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+        var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
         if (!await HasViewPermissionsForAllBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
@@ -78,10 +75,9 @@ public class ExportController : ControllerBase
     /// <param name="ids">The required list of borehole ids to filter by.</param>
     [HttpGet("gpkg")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult> ExportGeoPackageAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
+    public async Task<ActionResult> ExportGeoPackageAsync([FromQuery][MinLength(1)][MaxLength(MaxPageSize)] IEnumerable<int> ids)
     {
-        if (!ValidateIds(ids, out var idList)) return BadRequest(MissingIdsMessage);
-
+        var idList = ids.ToList();
         var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
@@ -176,10 +172,9 @@ public class ExportController : ControllerBase
     /// <returns>A CSV file containing the details of the specified boreholes.</returns>
     [HttpGet("csv")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> ExportCsvAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
+    public async Task<IActionResult> ExportCsvAsync([FromQuery][MinLength(1)][MaxLength(MaxPageSize)] IEnumerable<int> ids)
     {
-        if (!ValidateIds(ids, out var idList)) return BadRequest(MissingIdsMessage);
-
+        var idList = ids.ToList();
         var boreholes = await context.Boreholes
             .Include(b => b.BoreholeCodelists).ThenInclude(bc => bc.Codelist)
             .Where(borehole => idList.Contains(borehole.Id))
@@ -310,11 +305,9 @@ public class ExportController : ControllerBase
     /// <returns>A ZIP file including the borehole data as JSON and all corresponding attachments.</returns>
     [HttpGet("zip")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult> ExportJsonWithAttachmentsAsync([FromQuery][MaxLength(MaxPageSize)] IEnumerable<int> ids)
+    public async Task<ActionResult> ExportJsonWithAttachmentsAsync([FromQuery][MinLength(1)][MaxLength(MaxPageSize)] IEnumerable<int> ids)
     {
-        if (!ValidateIds(ids, out var idList)) return BadRequest(MissingIdsMessage);
-
-        var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => idList.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+        var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
         if (!await HasViewPermissionsForAllBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
@@ -323,11 +316,11 @@ public class ExportController : ControllerBase
 
         try
         {
-            var files = await context.BoreholeFiles.Include(f => f.File).AsNoTracking().Where(f => idList.Contains(f.BoreholeId)).ToListAsync().ConfigureAwait(false);
+            var files = await context.BoreholeFiles.Include(f => f.File).AsNoTracking().Where(f => ids.Contains(f.BoreholeId)).ToListAsync().ConfigureAwait(false);
             var fileName = $"{ExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}";
 
             // If only one borehole is exported, use its name as the file name
-            if (idList.Count == 1)
+            if (ids.Count() == 1)
             {
                 fileName = boreholes.Single().Name;
             }
@@ -349,14 +342,15 @@ public class ExportController : ControllerBase
                 {
                     var fileBytes = await boreholeFileCloudService.GetObject(file.NameUuid!).ConfigureAwait(false);
 
-                    // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name
-                    var zipEntry = archive.CreateEntry($"{file.NameUuid}_{file.Name}", CompressionLevel.Fastest);
+                    // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name.
+                    // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the original file name.
+                    var zipEntry = archive.CreateEntry($"{file.NameUuid}_{FileHelper.SanitizeZipEntryFileName(file.Name!, "export")}", CompressionLevel.Fastest);
                     using var zipEntryStream = zipEntry.Open();
                     await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
                 }
             }
 
-            return File(memoryStream.ToArray(), "application/zip", $"{fileName}");
+            return File(memoryStream.ToArray(), "application/zip", $"{fileName}.zip");
         }
         catch (AmazonS3Exception ex)
         {
@@ -449,14 +443,6 @@ public class ExportController : ControllerBase
                 }
             }
         }
-    }
-
-    private static bool ValidateIds(IEnumerable<int> ids, out List<int> idList)
-    {
-        idList = ids?.ToList() ?? [];
-        if (idList.Count < 1) return false;
-
-        return true;
     }
 
     /// <summary>

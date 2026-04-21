@@ -46,6 +46,7 @@ export interface TabStatus {
   photos: boolean;
   documents: boolean;
   log: boolean;
+  identifiers: boolean;
 }
 
 export interface WorkflowChangeRequest {

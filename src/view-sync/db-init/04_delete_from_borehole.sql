@@ -375,7 +375,7 @@ DELETE FROM bdms.borehole_identifiers_codelist WHERE borehole_id IN (
     INNER JOIN bdms.borehole b ON b.id_bho  = bi.borehole_id
     INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
     INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
-    WHERE t."location"  = false
+    WHERE t.identifiers = false
 );
 
 SELECT COUNT(*) AS "Free/Published Boreholes" FROM bdms.borehole;

@@ -14,7 +14,8 @@ import {
   fetchExtractStratigraphy,
   fetchPageBoundingBoxes,
 } from "../dataextraction.ts";
-import { download, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../fetchApiV2.ts";
+import { download } from "../download.ts";
+import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../fetchApiV2.ts";
 import { processFileWithOCR } from "../ocr.ts";
 import { DataExtractionResponse, maxFileSizeBytes, Profile } from "./fileInterfaces.ts";
 
@@ -149,6 +150,11 @@ const cleanUpExtractionData = (
     }, []);
 };
 
+export interface ExtractedStratigraphy {
+  descriptions: ExtractedLithologicalDescription[];
+  pageNumbers: number[];
+}
+
 export function useExtractStratigraphies(file: BoreholeAttachment, activePage: number) {
   const { data: fileInfo } = useFileInfo(file?.id, activePage);
   return useQuery({
@@ -157,21 +163,23 @@ export function useExtractStratigraphies(file: BoreholeAttachment, activePage: n
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes => Extraction for the same file doesn't need to be refetched.
     queryFn: async ({ signal }) => {
       const response = await extractStratigraphies(file.nameUuid, signal);
-      const lithologicalDescriptions: ExtractedLithologicalDescription[] =
-        // Todo: The extraction currently only supports a single borehole per file https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2146
-        Array.isArray(response.boreholes) && response.boreholes.length > 0
-          ? response.boreholes[0]?.layers?.map(({ start, end, material_description }, idx) => ({
-              id: idx,
-              fromDepth: start?.depth,
-              toDepth: end?.depth,
-              startDepthBoundingBoxes: start?.bounding_boxes,
-              endDepthBoundingBoxes: end?.bounding_boxes,
-              description: material_description.text,
-              descriptionBoundingBoxes: material_description.bounding_boxes,
-              stratigraphyId: 0,
-            })) || []
-          : [];
-      return cleanUpExtractionData(lithologicalDescriptions);
+      if (!Array.isArray(response.boreholes) || response.boreholes.length === 0) return [];
+      return response.boreholes.map(borehole => {
+        const descriptions = cleanUpExtractionData(
+          borehole.layers?.map(({ start, end, material_description }, idx) => ({
+            id: idx,
+            fromDepth: start?.depth,
+            toDepth: end?.depth,
+            startDepthBoundingBoxes: start?.bounding_boxes,
+            endDepthBoundingBoxes: end?.bounding_boxes,
+            description: material_description.text,
+            descriptionBoundingBoxes: material_description.bounding_boxes,
+            stratigraphyId: 0,
+          })) || [],
+        );
+
+        return { descriptions, pageNumbers: borehole.page_numbers } as ExtractedStratigraphy;
+      });
     },
   });
 }

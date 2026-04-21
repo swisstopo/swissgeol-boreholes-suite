@@ -21,7 +21,7 @@ import {
   createBorehole,
   createWateringress,
   deleteDownloadedFile,
-  getImportFileFromFixtures,
+  dropGeometryCSVFile,
   goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   handlePrompt,
@@ -32,6 +32,7 @@ import {
   selectInputFile,
   startBoreholeEditing,
   stopBoreholeEditing,
+  stubCloudStorageError,
 } from "../helpers/testHelpers";
 
 const jsonFileName = `bulkexport_${new Date().toISOString().split("T")[0]}.json`;
@@ -129,19 +130,7 @@ describe("Test for exporting boreholes.", () => {
     cy.dataCy("boreholegeometryimport-button").should("be.disabled");
 
     // upload geometry csv file
-    const geometryFile = new DataTransfer();
-    getImportFileFromFixtures("geometry_azimuth_inclination.csv", null).then(fileContent => {
-      const file = new File([fileContent], "geometry_azimuth_inclination.csv", {
-        type: "text/csv",
-      });
-      geometryFile.items.add(file);
-    });
-    cy.dataCy("import-geometry-input").within(() => {
-      cy.get("input[type=file]").then(input => {
-        (input[0] as HTMLInputElement).files = geometryFile.files;
-        input[0].dispatchEvent(new Event("change", { bubbles: true }));
-      });
-    });
+    dropGeometryCSVFile();
 
     cy.dataCy("boreholegeometryimport-button").should("be.enabled");
     setSelect("geometryFormat", 1);
@@ -172,16 +161,20 @@ describe("Test for exporting boreholes.", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
     setInput("name", firstBoreholeName);
+    saveWithSaveBar();
+    navigateInSidebar(SidebarMenuItem.identifiers);
     addItem("addIdentifier");
-    setSelect("boreholeCodelists.0.codelistId", 5);
+    setSelect("boreholeCodelists.0.codelistId", 4);
     setInput("boreholeCodelists.0.value", 13);
     saveWithSaveBar();
     returnToOverview();
 
     newEditableBorehole().as("borehole_id_2");
     setInput("name", secondBoreholeName);
+    saveWithSaveBar();
+    navigateInSidebar(SidebarMenuItem.identifiers);
     addItem("addIdentifier");
-    setSelect("boreholeCodelists.0.codelistId", 4);
+    setSelect("boreholeCodelists.0.codelistId", 3);
     setInput("boreholeCodelists.0.value", 14);
     saveWithSaveBar();
     returnToOverview();
@@ -198,11 +191,11 @@ describe("Test for exporting boreholes.", () => {
       expect(rows[1][3]).to.equal(firstBoreholeName);
       expect(rows[2][3]).to.equal(secondBoreholeName);
 
-      expect(rows[0][34]).to.equal("IDCanton");
+      expect(rows[0][34]).to.equal("cantonID");
       expect(rows[1][34]).to.equal("");
       expect(rows[2][34]).to.equal("14");
 
-      expect(rows[0][35]).to.equal("IDGeoQuat\r");
+      expect(rows[0][35]).to.equal("GeoQuatID\r");
       expect(rows[1][35]).to.equal("13\r");
       expect(rows[2][35]).to.equal("\r");
     });
@@ -220,10 +213,10 @@ describe("Test for exporting boreholes.", () => {
     exportItem();
 
     const moreThan100SelectedPrompt =
-      "You have selected more than 100 boreholes and a maximum of 100 boreholes can be exported. Do you want to continue?";
+      "You have selected more than 100 entries and a maximum of 100 entries can be exported. Do you want to continue?";
     handlePrompt(moreThan100SelectedPrompt, "cancel");
     exportItem();
-    handlePrompt(moreThan100SelectedPrompt, "export100Boreholes");
+    handlePrompt(moreThan100SelectedPrompt, "exportFirst100");
     exportItem();
     exportCSVItem();
     cy.wait("@borehole_export_csv").its("response.statusCode").should("eq", 200);
@@ -400,15 +393,7 @@ describe("Test for exporting boreholes.", () => {
     checkTwoFirstRows();
     exportItem();
 
-    // Fake Api error as returned from API
-    cy.intercept("GET", "/api/v2/export/zip?**", {
-      statusCode: 500,
-      body: {
-        title: "NoSuchKey",
-        status: 500,
-        detail: "An error occurred while fetching a file from the cloud storage.",
-      },
-    }).as("exportZipError");
+    stubCloudStorageError("/api/v2/boreholeexport/zip?**", "exportZipError");
 
     exportZipItem();
     cy.get(".MuiAlert-message").contains("An error occurred while fetching a file from the cloud storage.");
@@ -426,6 +411,7 @@ describe("Test for exporting boreholes.", () => {
       goToDetailRouteAndAcceptTerms(`/${id}`);
       startBoreholeEditing();
 
+      navigateInSidebar(SidebarMenuItem.identifiers);
       // set two custom identifiers
       addItem("addIdentifier");
       setSelect("boreholeCodelists.0.codelistId", 1);
@@ -434,7 +420,9 @@ describe("Test for exporting boreholes.", () => {
       addItem("addIdentifier");
       setSelect("boreholeCodelists.1.codelistId", 2);
       setInput("boreholeCodelists.1.value", "w2");
+      saveWithSaveBar();
 
+      navigateInSidebar(SidebarMenuItem.location);
       // add coordinates
       cy.get('[data-cy="locationX-formCoordinate"] input').type("2646000 ");
       cy.get('[data-cy="locationY-formCoordinate"] input').type("1247000 ");
@@ -477,10 +465,11 @@ describe("Test for exporting boreholes.", () => {
 
       clickOnRowWithText(boreholeName);
       evaluateInput("name", boreholeName);
-      evaluateInput("boreholeCodelists.1.value", "w1");
-      evaluateInput("boreholeCodelists.0.value", "w2");
       cy.get('[data-cy="locationX-formCoordinate"] input').should("have.value", `2'646'000`);
       cy.get('[data-cy="locationY-formCoordinate"] input').should("have.value", `1'247'000`);
+      navigateInSidebar(SidebarMenuItem.identifiers);
+      evaluateInput("boreholeCodelists.0.value", "w1");
+      evaluateInput("boreholeCodelists.1.value", "w2");
     });
   });
 });

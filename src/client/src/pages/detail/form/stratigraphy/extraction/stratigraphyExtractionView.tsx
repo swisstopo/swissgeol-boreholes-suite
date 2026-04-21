@@ -7,20 +7,26 @@ import { PageSelection } from "../../../labeling/pageSelection.tsx";
 import { ExtractedLithologicalDescription } from "../lithologicalDescription.ts";
 import { useCompletedLayers } from "../lithology/useCompletedLayers.tsx";
 import { ExtractedStratigraphyTable } from "./extractedStratigraphyTable.tsx";
+import { PagesBadge } from "./pagesBadge.tsx";
 
 interface StratigraphyExtractionViewProps {
   file: BoreholeAttachment;
   lithologicalDescriptions: ExtractedLithologicalDescription[];
   isLoading: boolean;
+  activePage: number;
+  setActivePage: (page: number) => void;
+  currentPageRange?: number[];
 }
 
 export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = ({
   file,
   lithologicalDescriptions,
   isLoading,
+  activePage,
+  setActivePage,
+  currentPageRange,
 }) => {
   const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(lithologicalDescriptions);
-  const [activePage, setActivePage] = useState<number>(1);
   const [pageCount, setPageCount] = useState<number>();
 
   return (
@@ -35,7 +41,7 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
         </Stack>
         <Stack
           direction="column"
-          justifyContent="flex-end"
+          justifyContent="space-between"
           sx={{
             backgroundColor: theme.palette.ai.background,
             border: `1px solid ${theme.palette.ai.background}`,
@@ -44,9 +50,10 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
             width: "50%",
             position: "fixed",
             right: theme.spacing(4),
-            top: theme.spacing(11),
+            top: theme.spacing(13.5),
             bottom: theme.spacing(12.5),
           }}>
+          <PagesBadge currentPageRange={currentPageRange} />
           <ExtractionImageContainer
             extractedDescriptions={lithologicalDescriptions}
             currentPageNumber={activePage}

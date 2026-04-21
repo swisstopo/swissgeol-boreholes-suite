@@ -6,6 +6,7 @@ import {
   verifyPaginationText,
 } from "../helpers/dataGridHelpers";
 import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
+import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers.ts";
 import {
   goToRouteAndAcceptTerms,
   newEditableBorehole,
@@ -19,19 +20,18 @@ describe("Tests for filtering data by identifier.", () => {
     newEditableBorehole().as("borehole_id");
 
     // Add multiple id values for the same identifier type
+    navigateInSidebar(SidebarMenuItem.identifiers);
     addItem("addIdentifier");
-    setSelect("boreholeCodelists.0.codelistId", 1);
+    setSelect("boreholeCodelists.0.codelistId", 0);
     setInput("boreholeCodelists.0.value", 819544732);
 
-    addItem("addIdentifier");
-    setSelect("boreholeCodelists.1.codelistId", 1);
+    cy.get('[data-cy="100000004-add-id-button"]').click();
     setInput("boreholeCodelists.1.value", "ABC123456");
     saveWithSaveBar();
 
     stopBoreholeEditing();
-    evaluateSelect("boreholeCodelists.0.codelistId", "ID Original");
+    evaluateSelect("boreholeCodelists.0.codelistId", "original ID");
     evaluateInput("boreholeCodelists.0.value", "819544732");
-    evaluateSelect("boreholeCodelists.1.codelistId", "ID Original");
     evaluateInput("boreholeCodelists.1.value", "ABC123456");
 
     returnToOverview();
@@ -53,6 +53,7 @@ describe("Tests for filtering data by identifier.", () => {
   it("can bulk edit boreholes while filter by identifier is set", () => {
     goToRouteAndAcceptTerms(`/`);
     newEditableBorehole().as("borehole_id");
+    navigateInSidebar(SidebarMenuItem.identifiers);
     addItem("addIdentifier");
     setSelect("boreholeCodelists.0.codelistId", 1);
     setInput("boreholeCodelists.0.value", 64531274);
@@ -62,6 +63,7 @@ describe("Tests for filtering data by identifier.", () => {
     returnToOverview();
 
     newEditableBorehole().as("borehole_id_2");
+    navigateInSidebar(SidebarMenuItem.identifiers);
     addItem("addIdentifier");
     setSelect("boreholeCodelists.0.codelistId", 1);
     setInput("boreholeCodelists.0.value", 436584127);

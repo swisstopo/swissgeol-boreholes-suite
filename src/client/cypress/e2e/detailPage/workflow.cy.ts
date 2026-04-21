@@ -123,6 +123,61 @@ function finishReview() {
   assertWorkflowSteps("Reviewed");
 }
 
+function assertBoreholeNotEditable(id: number) {
+  goToDetailRouteAndAcceptTerms(`/${id}/location`);
+  cy.wait("@borehole_by_id");
+  cy.dataCy("edit-button").should("not.exist");
+  cy.dataCy("editingstop-button").should("not.exist");
+  // Verify all text inputs are readonly
+  cy.get(".MuiFormControl-root")
+    .should("have.length", 22)
+    .each(i => {
+      cy.wrap(i).should("have.class", "readonly", "readonly");
+    });
+}
+
+function testTabReviewAndReset(
+  reviewSection: string,
+  reviewSubSection: string,
+  menuItem: (typeof SidebarMenuItem)[keyof typeof SidebarMenuItem],
+  changeTabCallback: () => void,
+) {
+  cy.get("@borehole_id").then(id => {
+    navigateToWorkflowAndStartEditing(id);
+    requestReviewFromValidator();
+    cy.get("sgc-tab").contains("Review").click();
+    isUncheckedTabStatusBox("review", reviewSection);
+    isUncheckedTabStatusBox("review", reviewSubSection);
+    clickTabStatusCheckbox("review", reviewSubSection);
+    isCheckedTabStatusBox("review", reviewSubSection);
+    navigateInSidebar(menuItem);
+    changeTabCallback();
+    navigateInSidebar(SidebarMenuItem.status);
+    cy.get("sgc-tab").contains("Review").click();
+
+    // log was reset to unchecked
+    isUncheckedTabStatusBox("review", reviewSection);
+    isUncheckedTabStatusBox("review", reviewSubSection);
+  });
+}
+
+function changeLogPanel() {
+  verifyTableLength(1);
+  verifyRowContains("Run 111", 0); // log run from complete borehole
+  checkRowWithIndex(0);
+  cy.dataCy("delete-button").click();
+  verifyTableLength(0);
+  saveWithSaveBar();
+}
+
+function changeIdentifiersPanel() {
+  addItem("addIdentifier");
+  setSelect("boreholeCodelists.0.codelistId", 1); // GeODin ID (100000000)
+  setInput("boreholeCodelists.0.value", "AA_PANDAs_for_life");
+  setInput("boreholeCodelists.0.comment", "primary id");
+  saveWithSaveBar();
+}
+
 describe("Tests the publication workflow.", () => {
   it("Can request review from users with controller privilege", () => {
     createBorehole({
@@ -280,6 +335,9 @@ describe("Tests the publication workflow.", () => {
       cy.get(`#review`).find("sgc-checkbox").should("have.class", "is-checked");
 
       finishReview();
+      assertBoreholeNotEditable(id);
+      goToDetailRouteAndAcceptTerms(`/${id}/status`);
+
       AssertHeaderChips(WorkflowStatus.Reviewed, null, false, "Free");
 
       cy.get("sgc-tab").contains("Approval").click();
@@ -310,6 +368,8 @@ describe("Tests the publication workflow.", () => {
 
       cy.get("sgc-tab").contains("History").click();
       checkWorkflowChangeContent("Admin User", "Status changed from Reviewed to Published", "I published a borehole!");
+
+      assertBoreholeNotEditable(id);
     });
   });
 
@@ -580,28 +640,11 @@ describe("Tests the publication workflow.", () => {
 
   it("Can review and reset log tab", () => {
     createBoreholeWithCompleteDataset().as("borehole_id");
-    cy.get("@borehole_id").then(id => {
-      navigateToWorkflowAndStartEditing(id);
-      requestReviewFromValidator();
-      cy.get("sgc-tab").contains("Review").click();
-      isUncheckedTabStatusBox("review", "LOG");
-      isUncheckedTabStatusBox("review", "Log runs");
-      clickTabStatusCheckbox("review", "Log runs");
-      isCheckedTabStatusBox("review", "LOG");
-      isCheckedTabStatusBox("review", "Log runs");
-      navigateInSidebar(SidebarMenuItem.log);
-      verifyTableLength(1);
-      verifyRowContains("Run 111", 0); // log run from complete borehole
-      checkRowWithIndex(0);
-      cy.dataCy("delete-button").click();
-      verifyTableLength(0);
-      saveWithSaveBar();
-      navigateInSidebar(SidebarMenuItem.status);
-      cy.get("sgc-tab").contains("Review").click();
+    testTabReviewAndReset("LOG", "Log runs", SidebarMenuItem.log, changeLogPanel);
+  });
 
-      // log was reset to unchecked
-      isUncheckedTabStatusBox("review", "LOG");
-      isUncheckedTabStatusBox("review", "Log runs");
-    });
+  it("Can review and reset Identifiers tab", () => {
+    createBoreholeWithCompleteDataset().as("borehole_id");
+    testTabReviewAndReset("Borehole", "IDs", SidebarMenuItem.identifiers, changeIdentifiersPanel);
   });
 });

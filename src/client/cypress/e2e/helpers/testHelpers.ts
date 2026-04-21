@@ -35,10 +35,9 @@ export const interceptApiCalls = () => {
   });
   cy.intercept("/api/v2/stratigraphy/copy*").as("stratigraphy_COPY");
   cy.intercept("/api/v2/lithology?stratigraphyId=**").as("lithology_by_stratigraphyId_GET");
-  cy.intercept("/api/v2/location/identify**").as("location");
   cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
-  cy.intercept("/api/v2/export/csv**").as("borehole_export_csv");
-  cy.intercept("/api/v2/export/json**").as("borehole_export_json");
+  cy.intercept("/api/v2/boreholeexport/csv**").as("borehole_export_csv");
+  cy.intercept("/api/v2/boreholeexport/json**").as("borehole_export_json");
   cy.intercept("/api/v2/borehole/**").as("borehole_by_id");
   cy.intercept("PUT", "/api/v2/borehole").as("update-borehole");
   cy.intercept("POST", "/api/v2/borehole").as("post-borehole");
@@ -126,12 +125,12 @@ export const interceptApiCalls = () => {
   }).as("load-extraction-file");
 
   cy.intercept("/api/v2/log?boreholeId=**").as("logrun_by_borehole_GET");
+  cy.intercept("POST", "/api/v2/log/export").as("log_export");
 
   cy.intercept("dataextraction/api/V1/extract_data").as("extract-data");
   cy.intercept("dataextraction/api/V1/extract_stratigraphy").as("extract-stratigraphy");
 
   cy.intercept("https://api3.geo.admin.ch/rest/services/height*").as("height");
-  cy.intercept("https://geodesy.geo.admin.ch/reframe/lv95tolv03*").as("geodesy");
   cy.intercept("/api/v2/import/*").as("borehole-upload");
   cy.intercept("/api/v2/boreholefile/getAllForBorehole?boreholeId=**").as("getAllAttachments");
   cy.intercept("/api/v2/boreholefile/upload?boreholeId=**").as("upload-files");
@@ -150,6 +149,68 @@ export const interceptApiCalls = () => {
   cy.intercept("POST", "/api/v2/maintenance/CoordinateMigration").as("start-coordinate-migration");
   cy.intercept("POST", "/api/v2/maintenance/UserMerge").as("start-user-merge");
   cy.intercept("GET", "/api/v2/maintenance/status").as("get-maintenance-status");
+
+  mockGeodesyIntercept();
+  mockLocationIntercept();
+};
+
+/**
+ * Mocks the geodesy coordinate transformation API.
+ * If no fixed response is provided, dynamically computes LV03 from LV95 by subtracting offsets.
+ */
+export const mockGeodesyIntercept = (
+  fixedResponse?: { easting: number; northing: number },
+  direction: string = "lv95tolv03",
+) => {
+  const url = `https://geodesy.geo.admin.ch/reframe/${direction}?easting=*&northing=*&altitude=0.0&format=json`;
+  if (fixedResponse) {
+    cy.intercept(url, {
+      statusCode: 200,
+      body: fixedResponse,
+    }).as("geodesy");
+  } else {
+    const offset = direction === "lv95tolv03" ? -1 : 1;
+    cy.intercept(url, req => {
+      const params = new URL(req.url).searchParams;
+      const easting = Number.parseFloat(params.get("easting")!);
+      const northing = Number.parseFloat(params.get("northing")!);
+      req.reply({
+        statusCode: 200,
+        body: {
+          easting: easting + offset * 2_000_000,
+          northing: northing + offset * 1_000_000,
+        },
+      });
+    }).as("geodesy");
+  }
+};
+
+/**
+ * Mocks the location API.
+ * If no fixed response is provided, a default body is returned.
+ */
+export const mockLocationIntercept = (
+  fixedResponse?: { country: string; canton: string; municipality: string },
+  coordinates?: { east: number; north: number },
+) => {
+  const url = `/api/v2/location/identify?east=${coordinates?.east ?? "*"}&north=${coordinates?.north ?? "*"}`;
+  if (fixedResponse) {
+    cy.intercept(url, {
+      statusCode: 200,
+      body: fixedResponse,
+    }).as("location");
+  } else {
+    cy.intercept(url, req => {
+      req.reply({
+        statusCode: 200,
+        body: {
+          country: "Schweiz",
+          canton: "Obwalden",
+          municipality: "Kerns",
+        },
+      });
+    }).as("location");
+  }
 };
 
 /**
@@ -908,6 +969,21 @@ export const createInstrument = ({
       auth: bearerAuth(token as string),
     });
   });
+};
+
+/**
+ * Stubs a cloud storage (S3) fetch failure for the given URL pattern.
+ * Used in export tests to simulate a missing object in the cloud.
+ */
+export const stubCloudStorageError = (urlPattern: string, alias: string, method: "GET" | "POST" = "GET") => {
+  cy.intercept(method, urlPattern, {
+    statusCode: 500,
+    body: {
+      title: "NoSuchKey",
+      status: 500,
+      detail: "An error occurred while fetching a file from the cloud storage.",
+    },
+  }).as(alias);
 };
 
 export const handlePrompt = (message: string | null, action: string) => {

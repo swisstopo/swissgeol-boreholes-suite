@@ -1,21 +1,23 @@
-import React, { useCallback, useContext, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Backdrop, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from "@mui/material";
-import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { ApiError } from "../../api/apiInterfaces.ts";
-import { exportCSVBorehole, exportJsonBoreholes, exportJsonWithAttachmentsBorehole } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme.ts";
-import { downloadData } from "../../utils.ts";
 import { AlertContext } from "../alert/alertContext.tsx";
 import { CancelButton, ExportButton } from "../buttons/buttons.tsx";
 
+export interface ExportItem {
+  label: string;
+  exportFunction: () => Promise<Response | void>;
+}
+
 interface ExportDialogProps {
   isExporting: boolean;
-  setIsExporting: React.Dispatch<React.SetStateAction<boolean>>;
-  selectionModel: GridRowSelectionModel;
-  fileName: string;
+  setIsExporting: Dispatch<SetStateAction<boolean>>;
+  exportItems: ExportItem[];
 }
-export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, fileName }: ExportDialogProps) => {
+
+export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: ExportDialogProps) => {
   const { t } = useTranslation();
   const [inProgress, setInProgress] = useState(false);
   const { showAlert } = useContext(AlertContext);
@@ -26,11 +28,11 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
   }, [setIsExporting]);
 
   const handleExport = useCallback(
-    async (exportFunction: (ids: number[] | GridRowSelectionModel) => Promise<Response | void>) => {
+    async (exportFunction: () => Promise<Response | void>) => {
       setInProgress(true);
       const startTime = Date.now();
       try {
-        await exportFunction(selectionModel.slice(0, 100));
+        await exportFunction();
       } catch (error) {
         if (error instanceof ApiError) {
           showAlert(t(error.message), "error");
@@ -50,31 +52,8 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
         }
       }
     },
-    [closeExportDialog, selectionModel, showAlert, t],
+    [closeExportDialog, showAlert, t],
   );
-
-  const onExportJson = async () => {
-    await handleExport(exportJson);
-  };
-
-  const onExportCsv = async () => {
-    await handleExport(exportCsv);
-  };
-
-  const onExportJsonWithAttachments = async () => {
-    await handleExport(exportJsonWithAttachmentsBorehole);
-  };
-
-  const exportJson = async (ids: number[] | GridRowSelectionModel) => {
-    const exportJsonResponse = await exportJsonBoreholes(ids);
-    const jsonString = JSON.stringify(exportJsonResponse);
-    downloadData(jsonString, `${fileName}.json`, "application/json");
-  };
-
-  const exportCsv = async (ids: number[] | GridRowSelectionModel) => {
-    const csvData = await exportCSVBorehole(ids);
-    downloadData(csvData, `${fileName}.csv`, "text/csv");
-  };
 
   return (
     <Dialog open={isExporting}>
@@ -82,9 +61,13 @@ export const ExportDialog = ({ isExporting, setIsExporting, selectionModel, file
         <DialogTitle>{t("export")}</DialogTitle>
         <DialogContent>
           <Stack gap={1} sx={{ mt: 3 }}>
-            <ExportButton label={"CSV"} onClick={onExportCsv} />
-            <ExportButton label={"JSON"} onClick={onExportJson} />
-            <ExportButton label={"exportJsonProfile"} onClick={onExportJsonWithAttachments} />
+            {exportItems.map(item => (
+              <ExportButton
+                key={`export-${item.label}`}
+                label={item.label}
+                onClick={() => handleExport(item.exportFunction)}
+              />
+            ))}
           </Stack>
         </DialogContent>
         <DialogActions>
