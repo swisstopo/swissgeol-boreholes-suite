@@ -252,15 +252,33 @@ export const login = (user: string) => {
   );
 };
 
+const CONSENT_COOKIE_VALUE = encodeURIComponent(JSON.stringify({ v: 1, analytics: true }));
+
+const visitWithConsent = (route: string) => {
+  cy.visit(route, {
+    onBeforeLoad(win) {
+      win.document.cookie = `boreholes_consent=${CONSENT_COOKIE_VALUE}; path=/; SameSite=Lax`;
+    },
+  });
+};
+
+export const clickAcceptIfPresent = () => {
+  cy.get("body").then($body => {
+    if ($body.find('[data-cy="accept-button"]').length) {
+      cy.dataCy("accept-button").click();
+    }
+  });
+};
+
 export const goToDetailRouteAndAcceptTerms = (route: string) => {
-  cy.visit(route);
-  cy.dataCy("accept-button").click();
+  visitWithConsent(route);
+  clickAcceptIfPresent();
   cy.wait(["@borehole_by_id", "@get-current-user"]);
 };
 
 export const goToRouteAndAcceptTerms = (route: string) => {
-  cy.visit(route);
-  cy.dataCy("accept-button").click();
+  visitWithConsent(route);
+  clickAcceptIfPresent();
 };
 
 /**
@@ -1003,8 +1021,8 @@ export const createBaseSelector = (parent?: string) => {
 };
 
 export const selectLanguage = (language: string) => {
-  cy.dataCy("language-button-select").click({ force: true });
-  cy.dataCy(`${language.toLowerCase()}-button-select-item`).click({ force: true });
+  cy.dataCy("language-button-select").click();
+  cy.dataCy(`${language.toLowerCase()}-button-select-item`).click();
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(1000);
 };

@@ -12,6 +12,7 @@ import {
 import { activeColor } from "../helpers/navigationHelpers";
 import {
   checkElementColorByDataCy,
+  clickAcceptIfPresent,
   createBorehole,
   createCompletion,
   goToDetailRouteAndAcceptTerms,
@@ -645,14 +646,14 @@ describe("completion crud tests", () => {
 
         assertLocationAndHash(id, completion1Id, "#casing");
         cy.reload(forceReload);
-        cy.dataCy("accept-button").click();
+        clickAcceptIfPresent();
 
         assertLocationAndHash(id, completion1Id, "#casing");
         setContentTab("instrumentation");
 
         assertLocationAndHash(id, completion1Id, "#instrumentation");
         cy.reload(forceReload);
-        cy.dataCy("accept-button").click();
+        clickAcceptIfPresent();
         assertLocationAndHash(id, completion1Id, "#instrumentation");
         // Resets hash from #instrumentation to #casing when switching to another completion
         // eslint-disable-next-line cypress/no-unnecessary-waiting
