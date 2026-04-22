@@ -30,7 +30,7 @@ describe("General app tests", () => {
     cy.clearCookie("boreholes_consent");
 
     cy.visit("/");
-    cy.dataCy("accept-button").should("be.visible").click();
+    cy.dataCy("accept-button").click();
     cy.dataCy("accept-button").should("not.exist");
 
     cy.getCookie("boreholes_consent")
