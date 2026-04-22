@@ -94,6 +94,9 @@ export const useBoreholeUrlParams = () => {
     // Set all filter keys to null to remove them from the URL
     const nulled = Object.fromEntries(Object.keys(filterParsers).map(k => [k, null]));
     setFilterParams(nulled as Parameters<typeof setFilterParams>[0]);
+    (Object.keys(filterParsers) as Array<keyof typeof filterParsers>).forEach(key => {
+      sessionStorage.removeItem(SessionKeys[key as keyof typeof SessionKeys]);
+    });
   };
 
   const saveFilterParamsInSession = useCallback(() => {
@@ -137,6 +140,12 @@ export const useBoreholeUrlParams = () => {
   }, [setTableParams]);
 
   const restoreFilterParamsFromSession = useCallback(() => {
+    // URL takes precedence over session: if ANY filter is already set via the URL,
+    // skip restoring filter values from sessionStorage entirely.
+    const hasUrlFilter = Object.values(allFilterParamsRef.current).some(v => v !== null);
+    if (hasUrlFilter) {
+      return;
+    }
     const updates: Record<string, unknown> = {};
     (Object.keys(filterParsers) as Array<keyof typeof filterParsers>).forEach(key => {
       const raw = sessionStorage.getItem(SessionKeys[key as keyof typeof SessionKeys]);
