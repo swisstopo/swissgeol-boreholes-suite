@@ -252,8 +252,6 @@ export const login = (user: string) => {
   );
 };
 
-const CONSENT_COOKIE_VALUE = encodeURIComponent(JSON.stringify({ v: 1, analytics: true }));
-
 export const clickAcceptIfPresent = () => {
   cy.get("body").then($body => {
     if ($body.find('[data-cy="accept-button"]').length) {
@@ -263,11 +261,13 @@ export const clickAcceptIfPresent = () => {
 };
 
 export const goToDetailRouteAndAcceptTerms = (route: string) => {
+  cy.visit(route);
   clickAcceptIfPresent();
   cy.wait(["@borehole_by_id", "@get-current-user"]);
 };
 
 export const goToRouteAndAcceptTerms = (route: string) => {
+  cy.visit(route);
   clickAcceptIfPresent();
 };
 
