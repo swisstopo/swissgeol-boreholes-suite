@@ -10,23 +10,23 @@ export interface FaciesDescription extends BaseLayer {
   facies?: Codelist | null;
 }
 
-export const fetchFaciesDescriptionsByProfileId = async (profileId: number): Promise<FaciesDescription[]> => {
+const fetchFaciesDescriptionsByProfileId = async (profileId: number): Promise<FaciesDescription[]> => {
   return await fetchApiV2WithApiError<FaciesDescription[]>(`faciesdescription?stratigraphyId=${profileId}`, "GET");
 };
 
-export const addFaciesDescription = async (faciesDescription: FaciesDescription): Promise<FaciesDescription> => {
+const addFaciesDescription = async (faciesDescription: FaciesDescription): Promise<FaciesDescription> => {
   return await fetchApiV2WithApiError<FaciesDescription>("faciesdescription", "POST", faciesDescription);
 };
 
-export const updateFaciesDescription = async (faciesDescription: FaciesDescription): Promise<FaciesDescription> => {
+const updateFaciesDescription = async (faciesDescription: FaciesDescription): Promise<FaciesDescription> => {
   return await fetchApiV2WithApiError<FaciesDescription>("faciesdescription", "PUT", faciesDescription);
 };
 
-export const deleteFaciesDescription = async (id: number): Promise<void> => {
+const deleteFaciesDescription = async (id: number): Promise<void> => {
   await fetchApiV2WithApiError(`faciesdescription?id=${id}`, "DELETE");
 };
 
-export const faciesDescriptionQueryKey = "faciesDescription";
+const faciesDescriptionQueryKey = "faciesDescription";
 
 export const useFaciesDescriptions = (stratigraphyId?: number) =>
   useQuery({

@@ -7,7 +7,7 @@ import { Photo } from "../pages/detail/attachments/tabs/photo.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
-import { LogRun } from "../pages/detail/form/log/log.ts";
+import { LogRun } from "../pages/detail/form/log/logInterfaces.ts";
 import { Workflow } from "../pages/detail/form/workflow/workflow.ts";
 import { Document, NullableDateString, User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
@@ -114,7 +114,7 @@ export const importBoreholesZip = async (workgroupId: number | null, combinedFor
   return await upload(`import/zip?workgroupId=${workgroupId}`, "POST", combinedFormData);
 };
 
-export const createBorehole = async (workgroupId: number): Promise<BoreholeV2> => {
+const createBorehole = async (workgroupId: number): Promise<BoreholeV2> => {
   return await fetchApiV2WithApiError<BoreholeV2>(`borehole`, "POST", {
     workgroupId,
     originalReferenceSystem: referenceSystems.LV95.code,
@@ -135,19 +135,19 @@ export const exportJsonWithAttachmentsBorehole = async (boreholeIds: number[] | 
   return await download(`boreholeexport/zip?${getIdQuery(boreholeIds)}`);
 };
 
-export const fetchBoreholeById = async (id: number): Promise<BoreholeV2> => {
+const fetchBoreholeById = async (id: number): Promise<BoreholeV2> => {
   return await fetchApiV2WithApiError<BoreholeV2>(`borehole/${id}`, "GET");
 };
 
-export const updateBorehole = async (borehole: BoreholeV2): Promise<BoreholeV2> => {
+const updateBorehole = async (borehole: BoreholeV2): Promise<BoreholeV2> => {
   return await fetchApiV2WithApiError<BoreholeV2>("borehole", "PUT", borehole);
 };
-export const deleteBorehole = async (id: number) => await fetchApiV2WithApiError(`borehole?id=${id}`, "DELETE");
+const deleteBorehole = async (id: number) => await fetchApiV2WithApiError(`borehole?id=${id}`, "DELETE");
 
-export const canUserEditBorehole = async (id: number) =>
+const canUserEditBorehole = async (id: number) =>
   await fetchApiV2WithApiError<boolean>(`permissions/canedit?boreholeId=${id}`, "GET");
 
-export const canUserUpdateBoreholeStatus = async (id: number) =>
+const canUserUpdateBoreholeStatus = async (id: number) =>
   await fetchApiV2WithApiError<boolean>(`permissions/canchangestatus?boreholeId=${id}`, "GET");
 
 export const boreholeQueryKey = "boreholes";
@@ -236,7 +236,7 @@ export const useReloadBoreholes = () => {
 };
 
 // ---- Filter interfaces ----
-export interface BoreholeListItem {
+interface BoreholeListItem {
   id: number;
   originalName: string | null;
   name: string | null;
@@ -258,7 +258,7 @@ export interface BoreholeListItem {
   locked: NullableDateString;
 }
 
-export interface FilterRequest {
+interface FilterRequest {
   polygon?: Geometry | null;
   originalName?: string | null;
   projectName?: string | null;
@@ -292,7 +292,7 @@ export interface FilterRequest {
   direction?: string | null;
 }
 
-export interface FilterResponse {
+interface FilterResponse {
   totalCount: number;
   pageNumber: number;
   pageSize: number;
@@ -304,10 +304,14 @@ export interface FilterResponse {
 }
 
 // ---- Filter API ----
-export const filterBoreholes = async (filterRequest: FilterRequest): Promise<FilterResponse> => {
+const filterBoreholes = async (filterRequest: FilterRequest): Promise<FilterResponse> => {
   return await fetchApiV2WithApiError<FilterResponse>("borehole/filter", "POST", filterRequest);
 };
 
+/**
+ * @public — planned consumer: upcoming filter feature (issue link TBD).
+ * Kept exported intentionally; do not remove without checking the tracking issue.
+ */
 export const useFilterBoreholes = (filterRequest: FilterRequest) => {
   return useQuery({
     queryKey: [boreholeQueryKey, filterRequest],

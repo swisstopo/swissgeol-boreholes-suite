@@ -5,7 +5,7 @@ import editorUser from "../../fixtures/editorUser.json";
 import viewerUser from "../../fixtures/viewerUser.json";
 import { startEditing, stopEditing } from "./buttonHelpers";
 
-export const bearerAuth = (token: string) => ({ bearer: token });
+const bearerAuth = (token: string) => ({ bearer: token });
 
 export const interceptApiCalls = () => {
   // Api V1
@@ -542,18 +542,6 @@ export const delayedType = (element: Cypress.Chainable<JQuery<HTMLElement>>, tex
   element.type(text, { delay: 10 });
 };
 
-/**
- * Sets the value for a provided input element.
- *
- * cy.Type() can be slow. If every keystroke triggers a request it can be even slower.
- * Thus use setValueOfInputElement to set the value of the input element and only type one char after.
- * @param {object} inputElement The input element.
- * @param {string} inputValue The input string to set as value.
- */
-export const setValueOfInputElement = function (inputElement: JQuery<HTMLElement>, inputValue: string) {
-  inputElement[0].setAttribute("value", inputValue);
-};
-
 // Deletes a downloaded file in Cypress' downloads folder
 export const deleteDownloadedFile = (fileName: string) => {
   // Get the path to the downloaded file you want to delete
@@ -615,7 +603,7 @@ export const getImportFileFromFixtures = (fileName: string, encoding: string | n
   return encoding ? cy.fixture(filePath, encoding as Cypress.Encodings) : cy.fixture(filePath);
 };
 
-export interface StratigraphyInput {
+interface StratigraphyInput {
   boreholeId: number | string;
   name: string;
   isPrimary?: boolean;
@@ -648,7 +636,7 @@ export const createStratigraphy = ({ boreholeId, name, isPrimary = true, date = 
   });
 };
 
-export interface CompletionInput {
+interface CompletionInput {
   name: string;
   boreholeId: number | string;
   kindId: number;
@@ -677,7 +665,7 @@ export const createCompletion = ({ name, boreholeId, kindId, isPrimary }: Comple
   });
 };
 
-export interface CasingInput {
+interface CasingInput {
   name: string;
   boreholeId: number | string;
   completionId: number | string;
@@ -741,7 +729,7 @@ export const openStratigraphyEditorTab = (stratigraphyName: string, hash: string
   cy.wait(waitAlias);
 };
 
-export interface ObservationInput {
+interface ObservationInput {
   boreholeId: number | string;
   startTime: string;
   reliabilityId: number;
@@ -750,7 +738,7 @@ export interface ObservationInput {
   toDepthM?: number | null;
 }
 
-export interface FieldMeasurementInput extends ObservationInput {
+interface FieldMeasurementInput extends ObservationInput {
   sampleTypeId: number;
   parameterId: number;
   value: number;
@@ -788,7 +776,7 @@ export const createFieldMeasurement = ({
   });
 };
 
-export interface WaterIngressInput extends ObservationInput {
+interface WaterIngressInput extends ObservationInput {
   quantityId: number;
 }
 
@@ -822,41 +810,7 @@ export const createWateringress = ({
   });
 };
 
-export interface GroundwaterLevelMeasurementInput extends ObservationInput {
-  kindId: number;
-}
-
-export const createGroundwaterLevelMeasurement = ({
-  boreholeId,
-  startTime,
-  reliabilityId,
-  kindId,
-  casingId = null,
-  fromDepthM = null,
-  toDepthM = null,
-}: GroundwaterLevelMeasurementInput) => {
-  return cy.get("@id_token").then(token => {
-    return cy.request({
-      method: "POST",
-      url: "/api/v2/groundwaterlevelmeasurement",
-      body: {
-        boreholeId: boreholeId,
-        startTime: startTime,
-        reliabilityId: reliabilityId,
-        kindId: kindId,
-        casingId: casingId,
-        fromDepthM: fromDepthM,
-        toDepthM: toDepthM,
-        type: ObservationType.groundwaterLevelMeasurement,
-      },
-      cache: "no-cache",
-      credentials: "same-origin",
-      auth: bearerAuth(token as string),
-    });
-  });
-};
-
-export interface HydrotestInput extends ObservationInput {
+interface HydrotestInput extends ObservationInput {
   kindCodelistIds: number[];
 }
 
@@ -890,7 +844,7 @@ export const createHydrotest = ({
   });
 };
 
-export interface BackfillInput {
+interface BackfillInput {
   completionId: number | string;
   casingId?: number | string | null;
   materialId?: number | null;
@@ -929,7 +883,7 @@ export const createBackfill = ({
   });
 };
 
-export interface InstrumentInput {
+interface InstrumentInput {
   completionId: number | string;
   casingId?: number | string | null;
   name: string;

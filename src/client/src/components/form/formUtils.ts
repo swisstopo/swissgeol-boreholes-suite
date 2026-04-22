@@ -1,5 +1,5 @@
 import { theme } from "../../AppTheme.ts";
-import { LogRun } from "../../pages/detail/form/log/log.ts";
+import { LogRun } from "../../pages/detail/form/log/logInterfaces.ts";
 import { Lithology } from "../../pages/detail/form/stratigraphy/lithology.ts";
 import { FormError, FormErrors } from "./form.ts";
 

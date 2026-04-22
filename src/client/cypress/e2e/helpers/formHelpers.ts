@@ -107,7 +107,7 @@ export const evaluateTextarea = (fieldName: string, expectedValue: string, paren
  * Scrolls the element into view.
  * @param {string} selector The selector for the form element.
  */
-export const scrollIntoView = (selector: string) => {
+const scrollIntoView = (selector: string) => {
   cy.get(selector).scrollIntoView();
 };
 
@@ -123,7 +123,7 @@ export const openDropdown = (selector: string) => {
  * Selects an option from a dropdown.
  * @param {number} index The index of the option to select.
  */
-export const selectDropdownOption = (index: number) => {
+const selectDropdownOption = (index: number) => {
   cy.get('.MuiPaper-elevation [role="listbox"]').find("li").eq(index).scrollIntoView();
   cy.get('.MuiPaper-elevation [role="listbox"]').find("li").eq(index).click();
 };
@@ -284,21 +284,6 @@ export const evaluateDisplayValue = (fieldName: string, expectedValue: string | 
   } else {
     cy.get(selector).contains(expectedValue);
   }
-};
-
-/**
- * Sets the value for a coordinate form element.
- * @param {string} fieldName The name of the coordinate field.
- * @param {string} value The text to type into the coordinate field.
- * @param {string} parent (optional) The parent of the form element.
- */
-export const setCoordinate = (fieldName: string, value: string, parent?: string) => {
-  const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formCoordinate"]`;
-  cy.get(selector).click();
-  cy.focused().clear();
-  cy.get(selector).type(value, {
-    delay: 10,
-  });
 };
 
 /**

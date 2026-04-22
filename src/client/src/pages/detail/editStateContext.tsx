@@ -2,7 +2,7 @@ import { createContext, FC, PropsWithChildren, useMemo, useState } from "react";
 import { useBoreholeEditable } from "../../api/borehole.ts";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 
-export interface EditStateContextProps {
+interface EditStateContextProps {
   editingEnabled: boolean;
   setEditingEnabled: (editingEnabled: boolean) => void;
 }

@@ -177,7 +177,7 @@ export const useCantons = () =>
     gcTime: garbageCollectionTime15Min,
   });
 
-export const geometryQueryKey = "boreholeGeometry";
+const geometryQueryKey = "boreholeGeometry";
 
 export const useBoreholeGeometry = (boreholeId?: number) =>
   useQuery({

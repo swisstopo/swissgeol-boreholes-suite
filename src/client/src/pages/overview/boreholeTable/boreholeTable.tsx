@@ -40,7 +40,7 @@ import { Table } from "../../../components/table/table.tsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { OverViewContext } from "../overViewContext.tsx";
 
-export interface BoreholeTableProps {
+interface BoreholeTableProps {
   boreholes: Boreholes;
   paginationModel: GridPaginationModel;
   setPaginationModel: (model: GridPaginationModel) => void;

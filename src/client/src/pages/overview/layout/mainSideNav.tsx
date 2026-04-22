@@ -13,7 +13,7 @@ import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
 import { ImportErrorDialog } from "../sidePanelContent/importer/importErrorDialog.tsx";
 import { useUserWorkgroups } from "../UserWorkgroupsContext.tsx";
 
-export interface MainSideNavProps {
+interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
   drawerOpen: boolean;
   setSideDrawerContent: React.Dispatch<React.SetStateAction<DrawerContentTypes>>;

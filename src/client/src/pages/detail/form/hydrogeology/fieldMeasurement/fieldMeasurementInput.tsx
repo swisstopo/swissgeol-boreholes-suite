@@ -179,5 +179,3 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
     </FormProvider>
   );
 };
-
-export default FieldMeasurementInput;

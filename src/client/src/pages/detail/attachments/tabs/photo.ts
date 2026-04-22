@@ -51,7 +51,7 @@ export const updatePhotos = async (data: { id: number; public: boolean }[]): Pro
   return await fetchApiV2WithApiError("photo", "PUT", data);
 };
 
-export const getPhotoImageData = async (photoId: number): Promise<Blob> => {
+const getPhotoImageData = async (photoId: number): Promise<Blob> => {
   const response = await fetchApiV2Base(`photo/image?photoId=${photoId}`, "GET");
   if (!response.ok) {
     throw new ApiError("errorLoadingImage", response.status);
@@ -59,7 +59,7 @@ export const getPhotoImageData = async (photoId: number): Promise<Blob> => {
   return await response.blob();
 };
 
-export const photoQueryKey = "photos";
+const photoQueryKey = "photos";
 
 export const usePhotos = (boreholeId?: number): UseQueryResult<Photo[]> =>
   useQuery({

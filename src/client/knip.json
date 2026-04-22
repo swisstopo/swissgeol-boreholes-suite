@@ -1,0 +1,25 @@
+{
+  "$schema": "https://unpkg.com/knip@6/schema.json",
+  "entry": [
+    "server.cjs",
+    "cypress/e2e/**/*.cy.{ts,tsx,js,jsx}",
+    "cypress/support/**/*.{ts,tsx,js,jsx}"
+  ],
+  "project": [
+    "src/**/*.{ts,tsx,js,jsx}",
+    "cypress/**/*.{ts,tsx,js,jsx}",
+    "hookformDevtools.ts"
+  ],
+  "ignore": [
+    "src/api-lib/**",
+    "src/hooks/useDevMode.tsx"
+  ],
+  "ignoreDependencies": [
+    "@babel/plugin-transform-private-property-in-object",
+    "@tanstack/eslint-plugin-query",
+    "eslint-plugin-jsx-a11y",
+    "eslint-plugin-react",
+    "eslint-plugin-react-hooks",
+    "license-checker"
+  ]
+}

@@ -83,7 +83,7 @@ interface FaciesDescriptionFormValues extends LithologicalDescriptionFormValues 
   faciesId?: number | string;
 }
 
-export const checkHasBedding = (hasBedding: boolean, share?: number) => {
+const checkHasBedding = (hasBedding: boolean, share?: number) => {
   if (hasBedding) {
     evaluateCheckbox("hasBedding", true);
     cy.dataCy("lithologyDescriptions.1").should("exist");
