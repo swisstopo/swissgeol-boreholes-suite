@@ -45,7 +45,7 @@
     "http-proxy-middleware": "^3.0.5",
     "i18next": "^23.7.7",
     "i18next-browser-languagedetector": "^7.2.0",
-    "i18next-http-backend": "^2.4.2",
+    "i18next-http-backend": "^3.0.5",
     "immer": "^10.0.3",
     "lodash": "^4.18.1",
     "lucide-react": "^0.438.0",
