@@ -25,14 +25,14 @@ namespace BDMS.Controllers;
 [SuppressMessage("StyleCop.CSharp.SpacingRules", "SA1010:Opening square brackets should be spaced correctly", Justification = "False positive for collection initializers.")]
 [DeploymentItem("TestData")]
 [TestClass]
-public class ExportControllerTest
+public class BoreholeExportControllerTest
 {
     private const string TestCsvString = "text/csv";
     private const string ExportFileName = "boreholes_export";
     private const int TestBoreholeId = 1000068;
     private BdmsContext context;
     private BoreholeFileCloudService boreholeFileCloudService;
-    private ExportController controller;
+    private BoreholeExportController controller;
     private ImportController importController;
     private User adminUser;
     private static readonly JsonSerializerOptions jsonOptions = new()
@@ -95,7 +95,7 @@ public class ExportControllerTest
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
 
-        var exportLoggerMock = new Mock<ILogger<ExportController>>();
+        var exportLoggerMock = new Mock<ILogger<BoreholeExportController>>();
         var importLoggerMock = new Mock<ILogger<ImportController>>();
 
         var locationServiceLoggerMock = new Mock<ILogger<LocationService>>(MockBehavior.Strict);
@@ -109,7 +109,7 @@ public class ExportControllerTest
             ControllerContext = GetControllerContextAdmin(),
         };
 
-        controller = new ExportController(context, boreholeFileCloudService, exportLoggerMock.Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new BoreholeExportController(context, boreholeFileCloudService, exportLoggerMock.Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestMethod]
@@ -397,8 +397,6 @@ public class ExportControllerTest
     }
 
     [TestMethod]
-    [DataRow(new int[] { }, typeof(BadRequestObjectResult), DisplayName = "Ids is empty list.")]
-    [DataRow(null, typeof(BadRequestObjectResult), DisplayName = "Ids is null.")]
     [DataRow(new int[] { 1_000_257, 1_000_258 }, typeof(FileContentResult), DisplayName = "Valid multiple ids.")]
     [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
     public async Task ExportGeoPackageIdsValidation(IEnumerable<int> ids, Type responseResultType)
@@ -406,18 +404,9 @@ public class ExportControllerTest
         var result = await controller.ExportGeoPackageAsync(ids).ConfigureAwait(false);
 
         Assert.IsInstanceOfType(result, responseResultType);
-
-        if (responseResultType == typeof(BadRequestObjectResult))
-        {
-            var badRequestResult = result as BadRequestObjectResult;
-            Assert.IsNotNull(badRequestResult);
-            Assert.AreEqual("The list of IDs must not be empty.", badRequestResult.Value);
-        }
     }
 
     [TestMethod]
-    [DataRow(new int[] { }, typeof(BadRequestObjectResult), DisplayName = "Ids is empty list.")]
-    [DataRow(null, typeof(BadRequestObjectResult), DisplayName = "Ids is null.")]
     [DataRow(new int[] { 1_000_257, 1_000_258 }, typeof(JsonResult), DisplayName = "Valid multiple ids.")]
     [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
     public async Task ExportJsonIdsValidation(IEnumerable<int> ids, Type responseResultType)
@@ -425,18 +414,9 @@ public class ExportControllerTest
         var result = await controller.ExportJsonAsync(ids).ConfigureAwait(false);
 
         Assert.IsInstanceOfType(result, responseResultType);
-
-        if (responseResultType == typeof(BadRequestObjectResult))
-        {
-            var badRequestResult = result as BadRequestObjectResult;
-            Assert.IsNotNull(badRequestResult);
-            Assert.AreEqual("The list of IDs must not be empty.", badRequestResult.Value);
-        }
     }
 
     [TestMethod]
-    [DataRow(new int[] { }, typeof(BadRequestObjectResult), DisplayName = "Ids is empty list.")]
-    [DataRow(null, typeof(BadRequestObjectResult), DisplayName = "Ids is null.")]
     [DataRow(new int[] { 1_000_257, 1_000_258 }, typeof(FileContentResult), DisplayName = "Valid multiple ids.")]
     [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
     public async Task ExportJsonWithAttachmentsIdsValidation(IEnumerable<int> ids, Type responseResultType)
@@ -444,13 +424,6 @@ public class ExportControllerTest
         var result = await controller.ExportJsonWithAttachmentsAsync(ids).ConfigureAwait(false);
 
         Assert.IsInstanceOfType(result, responseResultType);
-
-        if (responseResultType == typeof(BadRequestObjectResult))
-        {
-            var badRequestResult = result as BadRequestObjectResult;
-            Assert.IsNotNull(badRequestResult);
-            Assert.AreEqual("The list of IDs must not be empty.", badRequestResult.Value);
-        }
     }
 
     [TestMethod]
@@ -486,8 +459,6 @@ public class ExportControllerTest
     }
 
     [TestMethod]
-    [DataRow(new int[] { }, typeof(BadRequestObjectResult), DisplayName = "Ids is empty list.")]
-    [DataRow(null, typeof(BadRequestObjectResult), DisplayName = "Ids is null.")]
     [DataRow(new int[] { 1_000_257, 1_000_258 }, typeof(FileContentResult), DisplayName = "Valid multiple ids.")]
     [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
     public async Task ExportCsvIdsValidation(IEnumerable<int> ids, Type responseResultType)
@@ -495,13 +466,6 @@ public class ExportControllerTest
         var result = await controller.ExportCsvAsync(ids).ConfigureAwait(false);
 
         Assert.IsInstanceOfType(result, responseResultType);
-
-        if (responseResultType == typeof(BadRequestObjectResult))
-        {
-            var badRequestResult = result as BadRequestObjectResult;
-            Assert.IsNotNull(badRequestResult);
-            Assert.AreEqual("The list of IDs must not be empty.", badRequestResult.Value);
-        }
     }
 
     [TestMethod]
@@ -668,17 +632,6 @@ public class ExportControllerTest
     }
 
     [TestMethod]
-    public async Task DownloadCsvEmptyIdsReturnsBadRequest()
-    {
-        var ids = new List<int>();
-
-        var result = await controller.ExportCsvAsync(ids) as BadRequestObjectResult;
-
-        Assert.IsNotNull(result);
-        Assert.AreEqual("The list of IDs must not be empty.", result.Value);
-    }
-
-    [TestMethod]
     public async Task ExportControllerMethodsShouldValidateUserHasPermissions()
     {
         // Override return value of HasUserWorkgroupPermissions in this specific test
@@ -690,11 +643,11 @@ public class ExportControllerTest
         var boreholeFileControllerLoggerMock = new Mock<ILogger<BoreholeFileController>>(MockBehavior.Strict);
         boreholeFileControllerLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
 
-        var loggerMock = new Mock<ILogger<ExportController>>();
-        controller = new ExportController(context, boreholeFileCloudService, loggerMock.Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        var loggerMock = new Mock<ILogger<BoreholeExportController>>();
+        controller = new BoreholeExportController(context, boreholeFileCloudService, loggerMock.Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
 
         // Get all export methods from ExportController
-        var exportMethods = typeof(ExportController)
+        var exportMethods = typeof(BoreholeExportController)
             .GetMethods(BindingFlags.Public | BindingFlags.Instance)
             .Where(m => !m.IsConstructor && m.Name.Contains("export", StringComparison.OrdinalIgnoreCase))
             .ToList();

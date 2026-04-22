@@ -3,7 +3,14 @@ import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { ArrowDownToLine, Trash2, X } from "lucide-react";
 import { WorkflowStatus } from "@swissgeol/ui-core";
-import { BoreholeV2, useBoreholeEditable, useBoreholeMutations } from "../../api/borehole.ts";
+import {
+  BoreholeV2,
+  exportCSVBorehole,
+  exportJsonBoreholes,
+  exportJsonWithAttachmentsBorehole,
+  useBoreholeEditable,
+  useBoreholeMutations,
+} from "../../api/borehole.ts";
 import { useCurrentUser } from "../../api/user.ts";
 import { useAuth } from "../../auth/useBoreholesAuth.tsx";
 import {
@@ -173,8 +180,17 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
       <ExportDialog
         isExporting={isExporting}
         setIsExporting={setIsExporting}
-        selectionModel={[borehole.id]}
-        fileName={borehole.name?.replace(/\s/g, "_") ?? "export"}
+        exportItems={[
+          {
+            label: "CSV",
+            exportFunction: () => exportCSVBorehole([borehole.id], borehole.name?.replaceAll(/\s/g, "_") ?? "export"),
+          },
+          {
+            label: "JSON",
+            exportFunction: () => exportJsonBoreholes([borehole.id], borehole.name?.replaceAll(/\s/g, "_") ?? "export"),
+          },
+          { label: "exportJsonProfile", exportFunction: () => exportJsonWithAttachmentsBorehole([borehole.id]) },
+        ]}
       />
     </DetailHeaderStack>
   );

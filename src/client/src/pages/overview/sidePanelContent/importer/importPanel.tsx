@@ -8,7 +8,8 @@ import {
   importBoreholesJson,
   importBoreholesZip,
 } from "../../../../api/borehole.ts";
-import { downloadCodelistCsv, isJsonContentType } from "../../../../api/fetchApiV2.ts";
+import { downloadCodelistCsv } from "../../../../api/download.ts";
+import { isJsonContentType } from "../../../../api/fetchApiV2.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
