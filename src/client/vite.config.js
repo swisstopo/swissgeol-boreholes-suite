@@ -6,6 +6,11 @@ import viteTsconfigPaths from "vite-tsconfig-paths";
 
 export default defineConfig({
   base: "/",
+  // Preserve class/function names in the production bundle so Cypress assertions
+  // against `constructor.name` (e.g. OpenLayers ImageLayer / DragBox) keep matching.
+  esbuild: {
+    keepNames: true,
+  },
   plugins: [
     react(),
     viteTsconfigPaths(),
