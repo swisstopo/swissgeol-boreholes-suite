@@ -61,7 +61,7 @@ export const FilterTextField: FC<FilterTextFieldProps> = ({
     <TextField
       label={labelKey && t(labelKey)}
       placeholder={item?.placeholder && t(item.placeholder)}
-      data-cy={`${item?.value}-formInput`}
+      data-cy={`${item?.key}-formInput`}
       type={type}
       slotProps={type === "date" ? { inputLabel: { shrink: true }, htmlInput: { max: "9999-01-01" } } : undefined}
       value={localValue}

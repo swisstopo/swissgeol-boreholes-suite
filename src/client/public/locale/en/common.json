@@ -235,6 +235,7 @@
   "fileTooMany": "Too many files selected",
   "files": "Files",
   "filter": "Filter",
+  "filterNoSuggestions": "No suggestions",
   "firstname": "First name",
   "flowDirection": "Flow direction",
   "formation": "Formation",

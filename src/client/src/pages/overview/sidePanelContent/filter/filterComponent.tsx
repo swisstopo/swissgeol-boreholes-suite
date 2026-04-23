@@ -6,6 +6,7 @@ import { styled } from "@mui/material/styles";
 import { ChevronDown } from "lucide-react";
 import Polygon from "../../../../assets/icons/polygon.svg?react";
 import { ReduxRootState } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import { FilterRequest, useFilterStats } from "../../../../api/borehole.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { useAuth } from "../../../../auth/useBoreholesAuth.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
@@ -16,6 +17,7 @@ import { boreholeSearchData } from "./filterData/boreholeSearchData.ts";
 import { FilterComponentProps, FilterInputConfig } from "./filterData/filterInterfaces.ts";
 import { logSearchData } from "./filterData/logSearchData.ts";
 import { FilterReset } from "./filterReset.tsx";
+import { getDomainCountsForField } from "./filterUtils.ts";
 import { ListFilter } from "./listFilter.tsx";
 import { PolygonFilterContext } from "./polygonFilterContext.tsx";
 import { StatusFilter } from "./statusFilter.tsx";
@@ -45,6 +47,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
   const { filterParams, setFilterField, resetFilter, setTableParams } = useBoreholeUrlParams();
 
   const user = useSelector((state: ReduxRootState) => state.core_user);
+  const { data: stats } = useFilterStats(filterParams as FilterRequest);
   const auth = useAuth();
 
   const [searchList, setSearchList] = useState<FilterInputConfig[]>([
@@ -53,7 +56,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
       name: "workgroup",
       translationId: "workgroup",
       isSelected: false,
-      searchData: [{ value: "workgroupId", hideShowAllFields: true }],
+      searchData: [{ key: "workgroupId", hideShowAllFields: true }],
       isHidden: auth.anonymousModeEnabled,
     },
     {
@@ -61,7 +64,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
       name: "workflowStatus",
       translationId: "workflowStatus",
       isSelected: false,
-      searchData: [{ value: "workflowStatus", hideShowAllFields: true }],
+      searchData: [{ key: "workflowStatus", hideShowAllFields: true }],
       isHidden: auth.anonymousModeEnabled,
     },
     {
@@ -151,7 +154,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
         {searchList?.map(filter => {
           const currentFilterInputConfig = searchList.find(l => l.name === filter.name);
           const activeFilterLength = Object.entries(filterParams).filter(([key, value]) =>
-            currentFilterInputConfig?.searchData.some(d => d.value === key && value != null),
+            currentFilterInputConfig?.searchData.some(d => d.key === key && value != null),
           )?.length;
           return filter.isHidden ? null : (
             <StyledAccordion key={filter.id} expanded={filter?.isSelected}>
@@ -171,20 +174,20 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
                 <StyledAccordionDetails>
                   <WorkgroupFilter
                     onChange={workgroup => {
-                      setFilterField("workgroupId", workgroup === "all" ? null : [Number(workgroup)]);
+                      setFilterField("workgroupId", workgroup);
                       setTableParams({ page: 0 });
                     }}
                     workgroups={user.data.workgroups}
-                    selectedWorkgroup={
-                      filterParams.workgroupId == null ? "all" : String((filterParams.workgroupId as number[])[0])
-                    }
+                    selectedWorkgroupIds={filterParams["workgroupId"] as number[] | undefined}
+                    counts={getDomainCountsForField(stats, "workgroupId")}
                   />
                 </StyledAccordionDetails>
               )}
               {filter?.name === "workflowStatus" && filter?.isSelected && (
                 <StyledAccordionDetails>
                   <StatusFilter
-                    selectedRole={filterParams.workflowStatus == null ? "all" : (filterParams.workflowStatus as string)}
+                    selectedWorkflowStatus={filterParams["workflowStatus"] as string[] | undefined}
+                    counts={stats?.workflowStatusCount}
                     setFilterField={setFilterField}
                   />
                 </StyledAccordionDetails>

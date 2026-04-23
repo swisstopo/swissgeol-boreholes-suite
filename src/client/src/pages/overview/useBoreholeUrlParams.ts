@@ -9,6 +9,7 @@ import {
   useQueryStates,
 } from "nuqs";
 import { SessionKeys } from "./SessionKey.ts";
+import { nullableBooleanFilterKeys } from "./sidePanelContent/filter/filterUtils.ts";
 
 // Pagination & sort for borehole table
 const tableParsers = {
@@ -51,7 +52,7 @@ export const filterParsers = {
   hasProfiles: parseAsStringLiteral(["true", "false", "null"] as const),
   hasPhotos: parseAsStringLiteral(["true", "false", "null"] as const),
   hasDocuments: parseAsStringLiteral(["true", "false", "null"] as const),
-  workflowStatus: parseAsString,
+  workflowStatus: parseAsArrayOf(parseAsString),
 };
 
 export const useBoreholeUrlParams = () => {
@@ -68,16 +69,30 @@ export const useBoreholeUrlParams = () => {
   tableParamsRef.current = tableParams;
 
   const setFilterField = useCallback(
-    (key: keyof typeof filterParsers, value: string | string[] | number[] | boolean | null) => {
-      if (value === undefined) {
-        setFilterParams({ [key]: "null" });
+    (key: keyof typeof filterParsers, value: string | string[] | number[] | boolean | null | undefined) => {
+      if (value === true) {
+        setFilterParams({ [key]: "true" });
       } else if (value === false) {
         setFilterParams({ [key]: "false" });
-      } else if (value === true) {
-        setFilterParams({ [key]: "true" });
+      } else if (value === null && nullableBooleanFilterKeys.has(key)) {
+        // Preserve the "null" literal ("Keine Angabe") for nullable boolean filter keys.
+        setFilterParams({ [key]: "null" });
+      } else if (value === null || value === undefined) {
+        // Any other null/undefined clears the URL param.
+        setFilterParams({ [key]: null });
       } else {
-        setFilterParams({ [key]: value ?? null });
+        setFilterParams({ [key]: value as never });
       }
+    },
+    [setFilterParams],
+  );
+
+  // Removes the param from the URL entirely. Unlike `setFilterField(key, null)`, which preserves
+  // the literal "null" in the URL for nullable boolean keys (meaning "Keine Angabe"), this helper
+  // always drops the key so downstream consumers see an unset filter.
+  const clearFilterField = useCallback(
+    (key: keyof typeof filterParsers) => {
+      setFilterParams({ [key]: null } as Parameters<typeof setFilterParams>[0]);
     },
     [setFilterParams],
   );
@@ -178,6 +193,7 @@ export const useBoreholeUrlParams = () => {
   return {
     filterParams,
     setFilterField,
+    clearFilterField,
     resetFilter,
     saveFilterParamsInSession,
     tableParams,

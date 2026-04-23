@@ -295,7 +295,7 @@ interface BaseFilterRequest {
   pageSize?: number;
   orderBy?: string | null;
   direction?: string | null;
-  workflowStatus?: string | null;
+  workflowStatus?: string[] | null;
 }
 
 export interface FilterRequest extends BaseFilterRequest {
@@ -348,6 +348,7 @@ export interface FilterStatsResponse {
   purposeId: Record<number, number>;
   workgroupId: Record<number, number>;
   restrictionId: Record<number, number>;
+  workflowStatusCount: Record<string, number>;
   nationalInterest: NullableBooleanCounts;
   topBedrockIntersected: NullableBooleanCounts;
   hasGroundwater: NullableBooleanCounts;
@@ -460,7 +461,7 @@ export function getDefaultFilterRequestFromSession(): FilterRequest {
     hasProfiles: get(SessionKeys.hasProfiles) as BooleanFilterValue,
     hasPhotos: get(SessionKeys.hasPhotos) as BooleanFilterValue,
     hasDocuments: get(SessionKeys.hasDocuments) as BooleanFilterValue,
-    workflowStatus: get(SessionKeys.workflowStatus) ?? undefined,
+    workflowStatus: toArray(getInt(SessionKeys.workflowStatus)),
   };
   return Object.fromEntries(Object.entries(allFilterParams).filter(([, value]) => value != null));
 }
@@ -483,5 +484,16 @@ export const useFilterStats = (filterRequest: FilterRequest) => {
     queryKey: [boreholeQueryKey, "filter-stats", filterRequestSubmission],
     queryFn: () => fetchFilterStats(filterRequestSubmission),
     placeholderData: keepPreviousData,
+  });
+};
+
+export const useBoreholeSuggestions = (field: BoreholeSuggestionField, query: string, fetchEnabled: boolean) => {
+  return useQuery<BoreholeSuggestion[]>({
+    queryKey: ["borehole-suggestions", field, query],
+    queryFn: () => fetchBoreholeSuggestions(field, query, 10),
+    enabled: fetchEnabled,
+    staleTime: 30_000,
+    placeholderData: previous => previous,
+    retry: false,
   });
 };

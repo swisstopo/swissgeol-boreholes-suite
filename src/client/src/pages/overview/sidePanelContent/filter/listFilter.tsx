@@ -1,24 +1,23 @@
 import { FC, useCallback } from "react";
 import { Box } from "@mui/material";
-import { FormBooleanSelect, FormContainer, FormDomainSelect } from "../../../../components/form/form.ts";
+import { FilterRequest, useFilterStats } from "../../../../api/borehole.ts";
+import { FormContainer } from "../../../../components/form/form.ts";
 import { filterParsers, useBoreholeUrlParams } from "../../useBoreholeUrlParams.ts";
+import { FilterAutocomplete } from "./FilterAutocomplete.tsx";
+import { FilterBooleanButtons } from "./FilterBooleanButtons.tsx";
 import { FilterInputConfig } from "./filterData/filterInterfaces.ts";
+import { FilterDomainSelect } from "./FilterDomainSelect.tsx";
 import { FilterTextField } from "./FilterTextField.tsx";
+import { getBooleanCountsForField, getDomainCountsForField, parseBooleanFilterValue } from "./filterUtils.ts";
 
 interface ListFilterProps {
   inputConfig: FilterInputConfig;
 }
 
-const parseBooleanFilterValue = (value: unknown): boolean | null | undefined => {
-  if (value === "true") return true;
-  if (value === "false") return false;
-  if (value === "null") return null;
-  return undefined;
-};
-
 export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
   const { filterParams, setFilterField, setTableParams } = useBoreholeUrlParams();
   const searchData = inputConfig?.searchData;
+  const { data: stats } = useFilterStats(filterParams as FilterRequest);
 
   const updateChange = useCallback(
     (attribute: string, value: string | boolean | number | null | number[] | undefined) => {
@@ -30,56 +29,58 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
 
   return (
     <FormContainer>
-      {searchData?.map(item => (
-        <Box key={item.value}>
-          <FormContainer mt={item?.label ? -0.5 : -4}>
-            {item.type === "Input" && (
-              <FilterTextField
-                item={item}
-                filterValue={(filterParams?.[item.value as keyof typeof filterParsers] as string) ?? null}
-                onUpdate={value => updateChange(item.value, value)}
-              />
-            )}
-            {item.type === "Date" && (
-              <FilterTextField
-                item={item}
-                filterValue={(filterParams?.[item.value as keyof typeof filterParsers] as string) ?? null}
-                onUpdate={value => updateChange(item.value, value)}
-                type="date"
-                labelKeySuffix="_filter_title"
-                debounceMs={0}
-              />
-            )}
-            {item.type === "Dropdown" && item?.schema && (
-              <FormDomainSelect
-                fieldName={item.value}
-                label={item?.label || item.value}
-                readonly={false}
-                selected={(filterParams?.[item.value as keyof typeof filterParsers] as number[] | undefined)?.[0]} // only support single select for now, change later
-                canReset={false}
-                schemaName={item.schema}
-                additionalValues={item.additionalValues}
-                onUpdate={value => {
-                  updateChange(item.value, [value as number]);
-                }}
-              />
-            )}
-            {(item.type === "NullableBoolean" || item.type === "Boolean") && (
-              <FormBooleanSelect
-                readonly={false}
-                canReset={false}
-                allowUndefined={item.type === "NullableBoolean"}
-                selected={parseBooleanFilterValue(filterParams?.[item.value as keyof typeof filterParsers])}
-                fieldName={item.value}
-                label={item?.label ?? item.value}
-                onUpdate={value => {
-                  updateChange(item.value, value === null ? undefined : value);
-                }}
-              />
-            )}
-          </FormContainer>
-        </Box>
-      ))}
+      {searchData?.map(filterItem => {
+        const key = filterItem.key as keyof typeof filterParsers;
+        const value = filterParams?.[key];
+
+        return (
+          <Box key={filterItem.key}>
+            <FormContainer mt={filterItem?.label ? -0.5 : -4}>
+              {filterItem.type === "Input" && filterItem.isNumber && (
+                <FilterTextField
+                  item={filterItem}
+                  filterValue={(value as string) ?? null}
+                  onUpdate={value => updateChange(filterItem.key, value)}
+                />
+              )}
+              {filterItem.type === "Input" && !filterItem.isNumber && (
+                <FilterAutocomplete
+                  item={filterItem}
+                  filterValue={(value as string) ?? null}
+                  onUpdate={value => updateChange(filterItem.key, value)}
+                />
+              )}
+              {filterItem.type === "Date" && (
+                <FilterTextField
+                  item={filterItem}
+                  filterValue={(value as string) ?? null}
+                  onUpdate={value => updateChange(filterItem.key, value)}
+                  type="date"
+                  labelKeySuffix="_filter_title"
+                  debounceMs={0}
+                />
+              )}
+              {filterItem.type === "Dropdown" && filterItem?.schema && (
+                <FilterDomainSelect
+                  item={filterItem}
+                  filterValue={value as number[] | undefined}
+                  onUpdate={value => updateChange(filterItem.key, value)}
+                  counts={getDomainCountsForField(stats, filterItem.key)}
+                />
+              )}
+              {(filterItem.type === "NullableBoolean" || filterItem.type === "Boolean") && (
+                <FilterBooleanButtons
+                  item={filterItem}
+                  filterValue={parseBooleanFilterValue(value)}
+                  onUpdate={value => updateChange(filterItem.key, value)}
+                  allowNull={filterItem.type === "NullableBoolean"}
+                  counts={getBooleanCountsForField(stats, filterItem.key)}
+                />
+              )}
+            </FormContainer>
+          </Box>
+        );
+      })}
     </FormContainer>
   );
 };

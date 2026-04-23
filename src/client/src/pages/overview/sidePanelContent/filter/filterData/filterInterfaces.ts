@@ -2,7 +2,7 @@ import { UseFormReturn } from "react-hook-form";
 import { FormSelectValue } from "../../../../../components/form/formSelect.tsx";
 
 export interface SearchData {
-  value: string;
+  key: string;
   id?: number;
   type?: string;
   label?: string;

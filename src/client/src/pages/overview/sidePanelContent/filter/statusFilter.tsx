@@ -1,15 +1,20 @@
-import { ChangeEvent, FC } from "react";
+import { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { FormControl, FormControlLabel, Radio, RadioGroup } from "@mui/material";
+import { Box, Button, Stack } from "@mui/material";
 import { WorkflowStatus } from "@swissgeol/ui-core";
 import { capitalizeFirstLetter } from "../../../../utils";
 import { filterParsers } from "../../useBoreholeUrlParams.ts";
 
 interface StatusFilterProps {
-  selectedRole?: string;
-  setFilterField: (key: keyof typeof filterParsers, value: string | string[] | number[] | boolean | null) => void;
+  selectedWorkflowStatus?: string[];
+  setFilterField: (
+    key: keyof typeof filterParsers,
+    value: string | string[] | number[] | boolean | null | undefined,
+  ) => void;
+  counts?: Record<string, number>;
 }
-export const StatusFilter: FC<StatusFilterProps> = ({ selectedRole, setFilterField }) => {
+
+export const StatusFilter: FC<StatusFilterProps> = ({ selectedWorkflowStatus, setFilterField, counts }) => {
   const { t } = useTranslation();
 
   const workflowStatus = [
@@ -19,29 +24,38 @@ export const StatusFilter: FC<StatusFilterProps> = ({ selectedRole, setFilterFie
     WorkflowStatus.Published,
   ];
 
-  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
-    if (event.target.value === "all") {
-      setFilterField("workflowStatus", null);
-    } else {
-      setFilterField("workflowStatus", event.target.value);
-    }
+  const selected = selectedWorkflowStatus ?? [];
+  const toggle = (key: string) => {
+    const next = selected.includes(key) ? selected.filter(k => k !== key) : [...selected, key];
+    setFilterField("workflowStatus", next.length === 0 ? null : next);
   };
 
   return (
-    <FormControl>
-      <RadioGroup onChange={handleChange} value={selectedRole} defaultValue="all">
-        <>
-          <FormControlLabel key={"all"} value={"all"} control={<Radio />} label={capitalizeFirstLetter(t("all"))} />
-          {workflowStatus.map(status => (
-            <FormControlLabel
+    <Box data-cy="workflow-status-formSelect">
+      <Stack direction="row" flexWrap="wrap" gap={0.5}>
+        {workflowStatus.map(status => {
+          const isSelected = selected.includes(status);
+          const count = counts?.[status] ?? 0;
+          const hasCount = counts !== undefined;
+          // Disable when count information is available and there would be zero matches,
+          // unless the option is already selected (so the user can always clear).
+          const disabled = hasCount && !isSelected && count < 1;
+          const statusLabel = capitalizeFirstLetter(t(`statuses.${status}`));
+          const label = hasCount ? `${statusLabel} (${count})` : statusLabel;
+          return (
+            <Button
               key={status}
-              value={status}
-              control={<Radio data-cy={status} />}
-              label={capitalizeFirstLetter(t(`statuses.${status}`))}
-            />
-          ))}
-        </>
-      </RadioGroup>
-    </FormControl>
+              size="small"
+              variant={isSelected ? "contained" : "outlined"}
+              onClick={() => toggle(status)}
+              disabled={disabled}
+              sx={{ textTransform: "none" }}
+              data-cy={`workflow-status-button-${status}`}>
+              {label}
+            </Button>
+          );
+        })}
+      </Stack>
+    </Box>
   );
 };
