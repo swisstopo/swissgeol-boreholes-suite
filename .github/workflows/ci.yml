@@ -47,6 +47,10 @@ jobs:
       - working-directory: ./src/client
         run: npm run knip
 
+      - name: Run vitest unit tests
+        working-directory: ./src/client
+        run: npm run test:unit
+
   cypress-tests:
     runs-on: ubuntu-latest
     name: Run cypress tests
