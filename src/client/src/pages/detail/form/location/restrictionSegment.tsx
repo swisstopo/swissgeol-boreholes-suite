@@ -11,10 +11,11 @@ import {
 } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 import { EditStateContext } from "../../editStateContext.tsx";
-import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
+import { BoreholeFormInputs } from "../borehole/boreholePanelInterfaces.ts";
+import { LocationBaseProps } from "./locationPanelInterfaces.tsx";
 
 interface RestrictionSegmentProps extends LocationBaseProps {
-  formMethods: UseFormReturn<LocationFormInputs>;
+  formMethods: UseFormReturn<BoreholeFormInputs>;
 }
 
 const RestrictionSegment = ({ borehole, formMethods }: RestrictionSegmentProps) => {
