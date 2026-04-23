@@ -1,5 +1,5 @@
 name: Prepare backend
-description: Build api images with GHCR layer cache and start compose services with cached third-party images.
+description: Build api images with GHCR layer cache and start compose services.
 
 inputs:
   pulled-services:
@@ -48,45 +48,11 @@ runs:
         cache-from: type=registry,ref=ghcr.io/swisstopo/bdms-api-legacy:buildcache
         cache-to: type=registry,ref=ghcr.io/swisstopo/bdms-api-legacy:buildcache,mode=max
 
-    - name: Resolve compose image digests
-      id: compose-digests
+    - name: Pull compose images
       shell: bash
       env:
         PULLED_SERVICES: ${{ inputs.pulled-services }}
-      run: |
-        set -euo pipefail
-        # Sort to neutralize compose's non-deterministic service iteration order.
-        mapfile -t images < <(docker compose config --images $PULLED_SERVICES | sort)
-        fingerprint=""
-        for img in "${images[@]}"; do
-          digest=$(docker buildx imagetools inspect --format '{{.Manifest.Digest}}' "$img")
-          fingerprint+="${img}@${digest};"
-        done
-        key=$(printf '%s' "$fingerprint" | sha256sum | cut -c1-32)
-        echo "key=compose-images-$key" >> "$GITHUB_OUTPUT"
-        printf '%s\n' "${images[@]}" > /tmp/compose-images.list
-
-    - name: Cache compose images
-      id: compose-cache
-      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
-      with:
-        path: /tmp/compose-images.tar
-        key: ${{ steps.compose-digests.outputs.key }}
-
-    - name: Load cached compose images
-      if: steps.compose-cache.outputs.cache-hit == 'true'
-      shell: bash
-      run: docker load -i /tmp/compose-images.tar
-
-    - name: Pull and archive compose images
-      if: steps.compose-cache.outputs.cache-hit != 'true'
-      shell: bash
-      env:
-        PULLED_SERVICES: ${{ inputs.pulled-services }}
-      run: |
-        set -euo pipefail
-        docker compose pull $PULLED_SERVICES
-        xargs -a /tmp/compose-images.list docker save -o /tmp/compose-images.tar
+      run: docker compose pull $PULLED_SERVICES
 
     - name: Start services
       shell: bash
