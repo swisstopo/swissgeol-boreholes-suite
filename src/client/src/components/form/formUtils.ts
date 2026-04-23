@@ -1,3 +1,4 @@
+import { NullableBooleanSelect } from "../../api/apiInterfaces.ts";
 import { theme } from "../../AppTheme.ts";
 import { LogRun } from "../../pages/detail/form/log/log.ts";
 import { Lithology } from "../../pages/detail/form/stratigraphy/lithology.ts";
@@ -98,7 +99,7 @@ export const ensureDateOnly = (date: string) => date.split("T")[0].split("Z")[0]
  * @param value The value to convert from (yes=1, no=0, undefined=null).
  * @returns boolean or null depending on the input value.
  */
-export const convertValueToBoolean = (value: number | boolean | null): boolean | null => {
+export const convertValueToBoolean = (value: NullableBooleanSelect): boolean | null => {
   if (value === 1) return true;
   if (value === 0) return false;
   return null;

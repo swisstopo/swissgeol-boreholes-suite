@@ -22,7 +22,7 @@ describe("Viewer tests", () => {
     clickOnRowWithText("Aaron Rempel");
     // // verify all text inputs are readonly on Location tab
     cy.get(".MuiFormControl-root")
-      .should("have.length", 22)
+      .should("have.length", 15)
       .each(i => {
         cy.wrap(i).should("have.class", "readonly", "readonly");
       });
@@ -31,7 +31,7 @@ describe("Viewer tests", () => {
     navigateInSidebar(SidebarMenuItem.borehole);
     // verify all text inputs are readonly on Borehole tab
     cy.get(".MuiFormControl-root")
-      .should("have.length", 16)
+      .should("have.length", 23)
       .each(i => {
         cy.wrap(i).should("have.class", "readonly", "readonly");
       });
@@ -63,8 +63,8 @@ describe("Viewer tests", () => {
     loginAsViewer();
     showTableAndWaitForData();
     clickOnRowWithText("Aaron Konopelski");
-    evaluateInput("originalName", "Aaron Konopelski");
     navigateInSidebar(SidebarMenuItem.borehole);
+    evaluateInput("originalName", "Aaron Konopelski");
     evaluateInput("total_depth_tvd", "683.83");
     navigateInBorehole(BoreholeTab.sections);
     cy.contains("No section available").should("exist");
