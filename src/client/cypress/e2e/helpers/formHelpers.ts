@@ -134,7 +134,7 @@ const selectDropdownOption = (index: number) => {
  * Evaluates the number of options in a dropdown.
  * @param {number} length The expected number of options in the dropdown.
  */
-export const evaluateDropdownOptionsLength = (length: number) => {
+const evaluateDropdownOptionsLength = (length: number) => {
   cy.get('.MuiPaper-elevation [role="listbox"]').should($listbox => {
     expect($listbox.find('[role="option"]')).to.have.length(length);
   });

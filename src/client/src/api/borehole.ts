@@ -258,13 +258,13 @@ export interface BoreholeListItem {
   locked: NullableDateString;
 }
 
-export enum NullableBooleanFilter {
+enum NullableBooleanFilter {
   false,
   true,
   null,
 }
 
-export enum BooleanFilter {
+enum BooleanFilter {
   false,
   true,
 }
@@ -309,7 +309,7 @@ export interface FilterRequest extends BaseFilterRequest {
   hasDocuments?: BooleanFilterValue;
 }
 
-export interface FilterRequestSubmission extends BaseFilterRequest {
+interface FilterRequestSubmission extends BaseFilterRequest {
   nationalInterest?: NullableBooleanFilter;
   topBedrockIntersected?: NullableBooleanFilter;
   hasGroundwater?: NullableBooleanFilter;
@@ -336,13 +336,13 @@ export const filterBoreholes = async (filterRequest: FilterRequestSubmission): P
   return await fetchApiV2WithApiError<FilterResponse>("borehole/filter", "POST", filterRequest);
 };
 
-export const parseBooleanFilter = (value: "true" | "false" | undefined | null): BooleanFilter | undefined => {
+const parseBooleanFilter = (value: "true" | "false" | undefined | null): BooleanFilter | undefined => {
   if (value === "true") return BooleanFilter.true;
   if (value === "false") return BooleanFilter.false;
   return undefined;
 };
 
-export const parseNullableBooleanFilter = (
+const parseNullableBooleanFilter = (
   value: "true" | "false" | "null" | undefined | null,
 ): NullableBooleanFilter | undefined => {
   if (value === "true") return NullableBooleanFilter.true;
