@@ -142,7 +142,6 @@ describe("Test for exporting boreholes.", () => {
     cy.wait(["@borehole_by_id", "@get-depth-tvd", "@get-depth-tvd", "@get-depth-tvd"]);
     evaluateInput("totalDepth", "700");
     evaluateInput("total_depth_tvd", "674.87");
-    navigateInSidebar(SidebarMenuItem.location);
     setOriginalName(secondBoreholeName); // change name to avoid potential CSV filename conflict
     saveWithSaveBar();
     stopBoreholeEditing();
@@ -160,6 +159,7 @@ describe("Test for exporting boreholes.", () => {
     deleteDownloadedFile(csvFileName);
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
+    navigateInSidebar(SidebarMenuItem.borehole);
     setInput("name", firstBoreholeName);
     saveWithSaveBar();
     navigateInSidebar(SidebarMenuItem.identifiers);
@@ -170,6 +170,7 @@ describe("Test for exporting boreholes.", () => {
     returnToOverview();
 
     newEditableBorehole().as("borehole_id_2");
+    navigateInSidebar(SidebarMenuItem.borehole);
     setInput("name", secondBoreholeName);
     saveWithSaveBar();
     navigateInSidebar(SidebarMenuItem.identifiers);
@@ -464,7 +465,9 @@ describe("Test for exporting boreholes.", () => {
       });
 
       clickOnRowWithText(boreholeName);
+      navigateInSidebar(SidebarMenuItem.borehole);
       evaluateInput("name", boreholeName);
+      navigateInSidebar(SidebarMenuItem.location);
       cy.get('[data-cy="locationX-formCoordinate"] input').should("have.value", `2'646'000`);
       cy.get('[data-cy="locationY-formCoordinate"] input').should("have.value", `1'247'000`);
       navigateInSidebar(SidebarMenuItem.identifiers);
