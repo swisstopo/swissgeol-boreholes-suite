@@ -5,12 +5,19 @@ import { Box, Stack } from "@mui/system";
 import { CircleAlert, RotateCcw } from "lucide-react";
 import { BoreholesButton } from "../components/buttons/buttons.tsx";
 
-const DevError = ({ error }: { error: Error }) => {
+const DevError = ({ error }: { error: unknown }) => {
+  if (error instanceof Error) {
+    return (
+      <Box>
+        <Typography>Error Name: {error.name}</Typography>
+        <Typography>Error Message:{error.message}</Typography>
+        <Typography>Error Stack:{error.stack}</Typography>
+      </Box>
+    );
+  }
   return (
     <Box>
-      <Typography>Error Name: {error.name}</Typography>
-      <Typography>Error Message:{error.message}</Typography>
-      <Typography>Error Stack:{error.stack}</Typography>
+      <Typography>Error: {String(error)}</Typography>
     </Box>
   );
 };
@@ -20,7 +27,7 @@ const FallbackComponent = ({
   resetErrorBoundary,
   title,
 }: {
-  error: Error;
+  error: unknown;
   resetErrorBoundary: (() => void) | undefined;
   title: string;
 }) => {
@@ -43,7 +50,7 @@ const FallbackComponent = ({
 };
 
 interface ErrorFallbackProps {
-  error: Error;
+  error: unknown;
   resetErrorBoundary?: () => void;
 }
 
