@@ -322,6 +322,11 @@ DELETE FROM bdms."section" WHERE id IN (
 -- Borehole: General
 UPDATE bdms.borehole AS b
 SET
+    original_name_bho = NULL,
+    alternate_name_bho = NULL,
+    project_name_bho = NULL,
+    restriction_until_bho = NULL,
+    national_interest = NULL,
     borehole_type_id = NULL,
     purpose_id_cli = NULL,
     status_id_cli = NULL,
@@ -342,11 +347,6 @@ WHERE w.borehole_id = b.id_bho AND t."general" = false;
 -- Borehole: Location
 UPDATE bdms.borehole AS b
 SET
-    original_name_bho = NULL,
-    alternate_name_bho = NULL,
-    project_name_bho = NULL,
-    restriction_until_bho = NULL,
-    national_interest = NULL,
     srs_id_cli = NULL,
     location_x_bho = NULL,
     location_x_lv03_bho = NULL,

@@ -13,6 +13,7 @@
 - Optional comments to additional identifiers can now be added.
 - The cluster layer on the map is now displayed at higher zoom levels still.
 - Openlayers was upgraded to version 10.9.0.
+- The borehole name section and restriction sections were moved from the location page to the general tab of the borehole detail view.
 - The consent banner choice is now remembered for a year, so users no longer have to accept the terms again on every visit.
 
 ### Fixed
