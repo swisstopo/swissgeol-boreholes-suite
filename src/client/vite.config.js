@@ -24,16 +24,16 @@ export default defineConfig({
   server: {
     proxy: {
       "/api": {
-        target: "http://localhost:5000/",
+        target: "http://127.0.0.1:5000/",
         changeOrigin: true,
       },
       "/dataextraction": {
-        target: "http://localhost:8000/",
+        target: "http://127.0.0.1:8000/",
         changeOrigin: true,
         rewrite: path => path.replace(/^\/dataextraction/, ""),
       },
       "/ocr": {
-        target: "http://localhost:5052/",
+        target: "http://127.0.0.1:5052/",
         changeOrigin: true,
         rewrite: path => path.replace(/^\/ocr/, ""),
       },
@@ -47,5 +47,24 @@ export default defineConfig({
       "Referrer-Policy": "strict-origin-when-cross-origin",
       "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
     },
+  },
+  preview: {
+    proxy: {
+      "/api": {
+        target: "http://127.0.0.1:5000/",
+        changeOrigin: true,
+      },
+      "/dataextraction": {
+        target: "http://127.0.0.1:8000/",
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/dataextraction/, ""),
+      },
+      "/ocr": {
+        target: "http://127.0.0.1:5052/",
+        changeOrigin: true,
+        rewrite: path => path.replace(/^\/ocr/, ""),
+      },
+    },
+    port: 3000,
   },
 });

@@ -89,7 +89,7 @@ jobs:
         with:
           command: npx cypress run --record --parallel --key ${{ secrets.CYPRESS_RECORD_KEY }} --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}}
           build: npm run build
-          start: npm start
+          start: npm run preview
           wait-on: "http://localhost:3000"
           wait-on-timeout: 120
           working-directory: ./src/client
