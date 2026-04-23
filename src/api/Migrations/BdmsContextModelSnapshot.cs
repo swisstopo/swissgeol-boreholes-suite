@@ -353,6 +353,10 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("identifier_id");
 
+                    b.Property<string>("Comment")
+                        .HasColumnType("text")
+                        .HasColumnName("comment");
+
                     b.Property<string>("Value")
                         .IsRequired()
                         .HasColumnType("text")
@@ -2378,6 +2382,12 @@ namespace BDMS.Migrations
                         .HasColumnType("boolean")
                         .HasDefaultValue(false)
                         .HasColumnName("hydrotest");
+
+                    b.Property<bool>("Identifiers")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("boolean")
+                        .HasDefaultValue(false)
+                        .HasColumnName("identifiers");
 
                     b.Property<bool>("Instrumentation")
                         .ValueGeneratedOnAdd()

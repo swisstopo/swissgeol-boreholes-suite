@@ -13,14 +13,44 @@ interface Terms {
   it: string;
 }
 
+const CONSENT_COOKIE_NAME = "boreholes_consent";
+const CONSENT_SCHEMA_VERSION = 1;
+const CONSENT_MAX_AGE_SECONDS = 60 * 60 * 24 * 365;
+
+const readConsent = (): { analytics: boolean } | null => {
+  const match = document.cookie.split("; ").find(row => row.startsWith(`${CONSENT_COOKIE_NAME}=`));
+  if (!match) return null;
+  try {
+    const parsed = JSON.parse(decodeURIComponent(match.slice(CONSENT_COOKIE_NAME.length + 1)));
+    if (parsed?.v !== CONSENT_SCHEMA_VERSION) return null;
+    return { analytics: Boolean(parsed.analytics) };
+  } catch {
+    return null;
+  }
+};
+
+const writeConsent = (analytics: boolean): void => {
+  const payload = encodeURIComponent(JSON.stringify({ v: CONSENT_SCHEMA_VERSION, analytics }));
+  const secure = globalThis.location.protocol === "https:" ? "; Secure" : "";
+  document.cookie = `${CONSENT_COOKIE_NAME}=${payload}; Max-Age=${CONSENT_MAX_AGE_SECONDS}; Path=/; SameSite=Lax${secure}`;
+};
+
 export const AcceptTerms = ({ children }: { children: React.ReactNode }) => {
-  const [hasAccepted, setHasAccepted] = useState(false);
+  const [storedConsent] = useState(() => readConsent());
+  const [hasAccepted, setHasAccepted] = useState(storedConsent !== null);
   const { setAnalyticsEnabled } = useContext<AnalyticsContextProps>(AnalyticsContext);
   const [terms, setTerms] = useState<Terms>({ en: en, de: de, fr: fr, it: it });
   const [isFetching, setIsFetching] = useState(true);
   const { i18n } = useTranslation();
 
+  // Re-runs when setAnalyticsEnabled re-identifies after settings load,
+  // so the stored choice only enables analytics when googleAnalyticsTrackingId is also configured.
   useEffect(() => {
+    if (storedConsent) setAnalyticsEnabled(storedConsent.analytics);
+  }, [storedConsent, setAnalyticsEnabled]);
+
+  useEffect(() => {
+    if (storedConsent) return;
     // @ts-expect-error : The getTerms function is not typed
     getTerms().then(r => {
       const termsObject = r.data;
@@ -34,9 +64,10 @@ export const AcceptTerms = ({ children }: { children: React.ReactNode }) => {
         });
       }
     });
-  }, []);
+  }, [storedConsent]);
 
   const handleDialogClose = (analyticsEnabled: boolean) => {
+    writeConsent(analyticsEnabled);
     setAnalyticsEnabled(analyticsEnabled);
     setHasAccepted(true);
   };

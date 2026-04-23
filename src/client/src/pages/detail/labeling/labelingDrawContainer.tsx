@@ -67,7 +67,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
   }, []);
 
   const onPointerMove = useCallback(
-    (event: MapBrowserEvent<PointerEvent>) => {
+    (event: MapBrowserEvent) => {
       const [x, y] = event.pixel;
       updateTooltipPosition(x, y);
     },
@@ -120,12 +120,12 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
     highlightsLayerSource.addFeature(mergedFeature);
   };
 
-  const getSourceFromLayerName = (layers: BaseLayer[], layerName: string): VectorSource | undefined => {
-    const drawingLayer = layers.find(
-      layer => layer instanceof VectorLayer && layer.get("name") === layerName,
-    ) as VectorLayer<Feature<Geometry>>;
-    return drawingLayer?.getSource() as VectorSource | undefined;
-  };
+  const getSourceFromLayerName = useCallback((layers: BaseLayer[], layerName: string): VectorSource | undefined => {
+    const layer = layers.find(l => l instanceof VectorLayer && l.get("name") === layerName) as
+      | VectorLayer<VectorSource<Feature<Geometry>>>
+      | undefined;
+    return layer?.getSource() as VectorSource | undefined;
+  }, []);
 
   // Initially move tooltip out of view, to prevent wrong positioning when clicking and before pointermove event
   useEffect(() => {
@@ -157,7 +157,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
         const dragBox = new DragBox();
         dragBox.on("boxstart", () => {
           if (tooltipRef?.current) {
-            map.un("pointermove", onPointerMove);
+            map.un("pointermove" as const, onPointerMove);
             tooltipRef.current.style.visibility = "hidden";
             tooltipRef.current.innerHTML = "";
             map.getTargetElement().removeEventListener("mouseleave", handleMouseLeave);
@@ -217,7 +217,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
         }
       }
     }
-  }, [boundingBoxes, drawTooltipLabel, extractionType, onPointerMove, t]);
+  }, [boundingBoxes, drawTooltipLabel, extractionType, getSourceFromLayerName, onPointerMove, t]);
 
   const onMapInitialized = useCallback(
     (map: Map) => {

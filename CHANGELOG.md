@@ -2,6 +2,23 @@
 
 ## [Unreleased]
 
+### Added
+- Export functionality for LOG.
+
+### Changed
+- Duplicate boreholes (matching coordinates and total depth within the same workgroup or within the imported file) can now be imported.
+- Translations for borehole identifier codelist entries were streamlined.
+- Extracting multiple stratigraphies from a single PDF document is now supported.
+- Additional borehole identifiers are now administered on a separate detail page.
+- Optional comments to additional identifiers can now be added.
+- The cluster layer on the map is now displayed at higher zoom levels still.
+- Openlayers was upgraded to version 10.9.0.
+- The borehole name section and restriction sections were moved from the location page to the general tab of the borehole detail view.
+- The consent banner choice is now remembered for a year, so users no longer have to accept the terms again on every visit.
+
+### Fixed
+- Boreholes could be edited after being published.
+
 ## v2.1.1530 - 2026-04-02
 
 ### Added
@@ -19,6 +36,8 @@
 - Migrated `custom.chronostratigraphy_top_bedrock` codelist to `chronostratigraphy`.
 - Deleted legacy codelists `colour`, `alteration`, `description_quality` and `custom.lithology_top_bedrock` (migrated to `lithology_con`).
 - Restriction until now has the data type `DateOnly` instead of `DateTime`.
+- Added pod and container security context hardening across all Helm charts (seccomp profiles, privilege escalation prevention, capability dropping, read-only root filesystems).
+- Changed client Dockerfile to use numeric UID instead of named user for Kubernetes `runAsNonRoot` compatibility.
 
 ### Fixed
 - All tables in the `logs` and `attachments` tab of the borehole detail view were missing pagination.
@@ -32,10 +51,6 @@
 - Fixed display of facies when not editing a borehole.
 - Fixed bug where the top bedrock intersected default value could not be overwritten.
 - Reset form when switching between unconsolidated and consolidated rock in lithology.
-
-### Changed
-- Added pod and container security context hardening across all Helm charts (seccomp profiles, privilege escalation prevention, capability dropping, read-only root filesystems).
-- Changed client Dockerfile to use numeric UID instead of named user for Kubernetes `runAsNonRoot` compatibility.
 
 ## v2.1.1462 - 2026-02-19
 

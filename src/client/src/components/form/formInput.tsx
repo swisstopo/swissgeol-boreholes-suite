@@ -1,5 +1,5 @@
 import { FC, useContext } from "react";
-import { useFormContext } from "react-hook-form";
+import { useFormContext, useFormState } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { InputProps, SxProps, TextField } from "@mui/material";
 import { isValid } from "date-fns";
@@ -48,7 +48,8 @@ export const FormInput: FC<FormInputProps> = ({
 }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
-  const { formState, register, setValue } = useFormContext();
+  const { register, setValue, control } = useFormContext();
+  const { errors } = useFormState({ control, name: fieldName });
   const isDateTimeInput = type === FormValueType.DateTime;
   const isDateInput = type === FormValueType.Date;
   const isReadOnly = readonly ?? !editingEnabled;
@@ -65,7 +66,7 @@ export const FormInput: FC<FormInputProps> = ({
     }
   };
 
-  const formFieldError = getFormFieldError(fieldName, formState.errors);
+  const formFieldError = getFormFieldError(fieldName, errors);
 
   return (
     <TextField
@@ -84,7 +85,7 @@ export const FormInput: FC<FormInputProps> = ({
       rows={rows}
       label={labelWithTooltip}
       {...register(fieldName, {
-        required: required || false,
+        required: required ? "required" : false,
         valueAsNumber: type === FormValueType.Number,
         validate: value => {
           if (value === "") {

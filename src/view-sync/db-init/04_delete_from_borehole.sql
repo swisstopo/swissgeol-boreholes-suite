@@ -322,6 +322,11 @@ DELETE FROM bdms."section" WHERE id IN (
 -- Borehole: General
 UPDATE bdms.borehole AS b
 SET
+    original_name_bho = NULL,
+    alternate_name_bho = NULL,
+    project_name_bho = NULL,
+    restriction_until_bho = NULL,
+    national_interest = NULL,
     borehole_type_id = NULL,
     purpose_id_cli = NULL,
     status_id_cli = NULL,
@@ -342,11 +347,6 @@ WHERE w.borehole_id = b.id_bho AND t."general" = false;
 -- Borehole: Location
 UPDATE bdms.borehole AS b
 SET
-    original_name_bho = NULL,
-    alternate_name_bho = NULL,
-    project_name_bho = NULL,
-    restriction_until_bho = NULL,
-    national_interest = NULL,
     srs_id_cli = NULL,
     location_x_bho = NULL,
     location_x_lv03_bho = NULL,
@@ -375,7 +375,7 @@ DELETE FROM bdms.borehole_identifiers_codelist WHERE borehole_id IN (
     INNER JOIN bdms.borehole b ON b.id_bho  = bi.borehole_id
     INNER JOIN bdms.workflow w ON w.borehole_id = b.id_bho
     INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
-    WHERE t."location"  = false
+    WHERE t.identifiers = false
 );
 
 SELECT COUNT(*) AS "Free/Published Boreholes" FROM bdms.borehole;

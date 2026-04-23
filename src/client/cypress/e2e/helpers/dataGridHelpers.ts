@@ -1,0 +1,122 @@
+import { createBaseSelector } from "./testHelpers";
+
+export const verifyPaginationText = (text: string) => {
+  cy.get(".MuiTablePagination-displayedRows").should("have.text", text);
+};
+
+export const hasPagination = (exists: boolean) => {
+  if (exists) {
+    cy.get(".MuiTablePagination-displayedRows").should("exist");
+  } else {
+    cy.get(".MuiTablePagination-displayedRows").should("not.exist");
+  }
+};
+
+export const sortBy = (headerTextContent: string) => {
+  cy.get(".MuiDataGrid-columnHeader").contains(headerTextContent).click();
+  waitForTableData();
+};
+
+export const verifyRowContains = (rowContent: string, rowIndex: number) => {
+  cy.get(".MuiDataGrid-row").eq(rowIndex).scrollIntoView();
+  cy.get(".MuiDataGrid-row")
+    .eq(rowIndex)
+    .within(() => {
+      cy.contains(rowContent).should("exist");
+    });
+};
+
+export const verifyRowWithContentAlsoContains = (rowContent: string, alsoContains: string) => {
+  cy.get(".MuiDataGrid-row")
+    .contains(rowContent)
+    .parent()
+    .within(() => {
+      cy.contains(alsoContains).should("exist");
+    });
+};
+
+export const clickOnNextPage = () => {
+  cy.get('[aria-label="next page"]').scrollIntoView();
+  cy.get('[aria-label="next page"]').click();
+  waitForTableData();
+};
+
+export const clickOnLastPage = () => {
+  cy.get('[aria-label="last page"]').scrollIntoView();
+  cy.get('[aria-label="last page"]').click();
+  waitForTableData();
+};
+
+export const verifyTableLength = (length: number) => {
+  if (length === 0) {
+    cy.get(".MuiDataGrid-row").should("not.exist");
+  } else {
+    cy.get(".MuiDataGrid-row").should("have.length", length);
+  }
+};
+
+export const waitForTableData = () => {
+  cy.get(".MuiDataGrid-root").should("be.visible");
+  cy.get(".loading-indicator").should("not.exist");
+  cy.get(".MuiCircularProgress-root").should("not.exist");
+  cy.get(".MuiDataGrid-row").should("have.length.greaterThan", 0);
+};
+
+export const showTableAndWaitForData = () => {
+  cy.dataCy("showTableButton").click();
+  waitForTableData();
+};
+
+export const checkAllVisibleRows = () => {
+  cy.get(".MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root").find('input[type="checkbox"]').check({ force: true });
+};
+
+export const uncheckAllVisibleRows = () => {
+  cy.get(".MuiDataGrid-columnHeaderCheckbox .MuiCheckbox-root").find('input[type="checkbox"]').uncheck({ force: true });
+};
+
+const getCheckboxCellSelector = (column?: string) =>
+  column ? `[data-field="${column}"] .MuiCheckbox-root` : ".MuiDataGrid-cellCheckbox";
+
+export const checkRowWithText = (text: string, column?: string) => {
+  cy.contains(".MuiDataGrid-row", text)
+    .find(`${getCheckboxCellSelector(column)} input[type="checkbox"]`)
+    .check({ force: true });
+};
+
+export const unCheckRowWithText = (text: string, column?: string) => {
+  cy.contains(".MuiDataGrid-row", text)
+    .find(`${getCheckboxCellSelector(column)} input[type="checkbox"]`)
+    .uncheck({ force: true });
+};
+
+export const verifyRowWithTextCheckState = (text: string, checked: boolean, column?: string) => {
+  cy.contains(".MuiDataGrid-row", text)
+    .find(`${getCheckboxCellSelector(column)} input[type="checkbox"]`)
+    .should(checked ? "be.checked" : "not.be.checked");
+};
+
+export const checkTwoFirstRows = () => {
+  checkRowWithIndex(0);
+  checkRowWithIndex(1);
+};
+
+export const checkRowWithIndex = (index: number, parent?: string) => {
+  const selector = createBaseSelector(parent) + ".MuiDataGrid-row";
+  cy.get(selector).eq(index).find('.MuiDataGrid-cellCheckbox input[type="checkbox"]').check({ force: true });
+};
+
+export const clickOnRowWithText = (text: string) => {
+  cy.contains(".MuiDataGrid-row", text).click();
+};
+
+export const setTextInRow = (row: string | number, field: string, text: string) => {
+  const rowSelector =
+    typeof row === "number"
+      ? cy.get(".MuiDataGrid-row").eq(row).find(`[data-cy="${field}"]`)
+      : cy.contains(".MuiDataGrid-row", row).find(`[data-cy="${field}"]`);
+
+  rowSelector.click();
+  cy.focused().clear();
+  rowSelector.type(text, { delay: 10 });
+};

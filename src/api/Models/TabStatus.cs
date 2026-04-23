@@ -123,4 +123,10 @@ public class TabStatus : IIdentifyable
     /// </summary>
     [Column("log")]
     public bool Log { get; set; }
+
+    /// <summary>
+    /// Gets or sets the status of the identifiers tab of the borehole.
+    /// </summary>
+    [Column("identifiers")]
+    public bool Identifiers { get; set; }
 }

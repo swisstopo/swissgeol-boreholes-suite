@@ -1,3 +1,4 @@
+import { NullableBooleanSelect, NullableDateString } from "../../../../api/apiInterfaces.ts";
 import { BoreholeV2 } from "../../../../api/borehole.ts";
 import { Profile } from "../../../../api/file/fileInterfaces.ts";
 import { Workflow } from "../workflow/workflow.ts";
@@ -7,6 +8,12 @@ export interface BoreholeProps {
 }
 
 export interface BoreholeFormInputs {
+  name: string;
+  originalName: string;
+  projectName: number;
+  restrictionId: number | null;
+  restrictionUntil: NullableDateString;
+  nationalInterest: NullableBooleanSelect;
   totalDepth: number | null;
   depthPrecisionId: number;
   typeId: number;
@@ -17,9 +24,9 @@ export interface BoreholeFormInputs {
   lithologyTopBedrockId: number;
   lithostratigraphyTopBedrockId: number;
   chronostratigraphyTopBedrockId: number;
-  hasGroundwater: boolean | number | null;
+  hasGroundwater: NullableBooleanSelect;
   remarks: string;
-  topBedrockIntersected: boolean | number | null;
+  topBedrockIntersected: NullableBooleanSelect;
   boreholeFiles: Profile[] | null;
   workflow: Workflow | null;
 }
