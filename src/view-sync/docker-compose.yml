@@ -1,6 +1,7 @@
 services:
   view-sync:
     build: .
+    user: "70:70"
     environment:
       - SOURCE_DB_HOST=host.docker.internal
       - SOURCE_DB_PORT=5432
