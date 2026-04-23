@@ -12,11 +12,6 @@ services:
       interval: 2s
       start_period: 10s
 
-  dataextraction:
-    healthcheck:
-      interval: 2s
-      start_period: 5s
-
   oidc-server:
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost/.well-known/openid-configuration || exit 1"]
