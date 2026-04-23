@@ -1,0 +1,90 @@
+name: Prepare backend
+description: Build api images with GHCR layer cache and start compose services with cached third-party images.
+
+inputs:
+  pulled-services:
+    description: Space-separated list of compose services whose images are pulled from a registry.
+    required: true
+  up-services:
+    description: Space-separated list of compose services to start (pulled + built).
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Log in to GHCR
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GH_ACTOR: ${{ github.actor }}
+      run: echo "$GH_TOKEN" | docker login ghcr.io -u "$GH_ACTOR" --password-stdin
+
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+
+    - name: Build api image
+      uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+      with:
+        context: ./src
+        file: ./src/api/Dockerfile
+        target: development
+        load: true
+        tags: bdms-api
+        cache-from: type=registry,ref=ghcr.io/swisstopo/bdms-api:buildcache
+        cache-to: type=registry,ref=ghcr.io/swisstopo/bdms-api:buildcache,mode=max
+
+    - name: Build api-legacy image
+      uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+      with:
+        context: ./src/api-legacy
+        load: true
+        tags: bdms-api-legacy
+        cache-from: type=registry,ref=ghcr.io/swisstopo/bdms-api-legacy:buildcache
+        cache-to: type=registry,ref=ghcr.io/swisstopo/bdms-api-legacy:buildcache,mode=max
+
+    - name: Resolve compose image digests
+      id: compose-digests
+      shell: bash
+      env:
+        PULLED_SERVICES: ${{ inputs.pulled-services }}
+      run: |
+        set -euo pipefail
+        mapfile -t images < <(docker compose config --images $PULLED_SERVICES)
+        fingerprint=""
+        for img in "${images[@]}"; do
+          raw=$(docker buildx imagetools inspect --raw "$img")
+          fingerprint+="${img}@${raw};"
+        done
+        key=$(printf '%s' "$fingerprint" | sha256sum | cut -c1-32)
+        echo "key=compose-images-$key" >> "$GITHUB_OUTPUT"
+        printf '%s\n' "${images[@]}" > /tmp/compose-images.list
+
+    - name: Cache compose images
+      id: compose-cache
+      uses: actions/cache@27d5ce7f107fe9357f9df03efb73ab90386fccae # v5.0.5
+      with:
+        path: /tmp/compose-images.tar
+        key: ${{ steps.compose-digests.outputs.key }}
+
+    - name: Load cached compose images
+      if: steps.compose-cache.outputs.cache-hit == 'true'
+      shell: bash
+      run: docker load -i /tmp/compose-images.tar
+
+    - name: Pull and archive compose images
+      if: steps.compose-cache.outputs.cache-hit != 'true'
+      shell: bash
+      env:
+        PULLED_SERVICES: ${{ inputs.pulled-services }}
+      run: |
+        set -euo pipefail
+        docker compose pull $PULLED_SERVICES
+        xargs -a /tmp/compose-images.list docker save -o /tmp/compose-images.tar
+
+    - name: Start services
+      shell: bash
+      env:
+        UP_SERVICES: ${{ inputs.up-services }}
+        # Align compose's default image tags (<project>-<service>) with the bdms-api / bdms-api-legacy tags built above.
+        COMPOSE_PROJECT_NAME: bdms
+      run: docker compose up --wait --no-build $UP_SERVICES

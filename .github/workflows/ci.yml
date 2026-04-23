@@ -8,6 +8,9 @@ jobs:
   ci:
     runs-on: ubuntu-latest
     name: Build and run tests
+    permissions:
+      contents: read
+      packages: write
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -22,8 +25,11 @@ jobs:
       - name: Build solution
         run: dotnet build BDMS.sln -c Release /warnaserror
 
-      - name: Start db and api's
-        run: docker compose up --wait minio db api-legacy api dataextraction
+      - name: Prepare backend
+        uses: ./.github/actions/prepare-backend
+        with:
+          pulled-services: minio db dataextraction
+          up-services: minio db api-legacy api dataextraction
 
       - name: Run dotnet tests
         run: dotnet test BDMS.sln -c Release --no-build --verbosity normal --filter TestCategory!=LongRunning --logger trx
@@ -51,6 +57,9 @@ jobs:
   cypress-tests:
     runs-on: ubuntu-latest
     name: Run cypress tests
+    permissions:
+      contents: read
+      packages: write
     strategy:
       fail-fast: false
       matrix:
@@ -59,31 +68,11 @@ jobs:
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
 
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
-
-      - name: Build api image
-        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+      - name: Prepare backend
+        uses: ./.github/actions/prepare-backend
         with:
-          context: ./src
-          file: ./src/api/Dockerfile
-          target: development
-          load: true
-          tags: bdms-api
-          cache-from: type=gha,scope=ci-api-dev
-          cache-to: type=gha,scope=ci-api-dev,mode=max
-
-      - name: Build api-legacy image
-        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
-        with:
-          context: ./src/api-legacy
-          load: true
-          tags: bdms-api-legacy
-          cache-from: type=gha,scope=ci-api-legacy
-          cache-to: type=gha,scope=ci-api-legacy,mode=max
-
-      - name: Start db and api's
-        run: docker compose up --wait --no-build minio db api-legacy api oidc-server dataextraction
+          pulled-services: minio db oidc-server dataextraction
+          up-services: minio db api-legacy api oidc-server dataextraction
 
       - name: Setup Node.js 22
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
@@ -111,8 +100,6 @@ jobs:
       # Pass the GitHub token lets this action correctly
       # determine the unique run id necessary to re-run the checks
       GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      # Make `docker compose` match the image tags produced by the Buildx pre-build steps above
-      COMPOSE_PROJECT_NAME: bdms
 
   view-sync:
     runs-on: ubuntu-latest
