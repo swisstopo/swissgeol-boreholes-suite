@@ -197,7 +197,7 @@ describe("Test for importing boreholes.", () => {
 
     returnToOverview();
     cy.dataCy("show-filter-button").click();
-    cy.contains("Location").click();
+    cy.contains("Borehole").click();
     cy.contains("Original name").next().find("input").type("COLDWATER");
     showTableAndWaitForData();
 
