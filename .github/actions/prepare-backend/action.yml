@@ -49,11 +49,12 @@ runs:
         PULLED_SERVICES: ${{ inputs.pulled-services }}
       run: |
         set -euo pipefail
-        mapfile -t images < <(docker compose config --images $PULLED_SERVICES)
+        # Sort to neutralize compose's non-deterministic service iteration order.
+        mapfile -t images < <(docker compose config --images $PULLED_SERVICES | sort)
         fingerprint=""
         for img in "${images[@]}"; do
-          raw=$(docker buildx imagetools inspect --raw "$img")
-          fingerprint+="${img}@${raw};"
+          digest=$(docker buildx imagetools inspect --format '{{.Manifest.Digest}}' "$img")
+          fingerprint+="${img}@${digest};"
         done
         key=$(printf '%s' "$fingerprint" | sha256sum | cut -c1-32)
         echo "key=compose-images-$key" >> "$GITHUB_OUTPUT"

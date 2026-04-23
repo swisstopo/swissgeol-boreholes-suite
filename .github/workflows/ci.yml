@@ -28,7 +28,7 @@ jobs:
       - name: Prepare backend
         uses: ./.github/actions/prepare-backend
         with:
-          pulled-services: minio db dataextraction
+          pulled-services: minio db oidc-server dataextraction
           up-services: minio db api-legacy api dataextraction
 
       - name: Run dotnet tests
