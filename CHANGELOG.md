@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1568 - 2026-04-23
+
 ### Added
 - Export functionality for LOG.
 
