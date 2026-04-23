@@ -4,10 +4,11 @@ import { Card } from "@mui/material";
 import { useAuth } from "../../../../auth/useBoreholesAuth.tsx";
 import { FormContainer, FormInput, FormInputDisplayOnly } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
-import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
+import { BoreholeFormInputs } from "../borehole/boreholePanelInterfaces.ts";
+import { LocationBaseProps } from "./locationPanelInterfaces.tsx";
 
 interface NameSegmentProps extends LocationBaseProps {
-  formMethods: UseFormReturn<LocationFormInputs>;
+  formMethods: UseFormReturn<BoreholeFormInputs>;
 }
 const NameSegment = ({ borehole, formMethods }: NameSegmentProps) => {
   const auth = useAuth();

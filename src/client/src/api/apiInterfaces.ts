@@ -22,6 +22,7 @@ export enum Role {
 }
 
 export type NullableDateString = Date | string | null;
+export type NullableBooleanSelect = number | boolean | null; // Number as select options parsed to boolean
 
 export interface Workgroup {
   id: number;

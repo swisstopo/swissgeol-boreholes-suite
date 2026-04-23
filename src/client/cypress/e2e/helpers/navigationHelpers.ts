@@ -178,7 +178,7 @@ export const navigateInSidebar = (menuItem: string, promptSelector?: string) => 
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/location$/);
       });
-      cy.dataCy("originalName-formInput").should("exist");
+      cy.dataCy("originalReferenceSystem-formSelect").should("exist");
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.identifiers:

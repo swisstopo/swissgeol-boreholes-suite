@@ -1,5 +1,11 @@
-import { discardChanges, saveWithSaveBar } from "../helpers/buttonHelpers";
-import { clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
+import {
+  discardChanges,
+  saveWithSaveBar,
+  stopEditing,
+  verifyNoUnsavedChanges,
+  verifyUnsavedChanges,
+} from "../helpers/buttonHelpers";
+import { checkRowWithText, clickOnRowWithText, showTableAndWaitForData, sortBy } from "../helpers/dataGridHelpers";
 import {
   clearInput,
   evaluateInput,
@@ -8,6 +14,7 @@ import {
   evaluateYesNoSelect,
   isDisabled,
   setInput,
+  setOriginalName,
   setSelect,
   setYesNoSelect,
 } from "../helpers/formHelpers";
@@ -20,6 +27,7 @@ import {
   newEditableBorehole,
   returnToOverview,
   startBoreholeEditing,
+  stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
 function ensureEditingDisabled() {
@@ -39,20 +47,13 @@ describe("Test for the borehole form.", () => {
     newEditableBorehole().as("borehole_id");
     cy.dataCy("save-bar").should("be.visible");
 
-    // fills and evaluates all mui dropdowns on location tab (identifiers are tested separately)
-    setSelect("restrictionId", 2);
-    isDisabled("restrictionUntil", true);
-    setSelect("restrictionId", 3);
-    isDisabled("restrictionUntil", false);
-    setYesNoSelect("nationalInterest", "Not specified");
+    // fills and evaluates all mui dropdowns on location tab
     setSelect("originalReferenceSystem", 0);
     setSelect("locationPrecisionId", 2);
     setSelect("elevationPrecisionId", 2);
     setSelect("referenceElevationPrecisionId", 2);
     setSelect("referenceElevationTypeId", 4);
 
-    evaluateSelect("restrictionId", "restricted until"); //20111003
-    evaluateYesNoSelect("nationalInterest", "Not specified");
     evaluateSelect("originalReferenceSystem", "LV95"); //20104001
     evaluateSelect("locationPrecisionId", "50"); //20113002
     evaluateSelect("elevationPrecisionId", "5"); //20114002
@@ -63,8 +64,6 @@ describe("Test for the borehole form.", () => {
     // navigate away and back to check if values are saved
     navigateInSidebar(SidebarMenuItem.borehole);
     navigateInSidebar(SidebarMenuItem.location);
-    evaluateSelect("restrictionId", "restricted until"); //20111003
-    evaluateYesNoSelect("nationalInterest", "Not specified");
     evaluateSelect("originalReferenceSystem", "LV95"); //20104001
     evaluateSelect("locationPrecisionId", "50"); //20113002
     evaluateSelect("elevationPrecisionId", "5"); //20114002
@@ -73,11 +72,20 @@ describe("Test for the borehole form.", () => {
 
     // fill all dropdowns on borehole tab
     navigateInSidebar(SidebarMenuItem.borehole);
+    setSelect("restrictionId", 2);
+    isDisabled("restrictionUntil", true);
+    setSelect("restrictionId", 3);
+    isDisabled("restrictionUntil", false);
+    setYesNoSelect("nationalInterest", "Not specified");
     setSelect("purposeId", 1);
     setSelect("typeId", 1);
     setSelect("depthPrecisionId", 1);
     setSelect("statusId", 1);
 
+    evaluateSelect("restrictionId", "restricted until"); //20111003
+    evaluateYesNoSelect("nationalInterest", "Not specified");
+    evaluateSelect("restrictionId", "restricted until"); //20111003
+    evaluateYesNoSelect("nationalInterest", "Not specified");
     evaluateSelect("purposeId", "geotechnics"); //22103001
     evaluateSelect("typeId", "borehole"); //20101001
     evaluateSelect("depthPrecisionId", "2"); //22108001
@@ -89,6 +97,8 @@ describe("Test for the borehole form.", () => {
     navigateInSidebar(SidebarMenuItem.location);
     navigateInSidebar(SidebarMenuItem.borehole);
 
+    evaluateSelect("restrictionId", "restricted until"); //20111003
+    evaluateYesNoSelect("nationalInterest", "Not specified");
     evaluateSelect("purposeId", "geotechnics"); //22103001
     evaluateSelect("typeId", "borehole"); //20101001
     evaluateSelect("depthPrecisionId", "2"); //22108001
@@ -247,11 +257,13 @@ describe("Test for the borehole form.", () => {
     cy.wait("@borehole_filter");
     clickOnRowWithText("Zena Rath");
 
+    navigateInSidebar(SidebarMenuItem.borehole);
     evaluateInput("originalName", "Zena Rath");
     evaluateInput("name", "Zena Rath");
     evaluateInput("projectName", "Reactive asymmetric alliance");
     evaluateSelect("restrictionId", "");
     evaluateYesNoSelect("nationalInterest", "No");
+    navigateInSidebar(SidebarMenuItem.location);
     evaluateSelect("originalReferenceSystem", "LV03");
     evaluateSelect("locationPrecisionId", "0.1 (± DGPS / Theodolit)");
 
@@ -263,14 +275,15 @@ describe("Test for the borehole form.", () => {
 
     returnToOverview();
     clickOnRowWithText("Zena Mraz");
+    navigateInSidebar(SidebarMenuItem.borehole);
     evaluateInput("originalName", "Zena Mraz");
     evaluateInput("name", "Zena Mraz");
     evaluateInput("projectName", "Ergonomic heuristic installation");
     evaluateSelect("restrictionId", "");
     evaluateYesNoSelect("nationalInterest", "Yes");
+    navigateInSidebar(SidebarMenuItem.location);
     evaluateSelect("originalReferenceSystem", "LV03");
     evaluateSelect("locationPrecisionId", "not specified");
-
     evaluateInput("elevationZ", "3'062.9991330499756");
     evaluateInput("referenceElevation", "3'478.1368118609007");
     evaluateSelect("elevationPrecisionId", "1");
@@ -455,5 +468,174 @@ describe("Test for the borehole form.", () => {
       clickOnRowWithText("AAA_HIPPOPOTHAMUS");
       ensureEditingEnabled();
     });
+  });
+
+  it("completes alternate name", () => {
+    createBorehole({ originalName: "PHOTOSQUIRREL", name: "PHOTOSQUIRREL" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
+
+      evaluateInput("originalName", "PHOTOSQUIRREL");
+      evaluateInput("name", "PHOTOSQUIRREL");
+
+      startBoreholeEditing();
+      // changing original name should also change alternate name
+      setOriginalName("PHOTOCAT");
+      evaluateInput("originalName", "PHOTOCAT");
+      evaluateInput("name", "PHOTOCAT");
+
+      // changing alternate name should not change original name
+      setInput("name", "PHOTOMOUSE");
+      evaluateInput("originalName", "PHOTOCAT");
+      evaluateInput("name", "PHOTOMOUSE");
+
+      // changing original name should not update alternate name if they are different
+      setOriginalName("PHOTOPIGEON");
+      evaluateInput("originalName", "PHOTOPIGEON");
+      evaluateInput("name", "PHOTOMOUSE");
+
+      clearInput("name");
+      evaluateInput("originalName", "PHOTOPIGEON");
+      evaluateInput("name", "");
+      saveWithSaveBar();
+      // should be reset to original name if alternate name is empty
+      evaluateInput("originalName", "PHOTOPIGEON");
+      evaluateInput("name", "PHOTOPIGEON");
+
+      // should keep different alternate name when switching tabs
+      setInput("name", "PHOTOMOUSE");
+      saveWithSaveBar();
+      navigateInSidebar(SidebarMenuItem.location);
+      navigateInSidebar(SidebarMenuItem.borehole);
+      evaluateInput("originalName", "PHOTOPIGEON");
+      evaluateInput("name", "PHOTOMOUSE");
+    });
+  });
+
+  it("does not overwrite alternate name if it is different from original name", () => {
+    createBorehole({ originalName: "PHOTOSQUIRREL", name: "PHOTOMOUSE" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
+
+      evaluateInput("originalName", "PHOTOSQUIRREL");
+      evaluateInput("name", "PHOTOMOUSE");
+
+      startBoreholeEditing();
+      // changing original name should not update alternate name if they are different
+      setInput("originalName", "PHOTOPIGEON");
+      evaluateInput("originalName", "PHOTOPIGEON");
+      evaluateInput("name", "PHOTOMOUSE");
+    });
+  });
+
+  it("displays unsaved changes message if unsaved changes are present", () => {
+    createBorehole({ originalName: "PHOTOSQUIRREL", name: "PHOTOPIGEON" }).as("borehole_id");
+    cy.get("@borehole_id").then(id => {
+      goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
+      startBoreholeEditing();
+
+      verifyNoUnsavedChanges();
+      setSelect("restrictionId", 2);
+      verifyUnsavedChanges();
+
+      // reset from form
+      setSelect("restrictionId", 0);
+      verifyNoUnsavedChanges();
+
+      // discard changes with button
+      setSelect("restrictionId", 3);
+      verifyUnsavedChanges();
+      cy.get('[data-cy="discardchanges-button"]').click();
+      verifyNoUnsavedChanges();
+
+      // save changes
+      setSelect("restrictionId", 3);
+      verifyUnsavedChanges();
+      cy.get('[data-cy="save-button"]').click();
+      verifyNoUnsavedChanges();
+    });
+  });
+
+  it("saves with ctrl s", () => {
+    goToRouteAndAcceptTerms("/");
+    newEditableBorehole();
+    navigateInSidebar(SidebarMenuItem.borehole);
+    verifyNoUnsavedChanges();
+    setOriginalName("PHOTOFOX");
+    verifyUnsavedChanges();
+    cy.get("body").type("{ctrl}s");
+    verifyNoUnsavedChanges();
+  });
+
+  it("Saves restriction until date.", () => {
+    goToRouteAndAcceptTerms("/");
+    newEditableBorehole().as("borehole_id");
+    navigateInSidebar(SidebarMenuItem.borehole);
+    setSelect("restrictionId", 3);
+    isDisabled("restrictionUntil", false);
+    setInput("restrictionUntil", "2012-11-14");
+    evaluateInput("restrictionUntil", "2012-11-14");
+    saveWithSaveBar();
+    // navigate away and back to check if values are saved
+    navigateInSidebar(SidebarMenuItem.location);
+    navigateInSidebar(SidebarMenuItem.borehole);
+
+    evaluateInput("restrictionUntil", "2012-11-14");
+  });
+
+  it("blocks navigating away and stop editing with unsaved changes", () => {
+    goToRouteAndAcceptTerms("/");
+    newEditableBorehole().as("borehole_id");
+    let boreholeId: unknown;
+    cy.get("@borehole_id").then(id => {
+      boreholeId = id;
+    });
+    const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
+    navigateInSidebar(SidebarMenuItem.borehole);
+    setOriginalName("FELIX_THE_RACOON");
+    stopEditing();
+    handlePrompt(messageUnsavedChanges, "cancel");
+    cy.get('[data-cy="editingstop-button"]').should("exist");
+    stopEditing();
+    handlePrompt(messageUnsavedChanges, "discardchanges");
+    cy.get('[data-cy="editingstop-button"]').should("not.exist");
+
+    startBoreholeEditing();
+    setOriginalName("FELIX_THE_BROOM");
+
+    cy.dataCy("status-menu-item").click();
+    handlePrompt(messageUnsavedChanges, "cancel");
+    cy.location().should(location => {
+      expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
+    });
+
+    navigateInSidebar(SidebarMenuItem.location, "discardchanges");
+  });
+
+  it("creates and deletes a borehole.", () => {
+    goToRouteAndAcceptTerms("/");
+    newEditableBorehole();
+    navigateInSidebar(SidebarMenuItem.borehole);
+    // enter original name and make sure it was copied to alternate name
+    setOriginalName("AAA_SCATORPS");
+    evaluateInput("name", "AAA_SCATORPS");
+
+    // save borehole
+    saveWithSaveBar();
+
+    // stop editing
+    stopBoreholeEditing();
+    returnToOverview();
+    showTableAndWaitForData();
+
+    // search the newly created borehole and delete it
+    cy.get('[data-cy="borehole-table"]').within(() => {
+      checkRowWithText("AAA_SCATORPS");
+    });
+
+    cy.get('[data-cy="delete-button"]').click();
+    cy.get('.MuiButton-containedPrimary[data-cy="delete-button"]').click();
+    cy.wait(["@edit_deletelist"]);
+    cy.get('[data-cy="borehole-table"]').contains("AAA_SCATORPS").should("not.exist");
   });
 });
