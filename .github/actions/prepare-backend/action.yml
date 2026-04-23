@@ -27,7 +27,7 @@ runs:
       with:
         context: ./src
         file: ./src/api/Dockerfile
-        target: development
+        target: deploy
         load: true
         tags: bdms-api
         cache-from: type=registry,ref=ghcr.io/swisstopo/bdms-api:buildcache
@@ -88,4 +88,4 @@ runs:
         UP_SERVICES: ${{ inputs.up-services }}
         # Align compose's default image tags (<project>-<service>) with the bdms-api / bdms-api-legacy tags built above.
         COMPOSE_PROJECT_NAME: bdms
-      run: docker compose up --wait --no-build $UP_SERVICES
+      run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up --wait --no-build $UP_SERVICES

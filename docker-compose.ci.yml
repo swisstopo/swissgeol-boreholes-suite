@@ -1,0 +1,10 @@
+services:
+  api:
+    build:
+      target: deploy
+    # Development env keeps the in-app database seeding that integration tests rely on,
+    # while the deploy image skips the cold dotnet watch compile on startup.
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    # Drop the host-source bind-mount and the anonymous bin/obj volumes used by dev hot-reload.
+    volumes: !reset null
