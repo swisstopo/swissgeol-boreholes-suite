@@ -236,7 +236,7 @@ export const useReloadBoreholes = () => {
 };
 
 // ---- Filter interfaces ----
-interface BoreholeListItem {
+export interface BoreholeListItem {
   id: number;
   originalName: string | null;
   name: string | null;
