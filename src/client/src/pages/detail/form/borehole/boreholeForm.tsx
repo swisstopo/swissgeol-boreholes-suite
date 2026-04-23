@@ -239,6 +239,12 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
                     selected={borehole.hasGroundwater}
                   />
                 </FormContainer>
+              </FormContainer>
+            </FormSegmentBox>
+          </Card>
+          <Card>
+            <FormSegmentBox>
+              <FormContainer direction="row">
                 <FormInput fieldName={"remarks"} multiline={true} label={"remarks"} value={borehole?.remarks} />
               </FormContainer>
             </FormSegmentBox>
