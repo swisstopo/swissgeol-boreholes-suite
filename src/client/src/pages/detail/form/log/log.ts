@@ -6,7 +6,7 @@ import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack
 import { NullableDateString, User } from "../../../../api/apiInterfaces.ts";
 import { boreholeQueryKey } from "../../../../api/borehole.ts";
 import { downloadPost } from "../../../../api/download.ts";
-import { fetchApiV2WithApiError, uploadWithApiError } from "../../../../api/fetchApiV2.ts";
+import { fetchApiV2WithApiError, upload, uploadWithApiError } from "../../../../api/fetchApiV2.ts";
 import { Codelist } from "../../../../components/codelist.ts";
 import { ExportItem } from "../../../../components/export/exportDialog.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
@@ -135,6 +135,14 @@ export const useLogRunMutations = () => {
     update: useUpdateLogRun,
     delete: useDeleteLogRuns,
   };
+};
+
+export const importLogs = async (boreholeId: number, formData: FormData): Promise<LogRun[]> => {
+  return await uploadWithApiError<LogRun[]>(`${logController}/import?boreholeId=${boreholeId}`, "POST", formData);
+};
+
+export const importLogsRaw = async (boreholeId: number, formData: FormData): Promise<Response> => {
+  return await upload(`${logController}/import?boreholeId=${boreholeId}`, "POST", formData);
 };
 
 export const exportLogRuns = async (ids: number[], withAttachments: boolean, locale: string): Promise<Response> => {

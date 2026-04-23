@@ -24,6 +24,22 @@ public class LogFileCloudService : CloudServiceBase
     }
 
     /// <summary>
+    /// Uploads a file to the cloud storage using the provided objectName as the S3 key.
+    /// </summary>
+    public async Task UploadFileForExistingLogFileAsync(Stream fileStream, string contentType, string objectName)
+    {
+        try
+        {
+            await UploadObject(fileStream, objectName, contentType).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Error uploading file to S3 with key <{ObjectName}>.", objectName);
+            throw;
+        }
+    }
+
+    /// <summary>
     /// Uploads a log file to the cloud storage and links it to the log run.
     /// </summary>
     /// <param name="fileStream">The file stream for the file to upload and link to the <see cref="LogRun"/>.</param>
