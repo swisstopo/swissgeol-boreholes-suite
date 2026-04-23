@@ -6,39 +6,26 @@ export const useBoreholesNavigate = () => {
   const location = useLocation();
 
   const navigateTo = useCallback(
-    ({
-      path,
-      hash,
-      search,
-      preserveSearch,
-      replace,
-    }: {
-      path?: string;
-      hash?: string;
-      search?: string;
-      preserveSearch?: boolean;
-      replace?: boolean;
-    }) => {
+    ({ path, hash, replace }: { path?: string; hash?: string; replace?: boolean }) => {
       const pathname = path || location.pathname;
       const hashValue = hash?.split("?")[0];
-      const preserveSearchValue = preserveSearch ?? true;
       const replaceValue = replace ?? false;
-      let searchParams = search;
-      if (!searchParams && preserveSearchValue) {
-        const locationSearch = location.search;
-        const searchFromHash = location.hash.split("?")[1];
 
-        if (locationSearch) {
-          searchParams = locationSearch;
-        } else if (searchFromHash) {
-          searchParams = `${searchFromHash}`;
-        }
+      let searchParams;
+      const locationSearch = location.search;
+      const searchFromHash = location.hash.split("?")[1];
+      if (locationSearch) {
+        searchParams = locationSearch;
+      } else if (searchFromHash) {
+        searchParams = `${searchFromHash}`;
       }
+      const normalizedSearch = searchParams ?? "";
+      const normalizedLocationSearch = location.search ?? "";
 
       if (
         pathname !== location.pathname ||
         hashValue !== location.hash.split("?")[0] ||
-        searchParams !== location.search
+        normalizedSearch !== normalizedLocationSearch
       ) {
         navigate(
           {

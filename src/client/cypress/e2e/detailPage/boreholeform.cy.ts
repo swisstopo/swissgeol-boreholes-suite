@@ -109,7 +109,7 @@ describe("Test for the borehole form.", () => {
     createBorehole({ originalName: "AAA_Ferret", name: "AAA_Ferret" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
-      cy.wait("@borehole_by_id");
+      cy.wait(["@borehole_by_id"]);
       evaluateInput("totalDepth", "");
       cy.dataCy("save-bar").should("not.exist");
       startBoreholeEditing();
@@ -151,6 +151,7 @@ describe("Test for the borehole form.", () => {
     }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
+      cy.wait(["@borehole_by_id"]);
       startBoreholeEditing();
       evaluateInput("topBedrockWeatheredMd", "100");
       evaluateInput("topBedrockFreshMd", "50'000");
@@ -253,6 +254,7 @@ describe("Test for the borehole form.", () => {
     showTableAndWaitForData();
     // sort by Name descending
     sortBy("Name");
+    cy.wait("@borehole_filter");
     clickOnRowWithText("Zena Rath");
 
     navigateInSidebar(SidebarMenuItem.borehole);
@@ -295,7 +297,6 @@ describe("Test for the borehole form.", () => {
     cy.get("@borehole_id").then(id => {
       boreholeId = id;
       goToDetailRouteAndAcceptTerms(`/${id}/borehole`);
-      cy.wait(["@borehole"]);
     });
     cy.location().should(location => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
@@ -457,6 +458,7 @@ describe("Test for the borehole form.", () => {
       startBoreholeEditing();
       ensureEditingEnabled();
       returnToOverview(); // navigating with swissgeol back button stops editing
+      cy.wait("@update-borehole");
       showTableAndWaitForData();
       clickOnRowWithText("AAA_HIPPOPOTHAMUS");
       ensureEditingDisabled();
@@ -633,7 +635,7 @@ describe("Test for the borehole form.", () => {
 
     cy.get('[data-cy="delete-button"]').click();
     cy.get('.MuiButton-containedPrimary[data-cy="delete-button"]').click();
-    cy.wait(["@edit_deletelist", "@edit_list"]);
+    cy.wait(["@edit_deletelist"]);
     cy.get('[data-cy="borehole-table"]').contains("AAA_SCATORPS").should("not.exist");
   });
 });

@@ -237,4 +237,44 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         if (entity == null) return default;
         return await Task.FromResult<int?>(entity.Id).ConfigureAwait(false);
     }
+
+    /// <summary>
+    /// Asynchronously deletes the <see cref="Borehole"/> with the specified <paramref name="id"/>.
+    /// Permission is checked via <see cref="IBoreholePermissionService.CanChangeBoreholeStatusAsync"/>,
+    /// so admins can delete a borehole regardless of whether it is locked by another user or already in
+    /// Reviewed/Published status.
+    /// </summary>
+    /// <param name="id">The id of the borehole to delete.</param>
+    [HttpDelete]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async override Task<IActionResult> DeleteAsync(int id)
+    {
+        var borehole = await Context.Boreholes
+            .SingleOrDefaultAsync(b => b.Id == id)
+            .ConfigureAwait(false);
+
+        if (borehole == null)
+        {
+            return NotFound();
+        }
+
+        if (!await BoreholePermissionService.CanChangeBoreholeStatusAsync(HttpContext.GetUserSubjectId(), borehole.Id).ConfigureAwait(false))
+        {
+            return Unauthorized();
+        }
+
+        Context.Remove(borehole);
+
+        try
+        {
+            await Context.SaveChangesAsync().ConfigureAwait(false);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            var errorMessage = "An error occurred while saving the entity changes.";
+            Logger?.LogError(ex, errorMessage);
+            return Problem(errorMessage);
+        }
+    }
 }

@@ -58,7 +58,7 @@ const RestrictionSegment = ({ borehole, formMethods }: RestrictionSegmentProps) 
           <FormBooleanSelect
             canReset={false}
             fieldName={"nationalInterest"}
-            label="national_interest"
+            label="nationalInterest"
             selected={borehole.nationalInterest}
           />
         </FormContainer>
