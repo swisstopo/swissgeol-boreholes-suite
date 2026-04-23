@@ -132,7 +132,7 @@ describe("Maintenance Tasks page tests", () => {
       it("starts coordinate migration", () => {
         cy.wait("@get-maintenance-status");
         cy.dataCy("coordinate-migration-start").click();
-        cy.dataCy("coordinate-migration-start").should("be.disabled");
+        cy.get("[data-cy=coordinate-migration-start]", { timeout: 30000 }).should("be.disabled");
         cy.wait("@start-coordinate-migration");
         // Wait for migration to complete so it doesn't affect subsequent tests.
         cy.get("[data-cy=coordinate-migration-start]", { timeout: 30000 }).should("not.be.disabled");
@@ -199,6 +199,7 @@ describe("Maintenance Tasks page tests", () => {
         interceptMigrationProgress("CoordinateMigration", logEntry);
 
         goToRouteAndAcceptTerms("/setting#maintenance");
+        cy.dataCy("settings-header").should("be.visible");
 
         // Switch language to Italian before starting.
         selectLanguage("it");
@@ -364,6 +365,7 @@ describe("Maintenance Tasks page tests", () => {
           );
 
           goToRouteAndAcceptTerms("/setting#maintenance");
+          cy.dataCy("settings-header").should("be.visible");
           selectLanguage(lng);
           cy.wait("@get-maintenance-status-ok");
 
@@ -381,6 +383,7 @@ describe("Maintenance Tasks page tests", () => {
           }).as("start-location-migration-conflict");
 
           goToRouteAndAcceptTerms("/setting#maintenance");
+          cy.dataCy("settings-header").should("be.visible");
           selectLanguage(lng);
           cy.wait("@get-maintenance-status-ok");
 
