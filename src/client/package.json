@@ -104,6 +104,9 @@
     "vite-plugin-svgr": "^4.3.0",
     "vite-tsconfig-paths": "^5.1.4"
   },
+  "overrides": {
+    "@stencil/react-output-target": "1.2.0"
+  },
   "scripts": {
     "start": "vite",
     "build": "tsc && vite build",
