@@ -560,7 +560,7 @@ describe("Test for the borehole log.", () => {
     createBoreholeWithLogRuns(106, "borehole_id_106_export");
     cy.get("@borehole_id_106_export").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/log`);
-      cy.wait(["@borehole"]);
+      cy.wait("@borehole_by_id");
     });
     assertRunCountDisplayed("106 runs");
     verifyPaginationText("1–100 of 106");
