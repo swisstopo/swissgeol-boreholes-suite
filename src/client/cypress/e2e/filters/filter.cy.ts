@@ -99,14 +99,14 @@ describe("Search filter tests", () => {
     cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
   });
 
-  // ─── LOCATION FILTERS ──────────────────────────────────────────────────────
+  // ─── BOREHOLE FILTERS ──────────────────────────────────────────────────────
   it("filters boreholes by national interest", () => {
     createBorehole({ originalName: "NI test 1", nationalInterest: false }).as("bh1");
     createBorehole({ originalName: "NI test 2", nationalInterest: false }).as("bh2");
     createBorehole({ originalName: "NI test 3", nationalInterest: false }).as("bh3");
     createBorehole({ originalName: "NI test 4", nationalInterest: null }).as("bh4");
 
-    openFilter("Location");
+    openFilter("Borehole");
 
     setYesNoSelect("nationalInterest", "Yes");
     showTableAndWaitForData();
@@ -127,14 +127,14 @@ describe("Search filter tests", () => {
     cy.dataCy("boreholes-number-preview").should("have.text", "3'004");
   });
 
-  testInputFilter("original name", "Location", "originalName", "Abigail", "7");
-  testInputFilter("project name", "Location", "projectName", "engin", "106");
-  testInputFilter("alternate name", "Location", "name", "Eric", "26");
+  testInputFilter("original name", "Borehole", "originalName", "Abigail", "7");
+  testInputFilter("project name", "Borehole", "projectName", "engin", "106");
+  testInputFilter("alternate name", "Borehole", "name", "Eric", "26");
 
-  testSelectFilter("restriction", "Location", "restrictionId", 0, "376");
+  testSelectFilter("restriction", "Borehole", "restrictionId", 0, "376");
 
   it("filters boreholes by restriction date range", () => {
-    openFilter("Location");
+    openFilter("Borehole");
     setInput("restrictionUntilFrom", "2021-01-01");
     cy.wait("@borehole_filter");
     cy.location().its("search").should("contain", "2021-01-01");
@@ -151,7 +151,6 @@ describe("Search filter tests", () => {
     checkFilterChipExistsAndRemove("restrictionUntilTo");
   });
 
-  // ─── BOREHOLE FILTERS ──────────────────────────────────────────────────────
   it("filters boreholes by total depth range", () => {
     openFilter("Borehole");
     setInput("totalDepthMin", "800");
