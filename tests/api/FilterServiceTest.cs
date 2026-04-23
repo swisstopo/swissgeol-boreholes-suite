@@ -1583,4 +1583,73 @@ public class FilterServiceTest
             }
         }
     }
+
+    [TestMethod]
+    public async Task GetFilterStatsWithoutFiltersReturnsPopulatedCountsForAdmin()
+    {
+        // Derive expected truth from the seed data so assertions stay valid across seed changes.
+        var totalBoreholes = await context.Boreholes.CountAsync();
+        var expectedHasLogsTrue = await context.Boreholes.CountAsync(b => context.LogRuns.Any(lr => lr.BoreholeId == b.Id));
+        var expectedHasProfilesTrue = await context.Boreholes.CountAsync(b => context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id));
+        var expectedHasGeometryTrue = await context.Boreholes.CountAsync(b => b.BoreholeGeometry != null && b.BoreholeGeometry.Any());
+
+        var result = await filterService.GetFilterStatsAsync(null, adminUser);
+
+        Assert.IsNotNull(result);
+
+        // Boolean dimensions must partition the admin-visible set exactly.
+        Assert.AreEqual(expectedHasGeometryTrue, result.HasGeometry.True);
+        Assert.AreEqual(totalBoreholes, result.HasGeometry.True + result.HasGeometry.False);
+        Assert.AreEqual(expectedHasLogsTrue, result.HasLogs.True);
+        Assert.AreEqual(totalBoreholes, result.HasLogs.True + result.HasLogs.False);
+        Assert.AreEqual(expectedHasProfilesTrue, result.HasProfiles.True);
+        Assert.AreEqual(totalBoreholes, result.HasProfiles.True + result.HasProfiles.False);
+        Assert.AreEqual(totalBoreholes, result.HasPhotos.True + result.HasPhotos.False);
+        Assert.AreEqual(totalBoreholes, result.HasDocuments.True + result.HasDocuments.False);
+
+        // Nullable boolean dimensions must partition the full set across true/false/null.
+        Assert.AreEqual(totalBoreholes, result.NationalInterest.True + result.NationalInterest.False + result.NationalInterest.Null);
+        Assert.AreEqual(totalBoreholes, result.TopBedrockIntersected.True + result.TopBedrockIntersected.False + result.TopBedrockIntersected.Null);
+        Assert.AreEqual(totalBoreholes, result.HasGroundwater.True + result.HasGroundwater.False + result.HasGroundwater.Null);
+
+        // Every borehole has a workgroup, so workgroup counts should sum to the total.
+        Assert.AreEqual(totalBoreholes, result.WorkgroupId.Values.Sum());
+
+        // Id-dimension dictionaries skip nulls, so sums can be <= total but the maps must be populated.
+        Assert.IsTrue(result.StatusId.Count > 0);
+        Assert.IsTrue(result.TypeId.Count > 0);
+        Assert.IsTrue(result.PurposeId.Count > 0);
+        Assert.IsTrue(result.RestrictionId.Count > 0);
+    }
+
+    [TestMethod]
+    public async Task GetFilterStatsExcludesSelfDimensionWhenApplyingFilters()
+    {
+        // Filter-exclusion semantic: stats for dimension D must be computed with D's filter excluded.
+        // Other dimensions must see the filtered set. Verify with HasLogs=True.
+        var totalBoreholes = await context.Boreholes.CountAsync();
+        var expectedHasLogsTrue = await context.Boreholes.CountAsync(b => context.LogRuns.Any(lr => lr.BoreholeId == b.Id));
+        var expectedHasLogsFalse = totalBoreholes - expectedHasLogsTrue;
+
+        var filterRequest = new FilterRequest
+        {
+            HasLogs = BooleanFilterValue.True,
+        };
+
+        var result = await filterService.GetFilterStatsAsync(filterRequest, adminUser);
+
+        Assert.IsNotNull(result);
+
+        // Self-dimension: HasLogs counts ignore the HasLogs filter → full baseline.
+        Assert.AreEqual(expectedHasLogsTrue, result.HasLogs.True);
+        Assert.AreEqual(expectedHasLogsFalse, result.HasLogs.False);
+
+        // Other dimensions are counted WITH HasLogs=True applied → partitioned set of expectedHasLogsTrue.
+        Assert.AreEqual(expectedHasLogsTrue, result.HasGeometry.True + result.HasGeometry.False);
+        Assert.AreEqual(expectedHasLogsTrue, result.HasProfiles.True + result.HasProfiles.False);
+        Assert.AreEqual(expectedHasLogsTrue, result.HasPhotos.True + result.HasPhotos.False);
+        Assert.AreEqual(expectedHasLogsTrue, result.HasDocuments.True + result.HasDocuments.False);
+        Assert.AreEqual(expectedHasLogsTrue, result.NationalInterest.True + result.NationalInterest.False + result.NationalInterest.Null);
+        Assert.AreEqual(expectedHasLogsTrue, result.WorkgroupId.Values.Sum());
+    }
 }
