@@ -13,7 +13,6 @@ describe("Tests for the data cards in the editor.", () => {
     createBorehole({ originalName: "FISHTRUCK" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
-      cy.wait(["@borehole"]);
     });
 
     startBoreholeEditing();
@@ -52,7 +51,6 @@ describe("Tests for the data cards in the editor.", () => {
     createBorehole({ originalName: "FROGPHONE" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/hydrogeology/wateringress`);
-      cy.wait(["@borehole"]);
     });
     startBoreholeEditing();
     cy.wait("@wateringress_GET");

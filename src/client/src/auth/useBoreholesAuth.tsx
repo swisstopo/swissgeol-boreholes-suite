@@ -1,13 +1,13 @@
 import { useContext } from "react";
 import { useAuth as useOidcAuth } from "react-oidc-context";
-import { BdmsAuthContext } from "./BdmsAuthContext";
+import { BoreholesAuthContext } from "./BoreholesAuthContext.tsx";
 
 export const useAuth = () => {
   const oidcContext = useOidcAuth();
-  const customContext = useContext(BdmsAuthContext);
+  const customContext = useContext(BoreholesAuthContext);
 
   if (!customContext) {
-    throw new Error("useAuth must be used within a BdmsAuthContextProvider");
+    throw new Error("useAuth must be used within a BoreholesAuthContextProvider");
   }
 
   return {

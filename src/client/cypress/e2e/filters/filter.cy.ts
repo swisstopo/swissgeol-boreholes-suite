@@ -1,156 +1,80 @@
 import { WorkflowStatus } from "@swissgeol/ui-core";
 import { hasPagination, showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
-import { evaluateSelect, setInput, setSelect, setYesNoSelect } from "../helpers/formHelpers";
-import { createBorehole, goToRouteAndAcceptTerms, returnToOverview } from "../helpers/testHelpers";
+import { setInput, setSelect, setYesNoSelect } from "../helpers/formHelpers";
+import { createBorehole, goToRouteAndAcceptTerms } from "../helpers/testHelpers";
+
+function openFilter(filterTitle: string) {
+  goToRouteAndAcceptTerms("/");
+  cy.wait("@borehole_filter");
+  cy.dataCy("show-filter-button").click();
+  cy.contains(filterTitle).click();
+}
+
+function checkFilterChipExistsAndRemove(filterName: string) {
+  cy.dataCy(`filter-chip-${filterName}`).should("exist");
+  cy.dataCy(`filter-chip-${filterName}`).within(() => {
+    cy.get("svg").click();
+  });
+  cy.dataCy(`filter-chip-${filterName}`).should("not.exist");
+}
+
+function testYesNoFilter(
+  title: string,
+  filterSection: string,
+  fieldName: string,
+  option: string,
+  expectedCount: string,
+) {
+  it(`filters boreholes by ${title}`, () => {
+    openFilter(filterSection);
+    setYesNoSelect(fieldName, option);
+    cy.dataCy("boreholes-number-preview").should("have.text", expectedCount);
+    checkFilterChipExistsAndRemove(fieldName);
+  });
+}
+
+function testInputFilter(
+  title: string,
+  filterSection: string,
+  fieldName: string,
+  value: string,
+  expectedCount: string,
+) {
+  it(`filters boreholes by ${title}`, () => {
+    openFilter(filterSection);
+    setInput(fieldName, value);
+    cy.dataCy("boreholes-number-preview").should("have.text", expectedCount);
+    checkFilterChipExistsAndRemove(fieldName);
+  });
+}
+
+function testSelectFilter(
+  title: string,
+  filterSection: string,
+  fieldName: string,
+  optionIndex: number,
+  expectedCount: string,
+) {
+  it(`filters boreholes by ${title}`, () => {
+    openFilter(filterSection);
+    setSelect(fieldName, optionIndex);
+    cy.dataCy("boreholes-number-preview").should("have.text", expectedCount);
+    checkFilterChipExistsAndRemove(fieldName);
+  });
+}
 
 describe("Search filter tests", () => {
   it("has search filters", () => {
     goToRouteAndAcceptTerms("/");
     cy.dataCy("show-filter-button").click();
     cy.contains("Filters");
+    cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
   });
 
-  // TODO: Re-add once https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2380 is fixed
-  it.skip("checks that the registration filter settings control the filter visibility.", () => {
-    // precondition filters not visible
-    goToRouteAndAcceptTerms("/");
-    cy.get('[data-cy="show-filter-button"]').click();
-    cy.contains("Registration").click();
-    cy.contains("Show all fields");
-    cy.contains("Created by").should("not.exist");
-    cy.contains("Creation date").should("not.exist");
+  // ─── STATUS FILTER ─────────────────────────────────────────────────────────
 
-    // turn on registration filters
-    cy.dataCy("settings-button").click();
-    cy.dataCy("general-tab").click();
-    cy.contains("Registration filters").click();
-    cy.contains("Select all").click();
-    cy.wait("@setting");
-
-    // check visibility of filters
-    returnToOverview();
-    cy.dataCy("show-filter-button").click();
-    cy.contains("Registration").click();
-    cy.contains("Created by");
-    cy.contains("Creation date");
-
-    // reset setting
-    cy.dataCy("settings-button").click();
-    cy.dataCy("general-tab").click();
-    cy.contains("Registration filters").click();
-    cy.contains("Unselect all").click();
-    cy.wait("@setting");
-  });
-
-  it("filters boreholes by creator name", () => {
-    goToRouteAndAcceptTerms("/");
-    cy.dataCy("show-filter-button").click();
-    cy.contains("Registration").click();
-    cy.dataCy("show-all-fields-switch").click();
-
-    // input value
-    setInput("created_by", "v_ U%r");
-    cy.wait("@edit_list");
-
-    // check content of table
-    showTableAndWaitForData();
-    verifyPaginationText("1–100 of 602");
-  });
-
-  it("filters boreholes national_interest and striae", () => {
-    // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2547
-    // Reactivate all commented code once lithology filter is fixed
-    createBorehole({
-      originalName: "Borehole 1 with striae: true",
-      name: "striae true / null",
-      nationalInterest: false,
-    }).as("borehole_id");
-    // .then(boreholeId => {
-    //   createStratigraphy(boreholeId, 3000)
-    //     .as("stratigraphy_id")
-    //     .then(id => {
-    //       createLithologyLayer(id, { isStriae: null });
-    //       createLithologyLayer(id, { isStriae: true });
-    //     });
-    // });
-
-    createBorehole({
-      originalName: "Borehole 1 with striae: false",
-      name: "striae false / null",
-      nationalInterest: false,
-    }).as("borehole_id2");
-    // .then(boreholeId2 => {
-    //   createStratigraphy(boreholeId2, 3000)
-    //     .as("stratigraphy_id")
-    //     .then(id => {
-    //       createLithologyLayer(id, { isStriae: false });
-    //       createLithologyLayer(id, { isStriae: null });
-    //     });
-    // });
-
-    createBorehole({
-      originalName: "Borehole 2 with striae: false",
-      name: "striae false / null",
-      nationalInterest: false,
-    }).as("borehole_id3");
-    // .then(boreholeId3 => {
-    //   createStratigraphy(boreholeId3, 3000)
-    //     .as("stratigraphy_id")
-    //     .then(id => {
-    //       createLithologyLayer(id, { isStriae: false });
-    //     });
-    // });
-
-    createBorehole({
-      originalName: "Borehole 3 with striae: false",
-      name: "striae false, national_interest null",
-      nationalInterest: null,
-    }).as("borehole_id3");
-    // .then(boreholeId3 => {
-    //   createStratigraphy(boreholeId3, 3000)
-    //     .as("stratigraphy_id")
-    //     .then(id => {
-    //       createLithologyLayer(id, { isStriae: false });
-    //     });
-    // });
-
-    goToRouteAndAcceptTerms("/");
-    cy.dataCy("show-filter-button").click();
-    cy.contains("Location").click();
-    cy.dataCy("show-all-fields-switch").click();
-    setYesNoSelect("national_interest", "Yes");
-    cy.wait("@edit_list");
-
-    showTableAndWaitForData();
-    verifyPaginationText("1–100 of 300");
-    cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
-
-    setYesNoSelect("national_interest", "Not specified");
-    cy.wait("@edit_list");
-    hasPagination(false);
-    cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
-
-    setYesNoSelect("national_interest", "No");
-    cy.wait("@edit_list");
-    verifyPaginationText("1–100 of 2703");
-    cy.get('[data-cy="filter-chip-national_interest"]').should("exist");
-
-    // reset national interest filter
-    cy.get('[data-cy="filter-chip-national_interest"]')
-      .should("exist")
-      .within(() => {
-        cy.get("svg").click();
-      });
-
-    cy.wait("@edit_list");
-    cy.get('[data-cy="filter-chip-national_interest"]').should("not.exist");
-    verifyPaginationText("1–100 of 3004");
-  });
-
-  it("filters boreholes by status", () => {
-    goToRouteAndAcceptTerms("");
-    cy.dataCy("show-filter-button").click();
-    cy.contains("Status").click();
+  it("filters boreholes by workflow status", () => {
+    openFilter("Workflow status");
     cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
     cy.dataCy(WorkflowStatus.Draft).click();
     cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
@@ -158,84 +82,131 @@ describe("Search filter tests", () => {
     cy.dataCy("boreholes-number-preview").should("have.text", "0");
   });
 
-  it("filters boreholes by boreholestatus", () => {
-    goToRouteAndAcceptTerms("/");
-    cy.dataCy("show-filter-button").click();
-    cy.contains("Borehole").click();
-    cy.dataCy("show-all-fields-switch").click();
-    setSelect("status", 2);
-    cy.wait("@edit_list");
-
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "314");
-    cy.get('[data-cy="filter-chip-boreholestatus"]').contains("Borehole status");
-  });
-
-  // Todo: readd when new filtes are implemented https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2547
-  it.skip("filters boreholes by color and uscs3", () => {
-    goToRouteAndAcceptTerms("/");
-    cy.dataCy("show-filter-button").click();
-    cy.contains("Lithology").click();
-    cy.dataCy("show-all-fields-switch").click();
-    setSelect("color", 0);
-    cy.wait("@edit_list");
-    showTableAndWaitForData();
-    verifyPaginationText("1–100 of 1403");
-    setSelect("uscs_3", 4);
-    cy.wait("@edit_list");
-
-    // check content of table
-    verifyPaginationText("1–100 of 196");
-    cy.get(".MuiDataGrid-row").contains("Aisha Thiel").should("exist");
-  });
-
-  // Todo: readd when new filtes are implemented https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2547
-  it.skip("filters boreholes by original lithology in editor mode", () => {
-    goToRouteAndAcceptTerms("/");
-    cy.dataCy("show-filter-button").click();
-    cy.contains("Lithology").click();
-    cy.dataCy("show-all-fields-switch").click();
-    setInput("original_lithology", "Wooden Chair");
-    cy.wait("@edit_list");
-    showTableAndWaitForData();
-    hasPagination(false);
-  });
-
-  it("filters boreholes by creation date", () => {
-    goToRouteAndAcceptTerms("/");
-    cy.dataCy("show-filter-button").click();
-    cy.contains("Registration").click();
-    cy.dataCy("show-all-fields-switch").click();
-
-    setInput("created_date_from", "2021-11-09");
-    cy.wait("@edit_list");
-    setInput("created_date_to", "2021-11-10");
-
-    cy.wait("@edit_list");
-
-    // check content of table
-    showTableAndWaitForData();
-    hasPagination(false);
-  });
+  // ─── WORKGROUP FILTER ──────────────────────────────────────────────────────
 
   it("filters boreholes by workgroup", () => {
     goToRouteAndAcceptTerms("/");
     cy.dataCy("show-filter-button").click();
     showTableAndWaitForData();
     cy.contains("Workgroup").click();
-    cy.wait("@borehole");
-    cy.dataCy("filter-chip-workgroup").should("not.exist");
+    cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
+    cy.dataCy("filter-chip-workgroupId").should("not.exist");
     cy.dataCy("Default").click();
-    cy.dataCy("filter-chip-workgroup").should("exist");
+    cy.dataCy("filter-chip-workgroupId").should("exist");
+    cy.dataCy("boreholes-number-preview").should("exist");
     cy.dataCy("all").click();
-    cy.dataCy("filter-chip-workgroup").should("not.exist");
+    cy.dataCy("filter-chip-workgroupId").should("not.exist");
+    cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
   });
 
-  it("shows additional values in domain filter", () => {
-    goToRouteAndAcceptTerms("/");
-    cy.dataCy("show-filter-button").click();
-    cy.contains("Location").click();
-    cy.dataCy("show-all-fields-switch").click();
-    setSelect("borehole_identifier", 0);
-    evaluateSelect("borehole_identifier", "Boreholes.swissgeol.ch ID");
+  // ─── LOCATION FILTERS ──────────────────────────────────────────────────────
+  it("filters boreholes by national interest", () => {
+    createBorehole({ originalName: "NI test 1", nationalInterest: false }).as("bh1");
+    createBorehole({ originalName: "NI test 2", nationalInterest: false }).as("bh2");
+    createBorehole({ originalName: "NI test 3", nationalInterest: false }).as("bh3");
+    createBorehole({ originalName: "NI test 4", nationalInterest: null }).as("bh4");
+
+    openFilter("Location");
+
+    setYesNoSelect("nationalInterest", "Yes");
+    showTableAndWaitForData();
+    verifyPaginationText("1–100 of 300");
+    cy.dataCy("boreholes-number-preview").should("have.text", "300");
+    cy.dataCy("filter-chip-nationalInterest").should("exist");
+
+    setYesNoSelect("nationalInterest", "Not specified");
+    hasPagination(false);
+    cy.dataCy("boreholes-number-preview").should("exist");
+    cy.dataCy("filter-chip-nationalInterest").should("exist");
+
+    setYesNoSelect("nationalInterest", "No");
+    verifyPaginationText("1–100 of 2703");
+    cy.dataCy("boreholes-number-preview").should("have.text", "2'703");
+    checkFilterChipExistsAndRemove("nationalInterest");
+    verifyPaginationText("1–100 of 3004");
+    cy.dataCy("boreholes-number-preview").should("have.text", "3'004");
+  });
+
+  testInputFilter("original name", "Location", "originalName", "Abigail", "7");
+  testInputFilter("project name", "Location", "projectName", "engin", "106");
+  testInputFilter("alternate name", "Location", "name", "Eric", "26");
+
+  testSelectFilter("restriction", "Location", "restrictionId", 0, "376");
+
+  it("filters boreholes by restriction date range", () => {
+    openFilter("Location");
+    setInput("restrictionUntilFrom", "2021-01-01");
+    cy.wait("@borehole_filter");
+    cy.location().its("search").should("contain", "2021-01-01");
+    cy.dataCy("filter-chip-restrictionUntilFrom").should("exist");
+    cy.dataCy("boreholes-number-preview").should("exist");
+
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(500);
+    setInput("restrictionUntilTo", "2022-01-31");
+    cy.wait("@borehole_filter");
+    cy.location().its("search").should("contain", "2022-01-31");
+    cy.dataCy("boreholes-number-preview").should("have.text", "126");
+    checkFilterChipExistsAndRemove("restrictionUntilFrom");
+    checkFilterChipExistsAndRemove("restrictionUntilTo");
+  });
+
+  // ─── BOREHOLE FILTERS ──────────────────────────────────────────────────────
+  it("filters boreholes by total depth range", () => {
+    openFilter("Borehole");
+    setInput("totalDepthMin", "800");
+    cy.dataCy("boreholes-number-preview").should("have.text", "1'800");
+    checkFilterChipExistsAndRemove("totalDepthMin");
+    setInput("totalDepthMax", "1000");
+    cy.dataCy("boreholes-number-preview").should("have.text", "1'499");
+    checkFilterChipExistsAndRemove("totalDepthMax");
+  });
+
+  it("filters boreholes by top bedrock fresh md range", () => {
+    openFilter("Borehole");
+    setInput("topBedrockFreshMdMin", "700");
+    cy.dataCy("filter-chip-topBedrockFreshMdMin").should("exist");
+    cy.dataCy("boreholes-number-preview").should("have.text", "851");
+    setInput("topBedrockFreshMdMax", "710");
+    cy.dataCy("boreholes-number-preview").should("have.text", "30");
+    checkFilterChipExistsAndRemove("topBedrockFreshMdMax");
+    cy.dataCy("boreholes-number-preview").should("have.text", "851");
+  });
+
+  it("filters boreholes by top bedrock weathered md range", () => {
+    openFilter("Borehole");
+    setInput("topBedrockWeatheredMdMin", "1");
+    cy.dataCy("boreholes-number-preview").should("have.text", "1'448");
+    checkFilterChipExistsAndRemove("topBedrockWeatheredMdMin");
+    setInput("topBedrockWeatheredMdMax", "920");
+    cy.dataCy("filter-chip-topBedrockWeatheredMdMax").should("exist");
+    cy.dataCy("boreholes-number-preview").should("have.text", "2'855");
+  });
+
+  testSelectFilter("borehole type", "Borehole", "typeId", 0, "171");
+  testSelectFilter("purpose", "Borehole", "purposeId", 0, "112");
+  testSelectFilter("borehole status", "Borehole", "statusId", 2, "314");
+
+  testYesNoFilter("groundwater", "Borehole", "hasGroundwater", "Not specified", "601");
+  testYesNoFilter("top bedrock intersected", "Borehole", "topBedrockIntersected", "No", "1'209");
+  testYesNoFilter("geometry available", "Borehole", "hasGeometry", "Yes", "100");
+
+  // ─── LOG FILTER ────────────────────────────────────────────────────────────
+
+  testYesNoFilter("logs available", "LOG", "hasLogs", "Yes", "101");
+
+  // ─── ATTACHMENT FILTERS ────────────────────────────────────────────────────
+
+  testYesNoFilter("profiles available", "Attachments", "hasProfiles", "No", "2'912");
+  testYesNoFilter("photos available", "Attachments", "hasPhotos", "Yes", "71");
+
+  it("filters boreholes by documents available and resets filters", () => {
+    openFilter("Attachments");
+    setYesNoSelect("hasDocuments", "No");
+    cy.dataCy("boreholes-number-preview").should("have.text", "2'930");
+    cy.dataCy("boreholes-number-preview").should("exist");
+    cy.dataCy(`filter-chip-hasDocuments`).should("exist");
+    cy.dataCy("reset-filter-button").click();
+    cy.dataCy(`filter-chip-hasDocuments`).should("not.exist");
   });
 });

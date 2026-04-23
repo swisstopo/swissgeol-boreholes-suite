@@ -8,8 +8,7 @@ describe("map settings", () => {
     const wmsName = "Army logistics centres (ALC)";
     const wmtsName = "Wetness potential agricultural land";
 
-    cy.dataCy("general-tab").click();
-    cy.contains("Map").click();
+    cy.dataCy("map-tab").click();
     // Add WMS
     cy.get('[data-cy="load-layers-button"]').click();
     cy.get('[data-cy="wms-list-box"]').contains(wmsName);
@@ -40,8 +39,7 @@ describe("map settings", () => {
 
     // Remove layers
     cy.dataCy("settings-button").click();
-    cy.dataCy("general-tab").click();
-    cy.contains("Map").click();
+    cy.dataCy("map-tab").click();
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
     cy.get('[data-cy="maps-for-user-box"]').contains(wmtsName);

@@ -3,7 +3,6 @@ from bms.v1.action import Action
 from bms.v1.exceptions import (
     PatchAttributeException
 )
-from bms.v1.borehole.geom.patch import PatchGeom
 from bms.v1.exceptions import Locked
 
 
@@ -231,10 +230,6 @@ class PatchBorehole(Action):
                         WHERE id_bho = $3
                     """ % column, value, user['id'], id)
 
-                if field in ['location_x', 'location_y', 'location']:
-
-                    geom = PatchGeom(self.conn)
-                    await geom.execute(id, field, value)
 
             # Datetime values
             elif field in [

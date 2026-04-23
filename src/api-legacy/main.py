@@ -90,7 +90,6 @@ if __name__ == "__main__":
         UserHandler,
 
         # Borehole handlers
-        BoreholeViewerHandler,
         BoreholeProducerHandler,
 
         # Terms handlers
@@ -113,7 +112,6 @@ if __name__ == "__main__":
         (r'/api/v1/user', UserHandler),
 
         # Borehole handlers
-        (r'/api/v1/borehole', BoreholeViewerHandler),
         (r'/api/v1/borehole/edit', BoreholeProducerHandler),
 
         # Terms handlers

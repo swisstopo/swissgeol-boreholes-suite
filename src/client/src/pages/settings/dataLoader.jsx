@@ -1,19 +1,16 @@
 import { useEffect } from "react";
-import { useDispatch, useStore } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { CircularProgress } from "@mui/material";
-import { loadBoreholes, loadSettings } from "../../api-lib/index";
+import { loadSettings } from "../../api-lib/index";
 import { SplashScreen } from "../../auth/SplashScreen";
 
 export const DataLoader = ({ children }) => {
   const dispatch = useDispatch();
-  const isReady = useStore(state => state.dataLoaderState.isReady);
+  const isReady = useSelector(state => state.dataLoaderState.isReady);
 
   useEffect(() => {
-    // Only load one borehole to get the total borehole count.
-    // We need the count in case of the map only appearance, otherwise the boreholes get loaded by the borehole table.
-    dispatch(loadBoreholes(1, 1));
     dispatch(loadSettings());
-  });
+  }, [dispatch]);
 
   return isReady ? (
     children

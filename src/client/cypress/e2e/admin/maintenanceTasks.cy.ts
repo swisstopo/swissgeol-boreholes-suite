@@ -92,7 +92,7 @@ describe("Maintenance Tasks page tests", () => {
     cy.dataCy("maintenance-tab").should("not.exist");
     cy.dataCy("users-tab").should("not.exist");
     cy.dataCy("workgroups-tab").should("not.exist");
-    cy.dataCy("general-tab").should("exist");
+    cy.dataCy("map-tab").should("exist");
   });
 
   describe("as admin", () => {
