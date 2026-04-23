@@ -10,7 +10,6 @@ services:
     volumes: !reset null
     healthcheck:
       interval: 2s
-      start_period: 10s
 
   oidc-server:
     healthcheck:
