@@ -1560,7 +1560,7 @@ public class FilterServiceTest
         {
             var filterRequest = new FilterRequest
             {
-                WorkflowStatus = status,
+                WorkflowStatus = new[] { status },
                 PageNumber = 1,
                 PageSize = 100,
             };

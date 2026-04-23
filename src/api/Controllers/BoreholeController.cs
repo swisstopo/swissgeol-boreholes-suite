@@ -181,12 +181,12 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
         if (string.IsNullOrWhiteSpace(query) || query.Length < minQueryLength)
         {
-            return Problem(statusCode: StatusCodes.Status400BadRequest,title: "Invalid query", detail: $"'query' must be at least {minQueryLength} characters.");
+            return Problem(statusCode: StatusCodes.Status400BadRequest, title: "Invalid query", detail: $"'query' must be at least {minQueryLength} characters.");
         }
 
         if (limit < 1 || limit > maxLimit)
         {
-            return Problem(statusCode: StatusCodes.Status400BadRequest,title: "Invalid limit", detail: $"'limit' must be between 1 and {maxLimit}.");
+            return Problem(statusCode: StatusCodes.Status400BadRequest, title: "Invalid limit", detail: $"'limit' must be between 1 and {maxLimit}.");
         }
 
         var subjectId = HttpContext.GetUserSubjectId();

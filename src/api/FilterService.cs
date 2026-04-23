@@ -139,6 +139,7 @@ public class FilterService : IFilterService
             PurposeId = await CountByIntAsync(QueryExcluding(r => r.PurposeId = null), b => b.PurposeId).ConfigureAwait(false),
             WorkgroupId = await CountByIntAsync(QueryExcluding(r => r.WorkgroupId = null), b => b.WorkgroupId).ConfigureAwait(false),
             RestrictionId = await CountByIntAsync(QueryExcluding(r => r.RestrictionId = null), b => b.RestrictionId).ConfigureAwait(false),
+            WorkflowStatusCount = await CountByWorkflowStatusAsync(QueryExcluding(r => r.WorkflowStatus = null)).ConfigureAwait(false),
             NationalInterest = await CountByNullableBoolAsync(
                 QueryExcluding(r => r.NationalInterest = null),
                 b => b.NationalInterest == true,
@@ -175,6 +176,18 @@ public class FilterService : IFilterService
                 b => context.Documents.Any(d => d.BoreholeId == b.Id),
                 b => !context.Documents.Any(d => d.BoreholeId == b.Id)).ConfigureAwait(false),
         };
+    }
+
+    private static async Task<Dictionary<WorkflowStatus, int>> CountByWorkflowStatusAsync(IQueryable<Borehole> query)
+    {
+        var grouped = await query
+            .Where(b => b.Workflow != null)
+            .GroupBy(b => b.Workflow!.Status)
+            .Select(g => new { Status = g.Key, Count = g.Count() })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return grouped.ToDictionary(x => x.Status, x => x.Count);
     }
 
     private static async Task<Dictionary<int, int>> CountByIntAsync(
@@ -309,9 +322,9 @@ public class FilterService : IFilterService
         }
 
         // Workflow status filter
-        if (filterRequest.WorkflowStatus.HasValue)
+        if (filterRequest.WorkflowStatus != null && filterRequest.WorkflowStatus.Any())
         {
-            query = query.Where(b => b.Workflow != null && b.Workflow.Status == filterRequest.WorkflowStatus.Value);
+            query = query.Where(b => b.Workflow != null && filterRequest.WorkflowStatus.Contains(b.Workflow.Status));
         }
 
         // Date range filters
