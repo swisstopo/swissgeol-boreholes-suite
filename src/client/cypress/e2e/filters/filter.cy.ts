@@ -208,4 +208,78 @@ describe("Search filter tests", () => {
     cy.dataCy("reset-filter-button").click();
     cy.dataCy(`filter-chip-hasDocuments`).should("not.exist");
   });
+
+  it("shows autocomplete suggestions and commits a selection for originalName", () => {
+    openFilter("Location");
+    cy.dataCy("originalName-formInput").click();
+    cy.dataCy("originalName-formInput").type("Ra");
+    cy.get('[data-cy^="originalName-suggestion-"]').should("have.length.at.least", 1);
+    cy.get('[data-cy^="originalName-suggestion-"]').first().click();
+    cy.dataCy("boreholes-number-preview").invoke("text").should("not.equal", "3'000");
+    checkFilterChipExistsAndRemove("originalName");
+  });
+
+  it("does not fetch suggestions for a single character", () => {
+    cy.intercept("GET", "/api/v2/borehole/suggest*").as("suggestRequest");
+    openFilter("Location");
+    cy.dataCy("originalName-formInput").click();
+    cy.dataCy("originalName-formInput").type("a");
+    // Wait past the debounce window (300ms) to be sure no call fired
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(500);
+    cy.get("@suggestRequest.all").should("have.length", 0);
+  });
+
+  it("toggles button selections for restrictionId (< 12 options)", () => {
+    openFilter("Location");
+    cy.get('[data-cy^="restrictionId-button-"]').eq(0).click();
+    cy.get('[data-cy^="restrictionId-button-"]').eq(1).click();
+    cy.get('[data-cy^="restrictionId-button-"].MuiButton-contained').should("have.length.at.least", 2);
+    cy.dataCy("filter-chip-restrictionId").should("exist");
+    // Deselect one
+    cy.get('[data-cy^="restrictionId-button-"]').eq(1).click();
+    // Deselect the other → filter should clear
+    cy.get('[data-cy^="restrictionId-button-"]').eq(0).click();
+    cy.dataCy("filter-chip-restrictionId").should("not.exist");
+  });
+
+  it("multiselect filter chips show selected values and support per-value removal", () => {
+    openFilter("Borehole");
+    // Select two borehole status values. The status schema ("extended.status")
+    // has < 12 options, so FilterDomainSelect renders them as toggle buttons
+    // with data-cy="statusId-button-<codelistId>".
+    cy.dataCy("statusId-button-22104001").click();
+    cy.dataCy("statusId-button-22104002").click();
+
+    // Two chips should render — one per selected value (not one combined chip).
+    cy.get('[data-cy^="filter-chip-statusId-"]').should("have.length", 2);
+    cy.dataCy("filter-chip-statusId-22104001").should("be.visible");
+    cy.dataCy("filter-chip-statusId-22104002").should("be.visible");
+
+    // URL reflects both selections.
+    cy.location("search").should("contain", "statusId=22104001");
+    cy.location("search").should("contain", "22104002");
+
+    // Delete the first chip — only that value should be removed.
+    checkFilterChipExistsAndRemove("statusId-22104001");
+
+    cy.get('[data-cy^="filter-chip-statusId-"]').should("have.length", 1);
+    cy.dataCy("filter-chip-statusId-22104002").should("be.visible");
+
+    // The toggle button for the removed status is no longer selected;
+    // the still-active status keeps its selected (contained) state.
+    cy.dataCy("statusId-button-22104001").should("not.have.class", "MuiButton-contained");
+    cy.dataCy("statusId-button-22104002").should("have.class", "MuiButton-contained");
+
+    // URL keeps the remaining selection and drops the removed one.
+    cy.location("search").should("contain", "statusId=22104002");
+    cy.location("search").should("not.contain", "statusId=22104001");
+
+    // Delete the last remaining chip — filter is fully cleared.
+    checkFilterChipExistsAndRemove("statusId-22104002");
+
+    cy.get('[data-cy^="filter-chip-statusId-"]').should("not.exist");
+    cy.dataCy("statusId-button-22104002").should("not.have.class", "MuiButton-contained");
+    cy.location("search").should("not.contain", "statusId=");
+  });
 });
