@@ -21,6 +21,22 @@ import { PolygonFilterContext } from "./polygonFilterContext.tsx";
 import { StatusFilter } from "./statusFilter.tsx";
 import { WorkgroupFilter } from "./workgroupFilter.tsx";
 
+const StyledAccordion = styled(Accordion)(() => ({
+  marginBottom: "6px",
+  borderRadius: "4px",
+  boxShadow: "none !important",
+  border: "none",
+  padding: "12px, 16px, 12px, 16px",
+  "&.MuiAccordion-root:before": {
+    backgroundColor: theme.palette.background.default,
+  },
+}));
+
+const StyledAccordionDetails = styled(AccordionDetails)(() => ({
+  overflow: "visible",
+  flexGrow: 1,
+}));
+
 export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMethods }) => {
   const { t } = useTranslation();
   const { filterPolygon, polygonSelectionEnabled, setPolygonSelectionEnabled, setFeatureIds, setFilterPolygon } =
@@ -72,22 +88,6 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
     },
   ]);
 
-  const StyledAccordion = styled(Accordion)(() => ({
-    marginBottom: "6px",
-    borderRadius: "4px",
-    boxShadow: "none !important",
-    border: "none",
-    padding: "12px, 16px, 12px, 16px",
-    "&.MuiAccordion-root:before": {
-      backgroundColor: theme.palette.background.default,
-    },
-  }));
-
-  const StyledAccordionDetails = styled(AccordionDetails)(() => ({
-    overflow: "visible",
-    flexGrow: 1,
-  }));
-
   const handlePolygonFilterClick = () => {
     setPolygonSelectionEnabled(!polygonSelectionEnabled);
   };
@@ -104,7 +104,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
     <Stack direction="column" sx={{ height: "100%" }}>
       <SideDrawerHeader title={t("searchfilters")} toggleDrawer={toggleDrawer} />
       <FilterChips />
-      <Box sx={{ flexGrow: 1, overflow: "auto", scrollbarGutter: "stable" }}>
+      <Box sx={{ flexGrow: 1, overflow: "auto", scrollbarGutter: "stable", paddingRight: `-${theme.spacing(3)}` }}>
         <Button
           onClick={() => {
             handlePolygonFilterClick();
