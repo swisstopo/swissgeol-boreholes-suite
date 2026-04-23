@@ -4,7 +4,6 @@ from bms.v1.action import Action
 from bms.v1.exceptions import (
     DuplicateException
 )
-from bms.v1.borehole.geom.patch import PatchGeom
 import json
 
 
@@ -26,7 +25,7 @@ class PublishTerms(Action):
         if exists is False:
             raise Exception("Draft not exists")
 
-        try:            
+        try:
             # Begin transaction
             await self.conn.execute("BEGIN;")
 

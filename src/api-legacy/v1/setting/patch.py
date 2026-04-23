@@ -3,7 +3,6 @@ from bms.v1.action import Action
 from bms.v1.exceptions import (
     PatchAttributeException
 )
-from bms.v1.borehole.geom.patch import PatchGeom
 import json
 
 

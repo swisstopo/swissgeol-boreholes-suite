@@ -2,7 +2,7 @@ import { MouseEvent, useState } from "react";
 import { Button, IconButton, Popover, Stack, Typography } from "@mui/material";
 import ProfileIcon from "../../assets/icons/profile.svg?react";
 import { UserData } from "../../api-lib/ReduxStateInterfaces.ts";
-import { useAuth } from "../../auth/useBdmsAuth";
+import { useAuth } from "../../auth/useBoreholesAuth.tsx";
 
 export function ProfilePopup({ user }: { user: UserData }) {
   const auth = useAuth();

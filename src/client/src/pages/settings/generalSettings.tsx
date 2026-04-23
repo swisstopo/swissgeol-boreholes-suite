@@ -1,24 +1,17 @@
 import { Suspense, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useDispatch, useSelector } from "react-redux";
-import { Accordion, AccordionDetails, AccordionSummary, Box, CircularProgress, Typography } from "@mui/material";
-import { ChevronDownIcon } from "lucide-react";
+import { Box, CircularProgress } from "@mui/material";
 import _ from "lodash";
 import { register } from "ol/proj/proj4";
 import { Options, optionsFromCapabilities } from "ol/source/WMTS";
 import proj4 from "proj4";
 import { patchSettings } from "../../api-lib";
 import { ReduxRootState } from "../../api-lib/ReduxStateInterfaces.ts";
-import { theme } from "../../AppTheme";
 import { AlertContext } from "../../components/alert/alertContext";
 import { FullPageCentered } from "../../components/styledComponents.ts";
-import GeneralSettingList from "./components/editorSettingList/generalSettingList.tsx";
-import { MapSettings } from "./components/editorSettingList/mapSettings";
-import { boreholeEditorData } from "./data/boreholeEditorData.ts";
-import { locationEditorData } from "./data/locationEditorData.ts";
-import { registrationEditorData } from "./data/registrationEditorData.ts";
-import { SettingsItem } from "./data/SettingsItem.ts";
 import { Layer } from "./layerInterface.ts";
+import { MapSettings } from "./mapSettings";
 
 const projections = {
   "EPSG:21781":
@@ -55,41 +48,6 @@ const GeneralSettings = () => {
     searchWmsUser: "",
     wms: null,
   });
-
-  const [searchList, setSearchList] = useState([
-    {
-      id: 0,
-      name: "location",
-      translationId: "searchFilterLocation",
-      isSelected: false,
-    },
-    {
-      id: 1,
-      name: "borehole",
-      translationId: "searchFiltersBoreholes",
-      isSelected: false,
-    },
-    {
-      id: 4,
-      name: "registration",
-      translationId: "searchFilterRegistration",
-      isSelected: false,
-    },
-  ]);
-
-  const toggleFilterArray = (filter: string[], enabled: boolean) => {
-    const newFilter: string[] = [];
-    filter.forEach(element => {
-      newFilter.push(`efilter.${element}`);
-    });
-    // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
-    dispatch(patchSettings(newFilter, enabled));
-  };
-
-  const toggleFilter = (filter: string, enabled: boolean) => {
-    // @ts-expect-error legacy API methods will not be typed, as they are going to be removed
-    dispatch(patchSettings(`efilter.${filter}`, enabled));
-  };
 
   const dispatchMapSettings = (
     layer: Layer,
@@ -161,24 +119,6 @@ const GeneralSettings = () => {
   });
   register(proj4);
 
-  const handleButtonSelected = (name: string, isSelected: boolean): SettingsItem[] => {
-    let selectedData: SettingsItem[];
-    if (name === "location" && isSelected) {
-      selectedData = locationEditorData;
-    } else if (name === "borehole" && isSelected) {
-      selectedData = boreholeEditorData;
-    } else if (name === "registration" && isSelected) {
-      selectedData = registrationEditorData;
-    } else {
-      selectedData = [];
-    }
-    return selectedData;
-  };
-
-  function updateSearchList(idx: number) {
-    setSearchList(searchList.map(obj => (obj.id === idx ? { ...obj, isSelected: !obj.isSelected } : { ...obj })));
-  }
-
   return (
     <Box>
       <Suspense
@@ -197,42 +137,8 @@ const GeneralSettings = () => {
             handleOnChange(value);
           }}
           state={state}
-          setState={setState}></MapSettings>
-
-        {searchList?.map((filter, idx) => (
-          <Accordion key={filter.id} expanded={filter.isSelected} onChange={() => updateSearchList(idx)}>
-            <AccordionSummary
-              expandIcon={<ChevronDownIcon />}
-              id={`panel${idx}-header`}
-              sx={{
-                flexDirection: "row",
-                display: "flex",
-                cursor: "pointer",
-                backgroundColor: filter.isSelected
-                  ? theme.palette.background.lightgrey
-                  : theme.palette.background.default,
-                padding: 2,
-              }}>
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                }}>
-                <Typography>{t(filter.translationId)}</Typography>
-              </Box>
-            </AccordionSummary>
-            <AccordionDetails>
-              {filter.isSelected && handleButtonSelected(filter.name, filter.isSelected) !== null && (
-                <GeneralSettingList
-                  settingsItems={handleButtonSelected(filter.name, filter.isSelected)}
-                  data={setting.data.efilter}
-                  toggleFilter={toggleFilter}
-                  toggleFilterArray={toggleFilterArray}
-                />
-              )}
-            </AccordionDetails>
-          </Accordion>
-        ))}
+          setState={setState}
+        />
       </Suspense>
     </Box>
   );

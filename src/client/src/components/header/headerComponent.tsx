@@ -2,7 +2,7 @@ import { useSelector } from "react-redux";
 import { Box, Stack } from "@mui/material";
 import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../AppTheme.ts";
-import { useAuth } from "../../auth/useBdmsAuth";
+import { useAuth } from "../../auth/useBoreholesAuth.tsx";
 import { LanguagePopup } from "./languagePopup.tsx";
 import { ProfilePopup } from "./profilePopup.tsx";
 import { VersionTag } from "./versionTag.tsx";

@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from bms.v1.action import Action
-from bms.v1.borehole.geom.patch import PatchGeom
 import json
 
 
