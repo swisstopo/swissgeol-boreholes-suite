@@ -71,8 +71,8 @@ jobs:
       - name: Prepare backend
         uses: ./.github/actions/prepare-backend
         with:
-          pulled-services: minio db oidc-server dataextraction
-          up-services: minio db api-legacy api oidc-server dataextraction
+          pulled-services: minio db oidc-server dataextraction ocr
+          up-services: minio db api-legacy api oidc-server dataextraction ocr
 
       - name: Setup Node.js 22
         uses: actions/setup-node@53b83947a5a98c8d113130e565377fae1a50d02f # v6.3.0
