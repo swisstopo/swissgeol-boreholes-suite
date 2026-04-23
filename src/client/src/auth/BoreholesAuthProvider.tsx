@@ -6,6 +6,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { User, WebStorageStateStore } from "oidc-client-ts";
 import {
   boreholeQueryKey,
+  fetchFilterStats,
   filterBoreholes,
   getDefaultFilterRequestFromSession,
   toFilterRequestSubmission,
@@ -78,6 +79,10 @@ export const BoreholesAuthProvider: FC<PropsWithChildren<BoreholeAuthProviderPro
         queryClient.prefetchQuery({
           queryKey: [boreholeQueryKey, filterRequestSubmission],
           queryFn: () => filterBoreholes(filterRequestSubmission),
+        });
+        queryClient.prefetchQuery({
+          queryKey: [boreholeQueryKey, "filter-stats", filterRequestSubmission],
+          queryFn: () => fetchFilterStats(filterRequestSubmission),
         });
       }
     }, [auth.isAuthenticated, queryClient]);

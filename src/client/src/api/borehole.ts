@@ -331,9 +331,59 @@ export interface FilterResponse {
   selectableBoreholeIds: number[];
 }
 
-// ---- Filter API ----
+export interface NullableBooleanCounts {
+  true: number;
+  false: number;
+  null: number;
+}
+
+export interface BooleanCounts {
+  true: number;
+  false: number;
+}
+
+export interface FilterStatsResponse {
+  statusId: Record<number, number>;
+  typeId: Record<number, number>;
+  purposeId: Record<number, number>;
+  workgroupId: Record<number, number>;
+  restrictionId: Record<number, number>;
+  nationalInterest: NullableBooleanCounts;
+  topBedrockIntersected: NullableBooleanCounts;
+  hasGroundwater: NullableBooleanCounts;
+  hasGeometry: BooleanCounts;
+  hasLogs: BooleanCounts;
+  hasProfiles: BooleanCounts;
+  hasPhotos: BooleanCounts;
+  hasDocuments: BooleanCounts;
+}
+
+export type BoreholeSuggestionField = "originalName" | "projectName" | "name";
+
+export interface BoreholeSuggestion {
+  value: string;
+  count: number;
+}
+
 export const filterBoreholes = async (filterRequest: FilterRequestSubmission): Promise<FilterResponse> => {
   return await fetchApiV2WithApiError<FilterResponse>("borehole/filter", "POST", filterRequest);
+};
+
+export const fetchFilterStats = async (filterRequest: FilterRequestSubmission): Promise<FilterStatsResponse> => {
+  return await fetchApiV2WithApiError<FilterStatsResponse>("borehole/filter/stats", "POST", filterRequest);
+};
+
+export const fetchBoreholeSuggestions = (
+  field: BoreholeSuggestionField,
+  query: string,
+  limit = 10,
+): Promise<BoreholeSuggestion[]> => {
+  const params = new URLSearchParams({
+    field,
+    query,
+    limit: String(limit),
+  });
+  return fetchApiV2WithApiError<BoreholeSuggestion[]>(`borehole/suggest?${params.toString()}`, "GET");
 };
 
 const parseBooleanFilter = (value: "true" | "false" | undefined | null): BooleanFilter | undefined => {
@@ -422,6 +472,16 @@ export const useFilterBoreholes = (filterRequest: FilterRequest, enabled = true)
     queryKey: [boreholeQueryKey, filterRequestSubmission],
     queryFn: () => filterBoreholes(filterRequestSubmission),
     enabled,
+    placeholderData: keepPreviousData,
+  });
+};
+
+export const useFilterStats = (filterRequest: FilterRequest) => {
+  const filterRequestSubmission = toFilterRequestSubmission(filterRequest);
+
+  return useQuery({
+    queryKey: [boreholeQueryKey, "filter-stats", filterRequestSubmission],
+    queryFn: () => fetchFilterStats(filterRequestSubmission),
     placeholderData: keepPreviousData,
   });
 };
