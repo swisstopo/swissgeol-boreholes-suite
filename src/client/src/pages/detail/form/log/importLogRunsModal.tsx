@@ -83,8 +83,9 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
     setImportErrors([]);
 
     try {
+      if (!logRunFile) return false;
       const formData = new FormData();
-      formData.append("logRunsCsvFile", logRunFile!);
+      formData.append("logRunsCsvFile", logRunFile);
 
       if (logFileFile) {
         formData.append("logFilesCsvFile", logFileFile);
