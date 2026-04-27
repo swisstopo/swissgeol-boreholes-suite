@@ -104,11 +104,6 @@ export interface Casing {
   boreholeId?: number;
 }
 
-export interface Section {
-  id?: number;
-  boreholeId: number;
-}
-
 export interface GeometryFormat {
   csvHeader: string;
 }

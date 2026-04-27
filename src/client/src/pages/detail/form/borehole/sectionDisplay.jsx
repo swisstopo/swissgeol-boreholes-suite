@@ -1,7 +1,7 @@
 import { Divider } from "@mui/material";
 import { deleteSection } from "../../../../api/fetchApiV2.ts";
 import { useCodelists } from "../../../../components/codelist.js";
-import DataDisplayCard from "../../../../components/dataCard/dataDisplayCard.tsx";
+import { DataDisplayCard } from "../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 
 const SectionDisplay = ({ item }) => {

@@ -1,8 +1,7 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { RefObject, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { GridRowId } from "@mui/x-data-grid";
 import { GridApiCommunity } from "@mui/x-data-grid/internals";
-import { RefObject } from "@mui/x-internals/types";
 import { useReloadBoreholes } from "../../../api/borehole.ts";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { usePublicColumn } from "../../../components/table/usePublicColumn.tsx";
@@ -10,7 +9,7 @@ import { useResetTabStatus } from "../../../hooks/useResetTabStatus.ts";
 import { TabName } from "../form/workflow/workflow.ts";
 import { SaveContext, SaveContextProps } from "../saveContext.tsx";
 
-export interface AttachmentWithPublicState {
+interface AttachmentWithPublicState {
   public?: boolean;
 }
 

@@ -14,7 +14,8 @@ import { FormDomainMultiSelect } from "../../../../components/form/formDomainMul
 import { FormMultiSelect, FormMultiSelectValue } from "../../../../components/form/formMultiSelect.tsx";
 import { Table } from "../../../../components/table/table.tsx";
 import { usePublicColumn } from "../../../../components/table/usePublicColumn.tsx";
-import { exportLogFiles, LogFile, useLogExport } from "./log.ts";
+import { exportLogFiles, useLogExport } from "./log.ts";
+import { LogFile } from "./logInterfaces.ts";
 import { getFileExtension } from "./logUtils.ts";
 
 interface LogFileFilter {

@@ -35,7 +35,7 @@ export const downloadData = (dataString: string, fileName: string, type: string)
   downloadDataFromBlob(blob, fileName);
 };
 
-export const downloadDataFromBlob = (blob: Blob, fileName: string) => {
+const downloadDataFromBlob = (blob: Blob, fileName: string) => {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.href = url;

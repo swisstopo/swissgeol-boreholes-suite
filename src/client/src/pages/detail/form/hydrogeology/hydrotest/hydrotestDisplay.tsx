@@ -2,7 +2,7 @@ import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { TableCell } from "@mui/material";
 import { Codelist, useCodelists } from "../../../../../components/codelist.ts";
-import DataDisplayCard from "../../../../../components/dataCard/dataDisplayCard.js";
+import { DataDisplayCard } from "../../../../../components/dataCard/dataDisplayCard.js";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../../components/form/form.ts";
 import { FormResultTableDisplay } from "../../../../../components/form/formResultTableDisplay.tsx";
 import { parameterTableHeaderStyles } from "../../../../../components/form/formResultTableDisplayStyles.ts";

@@ -3,18 +3,18 @@ import { formatWithThousandsSeparator, setInput } from "../helpers/formHelpers";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers";
 import { goToRouteAndAcceptTerms, newEditableBorehole } from "../helpers/testHelpers";
 
-export interface LayerInput {
+interface LayerInput {
   layerType: string;
   fromDepth: number;
   toDepth?: number | null;
   isGap?: boolean;
 }
 
-export interface HasLayerInput extends LayerInput {
+interface HasLayerInput extends LayerInput {
   exists?: boolean;
 }
 
-export interface CheckLayerCardInput extends LayerInput {
+interface CheckLayerCardInput extends LayerInput {
   content: string[];
 }
 

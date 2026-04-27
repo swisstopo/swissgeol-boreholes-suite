@@ -3,15 +3,14 @@ import { Role, Workgroup, WorkgroupRole } from "./apiInterfaces.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 import { usersQueryKey } from "./user.ts";
 
-export const fetchWorkgroups = async (): Promise<Workgroup[]> => await fetchApiV2WithApiError("workgroup", "GET");
+const fetchWorkgroups = async (): Promise<Workgroup[]> => await fetchApiV2WithApiError("workgroup", "GET");
 
-export const fetchWorkgroupById = async (id: number): Promise<Workgroup> =>
+const fetchWorkgroupById = async (id: number): Promise<Workgroup> =>
   await fetchApiV2WithApiError(`workgroup/${id}`, "GET");
 
-export const createWorkgroup = async (workgroup: Workgroup) =>
-  await fetchApiV2WithApiError("workgroup", "POST", workgroup);
+const createWorkgroup = async (workgroup: Workgroup) => await fetchApiV2WithApiError("workgroup", "POST", workgroup);
 
-export const updateWorkgroup = async (workgroup: Workgroup) => {
+const updateWorkgroup = async (workgroup: Workgroup) => {
   if (workgroup.disabledAt) {
     workgroup.disabledAt = new Date(workgroup.disabledAt).toISOString();
   }
@@ -20,9 +19,9 @@ export const updateWorkgroup = async (workgroup: Workgroup) => {
   return await fetchApiV2WithApiError("workgroup", "PUT", workgroup);
 };
 
-export const deleteWorkgroup = async (id: number) => await fetchApiV2WithApiError(`workgroup/${id}`, "DELETE");
+const deleteWorkgroup = async (id: number) => await fetchApiV2WithApiError(`workgroup/${id}`, "DELETE");
 
-export const setWorkgroupRole = async (userId: number, workgroupId: number, role: Role, isActive: boolean) => {
+const setWorkgroupRole = async (userId: number, workgroupId: number, role: Role, isActive: boolean) => {
   const workgroupRole: WorkgroupRole[] = [
     {
       workgroupId: workgroupId,
@@ -34,11 +33,7 @@ export const setWorkgroupRole = async (userId: number, workgroupId: number, role
   return await fetchApiV2WithApiError("workgroup/setRoles", "POST", workgroupRole);
 };
 
-export const removeAllWorkgroupRolesForUser = async (
-  userId: number,
-  workgroupId: number,
-  roles: Role[],
-): Promise<void> => {
+const removeAllWorkgroupRolesForUser = async (userId: number, workgroupId: number, roles: Role[]): Promise<void> => {
   const workgroupRoles: WorkgroupRole[] = [];
   for (const role of roles) {
     workgroupRoles.push({

@@ -6,12 +6,12 @@ import { useResetTabStatus } from "../../../../../hooks/useResetTabStatus.ts";
 import { LithologicalDescription } from "../lithologicalDescription.ts";
 import { Lithology } from "../lithology.ts";
 
-export interface StratigraphyInput {
+interface StratigraphyInput {
   name: string;
   lithologicalDescriptions: Omit<LithologicalDescription, "id" | "stratigraphyId">[];
 }
 
-export interface BulkAddResult {
+interface BulkAddResult {
   stratigraphy: Stratigraphy;
   lithologies: Lithology[];
   lithologicalDescriptions: LithologicalDescription[];

@@ -11,7 +11,7 @@ import {
 import { SessionKeys } from "./SessionKey.ts";
 
 // Pagination & sort for borehole table
-export const tableParsers = {
+const tableParsers = {
   page: parseAsInteger.withDefault(0),
   pageSize: parseAsInteger.withDefault(100),
   orderBy: parseAsString.withDefault("name"),
@@ -19,7 +19,7 @@ export const tableParsers = {
   bottomDrawerOpen: parseAsBoolean.withDefault(false),
 };
 
-export const mapParsers = {
+const mapParsers = {
   mapResolution: parseAsFloat.withDefault(500),
   mapCenterX: parseAsFloat,
   mapCenterY: parseAsFloat,

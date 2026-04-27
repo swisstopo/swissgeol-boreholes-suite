@@ -52,7 +52,7 @@ export const StratigraphyTableCell = styled(Stack)(() => ({
   borderBottom: `1px solid ${theme.palette.border.darker}`,
 }));
 
-export const StratigraphyTableCellRow = styled(Stack)(() => ({
+const StratigraphyTableCellRow = styled(Stack)(() => ({
   flexDirection: "row",
   justifyContent: "space-between",
   alignItems: "center",

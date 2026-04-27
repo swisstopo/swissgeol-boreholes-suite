@@ -1,7 +1,7 @@
 import { createContext, FC, PropsWithChildren, useMemo, useState } from "react";
 import { GridSortModel } from "@mui/x-data-grid";
 
-export interface UserAdministrationContextProps {
+interface UserAdministrationContextProps {
   userTableSortModel: GridSortModel;
   setUserTableSortModel: (model: GridSortModel) => void;
   userDetailTableSortModel: GridSortModel;
