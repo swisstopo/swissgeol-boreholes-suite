@@ -668,7 +668,7 @@ public class LogController : BoreholeControllerBase<LogRun>
     private void AddImportError(int rowIndex, string errorMessage, string messageKey, string prefix, Dictionary<string, string>? values = null)
     {
         values ??= new Dictionary<string, string>();
-        values["rowNumber"] = rowIndex.ToString();
+        values["rowNumber"] = rowIndex.ToString(CultureInfo.InvariantCulture);
         importErrors.Add(new ImportError($"{prefix}{rowIndex}", messageKey, errorMessage, values));
     }
 
