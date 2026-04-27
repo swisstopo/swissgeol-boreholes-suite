@@ -1,4 +1,4 @@
-import { FC, useContext } from "react";
+import { FC, useContext, useEffect } from "react";
 import { useFormContext, useFormState, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { InputProps, SxProps, TextField } from "@mui/material";
@@ -46,16 +46,37 @@ export const FormInput: FC<FormInputProps> = ({
 }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
-  const { register, setValue, control } = useFormContext();
+  const { register, setValue, control, getValues } = useFormContext();
   const { errors } = useFormState({ control, name: fieldName });
   const isDateTimeInput = type === FormValueType.DateTime;
   const isDateInput = type === FormValueType.Date;
   const isReadOnly = readonly ?? !editingEnabled;
   const { labelWithTooltip } = useLabelOverflow(label);
 
-  // Thousand-separator inputs need to be controlled, otherwise the field gets marked as dirty
-  // on mount when the formatter reformats the initial number into a string.
+  // Read the form value so the input can be controlled by it.
+  // Without controlled mode, the formatter rewrites the number on mount and marks the field dirty.
   const watchedValue = useWatch({ control, name: fieldName, disabled: !withThousandSeparator });
+
+  // On mount, push the initial value into the form if nothing is there yet.
+  // Required validation reads the form value, so without this it always fails.
+  // We store it as a string to match what the formatter writes back when the user types.
+  useEffect(() => {
+    if (withThousandSeparator && value != null && getValues(fieldName) === undefined) {
+      setValue(fieldName, typeof value === "number" ? String(value) : value);
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  // What the input shows: the form value if it has one, otherwise the prop.
+  // On the first render the form is still empty; without the prop fallback the input would
+  // flash empty and then jump to the value, and that jump would be treated as a user change.
+  const rawControlledValue = watchedValue ?? value;
+  const controlledValue =
+    rawControlledValue == null
+      ? ""
+      : typeof rawControlledValue === "number"
+        ? String(rawControlledValue)
+        : (rawControlledValue as string);
 
   const getDefaultValue = (value: string | number | Date | undefined | null) => {
     if (value == undefined) {
@@ -107,7 +128,7 @@ export const FormInput: FC<FormInputProps> = ({
         },
       })}
       defaultValue={getDefaultValue(value)}
-      value={withThousandSeparator ? (watchedValue ?? "") : undefined}
+      value={withThousandSeparator ? controlledValue : undefined}
       disabled={disabled || false}
       data-cy={fieldName + "-formInput"}
       slotProps={{
