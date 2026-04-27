@@ -18,12 +18,12 @@ export interface Completion {
   instrumentations: Instrumentation[];
 }
 
-export interface Casing {
+interface Casing {
   id: number;
 }
-export interface Backfill {
+interface Backfill {
   id: number;
 }
-export interface Instrumentation {
+interface Instrumentation {
   id: number;
 }
