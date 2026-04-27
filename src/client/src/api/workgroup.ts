@@ -1,4 +1,5 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useAuth } from "../auth/useBoreholesAuth.tsx";
 import { Role, Workgroup, WorkgroupRole } from "./apiInterfaces.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 import { usersQueryKey } from "./user.ts";
@@ -49,9 +50,12 @@ const removeAllWorkgroupRolesForUser = async (userId: number, workgroupId: numbe
 export const workgroupQueryKey = "workgroups";
 
 export const useWorkgroups = () => {
+  const auth = useAuth();
+
   return useQuery({
     queryKey: [workgroupQueryKey],
     queryFn: fetchWorkgroups,
+    enabled: auth.anonymousModeEnabled,
   });
 };
 
