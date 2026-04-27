@@ -25,6 +25,18 @@ interface ImportLogModalProps {
   setIsImporting: (isImporting: boolean) => void;
 }
 
+const buildLogFileUpload = (logRun: LogRun, logFile: LogFile, attachments: File[]): Promise<LogFile> | null => {
+  const matchingAttachment = attachments.find(f => f.name.replaceAll(" ", "_") === logFile.name);
+  if (!matchingAttachment) return null;
+  const uploadFormData = new FormData();
+  uploadFormData.append("file", matchingAttachment);
+  return uploadWithApiError<LogFile>(
+    `log/upload?logRunId=${logRun.id}&logFileId=${logFile.id}`,
+    "POST",
+    uploadFormData,
+  );
+};
+
 const ImportErrorSection: FC<{ prefix: "LogRun" | "LogFile"; rowMessageKey: string; errors: ImportError[] }> = ({
   prefix,
   rowMessageKey,
@@ -42,7 +54,7 @@ const ImportErrorSection: FC<{ prefix: "LogRun" | "LogFile"; rowMessageKey: stri
       {[...grouped].map(([errorKey, group]) => (
         <Stack key={errorKey} gap={0.25}>
           <Typography variant="body2" color="error" fontWeight="bold">
-            {t(rowMessageKey, { rowNumber: errorKey.replace(/\D/g, "") })}
+            {t(rowMessageKey, { rowNumber: errorKey.replaceAll(/\D/g, "") })}
           </Typography>
           {group.map(e => (
             <Typography key={e.messageKey} variant="body2" color="error" sx={{ pl: 2 }}>
@@ -88,7 +100,7 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
         if (isJsonContentType(contentType)) {
           const responseBody = await response.json();
           if (Array.isArray(responseBody)) {
-            setImportErrors(responseBody as ImportError[]);
+            setImportErrors(responseBody);
             return false;
           }
           if (responseBody.messageKey) {
@@ -103,19 +115,11 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
 
       const importedLogRuns: LogRun[] = await response.json();
 
-      const uploadPromises = importedLogRuns.flatMap(logRun =>
-        (logRun.logFiles ?? []).map(logFile => {
-          const matchingAttachment = logFileAttachments.find(f => f.name.replace(/ /g, "_") === logFile.name);
-          if (!matchingAttachment) return null;
-          const uploadFormData = new FormData();
-          uploadFormData.append("file", matchingAttachment);
-          return uploadWithApiError<LogFile>(
-            `log/upload?logRunId=${logRun.id}&logFileId=${logFile.id}`,
-            "POST",
-            uploadFormData,
-          );
-        }),
-      );
+      const uploadPromises = importedLogRuns
+        .flatMap(logRun =>
+          (logRun.logFiles ?? []).map(logFile => buildLogFileUpload(logRun, logFile, logFileAttachments)),
+        )
+        .filter((p): p is Promise<LogFile> => p !== null);
       await Promise.all(uploadPromises);
 
       await queryClient.invalidateQueries({ queryKey: [logsQueryKey, Number(boreholeId)] });

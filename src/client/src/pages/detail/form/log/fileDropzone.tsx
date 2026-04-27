@@ -39,6 +39,17 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
     return mb >= 1 ? `${mb} MB` : `${maxFileSize / 1_000} KB`;
   }, [maxFileSize]);
 
+  const removeFileAt = useCallback(
+    (index: number) => {
+      setFiles(prev => {
+        const next = prev.filter((_, i) => i !== index);
+        onChange(next);
+        return next;
+      });
+    },
+    [onChange],
+  );
+
   const onDrop = useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[]) => {
       if (error) {
@@ -141,17 +152,11 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
         </Box>
       )}
       {files.map((f, index) => (
-        <Stack key={index} data-cy={"file-dropzone"} sx={fileItemStyle}>
+        <Stack key={`${f.name}-${f.lastModified}-${f.size}`} data-cy={"file-dropzone"} sx={fileItemStyle}>
           <Typography variant={"body2"}>{f.name}</Typography>
           <StandaloneIconButton
             icon={<X />}
-            onClick={() =>
-              setFiles(prev => {
-                const next = prev.filter((_, i) => i !== index);
-                onChange(next);
-                return next;
-              })
-            }
+            onClick={() => removeFileAt(index)}
             color={"primaryInverse"}
             sx={{ border: "none", "&:hover": { border: "none" } }}
           />

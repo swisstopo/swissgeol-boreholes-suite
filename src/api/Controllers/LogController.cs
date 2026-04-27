@@ -22,6 +22,9 @@ public class LogController : BoreholeControllerBase<LogRun>
     private const string LogRunExportFileName = "log_runs";
     private const string LogFileExportFileName = "log_files";
     private const string LogExportFileName = "log_export";
+    private const string LogRunErrorPrefix = "LogRun";
+    private const string LogFileErrorPrefix = "LogFile";
+    private const string ImportDateFormat = "dd/MM/yyyy";
     private readonly LogFileCloudService logFileCloudService;
 
     public LogController(BdmsContext context, ILogger<LogController> logger, IBoreholePermissionService boreholePermissionService, LogFileCloudService logFileCloudService)
@@ -424,7 +427,7 @@ public class LogController : BoreholeControllerBase<LogRun>
             var runNumber = csv.GetField<string>("RunNumber") ?? string.Empty;
             if (string.IsNullOrWhiteSpace(runNumber))
             {
-                AddImportError(rowIndex, "RunNumber is required.", "importErrorRunNumberRequired", "LogRun");
+                AddImportError(rowIndex, "RunNumber is required.", "importErrorRunNumberRequired", LogRunErrorPrefix);
             }
 
             var fromDepthStr = csv.GetField<string>("FromDepth");
@@ -432,30 +435,21 @@ public class LogController : BoreholeControllerBase<LogRun>
 
             if (!TryParseDouble(fromDepthStr, out var fromDepth))
             {
-                AddImportError(rowIndex, "FromDepth is required and must be a number.", "importErrorFromDepthRequired", "LogRun");
+                AddImportError(rowIndex, "FromDepth is required and must be a number.", "importErrorFromDepthRequired", LogRunErrorPrefix);
             }
 
             if (!TryParseDouble(toDepthStr, out var toDepth))
             {
-                AddImportError(rowIndex, "ToDepth is required and must be a number.", "importErrorToDepthRequired", "LogRun");
+                AddImportError(rowIndex, "ToDepth is required and must be a number.", "importErrorToDepthRequired", LogRunErrorPrefix);
             }
 
-            var boreholeStatusId = ResolveCodelistId("log_borehole_status", csv.GetField<string>("BoreholeStatus"), codelists, rowIndex, "BoreholeStatus", "LogRun");
-            var conveyanceMethodId = ResolveCodelistId("log_conveyance_method", csv.GetField<string>("ConveyanceMethod"), codelists, rowIndex, "ConveyanceMethod", "LogRun");
+            var boreholeStatusId = ResolveCodelistId("log_borehole_status", csv.GetField<string>("BoreholeStatus"), codelists, rowIndex, "BoreholeStatus", LogRunErrorPrefix);
+            var conveyanceMethodId = ResolveCodelistId("log_conveyance_method", csv.GetField<string>("ConveyanceMethod"), codelists, rowIndex, "ConveyanceMethod", LogRunErrorPrefix);
 
-            DateOnly? runDate = null;
-            var runDateStr = csv.GetField<string>("RunDate");
-            if (!string.IsNullOrWhiteSpace(runDateStr) && !DateOnly.TryParseExact(runDateStr, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedRunDate))
-            {
-                AddImportError(rowIndex, $"Invalid RunDate format: '{runDateStr}'. Expected dd/MM/yyyy.", "importErrorInvalidDateFormat", "LogRun", new() { ["value"] = runDateStr });
-            }
-            else if (!string.IsNullOrWhiteSpace(runDateStr))
-            {
-                DateOnly.TryParseExact(runDateStr, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var rd);
-                runDate = rd;
-            }
+            var runDate = TryParseImportDate(csv.GetField<string>("RunDate"), rowIndex, "RunDate", LogRunErrorPrefix);
 
-            TryParseDouble(csv.GetField<string>("BitSize"), out var bitSize);
+            var bitSizeStr = csv.GetField<string>("BitSize");
+            TryParseDouble(bitSizeStr, out var bitSize);
 
             result.Add(new ParsedLogRun
             {
@@ -464,7 +458,7 @@ public class LogController : BoreholeControllerBase<LogRun>
                 ToDepth = toDepth,
                 BoreholeStatusId = boreholeStatusId,
                 RunDate = runDate,
-                BitSize = bitSize == 0 && string.IsNullOrWhiteSpace(csv.GetField<string>("BitSize")) ? null : bitSize,
+                BitSize = string.IsNullOrWhiteSpace(bitSizeStr) ? null : bitSize,
                 ConveyanceMethodId = conveyanceMethodId,
                 ServiceCo = csv.GetField<string>("ServiceCo"),
                 Comment = csv.GetField<string>("Comment"),
@@ -492,7 +486,7 @@ public class LogController : BoreholeControllerBase<LogRun>
             var runNumber = csv.GetField<string>("RunNumber") ?? string.Empty;
             if (!validRunNumbers.Contains(runNumber))
             {
-                AddImportError(rowIndex, $"RunNumber '{runNumber}' does not match any imported log run.", "importErrorRunNumberNotFound", "LogFile", new() { ["runNumber"] = runNumber });
+                AddImportError(rowIndex, $"RunNumber '{runNumber}' does not match any imported log run.", "importErrorRunNumberNotFound", LogFileErrorPrefix, new() { ["runNumber"] = runNumber });
             }
 
             var name = csv.GetField<string>("Name") ?? string.Empty;
@@ -502,7 +496,7 @@ public class LogController : BoreholeControllerBase<LogRun>
             var matchedFileName = fileNames.FirstOrDefault(f => string.Equals(f, expectedFileName, StringComparison.OrdinalIgnoreCase));
             if (matchedFileName == null)
             {
-                AddImportError(rowIndex, $"No file in file list matches '{expectedFileName}'.", "importErrorFileNotFound", "LogFile", new() { ["fileName"] = expectedFileName });
+                AddImportError(rowIndex, $"No file in file list matches '{expectedFileName}'.", "importErrorFileNotFound", LogFileErrorPrefix, new() { ["fileName"] = expectedFileName });
             }
 
             var sanitizedName = (matchedFileName ?? expectedFileName).Replace(" ", "_", StringComparison.OrdinalIgnoreCase);
@@ -517,23 +511,11 @@ public class LogController : BoreholeControllerBase<LogRun>
                 pass = parsedPass;
             }
 
-            var passTypeId = ResolveCodelistId("log_pass_type", csv.GetField<string>("PassType"), codelists, rowIndex, "PassType", "LogFile");
-            var dataPackageId = ResolveCodelistId("log_data_package", csv.GetField<string>("DataPackage"), codelists, rowIndex, "DataPackage", "LogFile");
-            var depthTypeId = ResolveCodelistId("log_depth_type", csv.GetField<string>("DepthType"), codelists, rowIndex, "DepthType", "LogFile");
+            var passTypeId = ResolveCodelistId("log_pass_type", csv.GetField<string>("PassType"), codelists, rowIndex, "PassType", LogFileErrorPrefix);
+            var dataPackageId = ResolveCodelistId("log_data_package", csv.GetField<string>("DataPackage"), codelists, rowIndex, "DataPackage", LogFileErrorPrefix);
+            var depthTypeId = ResolveCodelistId("log_depth_type", csv.GetField<string>("DepthType"), codelists, rowIndex, "DepthType", LogFileErrorPrefix);
 
-            DateOnly? deliveryDate = null;
-            var deliveryDateStr = csv.GetField<string>("DeliveryDate");
-            if (!string.IsNullOrWhiteSpace(deliveryDateStr))
-            {
-                if (DateOnly.TryParseExact(deliveryDateStr, "dd/MM/yyyy", CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsedDate))
-                {
-                    deliveryDate = parsedDate;
-                }
-                else
-                {
-                    AddImportError(rowIndex, $"Invalid DeliveryDate format: '{deliveryDateStr}'. Expected dd/MM/yyyy.", "importErrorInvalidDateFormat", "LogFile", new() { ["value"] = deliveryDateStr });
-                }
-            }
+            var deliveryDate = TryParseImportDate(csv.GetField<string>("DeliveryDate"), rowIndex, "DeliveryDate", LogFileErrorPrefix);
 
             var publicValue = ParseLocalizedYesNo(csv.GetField<string>("Public"), rowIndex);
 
@@ -574,12 +556,12 @@ public class LogController : BoreholeControllerBase<LogRun>
 
             if (!seenRunNumbers.Add(runNumber))
             {
-                AddImportError(i + 1, $"Duplicate RunNumber '{runNumber}' in import file.", "importErrorDuplicateRunNumber", "LogRun", new() { ["runNumber"] = runNumber });
+                AddImportError(i + 1, $"Duplicate RunNumber '{runNumber}' in import file.", "importErrorDuplicateRunNumber", LogRunErrorPrefix, new() { ["runNumber"] = runNumber });
             }
 
             if (existingRunNumbers.Contains(runNumber))
             {
-                AddImportError(i + 1, $"RunNumber '{runNumber}' already exists for this borehole.", "importErrorRunNumberExists", "LogRun", new() { ["runNumber"] = runNumber });
+                AddImportError(i + 1, $"RunNumber '{runNumber}' already exists for this borehole.", "importErrorRunNumberExists", LogRunErrorPrefix, new() { ["runNumber"] = runNumber });
             }
         }
     }
@@ -634,7 +616,7 @@ public class LogController : BoreholeControllerBase<LogRun>
 
             if (match == null)
             {
-                AddImportError(rowIndex, $"Unknown tool type code: '{code}'.", "importErrorUnknownToolTypeCode", "LogFile", new() { ["code"] = code });
+                AddImportError(rowIndex, $"Unknown tool type code: '{code}'.", "importErrorUnknownToolTypeCode", LogFileErrorPrefix, new() { ["code"] = code });
             }
             else
             {
@@ -653,7 +635,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         {
             "YES" or "JA" or "OUI" or "SÌ" or "SI" => true,
             "NO" or "NEIN" or "NON" => false,
-            _ => AddImportErrorAndReturn(rowIndex, $"Unknown Public value: '{value}'. Expected Yes/No/Ja/Nein/Oui/Non/Sì/No.", "importErrorUnknownPublicValue", "LogFile", new() { ["value"] = value }),
+            _ => AddImportErrorAndReturn(rowIndex, $"Unknown Public value: '{value}'. Expected Yes/No/Ja/Nein/Oui/Non/Sì/No.", "importErrorUnknownPublicValue", LogFileErrorPrefix, new() { ["value"] = value }),
         };
     }
 
@@ -673,6 +655,18 @@ public class LogController : BoreholeControllerBase<LogRun>
     }
 
     private sealed record ImportError(string ErrorKey, string MessageKey, string Detail, Dictionary<string, string>? Values = null);
+
+    private DateOnly? TryParseImportDate(string? value, int rowIndex, string fieldName, string errorPrefix)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return null;
+        if (DateOnly.TryParseExact(value, ImportDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed))
+        {
+            return parsed;
+        }
+
+        AddImportError(rowIndex, $"Invalid {fieldName} format: '{value}'. Expected {ImportDateFormat}.", "importErrorInvalidDateFormat", errorPrefix, new() { ["value"] = value });
+        return null;
+    }
 
     private static bool TryParseDouble(string? value, out double result)
     {
@@ -854,7 +848,7 @@ public class LogController : BoreholeControllerBase<LogRun>
             csvWriter.WriteField(lr.ToDepth);
             csvWriter.WriteField(string.Join(",", toolTypes));
             csvWriter.WriteField(GetCodelistText(lr.BoreholeStatus, locale));
-            csvWriter.WriteField(lr.RunDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
+            csvWriter.WriteField(lr.RunDate?.ToString(ImportDateFormat, CultureInfo.InvariantCulture));
             csvWriter.WriteField(lr.BitSize);
             csvWriter.WriteField(GetCodelistText(lr.ConveyanceMethod, locale));
             csvWriter.WriteField(lr.ServiceCo);
@@ -895,7 +889,7 @@ public class LogController : BoreholeControllerBase<LogRun>
             csvWriter.WriteField(GetCodelistText(lf.PassType, locale));
             csvWriter.WriteField(GetCodelistText(lf.DataPackage, locale));
             csvWriter.WriteField(GetCodelistText(lf.DepthType, locale));
-            csvWriter.WriteField(lf.DeliveryDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
+            csvWriter.WriteField(lf.DeliveryDate?.ToString(ImportDateFormat, CultureInfo.InvariantCulture));
             csvWriter.WriteField(GetLocalizedYesNoBoolean(lf.Public, locale));
             await csvWriter.NextRecordAsync().ConfigureAwait(false);
         }

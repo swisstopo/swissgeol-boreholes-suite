@@ -40,9 +40,9 @@ export const FormDialog: FC<FormDialogProps> = ({
     </DialogMainContent>
     <DialogFooterContainer>
       {actions ? (
-        actions.map((action, index) => (
+        actions.map(action => (
           <BoreholesButton
-            key={index}
+            key={action.label}
             variant={action.variant ?? "contained"}
             color={action.color ?? "primary"}
             label={action.label}
