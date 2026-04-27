@@ -35,6 +35,7 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, formMethods }) 
             fieldName={"referenceElevation"}
             label={"reference_elevation"}
             value={borehole?.referenceElevation}
+            controlledValue={formMethods.watch("referenceElevation") ?? ""}
             withThousandSeparator={true}
           />
           <FormDomainSelect
