@@ -30,7 +30,10 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
       const errors: FormErrors = {};
       validateDepths(values, errors);
       validateLithologyUnconValues(values.lithologyDescriptions, errors);
-      return { values, errors };
+      if (Object.keys(errors).length > 0) {
+        return { values: {}, errors };
+      }
+      return { values, errors: {} };
     },
   });
   const { formState, getValues } = formMethods;

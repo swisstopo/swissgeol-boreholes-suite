@@ -269,8 +269,8 @@ enum BooleanFilter {
   true,
 }
 
-export type BooleanFilterValue = "true" | "false" | undefined;
-export type NullableBooleanFilterValue = BooleanFilterValue | "null";
+type BooleanFilterValue = "true" | "false" | undefined;
+type NullableBooleanFilterValue = BooleanFilterValue | "null";
 
 interface BaseFilterRequest {
   polygon?: Geometry | null;
