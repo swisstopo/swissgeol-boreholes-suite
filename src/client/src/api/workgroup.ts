@@ -51,8 +51,6 @@ export const workgroupQueryKey = "workgroups";
 
 export const useWorkgroups = () => {
   const auth = useAuth();
-  console.log(auth.anonymousModeEnabled);
-
   return useQuery({
     queryKey: [workgroupQueryKey],
     queryFn: fetchWorkgroups,
