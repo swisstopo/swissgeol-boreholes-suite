@@ -2,7 +2,7 @@
 import type { Workgroup } from "../../../../api/apiInterfaces";
 import type { Codelist } from "../../../../components/codelist";
 import { capitalizeFirstLetter } from "../../../../utils";
-import type { filterParsers } from "../../useBoreholeUrlParams";
+import { FilterKey } from "../../useBoreholeUrlParams.ts";
 
 export type ChipDescriptor = {
   id: string;
@@ -12,121 +12,100 @@ export type ChipDescriptor = {
   onDelete: () => void;
 };
 
-type FilterKey = keyof typeof filterParsers;
-
 type FilterFieldMeta =
-  | { shape: "multiselectCodelist"; labelKey: string; schema: string }
-  | { shape: "multiselectWorkgroup"; labelKey: string }
+  | { type: "multiselectCodelist"; labelKey: string; schema: string }
+  | { type: "multiselectWorkgroup"; labelKey: string }
   | {
-      shape: "multiselectString";
+      type: "multiselectString";
       labelKey: string;
       translateValue?: (v: string, t: TFunction) => string;
     }
   | {
-      shape: "text";
+      type: "text";
       labelKey: string;
       translateValue?: (v: string, t: TFunction) => string;
     }
-  | { shape: "rangeMin"; labelKey: string; boundLabel: "min" | "from" }
-  | { shape: "rangeMax"; labelKey: string; boundLabel: "max" | "to" }
-  | { shape: "nullableBoolean"; labelKey: string; allowNull: boolean };
+  | { type: "rangeMin"; labelKey: string; boundLabel: "min" | "from" }
+  | { type: "rangeMax"; labelKey: string; boundLabel: "max" | "to" }
+  | { type: "nullableBoolean"; labelKey: string; allowNull: boolean };
 
-// Shape → value type mapping. Mirrors what `filterParsers` in
-// useBoreholeUrlParams.ts actually produces at runtime, so the chip builders
-// can narrow `filterParams[key]` without ad-hoc casts.
-type FilterValueByShape = {
+type FilterValueByType = {
   multiselectCodelist: number[];
   multiselectWorkgroup: number[];
   multiselectString: string[];
   text: string;
-  // `parseAsFloat` is used for the numeric ranges; `parseAsString` for the
-  // date-string ranges (restrictionUntil*). Keep both options here.
-  rangeMin: number | string;
+  rangeMin: number | string; // types for dates and numeric ranges.
   rangeMax: number | string;
-  // `parseAsStringLiteral(["true", "false", "null"])` — URL representation.
   nullableBoolean: "true" | "false" | "null";
 };
 
-type FilterShapeOf<K extends FilterKey> = (typeof FILTER_FIELD_META)[K]["shape"];
+type FilterTypeOf<K extends FilterKey> = (typeof FilterFieldMetaData)[K]["type"];
 
-// Keys whose meta shape is "multiselectCodelist". Used to narrow the
-// multiselect-codelist builder's `key` parameter so `filterParams[key]` is
-// typed as `number[] | undefined` without an explicit cast.
 type MultiselectCodelistKey = {
-  [K in FilterKey]: FilterShapeOf<K> extends "multiselectCodelist" ? K : never;
+  [K in FilterKey]: FilterTypeOf<K> extends "multiselectCodelist" ? K : never;
 }[FilterKey];
 
-// Same pattern for workgroup-multiselect keys.
 type MultiselectWorkgroupKey = {
-  [K in FilterKey]: FilterShapeOf<K> extends "multiselectWorkgroup" ? K : never;
+  [K in FilterKey]: FilterTypeOf<K> extends "multiselectWorkgroup" ? K : never;
 }[FilterKey];
 
-// Same pattern for string-multiselect keys (e.g. workflowStatus).
 type MultiselectStringKey = {
-  [K in FilterKey]: FilterShapeOf<K> extends "multiselectString" ? K : never;
+  [K in FilterKey]: FilterTypeOf<K> extends "multiselectString" ? K : never;
 }[FilterKey];
 
 export type ChipDescriptorInputs = {
-  filterParams: Partial<{ [K in FilterKey]: FilterValueByShape[FilterShapeOf<K>] }>;
+  filterParams: Partial<{ [K in FilterKey]: FilterValueByType[FilterTypeOf<K>] }>;
   codelists: Codelist[];
   getCodelistLabel: (c: Codelist) => string;
   workgroups: Workgroup[];
   t: TFunction;
-  // Only multiselect deletion writes back to filter state from this module —
-  // and it always passes the narrowed remaining id array. Keep the signature
-  // tight to prevent future misuse.
   setField: (key: FilterKey, value: number[] | string[]) => void;
   clearField: (key: FilterKey) => void;
 };
 
-// Exhaustive meta for every key in filterParsers.
-// `satisfies` (instead of a `:` annotation) preserves the literal shape of
-// each entry so `FilterShapeOf<K>` can look up the per-key shape.
-// Adding a new parser without adding a meta entry here fails the TypeScript build.
-export const FILTER_FIELD_META = {
-  originalName: { shape: "text", labelKey: "original_name" },
-  projectName: { shape: "text", labelKey: "project_name" },
-  name: { shape: "text", labelKey: "name" },
-  statusId: { shape: "multiselectCodelist", labelKey: "boreholeStatus", schema: "extended.status" },
-  typeId: { shape: "multiselectCodelist", labelKey: "borehole_type", schema: "borehole_type" },
-  purposeId: { shape: "multiselectCodelist", labelKey: "purpose", schema: "extended.purpose" },
-  workgroupId: { shape: "multiselectWorkgroup", labelKey: "workgroup" },
-  restrictionId: { shape: "multiselectCodelist", labelKey: "restriction", schema: "restriction" },
-  restrictionUntilFrom: { shape: "rangeMin", labelKey: "restriction_until", boundLabel: "from" },
-  restrictionUntilTo: { shape: "rangeMax", labelKey: "restriction_until", boundLabel: "to" },
-  totalDepthMin: { shape: "rangeMin", labelKey: "totaldepth", boundLabel: "min" },
-  totalDepthMax: { shape: "rangeMax", labelKey: "totaldepth", boundLabel: "max" },
-  topBedrockFreshMdMin: { shape: "rangeMin", labelKey: "top_bedrock_fresh_md", boundLabel: "min" },
-  topBedrockFreshMdMax: { shape: "rangeMax", labelKey: "top_bedrock_fresh_md", boundLabel: "max" },
-  topBedrockWeatheredMdMin: { shape: "rangeMin", labelKey: "top_bedrock_weathered_md", boundLabel: "min" },
-  topBedrockWeatheredMdMax: { shape: "rangeMax", labelKey: "top_bedrock_weathered_md", boundLabel: "max" },
-  nationalInterest: { shape: "nullableBoolean", labelKey: "nationalInterest", allowNull: true },
-  topBedrockIntersected: { shape: "nullableBoolean", labelKey: "topBedrockIntersected", allowNull: true },
-  hasGroundwater: { shape: "nullableBoolean", labelKey: "hasGroundwater", allowNull: true },
-  hasGeometry: { shape: "nullableBoolean", labelKey: "hasGeometry", allowNull: false },
-  hasLogs: { shape: "nullableBoolean", labelKey: "hasLogs", allowNull: false },
-  hasProfiles: { shape: "nullableBoolean", labelKey: "hasProfiles", allowNull: false },
-  hasPhotos: { shape: "nullableBoolean", labelKey: "hasPhotos", allowNull: false },
-  hasDocuments: { shape: "nullableBoolean", labelKey: "hasDocuments", allowNull: false },
+// Meta for every key in filterParsers.
+// each entry so `FilterTypeOf<K>` can look up the per-key type.
+export const FilterFieldMetaData = {
+  originalName: { type: "text", labelKey: "original_name" },
+  projectName: { type: "text", labelKey: "project_name" },
+  name: { type: "text", labelKey: "name" },
+  statusId: { type: "multiselectCodelist", labelKey: "boreholeStatus", schema: "extended.status" },
+  typeId: { type: "multiselectCodelist", labelKey: "borehole_type", schema: "borehole_type" },
+  purposeId: { type: "multiselectCodelist", labelKey: "purpose", schema: "extended.purpose" },
+  workgroupId: { type: "multiselectWorkgroup", labelKey: "workgroup" },
+  restrictionId: { type: "multiselectCodelist", labelKey: "restriction", schema: "restriction" },
+  restrictionUntilFrom: { type: "rangeMin", labelKey: "restriction_until", boundLabel: "from" },
+  restrictionUntilTo: { type: "rangeMax", labelKey: "restriction_until", boundLabel: "to" },
+  totalDepthMin: { type: "rangeMin", labelKey: "totaldepth", boundLabel: "min" },
+  totalDepthMax: { type: "rangeMax", labelKey: "totaldepth", boundLabel: "max" },
+  topBedrockFreshMdMin: { type: "rangeMin", labelKey: "top_bedrock_fresh_md", boundLabel: "min" },
+  topBedrockFreshMdMax: { type: "rangeMax", labelKey: "top_bedrock_fresh_md", boundLabel: "max" },
+  topBedrockWeatheredMdMin: { type: "rangeMin", labelKey: "top_bedrock_weathered_md", boundLabel: "min" },
+  topBedrockWeatheredMdMax: { type: "rangeMax", labelKey: "top_bedrock_weathered_md", boundLabel: "max" },
+  nationalInterest: { type: "nullableBoolean", labelKey: "nationalInterest", allowNull: true },
+  topBedrockIntersected: { type: "nullableBoolean", labelKey: "topBedrockIntersected", allowNull: true },
+  hasGroundwater: { type: "nullableBoolean", labelKey: "hasGroundwater", allowNull: true },
+  hasGeometry: { type: "nullableBoolean", labelKey: "hasGeometry", allowNull: false },
+  hasLogs: { type: "nullableBoolean", labelKey: "hasLogs", allowNull: false },
+  hasProfiles: { type: "nullableBoolean", labelKey: "hasProfiles", allowNull: false },
+  hasPhotos: { type: "nullableBoolean", labelKey: "hasPhotos", allowNull: false },
+  hasDocuments: { type: "nullableBoolean", labelKey: "hasDocuments", allowNull: false },
   workflowStatus: {
-    shape: "multiselectString",
+    type: "multiselectString",
     labelKey: "workflowStatus",
     translateValue: (v: string, t: TFunction) => capitalizeFirstLetter(t(`statuses.${v}`)),
   },
-} as const satisfies Record<FilterKey, FilterFieldMeta>;
+} as const satisfies Record<FilterKey, FilterFieldMeta>; // Adding a new parser without adding a meta entry here fails the TypeScript build.
 
-// Order in which chips render. Uses the declaration order of FILTER_FIELD_META.
-const FILTER_KEY_ORDER = Object.keys(FILTER_FIELD_META) as FilterKey[];
+// Order in which chips render. Uses the declaration order of FilterFieldMetaData.
+const FilterKeyOrder = Object.keys(FilterFieldMetaData) as FilterKey[];
 
-// Shared helper — every shape that renders a tooltip formats the same
-// "{Category}: {value}" string. Keeping it in one place keeps the builders
-// short and makes it obvious when a future shape needs different formatting.
 function resolveCategoryLabel(meta: { labelKey: string }, inputs: ChipDescriptorInputs): string {
   return inputs.t(meta.labelKey) as string;
 }
 
-// Shared delete behavior for multiselect shapes: remove the value; if nothing
-// is left, clear the field entirely so URL state matches "no filter active".
+// Shared delete behavior for multiselect types: remove the value; if nothing
+// is left, clear the field entirely so URL state matches
 function makeMultiselectDeleteHandler<T extends number | string>(
   key: FilterKey,
   value: T[],
@@ -143,66 +122,24 @@ function makeMultiselectDeleteHandler<T extends number | string>(
   };
 }
 
-function buildCodelistMultiselectDescriptors(
-  key: MultiselectCodelistKey,
-  meta: Extract<FilterFieldMeta, { shape: "multiselectCodelist" }>,
-  inputs: ChipDescriptorInputs,
-): ChipDescriptor[] {
-  // `MultiselectCodelistKey` constrains `K` so `filterParams[key]` narrows to
-  // `number[] | undefined` via the `FilterValueByShape` map — no cast needed.
-  const value = inputs.filterParams[key];
-  if (value === undefined) return [];
-  // Skip entirely while codelists are still loading — flashing "#<id>" chips for
-  // every selection on initial render is worse than briefly rendering no chips.
-  if (inputs.codelists.length === 0) return [];
-  const categoryLabel = resolveCategoryLabel(meta, inputs);
-  return value.map(id => {
-    const codelist = inputs.codelists.find(c => c.schema === meta.schema && c.id === id);
-    const valueLabel = codelist ? inputs.getCodelistLabel(codelist) : `#${id}`;
-    return {
-      id: `${key}:${id}`,
-      label: valueLabel,
-      tooltip: `${categoryLabel}: ${valueLabel}`,
-      testId: `filter-chip-${key}-${id}`,
-      onDelete: makeMultiselectDeleteHandler(key, value, id, inputs),
-    };
-  });
-}
+// Per-type strategy for the generic multiselect builder. `isLoading` lets
+// codelist/workgroup types suppress chips while their lookup table is fetching.
+type MultiselectStrategy<V extends number | string> = {
+  isLoading: boolean;
+  getLabel: (v: V) => string;
+};
 
-function buildWorkgroupMultiselectDescriptors(
-  key: MultiselectWorkgroupKey,
-  meta: Extract<FilterFieldMeta, { shape: "multiselectWorkgroup" }>,
+function buildMultiselectDescriptors<V extends number | string>(
+  key: FilterKey,
+  value: V[],
+  meta: { labelKey: string },
   inputs: ChipDescriptorInputs,
+  { isLoading, getLabel }: MultiselectStrategy<V>,
 ): ChipDescriptor[] {
-  const value = inputs.filterParams[key];
-  if (value === undefined) return [];
-  // Same rationale as codelists: skip while workgroups haven't loaded rather
-  // than flash "#<id>" chips that immediately resolve.
-  if (inputs.workgroups.length === 0) return [];
-  const categoryLabel = resolveCategoryLabel(meta, inputs);
-  return value.map(id => {
-    const workgroup = inputs.workgroups.find(w => w.id === id);
-    const valueLabel = workgroup ? workgroup.name : `#${id}`;
-    return {
-      id: `${key}:${id}`,
-      label: valueLabel,
-      tooltip: `${categoryLabel}: ${valueLabel}`,
-      testId: `filter-chip-${key}-${id}`,
-      onDelete: makeMultiselectDeleteHandler(key, value, id, inputs),
-    };
-  });
-}
-
-function buildStringMultiselectDescriptors(
-  key: MultiselectStringKey,
-  meta: Extract<FilterFieldMeta, { shape: "multiselectString" }>,
-  inputs: ChipDescriptorInputs,
-): ChipDescriptor[] {
-  const value = inputs.filterParams[key];
-  if (value === undefined) return [];
+  if (isLoading) return [];
   const categoryLabel = resolveCategoryLabel(meta, inputs);
   return value.map(v => {
-    const valueLabel = meta.translateValue ? meta.translateValue(v, inputs.t) : v;
+    const valueLabel = getLabel(v);
     return {
       id: `${key}:${v}`,
       label: valueLabel,
@@ -213,9 +150,51 @@ function buildStringMultiselectDescriptors(
   });
 }
 
+function buildCodelistMultiselectDescriptors(
+  key: MultiselectCodelistKey,
+  meta: Extract<FilterFieldMeta, { type: "multiselectCodelist" }>,
+  inputs: ChipDescriptorInputs,
+): ChipDescriptor[] {
+  const value = inputs.filterParams[key];
+  if (value === undefined) return [];
+  return buildMultiselectDescriptors(key, value, meta, inputs, {
+    isLoading: inputs.codelists.length === 0,
+    getLabel: id => {
+      const codelist = inputs.codelists.find(c => c.schema === meta.schema && c.id === id);
+      return codelist ? inputs.getCodelistLabel(codelist) : `#${id}`;
+    },
+  });
+}
+
+function buildWorkgroupMultiselectDescriptors(
+  key: MultiselectWorkgroupKey,
+  meta: Extract<FilterFieldMeta, { type: "multiselectWorkgroup" }>,
+  inputs: ChipDescriptorInputs,
+): ChipDescriptor[] {
+  const value = inputs.filterParams[key];
+  if (value === undefined) return [];
+  return buildMultiselectDescriptors(key, value, meta, inputs, {
+    isLoading: inputs.workgroups.length === 0,
+    getLabel: id => inputs.workgroups.find(w => w.id === id)?.name ?? `#${id}`,
+  });
+}
+
+function buildStringMultiselectDescriptors(
+  key: MultiselectStringKey,
+  meta: Extract<FilterFieldMeta, { type: "multiselectString" }>,
+  inputs: ChipDescriptorInputs,
+): ChipDescriptor[] {
+  const value = inputs.filterParams[key];
+  if (value === undefined) return [];
+  return buildMultiselectDescriptors(key, value, meta, inputs, {
+    isLoading: false,
+    getLabel: v => (meta.translateValue ? meta.translateValue(v, inputs.t) : v),
+  });
+}
+
 function buildRangeBoundDescriptor(
   key: FilterKey,
-  meta: Extract<FilterFieldMeta, { shape: "rangeMin" | "rangeMax" }>,
+  meta: Extract<FilterFieldMeta, { type: "rangeMin" | "rangeMax" }>,
   value: string | number,
   inputs: ChipDescriptorInputs,
 ): ChipDescriptor | null {
@@ -224,7 +203,7 @@ function buildRangeBoundDescriptor(
   if (typeof value === "string" && value.trim().length === 0) return null;
   const categoryLabel = resolveCategoryLabel(meta, inputs);
   const boundWord = meta.boundLabel;
-  const symbol = meta.shape === "rangeMin" ? ">" : "<";
+  const symbol = meta.type === "rangeMin" ? ">" : "<";
   const label = `${symbol} ${value}`;
   return {
     id: key,
@@ -237,7 +216,7 @@ function buildRangeBoundDescriptor(
 
 function buildNullableBooleanDescriptor(
   key: FilterKey,
-  meta: Extract<FilterFieldMeta, { shape: "nullableBoolean" }>,
+  meta: Extract<FilterFieldMeta, { type: "nullableBoolean" }>,
   value: "true" | "false" | "null",
   inputs: ChipDescriptorInputs,
 ): ChipDescriptor | null {
@@ -255,7 +234,7 @@ function buildNullableBooleanDescriptor(
   const categoryLabel = resolveCategoryLabel(meta, inputs);
   return {
     id: key,
-    // Face already contains both category + value, so no tooltip is needed.
+    // Already contains both category + value, so no tooltip is needed.
     label: `${categoryLabel}: ${valueLabel}`,
     testId: `filter-chip-${key}`,
     // Must use clearField (not setField(key, null)) — for keys in
@@ -267,12 +246,12 @@ function buildNullableBooleanDescriptor(
 
 function buildTextDescriptor(
   key: FilterKey,
-  meta: Extract<FilterFieldMeta, { shape: "text" }>,
+  meta: Extract<FilterFieldMeta, { type: "text" }>,
   value: string,
   inputs: ChipDescriptorInputs,
 ): ChipDescriptor | null {
   // Empty / whitespace-only strings shouldn't surface as active filters — the
-  // underlying query treats them as "no filter", so a chip would be misleading.
+  // underlying query treats them as "no filter".
   if (value.trim().length === 0) return null;
   const categoryLabel = resolveCategoryLabel(meta, inputs);
   const valueLabel = meta.translateValue ? meta.translateValue(value, inputs.t) : value;
@@ -287,14 +266,12 @@ function buildTextDescriptor(
 
 export function buildFilterChipDescriptors(inputs: ChipDescriptorInputs): ChipDescriptor[] {
   const result: ChipDescriptor[] = [];
-  for (const key of FILTER_KEY_ORDER) {
+  for (const key of FilterKeyOrder) {
     const raw = inputs.filterParams[key];
     if (raw === undefined || raw === null) continue;
-    const meta = FILTER_FIELD_META[key];
-    switch (meta.shape) {
+    const meta = FilterFieldMetaData[key];
+    switch (meta.type) {
       case "multiselectCodelist":
-        // `key` is broadly typed as `FilterKey` here; the helper re-accesses
-        // `filterParams` with a narrowed key type to avoid a value cast.
         result.push(...buildCodelistMultiselectDescriptors(key as MultiselectCodelistKey, meta, inputs));
         break;
       case "multiselectWorkgroup":
@@ -320,7 +297,7 @@ export function buildFilterChipDescriptors(inputs: ChipDescriptorInputs): ChipDe
         break;
       }
       default:
-        // Exhaustiveness — every shape in FilterFieldMeta should be handled.
+        // Exhaustiveness — every type in FilterFieldMeta should be handled.
         meta satisfies never;
         break;
     }

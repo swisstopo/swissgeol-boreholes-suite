@@ -2,7 +2,7 @@ import { FC, useCallback } from "react";
 import { Box } from "@mui/material";
 import { FilterRequest, useFilterStats } from "../../../../api/borehole.ts";
 import { FormContainer } from "../../../../components/form/form.ts";
-import { filterParsers, useBoreholeUrlParams } from "../../useBoreholeUrlParams.ts";
+import { FilterKey, useBoreholeUrlParams } from "../../useBoreholeUrlParams.ts";
 import { FilterAutocomplete } from "./FilterAutocomplete.tsx";
 import { FilterBooleanButtons } from "./FilterBooleanButtons.tsx";
 import { FilterInputConfig } from "./filterData/filterInterfaces.ts";
@@ -21,7 +21,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
 
   const updateChange = useCallback(
     (attribute: string, value: string | boolean | number | null | number[] | undefined) => {
-      setFilterField(attribute as keyof typeof filterParsers, value as never);
+      setFilterField(attribute as FilterKey, value as never);
       setTableParams({ page: 0 });
     },
     [setFilterField, setTableParams],
@@ -30,7 +30,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
   return (
     <FormContainer>
       {searchData?.map(filterItem => {
-        const key = filterItem.key as keyof typeof filterParsers;
+        const key = filterItem.key as FilterKey;
         const value = filterParams?.[key];
 
         return (

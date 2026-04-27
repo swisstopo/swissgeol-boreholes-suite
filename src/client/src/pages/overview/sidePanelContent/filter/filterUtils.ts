@@ -1,5 +1,5 @@
 import { FilterStatsResponse, NullableBooleanCounts } from "../../../../api/borehole.ts";
-import { filterParsers } from "../../useBoreholeUrlParams.ts";
+import { FilterKey, filterParsers } from "../../useBoreholeUrlParams.ts";
 
 export const parseBooleanFilterValue = (value: unknown): boolean | null | undefined => {
   if (value === "true") return true;
@@ -30,7 +30,7 @@ export const getDomainCountsForField = (
 };
 
 // Filter keys whose parser accepts "null" as a valid literal value (for the "Keine Angabe" option).
-export const nullableBooleanFilterKeys: ReadonlySet<keyof typeof filterParsers> = new Set([
+export const nullableBooleanFilterKeys: ReadonlySet<FilterKey> = new Set([
   "nationalInterest",
   "topBedrockIntersected",
   "hasGroundwater",

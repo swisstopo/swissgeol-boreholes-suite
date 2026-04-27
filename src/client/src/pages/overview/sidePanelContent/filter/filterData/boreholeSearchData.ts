@@ -32,7 +32,6 @@ export const boreholeSearchData: SearchData[] = [
     label: "restriction_until",
     key: "restrictionUntilFrom",
     placeholder: "afterdate",
-    hasTwoFields: true,
   },
   {
     id: 5,
@@ -40,7 +39,6 @@ export const boreholeSearchData: SearchData[] = [
     label: "",
     key: "restrictionUntilTo",
     placeholder: "beforedate",
-    hasTwoFields: true,
   },
   {
     id: 6,
@@ -75,8 +73,6 @@ export const boreholeSearchData: SearchData[] = [
     label: "totaldepth",
     key: "totalDepthMin",
     isNumber: true,
-    inputType: "number",
-    hasTwoFields: true,
     placeholder: "from",
   },
   {
@@ -85,8 +81,6 @@ export const boreholeSearchData: SearchData[] = [
     label: "",
     key: "totalDepthMax",
     isNumber: true,
-    inputType: "number",
-    hasTwoFields: true,
     placeholder: "to",
   },
   {
@@ -95,8 +89,6 @@ export const boreholeSearchData: SearchData[] = [
     label: "top_bedrock_fresh_md",
     key: "topBedrockFreshMdMin",
     isNumber: true,
-    inputType: "number",
-    hasTwoFields: true,
     placeholder: "from",
   },
   {
@@ -105,8 +97,6 @@ export const boreholeSearchData: SearchData[] = [
     label: "",
     key: "topBedrockFreshMdMax",
     isNumber: true,
-    inputType: "number",
-    hasTwoFields: true,
     placeholder: "to",
   },
   {
@@ -115,8 +105,6 @@ export const boreholeSearchData: SearchData[] = [
     label: "top_bedrock_weathered_md",
     key: "topBedrockWeatheredMdMin",
     isNumber: true,
-    inputType: "number",
-    hasTwoFields: true,
     placeholder: "from",
   },
   {
@@ -125,8 +113,6 @@ export const boreholeSearchData: SearchData[] = [
     label: "",
     key: "topBedrockWeatheredMdMax",
     isNumber: true,
-    inputType: "number",
-    hasTwoFields: true,
     placeholder: "to",
   },
 

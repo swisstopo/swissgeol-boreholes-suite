@@ -3,14 +3,11 @@ import { useTranslation } from "react-i18next";
 import { Box, Button, Stack } from "@mui/material";
 import { WorkflowStatus } from "@swissgeol/ui-core";
 import { capitalizeFirstLetter } from "../../../../utils";
-import { filterParsers } from "../../useBoreholeUrlParams.ts";
+import { FilterKey, filterParsers } from "../../useBoreholeUrlParams.ts";
 
 interface StatusFilterProps {
   selectedWorkflowStatus?: string[];
-  setFilterField: (
-    key: keyof typeof filterParsers,
-    value: string | string[] | number[] | boolean | null | undefined,
-  ) => void;
+  setFilterField: (key: FilterKey, value: string | string[] | number[] | boolean | null | undefined) => void;
   counts?: Record<string, number>;
 }
 

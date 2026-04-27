@@ -5,7 +5,7 @@ import { CircleX } from "lucide-react";
 import PolygonIcon from "../../../../assets/icons/polygon.svg?react";
 import { useWorkgroups } from "../../../../api/workgroup.ts";
 import { CodelistLabelStyle, useCodelistLabel, useCodelists } from "../../../../components/codelist.ts";
-import { filterParsers, useBoreholeUrlParams } from "../../useBoreholeUrlParams.ts";
+import { FilterKey, useBoreholeUrlParams } from "../../useBoreholeUrlParams.ts";
 import { buildFilterChipDescriptors } from "./filterChipDescriptors.ts";
 import { PolygonFilterContext } from "./polygonFilterContext.tsx";
 
@@ -18,11 +18,11 @@ const FilterChips = () => {
   const getCodelistLabel = useCodelistLabel(CodelistLabelStyle.TextOnly);
   const { data: workgroups } = useWorkgroups();
 
-  const setFieldAndResetPage = (key: keyof typeof filterParsers, value: Parameters<typeof setFilterField>[1]) => {
+  const setFieldAndResetPage = (key: FilterKey, value: Parameters<typeof setFilterField>[1]) => {
     setFilterField(key, value);
     setTableParams({ page: 0 });
   };
-  const clearFieldAndResetPage = (key: keyof typeof filterParsers) => {
+  const clearFieldAndResetPage = (key: FilterKey) => {
     clearFilterField(key);
     setTableParams({ page: 0 });
   };

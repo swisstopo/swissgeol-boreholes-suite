@@ -55,6 +55,8 @@ export const filterParsers = {
   workflowStatus: parseAsArrayOf(parseAsString),
 };
 
+export type FilterKey = keyof typeof filterParsers;
+
 export const useBoreholeUrlParams = () => {
   const [allFilterParams, setFilterParams] = useQueryStates(filterParsers);
   const filterParams = Object.fromEntries(Object.entries(allFilterParams).filter(([, value]) => value !== null));
@@ -69,7 +71,7 @@ export const useBoreholeUrlParams = () => {
   tableParamsRef.current = tableParams;
 
   const setFilterField = useCallback(
-    (key: keyof typeof filterParsers, value: string | string[] | number[] | boolean | null | undefined) => {
+    (key: FilterKey, value: string | string[] | number[] | boolean | null | undefined) => {
       if (value === true) {
         setFilterParams({ [key]: "true" });
       } else if (value === false) {
@@ -91,7 +93,7 @@ export const useBoreholeUrlParams = () => {
   // the literal "null" in the URL for nullable boolean keys (meaning "Keine Angabe"), this helper
   // always drops the key so downstream consumers see an unset filter.
   const clearFilterField = useCallback(
-    (key: keyof typeof filterParsers) => {
+    (key: FilterKey) => {
       setFilterParams({ [key]: null } as Parameters<typeof setFilterParams>[0]);
     },
     [setFilterParams],
@@ -109,7 +111,7 @@ export const useBoreholeUrlParams = () => {
     // Set all filter keys to null to remove them from the URL
     const nulled = Object.fromEntries(Object.keys(filterParsers).map(k => [k, null]));
     setFilterParams(nulled as Parameters<typeof setFilterParams>[0]);
-    (Object.keys(filterParsers) as Array<keyof typeof filterParsers>).forEach(key => {
+    (Object.keys(filterParsers) as Array<FilterKey>).forEach(key => {
       sessionStorage.removeItem(SessionKeys[key as keyof typeof SessionKeys]);
     });
   };
@@ -162,7 +164,7 @@ export const useBoreholeUrlParams = () => {
       return;
     }
     const updates: Record<string, unknown> = {};
-    (Object.keys(filterParsers) as Array<keyof typeof filterParsers>).forEach(key => {
+    (Object.keys(filterParsers) as Array<FilterKey>).forEach(key => {
       const raw = sessionStorage.getItem(SessionKeys[key as keyof typeof SessionKeys]);
       if (raw !== null) {
         const parsed = filterParsers[key].parse(raw);
