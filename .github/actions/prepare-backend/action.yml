@@ -1,12 +1,9 @@
 name: Prepare backend
-description: Load prebuilt api images from the build-images job artifact and start compose services.
+description: Load prebuilt api images from the build-api-images job artifact and start compose services.
 
 inputs:
-  pulled-services:
-    description: Space-separated list of compose services whose images are pulled from a registry.
-    required: true
-  up-services:
-    description: Space-separated list of compose services to start (pulled + loaded).
+  services:
+    description: Space-separated list of compose services to start.
     required: true
 
 runs:
@@ -29,16 +26,8 @@ runs:
       shell: bash
       run: docker load -i /tmp/bdms-images.tar.gz
 
-    - name: Pull compose images
-      shell: bash
-      env:
-        PULLED_SERVICES: ${{ inputs.pulled-services }}
-      run: docker compose pull $PULLED_SERVICES
-
     - name: Start services
       shell: bash
       env:
-        UP_SERVICES: ${{ inputs.up-services }}
-        # Align compose's default image tags (<project>-<service>) with the bdms-api / bdms-api-legacy tags loaded above.
-        COMPOSE_PROJECT_NAME: bdms
-      run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up --wait --no-build $UP_SERVICES
+        SERVICES: ${{ inputs.services }}
+      run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up --wait --no-build $SERVICES

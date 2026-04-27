@@ -4,6 +4,23 @@ import { viteStaticCopy } from "vite-plugin-static-copy";
 import svgr from "vite-plugin-svgr";
 import viteTsconfigPaths from "vite-tsconfig-paths";
 
+const proxy = {
+  "/api": {
+    target: "http://127.0.0.1:5000/",
+    changeOrigin: true,
+  },
+  "/dataextraction": {
+    target: "http://127.0.0.1:8000/",
+    changeOrigin: true,
+    rewrite: path => path.replace(/^\/dataextraction/, ""),
+  },
+  "/ocr": {
+    target: "http://127.0.0.1:5052/",
+    changeOrigin: true,
+    rewrite: path => path.replace(/^\/ocr/, ""),
+  },
+};
+
 export default defineConfig({
   base: "/",
   // Preserve class/function names in the production bundle so Cypress assertions
@@ -27,22 +44,7 @@ export default defineConfig({
     }),
   ],
   server: {
-    proxy: {
-      "/api": {
-        target: "http://127.0.0.1:5000/",
-        changeOrigin: true,
-      },
-      "/dataextraction": {
-        target: "http://127.0.0.1:8000/",
-        changeOrigin: true,
-        rewrite: path => path.replace(/^\/dataextraction/, ""),
-      },
-      "/ocr": {
-        target: "http://127.0.0.1:5052/",
-        changeOrigin: true,
-        rewrite: path => path.replace(/^\/ocr/, ""),
-      },
-    },
+    proxy,
     port: 3000,
     headers: {
       "Content-Security-Policy":
@@ -53,23 +55,9 @@ export default defineConfig({
       "Strict-Transport-Security": "max-age=31536000; includeSubDomains",
     },
   },
+  // Preview shares the dev port so CI's `wait-on: http://localhost:3000` works regardless of which is running.
   preview: {
-    proxy: {
-      "/api": {
-        target: "http://127.0.0.1:5000/",
-        changeOrigin: true,
-      },
-      "/dataextraction": {
-        target: "http://127.0.0.1:8000/",
-        changeOrigin: true,
-        rewrite: path => path.replace(/^\/dataextraction/, ""),
-      },
-      "/ocr": {
-        target: "http://127.0.0.1:5052/",
-        changeOrigin: true,
-        rewrite: path => path.replace(/^\/ocr/, ""),
-      },
-    },
+    proxy,
     port: 3000,
   },
 });

@@ -1,7 +1,6 @@
 services:
   api:
-    build:
-      target: deploy
+    image: bdms-api
     # Development env keeps the in-app database seeding that integration tests rely on,
     # while the deploy image skips the cold dotnet watch compile on startup.
     environment:
@@ -10,6 +9,9 @@ services:
     volumes: !reset null
     healthcheck:
       interval: 2s
+
+  api-legacy:
+    image: bdms-api-legacy
 
   oidc-server:
     healthcheck:
