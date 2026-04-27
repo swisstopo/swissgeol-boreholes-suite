@@ -95,6 +95,9 @@ export const useBoreholeUrlParams = () => {
   const clearFilterField = useCallback(
     (key: FilterKey) => {
       setFilterParams({ [key]: null } as Parameters<typeof setFilterParams>[0]);
+      (Object.keys(filterParsers) as Array<FilterKey>).forEach(key => {
+        sessionStorage.removeItem(SessionKeys[key as keyof typeof SessionKeys]);
+      });
     },
     [setFilterParams],
   );
