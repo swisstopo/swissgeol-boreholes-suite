@@ -199,7 +199,7 @@ describe("Test for importing boreholes.", () => {
     returnToOverview();
     cy.dataCy("show-filter-button").click();
     cy.contains("Borehole").click();
-    setAutocompleteText("Original name", "COLDWATER");
+    setAutocompleteText("originalName", "COLDWATER");
     cy.contains("Original name").next().find("input").type("COLDWATER");
     cy.wait("@borehole_filter");
     showTableAndWaitForData();
