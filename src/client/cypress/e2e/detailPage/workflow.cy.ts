@@ -640,7 +640,7 @@ describe("Tests the publication workflow.", () => {
 
   it("Can review and reset log tab", () => {
     createBoreholeWithCompleteDataset().as("borehole_id");
-    testTabReviewAndReset("LOG", "Log runs", SidebarMenuItem.log, changeLogPanel);
+    testTabReviewAndReset("LOG", "LOG runs", SidebarMenuItem.log, changeLogPanel);
   });
 
   it("Can review and reset Identifiers tab", () => {
