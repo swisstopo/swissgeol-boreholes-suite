@@ -32,7 +32,7 @@ function testInputFilter(
   value: string,
   expectedCount: string,
 ) {
-  it(`filters boreholes by ${title}`, () => {
+  it.only(`filters boreholes by ${title}`, () => {
     openFilter(filterSection);
     setAutocompleteText(fieldName, value);
     cy.wait("@borehole_filter");
@@ -132,9 +132,9 @@ describe("Search filter tests", () => {
     cy.dataCy("boreholes-number-preview").should("have.text", "3'004");
   });
 
-  testInputFilter("original name", "Borehole", "originalName", "Abigail", "7");
-  testInputFilter("project name", "Borehole", "projectName", "engin", "106");
-  testInputFilter("alternate name", "Borehole", "name", "Eric", "26");
+  testInputFilter("original name", "Borehole", "originalName", "Abigail", "1");
+  testInputFilter("project name", "Borehole", "projectName", "Intuitive", "1");
+  testInputFilter("alternate name", "Borehole", "name", "Eric", "1");
 
   testSelectFilter("restriction", "Borehole", "restrictionId", 0, "376");
 

@@ -24,7 +24,9 @@ export function clickDomainButtonByIndex(fieldName: string, index: number) {
 export function setAutocompleteText(fieldName: string, value: string) {
   cy.dataCy(`${fieldName}-formInput`).click();
   cy.focused().clear();
-  cy.dataCy(`${fieldName}-formInput`).type(`${value}{enter}`, { delay: 10 });
+  cy.dataCy(`${fieldName}-formInput`).type(value, { delay: 10 });
+  cy.get(`[data-cy^="${fieldName}-suggestion-"]`).should("have.length.at.least", 1);
+  cy.get(`[data-cy^="${fieldName}-suggestion-"]`).first().click();
 }
 
 export function openFilter(filterTitle: string) {
