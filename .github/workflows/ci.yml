@@ -149,7 +149,9 @@ jobs:
           VITE_APP_VERSION: 0.0.99+dev
           TZ: Europe/Zurich
           SPLIT: ${{ strategy.job-total }}
-          SPLIT_INDEX: ${{ matrix.index }}
+          # strategy.job-index is 0-based (what cypress-split expects); matrix.index stays
+          # 1-based for the --group shard label and the branch-protection check names.
+          SPLIT_INDEX: ${{ strategy.job-index }}
     env:
       # Pass the GitHub token lets this action correctly
       # determine the unique run id necessary to re-run the checks
