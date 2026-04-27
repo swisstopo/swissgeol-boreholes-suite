@@ -158,7 +158,6 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
                       fieldName={"totalDepth"}
                       label={"totaldepth"}
                       value={borehole?.totalDepth}
-                      controlledValue={totalDepth ?? ""}
                       withThousandSeparator={true}
                     />
                     <FormDomainSelect
@@ -179,7 +178,6 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
                     fieldName={"topBedrockWeatheredMd"}
                     label={"top_bedrock_weathered_md"}
                     value={borehole?.topBedrockWeatheredMd}
-                    controlledValue={topBedrockWeatheredMd ?? ""}
                     withThousandSeparator={true}
                   />
                   <FormInputDisplayOnly
@@ -193,7 +191,6 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
                     fieldName={"topBedrockFreshMd"}
                     label={"top_bedrock_fresh_md"}
                     value={borehole?.topBedrockFreshMd}
-                    controlledValue={topBedrockFreshMd ?? ""}
                     withThousandSeparator={true}
                   />
                   <FormInputDisplayOnly

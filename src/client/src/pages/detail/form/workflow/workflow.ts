@@ -10,8 +10,6 @@ import { NullableDateString } from "../../../../api/apiInterfaces.ts";
 import { boreholeQueryKey, canEditQueryKey, canUpdateStatusQueryKey } from "../../../../api/borehole.ts";
 import { fetchApiV2Legacy } from "../../../../api/fetchApiV2.ts";
 
-export { WorkflowStatus };
-
 export interface Workflow extends GenericWorkflow {
   id: number;
   boreholeId: number;

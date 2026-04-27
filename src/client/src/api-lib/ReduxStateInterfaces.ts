@@ -16,7 +16,7 @@ export interface EditorStore {
   mselected: number[];
 }
 
-export type Role = "PUBLIC" | "VIEW" | "VALID" | "EDIT" | "CONTROL";
+type Role = "PUBLIC" | "VIEW" | "VALID" | "EDIT" | "CONTROL";
 
 export interface User {
   data: UserData;
