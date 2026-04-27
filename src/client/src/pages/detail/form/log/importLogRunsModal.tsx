@@ -10,7 +10,8 @@ import { BoreholesCard } from "../../../../components/boreholesCard.tsx";
 import { FormContainer, FormDialog } from "../../../../components/form/form.ts";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { FileDropzone } from "./fileDropzone.tsx";
-import { importLogsRaw, LogFile, LogRun, logsQueryKey } from "./log.ts";
+import { importLogs, logsQueryKey } from "./log.ts";
+import { LogFile, LogRun } from "./logInterfaces.ts";
 
 interface ImportError {
   errorKey: string;
@@ -60,7 +61,7 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
         formData.append("fileListFile", fileListBlob, "filelist.txt");
       }
 
-      const response = await importLogsRaw(Number(boreholeId), formData);
+      const response = await importLogs(Number(boreholeId), formData);
 
       if (!response.ok) {
         const contentType = response.headers.get("content-type");

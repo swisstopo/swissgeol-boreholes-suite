@@ -13,7 +13,7 @@ import { SaveContext } from "../../saveContext.tsx";
 import { LogFile, LogRun } from "./logInterfaces.ts";
 
 const logController = "log";
-const logsQueryKey = "logs";
+export const logsQueryKey = "logs";
 export const useLogsByBoreholeId = (boreholeId?: number): UseQueryResult<LogRun[]> =>
   useQuery<LogRun[]>({
     queryKey: [logsQueryKey, boreholeId],
@@ -85,11 +85,7 @@ export const useLogRunMutations = () => {
   };
 };
 
-export const importLogs = async (boreholeId: number, formData: FormData): Promise<LogRun[]> => {
-  return await uploadWithApiError<LogRun[]>(`${logController}/import?boreholeId=${boreholeId}`, "POST", formData);
-};
-
-export const importLogsRaw = async (boreholeId: number, formData: FormData): Promise<Response> => {
+export const importLogs = async (boreholeId: number, formData: FormData): Promise<Response> => {
   return await upload(`${logController}/import?boreholeId=${boreholeId}`, "POST", formData);
 };
 
