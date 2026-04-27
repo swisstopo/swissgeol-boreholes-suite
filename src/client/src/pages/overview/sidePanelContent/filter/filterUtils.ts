@@ -1,5 +1,5 @@
 import { FilterStatsResponse, NullableBooleanCounts } from "../../../../api/borehole.ts";
-import { FilterKey, filterParsers } from "../../useBoreholeUrlParams.ts";
+import { FilterKey } from "../../useBoreholeUrlParams.ts";
 
 export const parseBooleanFilterValue = (value: unknown): boolean | null | undefined => {
   if (value === "true") return true;

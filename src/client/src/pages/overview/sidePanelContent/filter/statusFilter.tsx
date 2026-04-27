@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Box, Button, Stack } from "@mui/material";
 import { WorkflowStatus } from "@swissgeol/ui-core";
 import { capitalizeFirstLetter } from "../../../../utils";
-import { FilterKey, filterParsers } from "../../useBoreholeUrlParams.ts";
+import { FilterKey } from "../../useBoreholeUrlParams.ts";
 
 interface StatusFilterProps {
   selectedWorkflowStatus?: string[];
