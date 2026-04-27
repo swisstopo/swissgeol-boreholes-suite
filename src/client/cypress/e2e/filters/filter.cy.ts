@@ -35,6 +35,7 @@ function testInputFilter(
   it(`filters boreholes by ${title}`, () => {
     openFilter(filterSection);
     setAutocompleteText(fieldName, value);
+    cy.wait("@borehole_filter");
     cy.dataCy("boreholes-number-preview").should("have.text", expectedCount);
     checkFilterChipExistsAndRemove(fieldName);
   });
