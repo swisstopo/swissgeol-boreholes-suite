@@ -4,7 +4,7 @@ import type { Codelist } from "../../../../components/codelist";
 import { capitalizeFirstLetter } from "../../../../utils";
 import { FilterKey } from "../../useBoreholeUrlParams.ts";
 
-export type ChipDescriptor = {
+type ChipDescriptor = {
   id: string;
   label: string;
   tooltip?: string;

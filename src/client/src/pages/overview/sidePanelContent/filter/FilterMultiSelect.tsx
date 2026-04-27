@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Autocomplete, Box, Chip, TextField, Typography } from "@mui/material";
 import { SearchData } from "./filterData/filterInterfaces.ts";
 
-export interface FilterMultiSelectOption {
+interface FilterMultiSelectOption {
   key: number;
   label: string;
 }

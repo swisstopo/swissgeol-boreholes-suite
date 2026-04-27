@@ -361,7 +361,7 @@ export interface FilterStatsResponse {
 
 export type BoreholeSuggestionField = "originalName" | "projectName" | "name";
 
-export interface BoreholeSuggestion {
+interface BoreholeSuggestion {
   value: string;
   count: number;
 }
@@ -374,7 +374,7 @@ export const fetchFilterStats = async (filterRequest: FilterRequestSubmission): 
   return await fetchApiV2WithApiError<FilterStatsResponse>("borehole/filter/stats", "POST", filterRequest);
 };
 
-export const fetchBoreholeSuggestions = (
+const fetchBoreholeSuggestions = (
   field: BoreholeSuggestionField,
   query: string,
   limit = 10,
