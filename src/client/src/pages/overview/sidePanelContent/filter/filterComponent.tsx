@@ -14,7 +14,6 @@ import FilterChips from "./FilterChips.tsx";
 import { attachmentSearchData } from "./filterData/attachmentSearchData.ts";
 import { boreholeSearchData } from "./filterData/boreholeSearchData.ts";
 import { FilterComponentProps, FilterInputConfig } from "./filterData/filterInterfaces.ts";
-import { LocationSearchData } from "./filterData/locationSearchData.ts";
 import { logSearchData } from "./filterData/logSearchData.ts";
 import { FilterReset } from "./filterReset.tsx";
 import { ListFilter } from "./listFilter.tsx";
@@ -51,13 +50,6 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
     },
     {
       id: 2,
-      name: "location",
-      translationId: "location",
-      isSelected: false,
-      searchData: LocationSearchData,
-    },
-    {
-      id: 3,
       name: "borehole",
       translationId: "borehole",
       isSelected: false,
@@ -65,14 +57,14 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
     },
 
     {
-      id: 4,
+      id: 3,
       name: "log",
       translationId: "log",
       isSelected: false,
       searchData: logSearchData,
     },
     {
-      id: 5,
+      id: 4,
       name: "attachments",
       translationId: "attachments",
       isSelected: false,
