@@ -85,7 +85,7 @@ const CompletionContent = ({ completion, editingEnabled }) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canSwitch]);
+  }, [canSwitch, checkContentDirty]);
 
   useEffect(() => {
     const newTabIndex = tabs.findIndex(t => t.hash === hash);

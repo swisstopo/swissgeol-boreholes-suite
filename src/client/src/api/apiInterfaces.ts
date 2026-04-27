@@ -43,7 +43,7 @@ export interface WorkgroupRole {
   workgroup?: Workgroup;
 }
 
-export interface Term {
+interface Term {
   id: number;
   isDraft: boolean;
   textEn: string;
@@ -55,7 +55,7 @@ export interface Term {
   expiration?: Date;
 }
 
-export interface TermsAccepted {
+interface TermsAccepted {
   userId: number;
   termId: number;
   term: Term;
