@@ -1,6 +1,4 @@
 import { hasPagination, showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
-import { setInput } from "../helpers/formHelpers";
-import { createBorehole, goToRouteAndAcceptTerms } from "../helpers/testHelpers";
 import {
   checkFilterChipExistsAndRemove,
   clickDomainButtonByIndex,
@@ -8,7 +6,9 @@ import {
   openFilter,
   removeFirstMultiselectChip,
   setAutocompleteText,
-} from "./filterHelpers.ts";
+} from "../helpers/filterHelpers.ts";
+import { setInput } from "../helpers/formHelpers";
+import { createBorehole, goToRouteAndAcceptTerms } from "../helpers/testHelpers";
 
 function testYesNoFilter(
   title: string,

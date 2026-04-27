@@ -5,6 +5,7 @@ import {
   showTableAndWaitForData,
   verifyRowContains,
 } from "../helpers/dataGridHelpers";
+import { setAutocompleteText } from "../helpers/filterHelpers";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers";
 import {
   createBorehole,
@@ -198,6 +199,7 @@ describe("Test for importing boreholes.", () => {
     returnToOverview();
     cy.dataCy("show-filter-button").click();
     cy.contains("Borehole").click();
+    setAutocompleteText("Original name", "COLDWATER");
     cy.contains("Original name").next().find("input").type("COLDWATER");
     cy.wait("@borehole_filter");
     showTableAndWaitForData();
