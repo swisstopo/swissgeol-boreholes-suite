@@ -12,7 +12,7 @@ import {
   useBoreholeMutations,
 } from "../../api/borehole.ts";
 import { useCurrentUser } from "../../api/user.ts";
-import { useAuth } from "../../auth/useBdmsAuth.tsx";
+import { useAuth } from "../../auth/useBoreholesAuth.tsx";
 import {
   DeleteButton,
   EditButton,

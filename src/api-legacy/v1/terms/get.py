@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 from bms.v1.action import Action
-from bms.v1.borehole.geom.patch import PatchGeom
 import json
 
 
@@ -9,14 +8,14 @@ class GetTerms(Action):
     async def execute(self):
         # Default language
         dl = 'en'
-        
+
         try:
             # Check if already accepted
             val = await self.conn.fetchval(f"""
                 SELECT
                     row_to_json(t)
 
-                FROM (    
+                FROM (
                     SELECT
                         id_tes AS id,
                         draft_tes AS draft,
@@ -74,7 +73,7 @@ class GetTermsDraft(Action):
                     draft_tes IS TRUE
             ) AS exists
         """)
-        
+
         sql_draft_filter = '''
             AND
                 draft_tes IS FALSE
@@ -92,7 +91,7 @@ class GetTermsDraft(Action):
                 SELECT
                     row_to_json(t)
 
-                FROM (    
+                FROM (
                     SELECT
                         id_tes AS id,
                         draft_tes AS draft,

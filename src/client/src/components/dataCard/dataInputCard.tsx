@@ -75,5 +75,3 @@ export const DataInputCard = <T extends FieldValues>({
     </FormProvider>
   );
 };
-
-export default DataInputCard;

@@ -21,8 +21,8 @@ import WMTS from "ol/source/WMTS";
 import WMTSTileGrid from "ol/tilegrid/WMTS";
 import proj4 from "proj4";
 import PropTypes from "prop-types";
-import { getGeojson } from "../../api-lib";
 import { theme } from "../../AppTheme.ts";
+import { SessionKeys } from "../../pages/overview/SessionKey.ts";
 import { BasemapContext } from "../basemapSelector/basemapContext.tsx";
 import { swissExtent, updateBasemap } from "../basemapSelector/basemaps.ts";
 import { BasemapSelector } from "../basemapSelector/basemapSelector.tsx";
@@ -37,7 +37,7 @@ class MapComponent extends React.Component {
   constructor(props) {
     super(props);
     this.onSelected = this.onSelected.bind(this);
-    this.fetchAndDisplayGeojson = this.fetchAndDisplayGeojson.bind(this);
+    this.displayGeoJson = this.displayGeoJson.bind(this);
     this.styleFunction = styleFunction.bind(this);
     this.clusterStyleFunction = clusterStyleFunction.bind(this);
     this.initializeMapLayers = this.initializeMapLayers.bind(this);
@@ -60,13 +60,11 @@ class MapComponent extends React.Component {
     this.zoomToCluster = this.zoomToCluster.bind(this);
     this.zoomToPoint = this.zoomToPoint.bind(this);
     this.zoomToFeatures = this.zoomToFeatures.bind(this);
-    this.handleFilter = this.handleFilter.bind(this);
     this.refreshPoints = this.refreshPoints.bind(this);
-    this.timeoutFilter = null;
     this.draw = null;
 
     this.srs = "EPSG:2056";
-    _.forEach(projections, function (proj, srs) {
+    Object.entries(projections).forEach(([srs, proj]) => {
       proj4.defs(srs, proj);
     });
     register(proj4);
@@ -80,20 +78,15 @@ class MapComponent extends React.Component {
   }
 
   //////  INITIALIZE BOREHOLE FEATURE LAYERS //////
-  async fetchAndDisplayGeojson() {
-    try {
-      const response = await getGeojson(this.props.searchState.filter);
-      if (response.data.success) {
-        this.initializeMapLayers();
-        this.handleMapInteractions();
-        let features = new GeoJSON().readFeatures(response.data.data);
-        features = this.filterByPolygon(features);
-        this.points.clear();
-        this.points.addFeatures(features);
-      }
-    } catch (error) {
-      console.error("Failed to fetch and display GeoJSON:", error);
-    }
+  displayGeoJson(geoJson) {
+    if (!geoJson) return;
+    // Todo check if initializeMapLayers and handleMapInteractions need to be called every time or only once on map initialization https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2007
+    this.initializeMapLayers();
+    this.handleMapInteractions();
+    let features = new GeoJSON().readFeatures(geoJson);
+    features = this.filterByPolygon(features);
+    this.points.clear();
+    this.points.addFeatures(features);
   }
 
   calculateLayerZIndex() {
@@ -395,14 +388,16 @@ class MapComponent extends React.Component {
               this.points.addFeatures(intersectingFeatures);
               this.props.setFilterPolygon(drawnFeature);
               // Zoom to the extent of the drawn feature
-              this.map.getView().fit(drawnFeature.getGeometry().getExtent(), { padding: [10, 10, 10, 10] });
+              this.map.getView().fit(drawnFeature.getGeometry().getExtent(), {
+                padding: [10, 10, 10, 10],
+              });
             } else {
               this.props.displayErrorMessage(this.props.t("msgNoBoreholesInSelection"));
               this.props.setFilterPolygon(null);
               drawSource.clear();
             }
             this.props.setPolygonSelectionEnabled(false);
-            this.props.setFeatureIds(intersectingFeatures.map(f => f.getId()));
+            this.props.setFeatureIds(intersectingFeatures.map(f => f.get("id")));
           });
         }
 
@@ -444,7 +439,7 @@ class MapComponent extends React.Component {
 
   setFeatureHighlight(feature, hoverCallback) {
     if (hoverCallback) {
-      hoverCallback([feature.getId()]);
+      hoverCallback([feature.get("id")]);
     }
   }
 
@@ -462,37 +457,11 @@ class MapComponent extends React.Component {
     const intersectingFeatures = features.filter(feature =>
       polygonGeometry.intersectsExtent(feature.getGeometry().getExtent()),
     );
-    const intersectingFeatureIds = intersectingFeatures.map(f => f.getId());
+    const intersectingFeatureIds = intersectingFeatures.map(f => f.get("id"));
     if (!_.isEqual(_.sortBy(intersectingFeatureIds), _.sortBy(this.props.featureIds))) {
       this.props.setFeatureIds(intersectingFeatureIds);
     }
     return intersectingFeatures;
-  }
-
-  handleFilter(searchState, previousSearchState, view) {
-    if (this.timeoutFilter !== null) {
-      clearTimeout(this.timeoutFilter);
-    }
-    this.timeoutFilter = setTimeout(() => {
-      getGeojson(searchState.filter)
-        .then(
-          function (response) {
-            if (response.data.success) {
-              let features = new GeoJSON().readFeatures(response.data.data);
-              features = this.filterByPolygon(features);
-              this.points.clear();
-              this.points.addFeatures(features);
-              view.fit(this.points.getExtent());
-            }
-          }.bind(this),
-        )
-        .catch(function (error) {
-          console.log(error);
-        });
-    }, 500);
-    this.refreshPoints();
-    this.map.updateSize();
-    if (view.getResolution() < 1) view.setResolution(1);
   }
 
   refreshPoints() {
@@ -521,12 +490,12 @@ class MapComponent extends React.Component {
     // Load additional user layers
     this.addUserLayers(swissExtent);
 
-    // Load borehole points
-    this.fetchAndDisplayGeojson();
+    // Load borehole points from geoJson prop
+    this.displayGeoJson(this.props.geoJson);
   }
 
   componentDidUpdate(prevProps) {
-    const { searchState, highlighted, hover: hoverCallback, layers } = this.props;
+    const { geoJson, highlighted, hover: hoverCallback, layers } = this.props;
     const view = this.map.getView();
 
     if (this.context.currentBasemapName !== this.state.displayedBaseMap) {
@@ -542,10 +511,12 @@ class MapComponent extends React.Component {
     if (!_.isEqual(prevProps.highlighted, highlighted)) {
       this.handleHighlights(highlighted, hoverCallback, prevProps.highlighted);
     }
-    if (!_.isEqual(searchState.filter, prevProps.searchState.filter)) {
-      this.handleFilter(searchState, prevProps.searchState, view);
-    } else if (!_.isEqual(prevProps.filterPolygon, this.props.filterPolygon) && this.props.filterPolygon === null) {
-      this.handleFilter(searchState, prevProps.searchState, view);
+
+    if (!_.isEqual(prevProps.geoJson, geoJson)) {
+      this.displayGeoJson(geoJson);
+      this.refreshPoints();
+      this.map.updateSize();
+      if (view.getResolution() < 1) view.setResolution(1);
     }
 
     if (
@@ -557,8 +528,11 @@ class MapComponent extends React.Component {
   }
 
   componentWillUnmount() {
-    this.props.setMapResolution(this.map.getView().getResolution());
-    this.props.setMapCenter(this.map.getView().getCenter());
+    const mapCenter = this.map.getView().getCenter();
+    const mapResolution = this.map.getView().getResolution();
+    sessionStorage.setItem(SessionKeys.mapCenterX, String(mapCenter[0]));
+    sessionStorage.setItem(SessionKeys.mapCenterY, String(mapCenter[1]));
+    sessionStorage.setItem(SessionKeys.mapResolution, String(mapResolution));
   }
 
   //////// Event handlers ////////
@@ -566,7 +540,7 @@ class MapComponent extends React.Component {
     const { selected } = this.props;
     if (selected !== undefined) {
       if (e.selected.length > 0) {
-        selected(e.selected[0].getId());
+        selected(e.selected[0].get("id"));
       } else {
         selected(null);
       }
@@ -618,7 +592,7 @@ class MapComponent extends React.Component {
       this.setState({ hover: features }, () => {
         const coordinate = features[0].getGeometry().getCoordinates();
         this.popup.setPosition(coordinate);
-        this.props.hover?.(features.map(f => f.getId()));
+        this.props.hover?.(features.map(f => f.get("id")));
       });
     }
   }
@@ -690,7 +664,7 @@ class MapComponent extends React.Component {
 }
 
 MapComponent.propTypes = {
-  searchState: PropTypes.object,
+  geoJson: PropTypes.object,
   highlighted: PropTypes.array,
   hover: PropTypes.func,
   layers: PropTypes.object,
@@ -701,7 +675,7 @@ MapComponent.propTypes = {
 
 MapComponent.defaultProps = {
   highlighted: [],
-  searchState: {},
+  geoJson: null,
   layers: {},
 };
 

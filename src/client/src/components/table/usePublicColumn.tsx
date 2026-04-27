@@ -1,12 +1,11 @@
-import { ChangeEvent, Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from "react";
+import { ChangeEvent, Dispatch, RefObject, SetStateAction, useCallback, useContext, useEffect, useState } from "react";
 import { Checkbox, Stack, Typography } from "@mui/material";
 import { GridColumnHeaderParams, GridRenderCellParams, GridRowId } from "@mui/x-data-grid";
 import { GridApiCommunity } from "@mui/x-data-grid/internals";
-import { RefObject } from "@mui/x-internals/types";
 import { CheckIcon } from "lucide-react";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 
-export interface ItemWithPublicState {
+interface ItemWithPublicState {
   public?: boolean;
 }
 

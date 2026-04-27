@@ -18,7 +18,7 @@ interface DataCardsContainerProps {
 const DataCardsContainer: React.FC<DataCardsContainerProps> = ({ children }) => {
   return <DataCardContainer>{children()}</DataCardContainer>;
 };
-export const MemoizedDataCardsContainer = React.memo(DataCardsContainer);
+const MemoizedDataCardsContainer = React.memo(DataCardsContainer);
 
 interface TempDatacardEntity {
   id: number;
@@ -161,5 +161,3 @@ export const DataCards = <T extends DataCardEntity>({
     </FullPage>
   );
 };
-
-export default DataCards;

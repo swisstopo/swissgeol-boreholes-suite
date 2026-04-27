@@ -9,7 +9,7 @@ import { getFieldBorderColor } from "./formUtils.ts";
 import { NumericFormatWithThousandSeparator } from "./numericFormatWithThousandSeparator.tsx";
 import { useLabelOverflow } from "./useLabelOverflow.tsx";
 
-export interface FormInputProps {
+interface FormInputProps {
   fieldName: string;
   label: string;
   required?: boolean;

@@ -7,9 +7,10 @@ import { ThemeProvider } from "@mui/material/styles";
 import { Language, SwissgeolCoreI18n } from "@swissgeol/ui-core";
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import { NuqsAdapter } from "nuqs/adapters/react-router/v7";
 import { ApiError } from "./api/apiInterfaces.ts";
 import { theme } from "./AppTheme";
-import { BdmsAuthProvider } from "./auth/BdmsAuthProvider.tsx";
+import { BoreholesAuthProvider } from "./auth/BoreholesAuthProvider.tsx";
 import { AlertBanner } from "./components/alert/alertBanner";
 import { AlertContext, AlertProvider } from "./components/alert/alertContext";
 import { BasemapProvider } from "./components/basemapSelector/basemapContext";
@@ -24,9 +25,8 @@ import { DetailPage } from "./pages/detail/detailPage";
 import { EditStateProvider } from "./pages/detail/editStateContext.tsx";
 import { LabelingProvider } from "./pages/detail/labeling/labelingContext";
 import { SaveProvider } from "./pages/detail/saveContext.tsx";
-import { OverviewProvider } from "./pages/overview/overViewContext";
 import { OverviewPage } from "./pages/overview/overviewPage";
-import { FilterProvider } from "./pages/overview/sidePanelContent/filter/filterContext";
+import { PolygonFilterProvider } from "./pages/overview/sidePanelContent/filter/polygonFilterContext.tsx";
 import { UserWorkgroupsProvider } from "./pages/overview/UserWorkgroupsContext.tsx";
 import { DataLoader } from "./pages/settings/dataLoader";
 import { SettingsPage } from "./pages/settings/settingsPage";
@@ -60,7 +60,11 @@ const router = createBrowserRouter([
     path: "/",
     element: (
       <ErrorBoundary FallbackComponent={OverviewError}>
-        <OverviewPage />
+        <NuqsAdapter>
+          <PolygonFilterProvider>
+            <OverviewPage />
+          </PolygonFilterProvider>
+        </NuqsAdapter>
       </ErrorBoundary>
     ),
   },
@@ -160,7 +164,7 @@ const App = () => {
         <AlertBanner />
         <ErrorBoundary FallbackComponent={GlobalError}>
           <QueryClientInitializer>
-            <BdmsAuthProvider router={router}>
+            <BoreholesAuthProvider router={router}>
               <DataLoader>
                 <AnalyticsProvider>
                   <AcceptTerms>
@@ -169,15 +173,11 @@ const App = () => {
                         <Prompt />
                         <DataCardProvider>
                           <BasemapProvider>
-                            <FilterProvider>
-                              <OverviewProvider>
-                                <ReactQueryDevtools buttonPosition={"top-left"} initialIsOpen={false} />
-                                <AppBox>
-                                  <HeaderComponent />
-                                  <RouterProvider router={router} />
-                                </AppBox>
-                              </OverviewProvider>
-                            </FilterProvider>
+                            <ReactQueryDevtools buttonPosition={"top-left"} initialIsOpen={false} />
+                            <AppBox>
+                              <HeaderComponent />
+                              <RouterProvider router={router} />
+                            </AppBox>
                           </BasemapProvider>
                         </DataCardProvider>
                       </PromptProvider>
@@ -185,7 +185,7 @@ const App = () => {
                   </AcceptTerms>
                 </AnalyticsProvider>
               </DataLoader>
-            </BdmsAuthProvider>
+            </BoreholesAuthProvider>
           </QueryClientInitializer>
         </ErrorBoundary>
       </AlertProvider>

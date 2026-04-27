@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { getSectionsByBoreholeId } from "../../../../api/fetchApiV2.ts";
-import DataCards from "../../../../components/dataCard/dataCards.tsx";
+import { DataCards } from "../../../../components/dataCard/dataCards.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import SectionDisplay from "./sectionDisplay.jsx";
 import SectionInput from "./sectionInput.jsx";

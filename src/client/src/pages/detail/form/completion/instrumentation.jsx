@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { getInstrumentation } from "../../../../api/fetchApiV2.ts";
-import DataCards from "../../../../components/dataCard/dataCards.tsx";
+import { DataCards } from "../../../../components/dataCard/dataCards.tsx";
 import { sortByDepth } from "../sorter.jsx";
 import InstrumentationDisplay from "./instrumentationDisplay.jsx";
 import InstrumentationInput from "./instrumentationInput.jsx";

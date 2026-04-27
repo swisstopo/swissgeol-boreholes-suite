@@ -61,7 +61,6 @@ public class FilterRequest
     /// <summary>
     /// Gets or sets multiple borehole IDs filter.
     /// </summary>
-    [MaxLength(100)]
     public IEnumerable<int>? Ids { get; set; }
 
     /// <summary>

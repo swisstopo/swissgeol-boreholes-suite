@@ -61,7 +61,7 @@ export interface Lithostratigraphy {
 
 export const stratigraphiesQueryKey = "stratigraphies";
 
-export const invalidateStratigraphyQueries = (
+const invalidateStratigraphyQueries = (
   queryClient: ReturnType<typeof useQueryClient>,
   boreholeId: number,
   invalidateBorehole: boolean,
@@ -139,7 +139,7 @@ export const useStratigraphyMutations = () => {
   };
 };
 
-export const chronostratigraphiesQueryKey = "chronostratigraphies";
+const chronostratigraphiesQueryKey = "chronostratigraphies";
 
 export const useChronostratigraphies = (stratigraphyID?: number) =>
   useQuery({
@@ -194,7 +194,7 @@ export const useChronostratigraphyMutations = () => {
   };
 };
 
-export const lithostratigraphiesQueryKey = "lithostratigraphies";
+const lithostratigraphiesQueryKey = "lithostratigraphies";
 
 export const useLithostratigraphies = (stratigraphyID?: number) =>
   useQuery({

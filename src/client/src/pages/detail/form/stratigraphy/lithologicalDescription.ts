@@ -14,16 +14,14 @@ export interface ExtractedLithologicalDescription extends LithologicalDescriptio
   descriptionBoundingBoxes: ExtractionBoundingBox[];
 }
 
-export const fetchLithologicalDescriptionsByProfileId = async (
-  profileId: number,
-): Promise<LithologicalDescription[]> => {
+const fetchLithologicalDescriptionsByProfileId = async (profileId: number): Promise<LithologicalDescription[]> => {
   return await fetchApiV2WithApiError<LithologicalDescription[]>(
     `lithologicaldescription?stratigraphyId=${profileId}`,
     "GET",
   );
 };
 
-export const addLithologicalDescription = async (
+const addLithologicalDescription = async (
   lithologicalDescription: LithologicalDescription,
 ): Promise<LithologicalDescription> => {
   return await fetchApiV2WithApiError<LithologicalDescription>(
@@ -33,7 +31,7 @@ export const addLithologicalDescription = async (
   );
 };
 
-export const updateLithologicalDescription = async (
+const updateLithologicalDescription = async (
   lithologicalDescription: LithologicalDescription,
 ): Promise<LithologicalDescription> => {
   return await fetchApiV2WithApiError<LithologicalDescription>(
@@ -43,11 +41,11 @@ export const updateLithologicalDescription = async (
   );
 };
 
-export const deleteLithologicalDescription = async (id: number): Promise<void> => {
+const deleteLithologicalDescription = async (id: number): Promise<void> => {
   await fetchApiV2WithApiError(`lithologicaldescription?id=${id}`, "DELETE");
 };
 
-export const lithologicalDescriptionQueryKey = "lithologicalDescription";
+const lithologicalDescriptionQueryKey = "lithologicalDescription";
 
 export const useLithologicalDescriptions = (stratigraphyId?: number) =>
   useQuery({

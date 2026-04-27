@@ -1,14 +1,14 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { WorkflowStatus } from "@swissgeol/ui-core";
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FeatureCollection, Geometry } from "geojson";
 import { Codelist } from "../components/codelist.ts";
 import { Photo } from "../pages/detail/attachments/tabs/photo.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
-import { LogRun } from "../pages/detail/form/log/log.ts";
+import { LogRun } from "../pages/detail/form/log/logInterfaces.ts";
 import { Workflow } from "../pages/detail/form/workflow/workflow.ts";
+import { SessionKeys } from "../pages/overview/SessionKey.ts";
 import { Document, NullableDateString, User, Workgroup } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
@@ -114,7 +114,7 @@ export const importBoreholesZip = async (workgroupId: number | null, combinedFor
   return await upload(`import/zip?workgroupId=${workgroupId}`, "POST", combinedFormData);
 };
 
-export const createBorehole = async (workgroupId: number): Promise<BoreholeV2> => {
+const createBorehole = async (workgroupId: number): Promise<BoreholeV2> => {
   return await fetchApiV2WithApiError<BoreholeV2>(`borehole`, "POST", {
     workgroupId,
     originalReferenceSystem: referenceSystems.LV95.code,
@@ -135,19 +135,19 @@ export const exportJsonWithAttachmentsBorehole = async (boreholeIds: number[] | 
   return await download(`boreholeexport/zip?${getIdQuery(boreholeIds)}`);
 };
 
-export const fetchBoreholeById = async (id: number): Promise<BoreholeV2> => {
+const fetchBoreholeById = async (id: number): Promise<BoreholeV2> => {
   return await fetchApiV2WithApiError<BoreholeV2>(`borehole/${id}`, "GET");
 };
 
-export const updateBorehole = async (borehole: BoreholeV2): Promise<BoreholeV2> => {
+const updateBorehole = async (borehole: BoreholeV2): Promise<BoreholeV2> => {
   return await fetchApiV2WithApiError<BoreholeV2>("borehole", "PUT", borehole);
 };
-export const deleteBorehole = async (id: number) => await fetchApiV2WithApiError(`borehole?id=${id}`, "DELETE");
+const deleteBorehole = async (id: number) => await fetchApiV2WithApiError(`borehole?id=${id}`, "DELETE");
 
-export const canUserEditBorehole = async (id: number) =>
+const canUserEditBorehole = async (id: number) =>
   await fetchApiV2WithApiError<boolean>(`permissions/canedit?boreholeId=${id}`, "GET");
 
-export const canUserUpdateBoreholeStatus = async (id: number) =>
+const canUserUpdateBoreholeStatus = async (id: number) =>
   await fetchApiV2WithApiError<boolean>(`permissions/canchangestatus?boreholeId=${id}`, "GET");
 
 export const boreholeQueryKey = "boreholes";
@@ -258,7 +258,21 @@ export interface BoreholeListItem {
   locked: NullableDateString;
 }
 
-export interface FilterRequest {
+enum NullableBooleanFilter {
+  false,
+  true,
+  null,
+}
+
+enum BooleanFilter {
+  false,
+  true,
+}
+
+export type BooleanFilterValue = "true" | "false" | undefined;
+export type NullableBooleanFilterValue = BooleanFilterValue | "null";
+
+interface BaseFilterRequest {
   polygon?: Geometry | null;
   originalName?: string | null;
   projectName?: string | null;
@@ -277,19 +291,33 @@ export interface FilterRequest {
   topBedrockFreshMdMax?: number | null;
   topBedrockWeatheredMdMin?: number | null;
   topBedrockWeatheredMdMax?: number | null;
-  nationalInterest?: boolean | null;
-  topBedrockIntersected?: boolean | null;
-  hasGroundwater?: boolean | null;
-  hasGeometry?: boolean | null;
-  hasLogs?: boolean | null;
-  hasProfiles?: boolean | null;
-  hasPhotos?: boolean | null;
-  hasDocuments?: boolean | null;
-  workflowStatus?: WorkflowStatus | null;
   pageNumber?: number;
   pageSize?: number;
   orderBy?: string | null;
   direction?: string | null;
+  workflowStatus?: string | null;
+}
+
+export interface FilterRequest extends BaseFilterRequest {
+  nationalInterest?: NullableBooleanFilterValue;
+  topBedrockIntersected?: NullableBooleanFilterValue;
+  hasGroundwater?: NullableBooleanFilterValue;
+  hasGeometry?: BooleanFilterValue;
+  hasLogs?: BooleanFilterValue;
+  hasProfiles?: BooleanFilterValue;
+  hasPhotos?: BooleanFilterValue;
+  hasDocuments?: BooleanFilterValue;
+}
+
+interface FilterRequestSubmission extends BaseFilterRequest {
+  nationalInterest?: NullableBooleanFilter;
+  topBedrockIntersected?: NullableBooleanFilter;
+  hasGroundwater?: NullableBooleanFilter;
+  hasGeometry?: BooleanFilter;
+  hasLogs?: BooleanFilter;
+  hasProfiles?: BooleanFilter;
+  hasPhotos?: BooleanFilter;
+  hasDocuments?: BooleanFilter;
 }
 
 export interface FilterResponse {
@@ -304,13 +332,96 @@ export interface FilterResponse {
 }
 
 // ---- Filter API ----
-export const filterBoreholes = async (filterRequest: FilterRequest): Promise<FilterResponse> => {
+export const filterBoreholes = async (filterRequest: FilterRequestSubmission): Promise<FilterResponse> => {
   return await fetchApiV2WithApiError<FilterResponse>("borehole/filter", "POST", filterRequest);
 };
 
-export const useFilterBoreholes = (filterRequest: FilterRequest) => {
+const parseBooleanFilter = (value: "true" | "false" | undefined | null): BooleanFilter | undefined => {
+  if (value === "true") return BooleanFilter.true;
+  if (value === "false") return BooleanFilter.false;
+  return undefined;
+};
+
+const parseNullableBooleanFilter = (
+  value: "true" | "false" | "null" | undefined | null,
+): NullableBooleanFilter | undefined => {
+  if (value === "true") return NullableBooleanFilter.true;
+  if (value === "false") return NullableBooleanFilter.false;
+  if (value === "null") return NullableBooleanFilter.null;
+  return undefined;
+};
+
+export const toFilterRequestSubmission = (filterRequest: FilterRequest): FilterRequestSubmission => ({
+  ...filterRequest,
+  hasGroundwater: parseNullableBooleanFilter(filterRequest.hasGroundwater),
+  topBedrockIntersected: parseNullableBooleanFilter(filterRequest.topBedrockIntersected),
+  nationalInterest: parseNullableBooleanFilter(filterRequest.nationalInterest),
+  hasGeometry: parseBooleanFilter(filterRequest.hasGeometry),
+  hasLogs: parseBooleanFilter(filterRequest.hasLogs),
+  hasProfiles: parseBooleanFilter(filterRequest.hasProfiles),
+  hasPhotos: parseBooleanFilter(filterRequest.hasPhotos),
+  hasDocuments: parseBooleanFilter(filterRequest.hasDocuments),
+});
+
+/**
+ * Reads filter values from sessionStorage and constructs a FilterRequest object.
+ */
+export function getDefaultFilterRequestFromSession(): FilterRequest {
+  const get = (key: string) => sessionStorage.getItem(key);
+
+  const getInt = (key: string) => {
+    const n = Number.parseInt(get(key) ?? "");
+    return Number.isNaN(n) ? undefined : n;
+  };
+
+  const getFloat = (key: string) => {
+    const n = Number.parseFloat(get(key) ?? "");
+    return Number.isNaN(n) ? undefined : n;
+  };
+
+  const toArray = (n: number | undefined) => (n === undefined ? undefined : [n]);
+
+  const allFilterParams = {
+    pageNumber: (getInt(SessionKeys.page) ?? 0) + 1,
+    pageSize: getInt(SessionKeys.pageSize) ?? 100,
+    orderBy: get(SessionKeys.orderBy) ?? "name",
+    direction: get(SessionKeys.direction) ?? "ASC",
+    originalName: get(SessionKeys.originalName) ?? undefined,
+    projectName: get(SessionKeys.projectName) ?? undefined,
+    name: get(SessionKeys.name) ?? undefined,
+    statusId: toArray(getInt(SessionKeys.statusId)),
+    typeId: toArray(getInt(SessionKeys.typeId)),
+    purposeId: toArray(getInt(SessionKeys.purposeId)),
+    workgroupId: toArray(getInt(SessionKeys.workgroupId)),
+    restrictionId: toArray(getInt(SessionKeys.restrictionId)),
+    restrictionUntilFrom: get(SessionKeys.restrictionUntilFrom) ?? undefined,
+    restrictionUntilTo: get(SessionKeys.restrictionUntilTo) ?? undefined,
+    totalDepthMin: getFloat(SessionKeys.totalDepthMin),
+    totalDepthMax: getFloat(SessionKeys.totalDepthMax),
+    topBedrockFreshMdMin: getFloat(SessionKeys.topBedrockFreshMdMin),
+    topBedrockFreshMdMax: getFloat(SessionKeys.topBedrockFreshMdMax),
+    topBedrockWeatheredMdMin: getFloat(SessionKeys.topBedrockWeatheredMdMin),
+    topBedrockWeatheredMdMax: getFloat(SessionKeys.topBedrockWeatheredMdMax),
+    nationalInterest: get(SessionKeys.nationalInterest) as NullableBooleanFilterValue,
+    topBedrockIntersected: get(SessionKeys.topBedrockIntersected) as NullableBooleanFilterValue,
+    hasGroundwater: get(SessionKeys.hasGroundwater) as NullableBooleanFilterValue,
+    hasGeometry: get(SessionKeys.hasGeometry) as BooleanFilterValue,
+    hasLogs: get(SessionKeys.hasLogs) as BooleanFilterValue,
+    hasProfiles: get(SessionKeys.hasProfiles) as BooleanFilterValue,
+    hasPhotos: get(SessionKeys.hasPhotos) as BooleanFilterValue,
+    hasDocuments: get(SessionKeys.hasDocuments) as BooleanFilterValue,
+    workflowStatus: get(SessionKeys.workflowStatus) ?? undefined,
+  };
+  return Object.fromEntries(Object.entries(allFilterParams).filter(([, value]) => value != null));
+}
+
+export const useFilterBoreholes = (filterRequest: FilterRequest, enabled = true) => {
+  const filterRequestSubmission = toFilterRequestSubmission(filterRequest);
+
   return useQuery({
-    queryKey: [boreholeQueryKey, filterRequest],
-    queryFn: () => filterBoreholes(filterRequest),
+    queryKey: [boreholeQueryKey, filterRequestSubmission],
+    queryFn: () => filterBoreholes(filterRequestSubmission),
+    enabled,
+    placeholderData: keepPreviousData,
   });
 };

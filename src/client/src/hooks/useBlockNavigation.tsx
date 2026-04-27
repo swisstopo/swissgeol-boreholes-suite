@@ -9,9 +9,21 @@ export const useBlockNavigation = () => {
   const { showPrompt } = useContext(PromptContext);
   const promptShownRef = useRef(false);
 
-  const shouldBlock = useCallback(() => {
-    return hasChanges;
-  }, [hasChanges]);
+  const shouldBlock = useCallback(
+    ({
+      currentLocation,
+      nextLocation,
+    }: {
+      currentLocation: { pathname: string; hash: string };
+      nextLocation: { pathname: string; hash: string };
+    }) => {
+      // Only block when the navigation actually leaves the current page.
+      if (currentLocation.pathname === nextLocation.pathname && currentLocation.hash === nextLocation.hash)
+        return false;
+      return hasChanges;
+    },
+    [hasChanges],
+  );
 
   const blocker = useBlocker(shouldBlock);
 

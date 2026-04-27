@@ -164,20 +164,7 @@ export async function upload(url: string, method: string, payload: FormData): Pr
 
 // Enable using react-query outputs across the application.
 
-const staleTime10Min = 10 * 60 * 1000;
-const garbageCollectionTime15Min = 15 * 60 * 1000;
-
-export const useCantons = () =>
-  useQuery({
-    queryKey: ["cantons"],
-    queryFn: () => {
-      return fetchApiV2WithApiError<string[]>("canton", "GET");
-    },
-    staleTime: staleTime10Min,
-    gcTime: garbageCollectionTime15Min,
-  });
-
-export const geometryQueryKey = "boreholeGeometry";
+const geometryQueryKey = "boreholeGeometry";
 
 export const useBoreholeGeometry = (boreholeId?: number) =>
   useQuery({
