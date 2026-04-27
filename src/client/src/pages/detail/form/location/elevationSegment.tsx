@@ -1,15 +1,10 @@
 import { FC } from "react";
-import { UseFormReturn } from "react-hook-form";
 import { Codelist, useCodelists } from "../../../../components/codelist.ts";
 import { FormContainer, FormDomainSelect, FormInput, FormInputDisplayOnly } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
-import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
+import { LocationBaseProps } from "./locationPanelInterfaces.tsx";
 
-interface ElevationSegmentProps extends LocationBaseProps {
-  formMethods: UseFormReturn<LocationFormInputs>;
-}
-
-const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, formMethods }) => {
+const ElevationSegment: FC<LocationBaseProps> = ({ borehole }) => {
   const { data: codelists } = useCodelists();
 
   return (
@@ -20,7 +15,6 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, formMethods }) 
             fieldName={"elevationZ"}
             label={"elevation_z"}
             value={borehole.elevationZ}
-            controlledValue={formMethods.watch("elevationZ") ?? ""}
             withThousandSeparator={true}
           />
           <FormDomainSelect
@@ -35,7 +29,6 @@ const ElevationSegment: FC<ElevationSegmentProps> = ({ borehole, formMethods }) 
             fieldName={"referenceElevation"}
             label={"reference_elevation"}
             value={borehole?.referenceElevation}
-            controlledValue={formMethods.watch("referenceElevation") ?? ""}
             withThousandSeparator={true}
           />
           <FormDomainSelect

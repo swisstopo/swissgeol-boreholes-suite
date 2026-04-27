@@ -1,5 +1,5 @@
 import { FC, useContext } from "react";
-import { useFormContext, useFormState } from "react-hook-form";
+import { useFormContext, useFormState, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { InputProps, SxProps, TextField } from "@mui/material";
 import { isValid } from "date-fns";
@@ -19,7 +19,6 @@ interface FormInputProps {
   multiline?: boolean;
   rows?: number;
   value?: string | number | Date | null;
-  controlledValue?: string | number | Date;
   sx?: SxProps;
   className?: string;
   inputProps?: InputProps;
@@ -37,8 +36,7 @@ export const FormInput: FC<FormInputProps> = ({
   type,
   multiline,
   rows,
-  value, // default value passed to the Textfield component
-  controlledValue, // value to be controlled with react-hook-form state, it is needed to correctly reset values with thousands separator
+  value,
   sx,
   className,
   inputProps,
@@ -54,6 +52,10 @@ export const FormInput: FC<FormInputProps> = ({
   const isDateInput = type === FormValueType.Date;
   const isReadOnly = readonly ?? !editingEnabled;
   const { labelWithTooltip } = useLabelOverflow(label);
+
+  // Thousand-separator inputs need to be controlled, otherwise the field gets marked as dirty
+  // on mount when the formatter reformats the initial number into a string.
+  const watchedValue = useWatch({ control, name: fieldName, disabled: !withThousandSeparator });
 
   const getDefaultValue = (value: string | number | Date | undefined | null) => {
     if (value == undefined) {
@@ -105,7 +107,7 @@ export const FormInput: FC<FormInputProps> = ({
         },
       })}
       defaultValue={getDefaultValue(value)}
-      value={controlledValue}
+      value={withThousandSeparator ? (watchedValue ?? "") : undefined}
       disabled={disabled || false}
       data-cy={fieldName + "-formInput"}
       slotProps={{
