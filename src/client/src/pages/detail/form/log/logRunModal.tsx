@@ -46,7 +46,10 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
       validateDepths(values, errors);
       validateRunNumber(values, errors, runs);
       validateFiles(values, errors);
-      return { values, errors };
+      if (Object.keys(errors).length > 0) {
+        return { values: {}, errors };
+      }
+      return { values, errors: {} };
     },
   });
 
