@@ -5,9 +5,59 @@ on:
   workflow_dispatch:
 
 jobs:
+  build-images:
+    runs-on: ubuntu-latest
+    name: Build api images
+    permissions:
+      contents: read
+
+    steps:
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@4d04d5d9486b7bd6fa91e7baf45bbb4f8b9deedd # v4.0.0
+
+      - name: Build api image
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+        with:
+          context: ./src
+          file: ./src/api/Dockerfile
+          target: deploy
+          # VERSION matches the 0.0.99 dev placeholder used by every other build arg in the repo.
+          # REVISION is a fixed string so the publish layer stays cache-stable across commits;
+          # swap to ${{ github.sha }} if accurate SourceRevisionId in binaries matters more than cache hits.
+          build-args: |
+            VERSION=0.0.99
+            REVISION=ci
+          load: true
+          tags: bdms-api
+          cache-from: type=gha,scope=bdms-api
+          cache-to: type=gha,scope=bdms-api,mode=max
+
+      - name: Build api-legacy image
+        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+        with:
+          context: ./src/api-legacy
+          load: true
+          tags: bdms-api-legacy
+          cache-from: type=gha,scope=bdms-api-legacy
+          cache-to: type=gha,scope=bdms-api-legacy,mode=max
+
+      - name: Save images
+        run: docker save bdms-api bdms-api-legacy | gzip > /tmp/bdms-images.tar.gz
+
+      - name: Upload images
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
+        with:
+          name: bdms-images
+          path: /tmp/bdms-images.tar.gz
+          retention-days: 1
+          compression-level: 0
+
   ci:
     runs-on: ubuntu-latest
     name: Build and run tests
+    needs: build-images
     permissions:
       contents: read
       packages: read
@@ -60,13 +110,14 @@ jobs:
   cypress-tests:
     runs-on: ubuntu-latest
     name: Run cypress tests
+    needs: build-images
     permissions:
       contents: read
       packages: read
     strategy:
       fail-fast: false
       matrix:
-        containers: [ 1, 2, 3, 4, 5 ]
+        index: [ 0, 1, 2, 3, 4 ]
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -90,7 +141,7 @@ jobs:
       - name: Cypress run
         uses: cypress-io/github-action@783cb3f07983868532cabaedaa1e6c00ff4786a8 # v7.1.9
         with:
-          command: npx cypress run --record --parallel --key ${{ secrets.CYPRESS_RECORD_KEY }} --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}}
+          command: npx cypress run --record --key ${{ secrets.CYPRESS_RECORD_KEY }} --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt}}
           build: npm run build
           start: npm run preview
           wait-on: "http://localhost:3000"
@@ -99,6 +150,8 @@ jobs:
         env:
           VITE_APP_VERSION: 0.0.99+dev
           TZ: Europe/Zurich
+          SPLIT: 5
+          SPLIT_INDEX: ${{ matrix.index }}
     env:
       # Pass the GitHub token lets this action correctly
       # determine the unique run id necessary to re-run the checks
