@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- Filters are now organized in new sections. Filters for attachments and LOG were added.
+
 ## v2.1.1568 - 2026-04-23
 
 ### Added
