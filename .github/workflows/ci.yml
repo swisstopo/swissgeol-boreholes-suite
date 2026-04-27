@@ -10,7 +10,7 @@ jobs:
     name: Build and run tests
     permissions:
       contents: read
-      packages: write
+      packages: read
 
     steps:
       - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
@@ -59,7 +59,7 @@ jobs:
     name: Run cypress tests
     permissions:
       contents: read
-      packages: write
+      packages: read
     strategy:
       fail-fast: false
       matrix:
