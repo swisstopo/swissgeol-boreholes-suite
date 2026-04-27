@@ -23,7 +23,7 @@ interface Units {
  * - `8`: "m" (meters)
  */
 
-export const TestResultParameterUnits: Units = {
+const TestResultParameterUnits: Units = {
   1: "m/s",
   2: "m/s",
   3: "m²/s",
@@ -51,7 +51,7 @@ export const TestResultParameterUnits: Units = {
  * - `7`: "mg/L" (milligrams per liter)
  */
 
-export const FieldMeasurementParameterUnits: Units = {
+const FieldMeasurementParameterUnits: Units = {
   1: "°C",
   2: "",
   3: "µS/cm",

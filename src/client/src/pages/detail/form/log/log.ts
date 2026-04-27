@@ -3,69 +3,17 @@ import { useTranslation } from "react-i18next";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { ArrowDownToLine, X } from "lucide-react";
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
-import { NullableDateString, User } from "../../../../api/apiInterfaces.ts";
 import { boreholeQueryKey } from "../../../../api/borehole.ts";
 import { downloadPost } from "../../../../api/download.ts";
 import { fetchApiV2WithApiError, upload, uploadWithApiError } from "../../../../api/fetchApiV2.ts";
-import { Codelist } from "../../../../components/codelist.ts";
 import { ExportItem } from "../../../../components/export/exportDialog.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { SaveContext } from "../../saveContext.tsx";
-
-export interface LogRunChangeTracker {
-  item: LogRun;
-  hasChanges: boolean;
-}
-
-export interface LogRun {
-  id: number;
-  tmpId?: string;
-  boreholeId: number;
-  runNumber: string;
-  fromDepth: number;
-  toDepth: number;
-  runDate?: NullableDateString;
-  comment?: string;
-  serviceCo?: string;
-  bitSize?: number;
-  conveyanceMethodId?: number | null;
-  conveyanceMethod?: Codelist;
-  boreholeStatusId?: number | null;
-  boreholeStatus?: Codelist;
-  logFiles?: LogFile[];
-  created?: NullableDateString;
-  createdBy?: User | null;
-  updated?: NullableDateString;
-  updatedBy?: User | null;
-}
-
-export interface LogFile {
-  id: number;
-  tmpId?: string;
-  logRunId: number;
-  name?: string;
-  extension?: string;
-  file?: File;
-  passTypeId?: number | null;
-  passType?: Codelist;
-  pass?: number | null;
-  dataPackageId?: number | null;
-  dataPackage?: Codelist;
-  deliveryDate?: NullableDateString;
-  depthTypeId?: number | null;
-  depthType?: Codelist;
-  toolTypeCodelistIds: number[];
-  toolTypeCodelists?: Codelist[];
-  public: boolean;
-  created?: NullableDateString;
-  createdBy?: User | null;
-  updated?: NullableDateString;
-  updatedBy?: User | null;
-}
+import { LogFile, LogRun } from "./logInterfaces.ts";
 
 const logController = "log";
-export const logsQueryKey = "logs";
+const logsQueryKey = "logs";
 export const useLogsByBoreholeId = (boreholeId?: number): UseQueryResult<LogRun[]> =>
   useQuery<LogRun[]>({
     queryKey: [logsQueryKey, boreholeId],

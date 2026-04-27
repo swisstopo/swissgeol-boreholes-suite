@@ -1,5 +1,5 @@
 import { FC } from "react";
-import DataInputCard from "../../../../../components/dataCard/dataInputCard.js";
+import { DataInputCard } from "../../../../../components/dataCard/dataInputCard.js";
 import { FormContainer } from "../../../../../components/form/form.ts";
 import { FormDomainSelect } from "../../../../../components/form/formDomainSelect.tsx";
 import { parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";

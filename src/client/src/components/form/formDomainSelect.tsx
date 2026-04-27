@@ -4,7 +4,7 @@ import { Codelist, CodelistLabelStyle, useCodelistLabel, useCodelists } from "..
 import { FormSelect } from "./form";
 import { FormSelectProps, FormSelectValue } from "./formSelect.tsx";
 
-export interface FormDomainSelectProps extends FormSelectProps {
+interface FormDomainSelectProps extends FormSelectProps {
   schemaName: string;
   prefilteredDomains?: Codelist[];
   additionalValues?: FormSelectValue[];

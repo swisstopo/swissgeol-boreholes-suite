@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { FormSelect } from "./form";
 import { FormSelectProps } from "./formSelect.tsx";
 
-export interface FormBooleanSelectProps extends FormSelectProps {
+interface FormBooleanSelectProps extends FormSelectProps {
   label: string;
   selected?: boolean | null | undefined;
   allowUndefined?: boolean;

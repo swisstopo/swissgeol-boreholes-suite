@@ -22,8 +22,8 @@ import { validateDepths } from "../../../../components/form/formUtils";
 import { useFormDirty } from "../../../../components/form/useFormDirty";
 import { EditStateContext } from "../../editStateContext";
 import { FileDropzone } from "./fileDropzone.tsx";
-import { LogFile, LogRun } from "./log";
 import { LogFileTable } from "./logFilesTable";
+import { LogFile, LogRun } from "./logInterfaces";
 import { getFileExtension, getServiceOrToolArray, validateFiles, validateRunNumber } from "./logUtils";
 
 type LogFileField = LogFile & { fileKey: string };

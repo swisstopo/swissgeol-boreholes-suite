@@ -1,12 +1,5 @@
 import { fetch } from "./index";
 
-export function acceptTerms(idTes) {
-  return fetch("/terms", {
-    type: "ACCEPT",
-    id_tes: idTes,
-  });
-}
-
 export function draftTerms(terms) {
   return fetch("/terms/admin", {
     action: "DRAFT",

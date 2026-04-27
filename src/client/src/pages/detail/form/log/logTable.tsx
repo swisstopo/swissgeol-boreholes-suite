@@ -16,7 +16,8 @@ import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts
 import { Table } from "../../../../components/table/table.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { SaveContext } from "../../saveContext.tsx";
-import { exportLogRuns, LogRun, LogRunChangeTracker, useLogExport } from "./log.ts";
+import { exportLogRuns, useLogExport } from "./log.ts";
+import { LogRun, LogRunChangeTracker } from "./logInterfaces.ts";
 import { getServiceOrToolArray } from "./logUtils.ts";
 
 interface SectionFilter {

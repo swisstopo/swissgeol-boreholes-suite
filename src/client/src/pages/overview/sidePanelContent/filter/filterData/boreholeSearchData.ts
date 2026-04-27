@@ -1,33 +1,76 @@
-export const boreholeSearchData = [
+import { SearchData } from "./filterInterfaces.ts";
+
+export const boreholeSearchData: SearchData[] = [
   {
     id: 0,
+    type: "Input",
+    label: "originalName",
+    value: "originalName",
+  },
+  {
+    id: 1,
+    type: "Input",
+    label: "projectName",
+    value: "projectName",
+  },
+  {
+    id: 2,
+    type: "Input",
+    label: "alternate_name",
+    value: "name",
+  },
+  {
+    id: 3,
+    type: "Dropdown",
+    label: "restriction",
+    value: "restrictionId",
+    schema: "restriction",
+  },
+  {
+    id: 4,
+    type: "Date",
+    label: "restriction_until",
+    value: "restrictionUntilFrom",
+    placeholder: "afterdate",
+    hasTwoFields: true,
+  },
+  {
+    id: 5,
+    type: "Date",
+    label: "",
+    value: "restrictionUntilTo",
+    placeholder: "beforedate",
+    hasTwoFields: true,
+  },
+  {
+    id: 6,
+    type: "NullableBoolean",
+    label: "nationalInterest",
+    value: "nationalInterest",
+  },
+  {
+    id: 7,
     type: "Dropdown",
     label: "borehole_type",
     value: "typeId",
     schema: "borehole_type",
-    multiple: false,
-    search: false,
   },
   {
-    id: 1,
+    id: 8,
     type: "Dropdown",
     label: "purpose",
     value: "purposeId",
     schema: "extended.purpose",
-    multiple: false,
-    search: false,
   },
   {
-    id: 2,
+    id: 9,
     type: "Dropdown",
     label: "boreholeStatus",
     value: "statusId",
     schema: "extended.status",
-    multiple: false,
-    search: false,
   },
   {
-    id: 3,
+    id: 10,
     type: "Input",
     label: "totaldepth",
     value: "totalDepthMin",
@@ -37,7 +80,7 @@ export const boreholeSearchData = [
     placeholder: "from",
   },
   {
-    id: 4,
+    id: 11,
     type: "Input",
     label: "",
     value: "totalDepthMax",
@@ -47,7 +90,7 @@ export const boreholeSearchData = [
     placeholder: "to",
   },
   {
-    id: 5,
+    id: 12,
     type: "Input",
     label: "top_bedrock_fresh_md",
     value: "topBedrockFreshMdMin",
@@ -57,7 +100,7 @@ export const boreholeSearchData = [
     placeholder: "from",
   },
   {
-    id: 6,
+    id: 13,
     type: "Input",
     label: "",
     value: "topBedrockFreshMdMax",
@@ -67,7 +110,7 @@ export const boreholeSearchData = [
     placeholder: "to",
   },
   {
-    id: 7,
+    id: 14,
     type: "Input",
     label: "top_bedrock_weathered_md",
     value: "topBedrockWeatheredMdMin",
@@ -77,7 +120,7 @@ export const boreholeSearchData = [
     placeholder: "from",
   },
   {
-    id: 8,
+    id: 15,
     type: "Input",
     label: "",
     value: "topBedrockWeatheredMdMax",
@@ -88,20 +131,19 @@ export const boreholeSearchData = [
   },
 
   {
-    id: 9,
+    id: 16,
     type: "NullableBoolean",
     label: "hasGroundwater",
     value: "hasGroundwater",
   },
-
   {
-    id: 10,
+    id: 17,
     type: "NullableBoolean",
     label: "topBedrockIntersected",
     value: "topBedrockIntersected",
   },
   {
-    id: 11,
+    id: 18,
     type: "Boolean",
     label: "hasGeometry",
     value: "hasGeometry",

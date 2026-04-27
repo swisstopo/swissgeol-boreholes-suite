@@ -5,7 +5,7 @@ import {
   ensureDateOnly,
   parseFloatWithThousandsSeparator,
 } from "../../../../components/form/formUtils.ts";
-import { LogFile, LogRun } from "./log.ts";
+import { LogFile, LogRun } from "./logInterfaces.ts";
 
 export const prepareLogRunForSubmit = (data: LogRun) => {
   data.fromDepth = parseFloatWithThousandsSeparator(data.fromDepth)!;

@@ -1,7 +1,7 @@
 import { applyMiddleware, combineReducers, compose, createStore } from "redux";
 import { thunk } from "redux-thunk";
 
-export function user() {
+function user() {
   const initialState = {
     isFetching: false,
     error: false,
@@ -86,7 +86,7 @@ export function user() {
 
 // Function that add dynamically reducers to the store
 // Inspired by: https://stackoverflow.com/a/33044701
-export function createReducer(pluginsReducers) {
+function createReducer(pluginsReducers) {
   const combinedReducers = combineReducers({
     core_user: user(),
     ...pluginsReducers,
@@ -96,7 +96,7 @@ export function createReducer(pluginsReducers) {
 
 const composeEnhancers = window.__REDUX_DEVTOOLS_EXTENSION_COMPOSE__ || compose;
 
-export function configureStore() {
+function configureStore() {
   const store = createStore(createReducer(), composeEnhancers(applyMiddleware(thunk)));
   store.pluginsReducers = {};
   return store;

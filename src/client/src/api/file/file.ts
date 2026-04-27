@@ -73,14 +73,14 @@ export const updateFile = async (
   );
 };
 
-export async function createExtractionPngs(fileName: string) {
+async function createExtractionPngs(fileName: string) {
   const response = await fetchCreatePngs(fileName);
   if (!response.ok) {
     throw new ApiError("errorDataExtractionFileLoading", response.status);
   }
 }
 
-export async function fetchExtractionBoundingBoxes(fileName: string, pageNumber: number): Promise<BoundingBoxResponse> {
+async function fetchExtractionBoundingBoxes(fileName: string, pageNumber: number): Promise<BoundingBoxResponse> {
   const response = await fetchPageBoundingBoxes(fileName, pageNumber);
   if (!response.ok) {
     throw new ApiError("errorDataExtractionFetchBoundingBoxes", response.status);
@@ -119,7 +119,7 @@ export async function extractText(request: ExtractionRequest, abortSignal: Abort
   return fetchAndHandleExtractionResponse(request, abortSignal, "noTextFound");
 }
 
-export async function extractStratigraphies(
+async function extractStratigraphies(
   fileName: string,
   abortSignal: AbortSignal,
 ): Promise<StratigraphyExtractionResponse> {
@@ -150,7 +150,7 @@ const cleanUpExtractionData = (
     }, []);
 };
 
-export interface ExtractedStratigraphy {
+interface ExtractedStratigraphy {
   descriptions: ExtractedLithologicalDescription[];
   pageNumbers: number[];
 }
