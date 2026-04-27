@@ -9,6 +9,12 @@ import { getFieldBorderColor } from "./formUtils.ts";
 import { NumericFormatWithThousandSeparator } from "./numericFormatWithThousandSeparator.tsx";
 import { useLabelOverflow } from "./useLabelOverflow.tsx";
 
+const toFormatterValue = (v: string | number | Date | null | undefined): string => {
+  if (v == null) return "";
+  if (typeof v === "number") return String(v);
+  return v as string;
+};
+
 interface FormInputProps {
   fieldName: string;
   label: string;
@@ -62,7 +68,7 @@ export const FormInput: FC<FormInputProps> = ({
   // We store it as a string to match what the formatter writes back when the user types.
   useEffect(() => {
     if (withThousandSeparator && value != null && getValues(fieldName) === undefined) {
-      setValue(fieldName, typeof value === "number" ? String(value) : value);
+      setValue(fieldName, toFormatterValue(value));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -70,13 +76,7 @@ export const FormInput: FC<FormInputProps> = ({
   // What the input shows: the form value if it has one, otherwise the prop.
   // On the first render the form is still empty; without the prop fallback the input would
   // flash empty and then jump to the value, and that jump would be treated as a user change.
-  const rawControlledValue = watchedValue ?? value;
-  const controlledValue =
-    rawControlledValue == null
-      ? ""
-      : typeof rawControlledValue === "number"
-        ? String(rawControlledValue)
-        : (rawControlledValue as string);
+  const controlledValue = toFormatterValue(watchedValue ?? value);
 
   const getDefaultValue = (value: string | number | Date | undefined | null) => {
     if (value == undefined) {
