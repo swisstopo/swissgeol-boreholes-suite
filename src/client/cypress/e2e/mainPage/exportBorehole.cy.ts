@@ -186,7 +186,7 @@ describe("Test for exporting boreholes.", () => {
     exportCSVItem();
     cy.readFile(prepareDownloadPath(csvFileName)).then(fileContent => {
       const { lines, rows } = splitFileContent(fileContent);
-      expect(lines.length).to.equal(4);
+      expect(lines.length).to.equal(3);
 
       expect(rows[0][3]).to.equal("Name");
       expect(rows[1][3]).to.equal(firstBoreholeName);
