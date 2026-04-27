@@ -25,6 +25,36 @@ interface ImportLogModalProps {
   setIsImporting: (isImporting: boolean) => void;
 }
 
+const ImportErrorSection: FC<{ prefix: "LogRun" | "LogFile"; rowMessageKey: string; errors: ImportError[] }> = ({
+  prefix,
+  rowMessageKey,
+  errors,
+}) => {
+  const { t } = useTranslation();
+  const grouped = new Map<string, ImportError[]>();
+  for (const e of errors.filter(e => e.errorKey.startsWith(prefix))) {
+    const list = grouped.get(e.errorKey) ?? [];
+    list.push(e);
+    grouped.set(e.errorKey, list);
+  }
+  return (
+    <>
+      {[...grouped].map(([errorKey, group]) => (
+        <Stack key={errorKey} gap={0.25}>
+          <Typography variant="body2" color="error" fontWeight="bold">
+            {t(rowMessageKey, { rowNumber: errorKey.replace(/\D/g, "") })}
+          </Typography>
+          {group.map(e => (
+            <Typography key={e.messageKey} variant="body2" color="error" sx={{ pl: 2 }}>
+              {t(e.messageKey, e.values ?? {})}
+            </Typography>
+          ))}
+        </Stack>
+      ))}
+    </>
+  );
+};
+
 export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIsImporting }) => {
   const { t } = useTranslation();
   const { id: boreholeId } = useRequiredParams();
@@ -35,16 +65,6 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
   const [logFileFile, setLogFileFile] = useState<File>();
   const [logFileAttachments, setLogFileAttachments] = useState<File[]>([]);
   const [importErrors, setImportErrors] = useState<ImportError[]>([]);
-
-  const groupedErrorsForPrefix = (prefix: string) => {
-    const grouped = new Map<string, ImportError[]>();
-    for (const e of importErrors.filter(e => e.errorKey.startsWith(prefix))) {
-      const list = grouped.get(e.errorKey) ?? [];
-      list.push(e);
-      grouped.set(e.errorKey, list);
-    }
-    return grouped;
-  };
 
   const startImport = useCallback(async () => {
     setIsImportRunning(true);
@@ -142,18 +162,7 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
               }}
               accept={{ "text/csv": [".csv"] }}
             />
-            {[...groupedErrorsForPrefix("LogRun")].map(([errorKey, errors]) => (
-              <Stack key={errorKey} gap={0.25}>
-                <Typography variant="body2" color="error" fontWeight="bold">
-                  {t("importErrorRowRun", { rowNumber: errorKey.replace(/\D/g, "") })}
-                </Typography>
-                {errors.map(e => (
-                  <Typography key={e.messageKey} variant="body2" color="error" sx={{ pl: 2 }}>
-                    {t(e.messageKey, e.values ?? {})}
-                  </Typography>
-                ))}
-              </Stack>
-            ))}
+            <ImportErrorSection prefix="LogRun" rowMessageKey="importErrorRowRun" errors={importErrors} />
           </FormContainer>
         </BoreholesCard>
         <BoreholesCard data-cy="import-logFiles" title={t("logFiles")}>
@@ -179,18 +188,7 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
                 multiple={true}
               />
             </Stack>
-            {[...groupedErrorsForPrefix("LogFile")].map(([errorKey, errors]) => (
-              <Stack key={errorKey} gap={0.25}>
-                <Typography variant="body2" color="error" fontWeight="bold">
-                  {t("importErrorRowFile", { rowNumber: errorKey.replace(/\D/g, "") })}
-                </Typography>
-                {errors.map(e => (
-                  <Typography key={e.messageKey} variant="body2" color="error" sx={{ pl: 2 }}>
-                    {t(e.messageKey, e.values ?? {})}
-                  </Typography>
-                ))}
-              </Stack>
-            ))}
+            <ImportErrorSection prefix="LogFile" rowMessageKey="importErrorRowFile" errors={importErrors} />
           </FormContainer>
         </BoreholesCard>
       </Fragment>
