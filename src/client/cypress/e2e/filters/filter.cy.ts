@@ -32,7 +32,7 @@ function testInputFilter(
   value: string,
   expectedCount: string,
 ) {
-  it.only(`filters boreholes by ${title}`, () => {
+  it(`filters boreholes by ${title}`, () => {
     openFilter(filterSection);
     setAutocompleteText(fieldName, value);
     cy.wait("@borehole_filter");
