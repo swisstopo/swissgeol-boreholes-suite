@@ -424,6 +424,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         while (csv.Read())
         {
             rowIndex++;
+            var rowErrorStartIndex = importErrors.Count;
             var runNumber = csv.GetField<string>("RunNumber") ?? string.Empty;
             if (string.IsNullOrWhiteSpace(runNumber))
             {
@@ -463,6 +464,15 @@ public class LogController : BoreholeControllerBase<LogRun>
                 ServiceCo = csv.GetField<string>("ServiceCo"),
                 Comment = csv.GetField<string>("Comment"),
             });
+
+            // Tag every error from this row with the run number so it can be shown as the group header.
+            if (!string.IsNullOrWhiteSpace(runNumber))
+            {
+                for (var i = rowErrorStartIndex; i < importErrors.Count; i++)
+                {
+                    importErrors[i].Values!["runNumber"] = runNumber;
+                }
+            }
         }
 
         return result;
@@ -472,6 +482,7 @@ public class LogController : BoreholeControllerBase<LogRun>
     {
         var result = new List<(string RunNumber, LogFile LogFile)>();
         var validRunNumbers = logRuns.Select(lr => lr.RunNumber).ToHashSet();
+        var referencedFileNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
         using var reader = new StreamReader(csvFile.OpenReadStream(), Encoding.UTF8);
         using var csv = new CsvReader(reader, config);
 
@@ -482,6 +493,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         while (csv.Read())
         {
             rowIndex++;
+            var rowErrorStartIndex = importErrors.Count;
 
             var runNumber = csv.GetField<string>("RunNumber") ?? string.Empty;
             if (!validRunNumbers.Contains(runNumber))
@@ -496,7 +508,11 @@ public class LogController : BoreholeControllerBase<LogRun>
             var matchedFileName = fileNames.FirstOrDefault(f => string.Equals(f, expectedFileName, StringComparison.OrdinalIgnoreCase));
             if (matchedFileName == null)
             {
-                AddImportError(rowIndex, $"No file in file list matches '{expectedFileName}'.", "importErrorFileNotFound", LogFileErrorPrefix, new() { ["fileName"] = expectedFileName });
+                AddImportError(rowIndex, $"No file in file list matches '{expectedFileName}'.", "importErrorFileNotFound", LogFileErrorPrefix);
+            }
+            else
+            {
+                referencedFileNames.Add(matchedFileName);
             }
 
             var sanitizedName = (matchedFileName ?? expectedFileName).Replace(" ", "_", StringComparison.OrdinalIgnoreCase);
@@ -535,6 +551,21 @@ public class LogController : BoreholeControllerBase<LogRun>
             };
 
             result.Add((runNumber, logFile));
+
+            // Tag every error from this row with the expected file name so it can be shown as the group header.
+            for (var i = rowErrorStartIndex; i < importErrors.Count; i++)
+            {
+                importErrors[i].Values!["fileName"] = expectedFileName;
+            }
+        }
+
+        // Add an error for every attachment that is not referenced by any row in the log files CSV.
+        var orphanIndex = 0;
+        foreach (var attachmentName in fileNames)
+        {
+            if (referencedFileNames.Contains(attachmentName)) continue;
+            orphanIndex++;
+            AddImportError(rowIndex + orphanIndex, $"Attachment '{attachmentName}' is not referenced by any row in the log files CSV.", "importErrorAttachmentNotInCsv", LogFileErrorPrefix, new() { ["fileName"] = attachmentName });
         }
 
         return result;

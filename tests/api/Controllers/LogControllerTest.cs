@@ -1017,13 +1017,14 @@ public class LogControllerTest : TestControllerBase
     }
 
     [TestMethod]
-    public async Task ImportResolvesCodelistFromAnyLocale()
+    public async Task ImportResolvesCodelistTextInAnyLanguage()
     {
         var borehole = await AddTestBoreholeAsync();
 
-        // Use German text for BoreholeStatus ("Keine Angabe" = 100003008) with locale "en"
+        // Mix codelist texts from different languages in the same row: "Senza indicazioni" is the Italian
+        // BoreholeStatus (id 100003008) and "Autre" is the French ConveyanceMethod (id 100003002).
         var csv = LogRunsCsvHeader +
-                  "LOCALE-01;10;20;;Keine Angabe;;;Anderer;;\r\n";
+                  "LANG-01;10;20;;Senza indicazioni;;;Autre;;\r\n";
 
         var csvFile = GetFormFileByContent(csv, LogRunsCsvFileName);
         var response = await controller.ImportAsync(borehole.Id, csvFile, null, null);
@@ -1165,6 +1166,42 @@ public class LogControllerTest : TestControllerBase
     }
 
     [TestMethod]
+    public async Task ImportReturnsErrorForOrphanAttachment()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRunsCsv = LogRunsCsvHeader +
+                         "ORPHAN;10;20;;;;;;;\r\n";
+
+        var logFilesCsv = LogFilesCsvHeader +
+                          "ORPHAN;welllog;;las;;;;;;No\r\n";
+
+        var logRunsFile = GetFormFileByContent(logRunsCsv, LogRunsCsvFileName);
+        var logFilesFile = GetFormFileByContent(logFilesCsv, LogFilesCsvFileName);
+        var fileListFile = GetFormFileByContent("welllog.las\r\norphan.bin", FileListFileName);
+
+        var response = await controller.ImportAsync(borehole.Id, logRunsFile, logFilesFile, fileListFile);
+        ActionResultAssert.IsBadRequest(response);
+
+        var errors = GetImportErrors(response);
+        Assert.IsTrue(errors.Any(e => e.MessageKey == "importErrorAttachmentNotInCsv" && e.Values!["fileName"] == "orphan.bin"));
+    }
+
+    [TestMethod]
+    public async Task ImportTagsLogRunErrorsWithRunNumber()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var csv = LogRunsCsvHeader +
+                  "TAG-01;abc;;;NotAStatus;;;;;\r\n";
+
+        var csvFile = GetFormFileByContent(csv, LogRunsCsvFileName);
+        var response = await controller.ImportAsync(borehole.Id, csvFile, null, null);
+        ActionResultAssert.IsBadRequest(response);
+
+        var errors = GetImportErrors(response);
+        Assert.IsTrue(errors.All(e => e.Values!["runNumber"] == "TAG-01"));
+    }
+
+    [TestMethod]
     public async Task ImportReturnsErrorForLogFilesCsvWithoutDataFiles()
     {
         var borehole = await AddTestBoreholeAsync();
@@ -1244,12 +1281,18 @@ public class LogControllerTest : TestControllerBase
         var content = Guid.NewGuid().ToString();
         var file = GetFormFileByContent(content, "imported_file.las");
 
-        var response = await controller.UploadAsync(file, logRun.Id, logFile.Id);
-        ActionResultAssert.IsOk(response);
+        var uploadResponse = await controller.UploadAsync(file, logRun.Id, logFile.Id);
+        ActionResultAssert.IsOk(uploadResponse);
 
         var updatedLogFile = Context.LogFiles.Single(f => f.Id == logFile.Id);
         Assert.AreEqual("imported_file.las", updatedLogFile.Name);
-        Assert.AreEqual(nameUuid, updatedLogFile.NameUuid);
+        Assert.AreEqual(nameUuid, updatedLogFile.NameUuid, "NameUuid should not change because the upload links to the existing LogFile.");
+
+        // Verify the upload actually linked the bytes to the existing LogFile by downloading them back.
+        var downloadResponse = await controller.DownloadAsync(updatedLogFile.Id);
+        var downloadedFile = (FileContentResult)downloadResponse;
+        Assert.AreEqual("imported_file.las", downloadedFile.FileDownloadName);
+        Assert.AreEqual(content, Encoding.ASCII.GetString(downloadedFile.FileContents));
     }
 
     [TestMethod]
