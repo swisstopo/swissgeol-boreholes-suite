@@ -7,7 +7,7 @@ import {
   startBoreholeEditing,
 } from "../helpers/testHelpers";
 
-const importDialogSelector = '.MuiDialog-container[role="dialog"]';
+const importDialogSelector = ".MuiDialog-container";
 const logRunsCsvInputSelector = '[data-cy="import-logRuns"] input[data-cy="file-dropzone"]';
 const logFilesCsvInputSelector = '[data-cy="import-logFiles"] input[data-cy="file-dropzone"]:not([multiple])';
 const attachmentsInputSelector = '[data-cy="import-logFiles"] input[data-cy="file-dropzone"][multiple]';
