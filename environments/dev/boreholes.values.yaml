@@ -2,10 +2,6 @@
 # Fill in the values before the first deploy.
 app:
   domain: dev-boreholes.swissgeol.ch
-dataextraction:
-  version: edge
-ocr:
-  version: edge
 s3:
   endpoint: https://s3.eu-central-1.amazonaws.com
 
