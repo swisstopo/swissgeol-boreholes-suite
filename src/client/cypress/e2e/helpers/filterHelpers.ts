@@ -9,7 +9,8 @@ export function removeFirstMultiselectChip(filterKey: string) {
 }
 
 export function clickYesNoButton(fieldName: string, option: string) {
-  const suffix = option.toLowerCase() === "yes" ? "yes" : option.toLowerCase() === "no" ? "no" : "np";
+  const lowered = option.toLowerCase();
+  const suffix = lowered === "yes" || lowered === "no" ? lowered : "np";
   cy.dataCy(`${fieldName}-button-${suffix}`).click();
 }
 

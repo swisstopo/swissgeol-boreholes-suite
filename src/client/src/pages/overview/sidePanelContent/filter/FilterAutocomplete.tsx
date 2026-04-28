@@ -32,10 +32,9 @@ export const FilterAutocomplete: FC<FilterAutocompleteProps> = ({ item, filterVa
     return map;
   }, [suggestions]);
 
-  const handleChange = (_: SyntheticEvent, newValue: string | null) => {
-    const next = newValue || null;
-    setInputValue(next ?? "");
-    onUpdate(next);
+  const handleChange = (_: SyntheticEvent, newValue: string | null = null) => {
+    setInputValue(newValue ?? "");
+    onUpdate(newValue);
   };
 
   const handleBlur = () => {

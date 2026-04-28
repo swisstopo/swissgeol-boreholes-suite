@@ -28,7 +28,7 @@ export const WorkgroupFilter: FC<WorkgroupFilterProps> = ({ selectedWorkgroupIds
           // unless the option is already selected (so the user can always clear).
           const disabled = hasCount && !isSelected && count < 1;
 
-          const workgroupLabel = workgroup.workgroup + (workgroup.disabled !== null ? " ( " + t("disabled") + ")" : "");
+          const workgroupLabel = workgroup.workgroup + (workgroup.disabled === null ? "" : " ( " + t("disabled") + ")");
           const label = hasCount ? `${workgroupLabel} (${count})` : workgroupLabel;
           return (
             <Button
