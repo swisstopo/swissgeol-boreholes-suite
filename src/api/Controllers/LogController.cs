@@ -25,6 +25,8 @@ public class LogController : BoreholeControllerBase<LogRun>
     private const string LogRunErrorPrefix = "LogRun";
     private const string LogFileErrorPrefix = "LogFile";
     private const string ImportDateFormat = "dd/MM/yyyy";
+    private const string RunNumberValueKey = "runNumber";
+    private const string FileNameValueKey = "fileName";
     private readonly LogFileCloudService logFileCloudService;
 
     public LogController(BdmsContext context, ILogger<LogController> logger, IBoreholePermissionService boreholePermissionService, LogFileCloudService logFileCloudService)
@@ -466,13 +468,7 @@ public class LogController : BoreholeControllerBase<LogRun>
             });
 
             // Tag every error from this row with the run number so it can be shown as the group header.
-            if (!string.IsNullOrWhiteSpace(runNumber))
-            {
-                for (var i = rowErrorStartIndex; i < importErrors.Count; i++)
-                {
-                    importErrors[i].Values!["runNumber"] = runNumber;
-                }
-            }
+            TagRowErrors(rowErrorStartIndex, RunNumberValueKey, runNumber);
         }
 
         return result;
@@ -498,7 +494,7 @@ public class LogController : BoreholeControllerBase<LogRun>
             var runNumber = csv.GetField<string>("RunNumber") ?? string.Empty;
             if (!validRunNumbers.Contains(runNumber))
             {
-                AddImportError(rowIndex, $"RunNumber '{runNumber}' does not match any imported log run.", "importErrorRunNumberNotFound", LogFileErrorPrefix, new() { ["runNumber"] = runNumber });
+                AddImportError(rowIndex, $"RunNumber '{runNumber}' does not match any imported log run.", "importErrorRunNumberNotFound", LogFileErrorPrefix, new() { [RunNumberValueKey] = runNumber });
             }
 
             var name = csv.GetField<string>("Name") ?? string.Empty;
@@ -553,22 +549,32 @@ public class LogController : BoreholeControllerBase<LogRun>
             result.Add((runNumber, logFile));
 
             // Tag every error from this row with the expected file name so it can be shown as the group header.
-            for (var i = rowErrorStartIndex; i < importErrors.Count; i++)
-            {
-                importErrors[i].Values!["fileName"] = expectedFileName;
-            }
+            TagRowErrors(rowErrorStartIndex, FileNameValueKey, expectedFileName);
         }
 
-        // Add an error for every attachment that is not referenced by any row in the log files CSV.
+        AddErrorsForUnreferencedAttachments(fileNames, referencedFileNames, rowIndex);
+
+        return result;
+    }
+
+    private void AddErrorsForUnreferencedAttachments(IReadOnlyList<string> fileNames, HashSet<string> referencedFileNames, int rowIndexOffset)
+    {
         var orphanIndex = 0;
         foreach (var attachmentName in fileNames)
         {
             if (referencedFileNames.Contains(attachmentName)) continue;
             orphanIndex++;
-            AddImportError(rowIndex + orphanIndex, $"Attachment '{attachmentName}' is not referenced by any row in the log files CSV.", "importErrorAttachmentNotInCsv", LogFileErrorPrefix, new() { ["fileName"] = attachmentName });
+            AddImportError(rowIndexOffset + orphanIndex, $"Attachment '{attachmentName}' is not referenced by any row in the log files CSV.", "importErrorAttachmentNotInCsv", LogFileErrorPrefix, new() { [FileNameValueKey] = attachmentName });
         }
+    }
 
-        return result;
+    private void TagRowErrors(int rowErrorStartIndex, string valueKey, string value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return;
+        for (var i = rowErrorStartIndex; i < importErrors.Count; i++)
+        {
+            importErrors[i].Values![valueKey] = value;
+        }
     }
 
     private async Task ValidateLogRuns(List<ParsedLogRun> parsedLogRuns, int boreholeId)
@@ -587,12 +593,12 @@ public class LogController : BoreholeControllerBase<LogRun>
 
             if (!seenRunNumbers.Add(runNumber))
             {
-                AddImportError(i + 1, $"Duplicate RunNumber '{runNumber}' in import file.", "importErrorDuplicateRunNumber", LogRunErrorPrefix, new() { ["runNumber"] = runNumber });
+                AddImportError(i + 1, $"Duplicate RunNumber '{runNumber}' in import file.", "importErrorDuplicateRunNumber", LogRunErrorPrefix, new() { [RunNumberValueKey] = runNumber });
             }
 
             if (existingRunNumbers.Contains(runNumber))
             {
-                AddImportError(i + 1, $"RunNumber '{runNumber}' already exists for this borehole.", "importErrorRunNumberExists", LogRunErrorPrefix, new() { ["runNumber"] = runNumber });
+                AddImportError(i + 1, $"RunNumber '{runNumber}' already exists for this borehole.", "importErrorRunNumberExists", LogRunErrorPrefix, new() { [RunNumberValueKey] = runNumber });
             }
         }
     }
