@@ -1,0 +1,316 @@
+import { verifyTableLength } from "../helpers/dataGridHelpers";
+import { setInput } from "../helpers/formHelpers";
+import {
+  createBorehole,
+  goToDetailRouteAndAcceptTerms,
+  handlePrompt,
+  startBoreholeEditing,
+} from "../helpers/testHelpers";
+
+const importDialogSelector = '.MuiDialog-container[role="dialog"]';
+const logRunsCsvInputSelector = '[data-cy="import-logRuns"] input[data-cy="file-dropzone"]';
+const logFilesCsvInputSelector = '[data-cy="import-logFiles"] input[data-cy="file-dropzone"]:not([multiple])';
+const attachmentsInputSelector = '[data-cy="import-logFiles"] input[data-cy="file-dropzone"][multiple]';
+
+function openImportDialog() {
+  cy.dataCy("import-button").should("be.visible").click();
+  cy.contains("h4", "Import LOG runs from CSV file");
+}
+
+function removeSelectedFileIfPresent(parent: string) {
+  cy.get(`[data-cy="${parent}"]`).then($el => {
+    if ($el.find('[data-cy="iconButton"]').length > 0) {
+      cy.get(`[data-cy="${parent}"] [data-cy="iconButton"]`).first().click();
+    }
+  });
+}
+
+function selectLogRunsCsv(fileName: string) {
+  removeSelectedFileIfPresent("import-logRuns");
+  cy.get(logRunsCsvInputSelector).selectFile(
+    { contents: `cypress/fixtures/import/${fileName}`, fileName },
+    { force: true },
+  );
+  cy.dataCy("import-logRuns").should("contain", fileName);
+}
+
+function selectLogFilesCsv(fileName: string) {
+  cy.get(logFilesCsvInputSelector).selectFile(
+    { contents: `cypress/fixtures/import/${fileName}`, fileName },
+    { force: true },
+  );
+  cy.dataCy("import-logFiles").should("contain", fileName);
+}
+
+function selectAttachments(fileNames: string[]) {
+  const files = fileNames.map(name => ({
+    contents: Cypress.Buffer.from(`dummy content for ${name}`),
+    fileName: name,
+  }));
+  cy.get(attachmentsInputSelector).selectFile(files, { force: true });
+  for (const name of fileNames) {
+    cy.dataCy("import-logFiles").should("contain", name);
+  }
+}
+
+function clickModalImportButton() {
+  cy.get(importDialogSelector).dataCy("import-button").should("not.be.disabled").click();
+}
+
+function expectModalImportButtonDisabled() {
+  cy.get(importDialogSelector).dataCy("import-button").should("be.disabled");
+}
+
+function clickModalCancelButton() {
+  cy.get(importDialogSelector).dataCy("cancel-button").click();
+}
+
+function expectImportError(errorText: string) {
+  cy.get(importDialogSelector).contains(errorText).should("be.visible");
+}
+
+function setupBoreholeAndOpenLogTab(originalName: string, alias = "borehole_id") {
+  createBorehole({ originalName }).as(alias);
+  cy.get(`@${alias}`).then(id => {
+    goToDetailRouteAndAcceptTerms(`/${id}/log`);
+  });
+  startBoreholeEditing();
+}
+
+describe("Test for the borehole log import.", () => {
+  it("does not show import button outside of edit mode", () => {
+    goToDetailRouteAndAcceptTerms(`/1000070/log`);
+    cy.dataCy("import-button").should("not.exist");
+    startBoreholeEditing();
+    cy.dataCy("import-button").should("be.visible");
+  });
+
+  it("disables the import button in dialog until a log runs CSV is selected", () => {
+    setupBoreholeAndOpenLogTab("LOG IMPORT BUTTON STATE");
+    openImportDialog();
+    expectModalImportButtonDisabled();
+    selectLogRunsCsv("log-runs-valid.csv");
+    cy.get(importDialogSelector).dataCy("import-button").should("not.be.disabled");
+    clickModalCancelButton();
+    cy.get(importDialogSelector).should("not.exist");
+  });
+
+  it("disables the import button in dialog when a log files CSV is provided without attachments", () => {
+    setupBoreholeAndOpenLogTab("LOG IMPORT MISSING ATTACHMENTS");
+
+    openImportDialog();
+    selectLogRunsCsv("log-runs-valid.csv");
+    cy.get(importDialogSelector).dataCy("import-button").should("not.be.disabled");
+
+    selectLogFilesCsv("log-files-valid.csv");
+    expectModalImportButtonDisabled();
+
+    selectAttachments(["welllog1.las", "welllog2.txt"]);
+    cy.get(importDialogSelector).dataCy("import-button").should("not.be.disabled");
+
+    clickModalCancelButton();
+  });
+
+  it("disables the import button in dialog when attachments are provided without a log files CSV", () => {
+    setupBoreholeAndOpenLogTab("LOG IMPORT MISSING LOG FILES CSV");
+
+    openImportDialog();
+    selectLogRunsCsv("log-runs-valid.csv");
+    cy.get(importDialogSelector).dataCy("import-button").should("not.be.disabled");
+
+    selectAttachments(["welllog1.las"]);
+    expectModalImportButtonDisabled();
+
+    selectLogFilesCsv("log-files-valid.csv");
+    cy.get(importDialogSelector).dataCy("import-button").should("not.be.disabled");
+
+    clickModalCancelButton();
+  });
+
+  it("imports log runs from a CSV file", () => {
+    setupBoreholeAndOpenLogTab("LOG IMPORT RUNS ONLY");
+
+    cy.contains("p", "No run added yet...");
+
+    openImportDialog();
+    selectLogRunsCsv("log-runs-valid.csv");
+    clickModalImportButton();
+
+    cy.wait("@log_import").its("response.statusCode").should("eq", 200);
+    cy.get(importDialogSelector).should("not.exist");
+
+    verifyTableLength(2);
+    cy.contains("IMP-RUN-1");
+    cy.contains("IMP-RUN-2");
+  });
+
+  it("imports log runs together with log files and attachments", () => {
+    setupBoreholeAndOpenLogTab("LOG IMPORT RUNS AND FILES");
+
+    openImportDialog();
+    selectLogRunsCsv("log-runs-valid.csv");
+    selectLogFilesCsv("log-files-valid.csv");
+    selectAttachments(["welllog1.las", "welllog2.txt"]);
+    clickModalImportButton();
+
+    cy.wait("@log_import").its("response.statusCode").should("eq", 200);
+    cy.wait("@log_upload").its("response.statusCode").should("eq", 200);
+    cy.wait("@log_upload").its("response.statusCode").should("eq", 200);
+
+    cy.get(importDialogSelector).should("not.exist");
+
+    verifyTableLength(2);
+    cy.contains("IMP-RUN-1");
+    cy.contains("IMP-RUN-2");
+  });
+
+  it("displays row-level errors for invalid log runs", () => {
+    setupBoreholeAndOpenLogTab("LOG IMPORT RUN ERRORS");
+
+    openImportDialog();
+    selectLogRunsCsv("log-runs-row-errors.csv");
+    clickModalImportButton();
+
+    cy.wait("@log_import").its("response.statusCode").should("eq", 400);
+
+    // Row 1 has no run number → fallback header "Run 1".
+    expectImportError("Run 1");
+    expectImportError("RunNumber is required.");
+
+    // Row 2 uses the run number as header.
+    expectImportError("ERR-2");
+    expectImportError("FromDepth is required and must be a number.");
+    expectImportError('Unknown BoreholeStatus value "NotAStatus".');
+    expectImportError('Unknown ConveyanceMethod value "NotAMethod".');
+    expectImportError('Invalid date format "2024-01-01". Expected: dd/MM/yyyy.');
+
+    expectImportError("ERR-3");
+    expectImportError("ToDepth is required and must be a number.");
+
+    // Import button stays disabled until file selection changes
+    expectModalImportButtonDisabled();
+
+    // Replacing the file clears errors and re-enables the button
+    selectLogRunsCsv("log-runs-valid.csv");
+    cy.get(importDialogSelector).contains("ERR-2").should("not.exist");
+    cy.get(importDialogSelector).dataCy("import-button").should("not.be.disabled");
+    clickModalCancelButton();
+  });
+
+  it("displays an error for duplicate run numbers within the import CSV", () => {
+    setupBoreholeAndOpenLogTab("LOG IMPORT DUPLICATE");
+
+    openImportDialog();
+    selectLogRunsCsv("log-runs-duplicate.csv");
+    clickModalImportButton();
+
+    cy.wait("@log_import").its("response.statusCode").should("eq", 400);
+    expectImportError("DUP-1");
+    expectImportError('Duplicate RunNumber "DUP-1" in the import file.');
+    clickModalCancelButton();
+  });
+
+  it("displays an error for run numbers that already exist on the borehole", () => {
+    setupBoreholeAndOpenLogTab("LOG IMPORT EXISTING RUN");
+
+    // Seed borehole with an existing run that conflicts with the import CSV.
+    openImportDialog();
+    selectLogRunsCsv("log-runs-existing.csv");
+    clickModalImportButton();
+    cy.wait("@log_import").its("response.statusCode").should("eq", 200);
+    cy.get(importDialogSelector).should("not.exist");
+    cy.contains("EXIST-RUN");
+
+    // Re-importing the same run number must fail with the database conflict error.
+    openImportDialog();
+    selectLogRunsCsv("log-runs-existing.csv");
+    clickModalImportButton();
+
+    cy.wait("@log_import").its("response.statusCode").should("eq", 400);
+    expectImportError("EXIST-RUN");
+    expectImportError('RunNumber "EXIST-RUN" already exists for this borehole.');
+    clickModalCancelButton();
+  });
+
+  it("displays row-level errors for invalid log files", () => {
+    setupBoreholeAndOpenLogTab("LOG IMPORT FILE ERRORS");
+
+    openImportDialog();
+    selectLogRunsCsv("log-runs-valid.csv");
+    selectLogFilesCsv("log-files-row-errors.csv");
+    selectAttachments(["welllog1.las"]);
+    clickModalImportButton();
+
+    cy.wait("@log_import").its("response.statusCode").should("eq", 400);
+
+    expectImportError("welllog1.las");
+    expectImportError('RunNumber "WRONG-RUN" does not match any imported LOG run.');
+
+    expectImportError("notinlist.txt");
+    expectImportError("No matching file found in the attachments.");
+    expectImportError('Unknown tool type code "NOPE".');
+    expectImportError('Unknown PassType value "NotAPassType".');
+    expectImportError('Invalid date format "not-a-date". Expected: dd/MM/yyyy.');
+    expectImportError('Unknown Public value "Maybe". Expected: Yes/No.');
+
+    expectModalImportButtonDisabled();
+    clickModalCancelButton();
+  });
+
+  it("displays an error for attachments that are not referenced in the log files CSV", () => {
+    setupBoreholeAndOpenLogTab("LOG IMPORT ORPHAN ATTACHMENT");
+
+    openImportDialog();
+    selectLogRunsCsv("log-runs-valid.csv");
+    selectLogFilesCsv("log-files-valid.csv");
+    selectAttachments(["welllog1.las", "welllog2.txt", "orphan.bin"]);
+    clickModalImportButton();
+
+    cy.wait("@log_import").its("response.statusCode").should("eq", 400);
+
+    expectImportError("orphan.bin");
+    expectImportError("No matching file found in the csv.");
+    clickModalCancelButton();
+  });
+
+  it("prompts to discard unsaved changes before opening the import dialog", () => {
+    setupBoreholeAndOpenLogTab("LOG IMPORT UNSAVED CHANGES");
+
+    cy.dataCy("addlogrun-button").click();
+    cy.contains("h4", "New run");
+    setInput("fromDepth", 0);
+    setInput("toDepth", 10);
+    setInput("runNumber", "UNSAVED-1");
+    cy.get(".MuiDialog-container").dataCy("close-button").click();
+    verifyTableLength(1);
+
+    const unsavedChangesPrompt = "There are unsaved changes. Do you want to discard all changes?";
+
+    cy.dataCy("import-button").click();
+    handlePrompt(unsavedChangesPrompt, "cancel");
+    cy.get(importDialogSelector).should("not.exist");
+    verifyTableLength(1);
+
+    cy.dataCy("import-button").click();
+    handlePrompt(unsavedChangesPrompt, "discardchanges");
+    cy.get(importDialogSelector).should("be.visible");
+    verifyTableLength(0);
+
+    clickModalCancelButton();
+  });
+
+  it("clears the selected files when the import dialog is closed and reopened", () => {
+    setupBoreholeAndOpenLogTab("LOG IMPORT RESET FILES");
+
+    openImportDialog();
+    selectLogRunsCsv("log-runs-valid.csv");
+    cy.dataCy("import-logRuns").should("contain", "log-runs-valid.csv");
+    clickModalCancelButton();
+    cy.get(importDialogSelector).should("not.exist");
+
+    openImportDialog();
+    cy.dataCy("import-logRuns").should("not.contain", "log-runs-valid.csv");
+    expectModalImportButtonDisabled();
+    clickModalCancelButton();
+  });
+});
