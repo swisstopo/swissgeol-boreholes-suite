@@ -5,7 +5,6 @@ import {
   showTableAndWaitForData,
   verifyRowContains,
 } from "../helpers/dataGridHelpers";
-import { setAutocompleteText } from "../helpers/filterHelpers";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers";
 import {
   createBorehole,
