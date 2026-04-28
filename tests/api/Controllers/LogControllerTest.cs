@@ -1270,28 +1270,29 @@ public class LogControllerTest : TestControllerBase
     [TestMethod]
     public async Task UploadWithLogFileIdLinksToExistingLogFile()
     {
+        const string importedFileName = "imported_file.las";
         var borehole = await AddTestBoreholeAsync();
         var logRun = await AddTestLogRunAsync(borehole.Id);
 
         var nameUuid = $"{Guid.NewGuid()}.las";
-        var logFile = new LogFile { LogRunId = logRun.Id, Name = "imported_file.las", NameUuid = nameUuid, Public = false };
+        var logFile = new LogFile { LogRunId = logRun.Id, Name = importedFileName, NameUuid = nameUuid, Public = false };
         Context.LogFiles.Add(logFile);
         await Context.SaveChangesAsync();
 
         var content = Guid.NewGuid().ToString();
-        var file = GetFormFileByContent(content, "imported_file.las");
+        var file = GetFormFileByContent(content, importedFileName);
 
         var uploadResponse = await controller.UploadAsync(file, logRun.Id, logFile.Id);
         ActionResultAssert.IsOk(uploadResponse);
 
         var updatedLogFile = Context.LogFiles.Single(f => f.Id == logFile.Id);
-        Assert.AreEqual("imported_file.las", updatedLogFile.Name);
+        Assert.AreEqual(importedFileName, updatedLogFile.Name);
         Assert.AreEqual(nameUuid, updatedLogFile.NameUuid, "NameUuid should not change because the upload links to the existing LogFile.");
 
         // Verify the upload actually linked the bytes to the existing LogFile by downloading them back.
         var downloadResponse = await controller.DownloadAsync(updatedLogFile.Id);
         var downloadedFile = (FileContentResult)downloadResponse;
-        Assert.AreEqual("imported_file.las", downloadedFile.FileDownloadName);
+        Assert.AreEqual(importedFileName, downloadedFile.FileDownloadName);
         Assert.AreEqual(content, Encoding.ASCII.GetString(downloadedFile.FileContents));
     }
 
