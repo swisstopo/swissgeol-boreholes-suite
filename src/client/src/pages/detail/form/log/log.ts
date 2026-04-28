@@ -5,7 +5,7 @@ import { ArrowDownToLine, X } from "lucide-react";
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { boreholeQueryKey } from "../../../../api/borehole.ts";
 import { downloadPost } from "../../../../api/download.ts";
-import { fetchApiV2WithApiError, uploadWithApiError } from "../../../../api/fetchApiV2.ts";
+import { fetchApiV2WithApiError, upload, uploadWithApiError } from "../../../../api/fetchApiV2.ts";
 import { ExportItem } from "../../../../components/export/exportDialog.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
@@ -13,7 +13,7 @@ import { SaveContext } from "../../saveContext.tsx";
 import { LogFile, LogRun } from "./logInterfaces.ts";
 
 const logController = "log";
-const logsQueryKey = "logs";
+export const logsQueryKey = "logs";
 export const useLogsByBoreholeId = (boreholeId?: number): UseQueryResult<LogRun[]> =>
   useQuery<LogRun[]>({
     queryKey: [logsQueryKey, boreholeId],
@@ -83,6 +83,10 @@ export const useLogRunMutations = () => {
     update: useUpdateLogRun,
     delete: useDeleteLogRuns,
   };
+};
+
+export const importLogs = async (boreholeId: number, formData: FormData): Promise<Response> => {
+  return await upload(`${logController}/import?boreholeId=${boreholeId}`, "POST", formData);
 };
 
 export const exportLogRuns = async (ids: number[], withAttachments: boolean, locale: string): Promise<Response> => {

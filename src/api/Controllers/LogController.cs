@@ -2,6 +2,7 @@
 using BDMS.Authentication;
 using BDMS.Models;
 using CsvHelper;
+using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
@@ -21,6 +22,11 @@ public class LogController : BoreholeControllerBase<LogRun>
     private const string LogRunExportFileName = "log_runs";
     private const string LogFileExportFileName = "log_files";
     private const string LogExportFileName = "log_export";
+    private const string LogRunErrorPrefix = "LogRun";
+    private const string LogFileErrorPrefix = "LogFile";
+    private const string ImportDateFormat = "dd/MM/yyyy";
+    private const string RunNumberValueKey = "runNumber";
+    private const string FileNameValueKey = "fileName";
     private readonly LogFileCloudService logFileCloudService;
 
     public LogController(BdmsContext context, ILogger<LogController> logger, IBoreholePermissionService boreholePermissionService, LogFileCloudService logFileCloudService)
@@ -55,15 +61,16 @@ public class LogController : BoreholeControllerBase<LogRun>
 
     /// <summary>
     /// Uploads a log file to the cloud storage and links it to the log run.
+    /// If <paramref name="logFileId"/> is provided, the file is linked to the existing <see cref="LogFile"/> instead of creating a new one.
     /// </summary>
     /// <param name="file">The file to upload.</param>
     /// <param name="logRunId">The log run ID to associate with the file.</param>
-    /// <returns>The newly created log file.</returns>
+    /// <param name="logFileId">Optional existing log file ID to link the uploaded file to.</param>
     [HttpPost("upload")]
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(MaxFileSize)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
-    public async Task<IActionResult> UploadAsync(IFormFile file, [Range(1, int.MaxValue)] int logRunId)
+    public async Task<IActionResult> UploadAsync(IFormFile file, [Range(1, int.MaxValue)] int logRunId, int? logFileId = null)
     {
         var logRun = await Context.LogRuns
             .Include(lr => lr.Borehole)
@@ -89,6 +96,26 @@ public class LogController : BoreholeControllerBase<LogRun>
 
         try
         {
+            if (logFileId.HasValue)
+            {
+                var existingLogFile = await Context.LogFiles
+                    .FirstOrDefaultAsync(lf => lf.Id == logFileId.Value && lf.LogRunId == logRunId)
+                    .ConfigureAwait(false);
+
+                if (existingLogFile == null)
+                {
+                    return NotFound($"LogFile with ID {logFileId.Value} not found for LogRun {logRunId}.");
+                }
+
+                await logFileCloudService.UploadFileForExistingLogFileAsync(
+                    file.OpenReadStream(),
+                    file.ContentType,
+                    existingLogFile.NameUuid!)
+                    .ConfigureAwait(false);
+
+                return Ok(existingLogFile);
+            }
+
             var logFile = await logFileCloudService.UploadLogFileAndLinkToLogRunAsync(
                 file.OpenReadStream(),
                 file.FileName,
@@ -282,6 +309,430 @@ public class LogController : BoreholeControllerBase<LogRun>
         return Ok(updatedLogRun);
     }
 
+    /// <summary>
+    /// Imports log runs and optionally log files from CSV files.
+    /// </summary>
+    [HttpPost("import")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    [RequestSizeLimit(MaxFileSize)]
+    [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
+    public async Task<IActionResult> ImportAsync(
+        [FromQuery] int boreholeId,
+        IFormFile logRunsCsvFile,
+        IFormFile? logFilesCsvFile,
+        IFormFile? fileListFile)
+    {
+        var borehole = await Context.Boreholes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(b => b.Id == boreholeId)
+            .ConfigureAwait(false);
+
+        if (borehole == null) return NotFound();
+
+        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
+        {
+            return Unauthorized();
+        }
+
+        if (logRunsCsvFile == null)
+        {
+            return BadRequest(new { detail = "Log runs CSV file is required.", messageKey = "importErrorLogRunsCsvRequired" });
+        }
+
+        if (logFilesCsvFile != null && fileListFile == null)
+        {
+            return BadRequest(new { detail = "File list is required when a log files CSV is provided.", messageKey = "importErrorFileListRequired" });
+        }
+
+        if (logFilesCsvFile == null && fileListFile != null)
+        {
+            return BadRequest(new { detail = "Log files CSV is required when a file list is provided.", messageKey = "importErrorLogFilesCsvRequired" });
+        }
+
+        var codelists = await Context.Codelists
+            .Where(c => c.Schema == "log_borehole_status"
+                     || c.Schema == "log_conveyance_method"
+                     || c.Schema == "log_pass_type"
+                     || c.Schema == "log_data_package"
+                     || c.Schema == "log_depth_type"
+                     || c.Schema == "log_tool_type")
+            .AsNoTracking()
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var importCsvConfig = new CsvConfiguration(new CultureInfo("de-CH"))
+        {
+            Delimiter = ";",
+            MissingFieldFound = null,
+        };
+
+        var parsedLogRuns = ParseLogRunsCsv(logRunsCsvFile, importCsvConfig, codelists);
+        await ValidateLogRuns(parsedLogRuns, boreholeId).ConfigureAwait(false);
+
+        List<(string RunNumber, LogFile LogFile)> parsedLogFiles = [];
+        if (logFilesCsvFile != null)
+        {
+            var fileNames = await ReadFileListAsync(fileListFile!).ConfigureAwait(false);
+            parsedLogFiles = ParseLogFilesCsv(logFilesCsvFile, importCsvConfig, codelists, parsedLogRuns, fileNames);
+        }
+
+        if (importErrors.Count > 0) return BadRequest(importErrors);
+
+        var runNumbers = new List<string>();
+        foreach (var parsed in parsedLogRuns)
+        {
+            var logRun = new LogRun
+            {
+                BoreholeId = boreholeId,
+                RunNumber = parsed.RunNumber,
+                FromDepth = parsed.FromDepth,
+                ToDepth = parsed.ToDepth,
+                BoreholeStatusId = parsed.BoreholeStatusId,
+                RunDate = parsed.RunDate,
+                BitSize = parsed.BitSize,
+                ConveyanceMethodId = parsed.ConveyanceMethodId,
+                ServiceCo = parsed.ServiceCo,
+                Comment = parsed.Comment,
+                LogFiles = parsedLogFiles
+                    .Where(pf => pf.RunNumber == parsed.RunNumber)
+                    .Select(pf => pf.LogFile)
+                    .ToList(),
+            };
+            Context.LogRuns.Add(logRun);
+            runNumbers.Add(parsed.RunNumber);
+        }
+
+        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+
+        var result = await Context.LogRunsWithIncludes
+            .AsNoTracking()
+            .Where(lr => lr.BoreholeId == boreholeId && runNumbers.Contains(lr.RunNumber))
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return Ok(result);
+    }
+
+    private List<ParsedLogRun> ParseLogRunsCsv(IFormFile csvFile, CsvConfiguration config, List<Codelist> codelists)
+    {
+        var result = new List<ParsedLogRun>();
+        using var reader = new StreamReader(csvFile.OpenReadStream(), Encoding.UTF8);
+        using var csv = new CsvReader(reader, config);
+
+        csv.Read();
+        csv.ReadHeader();
+
+        var rowIndex = 0;
+        while (csv.Read())
+        {
+            rowIndex++;
+            var rowErrorStartIndex = importErrors.Count;
+            var runNumber = csv.GetField<string>("RunNumber") ?? string.Empty;
+            if (string.IsNullOrWhiteSpace(runNumber))
+            {
+                AddImportError(rowIndex, "RunNumber is required.", "importErrorRunNumberRequired", LogRunErrorPrefix);
+            }
+
+            var fromDepthStr = csv.GetField<string>("FromDepth");
+            var toDepthStr = csv.GetField<string>("ToDepth");
+
+            if (!TryParseDouble(fromDepthStr, out var fromDepth))
+            {
+                AddImportError(rowIndex, "FromDepth is required and must be a number.", "importErrorFromDepthRequired", LogRunErrorPrefix);
+            }
+
+            if (!TryParseDouble(toDepthStr, out var toDepth))
+            {
+                AddImportError(rowIndex, "ToDepth is required and must be a number.", "importErrorToDepthRequired", LogRunErrorPrefix);
+            }
+
+            var boreholeStatusId = ResolveCodelistId("log_borehole_status", csv.GetField<string>("BoreholeStatus"), codelists, rowIndex, "BoreholeStatus", LogRunErrorPrefix);
+            var conveyanceMethodId = ResolveCodelistId("log_conveyance_method", csv.GetField<string>("ConveyanceMethod"), codelists, rowIndex, "ConveyanceMethod", LogRunErrorPrefix);
+
+            var runDate = TryParseImportDate(csv.GetField<string>("RunDate"), rowIndex, "RunDate", LogRunErrorPrefix);
+
+            var bitSizeStr = csv.GetField<string>("BitSize");
+            TryParseDouble(bitSizeStr, out var bitSize);
+
+            result.Add(new ParsedLogRun
+            {
+                RunNumber = runNumber,
+                FromDepth = fromDepth,
+                ToDepth = toDepth,
+                BoreholeStatusId = boreholeStatusId,
+                RunDate = runDate,
+                BitSize = string.IsNullOrWhiteSpace(bitSizeStr) ? null : bitSize,
+                ConveyanceMethodId = conveyanceMethodId,
+                ServiceCo = csv.GetField<string>("ServiceCo"),
+                Comment = csv.GetField<string>("Comment"),
+            });
+
+            // Tag every error from this row with the run number so it can be shown as the group header.
+            TagRowErrors(rowErrorStartIndex, RunNumberValueKey, runNumber);
+        }
+
+        return result;
+    }
+
+    private List<(string RunNumber, LogFile LogFile)> ParseLogFilesCsv(IFormFile csvFile, CsvConfiguration config, List<Codelist> codelists, List<ParsedLogRun> logRuns, IReadOnlyList<string> fileNames)
+    {
+        var result = new List<(string RunNumber, LogFile LogFile)>();
+        var validRunNumbers = logRuns.Select(lr => lr.RunNumber).ToHashSet();
+        var referencedFileNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        using var reader = new StreamReader(csvFile.OpenReadStream(), Encoding.UTF8);
+        using var csv = new CsvReader(reader, config);
+
+        csv.Read();
+        csv.ReadHeader();
+
+        var rowIndex = 0;
+        while (csv.Read())
+        {
+            rowIndex++;
+            var rowErrorStartIndex = importErrors.Count;
+
+            var runNumber = csv.GetField<string>("RunNumber") ?? string.Empty;
+            if (!validRunNumbers.Contains(runNumber))
+            {
+                AddImportError(rowIndex, $"RunNumber '{runNumber}' does not match any imported log run.", "importErrorRunNumberNotFound", LogFileErrorPrefix, new() { [RunNumberValueKey] = runNumber });
+            }
+
+            var name = csv.GetField<string>("Name") ?? string.Empty;
+            var extension = csv.GetField<string>("Extension") ?? string.Empty;
+            var expectedFileName = string.IsNullOrWhiteSpace(extension) ? name : $"{name}.{extension}";
+
+            var matchedFileName = fileNames.FirstOrDefault(f => string.Equals(f, expectedFileName, StringComparison.OrdinalIgnoreCase));
+            if (matchedFileName == null)
+            {
+                AddImportError(rowIndex, $"No file in file list matches '{expectedFileName}'.", "importErrorFileNotFound", LogFileErrorPrefix);
+            }
+            else
+            {
+                referencedFileNames.Add(matchedFileName);
+            }
+
+            var sanitizedName = (matchedFileName ?? expectedFileName).Replace(" ", "_", StringComparison.OrdinalIgnoreCase);
+            var fileExtension = Path.GetExtension(sanitizedName);
+
+            var toolTypeCodes = ResolveToolTypeCodelistIds(csv.GetField<string>("LogFileToolTypeCodes"), codelists, rowIndex);
+
+            var passStr = csv.GetField<string>("Pass");
+            int? pass = null;
+            if (!string.IsNullOrWhiteSpace(passStr) && int.TryParse(passStr, out var parsedPass))
+            {
+                pass = parsedPass;
+            }
+
+            var passTypeId = ResolveCodelistId("log_pass_type", csv.GetField<string>("PassType"), codelists, rowIndex, "PassType", LogFileErrorPrefix);
+            var dataPackageId = ResolveCodelistId("log_data_package", csv.GetField<string>("DataPackage"), codelists, rowIndex, "DataPackage", LogFileErrorPrefix);
+            var depthTypeId = ResolveCodelistId("log_depth_type", csv.GetField<string>("DepthType"), codelists, rowIndex, "DepthType", LogFileErrorPrefix);
+
+            var deliveryDate = TryParseImportDate(csv.GetField<string>("DeliveryDate"), rowIndex, "DeliveryDate", LogFileErrorPrefix);
+
+            var publicValue = ParseLocalizedYesNo(csv.GetField<string>("Public"), rowIndex);
+
+            var logFile = new LogFile
+            {
+                Name = sanitizedName,
+                NameUuid = $"{Guid.NewGuid()}{fileExtension}",
+                PassTypeId = passTypeId,
+                Pass = pass,
+                DataPackageId = dataPackageId,
+                DepthTypeId = depthTypeId,
+                DeliveryDate = deliveryDate,
+                Public = publicValue,
+                LogFileToolTypeCodes = toolTypeCodes
+                    .Select(id => new LogFileToolTypeCodes { CodelistId = id })
+                    .ToList(),
+            };
+
+            result.Add((runNumber, logFile));
+
+            // Tag every error from this row with the expected file name so it can be shown as the group header.
+            TagRowErrors(rowErrorStartIndex, FileNameValueKey, expectedFileName);
+        }
+
+        AddErrorsForUnreferencedAttachments(fileNames, referencedFileNames, rowIndex);
+
+        return result;
+    }
+
+    private void AddErrorsForUnreferencedAttachments(IReadOnlyList<string> fileNames, HashSet<string> referencedFileNames, int rowIndexOffset)
+    {
+        var orphanIndex = 0;
+        foreach (var attachmentName in fileNames)
+        {
+            if (referencedFileNames.Contains(attachmentName)) continue;
+            orphanIndex++;
+            AddImportError(rowIndexOffset + orphanIndex, $"Attachment '{attachmentName}' is not referenced by any row in the log files CSV.", "importErrorAttachmentNotInCsv", LogFileErrorPrefix, new() { [FileNameValueKey] = attachmentName });
+        }
+    }
+
+    private void TagRowErrors(int rowErrorStartIndex, string valueKey, string value)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return;
+        for (var i = rowErrorStartIndex; i < importErrors.Count; i++)
+        {
+            importErrors[i].Values![valueKey] = value;
+        }
+    }
+
+    private async Task ValidateLogRuns(List<ParsedLogRun> parsedLogRuns, int boreholeId)
+    {
+        var existingRunNumbers = await Context.LogRuns
+            .Where(lr => lr.BoreholeId == boreholeId)
+            .Select(lr => lr.RunNumber)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var seenRunNumbers = new HashSet<string>();
+        for (var i = 0; i < parsedLogRuns.Count; i++)
+        {
+            var runNumber = parsedLogRuns[i].RunNumber;
+            if (string.IsNullOrWhiteSpace(runNumber)) continue;
+
+            if (!seenRunNumbers.Add(runNumber))
+            {
+                AddImportError(i + 1, $"Duplicate RunNumber '{runNumber}' in import file.", "importErrorDuplicateRunNumber", LogRunErrorPrefix, new() { [RunNumberValueKey] = runNumber });
+            }
+
+            if (existingRunNumbers.Contains(runNumber))
+            {
+                AddImportError(i + 1, $"RunNumber '{runNumber}' already exists for this borehole.", "importErrorRunNumberExists", LogRunErrorPrefix, new() { [RunNumberValueKey] = runNumber });
+            }
+        }
+    }
+
+    private static async Task<IReadOnlyList<string>> ReadFileListAsync(IFormFile fileListFile)
+    {
+        var fileNames = new List<string>();
+        using var reader = new StreamReader(fileListFile.OpenReadStream(), Encoding.UTF8);
+        while (await reader.ReadLineAsync().ConfigureAwait(false) is { } line)
+        {
+            var trimmed = line.Trim();
+            if (!string.IsNullOrEmpty(trimmed))
+            {
+                fileNames.Add(trimmed);
+            }
+        }
+
+        return fileNames;
+    }
+
+    private int? ResolveCodelistId(string schema, string? textValue, List<Codelist> codelists, int rowIndex, string fieldName, string errorPrefix)
+    {
+        if (string.IsNullOrWhiteSpace(textValue)) return null;
+
+        var match = codelists.FirstOrDefault(c =>
+            c.Schema == schema &&
+            (string.Equals(c.En, textValue, StringComparison.OrdinalIgnoreCase) ||
+             string.Equals(c.De, textValue, StringComparison.OrdinalIgnoreCase) ||
+             string.Equals(c.Fr, textValue, StringComparison.OrdinalIgnoreCase) ||
+             string.Equals(c.It, textValue, StringComparison.OrdinalIgnoreCase)));
+
+        if (match == null)
+        {
+            AddImportError(rowIndex, $"Unknown {fieldName} value: '{textValue}'.", "importErrorUnknownCodelistValue", errorPrefix, new() { ["fieldName"] = fieldName, ["value"] = textValue! });
+            return null;
+        }
+
+        return match.Id;
+    }
+
+    private List<int> ResolveToolTypeCodelistIds(string? codesString, List<Codelist> codelists, int rowIndex)
+    {
+        if (string.IsNullOrWhiteSpace(codesString)) return [];
+
+        var codes = codesString.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
+        var result = new List<int>();
+        foreach (var code in codes)
+        {
+            var match = codelists.FirstOrDefault(c =>
+                c.Schema == "log_tool_type" &&
+                string.Equals(c.Code, code, StringComparison.OrdinalIgnoreCase));
+
+            if (match == null)
+            {
+                AddImportError(rowIndex, $"Unknown tool type code: '{code}'.", "importErrorUnknownToolTypeCode", LogFileErrorPrefix, new() { ["code"] = code });
+            }
+            else
+            {
+                result.Add(match.Id);
+            }
+        }
+
+        return result;
+    }
+
+    private bool ParseLocalizedYesNo(string? value, int rowIndex)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return false;
+
+        return value.Trim().ToUpperInvariant() switch
+        {
+            "YES" or "JA" or "OUI" or "SÌ" or "SI" => true,
+            "NO" or "NEIN" or "NON" => false,
+            _ => AddImportErrorAndReturn(rowIndex, $"Unknown Public value: '{value}'. Expected Yes/No/Ja/Nein/Oui/Non/Sì/No.", "importErrorUnknownPublicValue", LogFileErrorPrefix, new() { ["value"] = value }),
+        };
+    }
+
+    private bool AddImportErrorAndReturn(int rowIndex, string errorMessage, string messageKey, string prefix, Dictionary<string, string>? values = null)
+    {
+        AddImportError(rowIndex, errorMessage, messageKey, prefix, values);
+        return false;
+    }
+
+    private readonly List<ImportError> importErrors = [];
+
+    private void AddImportError(int rowIndex, string errorMessage, string messageKey, string prefix, Dictionary<string, string>? values = null)
+    {
+        values ??= new Dictionary<string, string>();
+        values["rowNumber"] = rowIndex.ToString(CultureInfo.InvariantCulture);
+        importErrors.Add(new ImportError($"{prefix}{rowIndex}", messageKey, errorMessage, values));
+    }
+
+    private sealed record ImportError(string ErrorKey, string MessageKey, string Detail, Dictionary<string, string>? Values = null);
+
+    private DateOnly? TryParseImportDate(string? value, int rowIndex, string fieldName, string errorPrefix)
+    {
+        if (string.IsNullOrWhiteSpace(value)) return null;
+        if (DateOnly.TryParseExact(value, ImportDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed))
+        {
+            return parsed;
+        }
+
+        AddImportError(rowIndex, $"Invalid {fieldName} format: '{value}'. Expected {ImportDateFormat}.", "importErrorInvalidDateFormat", errorPrefix, new() { ["value"] = value });
+        return null;
+    }
+
+    private static bool TryParseDouble(string? value, out double result)
+    {
+        result = 0;
+        if (string.IsNullOrWhiteSpace(value)) return false;
+        return double.TryParse(value, new CultureInfo("de-CH"), out result);
+    }
+
+    private sealed class ParsedLogRun
+    {
+        public string RunNumber { get; set; } = string.Empty;
+
+        public double FromDepth { get; set; }
+
+        public double ToDepth { get; set; }
+
+        public int? BoreholeStatusId { get; set; }
+
+        public DateOnly? RunDate { get; set; }
+
+        public double? BitSize { get; set; }
+
+        public int? ConveyanceMethodId { get; set; }
+
+        public string? ServiceCo { get; set; }
+
+        public string? Comment { get; set; }
+    }
+
     private IQueryable<LogRun> LogRunsForExport => Context.LogRuns
         .AsNoTracking()
         .Include(lr => lr.ConveyanceMethod)
@@ -434,7 +885,7 @@ public class LogController : BoreholeControllerBase<LogRun>
             csvWriter.WriteField(lr.ToDepth);
             csvWriter.WriteField(string.Join(",", toolTypes));
             csvWriter.WriteField(GetCodelistText(lr.BoreholeStatus, locale));
-            csvWriter.WriteField(lr.RunDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
+            csvWriter.WriteField(lr.RunDate?.ToString(ImportDateFormat, CultureInfo.InvariantCulture));
             csvWriter.WriteField(lr.BitSize);
             csvWriter.WriteField(GetCodelistText(lr.ConveyanceMethod, locale));
             csvWriter.WriteField(lr.ServiceCo);
@@ -475,7 +926,7 @@ public class LogController : BoreholeControllerBase<LogRun>
             csvWriter.WriteField(GetCodelistText(lf.PassType, locale));
             csvWriter.WriteField(GetCodelistText(lf.DataPackage, locale));
             csvWriter.WriteField(GetCodelistText(lf.DepthType, locale));
-            csvWriter.WriteField(lf.DeliveryDate?.ToString("dd/MM/yyyy", CultureInfo.InvariantCulture));
+            csvWriter.WriteField(lf.DeliveryDate?.ToString(ImportDateFormat, CultureInfo.InvariantCulture));
             csvWriter.WriteField(GetLocalizedYesNoBoolean(lf.Public, locale));
             await csvWriter.NextRecordAsync().ConfigureAwait(false);
         }
