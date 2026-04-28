@@ -337,7 +337,7 @@ export interface NullableBooleanCounts {
   null: number;
 }
 
-export interface BooleanCounts {
+interface BooleanCounts {
   true: number;
   false: number;
 }
