@@ -1,0 +1,104 @@
+name: Bump dataextraction version
+
+on:
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Dataextraction image tag (e.g. v1.0.162)"
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: bump-dataextraction
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    name: Update dataextraction version and open PR
+    timeout-minutes: 10
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+
+      - name: Validate input
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          if ! [[ "$VERSION" =~ ^[A-Za-z0-9._-]+$ ]]; then
+            echo "Invalid version format: $VERSION"
+            exit 1
+          fi
+
+      - name: Check current version
+        id: check
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          CURRENT=$(awk '
+            /^dataextraction:/ { in_block=1; next }
+            /^[^ ]/ { in_block=0 }
+            in_block && /^  version:/ { gsub(/"/, "", $2); print $2; exit }
+          ' charts/swissgeol-boreholes/values.yaml)
+          echo "Current: $CURRENT, requested: $VERSION"
+          if [[ "$CURRENT" == "$VERSION" ]]; then
+            echo "Already at $VERSION, nothing to do."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Configure Git
+        if: steps.check.outputs.skip != 'true'
+        run: |
+          git config user.email "office@geowerkstatt.ch"
+          git config user.name "GeoWerkstatt-Build"
+
+      - name: Update files
+        if: steps.check.outputs.skip != 'true'
+        env:
+          VERSION: ${{ inputs.version }}
+        run: |
+          # charts/swissgeol-boreholes/values.yaml: dataextraction.version
+          sed -i "/^dataextraction:/,/^[^ ]/ s|^  version: .*|  version: ${VERSION}|" charts/swissgeol-boreholes/values.yaml
+
+          # docker-compose.yml: dataextraction image tag
+          sed -i "s|swissgeol-boreholes-dataextraction-api:.*|swissgeol-boreholes-dataextraction-api:${VERSION}|" docker-compose.yml
+
+          # CHANGELOG.md: insert under ### Changed inside [Unreleased], synthesizing the heading if absent
+          awk -v entry="- Dataextraction service was updated to ${VERSION}." '
+            /^## \[Unreleased\]$/ { print; state="unreleased"; next }
+            /^## / && state=="unreleased" {
+              if (!inserted) { print "### Changed"; print entry; print "" }
+              state="other"
+            }
+            state=="unreleased" && /^### Changed$/ && !inserted {
+              print; print entry; inserted=1; next
+            }
+            { print }
+            END {
+              if (state=="unreleased" && !inserted) { print "### Changed"; print entry }
+            }
+          ' CHANGELOG.md > CHANGELOG.md.new && mv CHANGELOG.md.new CHANGELOG.md
+
+      - name: Commit, push and open PR
+        if: steps.check.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          VERSION: ${{ inputs.version }}
+        run: |
+          BRANCH="bump-dataextraction-${VERSION}"
+          git checkout -b "$BRANCH"
+          git commit -am "Bump dataextraction to ${VERSION}"
+          git push --set-upstream origin "$BRANCH"
+          gh pr create \
+            --title "Bump dataextraction to ${VERSION}" \
+            --body "- Bump dataextraction image to ${VERSION} so the chart, docker-compose, and CI track the same version.
+          - Upstream release: https://github.com/swisstopo/swissgeol-boreholes-dataextraction/releases/tag/${VERSION}"

@@ -106,6 +106,12 @@ Ein Hotfix-Release wird erstellt, indem vom letzten Release-Git-Tag ein neuer Br
 | `:v<major>` | Stabile Major-Version, z.B. `:v2` (wird beim PROD-Release aktualisiert) |
 | `:latest` | Aktuelle produktive Version (PROD-Release) |
 
+### Helm Chart Versionen
+
+`app.version` wird automatisch durch `release.yml` bei jedem GitHub Release aktualisiert.
+
+`dataextraction.version` und `ocr.version` müssen manuell in `charts/swissgeol-boreholes/values.yaml` aktualisiert werden, wenn diese Sub-Projekte ein neues Release erhalten.
+
 ## Developer best practices
 
 #### UI/UX
@@ -155,3 +161,11 @@ Für neue Fetch-Requests sollte immer `fetchApiV2WithApiError` (bzw. `uploadWith
 - **Fetch-Requests, die nicht von TanStack Query gemanagt werden (legacy):**
   - Wird `fetchApiV2WithApiError` verwendet, muss der Fetch-Request in einem `try-catch`-Block ausgeführt und Fehler explizit behandelt werden.
   - Wird `fetchApiV2Legacy` verwendet, erscheint im Fehlerfall ein Standard-Browser-Alert.
+
+## Helm Charts
+
+Die Helm Charts für das Deployment der Applikation befinden sich im Ordner [`charts/`](./charts/). Weitere Informationen zur Installation und Konfiguration finden sich in den jeweiligen Chart READMEs:
+
+- [swissgeol-boreholes](./charts/swissgeol-boreholes/README.md)
+- [swissgeol-boreholes-view-sync](./charts/swissgeol-boreholes-view-sync/README.md)
+- [swissgeol-boreholes-extern-sync](./charts/swissgeol-boreholes-extern-sync/README.md)
