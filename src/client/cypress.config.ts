@@ -2,6 +2,7 @@ import fs from "node:fs";
 // @ts-expect-error - @cypress/grep uses exports map incompatible with moduleResolution:node
 import { plugin as cypressGrepPlugin } from "@cypress/grep/plugin";
 import { defineConfig } from "cypress";
+import cypressSplit from "cypress-split";
 import vitePreprocessor from "cypress-vite";
 
 export default defineConfig({
@@ -19,6 +20,7 @@ export default defineConfig({
     },
 
     setupNodeEvents(on, config) {
+      cypressSplit(on, config);
       cypressGrepPlugin(config);
       on("file:preprocessor", vitePreprocessor());
 
