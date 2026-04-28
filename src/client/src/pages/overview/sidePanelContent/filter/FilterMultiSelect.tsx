@@ -1,6 +1,7 @@
 ﻿import { FC, SyntheticEvent, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, Box, Chip, TextField, Typography } from "@mui/material";
+import { CircleX } from "lucide-react";
 import { SearchData } from "./filterData/filterInterfaces.ts";
 
 interface FilterMultiSelectOption {
@@ -72,9 +73,11 @@ export const FilterMultiSelect: FC<FilterMultiSelectProps> = ({ item, filterValu
               <Chip
                 key={key}
                 size="small"
+                color="primary"
                 sx={{ height: "26px" }}
                 label={option.label}
                 data-cy={`${item.key}-chip-${option.key}`}
+                deleteIcon={<CircleX style={{ width: "16px", height: "16px" }} />}
                 {...chipProps}
               />
             );

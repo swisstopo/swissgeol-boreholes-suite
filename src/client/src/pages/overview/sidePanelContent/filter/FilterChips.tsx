@@ -47,7 +47,7 @@ const FilterChips = () => {
             key={descriptor.id}
             sx={{ marginRight: "10px", marginBottom: "10px" }}
             data-cy={descriptor.testId}
-            color="secondary"
+            color="primary"
             label={descriptor.label}
             onDelete={descriptor.onDelete}
             deleteIcon={<CircleX style={{ width: "16px", height: "16px" }} />}
