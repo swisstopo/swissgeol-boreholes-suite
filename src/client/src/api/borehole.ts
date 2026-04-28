@@ -492,8 +492,7 @@ export const useBoreholeSuggestions = (field: BoreholeSuggestionField, query: st
     queryKey: ["borehole-suggestions", field, query],
     queryFn: () => fetchBoreholeSuggestions(field, query, 10),
     enabled: fetchEnabled,
-    staleTime: 30_000,
     placeholderData: previous => previous,
-    retry: false,
+    retry: false, // Don't retry on failure, as suggestions are a nice-to-have feature and retries will race with user input changes.
   });
 };
