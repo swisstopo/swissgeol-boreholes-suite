@@ -119,13 +119,45 @@ public class AuthenticationTest
     [TestMethod]
     public async Task CreateOrUpdateUser_ShouldThrowInvalidOperationException_WhenNewUser_MissingEmail()
     {
-        var subjectId = "12345";
-        var surName = "WHITE";
-
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, subjectId),
-            new Claim(ClaimTypes.Surname, surName),
+            new Claim(ClaimTypes.NameIdentifier, "missing-email"),
+            new Claim(ClaimTypes.GivenName, "WHITE"),
+            new Claim(ClaimTypes.Surname, "MANGO"),
+        };
+
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "TestAuthentication"));
+        var transformation = new DatabaseAuthenticationClaimsTransformation(context);
+
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(
+            () => transformation.CreateOrUpdateUser(principal));
+    }
+
+    [TestMethod]
+    public async Task CreateOrUpdateUser_ShouldThrowInvalidOperationException_WhenNewUser_MissingGivenName()
+    {
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, "missing-given"),
+            new Claim(ClaimTypes.Surname, "MANGO"),
+            new Claim(ClaimTypes.Email, "test@example.com"),
+        };
+
+        var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "TestAuthentication"));
+        var transformation = new DatabaseAuthenticationClaimsTransformation(context);
+
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(
+            () => transformation.CreateOrUpdateUser(principal));
+    }
+
+    [TestMethod]
+    public async Task CreateOrUpdateUser_ShouldThrowInvalidOperationException_WhenNewUser_MissingFamilyName()
+    {
+        var claims = new List<Claim>
+        {
+            new Claim(ClaimTypes.NameIdentifier, "missing-family"),
+            new Claim(ClaimTypes.GivenName, "WHITE"),
+            new Claim(ClaimTypes.Email, "test@example.com"),
         };
 
         var principal = new ClaimsPrincipal(new ClaimsIdentity(claims, "TestAuthentication"));

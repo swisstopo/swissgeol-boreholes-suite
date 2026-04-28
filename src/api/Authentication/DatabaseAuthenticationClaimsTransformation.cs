@@ -56,16 +56,12 @@ public class DatabaseAuthenticationClaimsTransformation : IClaimsTransformation
 
         if (user == null)
         {
-            var email = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value
-                ?? throw new InvalidOperationException(
-                    "Cannot provision new user: email claim is missing. The UserInfo endpoint may be unreachable.");
-
             user = new User
             {
                 SubjectId = subjectId,
-                FirstName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value ?? "",
-                LastName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value ?? "",
-                Email = email,
+                FirstName = RequiredClaim(principal, ClaimTypes.GivenName, "given_name"),
+                LastName = RequiredClaim(principal, ClaimTypes.Surname, "family_name"),
+                Email = RequiredClaim(principal, ClaimTypes.Email, "email"),
             };
             user.Name = $"{user.FirstName[0]}. {user.LastName}";
         }
@@ -92,5 +88,13 @@ public class DatabaseAuthenticationClaimsTransformation : IClaimsTransformation
         }
 
         return user;
+    }
+
+    private static string RequiredClaim(ClaimsPrincipal principal, string claimType, string displayName)
+    {
+        var value = principal.Claims.FirstOrDefault(c => c.Type == claimType)?.Value;
+        if (string.IsNullOrWhiteSpace(value))
+            throw new InvalidOperationException($"Cannot provision new user: {displayName} claim is missing.");
+        return value;
     }
 }
