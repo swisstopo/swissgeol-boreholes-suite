@@ -87,7 +87,7 @@ export const FilterMultiSelect: FC<FilterMultiSelectProps> = ({ item, filterValu
             slotProps={{
               htmlInput: {
                 ...params.inputProps,
-                "data-cy": `${item.key}-formInput`,
+                "data-cy": `${item.key}-formSelect`,
               },
             }}
           />
