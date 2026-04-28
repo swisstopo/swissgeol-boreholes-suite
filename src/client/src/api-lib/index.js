@@ -1,15 +1,14 @@
 import { getHeight } from "./actions";
-import { deleteBoreholes, getGeojson, loadBoreholes, loadEditingBoreholes, patchBoreholes } from "./actions/borehole";
+import { deleteBoreholes, patchBoreholes } from "./actions/borehole";
 import { loadSettings, patchSettings } from "./actions/settings";
-import { acceptTerms, draftTerms, getTerms, getTermsDraft, publishTerms } from "./actions/terms";
+import { draftTerms, getTerms, getTermsDraft, publishTerms } from "./actions/terms";
 import { loadUser, setAuthentication, unsetAuthentication } from "./actions/user";
-import store, { configureStore, createReducer, injectReducer } from "./reducers";
+import store, { injectReducer } from "./reducers";
 
 export {
   getHeight,
   loadSettings,
   patchSettings,
-  acceptTerms,
   draftTerms,
   getTerms,
   getTermsDraft,
@@ -17,15 +16,10 @@ export {
   setAuthentication,
   unsetAuthentication,
   loadUser,
-  loadBoreholes,
-  loadEditingBoreholes,
   deleteBoreholes,
   patchBoreholes,
-  getGeojson,
 
   // Reducers
   store,
-  configureStore,
-  createReducer,
   injectReducer,
 };

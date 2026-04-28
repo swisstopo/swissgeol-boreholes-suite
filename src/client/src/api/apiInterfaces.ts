@@ -22,6 +22,7 @@ export enum Role {
 }
 
 export type NullableDateString = Date | string | null;
+export type NullableBooleanSelect = number | boolean | null; // Number as select options parsed to boolean
 
 export interface Workgroup {
   id: number;
@@ -42,7 +43,7 @@ export interface WorkgroupRole {
   workgroup?: Workgroup;
 }
 
-export interface Term {
+interface Term {
   id: number;
   isDraft: boolean;
   textEn: string;
@@ -54,7 +55,7 @@ export interface Term {
   expiration?: Date;
 }
 
-export interface TermsAccepted {
+interface TermsAccepted {
   userId: number;
   termId: number;
   term: Term;
@@ -101,11 +102,6 @@ export interface Casing {
   id?: number;
   completionId?: number;
   boreholeId?: number;
-}
-
-export interface Section {
-  id?: number;
-  boreholeId: number;
 }
 
 export interface GeometryFormat {

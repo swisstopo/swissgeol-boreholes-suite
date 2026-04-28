@@ -27,7 +27,6 @@ describe("Casing crud tests", () => {
 
       // open completion editor
       goToDetailRouteAndAcceptTerms(`/${id}/completion`);
-      cy.wait(["@borehole"]);
     });
 
     cy.wait("@completion_GET");
@@ -150,7 +149,6 @@ describe("Casing crud tests", () => {
         });
       });
       goToDetailRouteAndAcceptTerms(`/${id}/completion`);
-      cy.wait(["@borehole"]);
     });
 
     // casing 1

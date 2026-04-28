@@ -5,21 +5,20 @@ import { Box, Button, Stack, Typography } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { ArrowDownToLine, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import CopyIcon from "../../../assets/icons/copy.svg?react";
-import { Boreholes, Filters, ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
-import { useAuth } from "../../../auth/useBdmsAuth.tsx";
+import { useAuth } from "../../../auth/useBoreholesAuth.tsx";
 import { BulkEditButton, CopyButton, DeleteButton, ExportButton } from "../../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
-import { OverViewContext } from "../overViewContext.tsx";
 import WorkgroupSelect from "../sidePanelContent/commons/workgroupSelect.tsx";
+import { useBoreholeUrlParams } from "../useBoreholeUrlParams.ts";
 import { useUserWorkgroups } from "../UserWorkgroupsContext.tsx";
 import { BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
 
 interface BottomBarProps {
-  boreholes: Boreholes;
+  totalCount: number;
   selectionModel: GridRowSelectionModel;
   multipleSelected: (selection: GridRowSelectionModel, filter: Record<string, unknown>) => void;
-  filters: Filters;
   onDeleteMultiple: () => void;
   onCopyBorehole: () => void;
   setIsExporting: Dispatch<SetStateAction<boolean>>;
@@ -29,14 +28,13 @@ const BottomBar = ({
   selectionModel,
   multipleSelected,
   onDeleteMultiple,
-  filters,
   onCopyBorehole,
-  boreholes,
+  totalCount,
   setIsExporting,
 }: BottomBarProps) => {
   const { t } = useTranslation();
   const { showPrompt, promptIsOpen } = useContext(PromptContext);
-  const { bottomDrawerOpen, setBottomDrawerOpen } = useContext(OverViewContext);
+  const { bottomDrawerOpen, setBottomDrawerOpen } = useBoreholeUrlParams();
   const { currentWorkgroupId } = useUserWorkgroups();
   const user: User = useSelector((state: ReduxRootState) => state.core_user);
   const userIsEditor = user.data.roles.some(role => ["EDIT", "CONTROL", "VALID", "PUBLIC"].includes(role));
@@ -69,16 +67,16 @@ const BottomBar = ({
   }, [copyPromptOpen, promptIsOpen, showCopyPromptForSelectedWorkgroup, currentWorkgroupId]);
 
   function bulkEditSelected() {
-    multipleSelected(selectionModel, filters.filter);
+    multipleSelected(selectionModel, {});
   }
 
   const showPromptExportMoreThan100 = (callback: () => void) => {
-    showPrompt("bulkExportMoreThan100", [
+    showPrompt("exportMoreThan100", [
       {
         label: "cancel",
       },
       {
-        label: "export100Boreholes",
+        label: "exportFirst100",
         icon: <ArrowDownToLine />,
         variant: "contained",
         action: callback,
@@ -137,7 +135,7 @@ const BottomBar = ({
           <Typography variant="subtitle1"> {t("selectedCount", { count: selectionModel.length })}</Typography>
         </Stack>
       ) : (
-        <BoreholeNumbersPreview isFetching={boreholes.isFetching} boreholeCount={boreholes.length} />
+        <BoreholeNumbersPreview boreholeCount={totalCount} />
       )}
       <Box sx={{ flex: 1 }}></Box>
       <Button

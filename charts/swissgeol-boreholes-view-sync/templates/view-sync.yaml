@@ -19,6 +19,9 @@ spec:
         spec:
           automountServiceAccountToken: false
           securityContext:
+            runAsUser: 70
+            runAsGroup: 70
+            fsGroup: 70
             seccompProfile:
               type: RuntimeDefault
           containers:
@@ -39,10 +42,6 @@ spec:
                 capabilities:
                   drop:
                     - ALL
-                  add:
-                    - CHOWN
-                    - SETGID
-                    - SETUID
                 seccompProfile:
                   type: RuntimeDefault
               volumeMounts:

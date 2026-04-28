@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import DataCards from "../../../../../components/dataCard/dataCards";
+import { DataCards } from "../../../../../components/dataCard/dataCards";
 import { useRequiredParams } from "../../../../../hooks/useRequiredParams.ts";
 import { sortByDepth } from "../../sorter.jsx";
 import { getHydrotests, Hydrotest as HydrotestType } from "./Hydrotest";

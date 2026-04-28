@@ -6,8 +6,9 @@ import { Stack } from "@mui/system";
 import { GridColDef, GridEventListener, GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
 import Filter2Icon from "../../../../assets/icons/filter2.svg?react";
 import { getSectionsByBoreholeId } from "../../../../api/fetchApiV2.ts";
-import { DeleteButton, ToggleButton } from "../../../../components/buttons/buttons.tsx";
+import { DeleteButton, ExportButton, ToggleButton } from "../../../../components/buttons/buttons.tsx";
 import { CodelistLabelStyle, useCodelists } from "../../../../components/codelist.ts";
+import { ExportDialog } from "../../../../components/export/exportDialog.tsx";
 import { FormContainer, FormDomainMultiSelect, FormMultiSelect } from "../../../../components/form/form.ts";
 import { FormMultiSelectValue } from "../../../../components/form/formMultiSelect.tsx";
 import { FormSelectValue } from "../../../../components/form/formSelect.tsx";
@@ -15,7 +16,8 @@ import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts
 import { Table } from "../../../../components/table/table.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { SaveContext } from "../../saveContext.tsx";
-import { LogRun, LogRunChangeTracker } from "./log.ts";
+import { exportLogRuns, useLogExport } from "./log.ts";
+import { LogRun, LogRunChangeTracker } from "./logInterfaces.ts";
 import { getServiceOrToolArray } from "./logUtils.ts";
 
 interface SectionFilter {
@@ -49,6 +51,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
 
   const { markAsChanged } = useContext(SaveContext);
   const { data: codelists } = useCodelists();
+  const { isExporting, setIsExporting, startExport, exportItems } = useLogExport(exportLogRuns, selectionModel, runs);
 
   const formMethods = useForm<LogRunFilter>({ mode: "onChange" });
   const runFilter = formMethods.watch("runNumbers");
@@ -200,9 +203,8 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
     [t, codelists, i18n.language],
   );
 
-  const selection = true;
   return (
-    <Stack height={"100%"}>
+    <Stack height={"100%"} data-cy="log-runs">
       <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
         <Stack direction="row" alignItems="center" gap={1}>
           <Typography data-cy="log-run-count">
@@ -210,20 +212,10 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
               ? t("selectedCount", { count: selectionModel.length })
               : t("runCount", { count: filteredRuns.length })}
           </Typography>
-          {selection && (
-            <>
-              {editingEnabled && (
-                <DeleteButton disabled={selectionModel.length === 0} onClick={() => deleteLogRun(selectionModel)} />
-              )}
-              {/* TODO: Hide until logic is implemented with https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2361*/}
-              {/*<ExportButton label={"exportData"} disabled={selectionModel.length === 0} onClick={() => exportData()} />*/}
-              {/*<ExportButton*/}
-              {/*  label={"exportTable"}*/}
-              {/*  disabled={selectionModel.length === 0}*/}
-              {/*  onClick={() => exportTable()}*/}
-              {/*/>*/}
-            </>
+          {editingEnabled && (
+            <DeleteButton disabled={selectionModel.length === 0} onClick={() => deleteLogRun(selectionModel)} />
           )}
+          <ExportButton label="export" onClick={startExport} disabled={selectionModel.length === 0} />
         </Stack>
         <Stack direction="row" alignItems="center" gap={1}>
           <ToggleButton label={"filter"} icon={<Filter2Icon />} active={filterVisible} onToggle={setFilterVisible} />
@@ -263,6 +255,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
         rowAutoHeight={true}
         noRowsLabel={hasActiveFilter ? "noFilterResult" : "noLogRun"}
       />
+      <ExportDialog isExporting={isExporting} setIsExporting={setIsExporting} exportItems={exportItems} />
     </Stack>
   );
 };

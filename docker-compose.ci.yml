@@ -1,0 +1,22 @@
+services:
+  api:
+    image: bdms-api
+    # Development env keeps the in-app database seeding that integration tests rely on,
+    # while the deploy image skips the cold dotnet watch compile on startup.
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+    # Drop the host-source bind-mount and the anonymous bin/obj volumes used by dev hot-reload.
+    volumes: !reset null
+    healthcheck:
+      interval: 2s
+
+  api-legacy:
+    image: bdms-api-legacy
+
+  oidc-server:
+    healthcheck:
+      test: ["CMD-SHELL", "curl --fail http://localhost/.well-known/openid-configuration || exit 1"]
+      interval: 2s
+      timeout: 3s
+      retries: 30
+      start_period: 5s

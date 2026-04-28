@@ -5,7 +5,7 @@ import { Route, Routes } from "react-router";
 import { Stack } from "@mui/material";
 import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
 import { theme } from "../../AppTheme.ts";
-import { useAuth } from "../../auth/useBdmsAuth.tsx";
+import { useAuth } from "../../auth/useBoreholesAuth.tsx";
 import { TabPanel } from "../../components/tabs/tabPanel.tsx";
 import { AboutSettings } from "./aboutSettings.tsx";
 import { MaintenanceTasks } from "./admin/maintenanceTasks.tsx";
@@ -30,7 +30,7 @@ export const SettingsPage = () => {
     const tabsArray = [{ label: t("about"), hash: "#about", component: <AboutSettings /> }];
 
     if (!isAnonymousUser) {
-      tabsArray.unshift({ label: t("general"), hash: "#general", component: <GeneralSettings /> });
+      tabsArray.unshift({ label: t("map"), hash: "#map", component: <GeneralSettings /> });
       tabsArray.push({ label: t("terms"), hash: "#terms", component: <TermSettings /> });
     }
     if (isAdminUser) {

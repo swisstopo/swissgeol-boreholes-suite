@@ -1,13 +1,8 @@
 import { useCallback } from "react";
 import { useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { ApiError, NullableDateString, User } from "../../../../api/apiInterfaces.ts";
-import {
-  download,
-  fetchApiV2Base,
-  fetchApiV2Legacy,
-  fetchApiV2WithApiError,
-  upload,
-} from "../../../../api/fetchApiV2.ts";
+import { download } from "../../../../api/download.ts";
+import { fetchApiV2Base, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../../../../api/fetchApiV2.ts";
 import { getImageFromBlob } from "../../../../utils.ts";
 
 export interface Photo {
@@ -56,7 +51,7 @@ export const updatePhotos = async (data: { id: number; public: boolean }[]): Pro
   return await fetchApiV2WithApiError("photo", "PUT", data);
 };
 
-export const getPhotoImageData = async (photoId: number): Promise<Blob> => {
+const getPhotoImageData = async (photoId: number): Promise<Blob> => {
   const response = await fetchApiV2Base(`photo/image?photoId=${photoId}`, "GET");
   if (!response.ok) {
     throw new ApiError("errorLoadingImage", response.status);
@@ -64,7 +59,7 @@ export const getPhotoImageData = async (photoId: number): Promise<Blob> => {
   return await response.blob();
 };
 
-export const photoQueryKey = "photos";
+const photoQueryKey = "photos";
 
 export const usePhotos = (boreholeId?: number): UseQueryResult<Photo[]> =>
   useQuery({

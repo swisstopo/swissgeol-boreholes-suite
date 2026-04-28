@@ -3,6 +3,16 @@
 ## [Unreleased]
 
 ### Changed
+- Filters are now organized in new sections. Filters for attachments and LOG were added.
+- When the main map is fitted to the extent of the (filtered) boreholes, a padding is applied to the extent.
+- Upgraded swissgeol OCR service to version 1.1.4.
+
+## v2.1.1568 - 2026-04-23
+
+### Added
+- Export functionality for LOG.
+
+### Changed
 - Duplicate boreholes (matching coordinates and total depth within the same workgroup or within the imported file) can now be imported.
 - Translations for borehole identifier codelist entries were streamlined.
 - Extracting multiple stratigraphies from a single PDF document is now supported.
@@ -10,6 +20,8 @@
 - Optional comments to additional identifiers can now be added.
 - The cluster layer on the map is now displayed at higher zoom levels still.
 - Openlayers was upgraded to version 10.9.0.
+- The borehole name section and restriction sections were moved from the location page to the general tab of the borehole detail view.
+- The consent banner choice is now remembered for a year, so users no longer have to accept the terms again on every visit.
 
 ### Fixed
 - Boreholes could be edited after being published.
@@ -33,7 +45,7 @@
 - Restriction until now has the data type `DateOnly` instead of `DateTime`.
 - Added pod and container security context hardening across all Helm charts (seccomp profiles, privilege escalation prevention, capability dropping, read-only root filesystems).
 - Changed client Dockerfile to use numeric UID instead of named user for Kubernetes `runAsNonRoot` compatibility.
-- 
+
 ### Fixed
 - All tables in the `logs` and `attachments` tab of the borehole detail view were missing pagination.
 - Fixed Chronostratigraphy and Lithostratigraphy tabs not being correctly greyed out when empty.

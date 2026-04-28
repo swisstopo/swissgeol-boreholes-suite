@@ -1,13 +1,14 @@
 import { useEffect, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card } from "@mui/material";
-import { useAuth } from "../../../../auth/useBdmsAuth.tsx";
+import { useAuth } from "../../../../auth/useBoreholesAuth.tsx";
 import { FormContainer, FormInput, FormInputDisplayOnly } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
-import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
+import { BoreholeFormInputs } from "../borehole/boreholePanelInterfaces.ts";
+import { LocationBaseProps } from "./locationPanelInterfaces.tsx";
 
 interface NameSegmentProps extends LocationBaseProps {
-  formMethods: UseFormReturn<LocationFormInputs>;
+  formMethods: UseFormReturn<BoreholeFormInputs>;
 }
 const NameSegment = ({ borehole, formMethods }: NameSegmentProps) => {
   const auth = useAuth();
@@ -42,13 +43,13 @@ const NameSegment = ({ borehole, formMethods }: NameSegmentProps) => {
         <FormContainer>
           {!auth.anonymousModeEnabled && (
             <FormContainer direction="row">
-              <FormInput fieldName={"originalName"} label={"original_name"} value={borehole?.originalName} />
+              <FormInput fieldName={"originalName"} label={"originalName"} value={borehole?.originalName} />
               <FormInputDisplayOnly label={"workgroup"} value={borehole?.workgroup?.name} />
             </FormContainer>
           )}
           <FormContainer direction="row">
             <FormInput fieldName={"name"} label={"alternate_name"} value={borehole?.name} />
-            <FormInput fieldName={"projectName"} label={"project_name"} value={borehole?.projectName} />
+            <FormInput fieldName={"projectName"} label={"projectName"} value={borehole?.projectName} />
           </FormContainer>
         </FormContainer>
       </FormSegmentBox>

@@ -22,7 +22,7 @@ export enum Direction {
   X = "X",
   Y = "Y",
 }
-export interface FieldNameDirections {
+interface FieldNameDirections {
   X: FieldNameDirectionKeys;
   Y: FieldNameDirectionKeys;
 }
@@ -33,12 +33,12 @@ export interface ReferenceSystem {
   fieldName: FieldNameDirections;
 }
 
-export interface CoordinateLimit {
+interface CoordinateLimit {
   Min: number;
   Max: number;
 }
 
-export interface DirectionLimits {
+interface DirectionLimits {
   X: CoordinateLimit;
   Y: CoordinateLimit;
 }
@@ -48,23 +48,9 @@ export interface CoordinateLimits {
   LV03: DirectionLimits;
 }
 
-export interface CoordinatePrecisions {
-  LV95: { x: number; y: number };
-  LV03: { x: number; y: number };
-}
-
 export interface Coordinates {
   LV95: { x: number | null; y: number | null };
   LV03: { x: number | null; y: number | null };
-}
-
-export interface FormValues {
-  spatial_reference_system: number;
-  locationX: string;
-  locationY: string;
-  locationXLV03: string;
-  locationYLV03: string;
-  location_precision: string;
 }
 
 export interface CoordinatesSegmentProps extends LocationBaseProps {

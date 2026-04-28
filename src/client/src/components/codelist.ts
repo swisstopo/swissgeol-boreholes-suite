@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { useMutation, useQuery, useQueryClient, useSuspenseQuery } from "@tanstack/react-query";
+import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { fetchApiV2WithApiError } from "../api/fetchApiV2.ts";
 
 export interface Codelist {
@@ -45,14 +45,10 @@ export const restrictionFreeCode = 20111001;
 export const restrictionCode = 20111002;
 export const restrictionUntilCode = 20111003;
 
-export const fetchCodelists = async (): Promise<Codelist[]> => await fetchApiV2WithApiError("codelist", "GET");
+const fetchCodelists = async (): Promise<Codelist[]> => await fetchApiV2WithApiError("codelist", "GET");
 
-export const fetchCodelistsBySchema = async (schema: string): Promise<Codelist[]> =>
+const fetchCodelistsBySchema = async (schema: string): Promise<Codelist[]> =>
   await fetchApiV2WithApiError(`codelist?schema=${schema}`, "GET");
-
-export const updateCodelist = async (codelist: Codelist) => {
-  return await fetchApiV2WithApiError("codelist", "PUT", codelist);
-};
 
 const staleTime10Min = 10 * 60 * 1000;
 const garbageCollectionTime15Min = 15 * 60 * 1000;
@@ -75,22 +71,6 @@ export const useCodelistSchema = (schema: string) =>
     staleTime: staleTime10Min,
     gcTime: garbageCollectionTime15Min,
   });
-
-export const useCodelistMutations = () => {
-  const queryClient = useQueryClient();
-  const useUpdateCodelist = useMutation({
-    mutationFn: async (codelist: Codelist) => {
-      return await updateCodelist(codelist);
-    },
-    onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [codelistQueryKey] });
-    },
-  });
-
-  return {
-    update: useUpdateCodelist,
-  };
-};
 
 export const useCodelistDisplayValues = () => {
   const { data: codelists } = useCodelists();

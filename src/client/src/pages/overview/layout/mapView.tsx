@@ -1,16 +1,24 @@
-import { useCallback, useContext, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Stack } from "@mui/material";
-import { GridRowSelectionModel } from "@mui/x-data-grid";
-import { loadEditingBoreholes } from "../../../api-lib";
-import { Boreholes, EditorStore, Filters, ReduxRootState, Setting } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { GridPaginationModel, GridRowSelectionModel, GridSortModel } from "@mui/x-data-grid";
+import { EditorStore, ReduxRootState, Setting } from "../../../api-lib/ReduxStateInterfaces.ts";
+import {
+  exportCSVBorehole,
+  exportJsonBoreholes,
+  exportJsonWithAttachmentsBorehole,
+  FilterRequest,
+  FilterResponse,
+  useFilterBoreholes,
+  useReloadBoreholes,
+} from "../../../api/borehole.ts";
 import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
 import { ExportDialog } from "../../../components/export/exportDialog.tsx";
 import MapComponent from "../../../components/map/mapComponent.jsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import BottomBarContainer from "../boreholeTable/bottomBarContainer";
-import { OverViewContext } from "../overViewContext.tsx";
-import { FilterContext } from "../sidePanelContent/filter/filterContext.tsx";
+import { PolygonFilterContext } from "../sidePanelContent/filter/polygonFilterContext.tsx";
+import { useBoreholeUrlParams } from "../useBoreholeUrlParams.ts";
 
 interface MapViewProps {
   displayErrorMessage: (message: string) => void;
@@ -21,6 +29,8 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const [rowsToHighlight, setRowsToHighlight] = useState<number[]>([]);
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const [isExporting, setIsExporting] = useState(false);
+  const [sessionRestored, setSessionRestored] = useState(false);
+  const reloadBoreholes = useReloadBoreholes();
   const { navigateTo } = useBoreholesNavigate();
   const {
     filterPolygon,
@@ -29,108 +39,162 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     setPolygonSelectionEnabled,
     featureIds,
     setFeatureIds,
-  } = useContext(FilterContext);
-  const { mapResolution, setMapResolution, mapCenter, setMapCenter } = useContext(OverViewContext);
+  } = useContext(PolygonFilterContext);
+  const {
+    filterParams,
+    tableParams,
+    setTableParams,
+    mapResolution,
+    setMapResolution,
+    mapCenter,
+    setMapCenter,
+    saveFilterParamsInSession,
+    restoreMapParamsFromSession,
+    saveTableParamsInSession,
+    restoreTableParamsFromSession,
+    restoreFilterParamsFromSession,
+  } = useBoreholeUrlParams();
 
-  const boreholes: Boreholes = useSelector((state: ReduxRootState) => state.core_borehole_editor_list);
+  useEffect(() => {
+    restoreTableParamsFromSession();
+    restoreFilterParamsFromSession();
+    restoreMapParamsFromSession();
+    setSessionRestored(true);
+
+    return () => {
+      // On unmount: persist current state to sessionStorage.
+      saveFilterParamsInSession();
+      saveTableParamsInSession();
+    };
+  }, [
+    restoreTableParamsFromSession,
+    restoreFilterParamsFromSession,
+    restoreMapParamsFromSession,
+    saveFilterParamsInSession,
+    saveTableParamsInSession,
+  ]);
+
   const setting: Setting = useSelector((state: ReduxRootState) => state.setting);
   const editorStore: EditorStore = useSelector((state: ReduxRootState) => state.editor);
-  const filters: Filters = useSelector((state: ReduxRootState) => state.filters);
   const dispatch = useDispatch();
 
-  const lock = (id: string) => {
-    dispatch({
-      type: "CLEAR",
-      path: "/borehole",
+  // MUI DataGrid uses 0-based page, FilterRequest uses 1-based pageNumber
+  const paginationModel: GridPaginationModel = {
+    page: tableParams.page,
+    pageSize: tableParams.pageSize,
+  };
+  const setPaginationModel = (model: GridPaginationModel) => {
+    setTableParams({ page: model.page, pageSize: model.pageSize });
+  };
+
+  const sortModel: GridSortModel = [
+    {
+      field: tableParams.orderBy,
+      sort: tableParams.direction.toLowerCase() as "asc" | "desc",
+    },
+  ];
+  const setSortModel = (model: GridSortModel) => {
+    setTableParams({
+      orderBy: model[0]?.field ?? "name",
+      direction: model[0]?.sort === "desc" ? "DESC" : "ASC",
+      page: 0, // reset to first page on sort change
     });
+  };
+
+  // Assemble the full FilterRequest from URL params
+  const filterRequest: FilterRequest = {
+    ...filterParams,
+    ids: featureIds?.length > 0 ? featureIds : undefined,
+    pageNumber: tableParams.page + 1,
+    pageSize: tableParams.pageSize,
+    orderBy: tableParams.orderBy,
+    direction: tableParams.direction,
+  };
+
+  const emptyFilterResponse: FilterResponse = {
+    totalCount: 0,
+    pageNumber: 1,
+    pageSize: tableParams.pageSize,
+    totalPages: 0,
+    boreholes: [],
+    geoJson: null,
+    filteredBoreholeIds: [],
+    selectableBoreholeIds: [],
+  };
+  const { data: filterResponse = emptyFilterResponse } = useFilterBoreholes(filterRequest, sessionRestored);
+
+  const lock = (id: string) => {
+    dispatch({ type: "CLEAR", path: "/borehole" });
     navigateTo({ path: "/" + id });
   };
 
   const multipleSelected = (selection: GridRowSelectionModel, filter: Record<string, unknown> | null = null) => {
-    dispatch({
-      type: "EDITOR_MULTIPLE_SELECTED",
-      selection: selection,
-      filter: filter,
-    });
+    dispatch({ type: "EDITOR_MULTIPLE_SELECTED", selection, filter });
   };
 
-  const loadBoreholes = useCallback(
-    (
-      page: number,
-      limit = 100,
-      filter = {},
-      orderby = "alternate_name",
-      direction = "ASC",
-      featureIds: number[] = [],
-    ) => {
-      // @ts-expect-error legacy api functions are not typed
-      dispatch(loadEditingBoreholes(page, limit, filter, orderby, direction, featureIds));
-    },
-    [dispatch],
-  );
-
   return (
-    <Stack
-      direction="column"
-      sx={{
-        flex: "1 1.5 100%",
-      }}>
+    <Stack direction="column" sx={{ flex: "1 1.5 100%" }}>
       <BulkEditDialog
         isOpen={Array.isArray(editorStore.mselected)}
-        loadBoreholes={() => {
-          loadBoreholes(
-            boreholes.page,
-            boreholes.limit,
-            filters.filter,
-            boreholes.orderby,
-            boreholes.direction,
-            featureIds,
-          );
-        }}
+        loadBoreholes={reloadBoreholes}
         selected={selectionModel}
       />
       <ExportDialog
         isExporting={isExporting}
         setIsExporting={setIsExporting}
-        selectionModel={selectionModel}
-        fileName={`bulkexport_${new Date().toISOString().split("T")[0]}`}
+        exportItems={[
+          {
+            label: "CSV",
+            exportFunction: () =>
+              exportCSVBorehole(selectionModel.slice(0, 100), `bulkexport_${new Date().toISOString().split("T")[0]}`),
+          },
+          {
+            label: "JSON",
+            exportFunction: () =>
+              exportJsonBoreholes(selectionModel.slice(0, 100), `bulkexport_${new Date().toISOString().split("T")[0]}`),
+          },
+          {
+            label: "exportJsonProfile",
+            exportFunction: () => exportJsonWithAttachmentsBorehole(selectionModel.slice(0, 100)),
+          },
+        ]}
       />
-      <MapComponent
-        searchState={{
-          ...filters,
-        }}
-        highlighted={hover ? [hover] : []}
-        hover={(featureIds: number[]) => {
-          setRowsToHighlight(featureIds);
-        }}
-        layers={setting.data.map.explorer}
-        selected={(id: string | null) => {
-          if (id !== null) {
-            lock(id);
-          }
-        }}
-        mapResolution={mapResolution}
-        setMapResolution={setMapResolution}
-        mapCenter={mapCenter}
-        setMapCenter={setMapCenter}
-        polygonSelectionEnabled={polygonSelectionEnabled}
-        setPolygonSelectionEnabled={setPolygonSelectionEnabled}
-        filterPolygon={filterPolygon}
-        setFilterPolygon={setFilterPolygon}
-        featureIds={featureIds}
-        setFeatureIds={setFeatureIds}
-        displayErrorMessage={displayErrorMessage}
-      />
+      {sessionRestored && (
+        <MapComponent
+          geoJson={filterResponse.geoJson}
+          highlighted={hover ? [hover] : []}
+          hover={(ids: number[]) => setRowsToHighlight(ids)}
+          layers={setting.data.map.explorer}
+          selected={(id: string | null) => {
+            if (id !== null) lock(id);
+          }}
+          mapResolution={mapResolution}
+          setMapResolution={setMapResolution}
+          mapCenter={mapCenter}
+          setMapCenter={setMapCenter}
+          polygonSelectionEnabled={polygonSelectionEnabled}
+          setPolygonSelectionEnabled={setPolygonSelectionEnabled}
+          filterPolygon={filterPolygon}
+          setFilterPolygon={setFilterPolygon}
+          featureIds={featureIds}
+          setFeatureIds={setFeatureIds}
+          displayErrorMessage={displayErrorMessage}
+        />
+      )}
       <BottomBarContainer
-        boreholes={boreholes}
-        loadEditingBoreholes={loadBoreholes}
+        boreholes={filterResponse.boreholes}
+        totalCount={filterResponse.totalCount}
+        selectableBoreholeIds={filterResponse.selectableBoreholeIds}
         multipleSelected={multipleSelected}
-        filters={filters}
         selectionModel={selectionModel}
         setSelectionModel={setSelectionModel}
         rowsToHighlight={rowsToHighlight}
         setHover={setHover}
         setIsExporting={setIsExporting}
+        paginationModel={paginationModel}
+        setPaginationModel={setPaginationModel}
+        sortModel={sortModel}
+        setSortModel={setSortModel}
       />
     </Stack>
   );

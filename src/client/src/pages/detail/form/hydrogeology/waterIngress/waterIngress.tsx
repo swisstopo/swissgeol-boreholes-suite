@@ -1,5 +1,5 @@
 import { FC, useCallback } from "react";
-import DataCards from "../../../../../components/dataCard/dataCards.js";
+import { DataCards } from "../../../../../components/dataCard/dataCards.js";
 import { useRequiredParams } from "../../../../../hooks/useRequiredParams.ts";
 import { sortByDepth } from "../../sorter.jsx";
 import { getWaterIngress, WaterIngress as WaterIngressType } from "./WaterIngress.ts";

@@ -4,7 +4,7 @@ import { useLocation } from "react-router";
 import { Box, Stack } from "@mui/material";
 import { SgcMenuItem } from "@swissgeol/ui-core-react";
 import { BoreholeV2, useBoreholeStatusEditable } from "../../api/borehole.ts";
-import { useAuth } from "../../auth/useBdmsAuth";
+import { useAuth } from "../../auth/useBoreholesAuth.tsx";
 import { useBoreholeDataAvailability } from "../../hooks/useBoreholeDataAvailability.ts";
 import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
@@ -63,15 +63,6 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
         }}>
         <Box>
           <SgcMenuItem
-            active={location.pathname === `/${id}/location`}
-            data-cy="location-menu-item"
-            isReviewed={!auth.anonymousModeEnabled && isReviewed(["location"])}
-            onClick={() => {
-              navigateTo({ path: `/${id}/location` });
-            }}>
-            {capitalizeFirstLetter(t("location"))}
-          </SgcMenuItem>
-          <SgcMenuItem
             active={location.pathname === `/${id}/identifiers`}
             data-cy="identifiers-menu-item"
             isReviewed={!auth.anonymousModeEnabled && isReviewed(["identifiers"])}
@@ -79,6 +70,15 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
               navigateTo({ path: `/${id}/identifiers` });
             }}>
             {capitalizeFirstLetter(t("ids"))}
+          </SgcMenuItem>
+          <SgcMenuItem
+            active={location.pathname === `/${id}/location`}
+            data-cy="location-menu-item"
+            isReviewed={!auth.anonymousModeEnabled && isReviewed(["location"])}
+            onClick={() => {
+              navigateTo({ path: `/${id}/location` });
+            }}>
+            {capitalizeFirstLetter(t("location"))}
           </SgcMenuItem>
           <SgcMenuItem
             active={location.pathname === `/${id}/borehole`}

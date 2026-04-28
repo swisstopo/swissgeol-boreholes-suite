@@ -36,7 +36,7 @@ describe("Polygon filter tests", () => {
     goToRouteAndAcceptTerms("/");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(5000);
-    cy.wait("@borehole_geojson");
+    cy.wait("@borehole_filter");
     cy.get('[data-cy="show-filter-button"]').click();
 
     assertPolygonFilterInactive();
@@ -50,7 +50,7 @@ describe("Polygon filter tests", () => {
     cy.get('[data-cy="polygon-filter-chip"]').children().eq(1).click();
 
     assertPolygonFilterInactive();
-    cy.wait("@borehole_geojson");
+    cy.wait("@borehole_filter");
     // wait for map to redraw
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(2000);

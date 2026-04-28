@@ -1,4 +1,3 @@
-import { NullableDateString } from "../../../../api/apiInterfaces.ts";
 import { BoreholeV2 } from "../../../../api/borehole.ts";
 import { Profile } from "../../../../api/file/fileInterfaces.ts";
 import { Codelist } from "../../../../components/codelist.ts";
@@ -14,12 +13,6 @@ export interface LocationPanelProps extends LocationBaseProps {
 }
 
 interface LocationFormBaseInputs {
-  name: string;
-  originalName: string;
-  projectName: number;
-  restrictionId: number | null;
-  restrictionUntil: NullableDateString;
-  nationalInterest: number | boolean | null; // Number as select options parsed to boolean
   elevationZ: number | string | null; // Number with thousands separator then parsed to number
   elevationPrecisionId: number | null;
   referenceElevation: number | string | null; // Number with thousands separator then parsed to number
