@@ -26,7 +26,7 @@ jobs:
           cache-dependency-path: src/client/package-lock.json
 
       - working-directory: ./src/client
-        run: npm ci
+        run: npm ci --ignore-scripts
 
       - working-directory: ./src/client
         run: npm run lint
