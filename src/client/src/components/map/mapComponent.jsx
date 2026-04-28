@@ -387,10 +387,6 @@ class MapComponent extends React.Component {
               this.points.clear();
               this.points.addFeatures(intersectingFeatures);
               this.props.setFilterPolygon(drawnFeature);
-              // Zoom to the extent of the drawn feature
-              this.map.getView().fit(drawnFeature.getGeometry().getExtent(), {
-                padding: [10, 10, 10, 10],
-              });
             } else {
               this.props.displayErrorMessage(this.props.t("msgNoBoreholesInSelection"));
               this.props.setFilterPolygon(null);
@@ -515,8 +511,7 @@ class MapComponent extends React.Component {
     if (!_.isEqual(prevProps.geoJson, geoJson)) {
       this.displayGeoJson(geoJson);
       this.refreshPoints();
-      this.map.updateSize();
-      if (view.getResolution() < 1) view.setResolution(1);
+      this.onFitToExtent();
     }
 
     if (
@@ -628,9 +623,12 @@ class MapComponent extends React.Component {
 
   onFitToExtent = () => {
     const view = this.map.getView();
+    if (this.points.getFeatures().length < 1) return;
     const extent = this.points.getExtent();
-    view.fit(extent, this.map.getSize());
-    if (view.getResolution() < 1) view.setResolution(1);
+    view.fit(extent, {
+      size: this.map.getSize(),
+      padding: [20, 20, 20, 20],
+    });
   };
 
   render() {
