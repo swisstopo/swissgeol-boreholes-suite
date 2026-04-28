@@ -200,9 +200,9 @@ describe("Test for importing boreholes.", () => {
     cy.contains("Borehole").click();
     cy.dataCy(`originalName-formInput`).click();
     cy.dataCy(`originalName-formInput`).type("COLDWATER", { delay: 10 });
-    cy.get(`[data-cy^=originalName-suggestion-"]`).should("have.length.at.least", 2);
-    cy.get(`[data-cy^=originalName-suggestion-"]`).first().should("contain", "COLDWATERBATH");
-    cy.get(`[data-cy^=originalName-suggestion-"]`).eq(1).should("contain", "COLDWATERDRINK");
+    cy.get(`[data-cy^="originalName-suggestion-"]`).should("have.length.at.least", 2);
+    cy.get(`[data-cy^="originalName-suggestion-"]`).first().should("contain", "COLDWATERBATH");
+    cy.get(`[data-cy^="originalName-suggestion-"]`).eq(1).should("contain", "COLDWATERDRINK");
     cy.type("{enter}");
 
     cy.wait("@borehole_filter");
