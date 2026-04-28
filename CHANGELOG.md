@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Import functionality for LOG.
+
 ### Changed
 - Filters are now organized in new sections. Filters for attachments and LOG were added.
 - Upgraded swissgeol OCR service to version 1.1.4.
