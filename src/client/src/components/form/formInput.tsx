@@ -108,7 +108,6 @@ export const FormInput: FC<FormInputProps> = ({
       label={labelWithTooltip}
       {...register(fieldName, {
         required: required ? "required" : false,
-        valueAsNumber: type === FormValueType.Number,
         validate: value => {
           if (value === "") {
             return true;
