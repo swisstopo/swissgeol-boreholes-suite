@@ -22,7 +22,7 @@ export enum Direction {
   X = "X",
   Y = "Y",
 }
-export interface FieldNameDirections {
+interface FieldNameDirections {
   X: FieldNameDirectionKeys;
   Y: FieldNameDirectionKeys;
 }
@@ -33,12 +33,12 @@ export interface ReferenceSystem {
   fieldName: FieldNameDirections;
 }
 
-export interface CoordinateLimit {
+interface CoordinateLimit {
   Min: number;
   Max: number;
 }
 
-export interface DirectionLimits {
+interface DirectionLimits {
   X: CoordinateLimit;
   Y: CoordinateLimit;
 }

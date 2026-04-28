@@ -49,12 +49,12 @@ export interface MinimalLayer {
   hasBedding?: boolean;
 }
 
-export interface Chronostratigraphy {
+interface Chronostratigraphy {
   id: number;
   stratigraphyId: number;
 }
 
-export interface Lithostratigraphy {
+interface Lithostratigraphy {
   id: number;
   stratigraphyId: number;
 }

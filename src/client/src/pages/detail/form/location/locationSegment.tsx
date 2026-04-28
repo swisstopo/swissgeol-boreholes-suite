@@ -145,7 +145,7 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
             </FormSegmentBox>
           </Grid>
           <Grid item xs={12}>
-            <ElevationSegment borehole={borehole} formMethods={formMethods} />
+            <ElevationSegment borehole={borehole} />
           </Grid>
         </Grid>
       </Card>
