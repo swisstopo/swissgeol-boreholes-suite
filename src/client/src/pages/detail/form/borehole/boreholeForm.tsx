@@ -167,11 +167,7 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
                       schemaName={"depth_precision"}
                       selected={borehole.depthPrecisionId}
                     />
-                    <FormInputDisplayOnly
-                      label={"total_depth_tvd"}
-                      value={totalDepthTVD}
-                      withThousandSeparator={true}
-                    />
+                    <FormInputDisplayOnly label={"total_depth_tvd"} value={totalDepthTVD} type={FormValueType.Number} />
                   </FormContainer>
                 </FormContainer>
                 <FormContainer direction="row">
@@ -184,7 +180,7 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
                   <FormInputDisplayOnly
                     label={"top_bedrock_weathered_tvd"}
                     value={topBedrockWeatheredTVD}
-                    withThousandSeparator={true}
+                    type={FormValueType.Number}
                   />
                 </FormContainer>
                 <FormContainer direction="row">
@@ -197,7 +193,7 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
                   <FormInputDisplayOnly
                     label={"top_bedrock_fresh_tvd"}
                     value={topBedrockFreshTVD}
-                    withThousandSeparator={true}
+                    type={FormValueType.Number}
                   />
                 </FormContainer>
                 <FormContainer direction="row" width="50%">
