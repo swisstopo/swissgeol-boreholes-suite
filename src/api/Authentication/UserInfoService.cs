@@ -12,8 +12,8 @@ namespace BDMS.Authentication;
 /// When the API receives an access token (which lacks profile claims), this service
 /// calls the OIDC UserInfo endpoint to retrieve the user's email, given name, and
 /// family name. Results are cached per-user for <see cref="CacheTimeToLiveInMinutes"/>
-/// minutes to avoid redundant HTTP calls. On failure, returns <c>null</c> so the caller
-/// can fall back to DB-cached values.
+/// minutes to avoid redundant HTTP calls. Returns <c>null</c> on failure; the caller
+/// is expected to reject the request (HTTP 401).
 /// </remarks>
 public class UserInfoService
 {

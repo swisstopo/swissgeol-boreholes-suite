@@ -77,7 +77,11 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 if (sub == null || token == null) return;
 
                 var claims = await userInfoService.GetUserInfoClaimsAsync(sub, token, context.HttpContext.RequestAborted).ConfigureAwait(false);
-                if (claims == null) return;
+                if (claims == null)
+                {
+                    context.Fail("Failed to retrieve user info from identity provider.");
+                    return;
+                }
 
                 var claimsList = claims.ToList();
                 if (!claimsList.Any(c => c.Type == ClaimTypes.Email))
