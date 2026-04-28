@@ -5,6 +5,7 @@
 ### Changed
 - Filters are now organized in new sections. Filters for attachments and LOG were added.
 - When the main map is fitted to the extent of the (filtered) boreholes, a padding is applied to the extent.
+- Upgraded swissgeol OCR service to version 1.1.4.
 
 ## v2.1.1568 - 2026-04-23
 
