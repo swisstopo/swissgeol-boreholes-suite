@@ -1,4 +1,4 @@
-import { FC, SyntheticEvent, useEffect, useMemo, useState } from "react";
+import { FC, KeyboardEvent, SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, CircularProgress, TextField, Typography } from "@mui/material";
 import { useDebounce } from "@uidotdev/usehooks";
@@ -44,10 +44,20 @@ export const FilterAutocomplete: FC<FilterAutocompleteProps> = ({ item, filterVa
     setInputValue(filterValue ?? "");
   };
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter") {
+      event.preventDefault();
+      onUpdate(inputValue || null);
+      // @ts-expect-error - blur is unknown on the event target but closes the autocomplete popover as desired
+      event.target.blur();
+    }
+  };
+
   return (
     <Autocomplete
       freeSolo
       options={options}
+      onKeyDown={handleKeyDown}
       value={inputValue || null}
       inputValue={inputValue}
       onInputChange={(_, newInput) => setInputValue(newInput)}

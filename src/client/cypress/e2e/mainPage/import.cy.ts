@@ -199,8 +199,13 @@ describe("Test for importing boreholes.", () => {
     returnToOverview();
     cy.dataCy("show-filter-button").click();
     cy.contains("Borehole").click();
-    setAutocompleteText("originalName", "COLDWATER");
-    cy.contains("Original name").next().find("input").type("COLDWATER");
+    cy.dataCy(`originalName-formInput`).click();
+    cy.dataCy(`originalName-formInput`).type("COLDWATER", { delay: 10 });
+    cy.get(`[data-cy^=originalName-suggestion-"]`).should("have.length.at.least", 2);
+    cy.get(`[data-cy^=originalName-suggestion-"]`).first().should("contain", "COLDWATERBATH");
+    cy.get(`[data-cy^=originalName-suggestion-"]`).eq(1).should("contain", "COLDWATERDRINK");
+    cy.type("{enter}");
+
     cy.wait("@borehole_filter");
     showTableAndWaitForData();
 
