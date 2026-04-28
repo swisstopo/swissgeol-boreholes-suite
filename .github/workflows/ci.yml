@@ -95,7 +95,7 @@ jobs:
           retention-days: 1
           compression-level: 0
 
-  ci:
+  api:
     runs-on: ubuntu-latest
     name: Build and run tests
     needs: build-api-images
