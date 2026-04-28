@@ -1683,7 +1683,7 @@ public class FilterServiceTest
         var ids = result.FilteredBoreholeIds.ToHashSet();
 
         Assert.IsTrue(ids.Contains(matchingId), "typeA + ABC on the same row must match.");
-        Assert.IsFalse(ids.Contains(crossRowId),"Strict same-row semantics: borehole with typeA on one row and 'ABC' on a different row must NOT match.");
+        Assert.IsFalse(ids.Contains(crossRowId), "Strict same-row semantics: borehole with typeA on one row and 'ABC' on a different row must NOT match.");
     }
 
     [TestMethod]
