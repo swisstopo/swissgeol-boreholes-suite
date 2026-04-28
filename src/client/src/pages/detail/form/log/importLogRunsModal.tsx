@@ -134,6 +134,11 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
     }
   }, [logRunFile, logFileFile, logFileAttachments, boreholeId, queryClient, showAlert, t]);
 
+  const hasLogFilesCsv = !!logFileFile;
+  const hasAttachments = logFileAttachments.length > 0;
+  const logFilesAndAttachmentsMismatch = hasLogFilesCsv !== hasAttachments;
+  const isImportDisabled = isImportRunning || !logRunFile || importErrors.length > 0 || logFilesAndAttachmentsMismatch;
+
   return (
     <FormDialog
       open={isImporting}
@@ -152,12 +157,7 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
           label: "import",
           variant: "contained",
           color: "primary",
-          disabled:
-            isImportRunning ||
-            !logRunFile ||
-            importErrors.length > 0 ||
-            (!!logFileFile && logFileAttachments.length === 0) ||
-            (!logFileFile && logFileAttachments.length > 0),
+          disabled: isImportDisabled,
           onClick: startImport,
         },
       ]}>
