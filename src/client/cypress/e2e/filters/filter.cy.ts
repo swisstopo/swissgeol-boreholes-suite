@@ -77,9 +77,7 @@ function testLargeSelectFilter(
     cy.get("body").click(0, 0);
     cy.dataCy("boreholes-number-preview").should("have.text", expectedCount);
     cy.get(`[data-cy^="filter-chip-${fieldName}-"]`).should("have.length", options.length);
-    for (let i = 0; i < options.length; i++) {
-      removeFirstMultiselectChip(fieldName);
-    }
+    options.forEach(() => removeFirstMultiselectChip(fieldName));
     cy.get(`[data-cy^="filter-chip-${fieldName}-"]`).should("not.exist");
   });
 }
