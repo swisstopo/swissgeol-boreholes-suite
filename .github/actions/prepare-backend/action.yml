@@ -1,0 +1,33 @@
+name: Prepare backend
+description: Load prebuilt api images from the build-api-images job artifact and start compose services.
+
+inputs:
+  services:
+    description: Space-separated list of compose services to start.
+    required: true
+
+runs:
+  using: composite
+  steps:
+    - name: Log in to GHCR
+      shell: bash
+      env:
+        GH_TOKEN: ${{ github.token }}
+        GH_ACTOR: ${{ github.actor }}
+      run: echo "$GH_TOKEN" | docker login ghcr.io -u "$GH_ACTOR" --password-stdin
+
+    - name: Download api images
+      uses: actions/download-artifact@37930b1c2abaa49bbe596cd826c3c89aef350131 # v7.0.0
+      with:
+        name: bdms-images
+        path: /tmp
+
+    - name: Load api images
+      shell: bash
+      run: docker load -i /tmp/bdms-images.tar.gz
+
+    - name: Start services
+      shell: bash
+      env:
+        SERVICES: ${{ inputs.services }}
+      run: docker compose -f docker-compose.yml -f docker-compose.ci.yml up --wait --no-build $SERVICES

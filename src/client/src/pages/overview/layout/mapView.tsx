@@ -159,26 +159,28 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
           },
         ]}
       />
-      <MapComponent
-        geoJson={filterResponse.geoJson}
-        highlighted={hover ? [hover] : []}
-        hover={(ids: number[]) => setRowsToHighlight(ids)}
-        layers={setting.data.map.explorer}
-        selected={(id: string | null) => {
-          if (id !== null) lock(id);
-        }}
-        mapResolution={mapResolution}
-        setMapResolution={setMapResolution}
-        mapCenter={mapCenter}
-        setMapCenter={setMapCenter}
-        polygonSelectionEnabled={polygonSelectionEnabled}
-        setPolygonSelectionEnabled={setPolygonSelectionEnabled}
-        filterPolygon={filterPolygon}
-        setFilterPolygon={setFilterPolygon}
-        featureIds={featureIds}
-        setFeatureIds={setFeatureIds}
-        displayErrorMessage={displayErrorMessage}
-      />
+      {sessionRestored && (
+        <MapComponent
+          geoJson={filterResponse.geoJson}
+          highlighted={hover ? [hover] : []}
+          hover={(ids: number[]) => setRowsToHighlight(ids)}
+          layers={setting.data.map.explorer}
+          selected={(id: string | null) => {
+            if (id !== null) lock(id);
+          }}
+          mapResolution={mapResolution}
+          setMapResolution={setMapResolution}
+          mapCenter={mapCenter}
+          setMapCenter={setMapCenter}
+          polygonSelectionEnabled={polygonSelectionEnabled}
+          setPolygonSelectionEnabled={setPolygonSelectionEnabled}
+          filterPolygon={filterPolygon}
+          setFilterPolygon={setFilterPolygon}
+          featureIds={featureIds}
+          setFeatureIds={setFeatureIds}
+          displayErrorMessage={displayErrorMessage}
+        />
+      )}
       <BottomBarContainer
         boreholes={filterResponse.boreholes}
         totalCount={filterResponse.totalCount}
