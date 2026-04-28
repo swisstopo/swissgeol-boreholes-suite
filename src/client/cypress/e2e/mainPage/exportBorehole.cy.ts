@@ -180,6 +180,8 @@ describe("Test for exporting boreholes.", () => {
     saveWithSaveBar();
     returnToOverview();
     showTableAndWaitForData();
+    cy.contains(".MuiDataGrid-row", firstBoreholeName);
+    cy.contains(".MuiDataGrid-row", secondBoreholeName);
     checkRowWithText(firstBoreholeName);
     checkRowWithText(secondBoreholeName);
     exportItem();
