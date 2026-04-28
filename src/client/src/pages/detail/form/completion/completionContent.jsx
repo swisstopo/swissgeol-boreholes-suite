@@ -15,7 +15,7 @@ const CompletionContentTabBox = props => {
   return <BoreholeTabContent flex="1 0 0">{props.children()}</BoreholeTabContent>;
 };
 CompletionContentTabBox.propTypes = { children: PropTypes.func.isRequired };
-export const MemoizedCompletionContentTabBox = React.memo(CompletionContentTabBox);
+const MemoizedCompletionContentTabBox = React.memo(CompletionContentTabBox);
 
 const CompletionContent = ({ completion, editingEnabled }) => {
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
@@ -85,7 +85,7 @@ const CompletionContent = ({ completion, editingEnabled }) => {
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [canSwitch]);
+  }, [canSwitch, checkContentDirty]);
 
   useEffect(() => {
     const newTabIndex = tabs.findIndex(t => t.hash === hash);

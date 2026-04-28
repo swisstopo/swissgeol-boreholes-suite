@@ -75,5 +75,3 @@ export const DataDisplayCard = <T extends DataCardEntity>({
     </>
   );
 };
-
-export default DataDisplayCard;

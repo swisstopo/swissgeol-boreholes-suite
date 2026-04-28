@@ -6,9 +6,7 @@ from bms import (
     EDIT,
     Locked
 )
-from bms.v1.borehole import (
-    Lock
-)
+
 from datetime import (
     datetime,
     timedelta,

@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### Changed
+- Filters are now organized in new sections. Filters for attachments and LOG were added.
+- When the main map is fitted to the extent of the (filtered) boreholes, a padding is applied to the extent.
+- Upgraded swissgeol OCR service to version 1.1.4.
+
+## v2.1.1568 - 2026-04-23
+
 ### Added
 - Export functionality for LOG.
 
@@ -13,6 +20,8 @@
 - Optional comments to additional identifiers can now be added.
 - The cluster layer on the map is now displayed at higher zoom levels still.
 - Openlayers was upgraded to version 10.9.0.
+- The borehole name section and restriction sections were moved from the location page to the general tab of the borehole detail view.
+- The consent banner choice is now remembered for a year, so users no longer have to accept the terms again on every visit.
 - API authentication now uses OIDC access tokens instead of id tokens.
 
 ### Fixed

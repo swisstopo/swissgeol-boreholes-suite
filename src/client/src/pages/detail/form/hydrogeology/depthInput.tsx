@@ -121,7 +121,6 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
             fieldName={fields.fieldNameMD}
             label={fields.labelMD}
             value={fields.getValueMD()}
-            controlledValue={formMethods.watch(fields.fieldNameMD)}
             withThousandSeparator={true}
             onUpdate={() => convertDepth(fields.fieldNameMD, fields.fieldNameMasl, ObservationDepthUnitType.masl)}
             disabled={watchDepthUnit !== ObservationDepthUnitType.measuredDepth}
@@ -130,7 +129,6 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
             fieldName={fields.fieldNameMasl}
             label={fields.labelMasl}
             value={fields.getValueMasl()}
-            controlledValue={formMethods.watch(fields.fieldNameMasl)}
             withThousandSeparator={true}
             onUpdate={() =>
               convertDepth(fields.fieldNameMasl, fields.fieldNameMD, ObservationDepthUnitType.measuredDepth)

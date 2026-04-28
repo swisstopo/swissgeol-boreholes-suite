@@ -16,7 +16,7 @@ import {
 import { Check, ChevronDown, ChevronUp, Search } from "lucide-react";
 import { theme } from "../../AppTheme.ts";
 
-export interface ButtonSelectItem {
+interface ButtonSelectItem {
   key: number | string;
   value: string;
   startIcon?: ReactNode;

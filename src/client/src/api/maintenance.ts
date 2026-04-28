@@ -5,7 +5,7 @@ import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 export type MaintenanceTaskType = "LocationMigration" | "CoordinateMigration" | "UserMerge";
 export type MaintenanceTaskStatus = "Idle" | "Running" | "Completed" | "Failed";
 
-export interface MaintenanceTaskLogEntry {
+interface MaintenanceTaskLogEntry {
   taskType: MaintenanceTaskType;
   status: MaintenanceTaskStatus;
   affectedCount: number | null;
@@ -18,7 +18,7 @@ export interface MaintenanceTaskLogEntry {
   completedAt: string;
 }
 
-export interface PaginatedLogResponse {
+interface PaginatedLogResponse {
   totalCount: number;
   pageNumber: number;
   pageSize: number;
@@ -34,7 +34,7 @@ export interface MaintenanceTaskState {
   completedAt: string | null;
 }
 
-export interface MaintenanceTaskParams {
+interface MaintenanceTaskParams {
   onlyMissing: boolean;
   dryRun: boolean;
 }

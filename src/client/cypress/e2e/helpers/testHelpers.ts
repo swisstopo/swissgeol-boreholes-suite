@@ -5,7 +5,7 @@ import editorUser from "../../fixtures/editorUser.json";
 import viewerUser from "../../fixtures/viewerUser.json";
 import { startEditing, stopEditing } from "./buttonHelpers";
 
-export const bearerAuth = (token: string) => ({ bearer: token });
+const bearerAuth = (token: string) => ({ bearer: token });
 
 export const interceptApiCalls = () => {
   // Api V1
@@ -29,6 +29,7 @@ export const interceptApiCalls = () => {
   cy.intercept("api/v1/borehole/codes").as("codes");
 
   // Api V2
+  cy.intercept("/api/v2/borehole/filter").as("borehole_filter");
   cy.intercept("/api/v2/stratigraphy?boreholeId=**").as("stratigraphy_by_borehole_GET");
   cy.intercept("/api/v2/stratigraphy*", req => {
     req.alias = `stratigraphy_${req.method}`;
@@ -252,15 +253,33 @@ export const login = (user: string) => {
   );
 };
 
+const CONSENT_COOKIE_VALUE = encodeURIComponent(JSON.stringify({ v: 1, analytics: true }));
+
+const visitWithConsent = (route: string) => {
+  cy.visit(route, {
+    onBeforeLoad(win) {
+      win.document.cookie = `boreholes_consent=${CONSENT_COOKIE_VALUE}; path=/; SameSite=Lax`;
+    },
+  });
+};
+
+export const clickAcceptIfPresent = () => {
+  cy.get("body").then($body => {
+    if ($body.find('[data-cy="accept-button"]').length) {
+      cy.dataCy("accept-button").click();
+    }
+  });
+};
+
 export const goToDetailRouteAndAcceptTerms = (route: string) => {
-  cy.visit(route);
-  cy.dataCy("accept-button").click();
+  visitWithConsent(route);
+  clickAcceptIfPresent();
   cy.wait(["@borehole_by_id", "@get-current-user"]);
 };
 
 export const goToRouteAndAcceptTerms = (route: string) => {
-  cy.visit(route);
-  cy.dataCy("accept-button").click();
+  visitWithConsent(route);
+  clickAcceptIfPresent();
 };
 
 /**
@@ -465,7 +484,6 @@ export const stopBoreholeEditing = (discardChanges?: boolean) => {
 
 export const returnToOverview = () => {
   cy.dataCy("backButton").click();
-  cy.wait(["@edit_list", "@borehole"]);
 };
 
 export const checkElementColorByDataCy = (attribute: string, expectedColor: string) => {
@@ -475,16 +493,12 @@ export const checkElementColorByDataCy = (attribute: string, expectedColor: stri
 export const deleteBorehole = (id: number | string) => {
   cy.get("@access_token").then(token => {
     cy.request({
-      method: "POST",
-      url: "/api/v1/borehole/edit",
-      body: {
-        action: "DELETE",
-        id: id,
-      },
+      method: "DELETE",
+      url: `/api/v2/borehole?id=${id}`,
       auth: bearerAuth(token),
-    })
-      .its("body.success")
-      .should("eq", true);
+    }).then(response => {
+      expect(response.status).to.eq(200);
+    });
   });
 };
 
@@ -494,13 +508,11 @@ export const loginAndResetState = () => {
     // Reset boreholes
     cy.request({
       method: "POST",
-      url: "/api/v1/borehole/edit",
-      body: {
-        action: "IDS",
-      },
+      url: "/api/v2/borehole/filter",
+      body: {},
       auth: bearerAuth(token),
     }).then(response => {
-      response.body.data
+      response.body.filteredBoreholeIds
         .filter((id: number) => id > 1002999) // max id in seed data.
         .forEach((id: number) => {
           deleteBorehole(id);
@@ -540,18 +552,6 @@ export const delayedType = (element: Cypress.Chainable<JQuery<HTMLElement>>, tex
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(500);
   element.type(text, { delay: 10 });
-};
-
-/**
- * Sets the value for a provided input element.
- *
- * cy.Type() can be slow. If every keystroke triggers a request it can be even slower.
- * Thus use setValueOfInputElement to set the value of the input element and only type one char after.
- * @param {object} inputElement The input element.
- * @param {string} inputValue The input string to set as value.
- */
-export const setValueOfInputElement = function (inputElement: JQuery<HTMLElement>, inputValue: string) {
-  inputElement[0].setAttribute("value", inputValue);
 };
 
 // Deletes a downloaded file in Cypress' downloads folder
@@ -615,7 +615,7 @@ export const getImportFileFromFixtures = (fileName: string, encoding: string | n
   return encoding ? cy.fixture(filePath, encoding as Cypress.Encodings) : cy.fixture(filePath);
 };
 
-export interface StratigraphyInput {
+interface StratigraphyInput {
   boreholeId: number | string;
   name: string;
   isPrimary?: boolean;
@@ -648,7 +648,7 @@ export const createStratigraphy = ({ boreholeId, name, isPrimary = true, date = 
   });
 };
 
-export interface CompletionInput {
+interface CompletionInput {
   name: string;
   boreholeId: number | string;
   kindId: number;
@@ -677,7 +677,7 @@ export const createCompletion = ({ name, boreholeId, kindId, isPrimary }: Comple
   });
 };
 
-export interface CasingInput {
+interface CasingInput {
   name: string;
   boreholeId: number | string;
   completionId: number | string;
@@ -741,7 +741,7 @@ export const openStratigraphyEditorTab = (stratigraphyName: string, hash: string
   cy.wait(waitAlias);
 };
 
-export interface ObservationInput {
+interface ObservationInput {
   boreholeId: number | string;
   startTime: string;
   reliabilityId: number;
@@ -750,7 +750,7 @@ export interface ObservationInput {
   toDepthM?: number | null;
 }
 
-export interface FieldMeasurementInput extends ObservationInput {
+interface FieldMeasurementInput extends ObservationInput {
   sampleTypeId: number;
   parameterId: number;
   value: number;
@@ -788,7 +788,7 @@ export const createFieldMeasurement = ({
   });
 };
 
-export interface WaterIngressInput extends ObservationInput {
+interface WaterIngressInput extends ObservationInput {
   quantityId: number;
 }
 
@@ -822,41 +822,7 @@ export const createWateringress = ({
   });
 };
 
-export interface GroundwaterLevelMeasurementInput extends ObservationInput {
-  kindId: number;
-}
-
-export const createGroundwaterLevelMeasurement = ({
-  boreholeId,
-  startTime,
-  reliabilityId,
-  kindId,
-  casingId = null,
-  fromDepthM = null,
-  toDepthM = null,
-}: GroundwaterLevelMeasurementInput) => {
-  return cy.get("@access_token").then(token => {
-    return cy.request({
-      method: "POST",
-      url: "/api/v2/groundwaterlevelmeasurement",
-      body: {
-        boreholeId: boreholeId,
-        startTime: startTime,
-        reliabilityId: reliabilityId,
-        kindId: kindId,
-        casingId: casingId,
-        fromDepthM: fromDepthM,
-        toDepthM: toDepthM,
-        type: ObservationType.groundwaterLevelMeasurement,
-      },
-      cache: "no-cache",
-      credentials: "same-origin",
-      auth: bearerAuth(token),
-    });
-  });
-};
-
-export interface HydrotestInput extends ObservationInput {
+interface HydrotestInput extends ObservationInput {
   kindCodelistIds: number[];
 }
 
@@ -890,7 +856,7 @@ export const createHydrotest = ({
   });
 };
 
-export interface BackfillInput {
+interface BackfillInput {
   completionId: number | string;
   casingId?: number | string | null;
   materialId?: number | null;
@@ -929,7 +895,7 @@ export const createBackfill = ({
   });
 };
 
-export interface InstrumentInput {
+interface InstrumentInput {
   completionId: number | string;
   casingId?: number | string | null;
   name: string;
@@ -1003,8 +969,8 @@ export const createBaseSelector = (parent?: string) => {
 };
 
 export const selectLanguage = (language: string) => {
-  cy.dataCy("language-button-select").click({ force: true });
-  cy.dataCy(`${language.toLowerCase()}-button-select-item`).click({ force: true });
+  cy.dataCy("language-button-select").click();
+  cy.dataCy(`${language.toLowerCase()}-button-select-item`).click();
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(1000);
 };

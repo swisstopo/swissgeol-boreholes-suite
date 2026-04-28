@@ -164,8 +164,7 @@ function assertClipboardContent(expectedText: string) {
 }
 
 function moveMouseOntoMap() {
-  // eslint-disable-next-line cypress/no-unnecessary-waiting
-  cy.wait(1000);
+  waitForMapAnimations();
   cy.get('[data-cy="labeling-panel"]').realMouseMove(400, 400, { position: "topLeft" });
 }
 
@@ -445,11 +444,8 @@ describe("Test labeling tool", () => {
       const view = labelingWindow["labeling-map"]?.getView();
       expect(view?.getRotation()).to.equal(Math.PI / 2);
     });
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(1000);
+    waitForMapAnimations();
     cy.get('[data-cy="labeling-panel"] [data-cy="zoom-in-button"]').click();
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(1000);
     moveMouseOntoMap();
     assertDrawTooltip("Draw box around north & east coordinates");
     drawBox(400, 120, 600, 300);
