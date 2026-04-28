@@ -11,7 +11,7 @@ concurrency:
 jobs:
   client:
     runs-on: ubuntu-latest
-    name: Build client
+    name: Build and check client
     permissions:
       contents: read
 
@@ -97,7 +97,7 @@ jobs:
 
   api:
     runs-on: ubuntu-latest
-    name: Build and run tests
+    name: Run API tests
     needs: build-api-images
     permissions:
       contents: read
@@ -134,7 +134,7 @@ jobs:
   cypress-tests:
     runs-on: ubuntu-latest
     name: Run cypress tests
-    needs: [build-api-images, build-client]
+    needs: [build-api-images, client]
     permissions:
       contents: read
       packages: read
