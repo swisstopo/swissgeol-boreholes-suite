@@ -35,7 +35,8 @@ export const FormDialog: FC<FormDialogProps> = ({
         {title}
       </Typography>
     </DialogHeaderContainer>
-    <DialogMainContent sx={{ px: 7.5, py: 3, maxWidth: "1160px", backgroundColor: theme.palette.background.lightgrey }}>
+    <DialogMainContent
+      sx={{ px: 7.5, py: 3, width: "1160px", maxWidth: "100%", backgroundColor: theme.palette.background.lightgrey }}>
       <Stack gap={3}>{children}</Stack>
     </DialogMainContent>
     <DialogFooterContainer>
