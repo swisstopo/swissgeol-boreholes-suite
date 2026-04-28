@@ -7,7 +7,7 @@ import {
   removeFirstMultiselectChip,
   setAutocompleteText,
 } from "../helpers/filterHelpers.ts";
-import { setInput } from "../helpers/formHelpers";
+import { setInput, setSelect } from "../helpers/formHelpers";
 import { createBorehole, goToRouteAndAcceptTerms } from "../helpers/testHelpers";
 
 function testYesNoFilter(
@@ -51,6 +51,23 @@ function testSelectFilter(
   it(`filters boreholes by ${title}`, () => {
     openFilter(filterSection);
     clickDomainButtonByIndex(fieldName, optionIndex);
+    cy.dataCy("boreholes-number-preview").should("have.text", expectedCount);
+    cy.get(`[data-cy^="filter-chip-${fieldName}-"]`).should("have.length.at.least", 1);
+    removeFirstMultiselectChip(fieldName);
+    cy.get(`[data-cy^="filter-chip-${fieldName}-"]`).should("not.exist");
+  });
+}
+
+function testLargeSelectFilter(
+  title: string,
+  filterSection: string,
+  fieldName: string,
+  optionIndex: number,
+  expectedCount: string,
+) {
+  it(`filters boreholes by ${title}`, () => {
+    openFilter(filterSection);
+    setSelect(fieldName, optionIndex);
     cy.dataCy("boreholes-number-preview").should("have.text", expectedCount);
     cy.get(`[data-cy^="filter-chip-${fieldName}-"]`).should("have.length.at.least", 1);
     removeFirstMultiselectChip(fieldName);
@@ -188,7 +205,7 @@ describe("Search filter tests", () => {
   });
 
   testSelectFilter("borehole type", "Borehole", "typeId", 0, "171");
-  testSelectFilter("purpose", "Borehole", "purposeId", 0, "112");
+  testLargeSelectFilter("purpose", "Borehole", "purposeId", 0, "112");
   testSelectFilter("borehole status", "Borehole", "statusId", 2, "314");
 
   testYesNoFilter("groundwater", "Borehole", "hasGroundwater", "Not specified", "601");
