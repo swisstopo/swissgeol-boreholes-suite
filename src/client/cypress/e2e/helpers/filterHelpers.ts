@@ -14,7 +14,7 @@ export function clickYesNoButton(fieldName: string, option: string) {
   cy.dataCy(`${fieldName}-button-${suffix}`).click();
 }
 
-// Codelist dropdowns with < 12 options render as toggle buttons. Pick the
+// Codelist dropdowns with < 10 options render as toggle buttons. Pick the
 // nth visible (enabled) button in render order.
 export function clickDomainButtonByIndex(fieldName: string, index: number) {
   cy.get(`[data-cy^="${fieldName}-button-"]`).eq(index).scrollIntoView();
