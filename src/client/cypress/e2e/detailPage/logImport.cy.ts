@@ -66,6 +66,7 @@ function clickModalCancelButton() {
 }
 
 function expectImportError(errorText: string) {
+  cy.get(importDialogSelector).contains(errorText).scrollIntoView();
   cy.get(importDialogSelector).contains(errorText).should("be.visible");
 }
 
