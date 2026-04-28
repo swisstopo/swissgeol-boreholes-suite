@@ -15,6 +15,7 @@ import FilterChips from "./FilterChips.tsx";
 import { attachmentSearchData } from "./filterData/attachmentSearchData.ts";
 import { boreholeSearchData } from "./filterData/boreholeSearchData.ts";
 import { FilterComponentProps, FilterInputConfig } from "./filterData/filterInterfaces.ts";
+import { identifierSearchData } from "./filterData/identifierSearchData.ts";
 import { logSearchData } from "./filterData/logSearchData.ts";
 import { FilterReset } from "./filterReset.tsx";
 import { getDomainCountsForField } from "./filterUtils.ts";
@@ -69,6 +70,13 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
     },
     {
       id: 2,
+      name: "identifiers",
+      translationId: "ids",
+      isSelected: false,
+      searchData: identifierSearchData,
+    },
+    {
+      id: 3,
       name: "borehole",
       translationId: "borehole",
       isSelected: false,
@@ -76,14 +84,14 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
     },
 
     {
-      id: 3,
+      id: 4,
       name: "log",
       translationId: "log",
       isSelected: false,
       searchData: logSearchData,
     },
     {
-      id: 4,
+      id: 5,
       name: "attachments",
       translationId: "attachments",
       isSelected: false,

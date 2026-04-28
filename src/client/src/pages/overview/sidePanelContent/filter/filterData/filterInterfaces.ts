@@ -21,7 +21,7 @@ export interface FilterComponentProps {
   formMethods: UseFormReturn;
 }
 
-type FilterSectionName = "borehole" | "workgroup" | "workflowStatus" | "attachments" | "log";
+type FilterSectionName = "borehole" | "workgroup" | "workflowStatus" | "attachments" | "log" | "identifiers";
 
 export interface FilterInputConfig {
   id: number;

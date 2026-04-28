@@ -8,6 +8,8 @@ export const SessionKeys = {
   orderBy: "table_orderBy",
   direction: "table_direction",
   bottomDrawerOpen: "table_bottomDrawerOpen",
+  identifierTypeId: "filter_identifierTypeId",
+  identifierValue: "filter_identifierValue",
   originalName: "filter_originalName",
   projectName: "filter_projectName",
   name: "filter_name",
