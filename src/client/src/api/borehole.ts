@@ -14,7 +14,7 @@ import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
 import { download, downloadData } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
-import { Profile } from "./file/fileInterfaces.ts";
+import { Profile } from "./profile.ts";
 import { Section } from "./section.ts";
 import { Stratigraphy } from "./stratigraphy.ts";
 import { useCurrentUser } from "./user.ts";
@@ -88,7 +88,7 @@ export interface BoreholeV2 {
   observations: Observation[] | null;
   sections: Section[] | null;
   boreholeGeometry: BoreholeGeometry[] | null;
-  boreholeFiles: Profile[] | null;
+  profiles: Profile[] | null;
   photos: Photo[] | null;
   documents: Document[] | null;
   geometry: BoreholeGeometry | null;

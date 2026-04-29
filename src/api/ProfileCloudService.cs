@@ -6,14 +6,14 @@ using Microsoft.EntityFrameworkCore;
 namespace BDMS;
 
 /// <summary>
-/// Represents a service to manage borehole files in the cloud storage.
+/// Represents a service to manage <see cref="Profile"/> in the cloud storage.
 /// </summary>
-public class BoreholeFileCloudService : CloudServiceBase
+public class ProfileCloudService : CloudServiceBase
 {
     private readonly BdmsContext context;
     private readonly IHttpContextAccessor httpContextAccessor;
 
-    public BoreholeFileCloudService(BdmsContext context, IConfiguration configuration, ILogger<BoreholeFileCloudService> logger, IHttpContextAccessor httpContextAccessor, IAmazonS3 s3Client)
+    public ProfileCloudService(BdmsContext context, IConfiguration configuration, ILogger<ProfileCloudService> logger, IHttpContextAccessor httpContextAccessor, IAmazonS3 s3Client)
         : base(logger, s3Client, configuration["S3:BUCKET_NAME"]!)
     {
         this.httpContextAccessor = httpContextAccessor;
@@ -21,62 +21,48 @@ public class BoreholeFileCloudService : CloudServiceBase
     }
 
     /// <summary>
-    /// Uploads a file to the cloud storage and links it to the borehole.
+    /// Uploads a file to cloud storage and creates a <see cref="Profile"/> pointing at it.
     /// </summary>
-    /// <param name="fileStream">The file stream for the file to upload and link to the <see cref="Borehole"/>.</param>
+    /// <param name="fileStream">The file stream for the file to upload.</param>
     /// <param name="fileName">The name of the file to upload.</param>
-    /// <param name="fileDescription">The description of the file to upload.</param>
-    /// <param name="filePublicStatus">The public status of the file to upload.</param>
+    /// <param name="description">The description of the profile.</param>
+    /// <param name="isPublic">Whether the profile is publicly visible.</param>
     /// <param name="contentType">The content type of the file.</param>
-    /// <param name="boreholeId">The <see cref="Borehole.Id"/> to link the uploaded file to.</param>
-    public async Task<BoreholeFile> UploadFileAndLinkToBoreholeAsync(Stream fileStream, string fileName, string? fileDescription, bool filePublicStatus, string contentType, int boreholeId)
+    /// <param name="boreholeId">The <see cref="Borehole.Id"/> to attach the profile to.</param>
+    public async Task<Profile> UploadProfileAsync(Stream fileStream, string fileName, string? description, bool isPublic, string contentType, int boreholeId)
     {
-        // Use transaction to ensure data is only stored to db if the file upload was sucessful. Only create a transaction if there is not already one from the calling method.
+        // Use transaction to ensure data is only stored to db if the file upload was successful. Only create a transaction if there is not already one from the calling method.
         using var transaction = context.Database.CurrentTransaction == null ? await context.Database.BeginTransactionAsync().ConfigureAwait(false) : null;
         try
         {
-            var subjectId = httpContextAccessor.HttpContext?.GetUserSubjectId();
-
-            var user = await context.Users
-                .AsNoTracking()
-                .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
-                .ConfigureAwait(false);
-
-            if (user == null) throw new InvalidOperationException($"No user with subject_id <{subjectId}> found.");
-
-            // Register the new file in the boreholes database.
             var fileExtension = Path.GetExtension(fileName);
-            var fileNameGuid = $"{Guid.NewGuid()}{fileExtension}";
+            var nameUuid = $"{Guid.NewGuid()}{fileExtension}";
 
-            // Replace white spaces in file names, as they are interpreted differently across different systems.
+            // Replace whitespaces in file names, as they are interpreted differently across different systems.
             fileName = fileName.Replace(" ", "_", StringComparison.OrdinalIgnoreCase);
 
-            var file = new Models.File { Name = fileName, NameUuid = fileNameGuid, Type = contentType };
+            // S3 first: if upload fails we have no DB row pointing at a missing object.
+            await UploadObject(fileStream, nameUuid, contentType).ConfigureAwait(false);
 
-            await context.Files.AddAsync(file).ConfigureAwait(false);
-            await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!).ConfigureAwait(false);
+            var profile = new Profile
+            {
+                BoreholeId = boreholeId,
+                Name = fileName,
+                NameUuid = nameUuid,
+                Type = contentType,
+                Description = description,
+                Public = isPublic,
+            };
 
-            var fileId = file.Id;
-
-            // Upload the file to the cloud storage.
-            await UploadObject(fileStream, fileNameGuid, contentType).ConfigureAwait(false);
-
-            // If file is already linked to the borehole, throw an exception.
-            if (await context.BoreholeFiles.AnyAsync(bf => bf.BoreholeId == boreholeId && bf.FileId == fileId).ConfigureAwait(false))
-                throw new InvalidOperationException($"File <{fileName}> is already attached to borehole with Id <{boreholeId}>.");
-
-            // Link file to the borehole.
-            var newBoreholeFile = new BoreholeFile { FileId = fileId, BoreholeId = boreholeId, Description = fileDescription, Public = filePublicStatus, UserId = user.Id, Attached = DateTime.UtcNow };
-
-            var entityEntry = await context.BoreholeFiles.AddAsync(newBoreholeFile).ConfigureAwait(false);
+            await context.Profiles.AddAsync(profile).ConfigureAwait(false);
             await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!).ConfigureAwait(false);
 
             if (transaction != null) await transaction.CommitAsync().ConfigureAwait(false);
-            return entityEntry.Entity;
+            return profile;
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error attaching file <{FileName}> to borehole with Id <{BoreholeId}>.", fileName, boreholeId);
+            Logger.LogError(ex, "Error uploading profile <{FileName}> for borehole with Id <{BoreholeId}>.", fileName, boreholeId);
             throw;
         }
     }

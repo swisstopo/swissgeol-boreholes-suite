@@ -4,25 +4,25 @@ import { Alert, Box, Stack, ToggleButton, ToggleButtonGroup } from "@mui/materia
 import { styled } from "@mui/system";
 import { PanelBottom, PanelRight } from "lucide-react";
 import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
-import { uploadFile, useFileInfo } from "../../../api/file/file.ts";
-import { File as FileInterface, FileSizeLimit, maxFileSizeBytes } from "../../../api/file/fileInterfaces.ts";
-import { theme } from "../../../AppTheme.ts";
-import { useAlertManager } from "../../../components/alert/alertManager.tsx";
-import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
-import { Photo, uploadPhoto, usePhotoImage, usePhotos, useReloadPhotos } from "../attachments/tabs/photo.ts";
-import { useProfiles, useReloadProfiles } from "../attachments/useProfiles.tsx";
-import { FloatingExtractionFeedback } from "./floatingExtractionFeedback.tsx";
-import { useLabelingContext } from "./labelingContext.tsx";
-import { LabelingExtraction } from "./labelingExtraction.tsx";
-import LabelingFileSelector from "./labelingFileSelector.tsx";
-import { LabelingHeader } from "./labelingHeader.tsx";
+import { useFileInfo } from "../../../api/dataextraction.ts";
 import {
   ExtractionState,
   labelingFileFormat,
   matchesFileFormat,
   PanelPosition,
   PanelTab,
-} from "./labelingInterfaces.tsx";
+} from "../../../api/dataextractionInterfaces.ts";
+import { FileSizeLimit, maxFileSizeBytes } from "../../../api/file.ts";
+import { Profile, uploadProfile, useProfiles, useReloadProfiles } from "../../../api/profile.ts";
+import { theme } from "../../../AppTheme.ts";
+import { useAlertManager } from "../../../components/alert/alertManager.tsx";
+import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
+import { Photo, uploadPhoto, usePhotoImage, usePhotos, useReloadPhotos } from "../attachments/tabs/photo.ts";
+import { FloatingExtractionFeedback } from "./floatingExtractionFeedback.tsx";
+import { useLabelingContext } from "./labelingContext.tsx";
+import { LabelingExtraction } from "./labelingExtraction.tsx";
+import LabelingFileSelector from "./labelingFileSelector.tsx";
+import { LabelingHeader } from "./labelingHeader.tsx";
 import { labelingButtonStyles } from "./labelingStyles.ts";
 import { LabelingView } from "./labelingView.tsx";
 import { PageSelection } from "./pageSelection.tsx";
@@ -64,7 +64,7 @@ const LabelingPanel: FC = () => {
   const { alertIsOpen, text, severity, autoHideDuration, showAlert, closeAlert } = useAlertManager();
   const expectedFileFormat = labelingFileFormat[panelTab];
   const isPhotoSelected = selectedAttachment && "fromDepth" in selectedAttachment;
-  const selectedFile: FileInterface | undefined = isPhotoSelected ? undefined : selectedAttachment;
+  const selectedFile: Profile | undefined = isPhotoSelected ? undefined : selectedAttachment;
   const selectedPhoto: Photo | undefined = isPhotoSelected ? selectedAttachment : undefined;
   const { data: profiles, isLoading: isLoadingProfiles } = useProfiles(Number(boreholeId), true);
   const { data: fileInfo, isLoading: isLoadingFileInfo } = useFileInfo(selectedFile?.id, activePage);
@@ -83,14 +83,14 @@ const LabelingPanel: FC = () => {
     return () => clearTimeout(timer);
   }, [alertIsOpen, autoHideDuration, closeAlert]);
 
-  const files = panelTab === PanelTab.profile ? profiles?.map(p => p.file) : photos;
+  const files = panelTab === PanelTab.profile ? profiles : photos;
 
   const addFile = useCallback(
     async (file: File) => {
       try {
         if (panelTab === PanelTab.profile) {
-          const fileResponse = await uploadFile(Number(boreholeId), file);
-          setSelectedAttachment(fileResponse.file);
+          const fileResponse = await uploadProfile(Number(boreholeId), file);
+          setSelectedAttachment(fileResponse);
           reloadProfiles();
         } else {
           const photoResponse = await uploadPhoto(Number(boreholeId), file);

@@ -262,9 +262,9 @@ public class FilterService : IFilterService
         if (filterRequest.HasProfiles != null)
         {
             if (filterRequest.HasProfiles == BooleanFilterValue.True)
-                query = query.Where(b => context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id));
+                query = query.Where(b => context.Profiles.Any(p => p.BoreholeId == b.Id));
             else
-                query = query.Where(b => !context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id));
+                query = query.Where(b => !context.Profiles.Any(p => p.BoreholeId == b.Id));
         }
 
         if (filterRequest.HasPhotos != null)

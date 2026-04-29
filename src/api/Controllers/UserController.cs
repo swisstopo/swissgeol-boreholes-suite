@@ -222,7 +222,7 @@ public class UserController : ControllerBase
                 || context.Boreholes.Any(x => x.LockedById == user.Id)
                 || context.Stratigraphies.Any(x => x.CreatedById == user.Id)
                 || context.Stratigraphies.Any(x => x.UpdatedById == user.Id)
-                || context.Files.Any(x => x.CreatedById == user.Id)
-                || context.BoreholeFiles.Any(x => x.UserId == user.Id));
+                || context.Profiles.Any(x => x.CreatedById == user.Id)
+                || context.Profiles.Any(x => x.UpdatedById == user.Id));
     }
 }

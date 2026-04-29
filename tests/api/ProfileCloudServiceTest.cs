@@ -12,11 +12,11 @@ using static BDMS.Helpers;
 namespace BDMS;
 
 [TestClass]
-public class BoreholeFileCloudServiceTest
+public class ProfileCloudServiceTest
 {
     private AmazonS3Client s3Client;
     private BdmsContext context;
-    private BoreholeFileCloudService boreholeFileUploadService;
+    private ProfileCloudService profileCloudService;
     private string bucketName;
     private Models.User adminUser;
 
@@ -32,7 +32,7 @@ public class BoreholeFileCloudServiceTest
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
         contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, adminUser.SubjectId) }));
 
-        var loggerMock = new Mock<ILogger<BoreholeFileCloudService>>(MockBehavior.Strict);
+        var loggerMock = new Mock<ILogger<ProfileCloudService>>(MockBehavior.Strict);
         loggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
 
         var s3ClientMock = new AmazonS3Client(
@@ -45,7 +45,7 @@ public class BoreholeFileCloudServiceTest
                 UseHttp = configuration["S3:SECURE"] == "0",
             });
 
-        boreholeFileUploadService = new BoreholeFileCloudService(context, configuration, loggerMock.Object, contextAccessorMock.Object, s3ClientMock);
+        profileCloudService = new ProfileCloudService(context, configuration, loggerMock.Object, contextAccessorMock.Object, s3ClientMock);
 
         bucketName = configuration["S3:BUCKET_NAME"].ToLowerInvariant();
         s3Client = s3ClientMock;
@@ -61,19 +61,19 @@ public class BoreholeFileCloudServiceTest
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
         var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), fileName);
 
-        await boreholeFileUploadService.UploadFileAndLinkToBoreholeAsync(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, null, false, pdfFormFile.ContentType, minBoreholeId);
+        await profileCloudService.UploadProfileAsync(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, null, false, pdfFormFile.ContentType, minBoreholeId);
 
         fileName = fileName.Replace(" ", "_");
 
-        // Get borehole with file linked from db
+        // Get borehole with profile attached from db
         var borehole = context.BoreholesWithIncludes.Single(b => b.Id == minBoreholeId);
 
         // Check if fileName whitespace is replaced with underscore
-        Assert.AreEqual(borehole.BoreholeFiles.First().File.Name, fileName);
+        Assert.AreEqual(borehole.Profiles.First().Name, fileName);
     }
 
     [TestMethod]
-    public async Task UploadFileAndLinkToBoreholeShouldStoreFileInCloudStorageAndLinkFile()
+    public async Task UploadProfileShouldStoreFileInCloudStorageAndCreateProfile()
     {
         var fileName = $"{Guid.NewGuid()}.pdf";
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
@@ -81,19 +81,19 @@ public class BoreholeFileCloudServiceTest
         var firstPdfFormFile = GetFormFileByContent(content, fileName);
 
         // Upload file
-        await boreholeFileUploadService.UploadFileAndLinkToBoreholeAsync(firstPdfFormFile.OpenReadStream(), firstPdfFormFile.FileName, "New description", false, firstPdfFormFile.ContentType, minBoreholeId).ConfigureAwait(false);
+        await profileCloudService.UploadProfileAsync(firstPdfFormFile.OpenReadStream(), firstPdfFormFile.FileName, "New description", false, firstPdfFormFile.ContentType, minBoreholeId).ConfigureAwait(false);
 
-        // Get borehole with file linked from db
+        // Get borehole with profile attached from db
         var borehole = context.BoreholesWithIncludes.Single(b => b.Id == minBoreholeId);
 
-        // Check if file is linked to borehole
-        var boreholeFile = borehole.BoreholeFiles.First();
-        Assert.AreEqual(boreholeFile.File.Name, fileName);
-        Assert.AreEqual(boreholeFile.Description, "New description");
-        Assert.AreEqual(boreholeFile.Public, false);
+        // Check if profile is attached to borehole
+        var profile = borehole.Profiles.First();
+        Assert.AreEqual(profile.Name, fileName);
+        Assert.AreEqual(profile.Description, "New description");
+        Assert.AreEqual(profile.Public, false);
 
         // Ensure file exists in cloud storage
-        var request = new GetObjectMetadataRequest { BucketName = bucketName, Key = borehole.BoreholeFiles.First().File.NameUuid };
+        var request = new GetObjectMetadataRequest { BucketName = bucketName, Key = profile.NameUuid };
         await s3Client.GetObjectMetadataAsync(request);
     }
 
@@ -106,7 +106,7 @@ public class BoreholeFileCloudServiceTest
         var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), fileName);
 
         // Upload file
-        await boreholeFileUploadService.UploadObject(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType);
+        await profileCloudService.UploadObject(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType);
 
         // Get all objects in the bucket with provided name
         var listObjectsRequest = new ListObjectsV2Request { BucketName = bucketName, MaxKeys = 1000, Prefix = fileName };
@@ -126,7 +126,7 @@ public class BoreholeFileCloudServiceTest
         var pdfFormFile = GetFormFileByContent(content, "file_1.pdf");
 
         // First Upload file
-        await boreholeFileUploadService.UploadObject(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType);
+        await profileCloudService.UploadObject(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType);
 
         // Get all files with same key after upload
         var listObjectsRequest = new ListObjectsV2Request { BucketName = bucketName, MaxKeys = 1000, Prefix = pdfFormFile.FileName };
@@ -140,7 +140,7 @@ public class BoreholeFileCloudServiceTest
         var uploadDate = files.First().LastModified;
 
         // Second Upload file
-        await boreholeFileUploadService.UploadObject(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType);
+        await profileCloudService.UploadObject(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType);
 
         // Get all objects in the bucket with provided name
         listObjectResponse = await s3Client.ListObjectsV2Async(listObjectsRequest).ConfigureAwait(false);
@@ -156,7 +156,7 @@ public class BoreholeFileCloudServiceTest
     [TestMethod]
     public async Task GetObjectWithNotExistingObjectNameShouldThrowException()
     {
-        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => boreholeFileUploadService.GetObject("doesNotExist"));
+        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => profileCloudService.GetObject("doesNotExist"));
     }
 
     [TestMethod]
@@ -167,10 +167,10 @@ public class BoreholeFileCloudServiceTest
         var pdfFormFile = GetFormFileByContent(content, "file_1.pdf");
 
         // Upload file
-        await boreholeFileUploadService.UploadObject(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType);
+        await profileCloudService.UploadObject(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType);
 
         // Download file
-        var result = await boreholeFileUploadService.GetObject(pdfFormFile.FileName);
+        var result = await profileCloudService.GetObject(pdfFormFile.FileName);
         Assert.AreEqual(content, Encoding.UTF8.GetString(result));
     }
 
@@ -182,15 +182,49 @@ public class BoreholeFileCloudServiceTest
         var pdfFormFile = GetFormFileByContent(content, "file_1.pdf");
 
         // Upload file
-        await boreholeFileUploadService.UploadObject(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType);
+        await profileCloudService.UploadObject(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType);
 
         // Ensure file exists
-        await boreholeFileUploadService.GetObject(pdfFormFile.FileName);
+        await profileCloudService.GetObject(pdfFormFile.FileName);
 
         // Delete file
-        await boreholeFileUploadService.DeleteObject(pdfFormFile.FileName);
+        await profileCloudService.DeleteObject(pdfFormFile.FileName);
 
         // Ensure file does not exist
-        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => boreholeFileUploadService.GetObject(pdfFormFile.FileName));
+        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => profileCloudService.GetObject(pdfFormFile.FileName));
+    }
+
+    [TestMethod]
+    public async Task UploadProfileFailsWhenS3UploadThrowsAndDoesNotCreateProfileRow()
+    {
+        var failingS3Mock = new Mock<IAmazonS3>(MockBehavior.Strict);
+        failingS3Mock
+            .Setup(s => s.PutObjectAsync(It.IsAny<PutObjectRequest>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new AmazonS3Exception("simulated S3 outage"));
+
+        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+        var loggerMock = new Mock<ILogger<ProfileCloudService>>();
+        var contextAccessorMock = new Mock<IHttpContextAccessor>();
+        contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
+        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, adminUser.SubjectId) }));
+
+        var failingService = new ProfileCloudService(context, configuration, loggerMock.Object, contextAccessorMock.Object, failingS3Mock.Object);
+
+        var fileName = $"{Guid.NewGuid()}.pdf";
+        var minBoreholeId = context.Boreholes.Min(b => b.Id);
+        var profileCountBefore = context.Profiles.Count(p => p.BoreholeId == minBoreholeId);
+        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), fileName);
+
+        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(async () =>
+            await failingService.UploadProfileAsync(
+                pdfFormFile.OpenReadStream(),
+                pdfFormFile.FileName,
+                "test description",
+                false,
+                pdfFormFile.ContentType,
+                minBoreholeId).ConfigureAwait(false));
+
+        var profileCountAfter = context.Profiles.Count(p => p.BoreholeId == minBoreholeId);
+        Assert.AreEqual(profileCountBefore, profileCountAfter, "S3-first ordering: a failed S3 upload must not leave a DB row.");
     }
 }

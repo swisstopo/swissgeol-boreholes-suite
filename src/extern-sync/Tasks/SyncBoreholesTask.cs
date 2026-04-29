@@ -90,8 +90,6 @@ public class SyncBoreholesTask(ISyncContext syncContext, ILogger<SyncBoreholesTa
 
             // Existing file references must be preserved. Source and target environment
             // share the same object storage for borehole attachments.
-            publishedBorehole.BoreholeFiles?.UpdateAttachedUser(targetDefaultUser);
-
             Logger.LogInformation("Syncing borehole <{BoreholeName}> ...", publishedBorehole.Name);
         }
 

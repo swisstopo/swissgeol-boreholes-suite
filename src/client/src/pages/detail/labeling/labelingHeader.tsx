@@ -4,11 +4,11 @@ import { Box, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { styled } from "@mui/system";
 import { FileImageIcon, FileTextIcon, Plus } from "lucide-react";
 import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
+import { PanelTab } from "../../../api/dataextractionInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
 import { ButtonSelect } from "../../../components/buttons/buttonSelect.tsx";
 import { EditStateContext } from "../editStateContext.tsx";
 import { LabelingContext } from "./labelingContext.tsx";
-import { PanelTab } from "./labelingInterfaces.tsx";
 import { labelingButtonStyles } from "./labelingStyles.ts";
 
 const getDisplayName = (file: BoreholeAttachment) => {

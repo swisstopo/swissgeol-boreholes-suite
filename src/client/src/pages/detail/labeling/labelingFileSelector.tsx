@@ -5,13 +5,13 @@ import { useLocation } from "react-router";
 import { AlertColor, Box, CircularProgress, Divider, Stack, Typography } from "@mui/material";
 import { ChevronRight, FileImageIcon, FileTextIcon } from "lucide-react";
 import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
-import { FileSizeLimit, maxFileSizeBytes } from "../../../api/file/fileInterfaces.ts";
+import { labelingFileFormat, PanelTab } from "../../../api/dataextractionInterfaces.ts";
+import { FileSizeLimit, maxFileSizeBytes } from "../../../api/file.ts";
 import { theme } from "../../../AppTheme.ts";
 import { AddButton, BoreholesBaseButton, FileButton } from "../../../components/buttons/buttons.tsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
 import { EditStateContext } from "../editStateContext.tsx";
-import { labelingFileFormat, PanelTab } from "./labelingInterfaces.tsx";
 
 const dashedOutlineImage = `url("data:image/svg+xml,%3Csvg width='100%25' height='100%25' xmlns='http://www.w3.org/2000/svg'%3E%3Crect width='100%25' height='100%25' fill='none' rx='24' ry='24' stroke='%23fff' stroke-width='4' stroke-dasharray='12%2C 24' stroke-dashoffset='0' stroke-linecap='square'/%3E%3C/svg%3E")`;
 

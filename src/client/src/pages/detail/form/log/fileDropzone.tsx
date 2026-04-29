@@ -3,7 +3,7 @@ import { FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { Box, Stack, Typography } from "@mui/material";
 import { CloudUpload, X } from "lucide-react";
-import { FileSizeLimit, largeMaxFileSizeBytes } from "../../../../api/file/fileInterfaces.ts";
+import { FileSizeLimit, largeMaxFileSizeBytes } from "../../../../api/file.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
 

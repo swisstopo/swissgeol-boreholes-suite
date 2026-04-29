@@ -466,7 +466,7 @@ public class FilterServiceTest
         // Verify that boreholes have profiles (boreholefiles).
         foreach (var borehole in result.Boreholes)
         {
-            var hasProfiles = await context.BoreholeFiles.AnyAsync(s => s.BoreholeId == borehole.Id);
+            var hasProfiles = await context.Profiles.AnyAsync(s => s.BoreholeId == borehole.Id);
             Assert.IsTrue(hasProfiles);
         }
     }
@@ -475,7 +475,7 @@ public class FilterServiceTest
     public async Task FilterBoreholesWithHasProfilesFilterFalseReturnsMatchingBoreholes()
     {
         var expectedCount = await context.Boreholes
-            .CountAsync(b => !context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id));
+            .CountAsync(b => !context.Profiles.Any(p => p.BoreholeId == b.Id));
 
         var filterRequest = new FilterRequest
         {
@@ -492,7 +492,7 @@ public class FilterServiceTest
         // Verify that no returned borehole has profiles (boreholefiles)
         foreach (var borehole in result.Boreholes)
         {
-            var hasProfiles = await context.BoreholeFiles.AnyAsync(bf => bf.BoreholeId == borehole.Id);
+            var hasProfiles = await context.Profiles.AnyAsync(p => p.BoreholeId == borehole.Id);
             Assert.IsFalse(hasProfiles);
         }
     }

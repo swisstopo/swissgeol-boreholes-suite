@@ -232,7 +232,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.TopBedrockWeatheredTvd, _ => null)
            .RuleFor(o => o.Observations, _ => new Collection<Observation>())
            .RuleFor(o => o.BoreholeGeometry, _ => new Collection<BoreholeGeometryElement>())
-           .RuleFor(o => o.BoreholeFiles, _ => new Collection<BoreholeFile>())
+           .RuleFor(o => o.Profiles, _ => new Collection<Profile>())
            .RuleFor(o => o.TopBedrockIntersected, f => f.Random.Bool().OrNull(f, .2f))
            .RuleFor(o => o.Photos, _ => new Collection<Photo>())
            .RuleFor(o => o.Documents, _ => new Collection<Document>())
@@ -337,53 +337,29 @@ public static class BdmsContextExtensions
         WorkflowChange SeededWorkflowChanges(int seed) => fakeWorkflowChanges.UseSeed(seed).Generate();
         context.BulkInsert(workflowChangeRange.Select(SeededWorkflowChanges).ToList(), bulkConfig);
 
-        // Seed file
-        var filesUserRange = Enumerable.Range(1, 6); // Include dedicated user that only has file
-        var file_ids = 5_000_000;
-        var fileRange = Enumerable.Range(file_ids, 20);
-        var fakefiles = new Faker<Models.File>()
-               .StrictMode(true)
-               .RuleFor(o => o.Id, f => file_ids++)
-               .RuleFor(o => o.CreatedById, f => f.PickRandom(filesUserRange).OrNull(f, .05f))
-               .RuleFor(o => o.CreatedBy, _ => default!)
-               .RuleFor(o => o.UpdatedById, _ => default!)
-               .RuleFor(o => o.UpdatedBy, _ => default!)
-               .RuleFor(o => o.Updated, _ => default!)
-               .RuleFor(o => o.Name, f => f.Random.Word())
-               .RuleFor(o => o.Type, f => f.Random.Word())
-               .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime().OrNull(f, .05f))
-               .RuleFor(o => o.NameUuid, f => null);
-
-        Models.File Seededfiles(int seed) => fakefiles.UseSeed(seed).Generate();
-        context.BulkInsert(fileRange.Select(Seededfiles).ToList(), bulkConfig);
-
-        // Seed borehole_files
-        var fakeBoreholeFiles = new Faker<BoreholeFile>()
+        // Seed profiles (replaces the previous BoreholeFiles + Files seeders).
+        var profilesUserRange = Enumerable.Range(1, 6); // Include dedicated user that only has profiles
+        var profile_ids = 5_000_000;
+        var profileRange = Enumerable.Range(profile_ids, richBoreholeRange.Count);
+        var fakeProfiles = new Faker<Profile>()
             .StrictMode(true)
-            .RuleFor(o => o.FileId, f => f.PickRandom(fileRange))
-            .RuleFor(o => o.File, f => default!)
-            .RuleFor(o => o.BoreholeId, f => f.PickRandom(richBoreholeRange))
+            .RuleFor(o => o.Id, f => profile_ids++)
+            .RuleFor(o => o.BoreholeId, (f, p) => richBoreholeRange[(p.Id - profileRange.First()) % richBoreholeRange.Count])
             .RuleFor(o => o.Borehole, f => default!)
-            .RuleFor(o => o.UserId, f => f.PickRandom(userRange))
-            .RuleFor(o => o.User, f => default!)
-            .RuleFor(o => o.Attached, f => f.Date.Past().ToUniversalTime())
-            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime().OrNull(f, .5f))
-            .RuleFor(o => o.UpdatedById, (f, bf) => bf.Updated == null ? null : f.PickRandom(userRange))
-            .RuleFor(o => o.UpdatedBy, f => default!)
-            .RuleFor(o => o.CreatedById, _ => default!)
-            .RuleFor(o => o.CreatedBy, _ => default!)
-            .RuleFor(o => o.Created, _ => default!)
+            .RuleFor(o => o.Name, f => $"{f.Random.Word()}.pdf")
+            .RuleFor(o => o.NameUuid, f => $"{Guid.NewGuid()}.pdf")
+            .RuleFor(o => o.Type, _ => "application/pdf")
             .RuleFor(o => o.Description, f => f.Random.Words().OrNull(f, .5f))
-            .RuleFor(o => o.Public, f => f.Random.Bool(.9f));
+            .RuleFor(o => o.Public, f => f.Random.Bool(.9f))
+            .RuleFor(o => o.CreatedById, f => f.PickRandom(profilesUserRange).OrNull(f, .05f))
+            .RuleFor(o => o.CreatedBy, _ => default!)
+            .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
+            .RuleFor(o => o.Updated, f => f.Date.Past().ToUniversalTime().OrNull(f, .5f))
+            .RuleFor(o => o.UpdatedById, (f, p) => p.Updated == null ? null : f.PickRandom(userRange))
+            .RuleFor(o => o.UpdatedBy, f => default!);
 
-        BoreholeFile SeededBoreholeFiles(int seed) => fakeBoreholeFiles.UseSeed(seed).Generate();
-
-        var filesToInsert = richBoreholeRange
-            .Select(SeededBoreholeFiles)
-            .GroupBy(bf => new { bf.BoreholeId, bf.FileId })
-            .Select(bf => bf.FirstOrDefault())
-            .ToList();
-        context.BulkInsert<BoreholeFile>(filesToInsert, bulkConfig);
+        Profile SeededProfiles(int seed) => fakeProfiles.UseSeed(seed).Generate();
+        context.BulkInsert(profileRange.Select(SeededProfiles).ToList(), bulkConfig);
 
         // Seed borehole_photo
         var photo_ids = 4_000_000;
@@ -1429,7 +1405,7 @@ public static class BdmsContextExtensions
         // Sync all database sequences
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.workgroups', 'id_wgp'), {workgroup_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.borehole', 'id_bho'), {borehole_ids - 1})");
-        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.files', 'id_fil'), {file_ids - 1})");
+        context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.profile', 'id'), {profile_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.stratigraphy', 'id'), {stratigraphy_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.lithology', 'id'), {lithology_ids - 1})");
         context.Database.ExecuteSqlInterpolated($"SELECT setval(pg_get_serial_sequence('bdms.lithology_description', 'id'), {lithologyDescription_ids - 1})");
