@@ -86,6 +86,7 @@ export const FilterMultiSelect: FC<FilterMultiSelectProps> = ({ item, filterValu
         renderInput={params => (
           <TextField
             {...params}
+            sx={{ mt: 0 }}
             placeholder={item.placeholder ? t(item.placeholder) : undefined}
             slotProps={{
               htmlInput: {

@@ -35,7 +35,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
 
         return (
           <Box key={filterItem.key}>
-            <FormContainer mt={filterItem?.label ? -0.5 : -4}>
+            <FormContainer mt={filterItem?.label ? -0.5 : -4} rowGap={0}>
               {filterItem.type === "Input" && filterItem.isNumber && (
                 <FilterTextField
                   item={filterItem}

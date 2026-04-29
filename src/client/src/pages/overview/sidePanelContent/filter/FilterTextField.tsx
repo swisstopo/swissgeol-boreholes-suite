@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { TextField } from "@mui/material";
+import { TextField, Typography } from "@mui/material";
 import { useDebounce } from "@uidotdev/usehooks";
 import { SearchData } from "./filterData/filterInterfaces.ts";
 
@@ -58,21 +58,28 @@ export const FilterTextField: FC<FilterTextFieldProps> = ({
   }, [debouncedValue, type, isValidDate]);
 
   return (
-    <TextField
-      label={labelKey && t(labelKey)}
-      placeholder={item?.placeholder && t(item.placeholder)}
-      data-cy={`${item?.key}-formInput`}
-      type={type}
-      slotProps={type === "date" ? { inputLabel: { shrink: true }, htmlInput: { max: "9999-01-01" } } : undefined}
-      value={localValue}
-      onChange={e => setLocalValue(e.target.value)}
-      onBlur={() => {
-        const value = localValue || null;
-        if (value === lastCommittedRef.current) return;
-        if (!isValidDate(value)) return;
-        lastCommittedRef.current = value;
-        onUpdateRef.current(value);
-      }}
-    />
+    <>
+      {labelKey ? (
+        <Typography variant="body2" sx={{ mb: 0.5 }}>
+          {t(labelKey)}
+        </Typography>
+      ) : null}
+      <TextField
+        placeholder={item?.placeholder && t(item.placeholder)}
+        data-cy={`${item?.key}-formInput`}
+        type={type}
+        sx={labelKey ? { mt: 0 } : {}}
+        slotProps={type === "date" ? { inputLabel: { shrink: true }, htmlInput: { max: "9999-01-01" } } : undefined}
+        value={localValue}
+        onChange={e => setLocalValue(e.target.value)}
+        onBlur={() => {
+          const value = localValue || null;
+          if (value === lastCommittedRef.current) return;
+          if (!isValidDate(value)) return;
+          lastCommittedRef.current = value;
+          onUpdateRef.current(value);
+        }}
+      />
+    </>
   );
 };

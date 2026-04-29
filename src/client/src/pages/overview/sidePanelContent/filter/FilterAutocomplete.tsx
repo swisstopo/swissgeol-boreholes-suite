@@ -1,6 +1,6 @@
 import { FC, KeyboardEvent, SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Autocomplete, CircularProgress, TextField, Typography } from "@mui/material";
+import { Autocomplete, Box, CircularProgress, TextField, Typography } from "@mui/material";
 import { useDebounce } from "@uidotdev/usehooks";
 import { BoreholeSuggestionField, useBoreholeSuggestions } from "../../../../api/borehole.ts";
 import { SearchData } from "./filterData/filterInterfaces";
@@ -53,51 +53,58 @@ export const FilterAutocomplete: FC<FilterAutocompleteProps> = ({ item, filterVa
   };
 
   return (
-    <Autocomplete
-      freeSolo
-      options={options}
-      onKeyDown={handleKeyDown}
-      value={inputValue || null}
-      inputValue={inputValue}
-      onInputChange={(_, newInput) => setInputValue(newInput)}
-      onChange={handleChange}
-      onBlur={handleBlur}
-      filterOptions={x => x}
-      loading={fetchEnabled && isFetching}
-      noOptionsText={t("filterNoSuggestions")}
-      renderOption={(props, option, { index }) => {
-        const count = countByValue.get(option);
-        return (
-          <li {...props} data-cy={`${item.key}-suggestion-${index}`} key={`${option}-${index}`}>
-            <span style={{ flex: 1 }}>{option}</span>
-            <Typography component="span" variant="caption" color="text.secondary">
-              {count ?? ""}
-            </Typography>
-          </li>
-        );
-      }}
-      renderInput={params => (
-        <TextField
-          {...params}
-          label={item.label ? t(item.label) : undefined}
-          placeholder={item.placeholder ? t(item.placeholder) : undefined}
-          slotProps={{
-            htmlInput: {
-              ...params.inputProps,
-              "data-cy": `${item.key}-formInput`,
-            },
-            input: {
-              ...params.InputProps,
-              endAdornment: (
-                <>
-                  {fetchEnabled && isFetching ? <CircularProgress color="inherit" size={16} /> : null}
-                  {params.InputProps.endAdornment}
-                </>
-              ),
-            },
-          }}
-        />
-      )}
-    />
+    <>
+      {item.label ? (
+        <Typography variant="body2" sx={{ mb: 0.5 }}>
+          {t(item.label)}
+        </Typography>
+      ) : null}
+      <Autocomplete
+        freeSolo
+        options={options}
+        onKeyDown={handleKeyDown}
+        value={inputValue || null}
+        inputValue={inputValue}
+        onInputChange={(_, newInput) => setInputValue(newInput)}
+        onChange={handleChange}
+        onBlur={handleBlur}
+        filterOptions={x => x}
+        loading={fetchEnabled && isFetching}
+        noOptionsText={t("filterNoSuggestions")}
+        renderOption={(props, option, { index }) => {
+          const count = countByValue.get(option);
+          return (
+            <li {...props} data-cy={`${item.key}-suggestion-${index}`} key={`${option}-${index}`}>
+              <span style={{ flex: 1 }}>{option}</span>
+              <Typography component="span" variant="caption" color="text.secondary">
+                {count ?? ""}
+              </Typography>
+            </li>
+          );
+        }}
+        renderInput={params => (
+          <TextField
+            {...params}
+            sx={{ mt: 0 }}
+            placeholder={item.placeholder ? t(item.placeholder) : undefined}
+            slotProps={{
+              htmlInput: {
+                ...params.inputProps,
+                "data-cy": `${item.key}-formInput`,
+              },
+              input: {
+                ...params.InputProps,
+                endAdornment: (
+                  <>
+                    {fetchEnabled && isFetching ? <CircularProgress color="inherit" size={16} /> : null}
+                    {params.InputProps.endAdornment}
+                  </>
+                ),
+              },
+            }}
+          />
+        )}
+      />
+    </>
   );
 };
