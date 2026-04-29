@@ -8,9 +8,14 @@ using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.JsonWebTokens;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using NetTopologySuite.IO.Converters;
+using System.IdentityModel.Tokens.Jwt;
+using System.Net.Http.Headers;
 using System.Reflection;
+using System.Security.Claims;
 using System.Text.Json.Serialization;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -25,8 +30,70 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 });
 builder.Services.AddEndpointsApiExplorer();
 
+builder.Services.AddMemoryCache();
+builder.Services.AddSingleton<UserInfoService>();
+
+var expectedAudience = builder.Configuration["Auth:Audience"];
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
-    .AddJwtBearer(options => builder.Configuration.Bind("Auth", options));
+    .AddJwtBearer(options =>
+    {
+        builder.Configuration.Bind("Auth", options);
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            AudienceValidator = (audiences, token, _) =>
+            {
+                if (string.IsNullOrWhiteSpace(expectedAudience)) return false;
+
+                // Standard OAuth (RFC 9068): aud must match if present.
+                var audList = audiences?.ToList() ?? new List<string>();
+                if (audList.Count > 0)
+                    return audList.Any(a => string.Equals(a, expectedAudience, StringComparison.Ordinal));
+
+                // Cognito access tokens carry no aud — fall back to client_id, then azp.
+                var claims = (token as JwtSecurityToken)?.Claims
+                    ?? (token as JsonWebToken)?.Claims
+                    ?? Enumerable.Empty<Claim>();
+
+                bool Matches(string claimType) =>
+                    claims.FirstOrDefault(c => string.Equals(c.Type, claimType, StringComparison.Ordinal))?.Value is string v
+                    && !string.IsNullOrEmpty(v)
+                    && string.Equals(v, expectedAudience, StringComparison.Ordinal);
+
+                return Matches("client_id") || Matches("azp");
+            },
+        };
+        options.Events = new JwtBearerEvents
+        {
+            OnTokenValidated = async context =>
+            {
+                var userInfoService = context.HttpContext.RequestServices
+                    .GetRequiredService<UserInfoService>();
+                var sub = context.Principal?.FindFirstValue(ClaimTypes.NameIdentifier);
+                var authHeader = context.Request.Headers.Authorization.ToString();
+                var token = AuthenticationHeaderValue.TryParse(authHeader, out var parsed) ? parsed.Parameter : null;
+
+                if (sub == null || token == null) return;
+
+                var claims = await userInfoService.GetUserInfoClaimsAsync(sub, token, context.HttpContext.RequestAborted).ConfigureAwait(false);
+                if (claims == null)
+                {
+                    context.Fail("Failed to retrieve user info from identity provider.");
+                    return;
+                }
+
+                var claimsList = claims.ToList();
+                if (!claimsList.Any(c => c.Type == ClaimTypes.Email))
+                {
+                    context.Fail("UserInfo response is missing required email claim.");
+                    return;
+                }
+
+                (context.Principal?.Identity as ClaimsIdentity)?.AddClaims(claimsList);
+            },
+        };
+    });
 
 builder.Services.AddTransient<IClaimsTransformation, DatabaseAuthenticationClaimsTransformation>();
 
