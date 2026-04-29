@@ -1,6 +1,6 @@
 import { FC, KeyboardEvent, SyntheticEvent, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Autocomplete, Box, CircularProgress, TextField, Typography } from "@mui/material";
+import { Autocomplete, CircularProgress, TextField, Typography } from "@mui/material";
 import { useDebounce } from "@uidotdev/usehooks";
 import { BoreholeSuggestionField, useBoreholeSuggestions } from "../../../../api/borehole.ts";
 import { SearchData } from "./filterData/filterInterfaces";
