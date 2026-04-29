@@ -13,10 +13,10 @@ type ChipDescriptor = {
 };
 
 type FilterFieldMeta =
-  | { type: "multiselectCodelist"; labelKey: string; schema: string }
-  | { type: "multiselectWorkgroup"; labelKey: string }
+  | { type: "multiSelectCodelist"; labelKey: string; schema: string }
+  | { type: "multiSelectWorkgroup"; labelKey: string }
   | {
-      type: "multiselectString";
+      type: "multiSelectString";
       labelKey: string;
       translateValue?: (v: string, t: TFunction) => string;
     }
@@ -30,9 +30,9 @@ type FilterFieldMeta =
   | { type: "nullableBoolean"; labelKey: string; allowNull: boolean };
 
 type FilterValueByType = {
-  multiselectCodelist: number[];
-  multiselectWorkgroup: number[];
-  multiselectString: string[];
+  multiSelectCodelist: number[];
+  multiSelectWorkgroup: number[];
+  multiSelectString: string[];
   text: string;
   rangeMin: number | string; // types for dates and numeric ranges.
   rangeMax: number | string;
@@ -41,16 +41,16 @@ type FilterValueByType = {
 
 type FilterTypeOf<K extends FilterKey> = (typeof FilterFieldMetaData)[K]["type"];
 
-type MultiselectCodelistKey = {
-  [K in FilterKey]: FilterTypeOf<K> extends "multiselectCodelist" ? K : never;
+type MultiSelectCodelistKey = {
+  [K in FilterKey]: FilterTypeOf<K> extends "multiSelectCodelist" ? K : never;
 }[FilterKey];
 
-type MultiselectWorkgroupKey = {
-  [K in FilterKey]: FilterTypeOf<K> extends "multiselectWorkgroup" ? K : never;
+type MultiSelectWorkgroupKey = {
+  [K in FilterKey]: FilterTypeOf<K> extends "multiSelectWorkgroup" ? K : never;
 }[FilterKey];
 
-type MultiselectStringKey = {
-  [K in FilterKey]: FilterTypeOf<K> extends "multiselectString" ? K : never;
+type MultiSelectStringKey = {
+  [K in FilterKey]: FilterTypeOf<K> extends "multiSelectString" ? K : never;
 }[FilterKey];
 
 export type ChipDescriptorInputs = {
@@ -69,11 +69,11 @@ export const FilterFieldMetaData = {
   originalName: { type: "text", labelKey: "original_name" },
   projectName: { type: "text", labelKey: "project_name" },
   name: { type: "text", labelKey: "name" },
-  statusId: { type: "multiselectCodelist", labelKey: "boreholeStatus", schema: "extended.status" },
-  typeId: { type: "multiselectCodelist", labelKey: "borehole_type", schema: "borehole_type" },
-  purposeId: { type: "multiselectCodelist", labelKey: "purpose", schema: "extended.purpose" },
-  workgroupId: { type: "multiselectWorkgroup", labelKey: "workgroup" },
-  restrictionId: { type: "multiselectCodelist", labelKey: "restriction", schema: "restriction" },
+  statusId: { type: "multiSelectCodelist", labelKey: "boreholeStatus", schema: "extended.status" },
+  typeId: { type: "multiSelectCodelist", labelKey: "borehole_type", schema: "borehole_type" },
+  purposeId: { type: "multiSelectCodelist", labelKey: "purpose", schema: "extended.purpose" },
+  workgroupId: { type: "multiSelectWorkgroup", labelKey: "workgroup" },
+  restrictionId: { type: "multiSelectCodelist", labelKey: "restriction", schema: "restriction" },
   restrictionUntilFrom: { type: "rangeMin", labelKey: "restriction_until", boundLabel: "from" },
   restrictionUntilTo: { type: "rangeMax", labelKey: "restriction_until", boundLabel: "to" },
   totalDepthMin: { type: "rangeMin", labelKey: "totaldepth", boundLabel: "min" },
@@ -91,7 +91,7 @@ export const FilterFieldMetaData = {
   hasPhotos: { type: "nullableBoolean", labelKey: "hasPhotos", allowNull: false },
   hasDocuments: { type: "nullableBoolean", labelKey: "hasDocuments", allowNull: false },
   workflowStatus: {
-    type: "multiselectString",
+    type: "multiSelectString",
     labelKey: "workflowStatus",
     translateValue: (v: string, t: TFunction) => capitalizeFirstLetter(t(`statuses.${v}`)),
   },
@@ -104,9 +104,9 @@ function resolveCategoryLabel(meta: { labelKey: string }, inputs: ChipDescriptor
   return inputs.t(meta.labelKey) as string;
 }
 
-// Shared delete behavior for multiselect types: remove the value; if nothing
+// Shared delete behavior for multiSelect types: remove the value; if nothing
 // is left, clear the field entirely so URL state matches
-function makeMultiselectDeleteHandler<T extends number | string>(
+function makeMultiSelectDeleteHandler<T extends number | string>(
   key: FilterKey,
   value: T[],
   id: T,
@@ -122,19 +122,19 @@ function makeMultiselectDeleteHandler<T extends number | string>(
   };
 }
 
-// Per-type strategy for the generic multiselect builder. `isLoading` lets
+// Per-type strategy for the generic multiSelect builder. `isLoading` lets
 // codelist/workgroup types suppress chips while their lookup table is fetching.
-type MultiselectStrategy<V extends number | string> = {
+type MultiSelectStrategy<V extends number | string> = {
   isLoading: boolean;
   getLabel: (v: V) => string;
 };
 
-function buildMultiselectDescriptors<V extends number | string>(
+function buildMultiSelectDescriptors<V extends number | string>(
   key: FilterKey,
   value: V[],
   meta: { labelKey: string },
   inputs: ChipDescriptorInputs,
-  { isLoading, getLabel }: MultiselectStrategy<V>,
+  { isLoading, getLabel }: MultiSelectStrategy<V>,
 ): ChipDescriptor[] {
   if (isLoading) return [];
   const categoryLabel = resolveCategoryLabel(meta, inputs);
@@ -145,19 +145,19 @@ function buildMultiselectDescriptors<V extends number | string>(
       label: valueLabel,
       tooltip: `${categoryLabel}: ${valueLabel}`,
       testId: `filter-chip-${key}-${v}`,
-      onDelete: makeMultiselectDeleteHandler(key, value, v, inputs),
+      onDelete: makeMultiSelectDeleteHandler(key, value, v, inputs),
     };
   });
 }
 
-function buildCodelistMultiselectDescriptors(
-  key: MultiselectCodelistKey,
-  meta: Extract<FilterFieldMeta, { type: "multiselectCodelist" }>,
+function buildCodelistMultiSelectDescriptors(
+  key: MultiSelectCodelistKey,
+  meta: Extract<FilterFieldMeta, { type: "multiSelectCodelist" }>,
   inputs: ChipDescriptorInputs,
 ): ChipDescriptor[] {
   const value = inputs.filterParams[key];
   if (value === undefined) return [];
-  return buildMultiselectDescriptors(key, value, meta, inputs, {
+  return buildMultiSelectDescriptors(key, value, meta, inputs, {
     isLoading: inputs.codelists.length === 0,
     getLabel: id => {
       const codelist = inputs.codelists.find(c => c.schema === meta.schema && c.id === id);
@@ -166,27 +166,27 @@ function buildCodelistMultiselectDescriptors(
   });
 }
 
-function buildWorkgroupMultiselectDescriptors(
-  key: MultiselectWorkgroupKey,
-  meta: Extract<FilterFieldMeta, { type: "multiselectWorkgroup" }>,
+function buildWorkgroupMultiSelectDescriptors(
+  key: MultiSelectWorkgroupKey,
+  meta: Extract<FilterFieldMeta, { type: "multiSelectWorkgroup" }>,
   inputs: ChipDescriptorInputs,
 ): ChipDescriptor[] {
   const value = inputs.filterParams[key];
   if (value === undefined) return [];
-  return buildMultiselectDescriptors(key, value, meta, inputs, {
+  return buildMultiSelectDescriptors(key, value, meta, inputs, {
     isLoading: inputs.workgroups.length === 0,
     getLabel: id => inputs.workgroups.find(w => w.id === id)?.name ?? `#${id}`,
   });
 }
 
-function buildStringMultiselectDescriptors(
-  key: MultiselectStringKey,
-  meta: Extract<FilterFieldMeta, { type: "multiselectString" }>,
+function buildStringMultiSelectDescriptors(
+  key: MultiSelectStringKey,
+  meta: Extract<FilterFieldMeta, { type: "multiSelectString" }>,
   inputs: ChipDescriptorInputs,
 ): ChipDescriptor[] {
   const value = inputs.filterParams[key];
   if (value === undefined) return [];
-  return buildMultiselectDescriptors(key, value, meta, inputs, {
+  return buildMultiSelectDescriptors(key, value, meta, inputs, {
     isLoading: false,
     getLabel: v => (meta.translateValue ? meta.translateValue(v, inputs.t) : v),
   });
@@ -271,14 +271,14 @@ export function buildFilterChipDescriptors(inputs: ChipDescriptorInputs): ChipDe
     if (raw === undefined || raw === null) continue;
     const meta = FilterFieldMetaData[key];
     switch (meta.type) {
-      case "multiselectCodelist":
-        result.push(...buildCodelistMultiselectDescriptors(key as MultiselectCodelistKey, meta, inputs));
+      case "multiSelectCodelist":
+        result.push(...buildCodelistMultiSelectDescriptors(key as MultiSelectCodelistKey, meta, inputs));
         break;
-      case "multiselectWorkgroup":
-        result.push(...buildWorkgroupMultiselectDescriptors(key as MultiselectWorkgroupKey, meta, inputs));
+      case "multiSelectWorkgroup":
+        result.push(...buildWorkgroupMultiSelectDescriptors(key as MultiSelectWorkgroupKey, meta, inputs));
         break;
-      case "multiselectString":
-        result.push(...buildStringMultiselectDescriptors(key as MultiselectStringKey, meta, inputs));
+      case "multiSelectString":
+        result.push(...buildStringMultiSelectDescriptors(key as MultiSelectStringKey, meta, inputs));
         break;
       case "text": {
         const descriptor = buildTextDescriptor(key, meta, raw as string, inputs);

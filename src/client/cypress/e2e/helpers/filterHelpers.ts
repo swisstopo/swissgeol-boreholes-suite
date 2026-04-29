@@ -1,6 +1,6 @@
 import { goToRouteAndAcceptTerms } from "../helpers/testHelpers.ts";
 
-export function removeFirstMultiselectChip(filterKey: string) {
+export function removeFirstMultiSelectChip(filterKey: string) {
   cy.get(`[data-cy^="filter-chip-${filterKey}-"]`)
     .first()
     .within(() => {

@@ -4,7 +4,7 @@ import {
   clickDomainButtonByIndex,
   clickYesNoButton,
   openFilter,
-  removeFirstMultiselectChip,
+  removeFirstMultiSelectChip,
   setAutocompleteText,
 } from "../helpers/filterHelpers.ts";
 import { setInput } from "../helpers/formHelpers";
@@ -53,7 +53,7 @@ function testSelectFilter(
     clickDomainButtonByIndex(fieldName, optionIndex);
     cy.dataCy("boreholes-number-preview").should("have.text", expectedCount);
     cy.get(`[data-cy^="filter-chip-${fieldName}-"]`).should("have.length.at.least", 1);
-    removeFirstMultiselectChip(fieldName);
+    removeFirstMultiSelectChip(fieldName);
     cy.get(`[data-cy^="filter-chip-${fieldName}-"]`).should("not.exist");
   });
 }
@@ -77,7 +77,7 @@ function testLargeSelectFilter(
     cy.get("body").click(0, 0);
     cy.dataCy("boreholes-number-preview").should("have.text", expectedCount);
     cy.get(`[data-cy^="filter-chip-${fieldName}-"]`).should("have.length", options.length);
-    options.forEach(() => removeFirstMultiselectChip(fieldName));
+    options.forEach(() => removeFirstMultiSelectChip(fieldName));
     cy.get(`[data-cy^="filter-chip-${fieldName}-"]`).should("not.exist");
   });
 }
@@ -264,7 +264,7 @@ describe("Search filter tests", () => {
     cy.get('[data-cy^="restrictionId-button-"]').eq(0).click();
     cy.get('[data-cy^="restrictionId-button-"]').eq(1).click();
     cy.get('[data-cy^="restrictionId-button-"].MuiButton-contained').should("have.length.at.least", 2);
-    // Multiselect renders one chip per selected value.
+    // MultiSelect renders one chip per selected value.
     cy.get('[data-cy^="filter-chip-restrictionId-"]').should("have.length.at.least", 2);
     // Deselect one
     cy.get('[data-cy^="restrictionId-button-"]').eq(1).click();
