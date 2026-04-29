@@ -111,6 +111,20 @@ public class FilterRequest
     public IEnumerable<int>? RestrictionId { get; set; }
 
     /// <summary>
+    /// Gets or sets the identifier type (codelist) IDs filter.
+    /// Boreholes match if at least one <see cref="BoreholeCodelist"/> row has a
+    /// <c>CodelistId</c> in this set; combined with <see cref="IdentifierValue"/>
+    /// the predicates apply on the same row (strict semantics).
+    /// </summary>
+    [MaxLength(100)]
+    public IEnumerable<int>? IdentifierTypeId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier value substring filter (case-insensitive).
+    /// </summary>
+    public string? IdentifierValue { get; set; }
+
+    /// <summary>
     /// Gets or sets the national interest filter.
     /// </summary>
     public NullableBooleanFilterValue? NationalInterest { get; set; }

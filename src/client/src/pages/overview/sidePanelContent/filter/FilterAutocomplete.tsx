@@ -2,7 +2,11 @@ import { FC, KeyboardEvent, SyntheticEvent, useEffect, useMemo, useState } from 
 import { useTranslation } from "react-i18next";
 import { Autocomplete, CircularProgress, TextField, Typography } from "@mui/material";
 import { useDebounce } from "@uidotdev/usehooks";
-import { BoreholeSuggestionField, useBoreholeSuggestions } from "../../../../api/borehole.ts";
+import {
+  BoreholeSuggestionField,
+  isBoreholeSuggestionField,
+  useBoreholeSuggestions,
+} from "../../../../api/borehole.ts";
 import { SearchData } from "./filterData/filterInterfaces";
 
 interface FilterAutocompleteProps {
@@ -21,9 +25,14 @@ export const FilterAutocomplete: FC<FilterAutocompleteProps> = ({ item, filterVa
 
   const debouncedForFetch = useDebounce(inputValue, 300);
 
+  const isValidField = isBoreholeSuggestionField(item.key);
   const fetchEnabled = debouncedForFetch.trim().length >= 2;
   const field = item.key as BoreholeSuggestionField;
-  const { data: suggestions = [], isFetching } = useBoreholeSuggestions(field, debouncedForFetch, fetchEnabled);
+  const { data: suggestions = [], isFetching } = useBoreholeSuggestions(
+    field,
+    debouncedForFetch,
+    isValidField && fetchEnabled,
+  );
 
   const options = useMemo(() => suggestions.map(s => s.value), [suggestions]);
   const countByValue = useMemo(() => {

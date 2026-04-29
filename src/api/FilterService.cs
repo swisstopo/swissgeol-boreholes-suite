@@ -139,6 +139,7 @@ public class FilterService : IFilterService
             PurposeId = await CountByIntAsync(QueryExcluding(r => r.PurposeId = null), b => b.PurposeId).ConfigureAwait(false),
             WorkgroupId = await CountByIntAsync(QueryExcluding(r => r.WorkgroupId = null), b => b.WorkgroupId).ConfigureAwait(false),
             RestrictionId = await CountByIntAsync(QueryExcluding(r => r.RestrictionId = null), b => b.RestrictionId).ConfigureAwait(false),
+            IdentifierTypeId = await CountByIdentifierTypesAsync(QueryExcluding(r => r.IdentifierTypeId = null), req.IdentifierValue).ConfigureAwait(false),
             WorkflowStatusCount = await CountByWorkflowStatusAsync(QueryExcluding(r => r.WorkflowStatus = null)).ConfigureAwait(false),
             NationalInterest = await CountByNullableBoolAsync(
                 QueryExcluding(r => r.NationalInterest = null),
@@ -231,6 +232,23 @@ public class FilterService : IFilterService
         };
     }
 
+    private async Task<Dictionary<int, int>> CountByIdentifierTypesAsync(
+        IQueryable<Borehole> boreholeQuery,
+        string? valueFilter)
+    {
+        var hasValue = !string.IsNullOrWhiteSpace(valueFilter);
+        var valuePattern = hasValue ? $"%{valueFilter}%" : null;
+        var grouped = await boreholeQuery
+            .SelectMany(b => b.BoreholeCodelists!.Select(c => new { c.CodelistId, c.Value, b.Id }))
+            .Where(r => !hasValue || EF.Functions.ILike(r.Value, valuePattern!))
+            .GroupBy(r => r.CodelistId)
+            .Select(g => new { Key = g.Key, Count = g.Select(r => r.Id).Distinct().Count() })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return grouped.ToDictionary(x => x.Key, x => x.Count);
+    }
+
     private static FilterRequest CloneFilterRequest(FilterRequest src) => new()
     {
         Polygon = src.Polygon,
@@ -251,6 +269,8 @@ public class FilterService : IFilterService
         TopBedrockFreshMdMax = src.TopBedrockFreshMdMax,
         TopBedrockWeatheredMdMin = src.TopBedrockWeatheredMdMin,
         TopBedrockWeatheredMdMax = src.TopBedrockWeatheredMdMax,
+        IdentifierTypeId = src.IdentifierTypeId,
+        IdentifierValue = src.IdentifierValue,
         RestrictionId = src.RestrictionId,
         NationalInterest = src.NationalInterest,
         TopBedrockIntersected = src.TopBedrockIntersected,
@@ -319,6 +339,20 @@ public class FilterService : IFilterService
         if (filterRequest.RestrictionId != null && filterRequest.RestrictionId.Any())
         {
             query = query.Where(b => b.RestrictionId.HasValue && filterRequest.RestrictionId.Contains(b.RestrictionId.Value));
+        }
+
+        // Identifier filters — strict same-row semantics: when both type and value
+        // are present, both predicates must hold on the *same* BoreholeCodelist row.
+        var hasIdentifierTypes = filterRequest.IdentifierTypeId != null && filterRequest.IdentifierTypeId.Any();
+        var hasIdentifierValue = !string.IsNullOrWhiteSpace(filterRequest.IdentifierValue);
+        if (hasIdentifierTypes || hasIdentifierValue)
+        {
+            var typeIds = filterRequest.IdentifierTypeId;
+            var valuePattern = hasIdentifierValue ? $"%{filterRequest.IdentifierValue}%" : null;
+
+            query = query.Where(b => b.BoreholeCodelists!.Any(c =>
+                (!hasIdentifierTypes || typeIds!.Contains(c.CodelistId)) &&
+                (!hasIdentifierValue || EF.Functions.ILike(c.Value, valuePattern!))));
         }
 
         // Workflow status filter
