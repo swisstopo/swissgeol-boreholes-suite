@@ -48,17 +48,17 @@ export function styleFunction(feature, highlighted) {
   let selected = highlighted !== undefined && highlighted.length > 0 && highlighted.indexOf(feature.getId()) > -1;
   let res = feature.get("restriction");
   let fill;
-  if (res === "f") {
+  if (res === 20111001) {
     fill = greenFill;
-  } else if (["b", "g"].indexOf(res) >= 0) {
+  } else if ([20111003, 20111002].indexOf(res) >= 0) {
     fill = redFill;
   } else {
     fill = blackFill;
   }
 
   let conf;
-  let kind = feature.get("kind");
-  if (kind === "B") {
+  let type = feature.get("type");
+  if (type === 20101001) {
     // boreholes
     let image = boreholeStyleCache[res];
     if (!image) {
@@ -73,7 +73,7 @@ export function styleFunction(feature, highlighted) {
     conf = {
       image: image,
     };
-  } else if (kind === "V") {
+  } else if (type === 30000307) {
     // virtual borehole
     let image = virtualBoreholeStyleCache[res];
     if (!image) {
@@ -91,7 +91,7 @@ export function styleFunction(feature, highlighted) {
     conf = {
       image: image,
     };
-  } else if (kind === "SS") {
+  } else if (type === 20101003) {
     // trial pits
     let image = trialpitStyleCache[res];
     if (!image) {
@@ -108,7 +108,7 @@ export function styleFunction(feature, highlighted) {
     conf = {
       image: image,
     };
-  } else if (kind === "RS") {
+  } else if (type === 20101002) {
     // dynamic probing
     let image = probingStyleCache[res];
     if (!image) {
@@ -126,7 +126,7 @@ export function styleFunction(feature, highlighted) {
     conf = {
       image: image,
     };
-  } else if (kind === "a") {
+  } else if (type === 20101004) {
     // other
     let image = otherStyleCache[res];
     if (!image) {
