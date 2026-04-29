@@ -34,6 +34,10 @@ jobs:
       - working-directory: ./src/client
         run: npm run knip
 
+      - name: Run vitest unit tests
+        working-directory: ./src/client
+        run: npm run test:unit
+
       - working-directory: ./src/client
         run: npm run build
         env:
