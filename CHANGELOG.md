@@ -7,6 +7,7 @@
 - When the main map is fitted to the extent of the (filtered) boreholes, a padding is applied to the extent.
 - Filter UI was redesigned and now supports multiple selections and chips per selected filter value.
 - Upgraded swissgeol OCR service to version 1.1.4.
+- The database tables `boreholeFiles` and  `files` were merged into one table `profiles`.
 
 ## v2.1.1568 - 2026-04-23
 
