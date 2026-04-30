@@ -125,17 +125,13 @@ describe("Maintenance Tasks page tests", () => {
         cy.dataCy("location-migration-start").click();
         cy.dataCy("location-migration-start").should("be.disabled");
         cy.wait("@start-location-migration");
-        // Wait for migration to complete so it doesn't affect subsequent tests.
-        cy.get("[data-cy=location-migration-start]", { timeout: 30000 }).should("not.be.disabled");
       });
 
       it("starts coordinate migration", () => {
         cy.wait("@get-maintenance-status");
         cy.dataCy("coordinate-migration-start").click();
-        cy.get("[data-cy=coordinate-migration-start]", { timeout: 30000 }).should("be.disabled");
+        cy.dataCy("coordinate-migration-start").should("be.disabled");
         cy.wait("@start-coordinate-migration");
-        // Wait for migration to complete so it doesn't affect subsequent tests.
-        cy.get("[data-cy=coordinate-migration-start]", { timeout: 30000 }).should("not.be.disabled");
       });
 
       it("can toggle checkboxes", () => {

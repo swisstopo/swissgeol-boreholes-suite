@@ -9,7 +9,7 @@ import { useCodelists } from "../../../../../components/codelist.ts";
 import { DataCardContext } from "../../../../../components/dataCard/dataCardContext.tsx";
 import { DataCardSaveAndCancelButtons } from "../../../../../components/dataCard/saveAndCancelButtons.tsx";
 import { useUnsavedChangesPrompt } from "../../../../../components/dataCard/useUnsavedChangesPrompt.tsx";
-import { FormContainer, FormInput } from "../../../../../components/form/form.js";
+import { FormContainer, FormInput, FormValueType } from "../../../../../components/form/form.js";
 import { FormDomainSelect } from "../../../../../components/form/formDomainSelect.js";
 import { parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
 import { useFormDirtyMarkAsChanged } from "../../../../../components/form/useFormDirty.tsx";
@@ -156,7 +156,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
                   fieldName={`fieldMeasurementResults.${index}.value`}
                   label="value"
                   value={field.value}
-                  withThousandSeparator={true}
+                  type={FormValueType.Number}
                   required={true}
                   inputProps={{
                     endAdornment: <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>,
