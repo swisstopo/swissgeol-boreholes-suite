@@ -235,6 +235,7 @@
   "fileTooMany": "Trop de fichiers sélectionnés en même temps",
   "files": "Fichiers",
   "filter": "Filtre",
+  "filterNoSuggestions": "Aucune suggestion",
   "firstname": "Prénom",
   "flowDirection": "Direction du flux",
   "formation": "Formation",
