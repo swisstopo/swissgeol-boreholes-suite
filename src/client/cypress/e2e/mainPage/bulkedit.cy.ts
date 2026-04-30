@@ -71,8 +71,8 @@ describe("Test the borehole bulk edit feature.", () => {
       force: true,
     });
 
-    cy.get('[data-cy$="-formInput"] input[type=text]').should("have.length", 1);
-    cy.get('[data-cy$="-formInput"] input[type=text]').each(($input, index) => {
+    cy.get('[data-cy$="-formInput"] input[type=text]:not([inputmode="decimal"])').should("have.length", 1);
+    cy.get('[data-cy$="-formInput"] input[type=text]:not([inputmode="decimal"])').each(($input, index) => {
       cy.wrap($input).scrollIntoView();
       cy.wrap($input).clear();
       cy.wrap($input).type(`A${index}`);
@@ -90,8 +90,8 @@ describe("Test the borehole bulk edit feature.", () => {
         cy.wrap($input).should("have.value", "2024-09-25");
       });
 
-    cy.get("input[type=number]").should("have.length", 3);
-    cy.get("input[type=number]").each(($input, index) => {
+    cy.get('input[inputmode="decimal"]').should("have.length", 3);
+    cy.get('input[inputmode="decimal"]').each(($input, index) => {
       cy.wrap($input).scrollIntoView();
       cy.wrap($input).clear();
       cy.wrap($input).type(`${index}`);
@@ -113,8 +113,8 @@ describe("Test the borehole bulk edit feature.", () => {
       force: true,
     });
 
-    cy.get('[data-cy$="-formInput"] input[type=text]').should("have.length", 1);
-    cy.get('[data-cy$="-formInput"] input[type=text]').each($input => {
+    cy.get('[data-cy$="-formInput"] input[type=text]:not([inputmode="decimal"])').should("have.length", 1);
+    cy.get('[data-cy$="-formInput"] input[type=text]:not([inputmode="decimal"])').each($input => {
       cy.wrap($input).scrollIntoView();
       cy.wrap($input).should("have.value", "");
     });
@@ -125,8 +125,8 @@ describe("Test the borehole bulk edit feature.", () => {
       cy.wrap($input).should("have.value", "");
     });
 
-    cy.get("input[type=number]").should("have.length", 3);
-    cy.get("input[type=number]").each($input => {
+    cy.get('input[inputmode="decimal"]').should("have.length", 3);
+    cy.get('input[inputmode="decimal"]').each($input => {
       cy.wrap($input).scrollIntoView();
       cy.wrap($input).should("have.value", "");
     });

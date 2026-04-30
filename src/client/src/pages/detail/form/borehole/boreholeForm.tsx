@@ -8,6 +8,7 @@ import {
   FormDomainSelect,
   FormInput,
   FormInputDisplayOnly,
+  FormValueType,
 } from "../../../../components/form/form.ts";
 import { convertValueToBoolean, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
@@ -158,7 +159,7 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
                       fieldName={"totalDepth"}
                       label={"totaldepth"}
                       value={borehole?.totalDepth}
-                      withThousandSeparator={true}
+                      type={FormValueType.Number}
                     />
                     <FormDomainSelect
                       fieldName={"depthPrecisionId"}
@@ -166,11 +167,7 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
                       schemaName={"depth_precision"}
                       selected={borehole.depthPrecisionId}
                     />
-                    <FormInputDisplayOnly
-                      label={"total_depth_tvd"}
-                      value={totalDepthTVD}
-                      withThousandSeparator={true}
-                    />
+                    <FormInputDisplayOnly label={"total_depth_tvd"} value={totalDepthTVD} type={FormValueType.Number} />
                   </FormContainer>
                 </FormContainer>
                 <FormContainer direction="row">
@@ -178,12 +175,12 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
                     fieldName={"topBedrockWeatheredMd"}
                     label={"top_bedrock_weathered_md"}
                     value={borehole?.topBedrockWeatheredMd}
-                    withThousandSeparator={true}
+                    type={FormValueType.Number}
                   />
                   <FormInputDisplayOnly
                     label={"top_bedrock_weathered_tvd"}
                     value={topBedrockWeatheredTVD}
-                    withThousandSeparator={true}
+                    type={FormValueType.Number}
                   />
                 </FormContainer>
                 <FormContainer direction="row">
@@ -191,12 +188,12 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
                     fieldName={"topBedrockFreshMd"}
                     label={"top_bedrock_fresh_md"}
                     value={borehole?.topBedrockFreshMd}
-                    withThousandSeparator={true}
+                    type={FormValueType.Number}
                   />
                   <FormInputDisplayOnly
                     label={"top_bedrock_fresh_tvd"}
                     value={topBedrockFreshTVD}
-                    withThousandSeparator={true}
+                    type={FormValueType.Number}
                   />
                 </FormContainer>
                 <FormContainer direction="row" width="50%">
