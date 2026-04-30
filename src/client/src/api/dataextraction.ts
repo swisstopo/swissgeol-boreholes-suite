@@ -13,7 +13,7 @@ import {
 } from "./dataextractionInterfaces.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 
-export async function fetchCreatePngs(fileName: string): Promise<Response> {
+async function fetchCreatePngs(fileName: string): Promise<Response> {
   const reduxUser: User = store.getState().core_user as User;
   return await fetch("/dataextraction/api/V1/create_pngs", {
     method: "POST",
@@ -25,7 +25,7 @@ export async function fetchCreatePngs(fileName: string): Promise<Response> {
   });
 }
 
-export async function fetchPageBoundingBoxes(fileName: string, pageNumber: number): Promise<Response> {
+async function fetchPageBoundingBoxes(fileName: string, pageNumber: number): Promise<Response> {
   const reduxUser: User = store.getState().core_user as User;
   return await fetch("/dataextraction/api/V1/bounding_boxes", {
     method: "POST",
@@ -37,7 +37,7 @@ export async function fetchPageBoundingBoxes(fileName: string, pageNumber: numbe
   });
 }
 
-export async function fetchExtractData(request: unknown, abortSignal: AbortSignal): Promise<Response> {
+async function fetchExtractData(request: unknown, abortSignal: AbortSignal): Promise<Response> {
   const reduxUser: User = store.getState().core_user as User;
   return await fetch("/dataextraction/api/V1/extract_data", {
     method: "POST",
@@ -51,7 +51,7 @@ export async function fetchExtractData(request: unknown, abortSignal: AbortSigna
   });
 }
 
-export async function fetchExtractStratigraphy(fileName: string, abortSignal: AbortSignal): Promise<Response> {
+async function fetchExtractStratigraphy(fileName: string, abortSignal: AbortSignal): Promise<Response> {
   const reduxUser: User = store.getState().core_user as User;
   return await fetch("/dataextraction/api/V1/extract_stratigraphy", {
     method: "POST",
