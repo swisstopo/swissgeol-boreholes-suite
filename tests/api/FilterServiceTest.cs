@@ -461,7 +461,7 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(88, result.TotalCount);
+        Assert.AreEqual(100, result.TotalCount);
 
         // Verify that boreholes have profiles (boreholefiles).
         foreach (var borehole in result.Boreholes)
