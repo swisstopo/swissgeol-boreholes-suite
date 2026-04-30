@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { addInstrumentation, getCasings, updateInstrumentation } from "../../../../api/fetchApiV2.ts";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard.tsx";
-import { FormContainer, FormInput, FormSelect } from "../../../../components/form/form";
+import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils.jsx";
 import { completionSchemaConstants } from "./completionSchemaConstants.js";
@@ -37,14 +37,14 @@ const InstrumentationInput = ({ item, parentId }) => {
           fieldName="fromDepth"
           label="fromdepth"
           value={item.fromDepth}
-          withThousandSeparator={true}
+          type={FormValueType.Number}
           required={true}
         />
         <FormInput
           fieldName="toDepth"
           label="todepth"
           value={item.toDepth}
-          withThousandSeparator={true}
+          type={FormValueType.Number}
           required={true}
         />
       </FormContainer>

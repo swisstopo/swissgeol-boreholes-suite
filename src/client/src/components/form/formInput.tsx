@@ -29,7 +29,6 @@ interface FormInputProps {
   className?: string;
   inputProps?: InputProps;
   onUpdate?: (value: string) => void;
-  withThousandSeparator?: boolean;
   placeholder?: string;
 }
 
@@ -47,7 +46,6 @@ export const FormInput: FC<FormInputProps> = ({
   className,
   inputProps,
   onUpdate,
-  withThousandSeparator,
   placeholder,
 }) => {
   const { t } = useTranslation();
@@ -56,18 +54,19 @@ export const FormInput: FC<FormInputProps> = ({
   const { errors } = useFormState({ control, name: fieldName });
   const isDateTimeInput = type === FormValueType.DateTime;
   const isDateInput = type === FormValueType.Date;
+  const isNumberInput = type === FormValueType.Number;
   const isReadOnly = readonly ?? !editingEnabled;
   const { labelWithTooltip } = useLabelOverflow(label);
 
   // Read the form value so the input can be controlled by it.
   // Without controlled mode, the formatter rewrites the number on mount and marks the field dirty.
-  const watchedValue = useWatch({ control, name: fieldName, disabled: !withThousandSeparator });
+  const watchedValue = useWatch({ control, name: fieldName, disabled: !isNumberInput });
 
   // On mount, push the initial value into the form if nothing is there yet.
   // Required validation reads the form value, so without this it always fails.
   // We store it as a string to match what the formatter writes back when the user types.
   useEffect(() => {
-    if (withThousandSeparator && value != null && getValues(fieldName) === undefined) {
+    if (isNumberInput && value != null && getValues(fieldName) === undefined) {
       setValue(fieldName, toFormatterValue(value));
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -102,14 +101,13 @@ export const FormInput: FC<FormInputProps> = ({
         ...getFieldBorderColor(isReadOnly),
       }}
       className={`${isReadOnly ? "readonly" : ""} ${className ?? ""}`}
-      type={type || FormValueType.Text}
+      type={isNumberInput ? FormValueType.Text : type || FormValueType.Text} // Numeric values need to be of type text due to the thousands separators
       multiline={multiline || false}
       placeholder={placeholder && t(placeholder)}
       rows={rows}
       label={labelWithTooltip}
       {...register(fieldName, {
         required: required ? "required" : false,
-        valueAsNumber: type === FormValueType.Number,
         validate: value => {
           if (value === "") {
             return true;
@@ -128,13 +126,13 @@ export const FormInput: FC<FormInputProps> = ({
         },
       })}
       defaultValue={getDefaultValue(value)}
-      value={withThousandSeparator ? controlledValue : undefined}
+      value={isNumberInput ? controlledValue : undefined}
       disabled={disabled || false}
       data-cy={fieldName + "-formInput"}
       slotProps={{
         input: {
           ...inputProps /* eslint-disable  @typescript-eslint/no-explicit-any */,
-          ...(withThousandSeparator && { inputComponent: NumericFormatWithThousandSeparator as any }),
+          ...(isNumberInput && { inputComponent: NumericFormatWithThousandSeparator as any }),
           ...(isDateTimeInput && { max: "9999-01-01T00:00" }),
           ...(isDateInput && { max: "9999-01-01" }),
           readOnly: isReadOnly,

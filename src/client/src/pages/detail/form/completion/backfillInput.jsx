@@ -1,6 +1,6 @@
 import { addBackfill, updateBackfill } from "../../../../api/fetchApiV2.ts";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard.tsx";
-import { FormContainer, FormInput, FormSelect } from "../../../../components/form/form";
+import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { useCasings } from "./casing.ts";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils";
@@ -29,14 +29,14 @@ const BackfillInput = ({ item, parentId }) => {
           fieldName="fromDepth"
           label="fromdepth"
           value={item.fromDepth}
-          withThousandSeparator={true}
+          type={FormValueType.Number}
           required={true}
         />
         <FormInput
           fieldName="toDepth"
           label="todepth"
           value={item.toDepth}
-          withThousandSeparator={true}
+          type={FormValueType.Number}
           required={true}
         />
       </FormContainer>

@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import { Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { theme } from "../../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
-import { FormErrors } from "../../../../../../components/form/form.ts";
+import { FormErrors, FormValueType } from "../../../../../../components/form/form.ts";
 import { FormContainer } from "../../../../../../components/form/formContainer.tsx";
 import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
 import { FormInput } from "../../../../../../components/form/formInput.tsx";
@@ -147,14 +147,14 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
                   label={"fromdepth"}
                   required={true}
                   value={lithology?.fromDepth}
-                  withThousandSeparator={true}
+                  type={FormValueType.Number}
                 />
                 <FormInput
                   fieldName={"toDepth"}
                   label={"todepth"}
                   required={true}
                   value={lithology?.toDepth}
-                  withThousandSeparator={true}
+                  type={FormValueType.Number}
                 />
               </FormContainer>
             </FormContainer>
