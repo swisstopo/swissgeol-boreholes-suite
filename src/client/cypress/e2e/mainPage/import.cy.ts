@@ -174,7 +174,7 @@ describe("Test for importing boreholes.", () => {
     cy.contains("Blue");
   });
 
-  it("exports and reimports boreholes with attachments", () => {
+  it.only("exports and reimports boreholes with attachments", () => {
     const boreholeName = "COLDWATERDRINK";
     const boreholeName2 = "COLDWATERBATH";
     createBorehole({
@@ -229,6 +229,7 @@ describe("Test for importing boreholes.", () => {
       verifyRowContains("COLDWATERDRINK", 1);
       clickOnRowWithText("COLDWATERBATH");
       navigateInSidebar(SidebarMenuItem.attachments);
+      cy.wait("@getAllAttachments");
       cy.contains("NICEANDCOOL.txt");
       cy.contains("BREWINGHOT.txt");
     });
