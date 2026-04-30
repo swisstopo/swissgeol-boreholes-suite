@@ -176,7 +176,7 @@ const CasingInput = props => {
                             fieldName={`casingElements.${index}.fromDepth`}
                             label="fromdepth"
                             value={field.fromDepth}
-                            withThousandSeparator={true}
+                            type={FormValueType.Number}
                             required={true}
                             onUpdate={updateDepth}
                           />
@@ -184,7 +184,7 @@ const CasingInput = props => {
                             fieldName={`casingElements.${index}.toDepth`}
                             label="todepth"
                             value={field.toDepth}
-                            withThousandSeparator={true}
+                            type={FormValueType.Number}
                             required={true}
                             onUpdate={updateDepth}
                           />
@@ -207,13 +207,13 @@ const CasingInput = props => {
                             fieldName={`casingElements.${index}.innerDiameter`}
                             label="casingInnerDiameter"
                             value={field.innerDiameter}
-                            withThousandSeparator={true}
+                            type={FormValueType.Number}
                           />
                           <FormInput
                             fieldName={`casingElements.${index}.outerDiameter`}
                             label="casingOuterDiameter"
                             value={field.outerDiameter}
-                            withThousandSeparator={true}
+                            type={FormValueType.Number}
                           />
                         </FormContainer>
                       </FormContainer>

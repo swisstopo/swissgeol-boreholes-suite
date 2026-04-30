@@ -48,9 +48,10 @@ public class FilterRequest
     public IEnumerable<int>? PurposeId { get; set; }
 
     /// <summary>
-    /// Gets or sets the workflow status filter.
+    /// Gets or sets the workflow status filter. Matches boreholes whose workflow status is in this set.
     /// </summary>
-    public WorkflowStatus? WorkflowStatus { get; set; }
+    [MaxLength(100)]
+    public IEnumerable<WorkflowStatus>? WorkflowStatus { get; set; }
 
     /// <summary>
     /// Gets or sets the workgroup ID filter.

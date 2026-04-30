@@ -16,7 +16,7 @@ export const FormContainer: FC<FormContainerProps> = props => {
       ref={props.ref}
       data-cy={props.dataCy}
       {...props}
-      rowGap={3}
+      rowGap={props.rowGap ?? 3}
       columnGap={2}
       sx={{ ...props.sx, width: width }}>
       {props.children}
