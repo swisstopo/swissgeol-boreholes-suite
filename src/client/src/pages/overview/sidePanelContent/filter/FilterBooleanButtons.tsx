@@ -66,7 +66,8 @@ export const FilterBooleanButtons: FC<FilterBooleanButtonsProps> = ({
             <Button
               key={opt.key}
               size="small"
-              variant={isSelected ? "contained" : "outlined"}
+              variant="outlined"
+              className={isSelected ? "selected" : undefined}
               onClick={() => toggle(opt.value)}
               disabled={disabled}
               sx={{ textTransform: "none" }}
