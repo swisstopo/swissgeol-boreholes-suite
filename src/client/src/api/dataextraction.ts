@@ -177,7 +177,7 @@ const cleanUpExtractionData = (
     .sort((a, b) => (a.fromDepth ?? 0) - (b.fromDepth ?? 0))
     .reduce<ExtractedLithologicalDescription[]>((acc, layer) => {
       // Only use layer if it does not overlap with the previous one
-      if (acc.length === 0 || layer.fromDepth >= acc[acc.length - 1].toDepth) {
+      if (acc.length === 0 || layer.fromDepth >= acc.at(-1)!.toDepth) {
         acc.push(layer);
       }
       return acc;

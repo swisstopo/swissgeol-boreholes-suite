@@ -137,7 +137,7 @@ public class ProfileCloudServiceTest
         Assert.AreEqual(1, files.Count);
 
         // Get upload date of file
-        var uploadDate = files.First().LastModified;
+        var uploadDate = files[0].LastModified;
 
         // Second Upload file
         await profileCloudService.UploadObject(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType);
@@ -150,7 +150,7 @@ public class ProfileCloudServiceTest
         Assert.AreEqual(1, files.Count);
 
         // Check uploaded file was replaced
-        Assert.AreNotEqual(uploadDate, files.First().LastModified);
+        Assert.AreNotEqual(uploadDate, files[0].LastModified);
     }
 
     [TestMethod]

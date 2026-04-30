@@ -17,6 +17,8 @@ namespace BDMS.Controllers;
 [TestClass]
 public class ProfileControllerTest
 {
+    private const string SubAdmin = "sub_admin";
+    private const string LabelingAttachmentPdf = "labeling_attachment.pdf";
     private BdmsContext context;
     private ProfileController controller;
     private ProfileCloudService profileCloudService;
@@ -31,7 +33,7 @@ public class ProfileControllerTest
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
 
         context = ContextFactory.GetTestContext();
-        adminUser = context.Users.FirstOrDefault(u => u.SubjectId == "sub_admin") ?? throw new InvalidOperationException("No User found in database.");
+        adminUser = context.Users.FirstOrDefault(u => u.SubjectId == SubAdmin) ?? throw new InvalidOperationException("No User found in database.");
 
         var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
@@ -122,8 +124,7 @@ public class ProfileControllerTest
         Assert.IsNotNull(profilesOfBorehole.Value);
 
         // Get the uploaded profile in the response list
-        var uploadedProfile = profilesOfBorehole.Value.FirstOrDefault(p => p.Name == fileName);
-        Assert.IsNotNull(uploadedProfile);
+        var uploadedProfile = profilesOfBorehole.Value.First(p => p.Name == fileName);
 
         // Download uploaded file
         var response = await controller.Download(uploadedProfile.Id);
@@ -132,7 +133,7 @@ public class ProfileControllerTest
         Assert.AreEqual(content, contentResult);
 
         boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .Setup(x => x.CanViewBoreholeAsync(SubAdmin, It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var unauthorizedResponse = await controller.Download(uploadedProfile.Id);
@@ -158,8 +159,8 @@ public class ProfileControllerTest
         // Get profiles of borehole from controller
         var profilesOfBorehole = await controller.GetAllOfBorehole(minBoreholeId);
 
-        var firstProfile = profilesOfBorehole.Value?.FirstOrDefault(p => p.Name == firstFileName);
-        var secondProfile = profilesOfBorehole.Value?.FirstOrDefault(p => p.Name == secondFileName);
+        var firstProfile = profilesOfBorehole.Value!.First(p => p.Name == firstFileName);
+        var secondProfile = profilesOfBorehole.Value!.First(p => p.Name == secondFileName);
 
         Assert.AreEqual(firstFileName, firstProfile.Name);
         Assert.AreEqual(adminUser.SubjectId, firstProfile.CreatedBy.SubjectId);
@@ -172,7 +173,7 @@ public class ProfileControllerTest
     public async Task GetAllForBoreholeReturnsUnauthorizedWithInsufficientPermissions()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanViewBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .Setup(x => x.CanViewBoreholeAsync(SubAdmin, It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
@@ -296,7 +297,7 @@ public class ProfileControllerTest
         await profileCloudService.GetObject(latestProfileInDb.NameUuid);
 
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .Setup(x => x.CanEditBoreholeAsync(SubAdmin, It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         // Attempt to delete profile
@@ -318,7 +319,7 @@ public class ProfileControllerTest
     public async Task UpdateFailsWithoutPermission()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_admin", It.IsAny<int?>()))
+            .Setup(x => x.CanEditBoreholeAsync(SubAdmin, It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var borehole = new Borehole();
@@ -342,10 +343,10 @@ public class ProfileControllerTest
     {
         // Test setup
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
-        var labelingFile = GetFormFileByExistingFile("labeling_attachment.pdf");
+        var labelingFile = GetFormFileByExistingFile(LabelingAttachmentPdf);
         var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
         ActionResultAssert.IsOk(uploadResult);
-        var profile = (uploadResult as OkObjectResult)?.Value as Profile;
+        var profile = (Profile)((OkObjectResult)uploadResult).Value!;
         var fileUuid = profile.NameUuid.Replace(".pdf", "");
 
         var image1 = GetFormFileByExistingFile("labeling_attachment-1.png");
@@ -358,8 +359,7 @@ public class ProfileControllerTest
         // Test
         var result = await controller.GetDataExtractionFileInfo(profile.Id, 1);
         ActionResultAssert.IsOk(result);
-        var dataExtractionInfo = (result as OkObjectResult)?.Value as DataExtractionInfo;
-        Assert.IsNotNull(dataExtractionInfo);
+        var dataExtractionInfo = (DataExtractionInfo)((OkObjectResult)result).Value!;
         Assert.AreEqual($"{fileUuid}-1.png", dataExtractionInfo.FileName);
         Assert.AreEqual(1786, dataExtractionInfo.Width);
         Assert.AreEqual(2526, dataExtractionInfo.Height);
@@ -376,17 +376,16 @@ public class ProfileControllerTest
     {
         // Test setup
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
-        var labelingFile = GetFormFileByExistingFile("labeling_attachment.pdf");
+        var labelingFile = GetFormFileByExistingFile(LabelingAttachmentPdf);
         var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
         ActionResultAssert.IsOk(uploadResult);
-        var profile = (uploadResult as OkObjectResult)?.Value as Profile;
+        var profile = (Profile)((OkObjectResult)uploadResult).Value!;
         var fileUuid = profile.NameUuid.Replace(".pdf", "");
 
         // Test
         var result = await controller.GetDataExtractionFileInfo(profile.Id, 1);
         ActionResultAssert.IsOk(result);
-        var dataExtractionInfo = (result as OkObjectResult)?.Value as DataExtractionInfo;
-        Assert.IsNotNull(dataExtractionInfo);
+        var dataExtractionInfo = (DataExtractionInfo)((OkObjectResult)result).Value!;
         Assert.AreEqual(fileUuid, dataExtractionInfo.FileName);
         Assert.AreEqual(0, dataExtractionInfo.Width);
         Assert.AreEqual(0, dataExtractionInfo.Height);
@@ -398,10 +397,10 @@ public class ProfileControllerTest
     {
         // Test setup
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
-        var labelingFile = GetFormFileByExistingFile("labeling_attachment.pdf");
+        var labelingFile = GetFormFileByExistingFile(LabelingAttachmentPdf);
         var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
         ActionResultAssert.IsOk(uploadResult);
-        var profile = (uploadResult as OkObjectResult)?.Value as Profile;
+        var profile = (Profile)((OkObjectResult)uploadResult).Value!;
 
         // Test
         controller.HttpContext.SetClaimsPrincipal("sub_viewer", PolicyNames.Viewer);
@@ -421,10 +420,10 @@ public class ProfileControllerTest
     {
         // Test setup
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
-        var labelingFile = GetFormFileByExistingFile("labeling_attachment.pdf");
+        var labelingFile = GetFormFileByExistingFile(LabelingAttachmentPdf);
         var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
         ActionResultAssert.IsOk(uploadResult);
-        var profile = (uploadResult as OkObjectResult)?.Value as Profile;
+        var profile = (Profile)((OkObjectResult)uploadResult).Value!;
         var fileUuid = profile.NameUuid.Replace(".pdf", "");
 
         var image1 = GetFormFileByExistingFile("labeling_attachment-1.png");
@@ -439,7 +438,7 @@ public class ProfileControllerTest
         byte[] originalBytes = new byte[image1.Length];
         using (var ms = new MemoryStream())
         {
-            image1.CopyTo(ms);
+            await image1.CopyToAsync(ms);
             originalBytes = ms.ToArray();
         }
 
