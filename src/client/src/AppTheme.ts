@@ -259,6 +259,11 @@ export const theme = createTheme({
                   color: themePalette.buttonStates.outlined.disabled.color,
                   backgroundColor: themePalette.buttonStates.outlined.disabled.backgroundColor,
                 },
+                "&.selected": {
+                  color: themePalette.buttonStates.outlined.active.color,
+                  backgroundColor: themePalette.buttonStates.outlined.active.backgroundColor,
+                  border: `1px solid ${themePalette.buttonStates.outlined.active.backgroundColor}`,
+                },
               },
             },
             {
