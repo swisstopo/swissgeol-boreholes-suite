@@ -411,7 +411,7 @@ public class ProfileControllerTest
     [TestMethod]
     public async Task GetDataExtractionInfoFileNotFound()
     {
-        var result = await controller.Update(int.MaxValue, new ProfileUpdate());
+        var result = await controller.GetDataExtractionFileInfo(int.MaxValue, 1);
         ActionResultAssert.IsNotFound(result);
     }
 

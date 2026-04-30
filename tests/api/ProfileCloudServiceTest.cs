@@ -215,7 +215,7 @@ public class ProfileCloudServiceTest
         var profileCountBefore = context.Profiles.Count(p => p.BoreholeId == minBoreholeId);
         var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), fileName);
 
-        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(async () =>
+        await Assert.ThrowsExactlyAsync<IOException>(async () =>
             await failingService.UploadProfileAsync(
                 pdfFormFile.OpenReadStream(),
                 pdfFormFile.FileName,

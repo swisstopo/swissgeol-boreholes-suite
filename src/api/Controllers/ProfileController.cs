@@ -127,7 +127,8 @@ public class ProfileController : ControllerBase
             catch (Exception ex)
             {
                 // No image found for the requested index, return an empty response with the file info.
-                if (ex.Message.Contains("The specified key does not exist.", StringComparison.OrdinalIgnoreCase))
+                if (ex.Message.Contains("The specified key does not exist.", StringComparison.OrdinalIgnoreCase)
+                    || ex.InnerException?.Message.Contains("The specified key does not exist.", StringComparison.OrdinalIgnoreCase) == true)
                 {
                     return Ok(new DataExtractionInfo(fileUuid, 0, 0, 0));
                 }

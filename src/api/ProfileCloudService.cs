@@ -62,8 +62,7 @@ public class ProfileCloudService : CloudServiceBase
         }
         catch (Exception ex)
         {
-            Logger.LogError(ex, "Error uploading profile <{FileName}> for borehole with Id <{BoreholeId}>.", fileName, boreholeId);
-            throw;
+            throw new IOException($"Error uploading profile '{fileName}' for borehole with Id '{boreholeId}'.", ex);
         }
     }
 
@@ -97,8 +96,7 @@ public class ProfileCloudService : CloudServiceBase
         }
         catch (AmazonS3Exception ex)
         {
-            Logger.LogError(ex, "Error counting files in data extraction folder in cloud storage.");
-            throw;
+            throw new IOException("Error counting files in data extraction folder in cloud storage.", ex);
         }
     }
 
@@ -150,8 +148,7 @@ public class ProfileCloudService : CloudServiceBase
         }
         catch (AmazonS3Exception ex)
         {
-            Logger.LogError(ex, "Error retrieving image information from data extraction folder in cloud storage.");
-            throw;
+            throw new IOException("Error retrieving image information from data extraction folder in cloud storage.", ex);
         }
     }
 }
