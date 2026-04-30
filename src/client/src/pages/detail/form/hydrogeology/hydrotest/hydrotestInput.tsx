@@ -9,7 +9,13 @@ import { Codelist, useCodelists } from "../../../../../components/codelist.ts";
 import { DataCardContext } from "../../../../../components/dataCard/dataCardContext";
 import { DataCardSaveAndCancelButtons } from "../../../../../components/dataCard/saveAndCancelButtons.tsx";
 import { useUnsavedChangesPrompt } from "../../../../../components/dataCard/useUnsavedChangesPrompt.tsx";
-import { FormContainer, FormDomainMultiSelect, FormDomainSelect, FormInput } from "../../../../../components/form/form";
+import {
+  FormContainer,
+  FormDomainMultiSelect,
+  FormDomainSelect,
+  FormInput,
+  FormValueType,
+} from "../../../../../components/form/form";
 import { parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
 import { useFormDirtyMarkAsChanged } from "../../../../../components/form/useFormDirty.tsx";
 import { useValidateFormOnMount } from "../../../../../components/form/useValidateFormOnMount.tsx";
@@ -261,7 +267,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
                     fieldName={`hydrotestResults.${index}.value`}
                     label="value"
                     value={field.value}
-                    withThousandSeparator={true}
+                    type={FormValueType.Number}
                     inputProps={{
                       endAdornment: <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>,
                     }}
@@ -270,7 +276,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
                     fieldName={`hydrotestResults.${index}.minValue`}
                     label="minValue"
                     value={field.minValue}
-                    withThousandSeparator={true}
+                    type={FormValueType.Number}
                     inputProps={{
                       endAdornment: <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>,
                     }}
@@ -279,7 +285,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
                     fieldName={`hydrotestResults.${index}.maxValue`}
                     label="maxValue"
                     value={field.maxValue}
-                    withThousandSeparator={true}
+                    type={FormValueType.Number}
                     inputProps={{
                       endAdornment: <InputAdornment position="end">{units[index] ? units[index] : ""}</InputAdornment>,
                     }}
