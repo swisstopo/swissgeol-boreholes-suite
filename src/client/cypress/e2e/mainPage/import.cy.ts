@@ -13,6 +13,7 @@ import {
   goToDetailRouteAndAcceptTerms,
   goToRouteAndAcceptTerms,
   handlePrompt,
+  prepareDownloadPath,
   returnToOverview,
   selectInputFile,
   startBoreholeEditing,
@@ -174,7 +175,7 @@ describe("Test for importing boreholes.", () => {
     cy.contains("Blue");
   });
 
-  it.only("exports and reimports boreholes with attachments", () => {
+  it("exports and reimports boreholes with attachments", () => {
     const boreholeName = "COLDWATERDRINK";
     const boreholeName2 = "COLDWATERBATH";
     createBorehole({
@@ -205,9 +206,19 @@ describe("Test for importing boreholes.", () => {
     verifyRowContains("COLDWATERBATH", 0);
     verifyRowContains("COLDWATERDRINK", 1);
 
+    cy.intercept("/api/v2/boreholeexport/zip?**").as("borehole_export_zip");
     checkAllVisibleRows();
     exportItem();
     exportZipItem();
+
+    // Capture the exported zip filename from the response header
+    cy.wait("@borehole_export_zip")
+      .its("response.headers.content-disposition")
+      .then(contentDisposition => {
+        const zipFileName = (contentDisposition as string).split("filename=")[1].split(";")[0];
+        cy.wrap(zipFileName).as("exportedZipFileName");
+      });
+
     deleteItem();
     handlePrompt("Do you really want to delete these 2 boreholes? This cannot be undone.", "delete");
 
@@ -215,23 +226,26 @@ describe("Test for importing boreholes.", () => {
     cy.wait("@edit_deletelist");
     cy.dataCy("boreholes-number-preview").should("have.text", "0");
 
-    // reupload prepared zip file
-    getImportFileFromFixtures("COLDWATER.zip", "binary").then(fileContent => {
-      const blob = Cypress.Blob.binaryStringToBlob(fileContent, "application/zip");
-      const fileToReupload = new File([blob], "COLDWATER.zip", { type: "application/zip" });
-      const dataTransfer = new DataTransfer();
-      dataTransfer.items.add(fileToReupload);
-      cy.dataCy("import-borehole-button").click();
-      dropFileIntoImportDropzone(dataTransfer);
-      cy.dataCy("import-button").click();
-      cy.dataCy("boreholes-number-preview").should("have.text", "2");
-      verifyRowContains("COLDWATERBATH", 0);
-      verifyRowContains("COLDWATERDRINK", 1);
-      clickOnRowWithText("COLDWATERBATH");
-      navigateInSidebar(SidebarMenuItem.attachments);
-      cy.wait("@getAllAttachments");
-      cy.contains("NICEANDCOOL.txt");
-      cy.contains("BREWINGHOT.txt");
+    // reimport the exported zip file
+    cy.get("@exportedZipFileName").then(zipFileName => {
+      const downloadPath = prepareDownloadPath(zipFileName as unknown as string);
+      cy.readFile(downloadPath, "binary").then(fileContent => {
+        const blob = Cypress.Blob.binaryStringToBlob(fileContent, "application/zip");
+        const fileToReupload = new File([blob], zipFileName as unknown as string, { type: "application/zip" });
+        const dataTransfer = new DataTransfer();
+        dataTransfer.items.add(fileToReupload);
+        cy.dataCy("import-borehole-button").click();
+        dropFileIntoImportDropzone(dataTransfer);
+        cy.dataCy("import-button").click();
+        cy.dataCy("boreholes-number-preview").should("have.text", "2");
+        verifyRowContains("COLDWATERBATH", 0);
+        verifyRowContains("COLDWATERDRINK", 1);
+        clickOnRowWithText("COLDWATERBATH");
+        navigateInSidebar(SidebarMenuItem.attachments);
+        cy.wait("@getAllAttachments");
+        cy.contains("NICEANDCOOL.txt");
+        cy.contains("BREWINGHOT.txt");
+      });
     });
   });
 });
