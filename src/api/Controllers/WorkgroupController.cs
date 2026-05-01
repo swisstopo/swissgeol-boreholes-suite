@@ -29,6 +29,7 @@ public class WorkgroupController : ControllerBase
     /// Gets a list of workgroups.
     /// </summary>
     [HttpGet]
+    [Authorize(Policy = PolicyNames.Viewer)]
     [SwaggerResponse(StatusCodes.Status200OK, "Returns a list of workgroups.")]
     public async Task<IEnumerable<Workgroup>> GetAllAsync()
     {
@@ -37,6 +38,19 @@ public class WorkgroupController : ControllerBase
             .AsNoTracking()
             .ToListAsync()
             .ConfigureAwait(false);
+
+        // Apply permission filtering by workgroup
+        var subjectId = HttpContext.GetUserSubjectId();
+        var user = await context.UsersWithIncludes
+            .AsNoTracking()
+            .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
+            .ConfigureAwait(false);
+
+        if (!user.IsAdmin)
+        {
+            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+            workgroups = workgroups.Where(w => allowedWorkgroupIds.Contains(w.Id)).ToList();
+        }
 
         return workgroups;
     }

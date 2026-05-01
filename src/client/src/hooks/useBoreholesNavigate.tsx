@@ -11,13 +11,17 @@ export const useBoreholesNavigate = () => {
       const hashValue = hash?.split("?")[0];
       const replaceValue = replace ?? false;
 
-      let searchParams;
-      const locationSearch = location.search;
-      const searchFromHash = location.hash.split("?")[1];
-      if (locationSearch) {
-        searchParams = locationSearch;
-      } else if (searchFromHash) {
-        searchParams = `${searchFromHash}`;
+      // Only preserve search params when staying on the same page.
+      const isSamePage = pathname === location.pathname;
+      let searchParams: string | undefined;
+      if (isSamePage) {
+        const locationSearch = location.search;
+        const searchFromHash = location.hash.split("?")[1];
+        if (locationSearch) {
+          searchParams = locationSearch;
+        } else if (searchFromHash) {
+          searchParams = searchFromHash;
+        }
       }
       const normalizedSearch = searchParams ?? "";
       const normalizedLocationSearch = location.search ?? "";

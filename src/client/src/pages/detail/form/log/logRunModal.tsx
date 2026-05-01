@@ -225,14 +225,14 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
                 required
                 label="topLoggedInterval"
                 value={logRun.fromDepth}
-                withThousandSeparator
+                type={FormValueType.Number}
               />
               <FormInput
                 fieldName="toDepth"
                 required
                 label="bottomLoggedInterval"
                 value={logRun.toDepth}
-                withThousandSeparator
+                type={FormValueType.Number}
               />
               <FormDomainSelect
                 fieldName="boreholeStatusId"
