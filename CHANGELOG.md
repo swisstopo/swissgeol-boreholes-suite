@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Added
+- Added identifier filters.
 - Import functionality for LOG.
 
 ### Changed
