@@ -1692,7 +1692,7 @@ public class FilterServiceTest
         // Derive expected truth from the seed data so assertions stay valid across seed changes.
         var totalBoreholes = await context.Boreholes.CountAsync();
         var expectedHasLogsTrue = await context.Boreholes.CountAsync(b => context.LogRuns.Any(lr => lr.BoreholeId == b.Id));
-        var expectedHasProfilesTrue = await context.Boreholes.CountAsync(b => context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id));
+        var expectedHasProfilesTrue = await context.Boreholes.CountAsync(b => context.Profiles.Any(bf => bf.BoreholeId == b.Id));
         var expectedHasGeometryTrue = await context.Boreholes.CountAsync(b => b.BoreholeGeometry != null && b.BoreholeGeometry.Any());
 
         var result = await filterService.GetFilterStatsAsync(null, adminUser);

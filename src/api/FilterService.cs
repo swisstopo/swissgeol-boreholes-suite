@@ -166,8 +166,8 @@ public class FilterService : IFilterService
                 b => !context.LogRuns.Any(lr => lr.BoreholeId == b.Id)).ConfigureAwait(false),
             HasProfiles = await CountByBooleanAsync(
                 QueryExcluding(r => r.HasProfiles = null),
-                b => context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id),
-                b => !context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id)).ConfigureAwait(false),
+                b => context.Profiles.Any(bf => bf.BoreholeId == b.Id),
+                b => !context.Profiles.Any(bf => bf.BoreholeId == b.Id)).ConfigureAwait(false),
             HasPhotos = await CountByBooleanAsync(
                 QueryExcluding(r => r.HasPhotos = null),
                 b => context.Photos.Any(p => p.BoreholeId == b.Id),
