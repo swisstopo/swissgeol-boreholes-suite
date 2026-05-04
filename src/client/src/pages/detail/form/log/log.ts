@@ -3,9 +3,10 @@ import { useTranslation } from "react-i18next";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { ArrowDownToLine, X } from "lucide-react";
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
+import { ApiError } from "../../../../api/apiInterfaces.ts";
 import { boreholeQueryKey } from "../../../../api/borehole.ts";
 import { downloadPost } from "../../../../api/download.ts";
-import { fetchApiV2WithApiError, upload, uploadWithApiError } from "../../../../api/fetchApiV2.ts";
+import { fetchApiV2WithApiError, isJsonContentType, upload, uploadWithApiError } from "../../../../api/fetchApiV2.ts";
 import { ExportItem } from "../../../../components/export/exportDialog.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
@@ -87,6 +88,69 @@ export const useLogRunMutations = () => {
 
 export const importLogs = async (boreholeId: number, formData: FormData): Promise<Response> => {
   return await upload(`${logController}/import?boreholeId=${boreholeId}`, "POST", formData);
+};
+
+export interface LogImportError {
+  errorKey: string;
+  messageKey: string;
+  detail: string;
+  values?: Record<string, string>;
+}
+
+export class LogImportValidationError extends ApiError {
+  constructor(public readonly errors: LogImportError[]) {
+    super("Log import validation failed", 400);
+    this.name = "LogImportValidationError";
+    Object.setPrototypeOf(this, LogImportValidationError.prototype);
+  }
+}
+
+interface ImportLogsVariables {
+  boreholeId: number;
+  formData: FormData;
+  attachments: File[];
+}
+
+const buildLogFileUpload = (logRun: LogRun, logFile: LogFile, attachments: File[]): Promise<LogFile> | null => {
+  const matchingAttachment = attachments.find(f => f.name.replaceAll(" ", "_") === logFile.name);
+  if (!matchingAttachment) return null;
+  const uploadFormData = new FormData();
+  uploadFormData.append("file", matchingAttachment);
+  return uploadWithApiError<LogFile>(
+    `${logController}/upload?logRunId=${logRun.id}&logFileId=${logFile.id}`,
+    "POST",
+    uploadFormData,
+  );
+};
+
+export const useImportLogs = () => {
+  const queryClient = useQueryClient();
+
+  return useMutation<LogRun[], Error, ImportLogsVariables>({
+    mutationFn: async ({ boreholeId, formData, attachments }) => {
+      const response = await importLogs(boreholeId, formData);
+      if (!response.ok) {
+        if (isJsonContentType(response.headers.get("content-type"))) {
+          const responseBody = await response.json();
+          if (Array.isArray(responseBody)) {
+            throw new LogImportValidationError(responseBody);
+          }
+        }
+        throw new Error("Log import failed");
+      }
+
+      const importedLogRuns: LogRun[] = await response.json();
+      const uploadPromises = importedLogRuns
+        .flatMap(logRun => (logRun.logFiles ?? []).map(logFile => buildLogFileUpload(logRun, logFile, attachments)))
+        .filter((p): p is Promise<LogFile> => p !== null);
+      await Promise.all(uploadPromises);
+      return importedLogRuns;
+    },
+    onSuccess: (_data, { boreholeId }) => {
+      queryClient.invalidateQueries({ queryKey: [logsQueryKey, boreholeId] });
+      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, boreholeId] });
+    },
+  });
 };
 
 export const exportLogRuns = async (ids: number[], withAttachments: boolean, locale: string): Promise<Response> => {

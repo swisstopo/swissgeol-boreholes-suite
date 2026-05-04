@@ -1,49 +1,25 @@
-import { FC, Fragment, useCallback, useContext, useState } from "react";
+import { FC, Fragment, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Backdrop, CircularProgress, Stack, Typography } from "@mui/material";
-import { useQueryClient } from "@tanstack/react-query";
-import { boreholeQueryKey } from "../../../../api/borehole.ts";
-import { isJsonContentType, uploadWithApiError } from "../../../../api/fetchApiV2.ts";
 import { theme } from "../../../../AppTheme.ts";
-import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { BoreholesCard } from "../../../../components/boreholesCard.tsx";
 import { FormContainer, FormDialog } from "../../../../components/form/form.ts";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { FileDropzone } from "./fileDropzone.tsx";
-import { importLogs, logsQueryKey } from "./log.ts";
-import { LogFile, LogRun } from "./logInterfaces.ts";
-
-interface ImportError {
-  errorKey: string;
-  messageKey: string;
-  detail: string;
-  values?: Record<string, string>;
-}
+import { LogImportError, LogImportValidationError, useImportLogs } from "./log.ts";
 
 interface ImportLogModalProps {
   isImporting: boolean;
   setIsImporting: (isImporting: boolean) => void;
 }
 
-const buildLogFileUpload = (logRun: LogRun, logFile: LogFile, attachments: File[]): Promise<LogFile> | null => {
-  const matchingAttachment = attachments.find(f => f.name.replaceAll(" ", "_") === logFile.name);
-  if (!matchingAttachment) return null;
-  const uploadFormData = new FormData();
-  uploadFormData.append("file", matchingAttachment);
-  return uploadWithApiError<LogFile>(
-    `log/upload?logRunId=${logRun.id}&logFileId=${logFile.id}`,
-    "POST",
-    uploadFormData,
-  );
-};
-
 const ImportErrorSection: FC<{
   prefix: "LogRun" | "LogFile";
-  getHeader: (errorKey: string, group: ImportError[]) => string;
-  errors: ImportError[];
+  getHeader: (errorKey: string, group: LogImportError[]) => string;
+  errors: LogImportError[];
 }> = ({ prefix, getHeader, errors }) => {
   const { t } = useTranslation();
-  const grouped = new Map<string, ImportError[]>();
+  const grouped = new Map<string, LogImportError[]>();
   for (const e of errors.filter(e => e.errorKey.startsWith(prefix))) {
     const list = grouped.get(e.errorKey) ?? [];
     list.push(e);
@@ -70,74 +46,42 @@ const ImportErrorSection: FC<{
 export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIsImporting }) => {
   const { t } = useTranslation();
   const { id: boreholeId } = useRequiredParams();
-  const queryClient = useQueryClient();
-  const { showAlert } = useContext(AlertContext);
-  const [isImportRunning, setIsImportRunning] = useState<boolean>(false);
   const [logRunFile, setLogRunFile] = useState<File>();
   const [logFileFile, setLogFileFile] = useState<File>();
   const [logFileAttachments, setLogFileAttachments] = useState<File[]>([]);
-  const [importErrors, setImportErrors] = useState<ImportError[]>([]);
 
-  const startImport = useCallback(async () => {
-    setIsImportRunning(true);
-    setImportErrors([]);
+  const importMutation = useImportLogs();
+  const importErrors = importMutation.error instanceof LogImportValidationError ? importMutation.error.errors : [];
 
-    try {
-      if (!logRunFile) return false;
-      const formData = new FormData();
-      formData.append("logRunsCsvFile", logRunFile);
+  const startImport = (): Promise<boolean> => {
+    if (!logRunFile) return Promise.resolve(false);
 
-      if (logFileFile) {
-        formData.append("logFilesCsvFile", logFileFile);
-        const fileNames = logFileAttachments.map(f => f.name).join("\n");
-        const fileListBlob = new Blob([fileNames], { type: "text/plain" });
-        formData.append("fileListFile", fileListBlob, "filelist.txt");
-      }
-
-      const response = await importLogs(Number(boreholeId), formData);
-
-      if (!response.ok) {
-        const contentType = response.headers.get("content-type");
-        if (isJsonContentType(contentType)) {
-          const responseBody = await response.json();
-          if (Array.isArray(responseBody)) {
-            setImportErrors(responseBody);
-            return false;
-          }
-          if (responseBody.messageKey) {
-            showAlert(t(responseBody.messageKey), "error");
-            return false;
-          }
-        }
-        const errorText = await response.text();
-        showAlert(errorText || "Import failed", "error");
-        return false;
-      }
-
-      const importedLogRuns: LogRun[] = await response.json();
-
-      const uploadPromises = importedLogRuns
-        .flatMap(logRun =>
-          (logRun.logFiles ?? []).map(logFile => buildLogFileUpload(logRun, logFile, logFileAttachments)),
-        )
-        .filter((p): p is Promise<LogFile> => p !== null);
-      await Promise.all(uploadPromises);
-
-      await queryClient.invalidateQueries({ queryKey: [logsQueryKey, Number(boreholeId)] });
-      await queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, Number(boreholeId)] });
-      return true;
-    } catch (error) {
-      showAlert(String(error), "error");
-      return false;
-    } finally {
-      setIsImportRunning(false);
+    const formData = new FormData();
+    formData.append("logRunsCsvFile", logRunFile);
+    if (logFileFile) {
+      formData.append("logFilesCsvFile", logFileFile);
+      const fileNames = logFileAttachments.map(f => f.name).join("\n");
+      const fileListBlob = new Blob([fileNames], { type: "text/plain" });
+      formData.append("fileListFile", fileListBlob, "filelist.txt");
     }
-  }, [logRunFile, logFileFile, logFileAttachments, boreholeId, queryClient, showAlert, t]);
 
+    return importMutation
+      .mutateAsync({
+        boreholeId: Number(boreholeId),
+        formData,
+        attachments: logFileAttachments,
+      })
+      .then(
+        () => true,
+        () => false,
+      );
+  };
+
+  const isImportRunning = importMutation.isPending;
   const hasLogFilesCsv = !!logFileFile;
   const hasAttachments = logFileAttachments.length > 0;
   const logFilesAndAttachmentsMismatch = hasLogFilesCsv !== hasAttachments;
-  const isImportDisabled = isImportRunning || !logRunFile || importErrors.length > 0 || logFilesAndAttachmentsMismatch;
+  const isImportDisabled = isImportRunning || !logRunFile || logFilesAndAttachmentsMismatch || importErrors.length > 0;
 
   return (
     <FormDialog
@@ -148,7 +92,7 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
         setLogRunFile(undefined);
         setLogFileFile(undefined);
         setLogFileAttachments([]);
-        setImportErrors([]);
+        importMutation.reset();
       }}
       isCloseDisabled={isImportRunning}
       actions={[
@@ -168,7 +112,7 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
             <FileDropzone
               onChange={files => {
                 setLogRunFile(files[0]);
-                setImportErrors([]);
+                importMutation.reset();
               }}
               accept={{ "text/csv": [".csv"] }}
             />
@@ -189,7 +133,7 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
               <FileDropzone
                 onChange={files => {
                   setLogFileFile(files[0]);
-                  setImportErrors([]);
+                  importMutation.reset();
                 }}
                 accept={{ "text/csv": [".csv"] }}
               />
@@ -199,7 +143,7 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
               <FileDropzone
                 onChange={files => {
                   setLogFileAttachments(files);
-                  setImportErrors([]);
+                  importMutation.reset();
                 }}
                 multiple={true}
               />
