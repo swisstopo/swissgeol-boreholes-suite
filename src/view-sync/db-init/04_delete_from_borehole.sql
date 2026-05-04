@@ -95,8 +95,6 @@ DELETE FROM bdms.log_run WHERE borehole_id IN (
     WHERE t.log = false
 );
 
--- Note: Profiles, photos, documents and log files get deleted automatically when boreholes are deleted and therefore do not need a separate DELETE statement.
-
 -- Purge workflow data
 DELETE FROM bdms.workflow
 WHERE workflow.status <> 3;

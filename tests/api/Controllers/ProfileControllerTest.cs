@@ -5,7 +5,6 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Security.Claims;
 using System.Text;
@@ -19,13 +18,13 @@ public class ProfileControllerTest
 {
     private const string SubAdmin = "sub_admin";
     private const string LabelingAttachmentPdf = "labeling_attachment.pdf";
+    private const string File1 = "file_1.pdf";
     private BdmsContext context;
     private ProfileController controller;
     private ProfileCloudService profileCloudService;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
     private User adminUser;
 
-    private static string File1 => "file_1.pdf";
 
     [TestInitialize]
     public void TestInitialize()
