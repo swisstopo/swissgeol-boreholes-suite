@@ -429,35 +429,23 @@ public class LogController : BoreholeControllerBase<LogRun>
                 AddImportError(rowIndex, "RunNumber is required.", "importErrorRunNumberRequired", LogRunErrorPrefix);
             }
 
-            var fromDepthStr = csv.GetField<string>("FromDepth");
-            var toDepthStr = csv.GetField<string>("ToDepth");
+            var fromDepth = TryParseImportDouble(csv.GetField<string>("FromDepth"), rowIndex, "FromDepth", LogRunErrorPrefix, "importErrorFromDepthRequired", required: true);
+            var toDepth = TryParseImportDouble(csv.GetField<string>("ToDepth"), rowIndex, "ToDepth", LogRunErrorPrefix, "importErrorToDepthRequired", required: true);
 
-            if (!TryParseDouble(fromDepthStr, out var fromDepth))
-            {
-                AddImportError(rowIndex, "FromDepth is required and must be a number.", "importErrorFromDepthRequired", LogRunErrorPrefix);
-            }
-
-            if (!TryParseDouble(toDepthStr, out var toDepth))
-            {
-                AddImportError(rowIndex, "ToDepth is required and must be a number.", "importErrorToDepthRequired", LogRunErrorPrefix);
-            }
-
-            var boreholeStatusId = ResolveCodelistId("log_borehole_status", csv.GetField<string>("BoreholeStatus"), codelists, rowIndex, "BoreholeStatus", LogRunErrorPrefix);
-            var conveyanceMethodId = ResolveCodelistId("log_conveyance_method", csv.GetField<string>("ConveyanceMethod"), codelists, rowIndex, "ConveyanceMethod", LogRunErrorPrefix);
+            var boreholeStatusId = ResolveCodelistId(LogSchemas.LogBoreholeStatusSchema, csv.GetField<string>("BoreholeStatus"), codelists, rowIndex, "BoreholeStatus", LogRunErrorPrefix);
+            var conveyanceMethodId = ResolveCodelistId(LogSchemas.LogConveyanceMethodSchema, csv.GetField<string>("ConveyanceMethod"), codelists, rowIndex, "ConveyanceMethod", LogRunErrorPrefix);
 
             var runDate = TryParseImportDate(csv.GetField<string>("RunDate"), rowIndex, "RunDate", LogRunErrorPrefix);
-
-            var bitSizeStr = csv.GetField<string>("BitSize");
-            TryParseDouble(bitSizeStr, out var bitSize);
+            var bitSize = TryParseImportDouble(csv.GetField<string>("BitSize"), rowIndex, "BitSize", LogRunErrorPrefix, "importErrorInvalidNumberFormat");
 
             result.Add(new ParsedLogRun
             {
                 RunNumber = runNumber,
-                FromDepth = fromDepth,
-                ToDepth = toDepth,
+                FromDepth = fromDepth ?? 0,
+                ToDepth = toDepth ?? 0,
                 BoreholeStatusId = boreholeStatusId,
                 RunDate = runDate,
-                BitSize = string.IsNullOrWhiteSpace(bitSizeStr) ? null : bitSize,
+                BitSize = bitSize,
                 ConveyanceMethodId = conveyanceMethodId,
                 ServiceCo = csv.GetField<string>("ServiceCo"),
                 Comment = csv.GetField<string>("Comment"),
@@ -699,11 +687,18 @@ public class LogController : BoreholeControllerBase<LogRun>
         return null;
     }
 
-    private static bool TryParseDouble(string? value, out double result)
+    private double? TryParseImportDouble(string? value, int rowIndex, string fieldName, string errorPrefix, string messageKey, bool required = false)
     {
-        result = 0;
-        if (string.IsNullOrWhiteSpace(value)) return false;
-        return double.TryParse(value, new CultureInfo("de-CH"), out result);
+        if (string.IsNullOrWhiteSpace(value))
+    {
+            if (required) AddImportError(rowIndex, $"{fieldName} is required and must be a number.", messageKey, errorPrefix);
+            return null;
+        }
+
+        if (double.TryParse(value, new CultureInfo("de-CH"), out var parsed)) return parsed;
+
+        AddImportError(rowIndex, $"Invalid {fieldName} value: '{value}'. Expected a number.", messageKey, errorPrefix, new() { ["value"] = value });
+        return null;
     }
 
     private sealed class ParsedLogRun
