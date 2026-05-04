@@ -260,7 +260,7 @@ describe("Search filter tests", () => {
     cy.get("@suggestRequest.all").should("have.length", 0);
   });
 
-  it("toggles button selections for restrictionId (< 7 options)", () => {
+  it("toggles button selections for restrictionId (<= 7 options)", () => {
     openFilter("Borehole");
     cy.get('[data-cy^="restrictionId-button-"]').eq(0).click();
     cy.get('[data-cy^="restrictionId-button-"]').eq(1).click();
@@ -277,7 +277,7 @@ describe("Search filter tests", () => {
   it("multiselect filter chips show selected values and support per-value removal", () => {
     openFilter("Borehole");
     // Select two borehole status values. The status schema ("extended.status")
-    // has < 7 options, so FilterDomainSelect renders them as toggle buttons
+    // has <= 7 options, so FilterDomainSelect renders them as toggle buttons
     // with data-cy="statusId-button-<codelistId>".
     cy.dataCy("statusId-button-22104001").click();
     cy.dataCy("statusId-button-22104002").click();
