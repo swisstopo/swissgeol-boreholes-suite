@@ -21,7 +21,7 @@ const deleteLogRunsByIds = async (logRunIds: number[]) => {
 const uploadLogFileBlob = async (file: File, logRunId: number, logFileId?: number): Promise<LogFile> => {
   const formData = new FormData();
   formData.append("file", file);
-  const query = logFileId !== undefined ? `?logRunId=${logRunId}&logFileId=${logFileId}` : `?logRunId=${logRunId}`;
+  const query = logFileId ? `?logRunId=${logRunId}&logFileId=${logFileId}` : `?logRunId=${logRunId}`;
   return await uploadWithApiError<LogFile>(`${logController}/upload${query}`, "POST", formData);
 };
 
