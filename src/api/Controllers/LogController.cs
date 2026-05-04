@@ -362,20 +362,14 @@ public class LogController : BoreholeControllerBase<LogRun>
             .ToListAsync()
             .ConfigureAwait(false);
 
-        var importCsvConfig = new CsvConfiguration(new CultureInfo("de-CH"))
-        {
-            Delimiter = ";",
-            MissingFieldFound = null,
-        };
-
-        var parsedLogRuns = ParseLogRunsCsv(logRunsCsvFile, importCsvConfig, codelists);
+        var parsedLogRuns = ParseLogRunsCsv(logRunsCsvFile, CsvConfigHelper.CsvReadConfig, codelists);
         await ValidateLogRuns(parsedLogRuns, boreholeId).ConfigureAwait(false);
 
         List<(string RunNumber, LogFile LogFile)> parsedLogFiles = [];
         if (logFilesCsvFile != null)
         {
             var fileNames = await ReadFileListAsync(fileListFile!).ConfigureAwait(false);
-            parsedLogFiles = ParseLogFilesCsv(logFilesCsvFile, importCsvConfig, codelists, parsedLogRuns, fileNames);
+            parsedLogFiles = ParseLogFilesCsv(logFilesCsvFile, CsvConfigHelper.CsvReadConfig, codelists, parsedLogRuns, fileNames);
         }
 
         if (importErrors.Count > 0) return BadRequest(importErrors);
