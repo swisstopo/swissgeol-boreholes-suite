@@ -314,4 +314,52 @@ describe("Test for the borehole log import.", () => {
     expectModalImportButtonDisabled();
     clickModalCancelButton();
   });
+
+  it("rolls back imported log runs when an attachment upload fails", () => {
+    setupBoreholeAndOpenLogTab("LOG IMPORT UPLOAD FAILURE ROLLBACK");
+
+    cy.intercept("POST", "/api/v2/log/upload**", { statusCode: 500, body: "boom" }).as("log_upload_fail");
+    cy.intercept("DELETE", "/api/v2/log?logRunIds**").as("log_delete");
+
+    openImportDialog();
+    selectLogRunsCsv("log-runs-valid.csv");
+    selectLogFilesCsv("log-files-valid.csv");
+    selectAttachments(["welllog1.las", "welllog2.txt"]);
+    clickModalImportButton();
+
+    cy.wait("@log_import").its("response.statusCode").should("eq", 200);
+    cy.wait("@log_upload_fail").its("response.statusCode").should("eq", 500);
+    cy.wait("@log_delete").its("response.statusCode").should("eq", 200);
+
+    // Generic global error toast (handled by App.tsx MutationCache.onError).
+    cy.get(".MuiAlert-message").should("contain", "Unexpected error. The action you triggered was not successful.");
+
+    // Modal stays open because the mutation rejected.
+    cy.get(importDialogSelector).should("be.visible");
+    clickModalCancelButton();
+    cy.get(importDialogSelector).should("not.exist");
+
+    // Imported runs were rolled back: table is empty.
+    cy.contains("p", "No run added yet...");
+  });
+
+  it("shows the global error toast when a mutation fails with a non-userError", () => {
+    setupBoreholeAndOpenLogTab("LOG IMPORT GENERIC ERROR");
+
+    cy.intercept("POST", "/api/v2/log/import**", { statusCode: 500, body: "" }).as("log_import_fail");
+
+    openImportDialog();
+    selectLogRunsCsv("log-runs-valid.csv");
+    clickModalImportButton();
+
+    cy.wait("@log_import_fail").its("response.statusCode").should("eq", 500);
+
+    // The MutationCache.onError handler in App.tsx shows the generic toast for non-ApiError errors.
+    cy.get(".MuiAlert-message").should("contain", "Unexpected error. The action you triggered was not successful.");
+
+    // No inline form errors and the modal stays open.
+    cy.get(importDialogSelector).should("be.visible");
+    cy.get(importDialogSelector).contains("RunNumber is required.").should("not.exist");
+    clickModalCancelButton();
+  });
 });

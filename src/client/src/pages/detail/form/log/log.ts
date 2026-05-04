@@ -69,8 +69,7 @@ export const useLogRunMutations = () => {
 
   const useDeleteLogRuns = useMutation({
     mutationFn: async (logRuns: LogRun[]) => {
-      const queryParams = logRuns.map(logRun => "logRunIds=" + logRun.id).join("&");
-      return await fetchApiV2WithApiError(`${logController}?${queryParams}`, "DELETE");
+      return await deleteLogRunsByIds(logRuns.map(lr => lr.id));
     },
     onSuccess: (_data, logRuns) => {
       resetTabStatus();
@@ -111,6 +110,11 @@ interface ImportLogsVariables {
   attachments: File[];
 }
 
+const deleteLogRunsByIds = async (logRunIds: number[]) => {
+  const queryParams = logRunIds.map(id => `logRunIds=${id}`).join("&");
+  return await fetchApiV2WithApiError(`${logController}?${queryParams}`, "DELETE");
+};
+
 const buildLogFileUpload = (logRun: LogRun, logFile: LogFile, attachments: File[]): Promise<LogFile> | null => {
   const matchingAttachment = attachments.find(f => f.name.replaceAll(" ", "_") === logFile.name);
   if (!matchingAttachment) return null;
@@ -140,10 +144,19 @@ export const useImportLogs = () => {
       }
 
       const importedLogRuns: LogRun[] = await response.json();
-      const uploadPromises = importedLogRuns
-        .flatMap(logRun => (logRun.logFiles ?? []).map(logFile => buildLogFileUpload(logRun, logFile, attachments)))
-        .filter((p): p is Promise<LogFile> => p !== null);
-      await Promise.all(uploadPromises);
+      try {
+        const uploadPromises = importedLogRuns
+          .flatMap(logRun => (logRun.logFiles ?? []).map(logFile => buildLogFileUpload(logRun, logFile, attachments)))
+          .filter((p): p is Promise<LogFile> => p !== null);
+        await Promise.all(uploadPromises);
+      } catch (uploadError) {
+        // Roll back the imported log runs (and their already-saved log file metadata) so a retry isn't
+        // blocked by duplicate run numbers. Swallow rollback failures so the original upload error is surfaced.
+        if (importedLogRuns.length > 0) {
+          await deleteLogRunsByIds(importedLogRuns.map(lr => lr.id)).catch(() => undefined);
+        }
+        throw uploadError;
+      }
       return importedLogRuns;
     },
     onSuccess: (_data, { boreholeId }) => {
