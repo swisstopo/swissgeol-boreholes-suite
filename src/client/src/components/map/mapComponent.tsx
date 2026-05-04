@@ -401,17 +401,10 @@ export const MapComponent: FC<MapComponentProps> = ({
       // Persist polygon filter state
       const polygon = filterPolygonRef.current;
       if (polygon) {
-        sessionStorage.setItem(SessionKeys.filterPolygon, new GeoJSON().writeFeature(polygon));
-      } else {
-        sessionStorage.removeItem(SessionKeys.filterPolygon);
+        setFilterPolygon(polygon);
       }
       const ids = featureIdsRef.current;
-      if (ids.length > 0) {
-        sessionStorage.setItem(SessionKeys.filterFeatureIds, ids.join(","));
-      } else {
-        sessionStorage.removeItem(SessionKeys.filterFeatureIds);
-      }
-
+      setFeatureIds(ids);
       map.setTarget(undefined);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -486,7 +479,9 @@ export const MapComponent: FC<MapComponentProps> = ({
     if (filterPolygonRef.current) {
       const drawSource = mapRef.current ? getDrawSource(mapRef.current) : null;
       if (drawSource && drawSource.getFeatures().length === 0) {
-        drawSource.addFeature(filterPolygonRef.current);
+        // Clone the feature so it is not tied to a previous map's draw source.
+        const clone = filterPolygonRef.current.clone();
+        drawSource.addFeature(clone);
       }
     }
 
