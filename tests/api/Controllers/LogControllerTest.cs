@@ -9,6 +9,7 @@ using Moq;
 using System.IO.Compression;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json;
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
@@ -19,6 +20,12 @@ public class LogControllerTest : TestControllerBase
     private const string TestFileName = "test_logfile.las";
     private const string LogRunCsvPrefix = "log_runs_";
     private const string LogFileCsvPrefix = "log_files_";
+    private const string LogRunsCsvFileName = "log_runs.csv";
+    private const string LogFilesCsvFileName = "log_files.csv";
+    private const string FileListFileName = "filelist.txt";
+    private const string LogRun1ErrorKey = "LogRun1";
+    private const string LogRunsCsvHeader = "RunNumber;FromDepth;ToDepth;ToolType;BoreholeStatus;RunDate;BitSize;ConveyanceMethod;ServiceCo;Comment\r\n";
+    private const string LogFilesCsvHeader = "RunNumber;Name;LogFileToolTypeCodes;Extension;Pass;PassType;DataPackage;DepthType;DeliveryDate;Public\r\n";
     private User adminUser;
     private LogController controller;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
@@ -581,7 +588,7 @@ public class LogControllerTest : TestControllerBase
         Assert.AreEqual("20", fields[2]);
         Assert.AreEqual("CAL,GYRO", fields[3]); // Tool types have to be alphabetically sorted by Codelist.Code
         Assert.AreEqual("CH", fields[4]);
-        Assert.AreEqual("01/06/2023", fields[5]);
+        Assert.AreEqual("01.06.2023", fields[5]);
         Assert.AreEqual("80.97", fields[6]);
         Assert.AreEqual("LWD", fields[7]);
         Assert.AreEqual("TestCo", fields[8]);
@@ -796,7 +803,7 @@ public class LogControllerTest : TestControllerBase
         Assert.AreEqual("Main & repeat", fields[5]); // PassType 100003022
         Assert.AreEqual("Memory data (LWD)", fields[6]); // DataPackage 100003013
         Assert.AreEqual("TVD", fields[7]); // DepthType 100003028
-        Assert.AreEqual("15/03/2024", fields[8]);
+        Assert.AreEqual("15.03.2024", fields[8]);
         Assert.AreEqual("Yes", fields[9]);
     }
 
@@ -889,7 +896,381 @@ public class LogControllerTest : TestControllerBase
         StringAssert.StartsWith(problem.Detail, "An error occurred while fetching a file from the cloud storage.");
     }
 
+    // Import tests
+    [TestMethod]
+    public async Task ImportLogRunsOnly()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var csv = LogRunsCsvHeader +
+                  "IMP-01;10;20;;CH;01.06.2023;80.97;LWD;TestCo;Import test\r\n" +
+                  "IMP-02;30;40;;;;;;;\r\n";
+        var csvFile = GetFormFileByContent(csv, LogRunsCsvFileName);
+
+        var response = await controller.ImportAsync(borehole.Id, csvFile, null, null);
+        ActionResultAssert.IsOk(response);
+
+        var okResult = (OkObjectResult)response;
+        var result = (List<LogRun>)okResult.Value!;
+        Assert.AreEqual(2, result.Count);
+
+        var run1 = result.Single(r => r.RunNumber == "IMP-01");
+        Assert.AreEqual(10, run1.FromDepth);
+        Assert.AreEqual(20, run1.ToDepth);
+        Assert.AreEqual(100003005, run1.BoreholeStatusId);
+        Assert.AreEqual(new DateOnly(2023, 6, 1), run1.RunDate);
+        Assert.AreEqual(80.97, run1.BitSize);
+        Assert.AreEqual(100003000, run1.ConveyanceMethodId);
+        Assert.AreEqual("TestCo", run1.ServiceCo);
+        Assert.AreEqual("Import test", run1.Comment);
+
+        var run2 = result.Single(r => r.RunNumber == "IMP-02");
+        Assert.AreEqual(30, run2.FromDepth);
+        Assert.AreEqual(40, run2.ToDepth);
+        Assert.IsNull(run2.BoreholeStatusId);
+        Assert.IsNull(run2.ConveyanceMethodId);
+    }
+
+    [TestMethod]
+    public async Task ImportLogRunsAndLogFiles()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRunsCsv = LogRunsCsvHeader + "IMP-RUN;10;20;;CH;01.06.2023;80.97;LWD;TestCo;Test\r\n";
+        var logFilesCsv = LogFilesCsvHeader + "IMP-RUN;testfile;CAL,GYRO;las;3;Main & repeat;Memory data (LWD);TVD;15.03.2024;Yes\r\n";
+        var logRunsFile = GetFormFileByContent(logRunsCsv, LogRunsCsvFileName);
+        var logFilesFile = GetFormFileByContent(logFilesCsv, LogFilesCsvFileName);
+        var fileListFile = GetFormFileByContent("testfile.las", FileListFileName);
+
+        var response = await controller.ImportAsync(borehole.Id, logRunsFile, logFilesFile, fileListFile);
+        ActionResultAssert.IsOk(response);
+
+        var okResult = (OkObjectResult)response;
+        var result = (List<LogRun>)okResult.Value!;
+        Assert.AreEqual(1, result.Count);
+
+        var logRun = result[0];
+        Assert.AreEqual("IMP-RUN", logRun.RunNumber);
+        Assert.AreEqual(1, logRun.LogFiles!.Count);
+
+        var logFile = logRun.LogFiles!.First();
+        Assert.AreEqual("testfile.las", logFile.Name);
+        Assert.IsNotNull(logFile.NameUuid);
+        Assert.AreEqual(100003022, logFile.PassTypeId);
+        Assert.AreEqual(3, logFile.Pass);
+        Assert.AreEqual(100003013, logFile.DataPackageId);
+        Assert.AreEqual(100003028, logFile.DepthTypeId);
+        Assert.AreEqual(new DateOnly(2024, 3, 15), logFile.DeliveryDate);
+        Assert.AreEqual(true, logFile.Public);
+        Assert.AreEqual(2, logFile.ToolTypeCodelistIds.Count);
+        CollectionAssert.AreEquivalent(new List<int> { 100003032, 100003033 }, logFile.ToolTypeCodelistIds.ToList());
+    }
+
+    [TestMethod]
+    public async Task ImportResolvesCodelistTextCaseInsensitively()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var csv = LogRunsCsvHeader + "CASE-01;10;20;;ch;;;lwd;;\r\n";
+        var csvFile = GetFormFileByContent(csv, LogRunsCsvFileName);
+        var response = await controller.ImportAsync(borehole.Id, csvFile, null, null);
+        ActionResultAssert.IsOk(response);
+
+        var okResult = (OkObjectResult)response;
+        var result = (List<LogRun>)okResult.Value!;
+        Assert.AreEqual(100003005, result[0].BoreholeStatusId);
+        Assert.AreEqual(100003000, result[0].ConveyanceMethodId);
+    }
+
+    [TestMethod]
+    [DataRow("Ja", true)]
+    [DataRow("Nein", false)]
+    [DataRow("Oui", true)]
+    [DataRow("Non", false)]
+    [DataRow("Yes", true)]
+    [DataRow("No", false)]
+    [DataRow("Sì", true)]
+    public async Task ImportResolvesLocalizedYesNo(string yesNoValue, bool expected)
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRunsCsv = LogRunsCsvHeader + $"YN-{yesNoValue};10;20;;;;;;;\r\n";
+        var logFilesCsv = LogFilesCsvHeader + $"YN-{yesNoValue};datafile;;txt;;;;;;{yesNoValue}\r\n";
+        var logRunsFile = GetFormFileByContent(logRunsCsv, LogRunsCsvFileName);
+        var logFilesFile = GetFormFileByContent(logFilesCsv, LogFilesCsvFileName);
+        var fileListFile = GetFormFileByContent("datafile.txt", FileListFileName);
+
+        var response = await controller.ImportAsync(borehole.Id, logRunsFile, logFilesFile, fileListFile);
+        ActionResultAssert.IsOk(response);
+
+        var okResult = (OkObjectResult)response;
+        var result = (List<LogRun>)okResult.Value!;
+        var logFile = result[0].LogFiles!.First();
+        Assert.AreEqual(expected, logFile.Public);
+    }
+
+    [TestMethod]
+    public async Task ImportResolvesCodelistTextInAnyLanguage()
+    {
+        var borehole = await AddTestBoreholeAsync();
+
+        // Mix codelist texts from different languages in the same row: "Senza indicazioni" is the Italian
+        // BoreholeStatus (id 100003008) and "Autre" is the French ConveyanceMethod (id 100003002).
+        var csv = LogRunsCsvHeader + "LANG-01;10;20;;Senza indicazioni;;;Autre;;\r\n";
+        var csvFile = GetFormFileByContent(csv, LogRunsCsvFileName);
+        var response = await controller.ImportAsync(borehole.Id, csvFile, null, null);
+        ActionResultAssert.IsOk(response);
+
+        var okResult = (OkObjectResult)response;
+        var result = (List<LogRun>)okResult.Value!;
+        Assert.AreEqual(100003008, result[0].BoreholeStatusId);
+        Assert.AreEqual(100003002, result[0].ConveyanceMethodId);
+    }
+
+    [TestMethod]
+    public async Task ImportReturnsErrorForMissingRunNumber()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var csv = LogRunsCsvHeader + ";10;20;;;;;;;\r\n";
+        var csvFile = GetFormFileByContent(csv, LogRunsCsvFileName);
+        var response = await controller.ImportAsync(borehole.Id, csvFile, null, null);
+        ActionResultAssert.IsBadRequest(response);
+
+        var errors = GetImportErrors(response);
+        Assert.IsTrue(errors.Any(e => e.ErrorKey == LogRun1ErrorKey && e.MessageKey == "importErrorRunNumberRequired"));
+
+        Assert.AreEqual(0, Context.LogRuns.Count(lr => lr.BoreholeId == borehole.Id));
+    }
+
+    [TestMethod]
+    public async Task ImportReturnsErrorForDuplicateRunNumberInCsv()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var csv = LogRunsCsvHeader +
+                  "DUP-01;10;20;;;;;;;\r\n" +
+                  "DUP-01;30;40;;;;;;;\r\n";
+
+        var csvFile = GetFormFileByContent(csv, LogRunsCsvFileName);
+        var response = await controller.ImportAsync(borehole.Id, csvFile, null, null);
+        ActionResultAssert.IsBadRequest(response);
+
+        var errors = GetImportErrors(response);
+        Assert.IsTrue(errors.Any(e => e.ErrorKey == "LogRun2" && e.MessageKey == "importErrorDuplicateRunNumber"));
+    }
+
+    [TestMethod]
+    public async Task ImportReturnsErrorForDuplicateRunNumberInDatabase()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        await AddTestLogRunAsync(borehole.Id, "EXISTING");
+
+        var csv = LogRunsCsvHeader + "EXISTING;10;20;;;;;;;\r\n";
+        var csvFile = GetFormFileByContent(csv, LogRunsCsvFileName);
+        var response = await controller.ImportAsync(borehole.Id, csvFile, null, null);
+        ActionResultAssert.IsBadRequest(response);
+
+        var errors = GetImportErrors(response);
+        Assert.IsTrue(errors.Any(e => e.ErrorKey == LogRun1ErrorKey && e.MessageKey == "importErrorRunNumberExists"));
+    }
+
+    [TestMethod]
+    public async Task ImportReturnsErrorForUnknownCodelistValue()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var csv = LogRunsCsvHeader + "UNK-01;10;20;;NonExistentStatus;;;NonExistentMethod;;\r\n";
+        var csvFile = GetFormFileByContent(csv, LogRunsCsvFileName);
+        var response = await controller.ImportAsync(borehole.Id, csvFile, null, null);
+        ActionResultAssert.IsBadRequest(response);
+
+        var errors = GetImportErrors(response);
+        Assert.IsTrue(errors.Any(e => e.ErrorKey == LogRun1ErrorKey && e.MessageKey == "importErrorUnknownCodelistValue" && e.Detail.Contains("BoreholeStatus")));
+        Assert.IsTrue(errors.Any(e => e.ErrorKey == LogRun1ErrorKey && e.MessageKey == "importErrorUnknownCodelistValue" && e.Detail.Contains("ConveyanceMethod")));
+    }
+
+    [TestMethod]
+    public async Task ImportReturnsErrorForUnknownToolTypeCode()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRunsCsv = LogRunsCsvHeader + "TT-01;10;20;;;;;;;\r\n";
+        var logFilesCsv = LogFilesCsvHeader + "TT-01;file;NONEXISTENT;txt;;;;;;No\r\n";
+        var logRunsFile = GetFormFileByContent(logRunsCsv, LogRunsCsvFileName);
+        var logFilesFile = GetFormFileByContent(logFilesCsv, LogFilesCsvFileName);
+        var fileListFile = GetFormFileByContent("file.txt", FileListFileName);
+
+        var response = await controller.ImportAsync(borehole.Id, logRunsFile, logFilesFile, fileListFile);
+        ActionResultAssert.IsBadRequest(response);
+
+        var errors = GetImportErrors(response);
+        Assert.IsTrue(errors.Any(e => e.ErrorKey == "LogFile1" && e.MessageKey == "importErrorUnknownToolTypeCode" && e.Detail.Contains("NONEXISTENT")));
+    }
+
+    [TestMethod]
+    public async Task ImportReturnsErrorForLogFileWithInvalidRunNumber()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRunsCsv = LogRunsCsvHeader + "REAL-RUN;10;20;;;;;;;\r\n";
+        var logFilesCsv = LogFilesCsvHeader + "WRONG-RUN;file;;txt;;;;;;No\r\n";
+        var logRunsFile = GetFormFileByContent(logRunsCsv, LogRunsCsvFileName);
+        var logFilesFile = GetFormFileByContent(logFilesCsv, LogFilesCsvFileName);
+        var fileListFile = GetFormFileByContent("file.txt", FileListFileName);
+
+        var response = await controller.ImportAsync(borehole.Id, logRunsFile, logFilesFile, fileListFile);
+        ActionResultAssert.IsBadRequest(response);
+
+        var errors = GetImportErrors(response);
+        Assert.IsTrue(errors.Any(e => e.ErrorKey == "LogFile1" && e.MessageKey == "importErrorRunNumberNotFound" && e.Detail.Contains("WRONG-RUN")));
+    }
+
+    [TestMethod]
+    public async Task ImportReturnsErrorForMissingDataFile()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRunsCsv = LogRunsCsvHeader + "FILE-01;10;20;;;;;;;\r\n";
+        var logFilesCsv = LogFilesCsvHeader + "FILE-01;report;;pdf;;;;;;No\r\n";
+        var logRunsFile = GetFormFileByContent(logRunsCsv, LogRunsCsvFileName);
+        var logFilesFile = GetFormFileByContent(logFilesCsv, LogFilesCsvFileName);
+        var fileListFile = GetFormFileByContent("other.txt", FileListFileName);
+
+        var response = await controller.ImportAsync(borehole.Id, logRunsFile, logFilesFile, fileListFile);
+        ActionResultAssert.IsBadRequest(response);
+
+        var errors = GetImportErrors(response);
+        Assert.IsTrue(errors.Any(e => e.ErrorKey == "LogFile1" && e.MessageKey == "importErrorFileNotFound" && e.Detail.Contains("report.pdf")));
+    }
+
+    [TestMethod]
+    public async Task ImportReturnsErrorForOrphanAttachment()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRunsCsv = LogRunsCsvHeader + "ORPHAN;10;20;;;;;;;\r\n";
+        var logFilesCsv = LogFilesCsvHeader + "ORPHAN;welllog;;las;;;;;;No\r\n";
+        var logRunsFile = GetFormFileByContent(logRunsCsv, LogRunsCsvFileName);
+        var logFilesFile = GetFormFileByContent(logFilesCsv, LogFilesCsvFileName);
+        var fileListFile = GetFormFileByContent("welllog.las\r\norphan.bin", FileListFileName);
+
+        var response = await controller.ImportAsync(borehole.Id, logRunsFile, logFilesFile, fileListFile);
+        ActionResultAssert.IsBadRequest(response);
+
+        var errors = GetImportErrors(response);
+        Assert.IsTrue(errors.Any(e => e.MessageKey == "importErrorAttachmentNotInCsv" && e.Values!["fileName"] == "orphan.bin"));
+    }
+
+    [TestMethod]
+    public async Task ImportTagsLogRunErrorsWithRunNumber()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var csv = LogRunsCsvHeader + "TAG-01;abc;;;NotAStatus;;;;;\r\n";
+        var csvFile = GetFormFileByContent(csv, LogRunsCsvFileName);
+        var response = await controller.ImportAsync(borehole.Id, csvFile, null, null);
+        ActionResultAssert.IsBadRequest(response);
+
+        var errors = GetImportErrors(response);
+        Assert.IsTrue(errors.All(e => e.Values!["runNumber"] == "TAG-01"));
+    }
+
+    [TestMethod]
+    public async Task ImportReturnsErrorForLogFilesCsvWithoutDataFiles()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRunsCsv = LogRunsCsvHeader + "NODATA;10;20;;;;;;;\r\n";
+        var logFilesCsv = LogFilesCsvHeader + "NODATA;file;;txt;;;;;;No\r\n";
+        var logRunsFile = GetFormFileByContent(logRunsCsv, LogRunsCsvFileName);
+        var logFilesFile = GetFormFileByContent(logFilesCsv, LogFilesCsvFileName);
+
+        var response = await controller.ImportAsync(borehole.Id, logRunsFile, logFilesFile, null);
+        ActionResultAssert.IsBadRequest(response);
+    }
+
+    [TestMethod]
+    public async Task ImportCollectsMultipleErrors()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var csv = LogRunsCsvHeader +
+                  ";10;20;;InvalidStatus;;;;;\r\n" +
+                  "DUP;30;40;;;;;;;\r\n" +
+                  "DUP;50;60;;;;;;;\r\n";
+
+        var csvFile = GetFormFileByContent(csv, LogRunsCsvFileName);
+        var response = await controller.ImportAsync(borehole.Id, csvFile, null, null);
+        ActionResultAssert.IsBadRequest(response);
+
+        var errors = GetImportErrors(response);
+        Assert.IsTrue(errors.Any(e => e.ErrorKey == LogRun1ErrorKey), "Should have error for missing RunNumber");
+        Assert.IsTrue(errors.Any(e => e.ErrorKey == "LogRun3"), "Should have error for duplicate RunNumber");
+        Assert.IsTrue(errors.Count >= 2, "Should have at least 2 errors");
+
+        Assert.AreEqual(0, Context.LogRuns.Count(lr => lr.BoreholeId == borehole.Id));
+    }
+
+    [TestMethod]
+    public async Task ImportForNonExistentBoreholeReturnsNotFound()
+    {
+        var csv = LogRunsCsvHeader + "NF-01;10;20;;;;;;;\r\n";
+        var csvFile = GetFormFileByContent(csv, LogRunsCsvFileName);
+        var response = await controller.ImportAsync(99999999, csvFile, null, null);
+        ActionResultAssert.IsNotFound(response);
+    }
+
+    [TestMethod]
+    public async Task ImportWithoutEditPermissionReturnsUnauthorized()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", borehole.Id))
+            .ReturnsAsync(false);
+
+        var csv = LogRunsCsvHeader + "UNAUTH-01;10;20;;;;;;;\r\n";
+        var csvFile = GetFormFileByContent(csv, LogRunsCsvFileName);
+        var response = await controller.ImportAsync(borehole.Id, csvFile, null, null);
+        ActionResultAssert.IsUnauthorized(response);
+    }
+
+    [TestMethod]
+    public async Task UploadWithLogFileIdLinksToExistingLogFile()
+    {
+        const string importedFileName = "imported_file.las";
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
+
+        var nameUuid = $"{Guid.NewGuid()}.las";
+        var logFile = new LogFile { LogRunId = logRun.Id, Name = importedFileName, NameUuid = nameUuid, Public = false };
+        Context.LogFiles.Add(logFile);
+        await Context.SaveChangesAsync();
+
+        var content = Guid.NewGuid().ToString();
+        var file = GetFormFileByContent(content, importedFileName);
+
+        var uploadResponse = await controller.UploadAsync(file, logRun.Id, logFile.Id);
+        ActionResultAssert.IsOk(uploadResponse);
+
+        var updatedLogFile = Context.LogFiles.Single(f => f.Id == logFile.Id);
+        Assert.AreEqual(importedFileName, updatedLogFile.Name);
+        Assert.AreEqual(nameUuid, updatedLogFile.NameUuid, "NameUuid should not change because the upload links to the existing LogFile.");
+
+        // Verify the upload actually linked the bytes to the existing LogFile by downloading them back.
+        var downloadResponse = await controller.DownloadAsync(updatedLogFile.Id);
+        var downloadedFile = (FileContentResult)downloadResponse;
+        Assert.AreEqual(importedFileName, downloadedFile.FileDownloadName);
+        Assert.AreEqual(content, Encoding.ASCII.GetString(downloadedFile.FileContents));
+    }
+
+    [TestMethod]
+    public async Task UploadWithInvalidLogFileIdReturnsNotFound()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
+
+        var file = GetFormFileByContent("content", "test.las");
+        var response = await controller.UploadAsync(file, logRun.Id, 99999999);
+        ActionResultAssert.IsNotFound(response);
+    }
+
     // Helpers
+    private static List<ImportError> GetImportErrors(IActionResult response)
+    {
+        var result = (BadRequestObjectResult)response;
+        var options = new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase };
+        return JsonSerializer.Deserialize<List<ImportError>>(JsonSerializer.Serialize(result.Value, options), options)!;
+    }
+
+    private sealed record ImportError(string ErrorKey, string MessageKey, string Detail, Dictionary<string, string>? Values = null);
+
     private async Task<int> CreateCompleteLogRunAsync()
     {
         var logRun = new LogRun

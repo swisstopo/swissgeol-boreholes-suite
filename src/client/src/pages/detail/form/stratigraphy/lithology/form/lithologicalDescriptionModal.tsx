@@ -1,7 +1,6 @@
 import { FC, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Stack } from "@mui/material";
 import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
 import { FormContainer } from "../../../../../../components/form/form.ts";
 import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
@@ -52,14 +51,12 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
       onClose={closeDialog}
       isCloseDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
       <FormProvider {...formMethods}>
-        <Stack gap={3} flex={"0 1 1040px"} m={7.5}>
-          <BoreholesCard data-cy="lithological-description-basic-data" title={t("basicData")}>
-            <FormContainer>
-              <BasicDataFormSection fromDepths={fromDepths} toDepths={toDepths} />
-              <RemarksFormSection fieldName="description" label="remarks" />
-            </FormContainer>
-          </BoreholesCard>
-        </Stack>
+        <BoreholesCard data-cy="lithological-description-basic-data" title={t("basicData")}>
+          <FormContainer>
+            <BasicDataFormSection fromDepths={fromDepths} toDepths={toDepths} />
+            <RemarksFormSection fieldName="description" label="remarks" />
+          </FormContainer>
+        </BoreholesCard>
       </FormProvider>
     </FormDialog>
   );
