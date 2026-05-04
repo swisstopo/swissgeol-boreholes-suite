@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Added
+- Added identifier filters.
+
 ### Changed
 - Filters are now organized in new sections. Filters for attachments and LOG were added.
 - When the main map is fitted to the extent of the (filtered) boreholes, a padding is applied to the extent.

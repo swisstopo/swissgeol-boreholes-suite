@@ -15,6 +15,7 @@ import FilterChips from "./FilterChips.tsx";
 import { attachmentSearchData } from "./filterData/attachmentSearchData.ts";
 import { boreholeSearchData } from "./filterData/boreholeSearchData.ts";
 import { FilterComponentProps, FilterInputConfig } from "./filterData/filterInterfaces.ts";
+import { identifierSearchData } from "./filterData/identifierSearchData.ts";
 import { logSearchData } from "./filterData/logSearchData.ts";
 import { FilterReset } from "./filterReset.tsx";
 import { getDomainCountsForField } from "./filterUtils.ts";
@@ -69,6 +70,13 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
     },
     {
       id: 2,
+      name: "identifiers",
+      translationId: "ids",
+      isSelected: false,
+      searchData: identifierSearchData,
+    },
+    {
+      id: 3,
       name: "borehole",
       translationId: "borehole",
       isSelected: false,
@@ -76,14 +84,14 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
     },
 
     {
-      id: 3,
+      id: 4,
       name: "log",
       translationId: "log",
       isSelected: false,
       searchData: logSearchData,
     },
     {
-      id: 4,
+      id: 5,
       name: "attachments",
       translationId: "attachments",
       isSelected: false,
@@ -107,50 +115,66 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
     <Stack direction="column" sx={{ height: "100%" }}>
       <SideDrawerHeader title={t("searchfilters")} toggleDrawer={toggleDrawer} />
       <FilterChips />
-      <Box sx={{ flexGrow: 1, overflow: "auto", scrollbarGutter: "stable", paddingRight: `-${theme.spacing(3)}` }}>
-        <Button
-          onClick={() => {
-            handlePolygonFilterClick();
-          }}
-          variant="text"
-          data-cy="polygon-filter-button"
+      <Box
+        sx={{
+          flexGrow: 1,
+          overflow: "auto",
+          scrollbarGutter: "stable",
+          paddingRight: `-${theme.spacing(3)}`,
+        }}>
+        <Box
           sx={{
-            backgroundColor:
-              polygonSelectionEnabled && !filterPolygon
-                ? theme.palette.background.filterItemActive
-                : theme.palette.background.default,
-            color:
-              polygonSelectionEnabled && !filterPolygon
-                ? theme.palette.primary.contrastText
-                : theme.palette.primary.main,
-            width: "100%",
-            marginLeft: 0,
-            height: "48px",
-            marginBottom: "24px",
+            height: "60px",
+            backgroundColor: theme.palette.background.default,
+            marginBottom: theme.spacing(1),
             display: "flex",
-            justifyContent: "flex-start",
-            padding: 0,
+            justifyContent: "center",
+            alignItems: "center",
+            padding: theme.spacing(1.5),
           }}>
-          <Polygon
-            style={{
-              marginLeft: "18px",
-              marginRight: "14px",
+          <Button
+            onClick={() => {
+              handlePolygonFilterClick();
             }}
-          />
-          <Typography
-            variant="h6"
+            variant="outlined"
+            data-cy="polygon-filter-button"
             sx={{
+              backgroundColor:
+                polygonSelectionEnabled && !filterPolygon
+                  ? theme.palette.background.filterItemActive
+                  : theme.palette.background.default,
               color:
                 polygonSelectionEnabled && !filterPolygon
                   ? theme.palette.primary.contrastText
                   : theme.palette.primary.main,
+              width: "100%",
+              marginLeft: 0,
+              height: "36px",
+              display: "flex",
+              justifyContent: "flex-start",
+              padding: 0,
             }}>
-            {t("polygon_selection")}
-          </Typography>
-          {filterPolygon !== null && (
-            <Badge data-cy="polygon-filter-badge" badgeContent={1} sx={{ marginLeft: "18px" }} />
-          )}
-        </Button>
+            <Polygon
+              style={{
+                marginLeft: "18px",
+                marginRight: "14px",
+              }}
+            />
+            <Typography
+              variant="h6"
+              sx={{
+                color:
+                  polygonSelectionEnabled && !filterPolygon
+                    ? theme.palette.primary.contrastText
+                    : theme.palette.primary.main,
+              }}>
+              {t("polygon_selection")}
+            </Typography>
+            {filterPolygon !== null && (
+              <Badge data-cy="polygon-filter-badge" badgeContent={1} sx={{ marginLeft: "18px" }} />
+            )}
+          </Button>
+        </Box>
         {searchList?.map(filter => {
           const currentFilterInputConfig = searchList.find(l => l.name === filter.name);
           const activeFilterLength = Object.entries(filterParams).filter(([key, value]) =>

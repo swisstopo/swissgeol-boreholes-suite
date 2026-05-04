@@ -283,6 +283,8 @@ interface BaseFilterRequest {
   workgroupId?: number[] | null;
   ids?: number[] | null;
   restrictionId?: number[] | null;
+  identifierTypeId?: number[] | null;
+  identifierValue?: string | null;
   restrictionUntilFrom?: string | null;
   restrictionUntilTo?: string | null;
   totalDepthMin?: number | null;
@@ -348,6 +350,7 @@ export interface FilterStatsResponse {
   purposeId: Record<number, number>;
   workgroupId: Record<number, number>;
   restrictionId: Record<number, number>;
+  identifierTypeId: Record<number, number>;
   workflowStatusCount: Record<string, number>;
   nationalInterest: NullableBooleanCounts;
   topBedrockIntersected: NullableBooleanCounts;
@@ -359,7 +362,11 @@ export interface FilterStatsResponse {
   hasDocuments: BooleanCounts;
 }
 
-export type BoreholeSuggestionField = "originalName" | "projectName" | "name";
+const BOREHOLE_SUGGESTION_FIELDS = ["originalName", "projectName", "name"] as const;
+export type BoreholeSuggestionField = (typeof BOREHOLE_SUGGESTION_FIELDS)[number];
+
+export const isBoreholeSuggestionField = (key: string): key is BoreholeSuggestionField =>
+  (BOREHOLE_SUGGESTION_FIELDS as readonly string[]).includes(key);
 
 interface BoreholeSuggestion {
   value: string;

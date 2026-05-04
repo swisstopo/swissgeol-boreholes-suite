@@ -74,6 +74,8 @@ export const FilterFieldMetaData = {
   purposeId: { type: "multiSelectCodelist", labelKey: "purpose", schema: "extended.purpose" },
   workgroupId: { type: "multiSelectWorkgroup", labelKey: "workgroup" },
   restrictionId: { type: "multiSelectCodelist", labelKey: "restriction", schema: "restriction" },
+  identifierTypeId: { type: "multiSelectCodelist", labelKey: "borehole_identifier", schema: "borehole_identifier" },
+  identifierValue: { type: "text", labelKey: "identifier_value" },
   restrictionUntilFrom: { type: "rangeMin", labelKey: "restriction_until", boundLabel: "from" },
   restrictionUntilTo: { type: "rangeMax", labelKey: "restriction_until", boundLabel: "to" },
   totalDepthMin: { type: "rangeMin", labelKey: "totaldepth", boundLabel: "min" },

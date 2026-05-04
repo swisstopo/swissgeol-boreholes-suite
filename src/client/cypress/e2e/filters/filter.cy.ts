@@ -238,6 +238,7 @@ describe("Search filter tests", () => {
     cy.dataCy(`filter-chip-hasDocuments`).should("not.exist");
   });
 
+  // ─── AUTOCOMPLETE FILTERS ────────────────────────────────────────────────────
   it("shows autocomplete suggestions and commits a selection for originalName", () => {
     openFilter("Borehole");
     cy.dataCy("originalName-formInput").click();
@@ -311,5 +312,38 @@ describe("Search filter tests", () => {
     cy.get('[data-cy^="filter-chip-statusId-"]').should("not.exist");
     cy.dataCy("statusId-button-22104002").should("not.have.class", "MuiButton-contained");
     cy.location("search").should("not.contain", "statusId=");
+  });
+
+  // ─── IDENTIFIER FILTER ─────────────────────────────────────────────────────
+  it("filters boreholes by identifier type only", () => {
+    openFilter("IDs");
+    cy.dataCy("identifierTypeId-button-100000000").click(); // GeoDinID
+    cy.url().should("include", "identifierTypeId=");
+    cy.get('[data-cy^="filter-chip-identifierTypeId-"]').should("exist");
+    cy.dataCy("boreholes-number-preview").should("have.text", "56");
+  });
+
+  it("filters boreholes by identifier value only", () => {
+    openFilter("IDs");
+    cy.dataCy(`identifierValue-formInput`).type("8c{enter}", { delay: 10 });
+    cy.url().should("include", "identifierValue=8c");
+    cy.dataCy("filter-chip-identifierValue").should("exist");
+    cy.dataCy("boreholes-number-preview").should("have.text", "2");
+  });
+
+  it("filters boreholes by identifier type and value combined", () => {
+    openFilter("IDs");
+    cy.dataCy("identifierTypeId-button-100000005").click(); // canton ID
+    cy.dataCy("boreholes-number-preview").should("have.text", "48");
+    cy.dataCy(`identifierValue-formInput`).type("8{enter}", { delay: 10 });
+    cy.url().should("include", "identifierTypeId=100000005").and("include", "identifierValue=8");
+    // Both chips visible.
+    cy.dataCy("filter-chip-identifierTypeId-100000005").should("exist");
+    cy.dataCy("filter-chip-identifierValue").should("exist");
+    cy.dataCy("boreholes-number-preview").should("have.text", "13");
+    //removing the identifier type chip clears only the value field
+    cy.dataCy("filter-chip-identifierTypeId-100000005").within(() => cy.get("svg").click());
+    cy.dataCy("boreholes-number-preview").should("have.text", "60");
+    cy.url().should("include", "identifierValue=").and("not.include", "identifierTypeId=");
   });
 });

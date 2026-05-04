@@ -36,6 +36,8 @@ export const filterParsers = {
   purposeId: parseAsArrayOf(parseAsInteger),
   workgroupId: parseAsArrayOf(parseAsInteger),
   restrictionId: parseAsArrayOf(parseAsInteger),
+  identifierTypeId: parseAsArrayOf(parseAsInteger),
+  identifierValue: parseAsString,
   restrictionUntilFrom: parseAsString,
   restrictionUntilTo: parseAsString,
   totalDepthMin: parseAsFloat,
