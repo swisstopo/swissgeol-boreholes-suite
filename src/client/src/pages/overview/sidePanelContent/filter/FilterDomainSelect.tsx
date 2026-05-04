@@ -12,7 +12,7 @@ interface FilterDomainSelectProps {
   counts?: Record<number, number>;
 }
 
-const buttonThreshold = 10; // number of options above which we switch to a multi-select component instead of buttons
+const buttonThreshold = 7; // number of options above which we switch to a multi-select component instead of buttons
 
 export const FilterDomainSelect: FC<FilterDomainSelectProps> = ({ item, filterValue, onUpdate, counts }) => {
   const { t } = useTranslation();
@@ -31,7 +31,7 @@ export const FilterDomainSelect: FC<FilterDomainSelectProps> = ({ item, filterVa
 
   if (!options) return null;
 
-  if (options.length >= buttonThreshold) {
+  if (options.length > buttonThreshold) {
     return (
       <FilterMultiSelect item={item} filterValue={filterValue} onUpdate={onUpdate} options={options} counts={counts} />
     );
