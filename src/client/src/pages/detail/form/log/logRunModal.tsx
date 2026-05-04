@@ -166,7 +166,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
               <FormContainer>
                 <FileDropzone
                   existingFile={file.name ? new File([], file.name) : undefined}
-                  onChange={file => onFileChanged(file, index)}
+                  onChange={files => onFileChanged(files[0], index)}
                   errorMessageKey={nameError?.message}
                 />
                 <FormContainer direction={"row"}>
@@ -216,73 +216,70 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
       onClose={closeDialog}
       isCloseDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
       <FormProvider {...formMethods}>
-        <Stack gap={3} m={7.5} flex="1 1 1040px" sx={{ maxWidth: "1160px" }}>
-          <BoreholesCard data-cy="logRun-general" title={t("generalInformation")}>
-            <FormContainer>
-              <FormContainer direction="row">
-                <FormInput fieldName="runNumber" required label="runNumber" value={logRun.runNumber} />
-                <FormInput
-                  fieldName="fromDepth"
-                  required
-                  label="topLoggedInterval"
-                  value={logRun.fromDepth}
-                  type={FormValueType.Number}
-                />
-                <FormInput
-                  fieldName="toDepth"
-                  required
-                  label="bottomLoggedInterval"
-                  value={logRun.toDepth}
-                  type={FormValueType.Number}
-                />
-                <FormDomainSelect
-                  fieldName="boreholeStatusId"
-                  label="boreholeStatus"
-                  schemaName="log_borehole_status"
-                  selected={logRun.boreholeStatusId}
-                />
-              </FormContainer>
-              <FormContainer direction="row">
-                <FormInput fieldName="runDate" label="runDate" type={FormValueType.Date} value={logRun.runDate} />
-                <FormInput fieldName="bitSize" label="bitSize" value={logRun.bitSize} type={FormValueType.Number} />
-                <FormDomainSelect
-                  fieldName="conveyanceMethodId"
-                  label="conveyanceMethod"
-                  schemaName="log_conveyance_method"
-                  selected={logRun.conveyanceMethodId}
-                />
-                <FormInput fieldName="serviceCo" label="serviceCo" value={logRun.serviceCo} />
-              </FormContainer>
-              <FormContainer direction="row">
-                <FormInput
-                  label={t("serviceOrTool")}
-                  fieldName="serviceOrTool"
-                  readonly
-                  inputProps={{
-                    startAdornment: (
-                      <Stack direction="row" gap={1}>
-                        {getServiceOrToolArray(watchedFiles, codelists).map(tool => (
-                          <Chip key={tool} label={tool} size="small" color="primary" />
-                        ))}
-                      </Stack>
-                    ),
-                    readOnly: true,
-                  }}
-                />
-              </FormContainer>
-              <FormContainer direction="row">
-                <FormInput fieldName="comment" label="comment" multiline rows={3} value={logRun.comment} />
-              </FormContainer>
+        <BoreholesCard data-cy="logRun-general" title={t("generalInformation")}>
+          <FormContainer>
+            <FormContainer direction="row">
+              <FormInput fieldName="runNumber" required label="runNumber" value={logRun.runNumber} />
+              <FormInput
+                fieldName="fromDepth"
+                required
+                label="topLoggedInterval"
+                value={logRun.fromDepth}
+                type={FormValueType.Number}
+              />
+              <FormInput
+                fieldName="toDepth"
+                required
+                label="bottomLoggedInterval"
+                value={logRun.toDepth}
+                type={FormValueType.Number}
+              />
+              <FormDomainSelect
+                fieldName="boreholeStatusId"
+                label="boreholeStatus"
+                schemaName="log_borehole_status"
+                selected={logRun.boreholeStatusId}
+              />
             </FormContainer>
-          </BoreholesCard>
-          <BoreholesCard
-            data-cy="logRun-files"
-            title={t("files")}
-            action={editingEnabled && <AddButton label="addFile" variant="contained" onClick={addFile} />}>
-            {editingEnabled ? filesSection : <LogFileTable files={logRun.logFiles ?? []} />}
-          </BoreholesCard>
-          <Stack pb={4.5} />
-        </Stack>
+            <FormContainer direction="row">
+              <FormInput fieldName="runDate" label="runDate" type={FormValueType.Date} value={logRun.runDate} />
+              <FormInput fieldName="bitSize" label="bitSize" value={logRun.bitSize} type={FormValueType.Number} />
+              <FormDomainSelect
+                fieldName="conveyanceMethodId"
+                label="conveyanceMethod"
+                schemaName="log_conveyance_method"
+                selected={logRun.conveyanceMethodId}
+              />
+              <FormInput fieldName="serviceCo" label="serviceCo" value={logRun.serviceCo} />
+            </FormContainer>
+            <FormContainer direction="row">
+              <FormInput
+                label={t("serviceOrTool")}
+                fieldName="serviceOrTool"
+                readonly
+                inputProps={{
+                  startAdornment: (
+                    <Stack direction="row" gap={1}>
+                      {getServiceOrToolArray(watchedFiles, codelists).map(tool => (
+                        <Chip key={tool} label={tool} size="small" color="primary" />
+                      ))}
+                    </Stack>
+                  ),
+                  readOnly: true,
+                }}
+              />
+            </FormContainer>
+            <FormContainer direction="row">
+              <FormInput fieldName="comment" label="comment" multiline rows={3} value={logRun.comment} />
+            </FormContainer>
+          </FormContainer>
+        </BoreholesCard>
+        <BoreholesCard
+          data-cy="logRun-files"
+          title={t("files")}
+          action={editingEnabled && <AddButton label="addFile" variant="contained" onClick={addFile} />}>
+          {editingEnabled ? filesSection : <LogFileTable files={logRun.logFiles ?? []} />}
+        </BoreholesCard>
       </FormProvider>
     </FormDialog>
   );

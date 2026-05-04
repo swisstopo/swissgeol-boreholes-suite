@@ -127,6 +127,8 @@ export const interceptApiCalls = () => {
 
   cy.intercept("/api/v2/log?boreholeId=**").as("logrun_by_borehole_GET");
   cy.intercept("POST", "/api/v2/log/export").as("log_export");
+  cy.intercept("POST", "/api/v2/log/import**").as("log_import");
+  cy.intercept("POST", "/api/v2/log/upload**").as("log_upload");
 
   cy.intercept("dataextraction/api/V1/extract_data").as("extract-data");
   cy.intercept("dataextraction/api/V1/extract_stratigraphy").as("extract-stratigraphy");
@@ -533,18 +535,6 @@ export const loginAndResetState = () => {
     //       deleteStratigraphy(st.id);
     //     });
     // });
-
-    // Reset user settings (i.e. table ordering)
-    cy.request({
-      method: "POST",
-      url: "/api/v2/user/resetAllSettings",
-      cache: "no-cache",
-      credentials: "same-origin",
-      auth: bearerAuth(token as string),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
   });
 };
 
