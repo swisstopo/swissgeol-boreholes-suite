@@ -174,7 +174,7 @@ describe("Test for the borehole log import.", () => {
     expectImportError("Value in column FromDepth is required and must be a number.");
     expectImportError('Unknown value "NotAStatus" in column BoreholeStatus.');
     expectImportError('Unknown value "NotAMethod" in column ConveyanceMethod.');
-    expectImportError('Invalid date format "2024-01-01". Expected: dd.MM.yyyy.');
+    expectImportError('Invalid date format "not-a-date". Expected: dd.MM.yyyy.');
     expectImportError("ERR-3");
     expectImportError("Value in column ToDepth is required and must be a number.");
 
