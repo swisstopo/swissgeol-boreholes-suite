@@ -24,7 +24,6 @@ public class LogController : BoreholeControllerBase<LogRun>
     private const string LogExportFileName = "log_export";
     private const string LogRunErrorPrefix = "LogRun";
     private const string LogFileErrorPrefix = "LogFile";
-    private const string ImportDateFormat = "dd/MM/yyyy";
     private const string RunNumberValueKey = "runNumber";
     private const string FileNameValueKey = "fileName";
     private readonly LogFileCloudService logFileCloudService;
@@ -675,24 +674,24 @@ public class LogController : BoreholeControllerBase<LogRun>
     private DateOnly? TryParseImportDate(string? value, int rowIndex, string fieldName, string errorPrefix)
     {
         if (string.IsNullOrWhiteSpace(value)) return null;
-        if (DateOnly.TryParseExact(value, ImportDateFormat, CultureInfo.InvariantCulture, DateTimeStyles.None, out var parsed))
+        if (DateOnly.TryParse(value, CsvConfigHelper.CsvReadConfig.CultureInfo, DateTimeStyles.None, out var parsed))
         {
             return parsed;
         }
 
-        AddImportError(rowIndex, $"Invalid {fieldName} format: '{value}'. Expected {ImportDateFormat}.", "importErrorInvalidDateFormat", errorPrefix, new() { ["value"] = value });
+        AddImportError(rowIndex, $"Invalid {fieldName} value: '{value}'.", "importErrorInvalidDateFormat", errorPrefix, new() { ["value"] = value });
         return null;
     }
 
     private double? TryParseImportDouble(string? value, int rowIndex, string fieldName, string errorPrefix, string messageKey, bool required = false)
     {
         if (string.IsNullOrWhiteSpace(value))
-    {
+        {
             if (required) AddImportError(rowIndex, $"{fieldName} is required and must be a number.", messageKey, errorPrefix);
             return null;
         }
 
-        if (double.TryParse(value, new CultureInfo("de-CH"), out var parsed)) return parsed;
+        if (double.TryParse(value, CsvConfigHelper.CsvReadConfig.CultureInfo, out var parsed)) return parsed;
 
         AddImportError(rowIndex, $"Invalid {fieldName} value: '{value}'. Expected a number.", messageKey, errorPrefix, new() { ["value"] = value });
         return null;
@@ -871,7 +870,7 @@ public class LogController : BoreholeControllerBase<LogRun>
             csvWriter.WriteField(lr.ToDepth);
             csvWriter.WriteField(string.Join(",", toolTypes));
             csvWriter.WriteField(GetCodelistText(lr.BoreholeStatus, locale));
-            csvWriter.WriteField(lr.RunDate?.ToString(ImportDateFormat, CultureInfo.InvariantCulture));
+            csvWriter.WriteField(lr.RunDate);
             csvWriter.WriteField(lr.BitSize);
             csvWriter.WriteField(GetCodelistText(lr.ConveyanceMethod, locale));
             csvWriter.WriteField(lr.ServiceCo);
@@ -912,7 +911,7 @@ public class LogController : BoreholeControllerBase<LogRun>
             csvWriter.WriteField(GetCodelistText(lf.PassType, locale));
             csvWriter.WriteField(GetCodelistText(lf.DataPackage, locale));
             csvWriter.WriteField(GetCodelistText(lf.DepthType, locale));
-            csvWriter.WriteField(lf.DeliveryDate?.ToString(ImportDateFormat, CultureInfo.InvariantCulture));
+            csvWriter.WriteField(lf.DeliveryDate);
             csvWriter.WriteField(GetLocalizedYesNoBoolean(lf.Public, locale));
             await csvWriter.NextRecordAsync().ConfigureAwait(false);
         }

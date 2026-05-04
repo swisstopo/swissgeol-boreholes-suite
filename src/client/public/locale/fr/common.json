@@ -293,7 +293,7 @@
   "importErrorFileListRequired": "Les pièces jointes sont requises lorsqu'un CSV pour les fichiers LOG est fourni.",
   "importErrorFileNotFound": "Aucun fichier correspondant trouvé dans les pièces jointes.",
   "importErrorFromDepthRequired": "La valeur dans la colonne FromDepth est requise et doit être un nombre.",
-  "importErrorInvalidDateFormat": "Format de date invalide \"{{value}}\". Attendu : dd/MM/yyyy.",
+  "importErrorInvalidDateFormat": "Format de date invalide \"{{value}}\". Attendu : dd.MM.yyyy.",
   "importErrorLogFilesCsvRequired": "Le CSV pour les fichiers LOG est requis lorsque des pièces jointes sont fournies.",
   "importErrorLogRunsCsvRequired": "Le CSV pour les runs LOG est requis.",
   "importErrorRowFile": "Fichier {{rowNumber}}",

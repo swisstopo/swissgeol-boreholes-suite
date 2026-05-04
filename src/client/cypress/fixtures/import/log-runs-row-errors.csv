@@ -1,4 +1,4 @@
 RunNumber;FromDepth;ToDepth;ToolType;BoreholeStatus;RunDate;BitSize;ConveyanceMethod;ServiceCo;Comment
-;10;20;;CH;01/06/2023;;LWD;;Missing run number
+;10;20;;CH;01.06.2023;;LWD;;Missing run number
 ERR-2;abc;40;;NotAStatus;2024-01-01;;NotAMethod;;Multiple field errors
 ERR-3;;;;;;;;;Missing depths

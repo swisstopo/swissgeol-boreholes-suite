@@ -293,7 +293,7 @@
   "importErrorFileListRequired": "Gli allegati sono obbligatori quando viene fornito un CSV per i file LOG.",
   "importErrorFileNotFound": "Nessun file corrispondente trovato negli allegati.",
   "importErrorFromDepthRequired": "Il valore nella colonna FromDepth è obbligatorio e deve essere un numero.",
-  "importErrorInvalidDateFormat": "Formato data non valido \"{{value}}\". Previsto: dd/MM/yyyy.",
+  "importErrorInvalidDateFormat": "Formato data non valido \"{{value}}\". Previsto: dd.MM.yyyy.",
   "importErrorLogFilesCsvRequired": "Il CSV per i file LOG è obbligatorio quando vengono forniti degli allegati.",
   "importErrorLogRunsCsvRequired": "Il CSV per i run LOG è obbligatorio.",
   "importErrorRowFile": "File {{rowNumber}}",

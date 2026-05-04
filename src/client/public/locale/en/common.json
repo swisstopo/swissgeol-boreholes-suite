@@ -293,7 +293,7 @@
   "importErrorFileListRequired": "Attachments are required when a CSV for LOG files is provided.",
   "importErrorFileNotFound": "No matching file found in the attachments.",
   "importErrorFromDepthRequired": "Value in column FromDepth is required and must be a number.",
-  "importErrorInvalidDateFormat": "Invalid date format \"{{value}}\". Expected: dd/MM/yyyy.",
+  "importErrorInvalidDateFormat": "Invalid date format \"{{value}}\". Expected: dd.MM.yyyy.",
   "importErrorLogFilesCsvRequired": "CSV for LOG files is required when attachments are provided.",
   "importErrorLogRunsCsvRequired": "CSV for LOG runs is required.",
   "importErrorRowFile": "File {{rowNumber}}",

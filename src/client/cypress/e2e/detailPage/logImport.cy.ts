@@ -183,7 +183,7 @@ describe("Test for the borehole log import.", () => {
     expectImportError("Value in column FromDepth is required and must be a number.");
     expectImportError('Unknown value "NotAStatus" in column BoreholeStatus.');
     expectImportError('Unknown value "NotAMethod" in column ConveyanceMethod.');
-    expectImportError('Invalid date format "2024-01-01". Expected: dd/MM/yyyy.');
+    expectImportError('Invalid date format "2024-01-01". Expected: dd.MM.yyyy.');
 
     expectImportError("ERR-3");
     expectImportError("Value in column ToDepth is required and must be a number.");
@@ -251,7 +251,7 @@ describe("Test for the borehole log import.", () => {
     expectImportError("No matching file found in the attachments.");
     expectImportError('Unknown code "NOPE" in column ToolType.');
     expectImportError('Unknown value "NotAPassType" in column PassType.');
-    expectImportError('Invalid date format "not-a-date". Expected: dd/MM/yyyy.');
+    expectImportError('Invalid date format "not-a-date". Expected: dd.MM.yyyy.');
     expectImportError('Unknown value "Maybe" in column Public. Expected: Yes/No.');
 
     expectModalImportButtonDisabled();

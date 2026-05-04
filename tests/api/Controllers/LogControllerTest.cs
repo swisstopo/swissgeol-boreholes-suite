@@ -588,7 +588,7 @@ public class LogControllerTest : TestControllerBase
         Assert.AreEqual("20", fields[2]);
         Assert.AreEqual("CAL,GYRO", fields[3]); // Tool types have to be alphabetically sorted by Codelist.Code
         Assert.AreEqual("CH", fields[4]);
-        Assert.AreEqual("01/06/2023", fields[5]);
+        Assert.AreEqual("01.06.2023", fields[5]);
         Assert.AreEqual("80.97", fields[6]);
         Assert.AreEqual("LWD", fields[7]);
         Assert.AreEqual("TestCo", fields[8]);
@@ -803,7 +803,7 @@ public class LogControllerTest : TestControllerBase
         Assert.AreEqual("Main & repeat", fields[5]); // PassType 100003022
         Assert.AreEqual("Memory data (LWD)", fields[6]); // DataPackage 100003013
         Assert.AreEqual("TVD", fields[7]); // DepthType 100003028
-        Assert.AreEqual("15/03/2024", fields[8]);
+        Assert.AreEqual("15.03.2024", fields[8]);
         Assert.AreEqual("Yes", fields[9]);
     }
 
@@ -902,7 +902,7 @@ public class LogControllerTest : TestControllerBase
     {
         var borehole = await AddTestBoreholeAsync();
         var csv = LogRunsCsvHeader +
-                  "IMP-01;10;20;;CH;01/06/2023;80.97;LWD;TestCo;Import test\r\n" +
+                  "IMP-01;10;20;;CH;01.06.2023;80.97;LWD;TestCo;Import test\r\n" +
                   "IMP-02;30;40;;;;;;;\r\n";
         var csvFile = GetFormFileByContent(csv, LogRunsCsvFileName);
 
@@ -934,8 +934,8 @@ public class LogControllerTest : TestControllerBase
     public async Task ImportLogRunsAndLogFiles()
     {
         var borehole = await AddTestBoreholeAsync();
-        var logRunsCsv = LogRunsCsvHeader + "IMP-RUN;10;20;;CH;01/06/2023;80.97;LWD;TestCo;Test\r\n";
-        var logFilesCsv = LogFilesCsvHeader + "IMP-RUN;testfile;CAL,GYRO;las;3;Main & repeat;Memory data (LWD);TVD;15/03/2024;Yes\r\n";
+        var logRunsCsv = LogRunsCsvHeader + "IMP-RUN;10;20;;CH;01.06.2023;80.97;LWD;TestCo;Test\r\n";
+        var logFilesCsv = LogFilesCsvHeader + "IMP-RUN;testfile;CAL,GYRO;las;3;Main & repeat;Memory data (LWD);TVD;15.03.2024;Yes\r\n";
         var logRunsFile = GetFormFileByContent(logRunsCsv, LogRunsCsvFileName);
         var logFilesFile = GetFormFileByContent(logFilesCsv, LogFilesCsvFileName);
         var fileListFile = GetFormFileByContent("testfile.las", FileListFileName);
