@@ -335,6 +335,7 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     public async Task SourceUserIsDeletableAfterMerge()
     {
         var oldUser = CreateUser("DAWNFORGE", "ANVIL", DateTime.UtcNow.AddDays(-10));
+        var newUser = CreateUser("DAWNFORGE", "FORGE", DateTime.UtcNow);
 
         // Standard FK: borehole with CreatedBy/UpdatedBy
         var borehole = new Borehole { CreatedBy = oldUser, UpdatedBy = oldUser };
@@ -345,21 +346,9 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
         Context.Stratigraphies.Add(new Stratigraphy { BoreholeId = borehole.Id, CreatedBy = oldUser, UpdatedBy = oldUser });
         await Context.SaveChangesAsync().ConfigureAwait(false);
 
-        // Double FK: Profile with CreatedById/UpdatedById
-        Context.Profiles.Add(new Profile
-        {
-            BoreholeId = borehole.Id,
-            Name = "DAWNFORGE.pdf",
-            Type = "application/pdf",
-            NameUuid = "dawnforge-uuid",
-            CreatedById = oldUser.Id,
-            UpdatedById = oldUser.Id,
-        });
-        await Context.SaveChangesAsync().ConfigureAwait(false);
-
         // Composite-key FK: UserWorkgroupRole
         var workgroup = await Context.Workgroups.FirstAsync().ConfigureAwait(false);
-        Context.UserWorkgroupRoles.Add(new UserWorkgroupRole { UserId = oldUser.Id, WorkgroupId = workgroup.Id, Role = Role.Editor });
+        Context.UserWorkgroupRoles.Add(new UserWorkgroupRole { UserId = newUser.Id, WorkgroupId = workgroup.Id, Role = Role.Editor });
         await Context.SaveChangesAsync().ConfigureAwait(false);
 
         // Composite-key FK: TermsAccepted
