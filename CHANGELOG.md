@@ -12,6 +12,9 @@
 - Filter UI was redesigned and now supports multiple selections and chips per selected filter value.
 - Upgraded swissgeol OCR service to version 1.1.4.
 
+### Fixed
+- Only one workgroup could be added at once. Only with a complete refresh of the page another workgroup could be added.
+
 ## v2.1.1568 - 2026-04-23
 
 ### Added
