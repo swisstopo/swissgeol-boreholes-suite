@@ -13,6 +13,18 @@ import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { SaveContext } from "../../saveContext.tsx";
 import { LogFile, LogRun } from "./logInterfaces.ts";
 
+const deleteLogRunsByIds = async (logRunIds: number[]) => {
+  const queryParams = logRunIds.map(id => `logRunIds=${id}`).join("&");
+  return await fetchApiV2WithApiError(`${logController}?${queryParams}`, "DELETE");
+};
+
+const uploadLogFileBlob = async (file: File, logRunId: number, logFileId?: number): Promise<LogFile> => {
+  const formData = new FormData();
+  formData.append("file", file);
+  const query = logFileId !== undefined ? `?logRunId=${logRunId}&logFileId=${logFileId}` : `?logRunId=${logRunId}`;
+  return await uploadWithApiError<LogFile>(`${logController}/upload${query}`, "POST", formData);
+};
+
 const logController = "log";
 export const logsQueryKey = "logs";
 export const useLogsByBoreholeId = (boreholeId?: number): UseQueryResult<LogRun[]> =>
@@ -45,13 +57,7 @@ export const useLogRunMutations = () => {
         const uploadPromises = logRun.logFiles.map(async file => {
           file.logRunId = logRun.id;
           if (file.file) {
-            const formData = new FormData();
-            formData.append("file", file.file);
-            const savedFile = await uploadWithApiError<LogFile>(
-              `${logController}/upload?logRunId=${logRun.id}`,
-              "POST",
-              formData,
-            );
+            const savedFile = await uploadLogFileBlob(file.file, logRun.id);
             file.id = savedFile.id;
             delete file.file;
           }
@@ -110,21 +116,10 @@ interface ImportLogsVariables {
   attachments: File[];
 }
 
-const deleteLogRunsByIds = async (logRunIds: number[]) => {
-  const queryParams = logRunIds.map(id => `logRunIds=${id}`).join("&");
-  return await fetchApiV2WithApiError(`${logController}?${queryParams}`, "DELETE");
-};
-
 const buildLogFileUpload = (logRun: LogRun, logFile: LogFile, attachments: File[]): Promise<LogFile> | null => {
   const matchingAttachment = attachments.find(f => f.name.replaceAll(" ", "_") === logFile.name);
   if (!matchingAttachment) return null;
-  const uploadFormData = new FormData();
-  uploadFormData.append("file", matchingAttachment);
-  return uploadWithApiError<LogFile>(
-    `${logController}/upload?logRunId=${logRun.id}&logFileId=${logFile.id}`,
-    "POST",
-    uploadFormData,
-  );
+  return uploadLogFileBlob(matchingAttachment, logRun.id, logFile.id);
 };
 
 export const useImportLogs = () => {
