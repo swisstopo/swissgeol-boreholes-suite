@@ -129,6 +129,7 @@ const buildLogFileUpload = (logRun: LogRun, logFile: LogFile, attachments: File[
 
 export const useImportLogs = () => {
   const queryClient = useQueryClient();
+  const resetTabStatus = useResetTabStatus(["log"]);
 
   return useMutation<LogRun[], Error, ImportLogsVariables>({
     mutationFn: async ({ boreholeId, formData, attachments }) => {
@@ -160,6 +161,7 @@ export const useImportLogs = () => {
       return importedLogRuns;
     },
     onSuccess: (_data, { boreholeId }) => {
+      resetTabStatus();
       queryClient.invalidateQueries({ queryKey: [logsQueryKey, boreholeId] });
       queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, boreholeId] });
     },
