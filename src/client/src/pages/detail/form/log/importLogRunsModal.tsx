@@ -1,0 +1,170 @@
+import { FC, Fragment, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { Backdrop, CircularProgress, Stack, Typography } from "@mui/material";
+import { theme } from "../../../../AppTheme.ts";
+import { BoreholesCard } from "../../../../components/boreholesCard.tsx";
+import { FormContainer, FormDialog } from "../../../../components/form/form.ts";
+import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import { FileDropzone } from "./fileDropzone.tsx";
+import { LogImportError, LogImportValidationError, useImportLogs } from "./log.ts";
+
+interface ImportLogModalProps {
+  isImporting: boolean;
+  setIsImporting: (isImporting: boolean) => void;
+}
+
+const ImportErrorSection: FC<{
+  prefix: "LogRun" | "LogFile";
+  getHeader: (errorKey: string, group: LogImportError[]) => string;
+  errors: LogImportError[];
+}> = ({ prefix, getHeader, errors }) => {
+  const { t } = useTranslation();
+  const grouped = new Map<string, LogImportError[]>();
+  for (const e of errors.filter(e => e.errorKey.startsWith(prefix))) {
+    const list = grouped.get(e.errorKey) ?? [];
+    list.push(e);
+    grouped.set(e.errorKey, list);
+  }
+  return (
+    <>
+      {[...grouped].map(([errorKey, group]) => (
+        <Stack key={errorKey} gap={0.25}>
+          <Typography variant="body2" color="error" fontWeight="bold">
+            {getHeader(errorKey, group)}
+          </Typography>
+          {group.map(e => (
+            <Typography key={e.messageKey} variant="body2" color="error" sx={{ pl: 2 }}>
+              {t(e.messageKey, e.values ?? {})}
+            </Typography>
+          ))}
+        </Stack>
+      ))}
+    </>
+  );
+};
+
+export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIsImporting }) => {
+  const { t } = useTranslation();
+  const { id: boreholeId } = useRequiredParams();
+  const [logRunFile, setLogRunFile] = useState<File>();
+  const [logFileFile, setLogFileFile] = useState<File>();
+  const [logFileAttachments, setLogFileAttachments] = useState<File[]>([]);
+
+  const importMutation = useImportLogs();
+  const importErrors = importMutation.error instanceof LogImportValidationError ? importMutation.error.errors : [];
+
+  const startImport = (): Promise<boolean> => {
+    if (!logRunFile) return Promise.resolve(false);
+
+    const formData = new FormData();
+    formData.append("logRunsCsvFile", logRunFile);
+    if (logFileFile) {
+      formData.append("logFilesCsvFile", logFileFile);
+      const fileNames = logFileAttachments.map(f => f.name).join("\n");
+      const fileListBlob = new Blob([fileNames], { type: "text/plain" });
+      formData.append("fileListFile", fileListBlob, "filelist.txt");
+    }
+
+    return importMutation
+      .mutateAsync({
+        boreholeId: Number(boreholeId),
+        formData,
+        attachments: logFileAttachments,
+      })
+      .then(
+        () => true,
+        () => false,
+      );
+  };
+
+  const isImportRunning = importMutation.isPending;
+  const hasLogFilesCsv = !!logFileFile;
+  const hasAttachments = logFileAttachments.length > 0;
+  const logFilesAndAttachmentsMismatch = hasLogFilesCsv !== hasAttachments;
+  const isImportDisabled = isImportRunning || !logRunFile || logFilesAndAttachmentsMismatch || importErrors.length > 0;
+
+  return (
+    <FormDialog
+      open={isImporting}
+      title={t("importLogRuns")}
+      onClose={() => {
+        setIsImporting(false);
+        setLogRunFile(undefined);
+        setLogFileFile(undefined);
+        setLogFileAttachments([]);
+        importMutation.reset();
+      }}
+      isCloseDisabled={isImportRunning}
+      actions={[
+        { label: "cancel", variant: "outlined", color: "primary", disabled: isImportRunning },
+        {
+          label: "import",
+          variant: "contained",
+          color: "primary",
+          disabled: isImportDisabled,
+          onClick: startImport,
+        },
+      ]}>
+      <Fragment key={String(isImporting)}>
+        <BoreholesCard data-cy="import-logRuns" title={t("logRuns")}>
+          <FormContainer>
+            <Typography>{t("importLogRunsDescription")}</Typography>
+            <FileDropzone
+              onChange={files => {
+                setLogRunFile(files[0]);
+                importMutation.reset();
+              }}
+              accept={{ "text/csv": [".csv"] }}
+            />
+            <ImportErrorSection
+              prefix="LogRun"
+              getHeader={(errorKey, group) =>
+                group[0]?.values?.runNumber || t("importErrorRowRun", { rowNumber: errorKey.replaceAll(/\D/g, "") })
+              }
+              errors={importErrors}
+            />
+          </FormContainer>
+        </BoreholesCard>
+        <BoreholesCard data-cy="import-logFiles" title={t("logFiles")}>
+          <FormContainer>
+            <Typography>{t("importLogFilesDescription")}</Typography>
+            <Stack gap={0.5}>
+              <Typography variant="h6">{t("csvFile")}</Typography>
+              <FileDropzone
+                onChange={files => {
+                  setLogFileFile(files[0]);
+                  importMutation.reset();
+                }}
+                accept={{ "text/csv": [".csv"] }}
+              />
+            </Stack>
+            <Stack gap={0.5}>
+              <Typography variant="h6">{t("attachments")}</Typography>
+              <FileDropzone
+                onChange={files => {
+                  setLogFileAttachments(files);
+                  importMutation.reset();
+                }}
+                multiple={true}
+              />
+            </Stack>
+            <ImportErrorSection
+              prefix="LogFile"
+              getHeader={(errorKey, group) =>
+                group[0]?.values?.fileName || t("importErrorRowFile", { rowNumber: errorKey.replaceAll(/\D/g, "") })
+              }
+              errors={importErrors}
+            />
+          </FormContainer>
+        </BoreholesCard>
+      </Fragment>
+      {isImportRunning && (
+        <Backdrop
+          sx={{ color: theme.palette.primary.main, backgroundColor: theme.palette.background.backdrop }}
+          open={isImportRunning}>
+          <CircularProgress color="inherit" />
+        </Backdrop>
+      )}
+    </FormDialog>
+  );
+};

@@ -4,6 +4,7 @@
 
 ### Added
 - Added identifier filters.
+- Import functionality for LOG.
 
 ### Changed
 - Filters are now organized in new sections. Filters for attachments and LOG were added.
