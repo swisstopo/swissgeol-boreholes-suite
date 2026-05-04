@@ -31,7 +31,7 @@ export const FilterDomainSelect: FC<FilterDomainSelectProps> = ({ item, filterVa
 
   if (!options) return null;
 
-  if (options.length >= buttonThreshold) {
+  if (options.length > buttonThreshold) {
     return (
       <FilterMultiSelect item={item} filterValue={filterValue} onUpdate={onUpdate} options={options} counts={counts} />
     );
