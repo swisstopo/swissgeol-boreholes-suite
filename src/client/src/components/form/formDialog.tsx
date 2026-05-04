@@ -1,5 +1,5 @@
 import { FC, ReactNode } from "react";
-import { Dialog, Stack, Typography } from "@mui/material";
+import { Dialog, ButtonProps as MuiButtonProps, Stack, Typography } from "@mui/material";
 import { theme } from "../../AppTheme.ts";
 import { BoreholesButton } from "../buttons/buttons.tsx";
 import { DialogFooterContainer, DialogHeaderContainer, DialogMainContent } from "../styledComponents.ts";
@@ -8,8 +8,8 @@ interface FormDialogAction {
   label: string;
   onClick?: () => Promise<boolean> | boolean;
   disabled?: boolean;
-  variant?: "contained" | "outlined" | "text";
-  color?: "primary" | "secondary" | "error";
+  variant?: MuiButtonProps["variant"];
+  color?: MuiButtonProps["color"];
 }
 
 interface FormDialogProps {
