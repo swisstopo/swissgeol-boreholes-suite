@@ -213,7 +213,7 @@ describe("Search filter tests", () => {
 
   testSelectFilter("borehole type", "Borehole", "typeId", 0, "171");
   testLargeSelectFilter("purpose", "Borehole", "purposeId", ["hydrocarbon exploration", "mineral resources"], "233");
-  testSelectFilter("borehole status", "Borehole", "statusId", 2, "314");
+  testLargeSelectFilter("borehole status", "Borehole", "statusId", ["decayed"], "314");
 
   testYesNoFilter("groundwater", "Borehole", "hasGroundwater", "Not specified", "601");
   testYesNoFilter("top bedrock intersected", "Borehole", "topBedrockIntersected", "No", "1'209");
@@ -260,6 +260,7 @@ describe("Search filter tests", () => {
     cy.get("@suggestRequest.all").should("have.length", 0);
   });
 
+  // ─── MULTISELECT FILTERS ────────────────────────────────────────────────────
   it("toggles button selections for restrictionId (<= 7 options)", () => {
     openFilter("Borehole");
     cy.get('[data-cy^="restrictionId-button-"]').eq(0).click();
@@ -276,42 +277,41 @@ describe("Search filter tests", () => {
 
   it("multiselect filter chips show selected values and support per-value removal", () => {
     openFilter("Borehole");
-    // Select two borehole status values. The status schema ("extended.status")
+    // Select two borehole type values. The status schema ("borehole_type")
     // has <= 7 options, so FilterDomainSelect renders them as toggle buttons
-    // with data-cy="statusId-button-<codelistId>".
-    cy.dataCy("statusId-button-22104001").click();
-    cy.dataCy("statusId-button-22104002").click();
+    cy.dataCy("typeId-button-20101002").click();
+    cy.dataCy("typeId-button-30000307").click();
 
     // Two chips should render — one per selected value (not one combined chip).
-    cy.get('[data-cy^="filter-chip-statusId-"]').should("have.length", 2);
-    cy.dataCy("filter-chip-statusId-22104001").should("be.visible");
-    cy.dataCy("filter-chip-statusId-22104002").should("be.visible");
+    cy.get('[data-cy^="filter-chip-typeId-"]').should("have.length", 2);
+    cy.dataCy("filter-chip-typeId-20101002").should("be.visible");
+    cy.dataCy("filter-chip-typeId-30000307").should("be.visible");
 
     // URL reflects both selections.
-    cy.location("search").should("contain", "statusId=22104001");
-    cy.location("search").should("contain", "22104002");
+    cy.location("search").should("contain", "typeId=20101002");
+    cy.location("search").should("contain", "30000307");
 
     // Delete the first chip — only that value should be removed.
-    checkFilterChipExistsAndRemove("statusId-22104001");
+    checkFilterChipExistsAndRemove("typeId-20101002");
 
-    cy.get('[data-cy^="filter-chip-statusId-"]').should("have.length", 1);
-    cy.dataCy("filter-chip-statusId-22104002").should("be.visible");
+    cy.get('[data-cy^="filter-chip-typeId-"]').should("have.length", 1);
+    cy.dataCy("filter-chip-typeId-30000307").should("be.visible");
 
-    // The toggle button for the removed status is no longer selected;
-    // the still-active status keeps its selected (contained) state.
-    cy.dataCy("statusId-button-22104001").should("not.have.class", "MuiButton-contained");
-    cy.dataCy("statusId-button-22104002").should("have.class", "MuiButton-contained");
+    // The toggle button for the removed type is no longer selected;
+    // the still-active type keeps its selected (contained) state.
+    cy.dataCy("typeId-button-20101002").should("not.have.class", "MuiButton-contained");
+    cy.dataCy("typeId-button-30000307").should("have.class", "MuiButton-contained");
 
     // URL keeps the remaining selection and drops the removed one.
-    cy.location("search").should("contain", "statusId=22104002");
-    cy.location("search").should("not.contain", "statusId=22104001");
+    cy.location("search").should("contain", "typeId=30000307");
+    cy.location("search").should("not.contain", "typeId=20101002");
 
     // Delete the last remaining chip — filter is fully cleared.
-    checkFilterChipExistsAndRemove("statusId-22104002");
+    checkFilterChipExistsAndRemove("typeId-30000307");
 
-    cy.get('[data-cy^="filter-chip-statusId-"]').should("not.exist");
-    cy.dataCy("statusId-button-22104002").should("not.have.class", "MuiButton-contained");
-    cy.location("search").should("not.contain", "statusId=");
+    cy.get('[data-cy^="filter-chip-typeId-"]').should("not.exist");
+    cy.dataCy("typeId-button-30000307").should("not.have.class", "MuiButton-contained");
+    cy.location("search").should("not.contain", "typeId=");
   });
 
   // ─── IDENTIFIER FILTER ─────────────────────────────────────────────────────
