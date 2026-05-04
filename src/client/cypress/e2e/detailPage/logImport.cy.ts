@@ -98,48 +98,36 @@ describe("Test for the borehole log import.", () => {
 
   it("disables the import button in dialog when a log files CSV is provided without attachments", () => {
     setupBoreholeAndOpenLogTab("LOG IMPORT MISSING ATTACHMENTS");
-
     openImportDialog();
     selectLogRunsCsv("log-runs-valid.csv");
     cy.get(importDialogSelector).dataCy("import-button").should("not.be.disabled");
-
     selectLogFilesCsv("log-files-valid.csv");
     expectModalImportButtonDisabled();
-
     selectAttachments(["welllog1.las", "welllog2.txt"]);
     cy.get(importDialogSelector).dataCy("import-button").should("not.be.disabled");
-
     clickModalCancelButton();
   });
 
   it("disables the import button in dialog when attachments are provided without a log files CSV", () => {
     setupBoreholeAndOpenLogTab("LOG IMPORT MISSING LOG FILES CSV");
-
     openImportDialog();
     selectLogRunsCsv("log-runs-valid.csv");
     cy.get(importDialogSelector).dataCy("import-button").should("not.be.disabled");
-
     selectAttachments(["welllog1.las"]);
     expectModalImportButtonDisabled();
-
     selectLogFilesCsv("log-files-valid.csv");
     cy.get(importDialogSelector).dataCy("import-button").should("not.be.disabled");
-
     clickModalCancelButton();
   });
 
   it("imports log runs from a CSV file", () => {
     setupBoreholeAndOpenLogTab("LOG IMPORT RUNS ONLY");
-
     cy.contains("p", "No run added yet...");
-
     openImportDialog();
     selectLogRunsCsv("log-runs-valid.csv");
     clickModalImportButton();
-
     cy.wait("@log_import").its("response.statusCode").should("eq", 200);
     cy.get(importDialogSelector).should("not.exist");
-
     verifyTableLength(2);
     cy.contains("IMP-RUN-1");
     cy.contains("IMP-RUN-2");
@@ -147,19 +135,15 @@ describe("Test for the borehole log import.", () => {
 
   it("imports log runs together with log files and attachments", () => {
     setupBoreholeAndOpenLogTab("LOG IMPORT RUNS AND FILES");
-
     openImportDialog();
     selectLogRunsCsv("log-runs-valid.csv");
     selectLogFilesCsv("log-files-valid.csv");
     selectAttachments(["welllog1.las", "welllog2.txt"]);
     clickModalImportButton();
-
     cy.wait("@log_import").its("response.statusCode").should("eq", 200);
     cy.wait("@log_upload").its("response.statusCode").should("eq", 200);
     cy.wait("@log_upload").its("response.statusCode").should("eq", 200);
-
     cy.get(importDialogSelector).should("not.exist");
-
     verifyTableLength(2);
     cy.contains("IMP-RUN-1");
     cy.contains("IMP-RUN-2");
@@ -167,11 +151,9 @@ describe("Test for the borehole log import.", () => {
 
   it("displays row-level errors for invalid log runs", () => {
     setupBoreholeAndOpenLogTab("LOG IMPORT RUN ERRORS");
-
     openImportDialog();
     selectLogRunsCsv("log-runs-row-errors.csv");
     clickModalImportButton();
-
     cy.wait("@log_import").its("response.statusCode").should("eq", 400);
 
     // Row 1 has no run number → fallback header "Run 1".
@@ -184,7 +166,6 @@ describe("Test for the borehole log import.", () => {
     expectImportError('Unknown value "NotAStatus" in column BoreholeStatus.');
     expectImportError('Unknown value "NotAMethod" in column ConveyanceMethod.');
     expectImportError('Invalid date format "2024-01-01". Expected: dd.MM.yyyy.');
-
     expectImportError("ERR-3");
     expectImportError("Value in column ToDepth is required and must be a number.");
 
@@ -200,11 +181,9 @@ describe("Test for the borehole log import.", () => {
 
   it("displays an error for duplicate run numbers within the import CSV", () => {
     setupBoreholeAndOpenLogTab("LOG IMPORT DUPLICATE");
-
     openImportDialog();
     selectLogRunsCsv("log-runs-duplicate.csv");
     clickModalImportButton();
-
     cy.wait("@log_import").its("response.statusCode").should("eq", 400);
     expectImportError("DUP-1");
     expectImportError('Value "DUP-1" in column RunNumber is duplicated in the import file.');
@@ -226,7 +205,6 @@ describe("Test for the borehole log import.", () => {
     openImportDialog();
     selectLogRunsCsv("log-runs-existing.csv");
     clickModalImportButton();
-
     cy.wait("@log_import").its("response.statusCode").should("eq", 400);
     expectImportError("EXIST-RUN");
     expectImportError('Value "EXIST-RUN" in column RunNumber already exists for this borehole.');
@@ -235,40 +213,32 @@ describe("Test for the borehole log import.", () => {
 
   it("displays row-level errors for invalid log files", () => {
     setupBoreholeAndOpenLogTab("LOG IMPORT FILE ERRORS");
-
     openImportDialog();
     selectLogRunsCsv("log-runs-valid.csv");
     selectLogFilesCsv("log-files-row-errors.csv");
     selectAttachments(["welllog1.las"]);
     clickModalImportButton();
-
     cy.wait("@log_import").its("response.statusCode").should("eq", 400);
-
     expectImportError("welllog1.las");
     expectImportError('Value "WRONG-RUN" in column RunNumber does not match any imported LOG run.');
-
     expectImportError("notinlist.txt");
     expectImportError("No matching file found in the attachments.");
     expectImportError('Unknown code "NOPE" in column ToolType.');
     expectImportError('Unknown value "NotAPassType" in column PassType.');
     expectImportError('Invalid date format "not-a-date". Expected: dd.MM.yyyy.');
     expectImportError('Unknown value "Maybe" in column Public. Expected: Yes/No.');
-
     expectModalImportButtonDisabled();
     clickModalCancelButton();
   });
 
   it("displays an error for attachments that are not referenced in the log files CSV", () => {
     setupBoreholeAndOpenLogTab("LOG IMPORT ORPHAN ATTACHMENT");
-
     openImportDialog();
     selectLogRunsCsv("log-runs-valid.csv");
     selectLogFilesCsv("log-files-valid.csv");
     selectAttachments(["welllog1.las", "welllog2.txt", "orphan.bin"]);
     clickModalImportButton();
-
     cy.wait("@log_import").its("response.statusCode").should("eq", 400);
-
     expectImportError("orphan.bin");
     expectImportError("No matching file found in the CSV.");
     clickModalCancelButton();
@@ -276,7 +246,6 @@ describe("Test for the borehole log import.", () => {
 
   it("prompts to discard unsaved changes before opening the import dialog", () => {
     setupBoreholeAndOpenLogTab("LOG IMPORT UNSAVED CHANGES");
-
     cy.dataCy("addlogrun-button").click();
     cy.contains("h4", "New run");
     setInput("fromDepth", 0);
@@ -284,14 +253,11 @@ describe("Test for the borehole log import.", () => {
     setInput("runNumber", "UNSAVED-1");
     cy.get(".MuiDialog-container").dataCy("close-button").click();
     verifyTableLength(1);
-
     const unsavedChangesPrompt = "There are unsaved changes. Do you want to discard all changes?";
-
     cy.dataCy("import-button").click();
     handlePrompt(unsavedChangesPrompt, "cancel");
     cy.get(importDialogSelector).should("not.exist");
     verifyTableLength(1);
-
     cy.dataCy("import-button").click();
     handlePrompt(unsavedChangesPrompt, "discardchanges");
     cy.get(importDialogSelector).should("be.visible");
@@ -302,13 +268,11 @@ describe("Test for the borehole log import.", () => {
 
   it("clears the selected files when the import dialog is closed and reopened", () => {
     setupBoreholeAndOpenLogTab("LOG IMPORT RESET FILES");
-
     openImportDialog();
     selectLogRunsCsv("log-runs-valid.csv");
     cy.dataCy("import-logRuns").should("contain", "log-runs-valid.csv");
     clickModalCancelButton();
     cy.get(importDialogSelector).should("not.exist");
-
     openImportDialog();
     cy.dataCy("import-logRuns").should("not.contain", "log-runs-valid.csv");
     expectModalImportButtonDisabled();
@@ -317,16 +281,13 @@ describe("Test for the borehole log import.", () => {
 
   it("rolls back imported log runs when an attachment upload fails", () => {
     setupBoreholeAndOpenLogTab("LOG IMPORT UPLOAD FAILURE ROLLBACK");
-
     cy.intercept("POST", "/api/v2/log/upload**", { statusCode: 500, body: "boom" }).as("log_upload_fail");
     cy.intercept("DELETE", "/api/v2/log?logRunIds**").as("log_delete");
-
     openImportDialog();
     selectLogRunsCsv("log-runs-valid.csv");
     selectLogFilesCsv("log-files-valid.csv");
     selectAttachments(["welllog1.las", "welllog2.txt"]);
     clickModalImportButton();
-
     cy.wait("@log_import").its("response.statusCode").should("eq", 200);
     cy.wait("@log_upload_fail").its("response.statusCode").should("eq", 500);
     cy.wait("@log_delete").its("response.statusCode").should("eq", 200);
@@ -345,13 +306,10 @@ describe("Test for the borehole log import.", () => {
 
   it("shows the global error toast when a mutation fails with a non-userError", () => {
     setupBoreholeAndOpenLogTab("LOG IMPORT GENERIC ERROR");
-
     cy.intercept("POST", "/api/v2/log/import**", { statusCode: 500, body: "" }).as("log_import_fail");
-
     openImportDialog();
     selectLogRunsCsv("log-runs-valid.csv");
     clickModalImportButton();
-
     cy.wait("@log_import_fail").its("response.statusCode").should("eq", 500);
 
     // The MutationCache.onError handler in App.tsx shows the generic toast for non-ApiError errors.
