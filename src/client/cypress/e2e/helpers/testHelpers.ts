@@ -533,18 +533,6 @@ export const loginAndResetState = () => {
     //       deleteStratigraphy(st.id);
     //     });
     // });
-
-    // Reset user settings (i.e. table ordering)
-    cy.request({
-      method: "POST",
-      url: "/api/v2/user/resetAllSettings",
-      cache: "no-cache",
-      credentials: "same-origin",
-      auth: bearerAuth(token as string),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
   });
 };
 
