@@ -346,13 +346,18 @@ public class LogController : BoreholeControllerBase<LogRun>
             return BadRequest(new { detail = "Log files CSV is required when a file list is provided.", messageKey = "importErrorLogFilesCsvRequired" });
         }
 
+        var logSchemas = new[]
+        {
+            LogSchemas.LogBoreholeStatusSchema,
+            LogSchemas.LogConveyanceMethodSchema,
+            LogSchemas.LogPassTypeSchema,
+            LogSchemas.LogDataPackageSchema,
+            LogSchemas.LogDepthTypeSchema,
+            LogSchemas.LogToolTypeSchema,
+        };
+
         var codelists = await Context.Codelists
-            .Where(c => c.Schema == "log_borehole_status"
-                     || c.Schema == "log_conveyance_method"
-                     || c.Schema == "log_pass_type"
-                     || c.Schema == "log_data_package"
-                     || c.Schema == "log_depth_type"
-                     || c.Schema == "log_tool_type")
+            .Where(c => logSchemas.Contains(c.Schema))
             .AsNoTracking()
             .ToListAsync()
             .ConfigureAwait(false);
@@ -520,9 +525,9 @@ public class LogController : BoreholeControllerBase<LogRun>
                 pass = parsedPass;
             }
 
-            var passTypeId = ResolveCodelistId("log_pass_type", csv.GetField<string>("PassType"), codelists, rowIndex, "PassType", LogFileErrorPrefix);
-            var dataPackageId = ResolveCodelistId("log_data_package", csv.GetField<string>("DataPackage"), codelists, rowIndex, "DataPackage", LogFileErrorPrefix);
-            var depthTypeId = ResolveCodelistId("log_depth_type", csv.GetField<string>("DepthType"), codelists, rowIndex, "DepthType", LogFileErrorPrefix);
+            var passTypeId = ResolveCodelistId(LogSchemas.LogPassTypeSchema, csv.GetField<string>("PassType"), codelists, rowIndex, "PassType", LogFileErrorPrefix);
+            var dataPackageId = ResolveCodelistId(LogSchemas.LogDataPackageSchema, csv.GetField<string>("DataPackage"), codelists, rowIndex, "DataPackage", LogFileErrorPrefix);
+            var depthTypeId = ResolveCodelistId(LogSchemas.LogDepthTypeSchema, csv.GetField<string>("DepthType"), codelists, rowIndex, "DepthType", LogFileErrorPrefix);
 
             var deliveryDate = TryParseImportDate(csv.GetField<string>("DeliveryDate"), rowIndex, "DeliveryDate", LogFileErrorPrefix);
 
@@ -645,7 +650,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         foreach (var code in codes)
         {
             var match = codelists.FirstOrDefault(c =>
-                c.Schema == "log_tool_type" &&
+                c.Schema == LogSchemas.LogToolTypeSchema &&
                 string.Equals(c.Code, code, StringComparison.OrdinalIgnoreCase));
 
             if (match == null)
