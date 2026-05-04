@@ -119,20 +119,6 @@ public class UserController : ControllerBase
     }
 
     /// <summary>
-    /// Resets all settings to initial state.
-    /// </summary>
-    [HttpPost("resetAllSettings")]
-    [SwaggerResponse(StatusCodes.Status200OK, "All settings were reset successfully.")]
-    public ActionResult ResetAllSettings()
-    {
-        // Reset admin settings to initial state
-        context.Database.ExecuteSqlRaw("UPDATE bdms.users SET settings_usr = null;");
-        context.Database.ExecuteSqlRaw("UPDATE bdms.users SET settings_usr = '{{\"filter\": {{\"custom\": {{\"borehole_identifier\": true, \"project_name\": true, \"landuse\": true, \"alternate_name\": true, \"canton\": true, \"city\": true}}, \"restriction\": true, \"restriction_until\": true, \"extended\": {{ \"original_name\": true, \"method\": true, \"status\": true}}, \"kind\": true, \"elevation_z\": true, \"length\": true, \"drilling_date\": true, \"zoom2selected\": true}}, \"boreholetable\": {{ \"orderby\": \"original_name\", \"direction\": \"ASC\"}}, \"eboreholetable\": {{ \"orderby\": \"original_name\", \"direction\": \"ASC\"}}, \"map\": {{ \"explorer\": {{ }}, \"editor\": {{ }} }}, \"appearance\": {{ \"explorer\": 1}}}}' WHERE username = 'admin';");
-
-        return Ok();
-    }
-
-    /// <summary>
     /// Updates the <paramref name="user"/>.
     /// </summary>
     [HttpPut]
