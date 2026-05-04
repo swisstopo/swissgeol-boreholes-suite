@@ -411,12 +411,6 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<UserWorkgroupRole>().HasKey(k => new { k.UserId, k.WorkgroupId, k.Role });
         modelBuilder.Entity<TermsAccepted>().HasKey(k => new { k.UserId, k.TermId });
 
-        modelBuilder.Entity<Profile>()
-            .HasOne(p => p.Borehole)
-            .WithMany(b => b.Profiles)
-            .HasForeignKey(p => p.BoreholeId)
-            .OnDelete(DeleteBehavior.Cascade);
-
         modelBuilder.Entity<Borehole>()
             .HasMany(b => b.Codelists)
             .WithMany(f => f.Boreholes)
