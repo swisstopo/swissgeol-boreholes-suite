@@ -652,18 +652,16 @@ public class LogController : BoreholeControllerBase<LogRun>
     {
         if (string.IsNullOrWhiteSpace(value)) return false;
 
-        return value.Trim().ToUpperInvariant() switch
+        switch (value.Trim().ToUpperInvariant())
         {
-            "YES" or "JA" or "OUI" or "SÌ" or "SI" => true,
-            "NO" or "NEIN" or "NON" => false,
-            _ => AddImportErrorAndReturn(rowIndex, $"Unknown Public value: '{value}'. Expected Yes/No/Ja/Nein/Oui/Non/Sì/No.", "importErrorUnknownPublicValue", LogFileErrorPrefix, new() { ["value"] = value }),
-        };
+            case "YES" or "JA" or "OUI" or "SÌ" or "SI":
+                return true;
+            case "NO" or "NEIN" or "NON":
+                return false;
+            default:
+                AddImportError(rowIndex, $"Unknown Public value: '{value}'. Expected Yes/No/Ja/Nein/Oui/Non/Sì/Si/No.", "importErrorUnknownPublicValue", LogFileErrorPrefix, new() { ["value"] = value });
+                return false;
     }
-
-    private bool AddImportErrorAndReturn(int rowIndex, string errorMessage, string messageKey, string prefix, Dictionary<string, string>? values = null)
-    {
-        AddImportError(rowIndex, errorMessage, messageKey, prefix, values);
-        return false;
     }
 
     private void AddImportError(int rowIndex, string errorMessage, string messageKey, string prefix, Dictionary<string, string>? values = null)
