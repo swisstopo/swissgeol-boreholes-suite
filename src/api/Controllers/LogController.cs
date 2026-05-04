@@ -543,12 +543,11 @@ public class LogController : BoreholeControllerBase<LogRun>
 
     private void AddErrorsForUnreferencedAttachments(IReadOnlyList<string> fileNames, HashSet<string> referencedFileNames, int rowIndexOffset)
     {
-        var orphanIndex = 0;
-        foreach (var attachmentName in fileNames)
+        var orphans = fileNames.Where(name => !referencedFileNames.Contains(name)).ToList();
+        for (var i = 0; i < orphans.Count; i++)
         {
-            if (referencedFileNames.Contains(attachmentName)) continue;
-            orphanIndex++;
-            AddImportError(rowIndexOffset + orphanIndex, $"Attachment '{attachmentName}' is not referenced by any row in the log files CSV.", "importErrorAttachmentNotInCsv", LogFileErrorPrefix, new() { [FileNameValueKey] = attachmentName });
+            var orphanRowIndex = rowIndexOffset + i + 1;
+            AddImportError(orphanRowIndex, $"Attachment '{orphans[i]}' is not referenced by any row in the log files CSV.", "importErrorAttachmentNotInCsv", LogFileErrorPrefix, new() { [FileNameValueKey] = orphans[i] });
         }
     }
 
