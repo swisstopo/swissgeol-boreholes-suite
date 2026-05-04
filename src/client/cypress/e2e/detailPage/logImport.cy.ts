@@ -86,6 +86,11 @@ function setupBoreholeAndOpenLogTab(originalName: string, alias = "borehole_id")
   startBoreholeEditing();
 }
 
+function openSeedBoreholeLogTabInEditMode() {
+  goToDetailRouteAndAcceptTerms(`/1000070/log`);
+  startBoreholeEditing();
+}
+
 describe("Test for the borehole log import.", () => {
   it("does not show import button outside of edit mode", () => {
     goToDetailRouteAndAcceptTerms(`/1000070/log`);
@@ -95,7 +100,7 @@ describe("Test for the borehole log import.", () => {
   });
 
   it("disables the import button in dialog until a log runs CSV is selected", () => {
-    setupBoreholeAndOpenLogTab("LOG IMPORT BUTTON STATE");
+    openSeedBoreholeLogTabInEditMode();
     openImportDialog();
     expectModalImportButtonDisabled();
     selectLogRunsCsv("log-runs-valid.csv");
@@ -105,7 +110,7 @@ describe("Test for the borehole log import.", () => {
   });
 
   it("disables the import button in dialog when a log files CSV is provided without attachments", () => {
-    setupBoreholeAndOpenLogTab("LOG IMPORT MISSING ATTACHMENTS");
+    openSeedBoreholeLogTabInEditMode();
     openImportDialog();
     selectLogRunsCsv("log-runs-valid.csv");
     cy.get(importDialogSelector).dataCy("import-button").should("not.be.disabled");
@@ -117,7 +122,7 @@ describe("Test for the borehole log import.", () => {
   });
 
   it("disables the import button in dialog when attachments are provided without a log files CSV", () => {
-    setupBoreholeAndOpenLogTab("LOG IMPORT MISSING LOG FILES CSV");
+    openSeedBoreholeLogTabInEditMode();
     openImportDialog();
     selectLogRunsCsv("log-runs-valid.csv");
     cy.get(importDialogSelector).dataCy("import-button").should("not.be.disabled");
@@ -265,7 +270,7 @@ describe("Test for the borehole log import.", () => {
   });
 
   it("clears the selected files when the import dialog is closed and reopened", () => {
-    setupBoreholeAndOpenLogTab("LOG IMPORT RESET FILES");
+    openSeedBoreholeLogTabInEditMode();
     openImportDialog();
     selectLogRunsCsv("log-runs-valid.csv");
     cy.dataCy("import-logRuns").should("contain", "log-runs-valid.csv");
