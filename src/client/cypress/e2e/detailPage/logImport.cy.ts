@@ -176,17 +176,17 @@ describe("Test for the borehole log import.", () => {
 
     // Row 1 has no run number → fallback header "Run 1".
     expectImportError("Run 1");
-    expectImportError("RunNumber is required.");
+    expectImportError('Value "" in column RunNumber is required.');
 
     // Row 2 uses the run number as header.
     expectImportError("ERR-2");
-    expectImportError("FromDepth is required and must be a number.");
-    expectImportError('Unknown BoreholeStatus value "NotAStatus".');
-    expectImportError('Unknown ConveyanceMethod value "NotAMethod".');
+    expectImportError("Value in column FromDepth is required and must be a number.");
+    expectImportError('Unknown value "NotAStatus" in column BoreholeStatus.');
+    expectImportError('Unknown value "NotAMethod" in column ConveyanceMethod.');
     expectImportError('Invalid date format "2024-01-01". Expected: dd/MM/yyyy.');
 
     expectImportError("ERR-3");
-    expectImportError("ToDepth is required and must be a number.");
+    expectImportError("Value in column ToDepth is required and must be a number.");
 
     // Import button stays disabled until file selection changes
     expectModalImportButtonDisabled();
@@ -207,7 +207,7 @@ describe("Test for the borehole log import.", () => {
 
     cy.wait("@log_import").its("response.statusCode").should("eq", 400);
     expectImportError("DUP-1");
-    expectImportError('Duplicate RunNumber "DUP-1" in the import file.');
+    expectImportError('Value "DUP-1" in column RunNumber is duplicated in the import file.');
     clickModalCancelButton();
   });
 
@@ -229,7 +229,7 @@ describe("Test for the borehole log import.", () => {
 
     cy.wait("@log_import").its("response.statusCode").should("eq", 400);
     expectImportError("EXIST-RUN");
-    expectImportError('RunNumber "EXIST-RUN" already exists for this borehole.');
+    expectImportError('Value "EXIST-RUN" in column RunNumber already exists for this borehole.');
     clickModalCancelButton();
   });
 
@@ -245,14 +245,14 @@ describe("Test for the borehole log import.", () => {
     cy.wait("@log_import").its("response.statusCode").should("eq", 400);
 
     expectImportError("welllog1.las");
-    expectImportError('RunNumber "WRONG-RUN" does not match any imported LOG run.');
+    expectImportError('Value "WRONG-RUN" in column RunNumber does not match any imported LOG run.');
 
     expectImportError("notinlist.txt");
     expectImportError("No matching file found in the attachments.");
-    expectImportError('Unknown tool type code "NOPE".');
-    expectImportError('Unknown PassType value "NotAPassType".');
+    expectImportError('Unknown code "NOPE" in column ToolType.');
+    expectImportError('Unknown value "NotAPassType" in column PassType.');
     expectImportError('Invalid date format "not-a-date". Expected: dd/MM/yyyy.');
-    expectImportError('Unknown Public value "Maybe". Expected: Yes/No.');
+    expectImportError('Unknown value "Maybe" in column Public. Expected: Yes/No.');
 
     expectModalImportButtonDisabled();
     clickModalCancelButton();
@@ -270,7 +270,7 @@ describe("Test for the borehole log import.", () => {
     cy.wait("@log_import").its("response.statusCode").should("eq", 400);
 
     expectImportError("orphan.bin");
-    expectImportError("No matching file found in the csv.");
+    expectImportError("No matching file found in the CSV.");
     clickModalCancelButton();
   });
 
@@ -359,7 +359,7 @@ describe("Test for the borehole log import.", () => {
 
     // No inline form errors and the modal stays open.
     cy.get(importDialogSelector).should("be.visible");
-    cy.get(importDialogSelector).contains("RunNumber is required.").should("not.exist");
+    cy.get(importDialogSelector).contains("in column RunNumber is required.").should("not.exist");
     clickModalCancelButton();
   });
 });
