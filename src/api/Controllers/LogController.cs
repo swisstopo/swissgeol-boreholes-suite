@@ -361,7 +361,7 @@ public class LogController : BoreholeControllerBase<LogRun>
             .ToListAsync()
             .ConfigureAwait(false);
 
-        var parsedLogRuns = ParseLogRunsCsv(logRunsCsvFile, CsvConfigHelper.CsvReadConfig, codelists);
+        var parsedLogRuns = ParseLogRunsCsv(logRunsCsvFile, CsvConfigHelper.CsvReadConfig, codelists, boreholeId);
         await ValidateLogRuns(parsedLogRuns, boreholeId).ConfigureAwait(false);
 
         List<(string RunNumber, LogFile LogFile)> parsedLogFiles = [];
@@ -373,32 +373,18 @@ public class LogController : BoreholeControllerBase<LogRun>
 
         if (importErrors.Count > 0) return BadRequest(importErrors);
 
-        var runNumbers = new List<string>();
-        foreach (var parsed in parsedLogRuns)
+        foreach (var logRun in parsedLogRuns)
         {
-            var logRun = new LogRun
-            {
-                BoreholeId = boreholeId,
-                RunNumber = parsed.RunNumber,
-                FromDepth = parsed.FromDepth,
-                ToDepth = parsed.ToDepth,
-                BoreholeStatusId = parsed.BoreholeStatusId,
-                RunDate = parsed.RunDate,
-                BitSize = parsed.BitSize,
-                ConveyanceMethodId = parsed.ConveyanceMethodId,
-                ServiceCo = parsed.ServiceCo,
-                Comment = parsed.Comment,
-                LogFiles = parsedLogFiles
-                    .Where(pf => pf.RunNumber == parsed.RunNumber)
-                    .Select(pf => pf.LogFile)
-                    .ToList(),
-            };
+            logRun.LogFiles = parsedLogFiles
+                .Where(pf => pf.RunNumber == logRun.RunNumber)
+                .Select(pf => pf.LogFile)
+                .ToList();
             Context.LogRuns.Add(logRun);
-            runNumbers.Add(parsed.RunNumber);
         }
 
         await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
 
+        var runNumbers = parsedLogRuns.Select(lr => lr.RunNumber).ToList();
         var result = await Context.LogRunsWithIncludes
             .AsNoTracking()
             .Where(lr => lr.BoreholeId == boreholeId && runNumbers.Contains(lr.RunNumber))
@@ -408,9 +394,9 @@ public class LogController : BoreholeControllerBase<LogRun>
         return Ok(result);
     }
 
-    private List<ParsedLogRun> ParseLogRunsCsv(IFormFile csvFile, CsvConfiguration config, List<Codelist> codelists)
+    private List<LogRun> ParseLogRunsCsv(IFormFile csvFile, CsvConfiguration config, List<Codelist> codelists, int boreholeId)
     {
-        var result = new List<ParsedLogRun>();
+        var result = new List<LogRun>();
         using var reader = new StreamReader(csvFile.OpenReadStream(), Encoding.UTF8);
         using var csv = new CsvReader(reader, config);
 
@@ -437,8 +423,9 @@ public class LogController : BoreholeControllerBase<LogRun>
             var runDate = TryParseImportDate(csv.GetField<string>("RunDate"), rowIndex, "RunDate", LogRunErrorPrefix);
             var bitSize = TryParseImportDouble(csv.GetField<string>("BitSize"), rowIndex, "BitSize", LogRunErrorPrefix, "importErrorInvalidNumberFormat");
 
-            result.Add(new ParsedLogRun
+            result.Add(new LogRun
             {
+                BoreholeId = boreholeId,
                 RunNumber = runNumber,
                 FromDepth = fromDepth ?? 0,
                 ToDepth = toDepth ?? 0,
@@ -457,7 +444,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         return result;
     }
 
-    private List<(string RunNumber, LogFile LogFile)> ParseLogFilesCsv(IFormFile csvFile, CsvConfiguration config, List<Codelist> codelists, List<ParsedLogRun> logRuns, IReadOnlyList<string> fileNames)
+    private List<(string RunNumber, LogFile LogFile)> ParseLogFilesCsv(IFormFile csvFile, CsvConfiguration config, List<Codelist> codelists, List<LogRun> logRuns, IReadOnlyList<string> fileNames)
     {
         var result = new List<(string RunNumber, LogFile LogFile)>();
         var validRunNumbers = logRuns.Select(lr => lr.RunNumber).ToHashSet();
@@ -559,7 +546,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         }
     }
 
-    private async Task ValidateLogRuns(List<ParsedLogRun> parsedLogRuns, int boreholeId)
+    private async Task ValidateLogRuns(List<LogRun> parsedLogRuns, int boreholeId)
     {
         var existingRunNumbers = await Context.LogRuns
             .Where(lr => lr.BoreholeId == boreholeId)
@@ -695,27 +682,6 @@ public class LogController : BoreholeControllerBase<LogRun>
 
         AddImportError(rowIndex, $"Invalid {fieldName} value: '{value}'. Expected a number.", messageKey, errorPrefix, new() { ["value"] = value });
         return null;
-    }
-
-    private sealed class ParsedLogRun
-    {
-        public string RunNumber { get; set; } = string.Empty;
-
-        public double FromDepth { get; set; }
-
-        public double ToDepth { get; set; }
-
-        public int? BoreholeStatusId { get; set; }
-
-        public DateOnly? RunDate { get; set; }
-
-        public double? BitSize { get; set; }
-
-        public int? ConveyanceMethodId { get; set; }
-
-        public string? ServiceCo { get; set; }
-
-        public string? Comment { get; set; }
     }
 
     private IQueryable<LogRun> LogRunsForExport => Context.LogRuns
