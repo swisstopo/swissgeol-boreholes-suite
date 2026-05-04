@@ -300,7 +300,7 @@
   "importErrorRowRun": "Run {{rowNumber}}",
   "importErrorRunNumberExists": "Il valore \"{{runNumber}}\" nella colonna RunNumber esiste già per questo sondaggio.",
   "importErrorRunNumberNotFound": "Il valore \"{{runNumber}}\" nella colonna RunNumber non corrisponde a nessun run LOG importato.",
-  "importErrorRunNumberRequired": "Il valore \"{{runNumber}}\" nella colonna RunNumber è obbligatorio.",
+  "importErrorRunNumberRequired": "Il valore nella colonna RunNumber è obbligatorio.",
   "importErrorToDepthRequired": "Il valore nella colonna ToDepth è obbligatorio e deve essere un numero.",
   "importErrorUnknownCodelistValue": "Valore sconosciuto \"{{value}}\" nella colonna {{fieldName}}.",
   "importErrorUnknownPublicValue": "Valore sconosciuto \"{{value}}\" nella colonna Public. Previsto: Sì/No.",

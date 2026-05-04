@@ -167,7 +167,7 @@ describe("Test for the borehole log import.", () => {
 
     // Row 1 has no run number → fallback header "Run 1".
     expectImportError("Run 1");
-    expectImportError('Value "" in column RunNumber is required.');
+    expectImportError("Value in column RunNumber is required.");
 
     // Row 2 uses the run number as header.
     expectImportError("ERR-2");

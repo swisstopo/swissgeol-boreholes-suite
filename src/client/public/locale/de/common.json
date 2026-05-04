@@ -300,7 +300,7 @@
   "importErrorRowRun": "Run {{rowNumber}}",
   "importErrorRunNumberExists": "Wert \"{{runNumber}}\" in Spalte RunNumber existiert bereits für diese Bohrung.",
   "importErrorRunNumberNotFound": "Wert \"{{runNumber}}\" in Spalte RunNumber stimmt mit keinem importierten LOG Run überein.",
-  "importErrorRunNumberRequired": "Wert \"{{runNumber}}\" in Spalte RunNumber ist erforderlich.",
+  "importErrorRunNumberRequired": "Wert in Spalte RunNumber ist erforderlich.",
   "importErrorToDepthRequired": "Wert in Spalte ToDepth ist erforderlich und muss eine Zahl sein.",
   "importErrorUnknownCodelistValue": "Unbekannter Wert \"{{value}}\" in Spalte {{fieldName}}.",
   "importErrorUnknownPublicValue": "Unbekannter Wert \"{{value}}\" in Spalte Public. Erwartet: Ja/Nein.",

@@ -300,7 +300,7 @@
   "importErrorRowRun": "Run {{rowNumber}}",
   "importErrorRunNumberExists": "Value \"{{runNumber}}\" in column RunNumber already exists for this borehole.",
   "importErrorRunNumberNotFound": "Value \"{{runNumber}}\" in column RunNumber does not match any imported LOG run.",
-  "importErrorRunNumberRequired": "Value \"{{runNumber}}\" in column RunNumber is required.",
+  "importErrorRunNumberRequired": "Value in column RunNumber is required.",
   "importErrorToDepthRequired": "Value in column ToDepth is required and must be a number.",
   "importErrorUnknownCodelistValue": "Unknown value \"{{value}}\" in column {{fieldName}}.",
   "importErrorUnknownPublicValue": "Unknown value \"{{value}}\" in column Public. Expected: Yes/No.",

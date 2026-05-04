@@ -300,7 +300,7 @@
   "importErrorRowRun": "Run {{rowNumber}}",
   "importErrorRunNumberExists": "La valeur \"{{runNumber}}\" dans la colonne RunNumber existe déjà pour ce forage.",
   "importErrorRunNumberNotFound": "La valeur \"{{runNumber}}\" dans la colonne RunNumber ne correspond à aucun run LOG importé.",
-  "importErrorRunNumberRequired": "La valeur \"{{runNumber}}\" dans la colonne RunNumber est requise.",
+  "importErrorRunNumberRequired": "La valeur dans la colonne RunNumber est requise.",
   "importErrorToDepthRequired": "La valeur dans la colonne ToDepth est requise et doit être un nombre.",
   "importErrorUnknownCodelistValue": "Valeur inconnue \"{{value}}\" dans la colonne {{fieldName}}.",
   "importErrorUnknownPublicValue": "Valeur inconnue \"{{value}}\" dans la colonne Public. Attendu : Oui/Non.",
