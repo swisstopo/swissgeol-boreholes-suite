@@ -335,7 +335,6 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     public async Task SourceUserIsDeletableAfterMerge()
     {
         var oldUser = CreateUser("DAWNFORGE", "ANVIL", DateTime.UtcNow.AddDays(-10));
-        var newUser = CreateUser("DAWNFORGE", "FORGE", DateTime.UtcNow);
 
         // Standard FK: borehole with CreatedBy/UpdatedBy
         var borehole = new Borehole { CreatedBy = oldUser, UpdatedBy = oldUser };
