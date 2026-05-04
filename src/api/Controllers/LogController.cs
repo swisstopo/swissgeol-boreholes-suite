@@ -28,6 +28,7 @@ public class LogController : BoreholeControllerBase<LogRun>
     private const string RunNumberValueKey = "runNumber";
     private const string FileNameValueKey = "fileName";
     private readonly LogFileCloudService logFileCloudService;
+    private readonly List<ImportError> importErrors = [];
 
     public LogController(BdmsContext context, ILogger<LogController> logger, IBoreholePermissionService boreholePermissionService, LogFileCloudService logFileCloudService)
         : base(context, logger, boreholePermissionService)
@@ -316,11 +317,7 @@ public class LogController : BoreholeControllerBase<LogRun>
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(MaxFileSize)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
-    public async Task<IActionResult> ImportAsync(
-        [FromQuery] int boreholeId,
-        IFormFile logRunsCsvFile,
-        IFormFile? logFilesCsvFile,
-        IFormFile? fileListFile)
+    public async Task<IActionResult> ImportAsync([FromQuery] int boreholeId, IFormFile logRunsCsvFile, IFormFile? logFilesCsvFile, IFormFile? fileListFile)
     {
         var borehole = await Context.Boreholes
             .AsNoTracking()
@@ -681,8 +678,6 @@ public class LogController : BoreholeControllerBase<LogRun>
         AddImportError(rowIndex, errorMessage, messageKey, prefix, values);
         return false;
     }
-
-    private readonly List<ImportError> importErrors = [];
 
     private void AddImportError(int rowIndex, string errorMessage, string messageKey, string prefix, Dictionary<string, string>? values = null)
     {
