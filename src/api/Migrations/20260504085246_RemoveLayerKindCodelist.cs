@@ -2,15 +2,14 @@
 
 #nullable disable
 
-namespace BDMS.Migrations
+namespace BDMS.Migrations;
+
+/// <inheritdoc />
+public partial class RemoveLayerKindCodelist : Migration
 {
     /// <inheritdoc />
-    public partial class RemoveLayerKindCodelist : Migration
+    protected override void Up(MigrationBuilder migrationBuilder)
     {
-        /// <inheritdoc />
-        protected override void Up(MigrationBuilder migrationBuilder)
-        {
-            migrationBuilder.Sql(@"DELETE FROM bdms.codelist WHERE schema_cli = 'layer_kind'; ");
-        }
+        migrationBuilder.Sql(@"DELETE FROM bdms.codelist WHERE schema_cli = 'layer_kind'; ");
     }
 }
