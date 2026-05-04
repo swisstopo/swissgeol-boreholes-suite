@@ -65,7 +65,7 @@ const FilterChips = () => {
         <Chip
           sx={{ marginRight: "10px", marginBottom: "10px" }}
           data-cy="polygon-filter-chip"
-          color="secondary"
+          color="primary"
           label={<PolygonIcon style={{ marginTop: "5px", width: "14px", height: "14px" }} />}
           onDelete={() => {
             setPolygonSelectionEnabled(false);

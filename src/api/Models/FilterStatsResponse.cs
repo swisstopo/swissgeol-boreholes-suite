@@ -21,6 +21,9 @@ public class FilterStatsResponse
     /// <summary>Gets or sets counts grouped by <see cref="Borehole.RestrictionId"/>.</summary>
     public Dictionary<int, int> RestrictionId { get; set; } = new();
 
+    /// <summary>Gets or sets counts grouped by <see cref="BoreholeCodelist.CodelistId"/>.</summary>
+    public Dictionary<int, int> IdentifierTypeId { get; set; } = new();
+
     /// <summary>Gets or sets counts grouped by <see cref="Workflow.Status"/>.</summary>
     public Dictionary<WorkflowStatus, int> WorkflowStatusCount { get; set; } = new();
 
