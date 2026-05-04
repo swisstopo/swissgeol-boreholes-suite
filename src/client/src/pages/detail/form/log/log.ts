@@ -26,7 +26,7 @@ const uploadLogFileBlob = async (file: File, logRunId: number, logFileId?: numbe
 };
 
 const logController = "log";
-export const logsQueryKey = "logs";
+const logsQueryKey = "logs";
 export const useLogsByBoreholeId = (boreholeId?: number): UseQueryResult<LogRun[]> =>
   useQuery<LogRun[]>({
     queryKey: [logsQueryKey, boreholeId],
@@ -91,10 +91,6 @@ export const useLogRunMutations = () => {
   };
 };
 
-export const importLogs = async (boreholeId: number, formData: FormData): Promise<Response> => {
-  return await upload(`${logController}/import?boreholeId=${boreholeId}`, "POST", formData);
-};
-
 export interface LogImportError {
   errorKey: string;
   messageKey: string;
@@ -128,7 +124,7 @@ export const useImportLogs = () => {
 
   return useMutation<LogRun[], Error, ImportLogsVariables>({
     mutationFn: async ({ boreholeId, formData, attachments }) => {
-      const response = await importLogs(boreholeId, formData);
+      const response = await upload(`${logController}/import?boreholeId=${boreholeId}`, "POST", formData);
       if (!response.ok) {
         if (isJsonContentType(response.headers.get("content-type"))) {
           const responseBody = await response.json();
