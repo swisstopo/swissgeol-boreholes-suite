@@ -51,9 +51,9 @@ public class SyncBoreholesTaskTest
         Assert.AreEqual(8, syncedBoreholes.SelectMany(b => b.Completions.Select(c => c.Casings)).Count());
         Assert.IsTrue(syncedBoreholes.ValidateCasingReferences());
 
-        // Validate files. File details are already asserted by comparing serialized JSON output.
-        Assert.AreEqual(2, originalBoreholes.SelectMany(b => b.BoreholeFiles ?? Array.Empty<BoreholeFile>()).Count());
-        Assert.AreEqual(2, syncedBoreholes.SelectMany(b => b.BoreholeFiles ?? Array.Empty<BoreholeFile>()).Count());
+        // Validate profiles. Profile details are already asserted by comparing serialized JSON output.
+        Assert.AreEqual(2, originalBoreholes.SelectMany(b => b.Profiles ?? Array.Empty<Profile>()).Count());
+        Assert.AreEqual(2, syncedBoreholes.SelectMany(b => b.Profiles ?? Array.Empty<Profile>()).Count());
 
         // Validate photos. Photo details are already asserted by comparing serialized JSON output.
         Assert.AreEqual(2, originalBoreholes.SelectMany(b => b.Photos ?? Array.Empty<Photo>()).Count());

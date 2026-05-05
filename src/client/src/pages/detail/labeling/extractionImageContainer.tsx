@@ -8,10 +8,11 @@ import Map from "ol/Map";
 import VectorSource from "ol/source/Vector";
 import { Fill, Stroke, Style } from "ol/style";
 import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
-import { useFileInfo, useProfileImage } from "../../../api/file/file.ts";
+import { useFileInfo } from "../../../api/dataextraction.ts";
+import { ExtractionBoundingBox } from "../../../api/dataextractionInterfaces.ts";
+import { useProfileImage } from "../../../api/profile.ts";
 import { theme } from "../../../AppTheme.ts";
 import { ExtractedLithologicalDescription } from "../form/stratigraphy/lithologicalDescription.ts";
-import { ExtractionBoundingBox } from "./labelingInterfaces.tsx";
 import { LabelingView } from "./labelingView.tsx";
 
 interface ExtractionImageContainerProps {

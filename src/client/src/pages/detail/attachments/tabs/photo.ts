@@ -29,7 +29,7 @@ export const uploadPhoto = async (boreholeId: number, file: File): Promise<Photo
   } else if (response.status === 400) {
     throw new ApiError(await response.text(), response.status);
   } else {
-    throw new ApiError("errorDuringBoreholeFileUpload", response.status);
+    throw new ApiError("errorDuringFileUpload", response.status);
   }
 };
 

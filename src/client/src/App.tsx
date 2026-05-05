@@ -61,9 +61,7 @@ const router = createBrowserRouter([
     element: (
       <ErrorBoundary FallbackComponent={OverviewError}>
         <NuqsAdapter>
-          <PolygonFilterProvider>
-            <OverviewPage />
-          </PolygonFilterProvider>
+          <OverviewPage />
         </NuqsAdapter>
       </ErrorBoundary>
     ),
@@ -173,11 +171,13 @@ const App = () => {
                         <Prompt />
                         <DataCardProvider>
                           <BasemapProvider>
-                            <ReactQueryDevtools buttonPosition={"top-left"} initialIsOpen={false} />
-                            <AppBox>
-                              <HeaderComponent />
-                              <RouterProvider router={router} />
-                            </AppBox>
+                            <PolygonFilterProvider>
+                              <ReactQueryDevtools buttonPosition={"top-left"} initialIsOpen={false} />
+                              <AppBox>
+                                <HeaderComponent />
+                                <RouterProvider router={router} />
+                              </AppBox>
+                            </PolygonFilterProvider>
                           </BasemapProvider>
                         </DataCardProvider>
                       </PromptProvider>
