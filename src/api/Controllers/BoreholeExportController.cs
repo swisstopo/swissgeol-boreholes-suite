@@ -30,7 +30,7 @@ public class BoreholeExportController : ControllerBase
     private const string UserLacksPermissionsMessage = "The user lacks permissions to export the borehole(s).";
     private readonly BdmsContext context;
     private readonly ILogger<BoreholeExportController> logger;
-    private readonly BoreholeFileCloudService boreholeFileCloudService;
+    private readonly ProfileCloudService profileCloudService;
     private readonly IBoreholePermissionService boreholePermissionService;
 
     private static readonly JsonSerializerOptions jsonExportOptions = new()
@@ -44,11 +44,11 @@ public class BoreholeExportController : ControllerBase
         },
     };
 
-    public BoreholeExportController(BdmsContext context, BoreholeFileCloudService boreholeFileCloudService, ILogger<BoreholeExportController> logger, IBoreholePermissionService boreholePermissionService)
+    public BoreholeExportController(BdmsContext context, ProfileCloudService profileCloudService, ILogger<BoreholeExportController> logger, IBoreholePermissionService boreholePermissionService)
     {
         this.context = context;
         this.logger = logger;
-        this.boreholeFileCloudService = boreholeFileCloudService;
+        this.profileCloudService = profileCloudService;
         this.boreholePermissionService = boreholePermissionService;
     }
 
@@ -316,7 +316,7 @@ public class BoreholeExportController : ControllerBase
 
         try
         {
-            var files = await context.BoreholeFiles.Include(f => f.File).AsNoTracking().Where(f => ids.Contains(f.BoreholeId)).ToListAsync().ConfigureAwait(false);
+            var profiles = await context.Profiles.AsNoTracking().Where(p => ids.Contains(p.BoreholeId)).ToListAsync().ConfigureAwait(false);
             var fileName = $"{ExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}";
 
             // If only one borehole is exported, use its name as the file name
@@ -338,13 +338,13 @@ public class BoreholeExportController : ControllerBase
                     await textWriter.WriteAsync(json).ConfigureAwait(false);
                 }
 
-                foreach (var file in files.Select(f => f.File))
+                foreach (var profile in profiles)
                 {
-                    var fileBytes = await boreholeFileCloudService.GetObject(file.NameUuid!).ConfigureAwait(false);
+                    var fileBytes = await profileCloudService.GetObject(profile.NameUuid).ConfigureAwait(false);
 
                     // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name.
                     // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the original file name.
-                    var zipEntry = archive.CreateEntry($"{file.NameUuid}_{FileHelper.SanitizeZipEntryFileName(file.Name!, "export")}", CompressionLevel.Fastest);
+                    var zipEntry = archive.CreateEntry($"{profile.NameUuid}_{FileHelper.SanitizeZipEntryFileName(profile.Name, "export")}", CompressionLevel.Fastest);
                     using var zipEntryStream = zipEntry.Open();
                     await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
                 }

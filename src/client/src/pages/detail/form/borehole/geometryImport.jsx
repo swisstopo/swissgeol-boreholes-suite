@@ -60,7 +60,7 @@ const GeometryImport = ({ boreholeId }) => {
       { boreholeId, formData },
       {
         onError: error => {
-          showAlert(error.message ?? t("errorDuringBoreholeFileUpload"), "error");
+          showAlert(error.message ?? t("errorDuringFileUpload"), "error");
         },
       },
     );
