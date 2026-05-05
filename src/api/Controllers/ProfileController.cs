@@ -36,11 +36,8 @@ public class ProfileController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(int.MaxValue)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
-    public async Task<IActionResult> Upload(IFormFile file, [Range(1, int.MaxValue)] int boreholeId)
+    public async Task<IActionResult> Upload([Required] IFormFile file, [Required, Range(1, int.MaxValue)] int boreholeId)
     {
-        if (file == null || file.Length == 0) return BadRequest("No file provided.");
-        if (boreholeId == 0) return BadRequest("No boreholeId provided.");
-
         // Check if associated borehole is locked or user has permissions
         if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
@@ -67,8 +64,6 @@ public class ProfileController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> Download([Range(1, int.MaxValue)] int profileId)
     {
-        if (profileId == 0) return BadRequest("No profileId provided.");
-
         try
         {
             var profile = await context.Profiles
@@ -100,8 +95,6 @@ public class ProfileController : ControllerBase
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> GetDataExtractionFileInfo([Required, Range(1, int.MaxValue)] int profileId, int index)
     {
-        if (profileId == 0) return BadRequest("No profileId provided.");
-
         try
         {
             var profile = await context.Profiles
@@ -194,10 +187,8 @@ public class ProfileController : ControllerBase
     /// <param name="id">The id of the <see cref="Profile"/> to delete.</param>
     [HttpDelete("{id:int}")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> Delete(int id)
+    public async Task<IActionResult> Delete([Required, Range(1, int.MaxValue)] int id)
     {
-        if (id == 0) return BadRequest("No id provided.");
-
         try
         {
             var profile = await context.Profiles.SingleOrDefaultAsync(p => p.Id == id).ConfigureAwait(false);
@@ -227,11 +218,8 @@ public class ProfileController : ControllerBase
     /// <param name="update">The updated <see cref="ProfileUpdate"/> body.</param>
     [HttpPut("{id:int}")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> Update(int id, [FromBody] ProfileUpdate update)
+    public async Task<IActionResult> Update([Required, Range(1, int.MaxValue)] int id, [FromBody] ProfileUpdate update)
     {
-        if (update == null) return BadRequest("No body provided.");
-        if (id == 0) return BadRequest("No id provided.");
-
         var profile = await context.Profiles
             .FirstOrDefaultAsync(p => p.Id == id)
             .ConfigureAwait(false);
