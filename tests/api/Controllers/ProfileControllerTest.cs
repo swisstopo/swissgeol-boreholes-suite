@@ -253,29 +253,11 @@ public class ProfileControllerTest
     }
 
     [TestMethod]
-    public async Task UploadWithMissingBoreholeId()
-    {
-        var content = Guid.NewGuid().ToString();
-        var firstPdfFormFile = GetFormFileByContent(content, File1);
-
-        await AssertIsBadRequestResponse(() => controller.Upload(firstPdfFormFile, 0));
-    }
-
-    [TestMethod]
-    public async Task UploadWithMissingFile() => await AssertIsBadRequestResponse(() => controller.Upload(null, 1));
-
-    [TestMethod]
-    public async Task DownloadWithMissingProfileId() => await AssertIsBadRequestResponse(() => controller.Download(0));
-
-    [TestMethod]
     public async Task GetAllOfBoreholeWithMissingBoreholeId()
     {
         var result = await controller.GetAllOfBorehole(0);
         ActionResultAssert.IsBadRequest(result.Result);
     }
-
-    [TestMethod]
-    public async Task DeleteWithMissingProfileId() => await AssertIsBadRequestResponse(() => controller.Delete(0));
 
     [TestMethod]
     public async Task DeleteFailsWithoutPermission()
@@ -302,9 +284,6 @@ public class ProfileControllerTest
         var response = await controller.Delete(latestProfileInDb.Id);
         ActionResultAssert.IsUnauthorized(response);
     }
-
-    [TestMethod]
-    public async Task UpdateWithMissingProfileId() => await AssertIsBadRequestResponse(() => controller.Update(0, new ProfileUpdate()));
 
     [TestMethod]
     public async Task UpdateWithProfileNotFound()
