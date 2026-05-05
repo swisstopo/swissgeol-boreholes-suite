@@ -225,7 +225,7 @@ describe("Search filter tests", () => {
 
   // ─── ATTACHMENT FILTERS ────────────────────────────────────────────────────
 
-  testYesNoFilter("profiles available", "Attachments", "hasProfiles", "No", "2'912");
+  testYesNoFilter("profiles available", "Attachments", "hasProfiles", "No", "2'900");
   testYesNoFilter("photos available", "Attachments", "hasPhotos", "Yes", "71");
 
   it("filters boreholes by documents available and resets filters", () => {

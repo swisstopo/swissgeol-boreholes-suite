@@ -26,7 +26,7 @@ public class ImportController : ControllerBase
     private readonly ILogger logger;
     private readonly LocationService locationService;
     private readonly CoordinateService coordinateService;
-    private readonly BoreholeFileCloudService boreholeFileCloudService;
+    private readonly ProfileCloudService profileCloudService;
     private readonly IBoreholePermissionService boreholePermissionService;
     private readonly string nullOrEmptyMsg = "Field '{0}' is required.";
 
@@ -41,13 +41,13 @@ public class ImportController : ControllerBase
         },
     };
 
-    public ImportController(BdmsContext context, ILogger<ImportController> logger, LocationService locationService, CoordinateService coordinateService, BoreholeFileCloudService boreholeFileCloudService, IBoreholePermissionService boreholePermissionService)
+    public ImportController(BdmsContext context, ILogger<ImportController> logger, LocationService locationService, CoordinateService coordinateService, ProfileCloudService profileCloudService, IBoreholePermissionService boreholePermissionService)
     {
         this.context = context;
         this.logger = logger;
         this.locationService = locationService;
         this.coordinateService = coordinateService;
-        this.boreholeFileCloudService = boreholeFileCloudService;
+        this.profileCloudService = profileCloudService;
         this.boreholePermissionService = boreholePermissionService;
     }
 
@@ -221,12 +221,12 @@ public class ImportController : ControllerBase
         if (!ModelState.IsValid)
             return ValidationProblem();
 
-        var boreholeFiles = boreholes.Select(b => (b, b.BoreholeFiles?.ToList())).ToList(); // Copy files for re-upload because they are cleared on save.
+        var profiles = boreholes.Select(b => (b, b.Profiles?.ToList())).ToList(); // Copy profiles for re-upload because they are cleared on save.
         ActionResult<int> result = await ProcessAndSaveBoreholesAsync(workgroupId, boreholes).ConfigureAwait(false);
         if (!ModelState.IsValid)
             return ValidationProblem();
 
-        await UploadAttachmentsAsync(zipArchive, boreholeFiles).ConfigureAwait(false);
+        await UploadAttachmentsAsync(zipArchive, profiles).ConfigureAwait(false);
         return !ModelState.IsValid ? ValidationProblem() : result;
     }
 
@@ -263,7 +263,7 @@ public class ImportController : ControllerBase
         foreach (var borehole in boreholes)
         {
             // Attachments are re-uploaded when importing from a zip file.
-            borehole.BoreholeFiles?.Clear();
+            borehole.Profiles?.Clear();
 
             // Add new workflow with status draft.
             borehole.Workflow = new Workflow
@@ -293,16 +293,16 @@ public class ImportController : ControllerBase
         }
     }
 
-    private async Task UploadAttachmentsAsync(ZipArchive zipArchive, List<(BoreholeImport Borehole, List<BoreholeFile>? Files)> boreholeFiles)
+    private async Task UploadAttachmentsAsync(ZipArchive zipArchive, List<(BoreholeImport Borehole, List<Profile>? Profiles)> profiles)
     {
-        for (var i = 0; i < boreholeFiles.Count; i++)
+        for (var i = 0; i < profiles.Count; i++)
         {
-            var (borehole, files) = boreholeFiles[i];
-            if (files != null && files.Count > 0)
+            var (borehole, profilesForBorehole) = profiles[i];
+            if (profilesForBorehole != null && profilesForBorehole.Count > 0)
             {
-                foreach (var fileToProcess in files)
+                foreach (var profileToProcess in profilesForBorehole)
                 {
-                    var fileName = $"{fileToProcess.File.NameUuid}_{fileToProcess.File.Name}";
+                    var fileName = $"{profileToProcess.NameUuid}_{profileToProcess.Name}";
                     var attachment = zipArchive.Entries.FirstOrDefault(e => e.FullName == fileName);
                     if (attachment == null)
                     {
@@ -314,18 +314,18 @@ public class ImportController : ControllerBase
                     await attachment.Open().CopyToAsync(memoryStream).ConfigureAwait(false);
                     memoryStream.Position = 0;
 
-                    await UploadFormFileAsync(memoryStream, fileToProcess, GetContentType(attachment.Name), borehole, i).ConfigureAwait(false);
+                    await UploadFormFileAsync(memoryStream, profileToProcess, GetContentType(attachment.Name), borehole, i).ConfigureAwait(false);
                 }
             }
         }
     }
 
-    private async Task UploadFormFileAsync(Stream fileStream, BoreholeFile boreholeFile, string contentType, Borehole borehole, int index)
+    private async Task UploadFormFileAsync(Stream fileStream, Profile profile, string contentType, Borehole borehole, int index)
     {
-        var fileName = boreholeFile.File.Name;
+        var fileName = profile.Name;
         try
         {
-            await boreholeFileCloudService.UploadFileAndLinkToBoreholeAsync(fileStream, fileName, boreholeFile.Description, boreholeFile.Public == true, contentType, borehole.Id).ConfigureAwait(false);
+            await profileCloudService.UploadProfileAsync(fileStream, fileName, profile.Description, profile.Public == true, contentType, borehole.Id).ConfigureAwait(false);
         }
         catch (Exception ex)
         {
@@ -350,10 +350,9 @@ public class ImportController : ControllerBase
     {
         // Files are exported with the original name and the UUID as a prefix to make them unique while preserving the original name
         var referencedAttachments = boreholesFromFile
-            .Select(b => b.BoreholeFiles)
-            .Where(bf => bf != null)
-            .SelectMany(bf => bf!)
-            .Select(bf => bf.File.NameUuid + "_" + bf.File.Name);
+            .Where(b => b.Profiles != null)
+            .SelectMany(b => b.Profiles!)
+            .Select(p => p.NameUuid + "_" + p.Name);
 
         var missingAttachments = referencedAttachments.Except(attachmentsInZip).ToList();
         if (missingAttachments.Count > 0)
