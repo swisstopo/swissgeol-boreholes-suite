@@ -185,7 +185,7 @@ export function clusterStyleFunction(length: number): Style {
 }
 
 export function detailMapStyleFunction(feature: Feature, highlighted: number[]): Style[] {
-  const selected = highlighted !== undefined && highlighted.includes(feature.get("id") as number);
+  const selected = highlighted?.includes(feature.get("id") as number);
 
   const conf = {
     image: new Circle({
