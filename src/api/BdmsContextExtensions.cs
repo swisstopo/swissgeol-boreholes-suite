@@ -80,12 +80,12 @@ public static class BdmsContextExtensions
         List<int> hrsIds = codelists.Where(c => c.Schema == "height_reference_system").Select(s => s.Id).ToList();
         List<int> restrictionIds = codelists.Where(c => c.Schema == "restriction").Select(s => s.Id).ToList();
         List<int> locationPrecisionIds = codelists.Where(c => c.Schema == "location_precision").Select(s => s.Id).ToList();
-        List<int> drillingMethodIds = codelists.Where(c => c.Schema == "extended.drilling_method").Select(s => s.Id).ToList();
-        List<int> cuttingsIds = codelists.Where(c => c.Schema == "custom.cuttings").Select(s => s.Id).ToList();
+        List<int> drillingMethodIds = codelists.Where(c => c.Schema == "drilling_method").Select(s => s.Id).ToList();
+        List<int> cuttingsIds = codelists.Where(c => c.Schema == "borehole_cuttings_core").Select(s => s.Id).ToList();
         List<int> qtDepthIds = codelists.Where(c => c.Schema == "depth_precision").Select(s => s.Id).ToList();
         List<int> elevationPrecisionIds = codelists.Where(c => c.Schema == "elevation_precision").Select(s => s.Id).ToList();
-        List<int> purposeIds = codelists.Where(c => c.Schema == "extended.purpose").Select(s => s.Id).ToList();
-        List<int> statusIds = codelists.Where(c => c.Schema == "extended.status").Select(s => s.Id).ToList();
+        List<int> purposeIds = codelists.Where(c => c.Schema == "drilling_purpose").Select(s => s.Id).ToList();
+        List<int> statusIds = codelists.Where(c => c.Schema == "borehole_status").Select(s => s.Id).ToList();
         List<int> referenceElevationTypeIds = codelists.Where(c => c.Schema == "reference_elevation_type").Select(s => s.Id).ToList();
         List<int> drillingMudTypeIds = codelists.Where(c => c.Schema == "drilling_mud_type").Select(s => s.Id).ToList();
         List<int> identifierIds = codelists.Where(c => c.Schema == "borehole_identifier").Select(s => s.Id).ToList();
