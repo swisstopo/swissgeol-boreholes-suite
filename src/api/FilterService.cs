@@ -166,8 +166,8 @@ public class FilterService : IFilterService
                 b => !context.LogRuns.Any(lr => lr.BoreholeId == b.Id)).ConfigureAwait(false),
             HasProfiles = await CountByBooleanAsync(
                 QueryExcluding(r => r.HasProfiles = null),
-                b => context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id),
-                b => !context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id)).ConfigureAwait(false),
+                b => context.Profiles.Any(bf => bf.BoreholeId == b.Id),
+                b => !context.Profiles.Any(bf => bf.BoreholeId == b.Id)).ConfigureAwait(false),
             HasPhotos = await CountByBooleanAsync(
                 QueryExcluding(r => r.HasPhotos = null),
                 b => context.Photos.Any(p => p.BoreholeId == b.Id),
@@ -448,9 +448,9 @@ public class FilterService : IFilterService
         if (filterRequest.HasProfiles != null)
         {
             if (filterRequest.HasProfiles == BooleanFilterValue.True)
-                query = query.Where(b => context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id));
+                query = query.Where(b => context.Profiles.Any(p => p.BoreholeId == b.Id));
             else
-                query = query.Where(b => !context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id));
+                query = query.Where(b => !context.Profiles.Any(p => p.BoreholeId == b.Id));
         }
 
         if (filterRequest.HasPhotos != null)

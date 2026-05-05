@@ -15,7 +15,7 @@ import {
 } from "@mui/material";
 import { Stack } from "@mui/system";
 import { BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
-import { useExtractStratigraphies, useFileInfo } from "../../../../../api/file/file.ts";
+import { useExtractStratigraphies, useFileInfo } from "../../../../../api/dataextraction.ts";
 import { theme } from "../../../../../AppTheme.ts";
 import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
 import { BoreholesButton, CancelButton } from "../../../../../components/buttons/buttons.tsx";

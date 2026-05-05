@@ -50,7 +50,7 @@ public class BdmsContext : DbContext
         .Include(b => b.Workflow).ThenInclude(w => w.ReviewedTabs)
         .Include(b => b.Workflow).ThenInclude(w => w.PublishedTabs)
         .Include(b => b.Workflow).ThenInclude(w => w.Assignee)
-        .Include(b => b.BoreholeFiles).ThenInclude(f => f.File)
+        .Include(b => b.Profiles)
         .Include(b => b.Photos)
         .Include(b => b.Documents)
         .Include(b => b.LogRuns).ThenInclude(lr => lr.LogFiles).ThenInclude(lf => lf.LogFileToolTypeCodes)
@@ -61,8 +61,6 @@ public class BdmsContext : DbContext
     public DbSet<Codelist> Codelists { get; set; }
 
     public DbSet<Config> Configs { get; set; }
-
-    public DbSet<Models.File> Files { get; set; }
 
     public DbSet<Lithology> Lithologies { get; set; }
 
@@ -263,7 +261,7 @@ public class BdmsContext : DbContext
 
     public IQueryable<Workgroup> WorkgroupsWithIncludes => Workgroups.Include(w => w.Boreholes);
 
-    public DbSet<BoreholeFile> BoreholeFiles { get; set; }
+    public DbSet<Profile> Profiles { get; set; }
 
     public DbSet<LithologicalDescription> LithologicalDescriptions { get; set; }
 
@@ -412,20 +410,6 @@ public class BdmsContext : DbContext
         modelBuilder.HasDefaultSchema(BoreholesDatabaseSchemaName);
         modelBuilder.Entity<UserWorkgroupRole>().HasKey(k => new { k.UserId, k.WorkgroupId, k.Role });
         modelBuilder.Entity<TermsAccepted>().HasKey(k => new { k.UserId, k.TermId });
-
-        modelBuilder.Entity<Borehole>()
-            .HasMany(b => b.Files)
-            .WithMany(f => f.Boreholes)
-            .UsingEntity<BoreholeFile>(
-                j => j
-                    .HasOne(bf => bf.File)
-                    .WithMany(f => f.BoreholeFiles)
-                    .HasForeignKey(bf => bf.FileId),
-                j => j
-                    .HasOne(bf => bf.Borehole)
-                    .WithMany(b => b.BoreholeFiles)
-                    .HasForeignKey(bf => bf.BoreholeId),
-                j => j.HasKey(bf => new { bf.BoreholeId, bf.FileId }));
 
         modelBuilder.Entity<Borehole>()
             .HasMany(b => b.Codelists)
