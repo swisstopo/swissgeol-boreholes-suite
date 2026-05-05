@@ -5,6 +5,7 @@
 ### Added
 - Added identifier filters.
 - Import functionality for LOG.
+- Borehole name and sub route are now displayed in the document title.
 
 ### Changed
 - Filters are now organized in new sections. Filters for attachments and LOG were added.
