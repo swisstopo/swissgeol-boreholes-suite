@@ -36,8 +36,6 @@ import {
   LayerConfig,
   MapComponentProps,
   SRS,
-  WMSLayerConfig,
-  WMTSLayerConfig,
 } from "./map.ts";
 import { projections } from "./mapProjections";
 import { clusterStyleFunction, drawStyle, styleFunction } from "./mapStyleFunctions";
@@ -177,9 +175,9 @@ export const MapComponent: FC<MapComponentProps> = ({
     displayedBasemapRef.current = currentBasemapName;
     updateBasemap(map, currentBasemapName);
 
-    // Attach map to window for Cypress E2E tests.
+    // Attach map to globalThis for Cypress E2E tests.
     // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    (window as any).olMap = map;
+    (globalThis as any).olMap = map;
 
     // ── Feature layers ──
     const points = new VectorSource();
@@ -254,7 +252,7 @@ export const MapComponent: FC<MapComponentProps> = ({
         setTimeout(() => {
           if (!hoveringPopupRef.current) {
             const popup = popupRef.current;
-            if (popup && popup.getPosition() !== undefined) {
+            if (popup?.getPosition() !== undefined) {
               setHoverFeatures(null);
               hoveringPopupRef.current = false;
               popup.setPosition(undefined);
@@ -317,7 +315,7 @@ export const MapComponent: FC<MapComponentProps> = ({
       });
       popupEl.addEventListener("mouseleave", () => {
         const p = popupRef.current;
-        if (p && p.getPosition() !== undefined) {
+        if (p?.getPosition() !== undefined) {
           setHoverFeatures(null);
           hoveringPopupRef.current = false;
           p.setPosition(undefined);
@@ -435,15 +433,9 @@ export const MapComponent: FC<MapComponentProps> = ({
     for (const [identifier, layer] of Object.entries(layers) as [string, LayerConfig][]) {
       if (!existingNames.has(identifier)) {
         if (layer.type === "WMTS") {
-          addWMTSLayerToMap(map, identifier, layer as WMTSLayerConfig, overlaysRef.current);
+          addWMTSLayerToMap(map, identifier, layer, overlaysRef.current);
         } else if (layer.type === "WMS") {
-          addWMSLayerToMap(
-            map,
-            identifier,
-            layer as WMSLayerConfig,
-            overlaysRef.current,
-            map.getView().getProjection().getExtent(),
-          );
+          addWMSLayerToMap(map, identifier, layer, overlaysRef.current, map.getView().getProjection().getExtent());
         }
       }
 
@@ -478,7 +470,7 @@ export const MapComponent: FC<MapComponentProps> = ({
     // Restore polygon drawing if a filter polygon exists
     if (filterPolygonRef.current) {
       const drawSource = mapRef.current ? getDrawSource(mapRef.current) : null;
-      if (drawSource && drawSource.getFeatures().length === 0) {
+      if (drawSource?.getFeatures().length === 0) {
         // Clone the feature so it is not tied to a previous map's draw source.
         const clone = filterPolygonRef.current.clone();
         drawSource.addFeature(clone);
