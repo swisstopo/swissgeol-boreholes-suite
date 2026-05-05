@@ -5,17 +5,10 @@ import { capitalizeFirstLetter } from "../utils";
 
 const routeToTranslationKey: Record<string, string> = {
   identifiers: "ids",
-  location: "location",
-  borehole: "borehole",
-  stratigraphy: "stratigraphy",
-  completion: "completion",
   wateringress: "waterIngress",
   groundwaterlevelmeasurement: "groundwaterLevelMeasurement",
   fieldmeasurement: "fieldMeasurement",
   hydrotest: "hydrotest",
-  log: "log",
-  attachments: "attachments",
-  status: "status",
 };
 
 /**
@@ -31,16 +24,22 @@ export const useBoreholeDocumentTitle = (boreholeName: string | undefined) => {
   const pageTitle = useMemo(() => {
     if (!boreholeName) return undefined;
     const segments = location.pathname.split("/").filter(Boolean);
-    const lastSegment = segments[segments.length - 1];
-    const translationKey = routeToTranslationKey[lastSegment];
+    let detailUrlSegment = segments[1]; // URL structure: /boreholes/:id/:tab
+    if (detailUrlSegment === "hydrogeology") {
+      detailUrlSegment = segments[2]; // URL structure: /boreholes/:id/:hydrogeology/:tab
+    }
+    const translationKey = routeToTranslationKey[detailUrlSegment] ?? detailUrlSegment;
     const tabName = translationKey ? capitalizeFirstLetter(t(translationKey)) : undefined;
     return tabName ? `${boreholeName} - ${tabName}` : boreholeName;
   }, [boreholeName, location.pathname, t]);
 
   useEffect(() => {
-    document.title = pageTitle ? `${pageTitle} | ${defaultTitle}` : defaultTitle;
+    document.title = `${pageTitle} | ${defaultTitle}`;
+  }, [pageTitle, defaultTitle]);
+
+  useEffect(() => {
     return () => {
       document.title = defaultTitle;
     };
-  }, [pageTitle, defaultTitle]);
+  }, []);
 };
