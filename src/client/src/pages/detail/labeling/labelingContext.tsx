@@ -8,13 +8,22 @@ import {
   useLayoutEffect,
   useState,
 } from "react";
-import {
-  ExtractionObject,
-  ExtractionState,
-  LabelingContextInterface,
-  PanelPosition,
-  PanelTab,
-} from "./labelingInterfaces.tsx";
+import { ExtractionObject, ExtractionState, PanelPosition, PanelTab } from "../../../api/dataextractionInterfaces.ts";
+
+interface LabelingContextInterface {
+  panelPosition: PanelPosition;
+  setPanelPosition: (position: PanelPosition) => void;
+  panelOpen: boolean;
+  togglePanel: (isOpen?: boolean) => void;
+  extractionObject?: ExtractionObject;
+  setExtractionObject: (extractionObject: ExtractionObject | undefined) => void;
+  extractionState?: ExtractionState;
+  setExtractionState: (extractionState: ExtractionState) => void;
+  setAbortController: (abortController: AbortController | undefined) => void;
+  cancelRequest: () => void;
+  panelTab: PanelTab;
+  setPanelTab: (panelTab: PanelTab) => void;
+}
 
 export const LabelingContext = createContext<LabelingContextInterface>({
   panelPosition: "right",

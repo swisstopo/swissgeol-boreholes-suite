@@ -48,20 +48,20 @@ public class ImportControllerTest
             ForcePathStyle = true,
             UseHttp = configuration["S3:SECURE"] == "0",
         });
-        var loggerBoreholeFileCloudService = new Mock<ILogger<BoreholeFileCloudService>>(MockBehavior.Strict);
+        var loggerProfileCloudService = new Mock<ILogger<ProfileCloudService>>(MockBehavior.Strict);
         var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
         var testUser = context.Users.FirstOrDefault();
         Assert.IsNotNull(testUser, "Test database must contain at least one user.");
         contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, testUser!.SubjectId) }));
-        var boreholeFileCloudService = new BoreholeFileCloudService(context, configuration, loggerBoreholeFileCloudService.Object, contextAccessorMock.Object, s3ClientMock);
+        var profileCloudService = new ProfileCloudService(context, configuration, loggerProfileCloudService.Object, contextAccessorMock.Object, s3ClientMock);
 
         boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Role>()))
             .ReturnsAsync(true);
 
-        controller = new ImportController(context, loggerMock.Object, locationService, coordinateService, boreholeFileCloudService, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new ImportController(context, loggerMock.Object, locationService, coordinateService, profileCloudService, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -601,17 +601,17 @@ public class ImportControllerTest
         OkObjectResult okResult = (OkObjectResult)response.Result!;
         Assert.AreEqual(2, okResult.Value);
         var uploadedBoreholesWithAttachment = await context.BoreholesWithIncludes.Where(b => b.OriginalName.StartsWith("Carmen Catnip")).ToListAsync();
-        Assert.AreEqual(uploadedBoreholesWithAttachment.SelectMany(b => b.Files!).Count(), 3);
+        Assert.AreEqual(uploadedBoreholesWithAttachment.SelectMany(b => b.Profiles!).Count(), 3);
 
         var firstBorehole = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Cheese");
         var secondBorehole = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Fondue");
         Assert.IsNotNull(firstBorehole);
         Assert.IsNotNull(secondBorehole);
-        Assert.AreEqual(firstBorehole.Files.Count, 2);
-        Assert.AreEqual(secondBorehole.Files.Single().Name, "logos.png");
+        Assert.AreEqual(firstBorehole.Profiles.Count, 2);
+        Assert.AreEqual(secondBorehole.Profiles.Single().Name, "logos.png");
 
-        // Assert BoreholeFile description and public attribute
-        var profile = firstBorehole.BoreholeFiles.First();
+        // Assert profile description and public attribute
+        var profile = firstBorehole.Profiles.First();
         Assert.AreEqual(profile.Description, "Describing Incredible Granite");
         Assert.AreEqual(profile.Public, true);
     }
@@ -634,8 +634,8 @@ public class ImportControllerTest
         Assert.AreEqual(1, uploadedBoreholesWithAttachment.Count);
 
         var borehole = uploadedBoreholesWithAttachment.Single();
-        Assert.AreEqual(1, borehole.Files.Count);
-        Assert.AreEqual("boreholes.png", borehole.Files.Single().Name);
+        Assert.AreEqual(1, borehole.Profiles.Count);
+        Assert.AreEqual("boreholes.png", borehole.Profiles.Single().Name);
     }
 
     [TestMethod]

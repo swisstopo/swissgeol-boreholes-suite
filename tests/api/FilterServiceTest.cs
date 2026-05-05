@@ -461,12 +461,12 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(88, result.TotalCount);
+        Assert.AreEqual(100, result.TotalCount);
 
         // Verify that boreholes have profiles (boreholefiles).
         foreach (var borehole in result.Boreholes)
         {
-            var hasProfiles = await context.BoreholeFiles.AnyAsync(s => s.BoreholeId == borehole.Id);
+            var hasProfiles = await context.Profiles.AnyAsync(s => s.BoreholeId == borehole.Id);
             Assert.IsTrue(hasProfiles);
         }
     }
@@ -475,7 +475,7 @@ public class FilterServiceTest
     public async Task FilterBoreholesWithHasProfilesFilterFalseReturnsMatchingBoreholes()
     {
         var expectedCount = await context.Boreholes
-            .CountAsync(b => !context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id));
+            .CountAsync(b => !context.Profiles.Any(p => p.BoreholeId == b.Id));
 
         var filterRequest = new FilterRequest
         {
@@ -492,7 +492,7 @@ public class FilterServiceTest
         // Verify that no returned borehole has profiles (boreholefiles)
         foreach (var borehole in result.Boreholes)
         {
-            var hasProfiles = await context.BoreholeFiles.AnyAsync(bf => bf.BoreholeId == borehole.Id);
+            var hasProfiles = await context.Profiles.AnyAsync(p => p.BoreholeId == borehole.Id);
             Assert.IsFalse(hasProfiles);
         }
     }
@@ -1692,7 +1692,7 @@ public class FilterServiceTest
         // Derive expected truth from the seed data so assertions stay valid across seed changes.
         var totalBoreholes = await context.Boreholes.CountAsync();
         var expectedHasLogsTrue = await context.Boreholes.CountAsync(b => context.LogRuns.Any(lr => lr.BoreholeId == b.Id));
-        var expectedHasProfilesTrue = await context.Boreholes.CountAsync(b => context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id));
+        var expectedHasProfilesTrue = await context.Boreholes.CountAsync(b => context.Profiles.Any(bf => bf.BoreholeId == b.Id));
         var expectedHasGeometryTrue = await context.Boreholes.CountAsync(b => b.BoreholeGeometry != null && b.BoreholeGeometry.Any());
 
         var result = await filterService.GetFilterStatsAsync(null, adminUser);

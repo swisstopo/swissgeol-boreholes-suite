@@ -2,14 +2,21 @@ import { FC, useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { TextField, Typography } from "@mui/material";
 import { GridColDef, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui/x-data-grid";
-import { detachFile, downloadFile, getFiles, updateFile, uploadFile } from "../../../../api/file/file";
-import { Profile } from "../../../../api/file/fileInterfaces";
+import {
+  deleteProfile,
+  downloadProfile,
+  getProfiles,
+  Profile,
+  updateProfile,
+  uploadProfile,
+  useProfiles,
+  useReloadProfiles,
+} from "../../../../api/profile.ts";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 import { formatDate } from "../../../../utils.ts";
 import { EditStateContext } from "../../editStateContext";
 import { AttachmentContent } from "../attachmentsContent";
 import { useAttachments } from "../useAttachments.tsx";
-import { useProfiles, useReloadProfiles } from "../useProfiles.tsx";
 
 interface ProfilesProps {
   boreholeId: number;
@@ -24,28 +31,24 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const reloadProfiles = useReloadProfiles(Number(boreholeId));
 
   const loadAttachments = useCallback(async () => {
-    const profiles = await getFiles<Profile>(boreholeId);
-    return profiles.map(profile => ({
-      id: profile.fileId,
-      ...profile,
-    }));
+    return await getProfiles(boreholeId);
   }, [boreholeId]);
 
   const addAttachment = async (file?: File) => {
     if (file) {
-      await uploadFile(boreholeId, file);
+      await uploadProfile(boreholeId, file);
       reloadProfiles();
     }
   };
 
   const deleteAttachments = async (ids: number[]) => {
-    const detachPromises = ids.map(id => detachFile(id));
-    await Promise.all(detachPromises);
+    const deletePromises = ids.map(id => deleteProfile(id));
+    await Promise.all(deletePromises);
     reloadProfiles();
   };
 
   const exportAttachments = async (ids: number[]) => {
-    const downloadPromises = ids.map(id => downloadFile(id));
+    const downloadPromises = ids.map(id => downloadProfile(id));
     await Promise.all(downloadPromises);
   };
 
@@ -54,12 +57,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
       const updatePromises = Array.from(updatedRows.entries()).map(([id, row]) => {
         const data = apiRef.current.getRowWithUpdatedValues(id, "description");
         if (data) {
-          return updateFile(
-            boreholeId.toString(),
-            id as number,
-            row.description ?? data.description,
-            row.public ?? data.public,
-          );
+          return updateProfile(id as number, row.description ?? data.description, row.public ?? data.public);
         }
         return Promise.resolve();
       });
@@ -72,7 +70,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
       }
       return true;
     },
-    [apiRef, boreholeId, reloadProfiles, showApiErrorAlert],
+    [apiRef, reloadProfiles, showApiErrorAlert],
   );
 
   const { onAdd, onDelete, onExport, getPublicColumnHeader, getPublicColumnCell, updatedRows, setUpdatedRows } =
@@ -91,7 +89,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
     (id: GridRowId, description: string) => {
       setUpdatedRows(prevRows => {
         const newMap = new Map(prevRows);
-        const row: Profile = newMap.get(id) ?? ({ description: "" } as Profile);
+        const row = newMap.get(id) ?? ({ description: "" } as Profile);
         row.description = description;
         newMap.set(id, row);
         return newMap;
@@ -121,7 +119,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         field: "name",
         headerName: t("name"),
         flex: 0.5,
-        valueGetter: (value, row) => row.file.name,
+        valueGetter: (value, row) => row.name,
       },
       {
         field: "description",
@@ -141,13 +139,13 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         headerName: t("uploaded"),
         resizable: false,
         width: 160,
-        renderCell: ({ row }) => formatDate(row.attached, true),
+        renderCell: ({ row }) => formatDate(row.created, true),
       },
       {
         field: "createdBy",
         headerName: t("user"),
         flex: 0.25,
-        valueGetter: (value, row) => row.user?.name ?? "-",
+        valueGetter: (value, row) => row.createdBy?.name ?? "-",
       },
       {
         field: "public",
