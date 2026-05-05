@@ -46,13 +46,12 @@ export const drawStyle = new Style({
 });
 
 export function styleFunction(feature: Feature, highlighted: number[]): Style[] {
-  const selected =
-    highlighted !== undefined && highlighted.length > 0 && highlighted.indexOf(feature.get("id") as number) > -1;
+  const selected = highlighted?.length > 0 && highlighted.includes(feature.get("id"));
   const res = feature.get("restriction") as number;
   let fill: Fill;
   if (res === 20111001) {
     fill = greenFill;
-  } else if ([20111003, 20111002].indexOf(res) >= 0) {
+  } else if ([20111003, 20111002].includes(res)) {
     fill = redFill;
   } else {
     fill = blackFill;
