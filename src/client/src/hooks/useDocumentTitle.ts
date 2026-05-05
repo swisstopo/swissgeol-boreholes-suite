@@ -34,7 +34,7 @@ export const useBoreholeDocumentTitle = (boreholeName: string | undefined) => {
   }, [boreholeName, location.pathname, t]);
 
   useEffect(() => {
-    document.title = `${pageTitle} | ${defaultTitle}`;
+    document.title = pageTitle ? `${pageTitle} | ${defaultTitle}` : defaultTitle;
   }, [pageTitle, defaultTitle]);
 
   useEffect(() => {

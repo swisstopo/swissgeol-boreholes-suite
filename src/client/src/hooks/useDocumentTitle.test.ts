@@ -11,7 +11,7 @@ vi.mock("react-i18next", () => ({
 }));
 
 vi.mock("react-router", () => ({
-  useLocation: vi.fn(() => ({ pathname: "/borehole/123/location" })),
+  useLocation: vi.fn(() => ({ pathname: "/45084/location" })),
 }));
 
 describe("useBoreholeDocumentTitle", () => {
@@ -47,21 +47,25 @@ describe("useBoreholeDocumentTitle", () => {
     expect(document.title).toBe(defaultTitle);
   });
 
-  it("handles different route segments", () => {
-    vi.mocked(useLocation).mockReturnValue({ pathname: "/borehole/123/stratigraphy" } as ReturnType<
+  it("handles stratigraphy route", () => {
+    vi.mocked(useLocation).mockReturnValue({ pathname: "/45084/stratigraphy/45822#lithology" } as ReturnType<
       typeof useLocation
     >);
-
     renderHook(() => useBoreholeDocumentTitle("Test Borehole"));
-
     expect(document.title).toBe("Test Borehole - Stratigraphy | swissgeol boreholes");
   });
 
-  it("uses only borehole name when route has no translation key", () => {
-    vi.mocked(useLocation).mockReturnValue({ pathname: "/borehole/123/unknown" } as ReturnType<typeof useLocation>);
-
+  it("handles hydrotest route", () => {
+    vi.mocked(useLocation).mockReturnValue({ pathname: "/45084/hydrogeology/hydrotest" } as ReturnType<
+      typeof useLocation
+    >);
     renderHook(() => useBoreholeDocumentTitle("Test Borehole"));
+    expect(document.title).toBe("Test Borehole - Hydrotest | swissgeol boreholes");
+  });
 
+  it("uses only borehole name when URL has no tab segment", () => {
+    vi.mocked(useLocation).mockReturnValue({ pathname: "/123" } as ReturnType<typeof useLocation>);
+    renderHook(() => useBoreholeDocumentTitle("Test Borehole"));
     expect(document.title).toBe("Test Borehole | swissgeol boreholes");
   });
 });
