@@ -14,7 +14,7 @@ import {
 } from "../../../api/borehole.ts";
 import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
 import { ExportDialog } from "../../../components/export/exportDialog.tsx";
-import MapComponent from "../../../components/map/mapComponent.jsx";
+import { MapComponent } from "../../../components/map/mapComponent";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import BottomBarContainer from "../boreholeTable/bottomBarContainer";
 import { PolygonFilterContext } from "../sidePanelContent/filter/polygonFilterContext.tsx";
@@ -45,9 +45,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     tableParams,
     setTableParams,
     mapResolution,
-    setMapResolution,
     mapCenter,
-    setMapCenter,
     saveFilterParamsInSession,
     restoreMapParamsFromSession,
     saveTableParamsInSession,
@@ -169,9 +167,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
             if (id !== null) lock(id);
           }}
           mapResolution={mapResolution}
-          setMapResolution={setMapResolution}
           mapCenter={mapCenter}
-          setMapCenter={setMapCenter}
           polygonSelectionEnabled={polygonSelectionEnabled}
           setPolygonSelectionEnabled={setPolygonSelectionEnabled}
           filterPolygon={filterPolygon}
