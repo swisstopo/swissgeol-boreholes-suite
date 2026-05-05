@@ -9,7 +9,7 @@ import WMTS from "ol/source/WMTS";
 import WMTSTileGrid from "ol/tilegrid/WMTS";
 import { swissExtent } from "../basemapSelector/basemaps";
 
-export interface WMTSLayerConfig {
+interface WMTSLayerConfig {
   type: "WMTS";
   visibility: boolean;
   transparency: number;
@@ -18,7 +18,7 @@ export interface WMTSLayerConfig {
   conf: any;
 }
 
-export interface WMSLayerConfig {
+interface WMSLayerConfig {
   type: "WMS";
   visibility: boolean;
   transparency: number;
