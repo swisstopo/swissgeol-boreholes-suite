@@ -1,5 +1,5 @@
 import { BoreholeV2 } from "../../../../api/borehole.ts";
-import { Profile } from "../../../../api/file/fileInterfaces.ts";
+import { Profile } from "../../../../api/profile.ts";
 import { Codelist } from "../../../../components/codelist.ts";
 import { Workflow } from "../workflow/workflow.ts";
 import { ReferenceSystemCode } from "./coordinateSegmentInterfaces.ts";
@@ -31,7 +31,7 @@ export interface LocationFormInputs extends LocationFormBaseInputs {
   locationYLV03: string;
   locationY: string;
   locationX: string;
-  boreholeFiles: Profile[] | null;
+  profiles: Profile[] | null;
 }
 
 export interface LocationFormSubmission extends LocationFormBaseInputs {
@@ -44,6 +44,6 @@ export interface LocationFormSubmission extends LocationFormBaseInputs {
   locationY: string | number | null;
   locationX: string | number | null;
   codelists?: Codelist[];
-  boreholeFiles: Profile[] | null;
+  profiles: Profile[] | null;
   workflow: Workflow | null;
 }

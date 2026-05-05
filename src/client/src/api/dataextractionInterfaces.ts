@@ -1,4 +1,4 @@
-import { ReferenceSystemKey } from "../form/location/coordinateSegmentInterfaces.ts";
+import { ReferenceSystemKey } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 
 export type ExtractionType = "text" | "number" | "coordinates";
 export enum ExtractionState {
@@ -28,6 +28,13 @@ export interface ExtractionRequest {
   page_number: number;
   bbox: ExtractionBoundingBox;
   format: ExtractionType;
+}
+
+export interface DataExtractionResponse {
+  fileName: string;
+  width: number;
+  height: number;
+  count: number;
 }
 
 export interface Coordinate {
@@ -60,21 +67,6 @@ export type PanelPosition = "right" | "bottom";
 export enum PanelTab {
   profile = "profile",
   photo = "photo",
-}
-
-export interface LabelingContextInterface {
-  panelPosition: PanelPosition;
-  setPanelPosition: (position: PanelPosition) => void;
-  panelOpen: boolean;
-  togglePanel: (isOpen?: boolean) => void;
-  extractionObject?: ExtractionObject;
-  setExtractionObject: (extractionObject: ExtractionObject | undefined) => void;
-  extractionState?: ExtractionState;
-  setExtractionState: (extractionState: ExtractionState) => void;
-  setAbortController: (abortController: AbortController | undefined) => void;
-  cancelRequest: () => void;
-  panelTab: PanelTab;
-  setPanelTab: (panelTab: PanelTab) => void;
 }
 
 export const labelingFileFormat: Record<PanelTab, string> = {

@@ -26,6 +26,10 @@ export const verifyRowContains = (rowContent: string, rowIndex: number) => {
     });
 };
 
+export const verifyAnyRowContains = (rowContent: string) => {
+  cy.get(".MuiDataGrid-row").contains(rowContent).should("exist");
+};
+
 export const verifyRowWithContentAlsoContains = (rowContent: string, alsoContains: string) => {
   cy.get(".MuiDataGrid-row")
     .contains(rowContent)
