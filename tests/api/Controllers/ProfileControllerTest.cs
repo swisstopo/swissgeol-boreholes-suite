@@ -25,7 +25,6 @@ public class ProfileControllerTest
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
     private User adminUser;
 
-
     [TestInitialize]
     public void TestInitialize()
     {
