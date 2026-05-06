@@ -57,8 +57,9 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
       },
       { fieldName: "reference_elevation_type", type: FormValueType.Domain },
       { fieldName: "borehole_type", type: FormValueType.Domain },
-      { fieldName: "purpose", type: FormValueType.Domain, api: "extended.purpose" },
-      { fieldName: "boreholestatus", type: FormValueType.Domain, api: "extended.status" },
+      // Todo: Reactivate when bulk edit is migrated to new API https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2297
+      // { fieldName: "purpose", type: FormValueType.Domain, api: "drilling_purpose" },
+      // { fieldName: "boreholestatus", type: FormValueType.Domain, api: "borehole_status" },
       { fieldName: "totaldepth", type: FormValueType.Number, api: "total_depth" },
       { fieldName: "qt_depth", type: FormValueType.Domain, api: "depth_precision" },
       { fieldName: "top_bedrock_fresh_md", type: FormValueType.Number, api: "extended.top_bedrock_fresh_md" },

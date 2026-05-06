@@ -143,13 +143,13 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
                   <FormDomainSelect
                     fieldName={"purposeId"}
                     label={"purpose"}
-                    schemaName={"extended.purpose"}
+                    schemaName={"drilling_purpose"}
                     selected={borehole.purposeId}
                   />
                   <FormDomainSelect
                     fieldName={"statusId"}
                     label={"boreholestatus"}
-                    schemaName={"extended.status"}
+                    schemaName={"borehole_status"}
                     selected={borehole.statusId}
                   />
                 </FormContainer>
