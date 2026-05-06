@@ -35,7 +35,7 @@ const inLV03YBounds = (value: string): boolean => {
   return boundingBox.LV03.Y.Min < coordinate && coordinate < boundingBox.LV03.Y.Max;
 };
 
-export interface FormCoordinateProps {
+interface FormCoordinateProps {
   fieldName: string;
   required?: boolean;
   disabled?: boolean;

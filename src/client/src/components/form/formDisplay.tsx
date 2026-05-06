@@ -6,7 +6,7 @@ import { Codelist } from "../codelist.ts";
 import { FormValueType } from "./form";
 import { formatNumberForDisplay } from "./formUtils.ts";
 
-export interface FormDisplayProps {
+interface FormDisplayProps {
   prefix?: string;
   label: string;
   value: string | string[] | number | number[] | boolean | Codelist | Codelist[] | null;

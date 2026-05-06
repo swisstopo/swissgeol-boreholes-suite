@@ -4,7 +4,7 @@ import { FormMultiSelect } from "./form.ts";
 import { FormMultiSelectProps } from "./formMultiSelect.tsx";
 import { FormSelectMenuItem } from "./formSelect.tsx";
 
-export interface FormDomainMultiSelectProps extends FormMultiSelectProps {
+interface FormDomainMultiSelectProps extends FormMultiSelectProps {
   schemaName: string;
   prefilteredDomains?: Codelist[];
   labelStyle?: CodelistLabelStyle;

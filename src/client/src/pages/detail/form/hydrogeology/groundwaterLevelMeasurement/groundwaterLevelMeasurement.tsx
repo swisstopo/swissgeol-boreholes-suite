@@ -1,12 +1,12 @@
 import { FC, useCallback } from "react";
-import DataCards from "../../../../../components/dataCard/dataCards.js";
+import { DataCards } from "../../../../../components/dataCard/dataCards.js";
 import { useRequiredParams } from "../../../../../hooks/useRequiredParams.ts";
 import { sortByDepth } from "../../sorter.jsx";
 import {
   getGroundwaterLevelMeasurements,
   GroundwaterLevelMeasurement as GroundwaterLevelMeasurementType,
 } from "./GroundwaterLevelMeasurement.ts";
-import GroundwaterLevelMeasurementDisplay from "./groundwaterLevelMeasurementDisplay.tsx";
+import { GroundwaterLevelMeasurementDisplay } from "./groundwaterLevelMeasurementDisplay.tsx";
 import GroundwaterLevelMeasurementInput from "./groundwaterLevelMeasurementInput.tsx";
 
 const GroundwaterLevelMeasurement: FC = () => {

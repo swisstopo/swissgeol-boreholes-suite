@@ -2,7 +2,7 @@ import { UseFormReturn } from "react-hook-form";
 import { FormSelectValue } from "../../../../../components/form/formSelect.tsx";
 
 export interface SearchData {
-  value: string;
+  key: string;
   id?: number;
   type?: string;
   label?: string;
@@ -21,7 +21,7 @@ export interface FilterComponentProps {
   formMethods: UseFormReturn;
 }
 
-export type FilterSectionName = "borehole" | "location" | "workgroup" | "workflowStatus" | "attachments" | "log";
+type FilterSectionName = "borehole" | "workgroup" | "workflowStatus" | "attachments" | "log" | "identifiers";
 
 export interface FilterInputConfig {
   id: number;

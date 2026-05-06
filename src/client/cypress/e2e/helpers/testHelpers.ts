@@ -5,7 +5,7 @@ import editorUser from "../../fixtures/editorUser.json";
 import viewerUser from "../../fixtures/viewerUser.json";
 import { startEditing, stopEditing } from "./buttonHelpers";
 
-export const bearerAuth = (token: string) => ({ bearer: token });
+const bearerAuth = (token: string) => ({ bearer: token });
 
 export const interceptApiCalls = () => {
   // Api V1
@@ -119,24 +119,26 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/boreholegeometry/getDepthMDFromMasl?**").as("get-boreholegeometry-depth-md");
   cy.intercept("/api/v2/boreholegeometry/getDepthTVD?**").as("get-depth-tvd");
 
-  cy.intercept("/api/v2/boreholefile/getDataExtractionFileInfo*").as("extraction-file-info");
+  cy.intercept("/api/v2/profile/getDataExtractionFileInfo*").as("extraction-file-info");
   cy.intercept({
     method: "GET",
-    url: "/api/v2/boreholefile/dataextraction/*",
+    url: "/api/v2/profile/dataextraction/*",
   }).as("load-extraction-file");
 
   cy.intercept("/api/v2/log?boreholeId=**").as("logrun_by_borehole_GET");
   cy.intercept("POST", "/api/v2/log/export").as("log_export");
+  cy.intercept("POST", "/api/v2/log/import**").as("log_import");
+  cy.intercept("POST", "/api/v2/log/upload**").as("log_upload");
 
   cy.intercept("dataextraction/api/V1/extract_data").as("extract-data");
   cy.intercept("dataextraction/api/V1/extract_stratigraphy").as("extract-stratigraphy");
 
   cy.intercept("https://api3.geo.admin.ch/rest/services/height*").as("height");
   cy.intercept("/api/v2/import/*").as("borehole-upload");
-  cy.intercept("/api/v2/boreholefile/getAllForBorehole?boreholeId=**").as("getAllAttachments");
-  cy.intercept("/api/v2/boreholefile/upload?boreholeId=**").as("upload-files");
-  cy.intercept("/api/v2/boreholefile/download?boreholeFileId=**").as("download-file");
-  cy.intercept("/api/v2/boreholefile/detachFile?boreholeFileId=**").as("delete-file");
+  cy.intercept("/api/v2/profile/getAllForBorehole?boreholeId=**").as("getAllAttachments");
+  cy.intercept("/api/v2/profile/upload?boreholeId=**").as("upload-files");
+  cy.intercept("/api/v2/profile/download?profileId=**").as("download-file");
+  cy.intercept("DELETE", "/api/v2/profile/*").as("delete-file");
   cy.intercept("/api/v2/photo/getAllForBorehole?boreholeId=**").as("getAllPhotos");
   cy.intercept("/api/v2/photo/upload?boreholeId=**").as("upload-photo");
   cy.intercept("/api/v2/photo/export?photoIds=**").as("export-photos");
@@ -444,7 +446,7 @@ export const createBoreholeWithCompleteDataset = () => {
       { type: ObservationType.hydrotest },
       { type: ObservationType.fieldMeasurement },
     ],
-    boreholeFiles: [{ name: "Test Profile File", file: { name: "testfile", url: "testurl", type: "text/csv" } }],
+    profiles: [{ name: "testfile", nameUuid: "testfile-uuid", type: "text/csv" }],
     photos: [{ name: "Test Photo", nameUuid: "uuid1234", fileType: "image/tiff" }],
     documents: [{ name: "Test Document", url: "testurl" }],
     logRuns: [
@@ -533,18 +535,6 @@ export const loginAndResetState = () => {
     //       deleteStratigraphy(st.id);
     //     });
     // });
-
-    // Reset user settings (i.e. table ordering)
-    cy.request({
-      method: "POST",
-      url: "/api/v2/user/resetAllSettings",
-      cache: "no-cache",
-      credentials: "same-origin",
-      auth: bearerAuth(token as string),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
   });
 };
 
@@ -552,18 +542,6 @@ export const delayedType = (element: Cypress.Chainable<JQuery<HTMLElement>>, tex
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(500);
   element.type(text, { delay: 10 });
-};
-
-/**
- * Sets the value for a provided input element.
- *
- * cy.Type() can be slow. If every keystroke triggers a request it can be even slower.
- * Thus use setValueOfInputElement to set the value of the input element and only type one char after.
- * @param {object} inputElement The input element.
- * @param {string} inputValue The input string to set as value.
- */
-export const setValueOfInputElement = function (inputElement: JQuery<HTMLElement>, inputValue: string) {
-  inputElement[0].setAttribute("value", inputValue);
 };
 
 // Deletes a downloaded file in Cypress' downloads folder
@@ -627,7 +605,7 @@ export const getImportFileFromFixtures = (fileName: string, encoding: string | n
   return encoding ? cy.fixture(filePath, encoding as Cypress.Encodings) : cy.fixture(filePath);
 };
 
-export interface StratigraphyInput {
+interface StratigraphyInput {
   boreholeId: number | string;
   name: string;
   isPrimary?: boolean;
@@ -660,7 +638,7 @@ export const createStratigraphy = ({ boreholeId, name, isPrimary = true, date = 
   });
 };
 
-export interface CompletionInput {
+interface CompletionInput {
   name: string;
   boreholeId: number | string;
   kindId: number;
@@ -689,7 +667,7 @@ export const createCompletion = ({ name, boreholeId, kindId, isPrimary }: Comple
   });
 };
 
-export interface CasingInput {
+interface CasingInput {
   name: string;
   boreholeId: number | string;
   completionId: number | string;
@@ -753,7 +731,7 @@ export const openStratigraphyEditorTab = (stratigraphyName: string, hash: string
   cy.wait(waitAlias);
 };
 
-export interface ObservationInput {
+interface ObservationInput {
   boreholeId: number | string;
   startTime: string;
   reliabilityId: number;
@@ -762,7 +740,7 @@ export interface ObservationInput {
   toDepthM?: number | null;
 }
 
-export interface FieldMeasurementInput extends ObservationInput {
+interface FieldMeasurementInput extends ObservationInput {
   sampleTypeId: number;
   parameterId: number;
   value: number;
@@ -800,7 +778,7 @@ export const createFieldMeasurement = ({
   });
 };
 
-export interface WaterIngressInput extends ObservationInput {
+interface WaterIngressInput extends ObservationInput {
   quantityId: number;
 }
 
@@ -834,41 +812,7 @@ export const createWateringress = ({
   });
 };
 
-export interface GroundwaterLevelMeasurementInput extends ObservationInput {
-  kindId: number;
-}
-
-export const createGroundwaterLevelMeasurement = ({
-  boreholeId,
-  startTime,
-  reliabilityId,
-  kindId,
-  casingId = null,
-  fromDepthM = null,
-  toDepthM = null,
-}: GroundwaterLevelMeasurementInput) => {
-  return cy.get("@id_token").then(token => {
-    return cy.request({
-      method: "POST",
-      url: "/api/v2/groundwaterlevelmeasurement",
-      body: {
-        boreholeId: boreholeId,
-        startTime: startTime,
-        reliabilityId: reliabilityId,
-        kindId: kindId,
-        casingId: casingId,
-        fromDepthM: fromDepthM,
-        toDepthM: toDepthM,
-        type: ObservationType.groundwaterLevelMeasurement,
-      },
-      cache: "no-cache",
-      credentials: "same-origin",
-      auth: bearerAuth(token as string),
-    });
-  });
-};
-
-export interface HydrotestInput extends ObservationInput {
+interface HydrotestInput extends ObservationInput {
   kindCodelistIds: number[];
 }
 
@@ -902,7 +846,7 @@ export const createHydrotest = ({
   });
 };
 
-export interface BackfillInput {
+interface BackfillInput {
   completionId: number | string;
   casingId?: number | string | null;
   materialId?: number | null;
@@ -941,7 +885,7 @@ export const createBackfill = ({
   });
 };
 
-export interface InstrumentInput {
+interface InstrumentInput {
   completionId: number | string;
   casingId?: number | string | null;
   name: string;

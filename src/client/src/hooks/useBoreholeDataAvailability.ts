@@ -45,7 +45,7 @@ export const useBoreholeDataAvailability = (borehole?: BoreholeV2) => {
       hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.hydrotest) ?? false);
     const hasFieldMeasurement =
       hasObservation && (borehole.observations?.some(obs => obs.type === ObservationType.fieldMeasurement) ?? false);
-    const hasProfiles = (borehole.boreholeFiles?.length ?? 0) > 0;
+    const hasProfiles = (borehole.profiles?.length ?? 0) > 0;
     const hasDocuments = (borehole.documents?.length ?? 0) > 0;
     const hasPhotos = (borehole.photos?.length ?? 0) > 0;
     const hasAttachments = hasProfiles || hasPhotos || hasDocuments;

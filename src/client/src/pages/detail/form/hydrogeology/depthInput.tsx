@@ -3,7 +3,7 @@ import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Check, X } from "lucide-react";
 import { getBoreholeGeometryDepthMasl, getBoreholeGeometryDepthMDFromMasl } from "../../../../api/fetchApiV2.js";
-import { FormInput, FormSelect } from "../../../../components/form/form";
+import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormContainer } from "../../../../components/form/formContainer";
 import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
@@ -121,8 +121,7 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
             fieldName={fields.fieldNameMD}
             label={fields.labelMD}
             value={fields.getValueMD()}
-            controlledValue={formMethods.watch(fields.fieldNameMD)}
-            withThousandSeparator={true}
+            type={FormValueType.Number}
             onUpdate={() => convertDepth(fields.fieldNameMD, fields.fieldNameMasl, ObservationDepthUnitType.masl)}
             disabled={watchDepthUnit !== ObservationDepthUnitType.measuredDepth}
           />
@@ -130,8 +129,7 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
             fieldName={fields.fieldNameMasl}
             label={fields.labelMasl}
             value={fields.getValueMasl()}
-            controlledValue={formMethods.watch(fields.fieldNameMasl)}
-            withThousandSeparator={true}
+            type={FormValueType.Number}
             onUpdate={() =>
               convertDepth(fields.fieldNameMasl, fields.fieldNameMD, ObservationDepthUnitType.measuredDepth)
             }

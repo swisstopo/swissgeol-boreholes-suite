@@ -1,5 +1,5 @@
 import { FC } from "react";
-import DataDisplayCard from "../../../../../components/dataCard/dataDisplayCard.js";
+import { DataDisplayCard } from "../../../../../components/dataCard/dataDisplayCard.js";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../../components/form/form.ts";
 import ObservationDisplay from "../observationDisplay.tsx";
 import { deleteGroundwaterLevelMeasurement, GroundwaterLevelMeasurement } from "./GroundwaterLevelMeasurement.ts";
@@ -21,5 +21,3 @@ export const GroundwaterLevelMeasurementDisplay: FC<{ item: GroundwaterLevelMeas
     </DataDisplayCard>
   );
 };
-
-export default GroundwaterLevelMeasurementDisplay;

@@ -38,7 +38,7 @@ import { Table } from "../../../components/table/table.tsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { SessionKeys } from "../SessionKey.ts";
 
-export interface BoreholeTableProps {
+interface BoreholeTableProps {
   boreholes: BoreholeListItem[];
   totalCount: number;
   selectableBoreholeIds: number[];

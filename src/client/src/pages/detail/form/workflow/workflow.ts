@@ -10,8 +10,6 @@ import { NullableDateString } from "../../../../api/apiInterfaces.ts";
 import { boreholeQueryKey, canEditQueryKey, canUpdateStatusQueryKey } from "../../../../api/borehole.ts";
 import { fetchApiV2Legacy } from "../../../../api/fetchApiV2.ts";
 
-export { WorkflowStatus };
-
 export interface Workflow extends GenericWorkflow {
   id: number;
   boreholeId: number;
@@ -69,18 +67,18 @@ export enum TabType {
   Published,
 }
 
-export const fetchWorkflowByBoreholeId = async (boreholeId: number): Promise<Workflow> =>
+const fetchWorkflowByBoreholeId = async (boreholeId: number): Promise<Workflow> =>
   await fetchApiV2Legacy(`workflow/${boreholeId}`, "GET");
 
-export const sendWorkflowChangeRequest = async (workflowChangeRequest: WorkflowChangeRequest) => {
+const sendWorkflowChangeRequest = async (workflowChangeRequest: WorkflowChangeRequest) => {
   await fetchApiV2Legacy(`workflow/change`, "POST", workflowChangeRequest);
 };
 
-export const sendTabStatusChangeRequest = async (tabStatusChangeRequest: TabStatusChangeRequest) => {
+const sendTabStatusChangeRequest = async (tabStatusChangeRequest: TabStatusChangeRequest) => {
   await fetchApiV2Legacy(`workflow/tabstatuschange`, "POST", tabStatusChangeRequest);
 };
 
-export const workflowQueryKey = "workflows";
+const workflowQueryKey = "workflows";
 
 export const useWorkflow = (boreholeId: number): UseQueryResult<Workflow> => {
   return useQuery({

@@ -127,14 +127,14 @@ const SectionInput = ({ item, parentId }) => {
                         fieldName={`sectionElements.${index}.fromDepth`}
                         label="fromdepth"
                         value={field.fromDepth}
-                        withThousandSeparator={true}
+                        type={FormValueType.Number}
                         required={true}
                       />
                       <FormInput
                         fieldName={`sectionElements.${index}.toDepth`}
                         label="todepth"
                         value={field.toDepth}
-                        withThousandSeparator={true}
+                        type={FormValueType.Number}
                         required={true}
                       />
                     </FormContainer>
@@ -201,13 +201,13 @@ const SectionInput = ({ item, parentId }) => {
                         fieldName={`sectionElements.${index}.drillingDiameter`}
                         label="drill_diameter"
                         value={field.drillingDiameter}
-                        withThousandSeparator={true}
+                        type={FormValueType.Number}
                       />
                       <FormInput
                         fieldName={`sectionElements.${index}.drillingCoreDiameter`}
                         label="drill_core_diameter"
                         value={field.drillingCoreDiameter}
-                        withThousandSeparator={true}
+                        type={FormValueType.Number}
                       />
                     </FormContainer>
                     <FormContainer direction={"row"} justifyContent={"space-between"} alignItems={"center"}>

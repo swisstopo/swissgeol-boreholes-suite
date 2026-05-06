@@ -1,15 +1,20 @@
 import { FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress, Stack } from "@mui/material";
+import { Trash2, X } from "lucide-react";
+import UploadIcon from "../../../../assets/icons/upload.svg?react";
 import { v4 as uuidv4 } from "uuid";
-import { AddButton } from "../../../../components/buttons/buttons.tsx";
+import { AddButton, BoreholesBaseButton } from "../../../../components/buttons/buttons.tsx";
+import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { SaveContext } from "../../saveContext.tsx";
-import { LogRun, LogRunChangeTracker, useLogRunMutations, useLogsByBoreholeId } from "./log.ts";
+import { ImportLogRunsModal } from "./importLogRunsModal.tsx";
+import { useLogRunMutations, useLogsByBoreholeId } from "./log.ts";
+import { LogRun, LogRunChangeTracker } from "./logInterfaces.ts";
 import { LogRunModal } from "./logRunModal.tsx";
 import { LogTable } from "./logTable.tsx";
 import { prepareLogRunForSubmit } from "./logUtils.ts";
@@ -19,7 +24,10 @@ export const LogPanel: FC = () => {
   const { editingEnabled } = useContext(EditStateContext);
   const { id: boreholeId } = useRequiredParams();
   const [selectedLogRunId, setSelectedLogRunId] = useState<string | undefined>();
-  const { registerSaveHandler, registerResetHandler, unMount, markAsChanged } = useContext(SaveContext);
+  const [isImporting, setIsImporting] = useState<boolean>(false);
+  const { registerSaveHandler, registerResetHandler, unMount, markAsChanged, hasChanges, triggerReset } =
+    useContext(SaveContext);
+  const { showPrompt } = useContext(PromptContext);
   const showApiErrorAlert = useApiErrorAlert();
   const { data: logRuns = [], isLoading } = useLogsByBoreholeId(Number(boreholeId));
   const [tmpLogRuns, setTmpLogRuns] = useState<LogRunChangeTracker[]>([]);
@@ -46,6 +54,29 @@ export const LogPanel: FC = () => {
   const addRun = useCallback(() => {
     setSelectedLogRunId("new");
   }, []);
+
+  const startImport = useCallback(() => {
+    if (!hasChanges) {
+      setIsImporting(true);
+      return;
+    }
+    showPrompt("messageDiscardUnsavedChanges", [
+      {
+        label: "cancel",
+        icon: <X />,
+        variant: "outlined",
+      },
+      {
+        label: "discardchanges",
+        icon: <Trash2 />,
+        variant: "contained",
+        action: () => {
+          triggerReset();
+          setIsImporting(true);
+        },
+      },
+    ]);
+  }, [hasChanges, showPrompt, triggerReset]);
 
   const updateLogRunItem = useCallback(
     (selectedId: string | undefined, item: LogRun, hasChanges: boolean) => {
@@ -157,10 +188,18 @@ export const LogPanel: FC = () => {
         />
         {editingEnabled && (
           <Stack direction="row" gap={0.75} sx={{ position: "absolute", top: 0, right: 0, mx: 2, my: 1 }}>
+            <BoreholesBaseButton
+              label="import"
+              variant="outlined"
+              color="secondary"
+              icon={<UploadIcon />}
+              onClick={startImport}
+            />
             <AddButton label="addLogRun" variant="contained" onClick={addRun} />
           </Stack>
         )}
       </Box>
+      <ImportLogRunsModal isImporting={isImporting} setIsImporting={setIsImporting} />
       <LogRunModal logRun={selectedLogRun} updateLogRun={updateTmpLogRun} runs={tmpLogRunsFlat} />
     </>
   );

@@ -1,10 +1,10 @@
 import { FC, useContext, useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Stack, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { theme } from "../../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
-import { FormErrors } from "../../../../../../components/form/form.ts";
+import { FormErrors, FormValueType } from "../../../../../../components/form/form.ts";
 import { FormContainer } from "../../../../../../components/form/formContainer.tsx";
 import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
 import { FormInput } from "../../../../../../components/form/formInput.tsx";
@@ -30,7 +30,10 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
       const errors: FormErrors = {};
       validateDepths(values, errors);
       validateLithologyUnconValues(values.lithologyDescriptions, errors);
-      return { values, errors };
+      if (Object.keys(errors).length > 0) {
+        return { values: {}, errors };
+      }
+      return { values, errors: {} };
     },
   });
   const { formState, getValues } = formMethods;
@@ -77,109 +80,106 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
       onClose={closeDialog}
       isCloseDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
       <FormProvider {...formMethods}>
-        <Stack gap={3} flex={"0 1 1040px"} m={7.5}>
-          <BoreholesCard
-            data-cy="lithology-basic-data"
-            title={t("basicData")}
-            action={
-              <Controller
-                name="isUnconsolidated"
-                control={formMethods.control}
-                defaultValue={lithology?.isUnconsolidated === undefined ? true : lithology.isUnconsolidated}
-                render={({ field }) => (
-                  <ToggleButtonGroup
-                    value={field.value}
-                    onChange={(_, value) => {
-                      const currentLabel = field.value ? "unconsolidated" : "consolidated";
-                      const newLabel = field.value ? "consolidated" : "unconsolidated";
-                      showPrompt(t("switchUnconsolidatedMessage", { current: t(currentLabel), new: t(newLabel) }), [
-                        {
-                          label: "cancel",
-                          action: () => {},
+        <BoreholesCard
+          data-cy="lithology-basic-data"
+          title={t("basicData")}
+          action={
+            <Controller
+              name="isUnconsolidated"
+              control={formMethods.control}
+              defaultValue={lithology?.isUnconsolidated === undefined ? true : lithology.isUnconsolidated}
+              render={({ field }) => (
+                <ToggleButtonGroup
+                  value={field.value}
+                  onChange={(_, value) => {
+                    const currentLabel = field.value ? "unconsolidated" : "consolidated";
+                    const newLabel = field.value ? "consolidated" : "unconsolidated";
+                    showPrompt(t("switchUnconsolidatedMessage", { current: t(currentLabel), new: t(newLabel) }), [
+                      {
+                        label: "cancel",
+                        action: () => {},
+                      },
+                      {
+                        label: "continue",
+                        variant: "contained",
+                        action: () => {
+                          const currentValues = formMethods.getValues();
+                          formMethods.reset({
+                            id: currentValues.id,
+                            stratigraphyId: currentValues.stratigraphyId,
+                            fromDepth: currentValues.fromDepth,
+                            toDepth: currentValues.toDepth,
+                            isUnconsolidated: value,
+                            hasBedding: false,
+                            lithologyDescriptions: [
+                              {
+                                id: 0,
+                                lithologyId: currentValues.id,
+                                isFirst: true,
+                              },
+                            ],
+                            notes: "",
+                          } as Lithology);
                         },
-                        {
-                          label: "continue",
-                          variant: "contained",
-                          action: () => {
-                            const currentValues = formMethods.getValues();
-                            formMethods.reset({
-                              id: currentValues.id,
-                              stratigraphyId: currentValues.stratigraphyId,
-                              fromDepth: currentValues.fromDepth,
-                              toDepth: currentValues.toDepth,
-                              isUnconsolidated: value,
-                              hasBedding: false,
-                              lithologyDescriptions: [
-                                {
-                                  id: 0,
-                                  lithologyId: currentValues.id,
-                                  isFirst: true,
-                                },
-                              ],
-                              notes: "",
-                            } as Lithology);
-                          },
-                        },
-                      ]);
-                    }}
-                    exclusive
-                    sx={{
-                      boxShadow: "none",
-                      border: `1px solid ${theme.palette.border.light}`,
-                    }}>
-                    <ToggleButton value={true}>
-                      <Typography>{capitalizeFirstLetter(t("unconsolidated"))}</Typography>
-                    </ToggleButton>
-                    <ToggleButton value={false}>
-                      <Typography>{capitalizeFirstLetter(t("consolidated"))}</Typography>
-                    </ToggleButton>
-                  </ToggleButtonGroup>
-                )}
+                      },
+                    ]);
+                  }}
+                  exclusive
+                  sx={{
+                    boxShadow: "none",
+                    border: `1px solid ${theme.palette.border.light}`,
+                  }}>
+                  <ToggleButton value={true}>
+                    <Typography>{capitalizeFirstLetter(t("unconsolidated"))}</Typography>
+                  </ToggleButton>
+                  <ToggleButton value={false}>
+                    <Typography>{capitalizeFirstLetter(t("consolidated"))}</Typography>
+                  </ToggleButton>
+                </ToggleButtonGroup>
+              )}
+            />
+          }>
+          <FormContainer>
+            <FormContainer direction={"row"}>
+              <FormInput
+                fieldName={"fromDepth"}
+                label={"fromdepth"}
+                required={true}
+                value={lithology?.fromDepth}
+                type={FormValueType.Number}
               />
-            }>
-            <FormContainer>
-              <FormContainer direction={"row"}>
-                <FormInput
-                  fieldName={"fromDepth"}
-                  label={"fromdepth"}
-                  required={true}
-                  value={lithology?.fromDepth}
-                  withThousandSeparator={true}
-                />
-                <FormInput
-                  fieldName={"toDepth"}
-                  label={"todepth"}
-                  required={true}
-                  value={lithology?.toDepth}
-                  withThousandSeparator={true}
-                />
-              </FormContainer>
+              <FormInput
+                fieldName={"toDepth"}
+                label={"todepth"}
+                required={true}
+                value={lithology?.toDepth}
+                type={FormValueType.Number}
+              />
             </FormContainer>
-          </BoreholesCard>
-          {/* // TODO: Load description from lithological descriptions based on depths https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2386 */}
-          {/*<BoreholesCard data-cy="lithology-lithological-description" title={t("lithologyLayerDescription")}>*/}
-          {/*  <FormContainer>*/}
-          {/*    <FormInput*/}
-          {/*      fieldName={"description"}*/}
-          {/*      label={"description"}*/}
-          {/*      value={""}*/}
-          {/*      multiline={true}*/}
-          {/*      rows={3}*/}
-          {/*      readonly={true}*/}
-          {/*    />*/}
-          {/*  </FormContainer>*/}
-          {/*</BoreholesCard>*/}
-          {lithology &&
-            (isUnconsolidated ? (
-              <LithologyUnconsolidatedForm lithologyId={lithology.id} formMethods={formMethods} />
-            ) : (
-              <LithologyConsolidatedForm lithologyId={lithology.id} formMethods={formMethods} />
-            ))}
-          <BoreholesCard data-cy="lithology-notes" title={t("remarks")}>
-            <RemarksFormSection fieldName="notes" label="remarks" />
-          </BoreholesCard>
-          <Stack pb={4.5} />
-        </Stack>
+          </FormContainer>
+        </BoreholesCard>
+        {/* // TODO: Load description from lithological descriptions based on depths https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2386 */}
+        {/*<BoreholesCard data-cy="lithology-lithological-description" title={t("lithologyLayerDescription")}>*/}
+        {/*  <FormContainer>*/}
+        {/*    <FormInput*/}
+        {/*      fieldName={"description"}*/}
+        {/*      label={"description"}*/}
+        {/*      value={""}*/}
+        {/*      multiline={true}*/}
+        {/*      rows={3}*/}
+        {/*      readonly={true}*/}
+        {/*    />*/}
+        {/*  </FormContainer>*/}
+        {/*</BoreholesCard>*/}
+        {lithology &&
+          (isUnconsolidated ? (
+            <LithologyUnconsolidatedForm lithologyId={lithology.id} formMethods={formMethods} />
+          ) : (
+            <LithologyConsolidatedForm lithologyId={lithology.id} formMethods={formMethods} />
+          ))}
+        <BoreholesCard data-cy="lithology-notes" title={t("remarks")}>
+          <RemarksFormSection fieldName="notes" label="remarks" />
+        </BoreholesCard>
       </FormProvider>
     </FormDialog>
   );

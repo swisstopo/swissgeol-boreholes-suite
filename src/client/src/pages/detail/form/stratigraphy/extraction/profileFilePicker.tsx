@@ -4,7 +4,8 @@ import { CircularProgress, Dialog, DialogProps, Typography } from "@mui/material
 import { Stack } from "@mui/system";
 import { FileTextIcon } from "lucide-react";
 import { BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
-import { uploadFile } from "../../../../../api/file/file.ts";
+import { labelingFileFormat } from "../../../../../api/dataextractionInterfaces.ts";
+import { uploadProfile, useProfiles, useReloadProfiles } from "../../../../../api/profile.ts";
 import { AddFileButton } from "../../../../../components/buttons/addFileButton.tsx";
 import { CancelButton, FileButton } from "../../../../../components/buttons/buttons.tsx";
 import {
@@ -12,8 +13,6 @@ import {
   DialogHeaderContainer,
   DialogMainContent,
 } from "../../../../../components/styledComponents.ts";
-import { useProfiles, useReloadProfiles } from "../../../attachments/useProfiles.tsx";
-import { labelingFileFormat } from "../../../labeling/labelingInterfaces.tsx";
 
 interface ProfileFilePickerProps {
   boreholeId: string;
@@ -45,8 +44,8 @@ export const ProfileFilePicker: FC<ProfileFilePickerProps> = ({ boreholeId, open
 
   const addFile = useCallback(
     async (file: File) => {
-      const fileResponse = await uploadFile(Number(boreholeId), file);
-      selectFile(fileResponse.file);
+      const fileResponse = await uploadProfile(Number(boreholeId), file);
+      selectFile(fileResponse);
       reloadProfiles();
     },
     [boreholeId, reloadProfiles, selectFile],
@@ -56,10 +55,10 @@ export const ProfileFilePicker: FC<ProfileFilePickerProps> = ({ boreholeId, open
     return profiles && profiles?.length > 0 ? (
       profiles.map(profile => (
         <FileButton
-          key={profile.file.name}
-          label={profile.file.name}
+          key={profile.name}
+          label={profile.name}
           icon={<FileTextIcon />}
-          onClick={() => selectFile(profile.file)}
+          onClick={() => selectFile(profile)}
         />
       ))
     ) : (

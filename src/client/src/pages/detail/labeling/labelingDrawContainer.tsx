@@ -12,10 +12,13 @@ import VectorLayer from "ol/layer/Vector";
 import Map from "ol/Map";
 import VectorSource from "ol/source/Vector";
 import { Fill, Stroke, Style } from "ol/style";
-import { useProfileImage } from "../../../api/file/file.ts";
-import { DataExtractionResponse } from "../../../api/file/fileInterfaces.ts";
+import {
+  DataExtractionResponse,
+  ExtractionBoundingBox,
+  ExtractionType,
+} from "../../../api/dataextractionInterfaces.ts";
+import { useProfileImage } from "../../../api/profile.ts";
 import { theme } from "../../../AppTheme.ts";
-import { ExtractionBoundingBox, ExtractionType } from "./labelingInterfaces.tsx";
 import { LabelingView } from "./labelingView.tsx";
 
 const drawingStyle = () =>

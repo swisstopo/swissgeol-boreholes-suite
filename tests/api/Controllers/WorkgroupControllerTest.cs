@@ -1,4 +1,5 @@
-﻿using BDMS.Models;
+﻿using BDMS.Authentication;
+using BDMS.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -30,6 +31,60 @@ public class WorkgroupControllerTest
     {
         var workgroups = await workgroupController.GetAllAsync();
         Assert.AreEqual(6, workgroups.Count());
+    }
+
+    [TestMethod]
+    public async Task GetAllAsNonAdminReturnsOnlyAssignedWorkgroups()
+    {
+        workgroupController.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        var workgroups = (await workgroupController.GetAllAsync()).ToList();
+
+        // Editor is only assigned to the seeded default workgroup (id 1).
+        Assert.AreEqual(1, workgroups.Count);
+        Assert.AreEqual(1, workgroups[0].Id);
+    }
+
+    [TestMethod]
+    public async Task GetAllAsNonAdminWithMultipleRolesReturnsAllAssignedWorkgroups()
+    {
+        var editor = await context.Users.AsNoTracking().SingleAsync(u => u.SubjectId == "sub_editor");
+        await context.UserWorkgroupRoles.AddAsync(new UserWorkgroupRole
+        {
+            UserId = editor.Id,
+            WorkgroupId = 3,
+            Role = Role.View,
+        });
+        await context.SaveChangesAsync();
+
+        workgroupController.HttpContext.SetClaimsPrincipal("sub_editor", PolicyNames.Viewer);
+
+        var workgroups = (await workgroupController.GetAllAsync()).ToList();
+
+        Assert.AreEqual(2, workgroups.Count);
+        CollectionAssert.AreEquivalent(new[] { 1, 3 }, workgroups.Select(w => w.Id).ToList());
+    }
+
+    [TestMethod]
+    public async Task GetAllAsNonAdminWithoutRolesReturnsNoWorkgroups()
+    {
+        var orphanUser = new User
+        {
+            SubjectId = "sub_no_roles",
+            Name = "noroles",
+            FirstName = "no",
+            LastName = "roles",
+            Email = "noroles@example.com",
+            IsAdmin = false,
+        };
+        await context.Users.AddAsync(orphanUser);
+        await context.SaveChangesAsync();
+
+        workgroupController.HttpContext.SetClaimsPrincipal("sub_no_roles", PolicyNames.Viewer);
+
+        var workgroups = await workgroupController.GetAllAsync();
+
+        Assert.AreEqual(0, workgroups.Count());
     }
 
     [TestMethod]

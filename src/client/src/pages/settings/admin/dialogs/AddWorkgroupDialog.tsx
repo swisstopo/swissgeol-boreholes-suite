@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect, useState } from "react";
+import { FC, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
 import { Workgroup } from "../../../../api/apiInterfaces.ts";
@@ -17,7 +17,7 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({ open, setOpen 
   const { t } = useTranslation();
 
   const {
-    add: { mutate: add, isSuccess },
+    add: { mutate: add },
   } = useWorkgroupMutations();
 
   const addWorkgroup = async () => {
@@ -28,16 +28,14 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({ open, setOpen 
       boreholeCount: 0,
     };
 
-    add(workgroup);
+    add(workgroup, {
+      onSuccess: () => {
+        showAlert(t("workgroupWithNameAdded", { name: workgroupName }), "success");
+        setWorkgroupName(null);
+        setOpen(false);
+      },
+    });
   };
-
-  useEffect(() => {
-    if (isSuccess && workgroupName) {
-      showAlert(t("workgroupWithNameAdded", { name: workgroupName }), "success");
-      setWorkgroupName(null);
-      setOpen(false);
-    }
-  }, [setOpen, workgroupName, isSuccess, showAlert, t]);
 
   return (
     <Dialog open={open}>

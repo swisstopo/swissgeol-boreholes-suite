@@ -1,3 +1,5 @@
+import type { LayerConfig } from "../components/map/map";
+
 export interface ReduxRootState {
   editor: EditorStore;
   setting: Setting;
@@ -7,7 +9,7 @@ export interface ReduxRootState {
 export interface Setting {
   data: {
     map: {
-      explorer: string;
+      explorer: Record<string, LayerConfig>;
     };
   };
 }
@@ -16,7 +18,7 @@ export interface EditorStore {
   mselected: number[];
 }
 
-export type Role = "PUBLIC" | "VIEW" | "VALID" | "EDIT" | "CONTROL";
+type Role = "PUBLIC" | "VIEW" | "VALID" | "EDIT" | "CONTROL";
 
 export interface User {
   data: UserData;

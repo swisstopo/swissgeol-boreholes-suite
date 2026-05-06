@@ -1,7 +1,7 @@
 import { createContext, FC, PropsWithChildren, useMemo, useState } from "react";
 import { GridSortModel } from "@mui/x-data-grid";
 
-export interface WorkgroupAdministrationContextProps {
+interface WorkgroupAdministrationContextProps {
   workgroupTableSortModel: GridSortModel;
   setworkgroupTableSortModel: (model: GridSortModel) => void;
   workgroupDetailTableSortModel: GridSortModel;

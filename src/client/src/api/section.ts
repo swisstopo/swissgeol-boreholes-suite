@@ -15,7 +15,7 @@ export interface Section {
   sectionElements: SectionElement[];
 }
 
-export interface SectionElement {
+interface SectionElement {
   id: number;
   sectionId: number;
   section: Section | null;

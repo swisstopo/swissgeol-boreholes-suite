@@ -8,10 +8,7 @@ import { useWorkgroupMutations, workgroupQueryKey } from "../api/workgroup.ts";
 import { PromptContext } from "../components/prompt/promptContext.tsx";
 import { useBoreholesNavigate } from "./useBoreholesNavigate.tsx";
 
-export const useDeleteEntityPrompts = (
-  deleteEntity: UseMutateFunction<unknown, unknown, number>,
-  entityQueryKey: string,
-) => {
+const useDeleteEntityPrompts = (deleteEntity: UseMutateFunction<unknown, unknown, number>, entityQueryKey: string) => {
   const { navigateTo } = useBoreholesNavigate();
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);

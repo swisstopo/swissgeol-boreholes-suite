@@ -110,10 +110,10 @@ interface MutationContext {
 
 const lithologyController = "lithology";
 
-export const fetchLithologiesByStratigraphyId = async (stratigraphyId: number): Promise<Lithology[]> =>
+const fetchLithologiesByStratigraphyId = async (stratigraphyId: number): Promise<Lithology[]> =>
   await fetchApiV2Legacy(`lithology?stratigraphyId=${stratigraphyId}`, "GET");
 
-export const lithologyQueryKey = "lithologies";
+const lithologyQueryKey = "lithologies";
 
 export const useLithologies = (stratigraphyId?: number): UseQueryResult<Lithology[]> =>
   useQuery({

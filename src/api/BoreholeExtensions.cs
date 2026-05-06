@@ -142,6 +142,7 @@ public static class BoreholeExtensions
         borehole.BoreholeGeometry?.MarkAsNew();
         borehole.Documents?.MarkAsNew();
         borehole.LogRuns?.MarkAsNew();
+        borehole.Profiles?.MarkAsNew();
 
         borehole.Workflow = new Workflow
         {
@@ -151,15 +152,6 @@ public static class BoreholeExtensions
 
         // Set the geometry's SRID to LV95 (EPSG:2056)
         if (borehole.Geometry != null) borehole.Geometry.SRID = SpatialReferenceConstants.SridLv95;
-
-        borehole.Files?.Clear();
-        if (borehole.BoreholeFiles != null)
-        {
-            foreach (var file in borehole.BoreholeFiles)
-            {
-                file.File.MarkAsNew();
-            }
-        }
 
         foreach (var stratigraphy in borehole.Stratigraphies ?? [])
         {

@@ -14,7 +14,7 @@ import { ImportErrorDialog } from "../sidePanelContent/importer/importErrorDialo
 import { useBoreholeUrlParams } from "../useBoreholeUrlParams.ts";
 import { useUserWorkgroups } from "../UserWorkgroupsContext.tsx";
 
-export interface MainSideNavProps {
+interface MainSideNavProps {
   toggleDrawer: (open: boolean) => void;
   drawerOpen: boolean;
   setSideDrawerContent: React.Dispatch<React.SetStateAction<DrawerContentTypes>>;

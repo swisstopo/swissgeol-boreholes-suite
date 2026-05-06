@@ -3,6 +3,7 @@ import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, Chip, SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
+import { CircleX } from "lucide-react";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { getFormFieldError } from "./form";
 import { FormSelectMenuItem } from "./formSelect.tsx";
@@ -118,9 +119,11 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
                       key={key}
                       sx={{ height: "26px" }}
                       label={label}
+                      color="primary"
                       title={tooltipLabel ? t(tooltipLabel) : undefined}
                       {...chipProps}
                       data-cy={`chip-${label}`}
+                      deleteIcon={<CircleX style={{ width: "16px", height: "16px" }} />}
                     />
                   );
                 });

@@ -3,7 +3,7 @@ import { IconButton, Stack, Typography } from "@mui/material";
 import { theme } from "../../AppTheme";
 import { ButtonProps } from "./buttonsInterface";
 
-export interface NavButtonProps extends ButtonProps {
+interface NavButtonProps extends ButtonProps {
   label: string;
   icon: ReactNode;
   selected?: boolean;

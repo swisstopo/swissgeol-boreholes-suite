@@ -2,7 +2,7 @@ import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { TableCell } from "@mui/material";
 import { Codelist, useCodelists } from "../../../../../components/codelist.ts";
-import DataDisplayCard from "../../../../../components/dataCard/dataDisplayCard.tsx";
+import { DataDisplayCard } from "../../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormResultTableDisplay } from "../../../../../components/form/formResultTableDisplay.js";
 import { parameterTableHeaderStyles } from "../../../../../components/form/formResultTableDisplayStyles.js";
 import { formatNumberForDisplay } from "../../../../../components/form/formUtils.ts";
@@ -56,5 +56,3 @@ export const FieldMeasurementDisplay: FC<{ item: FieldMeasurement }> = ({ item }
     </DataDisplayCard>
   );
 };
-
-export default FieldMeasurementDisplay;

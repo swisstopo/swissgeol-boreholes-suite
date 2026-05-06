@@ -49,19 +49,19 @@ export interface MinimalLayer {
   hasBedding?: boolean;
 }
 
-export interface Chronostratigraphy {
+interface Chronostratigraphy {
   id: number;
   stratigraphyId: number;
 }
 
-export interface Lithostratigraphy {
+interface Lithostratigraphy {
   id: number;
   stratigraphyId: number;
 }
 
 export const stratigraphiesQueryKey = "stratigraphies";
 
-export const invalidateStratigraphyQueries = (
+const invalidateStratigraphyQueries = (
   queryClient: ReturnType<typeof useQueryClient>,
   boreholeId: number,
   invalidateBorehole: boolean,
@@ -139,7 +139,7 @@ export const useStratigraphyMutations = () => {
   };
 };
 
-export const chronostratigraphiesQueryKey = "chronostratigraphies";
+const chronostratigraphiesQueryKey = "chronostratigraphies";
 
 export const useChronostratigraphies = (stratigraphyID?: number) =>
   useQuery({
@@ -194,7 +194,7 @@ export const useChronostratigraphyMutations = () => {
   };
 };
 
-export const lithostratigraphiesQueryKey = "lithostratigraphies";
+const lithostratigraphiesQueryKey = "lithostratigraphies";
 
 export const useLithostratigraphies = (stratigraphyID?: number) =>
   useQuery({

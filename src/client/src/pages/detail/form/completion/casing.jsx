@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { getCasings } from "../../../../api/fetchApiV2.ts";
-import DataCards from "../../../../components/dataCard/dataCards.tsx";
+import { DataCards } from "../../../../components/dataCard/dataCards.tsx";
 import { sortByDepth } from "../sorter.jsx";
 import CasingDisplay from "./casingDisplay.jsx";
 import CasingInput from "./casingInput.jsx";
