@@ -1,6 +1,6 @@
 // @vitest-environment jsdom
-import { fireEvent, render, screen } from "@testing-library/react";
-import { describe, expect, it, vi } from "vitest";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
 import { FormDialog } from "./formDialog";
 
 vi.mock("react-i18next", () => ({
@@ -10,6 +10,10 @@ vi.mock("react-i18next", () => ({
 }));
 
 describe("FormDialog", () => {
+  afterEach(() => {
+    cleanup();
+  });
+
   it("renders Cancel and Apply buttons by default", () => {
     render(
       <FormDialog open={true} title="Test" onClose={vi.fn()}>
