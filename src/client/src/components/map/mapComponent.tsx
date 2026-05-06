@@ -184,7 +184,8 @@ export const MapComponent: FC<MapComponentProps> = ({
     pointsRef.current = points;
 
     const clusterSource = new Cluster({ distance: 40, source: points });
-    const layerZIndex = overlaysRef.current.length + 1;
+    // Use z-index to ensure points/clusters are always on top of WMS/WMTS overlay layers
+    const featureLayerZIndex = 1000;
 
     const clusterStyle: StyleFunction = (feature: FeatureLike) => clusterStyleFunction(feature.get("features").length);
 
@@ -192,7 +193,7 @@ export const MapComponent: FC<MapComponentProps> = ({
       new VectorLayer({
         source: clusterSource,
         properties: { name: "clusters" },
-        zIndex: layerZIndex,
+        zIndex: featureLayerZIndex,
         style: clusterStyle,
         minResolution: 15,
       }),
@@ -204,7 +205,7 @@ export const MapComponent: FC<MapComponentProps> = ({
     map.addLayer(
       new VectorLayer({
         properties: { name: "points" },
-        zIndex: layerZIndex,
+        zIndex: featureLayerZIndex,
         source: points,
         style: pointStyle,
         maxResolution: 15,
@@ -252,7 +253,7 @@ export const MapComponent: FC<MapComponentProps> = ({
         setTimeout(() => {
           if (!hoveringPopupRef.current) {
             const popup = popupRef.current;
-            if (popup?.getPosition() !== undefined) {
+            if (popup?.getPosition()) {
               setHoverFeatures(null);
               hoveringPopupRef.current = false;
               popup.setPosition(undefined);
