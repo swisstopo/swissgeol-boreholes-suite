@@ -6,6 +6,7 @@ import { SidePanelToggleButton } from "../../components/buttons/labelingButtons.
 import { GoogleAnalytics } from "../../components/GoogleAnalytics.tsx";
 import { FullPageCentered, LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import { useBlockNavigation } from "../../hooks/useBlockNavigation.tsx";
+import { useBoreholeDocumentTitle } from "../../hooks/useDocumentTitle.ts";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
 import { AnalyticsContext, AnalyticsContextProps } from "../../term/analyticsContext.tsx";
 import DetailHeader from "./detailHeader.tsx";
@@ -26,6 +27,7 @@ export const DetailPage: FC = () => {
   const { data: borehole, isLoading } = useBorehole(parseInt(id));
   const { data: currentUser } = useCurrentUser();
   useBlockNavigation();
+  useBoreholeDocumentTitle(borehole?.name);
 
   useEffect(() => {
     setEditingEnabled(borehole?.locked !== null && borehole?.lockedById === currentUser?.id);

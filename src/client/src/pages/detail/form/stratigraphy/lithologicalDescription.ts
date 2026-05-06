@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { ExtractionBoundingBox } from "../../../../api/dataextractionInterfaces.ts";
 import { fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
 import { BaseLayer } from "../../../../api/stratigraphy.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
-import { ExtractionBoundingBox } from "../../labeling/labelingInterfaces.tsx";
 
 export interface LithologicalDescription extends BaseLayer {
   description?: string;

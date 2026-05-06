@@ -2,14 +2,19 @@ import { FC, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertColor, Box } from "@mui/material";
 import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
-import { extractCoordinates, extractText, useExtractionBoundingBoxes, useFileInfo } from "../../../api/file/file.ts";
+import {
+  extractCoordinates,
+  extractText,
+  useExtractionBoundingBoxes,
+  useFileInfo,
+} from "../../../api/dataextraction.ts";
+import { ExtractionRequest, ExtractionState } from "../../../api/dataextractionInterfaces.ts";
 import { theme } from "../../../AppTheme.ts";
 import { TextExtractionButton } from "../../../components/buttons/labelingButtons.tsx";
 import { useShowAlertOnError } from "../../../hooks/useShowAlertOnError.tsx";
 import { EditStateContext } from "../editStateContext.tsx";
 import { useLabelingContext } from "./labelingContext.tsx";
 import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
-import { ExtractionRequest, ExtractionState } from "./labelingInterfaces.tsx";
 
 interface LabelingExtractionProps {
   selectedFile: BoreholeAttachment | undefined;

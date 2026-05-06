@@ -1,9 +1,9 @@
 import { createContext, Dispatch, FC, PropsWithChildren, SetStateAction, useMemo, useState } from "react";
-import Polygon from "ol/geom/Polygon";
+import Feature from "ol/Feature";
 
 interface PolygonFilterContextInterface {
-  filterPolygon: Polygon | null;
-  setFilterPolygon: Dispatch<SetStateAction<Polygon | null>>;
+  filterPolygon: Feature | null;
+  setFilterPolygon: Dispatch<SetStateAction<Feature | null>>;
   polygonSelectionEnabled: boolean;
   setPolygonSelectionEnabled: Dispatch<SetStateAction<boolean>>;
   featureIds: number[];
@@ -13,7 +13,7 @@ interface PolygonFilterContextInterface {
 export const PolygonFilterContext = createContext<PolygonFilterContextInterface>({} as PolygonFilterContextInterface);
 
 export const PolygonFilterProvider: FC<PropsWithChildren> = ({ children }) => {
-  const [filterPolygon, setFilterPolygon] = useState<Polygon | null>(null);
+  const [filterPolygon, setFilterPolygon] = useState<Feature | null>(null);
   const [polygonSelectionEnabled, setPolygonSelectionEnabled] = useState(false);
   const [featureIds, setFeatureIds] = useState<number[]>([]);
 

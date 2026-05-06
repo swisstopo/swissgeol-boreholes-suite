@@ -2,6 +2,7 @@ import React, { useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Card, CardContent, CardHeader } from "@mui/material";
 import { Check, X } from "lucide-react";
+import { Coordinate, ExtractionState } from "../../../../api/dataextractionInterfaces.ts";
 import { CoordinateExtractionButton } from "../../../../components/buttons/labelingButtons.tsx";
 import { FormContainer, FormCoordinate, FormDomainSelect, FormSelect } from "../../../../components/form/form";
 import {
@@ -12,7 +13,6 @@ import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { useLabelingContext } from "../../labeling/labelingContext.tsx";
-import { Coordinate, ExtractionState } from "../../labeling/labelingInterfaces";
 import { boundingBox, referenceSystems } from "./coordinateSegmentConstants";
 import {
   Coordinates,

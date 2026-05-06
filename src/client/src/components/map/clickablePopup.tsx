@@ -15,7 +15,7 @@ export const ClickablePopup: FC<ClickablePopupProps> = ({ features = [] }) => {
       <Box className="ol-popup" id="popup-overlay">
         {features?.length > 0 &&
           features.map(feature => {
-            const featureId = feature.getId();
+            const featureId = feature.get("id");
             const name = feature.get("name") ?? featureId;
             return (
               <Typography

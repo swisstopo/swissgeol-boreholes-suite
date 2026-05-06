@@ -1153,8 +1153,7 @@
         "Updated": "2024-12-17T10:12:31.217772Z"
       }
     ],
-    "files": null,
-    "boreholeFiles": [],
+    "profiles": [],
     "LogRuns": [
       {
         "Id": 24000000,
@@ -2678,8 +2677,7 @@
         "Updated": "2024-12-17T10:12:31.217772Z"
       }
     ],
-    "files": null,
-    "boreholeFiles": [],
+    "profiles": [],
     "codelists": null,
     "boreholeCodelists": []
   }

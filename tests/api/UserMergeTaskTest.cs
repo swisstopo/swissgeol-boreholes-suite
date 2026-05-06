@@ -239,29 +239,32 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     }
 
     [TestMethod]
-    public async Task HandlesBoreholeFileTripleFkReassignment()
+    public async Task HandlesProfileFkReassignment()
     {
         var oldUser = CreateUser("PRISMVOLT", "QUARTZ", DateTime.UtcNow.AddDays(-10));
         var newUser = CreateUser("PRISMVOLT", "OPAL", DateTime.UtcNow);
 
         var borehole = new Borehole { CreatedBy = newUser, UpdatedBy = newUser };
         Context.Boreholes.Add(borehole);
-
-        var file = new Models.File { CreatedBy = newUser, Name = "PRISMVOLT.pdf", Type = "application/pdf", NameUuid = "prismvolt-uuid" };
-        Context.Files.Add(file);
-
         await Context.SaveChangesAsync().ConfigureAwait(false);
 
-        Context.BoreholeFiles.Add(new BoreholeFile { BoreholeId = borehole.Id, FileId = file.Id, UserId = oldUser.Id, CreatedById = oldUser.Id, UpdatedById = oldUser.Id });
+        Context.Profiles.Add(new Profile
+        {
+            BoreholeId = borehole.Id,
+            Name = "PRISMVOLT.pdf",
+            Type = "application/pdf",
+            NameUuid = "prismvolt-uuid",
+            CreatedById = oldUser.Id,
+            UpdatedById = oldUser.Id,
+        });
         await Context.SaveChangesAsync().ConfigureAwait(false);
 
         Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.UserMerge, new MaintenanceTaskParameters(OnlyMissing: false, DryRun: false), AdminUserId));
         await Service.WaitForCompletionAsync(MaintenanceTaskType.UserMerge);
 
-        var bf = await Context.BoreholeFiles.AsNoTracking().SingleAsync(b => b.BoreholeId == borehole.Id && b.FileId == file.Id);
-        Assert.AreEqual(newUser.Id, bf.UserId);
-        Assert.AreEqual(newUser.Id, bf.CreatedById);
-        Assert.AreEqual(newUser.Id, bf.UpdatedById);
+        var profile = await Context.Profiles.AsNoTracking().SingleAsync(p => p.BoreholeId == borehole.Id);
+        Assert.AreEqual(newUser.Id, profile.CreatedById);
+        Assert.AreEqual(newUser.Id, profile.UpdatedById);
     }
 
     [TestMethod]
@@ -343,16 +346,9 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
         Context.Stratigraphies.Add(new Stratigraphy { BoreholeId = borehole.Id, CreatedBy = oldUser, UpdatedBy = oldUser });
         await Context.SaveChangesAsync().ConfigureAwait(false);
 
-        // Triple FK: BoreholeFile with UserId/CreatedById/UpdatedById
-        var file = new Models.File { CreatedBy = newUser, Name = "DAWNFORGE.pdf", Type = "application/pdf", NameUuid = "dawnforge-uuid" };
-        Context.Files.Add(file);
-        await Context.SaveChangesAsync().ConfigureAwait(false);
-        Context.BoreholeFiles.Add(new BoreholeFile { BoreholeId = borehole.Id, FileId = file.Id, UserId = oldUser.Id, CreatedById = oldUser.Id, UpdatedById = oldUser.Id });
-        await Context.SaveChangesAsync().ConfigureAwait(false);
-
         // Composite-key FK: UserWorkgroupRole
         var workgroup = await Context.Workgroups.FirstAsync().ConfigureAwait(false);
-        Context.UserWorkgroupRoles.Add(new UserWorkgroupRole { UserId = oldUser.Id, WorkgroupId = workgroup.Id, Role = Role.Editor });
+        Context.UserWorkgroupRoles.Add(new UserWorkgroupRole { UserId = newUser.Id, WorkgroupId = workgroup.Id, Role = Role.Editor });
         await Context.SaveChangesAsync().ConfigureAwait(false);
 
         // Composite-key FK: TermsAccepted

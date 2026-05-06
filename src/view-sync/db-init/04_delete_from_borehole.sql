@@ -51,14 +51,14 @@ DELETE FROM bdms.borehole WHERE id_bho NOT IN (
 );
 
 -- Purge non-public attachments
-DELETE FROM bdms.borehole_files WHERE public_bfi IS NOT true;
+DELETE FROM bdms.profile WHERE public IS NOT true;
 DELETE FROM bdms.photo WHERE public is NOT true;
 DELETE FROM bdms.document WHERE public is NOT true;
 
 -- Purge non-published attachments
-DELETE FROM bdms.borehole_files WHERE id_bho_fk IN (
-    SELECT bf.id_bho_fk FROM bdms.borehole_files bf
-    INNER JOIN bdms.workflow w ON w.borehole_id = bf.id_bho_fk
+DELETE FROM bdms.profile WHERE borehole_id IN (
+    SELECT p.borehole_id FROM bdms.profile p
+    INNER JOIN bdms.workflow w ON w.borehole_id = p.borehole_id
     INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
     WHERE t.profile = false
 );
@@ -94,11 +94,6 @@ DELETE FROM bdms.log_run WHERE borehole_id IN (
     INNER JOIN bdms.tab_status t ON t.tab_status_id = w.published_tabs_id
     WHERE t.log = false
 );
-
--- Clean-up unreferenced files.
--- Note: Photos, documents and log files get deleted automatically when boreholes are deleted and therefore do not need a separate DELETE statement.
-DELETE FROM bdms.files
-WHERE id_fil NOT IN (SELECT id_fil_fk FROM bdms.borehole_files);
 
 -- Purge workflow data
 DELETE FROM bdms.workflow

@@ -1,12 +1,13 @@
+import Feature from "ol/Feature";
 import { Circle, Fill, RegularShape, Stroke, Style, Text } from "ol/style";
 
-const boreholeStyleCache = {};
-const virtualBoreholeStyleCache = {};
-const trialpitStyleCache = {};
-const probingStyleCache = {};
-const deepBoreholeStyleCache = {};
-const otherStyleCache = {};
-const clusterStyleCache = {};
+const boreholeStyleCache: Record<number, Circle> = {};
+const virtualBoreholeStyleCache: Record<number, RegularShape> = {};
+const trialpitStyleCache: Record<number, RegularShape> = {};
+const probingStyleCache: Record<number, RegularShape> = {};
+const deepBoreholeStyleCache: Record<number, RegularShape> = {};
+const otherStyleCache: Record<number, RegularShape> = {};
+const clusterStyleCache: Record<number, Style> = {};
 
 const blackStroke = new Stroke({ color: "black", width: 1 });
 const greenFill = new Fill({ color: "rgb(33, 186, 69)" });
@@ -44,20 +45,20 @@ export const drawStyle = new Style({
   }),
 });
 
-export function styleFunction(feature, highlighted) {
-  let selected = highlighted !== undefined && highlighted.length > 0 && highlighted.indexOf(feature.getId()) > -1;
-  let res = feature.get("restriction");
-  let fill;
+export function styleFunction(feature: Feature, highlighted: number[]): Style[] {
+  const selected = highlighted?.length > 0 && highlighted.includes(feature.get("id"));
+  const res = feature.get("restriction") as number;
+  let fill: Fill;
   if (res === 20111001) {
     fill = greenFill;
-  } else if ([20111003, 20111002].indexOf(res) >= 0) {
+  } else if ([20111003, 20111002].includes(res)) {
     fill = redFill;
   } else {
     fill = blackFill;
   }
 
-  let conf;
-  let type = feature.get("type");
+  let conf: { image: Circle | RegularShape };
+  const type = feature.get("type") as number;
   if (type === 20101001) {
     // boreholes
     let image = boreholeStyleCache[res];
@@ -69,10 +70,7 @@ export function styleFunction(feature, highlighted) {
       });
       boreholeStyleCache[res] = image;
     }
-
-    conf = {
-      image: image,
-    };
+    conf = { image };
   } else if (type === 30000307) {
     // virtual borehole
     let image = virtualBoreholeStyleCache[res];
@@ -87,10 +85,7 @@ export function styleFunction(feature, highlighted) {
       });
       virtualBoreholeStyleCache[res] = image;
     }
-
-    conf = {
-      image: image,
-    };
+    conf = { image };
   } else if (type === 20101003) {
     // trial pits
     let image = trialpitStyleCache[res];
@@ -104,10 +99,7 @@ export function styleFunction(feature, highlighted) {
       });
       trialpitStyleCache[res] = image;
     }
-
-    conf = {
-      image: image,
-    };
+    conf = { image };
   } else if (type === 20101002) {
     // dynamic probing
     let image = probingStyleCache[res];
@@ -122,10 +114,7 @@ export function styleFunction(feature, highlighted) {
       });
       probingStyleCache[res] = image;
     }
-
-    conf = {
-      image: image,
-    };
+    conf = { image };
   } else if (type === 20101004) {
     // other
     let image = otherStyleCache[res];
@@ -139,10 +128,7 @@ export function styleFunction(feature, highlighted) {
       });
       otherStyleCache[res] = image;
     }
-
-    conf = {
-      image: image,
-    };
+    conf = { image };
   } else {
     // Not set
     let image = deepBoreholeStyleCache[res];
@@ -157,10 +143,7 @@ export function styleFunction(feature, highlighted) {
       });
       deepBoreholeStyleCache[res] = image;
     }
-
-    conf = {
-      image: image,
-    };
+    conf = { image };
   }
 
   if (selected) {
@@ -170,7 +153,7 @@ export function styleFunction(feature, highlighted) {
   return [new Style(conf)];
 }
 
-export function clusterStyleFunction(length) {
+export function clusterStyleFunction(length: number): Style {
   const circleSize = 8 + length.toString().length * 2.5;
   let clusterStyle = clusterStyleCache[circleSize];
   if (!clusterStyle) {
@@ -196,15 +179,15 @@ export function clusterStyleFunction(length) {
     clusterStyleCache[circleSize] = clusterStyle;
   }
 
-  clusterStyle.text_.text_ = length.toString();
+  clusterStyle.getText()!.setText(length.toString());
 
   return clusterStyle;
 }
 
-export function detailMapStyleFunction(feature, highlighted) {
-  let selected = highlighted !== undefined && highlighted.indexOf(feature.getId()) > -1;
+export function detailMapStyleFunction(feature: Feature, highlighted: number[]): Style[] {
+  const selected = highlighted?.includes(feature.get("id") as number);
 
-  let conf = {
+  const conf = {
     image: new Circle({
       radius: selected ? 10 : 6,
       fill: selected ? new Fill({ color: "rgba(255, 0, 0, 0.8)" }) : new Fill({ color: "rgba(0, 255, 0, 1)" }),
