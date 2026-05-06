@@ -84,7 +84,7 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
             f => expectedSet.has(f.name.toLowerCase()) && !alreadyProvided.has(f.name.toLowerCase()),
           );
           if (rejected.length > 0) {
-            setError(t("unexpectedFiles", { files: rejected.map(f => f.name).join(", ") }));
+            setError(t("unexpectedFiles", { count: rejected.length, files: rejected.map(f => f.name).join(", ") }));
           }
         }
         if (filesToAdd.length > 0) {
