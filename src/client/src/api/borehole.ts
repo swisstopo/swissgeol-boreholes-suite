@@ -283,6 +283,9 @@ interface BaseFilterRequest {
   workgroupId?: number[] | null;
   ids?: number[] | null;
   restrictionId?: number[] | null;
+  canton?: string[] | null;
+  municipality?: string[] | null;
+  logToolTypeId?: number[] | null;
   identifierTypeId?: number[] | null;
   identifierValue?: string | null;
   restrictionUntilFrom?: string | null;
@@ -351,6 +354,9 @@ export interface FilterStatsResponse {
   workgroupId: Record<number, number>;
   restrictionId: Record<number, number>;
   identifierTypeId: Record<number, number>;
+  canton: Record<string, number>;
+  municipality: Record<string, number>;
+  logToolTypeId: Record<number, number>;
   workflowStatusCount: Record<string, number>;
   nationalInterest: NullableBooleanCounts;
   topBedrockIntersected: NullableBooleanCounts;
