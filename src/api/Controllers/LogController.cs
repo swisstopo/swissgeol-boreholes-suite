@@ -316,7 +316,7 @@ public class LogController : BoreholeControllerBase<LogRun>
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(MaxFileSize)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
-    public async Task<IActionResult> ImportAsync([FromQuery] int boreholeId, IFormFile logRunsCsvFile, IFormFile? logFilesCsvFile, IFormFile? fileListFile)
+    public async Task<IActionResult> ImportAsync([FromQuery] int boreholeId, IFormFile logRunsCsvFile, IFormFile? logFilesCsvFile)
     {
         var borehole = await Context.Boreholes
             .AsNoTracking()
@@ -333,16 +333,6 @@ public class LogController : BoreholeControllerBase<LogRun>
         if (logRunsCsvFile == null)
         {
             return BadRequest(new { detail = "Log runs CSV file is required.", messageKey = "importErrorLogRunsCsvRequired" });
-        }
-
-        if (logFilesCsvFile != null && fileListFile == null)
-        {
-            return BadRequest(new { detail = "File list is required when a log files CSV is provided.", messageKey = "importErrorFileListRequired" });
-        }
-
-        if (logFilesCsvFile == null && fileListFile != null)
-        {
-            return BadRequest(new { detail = "Log files CSV is required when a file list is provided.", messageKey = "importErrorLogFilesCsvRequired" });
         }
 
         var logSchemas = new[]
@@ -367,8 +357,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         List<(string RunNumber, LogFile LogFile)> parsedLogFiles = [];
         if (logFilesCsvFile != null)
         {
-            var fileNames = await ReadFileListAsync(fileListFile!).ConfigureAwait(false);
-            parsedLogFiles = ParseLogFilesCsv(logFilesCsvFile, CsvConfigHelper.CsvReadConfig, codelists, parsedLogRuns, fileNames);
+            parsedLogFiles = ParseLogFilesCsv(logFilesCsvFile, CsvConfigHelper.CsvReadConfig, codelists, parsedLogRuns);
         }
 
         if (importErrors.Count > 0) return BadRequest(importErrors);
@@ -444,11 +433,11 @@ public class LogController : BoreholeControllerBase<LogRun>
         return result;
     }
 
-    private List<(string RunNumber, LogFile LogFile)> ParseLogFilesCsv(IFormFile csvFile, CsvConfiguration config, List<Codelist> codelists, List<LogRun> logRuns, IReadOnlyList<string> fileNames)
+    private List<(string RunNumber, LogFile LogFile)> ParseLogFilesCsv(IFormFile csvFile, CsvConfiguration config, List<Codelist> codelists, List<LogRun> logRuns)
     {
         var result = new List<(string RunNumber, LogFile LogFile)>();
         var validRunNumbers = logRuns.Select(lr => lr.RunNumber).ToHashSet();
-        var referencedFileNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+        var seenNamesPerRun = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
         using var reader = new StreamReader(csvFile.OpenReadStream(), Encoding.UTF8);
         using var csv = new CsvReader(reader, config);
 
@@ -471,18 +460,19 @@ public class LogController : BoreholeControllerBase<LogRun>
             var extension = csv.GetField<string>("Extension") ?? string.Empty;
             var expectedFileName = string.IsNullOrWhiteSpace(extension) ? name : $"{name}.{extension}";
 
-            var matchedFileName = fileNames.FirstOrDefault(f => string.Equals(f, expectedFileName, StringComparison.OrdinalIgnoreCase));
-            if (matchedFileName == null)
+            var sanitizedName = expectedFileName.Replace(" ", "_", StringComparison.OrdinalIgnoreCase);
+            var fileExtension = Path.GetExtension(sanitizedName);
+
+            if (!seenNamesPerRun.TryGetValue(runNumber, out var seenNames))
             {
-                AddImportError(rowIndex, $"No file in file list matches '{expectedFileName}'.", "importErrorFileNotFound", LogFileErrorPrefix);
-            }
-            else
-            {
-                referencedFileNames.Add(matchedFileName);
+                seenNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                seenNamesPerRun[runNumber] = seenNames;
             }
 
-            var sanitizedName = (matchedFileName ?? expectedFileName).Replace(" ", "_", StringComparison.OrdinalIgnoreCase);
-            var fileExtension = Path.GetExtension(sanitizedName);
+            if (!seenNames.Add(sanitizedName))
+            {
+                AddImportError(rowIndex, $"Duplicate file name '{sanitizedName}' in run '{runNumber}'.", "importErrorDuplicateFileName", LogFileErrorPrefix);
+            }
 
             var toolTypeCodes = ResolveToolTypeCodelistIds(csv.GetField<string>("LogFileToolTypeCodes"), codelists, rowIndex);
 
@@ -522,19 +512,7 @@ public class LogController : BoreholeControllerBase<LogRun>
             TagRowErrors(rowErrorStartIndex, FileNameValueKey, expectedFileName);
         }
 
-        AddErrorsForUnreferencedAttachments(fileNames, referencedFileNames, rowIndex);
-
         return result;
-    }
-
-    private void AddErrorsForUnreferencedAttachments(IReadOnlyList<string> fileNames, HashSet<string> referencedFileNames, int rowIndexOffset)
-    {
-        var orphans = fileNames.Where(name => !referencedFileNames.Contains(name)).ToList();
-        for (var i = 0; i < orphans.Count; i++)
-        {
-            var orphanRowIndex = rowIndexOffset + i + 1;
-            AddImportError(orphanRowIndex, $"Attachment '{orphans[i]}' is not referenced by any row in the log files CSV.", "importErrorAttachmentNotInCsv", LogFileErrorPrefix, new() { [FileNameValueKey] = orphans[i] });
-        }
     }
 
     private void TagRowErrors(int rowErrorStartIndex, string valueKey, string value)
@@ -570,22 +548,6 @@ public class LogController : BoreholeControllerBase<LogRun>
                 AddImportError(i + 1, $"RunNumber '{runNumber}' already exists for this borehole.", "importErrorRunNumberExists", LogRunErrorPrefix, new() { [RunNumberValueKey] = runNumber });
             }
         }
-    }
-
-    private static async Task<IReadOnlyList<string>> ReadFileListAsync(IFormFile fileListFile)
-    {
-        var fileNames = new List<string>();
-        using var reader = new StreamReader(fileListFile.OpenReadStream(), Encoding.UTF8);
-        while (await reader.ReadLineAsync().ConfigureAwait(false) is { } line)
-        {
-            var trimmed = line.Trim();
-            if (!string.IsNullOrEmpty(trimmed))
-            {
-                fileNames.Add(trimmed);
-            }
-        }
-
-        return fileNames;
     }
 
     private int? ResolveCodelistId(string schema, string? textValue, List<Codelist> codelists, int rowIndex, string fieldName, string errorPrefix)
@@ -739,9 +701,9 @@ public class LogController : BoreholeControllerBase<LogRun>
                     {
                         var fileBytes = await logFileCloudService.GetObject(logFile.NameUuid!).ConfigureAwait(false);
 
-                        // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name.
-                        // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the original file name.
-                        var entryName = $"{logFile.NameUuid}_{FileHelper.SanitizeZipEntryFileName(logFile.Name!, "export")}";
+                        var folderName = FileHelper.SanitizeZipEntryFileName(logFile.LogRun!.RunNumber, "run");
+                        var fileName = FileHelper.SanitizeZipEntryFileName(logFile.Name!, "export");
+                        var entryName = $"{folderName}/{fileName}";
                         var zipEntry = archive.CreateEntry(entryName, CompressionLevel.Fastest);
                         using var zipEntryStream = zipEntry.Open();
                         await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);

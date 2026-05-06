@@ -58,6 +58,14 @@ public class LogFileCloudService : CloudServiceBase
             // Replace white spaces in file names, as they are interpreted differently across different systems.
             fileName = fileName.Replace(" ", "_", StringComparison.OrdinalIgnoreCase);
 
+            var nameExists = await context.LogFiles
+                .AnyAsync(lf => lf.LogRunId == logRunId && lf.Name == fileName)
+                .ConfigureAwait(false);
+            if (nameExists)
+            {
+                throw new InvalidOperationException($"A file named '{fileName}' already exists in this log run.");
+            }
+
             await UploadObject(fileStream, fileNameGuid, contentType).ConfigureAwait(false);
 
             var logFile = new LogFile

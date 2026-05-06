@@ -9,11 +9,12 @@ import { StandaloneIconButton } from "../../../../components/buttons/buttons.tsx
 
 interface FileDropzoneProps {
   existingFile?: File;
-  onChange: (files: File[]) => void;
+  onChange: (files: File[]) => string | void | Promise<void>;
   errorMessageKey?: string;
   accept?: Accept;
   maxFileSize?: number;
   multiple?: boolean;
+  expectedFileNames?: string[];
 }
 
 export const FileDropzone: FC<FileDropzoneProps> = ({
@@ -23,6 +24,7 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
   accept,
   maxFileSize = largeMaxFileSizeBytes,
   multiple = false,
+  expectedFileNames,
 }) => {
   const { t } = useTranslation();
   const [files, setFiles] = useState<File[]>(existingFile ? [existingFile] : []);
@@ -71,14 +73,32 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
 
         setError(errorMessage);
       } else {
-        setFiles(prev => {
-          const next = multiple ? [...prev, ...acceptedFiles] : acceptedFiles;
-          onChange(next);
-          return next;
-        });
+        let filesToAdd = acceptedFiles;
+        if (expectedFileNames) {
+          const expectedSet = new Set(expectedFileNames.map(n => n.toLowerCase()));
+          const alreadyProvided = new Set(files.map(f => f.name.toLowerCase()));
+          const rejected = filesToAdd.filter(
+            f => !expectedSet.has(f.name.toLowerCase()) || alreadyProvided.has(f.name.toLowerCase()),
+          );
+          filesToAdd = filesToAdd.filter(
+            f => expectedSet.has(f.name.toLowerCase()) && !alreadyProvided.has(f.name.toLowerCase()),
+          );
+          if (rejected.length > 0) {
+            setError(t("unexpectedFiles", { files: rejected.map(f => f.name).join(", ") }));
+          }
+        }
+        if (filesToAdd.length > 0) {
+          const next = multiple ? [...files, ...filesToAdd] : filesToAdd;
+          const validationError = onChange(next);
+          if (typeof validationError === "string") {
+            setError(validationError);
+          } else {
+            setFiles(next);
+          }
+        }
       }
     },
-    [error, fileSizeLabel, multiple, onChange, t],
+    [error, expectedFileNames, files, fileSizeLabel, multiple, onChange, t],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
