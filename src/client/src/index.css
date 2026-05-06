@@ -1,143 +1,149 @@
 :root {
-  --sgc-color-brand: #a65462;
-  --sgc-color-primary--active: #a65462;
-  --sgc-color-secondary--active: #ffd6dc;
+    --sgc-color-brand: #a65462;
+    --sgc-color-primary--active: #a65462;
+    --sgc-color-secondary--active: #ffd6dc;
 }
 
 .lucide {
-  width: 20px;
-  height: 20px;
-  stroke-width: 1.7px;
+    width: 20px;
+    height: 20px;
+    stroke-width: 1.7px;
 }
 
 .ol-popup {
-  position: absolute;
-  background-color: white;
-  -webkit-filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
-  filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
-  padding: 8px;
-  border-radius: 10px;
-  border: 1px solid #cccccc;
-  bottom: 12px;
-  left: -50px;
-  min-width: 70px;
+    position: absolute;
+    background-color: white;
+    -webkit-filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
+    filter: drop-shadow(0 1px 4px rgba(0, 0, 0, 0.2));
+    padding: 8px;
+    border-radius: 10px;
+    border: 1px solid #cccccc;
+    bottom: 12px;
+    left: -50px;
+    min-width: 70px;
+    z-index: 1001 !important;
 }
+
 .ol-popup:after,
 .ol-popup:before {
-  top: 100%;
-  border: solid transparent;
-  content: " ";
-  height: 0;
-  width: 0;
-  position: absolute;
-  pointer-events: none;
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
 }
+
 .ol-popup:after {
-  border-top-color: white;
-  border-width: 10px;
-  left: 48px;
-  margin-left: -10px;
+    border-top-color: white;
+    border-width: 10px;
+    left: 48px;
+    margin-left: -10px;
 }
+
 .ol-popup:before {
-  border-top-color: #cccccc;
-  border-width: 11px;
-  left: 48px;
-  margin-left: -11px;
+    border-top-color: #cccccc;
+    border-width: 11px;
+    left: 48px;
+    margin-left: -11px;
 }
+
 .ol-popup-closer {
-  text-decoration: none;
-  position: absolute;
-  top: 2px;
-  right: 8px;
+    text-decoration: none;
+    position: absolute;
+    top: 2px;
+    right: 8px;
 }
+
 .ol-popup-closer:after {
-  content: "✖";
+    content: "✖";
 }
+
 .ol-dragbox {
-  border: 2px solid #5b21b6 !important; /* theme.palette.ai.main */
-  background-color: rgba(91, 33, 182, 0.2) !important; /* theme.palette.ai.mainTransparent */
+    border: 2px solid #5b21b6 !important; /* theme.palette.ai.main */
+    background-color: rgba(91, 33, 182, 0.2) !important; /* theme.palette.ai.mainTransparent */
 }
 
 .stbg {
-  background: #fff
-    url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAAnRSTlMAAHaTzTgAAAARSURBVHgBY3iKBFEAOp/+MgB+UQnYeBZPWAAAAABJRU5ErkJggg==) !important;
+    background: #fff url(data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAwAAAAMCAAAAABzHgM7AAAAAnRSTlMAAHaTzTgAAAARSURBVHgBY3iKBFEAOp/+MgB+UQnYeBZPWAAAAABJRU5ErkJggg==) !important;
 }
 
 /* way the hell off screen */
 .scrollbar-measure {
-  width: 100px;
-  height: 100px;
-  overflow: scroll;
-  position: absolute;
-  top: -9999px;
+    width: 100px;
+    height: 100px;
+    overflow: scroll;
+    position: absolute;
+    top: -9999px;
 }
 
 .scroller {
-  overflow: hidden;
-  flex-shrink: 0;
+    overflow: hidden;
+    flex-shrink: 0;
 }
 
 .scroller:hover {
-  overflow-y: auto !important;
-  margin-right: 0px !important;
+    overflow-y: auto !important;
+    margin-right: 0px !important;
 }
 
 .bdms-header {
-  font-weight: bold;
-  font-size: 1.28em;
+    font-weight: bold;
+    font-size: 1.28em;
 }
 
 .linker {
-  cursor: pointer;
-  text-decoration: underline;
-  color: rgb(33, 133, 208);
+    cursor: pointer;
+    text-decoration: underline;
+    color: rgb(33, 133, 208);
 }
 
 .link {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .link:hover {
-  text-decoration: underline;
+    text-decoration: underline;
 }
 
 .selectable {
-  cursor: pointer;
+    cursor: pointer;
 }
 
 .unselectable {
-  cursor: default !important;
+    cursor: default !important;
 }
 
 .selectable:hover {
-  background-color: rgb(233, 233, 233);
+    background-color: rgb(233, 233, 233);
 }
 
 *,
 *:before,
 *:after {
-  box-sizing: inherit;
+    box-sizing: inherit;
 }
 
 html {
-  box-sizing: border-box;
-  line-height: 1.15;
-  -ms-text-size-adjust: 100%;
-  -webkit-text-size-adjust: 100%;
-  font-size: 14px;
+    box-sizing: border-box;
+    line-height: 1.15;
+    -ms-text-size-adjust: 100%;
+    -webkit-text-size-adjust: 100%;
+    font-size: 14px;
 }
 
 body {
-  margin: 0;
-  overflow-x: hidden;
-  line-height: 1.4285em;
+    margin: 0;
+    overflow-x: hidden;
+    line-height: 1.4285em;
 }
 
 main {
-  display: block;
+    display: block;
 }
 
 html,
 body {
-  height: 100%;
+    height: 100%;
 }
