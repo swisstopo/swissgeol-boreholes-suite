@@ -145,7 +145,7 @@ export const StratigraphyPanel: FC = () => {
     ) {
       const primaryId = sortedStratigraphies.find(x => x.isPrimary)?.id ?? sortedStratigraphies[0].id ?? -1;
       navigateToStratigraphy(primaryId === -1 ? undefined : primaryId, true);
-    } else if (sortedStratigraphies && sortedStratigraphies.length === 0) {
+    } else if (sortedStratigraphies?.length === 0) {
       navigateToStratigraphy(undefined, true);
     }
   }, [boreholeId, stratigraphyId, sortedStratigraphies, navigateToStratigraphy]);
