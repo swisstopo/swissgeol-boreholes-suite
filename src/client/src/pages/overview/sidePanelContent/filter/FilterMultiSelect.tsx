@@ -1,4 +1,4 @@
-import { SyntheticEvent, useMemo } from "react";
+import { KeyboardEvent, SyntheticEvent, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, Box, Chip, TextField, Typography } from "@mui/material";
 import { CircleX } from "lucide-react";
@@ -37,6 +37,13 @@ export const FilterMultiSelect = <T extends number | string>({
     onUpdate(ids.length === 0 ? undefined : ids);
   };
 
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter") {
+      // @ts-expect-error - blur is unknown on the event target but closes the autocomplete popover as desired
+      event.target.blur();
+    }
+  };
+
   return (
     <Box data-cy={`${item.key}-formMultiSelect`}>
       {item.label ? (
@@ -46,10 +53,10 @@ export const FilterMultiSelect = <T extends number | string>({
       ) : null}
       <Autocomplete
         multiple
-        disableCloseOnSelect
         options={options}
         value={selectedOptions}
         onChange={handleChange}
+        onKeyDown={handleKeyDown}
         isOptionEqualToValue={(option, value) => option.key === value.key}
         getOptionLabel={option => option.label}
         getOptionDisabled={option => {
