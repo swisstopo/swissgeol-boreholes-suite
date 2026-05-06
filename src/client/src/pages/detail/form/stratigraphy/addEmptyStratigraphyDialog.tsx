@@ -1,8 +1,9 @@
 import { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
+import { useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "../../../../api/apiInterfaces.ts";
-import { Stratigraphy, useStratigraphyMutations } from "../../../../api/stratigraphy.ts";
+import { stratigraphiesQueryKey, Stratigraphy, useStratigraphyMutations } from "../../../../api/stratigraphy.ts";
 import { AddButton, CancelButton } from "../../../../components/buttons/buttons.tsx";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 
@@ -25,6 +26,7 @@ export const AddEmptyStratigraphyDialog: FC<AddEmptyStratigraphyDialogProps> = (
   const [nameError, setNameError] = useState<string | null>(null);
   const { t } = useTranslation();
   const showApiErrorAlert = useApiErrorAlert();
+  const queryClient = useQueryClient();
   const {
     add: { mutateAsync: addStratigraphy, isPending },
   } = useStratigraphyMutations();
@@ -56,6 +58,9 @@ export const AddEmptyStratigraphyDialog: FC<AddEmptyStratigraphyDialogProps> = (
     };
     try {
       const created = await addStratigraphy(payload);
+      // Wait for the stratigraphies refetch so the parent re-renders with the new entry
+      // before we navigate; otherwise the panel's redirect-to-primary effect runs on stale data.
+      await queryClient.invalidateQueries({ queryKey: [stratigraphiesQueryKey, boreholeId] });
       onCreated(created.id);
       resetAndClose();
     } catch (error) {

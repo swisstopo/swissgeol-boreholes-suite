@@ -10,6 +10,15 @@ vi.mock("react-i18next", () => ({
   }),
 }));
 
+const invalidateQueries = vi.fn().mockResolvedValue(undefined);
+vi.mock("@tanstack/react-query", async () => {
+  const actual = await vi.importActual<typeof import("@tanstack/react-query")>("@tanstack/react-query");
+  return {
+    ...actual,
+    useQueryClient: () => ({ invalidateQueries }),
+  };
+});
+
 const showApiErrorAlert = vi.fn();
 vi.mock("../../../../hooks/useShowAlertOnError.tsx", () => ({
   useApiErrorAlert: () => showApiErrorAlert,
@@ -54,6 +63,8 @@ describe("AddEmptyStratigraphyDialog", () => {
   beforeEach(() => {
     showApiErrorAlert.mockReset();
     mutateAsync.mockReset();
+    invalidateQueries.mockClear();
+    invalidateQueries.mockResolvedValue(undefined);
     onClose.mockReset();
     onCreated.mockReset();
   });
