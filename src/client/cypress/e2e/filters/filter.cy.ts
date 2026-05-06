@@ -68,13 +68,12 @@ function testLargeSelectFilter(
   it(`filters boreholes by ${title}`, () => {
     openFilter(filterSection);
     const selector = `[data-cy="${fieldName}-formSelect"]`;
-    cy.get(selector).scrollIntoView();
-    cy.get(selector).click();
     options.forEach(option => {
-      cy.contains(option).click();
+      cy.get(selector).scrollIntoView();
+      cy.get(selector).click();
+      cy.get(`[data-cy^="${fieldName}-option-"]`).contains(option).click();
       cy.wait("@borehole_filter");
     });
-    cy.get("body").click(0, 0);
     cy.dataCy("boreholes-number-preview").should("have.text", expectedCount);
     cy.get(`[data-cy^="filter-chip-${fieldName}-"]`).should("have.length", options.length);
     options.forEach(() => removeFirstMultiSelectChip(fieldName));
@@ -219,12 +218,15 @@ describe("Search filter tests", () => {
   testYesNoFilter("top bedrock intersected", "Borehole", "topBedrockIntersected", "No", "1'209");
   testYesNoFilter("geometry available", "Borehole", "hasGeometry", "Yes", "100");
 
-  // ─── LOG FILTER ────────────────────────────────────────────────────────────
+  // ─── LOCATION FILTERS ──────────────────────────────────────────────────────
+  testLargeSelectFilter("canton", "Location", "canton", ["California"], "57");
+  testLargeSelectFilter("municipality", "Location", "municipality", ["New Alexandria"], "1");
 
+  // ─── LOG FILTER ────────────────────────────────────────────────────────────
   testYesNoFilter("logs available", "LOG", "hasLogs", "Yes", "101");
+  testLargeSelectFilter("log tool type", "LOG", "logToolTypeId", ["Caliper", "Gamma Ray"], "101");
 
   // ─── ATTACHMENT FILTERS ────────────────────────────────────────────────────
-
   testYesNoFilter("profiles available", "Attachments", "hasProfiles", "No", "2'900");
   testYesNoFilter("photos available", "Attachments", "hasPhotos", "Yes", "71");
 
