@@ -13,6 +13,7 @@
 - Filter UI was redesigned and now supports multiple selections and chips per selected filter value.
 - Upgraded swissgeol OCR service to version 1.1.4.
 - The database tables `boreholeFiles` and  `files` were merged into one table `profiles`.
+- Lithology rock type can now be left unspecified (in addition to unconsolidated and consolidated). Stratigraphy extraction creates lithologies as unspecified by default.
 
 ### Fixed
 - Only one workgroup could be added at once. Only with a complete refresh of the page another workgroup could be added.

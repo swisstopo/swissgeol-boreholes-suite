@@ -66,11 +66,11 @@ public class Lithology : IStratigraphyLayer, IChangeTracking, IIdentifyable
 
     /// <summary>
     /// Gets or sets whether the <see cref="Lithology"/> is unconsolidated or consolidated.
+    /// <c>null</c> means no specification.
     /// </summary>
     [IncludeInExport]
-    [JsonRequired]
     [Column("unconsolidated")]
-    public bool IsUnconsolidated { get; set; }
+    public bool? IsUnconsolidated { get; set; }
 
     /// <summary>
     /// Gets or sets whether the <see cref="Lithology"/> has bedding.

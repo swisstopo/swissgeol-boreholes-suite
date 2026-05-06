@@ -22,6 +22,14 @@ interface LithologyEditModalProps {
   updateLithology: (lithology: Lithology, hasChanges: boolean) => void;
 }
 
+type RockTypeToggleValue = "unconsolidated" | "consolidated" | "unspecified";
+
+const toToggleValue = (v: boolean | null | undefined): RockTypeToggleValue =>
+  v === true ? "unconsolidated" : v === false ? "consolidated" : "unspecified";
+
+const fromToggleValue = (v: RockTypeToggleValue): boolean | null =>
+  v === "unconsolidated" ? true : v === "consolidated" ? false : null;
+
 export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateLithology }) => {
   const { t } = useTranslation();
   const formMethods = useForm<Lithology>({
@@ -29,7 +37,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
     resolver: async values => {
       const errors: FormErrors = {};
       validateDepths(values, errors);
-      validateLithologyUnconValues(values.lithologyDescriptions, errors);
+      validateLithologyUnconValues(values.lithologyDescriptions, errors, values.isUnconsolidated);
       if (Object.keys(errors).length > 0) {
         return { values: {}, errors };
       }
@@ -90,10 +98,13 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
               defaultValue={lithology?.isUnconsolidated === undefined ? true : lithology.isUnconsolidated}
               render={({ field }) => (
                 <ToggleButtonGroup
-                  value={field.value}
-                  onChange={(_, value) => {
-                    const currentLabel = field.value ? "unconsolidated" : "consolidated";
-                    const newLabel = field.value ? "consolidated" : "unconsolidated";
+                  value={toToggleValue(field.value)}
+                  onChange={(_, newToggleValue: RockTypeToggleValue | null) => {
+                    if (newToggleValue === null) return; // user clicked the active button — ignore deselect
+                    const newValue = fromToggleValue(newToggleValue);
+                    if (newValue === field.value) return;
+                    const currentLabel = toToggleValue(field.value);
+                    const newLabel = newToggleValue;
                     showPrompt(t("switchUnconsolidatedMessage", { current: t(currentLabel), new: t(newLabel) }), [
                       {
                         label: "cancel",
@@ -109,7 +120,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
                             stratigraphyId: currentValues.stratigraphyId,
                             fromDepth: currentValues.fromDepth,
                             toDepth: currentValues.toDepth,
-                            isUnconsolidated: value,
+                            isUnconsolidated: newValue,
                             hasBedding: false,
                             lithologyDescriptions: [
                               {
@@ -129,11 +140,14 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
                     boxShadow: "none",
                     border: `1px solid ${theme.palette.border.light}`,
                   }}>
-                  <ToggleButton value={true}>
+                  <ToggleButton value={"unconsolidated" satisfies RockTypeToggleValue}>
                     <Typography>{capitalizeFirstLetter(t("unconsolidated"))}</Typography>
                   </ToggleButton>
-                  <ToggleButton value={false}>
+                  <ToggleButton value={"consolidated" satisfies RockTypeToggleValue}>
                     <Typography>{capitalizeFirstLetter(t("consolidated"))}</Typography>
+                  </ToggleButton>
+                  <ToggleButton value={"unspecified" satisfies RockTypeToggleValue}>
+                    <Typography>{capitalizeFirstLetter(t("unspecified"))}</Typography>
                   </ToggleButton>
                 </ToggleButtonGroup>
               )}
@@ -171,12 +185,12 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
         {/*    />*/}
         {/*  </FormContainer>*/}
         {/*</BoreholesCard>*/}
-        {lithology &&
-          (isUnconsolidated ? (
-            <LithologyUnconsolidatedForm lithologyId={lithology.id} formMethods={formMethods} />
-          ) : (
-            <LithologyConsolidatedForm lithologyId={lithology.id} formMethods={formMethods} />
-          ))}
+        {lithology && isUnconsolidated === true && (
+          <LithologyUnconsolidatedForm lithologyId={lithology.id} formMethods={formMethods} />
+        )}
+        {lithology && isUnconsolidated === false && (
+          <LithologyConsolidatedForm lithologyId={lithology.id} formMethods={formMethods} />
+        )}
         <BoreholesCard data-cy="lithology-notes" title={t("remarks")}>
           <RemarksFormSection fieldName="notes" label="remarks" />
         </BoreholesCard>

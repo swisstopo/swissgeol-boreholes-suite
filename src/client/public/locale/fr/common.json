@@ -566,6 +566,7 @@
   "unsavedChanges": "Modifications non enregistrées",
   "unsavedChangesMessage": "{{where}}: Vous avez des modifications non enregistrés. Comment souhaitez-vous continuer?",
   "unselectAll": "Tout désélectionner",
+  "unspecified": "non spécifié",
   "upload": "Télécharger",
   "uploadPhotosAsAttachments": "Les photos doivent être téléchargées dans l'onglet \"Annexes\".",
   "uploaded": "Téléchargé",

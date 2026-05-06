@@ -66,7 +66,7 @@ export const useBulkAddMutation = () => {
                 id: 0,
                 toDepth: ld.toDepth,
                 fromDepth: ld.fromDepth,
-                isUnconsolidated: true,
+                isUnconsolidated: null,
                 hasBedding: false,
                 stratigraphyId: newStratigraphy.id,
                 lithologyDescriptions: [
