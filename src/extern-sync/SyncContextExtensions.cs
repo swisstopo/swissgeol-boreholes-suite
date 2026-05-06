@@ -154,10 +154,9 @@ public static class SyncContextExtensions
 
     private static Borehole ClearNavigationProperties(this Borehole borehole)
     {
-        foreach (var file in borehole.BoreholeFiles?.Select(boreholeFile => boreholeFile.File) ?? [])
+        foreach (var profile in borehole.Profiles ?? [])
         {
-            file.Boreholes.Clear();
-            file.BoreholeFiles.Clear();
+            profile.Borehole = null;
         }
 
         borehole.Observations?.ClearNavigationProperties();

@@ -371,61 +371,6 @@ namespace BDMS.Migrations
                     b.ToTable("borehole_identifiers_codelist", "bdms");
                 });
 
-            modelBuilder.Entity("BDMS.Models.BoreholeFile", b =>
-                {
-                    b.Property<int>("BoreholeId")
-                        .HasColumnType("integer")
-                        .HasColumnName("id_bho_fk");
-
-                    b.Property<int>("FileId")
-                        .HasColumnType("integer")
-                        .HasColumnName("id_fil_fk");
-
-                    b.Property<DateTime?>("Attached")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("attached_bfi");
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_bfi");
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("created_by_bfi");
-
-                    b.Property<string>("Description")
-                        .HasColumnType("text")
-                        .HasColumnName("description_bfi");
-
-                    b.Property<bool?>("Public")
-                        .HasColumnType("boolean")
-                        .HasColumnName("public_bfi");
-
-                    b.Property<DateTime?>("Updated")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("update_bfi");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("updater_bfi");
-
-                    b.Property<int?>("UserId")
-                        .HasColumnType("integer")
-                        .HasColumnName("id_usr_fk");
-
-                    b.HasKey("BoreholeId", "FileId");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("FileId");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.HasIndex("UserId");
-
-                    b.ToTable("borehole_files", "bdms");
-                });
-
             modelBuilder.Entity("BDMS.Models.BoreholeGeometryElement", b =>
                 {
                     b.Property<int>("Id")
@@ -949,54 +894,6 @@ namespace BDMS.Migrations
                     b.HasIndex("UpdatedById");
 
                     b.ToTable("fieldmeasurement_result", "bdms");
-                });
-
-            modelBuilder.Entity("BDMS.Models.File", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasColumnName("id_fil");
-
-                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
-
-                    b.Property<DateTime?>("Created")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("uploaded_fil");
-
-                    b.Property<int?>("CreatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("id_usr_fk");
-
-                    b.Property<string>("Name")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("name_fil");
-
-                    b.Property<string>("NameUuid")
-                        .HasColumnType("text")
-                        .HasColumnName("name_uuid_fil");
-
-                    b.Property<string>("Type")
-                        .IsRequired()
-                        .HasColumnType("text")
-                        .HasColumnName("type_fil");
-
-                    b.Property<DateTime?>("Updated")
-                        .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_fil");
-
-                    b.Property<int?>("UpdatedById")
-                        .HasColumnType("integer")
-                        .HasColumnName("updated_by_fil");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("CreatedById");
-
-                    b.HasIndex("UpdatedById");
-
-                    b.ToTable("files", "bdms");
                 });
 
             modelBuilder.Entity("BDMS.Models.HydrotestEvaluationMethodCode", b =>
@@ -2133,6 +2030,69 @@ namespace BDMS.Migrations
                     b.ToTable("photo", "bdms");
                 });
 
+            modelBuilder.Entity("BDMS.Models.Profile", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasColumnName("id");
+
+                    NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
+
+                    b.Property<int>("BoreholeId")
+                        .HasColumnType("integer")
+                        .HasColumnName("borehole_id");
+
+                    b.Property<DateTime?>("Created")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("creation");
+
+                    b.Property<int?>("CreatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("creator");
+
+                    b.Property<string>("Description")
+                        .HasColumnType("text")
+                        .HasColumnName("description");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name");
+
+                    b.Property<string>("NameUuid")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("name_uuid");
+
+                    b.Property<bool?>("Public")
+                        .HasColumnType("boolean")
+                        .HasColumnName("public");
+
+                    b.Property<string>("Type")
+                        .IsRequired()
+                        .HasColumnType("text")
+                        .HasColumnName("type");
+
+                    b.Property<DateTime?>("Updated")
+                        .HasColumnType("timestamp with time zone")
+                        .HasColumnName("update");
+
+                    b.Property<int?>("UpdatedById")
+                        .HasColumnType("integer")
+                        .HasColumnName("updater");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BoreholeId");
+
+                    b.HasIndex("CreatedById");
+
+                    b.HasIndex("UpdatedById");
+
+                    b.ToTable("profile", "bdms");
+                });
+
             modelBuilder.Entity("BDMS.Models.Section", b =>
                 {
                     b.Property<int>("Id")
@@ -2943,43 +2903,6 @@ namespace BDMS.Migrations
                     b.Navigation("Codelist");
                 });
 
-            modelBuilder.Entity("BDMS.Models.BoreholeFile", b =>
-                {
-                    b.HasOne("BDMS.Models.Borehole", "Borehole")
-                        .WithMany("BoreholeFiles")
-                        .HasForeignKey("BoreholeId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("BDMS.Models.File", "File")
-                        .WithMany("BoreholeFiles")
-                        .HasForeignKey("FileId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("BDMS.Models.User", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-
-                    b.HasOne("BDMS.Models.User", "User")
-                        .WithMany()
-                        .HasForeignKey("UserId");
-
-                    b.Navigation("Borehole");
-
-                    b.Navigation("CreatedBy");
-
-                    b.Navigation("File");
-
-                    b.Navigation("UpdatedBy");
-
-                    b.Navigation("User");
-                });
-
             modelBuilder.Entity("BDMS.Models.BoreholeGeometryElement", b =>
                 {
                     b.HasOne("BDMS.Models.Borehole", "Borehole")
@@ -3198,21 +3121,6 @@ namespace BDMS.Migrations
                     b.Navigation("Parameter");
 
                     b.Navigation("SampleType");
-
-                    b.Navigation("UpdatedBy");
-                });
-
-            modelBuilder.Entity("BDMS.Models.File", b =>
-                {
-                    b.HasOne("BDMS.Models.User", "CreatedBy")
-                        .WithMany()
-                        .HasForeignKey("CreatedById");
-
-                    b.HasOne("BDMS.Models.User", "UpdatedBy")
-                        .WithMany()
-                        .HasForeignKey("UpdatedById");
-
-                    b.Navigation("CreatedBy");
 
                     b.Navigation("UpdatedBy");
                 });
@@ -3955,6 +3863,29 @@ namespace BDMS.Migrations
                     b.Navigation("UpdatedBy");
                 });
 
+            modelBuilder.Entity("BDMS.Models.Profile", b =>
+                {
+                    b.HasOne("BDMS.Models.Borehole", "Borehole")
+                        .WithMany("Profiles")
+                        .HasForeignKey("BoreholeId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.HasOne("BDMS.Models.User", "CreatedBy")
+                        .WithMany()
+                        .HasForeignKey("CreatedById");
+
+                    b.HasOne("BDMS.Models.User", "UpdatedBy")
+                        .WithMany()
+                        .HasForeignKey("UpdatedById");
+
+                    b.Navigation("Borehole");
+
+                    b.Navigation("CreatedBy");
+
+                    b.Navigation("UpdatedBy");
+                });
+
             modelBuilder.Entity("BDMS.Models.Section", b =>
                 {
                     b.HasOne("BDMS.Models.Borehole", "Borehole")
@@ -4204,8 +4135,6 @@ namespace BDMS.Migrations
                 {
                     b.Navigation("BoreholeCodelists");
 
-                    b.Navigation("BoreholeFiles");
-
                     b.Navigation("BoreholeGeometry");
 
                     b.Navigation("Completions");
@@ -4217,6 +4146,8 @@ namespace BDMS.Migrations
                     b.Navigation("Observations");
 
                     b.Navigation("Photos");
+
+                    b.Navigation("Profiles");
 
                     b.Navigation("Sections");
 
@@ -4280,11 +4211,6 @@ namespace BDMS.Migrations
                     b.Navigation("Casings");
 
                     b.Navigation("Instrumentations");
-                });
-
-            modelBuilder.Entity("BDMS.Models.File", b =>
-                {
-                    b.Navigation("BoreholeFiles");
                 });
 
             modelBuilder.Entity("BDMS.Models.Lithology", b =>

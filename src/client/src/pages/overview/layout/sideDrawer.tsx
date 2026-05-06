@@ -19,10 +19,10 @@ export const SideDrawer = ({ drawerOpen, drawerContent }: SideDrawerProps) => {
       <Collapse in={drawerOpen} orientation="horizontal">
         <Paper
           sx={{
-            width: "360px",
+            width: "440px",
             height: "calc(100vh - 84px)",
             padding: "16px",
-            backgroundColor: theme.palette.background.lightgrey,
+            backgroundColor: theme.palette.background.header,
             boxShadow: theme.shadows[3],
             borderRight: "1px solid rgba(0, 0, 0, 0.12)",
           }}>

@@ -2,6 +2,7 @@ import { FC, useContext } from "react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, SxProps, TextField } from "@mui/material";
+import { theme } from "../../AppTheme.ts";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { getFieldBorderColor } from "./formUtils.ts";
 import { useLabelOverflow } from "./useLabelOverflow.tsx";
@@ -138,7 +139,7 @@ export const FormSelect: FC<FormSelectProps> = ({
                   required={required}
                   error={!!fieldState.error}
                   helperText={fieldState.error?.message ? t(fieldState.error.message) : ""}
-                  sx={{ ...sx, ...getFieldBorderColor(isReadOnly) }}
+                  sx={{ ...sx, ...getFieldBorderColor(isReadOnly), backgroundColor: theme.palette.background.default }}
                   className={className}
                   data-cy={fieldName + "-formSelect"}
                   disabled={disabled}

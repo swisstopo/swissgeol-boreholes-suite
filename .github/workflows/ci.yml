@@ -34,6 +34,10 @@ jobs:
       - working-directory: ./src/client
         run: npm run knip
 
+      - name: Run vitest unit tests
+        working-directory: ./src/client
+        run: npm run test:unit
+
       - working-directory: ./src/client
         run: npm run build
         env:
@@ -168,7 +172,7 @@ jobs:
           path: src/client/dist
 
       - name: Cypress run
-        uses: cypress-io/github-action@783cb3f07983868532cabaedaa1e6c00ff4786a8 # v7.1.9
+        uses: cypress-io/github-action@c495c3ddffba403ba11be95fffb67e25203b3799 # v7.1.10
         with:
           command: npx cypress run --record --key ${{ secrets.CYPRESS_RECORD_KEY }} --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }} --group shard-${{ matrix.index }}
           start: npm run preview

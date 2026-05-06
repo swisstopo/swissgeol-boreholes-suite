@@ -25,6 +25,7 @@ export const NumericFormatWithThousandSeparator: FC<Readonly<CustomProps>> = pro
       }}
       thousandSeparator="'"
       valueIsNumericString
+      inputMode="decimal"
     />
   );
 };
