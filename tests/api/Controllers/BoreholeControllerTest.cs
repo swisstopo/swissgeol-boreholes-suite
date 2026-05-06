@@ -1080,82 +1080,39 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
-    public async Task SuggestReturnsEmptyArrayWhenNoMatch()
+    public async Task SuggestForwardsFilterRequestToService()
     {
-        var result = await controller.SuggestAsync(BoreholeSuggestionField.OriginalName, query: "ZZNoMatchXYZABC", limit: 10);
-        ActionResultAssert.IsOk(result.Result);
-        var suggestions = ActionResultAssert.IsOkObjectResult<IEnumerable<BoreholeSuggestion>>(result.Result);
-        Assert.IsFalse(suggestions.Any(), "Expected no suggestions for a prefix that matches nothing.");
-    }
-
-    [TestMethod]
-    public async Task SuggestReturnsGroupedPrefixMatchesOrderedByCountThenValue()
-    {
-        // Seed: 2 boreholes named "ZZAlpha-1", 1 named "ZZAlpha-2", 1 named "ZZBeta-1"
-        context.Boreholes.AddRange(
-            new Borehole { WorkgroupId = DefaultWorkgroupId, OriginalName = "ZZAlpha-1" },
-            new Borehole { WorkgroupId = DefaultWorkgroupId, OriginalName = "ZZAlpha-1" },
-            new Borehole { WorkgroupId = DefaultWorkgroupId, OriginalName = "ZZAlpha-2" },
-            new Borehole { WorkgroupId = DefaultWorkgroupId, OriginalName = "ZZBeta-1" });
-        await context.SaveChangesAsync();
-
-        // Case-insensitive prefix search for "zzalph" should return ZZAlpha-1 (2) and ZZAlpha-2 (1)
-        var result = await controller.SuggestAsync(BoreholeSuggestionField.OriginalName, query: "zzalph", limit: 10);
-        ActionResultAssert.IsOk(result.Result);
-        var suggestions = ActionResultAssert.IsOkObjectResult<IEnumerable<BoreholeSuggestion>>(result.Result).ToList();
-
-        Assert.AreEqual(2, suggestions.Count, "Expected exactly 2 suggestion entries matching 'ZZAlpha-*'.");
-        Assert.AreEqual("ZZAlpha-1", suggestions[0].Value, "ZZAlpha-1 should be first (higher count).");
-        Assert.AreEqual(2, suggestions[0].Count, "ZZAlpha-1 should have count 2.");
-        Assert.AreEqual("ZZAlpha-2", suggestions[1].Value, "ZZAlpha-2 should be second (lower count).");
-        Assert.AreEqual(1, suggestions[1].Count, "ZZAlpha-2 should have count 1.");
-    }
-
-    [TestMethod]
-    public async Task SuggestRespectsLimit()
-    {
-        // Seed 5 boreholes with unique prefix LIMITTEST_
-        for (int i = 0; i < 5; i++)
+        var filterRequest = new FilterRequest
         {
-            context.Boreholes.Add(new Borehole { WorkgroupId = DefaultWorkgroupId, OriginalName = $"LIMITTEST_{i}" });
-        }
+            OriginalName = "abc",
+            StatusId = new List<int> { 1 },
+        };
 
-        await context.SaveChangesAsync();
+        FilterRequest? capturedRequest = null;
+        filterServiceMock
+            .Setup(x => x.GetSuggestionsAsync(
+                BoreholeSuggestionField.OriginalName,
+                "abcd",
+                10,
+                It.IsAny<FilterRequest?>(),
+                It.IsAny<User>()))
+            .Callback<BoreholeSuggestionField, string, int, FilterRequest?, User>(
+                (_, _, _, req, _) => capturedRequest = req)
+            .ReturnsAsync(new List<BoreholeSuggestion> { new("abcde", 3) });
 
-        var result = await controller.SuggestAsync(BoreholeSuggestionField.OriginalName, query: "LIMITTEST_", limit: 3);
+        var result = await controller.SuggestAsync(
+            BoreholeSuggestionField.OriginalName,
+            query: "abcd",
+            limit: 10,
+            filterRequest: filterRequest);
+
         ActionResultAssert.IsOk(result.Result);
         var suggestions = ActionResultAssert.IsOkObjectResult<IEnumerable<BoreholeSuggestion>>(result.Result).ToList();
+        Assert.AreEqual(1, suggestions.Count);
+        Assert.AreEqual("abcde", suggestions[0].Value);
 
-        Assert.AreEqual(3, suggestions.Count, "Expected exactly 3 results when limit is 3.");
-    }
-
-    [TestMethod]
-    public async Task SuggestReturnsResultsForProjectName()
-    {
-        context.Boreholes.Add(new Borehole { WorkgroupId = DefaultWorkgroupId, ProjectName = "ProjXYZ" });
-        await context.SaveChangesAsync();
-
-        var result = await controller.SuggestAsync(BoreholeSuggestionField.ProjectName, query: "projx", limit: 10);
-        ActionResultAssert.IsOk(result.Result);
-        var suggestions = ActionResultAssert.IsOkObjectResult<IEnumerable<BoreholeSuggestion>>(result.Result).ToList();
-
-        Assert.IsTrue(suggestions.Any(s => s.Value == "ProjXYZ"), "Expected 'ProjXYZ' in suggestions for prefix 'projx'.");
-    }
-
-    [TestMethod]
-    public async Task SuggestNonAdminOnlySeesOwnWorkgroup()
-    {
-        // Seed a borehole in a workgroup the editor does NOT belong to (reuses noPermissionWorkgroupId = 2)
-        context.Boreholes.Add(new Borehole { WorkgroupId = noPermissionWorkgroupId, OriginalName = "SECRETVAL_xyz" });
-        await context.SaveChangesAsync();
-
-        // Switch context to non-admin editor
-        controller.ControllerContext = GetControllerContext(EditorSubjectId, PolicyNames.Viewer);
-
-        var result = await controller.SuggestAsync(BoreholeSuggestionField.OriginalName, query: "secretval", limit: 10);
-        ActionResultAssert.IsOk(result.Result);
-        var suggestions = ActionResultAssert.IsOkObjectResult<IEnumerable<BoreholeSuggestion>>(result.Result).ToList();
-
-        Assert.IsFalse(suggestions.Any(s => s.Value == "SECRETVAL_xyz"), "Non-admin should not see boreholes from workgroups they don't belong to.");
+        Assert.IsNotNull(capturedRequest, "Filter request must be forwarded to the service.");
+        Assert.AreEqual("abc", capturedRequest!.OriginalName);
+        CollectionAssert.AreEqual(new List<int> { 1 }, capturedRequest.StatusId!.ToList());
     }
 }
