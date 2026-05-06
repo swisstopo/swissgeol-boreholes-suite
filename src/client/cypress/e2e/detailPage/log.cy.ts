@@ -60,7 +60,7 @@ function addLogRun() {
 }
 
 function closeLogRunEditor() {
-  cy.get(".MuiDialog-container").dataCy("close-button").click();
+  cy.get(".MuiDialog-container").dataCy("apply-button").click();
 }
 
 function addMinimalLogRun(fromDepth = 0, toDepth = 10, runNumber = "R01") {

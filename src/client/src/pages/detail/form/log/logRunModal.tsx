@@ -130,12 +130,13 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
     [formMethods],
   );
 
-  const closeDialog = async () => {
-    const isValid = await formMethods.trigger();
-    if (!isDirty || isValid) {
-      const values = getValues();
-      updateLogRun({ ...logRun, ...values } as LogRun, isDirty);
-    }
+  const cancelDialog = () => {
+    updateLogRun(logRun as LogRun, false);
+  };
+
+  const applyDialog = () => {
+    const values = getValues();
+    updateLogRun({ ...logRun, ...values } as LogRun, isDirty);
   };
 
   if (!logRun) return null;
@@ -213,8 +214,9 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
     <FormDialog
       open={true}
       title={logRun.id === 0 ? t("newLogRun") : (logRun.runNumber ?? "-")}
-      onClose={closeDialog}
-      isCloseDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
+      onClose={cancelDialog}
+      onApply={applyDialog}
+      isApplyDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
       <FormProvider {...formMethods}>
         <BoreholesCard data-cy="logRun-general" title={t("generalInformation")}>
           <FormContainer>

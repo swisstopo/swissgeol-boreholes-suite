@@ -61,24 +61,27 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
 
   const isUnconsolidated = formMethods.watch("isUnconsolidated");
 
-  const closeDialog = async () => {
-    const values = getValues();
-    const isValid = await formMethods.trigger();
-    const hasChanges = JSON.stringify(lithology) !== JSON.stringify(values);
+  const cancelDialog = () => {
+    updateLithology(lithology as Lithology, false);
+  };
 
-    // Close dialog if no changes have been made or the form is valid
-    if (!hasChanges || isValid) {
-      prepareLithologyForSubmit(values);
-      updateLithology({ ...lithology, ...values } as Lithology, hasChanges || (Boolean(lithology?.isGap) && isValid));
-    }
+  const applyDialog = () => {
+    const values = getValues();
+    const hasChanges = JSON.stringify(lithology) !== JSON.stringify(values);
+    prepareLithologyForSubmit(values);
+    updateLithology(
+      { ...lithology, ...values } as Lithology,
+      hasChanges || (Boolean(lithology?.isGap) && formState.isValid),
+    );
   };
 
   return (
     <FormDialog
       open={lithology !== undefined}
       title={t("lithology")}
-      onClose={closeDialog}
-      isCloseDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
+      onClose={cancelDialog}
+      onApply={applyDialog}
+      isApplyDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
       <FormProvider {...formMethods}>
         <BoreholesCard
           data-cy="lithology-basic-data"
