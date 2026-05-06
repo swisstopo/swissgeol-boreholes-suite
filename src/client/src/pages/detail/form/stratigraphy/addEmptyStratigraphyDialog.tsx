@@ -4,7 +4,7 @@ import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Ty
 import { useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "../../../../api/apiInterfaces.ts";
 import { stratigraphiesQueryKey, Stratigraphy, useStratigraphyMutations } from "../../../../api/stratigraphy.ts";
-import { AddButton, CancelButton } from "../../../../components/buttons/buttons.tsx";
+import { BoreholesButton, CancelButton } from "../../../../components/buttons/buttons.tsx";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 
 interface AddEmptyStratigraphyDialogProps {
@@ -24,11 +24,15 @@ export const AddEmptyStratigraphyDialog: FC<AddEmptyStratigraphyDialogProps> = (
 }) => {
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState<string | null>(null);
+  // Local saving flag covers both the POST and the follow-up refetch — `isPending` from
+  // the mutation flips back to false the moment the POST resolves, which would unblock
+  // the buttons during the await for `invalidateQueries` and cause a visible flicker.
+  const [isSaving, setIsSaving] = useState(false);
   const { t } = useTranslation();
   const showApiErrorAlert = useApiErrorAlert();
   const queryClient = useQueryClient();
   const {
-    add: { mutateAsync: addStratigraphy, isPending },
+    add: { mutateAsync: addStratigraphy },
   } = useStratigraphyMutations();
 
   const trimmedName = name.trim();
@@ -56,6 +60,7 @@ export const AddEmptyStratigraphyDialog: FC<AddEmptyStratigraphyDialogProps> = (
       chronostratigraphyLayers: null,
       lithostratigraphyLayers: null,
     };
+    setIsSaving(true);
     try {
       const created = await addStratigraphy(payload);
       // Wait for the stratigraphies refetch so the parent re-renders with the new entry
@@ -69,12 +74,14 @@ export const AddEmptyStratigraphyDialog: FC<AddEmptyStratigraphyDialogProps> = (
       } else {
         showApiErrorAlert(error);
       }
+    } finally {
+      setIsSaving(false);
     }
   };
 
   return (
     <Dialog open={open} data-cy="add-empty-stratigraphy-dialog">
-      <Stack sx={{ minWidth: "326px" }}>
+      <Stack sx={{ width: "560px" }}>
         <DialogTitle>
           <Typography variant="h4">{t("addEmptyStratigraphy")}</Typography>
         </DialogTitle>
@@ -97,12 +104,12 @@ export const AddEmptyStratigraphyDialog: FC<AddEmptyStratigraphyDialogProps> = (
         </DialogContent>
         <DialogActions>
           <Stack direction="row" justifyContent="flex-end" spacing={2}>
-            <CancelButton onClick={resetAndClose} disabled={isPending} />
-            <AddButton
+            <CancelButton onClick={resetAndClose} disabled={isSaving} />
+            <BoreholesButton
               label="addEmptyStratigraphy"
               variant="contained"
               dataCy="addemptystratigraphy-submit-button"
-              disabled={!trimmedName || isPending}
+              disabled={!trimmedName || isSaving}
               onClick={handleSave}
             />
           </Stack>
