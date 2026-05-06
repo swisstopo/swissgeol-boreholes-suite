@@ -44,13 +44,9 @@ describe("Tests for stratigraphy", () => {
       startBoreholeEditing();
 
       cy.dataCy("addemptystratigraphy-button").click();
-      cy.location().should(location => {
-        expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/new`);
-      });
-      setInput("name", "First Stratigraphy");
-      cy.dataCy("stratigraphy-header").contains("First Stratigraphy").should("not.exist");
-      cy.dataCy("isPrimary-formCheckbox").should("not.exist");
-      saveWithSaveBar();
+      cy.dataCy("add-empty-stratigraphy-dialog").should("be.visible");
+      cy.dataCy("stratigraphy-name-formInput").type("First Stratigraphy");
+      cy.dataCy("addemptystratigraphy-submit-button").click();
       cy.wait("@stratigraphy_POST").then(interception => {
         cy.wait("@stratigraphy_by_borehole_GET");
 
@@ -61,41 +57,33 @@ describe("Tests for stratigraphy", () => {
         });
 
         // Shows the title after saving
+        cy.dataCy("add-empty-stratigraphy-dialog").should("not.exist");
         cy.dataCy("stratigraphy-header").contains("First Stratigraphy").should("exist");
         cy.dataCy("delete-button").should("exist");
         cy.dataCy("duplicate-button").should("exist");
+        cy.dataCy("isPrimary-formCheckbox").should("not.exist");
 
-        // Shows tabs when more than one stratigraphy is available
+        // Duplicate names are rejected inline in the dialog
         addStratigraphy();
-        cy.location().should(location => {
-          expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/new`);
-        });
-        cy.dataCy("stratigraphy-header").should("not.exist");
-        checkTabsByTitles([{ title: "First Stratigraphy" }, { title: "Not specified", active: true }], {
-          datacy: "stratigraphy-tab",
-        });
+        cy.dataCy("add-empty-stratigraphy-dialog").should("be.visible");
+        cy.dataCy("stratigraphy-name-formInput").type("First Stratigraphy");
+        cy.dataCy("addemptystratigraphy-submit-button").click();
+        cy.wait("@stratigraphy_POST");
+        cy.dataCy("add-empty-stratigraphy-dialog").should("be.visible");
+        cy.contains("Value must be unique").should("be.visible");
 
-        setInput("name", "First Stratigraphy");
-        checkTabsByTitles([{ title: "First Stratigraphy" }, { title: "Not specified", active: true }], {
-          datacy: "stratigraphy-tab",
-        });
-        evaluateCheckbox("isPrimary", false);
-        saveForm();
-        verifyUnsavedChanges();
-        hasError("name");
-        setInput("name", "Another Stratigraphy");
-        hasError("name", false);
-        saveWithSaveBar();
-
+        cy.dataCy("stratigraphy-name-formInput").clear();
+        cy.dataCy("stratigraphy-name-formInput").type("Another Stratigraphy");
+        cy.dataCy("addemptystratigraphy-submit-button").click();
         cy.wait(["@stratigraphy_POST", "@stratigraphy_by_borehole_GET"]);
-        cy.location().should(location => {
-          expect(location.pathname).not.to.contain(`stratigraphy/new`);
-        });
+        cy.dataCy("add-empty-stratigraphy-dialog").should("not.exist");
+
         checkTabsByTitles([{ title: "First Stratigraphy" }, { title: "Another Stratigraphy", active: true }], {
           datacy: "stratigraphy-tab",
         });
         evaluateInput("name", "Another Stratigraphy");
         evaluateCheckbox("isPrimary", false);
+
         navigateToTabWithTitle("First Stratigraphy");
         cy.location().should(location => {
           expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/${firstStratigraphy.id}`);
@@ -107,22 +95,27 @@ describe("Tests for stratigraphy", () => {
         evaluateCheckbox("isPrimary", true);
 
         addStratigraphy();
+        cy.dataCy("add-empty-stratigraphy-dialog").should("be.visible");
+        cy.dataCy("stratigraphy-name-formInput").type("Primary Stratigraphy");
+        cy.dataCy("addemptystratigraphy-submit-button").click();
+        cy.wait(["@stratigraphy_POST", "@stratigraphy_by_borehole_GET"]);
+        cy.dataCy("add-empty-stratigraphy-dialog").should("not.exist");
         checkTabsByTitles(
           [
             { title: "First Stratigraphy" },
             { title: "Another Stratigraphy" },
-            { title: "Not specified", active: true },
+            { title: "Primary Stratigraphy", active: true },
           ],
           { datacy: "stratigraphy-tab" },
         );
-        cy.location().should(location => {
-          expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/new`);
-        });
-        setInput("name", "Primary Stratigraphy");
+        evaluateInput("name", "Primary Stratigraphy");
+        evaluateCheckbox("isPrimary", false);
+
+        // Date and primary flag are set on the new stratigraphy via the inline form
         setInput("date", "2024-03-20");
         toggleCheckbox("isPrimary");
         saveWithSaveBar();
-        cy.wait(["@stratigraphy_POST", "@stratigraphy_by_borehole_GET"]);
+        cy.wait(["@stratigraphy_PUT", "@stratigraphy_by_borehole_GET"]);
         checkTabsByTitles(
           [
             { title: "Primary Stratigraphy", active: true },
@@ -293,29 +286,25 @@ describe("Tests for stratigraphy", () => {
       cy.wait("@stratigraphy_by_borehole_GET");
       startBoreholeEditing();
 
-      // Can reset new stratigraphy with changes
+      // Cancelling the dialog discards the typed name and leaves the route unchanged
       cy.dataCy("addemptystratigraphy-button").click();
-      cy.location().should(location => {
-        expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/new`);
-      });
-      verifyNoUnsavedChanges();
-      setInput("name", "Reset Stratigraphy");
-      discardChanges();
-      // TODO optimize, why are attachments fetched every time when stratigraphy renders
-      cy.wait("@getAllAttachments");
+      cy.dataCy("add-empty-stratigraphy-dialog").should("be.visible");
+      cy.dataCy("stratigraphy-name-formInput").type("Reset Stratigraphy");
+      cy.dataCy("cancel-button").click();
+      cy.dataCy("add-empty-stratigraphy-dialog").should("not.exist");
       cy.location().should(location => {
         expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy`);
       });
 
-      // Can reset existing stratigraphy with changes
+      // Re-opening the dialog starts with an empty input
       cy.dataCy("addemptystratigraphy-button").click();
-      cy.location().should(location => {
-        expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/new`);
-      });
-      setInput("name", "CHESSCLUSTER");
-      saveForm();
+      cy.dataCy("stratigraphy-name-formInput").should("have.value", "");
+      cy.dataCy("stratigraphy-name-formInput").type("CHESSCLUSTER");
+      cy.dataCy("addemptystratigraphy-submit-button").click();
       cy.wait(["@stratigraphy_POST", "@stratigraphy_by_borehole_GET"]);
       cy.dataCy("stratigraphy-header").contains("CHESSCLUSTER").should("exist");
+
+      // Can reset existing stratigraphy with changes via the inline form
       verifyNoUnsavedChanges();
       setInput("name", "DISHMUTANT");
       verifyUnsavedChanges();
@@ -359,11 +348,9 @@ describe("Tests for stratigraphy", () => {
 
         startBoreholeEditing();
         addStratigraphy();
-        cy.location().should(location => {
-          expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/new`);
-        });
-        setInput("name", "KARMAMAGIC");
-        saveWithSaveBar();
+        cy.dataCy("add-empty-stratigraphy-dialog").should("be.visible");
+        cy.dataCy("stratigraphy-name-formInput").type("KARMAMAGIC");
+        cy.dataCy("addemptystratigraphy-submit-button").click();
         cy.wait(["@stratigraphy_POST", "@stratigraphy_by_borehole_GET"]);
         stopBoreholeEditing();
         cy.dataCy("stratigraphy-header").should("not.exist");
