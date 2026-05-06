@@ -16,7 +16,7 @@ interface FormDialogProps {
   open: boolean;
   title: string;
   onClose: () => void;
-  onApply?: () => void;
+  onApply?: () => Promise<void> | void;
   isApplyDisabled?: boolean;
   actions?: FormDialogAction[];
   children: ReactNode;

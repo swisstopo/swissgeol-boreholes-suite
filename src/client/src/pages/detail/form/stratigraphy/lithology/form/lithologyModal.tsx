@@ -65,14 +65,14 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
     updateLithology(lithology as Lithology, false);
   };
 
-  const applyDialog = () => {
+  const applyDialog = async () => {
     const values = getValues();
+    const isValid = await formMethods.trigger();
     const hasChanges = JSON.stringify(lithology) !== JSON.stringify(values);
-    prepareLithologyForSubmit(values);
-    updateLithology(
-      { ...lithology, ...values } as Lithology,
-      hasChanges || (Boolean(lithology?.isGap) && formState.isValid),
-    );
+    if (!hasChanges || isValid) {
+      prepareLithologyForSubmit(values);
+      updateLithology({ ...lithology, ...values } as Lithology, hasChanges || (Boolean(lithology?.isGap) && isValid));
+    }
   };
 
   return (

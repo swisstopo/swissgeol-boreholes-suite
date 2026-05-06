@@ -37,12 +37,15 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
     updateLithologicalDescription(description as LithologicalDescription, false);
   };
 
-  const applyDialog = () => {
-    const values = getValues();
-    updateLithologicalDescription(
-      { ...description, ...values } as LithologicalDescription,
-      isDirty || (Boolean(description?.isGap) && formState.isValid),
-    );
+  const applyDialog = async () => {
+    const isValid = await formMethods.trigger();
+    if (!isDirty || isValid) {
+      const values = getValues();
+      updateLithologicalDescription(
+        { ...description, ...values } as LithologicalDescription,
+        isDirty || (Boolean(description?.isGap) && isValid),
+      );
+    }
   };
 
   return (

@@ -39,15 +39,18 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
     updateFaciesDescription(description as FaciesDescription, false);
   };
 
-  const applyDialog = () => {
-    const values = getValues();
-    delete values.facies;
-    if (String(values.faciesId) === "") values.faciesId = null;
+  const applyDialog = async () => {
+    const isValid = await formMethods.trigger();
+    if (!isDirty || isValid) {
+      const values = getValues();
+      delete values.facies;
+      if (String(values.faciesId) === "") values.faciesId = null;
 
-    updateFaciesDescription(
-      { ...description, ...values } as FaciesDescription,
-      isDirty || (Boolean(description?.isGap) && formState.isValid),
-    );
+      updateFaciesDescription(
+        { ...description, ...values } as FaciesDescription,
+        isDirty || (Boolean(description?.isGap) && isValid),
+      );
+    }
   };
 
   return (

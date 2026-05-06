@@ -134,9 +134,12 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
     updateLogRun(logRun as LogRun, false);
   };
 
-  const applyDialog = () => {
-    const values = getValues();
-    updateLogRun({ ...logRun, ...values } as LogRun, isDirty);
+  const applyDialog = async () => {
+    const isValid = await formMethods.trigger();
+    if (!isDirty || isValid) {
+      const values = getValues();
+      updateLogRun({ ...logRun, ...values } as LogRun, isDirty);
+    }
   };
 
   if (!logRun) return null;
