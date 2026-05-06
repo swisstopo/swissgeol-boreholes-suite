@@ -272,7 +272,7 @@ describe("Search filter tests", () => {
     // Without a filter both seeded values appear.
     cy.dataCy("originalName-formInput").click();
     cy.dataCy("originalName-formInput").type("AA_SUGGEST_");
-    cy.wait("@suggestRequest").its("request.body").should("be.null");
+    cy.wait("@suggestRequest").its("request.body").should("deep.equal", {});
     cy.get('[data-cy^="originalName-suggestion-"]').should("have.length", 2);
 
     // Reset typed text without committing the autocomplete (filter remains uncommitted).
