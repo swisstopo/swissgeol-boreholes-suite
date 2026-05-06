@@ -3,18 +3,18 @@ export const attachmentSearchData = [
     id: 0,
     type: "Boolean",
     label: "hasProfiles",
-    value: "hasProfiles",
+    key: "hasProfiles",
   },
   {
     id: 1,
     type: "Boolean",
     label: "hasPhotos",
-    value: "hasPhotos",
+    key: "hasPhotos",
   },
   {
     id: 2,
     type: "Boolean",
     label: "hasDocuments",
-    value: "hasDocuments",
+    key: "hasDocuments",
   },
 ];

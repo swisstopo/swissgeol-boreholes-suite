@@ -119,24 +119,26 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/boreholegeometry/getDepthMDFromMasl?**").as("get-boreholegeometry-depth-md");
   cy.intercept("/api/v2/boreholegeometry/getDepthTVD?**").as("get-depth-tvd");
 
-  cy.intercept("/api/v2/boreholefile/getDataExtractionFileInfo*").as("extraction-file-info");
+  cy.intercept("/api/v2/profile/getDataExtractionFileInfo*").as("extraction-file-info");
   cy.intercept({
     method: "GET",
-    url: "/api/v2/boreholefile/dataextraction/*",
+    url: "/api/v2/profile/dataextraction/*",
   }).as("load-extraction-file");
 
   cy.intercept("/api/v2/log?boreholeId=**").as("logrun_by_borehole_GET");
   cy.intercept("POST", "/api/v2/log/export").as("log_export");
+  cy.intercept("POST", "/api/v2/log/import**").as("log_import");
+  cy.intercept("POST", "/api/v2/log/upload**").as("log_upload");
 
   cy.intercept("dataextraction/api/V1/extract_data").as("extract-data");
   cy.intercept("dataextraction/api/V1/extract_stratigraphy").as("extract-stratigraphy");
 
   cy.intercept("https://api3.geo.admin.ch/rest/services/height*").as("height");
   cy.intercept("/api/v2/import/*").as("borehole-upload");
-  cy.intercept("/api/v2/boreholefile/getAllForBorehole?boreholeId=**").as("getAllAttachments");
-  cy.intercept("/api/v2/boreholefile/upload?boreholeId=**").as("upload-files");
-  cy.intercept("/api/v2/boreholefile/download?boreholeFileId=**").as("download-file");
-  cy.intercept("/api/v2/boreholefile/detachFile?boreholeFileId=**").as("delete-file");
+  cy.intercept("/api/v2/profile/getAllForBorehole?boreholeId=**").as("getAllAttachments");
+  cy.intercept("/api/v2/profile/upload?boreholeId=**").as("upload-files");
+  cy.intercept("/api/v2/profile/download?profileId=**").as("download-file");
+  cy.intercept("DELETE", "/api/v2/profile/*").as("delete-file");
   cy.intercept("/api/v2/photo/getAllForBorehole?boreholeId=**").as("getAllPhotos");
   cy.intercept("/api/v2/photo/upload?boreholeId=**").as("upload-photo");
   cy.intercept("/api/v2/photo/export?photoIds=**").as("export-photos");
@@ -444,7 +446,7 @@ export const createBoreholeWithCompleteDataset = () => {
       { type: ObservationType.hydrotest },
       { type: ObservationType.fieldMeasurement },
     ],
-    boreholeFiles: [{ name: "Test Profile File", file: { name: "testfile", url: "testurl", type: "text/csv" } }],
+    profiles: [{ name: "testfile", nameUuid: "testfile-uuid", type: "text/csv" }],
     photos: [{ name: "Test Photo", nameUuid: "uuid1234", fileType: "image/tiff" }],
     documents: [{ name: "Test Document", url: "testurl" }],
     logRuns: [
@@ -533,18 +535,6 @@ export const loginAndResetState = () => {
     //       deleteStratigraphy(st.id);
     //     });
     // });
-
-    // Reset user settings (i.e. table ordering)
-    cy.request({
-      method: "POST",
-      url: "/api/v2/user/resetAllSettings",
-      cache: "no-cache",
-      credentials: "same-origin",
-      auth: bearerAuth(token),
-      headers: {
-        "Content-Type": "application/json",
-      },
-    });
   });
 };
 

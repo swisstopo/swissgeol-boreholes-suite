@@ -110,6 +110,178 @@ public class FilterService : IFilterService
             allSelectableBoreholeIds);
     }
 
+    /// <inheritdoc />
+    public async Task<FilterStatsResponse> GetFilterStatsAsync(FilterRequest? filterRequest, User user)
+    {
+        var baseQuery = context.Boreholes.AsNoTracking();
+
+        if (!user.IsAdmin)
+        {
+            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+            baseQuery = baseQuery.Where(b => b.WorkgroupId.HasValue && allowedWorkgroupIds.Contains(b.WorkgroupId.Value));
+        }
+
+        var req = filterRequest ?? new FilterRequest();
+
+        // For each dimension, clone the request, null out that dimension's filter,
+        // apply all remaining filters, then group/count by that dimension's value.
+        IQueryable<Borehole> QueryExcluding(Action<FilterRequest> mutate)
+        {
+            var clone = CloneFilterRequest(req);
+            mutate(clone);
+            return ApplyFilters(baseQuery, clone);
+        }
+
+        return new FilterStatsResponse
+        {
+            StatusId = await CountByIntAsync(QueryExcluding(r => r.StatusId = null), b => b.StatusId).ConfigureAwait(false),
+            TypeId = await CountByIntAsync(QueryExcluding(r => r.TypeId = null), b => b.TypeId).ConfigureAwait(false),
+            PurposeId = await CountByIntAsync(QueryExcluding(r => r.PurposeId = null), b => b.PurposeId).ConfigureAwait(false),
+            WorkgroupId = await CountByIntAsync(QueryExcluding(r => r.WorkgroupId = null), b => b.WorkgroupId).ConfigureAwait(false),
+            RestrictionId = await CountByIntAsync(QueryExcluding(r => r.RestrictionId = null), b => b.RestrictionId).ConfigureAwait(false),
+            IdentifierTypeId = await CountByIdentifierTypesAsync(QueryExcluding(r => r.IdentifierTypeId = null), req.IdentifierValue).ConfigureAwait(false),
+            WorkflowStatusCount = await CountByWorkflowStatusAsync(QueryExcluding(r => r.WorkflowStatus = null)).ConfigureAwait(false),
+            NationalInterest = await CountByNullableBoolAsync(
+                QueryExcluding(r => r.NationalInterest = null),
+                b => b.NationalInterest == true,
+                b => b.NationalInterest == false,
+                b => b.NationalInterest == null).ConfigureAwait(false),
+            TopBedrockIntersected = await CountByNullableBoolAsync(
+                QueryExcluding(r => r.TopBedrockIntersected = null),
+                b => b.TopBedrockIntersected == true,
+                b => b.TopBedrockIntersected == false,
+                b => b.TopBedrockIntersected == null).ConfigureAwait(false),
+            HasGroundwater = await CountByNullableBoolAsync(
+                QueryExcluding(r => r.HasGroundwater = null),
+                b => b.HasGroundwater == true,
+                b => b.HasGroundwater == false,
+                b => b.HasGroundwater == null).ConfigureAwait(false),
+            HasGeometry = await CountByBooleanAsync(
+                QueryExcluding(r => r.HasGeometry = null),
+                b => b.BoreholeGeometry != null && b.BoreholeGeometry.Any(),
+                b => b.BoreholeGeometry == null || !b.BoreholeGeometry.Any()).ConfigureAwait(false),
+            HasLogs = await CountByBooleanAsync(
+                QueryExcluding(r => r.HasLogs = null),
+                b => context.LogRuns.Any(lr => lr.BoreholeId == b.Id),
+                b => !context.LogRuns.Any(lr => lr.BoreholeId == b.Id)).ConfigureAwait(false),
+            HasProfiles = await CountByBooleanAsync(
+                QueryExcluding(r => r.HasProfiles = null),
+                b => context.Profiles.Any(bf => bf.BoreholeId == b.Id),
+                b => !context.Profiles.Any(bf => bf.BoreholeId == b.Id)).ConfigureAwait(false),
+            HasPhotos = await CountByBooleanAsync(
+                QueryExcluding(r => r.HasPhotos = null),
+                b => context.Photos.Any(p => p.BoreholeId == b.Id),
+                b => !context.Photos.Any(p => p.BoreholeId == b.Id)).ConfigureAwait(false),
+            HasDocuments = await CountByBooleanAsync(
+                QueryExcluding(r => r.HasDocuments = null),
+                b => context.Documents.Any(d => d.BoreholeId == b.Id),
+                b => !context.Documents.Any(d => d.BoreholeId == b.Id)).ConfigureAwait(false),
+        };
+    }
+
+    private static async Task<Dictionary<WorkflowStatus, int>> CountByWorkflowStatusAsync(IQueryable<Borehole> query)
+    {
+        var grouped = await query
+            .Where(b => b.Workflow != null)
+            .GroupBy(b => b.Workflow!.Status)
+            .Select(g => new { Status = g.Key, Count = g.Count() })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return grouped.ToDictionary(x => x.Status, x => x.Count);
+    }
+
+    private static async Task<Dictionary<int, int>> CountByIntAsync(
+        IQueryable<Borehole> query,
+        Expression<Func<Borehole, int?>> selector)
+    {
+        var grouped = await query
+            .Select(selector)
+            .Where(id => id.HasValue)
+            .GroupBy(id => id!.Value)
+            .Select(g => new { Key = g.Key, Count = g.Count() })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return grouped.ToDictionary(x => x.Key, x => x.Count);
+    }
+
+    private static async Task<BooleanCounts> CountByBooleanAsync(
+        IQueryable<Borehole> query,
+        Expression<Func<Borehole, bool>> isTrue,
+        Expression<Func<Borehole, bool>> isFalse)
+    {
+        return new BooleanCounts
+        {
+            True = await query.CountAsync(isTrue).ConfigureAwait(false),
+            False = await query.CountAsync(isFalse).ConfigureAwait(false),
+        };
+    }
+
+    private static async Task<NullableBooleanCounts> CountByNullableBoolAsync(
+        IQueryable<Borehole> query,
+        Expression<Func<Borehole, bool>> isTrue,
+        Expression<Func<Borehole, bool>> isFalse,
+        Expression<Func<Borehole, bool>> isNull)
+    {
+        return new NullableBooleanCounts
+        {
+            True = await query.CountAsync(isTrue).ConfigureAwait(false),
+            False = await query.CountAsync(isFalse).ConfigureAwait(false),
+            Null = await query.CountAsync(isNull).ConfigureAwait(false),
+        };
+    }
+
+    private async Task<Dictionary<int, int>> CountByIdentifierTypesAsync(
+        IQueryable<Borehole> boreholeQuery,
+        string? valueFilter)
+    {
+        var hasValue = !string.IsNullOrWhiteSpace(valueFilter);
+        var valuePattern = hasValue ? $"%{valueFilter}%" : null;
+        var grouped = await boreholeQuery
+            .SelectMany(b => b.BoreholeCodelists!.Select(c => new { c.CodelistId, c.Value, b.Id }))
+            .Where(r => !hasValue || EF.Functions.ILike(r.Value, valuePattern!))
+            .GroupBy(r => r.CodelistId)
+            .Select(g => new { Key = g.Key, Count = g.Select(r => r.Id).Distinct().Count() })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return grouped.ToDictionary(x => x.Key, x => x.Count);
+    }
+
+    private static FilterRequest CloneFilterRequest(FilterRequest src) => new()
+    {
+        Polygon = src.Polygon,
+        OriginalName = src.OriginalName,
+        ProjectName = src.ProjectName,
+        Name = src.Name,
+        StatusId = src.StatusId,
+        TypeId = src.TypeId,
+        PurposeId = src.PurposeId,
+        WorkflowStatus = src.WorkflowStatus,
+        WorkgroupId = src.WorkgroupId,
+        Ids = src.Ids,
+        RestrictionUntilFrom = src.RestrictionUntilFrom,
+        RestrictionUntilTo = src.RestrictionUntilTo,
+        TotalDepthMin = src.TotalDepthMin,
+        TotalDepthMax = src.TotalDepthMax,
+        TopBedrockFreshMdMin = src.TopBedrockFreshMdMin,
+        TopBedrockFreshMdMax = src.TopBedrockFreshMdMax,
+        TopBedrockWeatheredMdMin = src.TopBedrockWeatheredMdMin,
+        TopBedrockWeatheredMdMax = src.TopBedrockWeatheredMdMax,
+        IdentifierTypeId = src.IdentifierTypeId,
+        IdentifierValue = src.IdentifierValue,
+        RestrictionId = src.RestrictionId,
+        NationalInterest = src.NationalInterest,
+        TopBedrockIntersected = src.TopBedrockIntersected,
+        HasGroundwater = src.HasGroundwater,
+        HasGeometry = src.HasGeometry,
+        HasLogs = src.HasLogs,
+        HasProfiles = src.HasProfiles,
+        HasPhotos = src.HasPhotos,
+        HasDocuments = src.HasDocuments,
+    };
+
     private IQueryable<Borehole> ApplyFilters(IQueryable<Borehole> query, FilterRequest filterRequest)
     {
         if (filterRequest == null) return query;
@@ -169,10 +341,24 @@ public class FilterService : IFilterService
             query = query.Where(b => b.RestrictionId.HasValue && filterRequest.RestrictionId.Contains(b.RestrictionId.Value));
         }
 
-        // Workflow status filter
-        if (filterRequest.WorkflowStatus.HasValue)
+        // Identifier filters — strict same-row semantics: when both type and value
+        // are present, both predicates must hold on the *same* BoreholeCodelist row.
+        var hasIdentifierTypes = filterRequest.IdentifierTypeId != null && filterRequest.IdentifierTypeId.Any();
+        var hasIdentifierValue = !string.IsNullOrWhiteSpace(filterRequest.IdentifierValue);
+        if (hasIdentifierTypes || hasIdentifierValue)
         {
-            query = query.Where(b => b.Workflow != null && b.Workflow.Status == filterRequest.WorkflowStatus.Value);
+            var typeIds = filterRequest.IdentifierTypeId;
+            var valuePattern = hasIdentifierValue ? $"%{filterRequest.IdentifierValue}%" : null;
+
+            query = query.Where(b => b.BoreholeCodelists!.Any(c =>
+                (!hasIdentifierTypes || typeIds!.Contains(c.CodelistId)) &&
+                (!hasIdentifierValue || EF.Functions.ILike(c.Value, valuePattern!))));
+        }
+
+        // Workflow status filter
+        if (filterRequest.WorkflowStatus != null && filterRequest.WorkflowStatus.Any())
+        {
+            query = query.Where(b => b.Workflow != null && filterRequest.WorkflowStatus.Contains(b.Workflow.Status));
         }
 
         // Date range filters
@@ -262,9 +448,9 @@ public class FilterService : IFilterService
         if (filterRequest.HasProfiles != null)
         {
             if (filterRequest.HasProfiles == BooleanFilterValue.True)
-                query = query.Where(b => context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id));
+                query = query.Where(b => context.Profiles.Any(p => p.BoreholeId == b.Id));
             else
-                query = query.Where(b => !context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id));
+                query = query.Where(b => !context.Profiles.Any(p => p.BoreholeId == b.Id));
         }
 
         if (filterRequest.HasPhotos != null)

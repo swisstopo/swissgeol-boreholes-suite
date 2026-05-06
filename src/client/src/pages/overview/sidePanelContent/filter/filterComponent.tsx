@@ -6,6 +6,7 @@ import { styled } from "@mui/material/styles";
 import { ChevronDown } from "lucide-react";
 import Polygon from "../../../../assets/icons/polygon.svg?react";
 import { ReduxRootState } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import { FilterRequest, useFilterStats } from "../../../../api/borehole.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { useAuth } from "../../../../auth/useBoreholesAuth.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
@@ -14,12 +15,30 @@ import FilterChips from "./FilterChips.tsx";
 import { attachmentSearchData } from "./filterData/attachmentSearchData.ts";
 import { boreholeSearchData } from "./filterData/boreholeSearchData.ts";
 import { FilterComponentProps, FilterInputConfig } from "./filterData/filterInterfaces.ts";
+import { identifierSearchData } from "./filterData/identifierSearchData.ts";
 import { logSearchData } from "./filterData/logSearchData.ts";
 import { FilterReset } from "./filterReset.tsx";
+import { getDomainCountsForField } from "./filterUtils.ts";
 import { ListFilter } from "./listFilter.tsx";
 import { PolygonFilterContext } from "./polygonFilterContext.tsx";
 import { StatusFilter } from "./statusFilter.tsx";
 import { WorkgroupFilter } from "./workgroupFilter.tsx";
+
+const StyledAccordion = styled(Accordion)(() => ({
+  marginBottom: "6px",
+  borderRadius: "4px",
+  boxShadow: "none !important",
+  border: "none",
+  padding: "12px, 16px, 12px, 16px",
+  "&.MuiAccordion-root:before": {
+    backgroundColor: theme.palette.background.default,
+  },
+}));
+
+const StyledAccordionDetails = styled(AccordionDetails)(() => ({
+  overflow: "visible",
+  flexGrow: 1,
+}));
 
 export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMethods }) => {
   const { t } = useTranslation();
@@ -29,6 +48,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
   const { filterParams, setFilterField, resetFilter, setTableParams } = useBoreholeUrlParams();
 
   const user = useSelector((state: ReduxRootState) => state.core_user);
+  const { data: stats } = useFilterStats(filterParams as FilterRequest);
   const auth = useAuth();
 
   const [searchList, setSearchList] = useState<FilterInputConfig[]>([
@@ -37,7 +57,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
       name: "workgroup",
       translationId: "workgroup",
       isSelected: false,
-      searchData: [{ value: "workgroupId", hideShowAllFields: true }],
+      searchData: [{ key: "workgroupId", hideShowAllFields: true }],
       isHidden: auth.anonymousModeEnabled,
     },
     {
@@ -45,11 +65,18 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
       name: "workflowStatus",
       translationId: "workflowStatus",
       isSelected: false,
-      searchData: [{ value: "workflowStatus", hideShowAllFields: true }],
+      searchData: [{ key: "workflowStatus", hideShowAllFields: true }],
       isHidden: auth.anonymousModeEnabled,
     },
     {
       id: 2,
+      name: "identifiers",
+      translationId: "ids",
+      isSelected: false,
+      searchData: identifierSearchData,
+    },
+    {
+      id: 3,
       name: "borehole",
       translationId: "borehole",
       isSelected: false,
@@ -57,36 +84,20 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
     },
 
     {
-      id: 3,
+      id: 4,
       name: "log",
       translationId: "log",
       isSelected: false,
       searchData: logSearchData,
     },
     {
-      id: 4,
+      id: 5,
       name: "attachments",
       translationId: "attachments",
       isSelected: false,
       searchData: attachmentSearchData,
     },
   ]);
-
-  const StyledAccordion = styled(Accordion)(() => ({
-    marginBottom: "6px",
-    borderRadius: "4px",
-    boxShadow: "none !important",
-    border: "none",
-    padding: "12px, 16px, 12px, 16px",
-    "&.MuiAccordion-root:before": {
-      backgroundColor: theme.palette.background.default,
-    },
-  }));
-
-  const StyledAccordionDetails = styled(AccordionDetails)(() => ({
-    overflow: "visible",
-    flexGrow: 1,
-  }));
 
   const handlePolygonFilterClick = () => {
     setPolygonSelectionEnabled(!polygonSelectionEnabled);
@@ -104,54 +115,70 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
     <Stack direction="column" sx={{ height: "100%" }}>
       <SideDrawerHeader title={t("searchfilters")} toggleDrawer={toggleDrawer} />
       <FilterChips />
-      <Box sx={{ flexGrow: 1, overflow: "auto", scrollbarGutter: "stable" }}>
-        <Button
-          onClick={() => {
-            handlePolygonFilterClick();
-          }}
-          variant="text"
-          data-cy="polygon-filter-button"
+      <Box
+        sx={{
+          flexGrow: 1,
+          overflow: "auto",
+          scrollbarGutter: "stable",
+          paddingRight: `-${theme.spacing(3)}`,
+        }}>
+        <Box
           sx={{
-            backgroundColor:
-              polygonSelectionEnabled && !filterPolygon
-                ? theme.palette.background.filterItemActive
-                : theme.palette.background.default,
-            color:
-              polygonSelectionEnabled && !filterPolygon
-                ? theme.palette.primary.contrastText
-                : theme.palette.primary.main,
-            width: "100%",
-            marginLeft: 0,
-            height: "48px",
-            marginBottom: "24px",
+            height: "60px",
+            backgroundColor: theme.palette.background.default,
+            marginBottom: theme.spacing(1),
             display: "flex",
-            justifyContent: "flex-start",
-            padding: 0,
+            justifyContent: "center",
+            alignItems: "center",
+            padding: theme.spacing(1.5),
           }}>
-          <Polygon
-            style={{
-              marginLeft: "18px",
-              marginRight: "14px",
+          <Button
+            onClick={() => {
+              handlePolygonFilterClick();
             }}
-          />
-          <Typography
-            variant="h6"
+            variant="outlined"
+            data-cy="polygon-filter-button"
             sx={{
+              backgroundColor:
+                polygonSelectionEnabled && !filterPolygon
+                  ? theme.palette.background.filterItemActive
+                  : theme.palette.background.default,
               color:
                 polygonSelectionEnabled && !filterPolygon
                   ? theme.palette.primary.contrastText
                   : theme.palette.primary.main,
+              width: "100%",
+              marginLeft: 0,
+              height: "36px",
+              display: "flex",
+              justifyContent: "flex-start",
+              padding: 0,
             }}>
-            {t("polygon_selection")}
-          </Typography>
-          {filterPolygon !== null && (
-            <Badge data-cy="polygon-filter-badge" badgeContent={1} sx={{ marginLeft: "18px" }} />
-          )}
-        </Button>
+            <Polygon
+              style={{
+                marginLeft: "18px",
+                marginRight: "14px",
+              }}
+            />
+            <Typography
+              variant="h6"
+              sx={{
+                color:
+                  polygonSelectionEnabled && !filterPolygon
+                    ? theme.palette.primary.contrastText
+                    : theme.palette.primary.main,
+              }}>
+              {t("polygon_selection")}
+            </Typography>
+            {filterPolygon !== null && (
+              <Badge data-cy="polygon-filter-badge" badgeContent={1} sx={{ marginLeft: "18px" }} />
+            )}
+          </Button>
+        </Box>
         {searchList?.map(filter => {
           const currentFilterInputConfig = searchList.find(l => l.name === filter.name);
           const activeFilterLength = Object.entries(filterParams).filter(([key, value]) =>
-            currentFilterInputConfig?.searchData.some(d => d.value === key && value != null),
+            currentFilterInputConfig?.searchData.some(d => d.key === key && value != null),
           )?.length;
           return filter.isHidden ? null : (
             <StyledAccordion key={filter.id} expanded={filter?.isSelected}>
@@ -171,20 +198,20 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
                 <StyledAccordionDetails>
                   <WorkgroupFilter
                     onChange={workgroup => {
-                      setFilterField("workgroupId", workgroup === "all" ? null : [Number(workgroup)]);
+                      setFilterField("workgroupId", workgroup);
                       setTableParams({ page: 0 });
                     }}
                     workgroups={user.data.workgroups}
-                    selectedWorkgroup={
-                      filterParams.workgroupId == null ? "all" : String((filterParams.workgroupId as number[])[0])
-                    }
+                    selectedWorkgroupIds={filterParams["workgroupId"] as number[] | undefined}
+                    counts={getDomainCountsForField(stats, "workgroupId")}
                   />
                 </StyledAccordionDetails>
               )}
               {filter?.name === "workflowStatus" && filter?.isSelected && (
                 <StyledAccordionDetails>
                   <StatusFilter
-                    selectedRole={filterParams.workflowStatus == null ? "all" : (filterParams.workflowStatus as string)}
+                    selectedWorkflowStatus={filterParams["workflowStatus"] as string[] | undefined}
+                    counts={stats?.workflowStatusCount}
                     setFilterField={setFilterField}
                   />
                 </StyledAccordionDetails>

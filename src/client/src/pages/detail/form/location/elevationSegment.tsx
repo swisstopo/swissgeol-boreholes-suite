@@ -1,6 +1,12 @@
 import { FC } from "react";
 import { Codelist, useCodelists } from "../../../../components/codelist.ts";
-import { FormContainer, FormDomainSelect, FormInput, FormInputDisplayOnly } from "../../../../components/form/form.ts";
+import {
+  FormContainer,
+  FormDomainSelect,
+  FormInput,
+  FormInputDisplayOnly,
+  FormValueType,
+} from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents.ts";
 import { LocationBaseProps } from "./locationPanelInterfaces.tsx";
 
@@ -15,7 +21,7 @@ const ElevationSegment: FC<LocationBaseProps> = ({ borehole }) => {
             fieldName={"elevationZ"}
             label={"elevation_z"}
             value={borehole.elevationZ}
-            withThousandSeparator={true}
+            type={FormValueType.Number}
           />
           <FormDomainSelect
             fieldName={"elevationPrecisionId"}
@@ -29,7 +35,7 @@ const ElevationSegment: FC<LocationBaseProps> = ({ borehole }) => {
             fieldName={"referenceElevation"}
             label={"reference_elevation"}
             value={borehole?.referenceElevation}
-            withThousandSeparator={true}
+            type={FormValueType.Number}
           />
           <FormDomainSelect
             fieldName={"referenceElevationPrecisionId"}

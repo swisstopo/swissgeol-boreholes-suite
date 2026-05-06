@@ -1061,8 +1061,7 @@
         "updated": "2021-12-22T13:26:28.067476Z"
       }
     ],
-    "files": null,
-    "boreholeFiles": [
+    "profiles": [
     ],
     "codelists": null,
     "boreholeCodelists": []
@@ -2129,8 +2128,7 @@
         "updated": "2021-12-22T13:26:28.067476Z"
       }
     ],
-    "files": null,
-    "boreholeFiles": [
+    "profiles": [
     ],
     "codelists": null,
     "boreholeCodelists": []

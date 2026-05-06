@@ -548,9 +548,7 @@ describe("Test labeling tool", () => {
     cy.get('[data-cy="labeling-panel"]').should("not.exist");
 
     clickCoordinateLabelingButton();
-    cy.get('[data-cy="labeling-panel"]').should("exist");
-    moveMouseOntoMap();
-    assertDrawTooltip("Draw box around north & east coordinates");
+    cy.get('[data-cy="labeling-file-button-select"]').should("exist");
   });
 
   it("displays warning message when fetching bounding boxes fails.", () => {

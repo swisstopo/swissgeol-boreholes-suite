@@ -38,6 +38,19 @@ Mit `docker-compose up` kann eine funktionierende Infrastruktur hochgefahren wer
 
 ❌Der Debug Output der Tornado REST API ist aktuell in Visual Studio nicht sichtbar. Bitte den Container-Log benutzen `docker compose logs api --follow` oder direkt in Visual Studio im _Containers_-Tab.
 
+## Vitest Unit Tests
+
+Die client seitigen Unit Tests werden mit [Vitest](https://vitest.dev/) ausgeführt. Testdateien folgen dem Muster `*.test.ts` / `*.test.tsx`.
+Die Tests können mit folgenden Befehlen ausgeführt werden:
+
+| Befehl | Beschreibung |
+| :----- | :----------- |
+| `npm run test:unit` | Einmaliger Testlauf aller Unit Tests |
+| `npm run test:unit:watch` | Startet Vitest im Watch-Modus für die Entwicklung |
+
+Um einen einzelnen Test auszuführen, kann `npx vitest run <Pfad/zur/Testdatei>` verwendet werden.
+
+
 ## Cypress Tests
 
 Die Cypress Tests können mit `npm run cy` oder `npm run test` gestartet werden. Sie werden zudem automatisch in der CI/CD Pipeline ausgeführt. Das Projekt ist mit [Cypress Cloud](https://cloud.cypress.io/) konfiguriert, wodurch unter anderem die parallele Ausführung der End-to-End (E2E) Tests ermöglicht wird. Testergebnisse und Aufzeichnungen sind ebenfalls direkt in [Cypress Cloud](https://currents.dev/) einsehbar, was die Identifikation und Behebung möglicher Fehler und Probleme erleichtert. Um die detaillierten Testergebnisse einzusehen und die E2E-Tests des Projekts zu debuggen, kann die [Cypress Dashboard-Seite](https://cloud.cypress.io/projects/gv8yue/runs) besucht werden.

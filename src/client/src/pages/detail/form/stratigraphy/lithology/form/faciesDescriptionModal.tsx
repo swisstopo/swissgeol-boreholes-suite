@@ -1,7 +1,6 @@
 import { FC, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Stack } from "@mui/material";
 import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
 import { FormContainer } from "../../../../../../components/form/formContainer.tsx";
 import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
@@ -57,17 +56,15 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
       onClose={closeDialog}
       isCloseDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
       <FormProvider {...formMethods}>
-        <Stack gap={3} flex={"0 1 1040px"} m={7.5}>
-          <BoreholesCard data-cy="facies-description-basic-data" title={t("basicData")}>
-            <FormContainer>
-              <BasicDataFormSection fromDepths={fromDepths} toDepths={toDepths} />
-              <FormContainer direction={"row"}>
-                <FormDomainSelect fieldName={"faciesId"} label={"facies"} schemaName={"facies_con"} />
-              </FormContainer>
-              <RemarksFormSection fieldName="description" label="remarks" />
+        <BoreholesCard data-cy="facies-description-basic-data" title={t("basicData")}>
+          <FormContainer>
+            <BasicDataFormSection fromDepths={fromDepths} toDepths={toDepths} />
+            <FormContainer direction={"row"}>
+              <FormDomainSelect fieldName={"faciesId"} label={"facies"} schemaName={"facies_con"} />
             </FormContainer>
-          </BoreholesCard>
-        </Stack>
+            <RemarksFormSection fieldName="description" label="remarks" />
+          </FormContainer>
+        </BoreholesCard>
       </FormProvider>
     </FormDialog>
   );

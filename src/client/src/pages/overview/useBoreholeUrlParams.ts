@@ -9,6 +9,7 @@ import {
   useQueryStates,
 } from "nuqs";
 import { SessionKeys } from "./SessionKey.ts";
+import { nullableBooleanFilterKeys } from "./sidePanelContent/filter/filterUtils.ts";
 
 // Pagination & sort for borehole table
 const tableParsers = {
@@ -35,6 +36,8 @@ export const filterParsers = {
   purposeId: parseAsArrayOf(parseAsInteger),
   workgroupId: parseAsArrayOf(parseAsInteger),
   restrictionId: parseAsArrayOf(parseAsInteger),
+  identifierTypeId: parseAsArrayOf(parseAsInteger),
+  identifierValue: parseAsString,
   restrictionUntilFrom: parseAsString,
   restrictionUntilTo: parseAsString,
   totalDepthMin: parseAsFloat,
@@ -51,8 +54,10 @@ export const filterParsers = {
   hasProfiles: parseAsStringLiteral(["true", "false", "null"] as const),
   hasPhotos: parseAsStringLiteral(["true", "false", "null"] as const),
   hasDocuments: parseAsStringLiteral(["true", "false", "null"] as const),
-  workflowStatus: parseAsString,
+  workflowStatus: parseAsArrayOf(parseAsString),
 };
+
+export type FilterKey = keyof typeof filterParsers;
 
 export const useBoreholeUrlParams = () => {
   const [allFilterParams, setFilterParams] = useQueryStates(filterParsers);
@@ -68,16 +73,33 @@ export const useBoreholeUrlParams = () => {
   tableParamsRef.current = tableParams;
 
   const setFilterField = useCallback(
-    (key: keyof typeof filterParsers, value: string | string[] | number[] | boolean | null) => {
-      if (value === undefined) {
-        setFilterParams({ [key]: "null" });
+    (key: FilterKey, value: string | string[] | number[] | boolean | null | undefined) => {
+      if (value === true) {
+        setFilterParams({ [key]: "true" });
       } else if (value === false) {
         setFilterParams({ [key]: "false" });
-      } else if (value === true) {
-        setFilterParams({ [key]: "true" });
+      } else if (value === null && nullableBooleanFilterKeys.has(key)) {
+        // Preserve the "null" literal ("Keine Angabe") for nullable boolean filter keys.
+        setFilterParams({ [key]: "null" });
+      } else if (value === null || value === undefined) {
+        // Any other null/undefined clears the URL param.
+        setFilterParams({ [key]: null });
       } else {
-        setFilterParams({ [key]: value ?? null });
+        setFilterParams({ [key]: value as never });
       }
+    },
+    [setFilterParams],
+  );
+
+  // Removes the param from the URL entirely. Unlike `setFilterField(key, null)`, which preserves
+  // the literal "null" in the URL for nullable boolean keys (meaning "Keine Angabe"), this helper
+  // always drops the key so downstream consumers see an unset filter.
+  const clearFilterField = useCallback(
+    (key: FilterKey) => {
+      setFilterParams({ [key]: null } as Parameters<typeof setFilterParams>[0]);
+      (Object.keys(filterParsers) as Array<FilterKey>).forEach(key => {
+        sessionStorage.removeItem(SessionKeys[key as keyof typeof SessionKeys]);
+      });
     },
     [setFilterParams],
   );
@@ -94,7 +116,7 @@ export const useBoreholeUrlParams = () => {
     // Set all filter keys to null to remove them from the URL
     const nulled = Object.fromEntries(Object.keys(filterParsers).map(k => [k, null]));
     setFilterParams(nulled as Parameters<typeof setFilterParams>[0]);
-    (Object.keys(filterParsers) as Array<keyof typeof filterParsers>).forEach(key => {
+    (Object.keys(filterParsers) as Array<FilterKey>).forEach(key => {
       sessionStorage.removeItem(SessionKeys[key as keyof typeof SessionKeys]);
     });
   };
@@ -147,7 +169,7 @@ export const useBoreholeUrlParams = () => {
       return;
     }
     const updates: Record<string, unknown> = {};
-    (Object.keys(filterParsers) as Array<keyof typeof filterParsers>).forEach(key => {
+    (Object.keys(filterParsers) as Array<FilterKey>).forEach(key => {
       const raw = sessionStorage.getItem(SessionKeys[key as keyof typeof SessionKeys]);
       if (raw !== null) {
         const parsed = filterParsers[key].parse(raw);
@@ -178,6 +200,7 @@ export const useBoreholeUrlParams = () => {
   return {
     filterParams,
     setFilterField,
+    clearFilterField,
     resetFilter,
     saveFilterParamsInSession,
     tableParams,

@@ -1,22 +1,14 @@
-import { WorkflowStatus } from "@swissgeol/ui-core";
 import { hasPagination, showTableAndWaitForData, verifyPaginationText } from "../helpers/dataGridHelpers";
-import { setInput, setSelect, setYesNoSelect } from "../helpers/formHelpers";
+import {
+  checkFilterChipExistsAndRemove,
+  clickDomainButtonByIndex,
+  clickYesNoButton,
+  openFilter,
+  removeFirstMultiSelectChip,
+  setAutocompleteText,
+} from "../helpers/filterHelpers.ts";
+import { setInput } from "../helpers/formHelpers";
 import { createBorehole, goToRouteAndAcceptTerms } from "../helpers/testHelpers";
-
-function openFilter(filterTitle: string) {
-  goToRouteAndAcceptTerms("/");
-  cy.wait("@borehole_filter");
-  cy.dataCy("show-filter-button").click();
-  cy.contains(filterTitle).click();
-}
-
-function checkFilterChipExistsAndRemove(filterName: string) {
-  cy.dataCy(`filter-chip-${filterName}`).should("exist");
-  cy.dataCy(`filter-chip-${filterName}`).within(() => {
-    cy.get("svg").click();
-  });
-  cy.dataCy(`filter-chip-${filterName}`).should("not.exist");
-}
 
 function testYesNoFilter(
   title: string,
@@ -27,7 +19,7 @@ function testYesNoFilter(
 ) {
   it(`filters boreholes by ${title}`, () => {
     openFilter(filterSection);
-    setYesNoSelect(fieldName, option);
+    clickYesNoButton(fieldName, option);
     cy.dataCy("boreholes-number-preview").should("have.text", expectedCount);
     checkFilterChipExistsAndRemove(fieldName);
   });
@@ -42,7 +34,8 @@ function testInputFilter(
 ) {
   it(`filters boreholes by ${title}`, () => {
     openFilter(filterSection);
-    setInput(fieldName, value);
+    setAutocompleteText(fieldName, value);
+    cy.wait("@borehole_filter");
     cy.dataCy("boreholes-number-preview").should("have.text", expectedCount);
     checkFilterChipExistsAndRemove(fieldName);
   });
@@ -57,9 +50,35 @@ function testSelectFilter(
 ) {
   it(`filters boreholes by ${title}`, () => {
     openFilter(filterSection);
-    setSelect(fieldName, optionIndex);
+    clickDomainButtonByIndex(fieldName, optionIndex);
     cy.dataCy("boreholes-number-preview").should("have.text", expectedCount);
-    checkFilterChipExistsAndRemove(fieldName);
+    cy.get(`[data-cy^="filter-chip-${fieldName}-"]`).should("have.length.at.least", 1);
+    removeFirstMultiSelectChip(fieldName);
+    cy.get(`[data-cy^="filter-chip-${fieldName}-"]`).should("not.exist");
+  });
+}
+
+function testLargeSelectFilter(
+  title: string,
+  filterSection: string,
+  fieldName: string,
+  options: string[],
+  expectedCount: string,
+) {
+  it(`filters boreholes by ${title}`, () => {
+    openFilter(filterSection);
+    const selector = `[data-cy="${fieldName}-formSelect"]`;
+    cy.get(selector).scrollIntoView();
+    cy.get(selector).click();
+    options.forEach(option => {
+      cy.contains(option).click();
+      cy.wait("@borehole_filter");
+    });
+    cy.get("body").click(0, 0);
+    cy.dataCy("boreholes-number-preview").should("have.text", expectedCount);
+    cy.get(`[data-cy^="filter-chip-${fieldName}-"]`).should("have.length", options.length);
+    options.forEach(() => removeFirstMultiSelectChip(fieldName));
+    cy.get(`[data-cy^="filter-chip-${fieldName}-"]`).should("not.exist");
   });
 }
 
@@ -76,10 +95,18 @@ describe("Search filter tests", () => {
   it("filters boreholes by workflow status", () => {
     openFilter("Workflow status");
     cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
-    cy.dataCy(WorkflowStatus.Draft).click();
+    cy.dataCy("workflow-status-button-Draft").should("contain", "3000");
+    cy.dataCy("workflow-status-button-Reviewed").should("contain", "0");
+    cy.dataCy("workflow-status-button-Reviewed").should("be.disabled");
+
+    cy.dataCy("workflow-status-button-Draft").click();
     cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
-    cy.dataCy(WorkflowStatus.Reviewed).click();
-    cy.dataCy("boreholes-number-preview").should("have.text", "0");
+    cy.dataCy("filter-chip-workflowStatus-Draft").should("exist");
+
+    // Toggling Draft off clears the workflowStatus filter entirely.
+    cy.dataCy("workflow-status-button-Draft").click();
+    cy.dataCy("filter-chip-workflowStatus-Draft").should("not.exist");
+    cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
   });
 
   // ─── WORKGROUP FILTER ──────────────────────────────────────────────────────
@@ -90,12 +117,14 @@ describe("Search filter tests", () => {
     showTableAndWaitForData();
     cy.contains("Workgroup").click();
     cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
-    cy.dataCy("filter-chip-workgroupId").should("not.exist");
-    cy.dataCy("Default").click();
-    cy.dataCy("filter-chip-workgroupId").should("exist");
+    cy.get('[data-cy^="filter-chip-workgroupId-"]').should("not.exist");
+    cy.dataCy("workgroup-button-1").click();
+    cy.dataCy("filter-chip-workgroupId-1").should("exist");
     cy.dataCy("boreholes-number-preview").should("exist");
-    cy.dataCy("all").click();
-    cy.dataCy("filter-chip-workgroupId").should("not.exist");
+
+    // Clicking the same button again toggles the selection off
+    cy.dataCy("workgroup-button-1").click();
+    cy.get('[data-cy^="filter-chip-workgroupId-"]').should("not.exist");
     cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
   });
 
@@ -108,18 +137,18 @@ describe("Search filter tests", () => {
 
     openFilter("Borehole");
 
-    setYesNoSelect("nationalInterest", "Yes");
+    clickYesNoButton("nationalInterest", "Yes");
     showTableAndWaitForData();
     verifyPaginationText("1–100 of 300");
     cy.dataCy("boreholes-number-preview").should("have.text", "300");
     cy.dataCy("filter-chip-nationalInterest").should("exist");
 
-    setYesNoSelect("nationalInterest", "Not specified");
+    clickYesNoButton("nationalInterest", "Not specified");
     hasPagination(false);
     cy.dataCy("boreholes-number-preview").should("exist");
     cy.dataCy("filter-chip-nationalInterest").should("exist");
 
-    setYesNoSelect("nationalInterest", "No");
+    clickYesNoButton("nationalInterest", "No");
     verifyPaginationText("1–100 of 2703");
     cy.dataCy("boreholes-number-preview").should("have.text", "2'703");
     checkFilterChipExistsAndRemove("nationalInterest");
@@ -127,9 +156,9 @@ describe("Search filter tests", () => {
     cy.dataCy("boreholes-number-preview").should("have.text", "3'004");
   });
 
-  testInputFilter("original name", "Borehole", "originalName", "Abigail", "7");
-  testInputFilter("project name", "Borehole", "projectName", "engin", "106");
-  testInputFilter("alternate name", "Borehole", "name", "Eric", "26");
+  testInputFilter("original name", "Borehole", "originalName", "Abigail", "1");
+  testInputFilter("project name", "Borehole", "projectName", "Intuitive", "1");
+  testInputFilter("alternate name", "Borehole", "name", "Eric", "1");
 
   testSelectFilter("restriction", "Borehole", "restrictionId", 0, "376");
 
@@ -183,8 +212,8 @@ describe("Search filter tests", () => {
   });
 
   testSelectFilter("borehole type", "Borehole", "typeId", 0, "171");
-  testSelectFilter("purpose", "Borehole", "purposeId", 0, "112");
-  testSelectFilter("borehole status", "Borehole", "statusId", 2, "314");
+  testLargeSelectFilter("purpose", "Borehole", "purposeId", ["hydrocarbon exploration", "mineral resources"], "233");
+  testLargeSelectFilter("borehole status", "Borehole", "statusId", ["decayed"], "314");
 
   testYesNoFilter("groundwater", "Borehole", "hasGroundwater", "Not specified", "601");
   testYesNoFilter("top bedrock intersected", "Borehole", "topBedrockIntersected", "No", "1'209");
@@ -196,16 +225,125 @@ describe("Search filter tests", () => {
 
   // ─── ATTACHMENT FILTERS ────────────────────────────────────────────────────
 
-  testYesNoFilter("profiles available", "Attachments", "hasProfiles", "No", "2'912");
+  testYesNoFilter("profiles available", "Attachments", "hasProfiles", "No", "2'900");
   testYesNoFilter("photos available", "Attachments", "hasPhotos", "Yes", "71");
 
   it("filters boreholes by documents available and resets filters", () => {
     openFilter("Attachments");
-    setYesNoSelect("hasDocuments", "No");
+    clickYesNoButton("hasDocuments", "No");
     cy.dataCy("boreholes-number-preview").should("have.text", "2'930");
     cy.dataCy("boreholes-number-preview").should("exist");
     cy.dataCy(`filter-chip-hasDocuments`).should("exist");
     cy.dataCy("reset-filter-button").click();
     cy.dataCy(`filter-chip-hasDocuments`).should("not.exist");
+  });
+
+  // ─── AUTOCOMPLETE FILTERS ────────────────────────────────────────────────────
+  it("shows autocomplete suggestions and commits a selection for originalName", () => {
+    openFilter("Borehole");
+    cy.dataCy("originalName-formInput").click();
+    cy.dataCy("originalName-formInput").type("Ra");
+    cy.get('[data-cy^="originalName-suggestion-"]').should("have.length.at.least", 1);
+    cy.get('[data-cy^="originalName-suggestion-"]').first().click();
+    cy.dataCy("boreholes-number-preview").invoke("text").should("not.equal", "3'000");
+    checkFilterChipExistsAndRemove("originalName");
+  });
+
+  it("does not fetch suggestions for a single character", () => {
+    cy.intercept("GET", "/api/v2/borehole/suggest*").as("suggestRequest");
+    openFilter("Borehole");
+    cy.dataCy("originalName-formInput").click();
+    cy.dataCy("originalName-formInput").type("a");
+    // Wait past the debounce window (300ms) to be sure no call fired
+    // eslint-disable-next-line cypress/no-unnecessary-waiting
+    cy.wait(500);
+    cy.get("@suggestRequest.all").should("have.length", 0);
+  });
+
+  // ─── MULTISELECT FILTERS ────────────────────────────────────────────────────
+  it("toggles button selections for restrictionId (<= 7 options)", () => {
+    openFilter("Borehole");
+    cy.get('[data-cy^="restrictionId-button-"]').eq(0).click();
+    cy.get('[data-cy^="restrictionId-button-"]').eq(1).click();
+    cy.get('[data-cy^="restrictionId-button-"].MuiButton-contained').should("have.length.at.least", 2);
+    // MultiSelect renders one chip per selected value.
+    cy.get('[data-cy^="filter-chip-restrictionId-"]').should("have.length.at.least", 2);
+    // Deselect one
+    cy.get('[data-cy^="restrictionId-button-"]').eq(1).click();
+    // Deselect the other → filter should clear
+    cy.get('[data-cy^="restrictionId-button-"]').eq(0).click();
+    cy.get('[data-cy^="filter-chip-restrictionId-"]').should("not.exist");
+  });
+
+  it("multiselect filter chips show selected values and support per-value removal", () => {
+    openFilter("Borehole");
+    // Select two borehole type values. The status schema ("borehole_type")
+    // has <= 7 options, so FilterDomainSelect renders them as toggle buttons
+    cy.dataCy("typeId-button-20101002").click();
+    cy.dataCy("typeId-button-30000307").click();
+
+    // Two chips should render — one per selected value (not one combined chip).
+    cy.get('[data-cy^="filter-chip-typeId-"]').should("have.length", 2);
+    cy.dataCy("filter-chip-typeId-20101002").should("be.visible");
+    cy.dataCy("filter-chip-typeId-30000307").should("be.visible");
+
+    // URL reflects both selections.
+    cy.location("search").should("contain", "typeId=20101002");
+    cy.location("search").should("contain", "30000307");
+
+    // Delete the first chip — only that value should be removed.
+    checkFilterChipExistsAndRemove("typeId-20101002");
+
+    cy.get('[data-cy^="filter-chip-typeId-"]').should("have.length", 1);
+    cy.dataCy("filter-chip-typeId-30000307").should("be.visible");
+
+    // The toggle button for the removed type is no longer selected;
+    // the still-active type keeps its selected (contained) state.
+    cy.dataCy("typeId-button-20101002").should("not.have.class", "MuiButton-contained");
+    cy.dataCy("typeId-button-30000307").should("have.class", "MuiButton-contained");
+
+    // URL keeps the remaining selection and drops the removed one.
+    cy.location("search").should("contain", "typeId=30000307");
+    cy.location("search").should("not.contain", "typeId=20101002");
+
+    // Delete the last remaining chip — filter is fully cleared.
+    checkFilterChipExistsAndRemove("typeId-30000307");
+
+    cy.get('[data-cy^="filter-chip-typeId-"]').should("not.exist");
+    cy.dataCy("typeId-button-30000307").should("not.have.class", "MuiButton-contained");
+    cy.location("search").should("not.contain", "typeId=");
+  });
+
+  // ─── IDENTIFIER FILTER ─────────────────────────────────────────────────────
+  it("filters boreholes by identifier type only", () => {
+    openFilter("IDs");
+    cy.dataCy("identifierTypeId-button-100000000").click(); // GeoDinID
+    cy.url().should("include", "identifierTypeId=");
+    cy.get('[data-cy^="filter-chip-identifierTypeId-"]').should("exist");
+    cy.dataCy("boreholes-number-preview").should("have.text", "56");
+  });
+
+  it("filters boreholes by identifier value only", () => {
+    openFilter("IDs");
+    cy.dataCy(`identifierValue-formInput`).type("8c{enter}", { delay: 10 });
+    cy.url().should("include", "identifierValue=8c");
+    cy.dataCy("filter-chip-identifierValue").should("exist");
+    cy.dataCy("boreholes-number-preview").should("have.text", "2");
+  });
+
+  it("filters boreholes by identifier type and value combined", () => {
+    openFilter("IDs");
+    cy.dataCy("identifierTypeId-button-100000005").click(); // canton ID
+    cy.dataCy("boreholes-number-preview").should("have.text", "48");
+    cy.dataCy(`identifierValue-formInput`).type("8{enter}", { delay: 10 });
+    cy.url().should("include", "identifierTypeId=100000005").and("include", "identifierValue=8");
+    // Both chips visible.
+    cy.dataCy("filter-chip-identifierTypeId-100000005").should("exist");
+    cy.dataCy("filter-chip-identifierValue").should("exist");
+    cy.dataCy("boreholes-number-preview").should("have.text", "13");
+    //removing the identifier type chip clears only the value field
+    cy.dataCy("filter-chip-identifierTypeId-100000005").within(() => cy.get("svg").click());
+    cy.dataCy("boreholes-number-preview").should("have.text", "60");
+    cy.url().should("include", "identifierValue=").and("not.include", "identifierTypeId=");
   });
 });

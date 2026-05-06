@@ -23,8 +23,8 @@ import { attributions, crossOrigin, swissExtent, updateBasemap } from "../basema
 import { BasemapSelector } from "../basemapSelector/basemapSelector.tsx";
 import MapControls from "../buttons/mapControls.jsx";
 import { DataCardButtonContainer } from "../dataCard/dataCard.js";
-import { projections } from "./mapProjections.js";
-import { detailMapStyleFunction } from "./mapStyleFunctions.js";
+import { projections } from "./mapProjections.ts";
+import { detailMapStyleFunction } from "./mapStyleFunctions.ts";
 
 class PointComponent extends React.Component {
   static contextType = BasemapContext;

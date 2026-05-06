@@ -34,6 +34,7 @@
     "@swissgeol/ui-core": "^1.6.0",
     "@swissgeol/ui-core-react": "^1.6.0",
     "@tanstack/react-query": "^5.69.0",
+    "@testing-library/react": "^16.3.2",
     "@types/proj4": "^2.5.5",
     "@uidotdev/usehooks": "^2.4.1",
     "axios": "^1.15.0",
@@ -98,6 +99,7 @@
     "eslint-plugin-react-hooks": "^5.2.0",
     "eslint-plugin-react-refresh": "^0.4.19",
     "globals": "^16.0.0",
+    "jsdom": "^29.1.1",
     "knip": "^6.6.1",
     "license-checker": "^25.0.1",
     "prettier": "^3.5.3",
@@ -105,7 +107,8 @@
     "typescript": "^5.3.3",
     "vite": "^6.4.2",
     "vite-plugin-svgr": "^4.3.0",
-    "vite-tsconfig-paths": "^5.1.4"
+    "vite-tsconfig-paths": "^5.1.4",
+    "vitest": "^4.1.5"
   },
   "overrides": {
     "@stencil/react-output-target": "1.2.0"
@@ -115,6 +118,8 @@
     "build": "tsc && vite build",
     "preview": "vite preview",
     "test": "cypress run",
+    "test:unit": "vitest run",
+    "test:unit:watch": "vitest",
     "ts": "tsc --noEmit",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.json --report-unused-disable-directives --max-warnings 0",
     "knip": "knip",

@@ -1,5 +1,5 @@
 import { Photo } from "../pages/detail/attachments/tabs/photo.ts";
-import { File } from "./file/fileInterfaces";
+import { Profile } from "./profile.ts";
 
 export class ApiError extends Error {
   status?: number;
@@ -127,4 +127,4 @@ export interface DocumentUpdate {
   public: boolean;
 }
 
-export type BoreholeAttachment = File | Photo;
+export type BoreholeAttachment = Profile | Photo;

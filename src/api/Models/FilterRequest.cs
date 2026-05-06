@@ -48,9 +48,10 @@ public class FilterRequest
     public IEnumerable<int>? PurposeId { get; set; }
 
     /// <summary>
-    /// Gets or sets the workflow status filter.
+    /// Gets or sets the workflow status filter. Matches boreholes whose workflow status is in this set.
     /// </summary>
-    public WorkflowStatus? WorkflowStatus { get; set; }
+    [MaxLength(100)]
+    public IEnumerable<WorkflowStatus>? WorkflowStatus { get; set; }
 
     /// <summary>
     /// Gets or sets the workgroup ID filter.
@@ -108,6 +109,20 @@ public class FilterRequest
     /// </summary>
     [MaxLength(100)]
     public IEnumerable<int>? RestrictionId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier type (codelist) IDs filter.
+    /// Boreholes match if at least one <see cref="BoreholeCodelist"/> row has a
+    /// <c>CodelistId</c> in this set; combined with <see cref="IdentifierValue"/>
+    /// the predicates apply on the same row (strict semantics).
+    /// </summary>
+    [MaxLength(100)]
+    public IEnumerable<int>? IdentifierTypeId { get; set; }
+
+    /// <summary>
+    /// Gets or sets the identifier value substring filter (case-insensitive).
+    /// </summary>
+    public string? IdentifierValue { get; set; }
 
     /// <summary>
     /// Gets or sets the national interest filter.

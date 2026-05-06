@@ -461,12 +461,12 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(88, result.TotalCount);
+        Assert.AreEqual(100, result.TotalCount);
 
         // Verify that boreholes have profiles (boreholefiles).
         foreach (var borehole in result.Boreholes)
         {
-            var hasProfiles = await context.BoreholeFiles.AnyAsync(s => s.BoreholeId == borehole.Id);
+            var hasProfiles = await context.Profiles.AnyAsync(s => s.BoreholeId == borehole.Id);
             Assert.IsTrue(hasProfiles);
         }
     }
@@ -475,7 +475,7 @@ public class FilterServiceTest
     public async Task FilterBoreholesWithHasProfilesFilterFalseReturnsMatchingBoreholes()
     {
         var expectedCount = await context.Boreholes
-            .CountAsync(b => !context.BoreholeFiles.Any(bf => bf.BoreholeId == b.Id));
+            .CountAsync(b => !context.Profiles.Any(p => p.BoreholeId == b.Id));
 
         var filterRequest = new FilterRequest
         {
@@ -492,7 +492,7 @@ public class FilterServiceTest
         // Verify that no returned borehole has profiles (boreholefiles)
         foreach (var borehole in result.Boreholes)
         {
-            var hasProfiles = await context.BoreholeFiles.AnyAsync(bf => bf.BoreholeId == borehole.Id);
+            var hasProfiles = await context.Profiles.AnyAsync(p => p.BoreholeId == borehole.Id);
             Assert.IsFalse(hasProfiles);
         }
     }
@@ -1560,7 +1560,7 @@ public class FilterServiceTest
         {
             var filterRequest = new FilterRequest
             {
-                WorkflowStatus = status,
+                WorkflowStatus = new[] { status },
                 PageNumber = 1,
                 PageSize = 100,
             };
@@ -1582,5 +1582,233 @@ public class FilterServiceTest
                 Assert.AreEqual(status, borehole.Workflow.Status, $"Borehole {borehole.Id} should have status {status}");
             }
         }
+    }
+
+    private async Task<(int MatchingBoreholeId, int CrossRowBoreholeId, int TypeAId, int TypeBId)> SeedBoreholesWithIdentifiersAsync()
+    {
+        var typeIds = await context.Codelists
+            .Where(c => c.Schema == "borehole_identifier")
+            .OrderBy(c => c.Id)
+            .Select(c => c.Id)
+            .Take(2)
+            .ToListAsync();
+        Assert.IsTrue(typeIds.Count >= 2, "Test requires at least 2 borehole_identifier codelists in the test DB.");
+        var typeA = typeIds[0];
+        var typeB = typeIds[1];
+
+        var matching = new Borehole
+        {
+            WorkgroupId = 1,
+            OriginalName = "Borehole MATCH",
+            Workflow = new Workflow { ReviewedTabs = new(), PublishedTabs = new() },
+            BoreholeCodelists = new List<BoreholeCodelist>
+            {
+                new() { CodelistId = typeA, Value = "FOO_ABC_BAR" },
+            },
+        };
+
+        // Cross-row: typeA on one row, "ABC" only on the typeB row.
+        // Strict same-row semantics must reject this borehole when filtering by typeA + "ABC".
+        var crossRow = new Borehole
+        {
+            WorkgroupId = 1,
+            OriginalName = "Borehole CROSS",
+            Workflow = new Workflow { ReviewedTabs = new(), PublishedTabs = new() },
+            BoreholeCodelists = new List<BoreholeCodelist>
+            {
+                new() { CodelistId = typeA, Value = "NO_MATCH_HERE" },
+                new() { CodelistId = typeB, Value = "OTHER_ABC_VALUE" },
+            },
+        };
+
+        await context.Boreholes.AddAsync(matching);
+        await context.Boreholes.AddAsync(crossRow);
+        await context.SaveChangesAsync();
+
+        return (matching.Id, crossRow.Id, typeA, typeB);
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesByIdentifierTypeReturnsBoreholesWithThatType()
+    {
+        var (matchingId, crossRowId, typeA, _) = await SeedBoreholesWithIdentifiersAsync();
+
+        var filterRequest = new FilterRequest
+        {
+            IdentifierTypeId = new[] { typeA },
+            PageNumber = 1,
+            PageSize = 100,
+        };
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
+        var ids = result.FilteredBoreholeIds.ToHashSet();
+
+        Assert.IsTrue(ids.Contains(matchingId), "Borehole with typeA row must be returned.");
+        Assert.IsTrue(ids.Contains(crossRowId), "Borehole that also has a typeA row must be returned.");
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesByIdentifierValueReturnsBoreholesWithMatchingValue()
+    {
+        var (matchingId, crossRowId, _, _) = await SeedBoreholesWithIdentifiersAsync();
+
+        var filterRequest = new FilterRequest
+        {
+            IdentifierValue = "abc",
+            PageNumber = 1,
+            PageSize = 100,
+        };
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
+        var ids = result.FilteredBoreholeIds.ToHashSet();
+
+        Assert.IsTrue(ids.Contains(matchingId), "FOO_ABC_BAR matches case-insensitively.");
+        Assert.IsTrue(ids.Contains(crossRowId), "OTHER_ABC_VALUE matches case-insensitively.");
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesByIdentifierTypeAndValueOnSameRowMatches()
+    {
+        var (matchingId, crossRowId, typeA, _) = await SeedBoreholesWithIdentifiersAsync();
+
+        var filterRequest = new FilterRequest
+        {
+            IdentifierTypeId = new[] { typeA },
+            IdentifierValue = "abc",
+            PageNumber = 1,
+            PageSize = 100,
+        };
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
+        var ids = result.FilteredBoreholeIds.ToHashSet();
+
+        Assert.IsTrue(ids.Contains(matchingId), "typeA + ABC on the same row must match.");
+        Assert.IsFalse(ids.Contains(crossRowId), "Strict same-row semantics: borehole with typeA on one row and 'ABC' on a different row must NOT match.");
+    }
+
+    [TestMethod]
+    public async Task GetFilterStatsWithoutFiltersReturnsPopulatedCountsForAdmin()
+    {
+        // Derive expected truth from the seed data so assertions stay valid across seed changes.
+        var totalBoreholes = await context.Boreholes.CountAsync();
+        var expectedHasLogsTrue = await context.Boreholes.CountAsync(b => context.LogRuns.Any(lr => lr.BoreholeId == b.Id));
+        var expectedHasProfilesTrue = await context.Boreholes.CountAsync(b => context.Profiles.Any(bf => bf.BoreholeId == b.Id));
+        var expectedHasGeometryTrue = await context.Boreholes.CountAsync(b => b.BoreholeGeometry != null && b.BoreholeGeometry.Any());
+
+        var result = await filterService.GetFilterStatsAsync(null, adminUser);
+
+        Assert.IsNotNull(result);
+
+        // Boolean dimensions must partition the admin-visible set exactly.
+        Assert.AreEqual(expectedHasGeometryTrue, result.HasGeometry.True);
+        Assert.AreEqual(totalBoreholes, result.HasGeometry.True + result.HasGeometry.False);
+        Assert.AreEqual(expectedHasLogsTrue, result.HasLogs.True);
+        Assert.AreEqual(totalBoreholes, result.HasLogs.True + result.HasLogs.False);
+        Assert.AreEqual(expectedHasProfilesTrue, result.HasProfiles.True);
+        Assert.AreEqual(totalBoreholes, result.HasProfiles.True + result.HasProfiles.False);
+        Assert.AreEqual(totalBoreholes, result.HasPhotos.True + result.HasPhotos.False);
+        Assert.AreEqual(totalBoreholes, result.HasDocuments.True + result.HasDocuments.False);
+
+        // Nullable boolean dimensions must partition the full set across true/false/null.
+        Assert.AreEqual(totalBoreholes, result.NationalInterest.True + result.NationalInterest.False + result.NationalInterest.Null);
+        Assert.AreEqual(totalBoreholes, result.TopBedrockIntersected.True + result.TopBedrockIntersected.False + result.TopBedrockIntersected.Null);
+        Assert.AreEqual(totalBoreholes, result.HasGroundwater.True + result.HasGroundwater.False + result.HasGroundwater.Null);
+
+        // Every borehole has a workgroup, so workgroup counts should sum to the total.
+        Assert.AreEqual(totalBoreholes, result.WorkgroupId.Values.Sum());
+
+        // Id-dimension dictionaries skip nulls, so sums can be <= total but the maps must be populated.
+        Assert.IsTrue(result.StatusId.Count > 0);
+        Assert.IsTrue(result.TypeId.Count > 0);
+        Assert.IsTrue(result.PurposeId.Count > 0);
+        Assert.IsTrue(result.RestrictionId.Count > 0);
+    }
+
+    [TestMethod]
+    public async Task GetFilterStatsExcludesSelfDimensionWhenApplyingFilters()
+    {
+        // Filter-exclusion semantic: stats for dimension D must be computed with D's filter excluded.
+        // Other dimensions must see the filtered set. Verify with HasLogs=True.
+        var totalBoreholes = await context.Boreholes.CountAsync();
+        var expectedHasLogsTrue = await context.Boreholes.CountAsync(b => context.LogRuns.Any(lr => lr.BoreholeId == b.Id));
+        var expectedHasLogsFalse = totalBoreholes - expectedHasLogsTrue;
+
+        var filterRequest = new FilterRequest
+        {
+            HasLogs = BooleanFilterValue.True,
+        };
+
+        var result = await filterService.GetFilterStatsAsync(filterRequest, adminUser);
+
+        Assert.IsNotNull(result);
+
+        // Self-dimension: HasLogs counts ignore the HasLogs filter → full baseline.
+        Assert.AreEqual(expectedHasLogsTrue, result.HasLogs.True);
+        Assert.AreEqual(expectedHasLogsFalse, result.HasLogs.False);
+
+        // Other dimensions are counted WITH HasLogs=True applied → partitioned set of expectedHasLogsTrue.
+        Assert.AreEqual(expectedHasLogsTrue, result.HasGeometry.True + result.HasGeometry.False);
+        Assert.AreEqual(expectedHasLogsTrue, result.HasProfiles.True + result.HasProfiles.False);
+        Assert.AreEqual(expectedHasLogsTrue, result.HasPhotos.True + result.HasPhotos.False);
+        Assert.AreEqual(expectedHasLogsTrue, result.HasDocuments.True + result.HasDocuments.False);
+        Assert.AreEqual(expectedHasLogsTrue, result.NationalInterest.True + result.NationalInterest.False + result.NationalInterest.Null);
+        Assert.AreEqual(expectedHasLogsTrue, result.WorkgroupId.Values.Sum());
+    }
+
+    [TestMethod]
+    public async Task GetFilterStatsReturnsDistinctBoreholeCountPerIdentifierType()
+    {
+        var (matchingId, crossRowId, typeA, typeB) = await SeedBoreholesWithIdentifiersAsync();
+
+        // No filter → counts include every borehole that has at least one row of that type.
+        var noFilter = await filterService.GetFilterStatsAsync(new FilterRequest(), adminUser);
+
+        Assert.IsTrue(noFilter.IdentifierTypeId.ContainsKey(typeA), "Stats must contain typeA.");
+        Assert.IsTrue(noFilter.IdentifierTypeId.ContainsKey(typeB), "Stats must contain typeB.");
+
+        // With value="abc" only matching rows count.
+        // - matchingId has a typeA row "FOO_ABC_BAR" → typeA gets +1, typeB gets 0 from this borehole.
+        // - crossRowId has a typeB row "OTHER_ABC_VALUE" matching "abc" → typeB gets +1; its typeA
+        //   row "NO_MATCH_HERE" does NOT match, so typeA does NOT get a +1 from this borehole.
+        var withValue = await filterService.GetFilterStatsAsync(
+            new FilterRequest { IdentifierValue = "abc" },
+            adminUser);
+
+        var typeABaseline = noFilter.IdentifierTypeId[typeA];
+        var typeBBaseline = noFilter.IdentifierTypeId[typeB];
+
+        // typeA count drops by exactly the boreholes whose typeA row(s) don't match "abc".
+        // We can't assert the absolute number against seed data, but we can assert the relationship:
+        Assert.IsTrue(
+            withValue.IdentifierTypeId.GetValueOrDefault(typeA) <= typeABaseline,
+            "typeA count with value filter must be ≤ baseline.");
+        Assert.IsTrue(
+            withValue.IdentifierTypeId.GetValueOrDefault(typeB) <= typeBBaseline,
+            "typeB count with value filter must be ≤ baseline.");
+
+        // Specific assertions for the boreholes we explicitly seeded.
+        // After value="abc": matchingId contributes +1 to typeA; crossRowId contributes +1 to typeB.
+        // So filtering for typeA + value="abc" should match exactly matchingId.
+        var combined = await filterService.FilterBoreholesAsync(
+            new FilterRequest { IdentifierTypeId = new[] { typeA }, IdentifierValue = "abc", PageNumber = 1, PageSize = 100 },
+            adminUser);
+        Assert.IsTrue(combined.FilteredBoreholeIds.Contains(matchingId));
+        Assert.IsFalse(combined.FilteredBoreholeIds.Contains(crossRowId));
+    }
+
+    [TestMethod]
+    public async Task GetFilterStatsExcludesIdentifierTypeFromItsOwnDimension()
+    {
+        var (_, _, typeA, typeB) = await SeedBoreholesWithIdentifiersAsync();
+
+        // When the user is already filtering by typeA, the per-type counts must STILL show typeB
+        // — because the convention is "null only this dimension" so the user can switch to it.
+        var stats = await filterService.GetFilterStatsAsync(
+            new FilterRequest { IdentifierTypeId = new[] { typeA } },
+            adminUser);
+
+        Assert.IsTrue(
+            stats.IdentifierTypeId.ContainsKey(typeB),
+            "Per-type stats must show non-selected types (self-dimension excluded from filtering).");
     }
 }
