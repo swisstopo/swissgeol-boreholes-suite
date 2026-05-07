@@ -250,6 +250,8 @@ public class StratigraphyControllerTest
 
         var createResult = await controller.CreateAsync(stratigraphyToCreate);
         ActionResultAssert.IsInternalServerError(createResult.Result, "Name must be unique");
+        var problemDetails = (ProblemDetails)((ObjectResult)createResult.Result!).Value!;
+        Assert.AreEqual("mustBeUnique", problemDetails.Extensions["messageKey"]);
     }
 
     [TestMethod]
@@ -365,6 +367,8 @@ public class StratigraphyControllerTest
         secondStratigraphy.Name = "DECKDIXIE";
         var updateResult = await controller.EditAsync(secondStratigraphy);
         ActionResultAssert.IsInternalServerError(updateResult.Result, "Name must be unique");
+        var problemDetails = (ProblemDetails)((ObjectResult)updateResult.Result!).Value!;
+        Assert.AreEqual("mustBeUnique", problemDetails.Extensions["messageKey"]);
 
         secondStratigraphy = GetStratigraphy(secondStratigraphy.Id);
         Assert.AreEqual(stratigraphy2.Name, secondStratigraphy.Name);

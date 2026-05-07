@@ -23,22 +23,22 @@ export const AddEmptyStratigraphyDialog: FC<AddEmptyStratigraphyDialogProps> = (
   onCreated,
 }) => {
   const [name, setName] = useState("");
-  const [nameError, setNameError] = useState<string | null>(null);
   const { t } = useTranslation();
   const showApiErrorAlert = useApiErrorAlert();
   const {
-    add: { mutateAsync: addStratigraphy, isPending },
+    add: { mutate: addStratigraphy, isPending, error, reset },
   } = useStratigraphyMutations();
 
   const trimmedName = name.trim();
+  const nameError = error instanceof ApiError && error.messageKey === "mustBeUnique" ? t(error.messageKey) : null;
 
   const resetAndClose = () => {
     setName("");
-    setNameError(null);
+    reset();
     onClose();
   };
 
-  const handleSave = async () => {
+  const handleSave = () => {
     if (!trimmedName) return;
     const payload: Stratigraphy = {
       id: 0,
@@ -55,17 +55,17 @@ export const AddEmptyStratigraphyDialog: FC<AddEmptyStratigraphyDialogProps> = (
       chronostratigraphyLayers: null,
       lithostratigraphyLayers: null,
     };
-    try {
-      const created = await addStratigraphy(payload);
-      onCreated(created.id);
-      resetAndClose();
-    } catch (error) {
-      if (error instanceof ApiError && error.message.includes("Name must be unique")) {
-        setNameError(t("mustBeUnique"));
-      } else {
-        showApiErrorAlert(error);
-      }
-    }
+    addStratigraphy(payload, {
+      onSuccess: created => {
+        onCreated(created.id);
+        resetAndClose();
+      },
+      onError: error => {
+        if (!(error instanceof ApiError && error.messageKey === "mustBeUnique")) {
+          showApiErrorAlert(error);
+        }
+      },
+    });
   };
 
   return (
@@ -87,7 +87,7 @@ export const AddEmptyStratigraphyDialog: FC<AddEmptyStratigraphyDialogProps> = (
               sx={getFieldBorderColor(false)}
               onChange={event => {
                 setName(event.target.value);
-                if (nameError) setNameError(null);
+                if (error) reset();
               }}
             />
           </Stack>

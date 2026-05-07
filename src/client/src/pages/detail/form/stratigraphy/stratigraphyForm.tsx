@@ -46,8 +46,8 @@ export const StratigraphyForm: FC<StratigraphyFormProps> = ({ selectedStratigrap
       { ...selectedStratigraphy, ...values },
       {
         onError: (error: ApiError) => {
-          if (error.message.includes("Name must be unique")) {
-            formMethods.setError("name", { type: "manual", message: t("mustBeUnique") });
+          if (error.messageKey === "mustBeUnique") {
+            formMethods.setError("name", { type: "manual", message: t(error.messageKey) });
           } else {
             showApiErrorAlert(error);
           }

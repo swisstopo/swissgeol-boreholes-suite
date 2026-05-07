@@ -33,7 +33,7 @@ async function createStratigraphyWithUniqueName(
       boreholeId,
     });
   } catch (e) {
-    if (e instanceof ApiError && e.message.includes("Name must be unique") && attempt < maxUniqueNameRetries) {
+    if (e instanceof ApiError && e.messageKey === "mustBeUnique" && attempt < maxUniqueNameRetries) {
       return createStratigraphyWithUniqueName(name, boreholeId, attempt + 1);
     }
     throw e;
