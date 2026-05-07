@@ -6,6 +6,7 @@ on:
       - main
     paths:
       - "charts/**"
+      - "environments/**"
   workflow_dispatch:
 
 jobs:

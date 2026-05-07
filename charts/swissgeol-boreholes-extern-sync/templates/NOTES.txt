@@ -1,0 +1,12 @@
+swissgeol-boreholes-extern-sync has been installed/upgraded.
+
+IMPORTANT: The following secret keys must be configured in {{ .Release.Name }}-secrets:
+
+  sourceDatabaseConnectionString
+  targetDatabaseConnectionString
+
+Verify secret configuration:
+  kubectl get secret {{ .Release.Name }}-secrets -n {{ .Release.Namespace }} -o jsonpath='{.data}' | jq 'to_entries[] | {key: .key, value: (.value | @base64d)}'
+
+If any values show CHANGE_ME, update them:
+  kubectl edit secret {{ .Release.Name }}-secrets -n {{ .Release.Namespace }}

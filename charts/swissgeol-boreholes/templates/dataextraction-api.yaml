@@ -3,12 +3,6 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-dataextraction-api
   namespace: {{ .Release.Namespace }}
-  {{- if ne .Values.keel.enabled false }}
-  annotations:
-    keel.sh/policy: {{ .Values.keel.policy | default "force" }}
-    keel.sh/match-tag: {{ .Values.keel.matchTag | default "'true'" }}
-    keel.sh/trigger: {{ .Values.keel.trigger | default "poll" }}
-  {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -91,8 +85,8 @@ spec:
                   key: s3SecretKey
             - name: AWS_S3_BUCKET
               valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-config
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
                   key: s3Bucket
             - name: AWS_ENDPOINT
               valueFrom:
