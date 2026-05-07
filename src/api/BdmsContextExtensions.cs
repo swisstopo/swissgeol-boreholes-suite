@@ -45,6 +45,7 @@ public static class BdmsContextExtensions
     /// Seed test data.
     /// </summary>
     [SuppressMessage("Security", "CA5394:Do not use insecure randomness", Justification = "Accepted for test data seeding.")]
+    [SuppressMessage("Security", "S2245:Make sure that using this pseudorandom number generator is safe here.", Justification = "Accepted for test data seeding.")]
     public static void SeedData(this BdmsContext context)
     {
         var bulkConfig = new BulkConfig { SqlBulkCopyOptions = SqlBulkCopyOptions.KeepIdentity };
