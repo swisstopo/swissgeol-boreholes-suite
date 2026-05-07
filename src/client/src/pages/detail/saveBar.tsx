@@ -4,11 +4,13 @@ import { Box, Stack } from "@mui/material";
 import { CircleCheck, CircleX } from "lucide-react";
 import { theme } from "../../AppTheme.ts";
 import { DeleteButton, SaveButton } from "../../components/buttons/buttons.tsx";
+import { LoadingBackdrop } from "../../components/loadingBackdrop.tsx";
 import { SaveContext, SaveContextProps } from "./saveContext.tsx";
 
 export const SaveBar = () => {
   const { t } = useTranslation();
-  const { showSaveFeedback, hasChanges, triggerSave, triggerReset } = useContext<SaveContextProps>(SaveContext);
+  const { showSaveFeedback, hasChanges, isSaving, triggerSave, triggerReset } =
+    useContext<SaveContextProps>(SaveContext);
 
   const changesMessage = (
     <>
@@ -45,9 +47,10 @@ export const SaveBar = () => {
         {showSaveFeedback && !hasChanges && savedMessage}
       </Stack>
       <Stack spacing={1} direction="row">
-        <DeleteButton disabled={!hasChanges} label="discardchanges" onClick={triggerReset} />
-        <SaveButton disabled={!hasChanges} variant="contained" onClick={triggerSave} />
+        <DeleteButton disabled={!hasChanges || isSaving} label="discardchanges" onClick={triggerReset} />
+        <SaveButton disabled={!hasChanges || isSaving} variant="contained" onClick={triggerSave} />
       </Stack>
+      {isSaving && <LoadingBackdrop open={isSaving} sx={{ zIndex: theme.zIndex.modal }} />}
     </Stack>
   );
 };

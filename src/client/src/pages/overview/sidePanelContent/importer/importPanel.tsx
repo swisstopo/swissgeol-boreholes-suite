@@ -1,6 +1,6 @@
 import React, { useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Backdrop, Box, Button, CircularProgress, Link, Stack } from "@mui/material";
+import { Box, Button, Link, Stack } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   boreholeQueryKey,
@@ -12,6 +12,7 @@ import { downloadCodelistCsv } from "../../../../api/download.ts";
 import { isJsonContentType } from "../../../../api/fetchApiV2.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
+import { LoadingBackdrop } from "../../../../components/loadingBackdrop.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 import { useUserWorkgroups } from "../../UserWorkgroupsContext.tsx";
 import { ErrorResponse, NewBoreholeProps } from "../commons/actionsInterfaces.ts";
@@ -130,17 +131,7 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
           {t("import")}
         </Button>
       </Stack>
-      {isLoading && (
-        <Backdrop
-          sx={{
-            color: theme.palette.primary.main,
-            backgroundColor: theme.palette.background.backdrop,
-            zIndex: theme.zIndex.modal + 1,
-          }}
-          open={isLoading}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      )}
+      {isLoading && <LoadingBackdrop open={isLoading} sx={{ zIndex: theme.zIndex.modal + 1 }} />}
     </Box>
   );
 };

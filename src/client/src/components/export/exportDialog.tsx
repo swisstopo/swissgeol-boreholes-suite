@@ -1,10 +1,10 @@
 import { Dispatch, SetStateAction, useCallback, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Backdrop, CircularProgress, Dialog, DialogActions, DialogContent, DialogTitle, Stack } from "@mui/material";
+import { Dialog, DialogActions, DialogContent, DialogTitle, Stack } from "@mui/material";
 import { ApiError } from "../../api/apiInterfaces.ts";
-import { theme } from "../../AppTheme.ts";
 import { AlertContext } from "../alert/alertContext.tsx";
 import { CancelButton, ExportButton } from "../buttons/buttons.tsx";
+import { LoadingBackdrop } from "../loadingBackdrop.tsx";
 
 export interface ExportItem {
   label: string;
@@ -76,14 +76,7 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
           </Stack>
         </DialogActions>
       </Stack>
-      {inProgress && (
-        <Backdrop
-          sx={{ color: theme.palette.primary.main, backgroundColor: theme.palette.background.backdrop }}
-          open={inProgress}
-          onClick={closeExportDialog}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      )}
+      {inProgress && <LoadingBackdrop open={inProgress} onClick={closeExportDialog} />}
     </Dialog>
   );
 };

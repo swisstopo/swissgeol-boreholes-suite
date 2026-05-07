@@ -5,6 +5,7 @@ export interface SaveContextProps {
   showSaveBar: boolean;
   showSaveFeedback: boolean;
   hasChanges: boolean;
+  isSaving: boolean;
   markAsChanged: (hasChanges: boolean) => void;
   registerSaveHandler: (handler: SaveHandler) => void;
   triggerSave: () => void;
@@ -20,6 +21,7 @@ export const SaveContext = createContext<SaveContextProps>({
   showSaveBar: false,
   showSaveFeedback: false,
   hasChanges: false,
+  isSaving: false,
   markAsChanged: () => {},
   registerSaveHandler: () => {},
   triggerSave: () => {},
@@ -32,6 +34,7 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
   const location = useLocation();
   const [hasChanges, setHasChanges] = useState(false);
   const [showSaveFeedback, setShowSaveFeedback] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
   const saveHandlerRef = useRef<SaveHandler | null>(null);
   const resetHandlerRef = useRef<ResetHandler | null>(null);
   const [hasSaveHandler, setHasSaveHandler] = useState(false);
@@ -52,11 +55,16 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const triggerSave = useCallback(async () => {
     if (saveHandlerRef.current) {
-      const success = await saveHandlerRef.current();
-      if (success) {
-        setShowSaveFeedback(true);
-        setTimeout(() => setShowSaveFeedback(false), 4000);
-        setHasChanges(false);
+      setIsSaving(true);
+      try {
+        const success = await saveHandlerRef.current();
+        if (success) {
+          setShowSaveFeedback(true);
+          setTimeout(() => setShowSaveFeedback(false), 4000);
+          setHasChanges(false);
+        }
+      } finally {
+        setIsSaving(false);
       }
     }
   }, []);
@@ -107,6 +115,7 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
       showSaveBar,
       showSaveFeedback,
       hasChanges,
+      isSaving,
       markAsChanged,
       registerSaveHandler,
       triggerSave,
@@ -116,6 +125,7 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
     };
   }, [
     hasChanges,
+    isSaving,
     markAsChanged,
     registerResetHandler,
     registerSaveHandler,

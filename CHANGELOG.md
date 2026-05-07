@@ -6,6 +6,7 @@
 - Added identifier filters.
 - Import functionality for LOG.
 - Borehole name and sub route are now displayed in the document title.
+- Show a loading mask in the save bar while saving to prevent edits and navigation during the save.
 
 ### Changed
 - Filters are now organized in new sections. Filters for attachments, LOG and municipalities were added.
