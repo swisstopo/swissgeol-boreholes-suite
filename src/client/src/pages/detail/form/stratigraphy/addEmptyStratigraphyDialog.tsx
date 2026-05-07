@@ -1,9 +1,8 @@
 import { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
-import { useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "../../../../api/apiInterfaces.ts";
-import { stratigraphiesQueryKey, Stratigraphy, useStratigraphyMutations } from "../../../../api/stratigraphy.ts";
+import { Stratigraphy, useStratigraphyMutations } from "../../../../api/stratigraphy.ts";
 import { BoreholesButton, CancelButton } from "../../../../components/buttons/buttons.tsx";
 import { getFieldBorderColor } from "../../../../components/form/formUtils.ts";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
@@ -25,15 +24,10 @@ export const AddEmptyStratigraphyDialog: FC<AddEmptyStratigraphyDialogProps> = (
 }) => {
   const [name, setName] = useState("");
   const [nameError, setNameError] = useState<string | null>(null);
-  // Local saving flag covers both the POST and the follow-up refetch — `isPending` from
-  // the mutation flips back to false the moment the POST resolves, which would unblock
-  // the buttons during the await for `invalidateQueries` and cause a visible flicker.
-  const [isSaving, setIsSaving] = useState(false);
   const { t } = useTranslation();
   const showApiErrorAlert = useApiErrorAlert();
-  const queryClient = useQueryClient();
   const {
-    add: { mutateAsync: addStratigraphy },
+    add: { mutateAsync: addStratigraphy, isPending },
   } = useStratigraphyMutations();
 
   const trimmedName = name.trim();
@@ -61,12 +55,8 @@ export const AddEmptyStratigraphyDialog: FC<AddEmptyStratigraphyDialogProps> = (
       chronostratigraphyLayers: null,
       lithostratigraphyLayers: null,
     };
-    setIsSaving(true);
     try {
       const created = await addStratigraphy(payload);
-      // Wait for the stratigraphies refetch so the parent re-renders with the new entry
-      // before we navigate; otherwise the panel's redirect-to-primary effect runs on stale data.
-      await queryClient.invalidateQueries({ queryKey: [stratigraphiesQueryKey, boreholeId] });
       onCreated(created.id);
       resetAndClose();
     } catch (error) {
@@ -75,8 +65,6 @@ export const AddEmptyStratigraphyDialog: FC<AddEmptyStratigraphyDialogProps> = (
       } else {
         showApiErrorAlert(error);
       }
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -106,12 +94,12 @@ export const AddEmptyStratigraphyDialog: FC<AddEmptyStratigraphyDialogProps> = (
         </DialogContent>
         <DialogActions>
           <Stack direction="row" justifyContent="flex-end" spacing={2}>
-            <CancelButton onClick={resetAndClose} disabled={isSaving} />
+            <CancelButton onClick={resetAndClose} disabled={isPending} />
             <BoreholesButton
               label="addEmptyStratigraphy"
               variant="contained"
               dataCy="addemptystratigraphy-submit-button"
-              disabled={!trimmedName || isSaving}
+              disabled={!trimmedName || isPending}
               onClick={handleSave}
             />
           </Stack>
