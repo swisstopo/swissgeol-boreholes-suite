@@ -18,6 +18,9 @@
 ### Fixed
 - Only one workgroup could be added at once. Only with a complete refresh of the page another workgroup could be added.
 - The FormDialog could not be closed when the form was in an invalid state. Cancel and Apply buttons now replace the single Close button.
+- Additional identifiers are now ordered alphabetically by ID type on save.
+- Fixed bug where the same identifier type could be added multiple times to a borehole.
+- When saving fails on the identifiers panel due to missing required fields, the form now scrolls to the first error.
 
 ## v2.1.1568 - 2026-04-23
 
