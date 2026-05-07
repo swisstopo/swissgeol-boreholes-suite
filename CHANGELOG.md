@@ -17,6 +17,7 @@
 
 ### Fixed
 - Only one workgroup could be added at once. Only with a complete refresh of the page another workgroup could be added.
+- The FormDialog could not be closed when the form was in an invalid state. Cancel and Apply buttons now replace the single Close button.
 
 ## v2.1.1568 - 2026-04-23
 

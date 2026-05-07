@@ -63,7 +63,7 @@ export const openLayer = ({ layerType, fromDepth, toDepth, isGap }: LayerInput) 
 };
 
 export const closeLayerModal = () => {
-  cy.dataCy("close-button").click();
+  cy.dataCy("apply-button").click();
 };
 
 export const checkLayerCardContent = ({ layerType, fromDepth, toDepth, content }: CheckLayerCardInput) => {

@@ -3,12 +3,6 @@ kind: CronJob
 metadata:
   name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
-  {{- if ne .Values.keel.enabled false }}
-  annotations:
-    keel.sh/policy: {{ .Values.keel.policy | default "force" }}
-    keel.sh/match-tag: {{ .Values.keel.matchTag | default "'true'" }}
-    keel.sh/trigger: {{ .Values.keel.trigger | default "poll" }}
-  {{- end }}
 spec:
   schedule: "{{ .Values.app.schedule | default "0 0 * * *" }}"
   timeZone: "{{ .Values.app.timezone | default "Europe/Zurich" }}"
@@ -56,23 +50,23 @@ spec:
               env:
                 - name: SOURCE_DB_HOST
                   valueFrom:
-                    configMapKeyRef:
-                      name: "{{ .Release.Name }}-config"
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-secrets"
                       key: sourceDatabaseHost
                 - name: SOURCE_DB_PORT
                   valueFrom:
-                    configMapKeyRef:
-                      name: "{{ .Release.Name }}-config"
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-secrets"
                       key: sourceDatabasePort
                 - name: SOURCE_DB_NAME
                   valueFrom:
-                    configMapKeyRef:
-                      name: "{{ .Release.Name }}-config"
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-secrets"
                       key: sourceDatabaseName
                 - name: SOURCE_DB_SCHEMA
                   valueFrom:
-                    configMapKeyRef:
-                      name: "{{ .Release.Name }}-config"
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-secrets"
                       key: sourceDatabaseSchema
                 - name: SOURCE_DB_USERNAME
                   valueFrom:
@@ -86,18 +80,18 @@ spec:
                       key: sourceDatabasePassword
                 - name: TARGET_DB_HOST
                   valueFrom:
-                    configMapKeyRef:
-                      name: "{{ .Release.Name }}-config"
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-secrets"
                       key: targetDatabaseHost
                 - name: TARGET_DB_PORT
                   valueFrom:
-                    configMapKeyRef:
-                      name: "{{ .Release.Name }}-config"
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-secrets"
                       key: targetDatabasePort
                 - name: TARGET_DB_NAME
                   valueFrom:
-                    configMapKeyRef:
-                      name: "{{ .Release.Name }}-config"
+                    secretKeyRef:
+                      name: "{{ .Release.Name }}-secrets"
                       key: targetDatabaseName
                 - name: TARGET_DB_USERNAME
                   valueFrom:
@@ -109,6 +103,11 @@ spec:
                     secretKeyRef:
                       name: "{{ .Release.Name }}-secrets"
                       key: targetDatabasePassword
+                - name: TZ
+                  valueFrom:
+                    configMapKeyRef:
+                      name: "{{ .Release.Name }}-config"
+                      key: timezone
           volumes:
           - name: tmp
             emptyDir: {}

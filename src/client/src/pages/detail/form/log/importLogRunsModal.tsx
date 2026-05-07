@@ -94,7 +94,6 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
         setLogFileAttachments([]);
         importMutation.reset();
       }}
-      isCloseDisabled={isImportRunning}
       actions={[
         { label: "cancel", variant: "outlined", color: "primary", disabled: isImportRunning },
         {

@@ -1,0 +1,4 @@
+# INT overrides for swissgeol-boreholes-view namespace.
+# Applied on top of boreholes.values.yaml.
+app:
+  domain: int-view-boreholes.swissgeol.ch
