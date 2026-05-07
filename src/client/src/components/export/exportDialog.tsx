@@ -76,7 +76,7 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
           </Stack>
         </DialogActions>
       </Stack>
-      {inProgress && <LoadingBackdrop open={inProgress} onClick={closeExportDialog} />}
+      <LoadingBackdrop open={inProgress} onClick={closeExportDialog} />
     </Dialog>
   );
 };
