@@ -3,6 +3,7 @@ import { FieldValues, FormProvider, UseFormReturn } from "react-hook-form";
 import { Box } from "@mui/material";
 import { DevTool } from "../../../../hookformDevtools.ts";
 import { useBorehole, useBoreholeMutations } from "../../../api/borehole.ts";
+import { findFirstErrorRef } from "../../../components/form/formUtils.ts";
 import { useFormDirtyMarkAsChanged } from "../../../components/form/useFormDirty.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
 import { useResetTabStatus } from "../../../hooks/useResetTabStatus.ts";
@@ -58,7 +59,10 @@ export const BaseForm = <T extends FieldValues>({
   const resetAndSubmitForm = useCallback(async () => {
     if (triggerValidationBeforeSave) {
       const isValid = await formMethods.trigger();
-      if (!isValid) return false;
+      if (!isValid) {
+        findFirstErrorRef(formMethods.formState.errors)?.focus();
+        return false;
+      }
     }
     const currentValues = getValues();
     reset(currentValues);

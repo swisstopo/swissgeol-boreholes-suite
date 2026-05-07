@@ -32,7 +32,9 @@ describe("Tests for the borehole 'IDs' edit page.", () => {
     evaluateSelect("boreholeCodelists.1.codelistId", "original ID");
 
     // edit identifier (value, codelist and comment)
-    setSelect("boreholeCodelists.0.codelistId", 1); // GeODin ID (100000000)
+    // The first card's dropdown filters out 'original ID' (used by the second card),
+    // so GeODin sits at index 0 here, not 1.
+    setSelect("boreholeCodelists.0.codelistId", 0); // GeODin ID (100000000)
     setInput("boreholeCodelists.0.value", "we_must_stop_felix");
     setInput("boreholeCodelists.0.comment", "S.2; updated comment");
 
@@ -61,22 +63,24 @@ describe("Tests for the borehole 'IDs' edit page.", () => {
 
     // add two identifiers of different types
     addItem("addIdentifier");
-    setSelect("boreholeCodelists.0.codelistId", 2);
+    setSelect("boreholeCodelists.0.codelistId", 2); // InfoGeol ID
     setInput("boreholeCodelists.0.value", "card_value_1");
 
     addItem("addIdentifier");
-    setSelect("boreholeCodelists.1.codelistId", 1);
+    setSelect("boreholeCodelists.1.codelistId", 1); // GeODin ID
     setInput("boreholeCodelists.1.value", "card_value_2");
 
     saveWithSaveBar();
 
-    // delete entire first card
-    cy.get('[data-cy="boreholeCodelists.0.deleteCard"]').click();
+    // After save the cards are sorted alphabetically by codelist name,
+    // so GeODin/card_value_2 ends up at index 0 and InfoGeol/card_value_1 at index 1.
+    // Delete the InfoGeol card to verify the whole card is removed.
+    cy.get('[data-cy="boreholeCodelists.1.deleteCard"]').click();
 
-    // only the second identifier should remain (now at index 0)
+    // only the GeODin identifier should remain, still at index 0
     evaluateInput("boreholeCodelists.0.value", "card_value_2");
 
-    // first card should not exist anymore
+    // the deleted card should not exist anymore
     cy.get('[data-cy="boreholeCodelists.1.value-formInput"]').should("not.exist");
   });
 
