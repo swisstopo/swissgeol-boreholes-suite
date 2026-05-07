@@ -936,7 +936,17 @@ public static class BdmsContextExtensions
             foreach (var seed in range)
             {
                 var lithology = SeededLithologies(seed);
-                lithology.IsUnconsolidated = localIndex < switchIndex;
+
+                // ~20% of seeded lithologies are unspecified (null), the rest split
+                // around switchIndex into unconsolidated (true) and consolidated (false).
+                if (random.NextDouble() < 0.2)
+                {
+                    lithology.IsUnconsolidated = null;
+                }
+                else
+                {
+                    lithology.IsUnconsolidated = localIndex < switchIndex;
+                }
 
                 if (lithology.IsUnconsolidated == true)
                 {
