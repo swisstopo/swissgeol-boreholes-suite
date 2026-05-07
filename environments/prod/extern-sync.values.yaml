@@ -1,0 +1,4 @@
+# Environment-specific overrides for PROD — swissgeol-boreholes-extern-sync namespace.
+configuration:
+  targetDefaultWorkgroupName: Sync
+  targetDefaultUserSub: sub_admin

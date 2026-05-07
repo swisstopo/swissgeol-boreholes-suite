@@ -30,30 +30,11 @@
         "source": { "$ref": "#/definitions/sourceDatabaseConnection" },
         "target": { "$ref": "#/definitions/databaseConnection" }
       }
-    },
-
-    "keel": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "enabled": { "type": ["boolean", "null"], "default": true },
-        "policy": { "type": ["string", "null"], "minLength": 1, "default": "force" },
-
-        "matchTag": {
-          "anyOf": [
-            { "type": "boolean" },
-            { "type": "string", "enum": ["true", "false", "'true'", "\"true\"", "'false'", "\"false\""] },
-            { "type": "null" }
-          ],
-          "default": "true"
-        },
-
-        "trigger": { "type": ["string", "null"], "minLength": 1, "default": "poll" }
-      }
     }
+
   },
 
-  "required": ["app"],
+  "required": [],
 
   "definitions": {
     "databaseConnection": {
@@ -70,8 +51,8 @@
           "default": 5432
         },
         "name": { "type": ["string", "null"], "minLength": 1 },
-        "username": { "type": ["string", "null"], "minLength": 1 },
-        "password": { "type": ["string", "null"], "minLength": 1 }
+        "username": { "type": ["string", "null"] },
+        "password": { "type": ["string", "null"] }
       }
     },
 
@@ -90,8 +71,8 @@
         },
         "name": { "type": ["string", "null"], "minLength": 1 },
         "schema": { "type": ["string", "null"], "minLength": 1 },
-        "username": { "type": ["string", "null"], "minLength": 1 },
-        "password": { "type": ["string", "null"], "minLength": 1 }
+        "username": { "type": ["string", "null"] },
+        "password": { "type": ["string", "null"] }
       }
     }
   }

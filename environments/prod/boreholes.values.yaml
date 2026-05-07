@@ -1,0 +1,6 @@
+# PROD environment values — swissgeol-boreholes namespace.
+# Also serves as the base for boreholes-ext and boreholes-view namespaces.
+app:
+  domain: prod-boreholes.swissgeol.ch
+s3:
+  endpoint: https://s3.eu-central-1.amazonaws.com
