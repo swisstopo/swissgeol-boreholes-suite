@@ -17,6 +17,28 @@ interface FileDropzoneProps {
   expectedFileNames?: string[];
 }
 
+const rejectionErrorMessageKey: Record<string, string> = {
+  "file-too-large": "fileMaxSizeExceeded",
+  "file-invalid-type": "fileInvalidType",
+  "too-many-files": "fileDropzoneErrorChooseFile",
+};
+
+const filterExpectedFiles = (
+  filesToAdd: File[],
+  expectedFileNames: string[],
+  alreadyProvided: File[],
+): { accepted: File[]; rejected: File[] } => {
+  const expectedSet = new Set(expectedFileNames.map(n => n.toLowerCase()));
+  const providedSet = new Set(alreadyProvided.map(f => f.name.toLowerCase()));
+  const accepted = filesToAdd.filter(
+    f => expectedSet.has(f.name.toLowerCase()) && !providedSet.has(f.name.toLowerCase()),
+  );
+  const rejected = filesToAdd.filter(
+    f => !expectedSet.has(f.name.toLowerCase()) || providedSet.has(f.name.toLowerCase()),
+  );
+  return { accepted, rejected };
+};
+
 export const FileDropzone: FC<FileDropzoneProps> = ({
   existingFile,
   onChange,
@@ -58,43 +80,27 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
         setError(undefined);
       }
       if (fileRejections.length > 0) {
-        let errorMessage: string;
         const errorCode = fileRejections[0].errors[0].code;
+        const messageKey = rejectionErrorMessageKey[errorCode] ?? "fileDropzoneErrorChooseFile";
+        setError(messageKey === "fileMaxSizeExceeded" ? t(messageKey, { size: fileSizeLabel }) : t(messageKey));
+        return;
+      }
 
-        if (errorCode === "file-too-large") {
-          errorMessage = t("fileMaxSizeExceeded", { size: fileSizeLabel });
-        } else if (errorCode === "file-invalid-type") {
-          errorMessage = t("fileInvalidType");
-        } else if (errorCode === "too-many-files") {
-          errorMessage = t("fileDropzoneErrorChooseFile");
+      let filesToAdd = acceptedFiles;
+      if (expectedFileNames) {
+        const { accepted, rejected } = filterExpectedFiles(filesToAdd, expectedFileNames, files);
+        filesToAdd = accepted;
+        if (rejected.length > 0) {
+          setError(t("unexpectedFiles", { count: rejected.length, files: rejected.map(f => f.name).join(", ") }));
+        }
+      }
+      if (filesToAdd.length > 0) {
+        const next = multiple ? [...files, ...filesToAdd] : filesToAdd;
+        const validationError = onChange(next);
+        if (typeof validationError === "string") {
+          setError(validationError);
         } else {
-          errorMessage = t("fileDropzoneErrorChooseFile");
-        }
-
-        setError(errorMessage);
-      } else {
-        let filesToAdd = acceptedFiles;
-        if (expectedFileNames) {
-          const expectedSet = new Set(expectedFileNames.map(n => n.toLowerCase()));
-          const alreadyProvided = new Set(files.map(f => f.name.toLowerCase()));
-          const rejected = filesToAdd.filter(
-            f => !expectedSet.has(f.name.toLowerCase()) || alreadyProvided.has(f.name.toLowerCase()),
-          );
-          filesToAdd = filesToAdd.filter(
-            f => expectedSet.has(f.name.toLowerCase()) && !alreadyProvided.has(f.name.toLowerCase()),
-          );
-          if (rejected.length > 0) {
-            setError(t("unexpectedFiles", { count: rejected.length, files: rejected.map(f => f.name).join(", ") }));
-          }
-        }
-        if (filesToAdd.length > 0) {
-          const next = multiple ? [...files, ...filesToAdd] : filesToAdd;
-          const validationError = onChange(next);
-          if (typeof validationError === "string") {
-            setError(validationError);
-          } else {
-            setFiles(next);
-          }
+          setFiles(next);
         }
       }
     },

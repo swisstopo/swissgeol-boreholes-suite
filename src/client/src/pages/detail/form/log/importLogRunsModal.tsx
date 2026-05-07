@@ -12,25 +12,32 @@ interface LogFileCsvInfo {
   requiredFilesPerRun: Record<string, string[]>;
 }
 
+const buildFileName = (cols: string[], nameIndex: number, extensionIndex: number): string => {
+  const name = cols[nameIndex]?.trim() ?? "";
+  const ext = extensionIndex >= 0 ? (cols[extensionIndex]?.trim() ?? "") : "";
+  return ext ? `${name}.${ext}` : name;
+};
+
 const parseLogFilesCsv = async (csvFile: File): Promise<LogFileCsvInfo> => {
   const text = await csvFile.text();
   const lines = text.split(/\r?\n/).filter(l => l.trim());
   if (lines.length === 0) return { requiredFilesPerRun: {} };
+
   const headers = lines[0].split(";").map(h => h.trim().toLowerCase());
   const runNumberIndex = headers.indexOf("runnumber");
+  if (runNumberIndex === -1) return { requiredFilesPerRun: {} };
+
   const nameIndex = headers.indexOf("name");
   const extensionIndex = headers.indexOf("extension");
-  if (runNumberIndex === -1) return { requiredFilesPerRun: {} };
   const result: Record<string, string[]> = {};
+
   for (let i = 1; i < lines.length; i++) {
     const cols = lines[i].split(";");
     const runNumber = cols[runNumberIndex]?.trim();
     if (!runNumber) continue;
-    if (!result[runNumber]) result[runNumber] = [];
-    if (nameIndex !== -1) {
-      const name = cols[nameIndex]?.trim() ?? "";
-      const ext = extensionIndex !== -1 ? (cols[extensionIndex]?.trim() ?? "") : "";
-      const fileName = ext ? `${name}.${ext}` : name;
+    result[runNumber] ??= [];
+    if (nameIndex >= 0) {
+      const fileName = buildFileName(cols, nameIndex, extensionIndex);
       if (fileName) result[runNumber].push(fileName);
     }
   }
