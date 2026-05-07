@@ -160,7 +160,7 @@ export const useBorehole = (id: number) => {
     queryFn: async () => {
       const borehole = await fetchBoreholeById(id);
       // Sort boreholeCodelists by codelist name for consistent display order in the UI
-      const orderedBoreholeCodelists = borehole.boreholeCodelists.sort((a, b) =>
+      const orderedBoreholeCodelists = borehole.boreholeCodelists.toSorted((a, b) =>
         getCodelistName(a.codelistId ?? 0).text.localeCompare(getCodelistName(b.codelistId ?? 0).text),
       );
       return { ...borehole, boreholeCodelists: orderedBoreholeCodelists };
