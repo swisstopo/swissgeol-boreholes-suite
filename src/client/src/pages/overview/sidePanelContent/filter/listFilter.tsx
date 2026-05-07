@@ -3,12 +3,18 @@ import { Box } from "@mui/material";
 import { FilterRequest, useFilterStats } from "../../../../api/borehole.ts";
 import { FormContainer } from "../../../../components/form/form.ts";
 import { FilterKey, useBoreholeUrlParams } from "../../useBoreholeUrlParams.ts";
+import { FilterAdaptiveSelect } from "./FilterAdaptiveSelect.tsx";
 import { FilterAutocomplete } from "./FilterAutocomplete.tsx";
 import { FilterBooleanButtons } from "./FilterBooleanButtons.tsx";
 import { FilterInputConfig } from "./filterData/filterInterfaces.ts";
 import { FilterDomainSelect } from "./FilterDomainSelect.tsx";
 import { FilterTextField } from "./FilterTextField.tsx";
-import { getBooleanCountsForField, getDomainCountsForField, parseBooleanFilterValue } from "./filterUtils.ts";
+import {
+  getBooleanCountsForField,
+  getDomainCountsForField,
+  parseBooleanFilterValue,
+  textMultiSelectOptions,
+} from "./filterUtils.ts";
 
 interface ListFilterProps {
   inputConfig: FilterInputConfig;
@@ -67,6 +73,15 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
                   filterValue={value as number[] | undefined}
                   onUpdate={value => updateChange(filterItem.key, value)}
                   counts={getDomainCountsForField(stats, filterItem.key)}
+                />
+              )}
+              {filterItem.type === "TextMultiSelect" && (
+                <FilterAdaptiveSelect<string>
+                  item={filterItem}
+                  options={textMultiSelectOptions(filterItem.key, stats)}
+                  filterValue={value as string[] | undefined}
+                  onUpdate={value => updateChange(filterItem.key, value as never)}
+                  counts={getDomainCountsForField(stats, filterItem.key) as Record<string | number, number> | undefined}
                 />
               )}
               {(filterItem.type === "NullableBoolean" || filterItem.type === "Boolean") && (

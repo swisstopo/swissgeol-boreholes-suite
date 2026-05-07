@@ -35,4 +35,7 @@ export const SessionKeys = {
   hasPhotos: "filter_hasPhotos",
   hasDocuments: "filter_hasDocuments",
   workflowStatus: "filter_workflowStatus",
+  canton: "filter_canton",
+  municipality: "filter_municipality",
+  logToolTypeId: "filter_logToolTypeId",
 } as const;

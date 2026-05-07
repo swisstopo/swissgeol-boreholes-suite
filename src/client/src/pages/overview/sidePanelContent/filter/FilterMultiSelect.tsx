@@ -1,23 +1,29 @@
-﻿import { FC, SyntheticEvent, useMemo } from "react";
+import { KeyboardEvent, SyntheticEvent, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, Box, Chip, TextField, Typography } from "@mui/material";
 import { CircleX } from "lucide-react";
 import { SearchData } from "./filterData/filterInterfaces.ts";
 
-interface FilterMultiSelectOption {
-  key: number;
+export interface FilterMultiSelectOption<K extends number | string = number> {
+  key: K;
   label: string;
 }
 
-interface FilterMultiSelectProps {
+interface FilterMultiSelectProps<K extends number | string> {
   item: SearchData;
-  filterValue: number[] | undefined;
-  onUpdate: (value: number[] | undefined) => void;
-  options: FilterMultiSelectOption[];
-  counts?: Record<number, number>;
+  filterValue: K[] | undefined;
+  onUpdate: (value: K[] | undefined) => void;
+  options: FilterMultiSelectOption<K>[];
+  counts?: Record<string | number, number>;
 }
 
-export const FilterMultiSelect: FC<FilterMultiSelectProps> = ({ item, filterValue, onUpdate, options, counts }) => {
+export const FilterMultiSelect = <T extends number | string>({
+  item,
+  filterValue,
+  onUpdate,
+  options,
+  counts,
+}: FilterMultiSelectProps<T>) => {
   const { t } = useTranslation();
   const hasCounts = counts !== undefined;
 
@@ -26,9 +32,16 @@ export const FilterMultiSelect: FC<FilterMultiSelectProps> = ({ item, filterValu
     [filterValue, options],
   );
 
-  const handleChange = (_: SyntheticEvent, newValues: FilterMultiSelectOption[]) => {
+  const handleChange = (_: SyntheticEvent, newValues: FilterMultiSelectOption<T>[]) => {
     const ids = newValues.map(v => v.key);
     onUpdate(ids.length === 0 ? undefined : ids);
+  };
+
+  const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
+    if (event.key === "Enter") {
+      // @ts-expect-error - blur is unknown on the event target but closes the autocomplete popover as desired
+      event.target.blur();
+    }
   };
 
   return (
@@ -40,21 +53,21 @@ export const FilterMultiSelect: FC<FilterMultiSelectProps> = ({ item, filterValu
       ) : null}
       <Autocomplete
         multiple
-        disableCloseOnSelect
         options={options}
         value={selectedOptions}
         onChange={handleChange}
+        onKeyDown={handleKeyDown}
         isOptionEqualToValue={(option, value) => option.key === value.key}
         getOptionLabel={option => option.label}
         getOptionDisabled={option => {
           if (!hasCounts) return false;
           if (filterValue?.includes(option.key)) return false;
-          const count = counts?.[option.key] ?? 0;
+          const count = counts?.[option.key as string | number] ?? 0;
           return count < 1;
         }}
         renderOption={(props, option) => {
           const { key, ...rest } = props;
-          const count = counts?.[option.key] ?? 0;
+          const count = counts?.[option.key as string | number] ?? 0;
           return (
             <li key={key} {...rest} data-cy={`${item.key}-option-${option.key}`}>
               <span style={{ flex: 1 }}>{option.label}</span>

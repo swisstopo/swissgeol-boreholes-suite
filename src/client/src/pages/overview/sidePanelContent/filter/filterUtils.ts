@@ -29,6 +29,19 @@ export const getDomainCountsForField = (
   return value as Record<number, number>;
 };
 
+export const textMultiSelectOptions = (
+  field: string,
+  stats: FilterStatsResponse | undefined,
+): { key: string; label: string }[] => {
+  if (!stats) return [];
+  const value = (stats as unknown as Record<string, unknown>)[field];
+  if (!value || typeof value !== "object") return [];
+  const counts = value as Record<string, number>;
+  return Object.keys(counts)
+    .map(key => ({ key, label: key }))
+    .sort((a, b) => a.label.localeCompare(b.label));
+};
+
 // Filter keys whose parser accepts "null" as a valid literal value (for the "Keine Angabe" option).
 export const nullableBooleanFilterKeys: ReadonlySet<FilterKey> = new Set([
   "nationalInterest",
