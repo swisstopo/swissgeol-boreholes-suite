@@ -8,6 +8,7 @@
 - Borehole name and sub route are now displayed in the document title.
 
 ### Changed
+- Dataextraction service was updated to 1.0.115.
 - Filters are now organized in new sections. Filters for attachments and LOG were added.
 - When the main map is fitted to the extent of the (filtered) boreholes, a padding is applied to the extent.
 - Filter UI was redesigned and now supports multiple selections and chips per selected filter value.
