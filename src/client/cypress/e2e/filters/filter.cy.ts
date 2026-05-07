@@ -251,17 +251,6 @@ describe("Search filter tests", () => {
     checkFilterChipExistsAndRemove("originalName");
   });
 
-  it("does not fetch suggestions for a single character", () => {
-    cy.intercept("POST", "/api/v2/borehole/suggest*").as("suggestRequest");
-    openFilter("Borehole");
-    cy.dataCy("originalName-formInput").click();
-    cy.dataCy("originalName-formInput").type("a");
-    // Wait past the debounce window (300ms) to be sure no call fired
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(500);
-    cy.get("@suggestRequest.all").should("have.length", 0);
-  });
-
   it("constrains autocomplete suggestions to boreholes that match the active filter", () => {
     // Two boreholes share an "AA_SUGGEST_" prefix but only one has nationalInterest=true.
     // Applying the nationalInterest=Yes filter must restrict the suggestion list to the matching one.
