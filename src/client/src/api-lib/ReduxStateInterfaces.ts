@@ -24,7 +24,7 @@ export interface User {
   data: UserData;
   authentication: {
     token_type: string;
-    id_token: string;
+    access_token: string;
   };
 }
 
