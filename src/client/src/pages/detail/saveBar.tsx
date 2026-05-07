@@ -1,6 +1,6 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, Stack } from "@mui/material";
+import { Backdrop, Box, CircularProgress, Stack } from "@mui/material";
 import { CircleCheck, CircleX } from "lucide-react";
 import { theme } from "../../AppTheme.ts";
 import { DeleteButton, SaveButton } from "../../components/buttons/buttons.tsx";
@@ -8,7 +8,8 @@ import { SaveContext, SaveContextProps } from "./saveContext.tsx";
 
 export const SaveBar = () => {
   const { t } = useTranslation();
-  const { showSaveFeedback, hasChanges, triggerSave, triggerReset } = useContext<SaveContextProps>(SaveContext);
+  const { showSaveFeedback, hasChanges, isSaving, triggerSave, triggerReset } =
+    useContext<SaveContextProps>(SaveContext);
 
   const changesMessage = (
     <>
@@ -45,9 +46,18 @@ export const SaveBar = () => {
         {showSaveFeedback && !hasChanges && savedMessage}
       </Stack>
       <Stack spacing={1} direction="row">
-        <DeleteButton disabled={!hasChanges} label="discardchanges" onClick={triggerReset} />
-        <SaveButton disabled={!hasChanges} variant="contained" onClick={triggerSave} />
+        <DeleteButton disabled={!hasChanges || isSaving} label="discardchanges" onClick={triggerReset} />
+        <SaveButton disabled={!hasChanges || isSaving} variant="contained" onClick={triggerSave} />
       </Stack>
+      <Backdrop
+        sx={{
+          color: theme.palette.primary.main,
+          backgroundColor: theme.palette.background.backdrop,
+          zIndex: theme.zIndex.modal,
+        }}
+        open={isSaving}>
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Stack>
   );
 };
