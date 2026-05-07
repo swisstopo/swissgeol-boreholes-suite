@@ -34,6 +34,7 @@
 - Openlayers was upgraded to version 10.9.0.
 - The borehole name section and restriction sections were moved from the location page to the general tab of the borehole detail view.
 - The consent banner choice is now remembered for a year, so users no longer have to accept the terms again on every visit.
+- API authentication now uses OIDC access tokens instead of id tokens.
 
 ### Fixed
 - Boreholes could be edited after being published.
