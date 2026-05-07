@@ -60,11 +60,19 @@ export const validateRunNumber = (values: LogRun, errors: FormErrors, runs: LogR
 export const validateFiles = (values: LogRun, errors: FormErrors) => {
   if (!values.logFiles || values.logFiles.length === 0) return;
   const flatErrors: Record<string, string> = {};
+  const seenNames = new Set<string>();
   for (const [idx, file] of values.logFiles.entries()) {
     if (!file) return;
     const missingName = !file.name || file.name.trim() === "";
     if (missingName) {
       flatErrors[`logFiles.${idx}.name`] = "required";
+    } else {
+      const lowerName = file.name!.toLowerCase();
+      if (seenNames.has(lowerName)) {
+        flatErrors[`logFiles.${idx}.name`] = "mustBeUnique";
+      } else {
+        seenNames.add(lowerName);
+      }
     }
   }
   if (Object.keys(flatErrors).length > 0) {

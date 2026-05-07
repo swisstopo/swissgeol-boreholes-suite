@@ -114,9 +114,19 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
   );
 
   const onFileChanged = useCallback(
-    (selected: File | undefined, index: number) => {
-      const currentName = formMethods.getValues(`logFiles.${index}.name`);
+    (selected: File | undefined, index: number): string | void => {
       const updatedName = selected ? selected.name : "";
+      const existingFiles = formMethods.getValues("logFiles") ?? [];
+      if (
+        updatedName &&
+        existingFiles.some((f, i) => i !== index && f.name?.toLowerCase() === updatedName.toLowerCase())
+      ) {
+        const errorMessage = t("duplicateFileName", { fileName: updatedName });
+        formMethods.setError(`logFiles.${index}.name`, { type: "manual", message: errorMessage });
+        return errorMessage;
+      }
+      formMethods.clearErrors(`logFiles.${index}.name`);
+      const currentName = formMethods.getValues(`logFiles.${index}.name`);
       if (currentName !== updatedName) {
         formMethods.setValue(`logFiles.${index}.name`, updatedName, { shouldDirty: true, shouldTouch: true });
         formMethods.setValue(`logFiles.${index}.extension`, getFileExtension(updatedName), {
@@ -127,7 +137,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
         formMethods.setValue(`logFiles.${index}.file`, selected, { shouldDirty: true, shouldTouch: true });
       }
     },
-    [formMethods],
+    [formMethods, t],
   );
 
   const closeDialog = async () => {

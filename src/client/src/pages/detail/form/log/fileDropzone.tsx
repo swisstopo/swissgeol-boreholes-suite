@@ -9,12 +9,35 @@ import { StandaloneIconButton } from "../../../../components/buttons/buttons.tsx
 
 interface FileDropzoneProps {
   existingFile?: File;
-  onChange: (files: File[]) => void;
+  onChange: (files: File[]) => string | void | Promise<void>;
   errorMessageKey?: string;
   accept?: Accept;
   maxFileSize?: number;
   multiple?: boolean;
+  expectedFileNames?: string[];
 }
+
+const rejectionErrorMessageKey: Record<string, string> = {
+  "file-too-large": "fileMaxSizeExceeded",
+  "file-invalid-type": "fileInvalidType",
+  "too-many-files": "fileDropzoneErrorChooseFile",
+};
+
+const filterExpectedFiles = (
+  filesToAdd: File[],
+  expectedFileNames: string[],
+  alreadyProvided: File[],
+): { accepted: File[]; rejected: File[] } => {
+  const expectedSet = new Set(expectedFileNames.map(n => n.toLowerCase()));
+  const providedSet = new Set(alreadyProvided.map(f => f.name.toLowerCase()));
+  const accepted = filesToAdd.filter(
+    f => expectedSet.has(f.name.toLowerCase()) && !providedSet.has(f.name.toLowerCase()),
+  );
+  const rejected = filesToAdd.filter(
+    f => !expectedSet.has(f.name.toLowerCase()) || providedSet.has(f.name.toLowerCase()),
+  );
+  return { accepted, rejected };
+};
 
 export const FileDropzone: FC<FileDropzoneProps> = ({
   existingFile,
@@ -23,6 +46,7 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
   accept,
   maxFileSize = largeMaxFileSizeBytes,
   multiple = false,
+  expectedFileNames,
 }) => {
   const { t } = useTranslation();
   const [files, setFiles] = useState<File[]>(existingFile ? [existingFile] : []);
@@ -35,6 +59,8 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
 
   const fileSizeLabel = useMemo(() => {
     if (maxFileSize === largeMaxFileSizeBytes) return FileSizeLimit.Large;
+    const gb = maxFileSize / 1_000_000_000;
+    if (gb >= 1) return `${gb} GB`;
     const mb = maxFileSize / 1_000_000;
     return mb >= 1 ? `${mb} MB` : `${maxFileSize / 1_000} KB`;
   }, [maxFileSize]);
@@ -56,29 +82,31 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
         setError(undefined);
       }
       if (fileRejections.length > 0) {
-        let errorMessage: string;
         const errorCode = fileRejections[0].errors[0].code;
+        const messageKey = rejectionErrorMessageKey[errorCode] ?? "fileDropzoneErrorChooseFile";
+        setError(messageKey === "fileMaxSizeExceeded" ? t(messageKey, { size: fileSizeLabel }) : t(messageKey));
+        return;
+      }
 
-        if (errorCode === "file-too-large") {
-          errorMessage = t("fileMaxSizeExceeded", { size: fileSizeLabel });
-        } else if (errorCode === "file-invalid-type") {
-          errorMessage = t("fileInvalidType");
-        } else if (errorCode === "too-many-files") {
-          errorMessage = t("fileDropzoneErrorChooseFile");
-        } else {
-          errorMessage = t("fileDropzoneErrorChooseFile");
+      let filesToAdd = acceptedFiles;
+      if (expectedFileNames) {
+        const { accepted, rejected } = filterExpectedFiles(filesToAdd, expectedFileNames, files);
+        filesToAdd = accepted;
+        if (rejected.length > 0) {
+          setError(t("unexpectedFiles", { count: rejected.length, files: rejected.map(f => f.name).join(", ") }));
         }
-
-        setError(errorMessage);
-      } else {
-        setFiles(prev => {
-          const next = multiple ? [...prev, ...acceptedFiles] : acceptedFiles;
-          onChange(next);
-          return next;
-        });
+      }
+      if (filesToAdd.length > 0) {
+        const next = multiple ? [...files, ...filesToAdd] : filesToAdd;
+        const validationError = onChange(next);
+        if (typeof validationError === "string") {
+          setError(validationError);
+        } else {
+          setFiles(next);
+        }
       }
     },
-    [error, fileSizeLabel, multiple, onChange, t],
+    [error, expectedFileNames, files, fileSizeLabel, multiple, onChange, t],
   );
 
   const { getRootProps, getInputProps, isDragActive } = useDropzone({
@@ -124,9 +152,17 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
     borderRadius: theme.spacing(0.5),
   } as const;
 
+  const allExpectedFilesProvided = useMemo(() => {
+    if (!expectedFileNames || expectedFileNames.length === 0) return false;
+    const providedSet = new Set(files.map(f => f.name.toLowerCase()));
+    return expectedFileNames.every(n => providedSet.has(n.toLowerCase()));
+  }, [expectedFileNames, files]);
+
+  const showDropzone = (files.length === 0 || multiple) && !allExpectedFilesProvided;
+
   return (
     <Stack gap={1}>
-      {(files.length === 0 || multiple) && (
+      {showDropzone && (
         <Box
           {...getRootProps({
             style,
@@ -139,10 +175,24 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
           <input {...getInputProps()} data-cy="file-dropzone" />
           <Stack direction={"row"} gap={1.5} sx={{ color: theme.palette.primary.main }}>
             <CloudUpload />
-            <Typography variant="body2">{t("fileDropzoneText1")}</Typography>
+            <Typography variant="body2">{t("fileDropzoneText")}</Typography>
           </Stack>
+          {expectedFileNames && expectedFileNames.length > 0 ? (
+            <Typography variant="body2" color={theme.palette.buttonStates.outlined.disabled.color}>
+              {t("expectedFiles", { files: expectedFileNames.join(", ") })}
+            </Typography>
+          ) : (
+            accept && (
+              <Typography variant="body2" color={theme.palette.buttonStates.outlined.disabled.color}>
+                {t("expectedFileTypes", {
+                  count: Object.values(accept).flat().length,
+                  types: Object.values(accept).flat().join(", "),
+                })}
+              </Typography>
+            )
+          )}
           <Typography variant="body2" color={theme.palette.buttonStates.outlined.disabled.color}>
-            {t("fileDropzoneText2")}
+            {t("maxFileSize", { size: fileSizeLabel })}
           </Typography>
           {error && (
             <Typography variant="body2" color={theme.palette.error.main}>

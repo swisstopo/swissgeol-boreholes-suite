@@ -10,7 +10,6 @@ import {
 const importDialogSelector = ".MuiDialog-container";
 const logRunsCsvInputSelector = '[data-cy="import-logRuns"] input[data-cy="file-dropzone"]';
 const logFilesCsvInputSelector = '[data-cy="import-logFiles"] input[data-cy="file-dropzone"]:not([multiple])';
-const attachmentsInputSelector = '[data-cy="import-logFiles"] input[data-cy="file-dropzone"][multiple]';
 
 function openImportDialog() {
   cy.dataCy("import-button").should("be.visible").click();
@@ -42,14 +41,14 @@ function selectLogFilesCsv(fileName: string) {
   cy.dataCy("import-logFiles").should("contain", fileName);
 }
 
-function selectAttachments(fileNames: string[]) {
+function selectAttachmentsForRun(runNumber: string, fileNames: string[]) {
   const files = fileNames.map(name => ({
     contents: Cypress.Buffer.from(`dummy content for ${name}`),
     fileName: name,
   }));
-  cy.get(attachmentsInputSelector).selectFile(files, { force: true });
+  cy.get(`[data-cy="log-attachments-${runNumber}"] input[data-cy="file-dropzone"]`).selectFile(files, { force: true });
   for (const name of fileNames) {
-    cy.dataCy("import-logFiles").should("contain", name);
+    cy.get(`[data-cy="log-attachments-${runNumber}"]`).should("contain", name);
   }
 }
 
@@ -57,11 +56,19 @@ function clickModalImportButton() {
   cy.get(importDialogSelector).dataCy("import-button").should("not.be.disabled").click();
 }
 
-function performImport(opts: { logRunsCsv: string; logFilesCsv?: string; attachments?: string[] }) {
+function performImport(opts: {
+  logRunsCsv: string;
+  logFilesCsv?: string;
+  attachmentsPerRun?: Record<string, string[]>;
+}) {
   openImportDialog();
   selectLogRunsCsv(opts.logRunsCsv);
   if (opts.logFilesCsv) selectLogFilesCsv(opts.logFilesCsv);
-  if (opts.attachments) selectAttachments(opts.attachments);
+  if (opts.attachmentsPerRun) {
+    for (const [runNumber, files] of Object.entries(opts.attachmentsPerRun)) {
+      selectAttachmentsForRun(runNumber, files);
+    }
+  }
   clickModalImportButton();
 }
 
@@ -115,21 +122,26 @@ describe("Test for the borehole log import.", () => {
     selectLogRunsCsv("log-runs-valid.csv");
     cy.get(importDialogSelector).dataCy("import-button").should("not.be.disabled");
     selectLogFilesCsv("log-files-valid.csv");
+    // Per-run dropzones appear, but no attachments selected yet → import disabled
+    cy.get('[data-cy="log-attachments-IMP-RUN-1"]').should("be.visible");
+    cy.get('[data-cy="log-attachments-IMP-RUN-2"]').should("be.visible");
     expectModalImportButtonDisabled();
-    selectAttachments(["welllog1.las", "welllog2.txt"]);
+    selectAttachmentsForRun("IMP-RUN-1", ["welllog1.las"]);
+    selectAttachmentsForRun("IMP-RUN-2", ["welllog2.txt"]);
     cy.get(importDialogSelector).dataCy("import-button").should("not.be.disabled");
     clickModalCancelButton();
   });
 
-  it("disables the import button in dialog when attachments are provided without a log files CSV", () => {
+  it("shows per-run attachment dropzones only when a log files CSV is selected", () => {
     openSeedBoreholeLogTabInEditMode();
     openImportDialog();
     selectLogRunsCsv("log-runs-valid.csv");
-    cy.get(importDialogSelector).dataCy("import-button").should("not.be.disabled");
-    selectAttachments(["welllog1.las"]);
-    expectModalImportButtonDisabled();
+    // No per-run dropzones before a log files CSV is selected
+    cy.get('[data-cy^="log-attachments-"]').should("not.exist");
     selectLogFilesCsv("log-files-valid.csv");
-    cy.get(importDialogSelector).dataCy("import-button").should("not.be.disabled");
+    // Per-run dropzones appear after selecting the log files CSV
+    cy.get('[data-cy="log-attachments-IMP-RUN-1"]').should("be.visible");
+    cy.get('[data-cy="log-attachments-IMP-RUN-2"]').should("be.visible");
     clickModalCancelButton();
   });
 
@@ -149,7 +161,7 @@ describe("Test for the borehole log import.", () => {
     performImport({
       logRunsCsv: "log-runs-valid.csv",
       logFilesCsv: "log-files-valid.csv",
-      attachments: ["welllog1.las", "welllog2.txt"],
+      attachmentsPerRun: { "IMP-RUN-1": ["welllog1.las"], "IMP-RUN-2": ["welllog2.txt"] },
     });
     cy.wait("@log_import").its("response.statusCode").should("eq", 200);
     cy.wait("@log_upload").its("response.statusCode").should("eq", 200);
@@ -219,13 +231,11 @@ describe("Test for the borehole log import.", () => {
     performImport({
       logRunsCsv: "log-runs-valid.csv",
       logFilesCsv: "log-files-row-errors.csv",
-      attachments: ["welllog1.las"],
+      attachmentsPerRun: { "WRONG-RUN": ["welllog1.las"], "IMP-RUN-1": ["notinlist.txt"] },
     });
     cy.wait("@log_import").its("response.statusCode").should("eq", 400);
     expectImportError("welllog1.las");
     expectImportError('Value "WRONG-RUN" in column RunNumber does not match any imported LOG run.');
-    expectImportError("notinlist.txt");
-    expectImportError("No matching file found in the attachments.");
     expectImportError('Unknown code "NOPE" in column ToolType.');
     expectImportError('Unknown value "NotAPassType" in column PassType.');
     expectImportError('Invalid date format "not-a-date". Expected: dd.MM.yyyy.');
@@ -235,15 +245,17 @@ describe("Test for the borehole log import.", () => {
   });
 
   it("displays an error for attachments that are not referenced in the log files CSV", () => {
-    setupBoreholeAndOpenLogTab("LOG IMPORT ORPHAN ATTACHMENT");
-    performImport({
-      logRunsCsv: "log-runs-valid.csv",
-      logFilesCsv: "log-files-valid.csv",
-      attachments: ["welllog1.las", "welllog2.txt", "orphan.bin"],
-    });
-    cy.wait("@log_import").its("response.statusCode").should("eq", 400);
-    expectImportError("orphan.bin");
-    expectImportError("No matching file found in the CSV.");
+    openSeedBoreholeLogTabInEditMode();
+    openImportDialog();
+    selectLogRunsCsv("log-runs-valid.csv");
+    selectLogFilesCsv("log-files-valid.csv");
+    // Try to add an unexpected file to the first run's dropzone
+    selectAttachmentsForRun("IMP-RUN-1", ["welllog1.las", "orphan.bin"]);
+    // The dropzone should reject orphan.bin with a client-side error
+    cy.get('[data-cy="log-attachments-IMP-RUN-1"]').should("contain", "orphan.bin");
+    cy.get('[data-cy="log-attachments-IMP-RUN-1"]').should("contain", "is not listed in the CSV");
+    // welllog1.las should still be accepted
+    cy.get('[data-cy="log-attachments-IMP-RUN-1"]').dataCy("file-dropzone").should("contain", "welllog1.las");
     clickModalCancelButton();
   });
 
@@ -289,7 +301,7 @@ describe("Test for the borehole log import.", () => {
     performImport({
       logRunsCsv: "log-runs-valid.csv",
       logFilesCsv: "log-files-valid.csv",
-      attachments: ["welllog1.las", "welllog2.txt"],
+      attachmentsPerRun: { "IMP-RUN-1": ["welllog1.las"], "IMP-RUN-2": ["welllog2.txt"] },
     });
     cy.wait("@log_import").its("response.statusCode").should("eq", 200);
     cy.wait("@log_upload_fail").its("response.statusCode").should("eq", 500);

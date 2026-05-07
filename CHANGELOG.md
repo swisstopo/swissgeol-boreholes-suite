@@ -8,6 +8,8 @@
 - Borehole name and sub route are now displayed in the document title.
 
 ### Changed
+- Exported LOG attachments are now grouped in folders by run number instead of being prefixed with a UUID. Duplicate file names per log run are prevented on upload and import.
+- LOG import dialog now assigns attachments per run number instead of as a flat list.
 - Filters are now organized in new sections. Filters for attachments and LOG were added.
 - When the main map is fitted to the extent of the (filtered) boreholes, a padding is applied to the extent.
 - Filter UI was redesigned and now supports multiple selections and chips per selected filter value.
