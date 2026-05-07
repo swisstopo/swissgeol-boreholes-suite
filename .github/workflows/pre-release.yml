@@ -196,4 +196,6 @@ jobs:
     uses: ./.github/workflows/deploy-dev.yml
     with:
       version: ${{ needs.create-pre-release.outputs.version }}
-    secrets: inherit
+    secrets:
+      AWS_ROLE_DEV: ${{ secrets.AWS_ROLE_DEV }}
+      AWS_REGION: ${{ secrets.AWS_REGION }}
