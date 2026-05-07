@@ -14,10 +14,12 @@
 - When the main map is fitted to the extent of the (filtered) boreholes, a padding is applied to the extent.
 - Filter UI was redesigned and now supports multiple selections and chips per selected filter value.
 - Upgraded swissgeol OCR service to version 1.1.4.
+- Upgraded swissgeol Data Extraction service to version 1.0.162.
 - The database tables `boreholeFiles` and  `files` were merged into one table `profiles`.
 
 ### Fixed
 - Only one workgroup could be added at once. Only with a complete refresh of the page another workgroup could be added.
+- The FormDialog could not be closed when the form was in an invalid state. Cancel and Apply buttons now replace the single Close button.
 
 ## v2.1.1568 - 2026-04-23
 

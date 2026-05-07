@@ -1,0 +1,7 @@
+# DEV environment values — swissgeol-boreholes namespace.
+# Fill in the values before the first deploy.
+app:
+  domain: dev-boreholes.swissgeol.ch
+s3:
+  endpoint: https://s3.eu-central-1.amazonaws.com
+

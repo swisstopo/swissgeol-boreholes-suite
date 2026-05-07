@@ -3,12 +3,6 @@ kind: CronJob
 metadata:
   name: {{ .Release.Name }}
   namespace: {{ .Release.Namespace }}
-  {{- if ne .Values.keel.enabled false }}
-  annotations:
-    keel.sh/policy: {{ .Values.keel.policy | default "force" }}
-    keel.sh/match-tag: {{ .Values.keel.matchTag | default "'true'" }}
-    keel.sh/trigger: {{ .Values.keel.trigger | default "poll" }}
-  {{- end }}
 spec:
   schedule: "{{ .Values.app.schedule | default "0 0 * * *" }}"
   timeZone: "{{ .Values.app.timezone | default "Europe/Zurich" }}"

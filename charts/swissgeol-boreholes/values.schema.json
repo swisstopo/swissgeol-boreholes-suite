@@ -57,12 +57,7 @@
           "default": false
         },
 
-        "awsRoleArn": { "type": ["string", "null"], "minLength": 1 },
-
-        "automountServiceAccountToken": {
-          "type": "boolean",
-          "default": true
-        }
+        "awsRoleArn": { "type": ["string", "null"], "minLength": 1 }
       },
       "required": ["version"]
     },
@@ -80,13 +75,22 @@
         "anonymousModeEnabled": { "type": ["boolean", "null"], "default": false },
 
         "basicAuthEnabled": { "type": "boolean", "default": false },
-        "basicAuthUsername": { "type": ["string", "null"], "minLength": 1 },
-        "basicAuthPassword": { "type": ["string", "null"], "minLength": 1 }
+
+        "basicAuthUsername": {
+          "type": ["string", "null"],
+          "minLength": 1
+        },
+        "basicAuthPassword": {
+          "type": ["string", "null"],
+          "minLength": 1
+        }
       },
       "allOf": [
         {
           "if": {
-            "properties": { "basicAuthEnabled": { "const": true } },
+            "properties": {
+              "basicAuthEnabled": { "const": true }
+            },
             "required": ["basicAuthEnabled"]
           },
           "then": {
@@ -114,8 +118,8 @@
           "default": 5432
         },
         "name": { "type": ["string", "null"], "minLength": 1 },
-        "username": { "type": ["string", "null"], "minLength": 1 },
-        "password": { "type": ["string", "null"], "minLength": 1 }
+        "username": { "type": ["string", "null"] },
+        "password": { "type": ["string", "null"] }
       }
     },
 
@@ -133,16 +137,15 @@
         "bucket": { "type": ["string", "null"], "minLength": 1 },
         "photosBucket": { "type": ["string", "null"], "minLength": 1 },
         "logFilesBucket": { "type": ["string", "null"], "minLength": 1 },
-        "accessKey": { "type": ["string", "null"], "minLength": 1 },
-        "secretKey": { "type": ["string", "null"], "minLength": 1 },
-
         "secure": {
           "anyOf": [
             { "type": "string", "enum": ["0", "1"] },
             { "type": "integer", "enum": [0, 1] }
           ],
           "default": "1"
-        }
+        },
+        "accessKey": { "type": ["string", "null"] },
+        "secretKey": { "type": ["string", "null"] }
       }
     },
 
@@ -152,30 +155,11 @@
       "properties": {
         "trackingId": { "type": ["string", "null"], "minLength": 1 }
       }
-    },
-
-    "keel": {
-      "type": "object",
-      "additionalProperties": false,
-      "properties": {
-        "enabled": { "type": ["boolean", "null"], "default": true },
-        "policy": { "type": ["string", "null"], "minLength": 1, "default": "force" },
-
-        "matchTag": {
-          "anyOf": [
-            { "type": "boolean" },
-            { "type": "string", "enum": ["true", "false", "'true'", "\"true\"", "'false'", "\"false\""] },
-            { "type": "null" }
-          ],
-          "default": "true"
-        },
-
-        "trigger": { "type": ["string", "null"], "minLength": 1, "default": "poll" }
-      }
     }
+
   },
 
-  "required": ["app", "dataextraction", "ocr"],
+  "required": [],
 
   "definitions": {}
 }

@@ -7,60 +7,41 @@
 app:
   # -- The tag name of the Docker image tag to be deployed
   # -- e.g. v2.0.506
-  # -- required
-  version:
+  version: v2.1.1462
   # -- The timezone which will be used in the application
-  # -- defaults to "Europe/Zurich"
-  timezone:
+  timezone: Europe/Zurich
   # -- The schedule for the cron job
   # -- Refer to https://en.wikipedia.org/wiki/Cron for valid values.
-  # -- defaults to "0 0 * * *" which means every day at midnight
-  schedule:
+  schedule: 0 0 * * *
 
 configuration:
   # -- The default workgroup name to assign the borehole to if there is no matching workgroup in the target database
-  targetDefaultWorkgroupName:
+  targetDefaultWorkgroupName: Sync
   # -- The default user subject/identifier to assign the synced boreholes to.
-  targetDefaultUserSub:
+  targetDefaultUserSub: sub_admin
 
 # Database configuration (source and target)
+# All database values are stored as secrets and assembled into connection strings.
 db:
   source:
-    # -- The hostname of the source database server
+    # -- The hostname of the source database server (stored as secret)
     host:
-    # -- The port of the source database server
-    # -- defaults to "5432"
-    port:
-    # -- The name of the source database
+    # -- The port of the source database server (stored as secret)
+    port: 5432
+    # -- The name of the source database (stored as secret)
     name:
-    # -- The username to connect to the source database
+    # -- The username for the source database (stored as secret)
     username:
-    # -- The password to connect to the source database
+    # -- The password for the source database (stored as secret)
     password:
   target:
-    # -- The hostname of the target database server
+    # -- The hostname of the target database server (stored as secret)
     host:
-    # -- The port of the target database server
-    # -- defaults to "5432"
+    # -- The port of the target database server (stored as secret)
     port:
-    # -- The name of the target database
+    # -- The name of the target database (stored as secret)
     name:
-    # -- The username to connect to the target database
+    # -- The username for the target database (stored as secret)
     username:
-    # -- The password to connect to the target database
+    # -- The password for the target database (stored as secret)
     password:
-
-# Keel deployment automation configuration
-keel:
-  # -- Enables Keel deployment automation for the deployment
-  # -- defaults to true
-  enabled:
-  # -- The policy for Keel to use for updates
-  # -- defaults to "force"
-  policy:
-  # -- Whether to match tags for updates
-  # -- defaults to "'true'"
-  matchTag:
-  # -- The trigger type for Keel
-  # -- defaults to "poll"
-  trigger:
