@@ -1,9 +1,10 @@
 import { useContext } from "react";
 import { useTranslation } from "react-i18next";
-import { Backdrop, Box, CircularProgress, Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { CircleCheck, CircleX } from "lucide-react";
 import { theme } from "../../AppTheme.ts";
 import { DeleteButton, SaveButton } from "../../components/buttons/buttons.tsx";
+import { LoadingBackdrop } from "../../components/loadingBackdrop.tsx";
 import { SaveContext, SaveContextProps } from "./saveContext.tsx";
 
 export const SaveBar = () => {
@@ -49,15 +50,7 @@ export const SaveBar = () => {
         <DeleteButton disabled={!hasChanges || isSaving} label="discardchanges" onClick={triggerReset} />
         <SaveButton disabled={!hasChanges || isSaving} variant="contained" onClick={triggerSave} />
       </Stack>
-      <Backdrop
-        sx={{
-          color: theme.palette.primary.main,
-          backgroundColor: theme.palette.background.backdrop,
-          zIndex: theme.zIndex.modal,
-        }}
-        open={isSaving}>
-        <CircularProgress color="inherit" />
-      </Backdrop>
+      <LoadingBackdrop open={isSaving} sx={{ zIndex: theme.zIndex.modal }} />
     </Stack>
   );
 };
