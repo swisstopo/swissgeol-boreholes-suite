@@ -3,12 +3,6 @@ kind: Deployment
 metadata:
   name: {{ .Release.Name }}-ocr-api
   namespace: {{ .Release.Namespace }}
-  {{- if ne .Values.keel.enabled false }}
-  annotations:
-    keel.sh/policy: {{ .Values.keel.policy | default "force" }}
-    keel.sh/match-tag: {{ .Values.keel.matchTag | default "'true'" }}
-    keel.sh/trigger: {{ .Values.keel.trigger | default "poll" }}
-  {{- end }}
 spec:
   replicas: {{ .Values.replicaCount }}
   selector:
@@ -22,10 +16,8 @@ spec:
       labels:
         app: {{ .Release.Name }}-ocr-api
     spec:
-      {{- if .Values.ocr.awsRoleArn }}
       serviceAccountName: {{ .Release.Name }}-ocr-api
-      {{- end }}
-      automountServiceAccountToken: {{ .Values.ocr.automountServiceAccountToken }}
+      automountServiceAccountToken: true
       securityContext:
         seccompProfile:
           type: RuntimeDefault
@@ -81,8 +73,8 @@ spec:
               value: eu-central-1
             - name: S3_INPUT_BUCKET
               valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-config
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
                   key: s3Bucket
             - name: S3_INPUT_ENDPOINT
               valueFrom:
@@ -93,8 +85,8 @@ spec:
               value: ''
             - name: S3_OUTPUT_BUCKET
               valueFrom:
-                configMapKeyRef:
-                  name: {{ .Release.Name }}-config
+                secretKeyRef:
+                  name: {{ .Release.Name }}-secrets
                   key: s3Bucket
             - name: S3_OUTPUT_ENDPOINT
               valueFrom:

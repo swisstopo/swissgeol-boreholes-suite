@@ -254,7 +254,7 @@ describe("Test for the borehole log import.", () => {
     setInput("fromDepth", 0);
     setInput("toDepth", 10);
     setInput("runNumber", "UNSAVED-1");
-    cy.get(".MuiDialog-container").dataCy("close-button").click();
+    cy.get(".MuiDialog-container").dataCy("apply-button").click();
     verifyTableLength(1);
     const unsavedChangesPrompt = "There are unsaved changes. Do you want to discard all changes?";
     cy.dataCy("import-button").click();
