@@ -86,7 +86,12 @@ export const IdentifiersPanel: FC = () => {
             label="addIdentifier"
             variant={"contained"}
             onClick={() => {
-              append({ boreholeId: borehole.id, codelistId: null, value: "", comment: null });
+              append({
+                boreholeId: borehole.id,
+                codelistId: groupedByCodelistId.length, // Temporary ID to ensure click adds to a new group(card), is overwritten when a codelist is selected
+                value: "",
+                comment: null,
+              });
             }}
           />
         )
