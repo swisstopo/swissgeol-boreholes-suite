@@ -5,6 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 import { ApiError } from "../../../../api/apiInterfaces.ts";
 import { stratigraphiesQueryKey, Stratigraphy, useStratigraphyMutations } from "../../../../api/stratigraphy.ts";
 import { BoreholesButton, CancelButton } from "../../../../components/buttons/buttons.tsx";
+import { getFieldBorderColor } from "../../../../components/form/formUtils.ts";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 
 interface AddEmptyStratigraphyDialogProps {
@@ -95,6 +96,7 @@ export const AddEmptyStratigraphyDialog: FC<AddEmptyStratigraphyDialogProps> = (
               error={!!nameError}
               helperText={nameError ?? undefined}
               data-cy="stratigraphy-name-formInput"
+              sx={getFieldBorderColor(false)}
               onChange={event => {
                 setName(event.target.value);
                 if (nameError) setNameError(null);
