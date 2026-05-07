@@ -31,10 +31,10 @@ describe("useBoreholeDocumentTitle", () => {
     expect(document.title).toBe("My Borehole - Location | swissgeol boreholes");
   });
 
-  it("sets default title when boreholeName is undefined", () => {
+  it("sets tab name when boreholeName is undefined", () => {
     renderHook(() => useBoreholeDocumentTitle(undefined));
 
-    expect(document.title).toBe(defaultTitle);
+    expect(document.title).toBe("Location | swissgeol boreholes");
   });
 
   it("resets to default title on unmount", () => {
