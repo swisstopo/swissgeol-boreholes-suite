@@ -18,6 +18,7 @@ interface FilterAutocompleteProps {
 }
 
 export const FilterAutocomplete: FC<FilterAutocompleteProps> = ({ item, filterValue, onUpdate, filterRequest }) => {
+  console.log("Rendering FilterAutocomplete", { item, filterValue });
   const { t } = useTranslation();
   const [inputValue, setInputValue] = useState<string>(filterValue ?? "");
 
@@ -28,7 +29,7 @@ export const FilterAutocomplete: FC<FilterAutocompleteProps> = ({ item, filterVa
   const debouncedForFetch = useDebounce(inputValue, 300);
 
   const isValidField = isBoreholeSuggestionField(item.key);
-  const fetchEnabled = debouncedForFetch.trim().length >= 2;
+  const fetchEnabled = debouncedForFetch.trim().length >= 1;
   const field = item.key as BoreholeSuggestionField;
   const { data: suggestions = [], isFetching } = useBoreholeSuggestions(
     field,
