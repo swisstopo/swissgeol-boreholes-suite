@@ -3,12 +3,12 @@ import { FieldValues, FormProvider, UseFormReturn } from "react-hook-form";
 import { Box } from "@mui/material";
 import { DevTool } from "../../../../hookformDevtools.ts";
 import { useBorehole, useBoreholeMutations } from "../../../api/borehole.ts";
+import { findFirstErrorRef } from "../../../components/form/formUtils.ts";
 import { useFormDirtyMarkAsChanged } from "../../../components/form/useFormDirty.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
 import { useResetTabStatus } from "../../../hooks/useResetTabStatus.ts";
 import { useLabelingContext } from "../labeling/labelingContext.tsx";
 import { SaveContext } from "../saveContext.tsx";
-import { scrollToFirstError } from "./formErrorUtils.ts";
 import { TabName } from "./workflow/workflow.ts";
 
 interface BaseFormProps<T extends FieldValues> {
@@ -60,7 +60,7 @@ export const BaseForm = <T extends FieldValues>({
     if (triggerValidationBeforeSave) {
       const isValid = await formMethods.trigger();
       if (!isValid) {
-        scrollToFirstError(formMethods.formState.errors);
+        findFirstErrorRef(formMethods.formState.errors)?.focus();
         return false;
       }
     }

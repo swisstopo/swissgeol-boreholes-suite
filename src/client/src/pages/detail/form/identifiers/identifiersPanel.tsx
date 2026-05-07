@@ -147,6 +147,12 @@ export const IdentifiersPanel: FC = () => {
                       required={true}
                       selected={firstField.codelistId}
                       schemaName="borehole_identifier"
+                      rules={{
+                        validate: (value: number | null) => {
+                          if (value === null || value === undefined) return true;
+                          return value >= 100000000 || t("required");
+                        },
+                      }}
                       prefilteredDomains={codelists
                         ?.filter(d => d.schema === "borehole_identifier")
                         .filter(
