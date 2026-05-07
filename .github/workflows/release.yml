@@ -49,16 +49,29 @@ jobs:
     needs: retag-docker-images
 
     steps:
+      - name: Generate App token
+        id: app-token
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3 # v3.1.1
+        with:
+          app-id: ${{ secrets.RELEASE_BOT_APP_ID }}
+          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+
       - name: Checkout repository
         uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+        with:
+          token: ${{ steps.app-token.outputs.token }}
 
       - name: Set environment variables
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           echo GIT_BRANCH_NAME=mark-version-${TAG_NAME#v}-as-released >> $GITHUB_ENV
           echo GIT_COMMIT_MESSAGE=Mark version ${TAG_NAME#v} as released >> $GITHUB_ENV
           echo RELEASE_ID=$(gh api -H "Accept: application/vnd.github+json" /repos/${GITHUB_REPOSITORY}/releases/tags/${TAG_NAME} | jq '.id') >> $GITHUB_ENV
 
       - name: Get changelog for this specific release and update release notes
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           gh api \
             --method PATCH \
@@ -72,6 +85,8 @@ jobs:
           sed -i "/^\#\# \[Unreleased\]$/a \\\n\#\# $TAG_NAME - $(date '+%Y-%m-%d')" CHANGELOG.md
 
       - name: Commit, push and create pull request
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
         run: |
           git config --global user.email "office@geowerkstatt.ch"
           git config --global user.name "GeoWerkstatt-Build"
