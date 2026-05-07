@@ -191,7 +191,7 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
               <FileDropzone onChange={onLogFileCsvChanged} accept={{ "text/csv": [".csv"] }} />
             </Stack>
             {runNumbers.map(runNumber => (
-              <Stack key={runNumber} gap={0.5}>
+              <Stack key={runNumber} gap={0.5} data-cy={`log-attachments-${runNumber}`}>
                 <Typography variant="h6">{t("attachmentsForRun", { runNumber })}</Typography>
                 <FileDropzone
                   onChange={files => {

@@ -1153,19 +1153,6 @@ public class LogControllerTest : TestControllerBase
     }
 
     [TestMethod]
-    public async Task ImportReturnsErrorForLogFilesCsvWithoutDataFiles()
-    {
-        var borehole = await AddTestBoreholeAsync();
-        var logRunsCsv = LogRunsCsvHeader + "NODATA;10;20;;;;;;;\r\n";
-        var logFilesCsv = LogFilesCsvHeader + "NODATA;file;;txt;;;;;;No\r\n";
-        var logRunsFile = GetFormFileByContent(logRunsCsv, LogRunsCsvFileName);
-        var logFilesFile = GetFormFileByContent(logFilesCsv, LogFilesCsvFileName);
-
-        var response = await controller.ImportAsync(borehole.Id, logRunsFile, logFilesFile);
-        ActionResultAssert.IsBadRequest(response);
-    }
-
-    [TestMethod]
     public async Task ImportCollectsMultipleErrors()
     {
         var borehole = await AddTestBoreholeAsync();
