@@ -161,6 +161,7 @@ export const IdentifiersPanel: FC = () => {
                       rules={{
                         validate: (value: number | null) => {
                           if (value === null || value === undefined) return true;
+                          // Valid borehole_identifier codelists start at 100000000, this is necessary as we set a temporary codelistId for grouping
                           return value >= 100000000 || t("required");
                         },
                       }}
