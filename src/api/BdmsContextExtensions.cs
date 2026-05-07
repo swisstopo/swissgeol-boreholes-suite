@@ -929,24 +929,18 @@ public static class BdmsContextExtensions
         var random = new Random(42);
         for (int i = 0; i < stratigraphyRange.Count - 1; i++)
         {
-            int switchIndex = random.Next(0, 10); // Pick a new switchIndex for each stratigraphy
+            // ~20% of stratigraphies contain only unspecified (null) lithologies;
+            // the remaining stratigraphies are split sequentially into a leading block
+            // of unconsolidated (true) lithologies followed by consolidated (false) ones.
+            bool isUnspecifiedStratigraphy = random.NextDouble() < 0.2;
+            int switchIndex = isUnspecifiedStratigraphy ? 0 : random.Next(0, 10);
             var start = (i * 10) + 1;
             var range = Enumerable.Range(start, 10);
             int localIndex = 0;
             foreach (var seed in range)
             {
                 var lithology = SeededLithologies(seed);
-
-                // ~20% of seeded lithologies are unspecified (null), the rest split
-                // around switchIndex into unconsolidated (true) and consolidated (false).
-                if (random.NextDouble() < 0.2)
-                {
-                    lithology.IsUnconsolidated = null;
-                }
-                else
-                {
-                    lithology.IsUnconsolidated = localIndex < switchIndex;
-                }
+                lithology.IsUnconsolidated = isUnspecifiedStratigraphy ? null : localIndex < switchIndex;
 
                 if (lithology.IsUnconsolidated == true)
                 {
@@ -965,20 +959,23 @@ public static class BdmsContextExtensions
 
         context.BulkInsert(lithologiesToInsert, bulkConfig);
 
-        // Seed lithology codelist join tables (without using Faker)
-        var lithologyRange = Enumerable.Range(23_000_000, 20_000);
-
-        void SeedLithologyCodeRelationships<T>(IEnumerable<int> codelistIds)
+        // Seed lithology codelist join tables (without using Faker).
+        // Type-specific codes are only assigned to lithologies of the matching type;
+        // unspecified (null) lithologies receive no type-specific codes.
+        void SeedLithologyCodeRelationships<T>(IEnumerable<int> codelistIds, bool? isUnconsolidatedFilter)
             where T : class, ILithologyCode, new()
         {
+            var matchingLithologies = lithologiesToInsert
+                .Where(l => l.IsUnconsolidated == isUnconsolidatedFilter)
+                .ToList();
             var lithologyCodes = new List<T>();
 
             // Create a smaller representative sample (not all possible combinations).
             // This significantly reduces the data volume while maintaining distribution.
-            var random = new Random(lithologyRange.Count());
+            var random = new Random(matchingLithologies.Count);
             var codeListSampleSize = Math.Min(5, codelistIds.Count());
 
-            foreach (var lithologyId in lithologyRange)
+            foreach (var lithology in matchingLithologies)
             {
                 // Select a smaller subset of codes for each lithology.
                 // This is more realistic than assigning every code to every lithology.
@@ -989,16 +986,16 @@ public static class BdmsContextExtensions
 
                 foreach (var codeId in codeListSample)
                 {
-                    lithologyCodes.Add(new() { LithologyId = lithologyId, CodelistId = codeId });
+                    lithologyCodes.Add(new() { LithologyId = lithology.Id, CodelistId = codeId });
                 }
             }
 
             context.BulkInsert(lithologyCodes, bulkConfig);
         }
 
-        SeedLithologyCodeRelationships<LithologyRockConditionCodes>(rockConditionIds);
-        SeedLithologyCodeRelationships<LithologyUscsTypeCodes>(uscsTypeIds);
-        SeedLithologyCodeRelationships<LithologyTextureMetaCodes>(textureMetaIds);
+        SeedLithologyCodeRelationships<LithologyRockConditionCodes>(rockConditionIds, isUnconsolidatedFilter: true);
+        SeedLithologyCodeRelationships<LithologyUscsTypeCodes>(uscsTypeIds, isUnconsolidatedFilter: true);
+        SeedLithologyCodeRelationships<LithologyTextureMetaCodes>(textureMetaIds, isUnconsolidatedFilter: false);
 
         // Seed LithologyDescriptions
         var lithologyDescription_ids = 23_500_000;
@@ -1042,15 +1039,15 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.GrainAngularityCodelists, _ => new Collection<Codelist>())
             .RuleFor(o => o.LithologyUnconDebrisCodelistIds, _ => new List<int>())
             .RuleFor(o => o.LithologyUnconDebrisCodelists, _ => new Collection<Codelist>())
-            .RuleFor(o => o.LithologyConId, (f, ld) => ld.Lithology.IsUnconsolidated == false ? f.PickRandom(lithologyConIds) : null)
+            .RuleFor(o => o.LithologyConId, f => f.PickRandom(lithologyConIds))
             .RuleFor(o => o.LithologyCon, _ => default!)
-            .RuleFor(o => o.GrainSizeId, (f, ld) => ld.Lithology.IsUnconsolidated == false ? f.PickRandom(grainSizeIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.GrainSizeId, f => f.PickRandom(grainSizeIds).OrNull(f, .2f))
             .RuleFor(o => o.GrainSize, _ => default!)
-            .RuleFor(o => o.GrainAngularityId, (f, ld) => ld.Lithology.IsUnconsolidated == false ? f.PickRandom(grainAngularityIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.GrainAngularityId, f => f.PickRandom(grainAngularityIds).OrNull(f, .2f))
             .RuleFor(o => o.GrainAngularity, _ => default!)
-            .RuleFor(o => o.GradationId, (f, ld) => ld.Lithology.IsUnconsolidated == false ? f.PickRandom(gradationIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.GradationId, f => f.PickRandom(gradationIds).OrNull(f, .2f))
             .RuleFor(o => o.Gradation, _ => default!)
-            .RuleFor(o => o.CementationId, (f, ld) => ld.Lithology.IsUnconsolidated == false ? f.PickRandom(cementationIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.CementationId, f => f.PickRandom(cementationIds).OrNull(f, .2f))
             .RuleFor(o => o.Cementation, _ => default!)
             .RuleFor(o => o.ComponentConParticleCodelistIds, _ => new List<int>())
             .RuleFor(o => o.ComponentConParticleCodelists, _ => new Collection<Codelist>())
@@ -1107,15 +1104,35 @@ public static class BdmsContextExtensions
         for (int i = 0; i < lithologiesToInsert.Count; i++)
         {
             var lithology = lithologiesToInsert[i];
+
+            void ApplyTypeSpecificValues(LithologyDescription target, int seedOffset)
+            {
+                if (lithology.IsUnconsolidated == true)
+                {
+                    SetUnconsolidatedIds(i, target, seedOffset);
+                }
+                else
+                {
+                    // Not unconsolidated -> no striae.
+                    target.HasStriae = false;
+                }
+
+                if (lithology.IsUnconsolidated != false)
+                {
+                    // Not consolidated -> clear consolidated-only fields.
+                    target.LithologyConId = null;
+                    target.GrainSizeId = null;
+                    target.GrainAngularityId = null;
+                    target.GradationId = null;
+                    target.CementationId = null;
+                }
+            }
+
             var description = fakeLithologyDescriptions.UseSeed(i).Generate();
             description.LithologyId = lithology.Id;
             description.IsFirst = true;
 
-            if (lithology.IsUnconsolidated == true)
-            {
-                SetUnconsolidatedIds(i, description);
-            }
-
+            ApplyTypeSpecificValues(description, seedOffset: 0);
             lithologyDescriptionsToInsert.Add(description);
 
             if (lithology.HasBedding)
@@ -1124,31 +1141,32 @@ public static class BdmsContextExtensions
                 secondDescription.LithologyId = lithology.Id;
                 secondDescription.IsFirst = false;
 
-                if (lithology.IsUnconsolidated == true)
-                {
-                    SetUnconsolidatedIds(i, secondDescription, 10000);
-                }
-
+                ApplyTypeSpecificValues(secondDescription, seedOffset: 10000);
                 lithologyDescriptionsToInsert.Add(secondDescription);
             }
         }
 
         context.BulkInsert(lithologyDescriptionsToInsert, bulkConfig);
 
-        // Seed lithology description codelist join tables (without using Faker)
-        var lithologyDescriptionRange = Enumerable.Range(23_500_000, 20_000);
+        // Seed lithology description codelist join tables (without using Faker).
+        // Type-specific codes are only assigned to descriptions whose parent lithology
+        // matches the type; descriptions of unspecified (null) lithologies receive none.
+        var lithologyById = lithologiesToInsert.ToDictionary(l => l.Id);
 
-        void SeedLithologyDescriptionCodeRelationships<T>(IEnumerable<int> codelistIds)
+        void SeedLithologyDescriptionCodeRelationships<T>(IEnumerable<int> codelistIds, bool? parentIsUnconsolidatedFilter)
             where T : class, ILithologyDescriptionCode, new()
         {
+            var matchingDescriptions = lithologyDescriptionsToInsert
+                .Where(ld => lithologyById[ld.LithologyId].IsUnconsolidated == parentIsUnconsolidatedFilter)
+                .ToList();
             var lithologyDescriptionCodes = new List<T>();
 
             // Create a smaller representative sample (not all possible combinations).
             // This significantly reduces the data volume while maintaining distribution.
-            var random = new Random(lithologyDescriptionRange.Count());
+            var random = new Random(matchingDescriptions.Count);
             var codeListSampleSize = Math.Min(5, codelistIds.Count());
 
-            foreach (var lithologyDescriptionId in lithologyDescriptionRange)
+            foreach (var description in matchingDescriptions)
             {
                 // Select a smaller subset of codes for each lithology description.
                 // This is more realistic than assigning every code to every lithology description.
@@ -1159,22 +1177,22 @@ public static class BdmsContextExtensions
 
                 foreach (var codeId in codeListSample)
                 {
-                    lithologyDescriptionCodes.Add(new() { LithologyDescriptionId = lithologyDescriptionId, CodelistId = codeId });
+                    lithologyDescriptionCodes.Add(new() { LithologyDescriptionId = description.Id, CodelistId = codeId });
                 }
             }
 
             context.BulkInsert(lithologyDescriptionCodes, bulkConfig);
         }
 
-        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionComponentUnconOrganicCodes>(componentUnconOrganicIds);
-        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionComponentUnconDebrisCodes>(componentUnconDebrisIds);
-        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionGrainShapeCodes>(grainShapeIds);
-        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionGrainAngularityCodes>(grainAngularityIds);
-        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionLithologyUnconDebrisCodes>(lithologyConIds);
-        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionComponentConParticleCodes>(componentConParticleIds);
-        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionComponentConMineralCodes>(componentConMineralIds);
-        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionStructurePostGenCodes>(structurePostGenIds);
-        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionStructureSynGenCodes>(structureSynGenIds);
+        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionComponentUnconOrganicCodes>(componentUnconOrganicIds, parentIsUnconsolidatedFilter: true);
+        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionComponentUnconDebrisCodes>(componentUnconDebrisIds, parentIsUnconsolidatedFilter: true);
+        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionGrainShapeCodes>(grainShapeIds, parentIsUnconsolidatedFilter: true);
+        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionGrainAngularityCodes>(grainAngularityIds, parentIsUnconsolidatedFilter: true);
+        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionLithologyUnconDebrisCodes>(lithologyConIds, parentIsUnconsolidatedFilter: true);
+        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionComponentConParticleCodes>(componentConParticleIds, parentIsUnconsolidatedFilter: false);
+        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionComponentConMineralCodes>(componentConMineralIds, parentIsUnconsolidatedFilter: false);
+        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionStructurePostGenCodes>(structurePostGenIds, parentIsUnconsolidatedFilter: false);
+        SeedLithologyDescriptionCodeRelationships<LithologyDescriptionStructureSynGenCodes>(structureSynGenIds, parentIsUnconsolidatedFilter: false);
 
         // Seed lithologicalDescriptions
         var lithologicalDescription_ids = 9_000_000;
