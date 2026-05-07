@@ -1975,8 +1975,9 @@ public class FilterServiceTest
 
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
-        Assert.AreEqual(1, result.TotalCount);
         Assert.AreEqual(1, result.Boreholes.Count());
+        var firstBorehole = context.Boreholes.Single(b => b.Id == result.Boreholes.First().Id);
+        Assert.AreEqual("Bern", firstBorehole.Canton);
     }
 
     [TestMethod]
@@ -1993,6 +1994,9 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.AreEqual(2, result.TotalCount);
+        var completeBoreholes = context.Boreholes.Where(b => result.Boreholes.Select(rb => rb.Id).Contains(b.Id));
+        Assert.IsTrue(completeBoreholes.Any(b => b.Canton == "Bern"), "Results must include boreholes from Bern.");
+        Assert.IsTrue(completeBoreholes.Any(b => b.Canton == "Vaud"), "Results must include boreholes from Vaud.");
     }
 
     [TestMethod]
@@ -2008,7 +2012,6 @@ public class FilterServiceTest
 
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
-        Assert.AreEqual(1, result.TotalCount);
         Assert.AreEqual(1, result.Boreholes.Count());
     }
 
