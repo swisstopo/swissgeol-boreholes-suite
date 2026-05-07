@@ -65,7 +65,7 @@ function testLargeSelectFilter(
   options: string[],
   expectedCount: string,
 ) {
-  it.only(`filters boreholes by ${title}`, () => {
+  it(`filters boreholes by ${title}`, () => {
     openFilter(filterSection);
     const selector = `[data-cy="${fieldName}-formSelect"]`;
     options.forEach(option => {
