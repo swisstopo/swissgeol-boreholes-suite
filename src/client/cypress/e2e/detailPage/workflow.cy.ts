@@ -524,6 +524,8 @@ describe("Tests the publication workflow.", () => {
       // add new empty stratigraphy
       cy.dataCy("addStratigraphy-button-select").click();
       cy.dataCy("addEmpty-button-select-item").click();
+      cy.dataCy("stratigraphy-name-formInput").type("Workflow Stratigraphy");
+      cy.dataCy("addemptystratigraphy-submit-button").click();
       cy.wait([
         "@stratigraphy_POST",
         "@stratigraphy_by_borehole_GET",

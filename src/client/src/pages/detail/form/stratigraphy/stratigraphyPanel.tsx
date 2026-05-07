@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { FC, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import { Box, Card, Chip, CircularProgress, Stack, Tooltip, Typography } from "@mui/material";
@@ -18,6 +18,7 @@ import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams";
 import { formatDate } from "../../../../utils";
 import { EditStateContext } from "../../editStateContext";
+import { AddEmptyStratigraphyDialog } from "./addEmptyStratigraphyDialog.tsx";
 import { AddStratigraphyButton } from "./addStratigraphyButton";
 import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel";
 import { StratigraphyExtraction } from "./extraction/stratigraphyExtraction.tsx";
@@ -28,6 +29,7 @@ import { StratigraphyForm } from "./stratigraphyForm.tsx";
 
 export const StratigraphyPanel: FC = () => {
   const [filePickerOpen, setFilePickerOpen] = useState(false);
+  const [addDialogOpen, setAddDialogOpen] = useState(false);
   const justCopiedRef = useRef(false);
   const { id: boreholeId, stratigraphyId } = useRequiredParams();
   const { navigateTo } = useBoreholesNavigate();
@@ -45,36 +47,15 @@ export const StratigraphyPanel: FC = () => {
 
   const sortedStratigraphies: Stratigraphy[] | undefined = useMemo(() => {
     if (!stratigraphies) return stratigraphies;
-    const existingStratigraphies = [...stratigraphies].sort((a, b) => {
+    return [...stratigraphies].sort((a, b) => {
       if (a.isPrimary) return -1;
       if (b.isPrimary) return 1;
       return (a.name || "").localeCompare(b.name || "");
     });
-    if (stratigraphyId === "new") {
-      return [
-        ...existingStratigraphies,
-        {
-          id: 0,
-          boreholeId: Number(boreholeId),
-          borehole: null,
-          isPrimary: !stratigraphies?.length,
-          date: null,
-          created: null,
-          createdById: null,
-          updated: null,
-          updatedById: null,
-          name: "",
-          lithologies: null,
-          chronostratigraphyLayers: null,
-          lithostratigraphyLayers: null,
-        },
-      ];
-    }
-    return existingStratigraphies;
-  }, [boreholeId, stratigraphies, stratigraphyId]);
+  }, [stratigraphies]);
 
   const selectedTabIndex: number = useMemo(
-    () => sortedStratigraphies?.findIndex(x => x.id === (stratigraphyId === "new" ? 0 : Number(stratigraphyId))) ?? -1,
+    () => sortedStratigraphies?.findIndex(x => x.id === Number(stratigraphyId)) ?? -1,
     [sortedStratigraphies, stratigraphyId],
   );
 
@@ -89,7 +70,7 @@ export const StratigraphyPanel: FC = () => {
     (stratigraphyId: number | undefined, replace = false) => {
       if (stratigraphyId !== undefined) {
         navigateTo({
-          path: `/${boreholeId}/stratigraphy/${stratigraphyId === 0 ? "new" : stratigraphyId}`,
+          path: `/${boreholeId}/stratigraphy/${stratigraphyId}`,
           hash: location.hash,
           replace,
         });
@@ -117,9 +98,9 @@ export const StratigraphyPanel: FC = () => {
     setFilePickerOpen(true);
   }, []);
 
-  const addEmptyStratigraphy = useCallback(async () => {
-    navigateToStratigraphy(0);
-  }, [navigateToStratigraphy]);
+  const addEmptyStratigraphy = useCallback(() => {
+    setAddDialogOpen(true);
+  }, []);
 
   const deleteSelectedStratigraphy = useCallback(async () => {
     if (!selectedStratigraphy) return;
@@ -160,50 +141,41 @@ export const StratigraphyPanel: FC = () => {
     }
     if (
       sortedStratigraphies?.length &&
-      (stratigraphyId === undefined ||
-        (stratigraphyId !== "new" && !sortedStratigraphies.some(x => x.id === Number(stratigraphyId))))
+      (stratigraphyId === undefined || !sortedStratigraphies.some(x => x.id === Number(stratigraphyId)))
     ) {
       const primaryId = sortedStratigraphies.find(x => x.isPrimary)?.id ?? sortedStratigraphies[0].id ?? -1;
       navigateToStratigraphy(primaryId === -1 ? undefined : primaryId, true);
-    } else if (sortedStratigraphies && sortedStratigraphies.length === 0 && stratigraphyId !== "new") {
+    } else if (sortedStratigraphies?.length === 0) {
       navigateToStratigraphy(undefined, true);
     }
   }, [boreholeId, stratigraphyId, sortedStratigraphies, navigateToStratigraphy]);
 
+  let body: ReactNode = null;
   if (!sortedStratigraphies) {
-    return (
+    body = (
       <FullPageCentered>
         <CircularProgress />
       </FullPageCentered>
     );
   } else if (sortedStratigraphies.length === 0) {
-    return (
-      <>
-        <Card sx={{ p: 4 }}>
-          <Typography>{t("noStratigraphy")}</Typography>
-          {editingEnabled && (
-            <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
-              <AddButton label="addEmptyStratigraphy" variant="contained" onClick={addEmptyStratigraphy} />
-              <BoreholesButton
-                label="extractStratigraphyFromProfile"
-                variant="contained"
-                icon={<ExtractAiIcon />}
-                onClick={extractStratigraphyFromProfile}
-              />
-            </Stack>
-          )}
-        </Card>
-        <StratigraphyExtraction
-          boreholeId={boreholeId}
-          filePickerOpen={filePickerOpen}
-          setFilePickerOpen={setFilePickerOpen}
-        />
-      </>
+    body = (
+      <Card sx={{ p: 4 }}>
+        <Typography>{t("noStratigraphy")}</Typography>
+        {editingEnabled && (
+          <Stack direction="row" spacing={2} sx={{ mt: 2 }}>
+            <AddButton label="addEmptyStratigraphy" variant="contained" onClick={addEmptyStratigraphy} />
+            <BoreholesButton
+              label="extractStratigraphyFromProfile"
+              variant="contained"
+              icon={<ExtractAiIcon />}
+              onClick={extractStratigraphyFromProfile}
+            />
+          </Stack>
+        )}
+      </Card>
     );
-  }
-
-  if (selectedStratigraphy) {
-    return (
+  } else if (selectedStratigraphy) {
+    body = (
       <StratigraphyProvider>
         <Box>
           <Box sx={{ position: "relative" }}>
@@ -227,18 +199,14 @@ export const StratigraphyPanel: FC = () => {
                 <Stack direction="row" gap={0.75}>
                   {editingEnabled ? (
                     <>
-                      {selectedStratigraphy.id !== 0 && (
-                        <>
-                          <DeleteButton onClick={showDeletePrompt} />
-                          <BoreholesButton
-                            variant="outlined"
-                            color={"secondary"}
-                            label={"duplicate"}
-                            onClick={onCopy}
-                            icon={<CopyIcon />}
-                          />
-                        </>
-                      )}
+                      <DeleteButton onClick={showDeletePrompt} />
+                      <BoreholesButton
+                        variant="outlined"
+                        color={"secondary"}
+                        label={"duplicate"}
+                        onClick={onCopy}
+                        icon={<CopyIcon />}
+                      />
                       <AddStratigraphyButton
                         addEmptyStratigraphy={addEmptyStratigraphy}
                         extractStratigraphyFromProfile={extractStratigraphyFromProfile}
@@ -281,7 +249,7 @@ export const StratigraphyPanel: FC = () => {
                 borderBottomLeftRadius: "4px",
                 borderBottomRightRadius: "4px",
               }}>
-              {sortedStratigraphies.length > 1 && editingEnabled && selectedStratigraphy.id !== 0 && (
+              {sortedStratigraphies.length > 1 && editingEnabled && (
                 <Stack direction="row" gap={0.75} justifyContent="flex-end">
                   {selectedStratigraphy.isPrimary ? (
                     <Tooltip title={t("deleteMainStratigraphy")}>
@@ -305,7 +273,6 @@ export const StratigraphyPanel: FC = () => {
                 <StratigraphyForm
                   selectedStratigraphy={selectedStratigraphy}
                   stratigraphyCount={sortedStratigraphies.length}
-                  navigateToStratigraphy={navigateToStratigraphy}
                 />
               )}
               <Box sx={{ position: "relative" }}>
@@ -345,15 +312,26 @@ export const StratigraphyPanel: FC = () => {
               </Box>
             </BoreholeTabContent>
           </Box>
-          <StratigraphyExtraction
-            boreholeId={boreholeId}
-            filePickerOpen={filePickerOpen}
-            setFilePickerOpen={setFilePickerOpen}
-          />
         </Box>
       </StratigraphyProvider>
     );
   }
 
-  return <Box />;
+  return (
+    <>
+      {body}
+      <StratigraphyExtraction
+        boreholeId={boreholeId}
+        filePickerOpen={filePickerOpen}
+        setFilePickerOpen={setFilePickerOpen}
+      />
+      <AddEmptyStratigraphyDialog
+        open={addDialogOpen}
+        onClose={() => setAddDialogOpen(false)}
+        boreholeId={Number(boreholeId)}
+        isFirstStratigraphy={!stratigraphies?.length}
+        onCreated={id => navigateToStratigraphy(id, true)}
+      />
+    </>
+  );
 };
