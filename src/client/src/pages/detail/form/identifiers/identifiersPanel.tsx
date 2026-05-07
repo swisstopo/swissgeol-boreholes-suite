@@ -1,5 +1,5 @@
-import { FC, useCallback, useContext, useMemo } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { FC, useCallback, useContext, useEffect, useMemo } from "react";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { Plus, Trash2 } from "lucide-react";
@@ -35,12 +35,23 @@ export const IdentifiersPanel: FC = () => {
     },
   });
 
+  // Syncs the display order of the identifier cards with the borehole data after saving.
+  // Alphabetical order is applied it the useBorehole hook.
+  useEffect(() => {
+    if (borehole?.boreholeCodelists) {
+      formMethods.reset({ boreholeCodelists: borehole.boreholeCodelists });
+    }
+  }, [borehole?.boreholeCodelists, formMethods]);
+
   const { fields, append, remove } = useFieldArray<IdentifiersFormInputs, "boreholeCodelists">({
     name: "boreholeCodelists",
     control: formMethods.control,
   });
 
-  const watchedCodelists = formMethods.watch("boreholeCodelists");
+  const watchedCodelists = useWatch({
+    control: formMethods.control,
+    name: "boreholeCodelists",
+  });
 
   // Group field indices by codelistId to render one card per ID Type
   const groupedByCodelistId = useMemo(() => {
@@ -86,7 +97,12 @@ export const IdentifiersPanel: FC = () => {
             label="addIdentifier"
             variant={"contained"}
             onClick={() => {
-              append({ boreholeId: borehole.id, codelistId: null, value: "", comment: null });
+              append({
+                boreholeId: borehole.id,
+                codelistId: groupedByCodelistId.length, // Temporary ID to ensure click adds to a new group(card), is overwritten when a codelist is selected
+                value: "",
+                comment: null,
+              });
             }}
           />
         )
@@ -142,6 +158,12 @@ export const IdentifiersPanel: FC = () => {
                       required={true}
                       selected={firstField.codelistId}
                       schemaName="borehole_identifier"
+                      rules={{
+                        validate: (value: number | null) => {
+                          if (value === null || value === undefined) return true;
+                          return value >= 100000000 || t("required");
+                        },
+                      }}
                       prefilteredDomains={codelists
                         ?.filter(d => d.schema === "borehole_identifier")
                         .filter(

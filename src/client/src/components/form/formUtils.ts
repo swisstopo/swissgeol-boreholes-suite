@@ -145,3 +145,17 @@ export const buildErrorStructure = (
     }
   }
 };
+
+/**
+ * Recursively searches through the errors object to find the first error with a ref that has a focus method, and returns that ref.
+ * @param errors
+ */
+export const findFirstErrorRef = (errors: object): { focus: () => void } | undefined => {
+  for (const value of Object.values(errors)) {
+    if (!value || typeof value !== "object") continue;
+    const ref = (value as { ref?: { focus?: unknown } }).ref;
+    if (ref && typeof ref.focus === "function") return ref as { focus: () => void };
+    const nested = findFirstErrorRef(value);
+    if (nested) return nested;
+  }
+};
