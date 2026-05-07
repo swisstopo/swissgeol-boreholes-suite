@@ -1961,4 +1961,265 @@ public class FilterServiceTest
             new[] { "EXCL_alpha", "EXCL_beta" },
             filtered.Select(s => s.Value).ToArray());
     }
+
+    [TestMethod]
+    public async Task FilterBoreholesByCantonReturnsOnlyMatchingBoreholes()
+    {
+        await AddBoreholesWithCantons("Bern", "Vaud", null);
+        var filterRequest = new FilterRequest
+        {
+            Canton = new[] { "Bern" },
+            PageNumber = 1,
+            PageSize = 100,
+        };
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
+
+        Assert.AreEqual(1, result.TotalCount);
+        Assert.AreEqual(1, result.Boreholes.Count());
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesByMultipleCantonsReturnsUnion()
+    {
+        await AddBoreholesWithCantons("Bern", "Vaud", "Zurich");
+        var filterRequest = new FilterRequest
+        {
+            Canton = new[] { "Bern", "Vaud" },
+            PageNumber = 1,
+            PageSize = 100,
+        };
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
+
+        Assert.AreEqual(2, result.TotalCount);
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesByMunicipalityReturnsOnlyMatchingBoreholes()
+    {
+        await AddBoreholesWithMunicipalities("Aarau", "Lausanne", null);
+        var filterRequest = new FilterRequest
+        {
+            Municipality = new[] { "Aarau" },
+            PageNumber = 1,
+            PageSize = 100,
+        };
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
+
+        Assert.AreEqual(1, result.TotalCount);
+        Assert.AreEqual(1, result.Boreholes.Count());
+    }
+
+    private async Task AddBoreholesWithCantons(params string?[] cantons)
+    {
+        foreach (var canton in cantons)
+        {
+            var borehole = new Borehole
+            {
+                WorkgroupId = 1,
+                Name = $"BH-{Guid.NewGuid():N}",
+                Canton = canton,
+            };
+            context.Boreholes.Add(borehole);
+        }
+
+        await context.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    private async Task AddBoreholesWithMunicipalities(params string?[] municipalities)
+    {
+        foreach (var municipality in municipalities)
+        {
+            var borehole = new Borehole
+            {
+                WorkgroupId = 1,
+                Name = $"BH-{Guid.NewGuid():N}",
+                Municipality = municipality,
+            };
+            context.Boreholes.Add(borehole);
+        }
+
+        await context.SaveChangesAsync().ConfigureAwait(false);
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesByLogToolTypeReturnsBoreholesWithMatchingLogFiles()
+    {
+        var baseResult = await filterService.FilterBoreholesAsync(
+            new FilterRequest { LogToolTypeId = new[] { 100003032 }, PageNumber = 1, PageSize = 100 },
+            adminUser);
+        var baseCount = baseResult.TotalCount;
+
+        var addedBorehole = await AddBoreholeWithLogToolType(toolTypeCodelistId: 100003032);
+        var boreholeWithoutLogs = await AddBoreholeWithoutLogs();
+
+        var filterRequest = new FilterRequest
+        {
+            LogToolTypeId = new[] { 100003032 },
+            PageNumber = 1,
+            PageSize = 100,
+        };
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
+
+        Assert.AreEqual(baseCount + 1, result.TotalCount);
+        Assert.IsTrue(result.Boreholes.Any(b => b.Id == addedBorehole.Id), "Newly added borehole with matching tool type must appear in results.");
+        Assert.IsFalse(result.Boreholes.Any(b => b.Id == boreholeWithoutLogs.Id), "Borehole without logs must not appear in results.");
+    }
+
+    [TestMethod]
+    public async Task FilterBoreholesByLogToolTypeDoesNotDoubleCount()
+    {
+        var baseResult = await filterService.FilterBoreholesAsync(
+            new FilterRequest { LogToolTypeId = new[] { 100003032 }, PageNumber = 1, PageSize = 100 },
+            adminUser);
+        var baseCount = baseResult.TotalCount;
+
+        await AddBoreholeWithMultipleLogFilesSameToolType(toolTypeCodelistId: 100003032);
+
+        var filterRequest = new FilterRequest
+        {
+            LogToolTypeId = new[] { 100003032 },
+            PageNumber = 1,
+            PageSize = 100,
+        };
+
+        var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
+
+        Assert.AreEqual(baseCount + 1, result.TotalCount);
+    }
+
+    [TestMethod]
+    public async Task GetFilterStatsReturnsCantonAndCityCounts()
+    {
+        await AddBoreholesWithCantons("Bern", "Bern", "Vaud");
+        await AddBoreholesWithMunicipalities("Lausanne", "Lausanne");
+
+        var stats = await filterService.GetFilterStatsAsync(new FilterRequest(), adminUser);
+
+        Assert.IsTrue(stats.Canton.ContainsKey("Bern"));
+        Assert.IsTrue(stats.Canton["Bern"] >= 2);
+        Assert.IsTrue(stats.Canton["Vaud"] >= 1);
+        Assert.IsTrue(stats.Municipality.ContainsKey("Lausanne"));
+        Assert.IsTrue(stats.Municipality["Lausanne"] >= 2);
+    }
+
+    [TestMethod]
+    public async Task GetFilterStatsExcludesActiveCantonFromOwnCounts()
+    {
+        await AddBoreholesWithCantons("Bern", "Vaud");
+
+        // When canton=Bern is the active filter, the canton counts should reflect
+        // the universe of boreholes WITHOUT the canton filter applied — so Vaud is still counted.
+        var filterRequest = new FilterRequest { Canton = new[] { "Bern" } };
+        var stats = await filterService.GetFilterStatsAsync(filterRequest, adminUser);
+
+        Assert.IsTrue(stats.Canton.ContainsKey("Bern"));
+        Assert.IsTrue(stats.Canton.ContainsKey("Vaud"));
+    }
+
+    [TestMethod]
+    public async Task GetFilterStatsReturnsLogToolTypeCounts()
+    {
+        var baselineStats = await filterService.GetFilterStatsAsync(new FilterRequest(), adminUser);
+        var baselineCount = baselineStats.LogToolTypeId.TryGetValue(100003032, out var c) ? c : 0;
+
+        await AddBoreholeWithLogToolType(toolTypeCodelistId: 100003032);
+        await AddBoreholeWithLogToolType(toolTypeCodelistId: 100003032);
+
+        var stats = await filterService.GetFilterStatsAsync(new FilterRequest(), adminUser);
+
+        Assert.AreEqual(baselineCount + 2, stats.LogToolTypeId[100003032]);
+    }
+
+    private async Task<Borehole> AddBoreholeWithLogToolType(int toolTypeCodelistId)
+    {
+        var borehole = new Borehole
+        {
+            WorkgroupId = 1,
+            Name = $"BH-{Guid.NewGuid():N}",
+        };
+        context.Boreholes.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var logRun = new LogRun
+        {
+            BoreholeId = borehole.Id,
+            RunNumber = "1",
+            FromDepth = 0,
+            ToDepth = 100,
+        };
+        context.LogRuns.Add(logRun);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var logFile = new LogFile
+        {
+            LogRunId = logRun.Id,
+            Name = $"file-{Guid.NewGuid():N}.dlis",
+            NameUuid = Guid.NewGuid().ToString(),
+            Public = true,
+            LogFileToolTypeCodes = new List<LogFileToolTypeCodes>
+            {
+                new() { CodelistId = toolTypeCodelistId },
+            },
+        };
+        context.LogFiles.Add(logFile);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        return borehole;
+    }
+
+    private async Task<Borehole> AddBoreholeWithoutLogs()
+    {
+        var borehole = new Borehole
+        {
+            WorkgroupId = 1,
+            Name = $"BH-{Guid.NewGuid():N}",
+        };
+        context.Boreholes.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+        return borehole;
+    }
+
+    private async Task<Borehole> AddBoreholeWithMultipleLogFilesSameToolType(int toolTypeCodelistId)
+    {
+        var borehole = new Borehole
+        {
+            WorkgroupId = 1,
+            Name = $"BH-{Guid.NewGuid():N}",
+        };
+        context.Boreholes.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var logRun = new LogRun
+        {
+            BoreholeId = borehole.Id,
+            RunNumber = "1",
+            FromDepth = 0,
+            ToDepth = 100,
+        };
+        context.LogRuns.Add(logRun);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        for (int i = 0; i < 2; i++)
+        {
+            context.LogFiles.Add(new LogFile
+            {
+                LogRunId = logRun.Id,
+                Name = $"file-{Guid.NewGuid():N}.dlis",
+                NameUuid = Guid.NewGuid().ToString(),
+                Public = true,
+                LogFileToolTypeCodes = new List<LogFileToolTypeCodes>
+                {
+                    new() { CodelistId = toolTypeCodelistId },
+                },
+            });
+        }
+
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        return borehole;
+    }
 }

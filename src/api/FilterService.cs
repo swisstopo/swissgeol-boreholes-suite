@@ -176,6 +176,9 @@ public class FilterService : IFilterService
                 QueryExcluding(r => r.HasDocuments = null),
                 b => context.Documents.Any(d => d.BoreholeId == b.Id),
                 b => !context.Documents.Any(d => d.BoreholeId == b.Id)).ConfigureAwait(false),
+            Canton = await CountByStringAsync(QueryExcluding(r => r.Canton = null), b => b.Canton).ConfigureAwait(false),
+            Municipality = await CountByStringAsync(QueryExcluding(r => r.Municipality = null), b => b.Municipality).ConfigureAwait(false),
+            LogToolTypeId = await CountByLogToolTypeAsync(QueryExcluding(r => r.LogToolTypeId = null)).ConfigureAwait(false),
         };
     }
 
@@ -272,6 +275,40 @@ public class FilterService : IFilterService
         return grouped.ToDictionary(x => x.Key, x => x.Count);
     }
 
+    private static async Task<Dictionary<string, int>> CountByStringAsync(
+        IQueryable<Borehole> query,
+        Expression<Func<Borehole, string?>> selector)
+    {
+        var grouped = await query
+            .Select(selector)
+            .Where(v => v != null)
+            .GroupBy(v => v!)
+            .Select(g => new { Key = g.Key, Count = g.Count() })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return grouped.ToDictionary(x => x.Key, x => x.Count);
+    }
+
+    private async Task<Dictionary<int, int>> CountByLogToolTypeAsync(IQueryable<Borehole> boreholeQuery)
+    {
+        // Distinct-borehole count per tool type codelist id. Avoids double-counting boreholes
+        // with multiple log files referencing the same tool type.
+        var grouped = await boreholeQuery
+            .SelectMany(b => context.LogRuns
+                .Where(lr => lr.BoreholeId == b.Id)
+                .SelectMany(lr => context.LogFiles
+                    .Where(lf => lf.LogRunId == lr.Id)
+                    .SelectMany(lf => lf.LogFileToolTypeCodes!
+                        .Select(t => new { CodelistId = t.CodelistId, BoreholeId = b.Id }))))
+            .GroupBy(r => r.CodelistId)
+            .Select(g => new { Key = g.Key, Count = g.Select(r => r.BoreholeId).Distinct().Count() })
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return grouped.ToDictionary(x => x.Key, x => x.Count);
+    }
+
     private static async Task<BooleanCounts> CountByBooleanAsync(
         IQueryable<Borehole> query,
         Expression<Func<Borehole, bool>> isTrue,
@@ -338,6 +375,9 @@ public class FilterService : IFilterService
         IdentifierTypeId = src.IdentifierTypeId,
         IdentifierValue = src.IdentifierValue,
         RestrictionId = src.RestrictionId,
+        Canton = src.Canton,
+        Municipality = src.Municipality,
+        LogToolTypeId = src.LogToolTypeId,
         NationalInterest = src.NationalInterest,
         TopBedrockIntersected = src.TopBedrockIntersected,
         HasGroundwater = src.HasGroundwater,
@@ -405,6 +445,25 @@ public class FilterService : IFilterService
         if (filterRequest.RestrictionId != null && filterRequest.RestrictionId.Any())
         {
             query = query.Where(b => b.RestrictionId.HasValue && filterRequest.RestrictionId.Contains(b.RestrictionId.Value));
+        }
+
+        if (filterRequest.Canton != null && filterRequest.Canton.Any())
+        {
+            query = query.Where(b => b.Canton != null && filterRequest.Canton.Contains(b.Canton));
+        }
+
+        if (filterRequest.Municipality != null && filterRequest.Municipality.Any())
+        {
+            query = query.Where(b => b.Municipality != null && filterRequest.Municipality.Contains(b.Municipality));
+        }
+
+        // Nested property filters (requires joining with related tables)
+        if (filterRequest.LogToolTypeId != null && filterRequest.LogToolTypeId.Any())
+        {
+            query = query.Where(b =>
+                context.LogRuns.Any(lr => lr.BoreholeId == b.Id
+                    && context.LogFiles.Any(lf => lf.LogRunId == lr.Id
+                        && lf.LogFileToolTypeCodes!.Any(t => filterRequest.LogToolTypeId.Contains(t.CodelistId)))));
         }
 
         // Identifier filters — strict same-row semantics: when both type and value
