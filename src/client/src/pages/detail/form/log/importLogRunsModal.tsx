@@ -193,11 +193,6 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
             {runNumbers.map(runNumber => (
               <Stack key={runNumber} gap={0.5}>
                 <Typography variant="h6">{t("attachmentsForRun", { runNumber })}</Typography>
-                {requiredFilesPerRun[runNumber]?.length > 0 && (
-                  <Typography variant="body2" color="text.secondary">
-                    {t("expectedFiles", { files: requiredFilesPerRun[runNumber].join(", ") })}
-                  </Typography>
-                )}
                 <FileDropzone
                   onChange={files => {
                     setAttachmentsPerRun(prev => ({ ...prev, [runNumber]: files }));

@@ -59,6 +59,8 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
 
   const fileSizeLabel = useMemo(() => {
     if (maxFileSize === largeMaxFileSizeBytes) return FileSizeLimit.Large;
+    const gb = maxFileSize / 1_000_000_000;
+    if (gb >= 1) return `${gb} GB`;
     const mb = maxFileSize / 1_000_000;
     return mb >= 1 ? `${mb} MB` : `${maxFileSize / 1_000} KB`;
   }, [maxFileSize]);
@@ -150,9 +152,17 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
     borderRadius: theme.spacing(0.5),
   } as const;
 
+  const allExpectedFilesProvided = useMemo(() => {
+    if (!expectedFileNames || expectedFileNames.length === 0) return false;
+    const providedSet = new Set(files.map(f => f.name.toLowerCase()));
+    return expectedFileNames.every(n => providedSet.has(n.toLowerCase()));
+  }, [expectedFileNames, files]);
+
+  const showDropzone = (files.length === 0 || multiple) && !allExpectedFilesProvided;
+
   return (
     <Stack gap={1}>
-      {(files.length === 0 || multiple) && (
+      {showDropzone && (
         <Box
           {...getRootProps({
             style,
@@ -165,10 +175,24 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
           <input {...getInputProps()} data-cy="file-dropzone" />
           <Stack direction={"row"} gap={1.5} sx={{ color: theme.palette.primary.main }}>
             <CloudUpload />
-            <Typography variant="body2">{t("fileDropzoneText1")}</Typography>
+            <Typography variant="body2">{t("fileDropzoneText")}</Typography>
           </Stack>
+          {expectedFileNames && expectedFileNames.length > 0 ? (
+            <Typography variant="body2" color={theme.palette.buttonStates.outlined.disabled.color}>
+              {t("expectedFiles", { files: expectedFileNames.join(", ") })}
+            </Typography>
+          ) : (
+            accept && (
+              <Typography variant="body2" color={theme.palette.buttonStates.outlined.disabled.color}>
+                {t("expectedFileTypes", {
+                  count: Object.values(accept).flat().length,
+                  types: Object.values(accept).flat().join(", "),
+                })}
+              </Typography>
+            )
+          )}
           <Typography variant="body2" color={theme.palette.buttonStates.outlined.disabled.color}>
-            {t("fileDropzoneText2")}
+            {t("maxFileSize", { size: fileSizeLabel })}
           </Typography>
           {error && (
             <Typography variant="body2" color={theme.palette.error.main}>
