@@ -181,7 +181,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         [FromQuery] int limit = 10,
         [FromBody] FilterRequest? filterRequest = null)
     {
-        const int minQueryLength = 2;
+        const int minQueryLength = 1;
         const int maxLimit = 50;
 
         if (string.IsNullOrWhiteSpace(query) || query.Length < minQueryLength)

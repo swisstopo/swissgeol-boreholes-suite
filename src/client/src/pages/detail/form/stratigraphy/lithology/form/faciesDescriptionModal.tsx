@@ -35,7 +35,11 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
     }
   }, [description, formMethods]);
 
-  const closeDialog = async () => {
+  const cancelDialog = () => {
+    updateFaciesDescription(description as FaciesDescription, false);
+  };
+
+  const applyDialog = async () => {
     const isValid = await formMethods.trigger();
     if (!isDirty || isValid) {
       const values = getValues();
@@ -53,8 +57,9 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
     <FormDialog
       open={description !== undefined}
       title={t("facies_description")}
-      onClose={closeDialog}
-      isCloseDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
+      onClose={cancelDialog}
+      onApply={applyDialog}
+      isApplyDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
       <FormProvider {...formMethods}>
         <BoreholesCard data-cy="facies-description-basic-data" title={t("basicData")}>
           <FormContainer>
