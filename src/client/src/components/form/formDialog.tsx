@@ -18,6 +18,7 @@ interface FormDialogProps {
   onClose: () => void;
   isCloseDisabled?: boolean;
   actions?: FormDialogAction[];
+  headerAction?: ReactNode;
   children: ReactNode;
 }
 
@@ -27,6 +28,7 @@ export const FormDialog: FC<FormDialogProps> = ({
   onClose,
   isCloseDisabled = false,
   actions,
+  headerAction,
   children,
 }) => (
   <Dialog open={open} maxWidth={false}>
@@ -34,6 +36,7 @@ export const FormDialog: FC<FormDialogProps> = ({
       <Typography variant="h4" sx={{ flexGrow: 1 }}>
         {title}
       </Typography>
+      {headerAction}
     </DialogHeaderContainer>
     <DialogMainContent
       sx={{ px: 7.5, py: 3, width: "1160px", maxWidth: "100%", backgroundColor: theme.palette.background.lightgrey }}>

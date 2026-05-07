@@ -81,81 +81,81 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
     }
   };
 
+  const rockTypeToggle = (
+    <Controller
+      name="isUnconsolidated"
+      control={formMethods.control}
+      defaultValue={lithology?.isUnconsolidated === undefined ? true : lithology.isUnconsolidated}
+      render={({ field }) => (
+        <ToggleButtonGroup
+          value={field.value === null ? "unspecified" : field.value}
+          onChange={(_, newToggleValue: RockTypeToggleValue | null) => {
+            if (newToggleValue === null) return; // user clicked the active button — ignore deselect
+            const newValue: boolean | null = newToggleValue === "unspecified" ? null : newToggleValue;
+            showPrompt(
+              t("switchUnconsolidatedMessage", {
+                current: t(labelKey(field.value)),
+                new: t(labelKey(newToggleValue)),
+              }),
+              [
+                {
+                  label: "cancel",
+                  action: () => {},
+                },
+                {
+                  label: "continue",
+                  variant: "contained",
+                  action: () => {
+                    const currentValues = formMethods.getValues();
+                    formMethods.reset({
+                      id: currentValues.id,
+                      stratigraphyId: currentValues.stratigraphyId,
+                      fromDepth: currentValues.fromDepth,
+                      toDepth: currentValues.toDepth,
+                      isUnconsolidated: newValue,
+                      hasBedding: false,
+                      lithologyDescriptions: [
+                        {
+                          id: 0,
+                          lithologyId: currentValues.id,
+                          isFirst: true,
+                        },
+                      ],
+                      notes: "",
+                    } as Lithology);
+                  },
+                },
+              ],
+            );
+          }}
+          exclusive
+          sx={{
+            boxShadow: "none",
+            border: `1px solid ${theme.palette.border.light}`,
+          }}>
+          <ToggleButton value={true}>
+            <Typography>{capitalizeFirstLetter(t("unconsolidated"))}</Typography>
+          </ToggleButton>
+          <ToggleButton value={false}>
+            <Typography>{capitalizeFirstLetter(t("consolidated"))}</Typography>
+          </ToggleButton>
+          <ToggleButton value="unspecified">
+            <Typography>{capitalizeFirstLetter(t("unspecified"))}</Typography>
+          </ToggleButton>
+        </ToggleButtonGroup>
+      )}
+    />
+  );
+
   return (
     <FormDialog
       open={lithology !== undefined}
       title={t("lithology")}
       onClose={closeDialog}
-      isCloseDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
+      isCloseDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}
+      headerAction={rockTypeToggle}>
       <FormProvider {...formMethods}>
-        <BoreholesCard
-          data-cy="lithology-basic-data"
-          title={t("basicData")}
-          action={
-            <Controller
-              name="isUnconsolidated"
-              control={formMethods.control}
-              defaultValue={lithology?.isUnconsolidated === undefined ? true : lithology.isUnconsolidated}
-              render={({ field }) => (
-                <ToggleButtonGroup
-                  value={field.value === null ? "unspecified" : field.value}
-                  onChange={(_, newToggleValue: RockTypeToggleValue | null) => {
-                    if (newToggleValue === null) return; // user clicked the active button — ignore deselect
-                    const newValue: boolean | null = newToggleValue === "unspecified" ? null : newToggleValue;
-                    showPrompt(
-                      t("switchUnconsolidatedMessage", {
-                        current: t(labelKey(field.value)),
-                        new: t(labelKey(newToggleValue)),
-                      }),
-                      [
-                        {
-                          label: "cancel",
-                          action: () => {},
-                        },
-                        {
-                          label: "continue",
-                          variant: "contained",
-                          action: () => {
-                            const currentValues = formMethods.getValues();
-                            formMethods.reset({
-                              id: currentValues.id,
-                              stratigraphyId: currentValues.stratigraphyId,
-                              fromDepth: currentValues.fromDepth,
-                              toDepth: currentValues.toDepth,
-                              isUnconsolidated: newValue,
-                              hasBedding: false,
-                              lithologyDescriptions: [
-                                {
-                                  id: 0,
-                                  lithologyId: currentValues.id,
-                                  isFirst: true,
-                                },
-                              ],
-                              notes: "",
-                            } as Lithology);
-                          },
-                        },
-                      ],
-                    );
-                  }}
-                  exclusive
-                  sx={{
-                    boxShadow: "none",
-                    border: `1px solid ${theme.palette.border.light}`,
-                  }}>
-                  <ToggleButton value={true}>
-                    <Typography>{capitalizeFirstLetter(t("unconsolidated"))}</Typography>
-                  </ToggleButton>
-                  <ToggleButton value={false}>
-                    <Typography>{capitalizeFirstLetter(t("consolidated"))}</Typography>
-                  </ToggleButton>
-                  <ToggleButton value="unspecified">
-                    <Typography>{capitalizeFirstLetter(t("unspecified"))}</Typography>
-                  </ToggleButton>
-                </ToggleButtonGroup>
-              )}
-            />
-          }>
+        <BoreholesCard data-cy="lithology-basic-data" title={t("basicData")}>
           <FormContainer>
             <FormContainer direction={"row"}>
               <FormInput
