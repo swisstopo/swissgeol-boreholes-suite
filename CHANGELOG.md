@@ -8,17 +8,21 @@
 - Borehole name and sub route are now displayed in the document title.
 
 ### Changed
-- Filters are now organized in new sections. Filters for attachments and LOG were added.
+- Filters are now organized in new sections. Filters for attachments, LOG and municipalities were added.
 - When the main map is fitted to the extent of the (filtered) boreholes, a padding is applied to the extent.
 - Filter UI was redesigned and now supports multiple selections and chips per selected filter value.
 - Upgraded swissgeol OCR service to version 1.1.4.
 - Upgraded swissgeol Data Extraction service to version 1.0.162.
 - The database tables `boreholeFiles` and  `files` were merged into one table `profiles`.
+- Creating an empty stratigraphy now opens a modal that prompts for the name; the stratigraphy is created on confirmation and the user is taken straight to it.
 - Lithology rock type can now be left unspecified (in addition to unconsolidated and consolidated). Stratigraphy extraction creates lithologies as unspecified by default.
 
 ### Fixed
 - Only one workgroup could be added at once. Only with a complete refresh of the page another workgroup could be added.
 - The FormDialog could not be closed when the form was in an invalid state. Cancel and Apply buttons now replace the single Close button.
+- Additional identifiers are now ordered alphabetically by ID type on save.
+- Fixed bug where the same identifier type could be added multiple times to a borehole.
+- When saving fails on the identifiers panel due to missing required fields, the form now scrolls to the first error.
 
 ## v2.1.1568 - 2026-04-23
 

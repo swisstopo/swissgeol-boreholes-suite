@@ -111,6 +111,25 @@ public class FilterRequest
     public IEnumerable<int>? RestrictionId { get; set; }
 
     /// <summary>
+    /// Gets or sets the canton filter. Boreholes match if their canton is in this set.
+    /// </summary>
+    [MaxLength(100)]
+    public IEnumerable<string>? Canton { get; set; }
+
+    /// <summary>
+    /// Gets or sets the municipality filter. Boreholes match if their municipality is in this set.
+    /// </summary>
+    [MaxLength(100)]
+    public IEnumerable<string>? Municipality { get; set; }
+
+    /// <summary>
+    /// Gets or sets the log tool type codelist IDs filter. Boreholes match if any of their log files
+    /// have at least one of these tool type codelist IDs in their <see cref="LogFile.LogFileToolTypeCodes"/>.
+    /// </summary>
+    [MaxLength(100)]
+    public IEnumerable<int>? LogToolTypeId { get; set; }
+
+    /// <summary>
     /// Gets or sets the identifier type (codelist) IDs filter.
     /// Boreholes match if at least one <see cref="BoreholeCodelist"/> row has a
     /// <c>CodelistId</c> in this set; combined with <see cref="IdentifierValue"/>
