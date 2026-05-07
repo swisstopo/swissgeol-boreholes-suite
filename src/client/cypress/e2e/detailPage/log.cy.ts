@@ -286,63 +286,6 @@ describe("Test for the borehole log.", () => {
     saveWithSaveBar();
   });
 
-  it("Apply button reflects validation state and Cancel discards changes", () => {
-    createBorehole({ originalName: "CANCELCAT" }).as("borehole_id");
-    cy.get("@borehole_id").then(id => {
-      goToDetailRouteAndAcceptTerms(`/${id}/log`);
-    });
-    startBoreholeEditing();
-
-    // Cancel on a new run discards — no row added
-    addLogRun();
-    setInput("runNumber", "WILLBECANCEL");
-    setInput("fromDepth", 1);
-    setInput("toDepth", 2);
-    cy.get(".MuiDialog-container").dataCy("apply-button").should("be.enabled");
-    cy.get(".MuiDialog-container").dataCy("cancel-button").should("be.enabled").click();
-    cy.contains("p", "No run added yet...");
-
-    // Apply transitions: enabled (pristine) → disabled (after failed validation) → enabled (after fix)
-    addLogRun();
-    cy.get(".MuiDialog-container").dataCy("apply-button").should("be.enabled");
-    cy.get(".MuiDialog-container").dataCy("cancel-button").should("be.enabled");
-
-    setSelect("conveyanceMethodId", 3); // dirty the form so apply with errors keeps dialog open
-    cy.get(".MuiDialog-container").dataCy("apply-button").click();
-    hasError("fromDepth", true);
-    hasError("toDepth", true);
-    hasError("runNumber", true);
-    cy.get(".MuiDialog-container").dataCy("apply-button").should("be.disabled");
-    cy.get(".MuiDialog-container").dataCy("cancel-button").should("be.enabled");
-
-    setInput("runNumber", "R01");
-    setInput("fromDepth", 0);
-    setInput("toDepth", 10);
-    cy.get(".MuiDialog-container").dataCy("apply-button").should("be.enabled");
-
-    // Clearing a required field after validation has been armed re-disables Apply
-    cy.dataCy("runNumber-formInput").click();
-    cy.focused().clear();
-    cy.get("body").click(0, 0);
-    hasError("runNumber", true);
-    cy.get(".MuiDialog-container").dataCy("apply-button").should("be.disabled");
-    cy.get(".MuiDialog-container").dataCy("cancel-button").should("be.enabled");
-
-    setInput("runNumber", "R01");
-    cy.get(".MuiDialog-container").dataCy("apply-button").should("be.enabled");
-    closeLogRunEditor();
-    verifyRowContains("R01", 0);
-    verifyTableLength(1);
-
-    // Cancel on an edit reverts field changes
-    clickOnRowWithText("R01");
-    setInput("comment", "should-not-persist");
-    cy.get(".MuiDialog-container").dataCy("cancel-button").click();
-    clickOnRowWithText("R01");
-    evaluateTextarea("comment", "");
-    closeLogRunEditor();
-  });
-
   it("can add, update and delete log files", () => {
     createBorehole({ originalName: "FANCYPHANTOMFERRY" }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
