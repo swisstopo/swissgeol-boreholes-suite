@@ -249,7 +249,7 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
 
     private ObjectResult NameMustBeUniqueProblem()
     {
-        var result = (ObjectResult)Problem(detail: "Name must be unique", type: ProblemType.UserError);
+        var result = Problem(detail: "Name must be unique", type: ProblemType.UserError);
         ((ProblemDetails)result.Value!).Extensions["messageKey"] = "mustBeUnique";
         return result;
     }
