@@ -33,7 +33,11 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
     }
   }, [description, formMethods]);
 
-  const closeDialog = async () => {
+  const cancelDialog = () => {
+    updateLithologicalDescription(description as LithologicalDescription, false);
+  };
+
+  const applyDialog = async () => {
     const isValid = await formMethods.trigger();
     if (!isDirty || isValid) {
       const values = getValues();
@@ -48,8 +52,9 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
     <FormDialog
       open={description !== undefined}
       title={t("lithological_description")}
-      onClose={closeDialog}
-      isCloseDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
+      onClose={cancelDialog}
+      onApply={applyDialog}
+      isApplyDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
       <FormProvider {...formMethods}>
         <BoreholesCard data-cy="lithological-description-basic-data" title={t("basicData")}>
           <FormContainer>
