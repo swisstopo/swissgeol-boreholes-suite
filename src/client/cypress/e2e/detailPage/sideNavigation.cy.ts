@@ -71,6 +71,9 @@ describe("Test for the detail page side navigation.", () => {
     cy.dataCy("stratigraphy-name-formInput").type("AUTODESPERADO");
     cy.dataCy("addemptystratigraphy-submit-button").click();
     cy.wait(["@stratigraphy_POST", "@stratigraphy_by_borehole_GET"]);
+    // Wait for the dialog (and its backdrop) to fully unmount; otherwise the next sidebar
+    // click can land on the fading backdrop instead of the menu item.
+    cy.dataCy("add-empty-stratigraphy-dialog").should("not.exist");
     isActiveMenuItem(SidebarMenuItem.stratigraphy, true);
 
     // Add completion
