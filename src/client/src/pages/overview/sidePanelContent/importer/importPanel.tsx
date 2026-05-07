@@ -131,7 +131,7 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
           {t("import")}
         </Button>
       </Stack>
-      <LoadingBackdrop open={isLoading} sx={{ zIndex: theme.zIndex.modal + 1 }} />
+      {isLoading && <LoadingBackdrop open={isLoading} sx={{ zIndex: theme.zIndex.modal + 1 }} />}
     </Box>
   );
 };

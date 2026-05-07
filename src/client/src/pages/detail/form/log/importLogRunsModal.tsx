@@ -157,7 +157,7 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
           </FormContainer>
         </BoreholesCard>
       </Fragment>
-      <LoadingBackdrop open={isImportRunning} />
+      {isImportRunning && <LoadingBackdrop open={isImportRunning} />}
     </FormDialog>
   );
 };

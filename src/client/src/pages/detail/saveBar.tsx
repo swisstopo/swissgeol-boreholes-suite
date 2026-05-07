@@ -50,7 +50,7 @@ export const SaveBar = () => {
         <DeleteButton disabled={!hasChanges || isSaving} label="discardchanges" onClick={triggerReset} />
         <SaveButton disabled={!hasChanges || isSaving} variant="contained" onClick={triggerSave} />
       </Stack>
-      <LoadingBackdrop open={isSaving} sx={{ zIndex: theme.zIndex.modal }} />
+      {isSaving && <LoadingBackdrop open={isSaving} sx={{ zIndex: theme.zIndex.modal }} />}
     </Stack>
   );
 };
