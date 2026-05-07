@@ -85,7 +85,7 @@ export const getFileExtension = (fileName?: string, placeholder?: string): strin
   return extension ? extension.toLowerCase() : (placeholder ?? "");
 };
 
-export interface LogFileCsvInfo {
+interface LogFileCsvInfo {
   requiredFilesPerRun: Record<string, string[]>;
 }
 
