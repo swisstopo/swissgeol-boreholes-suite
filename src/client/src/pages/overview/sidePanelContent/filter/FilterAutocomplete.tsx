@@ -18,7 +18,6 @@ interface FilterAutocompleteProps {
 }
 
 export const FilterAutocomplete: FC<FilterAutocompleteProps> = ({ item, filterValue, onUpdate, filterRequest }) => {
-  console.log("Rendering FilterAutocomplete", { item, filterValue });
   const { t } = useTranslation();
   const [inputValue, setInputValue] = useState<string>(filterValue ?? "");
 
