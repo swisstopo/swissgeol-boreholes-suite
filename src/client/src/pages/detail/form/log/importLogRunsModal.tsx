@@ -1,9 +1,9 @@
 import { FC, Fragment, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Backdrop, CircularProgress, Stack, Typography } from "@mui/material";
-import { theme } from "../../../../AppTheme.ts";
+import { Stack, Typography } from "@mui/material";
 import { BoreholesCard } from "../../../../components/boreholesCard.tsx";
 import { FormContainer, FormDialog } from "../../../../components/form/form.ts";
+import { LoadingBackdrop } from "../../../../components/loadingBackdrop.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { FileDropzone } from "./fileDropzone.tsx";
 import { LogImportError, LogImportValidationError, useImportLogs } from "./log.ts";
@@ -177,13 +177,7 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
           </FormContainer>
         </BoreholesCard>
       </Fragment>
-      {isImportRunning && (
-        <Backdrop
-          sx={{ color: theme.palette.primary.main, backgroundColor: theme.palette.background.backdrop }}
-          open={isImportRunning}>
-          <CircularProgress color="inherit" />
-        </Backdrop>
-      )}
+      {isImportRunning && <LoadingBackdrop open={isImportRunning} />}
     </FormDialog>
   );
 };
