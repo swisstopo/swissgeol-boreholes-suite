@@ -8,6 +8,7 @@ import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
 import { useResetTabStatus } from "../../../hooks/useResetTabStatus.ts";
 import { useLabelingContext } from "../labeling/labelingContext.tsx";
 import { SaveContext } from "../saveContext.tsx";
+import { scrollToFirstError } from "./formErrorUtils.ts";
 import { TabName } from "./workflow/workflow.ts";
 
 interface BaseFormProps<T extends FieldValues> {
@@ -58,7 +59,10 @@ export const BaseForm = <T extends FieldValues>({
   const resetAndSubmitForm = useCallback(async () => {
     if (triggerValidationBeforeSave) {
       const isValid = await formMethods.trigger();
-      if (!isValid) return false;
+      if (!isValid) {
+        scrollToFirstError(formMethods.formState.errors);
+        return false;
+      }
     }
     const currentValues = getValues();
     reset(currentValues);
