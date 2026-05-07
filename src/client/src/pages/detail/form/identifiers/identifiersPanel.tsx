@@ -36,7 +36,7 @@ export const IdentifiersPanel: FC = () => {
   });
 
   // Syncs the display order of the identifier cards with the borehole data after saving.
-  // Alphabetical order is applied it the useBorehole hook.
+  // Alphabetical order is applied in the useBorehole hook.
   useEffect(() => {
     if (borehole?.boreholeCodelists) {
       formMethods.reset({ boreholeCodelists: borehole.boreholeCodelists });
