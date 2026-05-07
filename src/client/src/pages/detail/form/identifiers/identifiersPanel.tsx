@@ -1,5 +1,5 @@
 import { FC, useCallback, useContext, useMemo } from "react";
-import { useFieldArray, useForm } from "react-hook-form";
+import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { Plus, Trash2 } from "lucide-react";
@@ -40,7 +40,10 @@ export const IdentifiersPanel: FC = () => {
     control: formMethods.control,
   });
 
-  const watchedCodelists = formMethods.watch("boreholeCodelists");
+  const watchedCodelists = useWatch({
+    control: formMethods.control,
+    name: "boreholeCodelists",
+  });
 
   // Group field indices by codelistId to render one card per ID Type
   const groupedByCodelistId = useMemo(() => {
