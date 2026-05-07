@@ -71,7 +71,12 @@ export const prepareLithologyForSubmit = (values: Lithology) => {
   }
 };
 
-export const validateLithologyUnconValues = (descriptions: LithologyDescription[] | undefined, errors: FormErrors) => {
+export const validateLithologyUnconValues = (
+  descriptions: LithologyDescription[] | undefined,
+  errors: FormErrors,
+  isUnconsolidated: boolean | null | undefined,
+) => {
+  if (isUnconsolidated !== true) return;
   if (!descriptions || descriptions.length === 0) return;
 
   const index = descriptions?.[0].isFirst ? 0 : 1;

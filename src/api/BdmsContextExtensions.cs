@@ -936,9 +936,19 @@ public static class BdmsContextExtensions
             foreach (var seed in range)
             {
                 var lithology = SeededLithologies(seed);
-                lithology.IsUnconsolidated = localIndex < switchIndex;
 
-                if (lithology.IsUnconsolidated)
+                // ~20% of seeded lithologies are unspecified (null), the rest split
+                // around switchIndex into unconsolidated (true) and consolidated (false).
+                if (random.NextDouble() < 0.2)
+                {
+                    lithology.IsUnconsolidated = null;
+                }
+                else
+                {
+                    lithology.IsUnconsolidated = localIndex < switchIndex;
+                }
+
+                if (lithology.IsUnconsolidated == true)
                 {
                     lithology.CompactnessId = random.NextDouble() < 0.2 ? null : compactnessIds[random.Next(compactnessIds.Count)];
                     lithology.CohesionId = random.NextDouble() < 0.2 ? null : cohesionIds[random.Next(cohesionIds.Count)];
@@ -1032,15 +1042,15 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.GrainAngularityCodelists, _ => new Collection<Codelist>())
             .RuleFor(o => o.LithologyUnconDebrisCodelistIds, _ => new List<int>())
             .RuleFor(o => o.LithologyUnconDebrisCodelists, _ => new Collection<Codelist>())
-            .RuleFor(o => o.LithologyConId, (f, ld) => !ld.Lithology.IsUnconsolidated ? f.PickRandom(lithologyConIds) : null)
+            .RuleFor(o => o.LithologyConId, (f, ld) => ld.Lithology.IsUnconsolidated == false ? f.PickRandom(lithologyConIds) : null)
             .RuleFor(o => o.LithologyCon, _ => default!)
-            .RuleFor(o => o.GrainSizeId, (f, ld) => !ld.Lithology.IsUnconsolidated ? f.PickRandom(grainSizeIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.GrainSizeId, (f, ld) => ld.Lithology.IsUnconsolidated == false ? f.PickRandom(grainSizeIds).OrNull(f, .2f) : null)
             .RuleFor(o => o.GrainSize, _ => default!)
-            .RuleFor(o => o.GrainAngularityId, (f, ld) => !ld.Lithology.IsUnconsolidated ? f.PickRandom(grainAngularityIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.GrainAngularityId, (f, ld) => ld.Lithology.IsUnconsolidated == false ? f.PickRandom(grainAngularityIds).OrNull(f, .2f) : null)
             .RuleFor(o => o.GrainAngularity, _ => default!)
-            .RuleFor(o => o.GradationId, (f, ld) => !ld.Lithology.IsUnconsolidated ? f.PickRandom(gradationIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.GradationId, (f, ld) => ld.Lithology.IsUnconsolidated == false ? f.PickRandom(gradationIds).OrNull(f, .2f) : null)
             .RuleFor(o => o.Gradation, _ => default!)
-            .RuleFor(o => o.CementationId, (f, ld) => !ld.Lithology.IsUnconsolidated ? f.PickRandom(cementationIds).OrNull(f, .2f) : null)
+            .RuleFor(o => o.CementationId, (f, ld) => ld.Lithology.IsUnconsolidated == false ? f.PickRandom(cementationIds).OrNull(f, .2f) : null)
             .RuleFor(o => o.Cementation, _ => default!)
             .RuleFor(o => o.ComponentConParticleCodelistIds, _ => new List<int>())
             .RuleFor(o => o.ComponentConParticleCodelists, _ => new Collection<Codelist>())
@@ -1101,7 +1111,7 @@ public static class BdmsContextExtensions
             description.LithologyId = lithology.Id;
             description.IsFirst = true;
 
-            if (lithology.IsUnconsolidated)
+            if (lithology.IsUnconsolidated == true)
             {
                 SetUnconsolidatedIds(i, description);
             }
@@ -1114,7 +1124,7 @@ public static class BdmsContextExtensions
                 secondDescription.LithologyId = lithology.Id;
                 secondDescription.IsFirst = false;
 
-                if (lithology.IsUnconsolidated)
+                if (lithology.IsUnconsolidated == true)
                 {
                     SetUnconsolidatedIds(i, secondDescription, 10000);
                 }

@@ -564,6 +564,7 @@
   "unsavedChanges": "Unsaved changes",
   "unsavedChangesMessage": "{{where}}: You have unsaved changes. How would you like to proceed?",
   "unselectAll": "Unselect all",
+  "unspecified": "no specification",
   "upload": "Upload",
   "uploadPhotosAsAttachments": "Photos need to be uploaded in tab \"Attachments\".",
   "uploaded": "Uploaded",

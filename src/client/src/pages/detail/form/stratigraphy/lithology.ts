@@ -58,7 +58,7 @@ export interface LithologyDescription {
 }
 
 export interface Lithology extends BaseLayer {
-  isUnconsolidated: boolean;
+  isUnconsolidated: boolean | null;
   hasBedding: boolean;
   share?: number;
   shareInverse?: number;

@@ -565,6 +565,7 @@
   "unsavedChanges": "Ungespeicherte Änderungen",
   "unsavedChangesMessage": "{{where}}: Sie haben ungespeicherte Änderungen. Wie möchten Sie fortfahren?",
   "unselectAll": "Alle abwählen",
+  "unspecified": "keine Angabe",
   "upload": "Hochladen",
   "uploadPhotosAsAttachments": "Fotos müssen im Tab \"Anhänge\" hochgeladen werden.",
   "uploaded": "Hochgeladen",

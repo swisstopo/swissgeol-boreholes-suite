@@ -265,6 +265,95 @@ public class LithologyControllerTest
     }
 
     [TestMethod]
+    public async Task CreateUnspecifiedLithologyAsync()
+    {
+        var stratigraphyId = context.Stratigraphies.First().Id;
+        var lithology = GetCompleteLithology(stratigraphyId);
+        lithology.IsUnconsolidated = null;
+
+        var response = await controller.CreateAsync(lithology);
+        ActionResultAssert.IsOk(response.Result);
+        var okObjectResult = response.Result as OkObjectResult;
+        Assert.IsNotNull(okObjectResult);
+        var createdLithology = okObjectResult.Value as Lithology;
+        Assert.IsNotNull(createdLithology);
+        Assert.IsNull(createdLithology.IsUnconsolidated);
+
+        // Both unconsolidated-side and consolidated-side fields must be cleared.
+        Assert.IsNull(createdLithology.CompactnessId);
+        Assert.IsNull(createdLithology.CohesionId);
+        Assert.IsNull(createdLithology.HumidityId);
+        Assert.IsNull(createdLithology.ConsistencyId);
+        Assert.IsNull(createdLithology.PlasticityId);
+        Assert.IsNull(createdLithology.UscsDeterminationId);
+        Assert.AreEqual(0, createdLithology.LithologyUscsTypeCodes.Count);
+        Assert.AreEqual(0, createdLithology.LithologyRockConditionCodes.Count);
+        Assert.AreEqual(0, createdLithology.LithologyTextureMetaCodes.Count);
+
+        var firstLithologyDescription = createdLithology.LithologyDescriptions.Single(ld => ld.IsFirst);
+        Assert.IsNull(firstLithologyDescription.LithologyUnconMainId);
+        Assert.IsNull(firstLithologyDescription.LithologyUncon2Id);
+        Assert.IsNull(firstLithologyDescription.LithologyConId);
+        Assert.IsNull(firstLithologyDescription.GrainSizeId);
+        Assert.IsNull(firstLithologyDescription.GrainAngularityId);
+        Assert.IsNull(firstLithologyDescription.GradationId);
+        Assert.IsNull(firstLithologyDescription.CementationId);
+        Assert.IsFalse(firstLithologyDescription.HasStriae);
+        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionComponentUnconOrganicCodes.Count);
+        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionComponentUnconDebrisCodes.Count);
+        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionGrainShapeCodes.Count);
+        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionGrainAngularityCodes.Count);
+        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionLithologyUnconDebrisCodes.Count);
+        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionComponentConParticleCodes.Count);
+        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionComponentConMineralCodes.Count);
+        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionStructureSynGenCodes.Count);
+        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionStructurePostGenCodes.Count);
+
+        var deleteResponse = await controller.DeleteAsync(createdLithology.Id);
+        ActionResultAssert.IsOk(deleteResponse);
+    }
+
+    [TestMethod]
+    public async Task EditLithologyToUnspecifiedClearsBothSides()
+    {
+        var stratigraphyId = context.Stratigraphies.First().Id;
+        var existingUnconsolidatedLithology = GetCompleteLithology(stratigraphyId);
+        var createResponse = await controller.CreateAsync(existingUnconsolidatedLithology);
+        ActionResultAssert.IsOk(createResponse.Result);
+        existingUnconsolidatedLithology = (createResponse.Result as OkObjectResult).Value as Lithology;
+
+        var editPayload = new Lithology
+        {
+            Id = existingUnconsolidatedLithology.Id,
+            UpdatedById = 3,
+            StratigraphyId = existingUnconsolidatedLithology.StratigraphyId,
+            FromDepth = existingUnconsolidatedLithology.FromDepth,
+            ToDepth = existingUnconsolidatedLithology.ToDepth,
+            IsUnconsolidated = null,
+            HasBedding = false,
+            Notes = "Switched to unspecified",
+            LithologyDescriptions = existingUnconsolidatedLithology.LithologyDescriptions.Where(ld => ld.IsFirst).ToList(),
+        };
+
+        var response = await controller.EditAsync(editPayload);
+        ActionResultAssert.IsOk(response.Result);
+        var updatedLithology = (response.Result as OkObjectResult).Value as Lithology;
+
+        Assert.IsNull(updatedLithology.IsUnconsolidated);
+        Assert.AreEqual(0, updatedLithology.UscsTypeCodelistIds.Count);
+        Assert.AreEqual(0, updatedLithology.RockConditionCodelistIds.Count);
+        Assert.AreEqual(0, updatedLithology.TextureMetaCodelistIds.Count);
+        Assert.IsNull(updatedLithology.CompactnessId);
+        Assert.IsNull(updatedLithology.CohesionId);
+        Assert.IsNull(updatedLithology.HumidityId);
+        Assert.IsNull(updatedLithology.ConsistencyId);
+        Assert.IsNull(updatedLithology.PlasticityId);
+        Assert.IsNull(updatedLithology.UscsDeterminationId);
+
+        await controller.DeleteAsync(updatedLithology.Id);
+    }
+
+    [TestMethod]
     public async Task DeleteAsyncWithandWithoutPermissions()
     {
         // Create a lithology to delete

@@ -104,31 +104,44 @@ const checkHasBedding = (hasBedding: boolean, share?: number) => {
 export const RockType = {
   unconsolidated: "Unconsolidated rock",
   consolidated: "Consolidated rock",
+  unspecified: "No specification",
 };
 
-export const isUnconsolidatedForm = (isUnconsolidated: boolean) => {
-  if (isUnconsolidated) {
+export const isUnconsolidatedForm = (isUnconsolidated: boolean | null) => {
+  if (isUnconsolidated === true) {
     cy.contains("button", RockType.unconsolidated).should("have.class", "Mui-selected");
     cy.contains("button", RockType.consolidated).should("not.have.class", "Mui-selected");
+    cy.contains("button", RockType.unspecified).should("not.have.class", "Mui-selected");
     cy.dataCy("lithologyDescriptions.0.lithologyUnconMainId-formSelect").should("exist");
     cy.dataCy("lithologyDescriptions.0.lithologyConId-formSelect").should("not.exist");
-  } else {
+  } else if (isUnconsolidated === false) {
     cy.contains("button", RockType.unconsolidated).should("not.have.class", "Mui-selected");
     cy.contains("button", RockType.consolidated).should("have.class", "Mui-selected");
+    cy.contains("button", RockType.unspecified).should("not.have.class", "Mui-selected");
     cy.dataCy("lithologyDescriptions.0.lithologyUnconMainId-formSelect").should("not.exist");
     cy.dataCy("lithologyDescriptions.0.lithologyConId-formSelect").should("exist");
+  } else {
+    cy.contains("button", RockType.unconsolidated).should("not.have.class", "Mui-selected");
+    cy.contains("button", RockType.consolidated).should("not.have.class", "Mui-selected");
+    cy.contains("button", RockType.unspecified).should("have.class", "Mui-selected");
+    cy.dataCy("lithologyDescriptions.0.lithologyUnconMainId-formSelect").should("not.exist");
+    cy.dataCy("lithologyDescriptions.0.lithologyConId-formSelect").should("not.exist");
   }
 };
 
-export const switchRockType = (newRockType: string, action: string) => {
-  const isUnconsolidated = newRockType === RockType.unconsolidated;
-  const otherRockType = isUnconsolidated ? RockType.consolidated : RockType.unconsolidated;
+const rockTypeFlag = (rockType: string): boolean | null => {
+  if (rockType === RockType.unconsolidated) return true;
+  if (rockType === RockType.consolidated) return false;
+  return null;
+};
+
+export const switchRockType = (currentRockType: string, newRockType: string, action: string) => {
   cy.contains("button", newRockType).click();
   handlePrompt(
-    `When switching from ${otherRockType.toLowerCase()} to ${newRockType.toLowerCase()} existing values in the form will be lost. Would you like to continue?`,
+    `When switching from ${currentRockType.toLowerCase()} to ${newRockType.toLowerCase()} existing values in the form will be lost. Would you like to continue?`,
     action,
   );
-  isUnconsolidatedForm((action === "Continue" && isUnconsolidated) || (action !== "Continue" && !isUnconsolidated));
+  isUnconsolidatedForm(rockTypeFlag(action === "Continue" ? newRockType : currentRockType));
 };
 
 const fillUnconsoldiateLithologyDescriptionForm = (values: UnconsolidatedLithologyDescriptionValues, index: number) => {
