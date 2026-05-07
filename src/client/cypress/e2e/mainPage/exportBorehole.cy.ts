@@ -473,8 +473,8 @@ describe("Test for exporting boreholes.", () => {
       cy.get('[data-cy="locationX-formCoordinate"] input').should("have.value", `2'646'000`);
       cy.get('[data-cy="locationY-formCoordinate"] input').should("have.value", `1'247'000`);
       navigateInSidebar(SidebarMenuItem.identifiers);
-      evaluateInput("boreholeCodelists.0.value", "w1");
-      evaluateInput("boreholeCodelists.1.value", "w2");
+      evaluateInput("boreholeCodelists.0.value", "w2"); // codelists where ordered alphabetically, so codelistId 2 is now at index 0
+      evaluateInput("boreholeCodelists.1.value", "w1");
     });
   });
 });
