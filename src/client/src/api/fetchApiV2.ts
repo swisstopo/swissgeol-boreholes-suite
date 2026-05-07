@@ -93,7 +93,11 @@ async function handleFetchError(response: Response) {
   if (typeof responseContent === "object" && responseContent !== null) {
     if (responseContent.type === "userError") {
       // This error type is ignored by the default mutation and query error handler in QueryClientInitializer in App.tsx and allows to handle the error individually
-      throw new ApiError(responseContent.detail || responseContent.message, response.status);
+      throw new ApiError(
+        responseContent.detail || responseContent.message,
+        response.status,
+        responseContent.messageKey,
+      );
     }
   }
   throw new Error(responseContent);

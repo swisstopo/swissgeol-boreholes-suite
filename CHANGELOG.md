@@ -14,6 +14,7 @@
 - Upgraded swissgeol OCR service to version 1.1.4.
 - Upgraded swissgeol Data Extraction service to version 1.0.162.
 - The database tables `boreholeFiles` and  `files` were merged into one table `profiles`.
+- Creating an empty stratigraphy now opens a modal that prompts for the name; the stratigraphy is created on confirmation and the user is taken straight to it.
 
 ### Fixed
 - Only one workgroup could be added at once. Only with a complete refresh of the page another workgroup could be added.
