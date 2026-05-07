@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useMemo } from "react";
+import { FC, useCallback, useContext, useEffect, useMemo } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
@@ -34,6 +34,14 @@ export const IdentifiersPanel: FC = () => {
       boreholeCodelists: borehole?.boreholeCodelists ?? [],
     },
   });
+
+  // Syncs the display order of the identifier cards with the borehole data after saving.
+  // Alphabetical order is applied it the useBorehole hook.
+  useEffect(() => {
+    if (borehole?.boreholeCodelists) {
+      formMethods.reset({ boreholeCodelists: borehole.boreholeCodelists });
+    }
+  }, [borehole?.boreholeCodelists, formMethods]);
 
   const { fields, append, remove } = useFieldArray<IdentifiersFormInputs, "boreholeCodelists">({
     name: "boreholeCodelists",

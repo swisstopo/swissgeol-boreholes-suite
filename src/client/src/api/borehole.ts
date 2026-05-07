@@ -1,7 +1,7 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FeatureCollection, Geometry } from "geojson";
-import { Codelist } from "../components/codelist.ts";
+import { Codelist, useCodelistDisplayValues } from "../components/codelist.ts";
 import { Photo } from "../pages/detail/attachments/tabs/photo.ts";
 import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
@@ -153,10 +153,17 @@ const canUserUpdateBoreholeStatus = async (id: number) =>
 export const boreholeQueryKey = "boreholes";
 
 export const useBorehole = (id: number) => {
+  const getCodelistName = useCodelistDisplayValues();
+
   return useQuery({
-    queryKey: [boreholeQueryKey, id],
+    queryKey: [boreholeQueryKey, id, getCodelistName],
     queryFn: async () => {
-      return await fetchBoreholeById(id);
+      const borehole = await fetchBoreholeById(id);
+      // Sort boreholeCodelists by codelist name for consistent display order in the UI
+      const orderedBoreholeCodelists = borehole.boreholeCodelists.sort((a, b) =>
+        getCodelistName(a.codelistId ?? 0).text.localeCompare(getCodelistName(b.codelistId ?? 0).text),
+      );
+      return { ...borehole, boreholeCodelists: orderedBoreholeCodelists };
     },
     enabled: !!id,
   });
