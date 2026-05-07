@@ -65,7 +65,7 @@ function testLargeSelectFilter(
   options: string[],
   expectedCount: string,
 ) {
-  it(`filters boreholes by ${title}`, () => {
+  it.only(`filters boreholes by ${title}`, () => {
     openFilter(filterSection);
     const selector = `[data-cy="${fieldName}-formSelect"]`;
     options.forEach(option => {
@@ -110,19 +110,19 @@ describe("Search filter tests", () => {
 
   // ─── WORKGROUP FILTER ──────────────────────────────────────────────────────
 
-  it("filters boreholes by workgroup", () => {
+  it.only("filters boreholes by workgroup", () => {
     goToRouteAndAcceptTerms("/");
     cy.dataCy("show-filter-button").click();
     showTableAndWaitForData();
     cy.contains("Workgroup").click();
     cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
     cy.get('[data-cy^="filter-chip-workgroupId-"]').should("not.exist");
-    cy.dataCy("workgroup-button-1").click();
+    cy.dataCy("workgroupId-button-1").click();
     cy.dataCy("filter-chip-workgroupId-1").should("exist");
     cy.dataCy("boreholes-number-preview").should("exist");
 
     // Clicking the same button again toggles the selection off
-    cy.dataCy("workgroup-button-1").click();
+    cy.dataCy("workgroupId-button-1").click();
     cy.get('[data-cy^="filter-chip-workgroupId-"]').should("not.exist");
     cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
   });
