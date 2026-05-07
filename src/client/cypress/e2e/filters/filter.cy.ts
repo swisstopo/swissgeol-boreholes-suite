@@ -110,7 +110,7 @@ describe("Search filter tests", () => {
 
   // ─── WORKGROUP FILTER ──────────────────────────────────────────────────────
 
-  it.only("filters boreholes by workgroup", () => {
+  it("filters boreholes by workgroup", () => {
     goToRouteAndAcceptTerms("/");
     cy.dataCy("show-filter-button").click();
     showTableAndWaitForData();
