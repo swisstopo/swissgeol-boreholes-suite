@@ -204,6 +204,9 @@ public class LogControllerTest : TestControllerBase
         var formFile = GetFormFileByContent(content, TestFileName);
         var response = await controller.UploadAsync(formFile, logRun.Id);
         ActionResultAssert.IsBadRequest(response);
+
+        var errorMessage = (string)((BadRequestObjectResult)response).Value!;
+        StringAssert.Contains(errorMessage, $"A file named '{TestFileName}' already exists in this log run.");
     }
 
     [TestMethod]
