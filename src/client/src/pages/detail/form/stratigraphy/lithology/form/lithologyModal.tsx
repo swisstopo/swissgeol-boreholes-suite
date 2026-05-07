@@ -22,13 +22,13 @@ interface LithologyEditModalProps {
   updateLithology: (lithology: Lithology, hasChanges: boolean) => void;
 }
 
-type RockTypeToggleValue = "unconsolidated" | "consolidated" | "unspecified";
+type RockTypeToggleValue = boolean | "unspecified";
 
-const toToggleValue = (v: boolean | null | undefined): RockTypeToggleValue =>
-  v === true ? "unconsolidated" : v === false ? "consolidated" : "unspecified";
-
-const fromToggleValue = (v: RockTypeToggleValue): boolean | null =>
-  v === "unconsolidated" ? true : v === "consolidated" ? false : null;
+const labelKey = (value: boolean | null | "unspecified"): "unconsolidated" | "consolidated" | "unspecified" => {
+  if (value === true) return "unconsolidated";
+  if (value === false) return "consolidated";
+  return "unspecified";
+};
 
 export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateLithology }) => {
   const { t } = useTranslation();
@@ -98,55 +98,58 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
               defaultValue={lithology?.isUnconsolidated === undefined ? true : lithology.isUnconsolidated}
               render={({ field }) => (
                 <ToggleButtonGroup
-                  value={toToggleValue(field.value)}
+                  value={field.value === null ? "unspecified" : field.value}
                   onChange={(_, newToggleValue: RockTypeToggleValue | null) => {
                     if (newToggleValue === null) return; // user clicked the active button — ignore deselect
-                    const newValue = fromToggleValue(newToggleValue);
-                    if (newValue === field.value) return;
-                    const currentLabel = toToggleValue(field.value);
-                    const newLabel = newToggleValue;
-                    showPrompt(t("switchUnconsolidatedMessage", { current: t(currentLabel), new: t(newLabel) }), [
-                      {
-                        label: "cancel",
-                        action: () => {},
-                      },
-                      {
-                        label: "continue",
-                        variant: "contained",
-                        action: () => {
-                          const currentValues = formMethods.getValues();
-                          formMethods.reset({
-                            id: currentValues.id,
-                            stratigraphyId: currentValues.stratigraphyId,
-                            fromDepth: currentValues.fromDepth,
-                            toDepth: currentValues.toDepth,
-                            isUnconsolidated: newValue,
-                            hasBedding: false,
-                            lithologyDescriptions: [
-                              {
-                                id: 0,
-                                lithologyId: currentValues.id,
-                                isFirst: true,
-                              },
-                            ],
-                            notes: "",
-                          } as Lithology);
+                    const newValue: boolean | null = newToggleValue === "unspecified" ? null : newToggleValue;
+                    showPrompt(
+                      t("switchUnconsolidatedMessage", {
+                        current: t(labelKey(field.value)),
+                        new: t(labelKey(newToggleValue)),
+                      }),
+                      [
+                        {
+                          label: "cancel",
+                          action: () => {},
                         },
-                      },
-                    ]);
+                        {
+                          label: "continue",
+                          variant: "contained",
+                          action: () => {
+                            const currentValues = formMethods.getValues();
+                            formMethods.reset({
+                              id: currentValues.id,
+                              stratigraphyId: currentValues.stratigraphyId,
+                              fromDepth: currentValues.fromDepth,
+                              toDepth: currentValues.toDepth,
+                              isUnconsolidated: newValue,
+                              hasBedding: false,
+                              lithologyDescriptions: [
+                                {
+                                  id: 0,
+                                  lithologyId: currentValues.id,
+                                  isFirst: true,
+                                },
+                              ],
+                              notes: "",
+                            } as Lithology);
+                          },
+                        },
+                      ],
+                    );
                   }}
                   exclusive
                   sx={{
                     boxShadow: "none",
                     border: `1px solid ${theme.palette.border.light}`,
                   }}>
-                  <ToggleButton value={"unconsolidated" satisfies RockTypeToggleValue}>
+                  <ToggleButton value={true}>
                     <Typography>{capitalizeFirstLetter(t("unconsolidated"))}</Typography>
                   </ToggleButton>
-                  <ToggleButton value={"consolidated" satisfies RockTypeToggleValue}>
+                  <ToggleButton value={false}>
                     <Typography>{capitalizeFirstLetter(t("consolidated"))}</Typography>
                   </ToggleButton>
-                  <ToggleButton value={"unspecified" satisfies RockTypeToggleValue}>
+                  <ToggleButton value="unspecified">
                     <Typography>{capitalizeFirstLetter(t("unspecified"))}</Typography>
                   </ToggleButton>
                 </ToggleButtonGroup>

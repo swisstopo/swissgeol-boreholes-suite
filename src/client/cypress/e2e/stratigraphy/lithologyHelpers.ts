@@ -129,8 +129,11 @@ export const isUnconsolidatedForm = (isUnconsolidated: boolean | null) => {
   }
 };
 
-const rockTypeFlag = (rockType: string): boolean | null =>
-  rockType === RockType.unconsolidated ? true : rockType === RockType.consolidated ? false : null;
+const rockTypeFlag = (rockType: string): boolean | null => {
+  if (rockType === RockType.unconsolidated) return true;
+  if (rockType === RockType.consolidated) return false;
+  return null;
+};
 
 export const switchRockType = (currentRockType: string, newRockType: string, action: string) => {
   cy.contains("button", newRockType).click();
