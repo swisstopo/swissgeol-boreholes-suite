@@ -50,7 +50,7 @@ export const FilterAdaptiveSelect = <T extends number | string>({
       <Stack direction="row" flexWrap="wrap" gap={0.5}>
         {options.map(opt => {
           const isSelected = selected.includes(opt.key);
-          const count = counts?.[opt.key as string | number] ?? 0;
+          const count = counts?.[opt.key] ?? 0;
           const hasCount = counts !== undefined;
           const disabled = hasCount && !isSelected && count < 1;
           const label = hasCount ? `${opt.label} (${count})` : opt.label;
