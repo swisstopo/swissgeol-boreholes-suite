@@ -510,7 +510,6 @@ export const useBoreholeSuggestions = (
     queryKey: ["borehole-suggestions", field, query, filterRequestSubmission],
     queryFn: () => fetchBoreholeSuggestions(field, query, 10, filterRequestSubmission),
     enabled: fetchEnabled,
-    placeholderData: previous => previous,
     retry: false, // Don't retry on failure, as suggestions are a nice-to-have feature and retries will race with user input changes.
   });
 };

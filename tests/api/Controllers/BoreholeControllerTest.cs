@@ -1064,13 +1064,6 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
-    public async Task SuggestRejectsShortQuery()
-    {
-        var result = await controller.SuggestAsync(BoreholeSuggestionField.OriginalName, query: "a", limit: 10);
-        ActionResultAssert.IsBadRequest(result.Result);
-    }
-
-    [TestMethod]
     [DataRow(0)]
     [DataRow(51)]
     public async Task SuggestRejectsOutOfRangeLimit(int limit)

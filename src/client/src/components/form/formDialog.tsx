@@ -1,7 +1,7 @@
 import { FC, ReactNode } from "react";
 import { Dialog, ButtonProps as MuiButtonProps, Stack, Typography } from "@mui/material";
 import { theme } from "../../AppTheme.ts";
-import { BoreholesButton } from "../buttons/buttons.tsx";
+import { BoreholesButton, CancelButton } from "../buttons/buttons.tsx";
 import { DialogFooterContainer, DialogHeaderContainer, DialogMainContent } from "../styledComponents.ts";
 
 interface FormDialogAction {
@@ -16,7 +16,8 @@ interface FormDialogProps {
   open: boolean;
   title: string;
   onClose: () => void;
-  isCloseDisabled?: boolean;
+  onApply?: () => Promise<void> | void;
+  isApplyDisabled?: boolean;
   actions?: FormDialogAction[];
   headerAction?: ReactNode;
   children: ReactNode;
@@ -26,7 +27,8 @@ export const FormDialog: FC<FormDialogProps> = ({
   open,
   title,
   onClose,
-  isCloseDisabled = false,
+  onApply,
+  isApplyDisabled = false,
   actions,
   headerAction,
   children,
@@ -64,13 +66,16 @@ export const FormDialog: FC<FormDialogProps> = ({
           />
         ))
       ) : (
-        <BoreholesButton
-          variant="contained"
-          color="primary"
-          label={"close"}
-          onClick={onClose}
-          disabled={isCloseDisabled}
-        />
+        <>
+          <CancelButton onClick={onClose} />
+          <BoreholesButton
+            variant="contained"
+            color="primary"
+            label="apply"
+            onClick={onApply ?? onClose}
+            disabled={isApplyDisabled}
+          />
+        </>
       )}
     </DialogFooterContainer>
   </Dialog>

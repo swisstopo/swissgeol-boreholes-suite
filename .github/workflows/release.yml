@@ -84,6 +84,25 @@ jobs:
           git checkout -b $GIT_BRANCH_NAME
           sed -i "/^\#\# \[Unreleased\]$/a \\\n\#\# $TAG_NAME - $(date '+%Y-%m-%d')" CHANGELOG.md
 
+      - name: Bump chart versions
+        run: |
+          for chart in swissgeol-boreholes swissgeol-boreholes-extern-sync swissgeol-boreholes-view-sync; do
+            CHART_FILE="charts/${chart}/Chart.yaml"
+            VALUES_FILE="charts/${chart}/values.yaml"
+
+            # Bump chart patch version
+            CURRENT_VERSION=$(grep '^version:' "$CHART_FILE" | awk '{print $2}')
+            IFS='.' read -r major minor patch <<< "$CURRENT_VERSION"
+            NEW_VERSION="${major}.${minor}.$((patch + 1))"
+
+            # Update Chart.yaml
+            sed -i "s/^version: .*/version: ${NEW_VERSION}/" "$CHART_FILE"
+            sed -i "s/^appVersion: .*/appVersion: \"${TAG_NAME}\"/" "$CHART_FILE"
+
+            # Update values.yaml: app.version
+            sed -i "/^app:/,/^[^ ]/ s/^  version: .*/  version: \"${TAG_NAME}\"/" "$VALUES_FILE"
+          done
+
       - name: Commit, push and create pull request
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}

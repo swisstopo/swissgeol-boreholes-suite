@@ -22,18 +22,20 @@ export const useBoreholeDocumentTitle = (boreholeName: string | undefined) => {
   const defaultTitle = "swissgeol boreholes";
 
   const pageTitle = useMemo(() => {
-    if (!boreholeName) return undefined;
     const segments = location.pathname.split("/").filter(Boolean);
-    let detailUrlSegment = segments[1]; // URL structure: /boreholes/:id/:tab
+    let detailUrlSegment = segments[1]; // URL structure: /:id/:tab
     if (detailUrlSegment === "hydrogeology") {
-      detailUrlSegment = segments[2]; // URL structure: /boreholes/:id/:hydrogeology/:tab
+      detailUrlSegment = segments[2]; // URL structure: /:id/:hydrogeology/:tab
     }
     const translationKey = routeToTranslationKey[detailUrlSegment] ?? detailUrlSegment;
     const tabName = translationKey ? capitalizeFirstLetter(t(translationKey)) : undefined;
-    return tabName ? `${boreholeName} - ${tabName}` : boreholeName;
+    if (boreholeName && tabName) return `${boreholeName} - ${tabName}`;
+    if (boreholeName) return boreholeName;
+    return tabName;
   }, [boreholeName, location.pathname, t]);
 
   useEffect(() => {
+    console.log(pageTitle);
     document.title = pageTitle ? `${pageTitle} | ${defaultTitle}` : defaultTitle;
   }, [pageTitle, defaultTitle]);
 
