@@ -24,6 +24,15 @@ public class FilterStatsResponse
     /// <summary>Gets or sets counts grouped by <see cref="BoreholeCodelist.CodelistId"/>.</summary>
     public Dictionary<int, int> IdentifierTypeId { get; set; } = new();
 
+    /// <summary>Gets or sets counts grouped by <see cref="Borehole.Canton"/>.</summary>
+    public Dictionary<string, int> Canton { get; set; } = new();
+
+    /// <summary>Gets or sets counts grouped by <see cref="Borehole.Municipality"/> (UX-named "city").</summary>
+    public Dictionary<string, int> Municipality { get; set; } = new();
+
+    /// <summary>Gets or sets counts grouped by log tool type codelist ID.</summary>
+    public Dictionary<int, int> LogToolTypeId { get; set; } = new();
+
     /// <summary>Gets or sets counts grouped by <see cref="Workflow.Status"/>.</summary>
     public Dictionary<WorkflowStatus, int> WorkflowStatusCount { get; set; } = new();
 

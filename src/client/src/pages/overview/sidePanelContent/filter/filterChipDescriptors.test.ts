@@ -519,6 +519,59 @@ describe("nullable boolean chips (allowNull: false)", () => {
   });
 });
 
+describe("string-multiselect chips for canton and municipality", () => {
+  it("renders one chip per selected canton with category tooltip", () => {
+    const descriptors = buildFilterChipDescriptors({
+      ...baseInputs,
+      filterParams: { canton: ["Bern", "Vaud"] },
+      t: ((key: string) => (key === "canton" ? "Canton" : key)) as unknown as ChipDescriptorInputs["t"],
+    });
+    expect(descriptors).toHaveLength(2);
+    expect(descriptors[0].label).toBe("Bern");
+    expect(descriptors[0].tooltip).toBe("Canton: Bern");
+    expect(descriptors[1].label).toBe("Vaud");
+  });
+
+  it("renders one chip per selected municipality", () => {
+    const descriptors = buildFilterChipDescriptors({
+      ...baseInputs,
+      filterParams: { municipality: ["Lausanne"] },
+      t: ((key: string) => (key === "municipality" ? "Municipality" : key)) as unknown as ChipDescriptorInputs["t"],
+    });
+    expect(descriptors).toHaveLength(1);
+    expect(descriptors[0].label).toBe("Lausanne");
+  });
+
+  it("clears the field when the last canton chip is deleted", () => {
+    const clearField = vi.fn();
+    const descriptors = buildFilterChipDescriptors({
+      ...baseInputs,
+      filterParams: { canton: ["Bern"] },
+      clearField,
+    });
+    descriptors[0].onDelete();
+    expect(clearField).toHaveBeenCalledWith("canton");
+  });
+});
+
+describe("codelist-multiselect chips for log tool type", () => {
+  it("renders chips using log_tool_type codelist labels", () => {
+    const toolTypeCodelists = [
+      { id: 100000201, schema: "log_tool_type", order: 1, code: "gr", de: "GR", en: "Gamma Ray", fr: "GR", it: "GR" },
+    ] as unknown as ChipDescriptorInputs["codelists"];
+    const descriptors = buildFilterChipDescriptors({
+      ...baseInputs,
+      filterParams: { logToolTypeId: [100000201] },
+      codelists: toolTypeCodelists,
+      getCodelistLabel,
+      t: ((key: string) => (key === "toolType" ? "Tool type" : key)) as unknown as ChipDescriptorInputs["t"],
+    });
+    expect(descriptors).toHaveLength(1);
+    expect(descriptors[0].label).toBe("Gamma Ray");
+    expect(descriptors[0].tooltip).toBe("Tool type: Gamma Ray");
+  });
+});
+
 describe("FILTER_FIELD_META ordering contract", () => {
   it("FILTER_FIELD_META preserves filterParsers declaration order", () => {
     // Guards against three kinds of drift:

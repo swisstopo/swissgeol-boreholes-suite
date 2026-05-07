@@ -1,5 +1,5 @@
 import { FC, useContext } from "react";
-import { Controller, useFormContext, useWatch } from "react-hook-form";
+import { Controller, RegisterOptions, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, SxProps, TextField } from "@mui/material";
 import { theme } from "../../AppTheme.ts";
@@ -20,6 +20,7 @@ export interface FormSelectProps {
   className?: string;
   onUpdate?: (value: number | string | boolean | null) => void;
   canReset?: boolean;
+  rules?: Omit<RegisterOptions, "disabled" | "setValueAs" | "valueAsNumber" | "valueAsDate">;
 }
 
 export interface FormSelectValue {
@@ -47,6 +48,7 @@ export const FormSelect: FC<FormSelectProps> = ({
   onUpdate,
   ignoreOverlow = false,
   canReset = true, // option to disable reset in dropdown without using the required rule and error display
+  rules = {},
 }) => {
   const { t } = useTranslation();
   const { control } = useFormContext();
@@ -83,7 +85,7 @@ export const FormSelect: FC<FormSelectProps> = ({
       name={fieldName}
       control={control}
       defaultValue={selected ?? ""}
-      rules={{ required: required ? "required" : false }}
+      rules={{ ...rules, required: required ? "required" : false }}
       render={({ field, fieldState }) => {
         // Display FormSelect as a standard TextField in readonly mode, so that text becomes selectable
         if (isReadOnly) {
@@ -105,6 +107,7 @@ export const FormSelect: FC<FormSelectProps> = ({
                   disabled: disabled,
                 },
               }}
+              inputRef={field.ref}
             />
           );
         }
@@ -143,6 +146,7 @@ export const FormSelect: FC<FormSelectProps> = ({
                   className={className}
                   data-cy={fieldName + "-formSelect"}
                   disabled={disabled}
+                  inputRef={field.ref}
                 />
               );
             }}

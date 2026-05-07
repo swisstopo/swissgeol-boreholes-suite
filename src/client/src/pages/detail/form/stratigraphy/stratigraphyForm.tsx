@@ -15,17 +15,11 @@ import { StratigraphyContext, StratigraphyContextProps } from "./stratigraphyCon
 interface StratigraphyFormProps {
   selectedStratigraphy: Stratigraphy;
   stratigraphyCount: number;
-  navigateToStratigraphy: (stratigraphyId: number | undefined, replace?: boolean) => void;
 }
 
-export const StratigraphyForm: FC<StratigraphyFormProps> = ({
-  selectedStratigraphy,
-  stratigraphyCount,
-  navigateToStratigraphy,
-}) => {
+export const StratigraphyForm: FC<StratigraphyFormProps> = ({ selectedStratigraphy, stratigraphyCount }) => {
   const { t } = useTranslation();
   const {
-    add: { mutateAsync: addStratigraphy },
     update: { mutateAsync: updateStratigraphy },
   } = useStratigraphyMutations();
   const formMethods = useForm<Stratigraphy>({ mode: "all" });
@@ -43,63 +37,30 @@ export const StratigraphyForm: FC<StratigraphyFormProps> = ({
     }
   }, [formMethods, selectedStratigraphy]);
 
-  const resetWithoutSave = useCallback(() => {
-    if (selectedStratigraphy) {
-      if (selectedStratigraphy.id === 0) {
-        navigateToStratigraphy(undefined, true);
-      } else {
-        resetForm();
-      }
-    }
-  }, [navigateToStratigraphy, resetForm, selectedStratigraphy]);
-
   const onSave = useCallback(async () => {
-    const handleMutationError = (error: ApiError) => {
-      if (error.message.includes("Name must be unique")) {
-        formMethods.setError("name", { type: "manual", message: t("mustBeUnique") });
-      } else {
-        showApiErrorAlert(error);
-      }
-    };
-
     if (!selectedStratigraphy) return false;
 
     const values = getValues();
     values.date = values.date ? ensureDatetime(values.date.toString()) : null;
-    if (values.id === 0) {
-      const newStratigraphy: Stratigraphy = await addStratigraphy(values, {
-        onError: error => {
-          handleMutationError(error);
+    await updateStratigraphy(
+      { ...selectedStratigraphy, ...values },
+      {
+        onError: (error: ApiError) => {
+          if (error.messageKey === "mustBeUnique") {
+            formMethods.setError("name", { type: "manual", message: t(error.messageKey) });
+          } else {
+            showApiErrorAlert(error);
+          }
         },
-      });
-      navigateToStratigraphy(newStratigraphy.id, true);
-      return true;
-    } else {
-      await updateStratigraphy(
-        { ...selectedStratigraphy, ...values },
-        {
-          onError: error => {
-            handleMutationError(error);
-          },
-        },
-      );
-      return true;
-    }
-  }, [
-    addStratigraphy,
-    formMethods,
-    getValues,
-    navigateToStratigraphy,
-    selectedStratigraphy,
-    showApiErrorAlert,
-    t,
-    updateStratigraphy,
-  ]);
+      },
+    );
+    return true;
+  }, [formMethods, getValues, selectedStratigraphy, showApiErrorAlert, t, updateStratigraphy]);
 
   useEffect(() => {
     registerSaveHandler(onSave, "stratigraphy");
-    registerResetHandler(resetWithoutSave, "stratigraphy");
-  }, [onSave, registerResetHandler, registerSaveHandler, resetWithoutSave]);
+    registerResetHandler(resetForm, "stratigraphy");
+  }, [onSave, registerResetHandler, registerSaveHandler, resetForm]);
 
   useEffect(() => {
     resetForm();
