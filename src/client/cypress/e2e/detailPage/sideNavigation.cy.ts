@@ -1,4 +1,4 @@
-import { addItem, saveForm, saveWithSaveBar } from "../helpers/buttonHelpers";
+import { addItem, saveForm } from "../helpers/buttonHelpers";
 import { setInput, setSelect, toggleMultiSelect } from "../helpers/formHelpers";
 import {
   BoreholeTab,
@@ -68,8 +68,9 @@ describe("Test for the detail page side navigation.", () => {
     // Add stratigraphy and Lithology
     navigateInSidebar(SidebarMenuItem.stratigraphy);
     addItem("addEmptyStratigraphy");
-    setInput("name", "AUTODESPERADO");
-    saveWithSaveBar();
+    cy.dataCy("stratigraphy-name-formInput").type("AUTODESPERADO");
+    cy.dataCy("addemptystratigraphy-submit-button").click();
+    cy.wait(["@stratigraphy_POST", "@stratigraphy_by_borehole_GET"]);
     isActiveMenuItem(SidebarMenuItem.stratigraphy, true);
 
     // Add completion

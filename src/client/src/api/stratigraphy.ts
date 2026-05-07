@@ -89,11 +89,15 @@ export const useStratigraphyMutations = () => {
 
   const useAddStratigraphy = useMutation({
     mutationFn: async (stratigraphy: Stratigraphy) => {
-      return await fetchApiV2WithApiError<Stratigraphy>(stratigraphyController, "POST", stratigraphy);
-    },
-    onSuccess: (_data, stratigraphy) => {
+      const created = await fetchApiV2WithApiError<Stratigraphy>(stratigraphyController, "POST", stratigraphy);
       resetTabStatus();
-      invalidateStratigraphyQueries(queryClient, Number(stratigraphy.boreholeId), true);
+      await queryClient.invalidateQueries({
+        queryKey: [stratigraphiesQueryKey, Number(stratigraphy.boreholeId)],
+      });
+      await queryClient.invalidateQueries({
+        queryKey: [boreholeQueryKey, Number(stratigraphy.boreholeId)],
+      });
+      return created;
     },
   });
 

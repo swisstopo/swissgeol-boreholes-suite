@@ -1,5 +1,4 @@
-import { saveWithSaveBar } from "../helpers/buttonHelpers";
-import { formatWithThousandsSeparator, setInput } from "../helpers/formHelpers";
+import { formatWithThousandsSeparator } from "../helpers/formHelpers";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers";
 import { goToRouteAndAcceptTerms, newEditableBorehole } from "../helpers/testHelpers";
 
@@ -36,8 +35,8 @@ export const openNewStratigraphy = () => {
   newEditableBorehole().as("borehole_id");
   navigateInSidebar(SidebarMenuItem.stratigraphy);
   cy.dataCy("addemptystratigraphy-button").click();
-  setInput("name", "New Stratigraphy");
-  saveWithSaveBar();
+  cy.dataCy("stratigraphy-name-formInput").type("New Stratigraphy");
+  cy.dataCy("addemptystratigraphy-submit-button").click();
   cy.wait(["@stratigraphy_POST", "@stratigraphy_by_borehole_GET"]);
 };
 
