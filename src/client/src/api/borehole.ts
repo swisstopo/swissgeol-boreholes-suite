@@ -385,13 +385,18 @@ const fetchBoreholeSuggestions = (
   field: BoreholeSuggestionField,
   query: string,
   limit = 10,
+  filterRequest?: FilterRequestSubmission,
 ): Promise<BoreholeSuggestion[]> => {
   const params = new URLSearchParams({
     field,
     query,
     limit: String(limit),
   });
-  return fetchApiV2WithApiError<BoreholeSuggestion[]>(`borehole/suggest?${params.toString()}`, "GET");
+  return fetchApiV2WithApiError<BoreholeSuggestion[]>(
+    `borehole/suggest?${params.toString()}`,
+    "POST",
+    filterRequest ?? null,
+  );
 };
 
 const parseBooleanFilter = (value: "true" | "false" | undefined | null): BooleanFilter | undefined => {
@@ -494,12 +499,17 @@ export const useFilterStats = (filterRequest: FilterRequest) => {
   });
 };
 
-export const useBoreholeSuggestions = (field: BoreholeSuggestionField, query: string, fetchEnabled: boolean) => {
+export const useBoreholeSuggestions = (
+  field: BoreholeSuggestionField,
+  query: string,
+  fetchEnabled: boolean,
+  filterRequest?: FilterRequest,
+) => {
+  const filterRequestSubmission = filterRequest ? toFilterRequestSubmission(filterRequest) : undefined;
   return useQuery<BoreholeSuggestion[]>({
-    queryKey: ["borehole-suggestions", field, query],
-    queryFn: () => fetchBoreholeSuggestions(field, query, 10),
+    queryKey: ["borehole-suggestions", field, query, filterRequestSubmission],
+    queryFn: () => fetchBoreholeSuggestions(field, query, 10, filterRequestSubmission),
     enabled: fetchEnabled,
-    placeholderData: previous => previous,
     retry: false, // Don't retry on failure, as suggestions are a nice-to-have feature and retries will race with user input changes.
   });
 };

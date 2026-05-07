@@ -231,22 +231,22 @@ export const login = (user: string) => {
         cy.contains("button", "Login").click({ force: true });
       });
       cy.wait("@token")
-        .then(interception => interception.response!.body.id_token)
-        .then(token => globalThis.localStorage.setItem("id_token", token));
+        .then(interception => interception.response!.body.access_token)
+        .then(token => globalThis.localStorage.setItem("access_token", token));
     },
     {
       validate() {
         cy.window()
-          .then(win => win.localStorage.getItem("id_token"))
-          .as("id_token");
-        cy.get("@id_token").then(token =>
+          .then(win => win.localStorage.getItem("access_token"))
+          .as("access_token");
+        cy.get("@access_token").then(token =>
           cy.request({
             method: "POST",
             url: "/api/v1/user",
             body: {
               action: "GET",
             },
-            auth: bearerAuth(token as string),
+            auth: bearerAuth(token),
           }),
         );
       },
@@ -365,7 +365,7 @@ const waitForCreation = () => {
 };
 
 export const createBorehole = (borehole: Record<string, unknown>) => {
-  return cy.get("@id_token").then(token => {
+  return cy.get("@access_token").then(token => {
     return cy
       .request({
         method: "POST",
@@ -380,7 +380,7 @@ export const createBorehole = (borehole: Record<string, unknown>) => {
           hrsId: defaultHrsId,
           ...borehole,
         },
-        auth: bearerAuth(token as string),
+        auth: bearerAuth(token),
       })
       .then(res => {
         return cy.wrap(res.body.id as number);
@@ -493,11 +493,11 @@ export const checkElementColorByDataCy = (attribute: string, expectedColor: stri
 };
 
 export const deleteBorehole = (id: number | string) => {
-  cy.get("@id_token").then(token => {
+  cy.get("@access_token").then(token => {
     cy.request({
       method: "DELETE",
       url: `/api/v2/borehole?id=${id}`,
-      auth: bearerAuth(token as string),
+      auth: bearerAuth(token),
     }).then(response => {
       expect(response.status).to.eq(200);
     });
@@ -506,13 +506,13 @@ export const deleteBorehole = (id: number | string) => {
 
 export const loginAndResetState = () => {
   loginAsAdmin();
-  cy.get("@id_token").then(token => {
+  cy.get("@access_token").then(token => {
     // Reset boreholes
     cy.request({
       method: "POST",
       url: "/api/v2/borehole/filter",
       body: {},
-      auth: bearerAuth(token as string),
+      auth: bearerAuth(token),
     }).then(response => {
       response.body.filteredBoreholeIds
         .filter((id: number) => id > 1002999) // max id in seed data.
@@ -613,7 +613,7 @@ interface StratigraphyInput {
 }
 
 export const createStratigraphy = ({ boreholeId, name, isPrimary = true, date = null }: StratigraphyInput) => {
-  return cy.get("@id_token").then(token => {
+  return cy.get("@access_token").then(token => {
     return cy
       .request({
         method: "POST",
@@ -630,7 +630,7 @@ export const createStratigraphy = ({ boreholeId, name, isPrimary = true, date = 
         headers: {
           "Content-Type": "application/json",
         },
-        auth: bearerAuth(token as string),
+        auth: bearerAuth(token),
       })
       .then(res => {
         return cy.wrap(res.body.id);
@@ -646,7 +646,7 @@ interface CompletionInput {
 }
 
 export const createCompletion = ({ name, boreholeId, kindId, isPrimary }: CompletionInput) => {
-  return cy.get("@id_token").then(token => {
+  return cy.get("@access_token").then(token => {
     return cy
       .request({
         method: "POST",
@@ -659,7 +659,7 @@ export const createCompletion = ({ name, boreholeId, kindId, isPrimary }: Comple
         },
         cache: "no-cache",
         credentials: "same-origin",
-        auth: bearerAuth(token as string),
+        auth: bearerAuth(token),
       })
       .then(res => {
         return cy.wrap(res.body.id);
@@ -684,7 +684,7 @@ export const createCasing = ({
   dateFinish = null,
   casingElements,
 }: CasingInput) => {
-  return cy.get("@id_token").then(token => {
+  return cy.get("@access_token").then(token => {
     return cy
       .request({
         method: "POST",
@@ -699,7 +699,7 @@ export const createCasing = ({
         },
         cache: "no-cache",
         credentials: "same-origin",
-        auth: bearerAuth(token as string),
+        auth: bearerAuth(token),
       })
       .then(res => {
         return cy.wrap(res.body.id);
@@ -757,7 +757,7 @@ export const createFieldMeasurement = ({
   fromDepthM = null,
   toDepthM = null,
 }: FieldMeasurementInput) => {
-  return cy.get("@id_token").then(token => {
+  return cy.get("@access_token").then(token => {
     return cy.request({
       method: "POST",
       url: "/api/v2/fieldmeasurement",
@@ -773,7 +773,7 @@ export const createFieldMeasurement = ({
       },
       cache: "no-cache",
       credentials: "same-origin",
-      auth: bearerAuth(token as string),
+      auth: bearerAuth(token),
     });
   });
 };
@@ -791,7 +791,7 @@ export const createWateringress = ({
   fromDepthM = null,
   toDepthM = null,
 }: WaterIngressInput) => {
-  return cy.get("@id_token").then(token => {
+  return cy.get("@access_token").then(token => {
     return cy.request({
       method: "POST",
       url: "/api/v2/wateringress",
@@ -807,7 +807,7 @@ export const createWateringress = ({
       },
       cache: "no-cache",
       credentials: "same-origin",
-      auth: bearerAuth(token as string),
+      auth: bearerAuth(token),
     });
   });
 };
@@ -825,7 +825,7 @@ export const createHydrotest = ({
   fromDepthM = null,
   toDepthM = null,
 }: HydrotestInput) => {
-  return cy.get("@id_token").then(token => {
+  return cy.get("@access_token").then(token => {
     return cy.request({
       method: "POST",
       url: "/api/v2/hydrotest",
@@ -841,7 +841,7 @@ export const createHydrotest = ({
       },
       cache: "no-cache",
       credentials: "same-origin",
-      auth: bearerAuth(token as string),
+      auth: bearerAuth(token),
     });
   });
 };
@@ -865,7 +865,7 @@ export const createBackfill = ({
   toDepth,
   notes = null,
 }: BackfillInput) => {
-  cy.get("@id_token").then(token => {
+  cy.get("@access_token").then(token => {
     return cy.request({
       method: "POST",
       url: "/api/v2/backfill",
@@ -880,7 +880,7 @@ export const createBackfill = ({
       },
       cache: "no-cache",
       credentials: "same-origin",
-      auth: bearerAuth(token as string),
+      auth: bearerAuth(token),
     });
   });
 };
@@ -906,7 +906,7 @@ export const createInstrument = ({
   toDepth,
   notes = null,
 }: InstrumentInput) => {
-  cy.get("@id_token").then(token => {
+  cy.get("@access_token").then(token => {
     return cy.request({
       method: "POST",
       url: "/api/v2/instrumentation",
@@ -922,7 +922,7 @@ export const createInstrument = ({
       },
       cache: "no-cache",
       credentials: "same-origin",
-      auth: bearerAuth(token as string),
+      auth: bearerAuth(token),
     });
   });
 };

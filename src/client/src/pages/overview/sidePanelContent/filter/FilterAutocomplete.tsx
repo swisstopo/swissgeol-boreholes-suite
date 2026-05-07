@@ -4,6 +4,7 @@ import { Autocomplete, CircularProgress, TextField, Typography } from "@mui/mate
 import { useDebounce } from "@uidotdev/usehooks";
 import {
   BoreholeSuggestionField,
+  FilterRequest,
   isBoreholeSuggestionField,
   useBoreholeSuggestions,
 } from "../../../../api/borehole.ts";
@@ -13,9 +14,10 @@ interface FilterAutocompleteProps {
   item: SearchData;
   filterValue: string | null;
   onUpdate: (value: string | null) => void;
+  filterRequest?: FilterRequest;
 }
 
-export const FilterAutocomplete: FC<FilterAutocompleteProps> = ({ item, filterValue, onUpdate }) => {
+export const FilterAutocomplete: FC<FilterAutocompleteProps> = ({ item, filterValue, onUpdate, filterRequest }) => {
   const { t } = useTranslation();
   const [inputValue, setInputValue] = useState<string>(filterValue ?? "");
 
@@ -26,12 +28,13 @@ export const FilterAutocomplete: FC<FilterAutocompleteProps> = ({ item, filterVa
   const debouncedForFetch = useDebounce(inputValue, 300);
 
   const isValidField = isBoreholeSuggestionField(item.key);
-  const fetchEnabled = debouncedForFetch.trim().length >= 2;
+  const fetchEnabled = debouncedForFetch.trim().length >= 1;
   const field = item.key as BoreholeSuggestionField;
   const { data: suggestions = [], isFetching } = useBoreholeSuggestions(
     field,
     debouncedForFetch,
     isValidField && fetchEnabled,
+    filterRequest,
   );
 
   const options = useMemo(() => suggestions.map(s => s.value), [suggestions]);

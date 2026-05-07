@@ -19,7 +19,7 @@ declare global {
       get(alias: "@completion_id"): Chainable<number>;
       get(alias: "@casing1_id"): Chainable<number>;
       get(alias: "@casing2_id"): Chainable<number>;
-      get(alias: "@id_token"): Chainable<string>;
+      get(alias: "@access_token"): Chainable<string>;
     }
   }
 }

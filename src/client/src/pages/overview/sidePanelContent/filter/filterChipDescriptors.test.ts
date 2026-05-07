@@ -31,10 +31,10 @@ const mockTranslationFunction = ((key: string) => {
 }) as unknown as ChipDescriptorInputs["t"];
 
 const mockCodelists = [
-  { id: 10, schema: "extended.status", order: 1, code: "open", de: "offen", en: "open", fr: "ouvert", it: "aperto" },
+  { id: 10, schema: "borehole_status", order: 1, code: "open", de: "offen", en: "open", fr: "ouvert", it: "aperto" },
   {
     id: 11,
-    schema: "extended.status",
+    schema: "borehole_status",
     order: 2,
     code: "filled",
     de: "gefüllt",

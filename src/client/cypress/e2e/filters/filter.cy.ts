@@ -249,15 +249,39 @@ describe("Search filter tests", () => {
     checkFilterChipExistsAndRemove("originalName");
   });
 
-  it("does not fetch suggestions for a single character", () => {
-    cy.intercept("GET", "/api/v2/borehole/suggest*").as("suggestRequest");
+  it("constrains autocomplete suggestions to boreholes that match the active filter", () => {
+    // Two boreholes share an "AA_SUGGEST_" prefix but only one has nationalInterest=true.
+    // Applying the nationalInterest=Yes filter must restrict the suggestion list to the matching one.
+    createBorehole({ originalName: "AA_SUGGEST_match", nationalInterest: true });
+    createBorehole({ originalName: "AA_SUGGEST_other", nationalInterest: false });
+
+    cy.intercept("POST", "/api/v2/borehole/suggest*").as("suggestRequest");
     openFilter("Borehole");
+
+    // Without a filter both seeded values appear.
     cy.dataCy("originalName-formInput").click();
-    cy.dataCy("originalName-formInput").type("a");
-    // Wait past the debounce window (300ms) to be sure no call fired
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(500);
-    cy.get("@suggestRequest.all").should("have.length", 0);
+    cy.dataCy("originalName-formInput").type("AA_SUGGEST_");
+    cy.wait("@suggestRequest").its("request.body").should("deep.equal", {});
+    cy.get('[data-cy^="originalName-suggestion-"]').should("have.length", 2);
+
+    // Reset typed text without committing the autocomplete (filter remains uncommitted).
+    cy.dataCy("originalName-formInput").clear();
+    cy.get("body").click(0, 0);
+
+    // Apply the nationalInterest filter and re-open the autocomplete.
+    clickYesNoButton("nationalInterest", "Yes");
+    cy.wait("@borehole_filter");
+
+    cy.dataCy("originalName-formInput").click();
+    cy.dataCy("originalName-formInput").type("AA_SUGGEST_");
+    cy.wait("@suggestRequest").then(intercept => {
+      // The active filter must be forwarded in the suggest request body.
+      // NullableBooleanFilter is a numeric enum on the client; True serializes as 1.
+      expect(intercept.request.body).to.include({ nationalInterest: 1 });
+    });
+
+    cy.get('[data-cy^="originalName-suggestion-"]').should("have.length", 1);
+    cy.get('[data-cy^="originalName-suggestion-"]').first().should("contain", "AA_SUGGEST_match");
   });
 
   // ─── MULTISELECT FILTERS ────────────────────────────────────────────────────

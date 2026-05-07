@@ -1,3 +1,3 @@
-export function getAuthorizationHeader(authentication: { token_type: string; id_token: string }) {
-  return authentication === null ? "Anonymous" : `${authentication.token_type} ${authentication.id_token}`;
+export function getAuthorizationHeader(authentication: { token_type: string; access_token: string }) {
+  return authentication === null ? "Anonymous" : `${authentication.token_type} ${authentication.access_token}`;
 }

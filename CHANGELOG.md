@@ -12,10 +12,12 @@
 - When the main map is fitted to the extent of the (filtered) boreholes, a padding is applied to the extent.
 - Filter UI was redesigned and now supports multiple selections and chips per selected filter value.
 - Upgraded swissgeol OCR service to version 1.1.4.
+- Upgraded swissgeol Data Extraction service to version 1.0.162.
 - The database tables `boreholeFiles` and  `files` were merged into one table `profiles`.
 
 ### Fixed
 - Only one workgroup could be added at once. Only with a complete refresh of the page another workgroup could be added.
+- The FormDialog could not be closed when the form was in an invalid state. Cancel and Apply buttons now replace the single Close button.
 
 ## v2.1.1568 - 2026-04-23
 
@@ -32,6 +34,7 @@
 - Openlayers was upgraded to version 10.9.0.
 - The borehole name section and restriction sections were moved from the location page to the general tab of the borehole detail view.
 - The consent banner choice is now remembered for a year, so users no longer have to accept the terms again on every visit.
+- API authentication now uses OIDC access tokens instead of id tokens.
 
 ### Fixed
 - Boreholes could be edited after being published.

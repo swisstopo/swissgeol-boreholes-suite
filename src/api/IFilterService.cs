@@ -24,4 +24,18 @@ public interface IFilterService
     /// <param name="user">The user making the request.</param>
     /// <returns>A <see cref="FilterStatsResponse"/> with per-option counts for every filter dimension.</returns>
     Task<FilterStatsResponse> GetFilterStatsAsync(FilterRequest? filterRequest, User user);
+
+    /// <summary>
+    /// Returns autocomplete suggestions for a borehole text column. Suggestions are drawn from
+    /// boreholes matching the active <paramref name="filterRequest"/>, except the filter on the
+    /// <paramref name="field"/> being autocompleted is excluded. When no
+    /// filter is supplied only the user's workgroup permissions constrain the result set.
+    /// </summary>
+    /// <param name="field">The borehole column to search.</param>
+    /// <param name="query">The prefix to match against (case-insensitive).</param>
+    /// <param name="limit">Maximum number of suggestions to return.</param>
+    /// <param name="filterRequest">The active filter request; may be null to compute unconstrained suggestions.</param>
+    /// <param name="user">The user making the request.</param>
+    /// <returns>Suggestions ordered by descending count then value.</returns>
+    Task<IList<BoreholeSuggestion>> GetSuggestionsAsync(BoreholeSuggestionField field, string query, int limit, FilterRequest? filterRequest, User user);
 }

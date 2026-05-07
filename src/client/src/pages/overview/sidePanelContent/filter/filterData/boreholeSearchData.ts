@@ -58,14 +58,14 @@ export const boreholeSearchData: SearchData[] = [
     type: "Dropdown",
     label: "purpose",
     key: "purposeId",
-    schema: "extended.purpose",
+    schema: "drilling_purpose",
   },
   {
     id: 9,
     type: "Dropdown",
     label: "boreholeStatus",
     key: "statusId",
-    schema: "extended.status",
+    schema: "borehole_status",
   },
   {
     id: 10,
