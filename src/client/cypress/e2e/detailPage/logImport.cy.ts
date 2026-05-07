@@ -248,14 +248,19 @@ describe("Test for the borehole log import.", () => {
     openSeedBoreholeLogTabInEditMode();
     openImportDialog();
     selectLogRunsCsv("log-runs-valid.csv");
-    selectLogFilesCsv("log-files-valid.csv");
-    // Try to add an unexpected file to the first run's dropzone
-    selectAttachmentsForRun("IMP-RUN-1", ["welllog1.las", "orphan.bin"]);
-    // The dropzone should reject orphan.bin with a client-side error
+    selectLogFilesCsv("log-files-two-in-one-run.csv");
+
+    // Drop one valid and one unexpected file together
+    const files = [
+      { contents: Cypress.Buffer.from("dummy"), fileName: "welllog1.las" },
+      { contents: Cypress.Buffer.from("dummy"), fileName: "orphan.bin" },
+    ];
+    cy.get('[data-cy="log-attachments-IMP-RUN-1"] input[data-cy="file-dropzone"]').selectFile(files, { force: true });
+
+    // welllog1.las is accepted, orphan.bin is rejected with a client-side error
+    cy.get('[data-cy="log-attachments-IMP-RUN-1"]').dataCy("file-dropzone").should("contain", "welllog1.las");
     cy.get('[data-cy="log-attachments-IMP-RUN-1"]').should("contain", "orphan.bin");
     cy.get('[data-cy="log-attachments-IMP-RUN-1"]').should("contain", "is not listed in the CSV");
-    // welllog1.las should still be accepted
-    cy.get('[data-cy="log-attachments-IMP-RUN-1"]').dataCy("file-dropzone").should("contain", "welllog1.las");
     clickModalCancelButton();
   });
 
