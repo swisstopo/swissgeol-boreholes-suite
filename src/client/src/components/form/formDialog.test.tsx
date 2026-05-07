@@ -25,26 +25,15 @@ describe("FormDialog", () => {
     expect(screen.getByText("Apply")).toBeDefined();
   });
 
-  it("Cancel button is always enabled even when isApplyDisabled is true", () => {
+  it("Disables Apply but keeps Cancel enabled when isApplyDisabled is true", () => {
     render(
       <FormDialog open={true} title="Test" onClose={vi.fn()} isApplyDisabled={true}>
         <div />
       </FormDialog>,
     );
 
-    const cancelButton = screen.getByText("Cancel").closest("button");
-    expect(cancelButton?.disabled).toBe(false);
-  });
-
-  it("Apply button is disabled when isApplyDisabled is true", () => {
-    render(
-      <FormDialog open={true} title="Test" onClose={vi.fn()} isApplyDisabled={true}>
-        <div />
-      </FormDialog>,
-    );
-
-    const applyButton = screen.getByText("Apply").closest("button");
-    expect(applyButton?.disabled).toBe(true);
+    expect(screen.getByText("Cancel").closest("button")?.disabled).toBe(false);
+    expect(screen.getByText("Apply").closest("button")?.disabled).toBe(true);
   });
 
   it("Apply button is enabled when isApplyDisabled is false", () => {
