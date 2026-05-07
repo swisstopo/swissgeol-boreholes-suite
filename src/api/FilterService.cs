@@ -182,6 +182,72 @@ public class FilterService : IFilterService
         };
     }
 
+    /// <inheritdoc />
+    public async Task<IList<BoreholeSuggestion>> GetSuggestionsAsync(
+        BoreholeSuggestionField field,
+        string query,
+        int limit,
+        FilterRequest? filterRequest,
+        User user)
+    {
+        var baseQuery = context.Boreholes.AsNoTracking();
+
+        if (!user.IsAdmin)
+        {
+            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+            baseQuery = baseQuery.Where(b => b.WorkgroupId.HasValue && allowedWorkgroupIds.Contains(b.WorkgroupId.Value));
+        }
+
+        if (filterRequest != null)
+        {
+            // Filter-exclusion semantics: when computing suggestions for a field, drop that
+            // field's own filter so the user can refine the value they're typing. All other
+            // active filters still constrain the suggestion set (strict intersection).
+            var effectiveFilter = CloneFilterRequest(filterRequest);
+            switch (field)
+            {
+                case BoreholeSuggestionField.OriginalName:
+                    effectiveFilter.OriginalName = null;
+                    break;
+                case BoreholeSuggestionField.ProjectName:
+                    effectiveFilter.ProjectName = null;
+                    break;
+                case BoreholeSuggestionField.Name:
+                    effectiveFilter.Name = null;
+                    break;
+            }
+
+            baseQuery = ApplyFilters(baseQuery, effectiveFilter);
+        }
+
+        var prefix = query + "%";
+        var groupedQuery = field switch
+        {
+            BoreholeSuggestionField.OriginalName => baseQuery
+                .Where(b => b.OriginalName != null && b.OriginalName != "" && EF.Functions.ILike(b.OriginalName!, prefix))
+                .GroupBy(b => b.OriginalName!)
+                .Select(g => new { Value = g.Key, Count = g.Count() }),
+            BoreholeSuggestionField.ProjectName => baseQuery
+                .Where(b => b.ProjectName != null && b.ProjectName != "" && EF.Functions.ILike(b.ProjectName!, prefix))
+                .GroupBy(b => b.ProjectName!)
+                .Select(g => new { Value = g.Key, Count = g.Count() }),
+            BoreholeSuggestionField.Name => baseQuery
+                .Where(b => b.Name != null && b.Name != "" && EF.Functions.ILike(b.Name!, prefix))
+                .GroupBy(b => b.Name!)
+                .Select(g => new { Value = g.Key, Count = g.Count() }),
+            _ => throw new InvalidOperationException("Unreachable: enum binding guarantees a valid field."),
+        };
+
+        var rows = await groupedQuery
+            .OrderByDescending(s => s.Count)
+            .ThenBy(s => s.Value)
+            .Take(limit)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return rows.Select(r => new BoreholeSuggestion(r.Value, r.Count)).ToList();
+    }
+
     private static async Task<Dictionary<WorkflowStatus, int>> CountByWorkflowStatusAsync(IQueryable<Borehole> query)
     {
         var grouped = await query

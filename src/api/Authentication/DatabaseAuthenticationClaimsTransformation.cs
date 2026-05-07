@@ -52,16 +52,26 @@ public class DatabaseAuthenticationClaimsTransformation : IClaimsTransformation
         if (subjectId is null)
             return null;
 
-        var user = dbContext.Users.SingleOrDefault(u => u.SubjectId == subjectId) ?? new User { SubjectId = subjectId };
-        user.FirstName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value ?? user.FirstName;
-        user.LastName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value ?? user.LastName;
-        user.Name = $"{user.FirstName[0]}. {user.LastName}";
+        var user = dbContext.Users.SingleOrDefault(u => u.SubjectId == subjectId);
 
-        var emailClaim = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email);
-
-        if (emailClaim == null) throw new InvalidOperationException("The email claim is missing.");
-
-        user.Email = emailClaim.Value;
+        if (user == null)
+        {
+            user = new User
+            {
+                SubjectId = subjectId,
+                FirstName = RequiredClaim(principal, ClaimTypes.GivenName, "given_name"),
+                LastName = RequiredClaim(principal, ClaimTypes.Surname, "family_name"),
+                Email = RequiredClaim(principal, ClaimTypes.Email, "email"),
+            };
+            user.Name = $"{user.FirstName[0]}. {user.LastName}";
+        }
+        else
+        {
+            user.FirstName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.GivenName)?.Value ?? user.FirstName;
+            user.LastName = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Surname)?.Value ?? user.LastName;
+            user.Name = $"{user.FirstName[0]}. {user.LastName}";
+            user.Email = principal.Claims.FirstOrDefault(c => c.Type == ClaimTypes.Email)?.Value ?? user.Email;
+        }
 
         dbContext.Update(user);
 
@@ -78,5 +88,13 @@ public class DatabaseAuthenticationClaimsTransformation : IClaimsTransformation
         }
 
         return user;
+    }
+
+    private static string RequiredClaim(ClaimsPrincipal principal, string claimType, string displayName)
+    {
+        var value = principal.Claims.FirstOrDefault(c => c.Type == claimType)?.Value;
+        if (string.IsNullOrWhiteSpace(value))
+            throw new InvalidOperationException($"Cannot provision new user: {displayName} claim is missing.");
+        return value;
     }
 }

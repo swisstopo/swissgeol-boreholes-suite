@@ -143,13 +143,13 @@ const SectionInput = ({ item, parentId }) => {
                         fieldName={`sectionElements.${index}.drillingMethodId`}
                         label="drilling_method"
                         selected={field.drillingMethodId}
-                        schemaName="extended.drilling_method"
+                        schemaName="drilling_method"
                       />
                       <FormDomainSelect
                         fieldName={`sectionElements.${index}.cuttingsId`}
                         label="cuttings"
                         selected={field.cuttingsId}
-                        schemaName="custom.cuttings"
+                        schemaName="borehole_cuttings_core"
                       />
                     </FormContainer>
                     <FormContainer direction="row">

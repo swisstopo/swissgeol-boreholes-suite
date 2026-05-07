@@ -1813,6 +1813,156 @@ public class FilterServiceTest
     }
 
     [TestMethod]
+    public async Task GetSuggestionsReturnsEmptyWhenNoMatch()
+    {
+        var suggestions = await filterService.GetSuggestionsAsync(
+            BoreholeSuggestionField.OriginalName,
+            query: "ZZNoMatchXYZABC",
+            limit: 10,
+            filterRequest: null,
+            adminUser);
+
+        Assert.IsFalse(suggestions.Any(), "Expected no suggestions for a prefix that matches nothing.");
+    }
+
+    [TestMethod]
+    public async Task GetSuggestionsGroupsByValueAndOrdersByCountThenValue()
+    {
+        // Seed: 2 boreholes named "ZZAlpha-1", 1 named "ZZAlpha-2", 1 named "ZZBeta-1"
+        context.Boreholes.AddRange(
+            new Borehole { WorkgroupId = 1, OriginalName = "ZZAlpha-1" },
+            new Borehole { WorkgroupId = 1, OriginalName = "ZZAlpha-1" },
+            new Borehole { WorkgroupId = 1, OriginalName = "ZZAlpha-2" },
+            new Borehole { WorkgroupId = 1, OriginalName = "ZZBeta-1" });
+        await context.SaveChangesAsync();
+
+        var suggestions = (await filterService.GetSuggestionsAsync(
+            BoreholeSuggestionField.OriginalName,
+            query: "zzalph",
+            limit: 10,
+            filterRequest: null,
+            adminUser)).ToList();
+
+        Assert.AreEqual(2, suggestions.Count, "Expected exactly 2 suggestion entries matching 'ZZAlpha-*'.");
+        Assert.AreEqual("ZZAlpha-1", suggestions[0].Value, "ZZAlpha-1 should be first (higher count).");
+        Assert.AreEqual(2, suggestions[0].Count, "ZZAlpha-1 should have count 2.");
+        Assert.AreEqual("ZZAlpha-2", suggestions[1].Value, "ZZAlpha-2 should be second (lower count).");
+        Assert.AreEqual(1, suggestions[1].Count, "ZZAlpha-2 should have count 1.");
+    }
+
+    [TestMethod]
+    public async Task GetSuggestionsRespectsLimit()
+    {
+        for (int i = 0; i < 5; i++)
+        {
+            context.Boreholes.Add(new Borehole { WorkgroupId = 1, OriginalName = $"LIMITTEST_{i}" });
+        }
+
+        await context.SaveChangesAsync();
+
+        var suggestions = (await filterService.GetSuggestionsAsync(
+            BoreholeSuggestionField.OriginalName,
+            query: "LIMITTEST_",
+            limit: 3,
+            filterRequest: null,
+            adminUser)).ToList();
+
+        Assert.AreEqual(3, suggestions.Count, "Expected exactly 3 results when limit is 3.");
+    }
+
+    [TestMethod]
+    public async Task GetSuggestionsForProjectNameReturnsMatchingValues()
+    {
+        context.Boreholes.Add(new Borehole { WorkgroupId = 1, ProjectName = "ProjXYZ" });
+        await context.SaveChangesAsync();
+
+        var suggestions = (await filterService.GetSuggestionsAsync(
+            BoreholeSuggestionField.ProjectName,
+            query: "projx",
+            limit: 10,
+            filterRequest: null,
+            adminUser)).ToList();
+
+        Assert.IsTrue(suggestions.Any(s => s.Value == "ProjXYZ"), "Expected 'ProjXYZ' in suggestions for prefix 'projx'.");
+    }
+
+    [TestMethod]
+    public async Task GetSuggestionsHidesBoreholesOutsideEditorWorkgroups()
+    {
+        // editorUser is not a member of workgroup 3 (see test data setup).
+        await AddTwoBoreholesToWorkgroupWithId3();
+        context.Boreholes.Add(new Borehole { WorkgroupId = 3, OriginalName = "SECRETVAL_xyz" });
+        await context.SaveChangesAsync();
+
+        var suggestions = (await filterService.GetSuggestionsAsync(
+            BoreholeSuggestionField.OriginalName,
+            query: "secretval",
+            limit: 10,
+            filterRequest: null,
+            editorUser)).ToList();
+
+        Assert.IsFalse(
+            suggestions.Any(s => s.Value == "SECRETVAL_xyz"),
+            "Editor must not see suggestions from workgroups they don't belong to.");
+    }
+
+    [TestMethod]
+    public async Task GetSuggestionsRestrictsToBoreholesMatchingFilterRequest()
+    {
+        // Two values share the prefix but live in different workgroups.
+        // A workgroup filter must restrict the suggestion set.
+        context.Boreholes.AddRange(
+            new Borehole { WorkgroupId = 1, OriginalName = "FILTERTEST_alpha" },
+            new Borehole { WorkgroupId = 1, OriginalName = "FILTERTEST_alpha" },
+            new Borehole { WorkgroupId = 4, OriginalName = "FILTERTEST_beta" });
+        await context.SaveChangesAsync();
+
+        var unfiltered = (await filterService.GetSuggestionsAsync(
+            BoreholeSuggestionField.OriginalName,
+            query: "FILTERTEST_",
+            limit: 10,
+            filterRequest: null,
+            adminUser)).ToList();
+
+        Assert.AreEqual(2, unfiltered.Count, "Without a filter both seeded values must appear.");
+
+        var filtered = (await filterService.GetSuggestionsAsync(
+            BoreholeSuggestionField.OriginalName,
+            query: "FILTERTEST_",
+            limit: 10,
+            new FilterRequest { WorkgroupId = new List<int> { 1 } },
+            adminUser)).ToList();
+
+        Assert.AreEqual(1, filtered.Count, "Workgroup filter must drop suggestions from non-matching workgroups.");
+        Assert.AreEqual("FILTERTEST_alpha", filtered[0].Value);
+        Assert.AreEqual(2, filtered[0].Count, "Counts must reflect the filtered borehole set.");
+    }
+
+    [TestMethod]
+    public async Task GetSuggestionsExcludesSameFieldFilterSoTypedQueryCanRefineIt()
+    {
+        // When the user is typing in OriginalName, a previously committed OriginalName filter
+        // must NOT constrain the suggestion list — otherwise refining the value would only
+        // surface results matching the old committed text.
+        context.Boreholes.AddRange(
+            new Borehole { WorkgroupId = 1, OriginalName = "EXCL_alpha" },
+            new Borehole { WorkgroupId = 1, OriginalName = "EXCL_beta" });
+        await context.SaveChangesAsync();
+
+        var filtered = (await filterService.GetSuggestionsAsync(
+            BoreholeSuggestionField.OriginalName,
+            query: "EXCL_",
+            limit: 10,
+            new FilterRequest { OriginalName = "alpha" },
+            adminUser)).ToList();
+
+        Assert.AreEqual(2, filtered.Count, "Self-field text filter must be excluded so the typed prefix can refine the field.");
+        CollectionAssert.AreEquivalent(
+            new[] { "EXCL_alpha", "EXCL_beta" },
+            filtered.Select(s => s.Value).ToArray());
+    }
+
+    [TestMethod]
     public async Task FilterBoreholesByCantonReturnsOnlyMatchingBoreholes()
     {
         await AddBoreholesWithCantons("Bern", "Vaud", null);

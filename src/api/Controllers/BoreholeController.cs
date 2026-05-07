@@ -163,18 +163,23 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         ExecuteAsAuthenticatedUserAsync("computing filter stats", user => filterService.GetFilterStatsAsync(filterRequest, user));
 
     /// <summary>
-    /// Returns autocomplete suggestions for a borehole text column.
+    /// Returns autocomplete suggestions for a borehole text column. When a
+    /// <paramref name="filterRequest"/> is supplied, suggestions are restricted to boreholes
+    /// matching every active filter except the filter on the field being autocompleted, so the
+    /// user can refine that field's value (filter-exclusion on the self-field).
     /// </summary>
     /// <param name="field">The borehole column to search (originalName, projectName, or name).</param>
     /// <param name="query">The prefix string to match against; must be at least 2 characters.</param>
     /// <param name="limit">Maximum number of suggestions to return (1–50, default 10).</param>
+    /// <param name="filterRequest">The active filter request body; may be null/empty to compute suggestions over all boreholes the caller can see.</param>
     /// <returns>A list of <see cref="BoreholeSuggestion"/> ordered by frequency then value.</returns>
-    [HttpGet("suggest")]
+    [HttpPost("suggest")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<IEnumerable<BoreholeSuggestion>>> SuggestAsync(
+    public async Task<ActionResult<IList<BoreholeSuggestion>>> SuggestAsync(
         [FromQuery] BoreholeSuggestionField field,
         [FromQuery] string? query,
-        [FromQuery] int limit = 10)
+        [FromQuery] int limit = 10,
+        [FromBody] FilterRequest? filterRequest = null)
     {
         const int minQueryLength = 2;
         const int maxLimit = 50;
@@ -189,48 +194,9 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             return Problem(statusCode: StatusCodes.Status400BadRequest, title: "Invalid limit", detail: $"'limit' must be between 1 and {maxLimit}.");
         }
 
-        var subjectId = HttpContext.GetUserSubjectId();
-        var user = await Context.UsersWithIncludes
-            .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
-            .ConfigureAwait(false);
-
-        if (user == null) return Unauthorized($"No user with subject_id <{subjectId}> found.");
-
-        var baseQuery = Context.Boreholes.AsNoTracking();
-        if (!user.IsAdmin)
-        {
-            var allowedWorkgroupIds = user.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
-            baseQuery = baseQuery.Where(b => b.WorkgroupId.HasValue && allowedWorkgroupIds.Contains(b.WorkgroupId.Value));
-        }
-
-        var prefix = query + "%";
-        var groupedQuery = field switch
-        {
-            BoreholeSuggestionField.OriginalName => baseQuery
-                .Where(b => b.OriginalName != null && b.OriginalName != "" && EF.Functions.ILike(b.OriginalName!, prefix))
-                .GroupBy(b => b.OriginalName!)
-                .Select(g => new { Value = g.Key, Count = g.Count() }),
-            BoreholeSuggestionField.ProjectName => baseQuery
-                .Where(b => b.ProjectName != null && b.ProjectName != "" && EF.Functions.ILike(b.ProjectName!, prefix))
-                .GroupBy(b => b.ProjectName!)
-                .Select(g => new { Value = g.Key, Count = g.Count() }),
-            BoreholeSuggestionField.Name => baseQuery
-                .Where(b => b.Name != null && b.Name != "" && EF.Functions.ILike(b.Name!, prefix))
-                .GroupBy(b => b.Name!)
-                .Select(g => new { Value = g.Key, Count = g.Count() }),
-            _ => throw new InvalidOperationException("Unreachable: enum binding guarantees a valid field."),
-        };
-
-        var rows = await groupedQuery
-            .OrderByDescending(s => s.Count)
-            .ThenBy(s => s.Value)
-            .Take(limit)
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        var suggestions = rows.Select(r => new BoreholeSuggestion(r.Value, r.Count)).ToList();
-        return Ok(suggestions);
+        return await ExecuteAsAuthenticatedUserAsync(
+            "computing borehole suggestions",
+            user => filterService.GetSuggestionsAsync(field, query!, limit, filterRequest, user)).ConfigureAwait(false);
     }
 
     /// <summary>

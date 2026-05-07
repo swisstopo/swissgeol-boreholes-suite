@@ -54,6 +54,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
                   item={filterItem}
                   filterValue={(value as string) ?? null}
                   onUpdate={value => updateChange(filterItem.key, value)}
+                  filterRequest={filterParams as FilterRequest}
                 />
               )}
               {filterItem.type === "Date" && (
