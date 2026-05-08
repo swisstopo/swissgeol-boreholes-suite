@@ -885,10 +885,10 @@ public static class BdmsContextExtensions
         var fakeLithologies = new Faker<Lithology>()
             .StrictMode(true)
             .RuleFor(o => o.Id, f => lithology_ids++)
-            .RuleFor(o => o.StratigraphyId, f => GetStratigraphyId(lithology_ids, 23_000_000))
+            .RuleFor(o => o.StratigraphyId, (f, l) => GetStratigraphyId(l.Id, 23_000_000))
             .RuleFor(o => o.Stratigraphy, _ => default!)
-            .RuleFor(o => o.FromDepth, f => (lithology_ids % 10) * 10)
-            .RuleFor(o => o.ToDepth, f => ((lithology_ids % 10) + 1) * 10)
+            .RuleFor(o => o.FromDepth, (f, l) => (l.Id % 10) * 10)
+            .RuleFor(o => o.ToDepth, (f, l) => ((l.Id % 10) + 1) * 10)
             .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
             .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
             .RuleFor(o => o.CreatedBy, _ => default!)
@@ -928,29 +928,50 @@ public static class BdmsContextExtensions
 
         var lithologiesToInsert = new List<Lithology>();
         var random = new Random(42);
-        for (int i = 0; i < stratigraphyRange.Count - 1; i++)
+
+        // Select exactly 20% of stratigraphies whose lithologies are all unspecified
+        // (IsUnconsolidated == null). The remaining stratigraphies are split sequentially
+        // into a leading block of 0..10 unconsolidated (true) lithologies followed by
+        // 0..10 consolidated (false) ones — never mixed.
+        int totalStratigraphies = stratigraphyRange.Count - 1;
+        var unspecifiedStratigraphyIndices = Enumerable.Range(0, totalStratigraphies)
+            .OrderBy(_ => random.Next())
+            .Take(totalStratigraphies / 5)
+            .ToHashSet();
+
+        for (int i = 0; i < totalStratigraphies; i++)
         {
-            // ~20% of stratigraphies contain only unspecified (null) lithologies;
-            // the remaining stratigraphies are split sequentially into a leading block
-            // of unconsolidated (true) lithologies followed by consolidated (false) ones.
-            bool isUnspecifiedStratigraphy = random.NextDouble() < 0.2;
-            int switchIndex = isUnspecifiedStratigraphy ? 0 : random.Next(0, 10);
+            bool isUnspecifiedStratigraphy = unspecifiedStratigraphyIndices.Contains(i);
+            int switchIndex = isUnspecifiedStratigraphy ? 0 : random.Next(0, 11);
             var start = (i * 10) + 1;
             var range = Enumerable.Range(start, 10);
             int localIndex = 0;
             foreach (var seed in range)
             {
                 var lithology = SeededLithologies(seed);
-                lithology.IsUnconsolidated = isUnspecifiedStratigraphy ? null : localIndex < switchIndex;
 
-                if (lithology.IsUnconsolidated == true)
+                if (isUnspecifiedStratigraphy)
                 {
-                    lithology.CompactnessId = random.NextDouble() < 0.2 ? null : compactnessIds[random.Next(compactnessIds.Count)];
-                    lithology.CohesionId = random.NextDouble() < 0.2 ? null : cohesionIds[random.Next(cohesionIds.Count)];
-                    lithology.HumidityId = random.NextDouble() < 0.2 ? null : humidityIds[random.Next(humidityIds.Count)];
-                    lithology.ConsistencyId = random.NextDouble() < 0.2 ? null : consistencyIds[random.Next(consistencyIds.Count)];
-                    lithology.PlasticityId = random.NextDouble() < 0.2 ? null : plasticityIds[random.Next(plasticityIds.Count)];
-                    lithology.UscsDeterminationId = random.NextDouble() < 0.2 ? null : uscsDeterminationIds[random.Next(uscsDeterminationIds.Count)];
+                    // Unspecified lithologies only carry FromDepth, ToDepth and Notes;
+                    // every other domain-specific property must be null/false.
+                    lithology.IsUnconsolidated = null;
+                    lithology.HasBedding = false;
+                    lithology.Share = null;
+                    lithology.AlterationDegreeId = null;
+                }
+                else
+                {
+                    lithology.IsUnconsolidated = localIndex < switchIndex;
+
+                    if (lithology.IsUnconsolidated == true)
+                    {
+                        lithology.CompactnessId = random.NextDouble() < 0.2 ? null : compactnessIds[random.Next(compactnessIds.Count)];
+                        lithology.CohesionId = random.NextDouble() < 0.2 ? null : cohesionIds[random.Next(cohesionIds.Count)];
+                        lithology.HumidityId = random.NextDouble() < 0.2 ? null : humidityIds[random.Next(humidityIds.Count)];
+                        lithology.ConsistencyId = random.NextDouble() < 0.2 ? null : consistencyIds[random.Next(consistencyIds.Count)];
+                        lithology.PlasticityId = random.NextDouble() < 0.2 ? null : plasticityIds[random.Next(plasticityIds.Count)];
+                        lithology.UscsDeterminationId = random.NextDouble() < 0.2 ? null : uscsDeterminationIds[random.Next(uscsDeterminationIds.Count)];
+                    }
                 }
 
                 lithologiesToInsert.Add(lithology);
@@ -1105,6 +1126,12 @@ public static class BdmsContextExtensions
         for (int i = 0; i < lithologiesToInsert.Count; i++)
         {
             var lithology = lithologiesToInsert[i];
+
+            // Unspecified lithologies (IsUnconsolidated == null) carry no descriptions.
+            if (lithology.IsUnconsolidated == null)
+            {
+                continue;
+            }
 
             void ApplyTypeSpecificValues(LithologyDescription target, int seedOffset)
             {
