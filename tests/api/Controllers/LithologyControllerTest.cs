@@ -279,6 +279,10 @@ public class LithologyControllerTest
         Assert.IsNotNull(createdLithology);
         Assert.IsNull(createdLithology.IsUnconsolidated);
 
+        // Bedding and share are not applicable to unspecified lithologies.
+        Assert.IsFalse(createdLithology.HasBedding);
+        Assert.IsNull(createdLithology.Share);
+
         // Both unconsolidated-side and consolidated-side fields must be cleared.
         Assert.IsNull(createdLithology.CompactnessId);
         Assert.IsNull(createdLithology.CohesionId);
@@ -290,24 +294,8 @@ public class LithologyControllerTest
         Assert.AreEqual(0, createdLithology.LithologyRockConditionCodes.Count);
         Assert.AreEqual(0, createdLithology.LithologyTextureMetaCodes.Count);
 
-        var firstLithologyDescription = createdLithology.LithologyDescriptions.Single(ld => ld.IsFirst);
-        Assert.IsNull(firstLithologyDescription.LithologyUnconMainId);
-        Assert.IsNull(firstLithologyDescription.LithologyUncon2Id);
-        Assert.IsNull(firstLithologyDescription.LithologyConId);
-        Assert.IsNull(firstLithologyDescription.GrainSizeId);
-        Assert.IsNull(firstLithologyDescription.GrainAngularityId);
-        Assert.IsNull(firstLithologyDescription.GradationId);
-        Assert.IsNull(firstLithologyDescription.CementationId);
-        Assert.IsFalse(firstLithologyDescription.HasStriae);
-        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionComponentUnconOrganicCodes.Count);
-        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionComponentUnconDebrisCodes.Count);
-        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionGrainShapeCodes.Count);
-        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionGrainAngularityCodes.Count);
-        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionLithologyUnconDebrisCodes.Count);
-        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionComponentConParticleCodes.Count);
-        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionComponentConMineralCodes.Count);
-        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionStructureSynGenCodes.Count);
-        Assert.AreEqual(0, firstLithologyDescription.LithologyDescriptionStructurePostGenCodes.Count);
+        // Unspecified lithologies have no descriptions.
+        Assert.AreEqual(0, createdLithology.LithologyDescriptions.Count);
 
         var deleteResponse = await controller.DeleteAsync(createdLithology.Id);
         ActionResultAssert.IsOk(deleteResponse);
@@ -340,6 +328,8 @@ public class LithologyControllerTest
         var updatedLithology = (response.Result as OkObjectResult).Value as Lithology;
 
         Assert.IsNull(updatedLithology.IsUnconsolidated);
+        Assert.IsFalse(updatedLithology.HasBedding);
+        Assert.IsNull(updatedLithology.Share);
         Assert.AreEqual(0, updatedLithology.UscsTypeCodelistIds.Count);
         Assert.AreEqual(0, updatedLithology.RockConditionCodelistIds.Count);
         Assert.AreEqual(0, updatedLithology.TextureMetaCodelistIds.Count);
@@ -349,6 +339,7 @@ public class LithologyControllerTest
         Assert.IsNull(updatedLithology.ConsistencyId);
         Assert.IsNull(updatedLithology.PlasticityId);
         Assert.IsNull(updatedLithology.UscsDeterminationId);
+        Assert.AreEqual(0, updatedLithology.LithologyDescriptions.Count);
 
         await controller.DeleteAsync(updatedLithology.Id);
     }

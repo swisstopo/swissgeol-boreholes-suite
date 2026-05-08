@@ -218,10 +218,17 @@ public class LithologyController : BoreholeControllerBase<Lithology>
             .ThenBy(ld => ld.Id)
             .ToList() ?? [];
 
-        if (!entity.HasBedding)
+        if (entity.IsUnconsolidated == null)
+        {
+            // Unspecified lithologies carry no descriptions, no bedding, and no share.
+            entity.HasBedding = false;
+            entity.Share = null;
+            entity.LithologyDescriptions = [];
+        }
+        else if (!entity.HasBedding)
         {
             entity.Share = null; // Reset share if bedding is false
-            entity.LithologyDescriptions = entity.LithologyDescriptions?.Where(ld => ld.IsFirst).ToList() ?? [];
+            entity.LithologyDescriptions = entity.LithologyDescriptions.Where(ld => ld.IsFirst).ToList();
         }
 
         // Remove old lithology descriptions
