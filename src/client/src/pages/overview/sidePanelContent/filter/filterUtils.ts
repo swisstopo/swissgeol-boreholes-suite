@@ -1,5 +1,9 @@
 import { FilterStatsResponse, NullableBooleanCounts } from "../../../../api/borehole.ts";
 import { FilterKey } from "../../useBoreholeUrlParams.ts";
+import { SearchData } from "./filterData/filterInterfaces.ts";
+
+export const filterForAnonymousMode = (searchData: SearchData[], anonymousModeEnabled: boolean): SearchData[] =>
+  anonymousModeEnabled ? searchData.filter(d => !d.hideInAnonymousMode) : searchData;
 
 export const parseBooleanFilterValue = (value: unknown): boolean | null | undefined => {
   if (value === "true") return true;
