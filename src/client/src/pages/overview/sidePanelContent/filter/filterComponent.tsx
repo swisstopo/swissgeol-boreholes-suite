@@ -6,7 +6,7 @@ import { styled } from "@mui/material/styles";
 import { ChevronDown } from "lucide-react";
 import Polygon from "../../../../assets/icons/polygon.svg?react";
 import { ReduxRootState } from "../../../../api-lib/ReduxStateInterfaces.ts";
-import { FilterRequest, useFilterStats } from "../../../../api/borehole.ts";
+import { useFilterStats } from "../../../../api/borehole.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { useAuth } from "../../../../auth/useBoreholesAuth.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
@@ -49,7 +49,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
   const { filterParams, setFilterField, resetFilter, setTableParams } = useBoreholeUrlParams();
 
   const user = useSelector((state: ReduxRootState) => state.core_user);
-  const { data: stats } = useFilterStats(filterParams as FilterRequest);
+  const { data: stats } = useFilterStats(filterParams);
   const auth = useAuth();
 
   const [searchList, setSearchList] = useState<FilterInputConfig[]>([
