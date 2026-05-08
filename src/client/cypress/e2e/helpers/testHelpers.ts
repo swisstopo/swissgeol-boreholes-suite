@@ -504,10 +504,12 @@ export const deleteBorehole = (id: number | string) => {
   });
 };
 
-export const loginAndResetState = () => {
-  loginAsAdmin();
+/**
+ * Deletes any user-created boreholes (id > 1002999, above the seed range).
+ * Requires the `@access_token` alias to be set by a prior `loginAsAdmin()` call.
+ */
+export const resetBoreholeState = () => {
   cy.get("@access_token").then(token => {
-    // Reset boreholes
     cy.request({
       method: "POST",
       url: "/api/v2/borehole/filter",
@@ -536,6 +538,11 @@ export const loginAndResetState = () => {
     //     });
     // });
   });
+};
+
+export const loginAndResetState = () => {
+  loginAsAdmin();
+  resetBoreholeState();
 };
 
 export const delayedType = (element: Cypress.Chainable<JQuery<HTMLElement>>, text: string) => {

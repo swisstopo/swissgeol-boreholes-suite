@@ -1,5 +1,5 @@
 import "./commands";
-import { interceptApiCalls, login, loginAndResetState } from "../e2e/helpers/testHelpers";
+import { interceptApiCalls, login, loginAsAdmin, resetBoreholeState } from "../e2e/helpers/testHelpers";
 import "cypress-file-upload";
 // @ts-expect-error - @cypress/grep uses exports map incompatible with moduleResolution:node
 import { register as registerCypressGrep } from "@cypress/grep";
@@ -13,23 +13,19 @@ Cypress.on("uncaught:exception", () => {
   return false;
 });
 
-for (const command of ["click", "type", "select", "check", "uncheck"] as Array<keyof Cypress.Chainable>) {
-  Cypress.Commands.overwrite(command, (originalFn, ...args) => {
-    const result = originalFn(...args);
-    return new Promise(resolve => {
-      setTimeout(() => resolve(result), 100);
-    });
-  });
-}
-
 before(() => {
   // Makes sure that the Editor user is consistently overwritten with oidc-mock user Editor
   login("editor");
+  // Reset borehole state once per spec instead of per test. The @access_token alias is
+  // re-established per test by loginAsAdmin() in beforeEach, so resetBoreholeState() can
+  // run here using the alias bound during this login flow.
+  loginAsAdmin();
+  resetBoreholeState();
 });
 
 beforeEach(() => {
   interceptApiCalls();
-  loginAndResetState();
+  loginAsAdmin();
 });
 
 const failFlakyTests = false; // Set this to true to fail test run if at least one test fails in one of the attempts.
