@@ -3,6 +3,11 @@ import { goToRouteAndAcceptTerms, returnToOverview } from "../helpers/testHelper
 
 describe("map settings", () => {
   it("Adds wms and wmts to user maps", () => {
+    // Load hits live geo.admin.ch; alias so cy.wait uses responseTimeout (30s) instead
+    // of relying on defaultCommandTimeout (10s) for the resulting list to render.
+    cy.intercept({ hostname: "wms.geo.admin.ch" }).as("wmsCapabilities");
+    cy.intercept({ hostname: "wmts.geo.admin.ch" }).as("wmtsCapabilities");
+
     goToRouteAndAcceptTerms("/setting");
 
     const wmsName = "Army logistics centres (ALC)";
@@ -11,6 +16,7 @@ describe("map settings", () => {
     cy.dataCy("map-tab").click();
     // Add WMS
     cy.get('[data-cy="load-layers-button"]').click();
+    cy.wait("@wmsCapabilities");
     cy.get('[data-cy="wms-list-box"]').contains(wmsName);
     cy.get('[data-cy="maps-for-user-box"]').should("not.exist");
     cy.contains("div.selectable", wmsName).find('[data-cy="add-layer-button"]').click();
@@ -22,6 +28,7 @@ describe("map settings", () => {
 
     // Add WMTS
     cy.get('[data-cy="load-layers-button"]').click();
+    cy.wait("@wmtsCapabilities");
     cy.get('[data-cy="wmts-list-box"]').contains(wmtsName);
     cy.contains("div.selectable", wmtsName).find('[data-cy="add-layer-button"]').click();
     cy.wait("@setting");
