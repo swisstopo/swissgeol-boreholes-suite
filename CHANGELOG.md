@@ -16,6 +16,8 @@
 - Upgraded swissgeol Data Extraction service to version 1.0.162.
 - The database tables `boreholeFiles` and  `files` were merged into one table `profiles`.
 - Creating an empty stratigraphy now opens a modal that prompts for the name; the stratigraphy is created on confirmation and the user is taken straight to it.
+- Exported LOG attachments are now grouped in folders by run number instead of being prefixed with a UUID. Duplicate file names per log run are prevented on upload and import.
+- LOG import dialog now assigns attachments per run number instead of as a flat list.
 - Lithology rock type can now be left unspecified (in addition to unconsolidated and consolidated). Stratigraphy extraction creates lithologies as unspecified by default.
 
 ### Fixed
