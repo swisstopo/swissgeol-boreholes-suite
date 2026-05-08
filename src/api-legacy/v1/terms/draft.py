@@ -35,26 +35,26 @@ class DraftTerms(Action):
             # Get draft if present
             id_tes = await self.conn.fetchval("""
                 SELECT
-                    id_tes
+                    id
                 FROM
                     bdms.terms
                 WHERE
-                    draft_tes IS TRUE
+                    draft IS TRUE
             """)
 
             if id_tes is None:
-                # Create a new draft (draft_tes default value is true)
+                # Create a new draft (draft default value is true)
                 await self.conn.execute("""
                     INSERT INTO bdms.terms (
-                        text_tes_en,
-                        text_tes_de,
-                        text_tes_fr,
-                        text_tes_it,
-                        text_tes_ro
+                        text_en,
+                        text_de,
+                        text_fr,
+                        text_it,
+                        text_ro
                     ) VALUES (
                         $1, $2, $3, $4, $5
                     )
-                    RETURNING id_tes
+                    RETURNING id
                 """, *values)
 
             else:
@@ -66,14 +66,14 @@ class DraftTerms(Action):
                         bdms.terms
 
                     SET
-                        text_tes_en=$1,
-                        text_tes_de=$2,
-                        text_tes_fr=$3,
-                        text_tes_it=$4,
-                        text_tes_ro=$5
+                        text_en=$1,
+                        text_de=$2,
+                        text_fr=$3,
+                        text_it=$4,
+                        text_ro=$5
 
                     WHERE
-                        id_tes = $6
+                        id = $6
                 """, *values)
 
                 # Commit changes to db

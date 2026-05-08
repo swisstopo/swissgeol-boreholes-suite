@@ -53,9 +53,9 @@ class BaseHandler(web.RequestHandler):
                                     FROM
                                         bdms.terms
                                     WHERE
-                                        draft_tes IS FALSE
+                                        draft IS FALSE
                                     AND
-                                        expired_tes IS NULL
+                                        expired IS NULL
                                     LIMIT 1
                                 )
                             )
@@ -92,75 +92,75 @@ class BaseHandler(web.RequestHandler):
 
                     LEFT JOIN (
                         SELECT
-                            r.id_usr_fk,
+                            r.user_id,
                             array_agg(r.name_rol) AS roles
                         FROM (
                             SELECT distinct
-                                id_usr_fk,
+                                user_id,
                                 name_rol
                             FROM
                                 bdms.users_roles,
                                 bdms.roles,
                                 bdms.workgroups
                             WHERE
-                                id_rol = id_rol_fk
+                                id_rol = role_id
                             AND
-                                id_wgp = id_wgp_fk
+                                id = workgroup_id
                         ) r
-                        GROUP BY id_usr_fk
+                        GROUP BY user_id
                     ) as rl
-                    ON rl.id_usr_fk = id_usr
+                    ON rl.user_id = id_usr
 
                     LEFT JOIN (
                         SELECT
-                            id_usr_fk,
+                            user_id,
                             TRUE as terms
                         FROM
                             bdms.terms_accepted
                         INNER JOIN
                             bdms.terms
                         ON
-                            id_tes_fk = id_tes
+                            term_id = id
                         WHERE
-                            expired_tes IS NULL
+                            expired IS NULL
                         AND
-                            draft_tes IS FALSE
+                            draft IS FALSE
                     ) as tr
                     ON
-                        tr.id_usr_fk = id_usr
+                        tr.user_id = id_usr
 
                     LEFT JOIN (
                         SELECT
-                            id_usr_fk,
-                            array_agg(id_wgp) as wgps,
+                            user_id,
+                            array_agg(id) as wgps,
                             array_to_json(array_agg(j)) as ws
                         FROM (
                             SELECT
-                                id_usr_fk,
-                                id_wgp,
+                                user_id,
+                                id,
                                 json_build_object(
-                                    'id', id_wgp,
-                                    'workgroup', name_wgp,
+                                    'id', id,
+                                    'workgroup', name,
                                     'roles', array_agg(name_rol),
-                                    'disabled', disabled_wgp
+                                    'disabled', disabled
                                 ) as j
                             FROM
                                 bdms.users_roles,
                                 bdms.workgroups,
                                 bdms.roles
                             WHERE
-                                id_rol = id_rol_fk
+                                id_rol = role_id
                             AND
-                                id_wgp_fk = id_wgp
+                                workgroup_id = id
                             GROUP BY
-                                id_usr_fk,
-                                id_wgp
+                                user_id,
+                                id
                             ORDER BY
-                                name_wgp
+                                name
                         ) AS t
-                        GROUP BY id_usr_fk
+                        GROUP BY user_id
                     ) as w
-                    ON w.id_usr_fk = id_usr
+                    ON w.user_id = id_usr
 
                     WHERE
                         subject_id = $1

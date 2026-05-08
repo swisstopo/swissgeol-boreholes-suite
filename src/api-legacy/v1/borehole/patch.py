@@ -13,19 +13,19 @@ class PatchBorehole(Action):
         column = None
 
         if field == 'extended.original_name':
-            column = 'original_name_bho'
+            column = 'original_name'
 
         elif field == 'visible':
-            column = 'public_bho'
+            column = 'public'
 
         elif field == 'custom.alternate_name':
-            column = 'alternate_name_bho'
+            column = 'alternate_name'
 
         elif field == 'custom.project_name':
-            column = 'project_name_bho'
+            column = 'project_name'
 
         elif field == 'workgroup':
-            column = 'id_wgp_fk'
+            column = 'workgroup_id'
 
         elif field in [ 'location_x',
                         'location_y',
@@ -38,16 +38,16 @@ class PatchBorehole(Action):
                         'precision_location_y_lv03']:
 
             if field == 'location_x':
-                column = 'location_x_bho'
+                column = 'location_x'
 
             elif field == 'location_y':
-                column = 'location_y_bho'
+                column = 'location_y'
 
             elif field == 'location_x_lv03':
-                column = 'location_x_lv03_bho'
+                column = 'location_x_lv03'
 
             elif field == 'location_y_lv03':
-                column = 'location_y_lv03_bho'
+                column = 'location_y_lv03'
 
             elif field == 'precision_location_x':
                 column = 'precision_location_x'
@@ -63,19 +63,19 @@ class PatchBorehole(Action):
 
             elif field == 'location':
                 column = [
-                    'location_x_bho',
-                    'location_y_bho',
-                    'elevation_z_bho',
-                    'country_bho',
-                    'canton_bho',
-                    'municipality_bho',
+                    'location_x',
+                    'location_y',
+                    'elevation_z',
+                    'country',
+                    'canton',
+                    'municipality',
                 ]
 
         elif field == 'elevation_z':
-            column = 'elevation_z_bho'
+            column = 'elevation_z'
 
         elif field == 'custom.canton':
-            column = 'canton_bho'
+            column = 'canton'
 
         elif field == 'custom.city':
             column = 'city_bho'
@@ -84,25 +84,25 @@ class PatchBorehole(Action):
             column = 'canton_num'
 
         elif field == 'total_depth':
-            column = 'total_depth_bho'
+            column = 'total_depth'
 
         elif field == 'extended.top_bedrock_fresh_md':
             column = 'top_bedrock_fresh_md'
 
         elif field == 'extended.groundwater':
-            column = 'groundwater_bho'
+            column = 'groundwater'
 
         elif field == 'custom.mistakes':
             column = 'mistakes_bho'
 
         elif field == 'custom.remarks':
-            column = 'remarks_bho'
+            column = 'remarks'
 
         elif field == 'restriction_until':
-            column = 'restriction_until_bho'
+            column = 'restriction_until'
 
         elif field == 'restriction':
-            column = 'restriction_id_cli'
+            column = 'restriction_id'
 
         elif field == 'national_interest':
             column = 'national_interest'
@@ -111,49 +111,49 @@ class PatchBorehole(Action):
             column = 'borehole_type_id'
 
         elif field == 'spatial_reference_system':
-            column = 'srs_id_cli'
+            column = 'srs_id'
 
         elif field == 'location_precision':
-            column = 'qt_location_id_cli'
+            column = 'precision_location_id'
 
         elif field == 'elevation_precision':
-            column = 'qt_elevation_id_cli'
+            column = 'precision_elevation_id'
 
         elif field == 'reference_elevation':
-            column = 'reference_elevation_bho'
+            column = 'reference_elevation'
 
         elif field == 'qt_reference_elevation':
-            column = 'qt_reference_elevation_id_cli'
+            column = 'precision_reference_elevation_id'
 
         elif field == 'reference_elevation_type':
-            column = 'reference_elevation_type_id_cli'
+            column = 'reference_elevation_type_id'
 
         elif field == 'height_reference_system':
-            column = 'hrs_id_cli'
+            column = 'hrs_id'
 
         elif field == 'extended.purpose':
-            column = 'purpose_id_cli'
+            column = 'purpose_id'
 
         elif field == 'extended.status':
-            column = 'status_id_cli'
+            column = 'status_id'
 
         elif field == 'custom.qt_depth':
-            column = 'qt_depth_id_cli'
+            column = 'precision_depth_id'
 
         elif field == 'depth_precision':
-            column = 'qt_depth_id_cli'
+            column = 'precision_depth_id'
 
         elif field == 'custom.top_bedrock_weathered_md':
             column = 'top_bedrock_weathered_md'
 
         elif field == 'lithology_con':
-            column = 'lithology_top_bedrock_id_cli'
+            column = 'lithology_top_bedrock_id'
 
         elif field == 'lithostratigraphy':
-            column = 'lithostrat_id_cli'
+            column = 'lithostratigraphy_top_bedrock_id'
 
         elif field == 'chronostratigraphy':
-            column = 'chronostrat_id_cli'
+            column = 'chronostratigraphy_top_bedrock_id'
 
         if column is None:
             raise PatchAttributeException(
@@ -185,9 +185,9 @@ class PatchBorehole(Action):
                 'precision_location_x_lv03',
                 'precision_location_y_lv03',
                 'elevation_z',
-                'country_bho',
-                'canton_bho',
-                'municipality_bho',
+                'country',
+                'canton',
+                'municipality',
                 'depth_precision',
                 'drill_diameter',
                 'custom.drill_diameter',
@@ -211,9 +211,9 @@ class PatchBorehole(Action):
                         UPDATE bdms.borehole
                         SET
                             %s,
-                            updated_bho = now(),
-                            updated_by_bho = %s
-                        WHERE id_bho = %s
+                            updater = now(),
+                            updated = %s
+                        WHERE id = %s
                     """ % (
                         ", ".join(sets),
                         self.getIdx(),
@@ -225,9 +225,9 @@ class PatchBorehole(Action):
                         UPDATE bdms.borehole
                         SET
                             %s = $1,
-                            updated_bho = now(),
-                            updated_by_bho = $2
-                        WHERE id_bho = $3
+                            updater = now(),
+                            updated = $2
+                        WHERE id = $3
                     """ % column, value, user['id'], id)
 
 
@@ -245,9 +245,9 @@ class PatchBorehole(Action):
                     UPDATE bdms.borehole
                     SET
                         %s = to_date($1, 'YYYY-MM-DD'),
-                        updated_bho = now(),
-                        updated_by_bho = $2
-                    WHERE id_bho = $3
+                        updater = now(),
+                        updated = $2
+                    WHERE id = $3
                 """ % column, value, user['id'], id)
 
             elif field in [
@@ -313,9 +313,9 @@ class PatchBorehole(Action):
                     UPDATE bdms.borehole
                     SET
                         %s = $1,
-                        updated_bho = now(),
-                        updated_by_bho = $2
-                    WHERE id_bho = $3
+                        updater = now(),
+                        updated = $2
+                    WHERE id = $3
                 """ % column, value, user['id'], id)
 
             else:
@@ -330,12 +330,12 @@ class PatchBorehole(Action):
                             SELECT row_to_json(t)
                             FROM (
                                 SELECT
-                                    borehole.locked_by_bho as id,
+                                    borehole.locked_by as id,
                                     locker.username as username,
                                     locker.firstname || ' ' || locker.lastname
                                         as fullname,
                                     to_char(
-                                        borehole.locked_bho,
+                                        borehole.locked,
                                         'YYYY-MM-DD"T"HH24:MI:SSOF'
                                     ) as date
                             ) AS t
@@ -349,7 +349,7 @@ class PatchBorehole(Action):
                                     updater.firstname || ' ' || updater.lastname
                                         as fullname,
                                     to_char(
-                                        updated_bho,
+                                        borehole.updater,
                                         'YYYY-MM-DD"T"HH24:MI:SSOF'
                                     ) as date
                             ) t
@@ -357,11 +357,11 @@ class PatchBorehole(Action):
                     FROM
                         bdms.borehole
                     INNER JOIN bdms.users as locker
-                        ON locked_by_bho = locker.id_usr
+                        ON locked_by = locker.id_usr
                     INNER JOIN bdms.users as updater
-                        ON updated_by_bho = updater.id_usr
+                        ON updated = updater.id_usr
                     WHERE
-                        borehole.id_bho = $1
+                        borehole.id = $1
                 ) t2
             """, id)
 
