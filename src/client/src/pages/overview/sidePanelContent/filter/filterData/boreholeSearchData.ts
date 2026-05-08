@@ -6,6 +6,7 @@ export const boreholeSearchData: SearchData[] = [
     type: "Input",
     label: "originalName",
     key: "originalName",
+    hideInAnonymousMode: true,
   },
   {
     id: 1,

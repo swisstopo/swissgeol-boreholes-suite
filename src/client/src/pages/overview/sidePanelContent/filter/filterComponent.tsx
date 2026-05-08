@@ -14,7 +14,7 @@ import { useBoreholeUrlParams } from "../../useBoreholeUrlParams.ts";
 import FilterChips from "./FilterChips.tsx";
 import { attachmentSearchData } from "./filterData/attachmentSearchData.ts";
 import { boreholeSearchData } from "./filterData/boreholeSearchData.ts";
-import { FilterComponentProps, FilterInputConfig } from "./filterData/filterInterfaces.ts";
+import { FilterComponentProps, FilterInputConfig, SearchData } from "./filterData/filterInterfaces.ts";
 import { identifierSearchData } from "./filterData/identifierSearchData.ts";
 import { locationSearchData } from "./filterData/locationSearchData.ts";
 import { logSearchData } from "./filterData/logSearchData.ts";
@@ -51,6 +51,8 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
   const user = useSelector((state: ReduxRootState) => state.core_user);
   const { data: stats } = useFilterStats(filterParams as FilterRequest);
   const auth = useAuth();
+  const filterForAnonymous = (searchData: SearchData[]) =>
+    auth.anonymousModeEnabled ? searchData.filter(d => !d.hideInAnonymousMode) : searchData;
 
   const [searchList, setSearchList] = useState<FilterInputConfig[]>([
     {
@@ -74,21 +76,21 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
       name: "identifiers",
       translationId: "ids",
       isSelected: false,
-      searchData: identifierSearchData,
+      searchData: filterForAnonymous(identifierSearchData),
     },
     {
       id: 3,
       name: "location",
       translationId: "location",
       isSelected: false,
-      searchData: locationSearchData,
+      searchData: filterForAnonymous(locationSearchData),
     },
     {
       id: 4,
       name: "borehole",
       translationId: "borehole",
       isSelected: false,
-      searchData: boreholeSearchData,
+      searchData: filterForAnonymous(boreholeSearchData),
     },
 
     {
@@ -96,14 +98,14 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
       name: "log",
       translationId: "log",
       isSelected: false,
-      searchData: logSearchData,
+      searchData: filterForAnonymous(logSearchData),
     },
     {
       id: 6,
       name: "attachments",
       translationId: "attachments",
       isSelected: false,
-      searchData: attachmentSearchData,
+      searchData: filterForAnonymous(attachmentSearchData),
     },
   ]);
 
