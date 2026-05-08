@@ -9,7 +9,7 @@
 - Show a loading mask in the save bar while saving to prevent edits and navigation during the save.
 
 ### Changed
-- Filters are now organized in new sections. Filters for attachments and LOG were added.
+- Filters are now organized in new sections. Filters for attachments, LOG and municipalities were added.
 - When the main map is fitted to the extent of the (filtered) boreholes, a padding is applied to the extent.
 - Filter UI was redesigned and now supports multiple selections and chips per selected filter value.
 - Upgraded swissgeol OCR service to version 1.1.4.
