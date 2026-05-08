@@ -6,7 +6,7 @@ import { styled } from "@mui/material/styles";
 import { ChevronDown } from "lucide-react";
 import Polygon from "../../../../assets/icons/polygon.svg?react";
 import { ReduxRootState } from "../../../../api-lib/ReduxStateInterfaces.ts";
-import { FilterRequest, useFilterStats } from "../../../../api/borehole.ts";
+import { useFilterStats } from "../../../../api/borehole.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { useAuth } from "../../../../auth/useBoreholesAuth.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
@@ -19,7 +19,7 @@ import { identifierSearchData } from "./filterData/identifierSearchData.ts";
 import { locationSearchData } from "./filterData/locationSearchData.ts";
 import { logSearchData } from "./filterData/logSearchData.ts";
 import { FilterReset } from "./filterReset.tsx";
-import { getDomainCountsForField } from "./filterUtils.ts";
+import { filterForAnonymousMode, getDomainCountsForField } from "./filterUtils.ts";
 import { ListFilter } from "./listFilter.tsx";
 import { PolygonFilterContext } from "./polygonFilterContext.tsx";
 import { StatusFilter } from "./statusFilter.tsx";
@@ -49,7 +49,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
   const { filterParams, setFilterField, resetFilter, setTableParams } = useBoreholeUrlParams();
 
   const user = useSelector((state: ReduxRootState) => state.core_user);
-  const { data: stats } = useFilterStats(filterParams as FilterRequest);
+  const { data: stats } = useFilterStats(filterParams);
   const auth = useAuth();
 
   const [searchList, setSearchList] = useState<FilterInputConfig[]>([
@@ -74,21 +74,21 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
       name: "identifiers",
       translationId: "ids",
       isSelected: false,
-      searchData: identifierSearchData,
+      searchData: filterForAnonymousMode(identifierSearchData, auth.anonymousModeEnabled),
     },
     {
       id: 3,
       name: "location",
       translationId: "location",
       isSelected: false,
-      searchData: locationSearchData,
+      searchData: filterForAnonymousMode(locationSearchData, auth.anonymousModeEnabled),
     },
     {
       id: 4,
       name: "borehole",
       translationId: "borehole",
       isSelected: false,
-      searchData: boreholeSearchData,
+      searchData: filterForAnonymousMode(boreholeSearchData, auth.anonymousModeEnabled),
     },
 
     {
@@ -96,14 +96,14 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
       name: "log",
       translationId: "log",
       isSelected: false,
-      searchData: logSearchData,
+      searchData: filterForAnonymousMode(logSearchData, auth.anonymousModeEnabled),
     },
     {
       id: 6,
       name: "attachments",
       translationId: "attachments",
       isSelected: false,
-      searchData: attachmentSearchData,
+      searchData: filterForAnonymousMode(attachmentSearchData, auth.anonymousModeEnabled),
     },
   ]);
 
