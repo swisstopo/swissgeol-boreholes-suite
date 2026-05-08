@@ -383,6 +383,15 @@ public class LithologyController : BoreholeControllerBase<Lithology>
     {
         if (entity.IsUnconsolidated == true)
         {
+            // Set unconsolidated codes
+            var uscsTypeCodes = await Context.Codelists.Where(c => entity.UscsTypeCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+            entity.LithologyUscsTypeCodes = uscsTypeCodes.Select(c => new LithologyUscsTypeCodes { Codelist = c, CodelistId = c.Id }).ToList();
+
+            var rockConditionCodes = await Context.Codelists.Where(c => entity.RockConditionCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+            entity.LithologyRockConditionCodes = rockConditionCodes.Select(c => new LithologyRockConditionCodes { Codelist = c, CodelistId = c.Id }).ToList();
+        }
+        else
+        {
             // Reset unconsolidated codes for consolidated or undefined rock type
             entity.CompactnessId = null;
             entity.CohesionId = null;
@@ -394,26 +403,17 @@ public class LithologyController : BoreholeControllerBase<Lithology>
             entity.LithologyUscsTypeCodes = [];
             entity.LithologyRockConditionCodes = [];
         }
-        else
-        {
-            // Set unconsolidated codes
-            var uscsTypeCodes = await Context.Codelists.Where(c => entity.UscsTypeCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-            entity.LithologyUscsTypeCodes = uscsTypeCodes.Select(c => new LithologyUscsTypeCodes { Codelist = c, CodelistId = c.Id }).ToList();
-
-            var rockConditionCodes = await Context.Codelists.Where(c => entity.RockConditionCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-            entity.LithologyRockConditionCodes = rockConditionCodes.Select(c => new LithologyRockConditionCodes { Codelist = c, CodelistId = c.Id }).ToList();
-        }
 
         if (entity.IsUnconsolidated == false)
-        {
-            // Reset consolidated codes for unconsolidated or undefined rock type
-            entity.LithologyTextureMetaCodes = [];
-        }
-        else
         {
             // Set consolidated codes
             var textureMetaCodes = await Context.Codelists.Where(c => entity.TextureMetaCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
             entity.LithologyTextureMetaCodes = textureMetaCodes.Select(c => new LithologyTextureMetaCodes { Codelist = c, CodelistId = c.Id }).ToList();
+        }
+        else
+        {
+            // Reset consolidated codes for unconsolidated or undefined rock type
+            entity.LithologyTextureMetaCodes = [];
         }
     }
 
