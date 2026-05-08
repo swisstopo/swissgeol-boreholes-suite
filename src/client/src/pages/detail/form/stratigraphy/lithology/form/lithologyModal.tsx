@@ -127,7 +127,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
                               },
                             ],
                       notes: "",
-                    } as Lithology);
+                    });
                   },
                 },
               ],

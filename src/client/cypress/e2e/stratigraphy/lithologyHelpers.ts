@@ -216,17 +216,17 @@ const evaluateUnconsoldiateLithologyDescriptionForm = (
   index: number,
 ) => {
   if (values.lithologyUnconMainId !== undefined)
-    evaluateSelect(`lithologyDescriptions.${index}.lithologyUnconMainId`, values.lithologyUnconMainId as string);
+    evaluateSelect(`lithologyDescriptions.${index}.lithologyUnconMainId`, values.lithologyUnconMainId);
   if (values.lithologyUncon2Id !== undefined)
-    evaluateSelect(`lithologyDescriptions.${index}.lithologyUncon2Id`, values.lithologyUncon2Id as string);
+    evaluateSelect(`lithologyDescriptions.${index}.lithologyUncon2Id`, values.lithologyUncon2Id);
   if (values.lithologyUncon3Id !== undefined)
-    evaluateSelect(`lithologyDescriptions.${index}.lithologyUncon3Id`, values.lithologyUncon3Id as string);
+    evaluateSelect(`lithologyDescriptions.${index}.lithologyUncon3Id`, values.lithologyUncon3Id);
   if (values.lithologyUncon4Id !== undefined)
-    evaluateSelect(`lithologyDescriptions.${index}.lithologyUncon4Id`, values.lithologyUncon4Id as string);
+    evaluateSelect(`lithologyDescriptions.${index}.lithologyUncon4Id`, values.lithologyUncon4Id);
   if (values.lithologyUncon5Id !== undefined)
-    evaluateSelect(`lithologyDescriptions.${index}.lithologyUncon5Id`, values.lithologyUncon5Id as string);
+    evaluateSelect(`lithologyDescriptions.${index}.lithologyUncon5Id`, values.lithologyUncon5Id);
   if (values.lithologyUncon6Id !== undefined)
-    evaluateSelect(`lithologyDescriptions.${index}.lithologyUncon6Id`, values.lithologyUncon6Id as string);
+    evaluateSelect(`lithologyDescriptions.${index}.lithologyUncon6Id`, values.lithologyUncon6Id);
   if (values.componentUnconOrganicCodelistIds !== undefined)
     evaluateMultiSelect(
       `lithologyDescriptions.${index}.componentUnconOrganicCodelistIds`,
@@ -238,9 +238,9 @@ const evaluateUnconsoldiateLithologyDescriptionForm = (
       values.componentUnconDebrisCodelistIds as string[],
     );
   if (values.colorPrimaryId !== undefined)
-    evaluateSelect(`lithologyDescriptions.${index}.colorPrimaryId`, values.colorPrimaryId as string);
+    evaluateSelect(`lithologyDescriptions.${index}.colorPrimaryId`, values.colorPrimaryId);
   if (values.colorSecondaryId !== undefined)
-    evaluateSelect(`lithologyDescriptions.${index}.colorSecondaryId`, values.colorSecondaryId as string);
+    evaluateSelect(`lithologyDescriptions.${index}.colorSecondaryId`, values.colorSecondaryId);
   if (values.grainShapeCodelistIds !== undefined)
     evaluateMultiSelect(
       `lithologyDescriptions.${index}.grainShapeCodelistIds`,
@@ -266,18 +266,16 @@ export const evaluateUnconsolidatedLithologyForm = (values: UnconsolidatedLithol
   if (values.lithologyDescriptions) {
     values.lithologyDescriptions.forEach((desc, i) => evaluateUnconsoldiateLithologyDescriptionForm(desc, i));
   }
-  if (values.compactnessId !== undefined) evaluateSelect("compactnessId", values.compactnessId as string);
-  if (values.cohesionId !== undefined) evaluateSelect("cohesionId", values.cohesionId as string);
-  if (values.humidityId !== undefined) evaluateSelect("humidityId", values.humidityId as string);
-  if (values.consistencyId !== undefined) evaluateSelect("consistencyId", values.consistencyId as string);
-  if (values.plasticityId !== undefined) evaluateSelect("plasticityId", values.plasticityId as string);
+  if (values.compactnessId !== undefined) evaluateSelect("compactnessId", values.compactnessId);
+  if (values.cohesionId !== undefined) evaluateSelect("cohesionId", values.cohesionId);
+  if (values.humidityId !== undefined) evaluateSelect("humidityId", values.humidityId);
+  if (values.consistencyId !== undefined) evaluateSelect("consistencyId", values.consistencyId);
+  if (values.plasticityId !== undefined) evaluateSelect("plasticityId", values.plasticityId);
   if (values.uscsTypeCodelistIds) evaluateMultiSelect("uscsTypeCodelistIds", values.uscsTypeCodelistIds as string[]);
-  if (values.uscsDeterminationId !== undefined)
-    evaluateSelect("uscsDeterminationId", values.uscsDeterminationId as string);
+  if (values.uscsDeterminationId !== undefined) evaluateSelect("uscsDeterminationId", values.uscsDeterminationId);
   if (values.rockConditionCodelistIds)
     evaluateMultiSelect("rockConditionCodelistIds", values.rockConditionCodelistIds as string[]);
-  if (values.alterationDegreeId !== undefined)
-    evaluateSelect("alterationDegreeId", values.alterationDegreeId as string);
+  if (values.alterationDegreeId !== undefined) evaluateSelect("alterationDegreeId", values.alterationDegreeId);
   if (values.notes !== undefined) evaluateTextarea("notes", values.notes);
 };
 
@@ -338,11 +336,11 @@ export const fillConsolidatedLithologyForm = (values: ConsolidatedLithologyFormV
 
 const evaluateConsoldiateLithologyDescriptionForm = (values: ConsolidatedLithologyDescriptionValues, index: number) => {
   if (values.lithologyConId !== undefined)
-    evaluateSelect(`lithologyDescriptions.${index}.lithologyConId`, values.lithologyConId as string);
+    evaluateSelect(`lithologyDescriptions.${index}.lithologyConId`, values.lithologyConId);
   if (values.colorPrimaryId !== undefined)
-    evaluateSelect(`lithologyDescriptions.${index}.colorPrimaryId`, values.colorPrimaryId as string);
+    evaluateSelect(`lithologyDescriptions.${index}.colorPrimaryId`, values.colorPrimaryId);
   if (values.colorSecondaryId !== undefined)
-    evaluateSelect(`lithologyDescriptions.${index}.colorSecondaryId`, values.colorSecondaryId as string);
+    evaluateSelect(`lithologyDescriptions.${index}.colorSecondaryId`, values.colorSecondaryId);
   if (values.componentConParticleCodelistIds)
     evaluateMultiSelect(
       `lithologyDescriptions.${index}.componentConParticleCodelistIds`,
@@ -354,13 +352,13 @@ const evaluateConsoldiateLithologyDescriptionForm = (values: ConsolidatedLitholo
       values.componentConMineralCodelistIds as string[],
     );
   if (values.grainSizeId !== undefined)
-    evaluateSelect(`lithologyDescriptions.${index}.grainSizeId`, values.grainSizeId as string);
+    evaluateSelect(`lithologyDescriptions.${index}.grainSizeId`, values.grainSizeId);
   if (values.grainAngularityId !== undefined)
-    evaluateSelect(`lithologyDescriptions.${index}.grainAngularityId`, values.grainAngularityId as string);
+    evaluateSelect(`lithologyDescriptions.${index}.grainAngularityId`, values.grainAngularityId);
   if (values.gradationId !== undefined)
-    evaluateSelect(`lithologyDescriptions.${index}.gradationId`, values.gradationId as string);
+    evaluateSelect(`lithologyDescriptions.${index}.gradationId`, values.gradationId);
   if (values.cementationId !== undefined)
-    evaluateSelect(`lithologyDescriptions.${index}.cementationId`, values.cementationId as string);
+    evaluateSelect(`lithologyDescriptions.${index}.cementationId`, values.cementationId);
   if (values.structureSynGenCodelistIds)
     evaluateMultiSelect(
       `lithologyDescriptions.${index}.structureSynGenCodelistIds`,
@@ -382,8 +380,7 @@ export const evaluateConsolidatedLithologyForm = (values: ConsolidatedLithologyF
   }
   if (values.textureMetaCodelistIds !== undefined)
     evaluateMultiSelect("textureMetaCodelistIds", values.textureMetaCodelistIds as string[]);
-  if (values.alterationDegreeId !== undefined)
-    evaluateSelect("alterationDegreeId", values.alterationDegreeId as string);
+  if (values.alterationDegreeId !== undefined) evaluateSelect("alterationDegreeId", values.alterationDegreeId);
 
   if (values.notes !== undefined) evaluateTextarea("notes", values.notes);
 };

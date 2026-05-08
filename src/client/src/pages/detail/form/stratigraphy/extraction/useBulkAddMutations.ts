@@ -60,24 +60,15 @@ export const useBulkAddMutation = () => {
         const lithologiesPromise = fetchApiV2WithApiError<Lithology[]>(
           "lithology/bulk",
           "POST",
-          lithologicalDescriptions.map(
-            ld =>
-              ({
-                id: 0,
-                toDepth: ld.toDepth,
-                fromDepth: ld.fromDepth,
-                isUnconsolidated: null,
-                hasBedding: false,
-                stratigraphyId: newStratigraphy.id,
-                lithologyDescriptions: [
-                  {
-                    id: 0,
-                    lithologyId: 0,
-                    isFirst: true,
-                  },
-                ],
-              }) as Lithology,
-          ),
+          lithologicalDescriptions.map(ld => ({
+            id: 0,
+            toDepth: ld.toDepth,
+            fromDepth: ld.fromDepth,
+            isUnconsolidated: null,
+            hasBedding: false,
+            stratigraphyId: newStratigraphy.id,
+            lithologyDescriptions: [],
+          })),
         );
 
         const lithologicalDescriptionsPromise = fetchApiV2WithApiError<LithologicalDescription[]>(
