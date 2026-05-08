@@ -116,13 +116,16 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
                       toDepth: currentValues.toDepth,
                       isUnconsolidated: newValue,
                       hasBedding: false,
-                      lithologyDescriptions: [
-                        {
-                          id: 0,
-                          lithologyId: currentValues.id,
-                          isFirst: true,
-                        },
-                      ],
+                      lithologyDescriptions:
+                        newValue === null
+                          ? []
+                          : [
+                              {
+                                id: 0,
+                                lithologyId: currentValues.id,
+                                isFirst: true,
+                              },
+                            ],
                       notes: "",
                     } as Lithology);
                   },
