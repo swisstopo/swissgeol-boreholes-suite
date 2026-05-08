@@ -11,12 +11,12 @@ public partial class RenameTermsAcceptedColumns : Migration
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.DropForeignKey(
-            name: "FK_terms_accepted_terms_id_tes_fk",
+            name: "terms_accepted_id_tes_fk_fkey",
             schema: "bdms",
             table: "terms_accepted");
 
         migrationBuilder.DropForeignKey(
-            name: "FK_terms_accepted_users_id_usr_fk",
+            name: "terms_accepted_id_usr_fk_fkey",
             schema: "bdms",
             table: "terms_accepted");
 
@@ -38,11 +38,11 @@ public partial class RenameTermsAcceptedColumns : Migration
             table: "terms_accepted",
             newName: "user_id");
 
-        migrationBuilder.RenameIndex(
-            name: "IX_terms_accepted_id_tes_fk",
+        migrationBuilder.CreateIndex(
+            name: "IX_terms_accepted_term_id",
             schema: "bdms",
             table: "terms_accepted",
-            newName: "IX_terms_accepted_term_id");
+            column: "term_id");
 
         migrationBuilder.AddForeignKey(
             name: "FK_terms_accepted_terms_term_id",

@@ -11,12 +11,22 @@ public partial class RenameUserWorkgroupRoleColumns : Migration
     protected override void Up(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.DropForeignKey(
-            name: "FK_users_roles_users_id_usr_fk",
+            name: "user_roles_id_usr_fk_fkey",
             schema: "bdms",
             table: "users_roles");
 
         migrationBuilder.DropForeignKey(
-            name: "FK_users_roles_workgroups_id_wgp_fk",
+            name: "users_roles_id_wgp_fk_fkey",
+            schema: "bdms",
+            table: "users_roles");
+
+        migrationBuilder.DropForeignKey(
+            name: "users_roles_id_rol_fk_fkey",
+            schema: "bdms",
+            table: "users_roles");
+
+        migrationBuilder.DropIndex(
+            name: "IX_users_roles_id_rol_fk_fkey",
             schema: "bdms",
             table: "users_roles");
 
@@ -39,7 +49,7 @@ public partial class RenameUserWorkgroupRoleColumns : Migration
             newName: "user_id");
 
         migrationBuilder.RenameIndex(
-            name: "IX_users_roles_id_wgp_fk",
+            name: "IX_users_roles_id_wgp_fk_fkey",
             schema: "bdms",
             table: "users_roles",
             newName: "IX_users_roles_workgroup_id");
