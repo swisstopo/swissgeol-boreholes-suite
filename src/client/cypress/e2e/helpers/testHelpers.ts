@@ -540,11 +540,6 @@ export const resetBoreholeState = () => {
   });
 };
 
-export const loginAndResetState = () => {
-  loginAsAdmin();
-  resetBoreholeState();
-};
-
 export const delayedType = (element: Cypress.Chainable<JQuery<HTMLElement>>, text: string) => {
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(500);
