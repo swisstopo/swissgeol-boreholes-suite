@@ -1,11 +1,11 @@
-import { BoreholeV2 } from "../../../../api/borehole.ts";
+import { Borehole } from "../../../../api/borehole.ts";
 import { Profile } from "../../../../api/profile.ts";
 import { Codelist } from "../../../../components/codelist.ts";
 import { Workflow } from "../workflow/workflow.ts";
 import { ReferenceSystemCode } from "./coordinateSegmentInterfaces.ts";
 
 export interface LocationBaseProps {
-  borehole: BoreholeV2;
+  borehole: Borehole;
 }
 
 export interface LocationPanelProps extends LocationBaseProps {

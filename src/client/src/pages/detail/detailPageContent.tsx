@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from "react-router";
 import { Box } from "@mui/material";
-import { BoreholeV2 } from "../../api/borehole.ts";
+import { Borehole } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme";
 import { Attachments } from "./attachments/attachments.tsx";
 import { BoreholePanel } from "./form/borehole/boreholePanel.tsx";
@@ -16,7 +16,7 @@ import { StratigraphyPanel } from "./form/stratigraphy/stratigraphyPanel.tsx";
 import { WorkflowView } from "./form/workflow/workflowView.tsx";
 
 interface DetailPageContentProps {
-  borehole: BoreholeV2;
+  borehole: Borehole;
   panelOpen: boolean;
 }
 

@@ -212,7 +212,7 @@ export function useExtractStratigraphies(file: BoreholeAttachment, activePage: n
     enabled: !!file && !!fileInfo,
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes => Extraction for the same file doesn't need to be refetched.
     queryFn: async ({ signal }) => {
-      const response = await extractStratigraphies(file.nameUuid, signal);
+      const response = await extractStratigraphies(file.nameUuid!, signal);
       if (!Array.isArray(response.boreholes) || response.boreholes.length === 0) return [];
       return response.boreholes.map(borehole => {
         const descriptions = cleanUpExtractionData(

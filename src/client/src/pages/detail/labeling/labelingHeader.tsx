@@ -11,12 +11,12 @@ import { EditStateContext } from "../editStateContext.tsx";
 import { LabelingContext } from "./labelingContext.tsx";
 import { labelingButtonStyles } from "./labelingStyles.ts";
 
-const getDisplayName = (file: BoreholeAttachment) => {
+const getDisplayName = (file: BoreholeAttachment): string => {
   if (!file) return "";
   if ("fromDepth" in file) {
     return `${file.fromDepth?.toFixed(2)} - ${file.toDepth?.toFixed(2)}`;
   }
-  return file.name;
+  return file.name ?? "";
 };
 
 const DescriptionBox = styled(Box)(({ theme }) => ({
@@ -102,7 +102,7 @@ export const LabelingHeader: FC<{
           <ButtonSelect
             fieldName="labeling-file"
             items={fileSelectionItems}
-            selectedItem={{ key: selectedAttachment?.id, value: getDisplayName(selectedAttachment) }}
+            selectedItem={{ key: selectedAttachment.id!, value: getDisplayName(selectedAttachment) }}
             onItemSelected={item => {
               setActivePage(1);
               if (item.key === -1) handleFileInputClick();

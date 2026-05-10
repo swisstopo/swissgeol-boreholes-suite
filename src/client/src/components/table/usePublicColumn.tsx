@@ -6,7 +6,7 @@ import { CheckIcon } from "lucide-react";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 
 interface ItemWithPublicState {
-  public?: boolean;
+  public?: boolean | null;
 }
 
 interface UsePublicColumnProps<T extends ItemWithPublicState> {

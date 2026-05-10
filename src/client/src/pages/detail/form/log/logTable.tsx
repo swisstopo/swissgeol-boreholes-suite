@@ -121,14 +121,14 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
       getSectionsByBoreholeId(Number(boreholeId)).then(sections => {
         const filters: SectionFilter[] = [];
         for (const section of sections) {
-          for (const element of section.sectionElements) {
+          for (const element of section.sectionElements ?? []) {
             filters.push({
-              id: element.id,
+              id: element.id!,
               label:
                 section.name +
                 ` (${formatNumberForDisplay(element.fromDepth, 1)} - ${formatNumberForDisplay(element.toDepth, 1)})`,
-              fromDepth: element.fromDepth,
-              toDepth: element.toDepth,
+              fromDepth: element.fromDepth!,
+              toDepth: element.toDepth!,
             });
           }
         }

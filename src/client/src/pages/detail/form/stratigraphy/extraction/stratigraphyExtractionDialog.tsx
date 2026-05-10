@@ -37,7 +37,7 @@ interface StratigraphyExtractionDialogProps {
 }
 
 const getStratigraphyName = (file: BoreholeAttachment, index: number): string => {
-  const baseName = file.name.replace(/\.[^/.]+$/, "");
+  const baseName = (file.name ?? "").replace(/\.[^/.]+$/, "");
   return `${baseName}_${index + 1}`;
 };
 

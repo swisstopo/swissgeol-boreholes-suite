@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Chip, Stack } from "@mui/material";
 import { WorkflowStatus } from "@swissgeol/ui-core";
 import { NullableDateString } from "../../api/apiInterfaces.ts";
-import { BoreholeV2 } from "../../api/borehole.ts";
+import { Borehole } from "../../api/borehole.ts";
 import { useCurrentUser } from "../../api/user.ts";
 import { theme } from "../../AppTheme.ts";
 import { EditButton } from "../../components/buttons/buttons.tsx";
@@ -13,7 +13,7 @@ import { colorStatusMap } from "./form/workflow/statusColorMap.ts";
 import { useWorkflowMutation, WorkflowChangeRequest } from "./form/workflow/workflow.ts";
 
 interface StatusBadgesProps {
-  borehole?: BoreholeV2 | null;
+  borehole?: Borehole | null;
 }
 
 export const StatusBadges = ({ borehole }: StatusBadgesProps) => {

@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import { Box, Stack } from "@mui/material";
 import { SgcMenuItem } from "@swissgeol/ui-core-react";
-import { BoreholeV2, useBoreholeStatusEditable } from "../../api/borehole.ts";
+import { Borehole, useBoreholeStatusEditable } from "../../api/borehole.ts";
 import { useAuth } from "../../auth/useBoreholesAuth.tsx";
 import { useBoreholeDataAvailability } from "../../hooks/useBoreholeDataAvailability.ts";
 import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
@@ -12,7 +12,7 @@ import { capitalizeFirstLetter } from "../../utils";
 import { TabStatus } from "./form/workflow/workflow.ts";
 
 interface DetailSideNavProps {
-  borehole: BoreholeV2;
+  borehole: Borehole;
 }
 
 export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {

@@ -1,10 +1,10 @@
 import { NullableBooleanSelect, NullableDateString } from "../../../../api/apiInterfaces.ts";
-import { BoreholeV2 } from "../../../../api/borehole.ts";
+import { Borehole } from "../../../../api/borehole.ts";
 import { Profile } from "../../../../api/profile.ts";
 import { Workflow } from "../workflow/workflow.ts";
 
 export interface BoreholeProps {
-  borehole: BoreholeV2;
+  borehole: Borehole;
 }
 
 export interface BoreholeFormInputs {

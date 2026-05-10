@@ -4,7 +4,7 @@ import { Stack, Typography } from "@mui/material";
 import { ArrowDownToLine, Trash2, X } from "lucide-react";
 import { WorkflowStatus } from "@swissgeol/ui-core";
 import {
-  BoreholeV2,
+  Borehole,
   exportCSVBorehole,
   exportJsonBoreholes,
   exportJsonWithAttachmentsBorehole,
@@ -31,7 +31,7 @@ import { SaveContext, SaveContextProps } from "./saveContext.tsx";
 import { StatusBadges } from "./statusBadges.tsx";
 
 interface DetailHeaderProps {
-  borehole: BoreholeV2;
+  borehole: Borehole;
 }
 
 const DetailHeader = ({ borehole }: DetailHeaderProps) => {

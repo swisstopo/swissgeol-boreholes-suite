@@ -1,8 +1,8 @@
 import { useMemo } from "react";
-import { BoreholeV2 } from "../api/borehole";
+import { Borehole } from "../api/borehole";
 import { ObservationType } from "../pages/detail/form/hydrogeology/Observation";
 
-export const useBoreholeDataAvailability = (borehole?: BoreholeV2) => {
+export const useBoreholeDataAvailability = (borehole?: Borehole) => {
   return useMemo(() => {
     if (!borehole) {
       return {
@@ -50,11 +50,12 @@ export const useBoreholeDataAvailability = (borehole?: BoreholeV2) => {
     const hasPhotos = (borehole.photos?.length ?? 0) > 0;
     const hasAttachments = hasProfiles || hasPhotos || hasDocuments;
     const hasCasings =
-      hasCompletion && (borehole.completions?.some(completion => completion.casings?.length > 0) ?? false);
+      hasCompletion && (borehole.completions?.some(completion => (completion.casings?.length ?? 0) > 0) ?? false);
     const hasBackfills =
-      hasCompletion && (borehole.completions?.some(completion => completion.backfills?.length > 0) ?? false);
+      hasCompletion && (borehole.completions?.some(completion => (completion.backfills?.length ?? 0) > 0) ?? false);
     const hasInstrumentations =
-      hasCompletion && (borehole.completions?.some(completion => completion.instrumentations?.length > 0) ?? false);
+      hasCompletion &&
+      (borehole.completions?.some(completion => (completion.instrumentations?.length ?? 0) > 0) ?? false);
     const hasLithology =
       (hasStratigraphy &&
         borehole.stratigraphies?.some(stratigraphy => (stratigraphy?.lithologies?.length ?? 0) > 0)) ??
