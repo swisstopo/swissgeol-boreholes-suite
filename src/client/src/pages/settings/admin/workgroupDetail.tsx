@@ -5,7 +5,8 @@ import { Card, CardContent, CardHeader, Chip, Stack } from "@mui/material";
 import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { Trash2, X } from "lucide-react";
 import _ from "lodash";
-import { User, WorkgroupRole } from "../../../api/apiInterfaces.ts";
+import { WorkgroupRole } from "../../../api/apiInterfaces.ts";
+import { User } from "../../../api/generated";
 import { useUsers } from "../../../api/user.ts";
 import { useSelectedWorkgroup, useWorkgroupMutations } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
@@ -86,9 +87,10 @@ export const WorkgroupDetail: FC = () => {
         action: () => {
           if (!selectedWorkgroup || !user?.workgroupRoles || user.workgroupRoles.length <= 0) return;
           removeAllWorkgroupRolesForUser({
-            userId: user.id,
-            workgroupId: selectedWorkgroup.id,
-            roles: user.workgroupRoles?.map(r => r.role),
+            userId: user.id!,
+            workgroupId: selectedWorkgroup.id!,
+            roles:
+              user.workgroupRoles?.map(r => r.role).filter((r): r is NonNullable<typeof r> => r !== undefined) ?? [],
           });
         },
       },
@@ -106,7 +108,7 @@ export const WorkgroupDetail: FC = () => {
         {workgroupRoles.map((workgroupRole: WorkgroupRole) => (
           <Chip
             key={workgroupRole.role}
-            label={workgroupRole.role.toUpperCase()}
+            label={workgroupRole.role!.toUpperCase()}
             size="small"
             color="primary"
             data-cy={`${workgroupRole.role}-chip`}

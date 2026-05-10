@@ -9,11 +9,12 @@ import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSeg
 import { LogRun } from "../pages/detail/form/log/logInterfaces.ts";
 import { Workflow } from "../pages/detail/form/workflow/workflow.ts";
 import { SessionKeys } from "../pages/overview/SessionKey.ts";
-import { Document, NullableDateString, User, Workgroup } from "./apiInterfaces.ts";
+import { NullableDateString } from "./apiInterfaces.ts";
 import { BoreholeGeometry } from "./boreholeGeometry.ts";
 import { Completion } from "./completion.ts";
 import { download, downloadData } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
+import { Document, User, Workgroup } from "./generated";
 import { Profile } from "./profile.ts";
 import { Section } from "./section.ts";
 import { Stratigraphy } from "./stratigraphy.ts";

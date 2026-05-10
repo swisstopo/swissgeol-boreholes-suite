@@ -1,7 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
 import { Lithology } from "../pages/detail/form/stratigraphy/lithology.ts";
-import { NullableDateString, User } from "./apiInterfaces.ts";
+import { NullableDateString } from "./apiInterfaces.ts";
+import { User } from "./generated/types.gen";
 import { boreholeQueryKey, BoreholeV2 } from "./borehole.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 

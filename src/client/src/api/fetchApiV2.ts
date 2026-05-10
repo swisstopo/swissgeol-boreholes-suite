@@ -1,16 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
 import store from "../reducers";
-import {
-  ApiError,
-  Backfill,
-  Casing,
-  Completion,
-  Document,
-  DocumentUpdate,
-  GeometryFormat,
-  Instrumentation,
-} from "./apiInterfaces";
+import { ApiError, GeometryFormat } from "./apiInterfaces";
+import { Backfill, Casing, Completion, Document, DocumentUpdate, Instrumentation } from "./generated/types.gen";
 import { getAuthorizationHeader } from "./authentication.ts";
 import { Section } from "./section.ts";
 

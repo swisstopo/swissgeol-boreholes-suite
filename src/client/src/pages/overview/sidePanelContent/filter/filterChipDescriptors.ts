@@ -1,5 +1,5 @@
 ﻿import type { TFunction } from "i18next";
-import type { Workgroup } from "../../../../api/apiInterfaces";
+import type { Workgroup } from "../../../../api/generated";
 import type { Codelist } from "../../../../components/codelist";
 import { capitalizeFirstLetter } from "../../../../utils";
 import { FilterKey } from "../../useBoreholeUrlParams.ts";

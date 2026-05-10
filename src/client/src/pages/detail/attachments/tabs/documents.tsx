@@ -2,7 +2,7 @@ import { FC, useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, TextField, Typography } from "@mui/material";
 import { GridColDef, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui/x-data-grid";
-import { Document, DocumentUpdate } from "../../../../api/apiInterfaces.ts";
+import { Document, DocumentUpdate } from "../../../../api/generated/types.gen";
 import {
   createDocument,
   deleteDocuments,

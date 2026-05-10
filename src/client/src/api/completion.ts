@@ -1,4 +1,5 @@
-import { NullableDateString, User } from "./apiInterfaces.ts";
+import { NullableDateString } from "./apiInterfaces.ts";
+import { User } from "./generated/types.gen";
 import { BoreholeV2 } from "./borehole.ts";
 
 export interface Completion {

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Casing } from "../../../../api/apiInterfaces.ts";
+import { Casing } from "../../../../api/generated/types.gen";
 import { getCasingsByBoreholeId } from "../../../../api/fetchApiV2.js";
 import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormContainer } from "../../../../components/form/formContainer";

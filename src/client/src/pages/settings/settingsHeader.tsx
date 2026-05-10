@@ -35,7 +35,7 @@ export const SettingsHeader: FC = () => {
     const updatedUser = {
       ...selectedUser!,
       isDisabled: isDisabled,
-      disabledAt: isDisabled ? new Date() : undefined,
+      disabledAt: isDisabled ? new Date().toISOString() : undefined,
     };
     updateUser(updatedUser);
   };
@@ -44,7 +44,7 @@ export const SettingsHeader: FC = () => {
     const updatedWorkgroup = {
       ...selectedWorkgroup!,
       isDisabled: isDisabled,
-      disabledAt: isDisabled ? new Date() : undefined,
+      disabledAt: isDisabled ? new Date().toISOString() : undefined,
     };
     updateWorkgroup(updatedWorkgroup);
   };
@@ -67,8 +67,8 @@ export const SettingsHeader: FC = () => {
   };
 
   const getTitle = () => {
-    if (selectedUser) return capitalizeFirstLetter(t(selectedUser?.name));
-    else if (selectedWorkgroup) return capitalizeFirstLetter(t(selectedWorkgroup.name));
+    if (selectedUser) return capitalizeFirstLetter(t(selectedUser?.name ?? ""));
+    else if (selectedWorkgroup) return capitalizeFirstLetter(t(selectedWorkgroup.name ?? ""));
     else return t("header_settings");
   };
 

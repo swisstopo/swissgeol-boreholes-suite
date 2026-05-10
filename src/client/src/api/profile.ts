@@ -1,11 +1,12 @@
 import { useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getImageFromBlob } from "../utils.ts";
-import { ApiError, NullableDateString, User } from "./apiInterfaces.ts";
+import { ApiError, NullableDateString } from "./apiInterfaces.ts";
 import { labelingFileFormat, matchesFileFormat, PanelTab } from "./dataextractionInterfaces.ts";
 import { download } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
 import { maxFileSizeBytes } from "./file.ts";
+import { User } from "./generated/types.gen";
 import { processFileWithOCR } from "./ocr.ts";
 
 export interface Profile {
