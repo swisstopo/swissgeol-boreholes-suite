@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace BDMS.Models;
 
@@ -10,6 +11,7 @@ public class HydrotestKindCode : IHydrotestCode
 {
     /// <inheritdoc/>
     [Column("hydrotest_id")]
+    [Required]
     public int HydrotestId { get; set; }
 
     /// <inheritdoc/>
@@ -17,6 +19,7 @@ public class HydrotestKindCode : IHydrotestCode
 
     /// <inheritdoc/>
     [Column("codelist_id")]
+    [Required]
     public int CodelistId { get; set; }
 
     /// <inheritdoc/>

@@ -1,4 +1,5 @@
-﻿namespace BDMS.Models;
+using System.ComponentModel.DataAnnotations;
+namespace BDMS.Models;
 
 /// <summary>
 /// Represents a <see cref="User"/> with only minimal information, to be returned from a <see cref="BDMS.Controllers.UserController.GetWorkgroupEditors"/> request.
@@ -6,6 +7,7 @@
 public class WorkgroupEditor : IIdentifyable
 {
     /// <inheritdoc />
+    [Required]
     public int Id { get; set; }
 
     /// <summary>

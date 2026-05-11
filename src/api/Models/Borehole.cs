@@ -1,6 +1,7 @@
-﻿using BDMS.Json;
+using BDMS.Json;
 using NetTopologySuite.Geometries;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace BDMS.Models;
 
@@ -13,6 +14,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <inheritdoc />
     [IncludeInExport]
     [Column("id_bho")]
+    [Required]
     public int Id { get; set; }
 
     /// <inheritdoc />

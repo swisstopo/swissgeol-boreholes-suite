@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
@@ -12,6 +12,7 @@ public class User : IIdentifyable
     /// <inheritdoc />
     [Key]
     [Column("id_usr")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>

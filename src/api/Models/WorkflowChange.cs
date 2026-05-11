@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -13,6 +13,7 @@ public class WorkflowChange : IIdentifyable, IChangeTracking
     /// <inheritdoc />
     [Key]
     [Column("workflow_change_id")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>
@@ -37,6 +38,7 @@ public class WorkflowChange : IIdentifyable, IChangeTracking
     /// Gets or sets the id of the <see cref="Workflow"/>.
     /// </summary>
     [Column("workflow_id")]
+    [Required]
     public int WorkflowId { get; set; }
 
     /// <summary>

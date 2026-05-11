@@ -1,4 +1,4 @@
-﻿using BDMS.Json;
+using BDMS.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
@@ -16,6 +16,7 @@ public class LogRun : IIdentifyable, IChangeTracking
     [JsonRequired]
     [IncludeInExport]
     [Column("id")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>
@@ -24,6 +25,7 @@ public class LogRun : IIdentifyable, IChangeTracking
     [JsonRequired]
     [IncludeInExport]
     [Column("borehole_id")]
+    [Required]
     public int BoreholeId { get; set; }
 
     /// <summary>

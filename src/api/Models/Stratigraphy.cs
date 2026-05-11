@@ -1,6 +1,7 @@
-﻿using BDMS.Json;
+using BDMS.Json;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace BDMS.Models;
 
@@ -14,6 +15,7 @@ public class Stratigraphy : IChangeTracking, IIdentifyable
     [IncludeInExport]
     [JsonRequired]
     [Column("id")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>
@@ -22,6 +24,7 @@ public class Stratigraphy : IChangeTracking, IIdentifyable
     [IncludeInExport]
     [JsonRequired]
     [Column("borehole_id")]
+    [Required]
     public int BoreholeId { get; set; }
 
     /// <summary>

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace BDMS.Models;
 
@@ -12,6 +13,7 @@ public class LogFileToolTypeCodes
     /// Gets or sets the ID of the <see cref="LogFile"/> in the join table.
     /// </summary>
     [Column("logfile_id")]
+    [Required]
     public int LogFileId { get; set; }
 
     /// <summary>
@@ -23,6 +25,7 @@ public class LogFileToolTypeCodes
     /// Gets or sets the ID of the codelist in the join table.
     /// </summary>
     [Column("codelist_id")]
+    [Required]
     public int CodelistId { get; set; }
 
     /// <summary>

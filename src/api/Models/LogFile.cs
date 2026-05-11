@@ -1,4 +1,4 @@
-﻿using BDMS.Json;
+using BDMS.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
@@ -14,6 +14,7 @@ public class LogFile : IIdentifyable, IChangeTracking
     /// <inheritdoc />
     [Key]
     [Column("id")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>
@@ -21,6 +22,7 @@ public class LogFile : IIdentifyable, IChangeTracking
     /// </summary>
     [IncludeInExport]
     [Column("log_run_id")]
+    [Required]
     public int LogRunId { get; set; }
 
     /// <summary>

@@ -7347,6 +7347,10 @@
         "description": "Represents the authentication settings for the application."
       },
       "Backfill": {
+        "required": [
+          "completionId",
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -7465,6 +7469,9 @@
         "description": "Represents a boolean filter value for non-nullable boolean fields."
       },
       "Borehole": {
+        "required": [
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -7898,6 +7905,11 @@
         "description": "Represents a borehole entity in the database."
       },
       "BoreholeCodelist": {
+        "required": [
+          "boreholeId",
+          "codelistId",
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -7962,6 +7974,9 @@
         "additionalProperties": false
       },
       "BoreholeListItem": {
+        "required": [
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -8100,6 +8115,10 @@
         "description": "The set of borehole text columns that support suggestions.\r\nBound from the query string as camelCase (\"originalName\", \"projectName\", \"name\")."
       },
       "Casing": {
+        "required": [
+          "completionId",
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -8200,6 +8219,11 @@
         "description": "Represents a Casing entity in the database."
       },
       "CasingElement": {
+        "required": [
+          "casingId",
+          "id",
+          "kindId"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -8284,6 +8308,10 @@
         "description": "Represents a CasingElement entity in the database."
       },
       "ChronostratigraphyLayer": {
+        "required": [
+          "id",
+          "stratigraphyId"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -8347,6 +8375,9 @@
         "description": "Represents a chronostratigraphy entity in the database."
       },
       "Codelist": {
+        "required": [
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -8416,6 +8447,11 @@
         "description": "Represents a codelist entity in the database."
       },
       "Completion": {
+        "required": [
+          "boreholeId",
+          "id",
+          "kindId"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -8621,6 +8657,10 @@
         "format": "int32"
       },
       "Document": {
+        "required": [
+          "boreholeId",
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -8776,6 +8816,8 @@
       "FaciesDescription": {
         "required": [
           "fromDepth",
+          "id",
+          "stratigraphyId",
           "toDepth"
         ],
         "type": "object",
@@ -8844,6 +8886,10 @@
         "description": "Represents a facies description entity in the database."
       },
       "FieldMeasurement": {
+        "required": [
+          "boreholeId",
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -8970,6 +9016,12 @@
         "description": "Represents a field measurement observation in the boring process."
       },
       "FieldMeasurementResult": {
+        "required": [
+          "fieldMeasurementId",
+          "id",
+          "parameterId",
+          "sampleTypeId"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -9571,6 +9623,11 @@
         "additionalProperties": false
       },
       "GroundwaterLevelMeasurement": {
+        "required": [
+          "boreholeId",
+          "id",
+          "kindId"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -9709,6 +9766,10 @@
         "description": "Represents a groundwater level measurement observation in the boring process."
       },
       "Hydrotest": {
+        "required": [
+          "boreholeId",
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -9886,6 +9947,11 @@
         "description": "Represents a hydrotest in the boring process."
       },
       "HydrotestResult": {
+        "required": [
+          "hydrotestId",
+          "id",
+          "parameterId"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -9984,6 +10050,10 @@
         "additionalProperties": false
       },
       "Instrumentation": {
+        "required": [
+          "completionId",
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -10095,6 +10165,8 @@
       "LithologicalDescription": {
         "required": [
           "fromDepth",
+          "id",
+          "stratigraphyId",
           "toDepth"
         ],
         "type": "object",
@@ -10378,6 +10450,10 @@
         "description": "Represents a lithology entity in the database."
       },
       "LithologyDescription": {
+        "required": [
+          "id",
+          "lithologyId"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -10773,6 +10849,10 @@
         "description": "Represents a description section of a lithology entity in the database."
       },
       "LithologyDescriptionComponentConMineralCodes": {
+        "required": [
+          "codelistId",
+          "lithologyDescriptionId"
+        ],
         "type": "object",
         "properties": {
           "lithologyDescriptionId": {
@@ -10794,6 +10874,10 @@
         "description": "Join table entity for a BDMS.Models.Codelist with the schemaName 'component_con_mineral' attached to a BDMS.Models.LithologyDescription."
       },
       "LithologyDescriptionComponentConParticleCodes": {
+        "required": [
+          "codelistId",
+          "lithologyDescriptionId"
+        ],
         "type": "object",
         "properties": {
           "lithologyDescriptionId": {
@@ -10815,6 +10899,10 @@
         "description": "Join table entity for a BDMS.Models.Codelist with the schemaName 'component_con_particle' attached to a BDMS.Models.LithologyDescription."
       },
       "LithologyDescriptionComponentUnconDebrisCodes": {
+        "required": [
+          "codelistId",
+          "lithologyDescriptionId"
+        ],
         "type": "object",
         "properties": {
           "lithologyDescriptionId": {
@@ -10836,6 +10924,10 @@
         "description": "Join table entity for a BDMS.Models.Codelist with the schemaName 'component_uncon_debris' attached to a BDMS.Models.LithologyDescription."
       },
       "LithologyDescriptionComponentUnconOrganicCodes": {
+        "required": [
+          "codelistId",
+          "lithologyDescriptionId"
+        ],
         "type": "object",
         "properties": {
           "lithologyDescriptionId": {
@@ -10857,6 +10949,10 @@
         "description": "Join table entity for a BDMS.Models.Codelist with the schemaName 'component_uncon_organic' attached to a BDMS.Models.LithologyDescription."
       },
       "LithologyDescriptionGrainAngularityCodes": {
+        "required": [
+          "codelistId",
+          "lithologyDescriptionId"
+        ],
         "type": "object",
         "properties": {
           "lithologyDescriptionId": {
@@ -10878,6 +10974,10 @@
         "description": "Join table entity for a BDMS.Models.Codelist with the schemaName 'grain_angularity' attached to a BDMS.Models.LithologyDescription."
       },
       "LithologyDescriptionGrainShapeCodes": {
+        "required": [
+          "codelistId",
+          "lithologyDescriptionId"
+        ],
         "type": "object",
         "properties": {
           "lithologyDescriptionId": {
@@ -10899,6 +10999,10 @@
         "description": "Join table entity for a BDMS.Models.Codelist with the schemaName 'grain_shape' attached to a BDMS.Models.LithologyDescription."
       },
       "LithologyDescriptionLithologyUnconDebrisCodes": {
+        "required": [
+          "codelistId",
+          "lithologyDescriptionId"
+        ],
         "type": "object",
         "properties": {
           "lithologyDescriptionId": {
@@ -10920,6 +11024,10 @@
         "description": "Join table entity for a BDMS.Models.Codelist with the schemaName 'lithology_con' attached to a BDMS.Models.LithologyDescription."
       },
       "LithologyDescriptionStructurePostGenCodes": {
+        "required": [
+          "codelistId",
+          "lithologyDescriptionId"
+        ],
         "type": "object",
         "properties": {
           "lithologyDescriptionId": {
@@ -10941,6 +11049,10 @@
         "description": "Join table entity for a BDMS.Models.Codelist with the schemaName 'structure_post_gen' attached to a BDMS.Models.LithologyDescription."
       },
       "LithologyDescriptionStructureSynGenCodes": {
+        "required": [
+          "codelistId",
+          "lithologyDescriptionId"
+        ],
         "type": "object",
         "properties": {
           "lithologyDescriptionId": {
@@ -10962,6 +11074,10 @@
         "description": "Join table entity for a BDMS.Models.Codelist with the schemaName 'structure_syn_gen' attached to a BDMS.Models.LithologyDescription."
       },
       "LithologyRockConditionCodes": {
+        "required": [
+          "codelistId",
+          "lithologyId"
+        ],
         "type": "object",
         "properties": {
           "lithologyId": {
@@ -10983,6 +11099,10 @@
         "description": "Join table entity for a BDMS.Models.Codelist with the schemaName 'rock_condition' attached to a BDMS.Models.Lithology."
       },
       "LithologyTextureMetaCodes": {
+        "required": [
+          "codelistId",
+          "lithologyId"
+        ],
         "type": "object",
         "properties": {
           "lithologyId": {
@@ -11004,6 +11124,10 @@
         "description": "Join table entity for a BDMS.Models.Codelist with the schemaName 'texture_meta' attached to a BDMS.Models.Lithology."
       },
       "LithologyUscsTypeCodes": {
+        "required": [
+          "codelistId",
+          "lithologyId"
+        ],
         "type": "object",
         "properties": {
           "lithologyId": {
@@ -11025,6 +11149,10 @@
         "description": "Join table entity for a BDMS.Models.Codelist with the schemaName 'uscs_type' attached to a BDMS.Models.Lithology."
       },
       "LithostratigraphyLayer": {
+        "required": [
+          "id",
+          "stratigraphyId"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -11138,6 +11266,10 @@
         "description": "Represents a request to export log files, allowing the client to specify which log runs or log files to include, whether to include attachments, and the locale for any localized content in the export."
       },
       "LogFile": {
+        "required": [
+          "id",
+          "logRunId"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -11549,6 +11681,10 @@
         "description": "Represents a boolean filter value for nullable boolean fields."
       },
       "Observation": {
+        "required": [
+          "boreholeId",
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -11784,6 +11920,10 @@
         "description": "Represents a paginated response containing a subset of BDMS.Maintenance.MaintenanceTaskLogEntry along with pagination info."
       },
       "Photo": {
+        "required": [
+          "boreholeId",
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -12028,6 +12168,10 @@
         "format": "int32"
       },
       "Profile": {
+        "required": [
+          "boreholeId",
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -12133,6 +12277,10 @@
         "description": "Represents a role entity in the database."
       },
       "Section": {
+        "required": [
+          "boreholeId",
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -12189,6 +12337,10 @@
         "description": "Represents one section of a borehole."
       },
       "SectionElement": {
+        "required": [
+          "id",
+          "sectionId"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -12416,6 +12568,9 @@
         "description": "Represents a stratigraphy entity in the database."
       },
       "TabStatus": {
+        "required": [
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -12503,6 +12658,9 @@
         "description": "Represents the reviewed or published tab status of a BDMS.Models.Workflow."
       },
       "Term": {
+        "required": [
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -12553,6 +12711,10 @@
         "description": "Represents a term entity in the database."
       },
       "TermsAccepted": {
+        "required": [
+          "termId",
+          "userId"
+        ],
         "type": "object",
         "properties": {
           "userId": {
@@ -12581,6 +12743,9 @@
         "description": "Represents a terms_accepted entity in the database."
       },
       "User": {
+        "required": [
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -12659,6 +12824,10 @@
         "description": "Represents a user entity in the database."
       },
       "UserWorkgroupRole": {
+        "required": [
+          "userId",
+          "workgroupId"
+        ],
         "type": "object",
         "properties": {
           "userId": {
@@ -12700,6 +12869,11 @@
         "format": "int32"
       },
       "WaterIngress": {
+        "required": [
+          "boreholeId",
+          "id",
+          "quantityId"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -12835,6 +13009,12 @@
         "description": "Represents an water ingress observation in the boring process."
       },
       "Workflow": {
+        "required": [
+          "boreholeId",
+          "id",
+          "publishedTabsId",
+          "reviewedTabsId"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -12894,6 +13074,10 @@
         "description": "Represents a workflow entity in the database."
       },
       "WorkflowChange": {
+        "required": [
+          "id",
+          "workflowId"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -13028,6 +13212,9 @@
         "format": "int32"
       },
       "Workgroup": {
+        "required": [
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {
@@ -13071,6 +13258,9 @@
         "description": "Represents a workgroup entity in the database."
       },
       "WorkgroupEditor": {
+        "required": [
+          "id"
+        ],
         "type": "object",
         "properties": {
           "id": {

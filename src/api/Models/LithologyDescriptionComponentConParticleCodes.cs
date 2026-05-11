@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace BDMS.Models;
 
@@ -10,6 +11,7 @@ public class LithologyDescriptionComponentConParticleCodes : ILithologyDescripti
 {
     /// <inheritdoc/>
     [Column("lithology_description_id")]
+    [Required]
     public int LithologyDescriptionId { get; set; }
 
     /// <inheritdoc/>
@@ -17,6 +19,7 @@ public class LithologyDescriptionComponentConParticleCodes : ILithologyDescripti
 
     /// <inheritdoc/>
     [Column("component_con_particle_id")]
+    [Required]
     public int CodelistId { get; set; }
 
     /// <inheritdoc/>

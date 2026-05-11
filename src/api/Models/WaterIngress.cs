@@ -1,5 +1,6 @@
-﻿using BDMS.Json;
+using BDMS.Json;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace BDMS.Models;
 
@@ -13,6 +14,7 @@ public class WaterIngress : Observation
     /// </summary>
     [IncludeInExport]
     [Column("quantity")]
+    [Required]
     public int QuantityId { get; set; }
 
     /// <summary>

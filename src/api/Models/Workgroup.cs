@@ -1,4 +1,4 @@
-﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -13,6 +13,7 @@ public class Workgroup : IIdentifyable
     /// <inheritdoc />
     [Key]
     [Column("id_wgp")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>

@@ -1,4 +1,4 @@
-﻿using BDMS.Maintenance;
+using BDMS.Maintenance;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -13,6 +13,7 @@ public class MaintenanceTaskLog : IIdentifyable
     /// <inheritdoc />
     [Key]
     [Column("id")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>

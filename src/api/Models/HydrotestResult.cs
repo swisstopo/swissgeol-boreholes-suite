@@ -1,6 +1,7 @@
-﻿using BDMS.Json;
+using BDMS.Json;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace BDMS.Models;
 
@@ -14,6 +15,7 @@ public class HydrotestResult : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="HydrotestResult"/>'s id.
     /// </summary>
     [Column("id")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>
@@ -21,6 +23,7 @@ public class HydrotestResult : IChangeTracking, IIdentifyable
     /// </summary>
     [IncludeInExport]
     [Column("parameter")]
+    [Required]
     public int ParameterId { get; set; }
 
     /// <summary>
@@ -53,6 +56,7 @@ public class HydrotestResult : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="HydrotestResult"/>'s hydrotest id.
     /// </summary>
     [Column("hydrotest_id")]
+    [Required]
     public int HydrotestId { get; set; }
 
     /// <summary>

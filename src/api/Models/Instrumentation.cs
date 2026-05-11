@@ -1,6 +1,7 @@
-﻿using BDMS.Json;
+using BDMS.Json;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace BDMS.Models;
 
@@ -12,12 +13,14 @@ public class Instrumentation : IChangeTracking, IIdentifyable, ICasingReference
 {
     /// <inheritdoc />
     [Column("id")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>
     /// Gets or sets foreign key for the <see cref="Completion"/> of this <see cref="Instrumentation"/>.
     /// </summary>
     [Column("completion_id")]
+    [Required]
     public int CompletionId { get; set; }
 
     /// <summary>

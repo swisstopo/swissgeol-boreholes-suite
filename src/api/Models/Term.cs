@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace BDMS.Models;
 
@@ -10,6 +11,7 @@ public class Term : IIdentifyable
 {
     /// <inheritdoc />
     [Column("id_tes")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>

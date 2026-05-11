@@ -1,6 +1,7 @@
-﻿using BDMS.Json;
+using BDMS.Json;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
+using System.ComponentModel.DataAnnotations;
 
 namespace BDMS.Models;
 
@@ -9,12 +10,14 @@ public class SectionElement : IChangeTracking, IIdentifyable
 {
     /// <inheritdoc />
     [Column("id")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>
     /// Gets or sets foreign key for the <see cref="Section"/> of this <see cref="SectionElement"/>.
     /// </summary>
     [Column("section_id")]
+    [Required]
     public int SectionId { get; set; }
 
     /// <summary>
