@@ -28,6 +28,13 @@ jobs:
       - working-directory: ./src/client
         run: npm ci
 
+      - name: Verify generated types are up to date
+        working-directory: ./src/client
+        run: |
+          npm run openapi:gen
+          git diff --exit-code src/api/generated \
+            || (echo "Generated types are out of date. Run 'npm run openapi:gen' and commit the result." && exit 1)
+
       - working-directory: ./src/client
         run: npm run lint
 
@@ -124,6 +131,12 @@ jobs:
         uses: ./.github/actions/prepare-backend
         with:
           services: minio db api-legacy api dataextraction
+
+      - name: Verify swagger.json is up to date
+        run: |
+          curl -fsSL http://localhost:5000/swagger/v2/swagger.json -o /tmp/swagger-fresh.json
+          diff src/client/openapi/swagger.json /tmp/swagger-fresh.json \
+            || (echo "swagger.json is out of date. Run 'npm run openapi:fetch && npm run openapi:gen' and commit the result." && exit 1)
 
       - name: Run dotnet tests
         run: dotnet test BDMS.sln -c Release --no-build --verbosity normal --filter TestCategory!=LongRunning --logger trx
