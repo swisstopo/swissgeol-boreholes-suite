@@ -13,6 +13,7 @@ export interface SearchData {
   schema?: string;
   placeholder?: string;
   hideShowAllFields?: boolean;
+  hideInAnonymousMode?: boolean;
   additionalValues?: FormSelectValue[];
 }
 
