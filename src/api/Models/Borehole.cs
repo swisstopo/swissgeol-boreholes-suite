@@ -206,7 +206,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s alternate name.
     /// </summary>
     [IncludeInExport]
-    [Column("alternate_name")]
+    [Column("name")]
     public string? Name { get; set; }
 
     /// <summary>

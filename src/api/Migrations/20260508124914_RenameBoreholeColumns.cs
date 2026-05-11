@@ -326,7 +326,7 @@ public partial class RenameBoreholeColumns : Migration
             name: "alternate_name_bho",
             schema: "bdms",
             table: "borehole",
-            newName: "alternate_name");
+            newName: "name");
 
         migrationBuilder.RenameColumn(
             name: "id_bho",

@@ -199,7 +199,7 @@ namespace BDMS.Migrations
 
                     b.Property<string>("Name")
                         .HasColumnType("text")
-                        .HasColumnName("alternate_name");
+                        .HasColumnName("name");
 
                     b.Property<bool?>("NationalInterest")
                         .HasColumnType("boolean")

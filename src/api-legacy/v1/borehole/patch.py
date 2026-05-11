@@ -19,7 +19,7 @@ class PatchBorehole(Action):
             column = 'public'
 
         elif field == 'custom.alternate_name':
-            column = 'alternate_name'
+            column = 'name'
 
         elif field == 'custom.project_name':
             column = 'project_name'

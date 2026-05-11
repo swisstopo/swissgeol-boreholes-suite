@@ -318,7 +318,7 @@ DELETE FROM bdms."section" WHERE id IN (
 UPDATE bdms.borehole AS b
 SET
     original_name = NULL,
-    alternate_name = NULL,
+    name = NULL,
     project_name = NULL,
     restriction_until = NULL,
     national_interest = NULL,
