@@ -1,7 +1,7 @@
-using BDMS.Json;
+﻿using BDMS.Json;
 using NetTopologySuite.Geometries;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
 

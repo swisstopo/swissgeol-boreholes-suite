@@ -1,4 +1,4 @@
-using NetTopologySuite.Features;
+﻿using NetTopologySuite.Features;
 using System.ComponentModel.DataAnnotations;
 
 namespace BDMS.Models;
