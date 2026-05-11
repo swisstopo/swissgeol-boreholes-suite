@@ -41,8 +41,7 @@ export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = (
           dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.toDepth}`}
           sx={{
             height: `${defaultRowHeight}px`,
-          }}
-          layer={layer}>
+          }}>
           {buildContent(layer)}
         </StratigraphyTableActionCell>
       ),

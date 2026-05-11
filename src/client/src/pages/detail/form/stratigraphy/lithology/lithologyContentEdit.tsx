@@ -472,7 +472,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
         height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
       }}
       index={index}
-      layer={layer}
       onClick={onEdit}
       onHoverClick={index => onDelete(index)}>
       {buildContent(layer)}

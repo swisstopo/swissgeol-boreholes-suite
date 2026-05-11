@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { Chip, IconButton, Stack, SxProps, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import { Copy, Plus, Trash2, TriangleAlert } from "lucide-react";
-import { BaseLayer } from "../../../../api/stratigraphy.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
 
@@ -61,7 +60,6 @@ const StratigraphyTableCellRow = styled(Stack)(() => ({
 interface StratigraphyTableLayerCellProps {
   children: ReactNode;
   index: number;
-  layer: BaseLayer;
   onHoverClick?: (index: number) => void;
   onClick?: (index: number) => void;
   sx?: SxProps;
