@@ -1016,10 +1016,7 @@ public class ImportControllerTest
     [TestMethod]
     public async Task CanUploadDuplicateBoreholesInFile()
     {
-        httpClientFactoryMock
-           .Setup(cf => cf.CreateClient(It.IsAny<string>()))
-           .Returns(() => new HttpClient())
-           .Verifiable();
+        SetupHttpClientFactoryMock("600000", "100000", null, null, null);
 
         var boreholeCsvFile = GetFormFileByExistingFile("duplicateBoreholesInFile.csv");
 
