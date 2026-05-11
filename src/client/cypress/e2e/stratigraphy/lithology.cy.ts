@@ -21,7 +21,9 @@ import {
   closeLayerModal,
   deleteLayer,
   hasDepthError,
+  hasGapsAt,
   hasLayer,
+  hasLayersAt,
   LayerType,
   openLayer,
   openNewStratigraphy,
@@ -53,15 +55,13 @@ const openStratigraphyWith3Lithologies = () => {
     [355, 798],
     [798, 1123],
   ]);
-  hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
-  hasLayer({ layerType: LayerType.lithology, fromDepth: 355, toDepth: 798 });
-  hasLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
-  hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
-  hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
-  hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, isGap: true });
-  hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
-  hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, isGap: true });
-  hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, isGap: true });
+  hasLayersAt(LayerType.lithology, [
+    [0, 355],
+    [355, 798],
+    [798, 1123],
+  ]);
+  hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
+  hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
 };
 
 const createCompleteLayerGrid = () => {
@@ -85,15 +85,21 @@ const createCompleteLayerGrid = () => {
   fillFaciesDescriptionForm({ fromDepth: 0, toDepth: 0 });
   closeLayerModal();
 
-  hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
-  hasLayer({ layerType: LayerType.lithology, fromDepth: 355, toDepth: 798 });
-  hasLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
-  hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 355 });
-  hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, toDepth: 798 });
-  hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, toDepth: 1123 });
-  hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, toDepth: 355 });
-  hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, toDepth: 798 });
-  hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, toDepth: 1123 });
+  hasLayersAt(LayerType.lithology, [
+    [0, 355],
+    [355, 798],
+    [798, 1123],
+  ]);
+  hasLayersAt(LayerType.lithologicalDescription, [
+    [0, 355],
+    [355, 798],
+    [798, 1123],
+  ]);
+  hasLayersAt(LayerType.faciesDescription, [
+    [0, 355],
+    [355, 798],
+    [798, 1123],
+  ]);
 };
 
 const fillCompleteUnconsolidatedLithologyForm = () => {
@@ -419,12 +425,8 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       toDepth: 1123,
       content: ["psephite, well sorted"],
     });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, isGap: true });
+    hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
+    hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
 
     // Edit consolidated lithology and check that changes are applied
     openLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
@@ -450,12 +452,8 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       toDepth: 1123,
       content: ["breccia, well sorted"],
     });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, isGap: true });
+    hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
+    hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
 
     // Cannot save if there's a gap in the lithology column
     saveForm();
@@ -497,12 +495,8 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       toDepth: 1123,
       content: ["breccia, well sorted"],
     });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, isGap: true });
+    hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
+    hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
 
     // Can save after filling gap, even if lithological descriptions and facies descriptions are missing
     saveWithSaveBar();
@@ -526,12 +520,8 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       toDepth: 1123,
       content: ["breccia, well sorted"],
     });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, isGap: true });
+    hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
+    hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
   });
 
   it("adds, updates and displays lithological descriptions", () => {
@@ -549,14 +539,14 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [355, 798],
       [798, 1123],
     ]);
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
+    hasLayersAt(LayerType.lithology, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 355 });
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, isGap: true });
+    hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
 
     // Edit lithological description and check that changes are applied
     openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 355 });
@@ -574,9 +564,11 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [355, 798],
       [798, 1123],
     ]);
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
+    hasLayersAt(LayerType.lithology, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
     checkLayerCardContent({
       layerType: LayerType.lithologicalDescription,
       fromDepth: 0,
@@ -584,9 +576,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       content: ["lithological description 0 - 355"],
     });
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, isGap: true });
+    hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
 
     // Add lithological description from remaining gap and check that it has the correct depth range
     openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
@@ -610,9 +600,11 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [355, 798],
       [798, 1123],
     ]);
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
+    hasLayersAt(LayerType.lithology, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
     checkLayerCardContent({
       layerType: LayerType.lithologicalDescription,
       fromDepth: 0,
@@ -625,9 +617,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       toDepth: 1123,
       content: ["lithological description 355 - 1123"],
     });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, isGap: true });
+    hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
 
     saveWithSaveBar();
     stopBoreholeEditing();
@@ -636,9 +626,11 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [355, 798],
       [798, 1123],
     ]);
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
+    hasLayersAt(LayerType.lithology, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
     checkLayerCardContent({
       layerType: LayerType.lithologicalDescription,
       fromDepth: 0,
@@ -651,9 +643,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       toDepth: 1123,
       content: ["lithological description 355 - 1123"],
     });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, isGap: true });
+    hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
   });
 
   it("adds, updates and displays facies descriptions", () => {
@@ -678,12 +668,12 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [355, 798],
       [798, 1123],
     ]);
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, isGap: true });
+    hasLayersAt(LayerType.lithology, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
     hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
     checkLayerCardContent({
       layerType: LayerType.faciesDescription,
@@ -714,12 +704,12 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [355, 798],
       [798, 1123],
     ]);
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, isGap: true });
+    hasLayersAt(LayerType.lithology, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
     hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
     checkLayerCardContent({
       layerType: LayerType.faciesDescription,
@@ -746,12 +736,12 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [355, 798],
       [798, 1123],
     ]);
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, isGap: true });
+    hasLayersAt(LayerType.lithology, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
     checkLayerCardContent({
       layerType: LayerType.faciesDescription,
       fromDepth: 0,
@@ -772,12 +762,12 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [355, 798],
       [798, 1123],
     ]);
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, isGap: true });
+    hasLayersAt(LayerType.lithology, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
     checkLayerCardContent({
       layerType: LayerType.faciesDescription,
       fromDepth: 0,
@@ -1159,12 +1149,16 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
     hasLayer({ layerType: LayerType.lithology, fromDepth: 355, isGap: true });
     hasLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, toDepth: 1123 });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, toDepth: 1123 });
+    hasLayersAt(LayerType.lithologicalDescription, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasLayersAt(LayerType.faciesDescription, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
 
     deleteLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
     checkDepthColumn([
@@ -1178,12 +1172,16 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
     hasLayer({ layerType: LayerType.lithology, fromDepth: 355, isGap: true });
     hasLayer({ layerType: LayerType.lithology, fromDepth: 798, isGap: true });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, toDepth: 1123 });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, toDepth: 1123 });
+    hasLayersAt(LayerType.lithologicalDescription, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasLayersAt(LayerType.faciesDescription, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
 
     // Doesn't merge lithology gap layers
     deleteLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, toDepth: 1123 });
@@ -1201,9 +1199,11 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 355 });
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, toDepth: 798 });
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, toDepth: 1123 });
+    hasLayersAt(LayerType.faciesDescription, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
 
     deleteLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, toDepth: 1123 });
     checkDepthColumn([
@@ -1236,15 +1236,19 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasDepthError(0, 355, false, false);
     hasDepthError(355, 798, false, false);
     hasDepthError(798, 1123, false, false);
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
+    hasLayersAt(LayerType.lithology, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 355 });
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, toDepth: 798 });
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, toDepth: 1123 });
+    hasLayersAt(LayerType.faciesDescription, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
 
     deleteLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, toDepth: 798 });
     checkDepthColumn([
@@ -1255,15 +1259,19 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasDepthError(0, 355, false, false);
     hasDepthError(355, 798, false, false);
     hasDepthError(798, 1123, false, false);
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
+    hasLayersAt(LayerType.lithology, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 355 });
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, isGap: true });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, toDepth: 1123 });
+    hasLayersAt(LayerType.faciesDescription, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
 
     deleteLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, toDepth: 1123 });
     checkDepthColumn([
@@ -1274,9 +1282,11 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasDepthError(0, 355, false, false);
     hasDepthError(355, 798, false, false);
     hasDepthError(798, 1123, false, false);
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
+    hasLayersAt(LayerType.lithology, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 355 });
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, isGap: true });
@@ -1312,12 +1322,16 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasDepthError(0, 355, false, false);
     hasDepthError(355, 798, false, false);
     hasDepthError(798, 1123, false, false);
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, toDepth: 1123 });
+    hasLayersAt(LayerType.lithology, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasLayersAt(LayerType.lithologicalDescription, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
     hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
     hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, toDepth: 798 });
     hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, toDepth: 1123 });
@@ -1331,12 +1345,16 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasDepthError(0, 355, false, false);
     hasDepthError(355, 798, false, false);
     hasDepthError(798, 1123, false, false);
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, toDepth: 1123 });
+    hasLayersAt(LayerType.lithology, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasLayersAt(LayerType.lithologicalDescription, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
     hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
     hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, isGap: true });
     hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, toDepth: 1123 });
@@ -1350,9 +1368,11 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasDepthError(0, 355, false, false);
     hasDepthError(355, 798, false, false);
     hasDepthError(798, 1123, false, false);
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 355, toDepth: 798 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 798, toDepth: 1123 });
+    hasLayersAt(LayerType.lithology, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, toDepth: 798 });
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, toDepth: 1123 });
