@@ -125,7 +125,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
             top: 0,
             right: 0,
             padding: theme.spacing(1),
-            backgroundColor: theme.palette.buttonStates.outlined.hoverOrFocus.backgroundColor,
+            backgroundColor: theme.palette.background.grey,
             borderBottomLeftRadius: theme.spacing(0.5),
             zIndex: 1,
           }}>
@@ -138,7 +138,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
             }}
             color={"primaryInverse"}
             sx={{
-              backgroundColor: theme.palette.buttonStates.outlined.hoverOrFocus.backgroundColor,
+              backgroundColor: theme.palette.background.grey,
             }}
           />
         </Stack>
