@@ -42,7 +42,7 @@ WHERE username <> 'Anonymous';
 
 -- Purge non-free and non-published boreholes
 DELETE FROM bdms.borehole WHERE id NOT IN (
-    SELECT id FROM bdms.borehole
+    SELECT borehole.id FROM bdms.borehole
     JOIN bdms.codelist ON codelist.id_cli = borehole.restriction_id
     JOIN bdms.workflow ON workflow.borehole_id = borehole.id
     WHERE workflow.status = 3 -- workflow status: published
