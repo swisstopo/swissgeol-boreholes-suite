@@ -18,6 +18,7 @@
 - Creating an empty stratigraphy now opens a modal that prompts for the name; the stratigraphy is created on confirmation and the user is taken straight to it.
 - Exported LOG attachments are now grouped in folders by run number instead of being prefixed with a UUID. Duplicate file names per log run are prevented on upload and import.
 - LOG import dialog now assigns attachments per run number instead of as a flat list.
+- Normalize inconsistent casing in `codelist` text values for "other" / "not specified" across all four language columns.
 
 ### Fixed
 - Only one workgroup could be added at once. Only with a complete refresh of the page another workgroup could be added.
