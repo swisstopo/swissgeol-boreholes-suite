@@ -84,11 +84,14 @@ export const useBorehole = (id: number) => {
     queryKey: [boreholeQueryKey, id, getCodelistName],
     queryFn: async () => {
       const borehole = await fetchBoreholeById(id);
-      // Sort boreholeCodelists by codelist name for consistent display order in the UI
-      const orderedBoreholeCodelists = (borehole.boreholeCodelists ?? []).toSorted(
-        (a: BoreholeCodelist, b: BoreholeCodelist) =>
-          getCodelistName(a.codelistId ?? 0).text.localeCompare(getCodelistName(b.codelistId ?? 0).text),
-      );
+      // Sort boreholeCodelists by codelist name, then by value, for consistent display order in the UI
+      const orderedBoreholeCodelists = (borehole.boreholeCodelists ?? []).toSorted((a: BoreholeCodelist, b: BoreholeCodelist) => {
+        const nameCompare = getCodelistName(a.codelistId ?? 0).text.localeCompare(
+          getCodelistName(b.codelistId ?? 0).text,
+        );
+        if (nameCompare !== 0) return nameCompare;
+        return (a.value ?? "").localeCompare(b.value ?? "");
+      });
       return { ...borehole, boreholeCodelists: orderedBoreholeCodelists };
     },
     enabled: !!id,

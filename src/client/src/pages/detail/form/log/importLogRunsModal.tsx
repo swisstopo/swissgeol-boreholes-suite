@@ -1,4 +1,4 @@
-import { FC, Fragment, useState } from "react";
+import { FC, Fragment, useCallback, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { BoreholesCard } from "../../../../components/boreholesCard.tsx";
@@ -7,6 +7,7 @@ import { LoadingBackdrop } from "../../../../components/loadingBackdrop.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { FileDropzone } from "./fileDropzone.tsx";
 import { LogImportError, LogImportValidationError, useImportLogs } from "./log.ts";
+import { parseLogFilesCsv } from "./logUtils.ts";
 
 interface ImportLogModalProps {
   isImporting: boolean;
@@ -48,10 +49,36 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
   const { id: boreholeId } = useRequiredParams();
   const [logRunFile, setLogRunFile] = useState<File>();
   const [logFileFile, setLogFileFile] = useState<File>();
-  const [logFileAttachments, setLogFileAttachments] = useState<File[]>([]);
+  const [requiredFilesPerRun, setRequiredFilesPerRun] = useState<Record<string, string[]>>({});
+  const [attachmentsPerRun, setAttachmentsPerRun] = useState<Record<string, File[]>>({});
 
   const importMutation = useImportLogs();
   const importErrors = importMutation.error instanceof LogImportValidationError ? importMutation.error.errors : [];
+
+  const runNumbers = Object.keys(requiredFilesPerRun);
+
+  const allRequiredFilesProvided = runNumbers.every(run => {
+    const required = requiredFilesPerRun[run] ?? [];
+    if (required.length === 0) return true;
+    const provided = new Set((attachmentsPerRun[run] ?? []).map(f => f.name.toLowerCase()));
+    return required.every(r => provided.has(r.toLowerCase()));
+  });
+
+  const onLogFileCsvChanged = useCallback(
+    async (files: File[]) => {
+      const file = files[0] as File | undefined;
+      setLogFileFile(file);
+      setAttachmentsPerRun({});
+      importMutation.reset();
+      if (file) {
+        const info = await parseLogFilesCsv(file);
+        setRequiredFilesPerRun(info.requiredFilesPerRun);
+      } else {
+        setRequiredFilesPerRun({});
+      }
+    },
+    [importMutation],
+  );
 
   const startImport = (): Promise<boolean> => {
     if (!logRunFile) return Promise.resolve(false);
@@ -60,16 +87,13 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
     formData.append("logRunsCsvFile", logRunFile);
     if (logFileFile) {
       formData.append("logFilesCsvFile", logFileFile);
-      const fileNames = logFileAttachments.map(f => f.name).join("\n");
-      const fileListBlob = new Blob([fileNames], { type: "text/plain" });
-      formData.append("fileListFile", fileListBlob, "filelist.txt");
     }
 
     return importMutation
       .mutateAsync({
         boreholeId: Number(boreholeId),
         formData,
-        attachments: logFileAttachments,
+        attachmentsPerRun,
       })
       .then(
         () => true,
@@ -78,10 +102,8 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
   };
 
   const isImportRunning = importMutation.isPending;
-  const hasLogFilesCsv = !!logFileFile;
-  const hasAttachments = logFileAttachments.length > 0;
-  const logFilesAndAttachmentsMismatch = hasLogFilesCsv !== hasAttachments;
-  const isImportDisabled = isImportRunning || !logRunFile || logFilesAndAttachmentsMismatch || importErrors.length > 0;
+  const hasRequiredFiles = runNumbers.length === 0 || allRequiredFilesProvided;
+  const isImportDisabled = isImportRunning || !logRunFile || !hasRequiredFiles || importErrors.length > 0;
 
   return (
     <FormDialog
@@ -91,7 +113,8 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
         setIsImporting(false);
         setLogRunFile(undefined);
         setLogFileFile(undefined);
-        setLogFileAttachments([]);
+        setRequiredFilesPerRun({});
+        setAttachmentsPerRun({});
         importMutation.reset();
       }}
       actions={[
@@ -129,24 +152,21 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
             <Typography>{t("importLogFilesDescription")}</Typography>
             <Stack gap={0.5}>
               <Typography variant="h6">{t("csvFile")}</Typography>
-              <FileDropzone
-                onChange={files => {
-                  setLogFileFile(files[0]);
-                  importMutation.reset();
-                }}
-                accept={{ "text/csv": [".csv"] }}
-              />
+              <FileDropzone onChange={onLogFileCsvChanged} accept={{ "text/csv": [".csv"] }} />
             </Stack>
-            <Stack gap={0.5}>
-              <Typography variant="h6">{t("attachments")}</Typography>
-              <FileDropzone
-                onChange={files => {
-                  setLogFileAttachments(files);
-                  importMutation.reset();
-                }}
-                multiple={true}
-              />
-            </Stack>
+            {runNumbers.map(runNumber => (
+              <Stack key={runNumber} gap={0.5} data-cy={`log-attachments-${runNumber}`}>
+                <Typography variant="h6">{t("attachmentsForRun", { runNumber })}</Typography>
+                <FileDropzone
+                  onChange={files => {
+                    setAttachmentsPerRun(prev => ({ ...prev, [runNumber]: files }));
+                    importMutation.reset();
+                  }}
+                  multiple={true}
+                  expectedFileNames={requiredFilesPerRun[runNumber]}
+                />
+              </Stack>
+            ))}
             <ImportErrorSection
               prefix="LogFile"
               getHeader={(errorKey, group) =>

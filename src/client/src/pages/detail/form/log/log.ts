@@ -109,11 +109,16 @@ export class LogImportValidationError extends ApiError {
 interface ImportLogsVariables {
   boreholeId: number;
   formData: FormData;
-  attachments: File[];
+  attachmentsPerRun: Record<string, File[]>;
 }
 
-const buildLogFileUpload = (logRun: LogRun, logFile: LogFile, attachments: File[]): Promise<LogFile> | null => {
-  const matchingAttachment = attachments.find(f => f.name.replaceAll(" ", "_") === logFile.name);
+const buildLogFileUpload = (
+  logRun: LogRun,
+  logFile: LogFile,
+  attachmentsPerRun: Record<string, File[]>,
+): Promise<LogFile> | null => {
+  const runAttachments = attachmentsPerRun[logRun.runNumber] ?? [];
+  const matchingAttachment = runAttachments.find(f => f.name.replaceAll(" ", "_") === logFile.name);
   if (!matchingAttachment) return null;
   return uploadLogFileBlob(matchingAttachment, logRun.id, logFile.id);
 };
@@ -123,7 +128,7 @@ export const useImportLogs = () => {
   const resetTabStatus = useResetTabStatus(["log"]);
 
   return useMutation<LogRun[], Error, ImportLogsVariables>({
-    mutationFn: async ({ boreholeId, formData, attachments }) => {
+    mutationFn: async ({ boreholeId, formData, attachmentsPerRun }) => {
       const response = await upload(`${logController}/import?boreholeId=${boreholeId}`, "POST", formData);
       if (!response.ok) {
         if (isJsonContentType(response.headers.get("content-type"))) {
@@ -138,7 +143,9 @@ export const useImportLogs = () => {
       const importedLogRuns: LogRun[] = await response.json();
       try {
         const uploadPromises = importedLogRuns
-          .flatMap(logRun => (logRun.logFiles ?? []).map(logFile => buildLogFileUpload(logRun, logFile, attachments)))
+          .flatMap(logRun =>
+            (logRun.logFiles ?? []).map(logFile => buildLogFileUpload(logRun, logFile, attachmentsPerRun)),
+          )
           .filter((p): p is Promise<LogFile> => p !== null);
         await Promise.all(uploadPromises);
       } catch (uploadError) {
