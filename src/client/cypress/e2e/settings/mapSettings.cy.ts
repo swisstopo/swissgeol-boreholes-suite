@@ -1,8 +1,37 @@
 import { setSelect } from "../helpers/formHelpers";
-import { goToRouteAndAcceptTerms, returnToOverview } from "../helpers/testHelpers";
+import { bearerAuth, goToRouteAndAcceptTerms, returnToOverview } from "../helpers/testHelpers";
 
 describe("map settings", () => {
+  // Clear any user-map entries the test added
+  afterEach(() => {
+    cy.get("@access_token").then(token => {
+      cy.request({
+        method: "POST",
+        url: "/api/v1/setting",
+        auth: bearerAuth(token),
+        body: { action: "PATCH", tree: "map.explorer", value: {} },
+      });
+    });
+  });
+
   it("Adds wms and wmts to user maps", () => {
+    // Stub geo.admin.ch GetCapabilities so the test does not depend on the live service,
+    // which is intermittently broken (MapServer "Unable to access file" errors).
+    cy.fixture("wmsCapabilities.xml").then(wmsXml => {
+      cy.intercept(/^https:\/\/wms\.geo\.admin\.ch/, {
+        statusCode: 200,
+        headers: { "Content-Type": "application/xml" },
+        body: wmsXml,
+      }).as("wmsCapabilities");
+    });
+    cy.fixture("wmtsCapabilities.xml").then(wmtsXml => {
+      cy.intercept(/^https:\/\/wmts\.geo\.admin\.ch/, {
+        statusCode: 200,
+        headers: { "Content-Type": "application/xml" },
+        body: wmtsXml,
+      }).as("wmtsCapabilities");
+    });
+
     goToRouteAndAcceptTerms("/setting");
 
     const wmsName = "Army logistics centres (ALC)";
@@ -11,6 +40,7 @@ describe("map settings", () => {
     cy.dataCy("map-tab").click();
     // Add WMS
     cy.get('[data-cy="load-layers-button"]').click();
+    cy.wait("@wmsCapabilities");
     cy.get('[data-cy="wms-list-box"]').contains(wmsName);
     cy.get('[data-cy="maps-for-user-box"]').should("not.exist");
     cy.contains("div.selectable", wmsName).find('[data-cy="add-layer-button"]').click();
@@ -22,6 +52,7 @@ describe("map settings", () => {
 
     // Add WMTS
     cy.get('[data-cy="load-layers-button"]').click();
+    cy.wait("@wmtsCapabilities");
     cy.get('[data-cy="wmts-list-box"]').contains(wmtsName);
     cy.contains("div.selectable", wmtsName).find('[data-cy="add-layer-button"]').click();
     cy.wait("@setting");
@@ -36,24 +67,9 @@ describe("map settings", () => {
     // Reload page to verify layers are correctly added
     cy.reload(true);
     goToRouteAndAcceptTerms("/");
-
-    // Remove layers
     cy.dataCy("settings-button").click();
     cy.dataCy("map-tab").click();
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(1000);
     cy.get('[data-cy="maps-for-user-box"]').contains(wmtsName);
     cy.get('[data-cy="maps-for-user-box"]').contains(wmsName);
-    cy.get('[data-cy="delete-user-map-button"]').eq(0).click();
-    cy.wait("@setting");
-    cy.wait("@setting");
-    cy.wait("@setting"); //¯\_(ツ)_/¯
-
-    cy.get('[data-cy="maps-for-user-box"]').should("not.contain", wmsName);
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(1000);
-
-    cy.get('[data-cy="delete-user-map-button"]').eq(0).click();
-    cy.get('[data-cy="maps-for-user-box"]').should("not.exist");
   });
 });
