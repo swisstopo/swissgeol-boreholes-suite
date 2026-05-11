@@ -208,7 +208,7 @@ class TermSettings extends React.Component {
               {t("preview")}
             </div>
           </div>
-          <Markdown>{this.state[this.state.lang]}</Markdown>
+          <Markdown options={{ disableParsingRawHTML: true }}>{this.state[this.state.lang]}</Markdown>
         </div>
       </div>
     );
