@@ -1,16 +1,14 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FeatureCollection, Geometry } from "geojson";
-import { Codelist, useCodelistDisplayValues } from "../components/codelist.ts";
+import { useCodelistDisplayValues } from "../components/codelist.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { SessionKeys } from "../pages/overview/SessionKey.ts";
 import { NullableDateString } from "./apiInterfaces.ts";
 import { download, downloadData } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
-import { Borehole, BoreholeCodelist } from "./generated";
+import { Borehole, BoreholeCodelist, Codelist } from "./generated";
 import { useCurrentUser } from "./user.ts";
-
-export type { Borehole, Borehole as BoreholeV2 } from "./generated/types.gen";
 
 export interface BasicIdentifier extends BoreholeCodelist {
   codelist?: Codelist;
@@ -140,7 +138,7 @@ export const useBoreholeMutations = () => {
       });
       // force immediate background refetch to have the borehole's lock status up to date on next render and prevent button flickering
       queryClient.refetchQueries({
-        queryKey: [boreholeQueryKey, borehole.id!],
+        queryKey: [boreholeQueryKey, borehole.id],
         exact: true,
       });
     },

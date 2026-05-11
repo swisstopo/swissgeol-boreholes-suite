@@ -1,6 +1,6 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { User } from "./generated/types.gen";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
+import { User } from "./generated";
 
 const fetchCurrentUser = async (): Promise<User> => await fetchApiV2WithApiError<User>("user/self", "GET");
 

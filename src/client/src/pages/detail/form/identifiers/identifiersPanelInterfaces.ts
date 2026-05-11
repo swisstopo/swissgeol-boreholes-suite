@@ -1,5 +1,5 @@
 import { BasicIdentifier, Identifier } from "../../../../api/borehole.ts";
-import { Codelist } from "../../../../components/codelist.ts";
+import { Codelist } from "../../../../api/generated";
 import { Workflow } from "../workflow/workflow.ts";
 
 export interface IdentifiersFormInputs {

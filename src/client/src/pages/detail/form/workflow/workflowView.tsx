@@ -12,8 +12,8 @@ import {
   WorkflowStatus,
 } from "@swissgeol/ui-core";
 import { SgcWorkflow } from "@swissgeol/ui-core-react";
-import { Role as LegacyRole } from "../../../../api/generated/types.gen";
 import { useBorehole, useBoreholeStatusEditable } from "../../../../api/borehole.ts";
+import { Role as LegacyRole } from "../../../../api/generated/types.gen";
 import { useCurrentUser, useEditorUsersOnWorkgroup } from "../../../../api/user.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { restrictionFreeCode } from "../../../../components/codelist.ts";

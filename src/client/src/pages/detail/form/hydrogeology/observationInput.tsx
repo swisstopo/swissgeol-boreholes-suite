@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Casing } from "../../../../api/generated/types.gen";
 import { getCasingsByBoreholeId } from "../../../../api/fetchApiV2.js";
+import { Casing } from "../../../../api/generated";
 import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormContainer } from "../../../../components/form/formContainer";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
@@ -32,18 +32,18 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
             {
               fieldNameMD: "fromDepthM",
               labelMD: "fromdepth",
-              getValueMD: () => observation.fromDepthM,
+              getValueMD: () => observation.fromDepthM ?? null,
               fieldNameMasl: "fromDepthMasl",
               labelMasl: "fromDepthMasl",
-              getValueMasl: () => observation.fromDepthMasl,
+              getValueMasl: () => observation.fromDepthMasl ?? null,
             },
             {
               fieldNameMD: "toDepthM",
               labelMD: "todepth",
-              getValueMD: () => observation.toDepthM,
+              getValueMD: () => observation.toDepthM ?? null,
               fieldNameMasl: "toDepthMasl",
               labelMasl: "toDepthMasl",
-              getValueMasl: () => observation.toDepthMasl,
+              getValueMasl: () => observation.toDepthMasl ?? null,
             },
           ]}
         />

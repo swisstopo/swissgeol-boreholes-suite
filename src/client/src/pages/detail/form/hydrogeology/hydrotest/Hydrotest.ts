@@ -1,31 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchApiV2Legacy } from "../../../../../api/fetchApiV2.ts";
-import { Codelist } from "../../../../../components/codelist.ts";
-import { Observation, ObservationType } from "../Observation.ts";
-
-export interface Hydrotest extends Observation {
-  id?: number;
-  boreholeId: number;
-  hydrotestResults: HydrotestResult[];
-  evaluationMethodId?: number[];
-  flowDirectionId?: number[];
-  testKindId?: number[];
-  kindCodelistIds: number[];
-  type: ObservationType;
-  evaluationMethodCodelistIds: number[];
-  flowDirectionCodelistIds: number[];
-  kindCodelists?: Codelist[];
-  evaluationMethodCodelists?: Codelist[];
-  flowDirectionCodelists?: Codelist[];
-}
-
-export interface HydrotestResult {
-  id?: number;
-  parameterId: number | null;
-  value: number | null;
-  minValue: number | null;
-  maxValue: number | null;
-}
+import { Hydrotest } from "../../../../../api/generated";
 
 export interface HydrotestInputProps {
   item: Hydrotest;

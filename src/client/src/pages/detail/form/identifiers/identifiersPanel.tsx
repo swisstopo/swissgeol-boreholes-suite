@@ -7,7 +7,7 @@ import { Identifier, useBorehole } from "../../../../api/borehole.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../components/boreholesCard.tsx";
 import { AddButton, AddRowButton, StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
-import { useCodelists } from "../../../../components/codelist.ts";
+import { getCodelistLocalizedLabel, useCodelists } from "../../../../components/codelist.ts";
 import {
   FormContainer,
   FormDomainSelect,
@@ -62,7 +62,7 @@ export const IdentifiersPanel: FC = () => {
       if (existing) {
         existing.indices.push(index);
       } else {
-        groups.push({ codelistId: cId, indices: [index] });
+        groups.push({ codelistId: cId ?? null, indices: [index] });
       }
     });
     return groups;
@@ -98,6 +98,7 @@ export const IdentifiersPanel: FC = () => {
             variant={"contained"}
             onClick={() => {
               append({
+                id: 0,
                 boreholeId: borehole.id,
                 codelistId: groupedByCodelistId.length, // Temporary ID to ensure click adds to a new group(card), is overwritten when a codelist is selected
                 value: "",
@@ -145,11 +146,14 @@ export const IdentifiersPanel: FC = () => {
                     />
                   )
                 }
-                title={String(
-                  (editingEnabled &&
-                    codelists?.find(d => d.id === watchedCodelists?.[firstIndex]?.codelistId)?.[i18n.language]) ||
-                    "",
-                )}>
+                title={
+                  editingEnabled
+                    ? getCodelistLocalizedLabel(
+                        codelists?.find(d => d.id === watchedCodelists?.[firstIndex]?.codelistId),
+                        i18n.language,
+                      )
+                    : ""
+                }>
                 <FormSegmentBox>
                   <FormContainer direction={"column"} gap={2}>
                     <FormDomainSelect
@@ -204,6 +208,7 @@ export const IdentifiersPanel: FC = () => {
                         dataCy={`${watchedCodelists?.[firstIndex]?.codelistId}-add-id-button`}
                         onClick={() => {
                           append({
+                            id: 0,
                             boreholeId: borehole.id,
                             codelistId: watchedCodelists?.[firstIndex]?.codelistId ?? firstField.codelistId,
                             value: "",

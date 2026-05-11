@@ -102,7 +102,7 @@ export const LabelingHeader: FC<{
           <ButtonSelect
             fieldName="labeling-file"
             items={fileSelectionItems}
-            selectedItem={{ key: selectedAttachment.id!, value: getDisplayName(selectedAttachment) }}
+            selectedItem={{ key: selectedAttachment.id, value: getDisplayName(selectedAttachment) }}
             onItemSelected={item => {
               setActivePage(1);
               if (item.key === -1) handleFileInputClick();

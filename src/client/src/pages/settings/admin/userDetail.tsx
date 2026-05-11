@@ -110,8 +110,8 @@ export const UserDetail: FC = () => {
         action: () => {
           if (!selectedUser || !userWorkgroup?.roles) return;
           removeAllWorkgroupRolesForUser({
-            userId: selectedUser.id!,
-            workgroupId: userWorkgroup.id!,
+            userId: selectedUser.id,
+            workgroupId: userWorkgroup.id,
             roles: userWorkgroup.roles,
           });
         },

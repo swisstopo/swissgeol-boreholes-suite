@@ -25,7 +25,7 @@ export const useResetTabStatus = (tabsToReset: TabName[]) => {
 
     if (anyTabIsReviewed) {
       updateTabStatus({
-        boreholeId: borehole?.id,
+        boreholeId: borehole.id,
         tab: TabType.Reviewed,
         changes,
       });
@@ -33,7 +33,7 @@ export const useResetTabStatus = (tabsToReset: TabName[]) => {
 
     if (anyTabIsPublished) {
       updateTabStatus({
-        boreholeId: borehole?.id,
+        boreholeId: borehole.id,
         tab: TabType.Published,
         changes,
       });

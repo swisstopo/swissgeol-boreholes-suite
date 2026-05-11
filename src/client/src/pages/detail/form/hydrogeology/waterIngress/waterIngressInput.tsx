@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { WaterIngress } from "../../../../../api/generated";
 import { DataInputCard } from "../../../../../components/dataCard/dataInputCard.js";
 import { FormContainer } from "../../../../../components/form/form.ts";
 import { FormDomainSelect } from "../../../../../components/form/formDomainSelect.tsx";
@@ -6,14 +7,14 @@ import { prepareCasingDataForSubmit } from "../../completion/casingUtils.jsx";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
 import { ObservationType, prepareObservationDataForSubmit } from "../Observation.ts";
 import ObservationInput from "../observationInput.tsx";
-import { addWaterIngress, updateWaterIngress, WaterIngress } from "./WaterIngress.ts";
+import { addWaterIngress, updateWaterIngress } from "./WaterIngress.ts";
 
 const WaterIngressInput: FC<{ item: WaterIngress; parentId: number }> = ({ item, parentId }) => {
   const prepareFormDataForSubmit = (data: WaterIngress) => {
     data = prepareCasingDataForSubmit(data);
     data = prepareObservationDataForSubmit(data, parentId);
     data.type = ObservationType.waterIngress;
-    if (data.conditionsId === "") {
+    if (data.conditionsId == null) {
       data.conditionsId = null;
     }
     return data;

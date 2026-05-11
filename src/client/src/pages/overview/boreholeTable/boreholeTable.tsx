@@ -31,7 +31,7 @@ import { LockKeyhole } from "lucide-react";
 import { BoreholeListItem } from "../../../api/borehole.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBoreholesAuth.tsx";
-import { useCodelists } from "../../../components/codelist.ts";
+import { getCodelistLocalizedLabel, useCodelists } from "../../../components/codelist.ts";
 import { formatNumberForDisplay } from "../../../components/form/formUtils.ts";
 import { FullPageCentered } from "../../../components/styledComponents.ts";
 import { Table } from "../../../components/table/table.tsx";
@@ -165,11 +165,10 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     {
       field: "typeId",
       valueGetter: (value: number) => {
-        const domain = codelists.data?.find((d: { id: number }) => d.id === value);
-        if (domain) {
-          return domain[i18n.language];
-        }
-        return "";
+        return getCodelistLocalizedLabel(
+          codelists.data?.find((d: { id: number }) => d.id === value),
+          i18n.language,
+        );
       },
       headerName: t("borehole_type"),
       flex: 1,
@@ -183,8 +182,10 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     {
       field: "purposeId",
       valueGetter: (value: number) => {
-        const domain = codelists.data?.find((d: { id: number }) => d.id === value);
-        return domain ? domain[i18n.language] : "";
+        return getCodelistLocalizedLabel(
+          codelists.data?.find((d: { id: number }) => d.id === value),
+          i18n.language,
+        );
       },
       headerName: t("purpose"),
       flex: 1,

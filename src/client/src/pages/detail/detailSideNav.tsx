@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import { Box, Stack } from "@mui/material";
 import { SgcMenuItem } from "@swissgeol/ui-core-react";
-import { Borehole, useBoreholeStatusEditable } from "../../api/borehole.ts";
+import { useBoreholeStatusEditable } from "../../api/borehole.ts";
+import { Borehole } from "../../api/generated";
 import { useAuth } from "../../auth/useBoreholesAuth.tsx";
 import { useBoreholeDataAvailability } from "../../hooks/useBoreholeDataAvailability.ts";
 import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
@@ -45,8 +46,8 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   if (!borehole.workflow) return null;
 
   const isReviewed = (tabKeys: Array<keyof TabStatus>) => {
-    if (tabKeys.every(key => borehole.workflow?.reviewedTabs[key])) return "true";
-    if (tabKeys.some(key => borehole.workflow?.reviewedTabs[key])) return "partial";
+    if (tabKeys.every(key => borehole.workflow?.reviewedTabs?.[key])) return "true";
+    if (tabKeys.some(key => borehole.workflow?.reviewedTabs?.[key])) return "partial";
     return "false";
   };
 

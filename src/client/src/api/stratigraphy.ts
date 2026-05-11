@@ -1,28 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
-import { Lithology } from "../pages/detail/form/stratigraphy/lithology.ts";
 import { NullableDateString } from "./apiInterfaces.ts";
-import { Borehole, boreholeQueryKey } from "./borehole.ts";
+import { boreholeQueryKey } from "./borehole.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
-import { User } from "./generated/types.gen";
-
-export interface Stratigraphy {
-  id: number;
-  boreholeId: number;
-  borehole: Borehole | null;
-  name: string | null;
-  date: string | null;
-  isPrimary: boolean;
-  created: NullableDateString;
-  createdById: number | null;
-  createdBy?: User;
-  updated: NullableDateString;
-  updatedById: number | null;
-  updatedBy?: User;
-  lithologies: Lithology[] | null;
-  lithostratigraphyLayers: Lithostratigraphy[] | null;
-  chronostratigraphyLayers: Chronostratigraphy[] | null;
-}
+import { Stratigraphy, User } from "./generated";
 
 export interface BaseLayer {
   id: number;

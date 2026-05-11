@@ -4,8 +4,9 @@ import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 import { useReloadBoreholes } from "../../../../../api/borehole.ts";
+import { Codelist, Hydrotest, HydrotestResult } from "../../../../../api/generated";
 import { AddButton } from "../../../../../components/buttons/buttons";
-import { Codelist, useCodelists } from "../../../../../components/codelist.ts";
+import { useCodelists } from "../../../../../components/codelist.ts";
 import { DataCardContext } from "../../../../../components/dataCard/dataCardContext";
 import { DataCardSaveAndCancelButtons } from "../../../../../components/dataCard/saveAndCancelButtons.tsx";
 import { useUnsavedChangesPrompt } from "../../../../../components/dataCard/useUnsavedChangesPrompt.tsx";
@@ -25,7 +26,22 @@ import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants";
 import { ObservationType, prepareObservationDataForSubmit } from "../Observation";
 import ObservationInput from "../observationInput";
 import { getHydrotestParameterUnits } from "../parameterUnits";
-import { addHydrotest, Hydrotest, HydrotestInputProps, updateHydrotest, useHydrotestDomains } from "./Hydrotest";
+import { addHydrotest, HydrotestInputProps, updateHydrotest, useHydrotestDomains } from "./Hydrotest";
+
+interface HydrotestResultFormData {
+  id?: number;
+  parameterId?: number | null;
+  value?: number | null;
+  minValue?: number | null;
+  maxValue?: number | null;
+}
+
+type HydrotestFormData = Omit<Hydrotest, "hydrotestResults"> & {
+  testKindId?: number[];
+  flowDirectionId?: number[];
+  evaluationMethodId?: number[];
+  hydrotestResults?: HydrotestResultFormData[] | null;
+};
 
 export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
   const { t } = useTranslation();
@@ -34,7 +50,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
   const codelists = useCodelists();
   const reloadBoreholes = useReloadBoreholes();
 
-  const formMethods = useForm<Hydrotest>({
+  const formMethods = useForm<HydrotestFormData>({
     mode: "all",
     defaultValues: {
       hydrotestResults: item?.hydrotestResults || [],
@@ -50,7 +66,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
   const [hydrotestKindIds, setHydrotestKindIds] = useState<number[]>(item?.kindCodelists?.map(c => c.id) || []);
   const filteredTestKindDomains = useHydrotestDomains(hydrotestKindIds);
 
-  const submitForm = (data: Hydrotest) => {
+  const submitForm = (data: HydrotestFormData) => {
     resetTabStatus();
     const hydrotest: Hydrotest = prepareFormDataForSubmit(data);
 
@@ -137,8 +153,8 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
     trigger("hydrotestResults");
     const currentUnits: Record<number, string> = {};
 
-    getValues().hydrotestResults.forEach((element, index) => {
-      currentUnits[index] = getHydrotestParameterUnits(element.parameterId, codelists.data);
+    getValues().hydrotestResults?.forEach((element, index) => {
+      currentUnits[index] = getHydrotestParameterUnits(element.parameterId ?? null, codelists.data);
     });
 
     setUnits(currentUnits);
@@ -153,37 +169,27 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [item, getValues()["testKindId"]]);
 
-  const prepareFormDataForSubmit = (data: Hydrotest): Hydrotest => {
-    data = prepareCasingDataForSubmit(data);
-    data = prepareObservationDataForSubmit(data, parentId);
-    data.type = ObservationType.hydrotest;
+  const prepareFormDataForSubmit = (data: HydrotestFormData): Hydrotest => {
+    let prepared: Hydrotest = prepareCasingDataForSubmit(data) as Hydrotest;
+    prepared = prepareObservationDataForSubmit(prepared, parentId);
+    prepared.type = ObservationType.hydrotest;
 
-    if (Array.isArray(data.testKindId)) {
-      data.kindCodelistIds = data.testKindId;
-    }
-    if (Array.isArray(data.flowDirectionId)) {
-      data.flowDirectionCodelistIds = data.flowDirectionId;
-    }
-    if (Array.isArray(data.evaluationMethodId)) {
-      data.evaluationMethodCodelistIds = data.evaluationMethodId;
-    }
+    prepared.kindCodelistIds = Array.isArray(data.testKindId) ? data.testKindId : [];
+    prepared.flowDirectionCodelistIds = Array.isArray(data.flowDirectionId) ? data.flowDirectionId : [];
+    prepared.evaluationMethodCodelistIds = Array.isArray(data.evaluationMethodId) ? data.evaluationMethodId : [];
 
     if (data.hydrotestResults) {
-      data.hydrotestResults = data.hydrotestResults.map(r => {
-        return {
-          id: r.id,
-          parameterId: r.parameterId,
-          value: parseFloatWithThousandsSeparator(r.value?.toString()),
-          minValue: parseFloatWithThousandsSeparator(r.minValue?.toString()),
-          maxValue: parseFloatWithThousandsSeparator(r.maxValue?.toString()),
-        };
-      });
+      prepared.hydrotestResults = data.hydrotestResults.map(r => ({
+        id: r.id ?? 0,
+        parameterId: r.parameterId ?? 0,
+        hydrotestId: 0,
+        value: parseFloatWithThousandsSeparator(r.value?.toString()),
+        minValue: parseFloatWithThousandsSeparator(r.minValue?.toString()),
+        maxValue: parseFloatWithThousandsSeparator(r.maxValue?.toString()),
+      })) as HydrotestResult[];
     }
 
-    delete data.testKindId;
-    delete data.flowDirectionId;
-    delete data.evaluationMethodId;
-    return data;
+    return prepared;
   };
 
   const hasTestKindError = !!formState.errors?.testKindId;
@@ -246,7 +252,10 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
                 <AddButton
                   label="addHydrotestResult"
                   onClick={() => {
-                    append({ parameterId: null, value: null, minValue: null, maxValue: null }, { shouldFocus: false });
+                    append(
+                      { parameterId: undefined, value: undefined, minValue: undefined, maxValue: undefined },
+                      { shouldFocus: false },
+                    );
                   }}
                 />
               </FormContainer>

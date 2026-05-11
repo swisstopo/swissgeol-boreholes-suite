@@ -2,13 +2,13 @@ import { FC, useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, TextField, Typography } from "@mui/material";
 import { GridColDef, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui/x-data-grid";
-import { Document, DocumentUpdate } from "../../../../api/generated/types.gen";
 import {
   createDocument,
   deleteDocuments,
   getDocumentsByBoreholeId,
   updateDocuments,
 } from "../../../../api/fetchApiV2.ts";
+import { Document, DocumentUpdate } from "../../../../api/generated";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 import { formatDate } from "../../../../utils.ts";
 import { EditStateContext } from "../../editStateContext.tsx";

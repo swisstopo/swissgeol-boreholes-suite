@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Chip, Stack } from "@mui/material";
 import { WorkflowStatus } from "@swissgeol/ui-core";
 import { NullableDateString } from "../../api/apiInterfaces.ts";
-import { Borehole } from "../../api/borehole.ts";
+import { Borehole } from "../../api/generated";
 import { useCurrentUser } from "../../api/user.ts";
 import { theme } from "../../AppTheme.ts";
 import { EditButton } from "../../components/buttons/buttons.tsx";

@@ -6,9 +6,8 @@ import { labelingFileFormat, matchesFileFormat, PanelTab } from "./dataextractio
 import { download } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
 import { maxFileSizeBytes } from "./file.ts";
+import { Profile } from "./generated";
 import { processFileWithOCR } from "./ocr.ts";
-import type { Profile } from "./generated/types.gen";
-export type { Profile } from "./generated/types.gen";
 
 export async function uploadProfile(boreholeId: number, file: File): Promise<Profile> {
   if (file && file.size <= maxFileSizeBytes) {

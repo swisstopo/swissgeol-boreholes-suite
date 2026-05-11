@@ -1,9 +1,10 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Divider, Stack, TextField, Typography } from "@mui/material";
+import { Codelist } from "../../../../../../api/generated";
 import { theme } from "../../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
-import { Codelist, CodelistLabelStyle, useCodelistSchema } from "../../../../../../components/codelist.ts";
+import { CodelistLabelStyle, useCodelistSchema } from "../../../../../../components/codelist.ts";
 import {
   FormCheckbox,
   FormContainer,
@@ -150,7 +151,7 @@ export const LithologyUnconsolidatedForm: FC<LithologyEditForm> = ({ lithologyId
     description: LithologyDescription,
     field: string,
     idField: string,
-    codelist: { id: number | string; code: string }[],
+    codelist: { id: number | string; code?: string }[],
   ): string | undefined => {
     if (description[field as keyof LithologyDescription]) {
       return (description[field as keyof LithologyDescription] as Codelist)?.code;

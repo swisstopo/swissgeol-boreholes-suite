@@ -57,7 +57,7 @@ const useDeleteEntityPrompts = (deleteEntity: UseMutateFunction<unknown, unknown
       navigateTo({ path: "/setting", hash: "workgroups" });
     } else return "/setting";
 
-    deleteEntity(entity.id!);
+    deleteEntity(entity.id);
   };
 
   const isEntityDeletable = (entity: User | Workgroup) => {

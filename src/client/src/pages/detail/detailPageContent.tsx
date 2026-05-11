@@ -1,6 +1,6 @@
 import { Navigate, Route, Routes } from "react-router";
 import { Box } from "@mui/material";
-import { Borehole } from "../../api/borehole.ts";
+import { Borehole } from "../../api/generated";
 import { theme } from "../../AppTheme";
 import { Attachments } from "./attachments/attachments.tsx";
 import { BoreholePanel } from "./form/borehole/boreholePanel.tsx";

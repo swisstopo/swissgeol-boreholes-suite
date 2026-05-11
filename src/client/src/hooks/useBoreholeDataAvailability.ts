@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { Borehole } from "../api/borehole";
+import { Borehole } from "../api/generated";
 import { ObservationType } from "../pages/detail/form/hydrogeology/Observation";
 
 export const useBoreholeDataAvailability = (borehole?: Borehole) => {

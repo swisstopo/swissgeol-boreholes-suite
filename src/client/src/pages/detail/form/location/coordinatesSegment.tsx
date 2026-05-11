@@ -109,17 +109,17 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
       // Update form values for both reference systems
       updateFormValues(
         ReferenceSystemKey.LV95,
-        borehole.locationX,
-        borehole.locationY,
-        borehole.precisionLocationX,
-        borehole.precisionLocationY,
+        borehole.locationX ?? null,
+        borehole.locationY ?? null,
+        borehole.precisionLocationX ?? 0,
+        borehole.precisionLocationY ?? 0,
       );
       updateFormValues(
         ReferenceSystemKey.LV03,
-        borehole.locationXLV03,
-        borehole.locationYLV03,
-        borehole.precisionLocationXLV03,
-        borehole.precisionLocationYLV03,
+        borehole.locationXLV03 ?? null,
+        borehole.locationYLV03 ?? null,
+        borehole.precisionLocationXLV03 ?? 0,
+        borehole.precisionLocationYLV03 ?? 0,
       );
       setBoreholeId(borehole.id);
     }

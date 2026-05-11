@@ -1,4 +1,5 @@
 import { FC } from "react";
+import { GroundwaterLevelMeasurement } from "../../../../../api/generated";
 import { DataInputCard } from "../../../../../components/dataCard/dataInputCard.js";
 import { FormContainer } from "../../../../../components/form/form.ts";
 import { FormDomainSelect } from "../../../../../components/form/formDomainSelect.tsx";
@@ -8,11 +9,7 @@ import DepthInput from "../depthInput.tsx";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
 import { ObservationType, prepareObservationDataForSubmit } from "../Observation.ts";
 import ObservationInput from "../observationInput.tsx";
-import {
-  addGroundwaterLevelMeasurement,
-  GroundwaterLevelMeasurement,
-  updateGroundwaterLevelMeasurement,
-} from "./GroundwaterLevelMeasurement.ts";
+import { addGroundwaterLevelMeasurement, updateGroundwaterLevelMeasurement } from "./GroundwaterLevelMeasurement.ts";
 
 const GroundwaterLevelMeasurementInput: FC<{ item: GroundwaterLevelMeasurement; parentId: number }> = ({
   item,
@@ -55,10 +52,10 @@ const GroundwaterLevelMeasurementInput: FC<{ item: GroundwaterLevelMeasurement; 
           {
             fieldNameMD: "levelM",
             labelMD: "gwlm_levelm",
-            getValueMD: () => item.levelM,
+            getValueMD: () => item.levelM ?? null,
             fieldNameMasl: "levelMasl",
             labelMasl: "gwlm_levelmasl",
-            getValueMasl: () => item.levelMasl,
+            getValueMasl: () => item.levelMasl ?? null,
           },
         ]}
       />

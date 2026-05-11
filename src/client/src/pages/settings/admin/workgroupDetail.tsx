@@ -87,8 +87,8 @@ export const WorkgroupDetail: FC = () => {
         action: () => {
           if (!selectedWorkgroup || !user?.workgroupRoles || user.workgroupRoles.length <= 0) return;
           removeAllWorkgroupRolesForUser({
-            userId: user.id!,
-            workgroupId: selectedWorkgroup.id!,
+            userId: user.id,
+            workgroupId: selectedWorkgroup.id,
             roles:
               user.workgroupRoles?.map(r => r.role).filter((r): r is NonNullable<typeof r> => r !== undefined) ?? [],
           });

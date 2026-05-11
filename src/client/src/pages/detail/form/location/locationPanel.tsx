@@ -1,16 +1,17 @@
 import { FC, useCallback, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, UseFormReturn } from "react-hook-form";
 import {
   getDecimalsFromNumericString,
   parseFloatWithThousandsSeparator,
 } from "../../../../components/form/formUtils.ts";
 import { BaseForm } from "../baseForm.tsx";
+import { ReferenceSystemCode } from "./coordinateSegmentInterfaces.ts";
 import { LocationFormInputs, LocationFormSubmission, LocationPanelProps } from "./locationPanelInterfaces.tsx";
 import LocationSegment from "./locationSegment.tsx";
 
 export const LocationPanel: FC<LocationPanelProps> = ({ borehole, labelingPanelOpen }) => {
   const [resetKey, setResetKey] = useState(0);
-  const formMethods = useForm<LocationFormInputs>({
+  const formMethods: UseFormReturn<LocationFormInputs> = useForm<LocationFormInputs>({
     mode: "onChange",
     defaultValues: {
       elevationZ: borehole.elevationZ,
@@ -18,16 +19,16 @@ export const LocationPanel: FC<LocationPanelProps> = ({ borehole, labelingPanelO
       referenceElevation: borehole.referenceElevation,
       referenceElevationPrecisionId: borehole.referenceElevationPrecisionId,
       referenceElevationTypeId: borehole.referenceElevationTypeId,
-      hrsId: borehole.hrsId,
-      country: borehole.country,
-      canton: borehole.canton,
-      municipality: borehole.municipality,
-      locationX: borehole.locationX?.toFixed(borehole.precisionLocationX) ?? "",
-      locationY: borehole.locationY?.toFixed(borehole.precisionLocationY) ?? "",
-      locationXLV03: borehole.locationXLV03?.toFixed(borehole.precisionLocationXLV03) ?? "",
-      locationYLV03: borehole.locationYLV03?.toFixed(borehole.precisionLocationYLV03) ?? "",
+      hrsId: borehole.hrsId ?? undefined,
+      country: borehole.country ?? undefined,
+      canton: borehole.canton ?? undefined,
+      municipality: borehole.municipality ?? undefined,
+      locationX: borehole.locationX?.toFixed(borehole.precisionLocationX ?? undefined) ?? "",
+      locationY: borehole.locationY?.toFixed(borehole.precisionLocationY ?? undefined) ?? "",
+      locationXLV03: borehole.locationXLV03?.toFixed(borehole.precisionLocationXLV03 ?? undefined) ?? "",
+      locationYLV03: borehole.locationYLV03?.toFixed(borehole.precisionLocationYLV03 ?? undefined) ?? "",
       locationPrecisionId: borehole.locationPrecisionId,
-      originalReferenceSystem: borehole.originalReferenceSystem,
+      originalReferenceSystem: borehole.originalReferenceSystem as ReferenceSystemCode | undefined,
     },
   });
 

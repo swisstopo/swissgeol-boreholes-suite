@@ -30,11 +30,11 @@ export type AuthSettings = {
  * Represents a Backfill entity in the database.
  */
 export type Backfill = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets foreign key for the BDMS.Models.Backfill.Completion of this BDMS.Models.Backfill.
    */
-  completionId?: number;
+  completionId: number;
   completion?: Completion;
   /**
    * Gets or sets the BDMS.Models.Backfill's upper depth.
@@ -98,7 +98,7 @@ export type BooleanFilterValue = "False" | "True";
  * Represents a borehole entity in the database.
  */
 export type Borehole = {
-  id?: number;
+  id: number;
   createdById?: number | null;
   createdBy?: User;
   created?: string | null;
@@ -349,9 +349,9 @@ export type Borehole = {
  * Join table entity for a BDMS.Models.Codelist attached to a BDMS.Models.Borehole to store multiple borehole ids.
  */
 export type BoreholeCodelist = {
-  id?: number;
-  boreholeId?: number;
-  codelistId?: number;
+  id: number;
+  boreholeId: number;
+  codelistId: number;
   value?: string;
   comment?: string | null;
 };
@@ -387,7 +387,7 @@ export type BoreholeGeometryElement = {
  * Represents a lightweight borehole for displaying in boreholes table.
  */
 export type BoreholeListItem = {
-  id?: number;
+  id: number;
   originalName?: string | null;
   name?: string | null;
   workgroupId?: number | null;
@@ -448,11 +448,11 @@ export type BoreholeSuggestionField = "OriginalName" | "ProjectName" | "Name";
  * Represents a Casing entity in the database.
  */
 export type Casing = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets foreign key for the BDMS.Models.Casing.Completion of this BDMS.Models.Casing.
    */
-  completionId?: number;
+  completionId: number;
   completion?: Completion;
   /**
    * Gets or sets the BDMS.Models.Casing's name.
@@ -498,11 +498,11 @@ export type Casing = {
  * Represents a CasingElement entity in the database.
  */
 export type CasingElement = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets foreign key for the BDMS.Models.CasingElement.Casing of this BDMS.Models.CasingElement.
    */
-  casingId?: number;
+  casingId: number;
   casing?: Casing;
   /**
    * Gets or sets the BDMS.Models.CasingElement's upper depth.
@@ -515,7 +515,7 @@ export type CasingElement = {
   /**
    * Gets or sets the BDMS.Models.CasingElement.Casing's kind id.
    */
-  kindId?: number;
+  kindId: number;
   kind?: Codelist;
   /**
    * Gets or sets the id of the BDMS.Models.CasingElement.Casing's material.
@@ -542,8 +542,8 @@ export type CasingElement = {
  * Represents a chronostratigraphy entity in the database.
  */
 export type ChronostratigraphyLayer = {
-  id?: number;
-  stratigraphyId?: number;
+  id: number;
+  stratigraphyId: number;
   stratigraphy?: Stratigraphy;
   createdById?: number | null;
   createdBy?: User;
@@ -564,7 +564,7 @@ export type ChronostratigraphyLayer = {
  * Represents a codelist entity in the database.
  */
 export type Codelist = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the BDMS.Models.Codelist's geolcode.
    */
@@ -616,11 +616,11 @@ export type Codelist = {
  * Represents a completion entity in the database.
  */
 export type Completion = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets foreign key for the BDMS.Models.Borehole of this BDMS.Models.Completion.
    */
-  boreholeId?: number;
+  boreholeId: number;
   borehole?: Borehole;
   /**
    * Gets or sets whether this BDMS.Models.Completion is the primary BDMS.Models.Completion.
@@ -633,7 +633,7 @@ export type Completion = {
   /**
    * Gets or sets the BDMS.Models.Completion's type id.
    */
-  kindId?: number;
+  kindId: number;
   kind?: Codelist;
   /**
    * Gets or sets the BDMS.Models.Completion's notes.
@@ -700,11 +700,11 @@ export type Dimension = 0 | 1 | 2 | 3 | -3 | -2 | -1;
  * Represents a Document entity in the database.
  */
 export type Document = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the BDMS.Models.Document.Borehole id.
    */
-  boreholeId?: number;
+  boreholeId: number;
   borehole?: Borehole;
   /**
    * Gets or sets the BDMS.Models.Document's url.
@@ -767,8 +767,8 @@ export type Envelope = {
  * Represents a facies description entity in the database.
  */
 export type FaciesDescription = {
-  id?: number;
-  stratigraphyId?: number;
+  id: number;
+  stratigraphyId: number;
   stratigraphy?: Stratigraphy;
   createdById?: number | null;
   createdBy?: User;
@@ -796,7 +796,7 @@ export type FieldMeasurement = {
   /**
    * Gets or sets the BDMS.Models.Observation's id.
    */
-  id?: number;
+  id: number;
   type?: ObservationType;
   /**
    * Gets or sets the BDMS.Models.Observation's start time.
@@ -848,7 +848,7 @@ export type FieldMeasurement = {
   /**
    * Gets or sets the BDMS.Models.Observation's borehole id.
    */
-  boreholeId?: number;
+  boreholeId: number;
   createdById?: number | null;
   createdBy?: User;
   created?: string | null;
@@ -868,16 +868,16 @@ export type FieldMeasurementResult = {
   /**
    * Gets or sets the BDMS.Models.FieldMeasurementResult's id.
    */
-  id?: number;
+  id: number;
   /**
    * Gets or sets the BDMS.Models.FieldMeasurementResult's sample type id.
    */
-  sampleTypeId?: number;
+  sampleTypeId: number;
   sampleType?: Codelist;
   /**
    * Gets or sets the BDMS.Models.FieldMeasurementResult's parameter id.
    */
-  parameterId?: number;
+  parameterId: number;
   parameter?: Codelist;
   /**
    * Gets or sets the BDMS.Models.FieldMeasurementResult's value.
@@ -886,7 +886,7 @@ export type FieldMeasurementResult = {
   /**
    * Gets or sets the BDMS.Models.FieldMeasurementResult's field measurement id.
    */
-  fieldMeasurementId?: number;
+  fieldMeasurementId: number;
   fieldMeasurement?: FieldMeasurement;
   createdById?: number | null;
   createdBy?: User;
@@ -1178,7 +1178,7 @@ export type GroundwaterLevelMeasurement = {
   /**
    * Gets or sets the BDMS.Models.Observation's id.
    */
-  id?: number;
+  id: number;
   type?: ObservationType;
   /**
    * Gets or sets the BDMS.Models.Observation's start time.
@@ -1230,7 +1230,7 @@ export type GroundwaterLevelMeasurement = {
   /**
    * Gets or sets the BDMS.Models.Observation's borehole id.
    */
-  boreholeId?: number;
+  boreholeId: number;
   createdById?: number | null;
   createdBy?: User;
   created?: string | null;
@@ -1240,7 +1240,7 @@ export type GroundwaterLevelMeasurement = {
   /**
    * Gets or sets the BDMS.Models.GroundwaterLevelMeasurement's kind.
    */
-  kindId?: number;
+  kindId: number;
   kind?: Codelist;
   /**
    * Gets or sets the BDMS.Models.GroundwaterLevelMeasurement's level in m.
@@ -1259,7 +1259,7 @@ export type Hydrotest = {
   /**
    * Gets or sets the BDMS.Models.Observation's id.
    */
-  id?: number;
+  id: number;
   type?: ObservationType;
   /**
    * Gets or sets the BDMS.Models.Observation's start time.
@@ -1311,7 +1311,7 @@ export type Hydrotest = {
   /**
    * Gets or sets the BDMS.Models.Observation's borehole id.
    */
-  boreholeId?: number;
+  boreholeId: number;
   createdById?: number | null;
   createdBy?: User;
   created?: string | null;
@@ -1355,11 +1355,11 @@ export type HydrotestResult = {
   /**
    * Gets or sets the BDMS.Models.HydrotestResult's id.
    */
-  id?: number;
+  id: number;
   /**
    * Gets or sets the BDMS.Models.HydrotestResult's parameter id.
    */
-  parameterId?: number;
+  parameterId: number;
   parameter?: Codelist;
   /**
    * Gets or sets the BDMS.Models.HydrotestResult's value.
@@ -1376,7 +1376,7 @@ export type HydrotestResult = {
   /**
    * Gets or sets the BDMS.Models.HydrotestResult's hydrotest id.
    */
-  hydrotestId?: number;
+  hydrotestId: number;
   hydrotest?: Hydrotest;
   createdById?: number | null;
   createdBy?: User;
@@ -1400,11 +1400,11 @@ export type IFeature = {
  * Represents a Instrumentation entity in the database.
  */
 export type Instrumentation = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets foreign key for the BDMS.Models.Instrumentation.Completion of this BDMS.Models.Instrumentation.
    */
-  completionId?: number;
+  completionId: number;
   completion?: Completion;
   /**
    * Gets or sets the BDMS.Models.Instrumentation's upper depth.
@@ -1457,8 +1457,8 @@ export type LTree = {
  * Represents a lithological description entity in the database.
  */
 export type LithologicalDescription = {
-  id?: number;
-  stratigraphyId?: number;
+  id: number;
+  stratigraphyId: number;
   stratigraphy?: Stratigraphy;
   createdById?: number | null;
   createdBy?: User;
@@ -1586,11 +1586,11 @@ export type Lithology = {
  * Represents a description section of a lithology entity in the database.
  */
 export type LithologyDescription = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the id of the BDMS.Models.LithologyDescription's lithology.
    */
-  lithologyId?: number;
+  lithologyId: number;
   lithology?: Lithology;
   createdById?: number | null;
   createdBy?: User;
@@ -1785,9 +1785,9 @@ export type LithologyDescription = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'component_con_mineral' attached to a BDMS.Models.LithologyDescription.
  */
 export type LithologyDescriptionComponentConMineralCodes = {
-  lithologyDescriptionId?: number;
+  lithologyDescriptionId: number;
   lithologyDescription?: LithologyDescription;
-  codelistId?: number;
+  codelistId: number;
   codelist?: Codelist;
 };
 
@@ -1795,9 +1795,9 @@ export type LithologyDescriptionComponentConMineralCodes = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'component_con_particle' attached to a BDMS.Models.LithologyDescription.
  */
 export type LithologyDescriptionComponentConParticleCodes = {
-  lithologyDescriptionId?: number;
+  lithologyDescriptionId: number;
   lithologyDescription?: LithologyDescription;
-  codelistId?: number;
+  codelistId: number;
   codelist?: Codelist;
 };
 
@@ -1805,9 +1805,9 @@ export type LithologyDescriptionComponentConParticleCodes = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'component_uncon_debris' attached to a BDMS.Models.LithologyDescription.
  */
 export type LithologyDescriptionComponentUnconDebrisCodes = {
-  lithologyDescriptionId?: number;
+  lithologyDescriptionId: number;
   lithologyDescription?: LithologyDescription;
-  codelistId?: number;
+  codelistId: number;
   codelist?: Codelist;
 };
 
@@ -1815,9 +1815,9 @@ export type LithologyDescriptionComponentUnconDebrisCodes = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'component_uncon_organic' attached to a BDMS.Models.LithologyDescription.
  */
 export type LithologyDescriptionComponentUnconOrganicCodes = {
-  lithologyDescriptionId?: number;
+  lithologyDescriptionId: number;
   lithologyDescription?: LithologyDescription;
-  codelistId?: number;
+  codelistId: number;
   codelist?: Codelist;
 };
 
@@ -1825,9 +1825,9 @@ export type LithologyDescriptionComponentUnconOrganicCodes = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'grain_angularity' attached to a BDMS.Models.LithologyDescription.
  */
 export type LithologyDescriptionGrainAngularityCodes = {
-  lithologyDescriptionId?: number;
+  lithologyDescriptionId: number;
   lithologyDescription?: LithologyDescription;
-  codelistId?: number;
+  codelistId: number;
   codelist?: Codelist;
 };
 
@@ -1835,9 +1835,9 @@ export type LithologyDescriptionGrainAngularityCodes = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'grain_shape' attached to a BDMS.Models.LithologyDescription.
  */
 export type LithologyDescriptionGrainShapeCodes = {
-  lithologyDescriptionId?: number;
+  lithologyDescriptionId: number;
   lithologyDescription?: LithologyDescription;
-  codelistId?: number;
+  codelistId: number;
   codelist?: Codelist;
 };
 
@@ -1845,9 +1845,9 @@ export type LithologyDescriptionGrainShapeCodes = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'lithology_con' attached to a BDMS.Models.LithologyDescription.
  */
 export type LithologyDescriptionLithologyUnconDebrisCodes = {
-  lithologyDescriptionId?: number;
+  lithologyDescriptionId: number;
   lithologyDescription?: LithologyDescription;
-  codelistId?: number;
+  codelistId: number;
   codelist?: Codelist;
 };
 
@@ -1855,9 +1855,9 @@ export type LithologyDescriptionLithologyUnconDebrisCodes = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'structure_post_gen' attached to a BDMS.Models.LithologyDescription.
  */
 export type LithologyDescriptionStructurePostGenCodes = {
-  lithologyDescriptionId?: number;
+  lithologyDescriptionId: number;
   lithologyDescription?: LithologyDescription;
-  codelistId?: number;
+  codelistId: number;
   codelist?: Codelist;
 };
 
@@ -1865,9 +1865,9 @@ export type LithologyDescriptionStructurePostGenCodes = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'structure_syn_gen' attached to a BDMS.Models.LithologyDescription.
  */
 export type LithologyDescriptionStructureSynGenCodes = {
-  lithologyDescriptionId?: number;
+  lithologyDescriptionId: number;
   lithologyDescription?: LithologyDescription;
-  codelistId?: number;
+  codelistId: number;
   codelist?: Codelist;
 };
 
@@ -1875,9 +1875,9 @@ export type LithologyDescriptionStructureSynGenCodes = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'rock_condition' attached to a BDMS.Models.Lithology.
  */
 export type LithologyRockConditionCodes = {
-  lithologyId?: number;
+  lithologyId: number;
   lithology?: Lithology;
-  codelistId?: number;
+  codelistId: number;
   codelist?: Codelist;
 };
 
@@ -1885,9 +1885,9 @@ export type LithologyRockConditionCodes = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'texture_meta' attached to a BDMS.Models.Lithology.
  */
 export type LithologyTextureMetaCodes = {
-  lithologyId?: number;
+  lithologyId: number;
   lithology?: Lithology;
-  codelistId?: number;
+  codelistId: number;
   codelist?: Codelist;
 };
 
@@ -1895,9 +1895,9 @@ export type LithologyTextureMetaCodes = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'uscs_type' attached to a BDMS.Models.Lithology.
  */
 export type LithologyUscsTypeCodes = {
-  lithologyId?: number;
+  lithologyId: number;
   lithology?: Lithology;
-  codelistId?: number;
+  codelistId: number;
   codelist?: Codelist;
 };
 
@@ -1905,8 +1905,8 @@ export type LithologyUscsTypeCodes = {
  * Represents a lithostratigraphy entity in the database.
  */
 export type LithostratigraphyLayer = {
-  id?: number;
-  stratigraphyId?: number;
+  id: number;
+  stratigraphyId: number;
   stratigraphy?: Stratigraphy;
   createdById?: number | null;
   createdBy?: User;
@@ -1955,11 +1955,11 @@ export type LogExportRequest = {
  * Represents a LogFile entity in the database.
  */
 export type LogFile = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the BDMS.Models.LogFile.LogRun id.
    */
-  logRunId?: number;
+  logRunId: number;
   logRun?: LogRun;
   /**
    * Gets or sets the BDMS.Models.LogFile's name.
@@ -2198,7 +2198,7 @@ export type Observation = {
   /**
    * Gets or sets the BDMS.Models.Observation's id.
    */
-  id?: number;
+  id: number;
   type?: ObservationType;
   /**
    * Gets or sets the BDMS.Models.Observation's start time.
@@ -2250,7 +2250,7 @@ export type Observation = {
   /**
    * Gets or sets the BDMS.Models.Observation's borehole id.
    */
-  boreholeId?: number;
+  boreholeId: number;
   createdById?: number | null;
   createdBy?: User;
   created?: string | null;
@@ -2339,11 +2339,11 @@ export type PaginatedLogResponse = {
  * Represents a Photo entity in the database.
  */
 export type Photo = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the BDMS.Models.Photo.Borehole id.
    */
-  boreholeId?: number;
+  boreholeId: number;
   borehole?: Borehole;
   /**
    * Gets or sets the BDMS.Models.Photo's name.
@@ -2437,11 +2437,11 @@ export type PrecisionModels = 0 | 1 | 2;
  * Represents a Profile (a file attached to a borehole) entity in the database.
  */
 export type Profile = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the BDMS.Models.Profile.Borehole id.
    */
-  boreholeId?: number;
+  boreholeId: number;
   borehole?: Borehole;
   /**
    * Gets or sets the BDMS.Models.Profile's original file name.
@@ -2499,11 +2499,11 @@ export type Role = "View" | "Editor" | "Controller" | "Validator" | "Publisher";
  * Represents one section of a borehole.
  */
 export type Section = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets foreign key for the BDMS.Models.Borehole of this BDMS.Models.Section.
    */
-  boreholeId?: number;
+  boreholeId: number;
   borehole?: Borehole;
   /**
    * Gets or sets the BDMS.Models.Section's name.
@@ -2522,11 +2522,11 @@ export type Section = {
 };
 
 export type SectionElement = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets foreign key for the BDMS.Models.SectionElement.Section of this BDMS.Models.SectionElement.
    */
-  sectionId?: number;
+  sectionId: number;
   section?: Section;
   /**
    * Gets or sets the BDMS.Models.SectionElement's upper depth.
@@ -2645,7 +2645,7 @@ export type Stratigraphy = {
  * Represents the reviewed or published tab status of a BDMS.Models.Workflow.
  */
 export type TabStatus = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the status of the location tab of the borehole.
    */
@@ -2728,7 +2728,7 @@ export type TabStatus = {
  * Represents a term entity in the database.
  */
 export type Term = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets whetther the BDMS.Models.Term is a draft.
    */
@@ -2770,12 +2770,12 @@ export type TermsAccepted = {
   /**
    * Gets or sets the foreign key to the BDMS.Models.TermsAccepted.User entity.
    */
-  userId?: number;
+  userId: number;
   user?: User;
   /**
    * Gets or sets the foreign key to the BDMS.Models.TermsAccepted.Term entity.
    */
-  termId?: number;
+  termId: number;
   term?: Term;
   /**
    * Gets or sets the timestamp from the moment the terms got accepted.
@@ -2787,7 +2787,7 @@ export type TermsAccepted = {
  * Represents a user entity in the database.
  */
 export type User = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the BDMS.Models.User name.
    */
@@ -2849,12 +2849,12 @@ export type UserWorkgroupRole = {
   /**
    * Gets or sets the foreign key to the BDMS.Models.UserWorkgroupRole.User entity.
    */
-  userId?: number;
+  userId: number;
   user?: User;
   /**
    * Gets or sets the foreign key to the BDMS.Models.UserWorkgroupRole.Workgroup entity.
    */
-  workgroupId?: number;
+  workgroupId: number;
   workgroup?: Workgroup;
   role?: Role;
   /**
@@ -2875,7 +2875,7 @@ export type WaterIngress = {
   /**
    * Gets or sets the BDMS.Models.Observation's id.
    */
-  id?: number;
+  id: number;
   type?: ObservationType;
   /**
    * Gets or sets the BDMS.Models.Observation's start time.
@@ -2927,7 +2927,7 @@ export type WaterIngress = {
   /**
    * Gets or sets the BDMS.Models.Observation's borehole id.
    */
-  boreholeId?: number;
+  boreholeId: number;
   createdById?: number | null;
   createdBy?: User;
   created?: string | null;
@@ -2937,7 +2937,7 @@ export type WaterIngress = {
   /**
    * Gets or sets the BDMS.Models.WaterIngress's quantity id.
    */
-  quantityId?: number;
+  quantityId: number;
   quantity?: Codelist;
   /**
    * Gets or sets the BDMS.Models.WaterIngress's conditions id.
@@ -2950,7 +2950,7 @@ export type WaterIngress = {
  * Represents a workflow entity in the database.
  */
 export type Workflow = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets if a reviewer has requested changes for the borehole.
    */
@@ -2959,17 +2959,17 @@ export type Workflow = {
   /**
    * Gets or sets the id of the BDMS.Models.Workflow.Borehole.
    */
-  boreholeId?: number;
+  boreholeId: number;
   borehole?: Borehole;
   /**
    * Gets or sets the id of the BDMS.Models.Workflow.ReviewedTabs.
    */
-  reviewedTabsId?: number;
+  reviewedTabsId: number;
   reviewedTabs?: TabStatus;
   /**
    * Gets or sets the id of the BDMS.Models.Workflow.PublishedTabs.
    */
-  publishedTabsId?: number;
+  publishedTabsId: number;
   publishedTabs?: TabStatus;
   /**
    * Gets or sets the id of the BDMS.Models.Workflow.Assignee.
@@ -2986,7 +2986,7 @@ export type Workflow = {
  * Represents a status change of a BDMS.Models.Workflow.
  */
 export type WorkflowChange = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the comment for the change.
    */
@@ -2996,7 +2996,7 @@ export type WorkflowChange = {
   /**
    * Gets or sets the id of the BDMS.Models.WorkflowChange.Workflow.
    */
-  workflowId?: number;
+  workflowId: number;
   workflow?: Workflow;
   /**
    * Gets or sets the id of the BDMS.Models.User who created the entity.
@@ -3070,7 +3070,7 @@ export type WorkflowTabType = 0 | 1 | 2;
  * Represents a workgroup entity in the database.
  */
 export type Workgroup = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the name of the workgroup.
    */
@@ -3101,7 +3101,7 @@ export type Workgroup = {
  * Represents a BDMS.Models.User with only minimal information, to be returned from a M:BDMS.Controllers.UserController.GetWorkgroupEditors(System.Int32) request.
  */
 export type WorkgroupEditor = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the BDMS.Models.WorkgroupEditors name.
    */
@@ -3124,11 +3124,11 @@ export type WorkgroupEditor = {
  * Represents a Backfill entity in the database.
  */
 export type BackfillWritable = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets foreign key for the BDMS.Models.Backfill.Completion of this BDMS.Models.Backfill.
    */
-  completionId?: number;
+  completionId: number;
   completion?: CompletionWritable;
   /**
    * Gets or sets the BDMS.Models.Backfill's upper depth.
@@ -3173,7 +3173,7 @@ export type BackfillWritable = {
  * Represents a borehole entity in the database.
  */
 export type BoreholeWritable = {
-  id?: number;
+  id: number;
   createdById?: number | null;
   createdBy?: UserWritable;
   created?: string | null;
@@ -3420,11 +3420,11 @@ export type BoreholeWritable = {
  * Represents a Casing entity in the database.
  */
 export type CasingWritable = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets foreign key for the BDMS.Models.Casing.Completion of this BDMS.Models.Casing.
    */
-  completionId?: number;
+  completionId: number;
   completion?: CompletionWritable;
   /**
    * Gets or sets the BDMS.Models.Casing's name.
@@ -3458,11 +3458,11 @@ export type CasingWritable = {
  * Represents a CasingElement entity in the database.
  */
 export type CasingElementWritable = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets foreign key for the BDMS.Models.CasingElement.Casing of this BDMS.Models.CasingElement.
    */
-  casingId?: number;
+  casingId: number;
   casing?: CasingWritable;
   /**
    * Gets or sets the BDMS.Models.CasingElement's upper depth.
@@ -3475,7 +3475,7 @@ export type CasingElementWritable = {
   /**
    * Gets or sets the BDMS.Models.CasingElement.Casing's kind id.
    */
-  kindId?: number;
+  kindId: number;
   kind?: CodelistWritable;
   /**
    * Gets or sets the id of the BDMS.Models.CasingElement.Casing's material.
@@ -3502,8 +3502,8 @@ export type CasingElementWritable = {
  * Represents a chronostratigraphy entity in the database.
  */
 export type ChronostratigraphyLayerWritable = {
-  id?: number;
-  stratigraphyId?: number;
+  id: number;
+  stratigraphyId: number;
   stratigraphy?: StratigraphyWritable;
   createdById?: number | null;
   createdBy?: UserWritable;
@@ -3524,7 +3524,7 @@ export type ChronostratigraphyLayerWritable = {
  * Represents a codelist entity in the database.
  */
 export type CodelistWritable = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the BDMS.Models.Codelist's geolcode.
    */
@@ -3575,11 +3575,11 @@ export type CodelistWritable = {
  * Represents a completion entity in the database.
  */
 export type CompletionWritable = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets foreign key for the BDMS.Models.Borehole of this BDMS.Models.Completion.
    */
-  boreholeId?: number;
+  boreholeId: number;
   borehole?: BoreholeWritable;
   /**
    * Gets or sets whether this BDMS.Models.Completion is the primary BDMS.Models.Completion.
@@ -3592,7 +3592,7 @@ export type CompletionWritable = {
   /**
    * Gets or sets the BDMS.Models.Completion's type id.
    */
-  kindId?: number;
+  kindId: number;
   kind?: CodelistWritable;
   /**
    * Gets or sets the BDMS.Models.Completion's notes.
@@ -3640,11 +3640,11 @@ export type CoordinateSequenceWritable = {
  * Represents a Document entity in the database.
  */
 export type DocumentWritable = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the BDMS.Models.Document.Borehole id.
    */
-  boreholeId?: number;
+  boreholeId: number;
   borehole?: BoreholeWritable;
   /**
    * Gets or sets the BDMS.Models.Document's url.
@@ -3674,8 +3674,8 @@ export type EnvelopeWritable = {
  * Represents a facies description entity in the database.
  */
 export type FaciesDescriptionWritable = {
-  id?: number;
-  stratigraphyId?: number;
+  id: number;
+  stratigraphyId: number;
   stratigraphy?: StratigraphyWritable;
   createdById?: number | null;
   createdBy?: UserWritable;
@@ -3703,7 +3703,7 @@ export type FieldMeasurementWritable = {
   /**
    * Gets or sets the BDMS.Models.Observation's id.
    */
-  id?: number;
+  id: number;
   type?: ObservationType;
   /**
    * Gets or sets the BDMS.Models.Observation's start time.
@@ -3755,7 +3755,7 @@ export type FieldMeasurementWritable = {
   /**
    * Gets or sets the BDMS.Models.Observation's borehole id.
    */
-  boreholeId?: number;
+  boreholeId: number;
   createdById?: number | null;
   createdBy?: UserWritable;
   created?: string | null;
@@ -3775,16 +3775,16 @@ export type FieldMeasurementResultWritable = {
   /**
    * Gets or sets the BDMS.Models.FieldMeasurementResult's id.
    */
-  id?: number;
+  id: number;
   /**
    * Gets or sets the BDMS.Models.FieldMeasurementResult's sample type id.
    */
-  sampleTypeId?: number;
+  sampleTypeId: number;
   sampleType?: CodelistWritable;
   /**
    * Gets or sets the BDMS.Models.FieldMeasurementResult's parameter id.
    */
-  parameterId?: number;
+  parameterId: number;
   parameter?: CodelistWritable;
   /**
    * Gets or sets the BDMS.Models.FieldMeasurementResult's value.
@@ -3793,7 +3793,7 @@ export type FieldMeasurementResultWritable = {
   /**
    * Gets or sets the BDMS.Models.FieldMeasurementResult's field measurement id.
    */
-  fieldMeasurementId?: number;
+  fieldMeasurementId: number;
   fieldMeasurement?: FieldMeasurementWritable;
   createdById?: number | null;
   createdBy?: UserWritable;
@@ -3992,7 +3992,7 @@ export type GroundwaterLevelMeasurementWritable = {
   /**
    * Gets or sets the BDMS.Models.Observation's id.
    */
-  id?: number;
+  id: number;
   type?: ObservationType;
   /**
    * Gets or sets the BDMS.Models.Observation's start time.
@@ -4044,7 +4044,7 @@ export type GroundwaterLevelMeasurementWritable = {
   /**
    * Gets or sets the BDMS.Models.Observation's borehole id.
    */
-  boreholeId?: number;
+  boreholeId: number;
   createdById?: number | null;
   createdBy?: UserWritable;
   created?: string | null;
@@ -4054,7 +4054,7 @@ export type GroundwaterLevelMeasurementWritable = {
   /**
    * Gets or sets the BDMS.Models.GroundwaterLevelMeasurement's kind.
    */
-  kindId?: number;
+  kindId: number;
   kind?: CodelistWritable;
   /**
    * Gets or sets the BDMS.Models.GroundwaterLevelMeasurement's level in m.
@@ -4073,7 +4073,7 @@ export type HydrotestWritable = {
   /**
    * Gets or sets the BDMS.Models.Observation's id.
    */
-  id?: number;
+  id: number;
   type?: ObservationType;
   /**
    * Gets or sets the BDMS.Models.Observation's start time.
@@ -4125,7 +4125,7 @@ export type HydrotestWritable = {
   /**
    * Gets or sets the BDMS.Models.Observation's borehole id.
    */
-  boreholeId?: number;
+  boreholeId: number;
   createdById?: number | null;
   createdBy?: UserWritable;
   created?: string | null;
@@ -4169,11 +4169,11 @@ export type HydrotestResultWritable = {
   /**
    * Gets or sets the BDMS.Models.HydrotestResult's id.
    */
-  id?: number;
+  id: number;
   /**
    * Gets or sets the BDMS.Models.HydrotestResult's parameter id.
    */
-  parameterId?: number;
+  parameterId: number;
   parameter?: CodelistWritable;
   /**
    * Gets or sets the BDMS.Models.HydrotestResult's value.
@@ -4190,7 +4190,7 @@ export type HydrotestResultWritable = {
   /**
    * Gets or sets the BDMS.Models.HydrotestResult's hydrotest id.
    */
-  hydrotestId?: number;
+  hydrotestId: number;
   hydrotest?: HydrotestWritable;
   createdById?: number | null;
   createdBy?: UserWritable;
@@ -4209,11 +4209,11 @@ export type IFeatureWritable = {
  * Represents a Instrumentation entity in the database.
  */
 export type InstrumentationWritable = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets foreign key for the BDMS.Models.Instrumentation.Completion of this BDMS.Models.Instrumentation.
    */
-  completionId?: number;
+  completionId: number;
   completion?: CompletionWritable;
   /**
    * Gets or sets the BDMS.Models.Instrumentation's upper depth.
@@ -4262,8 +4262,8 @@ export type InstrumentationWritable = {
  * Represents a lithological description entity in the database.
  */
 export type LithologicalDescriptionWritable = {
-  id?: number;
-  stratigraphyId?: number;
+  id: number;
+  stratigraphyId: number;
   stratigraphy?: StratigraphyWritable;
   createdById?: number | null;
   createdBy?: UserWritable;
@@ -4391,11 +4391,11 @@ export type LithologyWritable = {
  * Represents a description section of a lithology entity in the database.
  */
 export type LithologyDescriptionWritable = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the id of the BDMS.Models.LithologyDescription's lithology.
    */
-  lithologyId?: number;
+  lithologyId: number;
   lithology?: LithologyWritable;
   createdById?: number | null;
   createdBy?: UserWritable;
@@ -4590,9 +4590,9 @@ export type LithologyDescriptionWritable = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'component_con_mineral' attached to a BDMS.Models.LithologyDescription.
  */
 export type LithologyDescriptionComponentConMineralCodesWritable = {
-  lithologyDescriptionId?: number;
+  lithologyDescriptionId: number;
   lithologyDescription?: LithologyDescriptionWritable;
-  codelistId?: number;
+  codelistId: number;
   codelist?: CodelistWritable;
 };
 
@@ -4600,9 +4600,9 @@ export type LithologyDescriptionComponentConMineralCodesWritable = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'component_con_particle' attached to a BDMS.Models.LithologyDescription.
  */
 export type LithologyDescriptionComponentConParticleCodesWritable = {
-  lithologyDescriptionId?: number;
+  lithologyDescriptionId: number;
   lithologyDescription?: LithologyDescriptionWritable;
-  codelistId?: number;
+  codelistId: number;
   codelist?: CodelistWritable;
 };
 
@@ -4610,9 +4610,9 @@ export type LithologyDescriptionComponentConParticleCodesWritable = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'component_uncon_debris' attached to a BDMS.Models.LithologyDescription.
  */
 export type LithologyDescriptionComponentUnconDebrisCodesWritable = {
-  lithologyDescriptionId?: number;
+  lithologyDescriptionId: number;
   lithologyDescription?: LithologyDescriptionWritable;
-  codelistId?: number;
+  codelistId: number;
   codelist?: CodelistWritable;
 };
 
@@ -4620,9 +4620,9 @@ export type LithologyDescriptionComponentUnconDebrisCodesWritable = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'component_uncon_organic' attached to a BDMS.Models.LithologyDescription.
  */
 export type LithologyDescriptionComponentUnconOrganicCodesWritable = {
-  lithologyDescriptionId?: number;
+  lithologyDescriptionId: number;
   lithologyDescription?: LithologyDescriptionWritable;
-  codelistId?: number;
+  codelistId: number;
   codelist?: CodelistWritable;
 };
 
@@ -4630,9 +4630,9 @@ export type LithologyDescriptionComponentUnconOrganicCodesWritable = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'grain_angularity' attached to a BDMS.Models.LithologyDescription.
  */
 export type LithologyDescriptionGrainAngularityCodesWritable = {
-  lithologyDescriptionId?: number;
+  lithologyDescriptionId: number;
   lithologyDescription?: LithologyDescriptionWritable;
-  codelistId?: number;
+  codelistId: number;
   codelist?: CodelistWritable;
 };
 
@@ -4640,9 +4640,9 @@ export type LithologyDescriptionGrainAngularityCodesWritable = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'grain_shape' attached to a BDMS.Models.LithologyDescription.
  */
 export type LithologyDescriptionGrainShapeCodesWritable = {
-  lithologyDescriptionId?: number;
+  lithologyDescriptionId: number;
   lithologyDescription?: LithologyDescriptionWritable;
-  codelistId?: number;
+  codelistId: number;
   codelist?: CodelistWritable;
 };
 
@@ -4650,9 +4650,9 @@ export type LithologyDescriptionGrainShapeCodesWritable = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'lithology_con' attached to a BDMS.Models.LithologyDescription.
  */
 export type LithologyDescriptionLithologyUnconDebrisCodesWritable = {
-  lithologyDescriptionId?: number;
+  lithologyDescriptionId: number;
   lithologyDescription?: LithologyDescriptionWritable;
-  codelistId?: number;
+  codelistId: number;
   codelist?: CodelistWritable;
 };
 
@@ -4660,9 +4660,9 @@ export type LithologyDescriptionLithologyUnconDebrisCodesWritable = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'structure_post_gen' attached to a BDMS.Models.LithologyDescription.
  */
 export type LithologyDescriptionStructurePostGenCodesWritable = {
-  lithologyDescriptionId?: number;
+  lithologyDescriptionId: number;
   lithologyDescription?: LithologyDescriptionWritable;
-  codelistId?: number;
+  codelistId: number;
   codelist?: CodelistWritable;
 };
 
@@ -4670,9 +4670,9 @@ export type LithologyDescriptionStructurePostGenCodesWritable = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'structure_syn_gen' attached to a BDMS.Models.LithologyDescription.
  */
 export type LithologyDescriptionStructureSynGenCodesWritable = {
-  lithologyDescriptionId?: number;
+  lithologyDescriptionId: number;
   lithologyDescription?: LithologyDescriptionWritable;
-  codelistId?: number;
+  codelistId: number;
   codelist?: CodelistWritable;
 };
 
@@ -4680,9 +4680,9 @@ export type LithologyDescriptionStructureSynGenCodesWritable = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'rock_condition' attached to a BDMS.Models.Lithology.
  */
 export type LithologyRockConditionCodesWritable = {
-  lithologyId?: number;
+  lithologyId: number;
   lithology?: LithologyWritable;
-  codelistId?: number;
+  codelistId: number;
   codelist?: CodelistWritable;
 };
 
@@ -4690,9 +4690,9 @@ export type LithologyRockConditionCodesWritable = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'texture_meta' attached to a BDMS.Models.Lithology.
  */
 export type LithologyTextureMetaCodesWritable = {
-  lithologyId?: number;
+  lithologyId: number;
   lithology?: LithologyWritable;
-  codelistId?: number;
+  codelistId: number;
   codelist?: CodelistWritable;
 };
 
@@ -4700,9 +4700,9 @@ export type LithologyTextureMetaCodesWritable = {
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'uscs_type' attached to a BDMS.Models.Lithology.
  */
 export type LithologyUscsTypeCodesWritable = {
-  lithologyId?: number;
+  lithologyId: number;
   lithology?: LithologyWritable;
-  codelistId?: number;
+  codelistId: number;
   codelist?: CodelistWritable;
 };
 
@@ -4710,8 +4710,8 @@ export type LithologyUscsTypeCodesWritable = {
  * Represents a lithostratigraphy entity in the database.
  */
 export type LithostratigraphyLayerWritable = {
-  id?: number;
-  stratigraphyId?: number;
+  id: number;
+  stratigraphyId: number;
   stratigraphy?: StratigraphyWritable;
   createdById?: number | null;
   createdBy?: UserWritable;
@@ -4732,11 +4732,11 @@ export type LithostratigraphyLayerWritable = {
  * Represents a LogFile entity in the database.
  */
 export type LogFileWritable = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the BDMS.Models.LogFile.LogRun id.
    */
-  logRunId?: number;
+  logRunId: number;
   logRun?: LogRunWritable;
   /**
    * Gets or sets the BDMS.Models.LogFile's name.
@@ -4863,7 +4863,7 @@ export type ObservationWritable = {
   /**
    * Gets or sets the BDMS.Models.Observation's id.
    */
-  id?: number;
+  id: number;
   type?: ObservationType;
   /**
    * Gets or sets the BDMS.Models.Observation's start time.
@@ -4915,7 +4915,7 @@ export type ObservationWritable = {
   /**
    * Gets or sets the BDMS.Models.Observation's borehole id.
    */
-  boreholeId?: number;
+  boreholeId: number;
   createdById?: number | null;
   createdBy?: UserWritable;
   created?: string | null;
@@ -4928,11 +4928,11 @@ export type ObservationWritable = {
  * Represents a Photo entity in the database.
  */
 export type PhotoWritable = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the BDMS.Models.Photo.Borehole id.
    */
-  boreholeId?: number;
+  boreholeId: number;
   borehole?: BoreholeWritable;
   /**
    * Gets or sets the BDMS.Models.Photo's name.
@@ -4997,11 +4997,11 @@ export type PrecisionModelWritable = {
  * Represents a Profile (a file attached to a borehole) entity in the database.
  */
 export type ProfileWritable = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the BDMS.Models.Profile.Borehole id.
    */
-  boreholeId?: number;
+  boreholeId: number;
   borehole?: BoreholeWritable;
   /**
    * Gets or sets the BDMS.Models.Profile's original file name.
@@ -5035,11 +5035,11 @@ export type ProfileWritable = {
  * Represents one section of a borehole.
  */
 export type SectionWritable = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets foreign key for the BDMS.Models.Borehole of this BDMS.Models.Section.
    */
-  boreholeId?: number;
+  boreholeId: number;
   borehole?: BoreholeWritable;
   /**
    * Gets or sets the BDMS.Models.Section's name.
@@ -5058,11 +5058,11 @@ export type SectionWritable = {
 };
 
 export type SectionElementWritable = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets foreign key for the BDMS.Models.SectionElement.Section of this BDMS.Models.SectionElement.
    */
-  sectionId?: number;
+  sectionId: number;
   section?: SectionWritable;
   /**
    * Gets or sets the BDMS.Models.SectionElement's upper depth.
@@ -5173,12 +5173,12 @@ export type TermsAcceptedWritable = {
   /**
    * Gets or sets the foreign key to the BDMS.Models.TermsAccepted.User entity.
    */
-  userId?: number;
+  userId: number;
   user?: UserWritable;
   /**
    * Gets or sets the foreign key to the BDMS.Models.TermsAccepted.Term entity.
    */
-  termId?: number;
+  termId: number;
   term?: Term;
   /**
    * Gets or sets the timestamp from the moment the terms got accepted.
@@ -5190,7 +5190,7 @@ export type TermsAcceptedWritable = {
  * Represents a user entity in the database.
  */
 export type UserWritable = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the BDMS.Models.User name.
    */
@@ -5240,12 +5240,12 @@ export type UserWorkgroupRoleWritable = {
   /**
    * Gets or sets the foreign key to the BDMS.Models.UserWorkgroupRole.User entity.
    */
-  userId?: number;
+  userId: number;
   user?: UserWritable;
   /**
    * Gets or sets the foreign key to the BDMS.Models.UserWorkgroupRole.Workgroup entity.
    */
-  workgroupId?: number;
+  workgroupId: number;
   workgroup?: WorkgroupWritable;
   role?: Role;
   /**
@@ -5261,7 +5261,7 @@ export type WaterIngressWritable = {
   /**
    * Gets or sets the BDMS.Models.Observation's id.
    */
-  id?: number;
+  id: number;
   type?: ObservationType;
   /**
    * Gets or sets the BDMS.Models.Observation's start time.
@@ -5313,7 +5313,7 @@ export type WaterIngressWritable = {
   /**
    * Gets or sets the BDMS.Models.Observation's borehole id.
    */
-  boreholeId?: number;
+  boreholeId: number;
   createdById?: number | null;
   createdBy?: UserWritable;
   created?: string | null;
@@ -5323,7 +5323,7 @@ export type WaterIngressWritable = {
   /**
    * Gets or sets the BDMS.Models.WaterIngress's quantity id.
    */
-  quantityId?: number;
+  quantityId: number;
   quantity?: CodelistWritable;
   /**
    * Gets or sets the BDMS.Models.WaterIngress's conditions id.
@@ -5336,7 +5336,7 @@ export type WaterIngressWritable = {
  * Represents a workflow entity in the database.
  */
 export type WorkflowWritable = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets if a reviewer has requested changes for the borehole.
    */
@@ -5345,17 +5345,17 @@ export type WorkflowWritable = {
   /**
    * Gets or sets the id of the BDMS.Models.Workflow.Borehole.
    */
-  boreholeId?: number;
+  boreholeId: number;
   borehole?: BoreholeWritable;
   /**
    * Gets or sets the id of the BDMS.Models.Workflow.ReviewedTabs.
    */
-  reviewedTabsId?: number;
+  reviewedTabsId: number;
   reviewedTabs?: TabStatus;
   /**
    * Gets or sets the id of the BDMS.Models.Workflow.PublishedTabs.
    */
-  publishedTabsId?: number;
+  publishedTabsId: number;
   publishedTabs?: TabStatus;
   /**
    * Gets or sets the id of the BDMS.Models.Workflow.Assignee.
@@ -5368,7 +5368,7 @@ export type WorkflowWritable = {
  * Represents a status change of a BDMS.Models.Workflow.
  */
 export type WorkflowChangeWritable = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the comment for the change.
    */
@@ -5378,7 +5378,7 @@ export type WorkflowChangeWritable = {
   /**
    * Gets or sets the id of the BDMS.Models.WorkflowChange.Workflow.
    */
-  workflowId?: number;
+  workflowId: number;
   workflow?: WorkflowWritable;
   /**
    * Gets or sets the id of the BDMS.Models.User who created the entity.
@@ -5400,7 +5400,7 @@ export type WorkflowChangeWritable = {
  * Represents a workgroup entity in the database.
  */
 export type WorkgroupWritable = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the name of the workgroup.
    */
@@ -5423,7 +5423,7 @@ export type WorkgroupWritable = {
  * Represents a BDMS.Models.User with only minimal information, to be returned from a M:BDMS.Controllers.UserController.GetWorkgroupEditors(System.Int32) request.
  */
 export type WorkgroupEditorWritable = {
-  id?: number;
+  id: number;
   /**
    * Gets or sets the BDMS.Models.WorkgroupEditors name.
    */

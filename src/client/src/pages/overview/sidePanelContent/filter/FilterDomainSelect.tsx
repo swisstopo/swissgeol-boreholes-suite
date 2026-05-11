@@ -18,7 +18,7 @@ export const FilterDomainSelect: FC<FilterDomainSelectProps> = ({ item, filterVa
     if (!item.schema) return null;
     const domain = codelists
       .filter(c => c.schema === item.schema)
-      .sort((a, b) => a.order - b.order)
+      .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
       .map(c => ({ key: c.id, label: getLabel(c) }));
     const extra = (item.additionalValues ?? []).map(v => ({ key: v.key, label: v.name }));
     return [...domain, ...extra];

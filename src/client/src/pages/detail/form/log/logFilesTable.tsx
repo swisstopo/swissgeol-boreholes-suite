@@ -6,7 +6,7 @@ import { Stack } from "@mui/system";
 import { GridColDef, GridRowId, GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
 import Filter2Icon from "../../../../assets/icons/filter2.svg?react";
 import { ExportButton, ToggleButton } from "../../../../components/buttons/buttons.tsx";
-import { CodelistLabelStyle, useCodelists } from "../../../../components/codelist.ts";
+import { CodelistLabelStyle, getCodelistLocalizedLabel, useCodelists } from "../../../../components/codelist.ts";
 import { ExportDialog } from "../../../../components/export/exportDialog.tsx";
 import { FormBooleanSelect } from "../../../../components/form/formBooleanSelect.tsx";
 import { FormContainer } from "../../../../components/form/formContainer.tsx";
@@ -130,7 +130,7 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
   const getCodelistValue = useCallback(
     (id: number) => {
       const code = codelists.find(code => code.id === id);
-      return code?.[i18n.language] ?? code?.["en"] ?? "";
+      return getCodelistLocalizedLabel(code, i18n.language);
     },
     [codelists, i18n.language],
   );

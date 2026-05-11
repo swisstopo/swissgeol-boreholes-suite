@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
+import { Codelist } from "../../../../api/generated";
 import { BaseLayer } from "../../../../api/stratigraphy.ts";
-import { Codelist } from "../../../../components/codelist.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 
 export interface FaciesDescription extends BaseLayer {

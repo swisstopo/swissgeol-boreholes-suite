@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../auth/useBoreholesAuth.tsx";
-import { Role, UserWorkgroupRole as WorkgroupRole, Workgroup } from "./generated/types.gen";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
+import { Role, Workgroup, UserWorkgroupRole as WorkgroupRole } from "./generated/types.gen";
 import { usersQueryKey } from "./user.ts";
 
 const fetchWorkgroups = async (): Promise<Workgroup[]> => await fetchApiV2WithApiError("workgroup", "GET");

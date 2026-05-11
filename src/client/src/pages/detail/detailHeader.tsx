@@ -4,13 +4,13 @@ import { Stack, Typography } from "@mui/material";
 import { ArrowDownToLine, Trash2, X } from "lucide-react";
 import { WorkflowStatus } from "@swissgeol/ui-core";
 import {
-  Borehole,
   exportCSVBorehole,
   exportJsonBoreholes,
   exportJsonWithAttachmentsBorehole,
   useBoreholeEditable,
   useBoreholeMutations,
 } from "../../api/borehole.ts";
+import { Borehole } from "../../api/generated";
 import { useCurrentUser } from "../../api/user.ts";
 import { useAuth } from "../../auth/useBoreholesAuth.tsx";
 import {

@@ -1,6 +1,4 @@
-import { Borehole } from "../../../../api/borehole.ts";
-import { Profile } from "../../../../api/profile.ts";
-import { Codelist } from "../../../../components/codelist.ts";
+import { Borehole, Codelist, Profile } from "../../../../api/generated";
 import { Workflow } from "../workflow/workflow.ts";
 import { ReferenceSystemCode } from "./coordinateSegmentInterfaces.ts";
 

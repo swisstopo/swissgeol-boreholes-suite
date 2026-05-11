@@ -1,5 +1,4 @@
-import { Photo } from "../pages/detail/attachments/tabs/photo.ts";
-import { Profile } from "./profile.ts";
+import { Photo, Profile } from "./generated";
 
 export class ApiError extends Error {
   status?: number;
