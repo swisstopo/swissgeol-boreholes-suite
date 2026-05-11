@@ -118,22 +118,30 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
         {children}
       </Stack>
       {onHoverClick && (
-        <StandaloneIconButton
+        <Stack
           className="hover-content"
-          icon={isEditing ? <Trash2 /> : <Copy />}
-          dataCy={isEditing ? "deleteLayer-button" : "copyLayer-button"}
-          onClick={e => {
-            e.stopPropagation();
-            onHoverClick(index);
-          }}
-          color={"primaryInverse"}
           sx={{
             position: "absolute",
-            top: theme.spacing(1),
-            right: theme.spacing(1),
+            top: 0,
+            right: 0,
+            padding: theme.spacing(1),
+            backgroundColor: theme.palette.buttonStates.outlined.hoverOrFocus.backgroundColor,
+            borderBottomLeftRadius: theme.spacing(0.5),
             zIndex: 1,
-          }}
-        />
+          }}>
+          <StandaloneIconButton
+            icon={isEditing ? <Trash2 /> : <Copy />}
+            dataCy={isEditing ? "deleteLayer-button" : "copyLayer-button"}
+            onClick={e => {
+              e.stopPropagation();
+              onHoverClick(index);
+            }}
+            color={"primaryInverse"}
+            sx={{
+              backgroundColor: theme.palette.buttonStates.outlined.hoverOrFocus.backgroundColor,
+            }}
+          />
+        </Stack>
       )}
     </StratigraphyTableCell>
   );
