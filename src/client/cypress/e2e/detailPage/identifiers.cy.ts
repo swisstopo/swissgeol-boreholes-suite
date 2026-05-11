@@ -131,6 +131,29 @@ describe("Tests for the borehole 'IDs' edit page.", () => {
     evaluateSelect("boreholeCodelists.0.codelistId", "GeODin ID");
   });
 
+  it("sorts identifier rows within a card alphabetically by value after saving", () => {
+    createBoreholeAndNavigateToIdentifiers();
+
+    // add first row with a value that should sort second
+    addItem("addIdentifier");
+    setSelect("boreholeCodelists.0.codelistId", 1); // GeODin ID
+    setInput("boreholeCodelists.0.value", "zebra_code");
+
+    // add a second row in the same card with a value that should sort first
+    cy.get('[data-cy="100000000-add-id-button"]').click();
+    setInput("boreholeCodelists.1.value", "alpha_code");
+
+    // before save: order matches append order
+    evaluateInput("boreholeCodelists.0.value", "zebra_code");
+    evaluateInput("boreholeCodelists.1.value", "alpha_code");
+
+    saveWithSaveBar();
+
+    // after save: rows within the card are sorted alphabetically by value
+    evaluateInput("boreholeCodelists.0.value", "alpha_code");
+    evaluateInput("boreholeCodelists.1.value", "zebra_code");
+  });
+
   it("ensures each identifier type can only be selected once", () => {
     createBoreholeAndNavigateToIdentifiers();
 
