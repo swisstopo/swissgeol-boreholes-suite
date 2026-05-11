@@ -529,7 +529,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
 
     // Add lithological description from gap and check that it has the correct depth range
     openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
-    evaluateLithologicalDescriptionForm({ fromDepth: 0, toDepth: 1123 });
+    evaluateLithologicalDescriptionForm({ fromDepth: 0, toDepth: 355 });
     fillLithologicalDescriptionForm({ fromDepth: 0, fromDepthOptionsLength: 3, toDepth: 0, toDepthOptionsLength: 3 });
     evaluateLithologicalDescriptionForm({ fromDepth: 0, toDepth: 355 });
     closeLayerModal();
@@ -580,7 +580,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
 
     // Add lithological description from remaining gap and check that it has the correct depth range
     openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
-    evaluateLithologicalDescriptionForm({ fromDepth: 355, toDepth: 1123 });
+    evaluateLithologicalDescriptionForm({ fromDepth: 355, toDepth: 798 });
     fillLithologicalDescriptionForm({
       fromDepth: 0,
       fromDepthOptionsLength: 2,
@@ -651,7 +651,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
 
     // Add facies description from gap and check that it has the correct depth range
     openLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
-    evaluateFaciesDescriptionForm({ fromDepth: 0, toDepth: 1123 });
+    evaluateFaciesDescriptionForm({ fromDepth: 0, toDepth: 355 });
     fillFaciesDescriptionForm({
       fromDepth: 1,
       fromDepthOptionsLength: 3,
