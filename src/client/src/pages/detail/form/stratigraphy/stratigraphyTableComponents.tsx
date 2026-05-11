@@ -6,7 +6,6 @@ import { Copy, Plus, Trash2, TriangleAlert } from "lucide-react";
 import { BaseLayer } from "../../../../api/stratigraphy.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
-import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
 
 export const StratigraphyTableHeader = styled(Stack)(() => ({
   flexDirection: "row",
@@ -72,7 +71,6 @@ interface StratigraphyTableLayerCellProps {
 export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = ({
   children,
   index,
-  layer,
   onHoverClick,
   onClick,
   sx,
@@ -93,13 +91,12 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
     <StratigraphyTableCell
       data-cy={dataCy}
       sx={{
+        position: "relative",
         justifyContent: "center",
         "& .hover-content": { visibility: "hidden" },
         "&:hover": {
-          justifyContent: "space-between",
           backgroundColor: theme.palette.background.grey,
           cursor: "pointer",
-
           "& .hover-content": { visibility: "visible" },
         },
         ...sx,
@@ -109,26 +106,6 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
           onClick(index);
         }
       }}>
-      <StratigraphyTableCellRow
-        className="hover-content"
-        sx={{
-          justifyContent: layer?.fromDepth !== null && layer?.fromDepth !== undefined ? "space-between" : "flex-end",
-        }}>
-        {layer?.fromDepth !== null && layer?.fromDepth !== undefined && (
-          <Typography variant="body1">{formatNumberForDisplay(layer?.fromDepth)} m MD</Typography>
-        )}
-        {onHoverClick && (
-          <StandaloneIconButton
-            icon={isEditing ? <Trash2 /> : <Copy />}
-            dataCy={isEditing ? "deleteLayer-button" : "copyLayer-button"}
-            onClick={e => {
-              e.stopPropagation();
-              onHoverClick(index);
-            }}
-            color={"primaryInverse"}
-          />
-        )}
-      </StratigraphyTableCellRow>
       <Stack
         ref={stackRef}
         gap={1}
@@ -140,11 +117,24 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
         }}>
         {children}
       </Stack>
-      <StratigraphyTableCellRow className="hover-content">
-        {layer?.toDepth !== null && layer?.toDepth !== undefined && (
-          <Typography variant="body1">{formatNumberForDisplay(layer?.toDepth)} m MD</Typography>
-        )}
-      </StratigraphyTableCellRow>
+      {onHoverClick && (
+        <StandaloneIconButton
+          className="hover-content"
+          icon={isEditing ? <Trash2 /> : <Copy />}
+          dataCy={isEditing ? "deleteLayer-button" : "copyLayer-button"}
+          onClick={e => {
+            e.stopPropagation();
+            onHoverClick(index);
+          }}
+          color={"primaryInverse"}
+          sx={{
+            position: "absolute",
+            top: theme.spacing(1),
+            right: theme.spacing(1),
+            zIndex: 1,
+          }}
+        />
+      )}
     </StratigraphyTableCell>
   );
 };

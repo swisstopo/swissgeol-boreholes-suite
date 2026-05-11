@@ -21,7 +21,7 @@ const layerSelector = ({ layerType, fromDepth, toDepth, isGap }: LayerInput) => 
   if (isGap) {
     return `[data-cy="${layerType}-${fromDepth}-0-gap"]`;
   }
-  return `[data-cy^="${layerType}-"]:not([data-cy$="-gap"]):contains("${formatWithThousandsSeparator(fromDepth)} m MD"):contains("${formatWithThousandsSeparator(toDepth!)} m MD")`;
+  return `[data-cy="${layerType}-${fromDepth}-${toDepth}"]`;
 };
 
 export enum LayerType {
