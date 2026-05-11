@@ -17,7 +17,7 @@ export const MarkdownWrapper = ({ markdownContent }: { markdownContent: string }
   return (
     <div>
       <div style={{ display: isRendered ? "block" : "none" }}>
-        <Markdown>{markdownContent}</Markdown>
+        <Markdown options={{ disableParsingRawHTML: true }}>{markdownContent}</Markdown>
       </div>
     </div>
   );
