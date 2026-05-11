@@ -1,6 +1,5 @@
 ﻿using BDMS.Json;
 using BDMS.Models;
-using DotNet.Testcontainers.Builders;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.IO.Converters;
 using System.Text.Json;
@@ -48,7 +47,6 @@ internal static class TestSyncContextExtensions
         var initDbDirectoryPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "initdb.d"));
         var postgreSqlContainer = new PostgreSqlBuilder("postgis/postgis:17-3.5-alpine")
             .WithDatabase(BoreholesDatabaseName)
-            .WithWaitStrategy(Wait.ForUnixContainer().UntilInternalTcpPortIsAvailable(5432))
             .WithResourceMapping(initDbDirectoryPath, "/docker-entrypoint-initdb.d")
             .Build();
         await postgreSqlContainer.StartAsync();
