@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Capabilities version="1.0.0"
+  xmlns="http://www.opengis.net/wmts/1.0"
+  xmlns:ows="http://www.opengis.net/ows/1.1"
+  xmlns:xlink="http://www.w3.org/1999/xlink">
+  <Contents>
+    <Layer>
+      <ows:Title>Wetness potential agricultural land</ows:Title>
+      <ows:Identifier>ch.bafu.wetness-potential</ows:Identifier>
+      <Style isDefault="true">
+        <ows:Identifier>default</ows:Identifier>
+      </Style>
+      <Format>image/png</Format>
+      <TileMatrixSetLink>
+        <TileMatrixSet>2056_0</TileMatrixSet>
+      </TileMatrixSetLink>
+      <ResourceURL format="image/png" resourceType="tile"
+        template="https://wmts.geo.admin.ch/1.0.0/ch.bafu.wetness-potential/default/current/2056/{TileMatrix}/{TileCol}/{TileRow}.png" />
+    </Layer>
+    <TileMatrixSet>
+      <ows:Identifier>2056_0</ows:Identifier>
+      <ows:SupportedCRS>EPSG:2056</ows:SupportedCRS>
+      <TileMatrix>
+        <ows:Identifier>0</ows:Identifier>
+        <ScaleDenominator>14285714.285714287</ScaleDenominator>
+        <TopLeftCorner>2420000.0 1350000.0</TopLeftCorner>
+        <TileWidth>256</TileWidth>
+        <TileHeight>256</TileHeight>
+        <MatrixWidth>1</MatrixWidth>
+        <MatrixHeight>1</MatrixHeight>
+      </TileMatrix>
+    </TileMatrixSet>
+  </Contents>
+</Capabilities>

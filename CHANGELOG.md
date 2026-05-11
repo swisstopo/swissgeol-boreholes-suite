@@ -25,6 +25,7 @@
 - Additional identifiers are now ordered alphabetically by ID type on save.
 - Fixed bug where the same identifier type could be added multiple times to a borehole.
 - When saving fails on the identifiers panel due to missing required fields, the form now scrolls to the first error.
+- Original name was not hidden in the borehole filter when opened in view mode.
 
 ## v2.1.1568 - 2026-04-23
 
