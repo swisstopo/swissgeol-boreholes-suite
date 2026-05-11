@@ -16,6 +16,7 @@ import {
   StratigraphyTableCell,
   StratigraphyTableColumn,
   StratigraphyTableContent,
+  StratigraphyTableDescriptionGap,
   StratigraphyTableGap,
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
@@ -283,7 +284,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       lithologicalDescriptions.map(layer => ({ item: layer, hasChanges: false })),
       initDepths,
       stratigraphyId,
-      true,
     );
     setTmpLithologicalDescriptions(tmpLithologicalDescriptions);
 
@@ -291,7 +291,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       faciesDescriptions.map(layer => ({ item: layer, hasChanges: false })),
       initDepths,
       stratigraphyId,
-      true,
     );
     setTmpFaciesDescriptions(tmpFaciesDescriptions);
     setDepths(initDepths);
@@ -318,13 +317,12 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
         tmpLithologicalDescriptions,
         updatedDepths,
         stratigraphyId,
-        true,
       );
       if (JSON.stringify(newTmpLithologicalDescriptions) !== JSON.stringify(tmpLithologicalDescriptions)) {
         setTmpLithologicalDescriptions(newTmpLithologicalDescriptions);
       }
 
-      const newTmpFaciesDescriptions = getLayersWithGaps(tmpFaciesDescriptions, updatedDepths, stratigraphyId, true);
+      const newTmpFaciesDescriptions = getLayersWithGaps(tmpFaciesDescriptions, updatedDepths, stratigraphyId);
       if (JSON.stringify(newTmpFaciesDescriptions) !== JSON.stringify(tmpFaciesDescriptions)) {
         setTmpFaciesDescriptions(newTmpFaciesDescriptions);
       }
@@ -441,9 +439,10 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     defaultRowHeight: number,
     computeCellHeight: ((fromDepth: number, toDepth: number) => number) | null,
     onEdit: (index: number) => void,
+    GapComponent: typeof StratigraphyTableGap,
   ) => {
     return (
-      <StratigraphyTableGap
+      <GapComponent
         key={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
         dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
         sx={{
@@ -491,6 +490,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     onDelete: (index: number) => void,
     buildContent: (layer: BaseLayer) => ReactNode,
     keyPrefix: string,
+    GapComponent: typeof StratigraphyTableGap,
   ) => {
     return layers.map((layer, index) => {
       if (layer.isGap) {
@@ -499,7 +499,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
         if (isLithology(layer)) {
           gapLayer.isUnconsolidated = (layers.at(index - 1) as Lithology)?.isUnconsolidated ?? true;
         }
-        return renderGapCell(index, gapLayer, keyPrefix, defaultRowHeight, computeCellHeight, onEdit);
+        return renderGapCell(index, gapLayer, keyPrefix, defaultRowHeight, computeCellHeight, onEdit, GapComponent);
       }
       return renderActionCell(
         index,
@@ -553,6 +553,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
                     <LithologyLabels lithology={layer as Lithology} />
                   ),
                   "lithology",
+                  StratigraphyTableGap,
                 )}
               </StratigraphyTableColumn>
               <StratigraphyTableColumn>
@@ -568,6 +569,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
                     </Typography>
                   ),
                   `lithologicalDescription`,
+                  StratigraphyTableDescriptionGap,
                 )}
               </StratigraphyTableColumn>
               <StratigraphyTableColumn>
@@ -581,6 +583,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
                     <FaciesDescriptionLabels description={layer as FaciesDescription} />
                   ),
                   `faciesDescription`,
+                  StratigraphyTableDescriptionGap,
                 )}
               </StratigraphyTableColumn>
             </StratigraphyTableContent>

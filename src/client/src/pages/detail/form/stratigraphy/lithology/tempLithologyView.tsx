@@ -1,4 +1,4 @@
-import { FC, ReactNode, useCallback } from "react";
+import { FC, ReactNode, useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { BaseLayer } from "../../../../../api/stratigraphy.ts";
@@ -11,10 +11,12 @@ import {
   StratigraphyTableCell,
   StratigraphyTableColumn,
   StratigraphyTableContent,
+  StratigraphyTableDescriptionGap,
   StratigraphyTableGap,
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "../stratigraphyTableComponents.tsx";
+import { getLayersWithGaps } from "../stratigraphyUtils.ts";
 import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";
@@ -37,8 +39,25 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
   const { depths } = useLayerDepths(lithologies);
 
   const { completedLayers: completedLithologies } = useCompletedLayers(lithologies, depths);
-  const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(lithologicalDescriptions, depths);
-  const { completedLayers: completedFaciesDescriptions } = useCompletedLayers(faciesDescriptions, depths);
+  const stratigraphyId = lithologies[0]?.stratigraphyId ?? 0;
+  const completedLithologicalDescriptions = useMemo(
+    () =>
+      getLayersWithGaps(
+        lithologicalDescriptions.map(layer => ({ item: layer, hasChanges: false })),
+        depths,
+        stratigraphyId,
+      ).map(l => l.item),
+    [lithologicalDescriptions, depths, stratigraphyId],
+  );
+  const completedFaciesDescriptions = useMemo(
+    () =>
+      getLayersWithGaps(
+        faciesDescriptions.map(layer => ({ item: layer, hasChanges: false })),
+        depths,
+        stratigraphyId,
+      ).map(l => l.item),
+    [faciesDescriptions, depths, stratigraphyId],
+  );
 
   const defaultRowHeight = 240;
 
@@ -58,8 +77,9 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
     keyPrefix: string,
     defaultRowHeight: number,
     computeCellHeight: ((fromDepth: number, toDepth: number) => number) | null,
+    GapComponent: typeof StratigraphyTableGap,
   ) => (
-    <StratigraphyTableGap
+    <GapComponent
       key={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
       dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
       sx={{
@@ -95,10 +115,11 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
     computeCellHeight: ((fromDepth: number, toDepth: number) => number) | null,
     buildContent: (layer: BaseLayer) => ReactNode,
     keyPrefix: string,
+    GapComponent: typeof StratigraphyTableGap,
   ) => {
     if (!layers || layers.length === 0) {
       return (
-        <StratigraphyTableGap
+        <GapComponent
           key={`${keyPrefix}-new`}
           dataCy={`${keyPrefix}-new`}
           sx={{ height: `${defaultRowHeight}px` }}
@@ -109,7 +130,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
 
     return layers.map((layer, index) =>
       layer.isGap
-        ? renderGapCell(index, layer, keyPrefix, defaultRowHeight, computeCellHeight)
+        ? renderGapCell(index, layer, keyPrefix, defaultRowHeight, computeCellHeight, GapComponent)
         : renderActionCell(index, layer, keyPrefix, defaultRowHeight, computeCellHeight, buildContent),
     );
   };
@@ -148,6 +169,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
                 <LithologyLabels lithology={layer as Lithology} />
               ),
               "lithology",
+              StratigraphyTableGap,
             )}
           </StratigraphyTableColumn>
           <StratigraphyTableColumn>
@@ -161,6 +183,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
                 </Typography>
               ),
               "lithologicalDescription",
+              StratigraphyTableDescriptionGap,
             )}
           </StratigraphyTableColumn>
           <StratigraphyTableColumn>
@@ -172,6 +195,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
                 <FaciesDescriptionLabels description={layer as FaciesDescription} />
               ),
               "faciesDescription",
+              StratigraphyTableDescriptionGap,
             )}
           </StratigraphyTableColumn>
         </StratigraphyTableContent>

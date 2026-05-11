@@ -261,24 +261,10 @@ const checkForEndGaps = (layers: BaseLayerChangeTracker[], depths: LayerDepth[])
   return gapLayers;
 };
 
-const mergeAdjacentGaps = (layers: BaseLayerChangeTracker[]): BaseLayerChangeTracker[] => {
-  const mergedLayers: BaseLayerChangeTracker[] = [];
-  for (const current of layers) {
-    const prev = mergedLayers.at(-1);
-    if (prev?.item.isGap && current.item.isGap && mergedLayers.at(-1)?.item.toDepth === current.item.fromDepth) {
-      prev.item.toDepth = current.item.toDepth;
-    } else {
-      mergedLayers.push(current);
-    }
-  }
-  return mergedLayers;
-};
-
 export const getLayersWithGaps = (
   layers: BaseLayerChangeTracker[],
   depths: LayerDepth[],
   stratigraphyId: number,
-  mergeGaps?: boolean,
 ): BaseLayerChangeTracker[] => {
   const sortedLayers = [...layers].filter(l => !l.item.isGap).sort((a, b) => a.item.fromDepth - b.item.fromDepth);
   const resultLayers: BaseLayerChangeTracker[] = [];
@@ -311,11 +297,7 @@ export const getLayersWithGaps = (
     resultLayers.push(...checkForEndGaps(sortedLayers, depths));
   }
 
-  if (mergeGaps) {
-    return mergeAdjacentGaps(resultLayers);
-  } else {
-    return resultLayers;
-  }
+  return resultLayers;
 };
 
 export interface BaseLayerChangeTracker {
