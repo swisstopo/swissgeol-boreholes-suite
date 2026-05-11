@@ -1,7 +1,7 @@
-using BDMS.Json;
+﻿using BDMS.Json;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 using System.ComponentModel.DataAnnotations;
+using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 

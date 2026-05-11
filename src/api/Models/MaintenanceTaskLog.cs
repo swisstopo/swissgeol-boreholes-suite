@@ -1,6 +1,6 @@
-using BDMS.Maintenance;
-using System.ComponentModel.DataAnnotations;
+﻿using BDMS.Maintenance;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.ComponentModel.DataAnnotations;
 
 namespace BDMS.Models;
 
