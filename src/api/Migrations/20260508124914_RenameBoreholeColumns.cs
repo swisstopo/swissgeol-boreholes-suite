@@ -104,13 +104,13 @@ public partial class RenameBoreholeColumns : Migration
             name: "updated_by_bho",
             schema: "bdms",
             table: "borehole",
-            newName: "updated");
+            newName: "updater");
 
         migrationBuilder.RenameColumn(
             name: "updated_bho",
             schema: "bdms",
             table: "borehole",
-            newName: "updater");
+            newName: "update");
 
         migrationBuilder.RenameColumn(
             name: "total_depth_bho",
@@ -338,7 +338,7 @@ public partial class RenameBoreholeColumns : Migration
             name: "IX_borehole_updater_bho_fkey",
             schema: "bdms",
             table: "borehole",
-            newName: "IX_borehole_updated");
+            newName: "IX_borehole_updater");
 
         migrationBuilder.RenameIndex(
             name: "IX_borehole_status_id_cli_fkey",
@@ -572,10 +572,10 @@ public partial class RenameBoreholeColumns : Migration
             principalColumn: "id_usr");
 
         migrationBuilder.AddForeignKey(
-            name: "FK_borehole_users_updated",
+            name: "FK_borehole_users_updater",
             schema: "bdms",
             table: "borehole",
-            column: "updated",
+            column: "updater",
             principalSchema: "bdms",
             principalTable: "users",
             principalColumn: "id_usr");

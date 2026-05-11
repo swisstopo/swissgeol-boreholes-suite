@@ -290,11 +290,11 @@ namespace BDMS.Migrations
 
                     b.Property<DateTime?>("Updated")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updater");
+                        .HasColumnName("update");
 
                     b.Property<int?>("UpdatedById")
                         .HasColumnType("integer")
-                        .HasColumnName("updated");
+                        .HasColumnName("updater");
 
                     b.Property<int?>("WorkgroupId")
                         .HasColumnType("integer")

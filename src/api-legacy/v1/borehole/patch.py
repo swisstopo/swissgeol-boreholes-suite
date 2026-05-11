@@ -211,8 +211,8 @@ class PatchBorehole(Action):
                         UPDATE bdms.borehole
                         SET
                             %s,
-                            updater = now(),
-                            updated = %s
+                            "update" = now(),
+                            updater = %s
                         WHERE id = %s
                     """ % (
                         ", ".join(sets),
@@ -225,8 +225,8 @@ class PatchBorehole(Action):
                         UPDATE bdms.borehole
                         SET
                             %s = $1,
-                            updater = now(),
-                            updated = $2
+                            "update" = now(),
+                            updater = $2
                         WHERE id = $3
                     """ % column, value, user['id'], id)
 
@@ -245,8 +245,8 @@ class PatchBorehole(Action):
                     UPDATE bdms.borehole
                     SET
                         %s = to_date($1, 'YYYY-MM-DD'),
-                        updater = now(),
-                        updated = $2
+                        "update" = now(),
+                        updater = $2
                     WHERE id = $3
                 """ % column, value, user['id'], id)
 
@@ -313,8 +313,8 @@ class PatchBorehole(Action):
                     UPDATE bdms.borehole
                     SET
                         %s = $1,
-                        updater = now(),
-                        updated = $2
+                        "update" = now(),
+                        updater = $2
                     WHERE id = $3
                 """ % column, value, user['id'], id)
 
@@ -349,7 +349,7 @@ class PatchBorehole(Action):
                                     updater.firstname || ' ' || updater.lastname
                                         as fullname,
                                     to_char(
-                                        borehole.updater,
+                                        borehole."update",
                                         'YYYY-MM-DD"T"HH24:MI:SSOF'
                                     ) as date
                             ) t
@@ -359,7 +359,7 @@ class PatchBorehole(Action):
                     INNER JOIN bdms.users as locker
                         ON locked_by = locker.id_usr
                     INNER JOIN bdms.users as updater
-                        ON updated = updater.id_usr
+                        ON borehole.updater = updater.id_usr
                     WHERE
                         borehole.id = $1
                 ) t2

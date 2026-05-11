@@ -29,11 +29,11 @@ public class Borehole : IChangeTracking, IIdentifyable
 
     /// <inheritdoc />
     [IncludeInExport]
-    [Column("updater")]
+    [Column("update")]
     public DateTime? Updated { get; set; }
 
     /// <inheritdoc />
-    [Column("updated")]
+    [Column("updater")]
     public int? UpdatedById { get; set; }
 
     /// <inheritdoc />
