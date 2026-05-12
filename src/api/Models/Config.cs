@@ -13,12 +13,12 @@ public class Config
     /// Gets or sets the <see cref="Config"/>'s name.
     /// </summary>
     [Key]
-    [Column("name_cfg")]
+    [Column("name")]
     public string Name { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Config"/>'s value.
     /// </summary>
-    [Column("value_cfg")]
+    [Column("value")]
     public string? Value { get; set; }
 }
