@@ -7,7 +7,7 @@ class DeleteBoreholes(Action):
     async def execute(self, ids):
         await self.conn.execute("""
                 DELETE FROM bdms.borehole
-                WHERE id_bho = ANY($1)
+                WHERE id = ANY($1)
             """, ids
         )
         return None

@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20260508124914_RenameBoreholeColumns")]
+    partial class RenameBoreholeColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -2413,42 +2416,42 @@ namespace BDMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnName("id_tes");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Creation")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation");
+                        .HasColumnName("creation_tes");
 
                     b.Property<DateTime?>("Expiration")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expired");
+                        .HasColumnName("expired_tes");
 
                     b.Property<bool>("IsDraft")
                         .HasColumnType("boolean")
-                        .HasColumnName("draft");
+                        .HasColumnName("draft_tes");
 
                     b.Property<string>("TextDe")
                         .HasColumnType("text")
-                        .HasColumnName("text_de");
+                        .HasColumnName("text_tes_de");
 
                     b.Property<string>("TextEn")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("text_en");
+                        .HasColumnName("text_tes_en");
 
                     b.Property<string>("TextFr")
                         .HasColumnType("text")
-                        .HasColumnName("text_fr");
+                        .HasColumnName("text_tes_fr");
 
                     b.Property<string>("TextIt")
                         .HasColumnType("text")
-                        .HasColumnName("text_it");
+                        .HasColumnName("text_tes_it");
 
                     b.Property<string>("TextRo")
                         .HasColumnType("text")
-                        .HasColumnName("text_ro");
+                        .HasColumnName("text_tes_ro");
 
                     b.HasKey("Id");
 
@@ -2459,15 +2462,15 @@ namespace BDMS.Migrations
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("integer")
-                        .HasColumnName("user_id");
+                        .HasColumnName("id_usr_fk");
 
                     b.Property<int>("TermId")
                         .HasColumnType("integer")
-                        .HasColumnName("term_id");
+                        .HasColumnName("id_tes_fk");
 
                     b.Property<DateTime>("AcceptedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("accepted");
+                        .HasColumnName("accepted_tea");
 
                     b.HasKey("UserId", "TermId");
 
@@ -2537,15 +2540,15 @@ namespace BDMS.Migrations
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("integer")
-                        .HasColumnName("user_id");
+                        .HasColumnName("id_usr_fk");
 
                     b.Property<int>("WorkgroupId")
                         .HasColumnType("integer")
-                        .HasColumnName("workgroup_id");
+                        .HasColumnName("id_wgp_fk");
 
                     b.Property<int>("Role")
                         .HasColumnType("int")
-                        .HasColumnName("role_id");
+                        .HasColumnName("id_rol_fk");
 
                     b.HasKey("UserId", "WorkgroupId", "Role");
 
@@ -2658,26 +2661,26 @@ namespace BDMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnName("id_wgp");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation");
+                        .HasColumnName("created_wgp");
 
                     b.Property<DateTime?>("DisabledAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("disabled");
+                        .HasColumnName("disabled_wgp");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("name");
+                        .HasColumnName("name_wgp");
 
                     b.Property<string>("Settings")
                         .HasColumnType("json")
-                        .HasColumnName("settings");
+                        .HasColumnName("settings_wgp");
 
                     b.HasKey("Id");
 

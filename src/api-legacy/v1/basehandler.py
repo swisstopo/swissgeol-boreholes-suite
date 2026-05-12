@@ -53,9 +53,9 @@ class BaseHandler(web.RequestHandler):
                                     FROM
                                         bdms.terms
                                     WHERE
-                                        draft_tes IS FALSE
+                                        draft IS FALSE
                                     AND
-                                        expired_tes IS NULL
+                                        expired IS NULL
                                     LIMIT 1
                                 )
                             )
@@ -92,75 +92,75 @@ class BaseHandler(web.RequestHandler):
 
                     LEFT JOIN (
                         SELECT
-                            r.id_usr_fk,
-                            array_agg(r.name_rol) AS roles
+                            r.user_id,
+                            array_agg(r.name) AS roles
                         FROM (
                             SELECT distinct
-                                id_usr_fk,
-                                name_rol
+                                user_id,
+                                roles.name
                             FROM
                                 bdms.users_roles,
                                 bdms.roles,
                                 bdms.workgroups
                             WHERE
-                                id_rol = id_rol_fk
+                                roles.id = role_id
                             AND
-                                id_wgp = id_wgp_fk
+                                workgroups.id = workgroup_id
                         ) r
-                        GROUP BY id_usr_fk
+                        GROUP BY user_id
                     ) as rl
-                    ON rl.id_usr_fk = id_usr
+                    ON rl.user_id = id_usr
 
                     LEFT JOIN (
                         SELECT
-                            id_usr_fk,
+                            user_id,
                             TRUE as terms
                         FROM
                             bdms.terms_accepted
                         INNER JOIN
                             bdms.terms
                         ON
-                            id_tes_fk = id_tes
+                            term_id = id
                         WHERE
-                            expired_tes IS NULL
+                            expired IS NULL
                         AND
-                            draft_tes IS FALSE
+                            draft IS FALSE
                     ) as tr
                     ON
-                        tr.id_usr_fk = id_usr
+                        tr.user_id = id_usr
 
                     LEFT JOIN (
                         SELECT
-                            id_usr_fk,
-                            array_agg(id_wgp) as wgps,
+                            user_id,
+                            array_agg(id) as wgps,
                             array_to_json(array_agg(j)) as ws
                         FROM (
                             SELECT
-                                id_usr_fk,
-                                id_wgp,
+                                user_id,
+                                workgroups.id,
                                 json_build_object(
-                                    'id', id_wgp,
-                                    'workgroup', name_wgp,
-                                    'roles', array_agg(name_rol),
-                                    'disabled', disabled_wgp
+                                    'id', workgroups.id,
+                                    'workgroup', workgroups.name,
+                                    'roles', array_agg(roles.name),
+                                    'disabled', disabled
                                 ) as j
                             FROM
                                 bdms.users_roles,
                                 bdms.workgroups,
                                 bdms.roles
                             WHERE
-                                id_rol = id_rol_fk
+                                roles.id = role_id
                             AND
-                                id_wgp_fk = id_wgp
+                                workgroup_id = workgroups.id
                             GROUP BY
-                                id_usr_fk,
-                                id_wgp
+                                user_id,
+                                workgroups.id
                             ORDER BY
-                                name_wgp
+                                workgroups.name
                         ) AS t
-                        GROUP BY id_usr_fk
+                        GROUP BY user_id
                     ) as w
-                    ON w.id_usr_fk = id_usr
+                    ON w.user_id = id_usr
 
                     WHERE
                         subject_id = $1

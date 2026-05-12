@@ -12,25 +12,25 @@ public class Workgroup : IIdentifyable
 {
     /// <inheritdoc />
     [Key]
-    [Column("id_wgp")]
+    [Column("id")]
     public int Id { get; set; }
 
     /// <summary>
     /// Gets or sets the name of the workgroup.
     /// </summary>
-    [Column("name_wgp")]
+    [Column("name")]
     public string Name { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Workgroup"/> created date.
     /// </summary>
-    [Column("created_wgp")]
+    [Column("creation")]
     public DateTime? CreatedAt { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Workgroup"/> disabled date.
     /// </summary>
-    [Column("disabled_wgp")]
+    [Column("disabled")]
     public DateTime? DisabledAt { get; set; }
 
     /// <summary>
@@ -41,7 +41,7 @@ public class Workgroup : IIdentifyable
     /// <summary>
     /// Gets or sets the Settings for the <see cref="Workgroup"/>.
     /// </summary>
-    [Column("settings_wgp", TypeName = "json")]
+    [Column("settings", TypeName = "json")]
     public string? Settings { get; set; }
 
     /// <summary>
