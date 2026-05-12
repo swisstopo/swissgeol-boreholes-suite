@@ -95,11 +95,6 @@ public partial class RenameBoreholeColumns : Migration
             schema: "bdms",
             table: "borehole");
 
-        migrationBuilder.DropIndex(
-            name: "IX_borehole_srs_id_cli_fkey",
-            schema: "bdms",
-            table: "borehole");
-
         migrationBuilder.RenameColumn(
             name: "updated_by_bho",
             schema: "bdms",
@@ -413,6 +408,12 @@ public partial class RenameBoreholeColumns : Migration
             newName: "IX_borehole_workgroup_id");
 
         migrationBuilder.RenameIndex(
+            name: "IX_borehole_srs_id_cli_fkey",
+            schema: "bdms",
+            table: "borehole",
+            newName: "IX_borehole_srs_id");
+
+        migrationBuilder.RenameIndex(
             name: "IX_borehole_hrs_id_cli_fkey",
             schema: "bdms",
             table: "borehole",
@@ -441,6 +442,15 @@ public partial class RenameBoreholeColumns : Migration
             schema: "bdms",
             table: "borehole",
             column: "chronostratigraphy_top_bedrock_id",
+            principalSchema: "bdms",
+            principalTable: "codelist",
+            principalColumn: "id_cli");
+
+        migrationBuilder.AddForeignKey(
+            name: "FK_borehole_codelist_srs_id",
+            schema: "bdms",
+            table: "borehole",
+            column: "srs_id",
             principalSchema: "bdms",
             principalTable: "codelist",
             principalColumn: "id_cli");

@@ -40,38 +40,4 @@ public partial class RenameWorkgroupColumns : Migration
             table: "workgroups",
             newName: "id");
     }
-
-    /// <inheritdoc />
-    protected override void Down(MigrationBuilder migrationBuilder)
-    {
-        migrationBuilder.RenameColumn(
-            name: "settings",
-            schema: "bdms",
-            table: "workgroups",
-            newName: "settings_wgp");
-
-        migrationBuilder.RenameColumn(
-            name: "name",
-            schema: "bdms",
-            table: "workgroups",
-            newName: "name_wgp");
-
-        migrationBuilder.RenameColumn(
-            name: "disabled",
-            schema: "bdms",
-            table: "workgroups",
-            newName: "disabled_wgp");
-
-        migrationBuilder.RenameColumn(
-            name: "creation",
-            schema: "bdms",
-            table: "workgroups",
-            newName: "created_wgp");
-
-        migrationBuilder.RenameColumn(
-            name: "id",
-            schema: "bdms",
-            table: "workgroups",
-            newName: "id_wgp");
-    }
 }
