@@ -73,7 +73,7 @@ class BaseHandler(web.RequestHandler):
                         firstname || ' ' || lastname as "name",
                         COALESCE(
                             settings_usr::json,
-                            value_cfg::json
+                            value::json
                         ) as setting,
                         COALESCE(
                             w.ws, '[]'::json
@@ -88,7 +88,7 @@ class BaseHandler(web.RequestHandler):
                         bdms.users
 
                     INNER JOIN bdms.config
-                    ON name_cfg = 'SETTINGS'
+                    ON name = 'SETTINGS'
 
                     LEFT JOIN (
                         SELECT
