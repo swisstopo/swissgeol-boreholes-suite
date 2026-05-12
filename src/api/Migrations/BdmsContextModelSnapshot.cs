@@ -593,31 +593,31 @@ namespace BDMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("id_cli");
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("code_cli");
+                        .HasColumnName("code");
 
                     b.Property<string>("Conf")
                         .HasColumnType("json")
-                        .HasColumnName("conf_cli");
+                        .HasColumnName("conf");
 
                     b.Property<string>("De")
                         .HasColumnType("text")
-                        .HasColumnName("text_cli_de");
+                        .HasColumnName("text_de");
 
                     b.Property<string>("En")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("text_cli_en");
+                        .HasColumnName("text_en");
 
                     b.Property<string>("Fr")
                         .HasColumnType("text")
-                        .HasColumnName("text_cli_fr");
+                        .HasColumnName("text_fr");
 
                     b.Property<int?>("Geolcode")
                         .HasColumnType("integer")
@@ -625,27 +625,27 @@ namespace BDMS.Migrations
 
                     b.Property<bool?>("IsDefault")
                         .HasColumnType("boolean")
-                        .HasColumnName("default_cli");
+                        .HasColumnName("default");
 
                     b.Property<string>("It")
                         .HasColumnType("text")
-                        .HasColumnName("text_cli_it");
+                        .HasColumnName("text_it");
 
                     b.Property<int?>("Order")
                         .HasColumnType("integer")
-                        .HasColumnName("order_cli");
+                        .HasColumnName("order");
 
                     b.Property<string>("Path")
                         .HasColumnType("ltree")
-                        .HasColumnName("path_cli");
+                        .HasColumnName("path");
 
                     b.Property<string>("Ro")
                         .HasColumnType("text")
-                        .HasColumnName("text_cli_ro");
+                        .HasColumnName("text_ro");
 
                     b.Property<string>("Schema")
                         .HasColumnType("text")
-                        .HasColumnName("schema_cli");
+                        .HasColumnName("schema");
 
                     b.HasKey("Id");
 
