@@ -34,7 +34,7 @@ public sealed class CoordinateService(ILogger<CoordinateService> logger, IHttpCl
         using var httpClient = httpClientFactory.CreateClient(nameof(CoordinateService));
         httpClient.BaseAddress = new Uri("https://geodesy.geo.admin.ch/reframe/");
 
-        var transformDirection = borehole.OriginalReferenceSystem == ReferenceSystem.LV95 ? Lv95ToLv03 : Lv03ToLv95;
+        var transformDirection = borehole.OriginalReferenceSystemId == (int)ReferenceSystem.LV95 ? Lv95ToLv03 : Lv03ToLv95;
         var sourceLocationX = transformDirection == Lv95ToLv03 ? borehole.LocationX : borehole.LocationXLV03;
         var sourceLocationY = transformDirection == Lv95ToLv03 ? borehole.LocationY : borehole.LocationYLV03;
         var destinationLocationX = transformDirection == Lv95ToLv03 ? borehole.LocationXLV03 : borehole.LocationX;

@@ -20,6 +20,7 @@
 - LOG import dialog now assigns attachments per run number instead of as a flat list.
 - Normalize inconsistent casing in `codelist` text values for "other" / "not specified" across all four language columns.
 - Unified database column names for borehole, terms_accepted, terms, users_roles, roles, workgroups and config.
+- Reference Codelist instead of enum for OriginalReferenceSystem in borehole.
 
 ### Fixed
 - Only one workgroup could be added at once. Only with a complete refresh of the page another workgroup could be added.

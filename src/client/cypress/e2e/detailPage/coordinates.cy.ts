@@ -58,12 +58,12 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("have.value", "Oberentfelden");
 
     //switch reference system and show prompt
-    setSelect("originalReferenceSystem", 1);
+    setSelect("originalReferenceSystemId", 1);
     handlePrompt("Changing the coordinate system will reset the coordinates. Do you want to continue?", "cancel");
-    evaluateSelect("originalReferenceSystem", "LV95");
-    setSelect("originalReferenceSystem", 1);
+    evaluateSelect("originalReferenceSystemId", "LV95");
+    setSelect("originalReferenceSystemId", 1);
     handlePrompt("Changing the coordinate system will reset the coordinates. Do you want to continue?", "confirm");
-    evaluateSelect("originalReferenceSystem", "LV03");
+    evaluateSelect("originalReferenceSystemId", "LV03");
 
     // verify all inputs are empty
     cy.get("@LV95X-input").should("be.empty");
@@ -75,8 +75,8 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("have.value", "");
 
     // no prompt should appear if coordinate fields are empty
-    setSelect("originalReferenceSystem", 1);
-    evaluateSelect("originalReferenceSystem", "LV03");
+    setSelect("originalReferenceSystemId", 1);
+    evaluateSelect("originalReferenceSystemId", "LV03");
   });
 
   it("validates inputs", () => {
@@ -114,7 +114,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
 
   it("changes coordinates from map and saves", () => {
     //start with references system LV03
-    setSelect("originalReferenceSystem", 1);
+    setSelect("originalReferenceSystemId", 1);
 
     // verify automatically filled inputs
     cy.get("@LV95X-input").should("have.value", "");
@@ -153,7 +153,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("not.have.value", "");
 
     // verify original reference system has switched to LV95
-    evaluateSelect("originalReferenceSystem", "LV95");
+    evaluateSelect("originalReferenceSystemId", "LV95");
 
     // verify that all inputs have a precision of 2 decimal places
     checkDecimalPlaces("@LV95X-input", 2);
@@ -247,7 +247,7 @@ describe("Tests for editing coordinates of a borehole.", () => {
     cy.get("@municipality").should("have.value", "Unterentfelden");
 
     // switch reference system to LV03
-    setSelect("originalReferenceSystem", 1);
+    setSelect("originalReferenceSystemId", 1);
     handlePrompt("Changing the coordinate system will reset the coordinates. Do you want to continue?", "confirm");
 
     // Type coordinates for Samaden in LV03

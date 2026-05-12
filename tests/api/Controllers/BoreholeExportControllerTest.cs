@@ -897,7 +897,7 @@ public class BoreholeExportControllerTest
             PrecisionLocationXLV03 = 5,
             LocationYLV03 = 200000.0,
             PrecisionLocationYLV03 = 5,
-            OriginalReferenceSystem = ReferenceSystem.LV95,
+            OriginalReferenceSystemId = (int)ReferenceSystem.LV95,
             ElevationZ = 450.5,
             HrsId = 20106001,
             TotalDepth = 100.0,
