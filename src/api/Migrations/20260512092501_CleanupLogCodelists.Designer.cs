@@ -13,8 +13,8 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    [Migration("20260512092501_CleanupSrsAndLogCodelists")]
-    partial class CleanupSrsAndLogCodelists
+    [Migration("20260512092501_CleanupLogCodelists")]
+    partial class CleanupLogCodelists
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
