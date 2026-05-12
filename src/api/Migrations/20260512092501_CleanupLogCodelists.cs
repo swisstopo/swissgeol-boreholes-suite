@@ -10,8 +10,6 @@ public partial class CleanupLogCodelists : Migration
     /// <inheritdoc />
     protected override void Up(MigrationBuilder migrationBuilder)
     {
-
-
         // Add missing codes for LOG tool type.
         migrationBuilder.Sql(@"
             UPDATE bdms.codelist
