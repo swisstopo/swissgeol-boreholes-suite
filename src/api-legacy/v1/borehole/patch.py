@@ -295,11 +295,11 @@ class PatchBorehole(Action):
                 if value is not None and schema != (
                     await self.conn.fetchval("""
                         SELECT
-                            schema_cli
+                            schema
                         FROM
                             bdms.codelist
                         WHERE
-                            id_cli = $1
+                            id = $1
                     """, value)
                 ):
                     raise Exception(

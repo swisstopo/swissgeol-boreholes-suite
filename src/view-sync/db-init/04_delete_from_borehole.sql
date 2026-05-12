@@ -43,11 +43,11 @@ WHERE username <> 'Anonymous';
 -- Purge non-free and non-published boreholes
 DELETE FROM bdms.borehole WHERE id NOT IN (
     SELECT borehole.id FROM bdms.borehole
-    JOIN bdms.codelist ON codelist.id_cli = borehole.restriction_id
+    JOIN bdms.codelist ON codelist.id = borehole.restriction_id
     JOIN bdms.workflow ON workflow.borehole_id = borehole.id
     WHERE workflow.status = 3 -- workflow status: published
-      AND codelist.schema_cli = 'restriction'
-      AND codelist.code_cli = 'f' -- restriction: free
+      AND codelist.schema = 'restriction'
+      AND codelist.code = 'f' -- restriction: free
 );
 
 -- Purge non-public attachments
