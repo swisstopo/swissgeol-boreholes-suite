@@ -72,7 +72,7 @@ describe("Section crud tests", () => {
     evaluateDisplayValue("0.drilling_end_date", "02. Jan. 2023");
     evaluateDisplayValue("0.drill_diameter", "3.4");
     evaluateDisplayValue("0.drill_core_diameter", "5.6");
-    evaluateDisplayValue("0.overcoring", "Yes");
+    evaluateDisplayValue("0.overcoring", "yes");
 
     evaluateDisplayValue("1.fromdepth", "0");
     evaluateDisplayValue("1.todepth", "10");
@@ -84,7 +84,7 @@ describe("Section crud tests", () => {
     evaluateDisplayValue("1.drilling_end_date", "-");
     evaluateDisplayValue("1.drill_diameter", "-");
     evaluateDisplayValue("1.drill_core_diameter", "-");
-    evaluateDisplayValue("1.overcoring", "No");
+    evaluateDisplayValue("1.overcoring", "no");
 
     // update section
     startEditing();
@@ -95,7 +95,7 @@ describe("Section crud tests", () => {
     saveSection("PUT");
     evaluateDisplayValue("sectionName", "section-1");
     evaluateDisplayValue("0.drilling_method", "auger drilling");
-    evaluateDisplayValue("0.overcoring", "No");
+    evaluateDisplayValue("0.overcoring", "no");
 
     // delete section
     deleteItem();
