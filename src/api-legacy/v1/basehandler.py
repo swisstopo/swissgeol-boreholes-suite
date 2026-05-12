@@ -93,19 +93,19 @@ class BaseHandler(web.RequestHandler):
                     LEFT JOIN (
                         SELECT
                             r.user_id,
-                            array_agg(r.name_rol) AS roles
+                            array_agg(r.name) AS roles
                         FROM (
                             SELECT distinct
                                 user_id,
-                                name_rol
+                                roles.name
                             FROM
                                 bdms.users_roles,
                                 bdms.roles,
                                 bdms.workgroups
                             WHERE
-                                id_rol = role_id
+                                roles.id = role_id
                             AND
-                                id = workgroup_id
+                                workgroups.id = workgroup_id
                         ) r
                         GROUP BY user_id
                     ) as rl
@@ -137,11 +137,11 @@ class BaseHandler(web.RequestHandler):
                         FROM (
                             SELECT
                                 user_id,
-                                id,
+                                workgroups.id,
                                 json_build_object(
-                                    'id', id,
-                                    'workgroup', name,
-                                    'roles', array_agg(name_rol),
+                                    'id', workgroups.id,
+                                    'workgroup', workgroups.name,
+                                    'roles', array_agg(roles.name),
                                     'disabled', disabled
                                 ) as j
                             FROM
@@ -149,14 +149,14 @@ class BaseHandler(web.RequestHandler):
                                 bdms.workgroups,
                                 bdms.roles
                             WHERE
-                                id_rol = role_id
+                                roles.id = role_id
                             AND
-                                workgroup_id = id
+                                workgroup_id = workgroups.id
                             GROUP BY
                                 user_id,
-                                id
+                                workgroups.id
                             ORDER BY
-                                name
+                                workgroups.name
                         ) AS t
                         GROUP BY user_id
                     ) as w

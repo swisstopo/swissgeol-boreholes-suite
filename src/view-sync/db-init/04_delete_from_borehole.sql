@@ -22,7 +22,7 @@ VALUES (false, 'Anonymous', 'Anonymous', 'Anonymous', 'sub_anonymous');
 DELETE FROM bdms.users_roles WHERE true;
 INSERT INTO bdms.users_roles(user_id, role_id, workgroup_id)
 VALUES ((SELECT id_usr FROM bdms.users WHERE subject_id = 'sub_anonymous'),
-        (SELECT id_rol FROM bdms.roles WHERE name_rol = 'VIEW'),
+        (SELECT id FROM bdms.roles WHERE name = 'VIEW'),
         (SELECT id FROM bdms.workgroups WHERE name = 'DEFAULT_VIEW'));
 
 -- Set default settings for anonymous user (e.g. "Maps displayed")
