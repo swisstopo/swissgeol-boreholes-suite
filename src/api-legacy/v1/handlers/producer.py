@@ -23,11 +23,11 @@ class Producer(BaseHandler):
     async def check_edit(self, id, user, conn):
         id_wgp = await conn.fetchval("""
             SELECT
-                id_wgp_fk
+                workgroup_id
             FROM
                 bdms.borehole
             WHERE
-                id_bho = $1
+                id = $1
         """, id)
         for w in self.user['workgroups']:
             if (

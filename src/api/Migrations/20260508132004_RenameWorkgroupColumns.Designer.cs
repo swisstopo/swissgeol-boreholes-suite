@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20260508132004_RenameWorkgroupColumns")]
+    partial class RenameWorkgroupColumns
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -718,11 +721,11 @@ namespace BDMS.Migrations
                 {
                     b.Property<string>("Name")
                         .HasColumnType("text")
-                        .HasColumnName("name");
+                        .HasColumnName("name_cfg");
 
                     b.Property<string>("Value")
                         .HasColumnType("text")
-                        .HasColumnName("value");
+                        .HasColumnName("value_cfg");
 
                     b.HasKey("Name");
 
@@ -1182,7 +1185,7 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("humidity_id");
 
-                    b.Property<bool?>("IsUnconsolidated")
+                    b.Property<bool>("IsUnconsolidated")
                         .HasColumnType("boolean")
                         .HasColumnName("unconsolidated");
 

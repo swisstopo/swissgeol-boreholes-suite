@@ -17,34 +17,34 @@ class GetTerms(Action):
 
                 FROM (
                     SELECT
-                        id_tes AS id,
-                        draft_tes AS draft,
-                        text_tes_en AS en,
+                        id,
+                        draft AS draft,
+                        text_en AS en,
                         COALESCE(
-                            text_tes_de,
-                            text_tes_{dl}
+                            text_de,
+                            text_{dl}
                         ) AS de,
                         COALESCE(
-                            text_tes_fr,
-                            text_tes_{dl}
+                            text_fr,
+                            text_{dl}
                         ) AS fr,
                         COALESCE(
-                            text_tes_it,
-                            text_tes_{dl}
+                            text_it,
+                            text_{dl}
                         ) AS it,
                         COALESCE(
-                            text_tes_ro,
-                            text_tes_{dl}
+                            text_ro,
+                            text_{dl}
                         ) AS ro
 
                     FROM
                         bdms.terms
 
                     WHERE
-                        expired_tes IS NULL
+                        expired IS NULL
 
                     AND
-                        draft_tes IS FALSE
+                        draft IS FALSE
 
                 ) t
             """)
@@ -70,19 +70,19 @@ class GetTermsDraft(Action):
                 FROM
                     bdms.terms
                 WHERE
-                    draft_tes IS TRUE
+                    draft IS TRUE
             ) AS exists
         """)
 
         sql_draft_filter = '''
             AND
-                draft_tes IS FALSE
+                draft IS FALSE
         '''
 
         if exists is True:
             sql_draft_filter = '''
                 AND
-                    draft_tes IS TRUE
+                    draft IS TRUE
             '''
 
         try:
@@ -93,31 +93,31 @@ class GetTermsDraft(Action):
 
                 FROM (
                     SELECT
-                        id_tes AS id,
-                        draft_tes AS draft,
-                        text_tes_en AS en,
+                        id,
+                        draft AS draft,
+                        text_en AS en,
                         COALESCE(
-                            text_tes_de,
-                            text_tes_{dl}
+                            text_de,
+                            text_{dl}
                         ) AS de,
                         COALESCE(
-                            text_tes_fr,
-                            text_tes_{dl}
+                            text_fr,
+                            text_{dl}
                         ) AS fr,
                         COALESCE(
-                            text_tes_it,
-                            text_tes_{dl}
+                            text_it,
+                            text_{dl}
                         ) AS it,
                         COALESCE(
-                            text_tes_ro,
-                            text_tes_{dl}
+                            text_ro,
+                            text_{dl}
                         ) AS ro
 
                     FROM
                         bdms.terms
 
                     WHERE
-                        expired_tes IS NULL
+                        expired IS NULL
 
                     {sql_draft_filter}
 

@@ -408,7 +408,7 @@
   "newFile": "Nuovo file",
   "newLogRun": "Nuovo run",
   "newStratigraphy": "Nuova stratigrafia",
-  "no": "No",
+  "no": "no",
   "noDocuments": "Nessun documento disponibile...",
   "noFilterResult": "Nessun risultato trovato",
   "noLogFile": "Nessun file disponibile",
@@ -420,7 +420,7 @@
   "noStratigraphy": "Nessuna stratigrafia disponibile...",
   "noTextFound": "Nessun testo trovato",
   "notes": "Note",
-  "np": "Senza indicazioni",
+  "np": "senza indicazioni",
   "onlyEPSG2056Supported": "È supportato solo EPSG:2056.",
   "onlyMissing": "Solo mancanti",
   "onlyMissingExplanation": "Quando attivato, verranno elaborati solo i sondaggi con valori mancanti. Quando disattivato, tutti i sondaggi verranno rielaborati. Attenzione: l'elaborazione di tutti i sondaggi può richiedere molto tempo e le API a monte possono restituire errori a causa dell'elevato numero di richieste.",
@@ -604,6 +604,6 @@
   "workgroupId": "Gruppo di lavoro",
   "workgroupWithNameAdded": "Il gruppo di lavoro \"{{name}}\" è stato aggiunto",
   "workgroups": "Gruppi di lavoro",
-  "yes": "Sì",
+  "yes": "sì",
   "zipMissingJsonFile": "Il file ZIP non contiene un file JSON."
 }

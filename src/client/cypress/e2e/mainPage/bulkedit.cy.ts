@@ -170,7 +170,7 @@ describe("Test the borehole bulk edit feature.", () => {
     evaluateInput("custom.project_name", "new name");
     evaluateSelect("restriction", "restricted until");
     evaluateSelect("workgroup", "Blue");
-    evaluateSelect("national_interest", "Yes");
+    evaluateSelect("national_interest", "yes");
 
     cy.get('[data-cy="bulk-edit-reset-button"]').click({ multiple: true, force: true });
     cy.get("h6").contains("Project name").scrollIntoView();

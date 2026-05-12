@@ -408,7 +408,7 @@
   "newFile": "Nouveau fichier",
   "newLogRun": "Nouveau run",
   "newStratigraphy": "Nouvelle stratigraphie",
-  "no": "Non",
+  "no": "non",
   "noDocuments": "Aucun document disponible...",
   "noFilterResult": "Aucun résultat trouvé pour les filtres appliqués.",
   "noLogFile": "Aucun fichier disponible...",
@@ -420,7 +420,7 @@
   "noStratigraphy": "Aucune stratigraphie disponible...",
   "noTextFound": "Aucun texte trouvé",
   "notes": "Remarques",
-  "np": "Sans indication",
+  "np": "sans indication",
   "onlyEPSG2056Supported": "Seulement le système de coordonnées EPSG:2056 est pris en charge.",
   "onlyMissing": "Uniquement manquants",
   "onlyMissingExplanation": "Lorsque cette option est activée, seuls les forages avec des valeurs manquantes seront traités. Lorsqu'elle est désactivée, tous les forages seront retraités. Attention : le traitement de tous les forages peut prendre beaucoup de temps et les APIs en amont peuvent renvoyer des erreurs en raison du nombre élevé de requêtes.",
@@ -605,6 +605,6 @@
   "workgroupId": "Groupe de travail",
   "workgroupWithNameAdded": "Groupe de travail \"{{name}}\" ajouté",
   "workgroups": "Groupes de travail",
-  "yes": "Oui",
+  "yes": "oui",
   "zipMissingJsonFile": "Le fichier ZIP ne contient pas de fichier JSON."
 }
