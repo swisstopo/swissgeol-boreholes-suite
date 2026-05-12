@@ -13,7 +13,7 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    [Migration("20260506145601_MakeLithologyUnconsolidatedNullable")]
+    [Migration("20260512122440_MakeLithologyUnconsolidatedNullable")]
     partial class MakeLithologyUnconsolidatedNullable
     {
         /// <inheritdoc />
@@ -108,101 +108,101 @@ namespace BDMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("id_bho");
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Canton")
                         .HasColumnType("text")
-                        .HasColumnName("canton_bho");
+                        .HasColumnName("canton");
 
                     b.Property<int?>("ChronostratigraphyTopBedrockId")
                         .HasColumnType("integer")
-                        .HasColumnName("chronostrat_id_cli");
+                        .HasColumnName("chronostratigraphy_top_bedrock_id");
 
                     b.Property<string>("Country")
                         .HasColumnType("text")
-                        .HasColumnName("country_bho");
+                        .HasColumnName("country");
 
                     b.Property<DateTime?>("Created")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_bho");
+                        .HasColumnName("creation");
 
                     b.Property<int?>("CreatedById")
                         .HasColumnType("integer")
-                        .HasColumnName("created_by_bho");
+                        .HasColumnName("creator");
 
                     b.Property<int?>("DepthPrecisionId")
                         .HasColumnType("integer")
-                        .HasColumnName("qt_depth_id_cli");
+                        .HasColumnName("precision_depth_id");
 
                     b.Property<int?>("ElevationPrecisionId")
                         .HasColumnType("integer")
-                        .HasColumnName("qt_elevation_id_cli");
+                        .HasColumnName("precision_elevation_id");
 
                     b.Property<double?>("ElevationZ")
                         .HasColumnType("double precision")
-                        .HasColumnName("elevation_z_bho");
+                        .HasColumnName("elevation_z");
 
                     b.Property<Point>("Geometry")
                         .HasColumnType("geometry")
-                        .HasColumnName("geom_bho");
+                        .HasColumnName("geometry");
 
                     b.Property<bool?>("HasGroundwater")
                         .HasColumnType("boolean")
-                        .HasColumnName("groundwater_bho");
+                        .HasColumnName("groundwater");
 
                     b.Property<int?>("HrsId")
                         .HasColumnType("integer")
-                        .HasColumnName("hrs_id_cli");
+                        .HasColumnName("hrs_id");
 
                     b.Property<bool?>("IsPublic")
                         .HasColumnType("boolean")
-                        .HasColumnName("public_bho");
+                        .HasColumnName("public");
 
                     b.Property<int?>("LithologyTopBedrockId")
                         .HasColumnType("integer")
-                        .HasColumnName("lithology_top_bedrock_id_cli");
+                        .HasColumnName("lithology_top_bedrock_id");
 
                     b.Property<int?>("LithostratigraphyTopBedrockId")
                         .HasColumnType("integer")
-                        .HasColumnName("lithostrat_id_cli");
+                        .HasColumnName("lithostratigraphy_top_bedrock_id");
 
                     b.Property<int?>("LocationPrecisionId")
                         .HasColumnType("integer")
-                        .HasColumnName("qt_location_id_cli");
+                        .HasColumnName("precision_location_id");
 
                     b.Property<double?>("LocationX")
                         .HasColumnType("double precision")
-                        .HasColumnName("location_x_bho");
+                        .HasColumnName("location_x");
 
                     b.Property<double?>("LocationXLV03")
                         .HasColumnType("double precision")
-                        .HasColumnName("location_x_lv03_bho");
+                        .HasColumnName("location_x_lv03");
 
                     b.Property<double?>("LocationY")
                         .HasColumnType("double precision")
-                        .HasColumnName("location_y_bho");
+                        .HasColumnName("location_y");
 
                     b.Property<double?>("LocationYLV03")
                         .HasColumnType("double precision")
-                        .HasColumnName("location_y_lv03_bho");
+                        .HasColumnName("location_y_lv03");
 
                     b.Property<DateTime?>("Locked")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("locked_bho");
+                        .HasColumnName("locked");
 
                     b.Property<int?>("LockedById")
                         .HasColumnType("integer")
-                        .HasColumnName("locked_by_bho");
+                        .HasColumnName("locked_by");
 
                     b.Property<string>("Municipality")
                         .HasColumnType("text")
-                        .HasColumnName("municipality_bho");
+                        .HasColumnName("municipality");
 
                     b.Property<string>("Name")
                         .HasColumnType("text")
-                        .HasColumnName("alternate_name_bho");
+                        .HasColumnName("name");
 
                     b.Property<bool?>("NationalInterest")
                         .HasColumnType("boolean")
@@ -210,11 +210,11 @@ namespace BDMS.Migrations
 
                     b.Property<string>("OriginalName")
                         .HasColumnType("text")
-                        .HasColumnName("original_name_bho");
+                        .HasColumnName("original_name");
 
                     b.Property<int?>("OriginalReferenceSystem")
                         .HasColumnType("integer")
-                        .HasColumnName("srs_id_cli");
+                        .HasColumnName("srs_id");
 
                     b.Property<int?>("PrecisionLocationX")
                         .HasColumnType("integer")
@@ -234,39 +234,39 @@ namespace BDMS.Migrations
 
                     b.Property<string>("ProjectName")
                         .HasColumnType("text")
-                        .HasColumnName("project_name_bho");
+                        .HasColumnName("project_name");
 
                     b.Property<int?>("PurposeId")
                         .HasColumnType("integer")
-                        .HasColumnName("purpose_id_cli");
+                        .HasColumnName("purpose_id");
 
                     b.Property<double?>("ReferenceElevation")
                         .HasColumnType("double precision")
-                        .HasColumnName("reference_elevation_bho");
+                        .HasColumnName("reference_elevation");
 
                     b.Property<int?>("ReferenceElevationPrecisionId")
                         .HasColumnType("integer")
-                        .HasColumnName("qt_reference_elevation_id_cli");
+                        .HasColumnName("precision_reference_elevation_id");
 
                     b.Property<int?>("ReferenceElevationTypeId")
                         .HasColumnType("integer")
-                        .HasColumnName("reference_elevation_type_id_cli");
+                        .HasColumnName("reference_elevation_type_id");
 
                     b.Property<string>("Remarks")
                         .HasColumnType("text")
-                        .HasColumnName("remarks_bho");
+                        .HasColumnName("remarks");
 
                     b.Property<int?>("RestrictionId")
                         .HasColumnType("integer")
-                        .HasColumnName("restriction_id_cli");
+                        .HasColumnName("restriction_id");
 
                     b.Property<DateOnly?>("RestrictionUntil")
                         .HasColumnType("date")
-                        .HasColumnName("restriction_until_bho");
+                        .HasColumnName("restriction_until");
 
                     b.Property<int?>("StatusId")
                         .HasColumnType("integer")
-                        .HasColumnName("status_id_cli");
+                        .HasColumnName("status_id");
 
                     b.Property<double?>("TopBedrockFreshMd")
                         .HasColumnType("double precision")
@@ -282,7 +282,7 @@ namespace BDMS.Migrations
 
                     b.Property<double?>("TotalDepth")
                         .HasColumnType("double precision")
-                        .HasColumnName("total_depth_bho");
+                        .HasColumnName("total_depth");
 
                     b.Property<int?>("TypeId")
                         .HasColumnType("integer")
@@ -290,15 +290,15 @@ namespace BDMS.Migrations
 
                     b.Property<DateTime?>("Updated")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("updated_bho");
+                        .HasColumnName("update");
 
                     b.Property<int?>("UpdatedById")
                         .HasColumnType("integer")
-                        .HasColumnName("updated_by_bho");
+                        .HasColumnName("updater");
 
                     b.Property<int?>("WorkgroupId")
                         .HasColumnType("integer")
-                        .HasColumnName("id_wgp_fk");
+                        .HasColumnName("workgroup_id");
 
                     b.HasKey("Id");
 
@@ -721,11 +721,11 @@ namespace BDMS.Migrations
                 {
                     b.Property<string>("Name")
                         .HasColumnType("text")
-                        .HasColumnName("name_cfg");
+                        .HasColumnName("name");
 
                     b.Property<string>("Value")
                         .HasColumnType("text")
-                        .HasColumnName("value_cfg");
+                        .HasColumnName("value");
 
                     b.HasKey("Name");
 
@@ -2416,42 +2416,42 @@ namespace BDMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("id_tes");
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime>("Creation")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("creation_tes");
+                        .HasColumnName("creation");
 
                     b.Property<DateTime?>("Expiration")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("expired_tes");
+                        .HasColumnName("expired");
 
                     b.Property<bool>("IsDraft")
                         .HasColumnType("boolean")
-                        .HasColumnName("draft_tes");
+                        .HasColumnName("draft");
 
                     b.Property<string>("TextDe")
                         .HasColumnType("text")
-                        .HasColumnName("text_tes_de");
+                        .HasColumnName("text_de");
 
                     b.Property<string>("TextEn")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("text_tes_en");
+                        .HasColumnName("text_en");
 
                     b.Property<string>("TextFr")
                         .HasColumnType("text")
-                        .HasColumnName("text_tes_fr");
+                        .HasColumnName("text_fr");
 
                     b.Property<string>("TextIt")
                         .HasColumnType("text")
-                        .HasColumnName("text_tes_it");
+                        .HasColumnName("text_it");
 
                     b.Property<string>("TextRo")
                         .HasColumnType("text")
-                        .HasColumnName("text_tes_ro");
+                        .HasColumnName("text_ro");
 
                     b.HasKey("Id");
 
@@ -2462,15 +2462,15 @@ namespace BDMS.Migrations
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("integer")
-                        .HasColumnName("id_usr_fk");
+                        .HasColumnName("user_id");
 
                     b.Property<int>("TermId")
                         .HasColumnType("integer")
-                        .HasColumnName("id_tes_fk");
+                        .HasColumnName("term_id");
 
                     b.Property<DateTime>("AcceptedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("accepted_tea");
+                        .HasColumnName("accepted");
 
                     b.HasKey("UserId", "TermId");
 
@@ -2540,15 +2540,15 @@ namespace BDMS.Migrations
                 {
                     b.Property<int>("UserId")
                         .HasColumnType("integer")
-                        .HasColumnName("id_usr_fk");
+                        .HasColumnName("user_id");
 
                     b.Property<int>("WorkgroupId")
                         .HasColumnType("integer")
-                        .HasColumnName("id_wgp_fk");
+                        .HasColumnName("workgroup_id");
 
                     b.Property<int>("Role")
                         .HasColumnType("int")
-                        .HasColumnName("id_rol_fk");
+                        .HasColumnName("role_id");
 
                     b.HasKey("UserId", "WorkgroupId", "Role");
 
@@ -2661,26 +2661,26 @@ namespace BDMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("id_wgp");
+                        .HasColumnName("id");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<DateTime?>("CreatedAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("created_wgp");
+                        .HasColumnName("creation");
 
                     b.Property<DateTime?>("DisabledAt")
                         .HasColumnType("timestamp with time zone")
-                        .HasColumnName("disabled_wgp");
+                        .HasColumnName("disabled");
 
                     b.Property<string>("Name")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("name_wgp");
+                        .HasColumnName("name");
 
                     b.Property<string>("Settings")
                         .HasColumnType("json")
-                        .HasColumnName("settings_wgp");
+                        .HasColumnName("settings");
 
                     b.HasKey("Id");
 
