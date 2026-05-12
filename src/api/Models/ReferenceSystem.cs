@@ -6,6 +6,11 @@
 public enum ReferenceSystem
 {
     /// <summary>
+    /// The default value.
+    /// </summary>
+    None = 0,
+
+    /// <summary>
     /// id_cli for CH1903+ LV 95 (EPSG:2056).
     /// </summary>
     LV95 = 20104001,
