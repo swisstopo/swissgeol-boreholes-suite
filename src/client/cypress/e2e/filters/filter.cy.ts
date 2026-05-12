@@ -136,18 +136,18 @@ describe("Search filter tests", () => {
 
     openFilter("Borehole");
 
-    clickYesNoButton("nationalInterest", "Yes");
+    clickYesNoButton("nationalInterest", "yes");
     showTableAndWaitForData();
     verifyPaginationText("1–100 of 300");
     cy.dataCy("boreholes-number-preview").should("have.text", "300");
     cy.dataCy("filter-chip-nationalInterest").should("exist");
 
-    clickYesNoButton("nationalInterest", "Not specified");
+    clickYesNoButton("nationalInterest", "not specified");
     hasPagination(false);
     cy.dataCy("boreholes-number-preview").should("exist");
     cy.dataCy("filter-chip-nationalInterest").should("exist");
 
-    clickYesNoButton("nationalInterest", "No");
+    clickYesNoButton("nationalInterest", "no");
     verifyPaginationText("1–100 of 2703");
     cy.dataCy("boreholes-number-preview").should("have.text", "2'703");
     checkFilterChipExistsAndRemove("nationalInterest");
@@ -214,25 +214,25 @@ describe("Search filter tests", () => {
   testLargeSelectFilter("purpose", "Borehole", "purposeId", ["hydrocarbon exploration", "mineral resources"], "233");
   testLargeSelectFilter("borehole status", "Borehole", "statusId", ["decayed"], "314");
 
-  testYesNoFilter("groundwater", "Borehole", "hasGroundwater", "Not specified", "601");
-  testYesNoFilter("top bedrock intersected", "Borehole", "topBedrockIntersected", "No", "1'209");
-  testYesNoFilter("geometry available", "Borehole", "hasGeometry", "Yes", "100");
+  testYesNoFilter("groundwater", "Borehole", "hasGroundwater", "not specified", "601");
+  testYesNoFilter("top bedrock intersected", "Borehole", "topBedrockIntersected", "no", "1'209");
+  testYesNoFilter("geometry available", "Borehole", "hasGeometry", "yes", "100");
 
   // ─── LOCATION FILTERS ──────────────────────────────────────────────────────
   testLargeSelectFilter("canton", "Location", "canton", ["California"], "57");
   testLargeSelectFilter("municipality", "Location", "municipality", ["New Alexandria"], "1");
 
   // ─── LOG FILTER ────────────────────────────────────────────────────────────
-  testYesNoFilter("logs available", "LOG", "hasLogs", "Yes", "101");
+  testYesNoFilter("logs available", "LOG", "hasLogs", "yes", "101");
   testLargeSelectFilter("log tool type", "LOG", "logToolTypeId", ["Caliper", "Gamma Ray"], "101");
 
   // ─── ATTACHMENT FILTERS ────────────────────────────────────────────────────
-  testYesNoFilter("profiles available", "Attachments", "hasProfiles", "No", "2'900");
-  testYesNoFilter("photos available", "Attachments", "hasPhotos", "Yes", "71");
+  testYesNoFilter("profiles available", "Attachments", "hasProfiles", "no", "2'900");
+  testYesNoFilter("photos available", "Attachments", "hasPhotos", "yes", "71");
 
   it("filters boreholes by documents available and resets filters", () => {
     openFilter("Attachments");
-    clickYesNoButton("hasDocuments", "No");
+    clickYesNoButton("hasDocuments", "no");
     cy.dataCy("boreholes-number-preview").should("have.text", "2'930");
     cy.dataCy("boreholes-number-preview").should("exist");
     cy.dataCy(`filter-chip-hasDocuments`).should("exist");
@@ -253,7 +253,7 @@ describe("Search filter tests", () => {
 
   it("constrains autocomplete suggestions to boreholes that match the active filter", () => {
     // Two boreholes share an "AA_SUGGEST_" prefix but only one has nationalInterest=true.
-    // Applying the nationalInterest=Yes filter must restrict the suggestion list to the matching one.
+    // Applying the nationalInterest=yes filter must restrict the suggestion list to the matching one.
     createBorehole({ originalName: "AA_SUGGEST_match", nationalInterest: true });
     createBorehole({ originalName: "AA_SUGGEST_other", nationalInterest: false });
 
@@ -271,7 +271,7 @@ describe("Search filter tests", () => {
     cy.get("body").click(0, 0);
 
     // Apply the nationalInterest filter and re-open the autocomplete.
-    clickYesNoButton("nationalInterest", "Yes");
+    clickYesNoButton("nationalInterest", "yes");
     cy.wait("@borehole_filter");
 
     cy.dataCy("originalName-formInput").click();

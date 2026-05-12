@@ -160,12 +160,12 @@ export const setSelect = (fieldName: string, index: number, optionsLength?: numb
 /**
  * Sets the value for a select form element.
  * @param {string} fieldName The name of the select field.
- * @param {string?} option The option to select ("Yes", "No", "Not specified")
+ * @param {string?} option The option to select ("yes", "no", "not specified")
  * @param {number} optionsLength The expected number of options in the dropdown.
  * @param {string} parent (optional) The parent of the form element.
  */
 export const setYesNoSelect = (fieldName: string, option: string, optionsLength?: number, parent?: string) => {
-  // order of options in dropdown list is Yes, No, Not Specified
+  // order of options in dropdown list is yes, no, not Specified
   let listIndex: number;
   if (option.toLowerCase() === "yes") {
     listIndex = 0;
@@ -178,9 +178,9 @@ export const setYesNoSelect = (fieldName: string, option: string, optionsLength?
 };
 
 /**
- * Evaluates the state of a select form element with the options "Yes", "No", "Not specified".
+ * Evaluates the state of a select form element with the options "yes", "no", "not specified".
  * @param {string} fieldName The name of the select field.
- * @param {string?} expectedValue The expected value of the select ("Yes", "No", "Not specified")
+ * @param {string?} expectedValue The expected value of the select ("yes", "no", "not specified")
  * @param {string} parent (optional) The parent of the form element.
  */
 export const evaluateYesNoSelect = (fieldName: string, expectedValue: string, parent?: string) => {

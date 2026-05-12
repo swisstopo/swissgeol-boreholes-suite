@@ -133,7 +133,7 @@ const assertLocationAndHash = (boreholeId: unknown, completionId: unknown, hash:
 
 const assertNewCompletionCreated = (boreholeId: unknown) => {
   assertLocationAndHash(boreholeId, "new", "");
-  cy.contains("Not specified").should("be.visible");
+  cy.contains("not specified").should("be.visible");
 };
 
 describe("completion crud tests", () => {
@@ -214,7 +214,7 @@ describe("completion crud tests", () => {
       deleteCompletion();
       cy.dataCy("completion-header-tab-1").should("not.exist");
       isHeaderTabSelected(0);
-      evaluateDisplayValue("mainCompletion", "Yes");
+      evaluateDisplayValue("mainCompletion", "yes");
     });
   });
 
@@ -365,7 +365,7 @@ describe("completion crud tests", () => {
           handlePrompt("Borehole architecture: You have unsaved changes. How would you like to proceed?", "reset");
           assertNewCompletionCreated(boreholeId);
           cy.contains("Reset compl-1").should("not.exist");
-          cy.contains("Not specified").should("be.visible"); // title of newly added completion
+          cy.contains("not specified").should("be.visible"); // title of newly added completion
           isHeaderTabSelected(2);
           // existing editing to new: changes can be saved in prompt
 
