@@ -11,7 +11,7 @@ public class User : IIdentifyable
 {
     /// <inheritdoc />
     [Key]
-    [Column("id_usr")]
+    [Column("id")]
     public int Id { get; set; }
 
     /// <summary>
@@ -47,7 +47,7 @@ public class User : IIdentifyable
     /// <summary>
     /// Gets or sets whether the <see cref="User"/> has admin privileges.
     /// </summary>
-    [Column("admin_usr")]
+    [Column("admin")]
     public bool IsAdmin { get; set; }
 
     /// <summary>
@@ -58,19 +58,19 @@ public class User : IIdentifyable
     /// <summary>
     /// Gets or sets the timestamp from the moment a <see cref="User"/> got disabled.
     /// </summary>
-    [Column("disabled_usr")]
+    [Column("disabled")]
     public DateTime? DisabledAt { get; set; }
 
     /// <summary>
     /// Gets or sets the timestamp from the moment a <see cref="User"/> got disabled.
     /// </summary>
-    [Column("created_usr")]
+    [Column("created")]
     public DateTime? CreatedAt { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="User"/>s settings.
     /// </summary>
-    [Column("settings_usr")]
+    [Column("settings")]
     public string? Settings { get; set; }
 
     /// <summary>

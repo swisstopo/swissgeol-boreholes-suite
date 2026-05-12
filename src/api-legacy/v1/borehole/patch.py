@@ -344,7 +344,7 @@ class PatchBorehole(Action):
                             select row_to_json(t)
                             FROM (
                                 SELECT
-                                    updater.id_usr as id,
+                                    updater.id as id,
                                     updater.username as username,
                                     updater.firstname || ' ' || updater.lastname
                                         as fullname,
@@ -357,9 +357,9 @@ class PatchBorehole(Action):
                     FROM
                         bdms.borehole
                     INNER JOIN bdms.users as locker
-                        ON locked_by = locker.id_usr
+                        ON locked_by = locker.id
                     INNER JOIN bdms.users as updater
-                        ON borehole.updater = updater.id_usr
+                        ON borehole.updater = updater.id
                     WHERE
                         borehole.id = $1
                 ) t2
