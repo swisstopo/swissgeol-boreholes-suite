@@ -3,6 +3,15 @@ import { FaciesDescription } from "./faciesDescription.ts";
 import { LithologicalDescription } from "./lithologicalDescription.ts";
 import { LayerDepth, Lithology } from "./lithology.ts";
 
+export const defaultRowHeight = 240;
+
+export const computeCellHeight = (fromDepth: number, toDepth: number, depths: LayerDepth[]) => {
+  const startIndex = depths.findIndex(l => l.fromDepth === fromDepth);
+  const endIndex = depths.findIndex(l => l.toDepth === toDepth);
+  if (startIndex === -1 || endIndex === -1) return defaultRowHeight;
+  return (endIndex - startIndex + 1) * defaultRowHeight;
+};
+
 const createGapLayerDepth = (fromDepth: number, toDepth: number): LayerDepth => ({
   fromDepth,
   toDepth,

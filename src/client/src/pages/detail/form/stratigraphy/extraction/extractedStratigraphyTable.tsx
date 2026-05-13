@@ -12,6 +12,7 @@ import {
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "../stratigraphyTableComponents.tsx";
+import { defaultRowHeight } from "../stratigraphyUtils.ts";
 
 interface ExtractedStratigraphyTableProps {
   lithologicalDescriptions: BaseLayer[];
@@ -19,7 +20,6 @@ interface ExtractedStratigraphyTableProps {
 
 export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = ({ lithologicalDescriptions }) => {
   const { t } = useTranslation();
-  const defaultRowHeight = 240;
 
   const renderTableCells = (layers: BaseLayer[], buildContent: (layer: BaseLayer) => ReactNode, keyPrefix: string) => {
     if (!layers || layers.length === 0) {
