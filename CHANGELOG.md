@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- Deleted unused Swiss coordinate reference systems.
+
 ## v2.1.1631 - 2026-05-13
 
 ### Added
@@ -22,7 +25,6 @@
 - LOG import dialog now assigns attachments per run number instead of as a flat list.
 - Normalize inconsistent casing in `codelist` text values for "other" / "not specified" across all four language columns.
 - Unified database column names for borehole, terms_accepted, terms, users_roles, roles, workgroups and config.
-- Deleted unused Swiss coordinate reference systems.
 
 ### Fixed
 - Only one workgroup could be added at once. Only with a complete refresh of the page another workgroup could be added.
