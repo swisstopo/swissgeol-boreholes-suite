@@ -18,7 +18,7 @@ class PublishTerms(Action):
                 FROM
                     bdms.terms
                 WHERE
-                    draft_tes IS TRUE
+                    draft IS TRUE
             ) AS exists
         """)
 
@@ -34,11 +34,11 @@ class PublishTerms(Action):
                 UPDATE
                     bdms.terms
                 SET
-                    expired_tes = now()
+                    expired = now()
                 WHERE
-                    expired_tes IS NULL
+                    expired IS NULL
                 AND
-                    draft_tes IS FALSE
+                    draft IS FALSE
             """)
 
             # Promote draft to current terms
@@ -46,11 +46,11 @@ class PublishTerms(Action):
                 UPDATE
                     bdms.terms
                 SET
-                    draft_tes = FALSE
+                    draft = FALSE
                 WHERE
-                    expired_tes IS NULL
+                    expired IS NULL
                 AND
-                    draft_tes IS TRUE
+                    draft IS TRUE
             """)
 
             # Commit changes to db

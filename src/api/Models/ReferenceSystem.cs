@@ -1,7 +1,7 @@
 ﻿namespace BDMS.Models;
 
 /// <summary>
-/// Represents a reference system.
+/// Represents a codelist entry for the schema "spatial_reference_system".
 /// </summary>
 public enum ReferenceSystem
 {
@@ -11,12 +11,12 @@ public enum ReferenceSystem
     None = 0,
 
     /// <summary>
-    /// CH1903+ LV 95 (EPSG:2056).
+    /// id_cli for CH1903+ LV 95 (EPSG:2056).
     /// </summary>
     LV95 = 20104001,
 
     /// <summary>
-    /// CH1903 LV 03 (EPSG:21781).
+    /// id_cli for CH1903 LV 03 (EPSG:21781).
     /// </summary>
     LV03 = 20104002,
 }

@@ -122,7 +122,7 @@ describe("Test for the borehole log.", () => {
     assertRunCountDisplayed("2 selected");
     assertExportButtonsDisabled(false);
 
-    verifyFullRowContent(["R44", "0.0 - 10.0", "CAL, GYRO", "Not specified"], 0);
+    verifyFullRowContent(["R44", "0.0 - 10.0", "CAL, GYRO", "not specified"], 0);
     verifyRowWithTextCheckState("R44", true);
 
     // sort by all columns
@@ -131,17 +131,17 @@ describe("Test for the borehole log.", () => {
     verifyRowWithTextCheckState("R01", false);
 
     sortBy("Logged interval");
-    verifyFullRowContent(["R44", "0.0 - 10.0", "CAL, GYRO, GR", "Not specified"], 0);
+    verifyFullRowContent(["R44", "0.0 - 10.0", "CAL, GYRO, GR", "not specified"], 0);
     verifyRowWithTextCheckState("R44", true);
 
     sortBy("Service or tool");
     sortBy("Borehole status");
     sortBy("Borehole status"); // sort descending
-    verifyFullRowContent(["R96", "10.0 - 20.0", "CAL, GYRO, GR", "Other"], 0);
+    verifyFullRowContent(["R96", "10.0 - 20.0", "CAL, GYRO, GR", "other"], 0);
     verifyRowWithTextCheckState("R96", true);
 
     sortBy("Comment");
-    verifyFullRowContent(["R96", "10.0 - 20.0", "CAL, GYRO, GR", "Other"], 0);
+    verifyFullRowContent(["R96", "10.0 - 20.0", "CAL, GYRO, GR", "other"], 0);
     verifyRowWithTextCheckState("R96", true);
   });
 
@@ -481,7 +481,7 @@ describe("Test for the borehole log.", () => {
     assertFileCountDisplayed("0 files");
     toggleMultiSelect("dataPackages", [4], 12, "logRun-files"); // "Real-time data (WL)"
     assertFileCountDisplayed("2 files");
-    setSelect("public", 2, 3, "logRun-files"); // "No"
+    setSelect("public", 2, 3, "logRun-files"); // "no"
     assertFileCountDisplayed("1 file");
 
     cy.dataCy("logRun-files").dataCy("filter-button").click();
