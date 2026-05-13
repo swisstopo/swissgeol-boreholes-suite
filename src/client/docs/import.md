@@ -68,8 +68,7 @@ Die zu importierenden Daten müssen gemäss obigen Anforderungen im CSV-Format v
 | LithologyTopBedrockId         | ID (Codeliste) | Nein        | Lithologie Top Fels                                                                   |
 | ChronostratigraphyTopBedrockId| ID (Codeliste) | Nein        | Chronostratigraphie Top Fels                                                          |
 | LithostratigraphyTopBedrockId | ID (Codeliste) | Nein        | Lithostratigraphie Top Fels                                                           |
-
-
+ 
 ### Ids
 Es können zusätzliche IDs importiert werden. Die dafür zu verwendenden Spaltenüberschriften sind dynamisch und können von Umgebung zu Umgebung variieren. 
 Um die korrekten Spaltenüberschriften zu erhalten, kann eine Bohrung mit einer entsprechenden ID als CSV-Datei exportiert werden.
@@ -125,13 +124,6 @@ Die JSON-Datei muss den folgenden Anforderungen entsprechen, damit sie erfolgrei
 
 Der JSON + Profil-Import ermöglicht es neben den Bohrlochdaten auch zugehörige Anhänge (z.B. Bilder, PDFs) zu importieren. Die Bohrlochdaten müssen in einer im ZIP-Archiv enthaltenen JSON-Datei vorliegen (siehe auch [Format und Anforderungen an die JSON-Datei](#format-und-anforderungen-an-die-json-datei)).
 Alle Anhänge im ZIP-Archiv müssen in der JSON-Datei referenziert werden. Mit dem Export-Feature können die Bohrlochdaten und Anhänge in einem ZIP-Archiv exportiert werden, welches die Anforderungen für den Import erfüllt.
-
-## Validierung
-
-### Duplikate
-
-Beim Importprozess der Bohrdaten wird eine Duplikatsvalidierung durchgeführt, um sicherzustellen, dass kein Bohrloch mehrmals in der Datei vorhanden ist oder bereits in der Datenbank existiert.
-Duplikate werden nur innerhalb einer Arbeitsgruppe erkannt. Die Duplikaterkennung erfolgt anhand der Koordinaten mit einer Toleranz von +/- 2 Metern und der Gesamttiefe des Bohrlochs.
 
 ## Anmerkungen
 
