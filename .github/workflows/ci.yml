@@ -172,7 +172,7 @@ jobs:
           path: src/client/dist
 
       - name: Cypress run
-        uses: cypress-io/github-action@b7a7441d775af8f8b9d19945c10dd689a51dba68 # v7.2.0
+        uses: cypress-io/github-action@dace029018fcdf86e0df89a31bc3cfa5b32570d8 # v7.3.0
         with:
           command: npx cypress run --record --key ${{ secrets.CYPRESS_RECORD_KEY }} --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }} --group shard-${{ matrix.index }}
           start: npm run preview
