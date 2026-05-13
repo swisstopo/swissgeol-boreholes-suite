@@ -412,6 +412,13 @@ export const MapComponent: FC<MapComponentProps> = ({
 
   // ────────────────────── Effect: User layers ──────────────────────
 
+  // The legacy `setting` reducer mutates `state.data.map.explorer` in place on PATCH,
+  // so the `layers` prop reference is stable even when content changes. Derive a
+  // value-based signature so the sync effect fires on actual changes.
+  const layersSignature = JSON.stringify(
+    Object.entries(layers).map(([id, l]) => [id, l.visibility, l.transparency, l.position, l.type]),
+  );
+
   useEffect(() => {
     const map = mapRef.current;
     if (!map || Object.keys(layers).length === 0) return;
@@ -440,7 +447,7 @@ export const MapComponent: FC<MapComponentProps> = ({
         overlay.setZIndex(layer.position + 1);
       }
     }
-  }, [layers]);
+  }, [layers, layersSignature]);
 
   // ────────────────────── Effect: GeoJSON feature loading ──────────────────────
 
