@@ -11,7 +11,7 @@ public class UserWorkgroupRole
     /// <summary>
     /// Gets or sets the foreign key to the <see cref="User"/> entity.
     /// </summary>
-    [Column("id_usr_fk")]
+    [Column("user_id")]
     public int UserId { get; set; }
 
     /// <summary>
@@ -22,7 +22,7 @@ public class UserWorkgroupRole
     /// <summary>
     /// Gets or sets the foreign key to the <see cref="Workgroup"/> entity.
     /// </summary>
-    [Column("id_wgp_fk")]
+    [Column("workgroup_id")]
     public int WorkgroupId { get; set; }
 
     /// <summary>
@@ -33,7 +33,7 @@ public class UserWorkgroupRole
     /// <summary>
     /// Gets or sets the <see cref="Role"/>.
     /// </summary>
-    [Column("id_rol_fk", TypeName = "int")]
+    [Column("role_id", TypeName = "int")]
     public Role Role { get; set; }
 
     /// <summary>

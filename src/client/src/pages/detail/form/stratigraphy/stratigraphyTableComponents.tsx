@@ -188,6 +188,36 @@ export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ index, onC
   );
 };
 
+export const StratigraphyTableDescriptionGap: FC<StratigraphyTableGapProps> = ({ index, onClick, sx, dataCy }) => (
+  <StratigraphyTableCell
+    sx={{
+      padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
+      backgroundColor: theme.palette.background.lightgrey,
+
+      ...(onClick && {
+        "&:hover": {
+          backgroundColor: theme.palette.background.grey,
+          cursor: "pointer",
+        },
+      }),
+      ...sx,
+    }}
+    data-cy={`${dataCy}-gap`}
+    onClick={() => {
+      if (onClick) {
+        onClick(index);
+      }
+    }}>
+    <StratigraphyTableCellRow />
+    {onClick && (
+      <Stack direction="row" justifyContent="center" alignItems="center">
+        <LayerAddButton dataCy={`${dataCy}-add-button`} />
+      </Stack>
+    )}
+    <StratigraphyTableCellRow />
+  </StratigraphyTableCell>
+);
+
 interface LayerAddButtonProps {
   onClick?: () => void;
   dataCy?: string;

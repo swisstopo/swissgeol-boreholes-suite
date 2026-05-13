@@ -1,4 +1,4 @@
-import { FC, ReactNode, useCallback } from "react";
+import { FC, ReactNode, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { BaseLayer } from "../../../../../api/stratigraphy.ts";
@@ -11,10 +11,12 @@ import {
   StratigraphyTableCell,
   StratigraphyTableColumn,
   StratigraphyTableContent,
+  StratigraphyTableDescriptionGap,
   StratigraphyTableGap,
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "../stratigraphyTableComponents.tsx";
+import { computeCellHeight, defaultRowHeight, getLayersWithGaps } from "../stratigraphyUtils.ts";
 import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";
@@ -37,33 +39,37 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
   const { depths } = useLayerDepths(lithologies);
 
   const { completedLayers: completedLithologies } = useCompletedLayers(lithologies, depths);
-  const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(lithologicalDescriptions, depths);
-  const { completedLayers: completedFaciesDescriptions } = useCompletedLayers(faciesDescriptions, depths);
-
-  const defaultRowHeight = 240;
-
-  const computeCellHeight = useCallback(
-    (fromDepth: number, toDepth: number) => {
-      const startIndex = depths.findIndex(l => l.fromDepth === fromDepth);
-      const endIndex = depths.findIndex(l => l.toDepth === toDepth);
-      if (startIndex === -1 || endIndex === -1) return defaultRowHeight;
-      return (endIndex - startIndex + 1) * defaultRowHeight;
-    },
-    [depths],
+  const stratigraphyId = lithologies[0]?.stratigraphyId ?? 0;
+  const completedLithologicalDescriptions = useMemo(
+    () =>
+      getLayersWithGaps(
+        lithologicalDescriptions.map(layer => ({ item: layer, hasChanges: false })),
+        depths,
+        stratigraphyId,
+      ).map(l => l.item),
+    [lithologicalDescriptions, depths, stratigraphyId],
+  );
+  const completedFaciesDescriptions = useMemo(
+    () =>
+      getLayersWithGaps(
+        faciesDescriptions.map(layer => ({ item: layer, hasChanges: false })),
+        depths,
+        stratigraphyId,
+      ).map(l => l.item),
+    [faciesDescriptions, depths, stratigraphyId],
   );
 
   const renderGapCell = (
     index: number,
     layer: BaseLayer,
     keyPrefix: string,
-    defaultRowHeight: number,
-    computeCellHeight: ((fromDepth: number, toDepth: number) => number) | null,
+    GapComponent: typeof StratigraphyTableGap,
   ) => (
-    <StratigraphyTableGap
+    <GapComponent
       key={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
       dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
       sx={{
-        height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
+        height: `${computeCellHeight(layer.fromDepth, layer.toDepth, depths)}px`,
       }}
       index={index}
     />
@@ -73,15 +79,13 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
     index: number,
     layer: BaseLayer,
     keyPrefix: string,
-    defaultRowHeight: number,
-    computeCellHeight: ((fromDepth: number, toDepth: number) => number) | null,
     buildContent: (layer: BaseLayer) => ReactNode,
   ) => (
     <StratigraphyTableActionCell
       key={`${keyPrefix}-${layer.id}`}
       dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.toDepth}`}
       sx={{
-        height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
+        height: `${computeCellHeight(layer.fromDepth, layer.toDepth, depths)}px`,
       }}
       index={index}>
       {buildContent(layer)}
@@ -90,14 +94,13 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
 
   const renderTableCells = (
     layers: BaseLayer[],
-    defaultRowHeight: number,
-    computeCellHeight: ((fromDepth: number, toDepth: number) => number) | null,
     buildContent: (layer: BaseLayer) => ReactNode,
     keyPrefix: string,
+    GapComponent: typeof StratigraphyTableGap,
   ) => {
     if (!layers || layers.length === 0) {
       return (
-        <StratigraphyTableGap
+        <GapComponent
           key={`${keyPrefix}-new`}
           dataCy={`${keyPrefix}-new`}
           sx={{ height: `${defaultRowHeight}px` }}
@@ -108,8 +111,8 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
 
     return layers.map((layer, index) =>
       layer.isGap
-        ? renderGapCell(index, layer, keyPrefix, defaultRowHeight, computeCellHeight)
-        : renderActionCell(index, layer, keyPrefix, defaultRowHeight, computeCellHeight, buildContent),
+        ? renderGapCell(index, layer, keyPrefix, GapComponent)
+        : renderActionCell(index, layer, keyPrefix, buildContent),
     );
   };
 
@@ -141,36 +144,33 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
           <StratigraphyTableColumn>
             {renderTableCells(
               completedLithologies,
-              defaultRowHeight,
-              computeCellHeight,
               layer => (
                 <LithologyLabels lithology={layer as Lithology} />
               ),
               "lithology",
+              StratigraphyTableGap,
             )}
           </StratigraphyTableColumn>
           <StratigraphyTableColumn>
             {renderTableCells(
               completedLithologicalDescriptions,
-              defaultRowHeight,
-              computeCellHeight,
               layer => (
                 <Typography variant="body1" fontWeight={700}>
                   {(layer as LithologicalDescription).description}
                 </Typography>
               ),
               "lithologicalDescription",
+              StratigraphyTableDescriptionGap,
             )}
           </StratigraphyTableColumn>
           <StratigraphyTableColumn>
             {renderTableCells(
               completedFaciesDescriptions,
-              defaultRowHeight,
-              computeCellHeight,
               layer => (
                 <FaciesDescriptionLabels description={layer as FaciesDescription} />
               ),
               "faciesDescription",
+              StratigraphyTableDescriptionGap,
             )}
           </StratigraphyTableColumn>
         </StratigraphyTableContent>
