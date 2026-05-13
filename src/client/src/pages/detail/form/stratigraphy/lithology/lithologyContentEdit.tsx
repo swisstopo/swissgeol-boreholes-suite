@@ -433,7 +433,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   ) => {
     return (
       <GapComponent
-        key={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
+        key={`${keyPrefix}-${index}-${layer.fromDepth}-${layer.id}`}
         dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
         sx={{
           height: `${computeCellHeight(layer.fromDepth, layer.toDepth, depths)}px`,
@@ -453,7 +453,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     buildContent: (layer: BaseLayer) => ReactNode,
   ) => (
     <StratigraphyTableActionCell
-      key={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
+      key={`${keyPrefix}-${index}-${layer.fromDepth}-${layer.id}`}
       dataCy={`${keyPrefix}-${index}`}
       sx={{
         height: `${computeCellHeight(layer.fromDepth, layer.toDepth, depths)}px`,
