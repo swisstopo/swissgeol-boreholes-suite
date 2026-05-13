@@ -69,7 +69,7 @@ export const CustomLayersComponent = ({
                 <Box>
                   <IconButton
                     aria-label={"move-up"}
-                    disabled={idx === len || isFetching === true}
+                    disabled={idx === 0 || isFetching === true}
                     onClick={() => {
                       moveUp(layer);
                     }}
