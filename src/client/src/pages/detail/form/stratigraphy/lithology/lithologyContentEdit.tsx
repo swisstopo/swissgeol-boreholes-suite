@@ -454,7 +454,7 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   ) => (
     <StratigraphyTableActionCell
       key={`${keyPrefix}-${index}-${layer.fromDepth}-${layer.id}`}
-      dataCy={`${keyPrefix}-${index}-${layer.fromDepth}-${layer.toDepth}`}
+      dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.toDepth}`}
       sx={{
         height: `${computeCellHeight(layer.fromDepth, layer.toDepth, depths)}px`,
       }}
