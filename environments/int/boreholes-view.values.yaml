@@ -4,3 +4,4 @@ app:
   domain: int-view-boreholes.swissgeol.ch
 auth:
   basicAuthEnabled: true
+  anonymousModeEnabled: true
