@@ -2,3 +2,5 @@
 # Applied on top of boreholes.values.yaml.
 app:
   domain: int-view-boreholes.swissgeol.ch
+auth:
+  basicAuthEnabled: true
