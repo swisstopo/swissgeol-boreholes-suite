@@ -16,11 +16,18 @@ import {
   StratigraphyTableCell,
   StratigraphyTableColumn,
   StratigraphyTableContent,
+  StratigraphyTableDescriptionGap,
   StratigraphyTableGap,
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "../stratigraphyTableComponents.tsx";
-import { BaseLayerChangeTracker, getLayerDepths, getLayersWithGaps } from "../stratigraphyUtils.ts";
+import {
+  BaseLayerChangeTracker,
+  computeCellHeight,
+  defaultRowHeight,
+  getLayerDepths,
+  getLayersWithGaps,
+} from "../stratigraphyUtils.ts";
 import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 import { FaciesDescriptionModal } from "./form/faciesDescriptionModal.tsx";
 import { LithologicalDescriptionModal } from "./form/lithologicalDescriptionModal.tsx";
@@ -106,18 +113,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     if (selectedFaciesDescriptionIndex === undefined) return undefined;
     return tmpFaciesDescriptionsFlat.at(selectedFaciesDescriptionIndex);
   }, [selectedFaciesDescriptionIndex, tmpFaciesDescriptionsFlat]);
-
-  const defaultRowHeight = 240;
-
-  const computeCellHeight = useCallback(
-    (fromDepth: number, toDepth: number) => {
-      const startIndex = depths.findIndex(l => l.fromDepth === fromDepth);
-      const endIndex = depths.findIndex(l => l.toDepth === toDepth);
-      if (startIndex === -1 || endIndex === -1) return defaultRowHeight;
-      return (endIndex - startIndex + 1) * defaultRowHeight;
-    },
-    [depths],
-  );
 
   const updateStratigraphyItem = useCallback(
     (
@@ -239,15 +234,13 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       if (!layer || !tmpLithologiesFlat) return [];
       let allPossibleDepths: number[] = [tmpLithologiesFlat[0].fromDepth, ...tmpLithologiesFlat.map(c => c.toDepth)];
       const layerIndex = layers.findIndex(l => l.fromDepth === layer.fromDepth && l.toDepth === layer.toDepth);
-      let previousLayer = layers[layerIndex - 1] ?? null;
-      let nextLayer = layers[layerIndex + 1] ?? null;
-      // Ignore gap layers when restricting depth options
-      if (previousLayer?.isGap) {
-        previousLayer = layers[layerIndex - 2] ?? null;
-      }
-      if (nextLayer?.isGap) {
-        nextLayer = layers[layerIndex + 2] ?? null;
-      }
+      // Walk past any gap layers when restricting depth options (description columns can have multiple consecutive gaps)
+      let previousIndex = layerIndex - 1;
+      while (layers[previousIndex]?.isGap) previousIndex--;
+      let nextIndex = layerIndex + 1;
+      while (layers[nextIndex]?.isGap) nextIndex++;
+      const previousLayer = layers[previousIndex] ?? null;
+      const nextLayer = layers[nextIndex] ?? null;
 
       allPossibleDepths = previousLayer ? allPossibleDepths.filter(d => d >= previousLayer.toDepth) : allPossibleDepths;
       allPossibleDepths = nextLayer ? allPossibleDepths.filter(d => d <= nextLayer.fromDepth) : allPossibleDepths;
@@ -283,7 +276,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       lithologicalDescriptions.map(layer => ({ item: layer, hasChanges: false })),
       initDepths,
       stratigraphyId,
-      true,
     );
     setTmpLithologicalDescriptions(tmpLithologicalDescriptions);
 
@@ -291,7 +283,6 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
       faciesDescriptions.map(layer => ({ item: layer, hasChanges: false })),
       initDepths,
       stratigraphyId,
-      true,
     );
     setTmpFaciesDescriptions(tmpFaciesDescriptions);
     setDepths(initDepths);
@@ -318,13 +309,12 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
         tmpLithologicalDescriptions,
         updatedDepths,
         stratigraphyId,
-        true,
       );
       if (JSON.stringify(newTmpLithologicalDescriptions) !== JSON.stringify(tmpLithologicalDescriptions)) {
         setTmpLithologicalDescriptions(newTmpLithologicalDescriptions);
       }
 
-      const newTmpFaciesDescriptions = getLayersWithGaps(tmpFaciesDescriptions, updatedDepths, stratigraphyId, true);
+      const newTmpFaciesDescriptions = getLayersWithGaps(tmpFaciesDescriptions, updatedDepths, stratigraphyId);
       if (JSON.stringify(newTmpFaciesDescriptions) !== JSON.stringify(tmpFaciesDescriptions)) {
         setTmpFaciesDescriptions(newTmpFaciesDescriptions);
       }
@@ -438,16 +428,15 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     index: number,
     layer: BaseLayer,
     keyPrefix: string,
-    defaultRowHeight: number,
-    computeCellHeight: ((fromDepth: number, toDepth: number) => number) | null,
     onEdit: (index: number) => void,
+    GapComponent: typeof StratigraphyTableGap,
   ) => {
     return (
-      <StratigraphyTableGap
-        key={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
+      <GapComponent
+        key={`${keyPrefix}-${index}-${layer.fromDepth}-${layer.id}`}
         dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
         sx={{
-          height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
+          height: `${computeCellHeight(layer.fromDepth, layer.toDepth, depths)}px`,
         }}
         index={index}
         onClick={onEdit}
@@ -459,17 +448,15 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
     index: number,
     layer: BaseLayer,
     keyPrefix: string,
-    defaultRowHeight: number,
-    computeCellHeight: ((fromDepth: number, toDepth: number) => number) | null,
     onEdit: (index: number) => void,
     onDelete: (index: number) => void,
     buildContent: (layer: BaseLayer) => ReactNode,
   ) => (
     <StratigraphyTableActionCell
-      key={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
+      key={`${keyPrefix}-${index}-${layer.fromDepth}-${layer.id}`}
       dataCy={`${keyPrefix}-${index}`}
       sx={{
-        height: `${computeCellHeight ? computeCellHeight(layer.fromDepth, layer.toDepth) : defaultRowHeight}px`,
+        height: `${computeCellHeight(layer.fromDepth, layer.toDepth, depths)}px`,
       }}
       index={index}
       layer={layer}
@@ -485,12 +472,11 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
 
   const renderTableCells = (
     layers: BaseLayer[],
-    defaultRowHeight: number,
-    computeCellHeight: ((fromDepth: number, toDepth: number) => number) | null,
     onEdit: (index: number) => void,
     onDelete: (index: number) => void,
     buildContent: (layer: BaseLayer) => ReactNode,
     keyPrefix: string,
+    GapComponent: typeof StratigraphyTableGap,
   ) => {
     return layers.map((layer, index) => {
       if (layer.isGap) {
@@ -499,18 +485,9 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
         if (isLithology(layer)) {
           gapLayer.isUnconsolidated = (layers.at(index - 1) as Lithology)?.isUnconsolidated ?? true;
         }
-        return renderGapCell(index, gapLayer, keyPrefix, defaultRowHeight, computeCellHeight, onEdit);
+        return renderGapCell(index, gapLayer, keyPrefix, onEdit, GapComponent);
       }
-      return renderActionCell(
-        index,
-        layer,
-        keyPrefix,
-        defaultRowHeight,
-        computeCellHeight,
-        onEdit,
-        onDelete,
-        buildContent,
-      );
+      return renderActionCell(index, layer, keyPrefix, onEdit, onDelete, buildContent);
     });
   };
 
@@ -545,21 +522,18 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
               <StratigraphyTableColumn>
                 {renderTableCells(
                   tmpLithologiesFlat,
-                  defaultRowHeight,
-                  computeCellHeight,
                   handleEditLithology,
                   handleDeleteLithology,
                   layer => (
                     <LithologyLabels lithology={layer as Lithology} />
                   ),
                   "lithology",
+                  StratigraphyTableGap,
                 )}
               </StratigraphyTableColumn>
               <StratigraphyTableColumn>
                 {renderTableCells(
                   tmpLithologicalDescriptionsFlat,
-                  defaultRowHeight,
-                  computeCellHeight,
                   handleEditLithologicalDescription,
                   handleDeleteLithologicalDescription,
                   layer => (
@@ -568,19 +542,19 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
                     </Typography>
                   ),
                   `lithologicalDescription`,
+                  StratigraphyTableDescriptionGap,
                 )}
               </StratigraphyTableColumn>
               <StratigraphyTableColumn>
                 {renderTableCells(
                   tmpFaciesDescriptionsFlat,
-                  defaultRowHeight,
-                  computeCellHeight,
                   handleEditFaciesDescription,
                   handleDeleteFaciesDescription,
                   layer => (
                     <FaciesDescriptionLabels description={layer as FaciesDescription} />
                   ),
                   `faciesDescription`,
+                  StratigraphyTableDescriptionGap,
                 )}
               </StratigraphyTableColumn>
             </StratigraphyTableContent>

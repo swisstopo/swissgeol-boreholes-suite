@@ -3,6 +3,15 @@ import { FaciesDescription } from "./faciesDescription.ts";
 import { LithologicalDescription } from "./lithologicalDescription.ts";
 import { LayerDepth, Lithology } from "./lithology.ts";
 
+export const defaultRowHeight = 240;
+
+export const computeCellHeight = (fromDepth: number, toDepth: number, depths: LayerDepth[]) => {
+  const startIndex = depths.findIndex(l => l.fromDepth === fromDepth);
+  const endIndex = depths.findIndex(l => l.toDepth === toDepth);
+  if (startIndex === -1 || endIndex === -1) return defaultRowHeight;
+  return (endIndex - startIndex + 1) * defaultRowHeight;
+};
+
 const createGapLayerDepth = (fromDepth: number, toDepth: number): LayerDepth => ({
   fromDepth,
   toDepth,
@@ -261,24 +270,10 @@ const checkForEndGaps = (layers: BaseLayerChangeTracker[], depths: LayerDepth[])
   return gapLayers;
 };
 
-const mergeAdjacentGaps = (layers: BaseLayerChangeTracker[]): BaseLayerChangeTracker[] => {
-  const mergedLayers: BaseLayerChangeTracker[] = [];
-  for (const current of layers) {
-    const prev = mergedLayers.at(-1);
-    if (prev?.item.isGap && current.item.isGap && mergedLayers.at(-1)?.item.toDepth === current.item.fromDepth) {
-      prev.item.toDepth = current.item.toDepth;
-    } else {
-      mergedLayers.push(current);
-    }
-  }
-  return mergedLayers;
-};
-
 export const getLayersWithGaps = (
   layers: BaseLayerChangeTracker[],
   depths: LayerDepth[],
   stratigraphyId: number,
-  mergeGaps?: boolean,
 ): BaseLayerChangeTracker[] => {
   const sortedLayers = [...layers].filter(l => !l.item.isGap).sort((a, b) => a.item.fromDepth - b.item.fromDepth);
   const resultLayers: BaseLayerChangeTracker[] = [];
@@ -311,11 +306,7 @@ export const getLayersWithGaps = (
     resultLayers.push(...checkForEndGaps(sortedLayers, depths));
   }
 
-  if (mergeGaps) {
-    return mergeAdjacentGaps(resultLayers);
-  } else {
-    return resultLayers;
-  }
+  return resultLayers;
 };
 
 export interface BaseLayerChangeTracker {

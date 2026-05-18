@@ -8,10 +8,11 @@ import {
   StratigraphyTableCell,
   StratigraphyTableColumn,
   StratigraphyTableContent,
-  StratigraphyTableGap,
+  StratigraphyTableDescriptionGap,
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "../stratigraphyTableComponents.tsx";
+import { defaultRowHeight } from "../stratigraphyUtils.ts";
 
 interface ExtractedStratigraphyTableProps {
   lithologicalDescriptions: BaseLayer[];
@@ -19,15 +20,16 @@ interface ExtractedStratigraphyTableProps {
 
 export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = ({ lithologicalDescriptions }) => {
   const { t } = useTranslation();
-  const defaultRowHeight = 240;
 
   const renderTableCells = (layers: BaseLayer[], buildContent: (layer: BaseLayer) => ReactNode, keyPrefix: string) => {
     if (!layers || layers.length === 0) {
-      return <StratigraphyTableGap key={`${keyPrefix}-new`} sx={{ height: `${defaultRowHeight}px` }} index={-1} />;
+      return (
+        <StratigraphyTableDescriptionGap key={`${keyPrefix}-new`} sx={{ height: `${defaultRowHeight}px` }} index={-1} />
+      );
     }
     return layers.map((layer, index) =>
       layer.isGap ? (
-        <StratigraphyTableGap
+        <StratigraphyTableDescriptionGap
           index={index}
           key={`${keyPrefix}-${layer.id}-${index}`}
           sx={{
