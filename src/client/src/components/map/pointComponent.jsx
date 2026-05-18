@@ -11,10 +11,8 @@ import Modify from "ol/interaction/Modify";
 import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import { get as getProjection } from "ol/proj";
-import { register } from "ol/proj/proj4";
 import VectorSource from "ol/source/Vector";
 import XYZ from "ol/source/XYZ";
-import proj4 from "proj4";
 import PropTypes from "prop-types";
 import { getHeight } from "../../api-lib";
 import { fetchApiV2Legacy } from "../../api/fetchApiV2.ts";
@@ -23,7 +21,7 @@ import { attributions, crossOrigin, swissExtent, updateBasemap } from "../basema
 import { BasemapSelector } from "../basemapSelector/basemapSelector.tsx";
 import MapControls from "../buttons/mapControls.jsx";
 import { DataCardButtonContainer } from "../dataCard/dataCard.js";
-import { projections } from "./mapProjections.ts";
+import "./mapProjections.ts";
 import { detailMapStyleFunction } from "./mapStyleFunctions.ts";
 
 class PointComponent extends React.Component {
@@ -35,11 +33,6 @@ class PointComponent extends React.Component {
     this.detailMapStyleFunction = detailMapStyleFunction.bind(this);
     this.getAddress = this.getAddress.bind(this);
     this.srs = "EPSG:2056";
-
-    _.forEach(projections, function (proj, srs) {
-      proj4.defs(srs, proj);
-    });
-    register(proj4);
 
     this.state = {
       point: null,

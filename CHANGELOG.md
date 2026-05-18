@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Changed
+- Deleted unused Swiss coordinate reference systems.
 - Gaps in the lithological and facies description columns are now displayed as neutral cells per depth row instead of a merged warning block.
 
 ## v2.1.1631 - 2026-05-13
