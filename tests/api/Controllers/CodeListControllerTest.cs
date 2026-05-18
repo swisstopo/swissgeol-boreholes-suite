@@ -32,7 +32,7 @@ public class CodeListControllerTest
     public async Task GetAllEntriesAsync()
     {
         var codeLists = await controller.GetAsync();
-        Assert.AreEqual(3476, codeLists.Count());
+        Assert.AreEqual(3473, codeLists.Count());
     }
 
     [TestMethod]
@@ -100,6 +100,6 @@ public class CodeListControllerTest
         var expectedHeader = "id,schema,code,text_en,text_de,text_fr,text_it,text_ro";
 
         Assert.AreEqual(expectedHeader, response.Content.Split('\n')[0]);
-        Assert.AreEqual(3478, response.Content.Split('\n').Length);
+        Assert.AreEqual(3475, response.Content.Split('\n').Length);
     }
 }

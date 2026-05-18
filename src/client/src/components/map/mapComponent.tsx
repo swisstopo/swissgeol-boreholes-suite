@@ -16,11 +16,9 @@ import TileLayer from "ol/layer/Tile";
 import VectorLayer from "ol/layer/Vector";
 import Overlay from "ol/Overlay";
 import { get as getProjection } from "ol/proj";
-import { register } from "ol/proj/proj4";
 import { Cluster } from "ol/source";
 import VectorSource from "ol/source/Vector";
 import { StyleFunction } from "ol/style/Style";
-import proj4 from "proj4";
 import { theme } from "../../AppTheme";
 import { SessionKeys } from "../../pages/overview/SessionKey";
 import { BasemapContext } from "../basemapSelector/basemapContext";
@@ -37,14 +35,8 @@ import {
   MapComponentProps,
   SRS,
 } from "./map.ts";
-import { projections } from "./mapProjections";
+import "./mapProjections";
 import { clusterStyleFunction, drawStyle, styleFunction } from "./mapStyleFunctions";
-
-// Register Swiss coordinate projections once at module level.
-Object.entries(projections).forEach(([srs, proj]) => {
-  proj4.defs(srs, proj);
-});
-register(proj4);
 
 export const MapComponent: FC<MapComponentProps> = ({
   geoJson,

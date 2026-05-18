@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### Changed
+- Deleted unused Swiss coordinate reference systems.
 - Unified database column names for users, stratigraphy and codelist.
 
 ## v2.1.1631 - 2026-05-13
