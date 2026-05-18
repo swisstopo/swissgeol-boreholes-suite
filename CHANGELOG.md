@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- Deleted unused Swiss coordinate reference systems.
+
 ## v2.1.1631 - 2026-05-13
 
 ### Added
