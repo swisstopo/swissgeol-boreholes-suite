@@ -169,7 +169,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s total depth.
     /// </summary>
     [IncludeInExport]
-    [Column("total_depth")]
+    [Column("depth_total")]
     public double? TotalDepth { get; set; }
 
     /// <summary>
