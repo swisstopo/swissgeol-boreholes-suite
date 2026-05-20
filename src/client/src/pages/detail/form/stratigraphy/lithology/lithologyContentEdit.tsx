@@ -454,12 +454,11 @@ export const LithologyContentEdit: FC<LithologyContentEditProps> = ({
   ) => (
     <StratigraphyTableActionCell
       key={`${keyPrefix}-${index}-${layer.fromDepth}-${layer.id}`}
-      dataCy={`${keyPrefix}-${index}`}
+      dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.toDepth}`}
       sx={{
         height: `${computeCellHeight(layer.fromDepth, layer.toDepth, depths)}px`,
       }}
       index={index}
-      layer={layer}
       onClick={onEdit}
       onHoverClick={index => onDelete(index)}>
       {buildContent(layer)}
