@@ -279,7 +279,7 @@ namespace BDMS.Migrations
 
                     b.Property<double?>("TotalDepth")
                         .HasColumnType("double precision")
-                        .HasColumnName("depth_total");
+                        .HasColumnName("total_depth");
 
                     b.Property<int?>("TypeId")
                         .HasColumnType("integer")
