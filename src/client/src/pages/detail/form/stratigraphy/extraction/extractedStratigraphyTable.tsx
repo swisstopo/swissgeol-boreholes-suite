@@ -40,11 +40,10 @@ export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = (
         <StratigraphyTableActionCell
           index={index}
           key={`${keyPrefix}-${layer.id}-${index}`}
-          dataCy={`${keyPrefix}-${index}`}
+          dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.toDepth}`}
           sx={{
             height: `${defaultRowHeight}px`,
-          }}
-          layer={layer}>
+          }}>
           {buildContent(layer)}
         </StratigraphyTableActionCell>
       ),

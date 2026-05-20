@@ -83,12 +83,11 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
   ) => (
     <StratigraphyTableActionCell
       key={`${keyPrefix}-${layer.id}`}
-      dataCy={`${keyPrefix}-${index}`}
+      dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.toDepth}`}
       sx={{
         height: `${computeCellHeight(layer.fromDepth, layer.toDepth, depths)}px`,
       }}
-      index={index}
-      layer={layer}>
+      index={index}>
       {buildContent(layer)}
     </StratigraphyTableActionCell>
   );
