@@ -21,7 +21,7 @@ const layerSelector = ({ layerType, fromDepth, toDepth, isGap }: LayerInput) => 
   if (isGap) {
     return `[data-cy="${layerType}-${fromDepth}-0-gap"]`;
   }
-  return `[data-cy^="${layerType}-"]:not([data-cy$="-gap"]):contains("${formatWithThousandsSeparator(fromDepth)} m MD"):contains("${formatWithThousandsSeparator(toDepth!)} m MD")`;
+  return `[data-cy="${layerType}-${fromDepth}-${toDepth}"]`;
 };
 
 export enum LayerType {
@@ -51,6 +51,14 @@ export const hasLayer = ({ layerType, fromDepth, toDepth, isGap, exists = true }
   } else {
     cy.get("body").find(selector).should("not.exist");
   }
+};
+
+export const hasGapsAt = (layerType: LayerType, fromDepths: number[]) => {
+  fromDepths.forEach(fromDepth => hasLayer({ layerType, fromDepth, isGap: true }));
+};
+
+export const hasLayersAt = (layerType: LayerType, depths: [number, number][]) => {
+  depths.forEach(([fromDepth, toDepth]) => hasLayer({ layerType, fromDepth, toDepth }));
 };
 
 export const deleteLayer = ({ layerType, fromDepth, toDepth }: LayerInput) => {
