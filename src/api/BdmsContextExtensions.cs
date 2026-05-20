@@ -166,7 +166,7 @@ public static class BdmsContextExtensions
            .RuleFor(o => o.LocationY, f => { if (borehole_ids % 10 < 5) return f.Random.Int(1066750, 1310750).OrNull(f, .1f); else return f.Random.Double(1066750, 1310750).OrNull(f, .1f); })
            .RuleFor(o => o.LocationXLV03, f => { if (borehole_ids % 10 < 5) return f.Random.Int(477750, 830750).OrNull(f, .1f); else return f.Random.Double(477750, 830750).OrNull(f, .1f); })
            .RuleFor(o => o.LocationYLV03, f => { if (borehole_ids % 10 < 5) return f.Random.Int(66750, 310750).OrNull(f, .1f); else return f.Random.Double(66750, 310750).OrNull(f, .1f); })
-           .RuleFor(o => o.OriginalReferenceSystemId, f => f.PickRandom((int)ReferenceSystem.LV95, (int)ReferenceSystem.LV03))
+           .RuleFor(o => o.OriginalReferenceSystemId, f => f.PickRandom(SpatialReferenceCodelistId.LV95, SpatialReferenceCodelistId.LV03))
            .RuleFor(o => o.OriginalReferenceSystem, _ => default!)
            .RuleFor(o => o.ElevationZ, f => f.Random.Double(0, 4500))
            .RuleFor(o => o.TypeId, f => f.PickRandom(kindIds).OrNull(f, .6f))
@@ -216,7 +216,7 @@ public static class BdmsContextExtensions
                if (b.LocationX.HasValue && b.LocationY.HasValue)
                {
                    var point = new Point(b.LocationX.Value, b.LocationY.Value);
-                   point.SRID = SpatialReferenceConstants.SridLv95;
+                   point.SRID = SpatialReferenceIdentifier.LV95;
                    return point;
                }
 

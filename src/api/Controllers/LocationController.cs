@@ -20,6 +20,6 @@ public class LocationController(LocationService locationService) : ControllerBas
     /// <returns>The <see cref="LocationInfo"/> corresponding to the supplied coordinates.</returns>
     [HttpGet("identify")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public Task<LocationInfo> IdentifyAsync([Required] double east, [Required] double north, int srid = SpatialReferenceConstants.SridLv95)
+    public Task<LocationInfo> IdentifyAsync([Required] double east, [Required] double north, int srid = SpatialReferenceIdentifier.LV95)
         => locationService.IdentifyAsync(east, north, srid);
 }

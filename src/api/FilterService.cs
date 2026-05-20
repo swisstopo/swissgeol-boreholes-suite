@@ -646,7 +646,7 @@ public class FilterService : IFilterService
         {
             if (borehole.LocationX.HasValue && borehole.LocationY.HasValue)
             {
-                var point = new Point(borehole.LocationX.Value, borehole.LocationY.Value) { SRID = SpatialReferenceConstants.SridLv95 };
+                var point = new Point(borehole.LocationX.Value, borehole.LocationY.Value) { SRID = SpatialReferenceIdentifier.LV95 };
                 var attributes = new AttributesTable
                 {
                     // Include selected attributes needed for map display and popups.

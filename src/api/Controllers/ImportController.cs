@@ -112,7 +112,7 @@ public class ImportController : ControllerBase
                 {
                     if (boreholeImport.Location_x >= 2_000_000)
                     {
-                        borehole.OriginalReferenceSystemId = (int)ReferenceSystem.LV95;
+                        borehole.OriginalReferenceSystemId = SpatialReferenceCodelistId.LV95;
                         borehole.LocationX = boreholeImport.Location_x;
                         borehole.LocationY = boreholeImport.Location_y;
                         borehole.PrecisionLocationXLV03 = Math.Max(borehole.PrecisionLocationX ?? 0, borehole.PrecisionLocationY ?? 0);
@@ -120,7 +120,7 @@ public class ImportController : ControllerBase
                     }
                     else
                     {
-                        borehole.OriginalReferenceSystemId = (int)ReferenceSystem.LV03;
+                        borehole.OriginalReferenceSystemId = SpatialReferenceCodelistId.LV03;
                         borehole.LocationXLV03 = boreholeImport.Location_x;
                         borehole.LocationYLV03 = boreholeImport.Location_y;
                         borehole.PrecisionLocationX = Math.Max(borehole.PrecisionLocationXLV03 ?? 0, borehole.PrecisionLocationYLV03 ?? 0);
@@ -496,9 +496,9 @@ public class ImportController : ControllerBase
     private async Task UpdateBoreholeLocationAndCoordinates(Borehole borehole)
     {
         // Use origin spatial reference system
-        var locationX = borehole.OriginalReferenceSystemId == (int)ReferenceSystem.LV95 ? borehole.LocationX : borehole.LocationXLV03;
-        var locationY = borehole.OriginalReferenceSystemId == (int)ReferenceSystem.LV95 ? borehole.LocationY : borehole.LocationYLV03;
-        var srid = borehole.OriginalReferenceSystemId == (int)ReferenceSystem.LV95 ? SpatialReferenceConstants.SridLv95 : SpatialReferenceConstants.SridLv03;
+        var locationX = borehole.OriginalReferenceSystemId == SpatialReferenceCodelistId.LV95 ? borehole.LocationX : borehole.LocationXLV03;
+        var locationY = borehole.OriginalReferenceSystemId == SpatialReferenceCodelistId.LV95 ? borehole.LocationY : borehole.LocationYLV03;
+        var srid = SpatialReferenceIdentifier.GetByCodelistId(borehole.OriginalReferenceSystemId);
 
         if (locationX == null || locationY == null) return;
 

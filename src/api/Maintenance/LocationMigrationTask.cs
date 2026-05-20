@@ -14,9 +14,9 @@ public sealed class LocationMigrationTask : MigrationTaskBase<LocationService>
     /// <inheritdoc/>
     protected override async Task<bool> ProcessBoreholeAsync(LocationService service, Borehole borehole, MaintenanceTaskParameters parameters, CancellationToken cancellationToken)
     {
-        var locationX = borehole.OriginalReferenceSystemId == (int)ReferenceSystem.LV95 ? borehole.LocationX : borehole.LocationXLV03;
-        var locationY = borehole.OriginalReferenceSystemId == (int)ReferenceSystem.LV95 ? borehole.LocationY : borehole.LocationYLV03;
-        var srid = borehole.OriginalReferenceSystemId == (int)ReferenceSystem.LV95 ? SpatialReferenceConstants.SridLv95 : SpatialReferenceConstants.SridLv03;
+        var locationX = borehole.OriginalReferenceSystemId == SpatialReferenceCodelistId.LV95 ? borehole.LocationX : borehole.LocationXLV03;
+        var locationY = borehole.OriginalReferenceSystemId == SpatialReferenceCodelistId.LV95 ? borehole.LocationY : borehole.LocationYLV03;
+        var srid = SpatialReferenceIdentifier.GetByCodelistId(borehole.OriginalReferenceSystemId);
 
         if (locationX == null || locationY == null) return false;
 
