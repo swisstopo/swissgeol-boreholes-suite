@@ -151,7 +151,7 @@ public static class BoreholeExtensions
         };
 
         // Set the geometry's SRID to LV95 (EPSG:2056)
-        if (borehole.Geometry != null) borehole.Geometry.SRID = SpatialReferenceConstants.SridLv95;
+        if (borehole.Geometry != null) borehole.Geometry.SRID = SpatialReferenceIdentifier.LV95;
 
         foreach (var stratigraphy in borehole.Stratigraphies ?? [])
         {

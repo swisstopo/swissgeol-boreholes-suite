@@ -51,7 +51,8 @@ export interface BoreholeV2 {
   boreholeCodelists: BasicIdentifier[];
   workgroupId: number;
   workgroup: Workgroup;
-  originalReferenceSystem: ReferenceSystemCode;
+  originalReferenceSystemId: ReferenceSystemCode;
+  originalReferenceSystem: Codelist | null;
   precisionLocationYLV03: number;
   precisionLocationXLV03: number;
   precisionLocationY: number;
@@ -117,7 +118,7 @@ export const importBoreholesZip = async (workgroupId: number | null, combinedFor
 const createBorehole = async (workgroupId: number): Promise<BoreholeV2> => {
   return await fetchApiV2WithApiError<BoreholeV2>(`borehole`, "POST", {
     workgroupId,
-    originalReferenceSystem: referenceSystems.LV95.code,
+    originalReferenceSystemId: referenceSystems.LV95.code,
     hrsId: defaultHrsId,
   });
 };
