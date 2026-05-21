@@ -18,6 +18,8 @@ import {
   DepthLayer,
   flagErrors,
   getInitialDepthLayers,
+  mergeAdjacentDepths,
+  removeDepthIdReferences,
 } from "./lithologyTableUtils.ts";
 import {
   LayerAddButton,
@@ -146,6 +148,52 @@ export const LithologyTable: FC<LithologyTableProps> = ({
     setTmpLithologies(newLithologies);
     markAsChanged(true);
   }, [depths, tmpLithologies, stratigraphyId, markAsChanged]);
+
+  // Delete a description and merge any depth layers it referenced whose exact range is no
+  // longer matched by any remaining item. The previous adjacent depth layer absorbs the
+  // candidate (its toDepth is extended). Depth-layer ids on the survivors stay put; items
+  // just have the absorbed-layer ids dropped from their depthIds.
+  const handleDeleteDescription = useCallback(
+    (kind: "lithological" | "facies", index: number) => {
+      const list = kind === "lithological" ? tmpLithologicalDescriptions : tmpFaciesDescriptions;
+      if (index < 0 || index >= list.length) return;
+      const deletedItem = list[index];
+      const trimmed = [...list.slice(0, index), ...list.slice(index + 1)];
+      const newLithologicalDescriptions = kind === "lithological" ? trimmed : tmpLithologicalDescriptions;
+      const newFaciesDescriptions = kind === "facies" ? trimmed : tmpFaciesDescriptions;
+
+      // Exact (fromDepth-toDepth) ranges still claimed by some remaining item.
+      const ownedRanges = new Set<string>();
+      for (const items of [tmpLithologies, newLithologicalDescriptions, newFaciesDescriptions] as BaseLayer[][]) {
+        for (const item of items) {
+          ownedRanges.add(`${item.fromDepth}-${item.toDepth}`);
+        }
+      }
+
+      // Merge candidates: depth layers the deleted item referenced whose range is no longer
+      // owned (no remaining item has matching fromDepth+toDepth).
+      const candidates = new Set<string>();
+      for (const id of deletedItem.depthIds ?? []) {
+        const depth = depths.find(d => d.id === id);
+        if (depth && !ownedRanges.has(`${depth.fromDepth}-${depth.toDepth}`)) {
+          candidates.add(id);
+        }
+      }
+
+      const { depths: mergedDepths, mergedIds } = mergeAdjacentDepths(depths, candidates);
+
+      const updatedLithologies = removeDepthIdReferences(tmpLithologies, mergedIds);
+      const updatedLithologicalDescriptions = removeDepthIdReferences(newLithologicalDescriptions, mergedIds);
+      const updatedFaciesDescriptions = removeDepthIdReferences(newFaciesDescriptions, mergedIds);
+
+      setDepths(flagErrors(mergedDepths, updatedLithologies));
+      setTmpLithologies(updatedLithologies);
+      setTmpLithologicalDescriptions(updatedLithologicalDescriptions);
+      setTmpFaciesDescriptions(updatedFaciesDescriptions);
+      markAsChanged(true);
+    },
+    [depths, tmpLithologies, tmpLithologicalDescriptions, tmpFaciesDescriptions, markAsChanged],
+  );
 
   const renderGapCell = (index: number, keyPrefix: string, layer: BaseLayer, onEdit: (index: number) => void) => {
     return (
@@ -325,7 +373,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({
                   </Typography>
                 ),
                 index => console.log(`edit lithologicalDescription ${index}`),
-                index => console.log(`delete lithologicalDescription ${index}`),
+                index => handleDeleteDescription("lithological", index),
               )}
             </StratigraphyTableColumn>
             <StratigraphyTableColumn>
@@ -336,7 +384,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({
                   <FaciesDescriptionLabels description={layer as FaciesDescription} />
                 ),
                 index => console.log(`edit faciesDescription ${index}`),
-                index => console.log(`delete faciesDescription ${index}`),
+                index => handleDeleteDescription("facies", index),
               )}
             </StratigraphyTableColumn>
           </StratigraphyTableContent>

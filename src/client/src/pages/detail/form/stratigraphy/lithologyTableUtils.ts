@@ -133,6 +133,38 @@ const assignDepthIds = <T extends BaseLayer>(items: T[], depthLayers: DepthLayer
   }
 };
 
+// Walk the depth layers and absorb each candidate into the immediately previous adjacent
+// layer (extends the previous layer's toDepth and reports the absorbed id). The previous
+// layer keeps its id — no depth-layer id is ever changed, only redundant ones are dropped.
+// If a candidate has no adjacent previous (e.g. it's first, or there's a gap), it stays
+// in place.
+export const mergeAdjacentDepths = (
+  depths: DepthLayer[],
+  candidates: Set<string>,
+): { depths: DepthLayer[]; mergedIds: Set<string> } => {
+  const result: DepthLayer[] = [];
+  const mergedIds = new Set<string>();
+  for (const depth of depths) {
+    const prev = result[result.length - 1];
+    if (candidates.has(depth.id) && prev && prev.toDepth === depth.fromDepth) {
+      result[result.length - 1] = { ...prev, toDepth: depth.toDepth };
+      mergedIds.add(depth.id);
+    } else {
+      result.push({ ...depth });
+    }
+  }
+  return { depths: result, mergedIds };
+};
+
+// Strip removed-layer ids out of every item's depthIds.
+export const removeDepthIdReferences = <T extends BaseLayer>(items: T[], removedIds: Set<string>): T[] => {
+  if (removedIds.size === 0) return items;
+  return items.map(item => {
+    if (!item.depthIds?.some(id => removedIds.has(id))) return item;
+    return { ...item, depthIds: item.depthIds.filter(id => !removedIds.has(id)) };
+  });
+};
+
 // Recompute error flags on every depth layer from scratch (zero-thickness layers and any
 // layer belonging to a lithology that spans more than one). Returns a new array so callers
 // can safely use the result in setState.
