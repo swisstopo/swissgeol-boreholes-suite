@@ -1,4 +1,4 @@
-import { FC, ReactNode, useCallback, useContext, useEffect, useState } from "react";
+import { FC, ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { v4 as uuidv4 } from "uuid";
@@ -53,15 +53,61 @@ export const LithologyTable: FC<LithologyTableProps> = ({
   const [tmpLithologicalDescriptions, setTmpLithologicalDescriptions] = useState<LithologicalDescription[]>([]);
   const [tmpFaciesDescriptions, setTmpFaciesDescriptions] = useState<FaciesDescription[]>([]);
 
+  const baselineRef = useRef({
+    lithologies: "[]",
+    lithologicalDescriptions: "[]",
+    faciesDescriptions: "[]",
+  });
+
   useEffect(() => {
     const { cleanDepths, cleanLithologies, cleanLithologicalDescriptions, cleanFaciesDescriptions } =
       getInitialDepthLayers(lithologies, lithologicalDescriptions, faciesDescriptions, stratigraphyId);
+    baselineRef.current = {
+      lithologies: JSON.stringify(cleanLithologies),
+      lithologicalDescriptions: JSON.stringify(cleanLithologicalDescriptions),
+      faciesDescriptions: JSON.stringify(cleanFaciesDescriptions),
+    };
     setDepths(cleanDepths);
     setTmpLithologies(cleanLithologies);
     setTmpLithologicalDescriptions(cleanLithologicalDescriptions);
     setTmpFaciesDescriptions(cleanFaciesDescriptions);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const commitChanges = useCallback(
+    (
+      newDepths: DepthLayer[],
+      newLithologies: Lithology[],
+      newLithologicalDescriptions: LithologicalDescription[],
+      newFaciesDescriptions: FaciesDescription[],
+    ) => {
+      const newLithologiesJson = JSON.stringify(newLithologies);
+      const newLithologicalDescriptionsJson = JSON.stringify(newLithologicalDescriptions);
+      const newFaciesDescriptionsJson = JSON.stringify(newFaciesDescriptions);
+
+      const depthsChanged = JSON.stringify(newDepths) !== JSON.stringify(depths);
+      const lithologiesChanged = newLithologiesJson !== JSON.stringify(tmpLithologies);
+      const lithologicalDescriptionsChanged =
+        newLithologicalDescriptionsJson !== JSON.stringify(tmpLithologicalDescriptions);
+      const faciesDescriptionsChanged = newFaciesDescriptionsJson !== JSON.stringify(tmpFaciesDescriptions);
+
+      if (!depthsChanged && !lithologiesChanged && !lithologicalDescriptionsChanged && !faciesDescriptionsChanged) {
+        return;
+      }
+
+      if (depthsChanged) setDepths(newDepths);
+      if (lithologiesChanged) setTmpLithologies(newLithologies);
+      if (lithologicalDescriptionsChanged) setTmpLithologicalDescriptions(newLithologicalDescriptions);
+      if (faciesDescriptionsChanged) setTmpFaciesDescriptions(newFaciesDescriptions);
+
+      const matchesBaseline =
+        newLithologiesJson === baselineRef.current.lithologies &&
+        newLithologicalDescriptionsJson === baselineRef.current.lithologicalDescriptions &&
+        newFaciesDescriptionsJson === baselineRef.current.faciesDescriptions;
+      markAsChanged(!matchesBaseline);
+    },
+    [depths, tmpLithologies, tmpLithologicalDescriptions, tmpFaciesDescriptions, markAsChanged],
+  );
 
   const updateDepthBoundaries = useCallback(
     (depthId: string, side: "from" | "to", newValue: number) => {
@@ -116,17 +162,14 @@ export const LithologyTable: FC<LithologyTableProps> = ({
       const newLithologicalDescriptions = propagate(tmpLithologicalDescriptions);
       const newFaciesDescriptions = propagate(tmpFaciesDescriptions);
 
-      // Re-flag errors so newly-created zero-thickness layers are highlighted and stale
-      // flags get cleared when an edit resolves the error.
-      setDepths(flagErrors(newDepths, newLithologies));
-
-      // TODO: Check if there are actual changes by comparing json
-      setTmpLithologies(newLithologies);
-      setTmpLithologicalDescriptions(newLithologicalDescriptions);
-      setTmpFaciesDescriptions(newFaciesDescriptions);
-      markAsChanged(true);
+      commitChanges(
+        flagErrors(newDepths, newLithologies),
+        newLithologies,
+        newLithologicalDescriptions,
+        newFaciesDescriptions,
+      );
     },
-    [depths, tmpLithologies, tmpLithologicalDescriptions, tmpFaciesDescriptions, markAsChanged],
+    [depths, tmpLithologies, tmpLithologicalDescriptions, tmpFaciesDescriptions, commitChanges],
   );
 
   const handleAddDepthLayer = useCallback(() => {
@@ -144,10 +187,13 @@ export const LithologyTable: FC<LithologyTableProps> = ({
     };
     const newDepths = [...depths, newDepthLayer];
     const newLithologies = [...tmpLithologies, newLithology];
-    setDepths(flagErrors(newDepths, newLithologies));
-    setTmpLithologies(newLithologies);
-    markAsChanged(true);
-  }, [depths, tmpLithologies, stratigraphyId, markAsChanged]);
+    commitChanges(
+      flagErrors(newDepths, newLithologies),
+      newLithologies,
+      tmpLithologicalDescriptions,
+      tmpFaciesDescriptions,
+    );
+  }, [depths, tmpLithologies, tmpLithologicalDescriptions, tmpFaciesDescriptions, stratigraphyId, commitChanges]);
 
   // Delete a description and merge any depth layers it referenced whose exact range is no
   // longer matched by any remaining item. The previous adjacent depth layer absorbs the
@@ -186,13 +232,14 @@ export const LithologyTable: FC<LithologyTableProps> = ({
       const updatedLithologicalDescriptions = removeDepthIdReferences(newLithologicalDescriptions, mergedIds);
       const updatedFaciesDescriptions = removeDepthIdReferences(newFaciesDescriptions, mergedIds);
 
-      setDepths(flagErrors(mergedDepths, updatedLithologies));
-      setTmpLithologies(updatedLithologies);
-      setTmpLithologicalDescriptions(updatedLithologicalDescriptions);
-      setTmpFaciesDescriptions(updatedFaciesDescriptions);
-      markAsChanged(true);
+      commitChanges(
+        flagErrors(mergedDepths, updatedLithologies),
+        updatedLithologies,
+        updatedLithologicalDescriptions,
+        updatedFaciesDescriptions,
+      );
     },
-    [depths, tmpLithologies, tmpLithologicalDescriptions, tmpFaciesDescriptions, markAsChanged],
+    [depths, tmpLithologies, tmpLithologicalDescriptions, tmpFaciesDescriptions, commitChanges],
   );
 
   const renderGapCell = (index: number, keyPrefix: string, layer: BaseLayer, onEdit: (index: number) => void) => {
