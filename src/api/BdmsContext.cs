@@ -434,6 +434,7 @@ public class BdmsContext : DbContext
         modelBuilder.Entity<Borehole>().HasOne(l => l.DepthPrecision).WithMany().HasForeignKey(l => l.DepthPrecisionId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.ElevationPrecision).WithMany().HasForeignKey(l => l.ElevationPrecisionId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.LocationPrecision).WithMany().HasForeignKey(l => l.LocationPrecisionId);
+        modelBuilder.Entity<Borehole>().HasOne(l => l.OriginalReferenceSystem).WithMany().HasForeignKey(l => l.OriginalReferenceSystemId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.ReferenceElevationPrecision).WithMany().HasForeignKey(l => l.ReferenceElevationPrecisionId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.ReferenceElevationType).WithMany().HasForeignKey(l => l.ReferenceElevationTypeId);
         modelBuilder.Entity<Borehole>().HasOne(l => l.Restriction).WithMany().HasForeignKey(l => l.RestrictionId);

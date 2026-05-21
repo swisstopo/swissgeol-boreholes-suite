@@ -33,8 +33,8 @@ public class CoordinateMigrationTest : MaintenanceTaskTestBase
         var lV03BoreholeWithMissingSourceCoordinates = CreateLV03BoreholeWithMissingSourceCoordinates();
 
         var boreholesWithSetSourceCoordinates = Context.Boreholes.Where(b =>
-            (b.OriginalReferenceSystem == ReferenceSystem.LV95 && b.LocationX != null && b.LocationY != null) ||
-            (b.OriginalReferenceSystem == ReferenceSystem.LV03 && b.LocationXLV03 != null && b.LocationYLV03 != null)).Count();
+            (b.OriginalReferenceSystemId == SpatialReferenceCodelistId.LV95 && b.LocationX != null && b.LocationY != null) ||
+            (b.OriginalReferenceSystemId == SpatialReferenceCodelistId.LV03 && b.LocationXLV03 != null && b.LocationYLV03 != null)).Count();
 
         Assert.AreEqual(3004, Context.Boreholes.Count());
 
@@ -65,11 +65,11 @@ public class CoordinateMigrationTest : MaintenanceTaskTestBase
         var lV03BoreholeWithMissingSourceCoordinates = CreateLV03BoreholeWithMissingSourceCoordinates();
 
         var boreholesWithMissingCoordinates = Context.Boreholes.Where(b =>
-            (b.OriginalReferenceSystem == ReferenceSystem.LV95 &&
+            (b.OriginalReferenceSystemId == SpatialReferenceCodelistId.LV95 &&
                 b.LocationX != null && b.LocationY != null &&
                 (b.LocationXLV03 == null || b.LocationYLV03 == null))
                 ||
-            (b.OriginalReferenceSystem == ReferenceSystem.LV03 &&
+            (b.OriginalReferenceSystemId == SpatialReferenceCodelistId.LV03 &&
                 b.LocationXLV03 != null && b.LocationYLV03 != null &&
                 (b.LocationX == null || b.LocationY == null)))
             .Count();
@@ -121,7 +121,7 @@ public class CoordinateMigrationTest : MaintenanceTaskTestBase
             LocationY = 1125366.3469565178,
             LocationXLV03 = 765875.1615463407,
             LocationYLV03 = 78390.10392298926,
-            OriginalReferenceSystem = ReferenceSystem.LV95,
+            OriginalReferenceSystemId = SpatialReferenceCodelistId.LV95,
             Name = "BLUEGIRAFFE",
         };
         Context.Boreholes.Add(borehole);
@@ -138,7 +138,7 @@ public class CoordinateMigrationTest : MaintenanceTaskTestBase
             LocationY = 1253325,
             LocationXLV03 = 655269,
             LocationYLV03 = 297874,
-            OriginalReferenceSystem = ReferenceSystem.LV03,
+            OriginalReferenceSystemId = SpatialReferenceCodelistId.LV03,
             Name = "MOONSCALLOP",
         };
         Context.Boreholes.Add(borehole);
@@ -155,7 +155,7 @@ public class CoordinateMigrationTest : MaintenanceTaskTestBase
             LocationY = 1099464.3374982823,
             LocationXLV03 = null,
             LocationYLV03 = 224735.18581408318,
-            OriginalReferenceSystem = ReferenceSystem.LV03,
+            OriginalReferenceSystemId = SpatialReferenceCodelistId.LV03,
             Name = "TEMPESTFLEA",
         };
         Context.Boreholes.Add(borehole);
@@ -172,7 +172,7 @@ public class CoordinateMigrationTest : MaintenanceTaskTestBase
             LocationY = 1189604.098138797,
             LocationXLV03 = 523204.9377711746,
             LocationYLV03 = null,
-            OriginalReferenceSystem = ReferenceSystem.LV95,
+            OriginalReferenceSystemId = SpatialReferenceCodelistId.LV95,
             Name = "RONINFOCUS",
         };
         Context.Boreholes.Add(borehole);
@@ -201,7 +201,7 @@ public class CoordinateMigrationTest : MaintenanceTaskTestBase
     {
         var borehole = Context.Boreholes.Single(b => b.Id == initialBorehole.Id);
         Assert.AreEqual("BLUEGIRAFFE", borehole.Name);
-        Assert.AreEqual(ReferenceSystem.LV95, borehole.OriginalReferenceSystem);
+        Assert.AreEqual(SpatialReferenceCodelistId.LV95, borehole.OriginalReferenceSystemId);
         Assert.AreEqual(2626103.1988343936, borehole.LocationX);
         Assert.AreEqual(1125366.3469565178, borehole.LocationY);
         Assert.AreEqual("POINT (2626103.1988343936 1125366.3469565178)", borehole.Geometry!.ToString());
@@ -213,7 +213,7 @@ public class CoordinateMigrationTest : MaintenanceTaskTestBase
     {
         var borehole = Context.Boreholes.Single(b => b.Id == initialBorehole.Id);
         Assert.AreEqual("MOONSCALLOP", borehole.Name);
-        Assert.AreEqual(ReferenceSystem.LV03, borehole.OriginalReferenceSystem);
+        Assert.AreEqual(SpatialReferenceCodelistId.LV03, borehole.OriginalReferenceSystemId);
         Assert.AreEqual(9877, borehole.LocationX);
         Assert.AreEqual(1235, borehole.LocationY);
         Assert.AreEqual("POINT (9877 1235)", borehole.Geometry!.ToString());
@@ -225,7 +225,7 @@ public class CoordinateMigrationTest : MaintenanceTaskTestBase
     {
         var borehole = Context.Boreholes.Single(b => b.Id == initialBorehole.Id);
         Assert.AreEqual("RONINFOCUS", borehole.Name);
-        Assert.AreEqual(ReferenceSystem.LV95, borehole.OriginalReferenceSystem);
+        Assert.AreEqual(SpatialReferenceCodelistId.LV95, borehole.OriginalReferenceSystemId);
         Assert.AreEqual(2582431.203588229, borehole.LocationX);
         Assert.AreEqual(1189604.098138797, borehole.LocationY);
         Assert.AreEqual("POINT (2582431.203588229 1189604.098138797)", borehole.Geometry!.ToString());

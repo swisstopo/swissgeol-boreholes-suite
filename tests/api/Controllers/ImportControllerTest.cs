@@ -122,7 +122,7 @@ public class ImportControllerTest
         Assert.AreEqual(4, borehole.PrecisionLocationXLV03, nameof(Borehole.PrecisionLocationXLV03));
         Assert.AreEqual(102500, borehole.LocationYLV03, nameof(Borehole.LocationYLV03));
         Assert.AreEqual(3, borehole.PrecisionLocationYLV03, nameof(Borehole.PrecisionLocationYLV03));
-        Assert.AreEqual((ReferenceSystem)20104002, borehole.OriginalReferenceSystem, nameof(Borehole.OriginalReferenceSystem));
+        Assert.AreEqual(20104002, borehole.OriginalReferenceSystemId, nameof(Borehole.OriginalReferenceSystemId));
         Assert.AreEqual(3160.6575921925983, borehole.ElevationZ, nameof(Borehole.ElevationZ));
         Assert.AreEqual(20106001, borehole.HrsId, nameof(Borehole.HrsId));
         Assert.IsNull(borehole.Hrs, nameof(Borehole.Hrs).ShouldBeNullMessage());
@@ -761,7 +761,7 @@ public class ImportControllerTest
 
         // Assert imported values
         var boreholeLV95 = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_2").ConfigureAwait(false);
-        Assert.AreEqual(ReferenceSystem.LV95, boreholeLV95.OriginalReferenceSystem);
+        Assert.AreEqual(SpatialReferenceCodelistId.LV95, boreholeLV95.OriginalReferenceSystemId);
         Assert.AreEqual(2000010.12, boreholeLV95.LocationX);
         Assert.AreEqual(1000010.1, boreholeLV95.LocationY);
         Assert.AreEqual(2, boreholeLV95.PrecisionLocationX);
@@ -770,7 +770,7 @@ public class ImportControllerTest
         Assert.AreEqual(2, boreholeLV95.PrecisionLocationYLV03);
 
         var boreholeLV03 = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_6").ConfigureAwait(false);
-        Assert.AreEqual(ReferenceSystem.LV03, boreholeLV03.OriginalReferenceSystem.Value);
+        Assert.AreEqual(SpatialReferenceCodelistId.LV03, boreholeLV03.OriginalReferenceSystemId);
         Assert.AreEqual(20050.12, boreholeLV03.LocationXLV03);
         Assert.AreEqual(10050.12345, boreholeLV03.LocationYLV03);
         Assert.AreEqual(2, boreholeLV03.PrecisionLocationXLV03);
@@ -779,7 +779,7 @@ public class ImportControllerTest
         Assert.AreEqual(5, boreholeLV03.PrecisionLocationY);
 
         var boreholeWithZeros = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "Unit_Test_7").ConfigureAwait(false);
-        Assert.AreEqual(ReferenceSystem.LV03, boreholeWithZeros.OriginalReferenceSystem.Value);
+        Assert.AreEqual(SpatialReferenceCodelistId.LV03, boreholeWithZeros.OriginalReferenceSystemId);
         Assert.AreEqual(20060.000, boreholeWithZeros.LocationXLV03);
         Assert.AreEqual(10060.0000, boreholeWithZeros.LocationYLV03);
         Assert.AreEqual(3, boreholeWithZeros.PrecisionLocationXLV03);
@@ -837,7 +837,7 @@ public class ImportControllerTest
 
         // Assert imported values
         var borehole = await context.Boreholes.SingleAsync(b => b.OriginalName != null && b.OriginalName.Contains("LV95 - All coordinates set")).ConfigureAwait(false);
-        Assert.AreEqual(ReferenceSystem.LV95, borehole.OriginalReferenceSystem);
+        Assert.AreEqual(SpatialReferenceCodelistId.LV95, borehole.OriginalReferenceSystemId);
         Assert.AreEqual(2631690, borehole.LocationX);
         Assert.AreEqual(1170516, borehole.LocationY);
         Assert.AreEqual(631690, borehole.LocationXLV03);
@@ -863,7 +863,7 @@ public class ImportControllerTest
 
         // Assert imported values
         var borehole = await context.Boreholes.SingleAsync(b => b.OriginalName != null && b.OriginalName.Contains("LV03 - All coordinates set")).ConfigureAwait(false);
-        Assert.AreEqual(ReferenceSystem.LV03, borehole.OriginalReferenceSystem);
+        Assert.AreEqual(SpatialReferenceCodelistId.LV03, borehole.OriginalReferenceSystemId);
         Assert.AreEqual(2649258.1270818082, borehole.LocationX);
         Assert.AreEqual(1131551.4611465326, borehole.LocationY);
         Assert.AreEqual(649258.36125645251, borehole.LocationXLV03);
@@ -889,7 +889,7 @@ public class ImportControllerTest
 
         // Assert imported values
         var borehole = await context.Boreholes.SingleAsync(b => b.OriginalName != null && b.OriginalName.Contains("LV03 - LV03 x out of range")).ConfigureAwait(false);
-        Assert.AreEqual(ReferenceSystem.LV03, borehole.OriginalReferenceSystem);
+        Assert.AreEqual(SpatialReferenceCodelistId.LV03, borehole.OriginalReferenceSystemId);
         Assert.AreEqual(2999999, borehole.LocationX);
         Assert.AreEqual(1, borehole.LocationY);
         Assert.AreEqual(999999, borehole.LocationXLV03);

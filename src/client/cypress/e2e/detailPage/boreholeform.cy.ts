@@ -48,13 +48,13 @@ describe("Test for the borehole form.", () => {
     cy.dataCy("save-bar").should("be.visible");
 
     // fills and evaluates all mui dropdowns on location tab
-    setSelect("originalReferenceSystem", 0);
+    setSelect("originalReferenceSystemId", 0);
     setSelect("locationPrecisionId", 2);
     setSelect("elevationPrecisionId", 2);
     setSelect("referenceElevationPrecisionId", 2);
     setSelect("referenceElevationTypeId", 4);
 
-    evaluateSelect("originalReferenceSystem", "LV95"); //20104001
+    evaluateSelect("originalReferenceSystemId", "LV95"); //20104001
     evaluateSelect("locationPrecisionId", "50"); //20113002
     evaluateSelect("elevationPrecisionId", "5"); //20114002
     evaluateSelect("referenceElevationPrecisionId", "5"); //20114002
@@ -64,7 +64,7 @@ describe("Test for the borehole form.", () => {
     // navigate away and back to check if values are saved
     navigateInSidebar(SidebarMenuItem.borehole);
     navigateInSidebar(SidebarMenuItem.location);
-    evaluateSelect("originalReferenceSystem", "LV95"); //20104001
+    evaluateSelect("originalReferenceSystemId", "LV95"); //20104001
     evaluateSelect("locationPrecisionId", "50"); //20113002
     evaluateSelect("elevationPrecisionId", "5"); //20114002
     evaluateSelect("referenceElevationPrecisionId", "5"); //20114002
@@ -264,7 +264,7 @@ describe("Test for the borehole form.", () => {
     evaluateSelect("restrictionId", "");
     evaluateYesNoSelect("nationalInterest", "no");
     navigateInSidebar(SidebarMenuItem.location);
-    evaluateSelect("originalReferenceSystem", "LV03");
+    evaluateSelect("originalReferenceSystemId", "LV03");
     evaluateSelect("locationPrecisionId", "0.1 (± DGPS / Theodolit)");
 
     evaluateInput("elevationZ", "3'519.948980314633");
@@ -282,7 +282,7 @@ describe("Test for the borehole form.", () => {
     evaluateSelect("restrictionId", "");
     evaluateYesNoSelect("nationalInterest", "yes");
     navigateInSidebar(SidebarMenuItem.location);
-    evaluateSelect("originalReferenceSystem", "LV03");
+    evaluateSelect("originalReferenceSystemId", "LV03");
     evaluateSelect("locationPrecisionId", "not specified");
     evaluateInput("elevationZ", "3'062.9991330499756");
     evaluateInput("referenceElevation", "3'478.1368118609007");
