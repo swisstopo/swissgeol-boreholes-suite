@@ -27,17 +27,17 @@ const cleanupOverlaps = <T extends BaseLayer>(items: T[]): T[] => {
   return sorted;
 };
 
-const createEmptyLithology = (
+export const createEmptyLithology = (
   fromDepth: number,
   toDepth: number,
   stratigraphyId: number,
-  inheritedUnconsolidated: boolean | null,
+  inheritedUnconsolidated?: boolean | null,
 ): Lithology => ({
   id: 0,
   stratigraphyId,
   fromDepth,
   toDepth,
-  isUnconsolidated: inheritedUnconsolidated,
+  isUnconsolidated: inheritedUnconsolidated ?? null,
   hasBedding: false,
   isAutoCorrected: true,
 });
@@ -55,10 +55,10 @@ const fillLithologyGaps = (
     const maxBoundary = Math.max(...otherBoundaries);
 
     if (result.length === 0) {
-      result.push(createEmptyLithology(minBoundary, maxBoundary, stratigraphyId, null));
+      result.push(createEmptyLithology(minBoundary, maxBoundary, stratigraphyId));
     } else {
       if (minBoundary < result[0].fromDepth) {
-        result.unshift(createEmptyLithology(minBoundary, result[0].fromDepth, stratigraphyId, null));
+        result.unshift(createEmptyLithology(minBoundary, result[0].fromDepth, stratigraphyId));
       }
       const last = result[result.length - 1];
       if (maxBoundary > last.toDepth) {

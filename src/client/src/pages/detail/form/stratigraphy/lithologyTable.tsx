@@ -1,6 +1,7 @@
 import { FC, ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
+import { v4 as uuidv4 } from "uuid";
 import { BaseLayer } from "../../../../api/stratigraphy.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { AddRowButton } from "../../../../components/buttons/buttons.tsx";
@@ -11,7 +12,13 @@ import { Lithology } from "./lithology.ts";
 import { DepthInput } from "./lithology/depthInput.tsx";
 import { FaciesDescriptionLabels } from "./lithology/faciesDescriptionLabels.tsx";
 import { LithologyLabels } from "./lithology/lithologyLabels.tsx";
-import { defaultRowHeight, DepthLayer, flagErrors, getInitialDepthLayers } from "./lithologyTableUtils.ts";
+import {
+  createEmptyLithology,
+  defaultRowHeight,
+  DepthLayer,
+  flagErrors,
+  getInitialDepthLayers,
+} from "./lithologyTableUtils.ts";
 import {
   LayerAddButton,
   StratigraphyTableActionCell,
@@ -120,6 +127,26 @@ export const LithologyTable: FC<LithologyTableProps> = ({
     [depths, tmpLithologies, tmpLithologicalDescriptions, tmpFaciesDescriptions, markAsChanged],
   );
 
+  const handleAddDepthLayer = useCallback(() => {
+    if (depths.length === 0) return;
+    const lastDepth = depths[depths.length - 1];
+    const lastLithology = tmpLithologies[tmpLithologies.length - 1];
+    const newDepthLayer: DepthLayer = {
+      id: uuidv4(),
+      fromDepth: lastDepth.toDepth,
+      toDepth: lastDepth.toDepth,
+    };
+    const newLithology: Lithology = {
+      ...createEmptyLithology(lastDepth.toDepth, lastDepth.toDepth, stratigraphyId, lastLithology?.isUnconsolidated),
+      depthIds: [newDepthLayer.id],
+    };
+    const newDepths = [...depths, newDepthLayer];
+    const newLithologies = [...tmpLithologies, newLithology];
+    setDepths(flagErrors(newDepths, newLithologies));
+    setTmpLithologies(newLithologies);
+    markAsChanged(true);
+  }, [depths, tmpLithologies, stratigraphyId, markAsChanged]);
+
   const renderGapCell = (index: number, keyPrefix: string, layer: BaseLayer, onEdit: (index: number) => void) => {
     return (
       <StratigraphyTableDescriptionGap
@@ -190,8 +217,10 @@ export const LithologyTable: FC<LithologyTableProps> = ({
       cells.push(renderActionCell(index, keyPrefix, layer, buildContent, onEdit, onDelete));
     });
 
-    // Trailing gap: depths exist after the last layer ends
-    if (lastLayer && lastDepth && lastLayer.toDepth < lastDepth.toDepth) {
+    // Trailing gap: any depth rows after the last layer that the last layer doesn't cover.
+    // Covers both the "depths extend past the last item" case and a trailing zero-thickness
+    // depth at the last item's toDepth (which the item doesn't own since the zt is at its boundary).
+    if (lastLayer && lastDepth && !lastLayer.depthIds?.includes(lastDepth.id)) {
       cells.push(renderGapCell(layers.length, keyPrefix, buildGapLayer(lastLayer.toDepth, lastDepth.toDepth), onEdit));
     }
 
@@ -294,11 +323,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({
           </StratigraphyTableContent>
         )}
       </Stack>
-      <AddRowButton
-        onClick={() => console.log("add new depth layer at the end")}
-        dataCy="add-row-button"
-        buttonContent={<LayerAddButton />}
-      />
+      <AddRowButton onClick={handleAddDepthLayer} dataCy="add-row-button" buttonContent={<LayerAddButton />} />
     </Stack>
   );
 };
