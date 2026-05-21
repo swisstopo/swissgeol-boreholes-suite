@@ -37,6 +37,8 @@ export interface BaseLayer {
   updatedBy?: User;
   isGap?: boolean;
   isUnconsolidated?: boolean | null;
+  depthIds?: string[];
+  isAutoCorrected?: boolean;
 }
 
 export interface MinimalLayer {

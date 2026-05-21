@@ -63,6 +63,7 @@ interface StratigraphyTableLayerCellProps {
   onHoverClick?: (index: number) => void;
   onClick?: (index: number) => void;
   sx?: SxProps;
+  isAutoCorrected?: boolean;
   dataCy?: string;
 }
 
@@ -72,6 +73,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
   onHoverClick,
   onClick,
   sx,
+  isAutoCorrected,
   dataCy,
 }) => {
   const stackRef = useRef<HTMLDivElement>(null);
@@ -91,9 +93,10 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
       sx={{
         position: "relative",
         justifyContent: "center",
+        backgroundColor: isAutoCorrected ? "#FFD6C0" : undefined,
         "& .hover-content": { visibility: "hidden" },
         "&:hover": {
-          backgroundColor: theme.palette.background.grey,
+          backgroundColor: isAutoCorrected ? "#FFBD99" : theme.palette.background.grey,
           cursor: "pointer",
           "& .hover-content": { visibility: "visible" },
         },
