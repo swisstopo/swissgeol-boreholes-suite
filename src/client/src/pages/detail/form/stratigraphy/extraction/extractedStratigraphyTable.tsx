@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, Typography } from "@mui/material";
+import { CircularProgress, Stack, Typography } from "@mui/material";
 import { BaseLayer } from "../../../../../api/stratigraphy.ts";
 import { LithologicalDescription } from "../lithologicalDescription.ts";
 import {
@@ -16,10 +16,22 @@ import { defaultRowHeight } from "../stratigraphyUtils.ts";
 
 interface ExtractedStratigraphyTableProps {
   lithologicalDescriptions: BaseLayer[];
+  isLoading?: boolean;
 }
 
-export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = ({ lithologicalDescriptions }) => {
+export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = ({
+  lithologicalDescriptions,
+  isLoading,
+}) => {
   const { t } = useTranslation();
+
+  if (isLoading) {
+    return (
+      <Stack sx={{ height: "100%", width: "100%" }} justifyContent="center" alignItems="center">
+        <CircularProgress />
+      </Stack>
+    );
+  }
 
   const renderTableCells = (layers: BaseLayer[], buildContent: (layer: BaseLayer) => ReactNode, keyPrefix: string) => {
     if (!layers || layers.length === 0) {
@@ -55,7 +67,7 @@ export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = (
       {!lithologicalDescriptions || lithologicalDescriptions.length === 0 ? (
         <Typography variant="body1">{t("msgNoStratigraphyExtracted")}</Typography>
       ) : (
-        <Box sx={{ height: "100%" }}>
+        <>
           <StratigraphyTableHeader sx={{ width: "100%" }}>
             <StratigraphyTableHeaderCell sx={{ flex: "0 0 90px" }} label={t("depth")} />
             <StratigraphyTableHeaderCell label={t("lithological_description")} />
@@ -81,7 +93,7 @@ export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = (
               )}
             </StratigraphyTableColumn>
           </StratigraphyTableContent>
-        </Box>
+        </>
       )}
     </>
   );
