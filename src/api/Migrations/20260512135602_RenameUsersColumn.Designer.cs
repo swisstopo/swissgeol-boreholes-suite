@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20260512135602_RenameUsersColumn")]
+    partial class RenameUsersColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -593,31 +596,31 @@ namespace BDMS.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
-                        .HasColumnName("id");
+                        .HasColumnName("id_cli");
 
                     NpgsqlPropertyBuilderExtensions.UseIdentityByDefaultColumn(b.Property<int>("Id"));
 
                     b.Property<string>("Code")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("code");
+                        .HasColumnName("code_cli");
 
                     b.Property<string>("Conf")
                         .HasColumnType("json")
-                        .HasColumnName("conf");
+                        .HasColumnName("conf_cli");
 
                     b.Property<string>("De")
                         .HasColumnType("text")
-                        .HasColumnName("text_de");
+                        .HasColumnName("text_cli_de");
 
                     b.Property<string>("En")
                         .IsRequired()
                         .HasColumnType("text")
-                        .HasColumnName("text_en");
+                        .HasColumnName("text_cli_en");
 
                     b.Property<string>("Fr")
                         .HasColumnType("text")
-                        .HasColumnName("text_fr");
+                        .HasColumnName("text_cli_fr");
 
                     b.Property<int?>("Geolcode")
                         .HasColumnType("integer")
@@ -625,27 +628,27 @@ namespace BDMS.Migrations
 
                     b.Property<bool?>("IsDefault")
                         .HasColumnType("boolean")
-                        .HasColumnName("default");
+                        .HasColumnName("default_cli");
 
                     b.Property<string>("It")
                         .HasColumnType("text")
-                        .HasColumnName("text_it");
+                        .HasColumnName("text_cli_it");
 
                     b.Property<int?>("Order")
                         .HasColumnType("integer")
-                        .HasColumnName("order");
+                        .HasColumnName("order_cli");
 
                     b.Property<string>("Path")
                         .HasColumnType("ltree")
-                        .HasColumnName("path");
+                        .HasColumnName("path_cli");
 
                     b.Property<string>("Ro")
                         .HasColumnType("text")
-                        .HasColumnName("text_ro");
+                        .HasColumnName("text_cli_ro");
 
                     b.Property<string>("Schema")
                         .HasColumnType("text")
-                        .HasColumnName("schema");
+                        .HasColumnName("schema_cli");
 
                     b.HasKey("Id");
 
@@ -1182,7 +1185,7 @@ namespace BDMS.Migrations
                         .HasColumnType("integer")
                         .HasColumnName("humidity_id");
 
-                    b.Property<bool?>("IsUnconsolidated")
+                    b.Property<bool>("IsUnconsolidated")
                         .HasColumnType("boolean")
                         .HasColumnName("unconsolidated");
 
