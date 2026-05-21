@@ -8,6 +8,7 @@
 - Unified database column names for users, stratigraphy and codelist.
 - BREAKING: codelist CSV export columns renamed
 - Reference Codelist instead of enum for OriginalReferenceSystem in borehole.
+- Lithology rock type can now be left unspecified (in addition to unconsolidated and consolidated). Stratigraphy extraction creates lithologies as unspecified by default.
 
 ## v2.1.1631 - 2026-05-13
 

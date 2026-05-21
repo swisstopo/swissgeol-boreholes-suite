@@ -393,7 +393,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     // Add consolidated lithology
     addLithology();
     isUnconsolidatedForm(true);
-    switchRockType(RockType.consolidated, "Continue");
+    switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
     evaluateInput("fromDepth", 355);
     fillConsolidatedLithologyForm({
       fromDepth: 798,
@@ -794,17 +794,17 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     evaluateCompleteUnconsolidatedLithologyForm();
 
     // Should not change form when canceling switch
-    switchRockType(RockType.consolidated, "Cancel");
+    switchRockType(RockType.unconsolidated, RockType.consolidated, "Cancel");
     evaluateCompleteUnconsolidatedLithologyForm();
 
     // Should reset form when continuing with switch
-    switchRockType(RockType.consolidated, "Continue");
+    switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
     evaluateConsolidatedLithologyFormHasOnlyDepths(0, 56);
 
-    switchRockType(RockType.unconsolidated, "Continue");
+    switchRockType(RockType.consolidated, RockType.unconsolidated, "Continue");
     evaluateUnconsolidatedLithologyFormHasOnlyDepths(0, 56);
 
-    switchRockType(RockType.consolidated, "Continue");
+    switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
     evaluateConsolidatedLithologyFormHasOnlyDepths(0, 56);
 
     fillCompleteConsolidatedLithologyForm();
@@ -815,14 +815,37 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     evaluateCompleteConsolidatedLithologyForm();
 
     // Should not change form when canceling switch
-    switchRockType(RockType.unconsolidated, "Cancel");
+    switchRockType(RockType.consolidated, RockType.unconsolidated, "Cancel");
     evaluateCompleteConsolidatedLithologyForm();
 
-    switchRockType(RockType.unconsolidated, "Continue");
+    switchRockType(RockType.consolidated, RockType.unconsolidated, "Continue");
     evaluateUnconsolidatedLithologyFormHasOnlyDepths(0, 56);
 
-    switchRockType(RockType.consolidated, "Continue");
+    switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
     evaluateConsolidatedLithologyFormHasOnlyDepths(0, 56);
+  });
+
+  it("supports the unspecified rock type", () => {
+    openNewStratigraphy();
+    addLithology();
+    isUnconsolidatedForm(true);
+
+    // Switch to unspecified hides both unconsolidated and consolidated form blocks
+    switchRockType(RockType.unconsolidated, RockType.unspecified, "Continue");
+    isUnconsolidatedForm(null);
+
+    setInput("fromDepth", 0);
+    setInput("toDepth", 25);
+    closeLayerModal();
+    saveWithSaveBar();
+
+    // Reopen and confirm unspecified state persisted
+    openLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 25 });
+    isUnconsolidatedForm(null);
+
+    // Switch from unspecified to a concrete type
+    switchRockType(RockType.unspecified, RockType.consolidated, "Continue");
+    isUnconsolidatedForm(false);
   });
 
   it("should inherit previous rock type", () => {
@@ -831,8 +854,8 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
 
     // By default, initial rock type is unconsolidated but can be switched
     isUnconsolidatedForm(true);
-    switchRockType(RockType.consolidated, "Continue");
-    switchRockType(RockType.unconsolidated, "Continue");
+    switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
+    switchRockType(RockType.consolidated, RockType.unconsolidated, "Continue");
     setInput("fromDepth", 0);
     setInput("toDepth", 10);
     closeLayerModal();
@@ -840,7 +863,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
 
     // If previous layer was unconsolidated, new layer is also unconsolidated
     isUnconsolidatedForm(true);
-    switchRockType(RockType.consolidated, "Continue");
+    switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
     setInput("toDepth", 20);
     closeLayerModal();
     addLithology();
@@ -989,7 +1012,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
 
     addLithology();
     isUnconsolidatedForm(true);
-    switchRockType(RockType.consolidated, "Continue");
+    switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
     fillConsolidatedLithologyForm({
       fromDepth: 46,
       toDepth: 78,
