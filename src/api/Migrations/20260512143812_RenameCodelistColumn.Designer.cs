@@ -3,6 +3,7 @@ using System;
 using BDMS;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using NetTopologySuite.Geometries;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
@@ -12,9 +13,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace BDMS.Migrations
 {
     [DbContext(typeof(BdmsContext))]
-    partial class BdmsContextModelSnapshot : ModelSnapshot
+    [Migration("20260512143812_RenameCodelistColumn")]
+    partial class RenameCodelistColumn
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -209,7 +212,7 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("original_name");
 
-                    b.Property<int?>("OriginalReferenceSystemId")
+                    b.Property<int?>("OriginalReferenceSystem")
                         .HasColumnType("integer")
                         .HasColumnName("srs_id");
 
@@ -316,8 +319,6 @@ namespace BDMS.Migrations
                     b.HasIndex("LocationPrecisionId");
 
                     b.HasIndex("LockedById");
-
-                    b.HasIndex("OriginalReferenceSystemId");
 
                     b.HasIndex("PurposeId");
 
@@ -2819,10 +2820,6 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("LockedById");
 
-                    b.HasOne("BDMS.Models.Codelist", "OriginalReferenceSystem")
-                        .WithMany()
-                        .HasForeignKey("OriginalReferenceSystemId");
-
                     b.HasOne("BDMS.Models.Codelist", "Purpose")
                         .WithMany()
                         .HasForeignKey("PurposeId");
@@ -2872,8 +2869,6 @@ namespace BDMS.Migrations
                     b.Navigation("LocationPrecision");
 
                     b.Navigation("LockedBy");
-
-                    b.Navigation("OriginalReferenceSystem");
 
                     b.Navigation("Purpose");
 

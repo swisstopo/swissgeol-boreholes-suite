@@ -42,7 +42,7 @@ class BaseHandler(web.RequestHandler):
                 SELECT row_to_json(t)
                 FROM (
                     SELECT
-                        id_usr as "id",
+                        id,
                         username,
                         CASE
                             WHEN (
@@ -68,11 +68,11 @@ class BaseHandler(web.RequestHandler):
                         END AS terms,
                         TRUE as viewer,
                         COALESCE(
-                            admin_usr, FALSE
+                            admin, FALSE
                         ) as admin,
                         firstname || ' ' || lastname as "name",
                         COALESCE(
-                            settings_usr::json,
+                            settings::json,
                             value::json
                         ) as setting,
                         COALESCE(
@@ -109,7 +109,7 @@ class BaseHandler(web.RequestHandler):
                         ) r
                         GROUP BY user_id
                     ) as rl
-                    ON rl.user_id = id_usr
+                    ON rl.user_id = id
 
                     LEFT JOIN (
                         SELECT
@@ -127,7 +127,7 @@ class BaseHandler(web.RequestHandler):
                             draft IS FALSE
                     ) as tr
                     ON
-                        tr.user_id = id_usr
+                        tr.user_id = id
 
                     LEFT JOIN (
                         SELECT
@@ -160,12 +160,12 @@ class BaseHandler(web.RequestHandler):
                         ) AS t
                         GROUP BY user_id
                     ) as w
-                    ON w.user_id = id_usr
+                    ON w.user_id = id
 
                     WHERE
                         subject_id = $1
                     AND
-                        disabled_usr IS NULL
+                        disabled IS NULL
                 ) as t
             """, subject_id)
 
