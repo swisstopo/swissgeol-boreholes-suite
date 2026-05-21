@@ -24,13 +24,13 @@ public class WorkflowChange : IIdentifyable, IChangeTracking
     /// <summary>
     /// Gets or sets the status of the <see cref="Models.Workflow"/> before the change.
     /// </summary>
-    [Column("from_status")]
+    [Column("status_from")]
     public WorkflowStatus FromStatus { get; set; }
 
     /// <summary>
     /// Gets or sets the status of the <see cref="Models.Workflow"/> after the change.
     /// </summary>
-    [Column("to_status")]
+    [Column("status_to")]
     public WorkflowStatus ToStatus { get; set; }
 
     /// <summary>

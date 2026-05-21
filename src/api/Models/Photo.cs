@@ -51,14 +51,14 @@ public class Photo : IIdentifyable, IChangeTracking
     /// Gets or sets the <see cref="Photo"/>'s upper depth.
     /// </summary>
     [IncludeInExport]
-    [Column("from_depth")]
+    [Column("depth_from")]
     public double FromDepth { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Photo"/>'s lower depth.
     /// </summary>
     [IncludeInExport]
-    [Column("to_depth")]
+    [Column("depth_to")]
     public double ToDepth { get; set; }
 
     /// <summary>
