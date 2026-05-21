@@ -183,13 +183,32 @@ export const LithologyTable: FC<LithologyTableProps> = ({
     </StratigraphyTableActionCell>
   );
 
-  const buildGapLayer = (fromDepth: number, toDepth: number): BaseLayer => ({
-    id: 0,
-    stratigraphyId: stratigraphyId,
-    fromDepth,
-    toDepth,
-    depthIds: depths.filter(d => d.fromDepth >= fromDepth && d.toDepth <= toDepth).map(d => d.id),
-  });
+  // Each gap cell maps to exactly one depth layer (height = defaultRowHeight). A gap range
+  // covering several depth layers is rendered as several gap cells, one per depth layer, so
+  // the gap stays aligned with the depth column.
+  const renderGapCellsForRange = (
+    startIndex: number,
+    keyPrefix: string,
+    fromDepth: number,
+    toDepth: number,
+    onEdit: (index: number) => void,
+  ): ReactNode[] =>
+    depths
+      .filter(d => d.fromDepth >= fromDepth && d.toDepth <= toDepth)
+      .map((depth, i) =>
+        renderGapCell(
+          startIndex + i,
+          keyPrefix,
+          {
+            id: 0,
+            stratigraphyId,
+            fromDepth: depth.fromDepth,
+            toDepth: depth.toDepth,
+            depthIds: [depth.id],
+          },
+          onEdit,
+        ),
+      );
 
   const renderTableCells = (
     keyPrefix: string,
@@ -206,13 +225,13 @@ export const LithologyTable: FC<LithologyTableProps> = ({
 
     // Leading gap: depths exist before the first layer starts
     if (firstLayer && firstDepth && firstLayer.fromDepth > firstDepth.fromDepth) {
-      cells.push(renderGapCell(-1, keyPrefix, buildGapLayer(firstDepth.fromDepth, firstLayer.fromDepth), onEdit));
+      cells.push(...renderGapCellsForRange(-1, keyPrefix, firstDepth.fromDepth, firstLayer.fromDepth, onEdit));
     }
 
     layers.forEach((layer, index) => {
       const previousLayer = layers[index - 1];
       if (previousLayer && layer.fromDepth > previousLayer.toDepth) {
-        cells.push(renderGapCell(index, keyPrefix, buildGapLayer(previousLayer.toDepth, layer.fromDepth), onEdit));
+        cells.push(...renderGapCellsForRange(index, keyPrefix, previousLayer.toDepth, layer.fromDepth, onEdit));
       }
       cells.push(renderActionCell(index, keyPrefix, layer, buildContent, onEdit, onDelete));
     });
@@ -221,7 +240,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({
     // Covers both the "depths extend past the last item" case and a trailing zero-thickness
     // depth at the last item's toDepth (which the item doesn't own since the zt is at its boundary).
     if (lastLayer && lastDepth && !lastLayer.depthIds?.includes(lastDepth.id)) {
-      cells.push(renderGapCell(layers.length, keyPrefix, buildGapLayer(lastLayer.toDepth, lastDepth.toDepth), onEdit));
+      cells.push(...renderGapCellsForRange(layers.length, keyPrefix, lastLayer.toDepth, lastDepth.toDepth, onEdit));
     }
 
     return cells;
