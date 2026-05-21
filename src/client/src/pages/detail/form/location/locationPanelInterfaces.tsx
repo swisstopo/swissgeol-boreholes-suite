@@ -18,7 +18,7 @@ interface LocationFormBaseInputs {
   referenceElevation: number | string | null; // Number with thousands separator then parsed to number
   referenceElevationPrecisionId: number | null;
   referenceElevationTypeId: number | null;
-  originalReferenceSystem: ReferenceSystemCode | null;
+  originalReferenceSystemId: ReferenceSystemCode | null;
   hrsId?: number;
   country: string;
   canton: string;

@@ -143,11 +143,13 @@ public class Borehole : IChangeTracking, IIdentifyable
     public int? PrecisionLocationYLV03 { get; set; }
 
     /// <summary>
-    /// Gets or sets the original reference system.
+    /// Gets or sets the <see cref="Borehole"/>'s original reference system id.
     /// </summary>
     [IncludeInExport]
     [Column("srs_id")]
-    public ReferenceSystem? OriginalReferenceSystem { get; set; }
+    public int? OriginalReferenceSystemId { get; set; }
+
+    public Codelist? OriginalReferenceSystem { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s Elevation(Z).

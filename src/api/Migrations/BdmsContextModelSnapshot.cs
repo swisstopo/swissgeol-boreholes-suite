@@ -209,7 +209,7 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("original_name");
 
-                    b.Property<int?>("OriginalReferenceSystem")
+                    b.Property<int?>("OriginalReferenceSystemId")
                         .HasColumnType("integer")
                         .HasColumnName("srs_id");
 
@@ -316,6 +316,8 @@ namespace BDMS.Migrations
                     b.HasIndex("LocationPrecisionId");
 
                     b.HasIndex("LockedById");
+
+                    b.HasIndex("OriginalReferenceSystemId");
 
                     b.HasIndex("PurposeId");
 
@@ -2817,6 +2819,10 @@ namespace BDMS.Migrations
                         .WithMany()
                         .HasForeignKey("LockedById");
 
+                    b.HasOne("BDMS.Models.Codelist", "OriginalReferenceSystem")
+                        .WithMany()
+                        .HasForeignKey("OriginalReferenceSystemId");
+
                     b.HasOne("BDMS.Models.Codelist", "Purpose")
                         .WithMany()
                         .HasForeignKey("PurposeId");
@@ -2866,6 +2872,8 @@ namespace BDMS.Migrations
                     b.Navigation("LocationPrecision");
 
                     b.Navigation("LockedBy");
+
+                    b.Navigation("OriginalReferenceSystem");
 
                     b.Navigation("Purpose");
 
