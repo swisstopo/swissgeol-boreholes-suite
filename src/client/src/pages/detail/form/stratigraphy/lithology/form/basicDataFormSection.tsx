@@ -10,18 +10,17 @@ interface BasicDataFormSectionProps {
 export const BasicDataFormSection: FC<BasicDataFormSectionProps> = ({ fromDepths, toDepths }) => (
   <FormContainer>
     <FormContainer direction={"row"}>
-      {/* TODO: Warn or forward error if change will produce an overlap or gap in the layer stack */}
       <FormSelect
         fieldName={"fromDepth"}
         label={"fromdepth"}
         values={fromDepths.map(d => ({ key: d, name: formatNumberForDisplay(d) }))}
-        required={true}
+        readonly={true}
       />
       <FormSelect
         fieldName={"toDepth"}
         label={"todepth"}
         values={toDepths.map(d => ({ key: d, name: formatNumberForDisplay(d) }))}
-        required={true}
+        readonly={true}
       />
     </FormContainer>
   </FormContainer>
