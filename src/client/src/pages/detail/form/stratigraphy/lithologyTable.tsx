@@ -14,6 +14,9 @@ import { LithologicalDescription } from "./lithologicalDescription.ts";
 import { Lithology } from "./lithology.ts";
 import { DepthInput } from "./lithology/depthInput.tsx";
 import { FaciesDescriptionLabels } from "./lithology/faciesDescriptionLabels.tsx";
+import { FaciesDescriptionModal } from "./lithology/form/faciesDescriptionModal.tsx";
+import { LithologicalDescriptionModal } from "./lithology/form/lithologicalDescriptionModal.tsx";
+import { LithologyModal } from "./lithology/form/lithologyModal.tsx";
 import { LithologyLabels } from "./lithology/lithologyLabels.tsx";
 import {
   createEmptyLithology,
@@ -55,6 +58,10 @@ export const LithologyTable: FC<LithologyTableProps> = ({
   const [tmpLithologies, setTmpLithologies] = useState<Lithology[]>([]);
   const [tmpLithologicalDescriptions, setTmpLithologicalDescriptions] = useState<LithologicalDescription[]>([]);
   const [tmpFaciesDescriptions, setTmpFaciesDescriptions] = useState<FaciesDescription[]>([]);
+
+  const [selectedLithology, setSelectedLithology] = useState<Lithology>();
+  const [selectedLithologicalDescription, setSelectedLithologicalDescription] = useState<LithologicalDescription>();
+  const [selectedFaciesDescription, setSelectedFaciesDescription] = useState<FaciesDescription>();
 
   const [deleteMenu, setDeleteMenu] = useState<{ anchorEl: HTMLElement; depthId: string } | null>(null);
   const [hoveredDeleteDepthId, setHoveredDeleteDepthId] = useState<string | null>(null);
@@ -254,6 +261,86 @@ export const LithologyTable: FC<LithologyTableProps> = ({
     [depths, tmpLithologies, tmpLithologicalDescriptions, tmpFaciesDescriptions, commitChanges],
   );
 
+  const mergeModalUpdate = useCallback(
+    <T extends BaseLayer>(tmpItems: T[], updated: T): T[] => {
+      const depthIdsKey = JSON.stringify(updated.depthIds ?? []);
+      const idx = tmpItems.findIndex(
+        item =>
+          item.fromDepth === updated.fromDepth &&
+          item.toDepth === updated.toDepth &&
+          JSON.stringify(item.depthIds ?? []) === depthIdsKey,
+      );
+      if (idx >= 0) return tmpItems.map((item, i) => (i === idx ? updated : item));
+
+      const depthOrder = new Map<string, number>();
+      depths.forEach((d, i) => depthOrder.set(d.id, i));
+      const firstDepthIdx = (item: T) =>
+        Math.min(...(item.depthIds?.map(id => depthOrder.get(id) ?? Infinity) ?? [Infinity]));
+      return [...tmpItems, updated].sort((a, b) => firstDepthIdx(a) - firstDepthIdx(b));
+    },
+    [depths],
+  );
+
+  const updateTmpLithology = useCallback(
+    (updated: Lithology, hasChanges: boolean) => {
+      if (hasChanges) {
+        const newLithologies = mergeModalUpdate(tmpLithologies, updated);
+        commitChanges(depths, newLithologies, tmpLithologicalDescriptions, tmpFaciesDescriptions);
+      }
+      setSelectedLithology(undefined);
+    },
+    [mergeModalUpdate, tmpLithologies, depths, tmpLithologicalDescriptions, tmpFaciesDescriptions, commitChanges],
+  );
+
+  const updateTmpLithologicalDescription = useCallback(
+    (updated: LithologicalDescription, hasChanges: boolean) => {
+      if (hasChanges) {
+        const newDescs = mergeModalUpdate(tmpLithologicalDescriptions, updated);
+        commitChanges(depths, tmpLithologies, newDescs, tmpFaciesDescriptions);
+      }
+      setSelectedLithologicalDescription(undefined);
+    },
+    [mergeModalUpdate, tmpLithologicalDescriptions, depths, tmpLithologies, tmpFaciesDescriptions, commitChanges],
+  );
+
+  const updateTmpFaciesDescription = useCallback(
+    (updated: FaciesDescription, hasChanges: boolean) => {
+      if (hasChanges) {
+        const newDescs = mergeModalUpdate(tmpFaciesDescriptions, updated);
+        commitChanges(depths, tmpLithologies, tmpLithologicalDescriptions, newDescs);
+      }
+      setSelectedFaciesDescription(undefined);
+    },
+    [mergeModalUpdate, tmpFaciesDescriptions, depths, tmpLithologies, tmpLithologicalDescriptions, commitChanges],
+  );
+
+  const handleAddLithologicalDescriptionInGap = useCallback(
+    (depthId: string, fromDepth: number, toDepth: number) => {
+      setSelectedLithologicalDescription({
+        id: 0,
+        stratigraphyId,
+        fromDepth,
+        toDepth,
+        depthIds: [depthId],
+      });
+    },
+    [stratigraphyId],
+  );
+
+  const handleAddFaciesDescriptionInGap = useCallback(
+    (depthId: string, fromDepth: number, toDepth: number) => {
+      setSelectedFaciesDescription({
+        id: 0,
+        stratigraphyId,
+        fromDepth,
+        toDepth,
+        faciesId: null,
+        depthIds: [depthId],
+      });
+    },
+    [stratigraphyId],
+  );
+
   const handleDeleteDepthLayer = useCallback(
     (depthId: string, action: "extendLower" | "extendUpper" | "reduceBoreholeEnd") => {
       if (depths.length === 1) {
@@ -328,16 +415,23 @@ export const LithologyTable: FC<LithologyTableProps> = ({
     [depths, tmpLithologies, tmpLithologicalDescriptions, tmpFaciesDescriptions, commitChanges],
   );
 
-  const renderGapCell = (index: number, keyPrefix: string, layer: BaseLayer, onEdit: (index: number) => void) => {
+  const renderGapCell = (
+    index: number,
+    keyPrefix: string,
+    depthId: string,
+    fromDepth: number,
+    toDepth: number,
+    onAddInGap?: (depthId: string, fromDepth: number, toDepth: number) => void,
+  ) => {
     return (
       <StratigraphyTableDescriptionGap
-        key={`${keyPrefix}-${index}-${layer.fromDepth}-${layer.id}`}
-        dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
+        key={`${keyPrefix}-${index}-${fromDepth}-${depthId}`}
+        dataCy={`${keyPrefix}-${fromDepth}-${depthId}`}
         sx={{
-          height: `${defaultRowHeight * (layer.depthIds?.length ?? 1)}px`,
+          height: `${defaultRowHeight}px`,
         }}
         index={index}
-        onClick={onEdit}
+        onClick={onAddInGap ? () => onAddInGap(depthId, fromDepth, toDepth) : undefined}
       />
     );
   };
@@ -368,72 +462,33 @@ export const LithologyTable: FC<LithologyTableProps> = ({
     </StratigraphyTableActionCell>
   );
 
-  // Each gap cell maps to exactly one depth layer (height = defaultRowHeight). A gap range
-  // covering several depth layers is rendered as several gap cells, one per depth layer, so
-  // the gap stays aligned with the depth column.
-  const renderGapCellsForRange = (
-    startIndex: number,
-    keyPrefix: string,
-    fromDepth: number,
-    toDepth: number,
-    onEdit: (index: number) => void,
-  ): ReactNode[] =>
-    depths
-      .filter(d => d.fromDepth >= fromDepth && d.toDepth <= toDepth)
-      .map((depth, i) =>
-        renderGapCell(
-          startIndex + i,
-          keyPrefix,
-          {
-            id: 0,
-            stratigraphyId,
-            fromDepth: depth.fromDepth,
-            toDepth: depth.toDepth,
-            depthIds: [depth.id],
-          },
-          onEdit,
-        ),
-      );
-
   const renderTableCells = (
     keyPrefix: string,
     layers: BaseLayer[],
     buildContent: (layer: BaseLayer) => ReactNode,
     onEdit: (index: number) => void,
     onDelete?: (index: number) => void,
-  ) => {
-    const cells: ReactNode[] = [];
-    const firstDepth = depths[0];
-    const lastDepth = depths[depths.length - 1];
-    const firstLayer = layers[0];
-    const lastLayer = layers[layers.length - 1];
-
-    // No items at all → render a gap cell per depth layer so the column stays aligned
-    // with the depth column (matters e.g. when the user just added the first row to an
-    // otherwise empty stratigraphy).
-    if (layers.length === 0 && firstDepth && lastDepth) {
-      return renderGapCellsForRange(0, keyPrefix, firstDepth.fromDepth, lastDepth.toDepth, onEdit);
-    }
-
-    // Leading gap: depths exist before the first layer starts
-    if (firstLayer && firstDepth && firstLayer.fromDepth > firstDepth.fromDepth) {
-      cells.push(...renderGapCellsForRange(-1, keyPrefix, firstDepth.fromDepth, firstLayer.fromDepth, onEdit));
-    }
-
-    layers.forEach((layer, index) => {
-      const previousLayer = layers[index - 1];
-      if (previousLayer && layer.fromDepth > previousLayer.toDepth) {
-        cells.push(...renderGapCellsForRange(index, keyPrefix, previousLayer.toDepth, layer.fromDepth, onEdit));
+    onAddInGap?: (depthId: string, fromDepth: number, toDepth: number) => void,
+  ): ReactNode[] => {
+    const itemIndexByDepthId = new Map<string, number>();
+    layers.forEach((layer, idx) => {
+      for (const id of layer.depthIds ?? []) {
+        itemIndexByDepthId.set(id, idx);
       }
-      cells.push(renderActionCell(index, keyPrefix, layer, buildContent, onEdit, onDelete));
     });
 
-    // Trailing gap: any depth rows after the last layer that the last layer doesn't cover.
-    // Covers both the "depths extend past the last item" case and a trailing zero-thickness
-    // depth at the last item's toDepth (which the item doesn't own since the zt is at its boundary).
-    if (lastLayer && lastDepth && !lastLayer.depthIds?.includes(lastDepth.id)) {
-      cells.push(...renderGapCellsForRange(layers.length, keyPrefix, lastLayer.toDepth, lastDepth.toDepth, onEdit));
-    }
+    const cells: ReactNode[] = [];
+    const renderedItems = new Set<number>();
+    depths.forEach((depth, depthIdx) => {
+      const itemIdx = itemIndexByDepthId.get(depth.id);
+      if (itemIdx === undefined) {
+        cells.push(renderGapCell(depthIdx, keyPrefix, depth.id, depth.fromDepth, depth.toDepth, onAddInGap));
+      } else if (!renderedItems.has(itemIdx)) {
+        cells.push(renderActionCell(itemIdx, keyPrefix, layers[itemIdx], buildContent, onEdit, onDelete));
+        renderedItems.add(itemIdx);
+      }
+      // else: item already rendered at an earlier depth and its cell spans through here.
+    });
 
     return cells;
   };
@@ -594,7 +649,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({
                 layer => (
                   <LithologyLabels lithology={layer as Lithology} />
                 ),
-                index => console.log(`edit lithology ${index}`),
+                index => setSelectedLithology(tmpLithologies[index]),
               )}
             </StratigraphyTableColumn>
             <StratigraphyTableColumn>
@@ -606,8 +661,9 @@ export const LithologyTable: FC<LithologyTableProps> = ({
                     {(layer as LithologicalDescription).description}
                   </Typography>
                 ),
-                index => console.log(`edit lithologicalDescription ${index}`),
+                index => setSelectedLithologicalDescription(tmpLithologicalDescriptions[index]),
                 index => handleDeleteDescription("lithological", index),
+                handleAddLithologicalDescriptionInGap,
               )}
             </StratigraphyTableColumn>
             <StratigraphyTableColumn>
@@ -617,14 +673,24 @@ export const LithologyTable: FC<LithologyTableProps> = ({
                 layer => (
                   <FaciesDescriptionLabels description={layer as FaciesDescription} />
                 ),
-                index => console.log(`edit faciesDescription ${index}`),
+                index => setSelectedFaciesDescription(tmpFaciesDescriptions[index]),
                 index => handleDeleteDescription("facies", index),
+                handleAddFaciesDescriptionInGap,
               )}
             </StratigraphyTableColumn>
           </StratigraphyTableContent>
         )}
       </Stack>
       <AddRowButton onClick={handleAddDepthLayer} dataCy="add-row-button" buttonContent={<LayerAddButton />} />
+      <LithologyModal lithology={selectedLithology} updateLithology={updateTmpLithology} />
+      <LithologicalDescriptionModal
+        description={selectedLithologicalDescription}
+        updateLithologicalDescription={updateTmpLithologicalDescription}
+      />
+      <FaciesDescriptionModal
+        description={selectedFaciesDescription}
+        updateFaciesDescription={updateTmpFaciesDescription}
+      />
     </Stack>
   );
 };
