@@ -22,14 +22,14 @@ import { LithologyLabels } from "./lithologyLabels.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";
 import { useLayerDepths } from "./useLayerDepths.tsx";
 
-interface LithologyContentEditProps {
+interface TempLithologyViewProps {
   lithologies: Lithology[];
   lithologicalDescriptions: LithologicalDescription[];
   faciesDescriptions: FaciesDescription[];
 }
 
 // Temporary Lithology View component (read-only, non-editable) to display lithology before panable/zoomable version is fully implemented.
-export const TempLithologyView: FC<LithologyContentEditProps> = ({
+export const TempLithologyView: FC<TempLithologyViewProps> = ({
   lithologies,
   lithologicalDescriptions,
   faciesDescriptions,

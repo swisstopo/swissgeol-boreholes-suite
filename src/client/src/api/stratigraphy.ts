@@ -41,16 +41,6 @@ export interface BaseLayer {
   isAutoCorrected?: boolean;
 }
 
-export interface MinimalLayer {
-  id: number;
-  fromDepth?: number;
-  toDepth?: number;
-  stratigraphyId: number;
-  isGap?: boolean;
-  isUnconsolidated?: boolean | null;
-  hasBedding?: boolean;
-}
-
 interface Chronostratigraphy {
   id: number;
   stratigraphyId: number;

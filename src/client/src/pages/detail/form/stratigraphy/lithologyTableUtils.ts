@@ -133,11 +133,11 @@ const assignDepthIds = <T extends BaseLayer>(items: T[], depthLayers: DepthLayer
   }
 };
 
-// Walk the depth layers and absorb each candidate into the immediately previous adjacent
-// layer (extends the previous layer's toDepth and reports the absorbed id). The previous
-// layer keeps its id — no depth-layer id is ever changed, only redundant ones are dropped.
-// If a candidate has no adjacent previous (e.g. it's first, or there's a gap), it stays
-// in place.
+// Top-to-bottom pass: for each candidate layer that touches the bottom of the previous
+// kept layer, extend that previous layer downward to swallow the candidate. The previous
+// layer keeps its id; the candidate's id is reported back in `mergedIds`. A candidate
+// with no touching layer above it (first in the list, or sitting after a gap) is left
+// where it is.
 export const mergeAdjacentDepths = (
   depths: DepthLayer[],
   candidates: Set<string>,
@@ -156,7 +156,6 @@ export const mergeAdjacentDepths = (
   return { depths: result, mergedIds };
 };
 
-// Strip removed-layer ids out of every item's depthIds.
 export const removeDepthIdReferences = <T extends BaseLayer>(items: T[], removedIds: Set<string>): T[] => {
   if (removedIds.size === 0) return items;
   return items.map(item => {
@@ -165,16 +164,17 @@ export const removeDepthIdReferences = <T extends BaseLayer>(items: T[], removed
   });
 };
 
-// Recompute error flags on every depth layer from scratch (zero-thickness layers and any
-// layer belonging to a lithology that spans more than one). Returns a new array so callers
-// can safely use the result in setState.
 export const flagErrors = (depthLayers: DepthLayer[], lithologies: Lithology[]): DepthLayer[] => {
   const flagged = new Set<string>();
+
+  // Zero-thickness layers
   for (const layer of depthLayers) {
     if (layer.fromDepth === layer.toDepth) {
       flagged.add(layer.id);
     }
   }
+
+  // Layers belonging to a lithology that spans more than one layer
   for (const lithology of lithologies) {
     if ((lithology.depthIds?.length ?? 0) > 1) {
       for (const depthId of lithology.depthIds!) {
@@ -182,6 +182,7 @@ export const flagErrors = (depthLayers: DepthLayer[], lithologies: Lithology[]):
       }
     }
   }
+
   return depthLayers.map(layer => ({
     ...layer,
     hasFromDepthError: flagged.has(layer.id),
