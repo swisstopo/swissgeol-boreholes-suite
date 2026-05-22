@@ -282,7 +282,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({
 
       const updateItem = <T extends BaseLayer>(item: T): T => {
         // Remove deleted depth layer id reference
-        const newDepthIds = item.depthIds?.filter(id => id === depthLayerToDelete.id);
+        const newDepthIds = item.depthIds?.filter(id => id !== depthLayerToDelete.id);
 
         // Adjust items linked to the depth layer to update
         if (depthLayerToUpdate && item.depthIds?.includes(depthLayerToUpdate.id)) {
