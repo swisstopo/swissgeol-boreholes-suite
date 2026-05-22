@@ -8,7 +8,6 @@ import { FormErrors, FormValueType } from "../../../../../../components/form/for
 import { FormContainer } from "../../../../../../components/form/formContainer.tsx";
 import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
 import { FormInput } from "../../../../../../components/form/formInput.tsx";
-import { validateDepths } from "../../../../../../components/form/formUtils.ts";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
 import { capitalizeFirstLetter } from "../../../../../../utils.ts";
 import { Lithology } from "../../lithology.ts";
@@ -36,7 +35,6 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
     mode: "all",
     resolver: async values => {
       const errors: FormErrors = {};
-      validateDepths(values, errors);
       validateLithologyUnconValues(values.lithologyDescriptions, errors, values.isUnconsolidated);
       if (Object.keys(errors).length > 0) {
         return { values: {}, errors };
