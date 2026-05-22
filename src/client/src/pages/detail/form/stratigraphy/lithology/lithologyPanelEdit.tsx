@@ -24,7 +24,7 @@ const stripClientFields = <T extends BaseLayer>(item: T): T => {
   const copy = { ...item } as T & { depthIds?: unknown; isAutoCorrected?: unknown };
   delete copy.depthIds;
   delete copy.isAutoCorrected;
-  return copy as T;
+  return copy;
 };
 
 interface ColumnDiff<T> {

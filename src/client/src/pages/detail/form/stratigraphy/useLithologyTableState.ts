@@ -208,8 +208,9 @@ export const useLithologyTableState = (
       const index = depths.findIndex(d => d.id === depthId);
       if (index < 0) return;
       const depthLayerToDelete = depths[index];
-      const depthLayerToUpdate =
-        action === "extendUpper" ? depths[index - 1] : action === "extendLower" ? depths[index + 1] : null;
+      let depthLayerToUpdate: DepthLayer | null = null;
+      if (action === "extendUpper") depthLayerToUpdate = depths[index - 1];
+      else if (action === "extendLower") depthLayerToUpdate = depths[index + 1];
 
       const updatedDepthLayers = depths.flatMap((d, i) => {
         if (i === index) return [];
@@ -225,30 +226,30 @@ export const useLithologyTableState = (
         item.toDepth === depthLayerToDelete.toDepth;
 
       const updateItem = <T extends BaseLayer>(item: T): T => {
-        // Remove deleted depth layer id reference
         const newDepthIds = item.depthIds?.filter(id => id !== depthLayerToDelete.id);
+        const refsUpdated = !!depthLayerToUpdate && !!item.depthIds?.includes(depthLayerToUpdate.id);
+        const refsDeleted = !!item.depthIds?.includes(depthLayerToDelete.id);
 
-        // Adjust items linked to the depth layer to update
-        if (depthLayerToUpdate && item.depthIds?.includes(depthLayerToUpdate.id)) {
-          if (action === "extendUpper" && item.toDepth === depthLayerToUpdate.toDepth) {
-            return { ...item, toDepth: depthLayerToDelete.toDepth, depthIds: newDepthIds };
-          }
-          if (action === "extendLower" && item.fromDepth === depthLayerToUpdate.fromDepth) {
-            return { ...item, fromDepth: depthLayerToDelete.fromDepth, depthIds: newDepthIds };
-          }
+        // Stretch items that referenced the surviving (updated) depth layer so their boundary
+        // follows the layer's new edge into the deleted layer's range.
+        if (refsUpdated && action === "extendUpper" && item.toDepth === depthLayerToUpdate!.toDepth) {
+          return { ...item, toDepth: depthLayerToDelete.toDepth, depthIds: newDepthIds };
+        }
+        if (refsUpdated && action === "extendLower" && item.fromDepth === depthLayerToUpdate!.fromDepth) {
+          return { ...item, fromDepth: depthLayerToDelete.fromDepth, depthIds: newDepthIds };
         }
 
-        // Shift items linked to deleted depth layer whose boundary sat on the layer's disappearing edge.
-        if (item.depthIds?.includes(depthLayerToDelete.id)) {
-          if (action === "extendUpper" && item.fromDepth === depthLayerToDelete.fromDepth) {
-            return { ...item, fromDepth: depthLayerToDelete.toDepth, depthIds: newDepthIds };
-          }
-          if (
-            (action === "extendLower" || action === "reduceBoreholeEnd") &&
-            item.toDepth === depthLayerToDelete.toDepth
-          ) {
-            return { ...item, toDepth: depthLayerToDelete.fromDepth, depthIds: newDepthIds };
-          }
+        // Shift items that referenced the deleted depth layer whose boundary sat on the
+        // disappearing edge — drag it onto the remaining edge.
+        if (refsDeleted && action === "extendUpper" && item.fromDepth === depthLayerToDelete.fromDepth) {
+          return { ...item, fromDepth: depthLayerToDelete.toDepth, depthIds: newDepthIds };
+        }
+        if (
+          refsDeleted &&
+          (action === "extendLower" || action === "reduceBoreholeEnd") &&
+          item.toDepth === depthLayerToDelete.toDepth
+        ) {
+          return { ...item, toDepth: depthLayerToDelete.fromDepth, depthIds: newDepthIds };
         }
 
         // Keep items unrelated to the deleted or updated depth layers unchanged

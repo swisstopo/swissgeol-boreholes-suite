@@ -24,7 +24,7 @@ export const DepthInput: FC<DepthInputProps> = ({ value, hasError, onCommit, sx,
 
   const commit = () => {
     const parsed = parseFloatWithThousandsSeparator(textValue);
-    if (parsed === null || isNaN(parsed)) {
+    if (parsed === null || Number.isNaN(parsed)) {
       setTextValue(String(value));
       return;
     }

@@ -60,7 +60,7 @@ const fillLithologyGaps = (
       if (minBoundary < result[0].fromDepth) {
         result.unshift(createEmptyLithology(minBoundary, result[0].fromDepth, stratigraphyId));
       }
-      const last = result[result.length - 1];
+      const last = result.at(-1)!;
       if (maxBoundary > last.toDepth) {
         result.push(createEmptyLithology(last.toDepth, maxBoundary, stratigraphyId, last.isUnconsolidated));
       }
@@ -145,8 +145,8 @@ export const mergeAdjacentDepths = (
   const result: DepthLayer[] = [];
   const mergedIds = new Set<string>();
   for (const depth of depths) {
-    const prev = result[result.length - 1];
-    if (candidates.has(depth.id) && prev && prev.toDepth === depth.fromDepth) {
+    const prev = result.at(-1);
+    if (candidates.has(depth.id) && prev?.toDepth === depth.fromDepth) {
       result[result.length - 1] = { ...prev, toDepth: depth.toDepth };
       mergedIds.add(depth.id);
     } else {
