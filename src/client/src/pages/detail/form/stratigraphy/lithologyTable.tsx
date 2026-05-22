@@ -185,16 +185,16 @@ export const LithologyTable: FC<LithologyTableProps> = ({
   );
 
   const handleAddDepthLayer = useCallback(() => {
-    if (depths.length === 0) return;
     const lastDepth = depths[depths.length - 1];
     const lastLithology = tmpLithologies[tmpLithologies.length - 1];
+    const newBoundary = lastDepth?.toDepth ?? 0;
     const newDepthLayer: DepthLayer = {
       id: uuidv4(),
-      fromDepth: lastDepth.toDepth,
-      toDepth: lastDepth.toDepth,
+      fromDepth: newBoundary,
+      toDepth: newBoundary,
     };
     const newLithology: Lithology = {
-      ...createEmptyLithology(lastDepth.toDepth, lastDepth.toDepth, stratigraphyId, lastLithology?.isUnconsolidated),
+      ...createEmptyLithology(newBoundary, newBoundary, stratigraphyId, lastLithology?.isUnconsolidated ?? true),
       depthIds: [newDepthLayer.id],
     };
     const newDepths = [...depths, newDepthLayer];
@@ -407,6 +407,13 @@ export const LithologyTable: FC<LithologyTableProps> = ({
     const lastDepth = depths[depths.length - 1];
     const firstLayer = layers[0];
     const lastLayer = layers[layers.length - 1];
+
+    // No items at all → render a gap cell per depth layer so the column stays aligned
+    // with the depth column (matters e.g. when the user just added the first row to an
+    // otherwise empty stratigraphy).
+    if (layers.length === 0 && firstDepth && lastDepth) {
+      return renderGapCellsForRange(0, keyPrefix, firstDepth.fromDepth, lastDepth.toDepth, onEdit);
+    }
 
     // Leading gap: depths exist before the first layer starts
     if (firstLayer && firstDepth && firstLayer.fromDepth > firstDepth.fromDepth) {
