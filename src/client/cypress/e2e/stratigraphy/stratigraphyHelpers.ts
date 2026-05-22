@@ -19,7 +19,9 @@ interface CheckLayerCardInput extends LayerInput {
 
 const layerSelector = ({ layerType, fromDepth, toDepth, isGap }: LayerInput) => {
   if (isGap) {
-    return `[data-cy="${layerType}-${fromDepth}-0-gap"]`;
+    // Gap cells have data-cy `${layerType}-${fromDepth}-${depthId}-gap` where depthId is a
+    // UUID — match by `${layerType}-${fromDepth}-` prefix + `-gap` suffix.
+    return `[data-cy^="${layerType}-${fromDepth}-"][data-cy$="-gap"]`;
   }
   return `[data-cy="${layerType}-${fromDepth}-${toDepth}"]`;
 };
@@ -44,6 +46,12 @@ export const addLithology = () => {
   cy.dataCy("add-row-button").click();
 };
 
+export const setDepth = (currentFromDepth: number, currentToDepth: number, side: "from" | "to", newDepth: number) => {
+  const selector = `[data-cy="depth-${side}-${currentFromDepth}-${currentToDepth}-input"]`;
+  cy.get(selector).clear();
+  cy.get(selector).type(`${newDepth}{enter}`);
+};
+
 export const hasLayer = ({ layerType, fromDepth, toDepth, isGap, exists = true }: HasLayerInput) => {
   const selector = layerSelector({ layerType, fromDepth, toDepth, isGap });
   if (exists) {
@@ -61,6 +69,11 @@ export const hasLayersAt = (layerType: LayerType, depths: [number, number][]) =>
   depths.forEach(([fromDepth, toDepth]) => hasLayer({ layerType, fromDepth, toDepth }));
 };
 
+/**
+ * Hover-delete a layer cell. Only the two description columns expose this — lithology
+ * deletion is done via `deleteDepthRow` because lithology rows are owned by the depth
+ * column, not by the lithology cell itself.
+ */
 export const deleteLayer = ({ layerType, fromDepth, toDepth }: LayerInput) => {
   cy.get(layerSelector({ layerType, fromDepth, toDepth })).realHover().dataCy("deleteLayer-button").click();
 };

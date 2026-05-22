@@ -40,10 +40,11 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({ descri
       delete values.facies;
       if (String(values.faciesId) === "") values.faciesId = null;
 
-      updateFaciesDescription(
-        { ...description, ...values } as FaciesDescription,
-        isDirty || (Boolean(description?.isGap) && isValid),
-      );
+      // A new description (id===0, built by the gap-click handler) must commit on Apply even
+      // when the user didn't type anything — that's how an empty placeholder description is
+      // attached to the clicked gap.
+      const isNew = description?.id === 0;
+      updateFaciesDescription({ ...description, ...values } as FaciesDescription, isDirty || (isNew && isValid));
     }
   };
 

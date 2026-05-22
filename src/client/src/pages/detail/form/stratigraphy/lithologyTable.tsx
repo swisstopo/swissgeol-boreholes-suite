@@ -231,7 +231,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                         value={depth.fromDepth}
                         hasError={depth.hasFromDepthError}
                         onCommit={newDepth => updateDepthBoundaries(depth.id, "from", newDepth)}
-                        dataCy={`depth-from-${depth.fromDepth}-input`}
+                        dataCy={`depth-from-${depth.fromDepth}-${depth.toDepth}-input`}
                         sx={{
                           position: "absolute",
                           top: theme.spacing(2),
@@ -275,7 +275,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                       value={depth.toDepth}
                       hasError={bottomBoundaryError}
                       onCommit={newDepth => updateDepthBoundaries(depth.id, "to", newDepth)}
-                      dataCy={`depth-to-${depth.toDepth}-input`}
+                      dataCy={`depth-to-${depth.fromDepth}-${depth.toDepth}-input`}
                       sx={{
                         position: "absolute",
                         left: "50%",

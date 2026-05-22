@@ -36,9 +36,13 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
     const isValid = await formMethods.trigger();
     if (!isDirty || isValid) {
       const values = getValues();
+      // A new description (id===0, built by the gap-click handler) must commit on Apply even
+      // when the user didn't type anything — that's how an empty placeholder description is
+      // attached to the clicked gap.
+      const isNew = description?.id === 0;
       updateLithologicalDescription(
         { ...description, ...values } as LithologicalDescription,
-        isDirty || (Boolean(description?.isGap) && isValid),
+        isDirty || (isNew && isValid),
       );
     }
   };
