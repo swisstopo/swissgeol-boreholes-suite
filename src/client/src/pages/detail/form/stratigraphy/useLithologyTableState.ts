@@ -185,29 +185,6 @@ export const useLithologyTableState = (
     [depths, tmpLithologies, tmpLithologicalDescriptions, tmpFaciesDescriptions, commitChanges],
   );
 
-  const handleAddDepthLayer = useCallback(() => {
-    const lastDepth = depths[depths.length - 1];
-    const lastLithology = tmpLithologies[tmpLithologies.length - 1];
-    const newBoundary = lastDepth?.toDepth ?? 0;
-    const newDepthLayer: DepthLayer = {
-      id: uuidv4(),
-      fromDepth: newBoundary,
-      toDepth: newBoundary,
-    };
-    const newLithology: Lithology = {
-      ...createEmptyLithology(newBoundary, newBoundary, stratigraphyId, lastLithology?.isUnconsolidated ?? true),
-      depthIds: [newDepthLayer.id],
-    };
-    const newDepths = [...depths, newDepthLayer];
-    const newLithologies = [...tmpLithologies, newLithology];
-    commitChanges(
-      flagErrors(newDepths, newLithologies),
-      newLithologies,
-      tmpLithologicalDescriptions,
-      tmpFaciesDescriptions,
-    );
-  }, [depths, tmpLithologies, tmpLithologicalDescriptions, tmpFaciesDescriptions, stratigraphyId, commitChanges]);
-
   const handleInsertDepthRow = useCallback(
     (parentDepthId: string, position: DepthInsertPosition) => {
       const parentIndex = depths.findIndex(d => d.id === parentDepthId);
@@ -258,6 +235,25 @@ export const useLithologyTableState = (
     },
     [depths, tmpLithologies, tmpLithologicalDescriptions, tmpFaciesDescriptions, stratigraphyId, commitChanges],
   );
+
+  const handleAddDepthLayer = useCallback(() => {
+    const lastDepth = depths.at(-1);
+    if (lastDepth) {
+      handleInsertDepthRow(lastDepth.id, "after");
+      return;
+    }
+    const newDepthLayer: DepthLayer = { id: uuidv4(), fromDepth: 0, toDepth: 0 };
+    const newLithology: Lithology = {
+      ...createEmptyLithology(0, 0, stratigraphyId, true),
+      depthIds: [newDepthLayer.id],
+    };
+    commitChanges(
+      flagErrors([newDepthLayer], [newLithology]),
+      [newLithology],
+      tmpLithologicalDescriptions,
+      tmpFaciesDescriptions,
+    );
+  }, [depths, handleInsertDepthRow, stratigraphyId, tmpLithologicalDescriptions, tmpFaciesDescriptions, commitChanges]);
 
   const handleDeleteDepthLayer = useCallback(
     (depthId: string, action: DepthDeleteAction) => {

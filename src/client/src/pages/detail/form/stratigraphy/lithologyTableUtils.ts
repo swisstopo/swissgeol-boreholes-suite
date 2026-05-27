@@ -42,38 +42,51 @@ export const createEmptyLithology = (
   isAutoCorrected: true,
 });
 
-// Fill gaps between lithologies and extend coverage to match description ranges, with empty autocorrected lithologies.
+// Fill gaps between lithologies and extend coverage to match description ranges with empty
+// autocorrected lithologies. Existing lithologies are never resized; we only add new ones.
+// Every emergent depth row (driven by description boundaries that fall inside the gap) gets
+// its own placeholder lithology so the lithology column stays one-lithology-per-depth-row.
 const fillLithologyGaps = (
   lithologies: Lithology[],
   otherBoundaries: number[],
   stratigraphyId: number,
 ): Lithology[] => {
   const result: Lithology[] = [...lithologies];
+  const sortedBoundaries = [...new Set(otherBoundaries)].sort((a, b) => a - b);
 
-  if (otherBoundaries.length > 0) {
-    const minBoundary = Math.min(...otherBoundaries);
-    const maxBoundary = Math.max(...otherBoundaries);
+  // Produce one empty lithology per inter-boundary segment that falls inside `[from, to]`.
+  const fillRange = (from: number, to: number, isUnconsolidated?: boolean | null): Lithology[] => {
+    const cuts = [from, ...sortedBoundaries.filter(b => b > from && b < to), to];
+    const fillers: Lithology[] = [];
+    for (let i = 0; i < cuts.length - 1; i++) {
+      fillers.push(createEmptyLithology(cuts[i], cuts[i + 1], stratigraphyId, isUnconsolidated));
+    }
+    return fillers;
+  };
+
+  if (sortedBoundaries.length > 0) {
+    const minBoundary = sortedBoundaries[0];
+    const maxBoundary = sortedBoundaries[sortedBoundaries.length - 1];
 
     if (result.length === 0) {
-      result.push(createEmptyLithology(minBoundary, maxBoundary, stratigraphyId));
+      result.push(...fillRange(minBoundary, maxBoundary));
     } else {
       if (minBoundary < result[0].fromDepth) {
-        result.unshift(createEmptyLithology(minBoundary, result[0].fromDepth, stratigraphyId));
+        result.unshift(...fillRange(minBoundary, result[0].fromDepth));
       }
-      const last = result.at(-1)!;
+      const last = result[result.length - 1];
       if (maxBoundary > last.toDepth) {
-        result.push(createEmptyLithology(last.toDepth, maxBoundary, stratigraphyId, last.isUnconsolidated));
+        result.push(...fillRange(last.toDepth, maxBoundary, last.isUnconsolidated));
       }
     }
   }
 
+  // Fill any remaining gaps between existing lithologies, also split by description boundaries.
   for (let i = 0; i < result.length - 1; i++) {
     if (result[i + 1].fromDepth > result[i].toDepth) {
-      result.splice(
-        i + 1,
-        0,
-        createEmptyLithology(result[i].toDepth, result[i + 1].fromDepth, stratigraphyId, result[i].isUnconsolidated),
-      );
+      const fillers = fillRange(result[i].toDepth, result[i + 1].fromDepth, result[i].isUnconsolidated);
+      result.splice(i + 1, 0, ...fillers);
+      i += fillers.length;
     }
   }
 

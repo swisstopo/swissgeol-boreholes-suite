@@ -20,10 +20,12 @@ import {
   checkLayerCardContent,
   closeLayerModal,
   deleteLayer,
+  hasAutoCorrectedStyle,
   hasDepthError,
   hasGapsAt,
   hasLayer,
   hasLayersAt,
+  insertDepthRow,
   LayerType,
   openLayer,
   openNewStratigraphy,
@@ -1085,8 +1087,63 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     });
   });
 
-  // TODO: Implement this
-  it.skip("shows errors for depths that are all covered by the same lithology", () => {});
+  it("flags zero-thickness depth rows added via add-row as errors", () => {
+    openNewStratigraphy();
+    addLithology();
+    // The new row is appended as a (0,0) zero-thickness row — should be flagged red on both
+    // boundaries until the user extends it.
+    hasDepthError(0, 0, true, true);
+
+    setDepth(0, 0, "to", 50);
+    hasDepthError(0, 50, false, false);
+  });
+
+  it("inserts zero-thickness depth rows via the depth-cell + buttons", () => {
+    openNewStratigraphy();
+    addLithologyAtDepth(0, 30);
+    fillUnconsolidatedLithologyForm({});
+    closeLayerModal();
+    addLithologyAtDepth(30, 70);
+    fillUnconsolidatedLithologyForm({});
+    closeLayerModal();
+    addLithologyAtDepth(70, 100);
+    fillUnconsolidatedLithologyForm({});
+    closeLayerModal();
+    checkDepthColumn([
+      [0, 30],
+      [30, 70],
+      [70, 100],
+    ]);
+
+    // New row at the very top via "+" on the upper edge of the first cell.
+    insertDepthRow(0, 30, "above");
+    hasDepthError(0, 0, true, true);
+
+    // New row in between via "+" on the lower edge of the upper neighbor.
+    insertDepthRow(0, 30, "below");
+    hasDepthError(30, 30, true, true);
+
+    // New row in between via "+" on the upper edge of the lower neighbor.
+    insertDepthRow(70, 100, "above");
+    hasDepthError(70, 70, true, true);
+
+    // New row at the very bottom via "+" on the lower edge of the last cell.
+    insertDepthRow(70, 100, "below");
+    hasDepthError(100, 100, true, true);
+
+    // The original lithologies are still in place, plus four new autocorrected empty lithologies (one per inserted zt depth row).
+    hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 0 });
+    hasAutoCorrectedStyle({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 0 });
+    hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 30 });
+    hasLayer({ layerType: LayerType.lithology, fromDepth: 30, toDepth: 30 });
+    hasAutoCorrectedStyle({ layerType: LayerType.lithology, fromDepth: 30, toDepth: 30 });
+    hasLayer({ layerType: LayerType.lithology, fromDepth: 30, toDepth: 70 });
+    hasLayer({ layerType: LayerType.lithology, fromDepth: 70, toDepth: 70 });
+    hasAutoCorrectedStyle({ layerType: LayerType.lithology, fromDepth: 70, toDepth: 70 });
+    hasLayer({ layerType: LayerType.lithology, fromDepth: 70, toDepth: 100 });
+    hasLayer({ layerType: LayerType.lithology, fromDepth: 100, toDepth: 100 });
+    hasAutoCorrectedStyle({ layerType: LayerType.lithology, fromDepth: 100, toDepth: 100 });
+  });
 
   it("creates one gap per row in lithological and facies descriptions", () => {
     createCompleteLayerGrid();

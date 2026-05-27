@@ -52,6 +52,19 @@ export const setDepth = (currentFromDepth: number, currentToDepth: number, side:
   cy.get(selector).type(`${newDepth}{enter}`);
 };
 
+/**
+ * Insert a zero-thickness depth row via the small `+` button on the upper or lower edge of
+ * a depth cell. The buttons are hover-revealed, so the cell is hovered first to expose them.
+ *   - `"above"` inserts at the cell's fromDepth (use to add a row at the top of the table or
+ *     just above the targeted cell).
+ *   - `"below"` inserts at the cell's toDepth (use to add a row at the bottom of the table or
+ *     just below the targeted cell).
+ */
+export const insertDepthRow = (fromDepth: number, toDepth: number, position: "above" | "below") => {
+  cy.get(`[data-cy="depth-${fromDepth}-${toDepth}"]`).realHover();
+  cy.dataCy(`insert-depth-${position}-${fromDepth}-${toDepth}-button`).click();
+};
+
 export const hasLayer = ({ layerType, fromDepth, toDepth, isGap, exists = true }: HasLayerInput) => {
   const selector = layerSelector({ layerType, fromDepth, toDepth, isGap });
   if (exists) {
@@ -59,6 +72,10 @@ export const hasLayer = ({ layerType, fromDepth, toDepth, isGap, exists = true }
   } else {
     cy.get("body").find(selector).should("not.exist");
   }
+};
+
+export const hasAutoCorrectedStyle = ({ layerType, fromDepth, toDepth }: LayerInput) => {
+  cy.get(layerSelector({ layerType, fromDepth, toDepth })).should("have.css", "background-color", "rgb(255, 214, 192)");
 };
 
 export const hasGapsAt = (layerType: LayerType, fromDepths: number[]) => {
@@ -69,11 +86,6 @@ export const hasLayersAt = (layerType: LayerType, depths: [number, number][]) =>
   depths.forEach(([fromDepth, toDepth]) => hasLayer({ layerType, fromDepth, toDepth }));
 };
 
-/**
- * Hover-delete a layer cell. Only the two description columns expose this — lithology
- * deletion is done via `deleteDepthRow` because lithology rows are owned by the depth
- * column, not by the lithology cell itself.
- */
 export const deleteLayer = ({ layerType, fromDepth, toDepth }: LayerInput) => {
   cy.get(layerSelector({ layerType, fromDepth, toDepth })).realHover().dataCy("deleteLayer-button").click();
 };
