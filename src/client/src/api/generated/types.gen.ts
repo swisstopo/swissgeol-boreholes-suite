@@ -7515,7 +7515,6 @@ export type PostApiVbyVersionLogImportData = {
   body?: {
     logRunsCsvFile?: Blob | File;
     logFilesCsvFile?: Blob | File;
-    fileListFile?: Blob | File;
   };
   path: {
     version: string;
