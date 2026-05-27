@@ -41,7 +41,7 @@ export interface DepthInputProps {
 export function prepareObservationDataForSubmit<
   T extends FieldMeasurement | WaterIngress | GroundwaterLevelMeasurement | Hydrotest,
 >(data: T, parentId: number): T {
-  if (data.reliabilityId == null) {
+  if (!data.reliabilityId) {
     data.reliabilityId = null;
   }
   delete data.reliability;
