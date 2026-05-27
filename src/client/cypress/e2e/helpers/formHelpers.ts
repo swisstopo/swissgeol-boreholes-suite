@@ -73,7 +73,7 @@ export const setInput = (fieldName: string, value: string | number, parent?: str
   cy.get("body").click(0, 0);
 };
 
-export const formatWithThousandsSeparator = (value: number): string | number =>
+const formatWithThousandsSeparator = (value: number): string | number =>
   value > 999 ? value.toLocaleString("de-CH").replaceAll("\u2019", "'") : value;
 
 /**
