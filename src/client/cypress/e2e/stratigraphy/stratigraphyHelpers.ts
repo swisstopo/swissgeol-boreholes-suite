@@ -1,4 +1,3 @@
-import { formatWithThousandsSeparator } from "../helpers/formHelpers";
 import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers";
 import { goToRouteAndAcceptTerms, newEditableBorehole } from "../helpers/testHelpers";
 
@@ -52,14 +51,6 @@ export const setDepth = (currentFromDepth: number, currentToDepth: number, side:
   cy.get(selector).type(`${newDepth}{enter}`);
 };
 
-/**
- * Insert a zero-thickness depth row via the small `+` button on the upper or lower edge of
- * a depth cell. The buttons are hover-revealed, so the cell is hovered first to expose them.
- *   - `"above"` inserts at the cell's fromDepth (use to add a row at the top of the table or
- *     just above the targeted cell).
- *   - `"below"` inserts at the cell's toDepth (use to add a row at the bottom of the table or
- *     just below the targeted cell).
- */
 export const insertDepthRow = (fromDepth: number, toDepth: number, position: "above" | "below") => {
   cy.get(`[data-cy="depth-${fromDepth}-${toDepth}"]`).realHover();
   cy.dataCy(`insert-depth-${position}-${fromDepth}-${toDepth}-button`).click();
@@ -111,14 +102,9 @@ export const checkDepthColumn = (depths: [number, number][]) => {
 };
 
 export const hasDepthError = (fromDepth: number, toDepth: number, startError: boolean, endError: boolean) => {
-  if (startError) {
-    cy.dataCy(`depth-${fromDepth}-${toDepth}`)
-      .contains(`${formatWithThousandsSeparator(fromDepth)} m MD`)
-      .should("have.css", "color", "rgb(191, 31, 37)");
-  }
-  if (endError) {
-    cy.dataCy(`depth-${fromDepth}-${toDepth}`)
-      .contains(`${formatWithThousandsSeparator(toDepth)} m MD`)
-      .should("have.css", "color", "rgb(191, 31, 37)");
+  if (startError || endError) {
+    cy.dataCy(`depth-${fromDepth}-${toDepth}`).find(".Mui-error").should("exist");
+  } else {
+    cy.dataCy(`depth-${fromDepth}-${toDepth}`).find(".Mui-error").should("not.exist");
   }
 };
