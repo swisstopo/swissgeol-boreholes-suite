@@ -18,6 +18,7 @@ import { LithologyModal } from "./lithology/form/lithologyModal.tsx";
 import { LithologyLabels } from "./lithology/lithologyLabels.tsx";
 import { defaultRowHeight } from "./lithologyTableUtils.ts";
 import {
+  DescriptionResizeHandle,
   LayerAddButton,
   StratigraphyTableActionCell,
   StratigraphyTableCell,
@@ -27,6 +28,7 @@ import {
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "./stratigraphyTableComponents.tsx";
+import { ResizeKind, useDescriptionResize } from "./useDescriptionResize.ts";
 import { LithologyTableState } from "./useLithologyTableState.ts";
 
 type LithologyTableColumn = "lithology" | "lithologicalDescription" | "faciesDescription";
@@ -50,6 +52,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     handleInsertDepthRow,
     handleDeleteDepthLayer,
     handleDeleteDescription,
+    resizeDescription,
     updateTmpLithology,
     updateTmpLithologicalDescription,
     updateTmpFaciesDescription,
@@ -79,6 +82,13 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     setHoveredItemDepthIds(depthIds && depthIds.length > 0 ? new Set(depthIds) : new Set());
   };
   const handleItemMouseLeave = () => setHoveredItemDepthIds(new Set());
+
+  const { activeDrag, previewRange, startResizeDrag } = useDescriptionResize({
+    depths,
+    tmpLithologicalDescriptions,
+    tmpFaciesDescriptions,
+    resizeDescription,
+  });
 
   const handleLithologyUpdate = (updated: Lithology, hasChanges: boolean) => {
     updateTmpLithology(updated, hasChanges);
@@ -116,6 +126,51 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     });
   };
 
+  const buildResizeHandles = (
+    kind: ResizeKind,
+    itemIdx: number,
+    layer: BaseLayer,
+    itemIndexByDepthId: Map<string, number>,
+  ): ReactNode => {
+    const ids = layer.depthIds ?? [];
+    if (ids.length === 0) return null;
+    const firstIdx = depths.findIndex(d => d.id === ids[0]);
+    const lastIdx = depths.findIndex(d => d.id === ids[ids.length - 1]);
+    if (firstIdx < 0 || lastIdx < 0) return null;
+    const hasGap = (depthIdx: number) => {
+      if (depthIdx < 0 || depthIdx >= depths.length) return false;
+      return !itemIndexByDepthId.has(depths[depthIdx].id);
+    };
+    const canShrink = ids.length > 1;
+    const showTop = hasGap(firstIdx - 1) || canShrink;
+    const showBottom = hasGap(lastIdx + 1) || canShrink;
+    if (!showTop && !showBottom) return null;
+    return (
+      <>
+        {showTop && (
+          <DescriptionResizeHandle
+            key={`resize-top-${itemIdx}`}
+            kind={kind}
+            side="top"
+            fromDepth={layer.fromDepth}
+            toDepth={layer.toDepth}
+            onMouseDown={event => startResizeDrag(event, kind, itemIdx, layer, "top")}
+          />
+        )}
+        {showBottom && (
+          <DescriptionResizeHandle
+            key={`resize-bottom-${itemIdx}`}
+            kind={kind}
+            side="bottom"
+            fromDepth={layer.fromDepth}
+            toDepth={layer.toDepth}
+            onMouseDown={event => startResizeDrag(event, kind, itemIdx, layer, "bottom")}
+          />
+        )}
+      </>
+    );
+  };
+
   const renderGapCell = (
     index: number,
     keyPrefix: string,
@@ -146,12 +201,14 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     buildContent: (layer: BaseLayer) => ReactNode,
     onEdit: (index: number) => void,
     onDelete?: (index: number) => void,
+    resizeHandles?: ReactNode,
+    heightInRows?: number,
   ) => (
     <StratigraphyTableActionCell
       key={`${keyPrefix}-${index}-${layer.fromDepth}-${layer.id}`}
       dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.toDepth}`}
       sx={{
-        height: `${defaultRowHeight * (layer.depthIds?.length ?? 1)}px`,
+        height: `${defaultRowHeight * (heightInRows ?? layer.depthIds?.length ?? 1)}px`,
         ...(isMarkedForDelete(layer) && {
           backgroundColor: theme.palette.error.background,
           "&:hover": { backgroundColor: theme.palette.error.backgroundHover },
@@ -162,7 +219,8 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
       onClick={onEdit}
       onHoverClick={onDelete ? index => onDelete(index) : undefined}
       onMouseEnter={() => handleItemMouseEnter(layer.depthIds)}
-      onMouseLeave={handleItemMouseLeave}>
+      onMouseLeave={handleItemMouseLeave}
+      resizeHandles={resizeHandles}>
       {buildContent(layer)}
     </StratigraphyTableActionCell>
   );
@@ -174,9 +232,33 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     onEdit: (index: number) => void,
     onDelete?: (index: number) => void,
     onAddInGap?: (depthId: string, fromDepth: number, toDepth: number) => void,
+    resizableKind?: ResizeKind,
   ): ReactNode[] => {
+    // Apply the in-flight resize preview to the matching description (only the description's
+    // own column — preview is purely visual; commit happens on mouseup via resizeDescription).
+    const effectiveLayers =
+      activeDrag && previewRange && resizableKind === activeDrag.kind
+        ? layers.map((layer, i) => {
+            if (i !== activeDrag.itemIdx) return layer;
+            const newDepthIds = depths
+              .filter(d => {
+                if (d.fromDepth === d.toDepth) {
+                  return d.fromDepth > previewRange.fromDepth && d.fromDepth < previewRange.toDepth;
+                }
+                return d.fromDepth >= previewRange.fromDepth && d.toDepth <= previewRange.toDepth;
+              })
+              .map(d => d.id);
+            return {
+              ...layer,
+              fromDepth: previewRange.fromDepth,
+              toDepth: previewRange.toDepth,
+              depthIds: newDepthIds,
+            };
+          })
+        : layers;
+
     const itemIndexByDepthId = new Map<string, number>();
-    layers.forEach((layer, idx) => {
+    effectiveLayers.forEach((layer, idx) => {
       for (const id of layer.depthIds ?? []) {
         itemIndexByDepthId.set(id, idx);
       }
@@ -189,7 +271,22 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
       if (itemIdx === undefined) {
         cells.push(renderGapCell(depthIdx, keyPrefix, depth.id, depth.fromDepth, depth.toDepth, onAddInGap));
       } else if (!renderedItems.has(itemIdx)) {
-        cells.push(renderActionCell(itemIdx, keyPrefix, layers[itemIdx], buildContent, onEdit, onDelete));
+        const layer = effectiveLayers[itemIdx];
+        const handles = resizableKind
+          ? buildResizeHandles(resizableKind, itemIdx, layer, itemIndexByDepthId)
+          : undefined;
+        cells.push(
+          renderActionCell(
+            itemIdx,
+            keyPrefix,
+            layer,
+            buildContent,
+            onEdit,
+            onDelete,
+            handles,
+            layer.depthIds?.length ?? 1,
+          ),
+        );
         renderedItems.add(itemIdx);
       }
       // else: item already rendered at an earlier depth and its cell spans through here.
@@ -403,6 +500,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                   index => setSelectedLithologicalDescription(tmpLithologicalDescriptions[index]),
                   index => handleDeleteDescription("lithological", index),
                   handleAddLithologicalDescriptionInGap,
+                  "lithological",
                 )}
               </StratigraphyTableColumn>
             )}
@@ -417,6 +515,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                   index => setSelectedFaciesDescription(tmpFaciesDescriptions[index]),
                   index => handleDeleteDescription("facies", index),
                   handleAddFaciesDescriptionInGap,
+                  "facies",
                 )}
               </StratigraphyTableColumn>
             )}

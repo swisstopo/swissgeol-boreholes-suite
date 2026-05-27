@@ -1,10 +1,11 @@
 import { FC, MouseEvent, ReactNode, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Chip, IconButton, Stack, SxProps, Typography } from "@mui/material";
+import { Box, Chip, IconButton, Stack, SxProps, Typography } from "@mui/material";
 import { styled } from "@mui/system";
 import { Copy, Plus, Trash2, TriangleAlert } from "lucide-react";
 import { theme } from "../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
+import { ResizeKind, ResizeSide } from "./useDescriptionResize.ts";
 
 export const StratigraphyTableHeader = styled(Stack)(() => ({
   flexDirection: "row",
@@ -67,6 +68,7 @@ interface StratigraphyTableLayerCellProps {
   sx?: SxProps;
   isAutoCorrected?: boolean;
   dataCy?: string;
+  resizeHandles?: ReactNode;
 }
 
 export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = ({
@@ -79,6 +81,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
   sx,
   isAutoCorrected,
   dataCy,
+  resizeHandles,
 }) => {
   const stackRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
@@ -124,6 +127,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
         }}>
         {children}
       </Stack>
+      {resizeHandles}
       {onHoverClick && (
         <Stack
           className="hover-content"
@@ -276,3 +280,57 @@ export const LayerAddButton: FC<LayerAddButtonProps> = ({ onClick, dataCy, size 
     </IconButton>
   );
 };
+
+interface DescriptionResizeHandleProps {
+  kind: ResizeKind;
+  side: ResizeSide;
+  fromDepth: number;
+  toDepth: number;
+  onMouseDown: (event: MouseEvent<HTMLElement>) => void;
+}
+
+export const DescriptionResizeHandle: FC<DescriptionResizeHandleProps> = ({
+  kind,
+  side,
+  fromDepth,
+  toDepth,
+  onMouseDown,
+}) => (
+  <Box
+    className="hover-content"
+    data-cy={`resize-description-${kind}-${side}-${fromDepth}-${toDepth}`}
+    onMouseDown={onMouseDown}
+    sx={{
+      position: "absolute",
+      [side]: theme.spacing(0.75),
+      left: theme.spacing(0.75),
+      right: theme.spacing(0.75),
+      height: "3px",
+      cursor: "ns-resize",
+      display: "flex",
+      justifyContent: "center",
+      zIndex: 2,
+      // Extend the interactive hit-box vertically beyond the visible pill.
+      "&::before": {
+        content: '""',
+        position: "absolute",
+        top: "-9px",
+        bottom: "-9px",
+        left: 0,
+        right: 0,
+      },
+      "& > .resize-handle-pill": {
+        height: "3px",
+        width: "40px",
+        borderRadius: "8px",
+        backgroundColor: theme.palette.primary.muted,
+        transition: "width 150ms ease-out, background-color 150ms ease-out",
+      },
+      "&:hover > .resize-handle-pill": {
+        width: "100%",
+        backgroundColor: theme.palette.primary.main,
+      },
+    }}>
+    <Box className="resize-handle-pill" />
+  </Box>
+);

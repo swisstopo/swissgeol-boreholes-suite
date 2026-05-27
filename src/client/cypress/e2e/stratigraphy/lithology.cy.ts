@@ -20,6 +20,7 @@ import {
   checkLayerCardContent,
   closeLayerModal,
   deleteLayer,
+  dragResizeDescription,
   hasAutoCorrectedStyle,
   hasDepthError,
   hasGapsAt,
@@ -1144,6 +1145,39 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasLayer({ layerType: LayerType.lithology, fromDepth: 70, toDepth: 100 });
     hasLayer({ layerType: LayerType.lithology, fromDepth: 100, toDepth: 100 });
     hasAutoCorrectedStyle({ layerType: LayerType.lithology, fromDepth: 100, toDepth: 100 });
+  });
+
+  it("resizes a lithological description across a gap row via the bottom handle", () => {
+    openNewStratigraphy();
+    addLithologyAtDepth(0, 30);
+    fillUnconsolidatedLithologyForm({});
+    closeLayerModal();
+    addLithologyAtDepth(30, 70);
+    fillUnconsolidatedLithologyForm({});
+    closeLayerModal();
+    addLithologyAtDepth(70, 100);
+    fillUnconsolidatedLithologyForm({});
+    closeLayerModal();
+    openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
+    fillLithologicalDescriptionForm({ description: "top description" });
+    closeLayerModal();
+
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 30 });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 30, isGap: true });
+
+    // Top row has no row above → top handle should not render.
+    cy.get(`[data-cy="resize-description-lithological-top-0-30"]`).should("not.exist");
+
+    // Drag the bottom handle one row down → description spans (0,70).
+    dragResizeDescription({
+      kind: "lithological",
+      fromDepth: 0,
+      toDepth: 30,
+      side: "bottom",
+      deltaRows: 1,
+    });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 70 });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 30, isGap: true, exists: false });
   });
 
   it("creates one gap per row in lithological and facies descriptions", () => {
