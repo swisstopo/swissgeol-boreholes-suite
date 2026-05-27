@@ -25,6 +25,7 @@ import {
   hasGapsAt,
   hasLayer,
   hasLayersAt,
+  hasNoDepthError,
   insertDepthRow,
   LayerType,
   openLayer,
@@ -1092,10 +1093,10 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     addLithology();
     // The new row is appended as a (0,0) zero-thickness row — should be flagged red on both
     // boundaries until the user extends it.
-    hasDepthError(0, 0, true, true);
+    hasDepthError(0, 0);
 
     setDepth(0, 0, "to", 50);
-    hasDepthError(0, 50, false, false);
+    hasNoDepthError(0, 50);
   });
 
   it("inserts zero-thickness depth rows via the depth-cell + buttons", () => {
@@ -1117,19 +1118,19 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
 
     // New row at the very top via "+" on the upper edge of the first cell.
     insertDepthRow(0, 30, "above");
-    hasDepthError(0, 0, true, true);
+    hasDepthError(0, 0);
 
     // New row in between via "+" on the lower edge of the upper neighbor.
     insertDepthRow(0, 30, "below");
-    hasDepthError(30, 30, true, true);
+    hasDepthError(30, 30);
 
     // New row in between via "+" on the upper edge of the lower neighbor.
     insertDepthRow(70, 100, "above");
-    hasDepthError(70, 70, true, true);
+    hasDepthError(70, 70);
 
     // New row at the very bottom via "+" on the lower edge of the last cell.
     insertDepthRow(70, 100, "below");
-    hasDepthError(100, 100, true, true);
+    hasDepthError(100, 100);
 
     // The original lithologies are still in place, plus four new autocorrected empty lithologies (one per inserted zt depth row).
     hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 0 });
@@ -1155,9 +1156,9 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [355, 798],
       [798, 1123],
     ]);
-    hasDepthError(0, 355, false, false);
-    hasDepthError(355, 798, false, false);
-    hasDepthError(798, 1123, false, false);
+    hasNoDepthError(0, 355);
+    hasNoDepthError(355, 798);
+    hasNoDepthError(798, 1123);
     hasLayersAt(LayerType.lithology, [
       [0, 355],
       [355, 798],
@@ -1178,9 +1179,9 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [355, 798],
       [798, 1123],
     ]);
-    hasDepthError(0, 355, false, false);
-    hasDepthError(355, 798, false, false);
-    hasDepthError(798, 1123, false, false);
+    hasNoDepthError(0, 355);
+    hasNoDepthError(355, 798);
+    hasNoDepthError(798, 1123);
     hasLayersAt(LayerType.lithology, [
       [0, 355],
       [355, 798],
@@ -1201,9 +1202,9 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [355, 798],
       [798, 1123],
     ]);
-    hasDepthError(0, 355, false, false);
-    hasDepthError(355, 798, false, false);
-    hasDepthError(798, 1123, false, false);
+    hasNoDepthError(0, 355);
+    hasNoDepthError(355, 798);
+    hasNoDepthError(798, 1123);
     hasLayersAt(LayerType.lithology, [
       [0, 355],
       [355, 798],
@@ -1224,9 +1225,9 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [355, 798],
       [798, 1123],
     ]);
-    hasDepthError(0, 355, false, false);
-    hasDepthError(355, 798, false, false);
-    hasDepthError(798, 1123, false, false);
+    hasNoDepthError(0, 355);
+    hasNoDepthError(355, 798);
+    hasNoDepthError(798, 1123);
     hasLayersAt(LayerType.lithology, [
       [0, 355],
       [355, 798],
@@ -1247,9 +1248,9 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [355, 798],
       [798, 1123],
     ]);
-    hasDepthError(0, 355, false, false);
-    hasDepthError(355, 798, false, false);
-    hasDepthError(798, 1123, false, false);
+    hasNoDepthError(0, 355);
+    hasNoDepthError(355, 798);
+    hasNoDepthError(798, 1123);
     hasLayersAt(LayerType.lithology, [
       [0, 355],
       [355, 798],
@@ -1270,9 +1271,9 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       [355, 798],
       [798, 1123],
     ]);
-    hasDepthError(0, 355, false, false);
-    hasDepthError(355, 798, false, false);
-    hasDepthError(798, 1123, false, false);
+    hasNoDepthError(0, 355);
+    hasNoDepthError(355, 798);
+    hasNoDepthError(798, 1123);
     hasLayersAt(LayerType.lithology, [
       [0, 355],
       [355, 798],

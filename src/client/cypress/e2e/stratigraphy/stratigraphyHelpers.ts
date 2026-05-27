@@ -101,10 +101,10 @@ export const checkDepthColumn = (depths: [number, number][]) => {
   });
 };
 
-export const hasDepthError = (fromDepth: number, toDepth: number, startError: boolean, endError: boolean) => {
-  if (startError || endError) {
-    cy.dataCy(`depth-${fromDepth}-${toDepth}`).find(".Mui-error").should("exist");
-  } else {
-    cy.dataCy(`depth-${fromDepth}-${toDepth}`).find(".Mui-error").should("not.exist");
-  }
+export const hasDepthError = (fromDepth: number, toDepth: number) => {
+  cy.dataCy(`depth-${fromDepth}-${toDepth}`).find(".Mui-error").should("exist");
+};
+
+export const hasNoDepthError = (fromDepth: number, toDepth: number) => {
+  cy.dataCy(`depth-${fromDepth}-${toDepth}`).find(".Mui-error").should("not.exist");
 };
