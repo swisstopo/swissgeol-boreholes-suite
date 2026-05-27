@@ -84,7 +84,7 @@ export const FormSelect: FC<FormSelectProps> = ({
     <Controller
       name={fieldName}
       control={control}
-      defaultValue={selected ?? ""}
+      defaultValue={selected ?? null}
       rules={{ ...rules, required: required ? "required" : false }}
       render={({ field, fieldState }) => {
         // Display FormSelect as a standard TextField in readonly mode, so that text becomes selectable

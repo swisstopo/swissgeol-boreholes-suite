@@ -14,7 +14,7 @@ const WaterIngressInput: FC<{ item: WaterIngress; parentId: number }> = ({ item,
     data = prepareCasingDataForSubmit(data);
     data = prepareObservationDataForSubmit(data, parentId);
     data.type = ObservationType.waterIngress;
-    if (data.conditionsId == null) {
+    if (!data.conditionsId) {
       data.conditionsId = null;
     }
     return data;
