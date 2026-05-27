@@ -2,7 +2,6 @@ import { FC, useState } from "react";
 import { Box, Stack } from "@mui/material";
 import { BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
 import { theme } from "../../../../../AppTheme.ts";
-import { StackHalfWidth } from "../../../../../components/styledComponents.ts";
 import { ExtractionImageContainer } from "../../../labeling/extractionImageContainer.tsx";
 import { PageSelection } from "../../../labeling/pageSelection.tsx";
 import { ExtractedLithologicalDescription } from "../lithologicalDescription.ts";
@@ -31,18 +30,17 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
   const [pageCount, setPageCount] = useState<number>();
 
   return (
-    <Stack direction="row" spacing={0} sx={{ height: "100%", minHeight: 0 }}>
-      <StackHalfWidth sx={{ flex: 1, width: "auto", minHeight: 0, overflow: "auto", padding: 3 }}>
+    <Stack direction="row" sx={{ height: "100%", minHeight: 0 }}>
+      <Stack sx={{ flex: 1, minHeight: 0, overflow: "auto", padding: 3 }}>
         <ExtractedStratigraphyTable
           lithologicalDescriptions={completedLithologicalDescriptions}
           isLoading={isLoading}
         />
-      </StackHalfWidth>
-      <StackHalfWidth
+      </Stack>
+      <Stack
         justifyContent="space-between"
         sx={{
           flex: 1,
-          width: "auto",
           minHeight: 0,
           backgroundColor: theme.palette.ai.background,
           borderLeft: `1px solid ${theme.palette.border.light}`,
@@ -62,7 +60,7 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
         <Box p={2} sx={{ zIndex: 500 }}>
           <PageSelection pageCount={pageCount} activePage={activePage} setActivePage={setActivePage} />
         </Box>
-      </StackHalfWidth>
+      </Stack>
     </Stack>
   );
 };
