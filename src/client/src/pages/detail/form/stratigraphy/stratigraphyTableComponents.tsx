@@ -163,7 +163,14 @@ interface StratigraphyTableGapProps {
   dataCy?: string;
 }
 
-export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ index, onClick, sx, dataCy }) => {
+export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({
+  index,
+  onClick,
+  onMouseEnter,
+  onMouseLeave,
+  sx,
+  dataCy,
+}) => {
   const { t } = useTranslation();
   return (
     <StratigraphyTableCell
@@ -180,6 +187,8 @@ export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ index, onC
         ...sx,
       }}
       data-cy={`${dataCy}-gap`}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       onClick={() => {
         if (onClick) {
           onClick(index);

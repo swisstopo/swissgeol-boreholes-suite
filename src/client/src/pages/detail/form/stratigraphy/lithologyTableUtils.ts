@@ -66,7 +66,7 @@ const fillLithologyGaps = (
 
   if (sortedBoundaries.length > 0) {
     const minBoundary = sortedBoundaries[0];
-    const maxBoundary = sortedBoundaries[sortedBoundaries.length - 1];
+    const maxBoundary = sortedBoundaries.at(-1)!;
 
     if (result.length === 0) {
       result.push(...fillRange(minBoundary, maxBoundary));
@@ -74,7 +74,7 @@ const fillLithologyGaps = (
       if (minBoundary < result[0].fromDepth) {
         result.unshift(...fillRange(minBoundary, result[0].fromDepth));
       }
-      const last = result[result.length - 1];
+      const last = result.at(-1)!;
       if (maxBoundary > last.toDepth) {
         result.push(...fillRange(last.toDepth, maxBoundary, last.isUnconsolidated));
       }

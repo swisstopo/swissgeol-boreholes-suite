@@ -211,15 +211,15 @@ export const useLithologyTableState = (
 
       const depthOrder = new Map<string, number>();
       newDepths.forEach((d, i) => depthOrder.set(d.id, i));
+      const compareByDepthOrder = (a: string, b: string) =>
+        (depthOrder.get(a) ?? Infinity) - (depthOrder.get(b) ?? Infinity);
 
       const extendIfSpanning = <T extends BaseLayer>(items: T[]): T[] =>
         items.map(item => {
           const ids = item.depthIds;
           if (!ids || !aboveId || !belowId) return item;
           if (!ids.includes(aboveId) || !ids.includes(belowId)) return item;
-          const newIds = [...ids, newDepthLayer.id].sort(
-            (a, b) => (depthOrder.get(a) ?? Infinity) - (depthOrder.get(b) ?? Infinity),
-          );
+          const newIds = [...ids, newDepthLayer.id].sort(compareByDepthOrder);
           return { ...item, depthIds: newIds };
         });
 
