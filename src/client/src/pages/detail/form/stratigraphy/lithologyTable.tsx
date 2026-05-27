@@ -47,6 +47,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     stratigraphyId,
     updateDepthBoundaries,
     handleAddDepthLayer,
+    handleInsertDepthRow,
     handleDeleteDepthLayer,
     handleDeleteDescription,
     updateTmpLithology,
@@ -65,12 +66,11 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
 
   const [deleteMenu, setDeleteMenu] = useState<{ anchorEl: HTMLElement; depthId: string } | null>(null);
   const [hoveredDeleteDepthId, setHoveredDeleteDepthId] = useState<string | null>(null);
-  const previewDeleteDepthId = deleteMenu?.depthId ?? hoveredDeleteDepthId;
-  const previewDeleteDepth = depths.find(d => d.id === previewDeleteDepthId);
+
+  const markedDepthId = deleteMenu?.depthId ?? hoveredDeleteDepthId;
+  const markedDepth = depths.find(d => d.id === markedDepthId);
   const isMarkedForDelete = (layer: BaseLayer): boolean =>
-    !!previewDeleteDepth &&
-    layer.fromDepth === previewDeleteDepth.fromDepth &&
-    layer.toDepth === previewDeleteDepth.toDepth;
+    !!markedDepth && layer.fromDepth === markedDepth.fromDepth && layer.toDepth === markedDepth.toDepth;
 
   const handleLithologyUpdate = (updated: Lithology, hasChanges: boolean) => {
     updateTmpLithology(updated, hasChanges);
@@ -190,14 +190,14 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     <Stack gap={1.5}>
       <Stack>
         <StratigraphyTableHeader>
-          <StratigraphyTableHeaderCell sx={{ flex: "0 0 120px" }} label={t("depth")} />
+          <StratigraphyTableHeaderCell sx={{ flex: "0 0 128px" }} label={t("depth")} />
           {showLithology && <StratigraphyTableHeaderCell label={t("lithology")} />}
           {showLithologicalDescription && <StratigraphyTableHeaderCell label={t("lithological_description")} />}
           {showFaciesDescription && <StratigraphyTableHeaderCell label={t("facies_description")} />}
         </StratigraphyTableHeader>
         {depths?.length > 0 && (
           <StratigraphyTableContent>
-            <StratigraphyTableColumn sx={{ flex: "0 0 120px" }}>
+            <StratigraphyTableColumn sx={{ flex: "0 0 128px" }}>
               {depths.map((depth, index) => {
                 const isFirst = index === 0;
                 const isLast = index === depths.length - 1;
@@ -220,7 +220,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                       height: `${defaultRowHeight}px`,
                       position: "relative",
                       overflow: "visible",
-                      ...(previewDeleteDepth?.id === depth.id && {
+                      ...(markedDepth?.id === depth.id && {
                         backgroundColor: theme.palette.error.background,
                       }),
                       "& .hover-content": { visibility: isMenuOpenForThis ? "visible" : "hidden" },
@@ -271,6 +271,34 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                         }}
                       />
                     </Stack>
+                    {markedDepth?.id !== depth.id && (
+                      <>
+                        <Stack
+                          className="hover-content"
+                          sx={{ position: "absolute", top: "-12px", left: "-12px", zIndex: 3 }}>
+                          <LayerAddButton
+                            size="small"
+                            dataCy={`insert-depth-above-${depth.fromDepth}-${depth.toDepth}-button`}
+                            onClick={event => {
+                              event.stopPropagation();
+                              handleInsertDepthRow(depth.id, "before");
+                            }}
+                          />
+                        </Stack>
+                        <Stack
+                          className="hover-content"
+                          sx={{ position: "absolute", bottom: "-12px", left: "-12px", zIndex: 3 }}>
+                          <LayerAddButton
+                            size="small"
+                            dataCy={`insert-depth-below-${depth.fromDepth}-${depth.toDepth}-button`}
+                            onClick={event => {
+                              event.stopPropagation();
+                              handleInsertDepthRow(depth.id, "after");
+                            }}
+                          />
+                        </Stack>
+                      </>
+                    )}
                     <DepthInput
                       value={depth.toDepth}
                       hasError={bottomBoundaryError}

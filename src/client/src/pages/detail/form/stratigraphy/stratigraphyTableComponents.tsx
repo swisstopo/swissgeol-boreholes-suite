@@ -1,4 +1,4 @@
-import { FC, ReactNode, useLayoutEffect, useRef, useState } from "react";
+import { FC, MouseEvent, ReactNode, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Chip, IconButton, Stack, SxProps, Typography } from "@mui/material";
 import { styled } from "@mui/system";
@@ -222,24 +222,31 @@ export const StratigraphyTableDescriptionGap: FC<StratigraphyTableGapProps> = ({
 );
 
 interface LayerAddButtonProps {
-  onClick?: () => void;
+  onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
   dataCy?: string;
+  size?: "small" | "default";
+  sx?: SxProps;
 }
 
-export const LayerAddButton: FC<LayerAddButtonProps> = ({ onClick, dataCy }) => (
-  <IconButton
-    onClick={onClick}
-    data-cy={dataCy}
-    sx={{
-      borderRadius: "50%",
-      backgroundColor: theme.palette.primary.main,
-      color: theme.palette.primary.contrastText,
-      width: 36,
-      height: 36,
-      "&:hover": {
-        backgroundColor: theme.palette.buttonStates.contained.hoverOrFocus.backgroundColor,
-      },
-    }}>
-    <Plus />
-  </IconButton>
-);
+export const LayerAddButton: FC<LayerAddButtonProps> = ({ onClick, dataCy, size = "default", sx }) => {
+  const isSmall = size === "small";
+  return (
+    <IconButton
+      onClick={onClick}
+      data-cy={dataCy}
+      sx={{
+        padding: 0,
+        borderRadius: "50%",
+        backgroundColor: theme.palette.primary.main,
+        color: theme.palette.primary.contrastText,
+        width: isSmall ? 24 : 36,
+        height: isSmall ? 24 : 36,
+        "&:hover": {
+          backgroundColor: theme.palette.buttonStates.contained.hoverOrFocus.backgroundColor,
+        },
+        ...sx,
+      }}>
+      <Plus />
+    </IconButton>
+  );
+};

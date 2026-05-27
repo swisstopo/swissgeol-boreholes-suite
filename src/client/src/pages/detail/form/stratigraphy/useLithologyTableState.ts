@@ -14,6 +14,7 @@ import {
 } from "./lithologyTableUtils.ts";
 
 type DepthDeleteAction = "extendLower" | "extendUpper" | "reduceBoreholeEnd";
+type DepthInsertPosition = "before" | "after";
 
 export interface LithologyTableState {
   depths: DepthLayer[];
@@ -24,6 +25,7 @@ export interface LithologyTableState {
 
   updateDepthBoundaries: (depthId: string, side: "from" | "to", newValue: number) => void;
   handleAddDepthLayer: () => void;
+  handleInsertDepthRow: (adjacentDepthId: string, position: DepthInsertPosition) => void;
   handleDeleteDepthLayer: (depthId: string, action: DepthDeleteAction) => void;
   handleDeleteDescription: (kind: "lithological" | "facies", index: number) => void;
   updateTmpLithology: (updated: Lithology, hasChanges: boolean) => void;
@@ -206,6 +208,57 @@ export const useLithologyTableState = (
     );
   }, [depths, tmpLithologies, tmpLithologicalDescriptions, tmpFaciesDescriptions, stratigraphyId, commitChanges]);
 
+  const handleInsertDepthRow = useCallback(
+    (parentDepthId: string, position: DepthInsertPosition) => {
+      const parentIndex = depths.findIndex(d => d.id === parentDepthId);
+      if (parentIndex < 0) return;
+      const parent = depths[parentIndex];
+      const boundary = position === "before" ? parent.fromDepth : parent.toDepth;
+      const insertIndex = position === "before" ? parentIndex : parentIndex + 1;
+      const aboveId = insertIndex > 0 ? depths[insertIndex - 1].id : null;
+      const belowId = insertIndex < depths.length ? depths[insertIndex].id : null;
+
+      const newDepthLayer: DepthLayer = {
+        id: uuidv4(),
+        fromDepth: boundary,
+        toDepth: boundary,
+      };
+      const aboveLithology = aboveId ? tmpLithologies.find(l => l.depthIds?.includes(aboveId)) : undefined;
+      const newLithology: Lithology = {
+        ...createEmptyLithology(boundary, boundary, stratigraphyId, aboveLithology?.isUnconsolidated ?? true),
+        depthIds: [newDepthLayer.id],
+      };
+
+      const newDepths = [...depths.slice(0, insertIndex), newDepthLayer, ...depths.slice(insertIndex)];
+      const newLithologies = [...tmpLithologies, newLithology];
+
+      const depthOrder = new Map<string, number>();
+      newDepths.forEach((d, i) => depthOrder.set(d.id, i));
+
+      const extendIfSpanning = <T extends BaseLayer>(items: T[]): T[] =>
+        items.map(item => {
+          const ids = item.depthIds;
+          if (!ids || !aboveId || !belowId) return item;
+          if (!ids.includes(aboveId) || !ids.includes(belowId)) return item;
+          const newIds = [...ids, newDepthLayer.id].sort(
+            (a, b) => (depthOrder.get(a) ?? Infinity) - (depthOrder.get(b) ?? Infinity),
+          );
+          return { ...item, depthIds: newIds };
+        });
+
+      const newLithologicalDescriptions = extendIfSpanning(tmpLithologicalDescriptions);
+      const newFaciesDescriptions = extendIfSpanning(tmpFaciesDescriptions);
+
+      commitChanges(
+        flagErrors(newDepths, newLithologies),
+        newLithologies,
+        newLithologicalDescriptions,
+        newFaciesDescriptions,
+      );
+    },
+    [depths, tmpLithologies, tmpLithologicalDescriptions, tmpFaciesDescriptions, stratigraphyId, commitChanges],
+  );
+
   const handleDeleteDepthLayer = useCallback(
     (depthId: string, action: DepthDeleteAction) => {
       if (depths.length === 1) {
@@ -380,6 +433,7 @@ export const useLithologyTableState = (
     stratigraphyId,
     updateDepthBoundaries,
     handleAddDepthLayer,
+    handleInsertDepthRow,
     handleDeleteDepthLayer,
     handleDeleteDescription,
     updateTmpLithology,
