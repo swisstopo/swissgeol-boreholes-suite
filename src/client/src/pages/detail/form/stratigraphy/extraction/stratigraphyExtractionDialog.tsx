@@ -199,7 +199,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
           )}
         </Stack>
       </DialogHeaderContainer>
-      <DialogMainContent>
+      <DialogMainContent sx={{ padding: 0 }}>
         <StratigraphyExtractionView
           file={file}
           activePage={activePage}
