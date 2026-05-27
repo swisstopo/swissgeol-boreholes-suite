@@ -65,12 +65,20 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
   const [selectedFaciesDescription, setSelectedFaciesDescription] = useState<FaciesDescription>();
 
   const [deleteMenu, setDeleteMenu] = useState<{ anchorEl: HTMLElement; depthId: string } | null>(null);
-  const [hoveredDeleteDepthId, setHoveredDeleteDepthId] = useState<string | null>(null);
-
-  const markedDepthId = deleteMenu?.depthId ?? hoveredDeleteDepthId;
-  const markedDepth = depths.find(d => d.id === markedDepthId);
+  const [trashHoverDepthId, setTrashHoverDepthId] = useState<string | null>(null);
+  const deletePreviewDepthId = deleteMenu?.depthId ?? trashHoverDepthId;
+  const deletePreviewDepth = depths.find(d => d.id === deletePreviewDepthId);
   const isMarkedForDelete = (layer: BaseLayer): boolean =>
-    !!markedDepth && layer.fromDepth === markedDepth.fromDepth && layer.toDepth === markedDepth.toDepth;
+    !!deletePreviewDepth &&
+    layer.fromDepth === deletePreviewDepth.fromDepth &&
+    layer.toDepth === deletePreviewDepth.toDepth;
+
+  const [hoveredItemDepthIds, setHoveredItemDepthIds] = useState<ReadonlySet<string>>(new Set());
+
+  const handleItemMouseEnter = (depthIds: string[] | undefined) => {
+    setHoveredItemDepthIds(depthIds && depthIds.length > 0 ? new Set(depthIds) : new Set());
+  };
+  const handleItemMouseLeave = () => setHoveredItemDepthIds(new Set());
 
   const handleLithologyUpdate = (updated: Lithology, hasChanges: boolean) => {
     updateTmpLithology(updated, hasChanges);
@@ -125,6 +133,8 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
         }}
         index={index}
         onClick={onAddInGap ? () => onAddInGap(depthId, fromDepth, toDepth) : undefined}
+        onMouseEnter={() => handleItemMouseEnter([depthId])}
+        onMouseLeave={handleItemMouseLeave}
       />
     );
   };
@@ -150,7 +160,9 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
       isAutoCorrected={layer.isAutoCorrected}
       index={index}
       onClick={onEdit}
-      onHoverClick={onDelete ? index => onDelete(index) : undefined}>
+      onHoverClick={onDelete ? index => onDelete(index) : undefined}
+      onMouseEnter={() => handleItemMouseEnter(layer.depthIds)}
+      onMouseLeave={handleItemMouseLeave}>
       {buildContent(layer)}
     </StratigraphyTableActionCell>
   );
@@ -212,6 +224,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                   }
                   setDeleteMenu({ anchorEl: event.currentTarget, depthId: depth.id });
                 };
+                const isHoveredViaItem = hoveredItemDepthIds.has(depth.id);
                 return (
                   <StratigraphyTableCell
                     key={`${depth.id}-depth-${depth.fromDepth}-${depth.toDepth}`}
@@ -220,10 +233,12 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                       height: `${defaultRowHeight}px`,
                       position: "relative",
                       overflow: "visible",
-                      ...(markedDepth?.id === depth.id && {
+                      ...(deletePreviewDepth?.id === depth.id && {
                         backgroundColor: theme.palette.error.background,
                       }),
-                      "& .hover-content": { visibility: isMenuOpenForThis ? "visible" : "hidden" },
+                      "& .hover-content": {
+                        visibility: isMenuOpenForThis || isHoveredViaItem ? "visible" : "hidden",
+                      },
                       "&:hover .hover-content": { visibility: "visible" },
                     }}>
                     {isFirst && (
@@ -253,8 +268,8 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                         icon={<Trash2 />}
                         color={isMenuOpenForThis ? undefined : "primaryInverse"}
                         onClick={onDeleteClick}
-                        onMouseEnter={() => setHoveredDeleteDepthId(depth.id)}
-                        onMouseLeave={() => setHoveredDeleteDepthId(null)}
+                        onMouseEnter={() => setTrashHoverDepthId(depth.id)}
+                        onMouseLeave={() => setTrashHoverDepthId(null)}
                         dataCy={`delete-depth-${depth.fromDepth}-${depth.toDepth}-button`}
                         sx={{
                           backgroundColor: isMenuOpenForThis
@@ -271,7 +286,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                         }}
                       />
                     </Stack>
-                    {markedDepth?.id !== depth.id && (
+                    {deletePreviewDepth?.id !== depth.id && (
                       <>
                         <Stack
                           className="hover-content"

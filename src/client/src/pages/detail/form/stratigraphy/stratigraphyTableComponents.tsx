@@ -62,6 +62,8 @@ interface StratigraphyTableLayerCellProps {
   index: number;
   onHoverClick?: (index: number) => void;
   onClick?: (index: number) => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
   sx?: SxProps;
   isAutoCorrected?: boolean;
   dataCy?: string;
@@ -72,6 +74,8 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
   index,
   onHoverClick,
   onClick,
+  onMouseEnter,
+  onMouseLeave,
   sx,
   isAutoCorrected,
   dataCy,
@@ -102,6 +106,8 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
         },
         ...sx,
       }}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}
       onClick={() => {
         if (onClick && isEditing) {
           onClick(index);
@@ -151,6 +157,8 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
 interface StratigraphyTableGapProps {
   index: number;
   onClick?: (index: number) => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
   sx?: SxProps;
   dataCy?: string;
 }
@@ -191,7 +199,14 @@ export const StratigraphyTableGap: FC<StratigraphyTableGapProps> = ({ index, onC
   );
 };
 
-export const StratigraphyTableDescriptionGap: FC<StratigraphyTableGapProps> = ({ index, onClick, sx, dataCy }) => (
+export const StratigraphyTableDescriptionGap: FC<StratigraphyTableGapProps> = ({
+  index,
+  onClick,
+  onMouseEnter,
+  onMouseLeave,
+  sx,
+  dataCy,
+}) => (
   <StratigraphyTableCell
     sx={{
       padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
@@ -206,6 +221,8 @@ export const StratigraphyTableDescriptionGap: FC<StratigraphyTableGapProps> = ({
       ...sx,
     }}
     data-cy={`${dataCy}-gap`}
+    onMouseEnter={onMouseEnter}
+    onMouseLeave={onMouseLeave}
     onClick={() => {
       if (onClick) {
         onClick(index);
