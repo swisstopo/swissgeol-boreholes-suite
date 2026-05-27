@@ -52,7 +52,7 @@ export const setDepth = (currentFromDepth: number, currentToDepth: number, side:
 };
 
 export const insertDepthRow = (fromDepth: number, toDepth: number, position: "above" | "below") => {
-  cy.get(`[data-cy="depth-${fromDepth}-${toDepth}"]`).realHover();
+  cy.get(`[data-cy="depth-${fromDepth}-${toDepth}"]`).realHover({ position: position === "above" ? "top" : "bottom" });
   cy.dataCy(`insert-depth-${position}-${fromDepth}-${toDepth}-button`).click();
 };
 
