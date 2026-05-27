@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useMemo, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import { BaseLayer } from "../../../../api/stratigraphy.ts";
 import { FaciesDescription } from "./faciesDescription.ts";
@@ -46,12 +46,19 @@ export const useLithologyTableState = (
   const [tmpLithologicalDescriptions, setTmpLithologicalDescriptions] = useState<LithologicalDescription[]>([]);
   const [tmpFaciesDescriptions, setTmpFaciesDescriptions] = useState<FaciesDescription[]>([]);
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [seededInputHash, setSeededInputHash] = useState<string | null>(null);
 
   const baselineRef = useRef({
     lithologies: "[]",
     lithologicalDescriptions: "[]",
     faciesDescriptions: "[]",
   });
+
+  const seedInputHash = useMemo(
+    () =>
+      JSON.stringify([initialLithologies, initialLithologicalDescriptions, initialFaciesDescriptions, stratigraphyId]),
+    [initialLithologies, initialLithologicalDescriptions, initialFaciesDescriptions, stratigraphyId],
+  );
 
   const seed = useCallback(() => {
     const { cleanDepths, cleanLithologies, cleanLithologicalDescriptions, cleanFaciesDescriptions } =
@@ -73,9 +80,10 @@ export const useLithologyTableState = (
     setHasUnsavedChanges(false);
   }, [initialLithologies, initialLithologicalDescriptions, initialFaciesDescriptions, stratigraphyId]);
 
-  useEffect(() => {
+  if (seedInputHash !== seededInputHash) {
+    setSeededInputHash(seedInputHash);
     seed();
-  }, [seed]);
+  }
 
   const commitChanges = useCallback(
     (
