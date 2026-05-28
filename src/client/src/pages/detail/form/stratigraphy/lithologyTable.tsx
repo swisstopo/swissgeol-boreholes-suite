@@ -135,7 +135,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     const ids = layer.depthIds ?? [];
     if (ids.length === 0) return null;
     const firstIdx = depths.findIndex(d => d.id === ids[0]);
-    const lastIdx = depths.findIndex(d => d.id === ids[ids.length - 1]);
+    const lastIdx = depths.findIndex(d => d.id === ids.at(-1));
     if (firstIdx < 0 || lastIdx < 0) return null;
     const hasGap = (depthIdx: number) => {
       if (depthIdx < 0 || depthIdx >= depths.length) return false;

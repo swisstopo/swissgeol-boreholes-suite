@@ -104,20 +104,24 @@ export const useDescriptionResize = ({
       return depths.length - 1;
     };
 
-    const computePreview = (clientY: number): PreviewRange => {
-      const targetIdx = findIdxAtClientY(clientY);
-      if (drag.side === "bottom") {
-        let newLastIdx = Math.max(drag.firstDepthIdx, Math.min(depths.length - 1, targetIdx));
-        if (newLastIdx > drag.lastDepthIdx) {
-          for (let i = drag.lastDepthIdx + 1; i <= newLastIdx; i++) {
-            if (ownedBySibling(i)) {
-              newLastIdx = i - 1;
-              break;
-            }
+    // Clamp the new bottom edge: start from the cursor's row but stop at the first
+    // sibling-owned row we'd cross. The drag can never reduce the description below its
+    // original range (Math.max with drag.firstDepthIdx).
+    const clampBottom = (targetIdx: number): number => {
+      let newLastIdx = Math.max(drag.firstDepthIdx, Math.min(depths.length - 1, targetIdx));
+      if (newLastIdx > drag.lastDepthIdx) {
+        for (let i = drag.lastDepthIdx + 1; i <= newLastIdx; i++) {
+          if (ownedBySibling(i)) {
+            newLastIdx = i - 1;
+            break;
           }
         }
-        return { fromDepth: drag.initialFromDepth, toDepth: depths[newLastIdx].toDepth };
       }
+      return newLastIdx;
+    };
+
+    // Mirror of clampBottom for the top edge.
+    const clampTop = (targetIdx: number): number => {
       let newFirstIdx = Math.max(0, Math.min(drag.lastDepthIdx, targetIdx));
       if (newFirstIdx < drag.firstDepthIdx) {
         for (let i = drag.firstDepthIdx - 1; i >= newFirstIdx; i--) {
@@ -127,14 +131,22 @@ export const useDescriptionResize = ({
           }
         }
       }
-      return { fromDepth: depths[newFirstIdx].fromDepth, toDepth: drag.initialToDepth };
+      return newFirstIdx;
+    };
+
+    const computePreview = (clientY: number): PreviewRange => {
+      const targetIdx = findIdxAtClientY(clientY);
+      if (drag.side === "bottom") {
+        const lastIdx = clampBottom(targetIdx);
+        return { fromDepth: drag.initialFromDepth, toDepth: depths[lastIdx].toDepth };
+      }
+      const firstIdx = clampTop(targetIdx);
+      return { fromDepth: depths[firstIdx].fromDepth, toDepth: drag.initialToDepth };
     };
 
     const updatePreview = (clientY: number) => {
       const next = computePreview(clientY);
-      setPreviewRange(prev =>
-        prev && prev.fromDepth === next.fromDepth && prev.toDepth === next.toDepth ? prev : next,
-      );
+      setPreviewRange(prev => (prev?.fromDepth === next.fromDepth && prev?.toDepth === next.toDepth ? prev : next));
     };
 
     const onMouseMove = (event: globalThis.MouseEvent) => {
@@ -164,10 +176,10 @@ export const useDescriptionResize = ({
       const swallowNextClick = (event: globalThis.MouseEvent) => {
         event.stopPropagation();
         event.preventDefault();
-        window.removeEventListener("click", swallowNextClick, true);
+        globalThis.removeEventListener("click", swallowNextClick, true);
       };
-      window.addEventListener("click", swallowNextClick, true);
-      setTimeout(() => window.removeEventListener("click", swallowNextClick, true), 0);
+      globalThis.addEventListener("click", swallowNextClick, true);
+      setTimeout(() => globalThis.removeEventListener("click", swallowNextClick, true), 0);
     };
 
     const onMouseUp = () => finish(true);
@@ -175,14 +187,14 @@ export const useDescriptionResize = ({
       if (event.key === "Escape") finish(false);
     };
 
-    window.addEventListener("mousemove", onMouseMove);
-    window.addEventListener("mouseup", onMouseUp);
-    window.addEventListener("keydown", onKeyDown);
+    globalThis.addEventListener("mousemove", onMouseMove);
+    globalThis.addEventListener("mouseup", onMouseUp);
+    globalThis.addEventListener("keydown", onKeyDown);
     document.addEventListener("scroll", onScroll, { capture: true, passive: true });
     return () => {
-      window.removeEventListener("mousemove", onMouseMove);
-      window.removeEventListener("mouseup", onMouseUp);
-      window.removeEventListener("keydown", onKeyDown);
+      globalThis.removeEventListener("mousemove", onMouseMove);
+      globalThis.removeEventListener("mouseup", onMouseUp);
+      globalThis.removeEventListener("keydown", onKeyDown);
       document.removeEventListener("scroll", onScroll, { capture: true });
       document.body.style.cursor = "";
     };
@@ -200,7 +212,7 @@ export const useDescriptionResize = ({
     const ids = layer.depthIds ?? [];
     if (ids.length === 0) return;
     const firstDepthIdx = depths.findIndex(d => d.id === ids[0]);
-    const lastDepthIdx = depths.findIndex(d => d.id === ids[ids.length - 1]);
+    const lastDepthIdx = depths.findIndex(d => d.id === ids.at(-1));
     if (firstDepthIdx < 0 || lastDepthIdx < 0) return;
     setActiveDrag({
       kind,
