@@ -41,6 +41,17 @@ export const DepthInput: FC<DepthInputProps> = ({ value, hasError, onCommit, pos
     }
   };
 
+  const getPositionStyles = () => {
+    switch (position) {
+      case "first":
+        return { top: theme.spacing(2), transform: "translateX(-50%)" };
+      case "last":
+        return { bottom: theme.spacing(2), transform: "translateX(-50%)" };
+      default:
+        return { bottom: 0, transform: "translate(-50%, 50%)", zIndex: 1 };
+    }
+  };
+
   return (
     <TextField
       label={t("mMd")}
@@ -59,11 +70,7 @@ export const DepthInput: FC<DepthInputProps> = ({ value, hasError, onCommit, pos
         width: "96px",
         backgroundColor: theme.palette.background.default,
         ...getFieldBorderColor(false),
-        ...(position === "first"
-          ? { top: theme.spacing(2), transform: "translateX(-50%)" }
-          : position === "last"
-            ? { bottom: theme.spacing(2), transform: "translateX(-50%)" }
-            : { bottom: 0, transform: "translate(-50%, 50%)", zIndex: 1 }),
+        ...getPositionStyles(),
       }}
       slotProps={{
         input: {
