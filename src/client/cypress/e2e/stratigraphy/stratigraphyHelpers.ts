@@ -84,8 +84,9 @@ export const dragResizeDescription = ({
 };
 
 export const insertDepthRow = (fromDepth: number, toDepth: number, position: "above" | "below") => {
+  cy.get(`[data-cy="depth-${fromDepth}-${toDepth}"]`).scrollIntoView();
   cy.get(`[data-cy="depth-${fromDepth}-${toDepth}"]`).realHover({ position: position === "above" ? "top" : "bottom" });
-  cy.dataCy(`insert-depth-${position}-${fromDepth}-${toDepth}-button`).click();
+  cy.dataCy(`insert-depth-${position}-${fromDepth}-${toDepth}-button`).click({ force: true });
 };
 
 export const hasLayer = ({ layerType, fromDepth, toDepth, isGap, exists = true }: HasLayerInput) => {
