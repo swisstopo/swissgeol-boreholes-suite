@@ -28,7 +28,7 @@ export const LocationPanel: FC<LocationPanelProps> = ({ borehole, labelingPanelO
       locationXLV03: borehole.locationXLV03?.toFixed(borehole.precisionLocationXLV03 ?? undefined) ?? "",
       locationYLV03: borehole.locationYLV03?.toFixed(borehole.precisionLocationYLV03 ?? undefined) ?? "",
       locationPrecisionId: borehole.locationPrecisionId,
-      originalReferenceSystem: borehole.originalReferenceSystem as ReferenceSystemCode | undefined,
+      originalReferenceSystemId: borehole.originalReferenceSystemId ?? undefined,
     },
   });
 

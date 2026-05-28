@@ -527,7 +527,6 @@ export type {
   PutApiVbyVersionWorkgroupData,
   PutApiVbyVersionWorkgroupErrors,
   PutApiVbyVersionWorkgroupResponses,
-  ReferenceSystem,
   Role,
   Section,
   SectionElement,

@@ -160,7 +160,11 @@ export type Borehole = {
    * Gets or sets the precision for the BDMS.Models.Borehole's Y-location (LV03).
    */
   precisionLocationYLV03?: number | null;
-  originalReferenceSystem?: ReferenceSystem;
+  /**
+   * Gets or sets the BDMS.Models.Borehole's original reference system id.
+   */
+  originalReferenceSystemId?: number | null;
+  originalReferenceSystem?: Codelist;
   /**
    * Gets or sets the BDMS.Models.Borehole's Elevation(Z).
    */
@@ -1491,8 +1495,9 @@ export type Lithology = {
   toDepth: number;
   /**
    * Gets or sets whether the BDMS.Models.Lithology is unconsolidated or consolidated.
+   * `null` means no specification.
    */
-  isUnconsolidated: boolean;
+  isUnconsolidated?: boolean | null;
   /**
    * Gets or sets whether the BDMS.Models.Lithology has bedding.
    */
@@ -2486,11 +2491,6 @@ export type ProfileUpdate = {
 };
 
 /**
- * Represents a reference system.
- */
-export type ReferenceSystem = 0 | 20104001 | 20104002;
-
-/**
  * Represents a role entity in the database.
  */
 export type Role = "View" | "Editor" | "Controller" | "Validator" | "Publisher";
@@ -3235,7 +3235,11 @@ export type BoreholeWritable = {
    * Gets or sets the precision for the BDMS.Models.Borehole's Y-location (LV03).
    */
   precisionLocationYLV03?: number | null;
-  originalReferenceSystem?: ReferenceSystem;
+  /**
+   * Gets or sets the BDMS.Models.Borehole's original reference system id.
+   */
+  originalReferenceSystemId?: number | null;
+  originalReferenceSystem?: CodelistWritable;
   /**
    * Gets or sets the BDMS.Models.Borehole's Elevation(Z).
    */
@@ -4296,8 +4300,9 @@ export type LithologyWritable = {
   toDepth: number;
   /**
    * Gets or sets whether the BDMS.Models.Lithology is unconsolidated or consolidated.
+   * `null` means no specification.
    */
-  isUnconsolidated: boolean;
+  isUnconsolidated?: boolean | null;
   /**
    * Gets or sets whether the BDMS.Models.Lithology has bedding.
    */

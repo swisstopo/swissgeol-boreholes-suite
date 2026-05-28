@@ -7583,8 +7583,14 @@
             "format": "int32",
             "nullable": true
           },
+          "originalReferenceSystemId": {
+            "type": "integer",
+            "description": "Gets or sets the BDMS.Models.Borehole's original reference system id.",
+            "format": "int32",
+            "nullable": true
+          },
           "originalReferenceSystem": {
-            "$ref": "#/components/schemas/ReferenceSystem"
+            "$ref": "#/components/schemas/Codelist"
           },
           "elevationZ": {
             "type": "number",
@@ -10222,7 +10228,6 @@
         "required": [
           "fromDepth",
           "id",
-          "isUnconsolidated",
           "stratigraphyId",
           "toDepth"
         ],
@@ -10275,7 +10280,8 @@
           },
           "isUnconsolidated": {
             "type": "boolean",
-            "description": "Gets or sets whether the BDMS.Models.Lithology is unconsolidated or consolidated."
+            "description": "Gets or sets whether the BDMS.Models.Lithology is unconsolidated or consolidated.\r\n`null` means no specification.",
+            "nullable": true
           },
           "hasBedding": {
             "type": "boolean",
@@ -12247,16 +12253,6 @@
         },
         "additionalProperties": false,
         "description": "Represents the editable properties of a BDMS.Models.Profile."
-      },
-      "ReferenceSystem": {
-        "enum": [
-          0,
-          20104001,
-          20104002
-        ],
-        "type": "integer",
-        "description": "Represents a reference system.",
-        "format": "int32"
       },
       "Role": {
         "enum": [
