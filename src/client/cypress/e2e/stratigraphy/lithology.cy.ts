@@ -1117,19 +1117,19 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     ]);
 
     // New row at the very top via "+" on the upper edge of the first cell.
-    insertDepthRow(0, 30, "above");
+    insertDepthRow(0, 30, "before");
     hasDepthError(0, 0);
 
     // New row in between via "+" on the lower edge of the upper neighbor.
-    insertDepthRow(0, 30, "below");
+    insertDepthRow(0, 30, "after");
     hasDepthError(30, 30);
 
     // New row in between via "+" on the upper edge of the lower neighbor.
-    insertDepthRow(70, 100, "above");
+    insertDepthRow(70, 100, "before");
     hasDepthError(70, 70);
 
     // New row at the very bottom via "+" on the lower edge of the last cell.
-    insertDepthRow(70, 100, "below");
+    insertDepthRow(70, 100, "after");
     hasDepthError(100, 100);
 
     // The original lithologies are still in place, plus four new autocorrected empty lithologies (one per inserted zt depth row).
