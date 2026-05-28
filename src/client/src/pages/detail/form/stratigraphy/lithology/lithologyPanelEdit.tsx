@@ -17,7 +17,7 @@ interface LithologyPanelEditProps {
   faciesDescriptions: FaciesDescription[];
 }
 
-const stripClientFields = <T extends BaseLayer>(item: T): T => {
+const prepareDataForSubmit = <T extends BaseLayer>(item: T): T => {
   const copy = { ...item } as T & { depthIds?: unknown; isAutoCorrected?: unknown };
   delete copy.depthIds;
   delete copy.isAutoCorrected;
@@ -33,10 +33,10 @@ interface ColumnDiff<T> {
 const diffColumn = <T extends BaseLayer>(orig: T[], tmp: T[]): ColumnDiff<T> => {
   const tmpById = new Map<number, T>();
   for (const t of tmp) {
-    if (t.id !== 0) tmpById.set(t.id, stripClientFields(t));
+    if (t.id !== 0) tmpById.set(t.id, t);
   }
   const toDelete = orig.filter(o => !tmpById.has(o.id));
-  const toAdd = tmp.filter(t => t.id === 0).map(stripClientFields);
+  const toAdd = tmp.filter(t => t.id === 0);
   const toUpdate: T[] = [];
   for (const o of orig) {
     const tmpItem = tmpById.get(o.id);
@@ -76,21 +76,32 @@ export const LithologyPanelEdit: FC<LithologyPanelEditProps> = ({
     invalidateQueries: invalidateFaciesDescriptionQueries,
   } = useFaciesDescriptionMutations(true);
 
-  const lithology = useLithologyTableState(lithologies, lithologicalDescriptions, faciesDescriptions, stratigraphyId);
+  const lithologyTableState = useLithologyTableState(
+    lithologies,
+    lithologicalDescriptions,
+    faciesDescriptions,
+    stratigraphyId,
+  );
 
   useEffect(() => {
-    markAsChanged(lithology.hasUnsavedChanges);
-  }, [lithology.hasUnsavedChanges, markAsChanged]);
+    markAsChanged(lithologyTableState.hasUnsavedChanges);
+  }, [lithologyTableState.hasUnsavedChanges, markAsChanged]);
 
   const onSave = useCallback(async () => {
-    if (lithology.hasErrors) {
+    if (lithologyTableState.hasErrors) {
       showAlert(t("gapOrOverlayErrorCannotSave"), "error");
       return false;
     }
 
-    const lithologyDiff = diffColumn(lithologies, lithology.tmpLithologies);
-    const lithDescDiff = diffColumn(lithologicalDescriptions, lithology.tmpLithologicalDescriptions);
-    const faciesDiff = diffColumn(faciesDescriptions, lithology.tmpFaciesDescriptions);
+    // Strip view-only fields once so the buckets are directly comparable to server data and
+    // ready to ship to the API without further per-item transformation.
+    const tmpLithologies = lithologyTableState.tmpLithologies.map(prepareDataForSubmit);
+    const tmpLithDescriptions = lithologyTableState.tmpLithologicalDescriptions.map(prepareDataForSubmit);
+    const tmpFaciesDescriptions = lithologyTableState.tmpFaciesDescriptions.map(prepareDataForSubmit);
+
+    const lithologyDiff = diffColumn(lithologies, tmpLithologies);
+    const lithDescDiff = diffColumn(lithologicalDescriptions, tmpLithDescriptions);
+    const faciesDiff = diffColumn(faciesDescriptions, tmpFaciesDescriptions);
 
     await Promise.all([
       ...lithologyDiff.toDelete.map(l => deleteLithology(l)),
@@ -111,7 +122,7 @@ export const LithologyPanelEdit: FC<LithologyPanelEditProps> = ({
     invalidateFaciesDescriptionQueries();
     return true;
   }, [
-    lithology,
+    lithologyTableState,
     lithologies,
     lithologicalDescriptions,
     faciesDescriptions,
@@ -133,13 +144,13 @@ export const LithologyPanelEdit: FC<LithologyPanelEditProps> = ({
   ]);
 
   const onReset = useCallback(() => {
-    lithology.reset();
-  }, [lithology]);
+    lithologyTableState.reset();
+  }, [lithologyTableState]);
 
   useEffect(() => {
     registerSaveHandler(onSave, "lithology");
     registerResetHandler(onReset, "lithology");
   }, [onSave, onReset, registerSaveHandler, registerResetHandler]);
 
-  return <LithologyTable state={lithology} />;
+  return <LithologyTable state={lithologyTableState} />;
 };
