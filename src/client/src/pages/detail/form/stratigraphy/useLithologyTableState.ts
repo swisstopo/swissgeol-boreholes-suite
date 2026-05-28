@@ -14,7 +14,7 @@ import {
 } from "./lithologyTableUtils.ts";
 
 type DepthDeleteAction = "extendLower" | "extendUpper" | "reduceBoreholeEnd";
-type DepthInsertPosition = "before" | "after";
+export type DepthInsertPosition = "before" | "after";
 
 export interface LithologyTableState {
   depths: DepthLayer[];

@@ -5,6 +5,8 @@ import { styled } from "@mui/system";
 import { Copy, Plus, Trash2, TriangleAlert } from "lucide-react";
 import { theme } from "../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
+import { defaultRowHeight, DepthLayer } from "./lithologyTableUtils.ts";
+import { DepthInsertPosition } from "./useLithologyTableState.ts";
 
 export const StratigraphyTableHeader = styled(Stack)(() => ({
   flexDirection: "row",
@@ -91,6 +93,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
     }
   }, [children]);
 
+  // TODO: Fix AutoCorrected-Style. Either remove it or add the colors to the theme
   return (
     <StratigraphyTableCell
       data-cy={dataCy}
@@ -247,6 +250,35 @@ export const StratigraphyTableDescriptionGap: FC<StratigraphyTableGapProps> = ({
   </StratigraphyTableCell>
 );
 
+interface InsertDepthButtonProps {
+  depth: DepthLayer;
+  onClick: (adjacentDepthId: string, position: DepthInsertPosition) => void;
+  position: DepthInsertPosition;
+}
+
+export const InsertDepthButton: FC<InsertDepthButtonProps> = ({ depth, onClick, position }) => {
+  return (
+    <Stack
+      className="hover-content"
+      sx={{
+        position: "absolute",
+        left: "-12px",
+        top: position === "before" ? "-12px" : undefined,
+        bottom: position === "after" ? "-12px" : undefined,
+        zIndex: 3,
+      }}>
+      <LayerAddButton
+        size="small"
+        dataCy={`insert-depth-${position}-${depth.fromDepth}-${depth.toDepth}-button`}
+        onClick={event => {
+          event.stopPropagation();
+          onClick(depth.id, position);
+        }}
+      />
+    </Stack>
+  );
+};
+
 interface LayerAddButtonProps {
   onClick?: (event: MouseEvent<HTMLButtonElement>) => void;
   dataCy?: string;
@@ -274,5 +306,78 @@ export const LayerAddButton: FC<LayerAddButtonProps> = ({ onClick, dataCy, size 
       }}>
       <Plus />
     </IconButton>
+  );
+};
+
+interface DepthColumnCellProps {
+  depth: DepthLayer;
+  showHoverContent: boolean;
+  isDeletePreview: boolean;
+  children: ReactNode;
+}
+
+export const DepthColumnCell: FC<DepthColumnCellProps> = ({ depth, showHoverContent, isDeletePreview, children }) => (
+  <StratigraphyTableCell
+    data-cy={`depth-${depth.fromDepth}-${depth.toDepth}`}
+    data-show-hover-content={showHoverContent}
+    data-delete-preview={isDeletePreview}
+    sx={{
+      height: `${defaultRowHeight}px`,
+      position: "relative",
+      overflow: "visible",
+      ...(isDeletePreview && {
+        backgroundColor: theme.palette.error.background,
+      }),
+      "& .hover-content": {
+        visibility: showHoverContent ? "visible" : "hidden",
+      },
+      "&:hover .hover-content": { visibility: "visible" },
+    }}>
+    {children}
+  </StratigraphyTableCell>
+);
+
+interface DepthDeleteButtonProps {
+  isMenuOpen: boolean;
+  onClick: (event: MouseEvent<HTMLElement>) => void;
+  onMouseEnter: () => void;
+  onMouseLeave: () => void;
+  dataCy: string;
+}
+
+export const DepthDeleteButton: FC<DepthDeleteButtonProps> = ({
+  isMenuOpen,
+  onClick,
+  onMouseEnter,
+  onMouseLeave,
+  dataCy,
+}) => {
+  const activeBackground = theme.palette.buttonStates.outlined.active.backgroundColor;
+  const neutralBackground = theme.palette.background.grey;
+  const background = isMenuOpen ? activeBackground : neutralBackground;
+  return (
+    <Stack
+      className="hover-content"
+      sx={{
+        position: "absolute",
+        top: "50%",
+        left: "50%",
+        transform: "translate(-50%, -50%)",
+        zIndex: 2,
+      }}>
+      <StandaloneIconButton
+        icon={<Trash2 />}
+        color={isMenuOpen ? undefined : "primaryInverse"}
+        onClick={onClick}
+        onMouseEnter={onMouseEnter}
+        onMouseLeave={onMouseLeave}
+        dataCy={dataCy}
+        sx={{
+          backgroundColor: background,
+          ...(isMenuOpen && { color: theme.palette.buttonStates.outlined.active.color }),
+          "&:hover": { backgroundColor: background },
+        }}
+      />
+    </Stack>
   );
 };
