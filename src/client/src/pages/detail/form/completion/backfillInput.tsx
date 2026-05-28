@@ -1,27 +1,40 @@
-import { addBackfill, updateBackfill } from "../../../../api/fetchApiV2.ts";
+﻿import { useQuery } from "@tanstack/react-query";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard.tsx";
 import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
-import { useCasings } from "./casing.ts";
-import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils";
-import { completionSchemaConstants } from "./completionSchemaConstants";
-import { prepareEntityDataForSubmit } from "./completionUtils.js";
+import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils.tsx";
+import {
+  addCompletionBackfill,
+  BackfillData,
+  DataCardItemInputProps,
+  getCompletionCasings,
+  updateCompletionBackfill,
+} from "./completionInterfaces.ts";
+import { completionSchemaConstants } from "./completionSchemaConstants.ts";
+import { prepareEntityDataForSubmit } from "./completionUtils.ts";
 
-const BackfillInput = ({ item, parentId }) => {
+const BackfillInput = ({ item, parentId }: DataCardItemInputProps<BackfillData>) => {
+  const { data: casings = [] } = useQuery({
+    queryKey: ["casings", parentId],
+    queryFn: () => getCompletionCasings(parentId),
+    enabled: !!parentId,
+  });
+
   const getCasingOptions = useGetCasingOptions();
-  const { data: casings = [] } = useCasings(parentId);
+  const casingOptions = getCasingOptions(casings);
 
-  const prepareFormDataForSubmit = data => {
+  const prepareFormDataForSubmit = (data: BackfillData): BackfillData => {
     data = prepareCasingDataForSubmit(data);
     data = prepareEntityDataForSubmit(data, parentId);
     return data;
   };
 
+  if (!casingOptions) return null;
   return (
     <DataInputCard
       item={item}
-      addData={addBackfill}
-      updateData={updateBackfill}
+      addData={addCompletionBackfill}
+      updateData={updateCompletionBackfill}
       entityName="backfill"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <FormContainer direction="row">
@@ -61,7 +74,7 @@ const BackfillInput = ({ item, parentId }) => {
           fieldName="casingId"
           label="casingName"
           selected={item.isOpenBorehole ? -1 : item.casingId}
-          values={getCasingOptions(casings)}
+          values={casingOptions}
         />
       </FormContainer>
       <FormContainer>

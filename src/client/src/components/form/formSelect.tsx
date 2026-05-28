@@ -121,8 +121,8 @@ export const FormSelect: FC<FormSelectProps> = ({
             isOptionEqualToValue={(option, value) => option.key === value.key}
             value={
               field.value === null || field.value === undefined
-                ? undefined
-                : menuItems.find(opt => opt.value === field.value)
+                ? null
+                : (menuItems.find(opt => opt.value === field.value) ?? null)
             }
             onChange={(_, newValue) => {
               if (newValue?.label.toLowerCase() === t("reset").toLowerCase()) {
@@ -159,7 +159,9 @@ export const FormSelect: FC<FormSelectProps> = ({
               );
             }}
             disabled={disabled}
-            disableClearable
+            // We need to allow null as a type MUI's Autocomplete uses TypeScript's conditional types — when DisableClearable is literal true, the value type becomes NonNullable<T> (no null). By widening true to boolean, TypeScript
+            // distributes the conditional over both true | false, resulting in T | T | null = T | null. The clear button is still hidden at runtime (the value is still true), but the type system now correctly allows null as a value.
+            disableClearable={true as boolean}
           />
         );
       }}
