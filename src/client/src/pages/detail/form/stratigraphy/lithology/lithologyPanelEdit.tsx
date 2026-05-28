@@ -17,9 +17,6 @@ interface LithologyPanelEditProps {
   faciesDescriptions: FaciesDescription[];
 }
 
-type IdentifiableLayer = BaseLayer & { id: number };
-
-/** Strip client-only fields before comparing to server data or sending over the wire. */
 const stripClientFields = <T extends BaseLayer>(item: T): T => {
   const copy = { ...item } as T & { depthIds?: unknown; isAutoCorrected?: unknown };
   delete copy.depthIds;
@@ -33,8 +30,7 @@ interface ColumnDiff<T> {
   toUpdate: T[];
 }
 
-/** Bucket tmp items per server original: new (id===0), changed (json differs), or to be deleted. */
-const diffColumn = <T extends IdentifiableLayer>(orig: T[], tmp: T[]): ColumnDiff<T> => {
+const diffColumn = <T extends BaseLayer>(orig: T[], tmp: T[]): ColumnDiff<T> => {
   const tmpById = new Map<number, T>();
   for (const t of tmp) {
     if (t.id !== 0) tmpById.set(t.id, stripClientFields(t));
@@ -50,12 +46,6 @@ const diffColumn = <T extends IdentifiableLayer>(orig: T[], tmp: T[]): ColumnDif
   return { toDelete, toAdd, toUpdate };
 };
 
-/**
- * Edit-mode subtree: owns the lithology-table state hook + save/reset registration. Lives in
- * its own component so it mounts only in edit mode — entering edit mode seeds the hook from
- * the freshly fetched server data, and leaving discards in-progress UI state. The hook
- * re-seeds whenever react-query updates the data props (e.g. after save+invalidate).
- */
 export const LithologyPanelEdit: FC<LithologyPanelEditProps> = ({
   stratigraphyId,
   lithologies,
