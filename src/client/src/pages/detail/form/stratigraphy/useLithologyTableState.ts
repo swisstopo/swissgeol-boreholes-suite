@@ -13,7 +13,7 @@ import {
   removeDepthIdReferences,
 } from "./lithologyTableUtils.ts";
 
-type DepthDeleteAction = "extendLower" | "extendUpper" | "reduceBoreholeEnd";
+export type DepthDeleteAction = "extendLower" | "extendUpper" | "reduceBoreholeEnd";
 export type DepthInsertPosition = "before" | "after";
 
 export interface LithologyTableState {

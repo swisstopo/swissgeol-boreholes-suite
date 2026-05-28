@@ -1,12 +1,14 @@
 import { FC, MouseEvent, ReactNode, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Chip, IconButton, Stack, SxProps, Typography } from "@mui/material";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 import { styled } from "@mui/system";
 import { Copy, Plus, Trash2, TriangleAlert } from "lucide-react";
 import { theme } from "../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
 import { defaultRowHeight, DepthLayer } from "./lithologyTableUtils.ts";
-import { DepthInsertPosition } from "./useLithologyTableState.ts";
+import { DepthDeleteAction, DepthInsertPosition } from "./useLithologyTableState.ts";
 
 export const StratigraphyTableHeader = styled(Stack)(() => ({
   flexDirection: "row",
@@ -338,23 +340,54 @@ export const DepthColumnCell: FC<DepthColumnCellProps> = ({ depth, showHoverCont
 );
 
 interface DepthDeleteButtonProps {
-  isMenuOpen: boolean;
-  onClick: (event: MouseEvent<HTMLElement>) => void;
-  onMouseEnter: () => void;
-  onMouseLeave: () => void;
-  dataCy: string;
+  depth: DepthLayer;
+  isFirst: boolean;
+  isLast: boolean;
+  isOnly: boolean;
+  onDelete: (depthId: string, action: DepthDeleteAction) => void;
+  onMouseEnter?: () => void;
+  onMouseLeave?: () => void;
+  onMenuOpenChange?: (isOpen: boolean) => void;
 }
 
 export const DepthDeleteButton: FC<DepthDeleteButtonProps> = ({
-  isMenuOpen,
-  onClick,
+  depth,
+  isFirst,
+  isLast,
+  isOnly,
+  onDelete,
   onMouseEnter,
   onMouseLeave,
-  dataCy,
+  onMenuOpenChange,
 }) => {
+  const { t } = useTranslation();
+  const [anchorEl, setAnchorEl] = useState<HTMLElement | null>(null);
+  const isMenuOpen = anchorEl !== null;
+
   const activeBackground = theme.palette.buttonStates.outlined.active.backgroundColor;
   const neutralBackground = theme.palette.background.grey;
   const background = isMenuOpen ? activeBackground : neutralBackground;
+
+  const handleClick = (event: MouseEvent<HTMLElement>) => {
+    event.stopPropagation();
+    if (isFirst || isOnly) {
+      onDelete(depth.id, "extendLower");
+      return;
+    }
+    setAnchorEl(event.currentTarget);
+    onMenuOpenChange?.(true);
+  };
+
+  const closeMenu = () => {
+    setAnchorEl(null);
+    onMenuOpenChange?.(false);
+  };
+
+  const handleAction = (action: DepthDeleteAction) => {
+    onDelete(depth.id, action);
+    closeMenu();
+  };
+
   return (
     <Stack
       className="hover-content"
@@ -368,16 +401,40 @@ export const DepthDeleteButton: FC<DepthDeleteButtonProps> = ({
       <StandaloneIconButton
         icon={<Trash2 />}
         color={isMenuOpen ? undefined : "primaryInverse"}
-        onClick={onClick}
+        onClick={handleClick}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
-        dataCy={dataCy}
+        dataCy={`delete-depth-${depth.fromDepth}-${depth.toDepth}-button`}
         sx={{
           backgroundColor: background,
           ...(isMenuOpen && { color: theme.palette.buttonStates.outlined.active.color }),
           "&:hover": { backgroundColor: background },
         }}
       />
+      <Menu
+        anchorEl={anchorEl}
+        open={isMenuOpen}
+        onClose={closeMenu}
+        anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
+        transformOrigin={{ vertical: "top", horizontal: "left" }}
+        slotProps={{
+          paper: {
+            sx: {
+              marginTop: theme.spacing(0.5),
+              border: `1px solid ${theme.palette.border.darker}`,
+              boxShadow: theme.shadows[1],
+            },
+          },
+        }}>
+        <MenuItem onClick={() => handleAction("extendUpper")} data-cy="extend-upper-layer-downward">
+          {t("extendUpperLayerDownward")}
+        </MenuItem>
+        <MenuItem
+          onClick={() => handleAction(isLast ? "reduceBoreholeEnd" : "extendLower")}
+          data-cy={isLast ? "reduce-borehole-end-depth" : "extend-lower-layer-upward"}>
+          {isLast ? t("reduceBoreholeEndDepth") : t("extendLowerLayerUpward")}
+        </MenuItem>
+      </Menu>
     </Stack>
   );
 };

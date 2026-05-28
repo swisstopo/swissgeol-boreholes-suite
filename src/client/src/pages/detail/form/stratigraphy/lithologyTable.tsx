@@ -1,8 +1,6 @@
-import { FC, MouseEvent, ReactNode, useMemo, useState } from "react";
+import { FC, ReactNode, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
 import { BaseLayer } from "../../../../api/stratigraphy.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { AddRowButton } from "../../../../components/buttons/buttons.tsx";
@@ -65,9 +63,9 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
   const [selectedLithologicalDescription, setSelectedLithologicalDescription] = useState<LithologicalDescription>();
   const [selectedFaciesDescription, setSelectedFaciesDescription] = useState<FaciesDescription>();
 
-  const [deleteMenu, setDeleteMenu] = useState<{ anchorEl: HTMLElement; depthId: string } | null>(null);
+  const [openMenuDepthId, setOpenMenuDepthId] = useState<string | null>(null);
   const [trashHoverDepthId, setTrashHoverDepthId] = useState<string | null>(null);
-  const deletePreviewDepthId = deleteMenu?.depthId ?? trashHoverDepthId;
+  const deletePreviewDepthId = openMenuDepthId ?? trashHoverDepthId;
   const deletePreviewDepth = depths.find(d => d.id === deletePreviewDepthId);
   const isMarkedForDelete = (layer: BaseLayer): boolean =>
     !!deletePreviewDepth &&
@@ -216,16 +214,8 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                 const isLast = index === depths.length - 1;
                 const isOnly = depths.length === 1;
                 const bottomBoundaryError = depth.hasToDepthError || (!isLast && depths[index + 1].hasFromDepthError);
-                const isMenuOpenForThis = deleteMenu?.depthId === depth.id;
-                const onDeleteClick = (event: MouseEvent<HTMLElement>) => {
-                  event.stopPropagation();
-                  if (isFirst || isOnly) {
-                    handleDeleteDepthLayer(depth.id, "extendLower");
-                    return;
-                  }
-                  setDeleteMenu({ anchorEl: event.currentTarget, depthId: depth.id });
-                };
                 const isHoveredViaItem = hoveredItemDepthIds.has(depth.id);
+                const isMenuOpenForThis = openMenuDepthId === depth.id;
                 return (
                   <DepthColumnCell
                     key={`${depth.id}-depth-${depth.fromDepth}-${depth.toDepth}`}
@@ -242,11 +232,14 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                       />
                     )}
                     <DepthDeleteButton
-                      isMenuOpen={isMenuOpenForThis}
-                      onClick={onDeleteClick}
+                      depth={depth}
+                      isFirst={isFirst}
+                      isLast={isLast}
+                      isOnly={isOnly}
+                      onDelete={handleDeleteDepthLayer}
                       onMouseEnter={() => setTrashHoverDepthId(depth.id)}
                       onMouseLeave={() => setTrashHoverDepthId(null)}
-                      dataCy={`delete-depth-${depth.fromDepth}-${depth.toDepth}-button`}
+                      onMenuOpenChange={isOpen => setOpenMenuDepthId(isOpen ? depth.id : null)}
                     />
                     {deletePreviewDepth?.id !== depth.id && (
                       <>
@@ -264,46 +257,6 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                   </DepthColumnCell>
                 );
               })}
-              <Menu
-                anchorEl={deleteMenu?.anchorEl ?? null}
-                open={Boolean(deleteMenu)}
-                onClose={() => setDeleteMenu(null)}
-                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-                transformOrigin={{ vertical: "top", horizontal: "left" }}
-                slotProps={{
-                  paper: {
-                    sx: {
-                      marginTop: theme.spacing(0.5),
-                      border: `1px solid ${theme.palette.border.darker}`,
-                      boxShadow: theme.shadows[1],
-                    },
-                  },
-                }}>
-                <MenuItem
-                  onClick={() => {
-                    if (!deleteMenu) return;
-                    handleDeleteDepthLayer(deleteMenu.depthId, "extendUpper");
-                    setDeleteMenu(null);
-                  }}
-                  data-cy="extend-upper-layer-downward">
-                  {t("extendUpperLayerDownward")}
-                </MenuItem>
-                {(() => {
-                  const activeIndex = deleteMenu ? depths.findIndex(d => d.id === deleteMenu.depthId) : -1;
-                  const activeIsLast = activeIndex >= 0 && activeIndex === depths.length - 1;
-                  return (
-                    <MenuItem
-                      onClick={() => {
-                        if (!deleteMenu) return;
-                        handleDeleteDepthLayer(deleteMenu.depthId, activeIsLast ? "reduceBoreholeEnd" : "extendLower");
-                        setDeleteMenu(null);
-                      }}
-                      data-cy={activeIsLast ? "reduce-borehole-end-depth" : "extend-lower-layer-upward"}>
-                      {activeIsLast ? t("reduceBoreholeEndDepth") : t("extendLowerLayerUpward")}
-                    </MenuItem>
-                  );
-                })()}
-              </Menu>
             </StratigraphyTableColumn>
             {showLithology && (
               <StratigraphyTableColumn>
