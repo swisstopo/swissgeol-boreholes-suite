@@ -11,6 +11,9 @@ export interface Completion {
   notes: string | null;
   kind?: Codelist;
   created?: string;
+  casings?: Casing[];
+  backfills?: Backfill[];
+  instrumentations?: Instrumentation[];
 }
 
 export interface CasingElement {
