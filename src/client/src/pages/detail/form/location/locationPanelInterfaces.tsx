@@ -1,6 +1,5 @@
 import { Borehole, Codelist, Profile } from "../../../../api/generated";
 import { Workflow } from "../workflow/workflow.ts";
-import { ReferenceSystemCode } from "./coordinateSegmentInterfaces.ts";
 
 export interface LocationBaseProps {
   borehole: Borehole;

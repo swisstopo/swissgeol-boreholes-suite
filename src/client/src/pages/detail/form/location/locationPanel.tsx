@@ -5,7 +5,6 @@ import {
   parseFloatWithThousandsSeparator,
 } from "../../../../components/form/formUtils.ts";
 import { BaseForm } from "../baseForm.tsx";
-import { ReferenceSystemCode } from "./coordinateSegmentInterfaces.ts";
 import { LocationFormInputs, LocationFormSubmission, LocationPanelProps } from "./locationPanelInterfaces.tsx";
 import LocationSegment from "./locationSegment.tsx";
 
