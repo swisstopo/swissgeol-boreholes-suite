@@ -1,14 +1,13 @@
-import { useTranslation } from "react-i18next";
+﻿import { useTranslation } from "react-i18next";
 import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
+import { Casing, CasingDepth, CasingOption } from "./completionInterfaces.ts";
 
 /**
  * Extract the minimum and maximum depth of the casing elements from the casing object
- * @param {any} casing The casing with the casing elements
- * @returns {number, number} The minimum and maximum depth of the casing elements
  */
-export const extractCasingDepth = casing => {
-  var min = null;
-  var max = null;
+export const extractCasingDepth = (casing: Pick<Casing, "casingElements">): CasingDepth => {
+  let min: number | null = null;
+  let max: number | null = null;
   if (casing?.casingElements != null) {
     casing.casingElements.forEach(element => {
       if (element?.fromDepth != null && (min === null || element.fromDepth < min)) {
@@ -22,15 +21,22 @@ export const extractCasingDepth = casing => {
   return { min: parseFloatWithThousandsSeparator(min), max: parseFloatWithThousandsSeparator(max) };
 };
 
+interface CasingReferenceItem {
+  isOpenBorehole?: boolean;
+  casingId?: number | null;
+  casing?: {
+    name?: string;
+    completion?: { name?: string };
+  };
+}
+
 export const useGetCasingName = () => {
   const { t } = useTranslation();
 
   /**
    * Gets the name of the casing with the name of the completion; or if the item references an open borehole, it returns the open borehole string
-   * @param {any} item An object that references a casing
-   * @returns The name to be displayed
    */
-  const getCasingNameWithCompletion = item => {
+  const getCasingNameWithCompletion = (item: CasingReferenceItem): string => {
     if (item?.isOpenBorehole) {
       return t("openBorehole");
     } else if (item?.casingId) {
@@ -44,24 +50,27 @@ export const useGetCasingName = () => {
 
 export const useGetCasingOptions = () => {
   const { t } = useTranslation();
-
   /**
    * Get the available casings together with an open borehole option
    * @param {any[]} casings An array of casings
    * @returns An array of objects that contain the key and name of the available casings as well as the open borehole option
    */
-  const getCasingOptions = casings => {
-    var options = [{ key: -1, name: t("openBorehole") }];
+  const getCasingOptions = (
+    casings: { id?: number; name?: string; completion?: { name: string } }[],
+  ): CasingOption[] => {
+    const options: CasingOption[] = [{ key: -1, name: t("openBorehole") }];
     casings
       .sort((a, b) => {
         if (a.name !== b.name) {
-          return a.name < b.name ? -1 : 1;
+          return (a.name ?? "") < (b.name ?? "") ? -1 : 1;
         } else {
           return 0;
         }
       })
       .forEach(casing => {
-        options.push({ key: casing.id, name: `${casing.completion.name} - ${casing.name}` });
+        if (casing.id != null) {
+          options.push({ key: casing.id, name: `${casing.completion?.name} - ${casing.name}` });
+        }
       });
     return options;
   };
@@ -69,12 +78,16 @@ export const useGetCasingOptions = () => {
   return getCasingOptions;
 };
 
+interface CasingSubmitData {
+  casingId?: number | string | null;
+  isOpenBorehole?: boolean;
+  casing?: unknown;
+}
+
 /**
  * Prepares the casing data of an item that references a casing for submission
- * @param {any} data The form data to be prepared for submission
- * @returns {any} The updated form data
  */
-export const prepareCasingDataForSubmit = data => {
+export const prepareCasingDataForSubmit = <T extends CasingSubmitData>(data: T): T => {
   switch (data.casingId) {
     case -1:
       data.isOpenBorehole = true;

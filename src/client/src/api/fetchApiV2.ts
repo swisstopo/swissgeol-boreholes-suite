@@ -1,16 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
+import { Backfill, Casing, Completion, Instrumentation } from "../pages/detail/form/completion/completionInterfaces.ts";
 import store from "../reducers";
-import {
-  ApiError,
-  Backfill,
-  Casing,
-  Completion,
-  Document,
-  DocumentUpdate,
-  GeometryFormat,
-  Instrumentation,
-} from "./apiInterfaces";
+import { ApiError, Document, DocumentUpdate, GeometryFormat } from "./apiInterfaces";
 import { getAuthorizationHeader } from "./authentication.ts";
 import { Section } from "./section.ts";
 
@@ -255,11 +247,11 @@ export const getInstrumentation = async (completionId: number): Promise<Instrume
   return await fetchApiV2Legacy(`instrumentation?completionId=${completionId}`, "GET");
 };
 
-export const addInstrumentation = async (instrumentation: Instrumentation): Promise<Instrumentation> => {
+export const addInstrumentation = async (instrumentation: Instrumentation): Promise<void> => {
   return await fetchApiV2Legacy("instrumentation", "POST", instrumentation);
 };
 
-export const updateInstrumentation = async (instrumentation: Instrumentation): Promise<Instrumentation> => {
+export const updateInstrumentation = async (instrumentation: Instrumentation): Promise<void> => {
   return await fetchApiV2Legacy("instrumentation", "PUT", instrumentation);
 };
 
@@ -271,11 +263,11 @@ export const getBackfills = async (completionId: number): Promise<Backfill[]> =>
   return await fetchApiV2Legacy(`backfill?completionId=${completionId}`, "GET");
 };
 
-export const addBackfill = async (backfill: Backfill): Promise<Backfill> => {
+export const addBackfill = async (backfill: Backfill): Promise<void> => {
   return await fetchApiV2Legacy("backfill", "POST", backfill);
 };
 
-export const updateBackfill = async (backfill: Backfill): Promise<Backfill> => {
+export const updateBackfill = async (backfill: Backfill): Promise<void> => {
   return await fetchApiV2Legacy("backfill", "PUT", backfill);
 };
 

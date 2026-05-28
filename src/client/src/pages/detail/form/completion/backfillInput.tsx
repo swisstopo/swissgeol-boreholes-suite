@@ -1,29 +1,24 @@
 ﻿import { useQuery } from "@tanstack/react-query";
+import { addBackfill, getCasings, updateBackfill } from "../../../../api/fetchApiV2.ts";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard.tsx";
 import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils.tsx";
-import {
-  addCompletionBackfill,
-  BackfillData,
-  DataCardItemInputProps,
-  getCompletionCasings,
-  updateCompletionBackfill,
-} from "./completionInterfaces.ts";
+import { Backfill, DataCardItemInputProps } from "./completionInterfaces.ts";
 import { completionSchemaConstants } from "./completionSchemaConstants.ts";
 import { prepareEntityDataForSubmit } from "./completionUtils.ts";
 
-const BackfillInput = ({ item, parentId }: DataCardItemInputProps<BackfillData>) => {
+const BackfillInput = ({ item, parentId }: DataCardItemInputProps<Backfill>) => {
   const { data: casings = [] } = useQuery({
     queryKey: ["casings", parentId],
-    queryFn: () => getCompletionCasings(parentId),
+    queryFn: () => getCasings(parentId),
     enabled: !!parentId,
   });
 
   const getCasingOptions = useGetCasingOptions();
   const casingOptions = getCasingOptions(casings);
 
-  const prepareFormDataForSubmit = (data: BackfillData): BackfillData => {
+  const prepareFormDataForSubmit = (data: Backfill): Backfill => {
     data = prepareCasingDataForSubmit(data);
     data = prepareEntityDataForSubmit(data, parentId);
     return data;
@@ -31,10 +26,10 @@ const BackfillInput = ({ item, parentId }: DataCardItemInputProps<BackfillData>)
 
   if (!casingOptions) return null;
   return (
-    <DataInputCard
+    <DataInputCard<Backfill>
       item={item}
-      addData={addCompletionBackfill}
-      updateData={updateCompletionBackfill}
+      addData={addBackfill}
+      updateData={updateBackfill}
       entityName="backfill"
       prepareFormDataForSubmit={prepareFormDataForSubmit}>
       <FormContainer direction="row">

@@ -1,32 +1,43 @@
-import { useContext, useEffect } from "react";
+﻿import { useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, Divider, IconButton, Stack, Typography } from "@mui/material";
 import { useReloadBoreholes } from "../../../../api/borehole.ts";
-import { addCasing, updateCasing } from "../../../../api/fetchApiV2.js";
+import { addCasing, updateCasing } from "../../../../api/fetchApiV2.ts";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardContext } from "../../../../components/dataCard/dataCardContext.tsx";
-import { DataCardSaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.js";
-import { useUnsavedChangesPrompt } from "../../../../components/dataCard/useUnsavedChangesPrompt.js";
+import { DataCardSaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.tsx";
+import { useUnsavedChangesPrompt } from "../../../../components/dataCard/useUnsavedChangesPrompt.tsx";
 import { FormContainer, FormInput, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
-import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
+import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 import { useFormDirtyMarkAsChanged } from "../../../../components/form/useFormDirty.tsx";
-import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
+import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.tsx";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
-import { extractCasingDepth } from "./casingUtils.jsx";
-import { completionSchemaConstants } from "./completionSchemaConstants";
-import { prepareEntityDataForSubmit } from "./completionUtils.js";
+import { extractCasingDepth } from "./casingUtils.tsx";
+import { Casing, CasingElement, DataCardItemInputProps } from "./completionInterfaces.ts";
+import { completionSchemaConstants } from "./completionSchemaConstants.ts";
+import { prepareEntityDataForSubmit } from "./completionUtils.ts";
 
-const CasingInput = props => {
+interface CasingFormValues {
+  name?: string;
+  fromDepth?: string | number | null;
+  toDepth?: string | number | null;
+  dateStart?: string | null;
+  dateFinish?: string | null;
+  notes?: string;
+  completionId?: number;
+  casingElements: CasingElement[];
+}
+
+const CasingInput = ({ item, parentId }: DataCardItemInputProps<Casing>) => {
   const { t } = useTranslation();
-  const { item, parentId } = props;
   const { triggerReload } = useContext(DataCardContext);
   const reloadBoreholes = useReloadBoreholes();
   const resetTabStatus = useResetTabStatus(["casing"]);
 
-  const formMethods = useForm({
+  const formMethods = useForm<CasingFormValues>({
     mode: "all",
     defaultValues: {
       casingElements: item?.casingElements || [
@@ -43,7 +54,7 @@ const CasingInput = props => {
     },
   });
 
-  const prepareFormDataForSubmit = data => {
+  const prepareFormDataForSubmit = (data: CasingFormValues): CasingFormValues => {
     data = prepareEntityDataForSubmit(data, parentId);
     if (data?.dateStart === "") {
       data.dateStart = null;
@@ -65,36 +76,33 @@ const CasingInput = props => {
     return data;
   };
 
-  const submitForm = data => {
+  const submitForm = (data: CasingFormValues) => {
     resetTabStatus();
     data = prepareFormDataForSubmit(data);
+    const payload = { ...item, ...data } as unknown as Casing;
     if (item.id === 0) {
-      addCasing({
-        ...data,
-      }).then(() => {
+      addCasing(payload).then(() => {
         triggerReload();
         reloadBoreholes();
       });
     } else {
-      updateCasing({
-        ...item,
-        ...data,
-      }).then(() => {
+      updateCasing(payload).then(() => {
         triggerReload();
       });
     }
   };
 
   const updateDepth = () => {
-    const depths = extractCasingDepth(getValues());
-    if (depths.min !== getValues()["fromDepth"] || depths.max !== getValues()["toDepth"]) {
+    const values = getValues();
+    const depths = extractCasingDepth(values);
+    if (depths.min !== values.fromDepth || depths.max !== values.toDepth) {
       setValue("fromDepth", formatNumberForDisplay(depths.min));
       setValue("toDepth", formatNumberForDisplay(depths.max));
     }
   };
 
   const addCasingElement = () => {
-    const fieldArrayValues = getValues()["casingElements"];
+    const fieldArrayValues = getValues().casingElements;
     append(
       {
         fromDepth: fieldArrayValues[fieldArrayValues.length - 1].toDepth,
@@ -121,7 +129,7 @@ const CasingInput = props => {
     trigger("casingElements");
     updateDepth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [getValues()["casingElements"]]);
+  }, [getValues().casingElements]);
 
   return (
     <>
@@ -166,7 +174,7 @@ const CasingInput = props => {
                 />
               </FormContainer>
               {fields
-                .sort((a, b) => (a.fromDepth || Infinity) - (b.fromDepth || Infinity))
+                .sort((a, b) => (a.fromDepth ?? Infinity) - (b.fromDepth ?? Infinity))
                 .map((field, index) => (
                   <>
                     <Stack direction={"row"} key={field.id} marginTop="8px" data-cy={`casingElement-${index}`}>
@@ -191,7 +199,7 @@ const CasingInput = props => {
                           <FormDomainSelect
                             fieldName={`casingElements.${index}.kindId`}
                             label="kindCasingLayer"
-                            selected={field.kindId}
+                            selected={typeof field.kindId === "number" ? field.kindId : null}
                             required={true}
                             schemaName={completionSchemaConstants.casingType}
                           />
@@ -200,7 +208,7 @@ const CasingInput = props => {
                           <FormDomainSelect
                             fieldName={`casingElements.${index}.materialId`}
                             label="materialCasingLayer"
-                            selected={field.materialId}
+                            selected={typeof field.materialId === "number" ? field.materialId : null}
                             schemaName={completionSchemaConstants.casingMaterial}
                           />
                           <FormInput

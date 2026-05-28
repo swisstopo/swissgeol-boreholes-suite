@@ -1,31 +1,31 @@
-import { useTranslation } from "react-i18next";
+﻿import { useTranslation } from "react-i18next";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { deleteCasing } from "../../../../api/fetchApiV2.ts";
 import { useCodelists } from "../../../../components/codelist.ts";
 import { DataDisplayCard } from "../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
-import { formatNumberForDisplay } from "../../../../components/form/formUtils.js";
-import { extractCasingDepth } from "./casingUtils";
+import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
+import { extractCasingDepth } from "./casingUtils.tsx";
+import { Casing, DataCardItemDisplayProps } from "./completionInterfaces.ts";
 
-const CasingDisplay = props => {
-  const { item } = props;
+const CasingDisplay = ({ item }: DataCardItemDisplayProps<Casing>) => {
   const { t, i18n } = useTranslation();
   const codelists = useCodelists();
 
-  var depth = extractCasingDepth(item);
+  const depth = extractCasingDepth(item);
 
   return (
     <DataDisplayCard item={item} deleteData={deleteCasing} entityName={"casing"}>
-      <FormDisplay label="name" value={item?.name} />
+      <FormDisplay label="name" value={item?.name ?? null} />
       <FormContainer direction="row">
         <FormDisplay label="fromdepth" value={depth.min} type={FormValueType.Number} />
         <FormDisplay label="todepth" value={depth.max} type={FormValueType.Number} />
       </FormContainer>
       <FormContainer direction="row">
-        <FormDisplay label="dateStartCasing" value={item?.dateStart} type={FormValueType.Date} />
-        <FormDisplay label="dateFinishCasing" value={item?.dateFinish} type={FormValueType.Date} />
+        <FormDisplay label="dateStartCasing" value={item?.dateStart ?? null} type={FormValueType.Date} />
+        <FormDisplay label="dateFinishCasing" value={item?.dateFinish ?? null} type={FormValueType.Date} />
       </FormContainer>
-      <FormDisplay label="notes" value={item?.notes} />
+      <FormDisplay label="notes" value={item?.notes ?? null} />
       <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("casingElements")}</Typography>
       <TableContainer>
         <Table>
@@ -49,7 +49,7 @@ const CasingDisplay = props => {
           </TableHead>
           <TableBody>
             {item?.casingElements
-              ?.sort((a, b) => a.fromDepth - b.fromDepth)
+              ?.sort((a, b) => (a.fromDepth ?? 0) - (b.fromDepth ?? 0))
               .map((element, index) => (
                 <TableRow key={index} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                   <TableCell component="th" scope="row" data-cy={`casingElements.${index}.fromDepth-formDisplay`}>

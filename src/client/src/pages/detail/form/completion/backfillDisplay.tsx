@@ -1,10 +1,10 @@
-import { deleteBackfill } from "../../../../api/fetchApiV2.js";
+﻿import { deleteBackfill } from "../../../../api/fetchApiV2.ts";
 import { DataDisplayCard } from "../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
-import { useGetCasingName } from "./casingUtils";
+import { useGetCasingName } from "./casingUtils.tsx";
+import { Backfill, DataCardItemDisplayProps } from "./completionInterfaces.ts";
 
-const BackfillDisplay = props => {
-  const { item } = props;
+const BackfillDisplay = ({ item }: DataCardItemDisplayProps<Backfill>) => {
   const { getCasingNameWithCompletion } = useGetCasingName();
 
   return (
@@ -14,13 +14,13 @@ const BackfillDisplay = props => {
         <FormDisplay label="todepth" value={item?.toDepth} type={FormValueType.Number} />
       </FormContainer>
       <FormContainer direction="row">
-        <FormDisplay label="kindBackfill" value={item?.kind} type={FormValueType.Domain} />
-        <FormDisplay label="materialBackfill" value={item?.material} type={FormValueType.Domain} />
+        <FormDisplay label="kindBackfill" value={item?.kind ?? null} type={FormValueType.Domain} />
+        <FormDisplay label="materialBackfill" value={item?.material ?? null} type={FormValueType.Domain} />
       </FormContainer>
       <FormContainer>
         <FormDisplay label="casingName" value={getCasingNameWithCompletion(item)} />
       </FormContainer>
-      <FormDisplay label="notes" value={item?.notes} />
+      <FormDisplay label="notes" value={item?.notes ?? null} />
     </DataDisplayCard>
   );
 };

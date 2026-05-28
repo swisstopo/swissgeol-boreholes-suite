@@ -1,12 +1,18 @@
-import { useContext, useState } from "react";
+﻿import { useContext, useState } from "react";
 import { IconButton, Stack } from "@mui/material";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { CopyButton, DeleteButton, EditButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardButtonContainer } from "../../../../components/dataCard/dataCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import { EditStateContext } from "../../editStateContext.tsx";
+import { CompletionHeaderDisplayProps } from "./completionInterfaces.ts";
 
-const CompletionHeaderDisplay = ({ completion, setEditing, copyCompletion, deleteCompletion }) => {
+const CompletionHeaderDisplay = ({
+  completion,
+  setEditing,
+  copyCompletion,
+  deleteCompletion,
+}: CompletionHeaderDisplayProps) => {
   const [expanded, setExpanded] = useState(false);
   const { editingEnabled } = useContext(EditStateContext);
   const toggleHeader = () => {
@@ -19,7 +25,7 @@ const CompletionHeaderDisplay = ({ completion, setEditing, copyCompletion, delet
         <FormContainer direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap">
           <FormDisplay label="name" value={completion?.name} sx={{ flex: "1 1 180px" }} />
           <FormContainer direction="row" justifyContent="space-between" alignItems="center" flex={"0 0 400px"}>
-            <FormDisplay label="completionKind" value={completion?.kind} type={FormValueType.Domain} />
+            <FormDisplay label="completionKind" value={completion?.kind ?? null} type={FormValueType.Domain} />
             <FormDisplay label="mainCompletion" value={completion?.isPrimary} type={FormValueType.Boolean} />
           </FormContainer>
         </FormContainer>
@@ -36,25 +42,9 @@ const CompletionHeaderDisplay = ({ completion, setEditing, copyCompletion, delet
             </FormContainer>
             {editingEnabled && (
               <DataCardButtonContainer>
-                <CopyButton
-                  onClick={e => {
-                    e.stopPropagation();
-                    copyCompletion();
-                  }}
-                />
-                <DeleteButton
-                  onClick={e => {
-                    e.stopPropagation();
-                    deleteCompletion();
-                  }}
-                />
-                <EditButton
-                  label="edit"
-                  onClick={e => {
-                    e.stopPropagation();
-                    setEditing(true);
-                  }}
-                />
+                <CopyButton onClick={() => copyCompletion()} />
+                <DeleteButton onClick={() => deleteCompletion()} />
+                <EditButton label="edit" onClick={() => setEditing(true)} />
               </DataCardButtonContainer>
             )}
           </>

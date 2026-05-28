@@ -15,7 +15,7 @@ import { parseFloatWithThousandsSeparator } from "../../../../../components/form
 import { useFormDirtyMarkAsChanged } from "../../../../../components/form/useFormDirty.tsx";
 import { useValidateFormOnMount } from "../../../../../components/form/useValidateFormOnMount.tsx";
 import { useResetTabStatus } from "../../../../../hooks/useResetTabStatus.ts";
-import { prepareCasingDataForSubmit } from "../../completion/casingUtils.jsx";
+import { prepareCasingDataForSubmit } from "../../completion/casingUtils.tsx";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
 import { ObservationType, prepareObservationDataForSubmit } from "../Observation.ts";
 import ObservationInput from "../observationInput.tsx";

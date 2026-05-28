@@ -1,25 +1,26 @@
-import { useCallback } from "react";
+﻿import { useCallback } from "react";
 import { getBackfills } from "../../../../api/fetchApiV2.ts";
 import { DataCards } from "../../../../components/dataCard/dataCards.tsx";
 import { sortByDepth } from "../sorter.jsx";
-import BackfillDisplay from "./backfillDisplay.jsx";
-import BackfillInput from "./backfillInput.jsx";
+import BackfillDisplay from "./backfillDisplay.tsx";
+import BackfillInput from "./backfillInput.tsx";
+import { Backfill, CompletionTabProps } from "./completionInterfaces.ts";
 
-const Backfill = ({ completionId }) => {
-  const renderInput = useCallback(props => <BackfillInput {...props} />, []);
-  const renderDisplay = useCallback(props => <BackfillDisplay {...props} />, []);
-  const sortDisplayed = useCallback((a, b) => {
+export const BackfillTab = ({ completionId }: CompletionTabProps) => {
+  const renderInput = useCallback((props: { item: Backfill; parentId: number }) => <BackfillInput {...props} />, []);
+  const renderDisplay = useCallback((props: { item: Backfill }) => <BackfillDisplay {...props} />, []);
+  const sortDisplayed = useCallback((a: Backfill, b: Backfill) => {
     const aName = a.casingId ? a.casing?.name : null;
     const bName = b.casingId ? b.casing?.name : null;
     if (aName !== bName) {
-      return aName < bName ? -1 : 1;
+      return (aName ?? "") < (bName ?? "") ? -1 : 1;
     } else {
       return sortByDepth(a, b, "fromDepth", "toDepth");
     }
   }, []);
 
   return (
-    <DataCards
+    <DataCards<Backfill>
       parentId={completionId}
       getData={getBackfills}
       cyLabel="backfill"
@@ -31,4 +32,3 @@ const Backfill = ({ completionId }) => {
     />
   );
 };
-export default Backfill;

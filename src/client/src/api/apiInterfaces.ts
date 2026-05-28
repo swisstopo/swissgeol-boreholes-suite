@@ -85,27 +85,6 @@ export enum EntityType {
   workgroup = "Workgroup",
 }
 
-export interface Completion {
-  id?: number;
-  boreholeId: number;
-}
-
-export interface Instrumentation {
-  id?: number;
-  completionId: number;
-}
-
-export interface Backfill {
-  id?: number;
-  completionId: number;
-}
-
-export interface Casing {
-  id?: number;
-  completionId?: number;
-  boreholeId?: number;
-}
-
 export interface GeometryFormat {
   csvHeader: string;
 }

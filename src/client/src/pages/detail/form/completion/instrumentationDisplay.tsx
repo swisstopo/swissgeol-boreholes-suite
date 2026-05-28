@@ -1,10 +1,10 @@
-import { deleteInstrumentation } from "../../../../api/fetchApiV2.ts";
+﻿import { deleteInstrumentation } from "../../../../api/fetchApiV2.ts";
 import { DataDisplayCard } from "../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
-import { useGetCasingName } from "./casingUtils.jsx";
+import { useGetCasingName } from "./casingUtils.tsx";
+import { DataCardItemDisplayProps, Instrumentation } from "./completionInterfaces.ts";
 
-const InstrumentationDisplay = props => {
-  const { item } = props;
+const InstrumentationDisplay = ({ item }: DataCardItemDisplayProps<Instrumentation>) => {
   const { getCasingNameWithCompletion } = useGetCasingName();
 
   return (
@@ -18,10 +18,10 @@ const InstrumentationDisplay = props => {
         <FormDisplay label="casingName" value={getCasingNameWithCompletion(item)} />
       </FormContainer>
       <FormContainer direction="row">
-        <FormDisplay label="kindInstrument" value={item?.kind} type={FormValueType.Domain} />
-        <FormDisplay label="statusInstrument" value={item?.status} type={FormValueType.Domain} />
+        <FormDisplay label="kindInstrument" value={item?.kind ?? null} type={FormValueType.Domain} />
+        <FormDisplay label="statusInstrument" value={item?.status ?? null} type={FormValueType.Domain} />
       </FormContainer>
-      <FormDisplay label="notes" value={item?.notes} />
+      <FormDisplay label="notes" value={item?.notes ?? null} />
     </DataDisplayCard>
   );
 };

@@ -1,4 +1,4 @@
-import { useContext, useEffect, useRef, useState } from "react";
+﻿import { useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useParams } from "react-router";
 import { CircularProgress, Stack, Typography } from "@mui/material";
@@ -16,14 +16,15 @@ import { DataCardExternalContext } from "../../../../components/dataCard/dataCar
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPage } from "../../../../components/styledComponents.ts";
 import { BoreholeTab, BoreholeTabContent, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
-import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.js";
+import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
-import CompletionContent from "./completionContent.jsx";
-import CompletionHeaderDisplay from "./completionHeaderDisplay.jsx";
-import CompletionHeaderInput from "./completionHeaderInput.jsx";
+import CompletionContent from "./completionContent.tsx";
+import CompletionHeaderDisplay from "./completionHeaderDisplay.tsx";
+import CompletionHeaderInput from "./completionHeaderInput.tsx";
+import { Completion, CompletionPanelState } from "./completionInterfaces.ts";
 
-const Completion = () => {
+export const CompletionPanel = () => {
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled } = useContext(EditStateContext);
@@ -34,8 +35,8 @@ const Completion = () => {
   const { t } = useTranslation();
   const mounted = useRef(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [completions, setCompletions] = useState([]);
-  const [state, setState] = useState({
+  const [completions, setCompletions] = useState<Completion[]>([]);
+  const [state, setState] = useState<CompletionPanelState>({
     index: 0,
     selected: null,
     switchTabTo: null,
@@ -43,7 +44,7 @@ const Completion = () => {
     editing: false,
   });
   const [checkContentDirty, setCheckContentDirty] = useState(false);
-  const [completionToBeSaved, setCompletionToBeSaved] = useState(null);
+  const [completionToBeSaved, setCompletionToBeSaved] = useState<Completion | null>(null);
   const reloadBoreholes = useReloadBoreholes();
 
   const resetState = () => {
@@ -57,8 +58,8 @@ const Completion = () => {
     });
   };
 
-  const updateHistory = selectedId => {
-    let newLocation = "/" + boreholeId + "/completion/" + selectedId;
+  const updateHistory = (selectedId: number | string) => {
+    const newLocation = "/" + boreholeId + "/completion/" + selectedId;
     let hash;
     if (selectedId !== "new") {
       if (location.hash !== "" && selectedId.toString() === completionId) {
@@ -88,7 +89,7 @@ const Completion = () => {
           // Display primary completion first then order by created date
           response.sort((a, b) => {
             if (a.isPrimary === b.isPrimary) {
-              return a.created.localeCompare(b.created);
+              return (a.created ?? "").localeCompare(b.created ?? "");
             }
             return a.isPrimary ? -1 : 1;
           });
@@ -106,7 +107,7 @@ const Completion = () => {
     triggerCanSwitch();
   };
 
-  const handleCompletionChanged = (event, index) => {
+  const handleCompletionChanged = (_event: React.SyntheticEvent | null, index: number) => {
     if (state.editing) {
       setState({ ...state, switchTabTo: index, trySwitchTab: true });
     } else {
@@ -115,7 +116,7 @@ const Completion = () => {
     }
   };
 
-  const switchTabs = continueSwitching => {
+  const switchTabs = (continueSwitching: boolean) => {
     if (continueSwitching) {
       checkIfContentIsDirty();
     } else {
@@ -137,7 +138,7 @@ const Completion = () => {
       if (canSwitch === 1 && state.switchTabTo !== null) {
         if (state.switchTabTo === -1) {
           updateHistory("new");
-        } else if (state.selected.id === 0) {
+        } else if (state.selected?.id === 0) {
           const newCompletionList = state.displayed.slice(0, -1);
           if (newCompletionList.length === 0) {
             navigateTo({ path: "/" + boreholeId + "/completion" });
@@ -181,7 +182,7 @@ const Completion = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canSwitch]);
 
-  const saveCompletion = (completion, preventReload) => {
+  const saveCompletion = (completion: Completion, preventReload?: boolean) => {
     if (completion.id === 0) {
       addCompletion(completion).then(() => {
         setState({
@@ -202,7 +203,7 @@ const Completion = () => {
     }
   };
 
-  const checkSwitchBeforeSave = completion => {
+  const checkSwitchBeforeSave = (completion: Completion) => {
     if (state.trySwitchTab) {
       setCompletionToBeSaved(completion);
       checkIfContentIsDirty();
@@ -212,7 +213,7 @@ const Completion = () => {
   };
 
   const copySelectedCompletion = () => {
-    copyCompletion(state.selected.id).then(() => {
+    copyCompletion(state.selected!.id).then(() => {
       setState({ ...state, switchTabTo: state.displayed.length });
       loadData();
     });
@@ -220,7 +221,7 @@ const Completion = () => {
 
   const cancelChanges = () => {
     setState({ ...state, editing: false });
-    if (state.selected.id === 0) {
+    if (state.selected?.id === 0) {
       const newCompletionList = state.displayed.slice(0, -1);
       const index = newCompletionList.length - 1;
       if (newCompletionList.length === 0) {
@@ -235,7 +236,7 @@ const Completion = () => {
     showPrompt(t("deleteCompletionMessage"), [
       {
         label: "cancel",
-        action: null,
+        action: undefined,
       },
       {
         label: "delete",
@@ -249,7 +250,7 @@ const Completion = () => {
   const onDeleteConfirmed = () => {
     const newTabIndex = state.index > 0 ? state.index - 1 : 0;
     setState({ ...state, switchTabTo: newTabIndex });
-    deleteCompletion(state.selected.id).then(() => {
+    deleteCompletion(state.selected!.id).then(() => {
       loadData();
       reloadBoreholes();
     });
@@ -273,7 +274,7 @@ const Completion = () => {
       return;
     }
     if (completionId === "new" && (state.switchTabTo === null || state.switchTabTo === -1)) {
-      const tempCompletion = {
+      const tempCompletion: Completion = {
         id: 0,
         boreholeId: boreholeId,
         name: null,
@@ -340,7 +341,8 @@ const Completion = () => {
                     <BoreholeTab
                       data-cy={"completion-header-tab-" + index}
                       label={item.name === null || item.name === "" ? t("common:np") : item.name}
-                      key={item.id}
+                      key={item.id.toString()}
+                      hasContent={undefined}
                     />
                   );
                 })}
@@ -349,8 +351,8 @@ const Completion = () => {
               <AddButton
                 label="addCompletion"
                 disabled={state.selected?.id === 0}
-                onClick={e => {
-                  handleCompletionChanged(e, -1);
+                onClick={() => {
+                  handleCompletionChanged(null, -1);
                 }}
               />
             )}
@@ -364,7 +366,7 @@ const Completion = () => {
                     editing={state.editing}
                     cancelChanges={cancelChanges}
                     saveCompletion={checkSwitchBeforeSave}
-                    trySwitchTab={state.trySwitchTab}
+                    trySwitchTab={state.trySwitchTab ?? false}
                     switchTabs={continueSwitching => {
                       switchTabs(continueSwitching);
                     }}
@@ -398,4 +400,3 @@ const Completion = () => {
     </>
   );
 };
-export default Completion;

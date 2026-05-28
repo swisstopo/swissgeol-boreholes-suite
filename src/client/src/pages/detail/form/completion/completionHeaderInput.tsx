@@ -1,8 +1,8 @@
-import { useContext, useEffect, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+﻿import { useContext, useEffect, useState } from "react";
+import { FieldValues, FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { CircularProgress } from "@mui/material";
-import { useCodelistSchema } from "../../../../components/codelist.js";
+import { useCodelistSchema } from "../../../../components/codelist.ts";
 import { SaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.tsx";
 import {
   FormCheckbox,
@@ -11,21 +11,27 @@ import {
   FormInput,
   FormValueType,
 } from "../../../../components/form/form";
-import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.js";
+import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
-import { completionSchemaConstants } from "./completionSchemaConstants.js";
+import { Completion, CompletionHeaderInputProps } from "./completionInterfaces.ts";
+import { completionSchemaConstants } from "./completionSchemaConstants.ts";
 
-const CompletionHeaderInput = props => {
-  const { completion, cancelChanges, saveCompletion, trySwitchTab, switchTabs } = props;
+const CompletionHeaderInput = ({
+  completion,
+  cancelChanges,
+  saveCompletion,
+  trySwitchTab,
+  switchTabs,
+}: CompletionHeaderInputProps) => {
   const { showPrompt } = useContext(PromptContext);
   const formMethods = useForm({ mode: "all" });
   const { t } = useTranslation();
   const { data: schemaData, isLoading } = useCodelistSchema(completionSchemaConstants.completionKind);
   const resetTabStatus = useResetTabStatus(["casing", "instrumentation", "backfill"]);
 
-  const [selectedCompletion, setSelectedCompletion] = useState({
+  const [selectedCompletion, setSelectedCompletion] = useState<Completion>({
     ...completion,
   });
 
@@ -73,14 +79,14 @@ const CompletionHeaderInput = props => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trySwitchTab]);
 
-  const submitForm = data => {
+  const submitForm = (data: FieldValues) => {
     if (data?.abandonDate === "") {
       data.abandonDate = null;
     }
     if (data?.isPrimary === undefined) {
       data.isPrimary = completion.isPrimary;
     }
-    saveCompletion({ ...completion, ...data });
+    saveCompletion({ ...completion, ...data } as Completion);
   };
 
   if (isLoading)
@@ -133,19 +139,14 @@ const CompletionHeaderInput = props => {
               />
             </FormContainer>
             <FormContainer direction="row-reverse" justifyContent="space-between" flexWrap="wrap">
-              <FormCheckbox
-                fieldName="isPrimary"
-                label="mainCompletion"
-                checked={completion.isPrimary}
-                disabled={completion.isPrimary}
-              />
+              <FormCheckbox fieldName="isPrimary" label="mainCompletion" disabled={completion.isPrimary} />
             </FormContainer>
             <SaveAndCancelButtons
               onCancel={() => {
                 formMethods.reset(selectedCompletion);
                 cancelChanges();
               }}
-              onSave={() => {
+              onSave={async () => {
                 resetTabStatus();
                 formMethods.handleSubmit(submitForm)();
               }}
