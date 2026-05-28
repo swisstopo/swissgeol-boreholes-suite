@@ -1,10 +1,9 @@
 // @vitest-environment jsdom
-// @vitest-environment jsdom
 import { act, renderHook } from "@testing-library/react";
 import { describe, expect, it } from "vitest";
-import { FaciesDescription } from "./faciesDescription.ts";
-import { LithologicalDescription } from "./lithologicalDescription.ts";
-import { Lithology } from "./lithology.ts";
+import { FaciesDescription } from "../../faciesDescription.ts";
+import { LithologicalDescription } from "../../lithologicalDescription.ts";
+import { Lithology } from "../../lithology.ts";
 import { useLithologyTableState } from "./useLithologyTableState.ts";
 
 const lithology = (overrides: Partial<Lithology> = {}): Lithology => ({

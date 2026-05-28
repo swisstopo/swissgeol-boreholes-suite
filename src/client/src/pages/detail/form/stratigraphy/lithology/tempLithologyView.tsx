@@ -3,20 +3,21 @@ import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { BaseLayer } from "../../../../../api/stratigraphy.ts";
 import { formatNumberForDisplay } from "../../../../../components/form/formUtils.ts";
-import { FaciesDescription } from "../faciesDescription.ts";
-import { LithologicalDescription } from "../lithologicalDescription.ts";
-import { Lithology } from "../lithology.ts";
+import { StratigraphyTableActionCell } from "../components/stratigraphyTableActionCell.tsx";
+import { StratigraphyTableDescriptionGap } from "../components/stratigraphyTableDescriptionGap.tsx";
+import { StratigraphyTableGap } from "../components/stratigraphyTableGap.tsx";
+import { StratigraphyTableHeaderCell } from "../components/stratigraphyTableHeaderCell.tsx";
 import {
-  StratigraphyTableActionCell,
+  defaultRowHeight,
   StratigraphyTableCell,
   StratigraphyTableColumn,
   StratigraphyTableContent,
-  StratigraphyTableDescriptionGap,
-  StratigraphyTableGap,
   StratigraphyTableHeader,
-  StratigraphyTableHeaderCell,
-} from "../stratigraphyTableComponents.tsx";
-import { computeCellHeight, defaultRowHeight, getLayersWithGaps } from "../stratigraphyUtils.ts";
+} from "../components/stratigraphyTablePrimitives.tsx";
+import { FaciesDescription } from "../faciesDescription.ts";
+import { LithologicalDescription } from "../lithologicalDescription.ts";
+import { Lithology } from "../lithology.ts";
+import { computeCellHeight, getLayersWithGaps } from "../stratigraphyUtils.ts";
 import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";

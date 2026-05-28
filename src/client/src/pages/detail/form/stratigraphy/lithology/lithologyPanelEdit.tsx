@@ -3,12 +3,12 @@ import { useTranslation } from "react-i18next";
 import { BaseLayer } from "../../../../../api/stratigraphy.ts";
 import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
 import { SaveContext } from "../../../saveContext.tsx";
+import { LithologyTable } from "../components/lithologyTable/lithologyTable.tsx";
+import { useLithologyTableState } from "../components/lithologyTable/useLithologyTableState.ts";
 import { FaciesDescription, useFaciesDescriptionMutations } from "../faciesDescription.ts";
 import { LithologicalDescription, useLithologicalDescriptionMutations } from "../lithologicalDescription.ts";
 import { Lithology, useLithologyMutations } from "../lithology.ts";
-import { LithologyTable } from "../lithologyTable.tsx";
 import { StratigraphyContext, StratigraphyContextProps } from "../stratigraphyContext.tsx";
-import { useLithologyTableState } from "../useLithologyTableState.ts";
 
 interface LithologyPanelEditProps {
   stratigraphyId: number;

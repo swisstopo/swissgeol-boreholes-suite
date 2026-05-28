@@ -1,31 +1,31 @@
 import { FC, ReactNode, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
-import { BaseLayer } from "../../../../api/stratigraphy.ts";
-import { theme } from "../../../../AppTheme.ts";
-import { AddRowButton } from "../../../../components/buttons/buttons.tsx";
-import { FaciesDescription } from "./faciesDescription.ts";
-import { LithologicalDescription } from "./lithologicalDescription.ts";
-import { Lithology } from "./lithology.ts";
-import { DepthInput } from "./lithology/depthInput.tsx";
-import { FaciesDescriptionLabels } from "./lithology/faciesDescriptionLabels.tsx";
-import { FaciesDescriptionModal } from "./lithology/form/faciesDescriptionModal.tsx";
-import { LithologicalDescriptionModal } from "./lithology/form/lithologicalDescriptionModal.tsx";
-import { LithologyModal } from "./lithology/form/lithologyModal.tsx";
-import { LithologyLabels } from "./lithology/lithologyLabels.tsx";
-import { defaultRowHeight } from "./lithologyTableUtils.ts";
+import { BaseLayer } from "../../../../../../api/stratigraphy.ts";
+import { theme } from "../../../../../../AppTheme.ts";
+import { AddRowButton } from "../../../../../../components/buttons/buttons.tsx";
+import { FaciesDescription } from "../../faciesDescription.ts";
+import { LithologicalDescription } from "../../lithologicalDescription.ts";
+import { Lithology } from "../../lithology.ts";
+import { DepthInput } from "../../lithology/depthInput.tsx";
+import { FaciesDescriptionLabels } from "../../lithology/faciesDescriptionLabels.tsx";
+import { FaciesDescriptionModal } from "../../lithology/form/faciesDescriptionModal.tsx";
+import { LithologicalDescriptionModal } from "../../lithology/form/lithologicalDescriptionModal.tsx";
+import { LithologyModal } from "../../lithology/form/lithologyModal.tsx";
+import { LithologyLabels } from "../../lithology/lithologyLabels.tsx";
+import { DepthColumnCell } from "../depthColumnCell.tsx";
+import { DepthDeleteButton } from "../depthDeleteButton.tsx";
+import { DepthInsertButton } from "../depthInsertButton.tsx";
+import { LayerAddButton } from "../layerAddButton.tsx";
+import { StratigraphyTableActionCell } from "../stratigraphyTableActionCell.tsx";
+import { StratigraphyTableDescriptionGap } from "../stratigraphyTableDescriptionGap.tsx";
+import { StratigraphyTableHeaderCell } from "../stratigraphyTableHeaderCell.tsx";
 import {
-  DepthColumnCell,
-  DepthDeleteButton,
-  InsertDepthButton,
-  LayerAddButton,
-  StratigraphyTableActionCell,
+  defaultRowHeight,
   StratigraphyTableColumn,
   StratigraphyTableContent,
-  StratigraphyTableDescriptionGap,
   StratigraphyTableHeader,
-  StratigraphyTableHeaderCell,
-} from "./stratigraphyTableComponents.tsx";
+} from "../stratigraphyTablePrimitives.tsx";
 import { LithologyTableState } from "./useLithologyTableState.ts";
 
 type LithologyTableColumn = "lithology" | "lithologicalDescription" | "faciesDescription";
@@ -243,8 +243,8 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                     />
                     {deletePreviewDepth?.id !== depth.id && (
                       <>
-                        <InsertDepthButton depth={depth} position="before" onClick={handleInsertDepthRow} />
-                        <InsertDepthButton depth={depth} position="after" onClick={handleInsertDepthRow} />
+                        <DepthInsertButton depth={depth} position="before" onClick={handleInsertDepthRow} />
+                        <DepthInsertButton depth={depth} position="after" onClick={handleInsertDepthRow} />
                       </>
                     )}
                     <DepthInput

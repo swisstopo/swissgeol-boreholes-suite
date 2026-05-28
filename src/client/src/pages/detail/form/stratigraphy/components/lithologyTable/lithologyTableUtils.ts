@@ -1,19 +1,8 @@
 import { v4 as uuidv4 } from "uuid";
-import { BaseLayer } from "../../../../api/stratigraphy.ts";
-import { FaciesDescription } from "./faciesDescription.ts";
-import { LithologicalDescription } from "./lithologicalDescription.ts";
-import { Lithology } from "./lithology.ts";
-
-export interface DepthLayer {
-  id: string;
-  fromDepth: number;
-  toDepth: number;
-  hasFromDepthError?: boolean;
-  hasToDepthError?: boolean;
-  isAutoCorrected?: boolean;
-}
-
-export const defaultRowHeight = 240;
+import { BaseLayer, DepthLayer } from "../../../../../../api/stratigraphy.ts";
+import { FaciesDescription } from "../../faciesDescription.ts";
+import { LithologicalDescription } from "../../lithologicalDescription.ts";
+import { Lithology } from "../../lithology.ts";
 
 // Sort by fromDepth, tie-breaking on toDepth, then clamp toDepth to the next item's fromDepth wherever they overlap.
 const cleanupOverlaps = <T extends BaseLayer>(items: T[]): T[] => {
