@@ -12,7 +12,7 @@ public class TermsAccepted
     /// <summary>
     /// Gets or sets the foreign key to the <see cref="User"/> entity.
     /// </summary>
-    [Column("id_usr_fk")]
+    [Column("user_id")]
     [Required]
     public int UserId { get; set; }
 
@@ -24,7 +24,7 @@ public class TermsAccepted
     /// <summary>
     /// Gets or sets the foreign key to the <see cref="Term"/> entity.
     /// </summary>
-    [Column("id_tes_fk")]
+    [Column("term_id")]
     [Required]
     public int TermId { get; set; }
 
@@ -36,6 +36,6 @@ public class TermsAccepted
     /// <summary>
     /// Gets or sets the timestamp from the moment the terms got accepted.
     /// </summary>
-    [Column("accepted_tea")]
+    [Column("accepted")]
     public DateTime AcceptedAt { get; set; }
 }

@@ -1,5 +1,5 @@
 INSERT INTO bdms.users
-    (created_usr, admin_usr, username, settings_usr, firstname, lastname)
+    (created, admin, username, settings, firstname, lastname)
 VALUES
     (
         NOW(), true, 'GeoWerkstatt',

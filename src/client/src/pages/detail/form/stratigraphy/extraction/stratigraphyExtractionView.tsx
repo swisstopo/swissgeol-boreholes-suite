@@ -1,5 +1,5 @@
 import { FC, useState } from "react";
-import { Box, CircularProgress, Stack } from "@mui/material";
+import { Box, Stack } from "@mui/material";
 import { BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
 import { theme } from "../../../../../AppTheme.ts";
 import { ExtractionImageContainer } from "../../../labeling/extractionImageContainer.tsx";
@@ -30,44 +30,37 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
   const [pageCount, setPageCount] = useState<number>();
 
   return (
-    <Box sx={{ height: "calc(100vh - 156px - 84px)", overflow: "auto" }}>
-      <Stack direction="row" spacing={4} sx={{ height: "100%" }}>
-        <Stack direction="column" justifyContent="center" alignItems="center" sx={{ width: "calc(50% - 32px)" }}>
-          {isLoading ? (
-            <CircularProgress />
-          ) : (
-            <ExtractedStratigraphyTable lithologicalDescriptions={completedLithologicalDescriptions} />
-          )}
-        </Stack>
-        <Stack
-          direction="column"
-          justifyContent="space-between"
-          sx={{
-            backgroundColor: theme.palette.ai.background,
-            border: `1px solid ${theme.palette.ai.background}`,
-            borderRight: 0,
-            borderBottom: 0,
-            width: "50%",
-            position: "fixed",
-            right: theme.spacing(4),
-            top: theme.spacing(13.5),
-            bottom: theme.spacing(12.5),
-          }}>
-          <PagesBadge currentPageRange={currentPageRange} />
-          <ExtractionImageContainer
-            extractedDescriptions={lithologicalDescriptions}
-            currentPageNumber={activePage}
-            selectedFile={file}
-            activePage={activePage}
-            setActivePage={setActivePage}
-            pageCount={pageCount}
-            setPageCount={setPageCount}
-          />
-          <Box p={2} sx={{ zIndex: 500 }}>
-            <PageSelection pageCount={pageCount} activePage={activePage} setActivePage={setActivePage} />
-          </Box>
-        </Stack>
+    <Stack direction="row" sx={{ height: "100%", minHeight: 0 }}>
+      <Stack sx={{ flex: 1, minHeight: 0, overflow: "auto", padding: 3 }}>
+        <ExtractedStratigraphyTable
+          lithologicalDescriptions={completedLithologicalDescriptions}
+          isLoading={isLoading}
+        />
       </Stack>
-    </Box>
+      <Stack
+        justifyContent="space-between"
+        sx={{
+          flex: 1,
+          minHeight: 0,
+          backgroundColor: theme.palette.ai.background,
+          borderLeft: `1px solid ${theme.palette.border.light}`,
+          position: "relative",
+          overflow: "hidden",
+        }}>
+        <PagesBadge currentPageRange={currentPageRange} />
+        <ExtractionImageContainer
+          extractedDescriptions={lithologicalDescriptions}
+          currentPageNumber={activePage}
+          selectedFile={file}
+          activePage={activePage}
+          setActivePage={setActivePage}
+          pageCount={pageCount}
+          setPageCount={setPageCount}
+        />
+        <Box p={2} sx={{ zIndex: 500 }}>
+          <PageSelection pageCount={pageCount} activePage={activePage} setActivePage={setActivePage} />
+        </Box>
+      </Stack>
+    </Stack>
   );
 };

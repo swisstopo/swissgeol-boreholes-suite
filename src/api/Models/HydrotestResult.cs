@@ -42,14 +42,14 @@ public class HydrotestResult : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="HydrotestResult"/>'s max value.
     /// </summary>
     [IncludeInExport]
-    [Column("max_value")]
+    [Column("value_max")]
     public double? MaxValue { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="HydrotestResult"/>'s min value.
     /// </summary>
     [IncludeInExport]
-    [Column("min_value")]
+    [Column("value_min")]
     public double? MinValue { get; set; }
 
     /// <summary>

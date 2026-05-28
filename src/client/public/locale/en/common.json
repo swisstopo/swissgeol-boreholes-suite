@@ -408,7 +408,7 @@
   "newFile": "New file",
   "newLogRun": "New run",
   "newStratigraphy": "New stratigraphy",
-  "no": "No",
+  "no": "no",
   "noDocuments": "No documents available...",
   "noFilterResult": "No filter result found",
   "noLogFile": "No file added yet...",
@@ -420,7 +420,7 @@
   "noStratigraphy": "No stratigraphies available...",
   "noTextFound": "No text found",
   "notes": "Notes",
-  "np": "Not specified",
+  "np": "not specified",
   "onlyEPSG2056Supported": "Only EPSG:2056 is supported",
   "onlyMissing": "Only missing",
   "onlyMissingExplanation": "When enabled, only boreholes with missing values will be processed. When disabled, all boreholes will be reprocessed. Warning: processing all boreholes may take a long time and upstream APIs may return errors due to the high number of requests.",
@@ -573,6 +573,7 @@
   "unsavedChanges": "Unsaved changes",
   "unsavedChangesMessage": "{{where}}: You have unsaved changes. How would you like to proceed?",
   "unselectAll": "Unselect all",
+  "unspecified": "no specification",
   "upload": "Upload",
   "uploadPhotosAsAttachments": "Photos need to be uploaded in tab \"Attachments\".",
   "uploaded": "Uploaded",
@@ -602,6 +603,6 @@
   "workgroupId": "Workgroup",
   "workgroupWithNameAdded": "Workgroup \"{{name}}\" was added",
   "workgroups": "Workgroups",
-  "yes": "Yes",
+  "yes": "yes",
   "zipMissingJsonFile": "ZIP file does not contain a JSON file."
 }

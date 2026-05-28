@@ -198,7 +198,7 @@ public class FilterServiceTest
             new Coordinate(coordX - buffer, coordY - buffer),
         };
 
-        var polygon = new Polygon(new LinearRing(coordinates)) { SRID = SpatialReferenceConstants.SridLv95 };
+        var polygon = new Polygon(new LinearRing(coordinates)) { SRID = SpatialReferenceIdentifier.LV95 };
 
         var filterRequest = new FilterRequest
         {

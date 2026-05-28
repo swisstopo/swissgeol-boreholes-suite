@@ -408,7 +408,7 @@
   "newFile": "Neue Datei",
   "newLogRun": "Neuer Run",
   "newStratigraphy": "Neue Stratigraphie",
-  "no": "Nein",
+  "no": "nein",
   "noDocuments": "Keine Dokumente vorhanden...",
   "noFilterResult": "Kein Filterergebnis gefunden",
   "noLogFile": "Noch keine Datei hinzugefügt...",
@@ -420,7 +420,7 @@
   "noStratigraphy": "Keine Stratigraphie vorhanden...",
   "noTextFound": "Es wurde kein Text gefunden",
   "notes": "Anmerkungen",
-  "np": "Keine Angabe",
+  "np": "keine Angabe",
   "onlyEPSG2056Supported": "Nur EPSG:2056 wird unterstützt.",
   "onlyMissing": "Nur fehlende",
   "onlyMissingExplanation": "Wenn aktiviert, werden nur Bohrungen mit fehlenden Werten verarbeitet. Wenn deaktiviert, werden alle Bohrungen erneut verarbeitet. Warnung: Die Verarbeitung aller Bohrungen kann lange dauern und es können Fehler bei den externen APIs aufgrund der hohen Anzahl von Anfragen auftreten.",
@@ -574,6 +574,7 @@
   "unsavedChanges": "Ungespeicherte Änderungen",
   "unsavedChangesMessage": "{{where}}: Sie haben ungespeicherte Änderungen. Wie möchten Sie fortfahren?",
   "unselectAll": "Alle abwählen",
+  "unspecified": "keine Angabe",
   "upload": "Hochladen",
   "uploadPhotosAsAttachments": "Fotos müssen im Tab \"Anhänge\" hochgeladen werden.",
   "uploaded": "Hochgeladen",
@@ -603,6 +604,6 @@
   "workgroupId": "Arbeitsgruppe",
   "workgroupWithNameAdded": "Arbeitsgruppe \"{{name}}\" wurde hinzugefügt",
   "workgroups": "Arbeitsgruppen",
-  "yes": "Ja",
+  "yes": "ja",
   "zipMissingJsonFile": "ZIP-Datei enthält keine JSON-Datei."
 }

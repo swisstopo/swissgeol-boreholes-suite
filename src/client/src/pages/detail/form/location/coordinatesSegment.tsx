@@ -39,7 +39,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   // --- State variables ---
   const [boreholeId, setBoreholeId] = useState<number>();
-  const currentReferenceSystem = formMethods.watch("originalReferenceSystem");
+  const currentReferenceSystem = formMethods.watch("originalReferenceSystemId");
 
   // --- UseCallback hooks ---
 
@@ -129,7 +129,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     if (extractionObject?.type === "coordinates" && extractionState === ExtractionState.success) {
       const coordinate = extractionObject.value as Coordinate;
       if (coordinate) {
-        formMethods.setValue("originalReferenceSystem", referenceSystems[coordinate.projection].code);
+        formMethods.setValue("originalReferenceSystemId", referenceSystems[coordinate.projection].code);
         setValuesForReferenceSystem(coordinate.projection, coordinate.east.toString(), coordinate.north.toString());
       }
     }
@@ -206,9 +206,9 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   };
 
   const onCancelCoordinateChange = (e: number) => {
-    formMethods.resetField("originalReferenceSystem");
+    formMethods.resetField("originalReferenceSystemId");
     formMethods.setValue(
-      "originalReferenceSystem",
+      "originalReferenceSystemId",
       Object.values(ReferenceSystemCode).find(code => typeof code === "number" && code !== e) as ReferenceSystemCode,
     );
   };
@@ -276,9 +276,9 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
               <FormContainer>
                 <FormSelect
                   canReset={false}
-                  fieldName={"originalReferenceSystem"}
+                  fieldName={"originalReferenceSystemId"}
                   label="spatial_reference_system"
-                  selected={borehole.originalReferenceSystem}
+                  selected={borehole.originalReferenceSystemId}
                   className={isCoordinateExtraction ? "ai" : ""}
                   onUpdate={resetCoordinatesOnReferenceSystemChange}
                   values={Object.entries(referenceSystems).map(([, value]) => ({

@@ -32,7 +32,7 @@ public class CodeListControllerTest
     public async Task GetAllEntriesAsync()
     {
         var codeLists = await controller.GetAsync();
-        Assert.AreEqual(3476, codeLists.Count());
+        Assert.AreEqual(3473, codeLists.Count());
     }
 
     [TestMethod]
@@ -97,9 +97,9 @@ public class CodeListControllerTest
         Assert.AreEqual("text/csv; charset=utf-8", response.ContentType);
         Assert.AreEqual("attachment; filename=codelist_export.csv", httpContext.Response.Headers["Content-Disposition"].ToString());
 
-        var expectedHeader = "id_cli,schema_cli,code_cli,text_cli_en,text_cli_de,text_cli_fr,text_cli_it,text_cli_ro";
+        var expectedHeader = "id,schema,code,text_en,text_de,text_fr,text_it,text_ro";
 
         Assert.AreEqual(expectedHeader, response.Content.Split('\n')[0]);
-        Assert.AreEqual(3478, response.Content.Split('\n').Length);
+        Assert.AreEqual(3475, response.Content.Split('\n').Length);
     }
 }

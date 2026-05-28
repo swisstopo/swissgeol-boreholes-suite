@@ -30,14 +30,14 @@ public class Observation : IChangeTracking, IIdentifyable, ICasingReference
     /// Gets or sets the <see cref="Observation"/>'s start time.
     /// </summary>
     [IncludeInExport]
-    [Column("start_time")]
+    [Column("time_start")]
     public DateTime? StartTime { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Observation"/>'s end time.
     /// </summary>
     [IncludeInExport]
-    [Column("end_time")]
+    [Column("time_end")]
     public DateTime? EndTime { get; set; }
 
     /// <summary>
@@ -57,28 +57,28 @@ public class Observation : IChangeTracking, IIdentifyable, ICasingReference
     /// Gets or sets the <see cref="Observation"/>'s from depth in m.
     /// </summary>
     [IncludeInExport]
-    [Column("from_depth_m")]
+    [Column("depth_from_m")]
     public double? FromDepthM { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Observation"/>'s to depth in m.
     /// </summary>
     [IncludeInExport]
-    [Column("to_depth_m")]
+    [Column("depth_to_m")]
     public double? ToDepthM { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Observation"/>'s from depth in m a.s.l.
     /// </summary>
     [IncludeInExport]
-    [Column("from_depth_masl")]
+    [Column("depth_from_masl")]
     public double? FromDepthMasl { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Observation"/>'s to depth in m a.s.l.
     /// </summary>
     [IncludeInExport]
-    [Column("to_depth_masl")]
+    [Column("depth_to_masl")]
     public double? ToDepthMasl { get; set; }
 
     /// <summary>

@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, Typography } from "@mui/material";
+import { CircularProgress, Stack, Typography } from "@mui/material";
 import { BaseLayer } from "../../../../../api/stratigraphy.ts";
 import { LithologicalDescription } from "../lithologicalDescription.ts";
 import {
@@ -8,26 +8,40 @@ import {
   StratigraphyTableCell,
   StratigraphyTableColumn,
   StratigraphyTableContent,
-  StratigraphyTableGap,
+  StratigraphyTableDescriptionGap,
   StratigraphyTableHeader,
   StratigraphyTableHeaderCell,
 } from "../stratigraphyTableComponents.tsx";
+import { defaultRowHeight } from "../stratigraphyUtils.ts";
 
 interface ExtractedStratigraphyTableProps {
   lithologicalDescriptions: BaseLayer[];
+  isLoading?: boolean;
 }
 
-export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = ({ lithologicalDescriptions }) => {
+export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = ({
+  lithologicalDescriptions,
+  isLoading,
+}) => {
   const { t } = useTranslation();
-  const defaultRowHeight = 240;
+
+  if (isLoading) {
+    return (
+      <Stack sx={{ height: "100%", width: "100%" }} justifyContent="center" alignItems="center">
+        <CircularProgress />
+      </Stack>
+    );
+  }
 
   const renderTableCells = (layers: BaseLayer[], buildContent: (layer: BaseLayer) => ReactNode, keyPrefix: string) => {
     if (!layers || layers.length === 0) {
-      return <StratigraphyTableGap key={`${keyPrefix}-new`} sx={{ height: `${defaultRowHeight}px` }} index={-1} />;
+      return (
+        <StratigraphyTableDescriptionGap key={`${keyPrefix}-new`} sx={{ height: `${defaultRowHeight}px` }} index={-1} />
+      );
     }
     return layers.map((layer, index) =>
       layer.isGap ? (
-        <StratigraphyTableGap
+        <StratigraphyTableDescriptionGap
           index={index}
           key={`${keyPrefix}-${layer.id}-${index}`}
           sx={{
@@ -38,11 +52,10 @@ export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = (
         <StratigraphyTableActionCell
           index={index}
           key={`${keyPrefix}-${layer.id}-${index}`}
-          dataCy={`${keyPrefix}-${index}`}
+          dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.toDepth}`}
           sx={{
             height: `${defaultRowHeight}px`,
-          }}
-          layer={layer}>
+          }}>
           {buildContent(layer)}
         </StratigraphyTableActionCell>
       ),
@@ -54,7 +67,7 @@ export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = (
       {!lithologicalDescriptions || lithologicalDescriptions.length === 0 ? (
         <Typography variant="body1">{t("msgNoStratigraphyExtracted")}</Typography>
       ) : (
-        <Box sx={{ height: "100%" }}>
+        <>
           <StratigraphyTableHeader sx={{ width: "100%" }}>
             <StratigraphyTableHeaderCell sx={{ flex: "0 0 90px" }} label={t("depth")} />
             <StratigraphyTableHeaderCell label={t("lithological_description")} />
@@ -80,7 +93,7 @@ export const ExtractedStratigraphyTable: FC<ExtractedStratigraphyTableProps> = (
               )}
             </StratigraphyTableColumn>
           </StratigraphyTableContent>
-        </Box>
+        </>
       )}
     </>
   );

@@ -29,8 +29,8 @@ public class LocationMigrationTest : MaintenanceTaskTestBase
         var boreholeWithMissingSourceCoordinates = CreateBoreholeWithMissingSourceCoordinates();
 
         var boreholesWithSetSourceCoordinates = Context.Boreholes.Where(b =>
-            (b.OriginalReferenceSystem == ReferenceSystem.LV95 && b.LocationX != null && b.LocationY != null) ||
-            (b.OriginalReferenceSystem == ReferenceSystem.LV03 && b.LocationXLV03 != null && b.LocationYLV03 != null)).Count();
+            (b.OriginalReferenceSystemId == SpatialReferenceCodelistId.LV95 && b.LocationX != null && b.LocationY != null) ||
+            (b.OriginalReferenceSystemId == SpatialReferenceCodelistId.LV03 && b.LocationXLV03 != null && b.LocationYLV03 != null)).Count();
 
         Assert.AreEqual(3003, Context.Boreholes.Count());
 
@@ -56,8 +56,8 @@ public class LocationMigrationTest : MaintenanceTaskTestBase
         var boreholeWithMissingSourceCoordinates = CreateBoreholeWithMissingSourceCoordinates();
 
         var boreholesWithMissingLocationAttributes = Context.Boreholes.Where(b =>
-            ((b.OriginalReferenceSystem == ReferenceSystem.LV95 && b.LocationX != null && b.LocationY != null) ||
-            (b.OriginalReferenceSystem == ReferenceSystem.LV03 && b.LocationXLV03 != null && b.LocationYLV03 != null))
+            ((b.OriginalReferenceSystemId == SpatialReferenceCodelistId.LV95 && b.LocationX != null && b.LocationY != null) ||
+            (b.OriginalReferenceSystemId == SpatialReferenceCodelistId.LV03 && b.LocationXLV03 != null && b.LocationYLV03 != null))
             &&
             (string.IsNullOrWhiteSpace(b.Country) || string.IsNullOrWhiteSpace(b.Canton) || string.IsNullOrWhiteSpace(b.Municipality)))
             .Count();
@@ -99,7 +99,7 @@ public class LocationMigrationTest : MaintenanceTaskTestBase
             LocationY = 1125366.3469565178,
             LocationXLV03 = null,
             LocationYLV03 = 78390.10392298926,
-            OriginalReferenceSystem = ReferenceSystem.LV95,
+            OriginalReferenceSystemId = SpatialReferenceCodelistId.LV95,
             Name = "WINDTOPPER",
             Country = "GALAXYOLIVE",
             Canton = "ATLASFOOT",
@@ -119,7 +119,7 @@ public class LocationMigrationTest : MaintenanceTaskTestBase
             LocationY = 1125366.3469565178,
             LocationXLV03 = 741929.5530394556,
             LocationYLV03 = 78390.10392298926,
-            OriginalReferenceSystem = ReferenceSystem.LV95,
+            OriginalReferenceSystemId = SpatialReferenceCodelistId.LV95,
             Name = "CHAOSBEAM",
             Country = null,
             Canton = "ATLASFOOT",
@@ -139,7 +139,7 @@ public class LocationMigrationTest : MaintenanceTaskTestBase
             LocationY = 1125366.3469565178,
             LocationXLV03 = 741929.5530394556,
             LocationYLV03 = 78390.10392298926,
-            OriginalReferenceSystem = ReferenceSystem.LV95,
+            OriginalReferenceSystemId = SpatialReferenceCodelistId.LV95,
             Name = "PRISMHUNT",
             Country = "HEMLOCKSTONE",
             Canton = "ATLASFOOT",

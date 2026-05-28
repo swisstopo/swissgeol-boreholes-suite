@@ -13,12 +13,12 @@ public class Borehole : IChangeTracking, IIdentifyable
 {
     /// <inheritdoc />
     [IncludeInExport]
-    [Column("id_bho")]
+    [Column("id")]
     [Required]
     public int Id { get; set; }
 
     /// <inheritdoc />
-    [Column("created_by_bho")]
+    [Column("creator")]
     public int? CreatedById { get; set; }
 
     /// <inheritdoc />
@@ -26,16 +26,16 @@ public class Borehole : IChangeTracking, IIdentifyable
 
     /// <inheritdoc />
     [IncludeInExport]
-    [Column("created_bho")]
+    [Column("creation")]
     public DateTime? Created { get; set; }
 
     /// <inheritdoc />
     [IncludeInExport]
-    [Column("updated_bho")]
+    [Column("update")]
     public DateTime? Updated { get; set; }
 
     /// <inheritdoc />
-    [Column("updated_by_bho")]
+    [Column("updater")]
     public int? UpdatedById { get; set; }
 
     /// <inheritdoc />
@@ -44,13 +44,13 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/> locked date.
     /// </summary>
-    [Column("locked_bho")]
+    [Column("locked")]
     public DateTime? Locked { get; set; }
 
     /// <summary>
     /// Gets or sets the id of the <see cref="User"/> who locked the <see cref="Borehole"/>.
     /// </summary>
-    [Column("locked_by_bho")]
+    [Column("locked_by")]
     public int? LockedById { get; set; }
 
     /// <summary>
@@ -61,7 +61,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// <summary>
     /// Gets or sets the foreign key to the <see cref="Workgroup"/> entity.
     /// </summary>
-    [Column("id_wgp_fk")]
+    [Column("workgroup_id")]
     public int? WorkgroupId { get; set; }
 
     /// <summary>
@@ -73,7 +73,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets whether the <see cref="Borehole"/> is public.
     /// </summary>
     [IncludeInExport]
-    [Column("public_bho")]
+    [Column("public")]
     public bool? IsPublic { get; set; }
 
     /// <summary>
@@ -92,7 +92,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s X-location using LV95 coordinates.
     /// </summary>
     [IncludeInExport]
-    [Column("location_x_bho")]
+    [Column("location_x")]
     public double? LocationX { get; set; }
 
     /// <summary>
@@ -106,7 +106,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s Y-location using LV95 coordinates.
     /// </summary>
     [IncludeInExport]
-    [Column("location_y_bho")]
+    [Column("location_y")]
     public double? LocationY { get; set; }
 
     /// <summary>
@@ -120,7 +120,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s X-location using LV03 coordinates.
     /// </summary>
     [IncludeInExport]
-    [Column("location_x_lv03_bho")]
+    [Column("location_x_lv03")]
     public double? LocationXLV03 { get; set; }
 
     /// <summary>
@@ -134,7 +134,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s Y-location using LV03 coordinates.
     /// </summary>
     [IncludeInExport]
-    [Column("location_y_lv03_bho")]
+    [Column("location_y_lv03")]
     public double? LocationYLV03 { get; set; }
 
     /// <summary>
@@ -145,24 +145,26 @@ public class Borehole : IChangeTracking, IIdentifyable
     public int? PrecisionLocationYLV03 { get; set; }
 
     /// <summary>
-    /// Gets or sets the original reference system.
+    /// Gets or sets the <see cref="Borehole"/>'s original reference system id.
     /// </summary>
     [IncludeInExport]
-    [Column("srs_id_cli")]
-    public ReferenceSystem? OriginalReferenceSystem { get; set; }
+    [Column("srs_id")]
+    public int? OriginalReferenceSystemId { get; set; }
+
+    public Codelist? OriginalReferenceSystem { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s Elevation(Z).
     /// </summary>
     [IncludeInExport]
-    [Column("elevation_z_bho")]
+    [Column("elevation_z")]
     public double? ElevationZ { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s HrsId.
     /// </summary>
     [IncludeInExport]
-    [Column("hrs_id_cli")]
+    [Column("hrs_id")]
     public int? HrsId { get; set; }
 
     public Codelist? Hrs { get; set; }
@@ -171,14 +173,14 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s total depth.
     /// </summary>
     [IncludeInExport]
-    [Column("total_depth_bho")]
+    [Column("total_depth")]
     public double? TotalDepth { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s restriction id.
     /// </summary>
     [IncludeInExport]
-    [Column("restriction_id_cli")]
+    [Column("restriction_id")]
     public int? RestrictionId { get; set; }
 
     public Codelist? Restriction { get; set; }
@@ -187,7 +189,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the date until when a <see cref="Borehole"/> is restricted.
     /// </summary>
     [IncludeInExport]
-    [Column("restriction_until_bho")]
+    [Column("restriction_until")]
     public DateOnly? RestrictionUntil { get; set; }
 
     /// <summary>
@@ -201,21 +203,21 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s original name.
     /// </summary>
     [IncludeInExport]
-    [Column("original_name_bho")]
+    [Column("original_name")]
     public string? OriginalName { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s alternate name.
     /// </summary>
     [IncludeInExport]
-    [Column("alternate_name_bho")]
+    [Column("name")]
     public string? Name { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s location precision.
     /// </summary>
     [IncludeInExport]
-    [Column("qt_location_id_cli")]
+    [Column("precision_location_id")]
     public int? LocationPrecisionId { get; set; }
 
     public Codelist? LocationPrecision { get; set; }
@@ -224,7 +226,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s elevation precision id.
     /// </summary>
     [IncludeInExport]
-    [Column("qt_elevation_id_cli")]
+    [Column("precision_elevation_id")]
     public int? ElevationPrecisionId { get; set; }
 
     /// <summary>
@@ -236,35 +238,35 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s project name.
     /// </summary>
     [IncludeInExport]
-    [Column("project_name_bho")]
+    [Column("project_name")]
     public string? ProjectName { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s country.
     /// </summary>
     [IncludeInExport]
-    [Column("country_bho")]
+    [Column("country")]
     public string? Country { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s canton.
     /// </summary>
     [IncludeInExport]
-    [Column("canton_bho")]
+    [Column("canton")]
     public string? Canton { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s municipality.
     /// </summary>
     [IncludeInExport]
-    [Column("municipality_bho")]
+    [Column("municipality")]
     public string? Municipality { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s purpose id.
     /// </summary>
     [IncludeInExport]
-    [Column("purpose_id_cli")]
+    [Column("purpose_id")]
     public int? PurposeId { get; set; }
 
     /// <summary>
@@ -276,7 +278,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s status id.
     /// </summary>
     [IncludeInExport]
-    [Column("status_id_cli")]
+    [Column("status_id")]
     public int? StatusId { get; set; }
 
     /// <summary>
@@ -288,7 +290,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s Depth presicion id.
     /// </summary>
     [IncludeInExport]
-    [Column("qt_depth_id_cli")]
+    [Column("precision_depth_id")]
     public int? DepthPrecisionId { get; set; }
 
     /// <summary>
@@ -314,28 +316,28 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets whether the <see cref="Borehole"/> has groundwater.
     /// </summary>
     [IncludeInExport]
-    [Column("groundwater_bho")]
+    [Column("groundwater")]
     public bool? HasGroundwater { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s geometry.
     /// </summary>
     [IncludeInExport]
-    [Column("geom_bho")]
+    [Column("geometry")]
     public Point? Geometry { get; set; }
 
     /// <summary>
     /// Gets or sets remarks for  the <see cref="Borehole"/>.
     /// </summary>
     [IncludeInExport]
-    [Column("remarks_bho")]
+    [Column("remarks")]
     public string? Remarks { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s lithology top bedrock id.
     /// </summary>
     [IncludeInExport]
-    [Column("lithology_top_bedrock_id_cli")]
+    [Column("lithology_top_bedrock_id")]
     public int? LithologyTopBedrockId { get; set; }
 
     /// <summary>
@@ -347,7 +349,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s lithostratigraphy top bedrock id.
     /// </summary>
     [IncludeInExport]
-    [Column("lithostrat_id_cli")]
+    [Column("lithostratigraphy_top_bedrock_id")]
     public int? LithostratigraphyTopBedrockId { get; set; }
 
     /// <summary>
@@ -359,7 +361,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s chronostratigraphy top bedrock id.
     /// </summary>
     [IncludeInExport]
-    [Column("chronostrat_id_cli")]
+    [Column("chronostratigraphy_top_bedrock_id")]
     public int? ChronostratigraphyTopBedrockId { get; set; }
 
     /// <summary>
@@ -371,14 +373,14 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s reference elevation.
     /// </summary>
     [IncludeInExport]
-    [Column("reference_elevation_bho")]
+    [Column("reference_elevation")]
     public double? ReferenceElevation { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/>'s reference elevation precision id.
     /// </summary>
     [IncludeInExport]
-    [Column("qt_reference_elevation_id_cli")]
+    [Column("precision_reference_elevation_id")]
     public int? ReferenceElevationPrecisionId { get; set; }
 
     /// <summary>
@@ -390,7 +392,7 @@ public class Borehole : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Borehole"/>'s reference elevation type id.
     /// </summary>
     [IncludeInExport]
-    [Column("reference_elevation_type_id_cli")]
+    [Column("reference_elevation_type_id")]
     public int? ReferenceElevationTypeId { get; set; }
 
     /// <summary>

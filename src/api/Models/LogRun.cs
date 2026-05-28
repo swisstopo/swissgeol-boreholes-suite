@@ -46,7 +46,7 @@ public class LogRun : IIdentifyable, IChangeTracking
     /// </summary>
     [IncludeInExport]
     [JsonRequired]
-    [Column("from_depth")]
+    [Column("depth_from")]
     public double FromDepth { get; set; }
 
     /// <summary>
@@ -54,7 +54,7 @@ public class LogRun : IIdentifyable, IChangeTracking
     /// </summary>
     [IncludeInExport]
     [JsonRequired]
-    [Column("to_depth")]
+    [Column("depth_to")]
     public double ToDepth { get; set; }
 
     /// <summary>

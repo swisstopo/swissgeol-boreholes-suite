@@ -42,7 +42,7 @@ export const importBoreholesZip = async (workgroupId: number | null, combinedFor
 const createBorehole = async (workgroupId: number): Promise<Borehole> => {
   return await fetchApiV2WithApiError<Borehole>(`borehole`, "POST", {
     workgroupId,
-    originalReferenceSystem: referenceSystems.LV95.code,
+    originalReferenceSystemId: referenceSystems.LV95.code,
     hrsId: defaultHrsId,
   });
 };

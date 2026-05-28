@@ -48,6 +48,9 @@ services:
     environment:
       # use development environment to enable seeding the database
       - ASPNETCORE_ENVIRONMENT=Development
+    # Override entrypoint to disable hot reload; works around a Roslyn
+    # AccessViolationException in TemporaryStorageService (MMF write).
+    entrypoint: ["dotnet", "watch", "--no-hot-reload", "run", "--no-launch-profile"]
   minio:
     extends:
       file: ../../docker-compose.yml

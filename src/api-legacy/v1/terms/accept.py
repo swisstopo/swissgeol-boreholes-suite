@@ -14,19 +14,19 @@ class AcceptTerms(Action):
             # Check if already accepted
             rec = await self.conn.fetchrow("""
                 SELECT
-                    id_usr_fk,
-                    accepted_tea
+                    user_id,
+                    accepted
                 FROM
                     bdms.terms_accepted
                 WHERE
-                    id_tes_fk = $1
+                    term_id = $1
             """, id_tes)
 
             if rec is None:
                 # Accepted Terms flag
                 await self.conn.execute("""
                     INSERT INTO bdms.terms_accepted (
-                        id_usr_fk, id_tes_fk
+                        user_id, term_id
                     ) VALUES (
                         $1, $2
                     )

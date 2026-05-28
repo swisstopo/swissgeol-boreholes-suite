@@ -58,7 +58,7 @@ public class CoordinateServiceTest
             LocationY = 1125366.3469565178,
             LocationXLV03 = 765875.1615463407,
             LocationYLV03 = 78390.10392298926,
-            OriginalReferenceSystem = ReferenceSystem.LV95,
+            OriginalReferenceSystemId = SpatialReferenceCodelistId.LV95,
             Name = "Laurence.Padberg3",
         };
         context.Boreholes.Add(borehole);
@@ -68,7 +68,7 @@ public class CoordinateServiceTest
         context.SaveChanges();
 
         var result = context.Boreholes.FirstOrDefault(b => b.Id == LV95BoreholeWithAllCoordinatesSetId);
-        Assert.AreEqual(ReferenceSystem.LV95, result.OriginalReferenceSystem);
+        Assert.AreEqual(SpatialReferenceCodelistId.LV95, result.OriginalReferenceSystemId);
         Assert.AreEqual(2626103.1988343936, result.LocationX);
         Assert.AreEqual(1125366.3469565178, result.LocationY);
         Assert.AreEqual(626103.56923180178, result.LocationXLV03);
@@ -87,7 +87,7 @@ public class CoordinateServiceTest
             LocationY = 1125366.3469565178,
             LocationXLV03 = 765875.1615463407,
             LocationYLV03 = 78390.10392298926,
-            OriginalReferenceSystem = ReferenceSystem.LV95,
+            OriginalReferenceSystemId = SpatialReferenceCodelistId.LV95,
             Name = "Laurence.Padberg3",
         };
         context.Boreholes.Add(borehole);
@@ -98,7 +98,7 @@ public class CoordinateServiceTest
         context.SaveChanges();
 
         var result = context.Boreholes.FirstOrDefault(b => b.Id == LV95BoreholeWithAllCoordinatesSetId);
-        Assert.AreEqual(ReferenceSystem.LV95, result.OriginalReferenceSystem);
+        Assert.AreEqual(SpatialReferenceCodelistId.LV95, result.OriginalReferenceSystemId);
         Assert.AreEqual(2626103.1988343936, result.LocationX);
         Assert.AreEqual(1125366.3469565178, result.LocationY);
         Assert.AreEqual(765875.1615463407, result.LocationXLV03);
@@ -117,7 +117,7 @@ public class CoordinateServiceTest
             LocationY = 1253325,
             LocationXLV03 = 655269,
             LocationYLV03 = 297874,
-            OriginalReferenceSystem = ReferenceSystem.LV03,
+            OriginalReferenceSystemId = SpatialReferenceCodelistId.LV03,
             Name = "Floyd29",
         };
         context.Boreholes.Add(borehole);
@@ -127,7 +127,7 @@ public class CoordinateServiceTest
         context.SaveChanges();
 
         var result = context.Boreholes.FirstOrDefault(b => b.Id == LV03BoreholeWithMissingDestCoordinatesId);
-        Assert.AreEqual(ReferenceSystem.LV03, result.OriginalReferenceSystem);
+        Assert.AreEqual(SpatialReferenceCodelistId.LV03, result.OriginalReferenceSystemId);
         Assert.AreEqual(2655270, result.LocationX);
         Assert.AreEqual(1297874, result.LocationY);
         Assert.AreEqual(655269, result.LocationXLV03);
@@ -146,7 +146,7 @@ public class CoordinateServiceTest
             LocationY = 1099464.3374982823,
             LocationXLV03 = null,
             LocationYLV03 = 224735.18581408318,
-            OriginalReferenceSystem = ReferenceSystem.LV03,
+            OriginalReferenceSystemId = SpatialReferenceCodelistId.LV03,
             Name = "Brendan.Trantow38",
         };
         context.Boreholes.Add(borehole);
@@ -156,7 +156,7 @@ public class CoordinateServiceTest
         context.SaveChanges();
 
         var result = context.Boreholes.FirstOrDefault(b => b.Id == LV03BoreholeWithMissingSourceCoordinatesId);
-        Assert.AreEqual(ReferenceSystem.LV03, result.OriginalReferenceSystem);
+        Assert.AreEqual(SpatialReferenceCodelistId.LV03, result.OriginalReferenceSystemId);
         Assert.AreEqual(2622479.1608037096, result.LocationX);
         Assert.AreEqual(1099464.3374982823, result.LocationY);
         Assert.AreEqual(null, result.LocationXLV03);
@@ -191,7 +191,7 @@ public class CoordinateServiceTest
             LocationY = 1125366.3469565178,
             LocationXLV03 = null,
             LocationYLV03 = null,
-            OriginalReferenceSystem = ReferenceSystem.LV95,
+            OriginalReferenceSystemId = SpatialReferenceCodelistId.LV95,
             Name = "STORMPELICAN",
         };
 

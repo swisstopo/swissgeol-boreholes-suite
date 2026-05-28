@@ -32,14 +32,14 @@ public class CasingElement : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="CasingElement"/>'s upper depth.
     /// </summary>
     [IncludeInExport]
-    [Column("from_depth")]
+    [Column("depth_from")]
     public double FromDepth { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="CasingElement"/>'s lower depth.
     /// </summary>
     [IncludeInExport]
-    [Column("to_depth")]
+    [Column("depth_to")]
     public double ToDepth { get; set; }
 
     /// <summary>
@@ -71,14 +71,14 @@ public class CasingElement : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Casing"/>'s inner diameter.
     /// </summary>
     [IncludeInExport]
-    [Column("inner_diameter")]
+    [Column("diameter_inner")]
     public double? InnerDiameter { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Casing"/>'s outer diameter.
     /// </summary>
     [IncludeInExport]
-    [Column("outer_diameter")]
+    [Column("diameter_outer")]
     public double? OuterDiameter { get; set; }
 
     /// <inheritdoc />

@@ -38,10 +38,10 @@ class PatchSetting(Action):
 
                 rec = await self.conn.fetchrow("""
                     SELECT
-                        settings_usr
+                        settings
                     FROM
                         bdms.users
-                    WHERE id_usr = $1
+                    WHERE id = $1
                 """, user_id)
 
                 setting = self.decode(rec[0]) if rec[0] is not None else None
@@ -146,8 +146,8 @@ class PatchSetting(Action):
                 await self.conn.execute("""
                     UPDATE bdms.users
                     SET
-                        settings_usr = $1
-                    WHERE id_usr = $2
+                        settings = $1
+                    WHERE id = $2
                 """, json.dumps(setting), user_id)
 
                 return {

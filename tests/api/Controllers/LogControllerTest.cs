@@ -683,11 +683,11 @@ public class LogControllerTest : TestControllerBase
     }
 
     [TestMethod]
-    [DataRow("en", "Not specified", "Other")]
-    [DataRow("de", "Keine Angabe", "Anderer")]
-    [DataRow("fr", "Sans indication", "Autre")]
-    [DataRow("it", "Senza indicazioni", "Altro")]
-    [DataRow("xx", "Not specified", "Other")] // unknown locale falls back to en
+    [DataRow("en", "not specified", "other")]
+    [DataRow("de", "keine Angabe", "anderer")]
+    [DataRow("fr", "sans indication", "autre")]
+    [DataRow("it", "senza indicazioni", "altro")]
+    [DataRow("xx", "not specified", "other")] // unknown locale falls back to en
     public async Task ExportLogRunsUsesLocaleForCodelistText(string locale, string expectedBoreholeStatus, string expectedConveyanceMethod)
     {
         var borehole = await AddTestBoreholeAsync();

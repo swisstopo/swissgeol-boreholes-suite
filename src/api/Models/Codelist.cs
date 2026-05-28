@@ -13,7 +13,7 @@ public class Codelist : IIdentifyable
 {
     /// <inheritdoc />
     [Key]
-    [Column("id_cli")]
+    [Column("id")]
     [Required]
     public int Id { get; set; }
 
@@ -26,67 +26,67 @@ public class Codelist : IIdentifyable
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/>'s schema.
     /// </summary>
-    [Column("schema_cli")]
+    [Column("schema")]
     public string? Schema { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/>'s code.
     /// </summary>
-    [Column("code_cli")]
+    [Column("code")]
     public string Code { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/>'s english text.
     /// </summary>
-    [Column("text_cli_en")]
+    [Column("text_en")]
     public string En { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/>'s german text.
     /// </summary>
-    [Column("text_cli_de")]
+    [Column("text_de")]
     public string? De { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/> 's french text.
     /// </summary>
-    [Column("text_cli_fr")]
+    [Column("text_fr")]
     public string? Fr { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/>'s italian text.
     /// </summary>
-    [Column("text_cli_it")]
+    [Column("text_it")]
     public string? It { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/>'s romantsch text.
     /// </summary>
-    [Column("text_cli_ro")]
+    [Column("text_ro")]
     public string? Ro { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/>'s order.
     /// </summary>
-    [Column("order_cli")]
+    [Column("order")]
     public int? Order { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Codelist"/>'s configuration.
     /// </summary>
-    [Column("conf_cli")]
+    [Column("conf")]
     public string? Conf { get; set; }
 
     /// <summary>
     /// Gets or sets whether the <see cref="Codelist"/> is default.
     /// </summary>
-    [Column("default_cli")]
+    [Column("default")]
     public bool? IsDefault { get; set; }
 
     /// <summary>
     /// Gets or sets the Path of this <see cref="Codelist"/> in a tree structure.
     /// </summary>
-    [Column("path_cli")]
+    [Column("path")]
     public LTree? Path { get; set; }
 
     /// <summary>

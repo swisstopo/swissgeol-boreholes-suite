@@ -46,7 +46,7 @@ describe("Tests for stratigraphy extraction", () => {
     createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "test_profile.pdf");
     cy.wait("@extract-stratigraphy", { timeout: 240000 }).then(interception => {
       expect(interception.response!.statusCode).to.eq(200);
-      cy.dataCy("extracted_lithologicalDescription-0").should("contain", "Humus");
+      cy.get('[data-cy^="extracted_lithologicalDescription-"]').first().should("contain", "Humus");
       cy.get(`#extraction-map`).within(() => {
         cy.get("canvas, svg").should("exist");
       });
@@ -65,7 +65,7 @@ describe("Tests for stratigraphy extraction", () => {
       "@borehole_by_id",
     ]);
 
-    cy.dataCy("lithologicalDescription-0").should("contain", "Humus");
+    cy.get('[data-cy^="lithologicalDescription-"]:not([data-cy$="-gap"])').first().should("contain", "Humus");
     cy.dataCy("labeling-toggle-button").click();
     cy.get(`#labeling-map`).within(() => {
       cy.get("canvas, svg").should("exist");
@@ -113,7 +113,7 @@ describe("Tests for stratigraphy extraction", () => {
     cy.dataCy("stratigraphy-toggle-item-0").should("not.exist");
 
     // First stratigraphy is selected by default; its description is visible.
-    cy.dataCy("extracted_lithologicalDescription-0").should("contain", "Humus");
+    cy.dataCy("extracted_lithologicalDescription-0-1.5").should("contain", "Humus");
 
     // Footer checkbox targets the currently selected stratigraphy and starts unchecked.
     cy.dataCy("add-stratigraphy-checkbox-1").find('input[type="checkbox"]').should("not.be.checked");
@@ -127,7 +127,7 @@ describe("Tests for stratigraphy extraction", () => {
     // Switch to stratigraphy 3 via the dropdown; preview and checkbox update.
     cy.dataCy("stratigraphy-select").click();
     cy.dataCy("stratigraphy-select-item-2").click();
-    cy.dataCy("extracted_lithologicalDescription-0").should("contain", "Kies");
+    cy.dataCy("extracted_lithologicalDescription-0-3").should("contain", "Kies");
     cy.dataCy("add-stratigraphy-checkbox-3").find('input[type="checkbox"]').should("not.be.checked");
 
     // Check stratigraphy 3; button count should reflect two checked.

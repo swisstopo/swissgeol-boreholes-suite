@@ -19,6 +19,7 @@ interface FormDialogProps {
   onApply?: () => Promise<void> | void;
   isApplyDisabled?: boolean;
   actions?: FormDialogAction[];
+  headerAction?: ReactNode;
   children: ReactNode;
 }
 
@@ -29,6 +30,7 @@ export const FormDialog: FC<FormDialogProps> = ({
   onApply,
   isApplyDisabled = false,
   actions,
+  headerAction,
   children,
 }) => (
   <Dialog open={open} maxWidth={false}>
@@ -36,6 +38,7 @@ export const FormDialog: FC<FormDialogProps> = ({
       <Typography variant="h4" sx={{ flexGrow: 1 }}>
         {title}
       </Typography>
+      {headerAction}
     </DialogHeaderContainer>
     <DialogMainContent
       sx={{ px: 7.5, py: 3, width: "1160px", maxWidth: "100%", backgroundColor: theme.palette.background.lightgrey }}>

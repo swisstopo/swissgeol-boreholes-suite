@@ -218,10 +218,17 @@ public class LithologyController : BoreholeControllerBase<Lithology>
             .ThenBy(ld => ld.Id)
             .ToList() ?? [];
 
-        if (!entity.HasBedding)
+        if (entity.IsUnconsolidated == null)
+        {
+            // Unspecified lithologies carry no descriptions, no bedding, and no share.
+            entity.HasBedding = false;
+            entity.Share = null;
+            entity.LithologyDescriptions = [];
+        }
+        else if (!entity.HasBedding)
         {
             entity.Share = null; // Reset share if bedding is false
-            entity.LithologyDescriptions = entity.LithologyDescriptions?.Where(ld => ld.IsFirst).ToList() ?? [];
+            entity.LithologyDescriptions = entity.LithologyDescriptions.Where(ld => ld.IsFirst).ToList();
         }
 
         // Remove old lithology descriptions
@@ -257,22 +264,10 @@ public class LithologyController : BoreholeControllerBase<Lithology>
         }
     }
 
-    private async Task PrepareNewLithologyDescriptionForSaveAsync(LithologyDescription lithologyDescription, bool isUnconsolidated)
+    private async Task PrepareNewLithologyDescriptionForSaveAsync(LithologyDescription lithologyDescription, bool? isUnconsolidated)
     {
-        if (isUnconsolidated)
+        if (isUnconsolidated == true)
         {
-            // Reset consolidated codes
-            lithologyDescription.LithologyConId = null;
-            lithologyDescription.GrainSizeId = null;
-            lithologyDescription.GrainAngularityId = null;
-            lithologyDescription.GradationId = null;
-            lithologyDescription.CementationId = null;
-
-            lithologyDescription.LithologyDescriptionComponentConParticleCodes = [];
-            lithologyDescription.LithologyDescriptionComponentConMineralCodes = [];
-            lithologyDescription.LithologyDescriptionStructureSynGenCodes = [];
-            lithologyDescription.LithologyDescriptionStructurePostGenCodes = [];
-
             // Set unconsolidated codes
             var organicComponentCodes = await Context.Codelists.Where(c => lithologyDescription.ComponentUnconOrganicCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
             lithologyDescription.LithologyDescriptionComponentUnconOrganicCodes = organicComponentCodes.Select(c => new LithologyDescriptionComponentUnconOrganicCodes() { Codelist = c, CodelistId = c.Id }).ToList();
@@ -291,7 +286,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
         }
         else
         {
-            // Reset unconsolidated codes
+            // Reset unconsolidated codes for consolidated or undefined rock type
             lithologyDescription.LithologyUnconMainId = null;
             lithologyDescription.LithologyUncon2Id = null;
             lithologyDescription.LithologyUncon3Id = null;
@@ -305,7 +300,10 @@ public class LithologyController : BoreholeControllerBase<Lithology>
             lithologyDescription.LithologyDescriptionGrainShapeCodes = [];
             lithologyDescription.LithologyDescriptionGrainAngularityCodes = [];
             lithologyDescription.LithologyDescriptionLithologyUnconDebrisCodes = [];
+        }
 
+        if (isUnconsolidated == false)
+        {
             // Set consolidated codes
             var componentConParticleCodes = await Context.Codelists.Where(c => lithologyDescription.ComponentConParticleCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
             lithologyDescription.LithologyDescriptionComponentConParticleCodes = componentConParticleCodes.Select(c => new LithologyDescriptionComponentConParticleCodes() { Codelist = c, CodelistId = c.Id }).ToList();
@@ -319,24 +317,26 @@ public class LithologyController : BoreholeControllerBase<Lithology>
             var structurePostGenCodes = await Context.Codelists.Where(c => lithologyDescription.StructurePostGenCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
             lithologyDescription.LithologyDescriptionStructurePostGenCodes = [.. structurePostGenCodes.Select(c => new LithologyDescriptionStructurePostGenCodes() { Codelist = c, CodelistId = c.Id })];
         }
-    }
-
-    private async Task PrepareEditedLithologyDescriptionAsync(LithologyDescription lithologyDescription, LithologyDescription existingDescription, bool isUnconsolidated)
-    {
-        if (isUnconsolidated)
+        else
         {
-            // Reset consolidated codes
+            // Reset consolidated codes for unconsolidated or undefined rock type
             lithologyDescription.LithologyConId = null;
             lithologyDescription.GrainSizeId = null;
             lithologyDescription.GrainAngularityId = null;
             lithologyDescription.GradationId = null;
             lithologyDescription.CementationId = null;
 
-            await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionComponentConParticleCodes!, []).ConfigureAwait(false);
-            await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionComponentConMineralCodes!, []).ConfigureAwait(false);
-            await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionStructureSynGenCodes!, []).ConfigureAwait(false);
-            await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionStructurePostGenCodes!, []).ConfigureAwait(false);
+            lithologyDescription.LithologyDescriptionComponentConParticleCodes = [];
+            lithologyDescription.LithologyDescriptionComponentConMineralCodes = [];
+            lithologyDescription.LithologyDescriptionStructureSynGenCodes = [];
+            lithologyDescription.LithologyDescriptionStructurePostGenCodes = [];
+        }
+    }
 
+    private async Task PrepareEditedLithologyDescriptionAsync(LithologyDescription lithologyDescription, LithologyDescription existingDescription, bool? isUnconsolidated)
+    {
+        if (isUnconsolidated == true)
+        {
             // Set unconsolidated codes
             await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionComponentUnconOrganicCodes!, lithologyDescription.ComponentUnconOrganicCodelistIds!).ConfigureAwait(false);
             await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionComponentUnconDebrisCodes!, lithologyDescription.ComponentUnconDebrisCodelistIds!).ConfigureAwait(false);
@@ -346,7 +346,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
         }
         else
         {
-            // Reset unconsolidated codes
+            // Reset unconsolidated codes for consolidated or undefined rock type
             lithologyDescription.LithologyUnconMainId = null;
             lithologyDescription.LithologyUncon2Id = null;
             lithologyDescription.LithologyUncon3Id = null;
@@ -360,22 +360,36 @@ public class LithologyController : BoreholeControllerBase<Lithology>
             await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionGrainShapeCodes!, []).ConfigureAwait(false);
             await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionGrainAngularityCodes!, []).ConfigureAwait(false);
             await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionLithologyUnconDebrisCodes!, []).ConfigureAwait(false);
+        }
 
+        if (isUnconsolidated == false)
+        {
             // Set consolidated codes
             await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionComponentConParticleCodes!, lithologyDescription.ComponentConParticleCodelistIds!).ConfigureAwait(false);
             await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionComponentConMineralCodes!, lithologyDescription.ComponentConMineralCodelistIds!).ConfigureAwait(false);
             await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionStructureSynGenCodes!, lithologyDescription.StructureSynGenCodelistIds!).ConfigureAwait(false);
             await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionStructurePostGenCodes!, lithologyDescription.StructurePostGenCodelistIds!).ConfigureAwait(false);
         }
+        else
+        {
+            // Reset consolidated codes for unconsolidated or undefined rock type
+            lithologyDescription.LithologyConId = null;
+            lithologyDescription.GrainSizeId = null;
+            lithologyDescription.GrainAngularityId = null;
+            lithologyDescription.GradationId = null;
+            lithologyDescription.CementationId = null;
+
+            await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionComponentConParticleCodes!, []).ConfigureAwait(false);
+            await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionComponentConMineralCodes!, []).ConfigureAwait(false);
+            await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionStructureSynGenCodes!, []).ConfigureAwait(false);
+            await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionStructurePostGenCodes!, []).ConfigureAwait(false);
+        }
     }
 
     private async Task PrepareNewLithologyForSaveAsync(Lithology entity)
     {
-        if (entity.IsUnconsolidated)
+        if (entity.IsUnconsolidated == true)
         {
-            // Reset consolidated codes
-            entity.LithologyTextureMetaCodes = [];
-
             // Set unconsolidated codes
             var uscsTypeCodes = await Context.Codelists.Where(c => entity.UscsTypeCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
             entity.LithologyUscsTypeCodes = uscsTypeCodes.Select(c => new LithologyUscsTypeCodes { Codelist = c, CodelistId = c.Id }).ToList();
@@ -385,7 +399,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
         }
         else
         {
-            // Reset unconsolidated codes
+            // Reset unconsolidated codes for consolidated or undefined rock type
             entity.CompactnessId = null;
             entity.CohesionId = null;
             entity.HumidityId = null;
@@ -395,27 +409,32 @@ public class LithologyController : BoreholeControllerBase<Lithology>
 
             entity.LithologyUscsTypeCodes = [];
             entity.LithologyRockConditionCodes = [];
+        }
 
+        if (entity.IsUnconsolidated == false)
+        {
             // Set consolidated codes
             var textureMetaCodes = await Context.Codelists.Where(c => entity.TextureMetaCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
             entity.LithologyTextureMetaCodes = textureMetaCodes.Select(c => new LithologyTextureMetaCodes { Codelist = c, CodelistId = c.Id }).ToList();
+        }
+        else
+        {
+            // Reset consolidated codes for unconsolidated or undefined rock type
+            entity.LithologyTextureMetaCodes = [];
         }
     }
 
     private async Task PrepareEditedLithologyForSaveAsync(Lithology entity, Lithology existingLithology)
     {
-        if (entity.IsUnconsolidated)
+        if (entity.IsUnconsolidated == true)
         {
-            // Reset consolidated codes
-            await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyTextureMetaCodes!, []).ConfigureAwait(false);
-
             // Set unconsolidated codes
             await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyUscsTypeCodes!, entity.UscsTypeCodelistIds!).ConfigureAwait(false);
             await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyRockConditionCodes!, entity.RockConditionCodelistIds!).ConfigureAwait(false);
         }
         else
         {
-            // Reset unconsolidated codes
+            // Reset unconsolidated codes for consolidated or undefined rock type
             entity.CompactnessId = null;
             entity.CohesionId = null;
             entity.HumidityId = null;
@@ -425,9 +444,17 @@ public class LithologyController : BoreholeControllerBase<Lithology>
 
             await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyUscsTypeCodes!, []).ConfigureAwait(false);
             await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyRockConditionCodes!, []).ConfigureAwait(false);
+        }
 
+        if (entity.IsUnconsolidated == false)
+        {
             // Set consolidated codes
             await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyTextureMetaCodes!, entity.TextureMetaCodelistIds!).ConfigureAwait(false);
+        }
+        else
+        {
+            // Reset consolidated codes for unconsolidated or undefined rock type
+            await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyTextureMetaCodes!, []).ConfigureAwait(false);
         }
     }
 
