@@ -194,7 +194,7 @@ export const useLithologyTableState = (
     };
     const aboveLithology = aboveId ? tmpLithologies.find(l => l.depthIds?.includes(aboveId)) : undefined;
     const newLithology: Lithology = {
-      ...createEmptyLithology(boundary, boundary, stratigraphyId, aboveLithology?.isUnconsolidated ?? true),
+      ...createEmptyLithology(boundary, boundary, stratigraphyId, aboveLithology?.isUnconsolidated ?? true, false),
       depthIds: [newDepthLayer.id],
     };
 
@@ -234,7 +234,7 @@ export const useLithologyTableState = (
     }
     const newDepthLayer: DepthLayer = { id: uuidv4(), fromDepth: 0, toDepth: 0 };
     const newLithology: Lithology = {
-      ...createEmptyLithology(0, 0, stratigraphyId, true),
+      ...createEmptyLithology(0, 0, stratigraphyId, true, false),
       depthIds: [newDepthLayer.id],
     };
     commitChanges(

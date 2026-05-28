@@ -21,6 +21,7 @@ export const createEmptyLithology = (
   toDepth: number,
   stratigraphyId: number,
   inheritedUnconsolidated?: boolean | null,
+  autoCorrected?: boolean | null,
 ): Lithology => ({
   id: 0,
   stratigraphyId,
@@ -28,7 +29,7 @@ export const createEmptyLithology = (
   toDepth,
   isUnconsolidated: inheritedUnconsolidated ?? null,
   hasBedding: false,
-  isAutoCorrected: true,
+  isAutoCorrected: autoCorrected ?? true,
 });
 
 // Fill gaps between lithologies and extend coverage to match description ranges with empty
