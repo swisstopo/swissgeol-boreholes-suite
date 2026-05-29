@@ -10,6 +10,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import { FlatCompat } from "@eslint/eslintrc";
+import noHardcodedColors from "./eslint-rules/no-hardcoded-colors.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -61,6 +62,16 @@ export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.
         "react/react-in-jsx-scope": "off",
         "react/prop-types": "off",
         "react/display-name": "off",
+    },
+  },
+  {
+    files: ["**/*.{js,jsx,ts,tsx}"],
+    ignores: ["src/AppTheme.ts", "src/mui.theme.d.ts", "cypress/**"],
+    plugins: {
+      local: { rules: { "no-hardcoded-colors": noHardcodedColors } },
+    },
+    rules: {
+      "local/no-hardcoded-colors": "warn",
     },
   },
   {

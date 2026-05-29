@@ -119,6 +119,7 @@ describe("multiselect (codelist) chips", () => {
       codelists: mockCodelists,
       getCodelistLabel,
     });
+    // eslint-disable-next-line local/no-hardcoded-colors -- "#999" is a label format (#<id>), not a color
     expect(desc.label).toBe("#999");
   });
 

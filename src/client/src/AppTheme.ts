@@ -27,6 +27,8 @@ const themePalette: AppThemePalette = {
   },
   warning: {
     main: "#B45309",
+    background: "#FFD6C0",
+    backgroundHover: "#FFBD99",
   },
   info: {
     main: "#46596B",
@@ -49,6 +51,22 @@ const themePalette: AppThemePalette = {
   mapIcon: {
     main: "#337083",
     secondary: "#a65462",
+    selected: "#cb5d53",
+  },
+  map: {
+    restrictionOpen: "rgb(33, 186, 69)",
+    restrictionClosed: "rgb(220, 0, 24)",
+    restrictionUnknown: "rgb(0, 0, 0)",
+    selectedFill: "rgba(255, 255, 0, 1)",
+    selectedStroke: "rgba(0, 0, 0, 0.75)",
+    selectedOuterStroke: "rgba(120, 120, 120, 0.5)",
+    drawFill: "rgba(255, 255, 255, 0.5)",
+    drawStroke: "rgba(0, 153, 255, 1)",
+    clusterStroke: "rgba(43, 132, 204, 0.5)",
+    clusterFill: "rgba(43, 132, 204, 1)",
+    clusterText: "rgba(255, 255, 255, 1)",
+    detailSelectedFill: "rgba(255, 0, 0, 0.8)",
+    detailUnselectedFill: "rgba(0, 255, 0, 1)",
   },
   ai: {
     background: "#46596B",
@@ -75,13 +93,11 @@ const themePalette: AppThemePalette = {
     lightgrey: "#F8F9FA",
     grey: "#F0F4F7",
     darkgrey: "#787878",
-    dark: "rgba(0, 0, 0, 0.5)",
     header: "#F1F3F5",
     menuItemActive: "#A65462",
     filterItemActive: "#1C2834",
     listItemActive: "#DFE4E9",
     fileDropzoneSelected: "#F8FBFC",
-
     backdrop: "rgba(255,255,255,0.7)",
     tabFocus: "rgba(100, 95, 228, 0.32)",
   },

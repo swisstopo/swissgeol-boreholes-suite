@@ -13,6 +13,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { theme } from "../../../../AppTheme.ts";
 import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
 import { NumericFormatWithThousandSeparator } from "../../../../components/form/numericFormatWithThousandSeparator.js";
 import { EditStateContext } from "../../editStateContext.tsx";
@@ -284,8 +285,8 @@ const LayerCard = ({
         gridTemplateColumns: `repeat(${header.reduce((acc, h) => acc + h.isVisible, 0)},minmax(0,1fr))`,
         justifyItems: "stretch",
         alignItems: "stretch",
-        borderLeft: "1px solid rgba(0, 0, 0, 0.12)",
-        borderTop: "1px solid rgba(0, 0, 0, 0.12)",
+        borderLeft: `1px solid ${theme.palette.border.light}`,
+        borderTop: `1px solid ${theme.palette.border.light}`,
         minHeight: State.EDITING === cardState ? "14rem" : "0",
         height: height + "px",
         position: "relative",
@@ -301,7 +302,7 @@ const LayerCard = ({
                 alignItems: "center",
                 justifyContent: "center",
                 backgroundColor: selectedItem?.color ? `rgb(${selectedItem?.color?.join()})` : "transparent",
-                borderRight: "1px solid rgba(0, 0, 0, 0.12)",
+                borderRight: `1px solid ${theme.palette.border.light}`,
                 padding: "0 1rem",
               }}>
               {[State.DISPLAY, State.EDITABLE].includes(cardState) && showCenterLabel && (
