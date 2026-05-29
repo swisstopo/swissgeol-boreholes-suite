@@ -66,10 +66,6 @@ export const hasLayer = ({ layerType, fromDepth, toDepth, isGap, exists = true }
   }
 };
 
-export const hasAutoCorrectedStyle = ({ layerType, fromDepth, toDepth }: LayerInput) => {
-  cy.get(layerSelector({ layerType, fromDepth, toDepth })).should("have.css", "background-color", "rgb(255, 214, 192)");
-};
-
 export const hasGapsAt = (layerType: LayerType, fromDepths: number[]) => {
   fromDepths.forEach(fromDepth => hasLayer({ layerType, fromDepth, isGap: true }));
 };
