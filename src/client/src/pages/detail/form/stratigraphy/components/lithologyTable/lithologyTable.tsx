@@ -94,7 +94,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     setSelectedFaciesDescription(undefined);
   };
 
-  const handleAddLithologicalDescriptionInGap = (depthId: string, fromDepth: number, toDepth: number) => {
+  const handleAddLithologicalDescriptionInGap = (depthId: string, fromDepth: number | null, toDepth: number | null) => {
     setSelectedLithologicalDescription({
       id: 0,
       stratigraphyId,
@@ -104,7 +104,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     });
   };
 
-  const handleAddFaciesDescriptionInGap = (depthId: string, fromDepth: number, toDepth: number) => {
+  const handleAddFaciesDescriptionInGap = (depthId: string, fromDepth: number | null, toDepth: number | null) => {
     setSelectedFaciesDescription({
       id: 0,
       stratigraphyId,
@@ -119,10 +119,11 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     index: number,
     keyPrefix: string,
     depthId: string,
-    fromDepth: number,
-    toDepth: number,
-    onAddInGap?: (depthId: string, fromDepth: number, toDepth: number) => void,
+    fromDepth: number | null,
+    toDepth: number | null,
+    onAddInGap?: (depthId: string, fromDepth: number | null, toDepth: number | null) => void,
   ) => {
+    const onClick = onAddInGap ? () => onAddInGap(depthId, fromDepth, toDepth) : undefined;
     return (
       <StratigraphyTableDescriptionGap
         key={`${keyPrefix}-${index}-${fromDepth}-${depthId}`}
@@ -131,7 +132,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
           height: `${defaultRowHeight}px`,
         }}
         index={index}
-        onClick={onAddInGap ? () => onAddInGap(depthId, fromDepth, toDepth) : undefined}
+        onClick={onClick}
         onMouseEnter={() => handleItemMouseEnter([depthId])}
         onMouseLeave={handleItemMouseLeave}
       />
@@ -172,7 +173,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     buildContent: (layer: BaseLayer) => ReactNode,
     onEdit: (index: number) => void,
     onDelete?: (index: number) => void,
-    onAddInGap?: (depthId: string, fromDepth: number, toDepth: number) => void,
+    onAddInGap?: (depthId: string, fromDepth: number | null, toDepth: number | null) => void,
   ): ReactNode[] => {
     const itemIndexByDepthId = new Map<string, number>();
     layers.forEach((layer, idx) => {

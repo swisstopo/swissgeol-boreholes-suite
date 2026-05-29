@@ -34,7 +34,7 @@ import {
 
 const addLithologyAtDepth = (fromDepth: number, toDepth: number) => {
   addLithology();
-  setDepth(fromDepth, fromDepth, "to", toDepth);
+  setDepth(fromDepth, toDepth, "to", toDepth);
   openLayer({ layerType: LayerType.lithology, fromDepth, toDepth });
 };
 
@@ -1087,14 +1087,12 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     });
   });
 
-  it("flags zero-thickness depth rows added via add-row as errors", () => {
+  it("flags newly-added depth rows with unset toDepth as errors", () => {
     openNewStratigraphy();
     addLithology();
-    // The new row is appended as a (0,0) zero-thickness row — should be flagged red on both
-    // boundaries until the user extends it.
-    hasDepthError(0, 0);
-
-    setDepth(0, 0, "to", 50);
+    hasDepthError(null, null);
+    setDepth(null, null, "from", 0);
+    setDepth(0, null, "to", 50);
     hasNoDepthError(0, 50);
   });
 
@@ -1127,9 +1125,10 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     insertDepthRow(70, 100, "before");
     hasDepthError(70, 70);
 
-    // New row at the very bottom via "+" on the lower edge of the last cell.
+    // New row at the very bottom via "+" on the lower edge of the last cell — appended at
+    // the end, so toDepth stays unset (null) and only the toDepth side is flagged.
     insertDepthRow(70, 100, "after");
-    hasDepthError(100, 100);
+    hasDepthError(100, null);
 
     // The original lithologies are still in place, plus four new autocorrected empty lithologies (one per inserted zt depth row).
     hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 0 });
@@ -1138,7 +1137,9 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasLayer({ layerType: LayerType.lithology, fromDepth: 30, toDepth: 70 });
     hasLayer({ layerType: LayerType.lithology, fromDepth: 70, toDepth: 70 });
     hasLayer({ layerType: LayerType.lithology, fromDepth: 70, toDepth: 100 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 100, toDepth: 100 });
+    // The appended-at-end lithology mirrors the depth row's (100, null) — toDepth stays
+    // unset until the user enters a value.
+    hasLayer({ layerType: LayerType.lithology, fromDepth: 100, toDepth: null });
   });
 
   it("creates one gap per row in lithological and facies descriptions", () => {

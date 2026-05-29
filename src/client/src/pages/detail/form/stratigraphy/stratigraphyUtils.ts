@@ -28,7 +28,7 @@ const createGapLayer = (fromDepth: number, toDepth: number, stratigraphyId: numb
 const checkForStartGaps = (layers: BaseLayerChangeTracker[], depths: LayerDepth[]) => {
   const gapLayers: BaseLayerChangeTracker[] = [];
   if (layers.length > 0) {
-    const firstLayerFromDepth = layers[0].item.fromDepth;
+    const firstLayerFromDepth = layers[0].item.fromDepth ?? 0;
     const preLayers = depths.filter(d => d.toDepth <= firstLayerFromDepth).sort((a, b) => a.fromDepth - b.fromDepth);
 
     for (const d of preLayers) {
@@ -47,9 +47,11 @@ const checkForStartGaps = (layers: BaseLayerChangeTracker[], depths: LayerDepth[
 
 const checkForGapsBetween = (depths: LayerDepth[], current: BaseLayerChangeTracker, prev?: BaseLayerChangeTracker) => {
   const gapLayers: BaseLayerChangeTracker[] = [];
-  if (prev && !prev.item.isGap && current.item.fromDepth > prev.item.toDepth) {
+  const currFrom = current.item.fromDepth ?? 0;
+  const prevTo = prev?.item.toDepth ?? 0;
+  if (prev && !prev.item.isGap && currFrom > prevTo) {
     const gapDepths = depths
-      .filter(d => d.fromDepth >= prev.item.toDepth && d.toDepth <= current.item.fromDepth)
+      .filter(d => d.fromDepth >= prevTo && d.toDepth <= currFrom)
       .sort((a, b) => a.fromDepth - b.fromDepth);
 
     for (const d of gapDepths) {
@@ -71,7 +73,7 @@ const checkForEndGaps = (layers: BaseLayerChangeTracker[], depths: LayerDepth[])
   if (layers.length > 0) {
     const lastLayer = layers.at(-1);
     if (lastLayer && !lastLayer.item.isGap) {
-      const lastLayerToDepth = lastLayer.item.toDepth;
+      const lastLayerToDepth = lastLayer.item.toDepth ?? 0;
       const postLayers = depths.filter(d => d.fromDepth >= lastLayerToDepth).sort((a, b) => a.fromDepth - b.fromDepth);
 
       for (const d of postLayers) {
@@ -94,7 +96,9 @@ export const getLayersWithGaps = (
   depths: LayerDepth[],
   stratigraphyId: number,
 ): BaseLayerChangeTracker[] => {
-  const sortedLayers = [...layers].filter(l => !l.item.isGap).sort((a, b) => a.item.fromDepth - b.item.fromDepth);
+  const sortedLayers = [...layers]
+    .filter(l => !l.item.isGap)
+    .sort((a, b) => (a.item.fromDepth ?? 0) - (b.item.fromDepth ?? 0));
   const resultLayers: BaseLayerChangeTracker[] = [];
 
   if (sortedLayers.length === 0) {

@@ -54,7 +54,7 @@ export const LithologyPanelEdit: FC<LithologyPanelEditProps> = ({
 }) => {
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
-  const { markAsChanged } = useContext(SaveContext);
+  const { markAsChanged, markHasErrors } = useContext(SaveContext);
   const { registerSaveHandler, registerResetHandler } = useContext<StratigraphyContextProps>(StratigraphyContext);
 
   const {
@@ -86,6 +86,10 @@ export const LithologyPanelEdit: FC<LithologyPanelEditProps> = ({
   useEffect(() => {
     markAsChanged(lithologyTableState.hasUnsavedChanges);
   }, [lithologyTableState.hasUnsavedChanges, markAsChanged]);
+
+  useEffect(() => {
+    markHasErrors(lithologyTableState.hasErrors);
+  }, [lithologyTableState.hasErrors, markHasErrors]);
 
   const onSave = useCallback(async () => {
     if (lithologyTableState.hasErrors) {

@@ -4,11 +4,15 @@ import { FaciesDescription } from "../../faciesDescription.ts";
 import { LithologicalDescription } from "../../lithologicalDescription.ts";
 import { Lithology } from "../../lithology.ts";
 
+// TODO: What does this mean when building the depth layers?
 // Sort by fromDepth, tie-breaking on toDepth, then clamp toDepth to the next item's fromDepth wherever they overlap.
+// Operates on server-loaded layers — boundaries are always real numbers; nulls are treated as 0 defensively.
 const cleanupOverlaps = <T extends BaseLayer>(items: T[]): T[] => {
-  const sorted = items.map(item => ({ ...item })).sort((a, b) => a.fromDepth - b.fromDepth || a.toDepth - b.toDepth);
+  const sorted = items
+    .map(item => ({ ...item }))
+    .sort((a, b) => (a.fromDepth ?? 0) - (b.fromDepth ?? 0) || (a.toDepth ?? 0) - (b.toDepth ?? 0));
   for (let i = 0; i < sorted.length - 1; i++) {
-    if (sorted[i].toDepth > sorted[i + 1].fromDepth) {
+    if ((sorted[i].toDepth ?? 0) > (sorted[i + 1].fromDepth ?? 0)) {
       sorted[i].toDepth = sorted[i + 1].fromDepth;
       sorted[i].isAutoCorrected = true;
     }
@@ -17,8 +21,8 @@ const cleanupOverlaps = <T extends BaseLayer>(items: T[]): T[] => {
 };
 
 export const createEmptyLithology = (
-  fromDepth: number,
-  toDepth: number,
+  fromDepth: number | null,
+  toDepth: number | null,
   stratigraphyId: number,
   inheritedUnconsolidated?: boolean | null,
   autoCorrected?: boolean | null,
@@ -54,6 +58,8 @@ const fillLithologyGaps = (
     return fillers;
   };
 
+  // TODO: Is this correct?
+  // Operates on server-loaded lithologies — boundaries are real numbers; nulls treated as 0.
   if (sortedBoundaries.length > 0) {
     const minBoundary = sortedBoundaries[0];
     const maxBoundary = sortedBoundaries.at(-1)!;
@@ -61,20 +67,24 @@ const fillLithologyGaps = (
     if (result.length === 0) {
       result.push(...fillRange(minBoundary, maxBoundary));
     } else {
-      if (minBoundary < result[0].fromDepth) {
-        result.unshift(...fillRange(minBoundary, result[0].fromDepth));
+      const firstFrom = result[0].fromDepth ?? 0;
+      if (minBoundary < firstFrom) {
+        result.unshift(...fillRange(minBoundary, firstFrom));
       }
       const last = result.at(-1)!;
-      if (maxBoundary > last.toDepth) {
-        result.push(...fillRange(last.toDepth, maxBoundary, last.isUnconsolidated));
+      const lastTo = last.toDepth ?? 0;
+      if (maxBoundary > lastTo) {
+        result.push(...fillRange(lastTo, maxBoundary, last.isUnconsolidated));
       }
     }
   }
 
   // Fill any remaining gaps between existing lithologies, also split by description boundaries.
   for (let i = 0; i < result.length - 1; i++) {
-    if (result[i + 1].fromDepth > result[i].toDepth) {
-      const fillers = fillRange(result[i].toDepth, result[i + 1].fromDepth, result[i].isUnconsolidated);
+    const currTo = result[i].toDepth ?? 0;
+    const nextFrom = result[i + 1].fromDepth ?? 0;
+    if (nextFrom > currTo) {
+      const fillers = fillRange(currTo, nextFrom, result[i].isUnconsolidated);
       result.splice(i + 1, 0, ...fillers);
       i += fillers.length;
     }
@@ -93,6 +103,8 @@ const buildDepthLayers = (
   const zeroThicknessPoints = new Set<number>();
   for (const items of [lithologies, lithologicalDescriptions, faciesDescriptions]) {
     for (const item of items) {
+      // Server-loaded items here — null boundaries are skipped defensively (shouldn't occur).
+      if (item.fromDepth === null || item.toDepth === null) continue;
       boundarySet.add(item.fromDepth);
       boundarySet.add(item.toDepth);
       if (item.fromDepth === item.toDepth) {
@@ -118,18 +130,25 @@ const buildDepthLayers = (
 // start/end, not a foreign cut, so it doesn't count). A zero-thickness item owns exactly the
 // zero-thickness layer at its point.
 const assignDepthIds = <T extends BaseLayer>(items: T[], depthLayers: DepthLayer[]) => {
+  // TODO: What does this mean?
+  // Called from `getInitialDepthLayers` against server data, which never has unset boundaries.
+  // Skip any null-bounded layers/depths defensively to keep the comparisons total.
+  const concreteLayers = depthLayers.filter(
+    (l): l is DepthLayer & { fromDepth: number; toDepth: number } => l.fromDepth !== null && l.toDepth !== null,
+  );
   for (const item of items) {
-    if (item.fromDepth === item.toDepth) {
-      item.depthIds = depthLayers
-        .filter(l => l.fromDepth === item.fromDepth && l.toDepth === item.fromDepth)
-        .map(l => l.id);
+    if (item.fromDepth === null || item.toDepth === null) continue;
+    const itemFrom = item.fromDepth;
+    const itemTo = item.toDepth;
+    if (itemFrom === itemTo) {
+      item.depthIds = concreteLayers.filter(l => l.fromDepth === itemFrom && l.toDepth === itemFrom).map(l => l.id);
     } else {
-      item.depthIds = depthLayers
+      item.depthIds = concreteLayers
         .filter(l => {
           if (l.fromDepth < l.toDepth) {
-            return l.fromDepth >= item.fromDepth && l.toDepth <= item.toDepth;
+            return l.fromDepth >= itemFrom && l.toDepth <= itemTo;
           }
-          return l.fromDepth > item.fromDepth && l.fromDepth < item.toDepth;
+          return l.fromDepth > itemFrom && l.fromDepth < itemTo;
         })
         .map(l => l.id);
     }
@@ -168,12 +187,15 @@ export const removeDepthIdReferences = <T extends BaseLayer>(items: T[], removed
 };
 
 export const flagErrors = (depthLayers: DepthLayer[], lithologies: Lithology[]): DepthLayer[] => {
-  const flagged = new Set<string>();
+  const bothSidesFlagged = new Set<string>();
+  const fromDepthOnly = new Set<string>();
+  const toDepthOnly = new Set<string>();
 
-  // Zero-thickness layers
   for (const layer of depthLayers) {
-    if (layer.fromDepth === layer.toDepth) {
-      flagged.add(layer.id);
+    if (layer.fromDepth === null) fromDepthOnly.add(layer.id);
+    if (layer.toDepth === null) toDepthOnly.add(layer.id);
+    if (layer.fromDepth !== null && layer.toDepth !== null && layer.fromDepth >= layer.toDepth) {
+      bothSidesFlagged.add(layer.id);
     }
   }
 
@@ -181,15 +203,15 @@ export const flagErrors = (depthLayers: DepthLayer[], lithologies: Lithology[]):
   for (const lithology of lithologies) {
     if ((lithology.depthIds?.length ?? 0) > 1) {
       for (const depthId of lithology.depthIds!) {
-        flagged.add(depthId);
+        bothSidesFlagged.add(depthId);
       }
     }
   }
 
   return depthLayers.map(layer => ({
     ...layer,
-    hasFromDepthError: flagged.has(layer.id),
-    hasToDepthError: flagged.has(layer.id),
+    hasFromDepthError: bothSidesFlagged.has(layer.id) || fromDepthOnly.has(layer.id),
+    hasToDepthError: bothSidesFlagged.has(layer.id) || toDepthOnly.has(layer.id),
   }));
 };
 
@@ -205,10 +227,12 @@ export const getInitialDepthLayers = (
   let cleanLithologies = cleanupOverlaps(lithologies);
 
   // 2. Fill gaps in the lithology column with empty, autocorrected lithologies; extend coverage to description range.
-  const descriptionBoundaries = [
+  // TODO: What does this mean?
+  // Boundaries from server data are real numbers; drop any nulls defensively.
+  const descriptionBoundaries: number[] = [
     ...cleanLithologicalDescriptions.flatMap(d => [d.fromDepth, d.toDepth]),
     ...cleanFaciesDescriptions.flatMap(d => [d.fromDepth, d.toDepth]),
-  ];
+  ].filter((b): b is number => b !== null);
   cleanLithologies = fillLithologyGaps(cleanLithologies, descriptionBoundaries, stratigraphyId);
 
   // 3. Build depth layers from the union of all distinct boundaries.
