@@ -16,6 +16,8 @@ import { DepthColumnCell } from "../depthColumnCell.tsx";
 import { DepthDeleteButton } from "../depthDeleteButton.tsx";
 import { DepthInput } from "../depthInput.tsx";
 import { DepthInsertButton } from "../depthInsertButton.tsx";
+import { DescriptionResizeHandle } from "../descriptionResize/descriptionResizeHandle.tsx";
+import { ResizeKind, useDescriptionResize } from "../descriptionResize/useDescriptionResize.ts";
 import { LayerAddButton } from "../layerAddButton.tsx";
 import { StratigraphyTableActionCell } from "../stratigraphyTableActionCell.tsx";
 import { StratigraphyTableDescriptionGap } from "../stratigraphyTableDescriptionGap.tsx";
@@ -26,7 +28,6 @@ import {
   StratigraphyTableContent,
   StratigraphyTableHeader,
 } from "../stratigraphyTablePrimitives.tsx";
-import { ResizeKind, useDescriptionResize } from "./useDescriptionResize.ts";
 import { LithologyTableState } from "./useLithologyTableState.ts";
 
 type LithologyTableColumn = "lithology" | "lithologicalDescription" | "faciesDescription";

@@ -15,6 +15,7 @@ interface StratigraphyTableLayerCellProps {
   sx?: SxProps;
   isAutoCorrected?: boolean;
   dataCy?: string;
+  resizeHandles?: ReactNode;
 }
 
 // TODO: Fix AutoCorrected-Style. Either remove it or add the colors to the theme
@@ -28,6 +29,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
   sx,
   isAutoCorrected,
   dataCy,
+  resizeHandles,
 }) => {
   const stackRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
@@ -73,6 +75,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
         }}>
         {children}
       </Stack>
+      {resizeHandles}
       {onHoverClick && (
         <Stack
           className="hover-content"
