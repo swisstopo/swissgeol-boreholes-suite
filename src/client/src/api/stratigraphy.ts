@@ -47,7 +47,6 @@ export interface DepthLayer {
   toDepth: number;
   hasFromDepthError?: boolean;
   hasToDepthError?: boolean;
-  isAutoCorrected?: boolean;
 }
 
 interface Chronostratigraphy {

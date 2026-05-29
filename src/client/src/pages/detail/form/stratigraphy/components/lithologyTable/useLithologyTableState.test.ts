@@ -227,7 +227,7 @@ describe("useLithologyTableState", () => {
       expect(result.current.tmpLithologies).toHaveLength(1);
       expect(result.current.tmpLithologies[0].id).toBe(0);
       expect(result.current.tmpLithologies[0].isUnconsolidated).toBe(true);
-      expect(result.current.tmpLithologies[0].isAutoCorrected).toBe(true);
+      expect(result.current.tmpLithologies[0].isAutoCorrected).toBe(false);
     });
 
     it("appends a (lastTo,lastTo) zero-thickness row inheriting isUnconsolidated", () => {
@@ -239,7 +239,7 @@ describe("useLithologyTableState", () => {
       expect(added).toMatchObject({ fromDepth: 50, toDepth: 50 });
       const addedLithology = result.current.tmpLithologies.at(-1)!;
       expect(addedLithology.isUnconsolidated).toBe(false);
-      expect(addedLithology.isAutoCorrected).toBe(true);
+      expect(addedLithology.isAutoCorrected).toBe(false);
     });
   });
 
