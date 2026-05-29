@@ -35,27 +35,31 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
   const currentPageRange = selectedStratigraphy?.pageNumbers;
   const rawDescriptions = selectedStratigraphy?.descriptions ?? [];
 
+  const renderExtractionItems = () => {
+    if (isLoading) {
+      return (
+        <Stack sx={{ height: "100%", width: "100%" }} justifyContent="center" alignItems="center">
+          <CircularProgress />
+        </Stack>
+      );
+    }
+    if (allExtractedStratigraphies.length === 0) {
+      return <Typography>{t("msgNoStratigraphyExtracted")}</Typography>;
+    }
+    return allExtractedStratigraphies.map((stratigraphy, index) => (
+      <StratigraphyExtractionItem
+        key={`stratigraphy-${stratigraphy.pageNumbers.join("-")}`}
+        index={index}
+        descriptions={stratigraphy.descriptions}
+        visible={index === selectedIndex}
+        onStateChange={onItemStateChange}
+      />
+    ));
+  };
+
   return (
     <Stack direction="row" sx={{ height: "100%", minHeight: 0 }}>
-      <Stack sx={{ flex: 1, minHeight: 0, overflow: "auto", padding: 3 }}>
-        {isLoading ? (
-          <Stack sx={{ height: "100%", width: "100%" }} justifyContent="center" alignItems="center">
-            <CircularProgress />
-          </Stack>
-        ) : allExtractedStratigraphies.length === 0 ? (
-          <Typography>{t("msgNoStratigraphyExtracted")}</Typography>
-        ) : (
-          allExtractedStratigraphies.map((stratigraphy, index) => (
-            <StratigraphyExtractionItem
-              key={index}
-              index={index}
-              descriptions={stratigraphy.descriptions}
-              visible={index === selectedIndex}
-              onStateChange={onItemStateChange}
-            />
-          ))
-        )}
-      </Stack>
+      <Stack sx={{ flex: 1, minHeight: 0, overflow: "auto", padding: 3 }}>{renderExtractionItems()}</Stack>
       <Stack
         justifyContent="space-between"
         sx={{
