@@ -3,8 +3,8 @@ import { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ApiError } from "../../../../api/apiInterfaces.ts";
-import { AddEmptyStratigraphyDialog } from "./addEmptyStratigraphyDialog";
+import { ApiError } from "../../../../../../api/apiInterfaces.ts";
+import { AddEmptyStratigraphyDialog } from "./addEmptyStratigraphyDialog.tsx";
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
@@ -13,17 +13,19 @@ vi.mock("react-i18next", () => ({
 }));
 
 const { fetchApiV2WithApiError } = vi.hoisted(() => ({ fetchApiV2WithApiError: vi.fn() }));
-vi.mock("../../../../api/fetchApiV2.ts", async () => {
-  const actual = await vi.importActual<typeof import("../../../../api/fetchApiV2.ts")>("../../../../api/fetchApiV2.ts");
+vi.mock("../../../../../../api/fetchApiV2.ts", async () => {
+  const actual = await vi.importActual<typeof import("../../../../../../api/fetchApiV2.ts")>(
+    "../../../../../../api/fetchApiV2.ts",
+  );
   return { ...actual, fetchApiV2WithApiError };
 });
 
-vi.mock("../../../../hooks/useResetTabStatus.ts", () => ({
+vi.mock("../../../../../../hooks/useResetTabStatus.ts", () => ({
   useResetTabStatus: () => () => {},
 }));
 
 const showApiErrorAlert = vi.fn();
-vi.mock("../../../../hooks/useShowAlertOnError.tsx", () => ({
+vi.mock("../../../../../../hooks/useShowAlertOnError.tsx", () => ({
   useApiErrorAlert: () => showApiErrorAlert,
 }));
 

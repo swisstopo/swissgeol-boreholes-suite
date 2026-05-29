@@ -2,7 +2,7 @@ import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { SxProps } from "@mui/material";
 import { Sparkles } from "lucide-react";
-import { ButtonSelect } from "../../../../components/buttons/buttonSelect";
+import { ButtonSelect } from "../../../../../components/buttons/buttonSelect.tsx";
 
 interface AddStratigraphyButtonProps {
   addEmptyStratigraphy: () => void;

@@ -41,6 +41,14 @@ export interface BaseLayer {
   isAutoCorrected?: boolean;
 }
 
+export interface DepthLayer {
+  id: string;
+  fromDepth: number;
+  toDepth: number;
+  hasFromDepthError?: boolean;
+  hasToDepthError?: boolean;
+}
+
 interface Chronostratigraphy {
   id: number;
   stratigraphyId: number;

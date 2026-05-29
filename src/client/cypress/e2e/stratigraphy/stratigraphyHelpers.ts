@@ -83,9 +83,9 @@ export const dragResizeDescription = ({
   });
 };
 
-export const insertDepthRow = (fromDepth: number, toDepth: number, position: "above" | "below") => {
+export const insertDepthRow = (fromDepth: number, toDepth: number, position: "before" | "after") => {
   cy.dataCy(`depth-${fromDepth}-${toDepth}`).scrollIntoView();
-  cy.dataCy(`depth-${fromDepth}-${toDepth}`).realHover({ position: position === "above" ? "top" : "bottom" });
+  cy.dataCy(`depth-${fromDepth}-${toDepth}`).realHover({ position: position === "before" ? "top" : "bottom" });
   cy.dataCy(`insert-depth-${position}-${fromDepth}-${toDepth}-button`).click({ force: true });
 };
 

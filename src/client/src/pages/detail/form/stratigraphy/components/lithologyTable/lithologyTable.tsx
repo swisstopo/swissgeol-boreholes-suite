@@ -1,33 +1,31 @@
-import { FC, MouseEvent, ReactNode, useMemo, useState } from "react";
+import { FC, ReactNode, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
-import Menu from "@mui/material/Menu";
-import MenuItem from "@mui/material/MenuItem";
-import { Trash2 } from "lucide-react";
-import { BaseLayer } from "../../../../api/stratigraphy.ts";
-import { theme } from "../../../../AppTheme.ts";
-import { AddRowButton, StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
-import { FaciesDescription } from "./faciesDescription.ts";
-import { LithologicalDescription } from "./lithologicalDescription.ts";
-import { Lithology } from "./lithology.ts";
-import { DepthInput } from "./lithology/depthInput.tsx";
-import { FaciesDescriptionLabels } from "./lithology/faciesDescriptionLabels.tsx";
-import { FaciesDescriptionModal } from "./lithology/form/faciesDescriptionModal.tsx";
-import { LithologicalDescriptionModal } from "./lithology/form/lithologicalDescriptionModal.tsx";
-import { LithologyModal } from "./lithology/form/lithologyModal.tsx";
-import { LithologyLabels } from "./lithology/lithologyLabels.tsx";
-import { defaultRowHeight } from "./lithologyTableUtils.ts";
+import { BaseLayer } from "../../../../../../api/stratigraphy.ts";
+import { theme } from "../../../../../../AppTheme.ts";
+import { AddRowButton } from "../../../../../../components/buttons/buttons.tsx";
+import { FaciesDescription } from "../../faciesDescription.ts";
+import { LithologicalDescription } from "../../lithologicalDescription.ts";
+import { Lithology } from "../../lithology.ts";
+import { FaciesDescriptionLabels } from "../../lithology/faciesDescriptionLabels.tsx";
+import { FaciesDescriptionModal } from "../../lithology/form/faciesDescriptionModal.tsx";
+import { LithologicalDescriptionModal } from "../../lithology/form/lithologicalDescriptionModal.tsx";
+import { LithologyModal } from "../../lithology/form/lithologyModal.tsx";
+import { LithologyLabels } from "../../lithology/lithologyLabels.tsx";
+import { DepthColumnCell } from "../depthColumnCell.tsx";
+import { DepthDeleteButton } from "../depthDeleteButton.tsx";
+import { DepthInput } from "../depthInput.tsx";
+import { DepthInsertButton } from "../depthInsertButton.tsx";
+import { LayerAddButton } from "../layerAddButton.tsx";
+import { StratigraphyTableActionCell } from "../stratigraphyTableActionCell.tsx";
+import { StratigraphyTableDescriptionGap } from "../stratigraphyTableDescriptionGap.tsx";
+import { StratigraphyTableHeaderCell } from "../stratigraphyTableHeaderCell.tsx";
 import {
-  DescriptionResizeHandle,
-  LayerAddButton,
-  StratigraphyTableActionCell,
-  StratigraphyTableCell,
+  defaultRowHeight,
   StratigraphyTableColumn,
   StratigraphyTableContent,
-  StratigraphyTableDescriptionGap,
   StratigraphyTableHeader,
-  StratigraphyTableHeaderCell,
-} from "./stratigraphyTableComponents.tsx";
+} from "../stratigraphyTablePrimitives.tsx";
 import { ResizeKind, useDescriptionResize } from "./useDescriptionResize.ts";
 import { LithologyTableState } from "./useLithologyTableState.ts";
 
@@ -67,9 +65,9 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
   const [selectedLithologicalDescription, setSelectedLithologicalDescription] = useState<LithologicalDescription>();
   const [selectedFaciesDescription, setSelectedFaciesDescription] = useState<FaciesDescription>();
 
-  const [deleteMenu, setDeleteMenu] = useState<{ anchorEl: HTMLElement; depthId: string } | null>(null);
+  const [openMenuDepthId, setOpenMenuDepthId] = useState<string | null>(null);
   const [trashHoverDepthId, setTrashHoverDepthId] = useState<string | null>(null);
-  const deletePreviewDepthId = deleteMenu?.depthId ?? trashHoverDepthId;
+  const deletePreviewDepthId = openMenuDepthId ?? trashHoverDepthId;
   const deletePreviewDepth = depths.find(d => d.id === deletePreviewDepthId);
   const isMarkedForDelete = (layer: BaseLayer): boolean =>
     !!deletePreviewDepth &&
@@ -312,103 +310,37 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                 const isLast = index === depths.length - 1;
                 const isOnly = depths.length === 1;
                 const bottomBoundaryError = depth.hasToDepthError || (!isLast && depths[index + 1].hasFromDepthError);
-                const isMenuOpenForThis = deleteMenu?.depthId === depth.id;
-                const onDeleteClick = (event: MouseEvent<HTMLElement>) => {
-                  event.stopPropagation();
-                  if (isFirst || isOnly) {
-                    handleDeleteDepthLayer(depth.id, "extendLower");
-                    return;
-                  }
-                  setDeleteMenu({ anchorEl: event.currentTarget, depthId: depth.id });
-                };
                 const isHoveredViaItem = hoveredItemDepthIds.has(depth.id);
+                const isMenuOpenForThis = openMenuDepthId === depth.id;
                 return (
-                  <StratigraphyTableCell
+                  <DepthColumnCell
                     key={`${depth.id}-depth-${depth.fromDepth}-${depth.toDepth}`}
-                    data-cy={`depth-${depth.fromDepth}-${depth.toDepth}`}
-                    sx={{
-                      height: `${defaultRowHeight}px`,
-                      position: "relative",
-                      overflow: "visible",
-                      ...(deletePreviewDepth?.id === depth.id && {
-                        backgroundColor: theme.palette.error.background,
-                      }),
-                      "& .hover-content": {
-                        visibility: isMenuOpenForThis || isHoveredViaItem ? "visible" : "hidden",
-                      },
-                      "&:hover .hover-content": { visibility: "visible" },
-                    }}>
+                    depth={depth}
+                    showHoverContent={isMenuOpenForThis || isHoveredViaItem}
+                    isDeletePreview={deletePreviewDepth?.id === depth.id}>
                     {isFirst && (
                       <DepthInput
                         value={depth.fromDepth}
                         hasError={depth.hasFromDepthError}
                         onCommit={newDepth => updateDepthBoundaries(depth.id, "from", newDepth)}
                         dataCy={`depth-from-${depth.fromDepth}-${depth.toDepth}-input`}
-                        sx={{
-                          position: "absolute",
-                          top: theme.spacing(2),
-                          left: "50%",
-                          transform: "translateX(-50%)",
-                        }}
+                        position="first"
                       />
                     )}
-                    <Stack
-                      className="hover-content"
-                      sx={{
-                        position: "absolute",
-                        top: "50%",
-                        left: "50%",
-                        transform: "translate(-50%, -50%)",
-                        zIndex: 2,
-                      }}>
-                      <StandaloneIconButton
-                        icon={<Trash2 />}
-                        color={isMenuOpenForThis ? undefined : "primaryInverse"}
-                        onClick={onDeleteClick}
-                        onMouseEnter={() => setTrashHoverDepthId(depth.id)}
-                        onMouseLeave={() => setTrashHoverDepthId(null)}
-                        dataCy={`delete-depth-${depth.fromDepth}-${depth.toDepth}-button`}
-                        sx={{
-                          backgroundColor: isMenuOpenForThis
-                            ? theme.palette.buttonStates.outlined.active.backgroundColor
-                            : theme.palette.background.grey,
-                          ...(isMenuOpenForThis && {
-                            color: theme.palette.buttonStates.outlined.active.color,
-                          }),
-                          "&:hover": {
-                            backgroundColor: isMenuOpenForThis
-                              ? theme.palette.buttonStates.outlined.active.backgroundColor
-                              : theme.palette.background.grey,
-                          },
-                        }}
-                      />
-                    </Stack>
+                    <DepthDeleteButton
+                      depth={depth}
+                      isFirst={isFirst}
+                      isLast={isLast}
+                      isOnly={isOnly}
+                      onDelete={handleDeleteDepthLayer}
+                      onMouseEnter={() => setTrashHoverDepthId(depth.id)}
+                      onMouseLeave={() => setTrashHoverDepthId(null)}
+                      onMenuOpenChange={isOpen => setOpenMenuDepthId(isOpen ? depth.id : null)}
+                    />
                     {deletePreviewDepth?.id !== depth.id && (
                       <>
-                        <Stack
-                          className="hover-content"
-                          sx={{ position: "absolute", top: "-12px", left: "-12px", zIndex: 3 }}>
-                          <LayerAddButton
-                            size="small"
-                            dataCy={`insert-depth-above-${depth.fromDepth}-${depth.toDepth}-button`}
-                            onClick={event => {
-                              event.stopPropagation();
-                              handleInsertDepthRow(depth.id, "before");
-                            }}
-                          />
-                        </Stack>
-                        <Stack
-                          className="hover-content"
-                          sx={{ position: "absolute", bottom: "-12px", left: "-12px", zIndex: 3 }}>
-                          <LayerAddButton
-                            size="small"
-                            dataCy={`insert-depth-below-${depth.fromDepth}-${depth.toDepth}-button`}
-                            onClick={event => {
-                              event.stopPropagation();
-                              handleInsertDepthRow(depth.id, "after");
-                            }}
-                          />
-                        </Stack>
+                        <DepthInsertButton depth={depth} position="before" onClick={handleInsertDepthRow} />
+                        <DepthInsertButton depth={depth} position="after" onClick={handleInsertDepthRow} />
                       </>
                     )}
                     <DepthInput
@@ -416,64 +348,11 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                       hasError={bottomBoundaryError}
                       onCommit={newDepth => updateDepthBoundaries(depth.id, "to", newDepth)}
                       dataCy={`depth-to-${depth.fromDepth}-${depth.toDepth}-input`}
-                      sx={{
-                        position: "absolute",
-                        left: "50%",
-                        ...(isLast
-                          ? {
-                              bottom: theme.spacing(2),
-                              transform: "translateX(-50%)",
-                            }
-                          : {
-                              bottom: 0,
-                              transform: "translate(-50%, 50%)",
-                              zIndex: 1,
-                            }),
-                      }}
+                      position={isLast ? "last" : "default"}
                     />
-                  </StratigraphyTableCell>
+                  </DepthColumnCell>
                 );
               })}
-              <Menu
-                anchorEl={deleteMenu?.anchorEl ?? null}
-                open={Boolean(deleteMenu)}
-                onClose={() => setDeleteMenu(null)}
-                anchorOrigin={{ vertical: "bottom", horizontal: "left" }}
-                transformOrigin={{ vertical: "top", horizontal: "left" }}
-                slotProps={{
-                  paper: {
-                    sx: {
-                      marginTop: theme.spacing(0.5),
-                      border: `1px solid ${theme.palette.border.darker}`,
-                      boxShadow: theme.shadows[1],
-                    },
-                  },
-                }}>
-                <MenuItem
-                  onClick={() => {
-                    if (!deleteMenu) return;
-                    handleDeleteDepthLayer(deleteMenu.depthId, "extendUpper");
-                    setDeleteMenu(null);
-                  }}
-                  data-cy="extend-upper-layer-downward">
-                  {t("extendUpperLayerDownward")}
-                </MenuItem>
-                {(() => {
-                  const activeIndex = deleteMenu ? depths.findIndex(d => d.id === deleteMenu.depthId) : -1;
-                  const activeIsLast = activeIndex >= 0 && activeIndex === depths.length - 1;
-                  return (
-                    <MenuItem
-                      onClick={() => {
-                        if (!deleteMenu) return;
-                        handleDeleteDepthLayer(deleteMenu.depthId, activeIsLast ? "reduceBoreholeEnd" : "extendLower");
-                        setDeleteMenu(null);
-                      }}
-                      data-cy={activeIsLast ? "reduce-borehole-end-depth" : "extend-lower-layer-upward"}>
-                      {activeIsLast ? t("reduceBoreholeEndDepth") : t("extendLowerLayerUpward")}
-                    </MenuItem>
-                  );
-                })()}
-              </Menu>
             </StratigraphyTableColumn>
             {showLithology && (
               <StratigraphyTableColumn>

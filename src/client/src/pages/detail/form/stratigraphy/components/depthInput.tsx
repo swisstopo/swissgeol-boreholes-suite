@@ -1,6 +1,6 @@
 import { ChangeEvent, FC, KeyboardEvent, MouseEvent, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { SxProps, TextField } from "@mui/material";
+import { TextField } from "@mui/material";
 import { theme } from "../../../../../AppTheme.ts";
 import { FormValueType } from "../../../../../components/form/form.ts";
 import { getFieldBorderColor, parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
@@ -10,11 +10,11 @@ interface DepthInputProps {
   value: number;
   hasError?: boolean;
   onCommit: (newDepth: number) => void;
-  sx?: SxProps;
+  position?: "first" | "last" | "default";
   dataCy?: string;
 }
 
-export const DepthInput: FC<DepthInputProps> = ({ value, hasError, onCommit, sx, dataCy }) => {
+export const DepthInput: FC<DepthInputProps> = ({ value, hasError, onCommit, position = "default", dataCy }) => {
   const { t } = useTranslation();
   const [textValue, setTextValue] = useState<string>(String(value));
 
@@ -41,6 +41,17 @@ export const DepthInput: FC<DepthInputProps> = ({ value, hasError, onCommit, sx,
     }
   };
 
+  const getPositionStyles = () => {
+    switch (position) {
+      case "first":
+        return { top: theme.spacing(2), transform: "translateX(-50%)" };
+      case "last":
+        return { bottom: theme.spacing(2), transform: "translateX(-50%)" };
+      default:
+        return { bottom: 0, transform: "translate(-50%, 50%)", zIndex: 1 };
+    }
+  };
+
   return (
     <TextField
       label={t("mMd")}
@@ -54,10 +65,12 @@ export const DepthInput: FC<DepthInputProps> = ({ value, hasError, onCommit, sx,
       error={!!hasError}
       data-cy={dataCy}
       sx={{
-        backgroundColor: theme.palette.background.default,
+        position: "absolute",
+        left: "50%",
         width: "96px",
+        backgroundColor: theme.palette.background.default,
         ...getFieldBorderColor(false),
-        ...sx,
+        ...getPositionStyles(),
       }}
       slotProps={{
         input: {

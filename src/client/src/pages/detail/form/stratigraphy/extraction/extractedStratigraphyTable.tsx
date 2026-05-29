@@ -2,17 +2,17 @@ import { FC, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Stack, Typography } from "@mui/material";
 import { BaseLayer } from "../../../../../api/stratigraphy.ts";
-import { LithologicalDescription } from "../lithologicalDescription.ts";
+import { StratigraphyTableActionCell } from "../components/stratigraphyTableActionCell.tsx";
+import { StratigraphyTableDescriptionGap } from "../components/stratigraphyTableDescriptionGap.tsx";
+import { StratigraphyTableHeaderCell } from "../components/stratigraphyTableHeaderCell.tsx";
 import {
-  StratigraphyTableActionCell,
+  defaultRowHeight,
   StratigraphyTableCell,
   StratigraphyTableColumn,
   StratigraphyTableContent,
-  StratigraphyTableDescriptionGap,
   StratigraphyTableHeader,
-  StratigraphyTableHeaderCell,
-} from "../stratigraphyTableComponents.tsx";
-import { defaultRowHeight } from "../stratigraphyUtils.ts";
+} from "../components/stratigraphyTablePrimitives.tsx";
+import { LithologicalDescription } from "../lithologicalDescription.ts";
 
 interface ExtractedStratigraphyTableProps {
   lithologicalDescriptions: BaseLayer[];
