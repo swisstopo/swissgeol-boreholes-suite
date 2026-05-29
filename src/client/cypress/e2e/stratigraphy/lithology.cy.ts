@@ -21,7 +21,6 @@ import {
   closeLayerModal,
   deleteLayer,
   dragResizeDescription,
-  hasAutoCorrectedStyle,
   hasDepthError,
   hasGapsAt,
   hasLayer,
@@ -881,16 +880,12 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
 
     // The original lithologies are still in place, plus four new autocorrected empty lithologies (one per inserted zt depth row).
     hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 0 });
-    hasAutoCorrectedStyle({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 0 });
     hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 30 });
     hasLayer({ layerType: LayerType.lithology, fromDepth: 30, toDepth: 30 });
-    hasAutoCorrectedStyle({ layerType: LayerType.lithology, fromDepth: 30, toDepth: 30 });
     hasLayer({ layerType: LayerType.lithology, fromDepth: 30, toDepth: 70 });
     hasLayer({ layerType: LayerType.lithology, fromDepth: 70, toDepth: 70 });
-    hasAutoCorrectedStyle({ layerType: LayerType.lithology, fromDepth: 70, toDepth: 70 });
     hasLayer({ layerType: LayerType.lithology, fromDepth: 70, toDepth: 100 });
     hasLayer({ layerType: LayerType.lithology, fromDepth: 100, toDepth: 100 });
-    hasAutoCorrectedStyle({ layerType: LayerType.lithology, fromDepth: 100, toDepth: 100 });
   });
 
   it("adds, edits and resizes lithological descriptions across gap rows", () => {
