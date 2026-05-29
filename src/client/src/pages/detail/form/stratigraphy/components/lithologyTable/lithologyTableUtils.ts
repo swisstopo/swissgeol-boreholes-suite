@@ -178,6 +178,13 @@ export const mergeAdjacentDepths = (
   return { depths: result, mergedIds };
 };
 
+export const prepareDataForSubmit = <T extends BaseLayer>(item: T): T => {
+  const copy = { ...item } as T & { depthIds?: unknown; isAutoCorrected?: unknown };
+  delete copy.depthIds;
+  delete copy.isAutoCorrected;
+  return copy;
+};
+
 export const removeDepthIdReferences = <T extends BaseLayer>(items: T[], removedIds: Set<string>): T[] => {
   if (removedIds.size === 0) return items;
   return items.map(item => {

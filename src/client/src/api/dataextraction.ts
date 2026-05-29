@@ -185,7 +185,7 @@ const cleanUpExtractionData = (
     }, []);
 };
 
-interface ExtractedStratigraphy {
+export interface ExtractedStratigraphy {
   descriptions: ExtractedLithologicalDescription[];
   pageNumbers: number[];
 }

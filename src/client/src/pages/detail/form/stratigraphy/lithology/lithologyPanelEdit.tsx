@@ -4,6 +4,7 @@ import { BaseLayer } from "../../../../../api/stratigraphy.ts";
 import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
 import { SaveContext } from "../../../saveContext.tsx";
 import { LithologyTable } from "../components/lithologyTable/lithologyTable.tsx";
+import { prepareDataForSubmit } from "../components/lithologyTable/lithologyTableUtils.ts";
 import { useLithologyTableState } from "../components/lithologyTable/useLithologyTableState.ts";
 import { FaciesDescription, useFaciesDescriptionMutations } from "../faciesDescription.ts";
 import { LithologicalDescription, useLithologicalDescriptionMutations } from "../lithologicalDescription.ts";
@@ -16,13 +17,6 @@ interface LithologyPanelEditProps {
   lithologicalDescriptions: LithologicalDescription[];
   faciesDescriptions: FaciesDescription[];
 }
-
-const prepareDataForSubmit = <T extends BaseLayer>(item: T): T => {
-  const copy = { ...item } as T & { depthIds?: unknown; isAutoCorrected?: unknown };
-  delete copy.depthIds;
-  delete copy.isAutoCorrected;
-  return copy;
-};
 
 interface ColumnDiff<T> {
   toDelete: T[];

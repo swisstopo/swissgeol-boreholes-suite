@@ -613,6 +613,13 @@ export const theme = createTheme({
           backgroundColor: themePalette.background.default,
           color: themePalette.primary.main,
         },
+        standardError: {
+          color: themePalette.error.main,
+          border: `1px solid ${themePalette.error.main}`,
+          "& .MuiAlert-icon": {
+            color: themePalette.error.main,
+          },
+        },
       },
     },
     MuiDialog: {
