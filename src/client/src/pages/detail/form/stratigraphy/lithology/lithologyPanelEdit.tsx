@@ -1,6 +1,5 @@
 import { FC, useCallback, useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { BaseLayer } from "../../../../../api/stratigraphy.ts";
 import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
 import { SaveContext } from "../../../saveContext.tsx";
 import { LithologyTable } from "../components/lithologyTable/lithologyTable.tsx";
@@ -9,6 +8,7 @@ import { useLithologyTableState } from "../components/lithologyTable/useLitholog
 import { FaciesDescription, useFaciesDescriptionMutations } from "../faciesDescription.ts";
 import { LithologicalDescription, useLithologicalDescriptionMutations } from "../lithologicalDescription.ts";
 import { Lithology, useLithologyMutations } from "../lithology.ts";
+import { BaseLayer } from "../stratigraphy.ts";
 import { StratigraphyContext, StratigraphyContextProps } from "../stratigraphyContext.tsx";
 
 interface LithologyPanelEditProps {

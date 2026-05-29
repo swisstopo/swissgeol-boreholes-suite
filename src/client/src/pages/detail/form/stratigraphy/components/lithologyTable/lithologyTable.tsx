@@ -1,7 +1,6 @@
 import { FC, ReactNode, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
-import { BaseLayer } from "../../../../../../api/stratigraphy.ts";
 import { theme } from "../../../../../../AppTheme.ts";
 import { AddRowButton } from "../../../../../../components/buttons/buttons.tsx";
 import { FaciesDescription } from "../../faciesDescription.ts";
@@ -12,6 +11,7 @@ import { FaciesDescriptionModal } from "../../lithology/form/faciesDescriptionMo
 import { LithologicalDescriptionModal } from "../../lithology/form/lithologicalDescriptionModal.tsx";
 import { LithologyModal } from "../../lithology/form/lithologyModal.tsx";
 import { LithologyLabels } from "../../lithology/lithologyLabels.tsx";
+import { BaseLayer } from "../../stratigraphy.ts";
 import { DepthColumnCell } from "../depthColumnCell.tsx";
 import { DepthDeleteButton } from "../depthDeleteButton.tsx";
 import { DepthInput } from "../depthInput.tsx";

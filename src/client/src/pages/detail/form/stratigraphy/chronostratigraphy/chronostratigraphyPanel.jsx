@@ -1,11 +1,11 @@
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
-import { useLithostratigraphies } from "../../../../../api/stratigraphy.ts";
 import LithostratigraphyViewProfile from "../lithostratigraphy/lithostratigraphyViewProfile.jsx";
 import NavigationChild from "../navigationChild.jsx";
 import NavigationContainer from "../navigationContainer.jsx";
 import NavigationLens from "../navigationLens.jsx";
 import Scale from "../scale.jsx";
+import { useLithostratigraphies } from "../stratigraphy.ts";
 import ChronostratigraphyEditProfile from "./chronostratigraphyEditProfile.jsx";
 
 const ChronostratigraphyPanel = ({ stratigraphyId }) => {

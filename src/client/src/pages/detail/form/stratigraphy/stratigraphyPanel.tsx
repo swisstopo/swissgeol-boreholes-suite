@@ -6,7 +6,6 @@ import { Trash2 } from "lucide-react";
 import CopyIcon from "../../../../assets/icons/copy.svg?react";
 import ExtractAiIcon from "../../../../assets/icons/extractAi.svg?react";
 import { useBorehole } from "../../../../api/borehole.ts";
-import { Stratigraphy, useStratigraphiesByBoreholeId, useStratigraphyMutations } from "../../../../api/stratigraphy";
 import { theme } from "../../../../AppTheme";
 import { AddButton, BoreholesButton, DeleteButton } from "../../../../components/buttons/buttons";
 import { PromptContext } from "../../../../components/prompt/promptContext";
@@ -24,6 +23,7 @@ import { AddStratigraphyButton } from "./components/addStratigraphyButton.tsx";
 import { StratigraphyExtraction } from "./extraction/stratigraphyExtraction.tsx";
 import { LithologyPanel } from "./lithology/lithologyPanel.tsx";
 import LithostratigraphyPanel from "./lithostratigraphy/lithostratigraphyPanel";
+import { Stratigraphy, useStratigraphiesByBoreholeId, useStratigraphyMutations } from "./stratigraphy.ts";
 import { StratigraphyProvider } from "./stratigraphyContext.tsx";
 import { StratigraphyForm } from "./stratigraphyForm.tsx";
 

@@ -7,6 +7,7 @@ import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
 import { LogRun } from "../pages/detail/form/log/logInterfaces.ts";
+import { Stratigraphy } from "../pages/detail/form/stratigraphy/stratigraphy.ts";
 import { Workflow } from "../pages/detail/form/workflow/workflow.ts";
 import { SessionKeys } from "../pages/overview/SessionKey.ts";
 import { Document, NullableDateString, User, Workgroup } from "./apiInterfaces.ts";
@@ -16,7 +17,6 @@ import { download, downloadData } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
 import { Profile } from "./profile.ts";
 import { Section } from "./section.ts";
-import { Stratigraphy } from "./stratigraphy.ts";
 import { useCurrentUser } from "./user.ts";
 
 export interface BasicIdentifier {

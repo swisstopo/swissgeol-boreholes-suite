@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
-import { useChronostratigraphies, useChronostratigraphyMutations } from "../../../../../api/stratigraphy.ts";
 import HierarchicalDataEditProfile from "../hierarchicalDataEditProfile.jsx";
+import { useChronostratigraphies, useChronostratigraphyMutations } from "../stratigraphy.ts";
 
 /**
  * Manages the chronostratigraphy data and mutations.

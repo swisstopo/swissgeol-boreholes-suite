@@ -1,7 +1,6 @@
 import { FC, ReactNode, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
-import { BaseLayer } from "../../../../../api/stratigraphy.ts";
 import { formatNumberForDisplay } from "../../../../../components/form/formUtils.ts";
 import { StratigraphyTableActionCell } from "../components/stratigraphyTableActionCell.tsx";
 import { StratigraphyTableDescriptionGap } from "../components/stratigraphyTableDescriptionGap.tsx";
@@ -17,6 +16,7 @@ import {
 import { FaciesDescription } from "../faciesDescription.ts";
 import { LithologicalDescription } from "../lithologicalDescription.ts";
 import { Lithology } from "../lithology.ts";
+import { BaseLayer } from "../stratigraphy.ts";
 import { computeCellHeight, getLayersWithGaps } from "../stratigraphyUtils.ts";
 import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";

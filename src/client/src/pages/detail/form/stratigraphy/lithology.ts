@@ -1,9 +1,9 @@
 import { UseFormReturn } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { fetchApiV2Legacy, fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
-import { BaseLayer } from "../../../../api/stratigraphy.ts";
 import { Codelist } from "../../../../components/codelist.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
+import { BaseLayer } from "./stratigraphy.ts";
 
 export interface LithologyDescription {
   id: number;

@@ -1,9 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
-import { Lithology } from "../pages/detail/form/stratigraphy/lithology.ts";
-import { NullableDateString, User } from "./apiInterfaces.ts";
-import { boreholeQueryKey, BoreholeV2 } from "./borehole.ts";
-import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
+import { NullableDateString, User } from "../../../../api/apiInterfaces.ts";
+import { boreholeQueryKey, BoreholeV2 } from "../../../../api/borehole.ts";
+import { fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
+import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
+import { Lithology } from "./lithology.ts";
 
 export interface Stratigraphy {
   id: number;
