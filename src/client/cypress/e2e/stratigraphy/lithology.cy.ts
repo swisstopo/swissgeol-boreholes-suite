@@ -34,7 +34,15 @@ import {
 
 const addLithologyAtDepth = (fromDepth: number, toDepth: number) => {
   addLithology();
-  setDepth(fromDepth, toDepth, "to", toDepth);
+  // First-row case (empty stratigraphy): the new row is (null, null) — set fromDepth first.
+  // Subsequent-row case: the new row is appended as (prevToDepth, null), so fromDepth is
+  // already set when prevToDepth matches the requested fromDepth.
+  cy.get("body").then($body => {
+    if ($body.find('[data-cy="depth-from-null-null-input"]').length > 0) {
+      setDepth(null, null, "from", fromDepth);
+    }
+  });
+  setDepth(fromDepth, null, "to", toDepth);
   openLayer({ layerType: LayerType.lithology, fromDepth, toDepth });
 };
 
@@ -385,9 +393,9 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       content: ["[MGr-co]: medium gravel, stony / with stones"],
     });
 
-    // Add the middle row as an auto-corrected empty lithology, then add the bottom consolidated lithology.
+    // Add the middle row as an empty lithology, then add the bottom consolidated lithology.
     addLithology();
-    setDepth(355, 355, "to", 798);
+    setDepth(355, null, "to", 798);
     addLithologyAtDepth(798, 1123);
     isUnconsolidatedForm(true);
     switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
