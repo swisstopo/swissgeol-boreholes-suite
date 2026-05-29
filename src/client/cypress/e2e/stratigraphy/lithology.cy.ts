@@ -904,7 +904,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
 
     // Top row has no row above → the top handle should not render.
-    cy.dataCy((y = "resize-description-lithological-top-0-355")).should("not.exist");
+    cy.dataCy("resize-description-lithological-top-0-355").should("not.exist");
 
     // Reopen the description and update its text.
     openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 355 });
