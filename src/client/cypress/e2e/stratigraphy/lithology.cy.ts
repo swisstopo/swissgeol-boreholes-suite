@@ -853,7 +853,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
     closeLayerModal();
     addLithology();
-    openLayer({ layerType: LayerType.lithology, fromDepth: 20, toDepth: 20 });
+    openLayer({ layerType: LayerType.lithology, fromDepth: 20, toDepth: null });
 
     // If previous layer was consolidated, new layer is also consolidated
     isUnconsolidatedForm(false);
