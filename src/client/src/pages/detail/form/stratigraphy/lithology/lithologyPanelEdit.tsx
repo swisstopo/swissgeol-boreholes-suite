@@ -1,6 +1,4 @@
 import { FC, useCallback, useContext, useEffect } from "react";
-import { useTranslation } from "react-i18next";
-import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
 import { SaveContext } from "../../../saveContext.tsx";
 import { LithologyTable } from "../components/lithologyTable/lithologyTable.tsx";
 import { prepareDataForSubmit } from "../components/lithologyTable/lithologyTableUtils.ts";
