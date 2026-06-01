@@ -5,10 +5,10 @@ import { SaveContext } from "../../../saveContext.tsx";
 import { LithologyTable } from "../components/lithologyTable/lithologyTable.tsx";
 import { prepareDataForSubmit } from "../components/lithologyTable/lithologyTableUtils.ts";
 import { useLithologyTableState } from "../components/lithologyTable/useLithologyTableState.ts";
-import { FaciesDescription, useFaciesDescriptionMutations } from "../faciesDescription.ts";
-import { LithologicalDescription, useLithologicalDescriptionMutations } from "../lithologicalDescription.ts";
-import { Lithology, useLithologyMutations } from "../lithology.ts";
-import { BaseLayer } from "../stratigraphy.ts";
+import { useFaciesDescriptionMutations } from "../faciesDescription.ts";
+import { useLithologicalDescriptionMutations } from "../lithologicalDescription.ts";
+import { useLithologyMutations } from "../lithology.ts";
+import { BaseLayer, FaciesDescription, LithologicalDescription, Lithology } from "../stratigraphy.ts";
 import { StratigraphyContext, StratigraphyContextProps } from "../stratigraphyContext.tsx";
 
 interface LithologyPanelEditProps {

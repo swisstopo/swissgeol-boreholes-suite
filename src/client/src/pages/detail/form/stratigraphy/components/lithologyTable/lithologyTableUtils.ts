@@ -1,8 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { FaciesDescription } from "../../faciesDescription.ts";
-import { LithologicalDescription } from "../../lithologicalDescription.ts";
-import { Lithology } from "../../lithology.ts";
-import { BaseLayer, DepthLayer } from "../../stratigraphy.ts";
+import { BaseLayer, DepthLayer, FaciesDescription, LithologicalDescription, Lithology } from "../../stratigraphy.ts";
 
 // TODO: What does this mean when building the depth layers?
 // Sort by fromDepth, tie-breaking on toDepth, then clamp toDepth to the next item's fromDepth wherever they overlap.
