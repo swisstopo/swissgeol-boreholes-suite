@@ -1,18 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { ExtractionBoundingBox } from "../../../../api/dataextractionInterfaces.ts";
 import { fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
-import { BaseLayer } from "./stratigraphy.ts";
-
-export interface LithologicalDescription extends BaseLayer {
-  description?: string;
-}
-
-export interface ExtractedLithologicalDescription extends LithologicalDescription {
-  startDepthBoundingBoxes: ExtractionBoundingBox[];
-  endDepthBoundingBoxes: ExtractionBoundingBox[];
-  descriptionBoundingBoxes: ExtractionBoundingBox[];
-}
+import { LithologicalDescription } from "./stratigraphy.ts";
 
 const fetchLithologicalDescriptionsByProfileId = async (profileId: number): Promise<LithologicalDescription[]> => {
   return await fetchApiV2WithApiError<LithologicalDescription[]>(

@@ -1,8 +1,5 @@
 import { v4 as uuidv4 } from "uuid";
-import { FaciesDescription } from "../../faciesDescription.ts";
-import { LithologicalDescription } from "../../lithologicalDescription.ts";
-import { Lithology } from "../../lithology.ts";
-import { BaseLayer, DepthLayer } from "../../stratigraphy.ts";
+import { BaseLayer, DepthLayer, FaciesDescription, LithologicalDescription, Lithology } from "../../stratigraphy.ts";
 
 const cleanupOverlaps = <T extends BaseLayer>(items: T[]): T[] => {
   const sorted = items

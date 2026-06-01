@@ -13,10 +13,7 @@ import {
   StratigraphyTableContent,
   StratigraphyTableHeader,
 } from "../components/stratigraphyTablePrimitives.tsx";
-import { FaciesDescription } from "../faciesDescription.ts";
-import { LithologicalDescription } from "../lithologicalDescription.ts";
-import { Lithology } from "../lithology.ts";
-import { BaseLayer } from "../stratigraphy.ts";
+import { BaseLayer, FaciesDescription, LithologicalDescription, Lithology } from "../stratigraphy.ts";
 import { computeCellHeight, getLayersWithGaps } from "../stratigraphyUtils.ts";
 import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";

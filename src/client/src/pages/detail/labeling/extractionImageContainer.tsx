@@ -12,7 +12,7 @@ import { useFileInfo } from "../../../api/dataextraction.ts";
 import { ExtractionBoundingBox } from "../../../api/dataextractionInterfaces.ts";
 import { useProfileImage } from "../../../api/profile.ts";
 import { theme } from "../../../AppTheme.ts";
-import { ExtractedLithologicalDescription } from "../form/stratigraphy/lithologicalDescription.ts";
+import { ExtractedLithologicalDescription } from "../form/stratigraphy/stratigraphy.ts";
 import { LabelingView } from "./labelingView.tsx";
 
 interface ExtractionImageContainerProps {
