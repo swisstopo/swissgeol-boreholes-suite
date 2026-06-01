@@ -78,7 +78,6 @@ export const DepthInput: FC<DepthInputProps> = ({ value, hasError, onCommit, pos
       onKeyDown={handleKeyDown}
       onClick={(e: MouseEvent) => e.stopPropagation()}
       error={!!hasError}
-      data-cy={dataCy}
       sx={{
         position: "absolute",
         left: "50%",
@@ -88,6 +87,7 @@ export const DepthInput: FC<DepthInputProps> = ({ value, hasError, onCommit, pos
         ...getPositionStyles(),
       }}
       slotProps={{
+        htmlInput: { "data-cy": dataCy },
         input: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           inputComponent: NumericFormatWithThousandSeparator as any,
