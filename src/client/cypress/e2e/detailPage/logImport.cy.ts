@@ -17,7 +17,7 @@ function openImportDialog() {
 }
 
 function removeSelectedFileIfPresent(parent: string) {
-  cy.get(`[data-cy="${parent}"]`).then($el => {
+  cy.dataCy(parent).then($el => {
     if ($el.find('[data-cy="iconButton"]').length > 0) {
       cy.get(`[data-cy="${parent}"] [data-cy="iconButton"]`).first().click();
     }
@@ -48,7 +48,7 @@ function selectAttachmentsForRun(runNumber: string, fileNames: string[]) {
   }));
   cy.get(`[data-cy="log-attachments-${runNumber}"] input[data-cy="file-dropzone"]`).selectFile(files, { force: true });
   for (const name of fileNames) {
-    cy.get(`[data-cy="log-attachments-${runNumber}"]`).should("contain", name);
+    cy.dataCy(`log-attachments-${runNumber}`).should("contain", name);
   }
 }
 

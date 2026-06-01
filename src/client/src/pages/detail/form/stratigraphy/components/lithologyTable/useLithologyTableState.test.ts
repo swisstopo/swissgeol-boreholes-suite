@@ -406,6 +406,84 @@ describe("useLithologyTableState", () => {
     });
   });
 
+  describe("resizeDescription", () => {
+    it("grows a description across an adjacent gap row", () => {
+      const { result } = renderState({
+        lithologies: [
+          lithology({ id: 1, fromDepth: 0, toDepth: 50 }),
+          lithology({ id: 2, fromDepth: 50, toDepth: 100 }),
+        ],
+        lithologicalDescriptions: [lithologicalDescription({ id: 10, fromDepth: 0, toDepth: 50 })],
+      });
+      const initialDepthIds = result.current.tmpLithologicalDescriptions[0].depthIds!;
+      expect(initialDepthIds).toHaveLength(1);
+
+      act(() => result.current.resizeDescription("lithological", 0, 0, 100));
+      const grown = result.current.tmpLithologicalDescriptions[0];
+      expect(grown.fromDepth).toBe(0);
+      expect(grown.toDepth).toBe(100);
+      expect(grown.depthIds).toHaveLength(2);
+      expect(grown.depthIds).toEqual([result.current.depths[0].id, result.current.depths[1].id]);
+      expect(result.current.hasUnsavedChanges).toBe(true);
+    });
+
+    it("shrinks a description so the formerly-owned row becomes a gap", () => {
+      const { result } = renderState({
+        lithologies: [
+          lithology({ id: 1, fromDepth: 0, toDepth: 50 }),
+          lithology({ id: 2, fromDepth: 50, toDepth: 100 }),
+        ],
+        lithologicalDescriptions: [lithologicalDescription({ id: 10, fromDepth: 0, toDepth: 100 })],
+      });
+      expect(result.current.tmpLithologicalDescriptions[0].depthIds).toHaveLength(2);
+
+      act(() => result.current.resizeDescription("lithological", 0, 0, 50));
+      const shrunk = result.current.tmpLithologicalDescriptions[0];
+      expect(shrunk.toDepth).toBe(50);
+      expect(shrunk.depthIds).toEqual([result.current.depths[0].id]);
+      // depth array unchanged; the (50,100) row is still there, just not in the description.
+      expect(result.current.depths).toHaveLength(2);
+    });
+
+    it("rejects a resize that would cross a sibling description", () => {
+      const { result } = renderState({
+        lithologies: [
+          lithology({ id: 1, fromDepth: 0, toDepth: 50 }),
+          lithology({ id: 2, fromDepth: 50, toDepth: 100 }),
+          lithology({ id: 3, fromDepth: 100, toDepth: 150 }),
+        ],
+        lithologicalDescriptions: [
+          lithologicalDescription({ id: 10, fromDepth: 0, toDepth: 50 }),
+          // Sibling description sitting in the middle row (50,100) — blocks expansion.
+          lithologicalDescription({ id: 11, fromDepth: 50, toDepth: 100 }),
+        ],
+      });
+      const before = result.current.tmpLithologicalDescriptions[0];
+      act(() => result.current.resizeDescription("lithological", 0, 0, 100));
+      // Sibling row (50,100) is owned by desc id:11 → resize is rejected, state unchanged.
+      expect(result.current.tmpLithologicalDescriptions[0]).toBe(before);
+      expect(result.current.hasUnsavedChanges).toBe(false);
+    });
+
+    it("picks up multiple gap rows in one resize and keeps depthIds sorted top-to-bottom", () => {
+      const { result } = renderState({
+        lithologies: [
+          lithology({ id: 1, fromDepth: 0, toDepth: 30 }),
+          lithology({ id: 2, fromDepth: 30, toDepth: 60 }),
+          lithology({ id: 3, fromDepth: 60, toDepth: 100 }),
+        ],
+        lithologicalDescriptions: [lithologicalDescription({ id: 10, fromDepth: 0, toDepth: 30 })],
+      });
+      act(() => result.current.resizeDescription("lithological", 0, 0, 100));
+      const grown = result.current.tmpLithologicalDescriptions[0];
+      expect(grown.depthIds).toEqual([
+        result.current.depths[0].id,
+        result.current.depths[1].id,
+        result.current.depths[2].id,
+      ]);
+    });
+  });
+
   describe("updateTmp* (modal apply)", () => {
     it("ignores updates when hasChanges is false", () => {
       const { result } = renderState({ lithologies: [lithology({ id: 1, fromDepth: 0, toDepth: 50 })] });
