@@ -417,6 +417,7 @@ export const useLithologyTableState = (
 
     // Determine which depth rows fall fully inside the new range (mirrors assignDepthIds).
     const candidateDepths = depths.filter(d => {
+      if (d.fromDepth === null || d.toDepth === null) return false;
       if (d.fromDepth === d.toDepth) return d.fromDepth > newFromDepth && d.fromDepth < newToDepth;
       return d.fromDepth >= newFromDepth && d.toDepth <= newToDepth;
     });

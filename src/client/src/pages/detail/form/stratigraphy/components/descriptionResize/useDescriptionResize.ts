@@ -137,10 +137,10 @@ export const useDescriptionResize = ({
       const targetIdx = findIdxAtClientY(clientY);
       if (drag.side === "bottom") {
         const lastIdx = clampBottom(targetIdx);
-        return { fromDepth: drag.initialFromDepth, toDepth: depths[lastIdx].toDepth };
+        return { fromDepth: drag.initialFromDepth, toDepth: depths[lastIdx].toDepth ?? drag.initialToDepth };
       }
       const firstIdx = clampTop(targetIdx);
-      return { fromDepth: depths[firstIdx].fromDepth, toDepth: drag.initialToDepth };
+      return { fromDepth: depths[firstIdx].fromDepth ?? drag.initialFromDepth, toDepth: drag.initialToDepth };
     };
 
     const updatePreview = (clientY: number) => {
@@ -210,6 +210,7 @@ export const useDescriptionResize = ({
     event.preventDefault();
     const ids = layer.depthIds ?? [];
     if (ids.length === 0) return;
+    if (layer.fromDepth === null || layer.toDepth === null) return;
     const firstDepthIdx = depths.findIndex(d => d.id === ids[0]);
     const lastDepthIdx = depths.findIndex(d => d.id === ids.at(-1));
     if (firstDepthIdx < 0 || lastDepthIdx < 0) return;
