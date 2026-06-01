@@ -63,6 +63,7 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
   }, []);
 
   const triggerSave = useCallback(async () => {
+    if (hasErrors) return;
     if (saveHandlerRef.current) {
       setIsSaving(true);
       try {
@@ -76,7 +77,7 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
         setIsSaving(false);
       }
     }
-  }, []);
+  }, [hasErrors]);
 
   const registerResetHandler = useCallback((handler: ResetHandler) => {
     resetHandlerRef.current = handler;

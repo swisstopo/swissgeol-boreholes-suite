@@ -219,7 +219,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                 const isMenuOpenForThis = openMenuDepthId === depth.id;
                 return (
                   <DepthColumnCell
-                    key={`${depth.id}-depth-${depth.fromDepth}-${depth.toDepth}`}
+                    key={depth.id}
                     depth={depth}
                     showHoverContent={isMenuOpenForThis || isHoveredViaItem}
                     isDeletePreview={deletePreviewDepth?.id === depth.id}>
