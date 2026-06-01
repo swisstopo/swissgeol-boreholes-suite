@@ -239,6 +239,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
             if (i !== activeDrag.itemIdx) return layer;
             const newDepthIds = depths
               .filter(d => {
+                if (d.fromDepth === null || d.toDepth === null) return false;
                 if (d.fromDepth === d.toDepth) {
                   return d.fromDepth > previewRange.fromDepth && d.fromDepth < previewRange.toDepth;
                 }
