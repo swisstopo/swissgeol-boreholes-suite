@@ -9,7 +9,7 @@
 - BREAKING: codelist CSV export columns renamed
 - Reference Codelist instead of enum for OriginalReferenceSystem in borehole.
 - Lithology rock type can now be left unspecified (in addition to unconsolidated and consolidated). Stratigraphy extraction creates lithologies as unspecified by default.
-- Redesigned lithology table to edit depths in the table overview.
+- Redesigned lithology table to edit depths in the table overview and stratigraphy extraction.
 
 ## v2.1.1631 - 2026-05-13
 
