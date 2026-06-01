@@ -46,8 +46,6 @@ export const LithologyPanelEdit: FC<LithologyPanelEditProps> = ({
   lithologicalDescriptions,
   faciesDescriptions,
 }) => {
-  const { t } = useTranslation();
-  const { showAlert } = useContext(AlertContext);
   const { markAsChanged, markHasErrors } = useContext(SaveContext);
   const { registerSaveHandler, registerResetHandler } = useContext<StratigraphyContextProps>(StratigraphyContext);
 
@@ -86,11 +84,6 @@ export const LithologyPanelEdit: FC<LithologyPanelEditProps> = ({
   }, [lithologyTableState.hasErrors, markHasErrors]);
 
   const onSave = useCallback(async () => {
-    if (lithologyTableState.hasErrors) {
-      showAlert(t("gapOrOverlayErrorCannotSave"), "error");
-      return false;
-    }
-
     // Strip view-only fields once so the buckets are directly comparable to server data and
     // ready to ship to the API without further per-item transformation.
     const tmpLithologies = lithologyTableState.tmpLithologies.map(prepareDataForSubmit);
@@ -137,8 +130,6 @@ export const LithologyPanelEdit: FC<LithologyPanelEditProps> = ({
     invalidateLithologyQueries,
     invalidateLithologicalDescriptionQueries,
     invalidateFaciesDescriptionQueries,
-    showAlert,
-    t,
   ]);
 
   const onReset = useCallback(() => {

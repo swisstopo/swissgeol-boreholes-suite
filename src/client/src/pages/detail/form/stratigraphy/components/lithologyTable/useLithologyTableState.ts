@@ -28,6 +28,8 @@ export interface LithologyTableState {
   updateTmpLithologicalDescription: (updated: LithologicalDescription, hasChanges: boolean) => void;
   updateTmpFaciesDescription: (updated: FaciesDescription, hasChanges: boolean) => void;
 
+  resizeDescription: (kind: "lithological" | "facies", index: number, newFromDepth: number, newToDepth: number) => void;
+
   hasErrors: boolean;
   hasUnsavedChanges: boolean;
   reset: () => void;
@@ -398,6 +400,42 @@ export const useLithologyTableState = (
     commitChanges(depths, tmpLithologies, tmpLithologicalDescriptions, newDescs);
   };
 
+  const resizeDescription = (
+    kind: "lithological" | "facies",
+    index: number,
+    newFromDepth: number,
+    newToDepth: number,
+  ) => {
+    const list = kind === "lithological" ? tmpLithologicalDescriptions : tmpFaciesDescriptions;
+    if (index < 0 || index >= list.length) return;
+    if (newFromDepth >= newToDepth) return;
+    const current = list[index];
+    if (current.fromDepth === newFromDepth && current.toDepth === newToDepth) return;
+
+    // Determine which depth rows fall fully inside the new range (mirrors assignDepthIds).
+    const candidateDepths = depths.filter(d => {
+      if (d.fromDepth === d.toDepth) return d.fromDepth > newFromDepth && d.fromDepth < newToDepth;
+      return d.fromDepth >= newFromDepth && d.toDepth <= newToDepth;
+    });
+
+    // Reject if any candidate depth row is owned by ANOTHER item in the same description column. (Same-column conflict only — descriptions are allowed to overlap lithologies.)
+    const otherItems = list.filter((_, i) => i !== index);
+    const conflict = candidateDepths.some(d => otherItems.some(o => o.depthIds?.includes(d.id)));
+    if (conflict) return;
+
+    const updated = {
+      ...current,
+      fromDepth: newFromDepth,
+      toDepth: newToDepth,
+      depthIds: candidateDepths.map(d => d.id),
+    };
+    const newList = list.map((item, i) => (i === index ? updated : item));
+    const newLithologicalDescriptions = kind === "lithological" ? newList : tmpLithologicalDescriptions;
+    const newFaciesDescriptions = kind === "facies" ? newList : tmpFaciesDescriptions;
+
+    commitChanges(depths, tmpLithologies, newLithologicalDescriptions, newFaciesDescriptions);
+  };
+
   const hasErrors = depths.some(d => d.hasFromDepthError || d.hasToDepthError);
 
   return {
@@ -414,6 +452,7 @@ export const useLithologyTableState = (
     updateTmpLithology,
     updateTmpLithologicalDescription,
     updateTmpFaciesDescription,
+    resizeDescription,
     hasErrors,
     hasUnsavedChanges,
     reset: seed,

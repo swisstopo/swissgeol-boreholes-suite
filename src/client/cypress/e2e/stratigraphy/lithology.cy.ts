@@ -20,6 +20,7 @@ import {
   checkLayerCardContent,
   closeLayerModal,
   deleteLayer,
+  dragResizeDescription,
   hasDepthError,
   hasGapsAt,
   hasLayer,
@@ -34,7 +35,15 @@ import {
 
 const addLithologyAtDepth = (fromDepth: number, toDepth: number) => {
   addLithology();
-  setDepth(fromDepth, toDepth, "to", toDepth);
+  // First-row case (empty stratigraphy): the new row is (null, null) — set fromDepth first.
+  // Subsequent-row case: the new row is appended as (prevToDepth, null), so fromDepth is
+  // already set when prevToDepth matches the requested fromDepth.
+  cy.get("body").then($body => {
+    if ($body.find('[data-cy="depth-from-null-null-input"]').length > 0) {
+      setDepth(null, null, "from", fromDepth);
+    }
+  });
+  setDepth(fromDepth, null, "to", toDepth);
   openLayer({ layerType: LayerType.lithology, fromDepth, toDepth });
 };
 
@@ -385,9 +394,9 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       content: ["[MGr-co]: medium gravel, stony / with stones"],
     });
 
-    // Add the middle row as an auto-corrected empty lithology, then add the bottom consolidated lithology.
+    // Add the middle row as an empty lithology, then add the bottom consolidated lithology.
     addLithology();
-    setDepth(355, 355, "to", 798);
+    setDepth(355, null, "to", 798);
     addLithologyAtDepth(798, 1123);
     isUnconsolidatedForm(true);
     switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
@@ -511,260 +520,6 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
   });
 
-  // TODO https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2752
-  it.skip("adds, updates and displays lithological descriptions", () => {
-    openStratigraphyWith3Lithologies();
-
-    // Add lithological description from gap and check that it has the correct depth range
-    openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
-    evaluateLithologicalDescriptionForm({ fromDepth: 0, toDepth: 355 });
-    fillLithologicalDescriptionForm({ fromDepth: 0, toDepth: 0 });
-    evaluateLithologicalDescriptionForm({ fromDepth: 0, toDepth: 355 });
-    closeLayerModal();
-
-    checkDepthColumn([
-      [0, 355],
-      [355, 798],
-      [798, 1123],
-    ]);
-    hasLayersAt(LayerType.lithology, [
-      [0, 355],
-      [355, 798],
-      [798, 1123],
-    ]);
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 355 });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
-    hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
-
-    // Edit lithological description and check that changes are applied
-    openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 355 });
-    evaluateLithologicalDescriptionForm({ fromDepth: 0, toDepth: 355 });
-    fillLithologicalDescriptionForm({ description: "lithological description 0 - 355" });
-    evaluateLithologicalDescriptionForm({
-      fromDepth: 0,
-      toDepth: 355,
-      description: "lithological description 0 - 355",
-    });
-    closeLayerModal();
-
-    checkDepthColumn([
-      [0, 355],
-      [355, 798],
-      [798, 1123],
-    ]);
-    hasLayersAt(LayerType.lithology, [
-      [0, 355],
-      [355, 798],
-      [798, 1123],
-    ]);
-    checkLayerCardContent({
-      layerType: LayerType.lithologicalDescription,
-      fromDepth: 0,
-      toDepth: 355,
-      content: ["lithological description 0 - 355"],
-    });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
-    hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
-
-    // Add lithological description from remaining gap and check that it has the correct depth range
-    openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
-    evaluateLithologicalDescriptionForm({ fromDepth: 355, toDepth: 798 });
-    fillLithologicalDescriptionForm({
-      fromDepth: 0,
-      toDepth: 1,
-      description: "lithological description 355 - 1123",
-    });
-    evaluateLithologicalDescriptionForm({
-      fromDepth: 355,
-      toDepth: 1123,
-      description: "lithological description 355 - 1123",
-    });
-    closeLayerModal();
-
-    checkDepthColumn([
-      [0, 355],
-      [355, 798],
-      [798, 1123],
-    ]);
-    hasLayersAt(LayerType.lithology, [
-      [0, 355],
-      [355, 798],
-      [798, 1123],
-    ]);
-    checkLayerCardContent({
-      layerType: LayerType.lithologicalDescription,
-      fromDepth: 0,
-      toDepth: 355,
-      content: ["lithological description 0 - 355"],
-    });
-    checkLayerCardContent({
-      layerType: LayerType.lithologicalDescription,
-      fromDepth: 355,
-      toDepth: 1123,
-      content: ["lithological description 355 - 1123"],
-    });
-    hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
-
-    saveWithSaveBar();
-    stopBoreholeEditing();
-    checkDepthColumn([
-      [0, 355],
-      [355, 798],
-      [798, 1123],
-    ]);
-    hasLayersAt(LayerType.lithology, [
-      [0, 355],
-      [355, 798],
-      [798, 1123],
-    ]);
-    checkLayerCardContent({
-      layerType: LayerType.lithologicalDescription,
-      fromDepth: 0,
-      toDepth: 355,
-      content: ["lithological description 0 - 355"],
-    });
-    checkLayerCardContent({
-      layerType: LayerType.lithologicalDescription,
-      fromDepth: 355,
-      toDepth: 1123,
-      content: ["lithological description 355 - 1123"],
-    });
-    hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
-  });
-
-  // TODO https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2752
-  it.skip("adds, updates and displays facies descriptions", () => {
-    openStratigraphyWith3Lithologies();
-
-    // Add facies description from gap and check that it has the correct depth range
-    openLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
-    evaluateFaciesDescriptionForm({ fromDepth: 0, toDepth: 355 });
-    fillFaciesDescriptionForm({
-      fromDepth: 1,
-      toDepth: 2,
-      faciesId: 1,
-      description: "facies description 355 - 1123",
-    });
-    evaluateFaciesDescriptionForm({ fromDepth: 355, toDepth: 1123, faciesId: "terrestrial" });
-    closeLayerModal();
-
-    checkDepthColumn([
-      [0, 355],
-      [355, 798],
-      [798, 1123],
-    ]);
-    hasLayersAt(LayerType.lithology, [
-      [0, 355],
-      [355, 798],
-      [798, 1123],
-    ]);
-    hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
-    checkLayerCardContent({
-      layerType: LayerType.faciesDescription,
-      fromDepth: 355,
-      toDepth: 1123,
-      content: ["terrestrial", "facies description 355 - 1123"],
-    });
-
-    // Edit facies description and check that changes are applied
-    openLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, toDepth: 1123 });
-    evaluateFaciesDescriptionForm({
-      fromDepth: 355,
-      toDepth: 1123,
-      faciesId: "terrestrial",
-      description: "facies description 355 - 1123",
-    });
-    fillFaciesDescriptionForm({ faciesId: 3 });
-    evaluateFaciesDescriptionForm({
-      fromDepth: 355,
-      toDepth: 1123,
-      faciesId: "alluvial fan",
-      description: "facies description 355 - 1123",
-    });
-    closeLayerModal();
-
-    checkDepthColumn([
-      [0, 355],
-      [355, 798],
-      [798, 1123],
-    ]);
-    hasLayersAt(LayerType.lithology, [
-      [0, 355],
-      [355, 798],
-      [798, 1123],
-    ]);
-    hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
-    checkLayerCardContent({
-      layerType: LayerType.faciesDescription,
-      fromDepth: 355,
-      toDepth: 1123,
-      content: ["alluvial fan", "facies description 355 - 1123"],
-    });
-
-    // Add facies description from remaining gap and check that it has the correct depth range
-    openLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
-    evaluateFaciesDescriptionForm({ fromDepth: 0, toDepth: 355 });
-    fillFaciesDescriptionForm({
-      fromDepth: 0,
-      toDepth: 0,
-      faciesId: 2,
-    });
-    evaluateFaciesDescriptionForm({ fromDepth: 0, toDepth: 355, faciesId: "alluvial" });
-    closeLayerModal();
-
-    checkDepthColumn([
-      [0, 355],
-      [355, 798],
-      [798, 1123],
-    ]);
-    hasLayersAt(LayerType.lithology, [
-      [0, 355],
-      [355, 798],
-      [798, 1123],
-    ]);
-    hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
-    checkLayerCardContent({
-      layerType: LayerType.faciesDescription,
-      fromDepth: 0,
-      toDepth: 355,
-      content: ["alluvial"],
-    });
-    checkLayerCardContent({
-      layerType: LayerType.faciesDescription,
-      fromDepth: 355,
-      toDepth: 1123,
-      content: ["alluvial fan", "facies description 355 - 1123"],
-    });
-
-    saveWithSaveBar();
-    stopBoreholeEditing();
-    checkDepthColumn([
-      [0, 355],
-      [355, 798],
-      [798, 1123],
-    ]);
-    hasLayersAt(LayerType.lithology, [
-      [0, 355],
-      [355, 798],
-      [798, 1123],
-    ]);
-    hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
-    checkLayerCardContent({
-      layerType: LayerType.faciesDescription,
-      fromDepth: 0,
-      toDepth: 355,
-      content: ["alluvial"],
-    });
-    checkLayerCardContent({
-      layerType: LayerType.faciesDescription,
-      fromDepth: 355,
-      toDepth: 1123,
-      content: ["alluvial fan", "facies description 355 - 1123"],
-    });
-  });
-
   it("resets form when switching between unconsolidated and consolidated rock", () => {
     openNewStratigraphy();
     addLithologyAtDepth(0, 56);
@@ -845,7 +600,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
     closeLayerModal();
     addLithology();
-    openLayer({ layerType: LayerType.lithology, fromDepth: 20, toDepth: 20 });
+    openLayer({ layerType: LayerType.lithology, fromDepth: 20, toDepth: null });
 
     // If previous layer was consolidated, new layer is also consolidated
     isUnconsolidatedForm(false);
@@ -1140,6 +895,144 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     // The appended-at-end lithology mirrors the depth row's (100, null) — toDepth stays
     // unset until the user enters a value.
     hasLayer({ layerType: LayerType.lithology, fromDepth: 100, toDepth: null });
+  });
+
+  it("adds, edits and resizes lithological descriptions across gap rows", () => {
+    openStratigraphyWith3Lithologies();
+
+    // Create a description from the first gap; it spans only that gap's row.
+    openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
+    fillLithologicalDescriptionForm({ description: "lithological description 0 - 355" });
+    closeLayerModal();
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 355 });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
+
+    // Top row has no row above → the top handle should not render.
+    cy.dataCy("resize-description-lithological-top-0-355").should("not.exist");
+
+    // Reopen the description and update its text.
+    openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 355 });
+    evaluateLithologicalDescriptionForm({ description: "lithological description 0 - 355" });
+    fillLithologicalDescriptionForm({ description: "lithological description 0 - 355 (updated)" });
+    closeLayerModal();
+    checkLayerCardContent({
+      layerType: LayerType.lithologicalDescription,
+      fromDepth: 0,
+      toDepth: 355,
+      content: ["lithological description 0 - 355 (updated)"],
+    });
+
+    // Create a second description from the middle gap, then drag-resize its bottom handle
+    // one row down → it absorbs the bottom row and spans (355, 1123).
+    openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
+    fillLithologicalDescriptionForm({ description: "lithological description 355 - 1123" });
+    closeLayerModal();
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, toDepth: 798 });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, isGap: true });
+
+    dragResizeDescription({
+      kind: "lithological",
+      fromDepth: 355,
+      toDepth: 798,
+      side: "bottom",
+      deltaRows: 1,
+    });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, toDepth: 1123 });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, isGap: true, exists: false });
+
+    // Save, reload and verify everything persisted.
+    saveWithSaveBar();
+    stopBoreholeEditing();
+    hasLayersAt(LayerType.lithology, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    checkLayerCardContent({
+      layerType: LayerType.lithologicalDescription,
+      fromDepth: 0,
+      toDepth: 355,
+      content: ["lithological description 0 - 355 (updated)"],
+    });
+    checkLayerCardContent({
+      layerType: LayerType.lithologicalDescription,
+      fromDepth: 355,
+      toDepth: 1123,
+      content: ["lithological description 355 - 1123"],
+    });
+    hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
+  });
+
+  it("adds, edits and resizes facies descriptions across gap rows", () => {
+    openStratigraphyWith3Lithologies();
+
+    // Create a facies description from the first gap.
+    openLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
+    fillFaciesDescriptionForm({ faciesId: 1, description: "facies description 0 - 355" });
+    closeLayerModal();
+    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, toDepth: 355 });
+    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, isGap: true });
+    checkLayerCardContent({
+      layerType: LayerType.faciesDescription,
+      fromDepth: 0,
+      toDepth: 355,
+      content: ["terrestrial", "facies description 0 - 355"],
+    });
+
+    // Top row has no row above → the top handle should not render.
+    cy.dataCy("resize-description-facies-top-0-355").should("not.exist");
+
+    // Reopen and switch the faciesId.
+    openLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, toDepth: 355 });
+    evaluateFaciesDescriptionForm({ faciesId: "terrestrial", description: "facies description 0 - 355" });
+    fillFaciesDescriptionForm({ faciesId: 3 });
+    closeLayerModal();
+    checkLayerCardContent({
+      layerType: LayerType.faciesDescription,
+      fromDepth: 0,
+      toDepth: 355,
+      content: ["alluvial fan", "facies description 0 - 355"],
+    });
+
+    // Create a second description from the middle gap, then drag-resize its bottom handle
+    // one row down → it absorbs the bottom row and spans (355, 1123).
+    openLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, isGap: true });
+    fillFaciesDescriptionForm({ faciesId: 2, description: "facies description 355 - 1123" });
+    closeLayerModal();
+    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, toDepth: 798 });
+    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, isGap: true });
+
+    dragResizeDescription({
+      kind: "facies",
+      fromDepth: 355,
+      toDepth: 798,
+      side: "bottom",
+      deltaRows: 1,
+    });
+    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, toDepth: 1123 });
+    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, isGap: true, exists: false });
+
+    // Save, reload and verify everything persisted.
+    saveWithSaveBar();
+    stopBoreholeEditing();
+    hasLayersAt(LayerType.lithology, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
+    checkLayerCardContent({
+      layerType: LayerType.faciesDescription,
+      fromDepth: 0,
+      toDepth: 355,
+      content: ["alluvial fan", "facies description 0 - 355"],
+    });
+    checkLayerCardContent({
+      layerType: LayerType.faciesDescription,
+      fromDepth: 355,
+      toDepth: 1123,
+      content: ["alluvial", "facies description 355 - 1123"],
+    });
   });
 
   it("creates one gap per row in lithological and facies descriptions", () => {

@@ -24,18 +24,27 @@ export const DepthInput: FC<DepthInputProps> = ({ value, hasError, onCommit, pos
     setTextValue(toText(value));
   }, [value]);
 
-  const commit = () => {
-    if (textValue.trim() === "") {
+  const tryCommit = (text: string): boolean => {
+    if (text.trim() === "") {
       if (value !== null) onCommit(null);
-      return;
+      return true;
     }
-    const parsed = parseFloatWithThousandsSeparator(textValue);
-    if (parsed === null || Number.isNaN(parsed)) {
+    const parsed = parseFloatWithThousandsSeparator(text);
+    if (parsed === null || Number.isNaN(parsed)) return false;
+    if (parsed !== value) onCommit(parsed);
+    return true;
+  };
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const newText = e.target.value;
+    setTextValue(newText);
+    tryCommit(newText);
+  };
+
+  const handleBlur = () => {
+    if (!tryCommit(textValue)) {
       setTextValue(toText(value));
-      return;
     }
-    if (parsed === value) return;
-    onCommit(parsed);
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
@@ -64,12 +73,11 @@ export const DepthInput: FC<DepthInputProps> = ({ value, hasError, onCommit, pos
       size="small"
       type={FormValueType.Text}
       value={textValue}
-      onChange={(e: ChangeEvent<HTMLInputElement>) => setTextValue(e.target.value)}
-      onBlur={commit}
+      onChange={handleChange}
+      onBlur={handleBlur}
       onKeyDown={handleKeyDown}
       onClick={(e: MouseEvent) => e.stopPropagation()}
       error={!!hasError}
-      data-cy={dataCy}
       sx={{
         position: "absolute",
         left: "50%",
@@ -79,6 +87,7 @@ export const DepthInput: FC<DepthInputProps> = ({ value, hasError, onCommit, pos
         ...getPositionStyles(),
       }}
       slotProps={{
+        htmlInput: { "data-cy": dataCy },
         input: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           inputComponent: NumericFormatWithThousandSeparator as any,

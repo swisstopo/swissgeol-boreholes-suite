@@ -11,6 +11,7 @@ const themePalette: AppThemePalette = {
   primary: {
     main: "#337083",
     contrastText: "#ffffff",
+    muted: "rgba(51, 112, 131, 0.3)",
   },
   secondary: {
     main: "#1c2834",
