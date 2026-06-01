@@ -57,9 +57,41 @@ export const setDepth = (
 };
 
 export const insertDepthRow = (fromDepth: number | null, toDepth: number | null, position: "before" | "after") => {
-  cy.get(`[data-cy="depth-${fromDepth}-${toDepth}"]`).scrollIntoView();
-  cy.get(`[data-cy="depth-${fromDepth}-${toDepth}"]`).realHover({ position: position === "before" ? "top" : "bottom" });
+  cy.dataCy(`depth-${fromDepth}-${toDepth}`).scrollIntoView();
+  cy.dataCy(`depth-${fromDepth}-${toDepth}`).realHover({ position: position === "before" ? "top" : "bottom" });
   cy.dataCy(`insert-depth-${position}-${fromDepth}-${toDepth}-button`).click({ force: true });
+};
+
+interface DragResizeDescriptionInput {
+  kind: "lithological" | "facies";
+  fromDepth: number;
+  toDepth: number;
+  side: "top" | "bottom";
+  deltaRows: number; // How many depth-row heights to drag. Positive = downward (towards larger depths).
+  rowHeight?: number; // Depth-row pixel height. Defaults to 240 (`defaultRowHeight` in `lithologyTableUtils.ts`).
+}
+
+export const dragResizeDescription = ({
+                                        kind,
+                                        fromDepth,
+                                        toDepth,
+                                        side,
+                                        deltaRows,
+                                        rowHeight = 240,
+                                      }: DragResizeDescriptionInput) => {
+  const columnPrefix = kind === "lithological" ? "lithologicalDescription" : "faciesDescription";
+  const cellSelector = `[data-cy="${columnPrefix}-${fromDepth}-${toDepth}"]`;
+  const handleSelector = `[data-cy="resize-description-${kind}-${side}-${fromDepth}-${toDepth}"]`;
+  cy.get(cellSelector).realHover();
+  cy.get(handleSelector).then($handle => {
+    const rect = $handle[0].getBoundingClientRect();
+    const startX = rect.left + rect.width / 2;
+    const startY = rect.top + rect.height / 2;
+    const endY = startY + deltaRows * rowHeight;
+    cy.get(handleSelector).trigger("mousedown", { clientX: startX, clientY: startY, button: 0 });
+    cy.get("body").trigger("mousemove", { clientX: startX, clientY: endY });
+    cy.get("body").trigger("mouseup", { clientX: startX, clientY: endY });
+  });
 };
 
 export const hasLayer = ({ layerType, fromDepth, toDepth, isGap, exists = true }: HasLayerInput) => {
