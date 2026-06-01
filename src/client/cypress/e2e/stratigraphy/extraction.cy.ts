@@ -148,7 +148,6 @@ describe("Tests for stratigraphy extraction", () => {
   });
 
   it("extracts two stratigraphies from a real profile and saves both", () => {
-    cy.intercept("POST", "/api/v2/stratigraphy").as("stratigraphy_POST");
     createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "2-Bohrungen.pdf");
     cy.wait("@extract-stratigraphy", { timeout: 240000 }).then(interception => {
       expect(interception.response!.statusCode).to.eq(200);
