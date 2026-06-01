@@ -3,212 +3,425 @@ using BDMS.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System;
+using System.Collections.ObjectModel;
 
 namespace BDMS.Controllers;
 
+/// <summary>
+/// Endpoints for the Lithology tab of a stratigraphy: the tab owns three sibling collections
+/// (<see cref="Lithology"/>, <see cref="LithologicalDescription"/> and <see cref="FaciesDescription"/>)
+/// that are loaded and persisted together so a single transactional save covers them.
+/// </summary>
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class LithologyController : BoreholeControllerBase<Lithology>
+public class LithologyController : ControllerBase
 {
+    private readonly BdmsContext context;
+    private readonly ILogger<LithologyController> logger;
+    private readonly IBoreholePermissionService boreholePermissionService;
+
     public LithologyController(BdmsContext context, ILogger<LithologyController> logger, IBoreholePermissionService boreholePermissionService)
-        : base(context, logger, boreholePermissionService)
     {
+        this.context = context;
+        this.logger = logger;
+        this.boreholePermissionService = boreholePermissionService;
     }
 
     /// <summary>
-    /// Asynchronously gets the <see cref="Lithology"/>s, filtered by <paramref name="stratigraphyId"/>.
+    /// Gets the full contents of the Lithology tab for the given <paramref name="stratigraphyId"/>.
     /// </summary>
-    /// <param name="stratigraphyId">The id of the stratigraphy containing the lithologies to get.</param>
-    [HttpGet]
+    [HttpGet("{stratigraphyId:int}")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<IEnumerable<Lithology>>> GetAsync([FromQuery] int stratigraphyId)
+    public async Task<ActionResult<LithologyTabContents>> GetByStratigraphyIdAsync(int stratigraphyId)
     {
-        var stratigraphy = await Context.Stratigraphies
+        var stratigraphy = await context.Stratigraphies
             .AsNoTracking()
             .SingleOrDefaultAsync(x => x.Id == stratigraphyId)
             .ConfigureAwait(false);
 
-        if (stratigraphy == null)
+        if (stratigraphy == null) return NotFound();
+
+        if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false))
         {
-            return NotFound();
+            return Unauthorized();
         }
 
-        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
+        return Ok(await LoadTabContentsAsync(stratigraphyId).ConfigureAwait(false));
+    }
 
-        return await Context.LithologiesWithProjection // LithologiesWithProjection is used to return only CodelistIds instead of the whole codeslists to the client
+    /// <summary>
+    /// Creates one or more new <see cref="Stratigraphy"/> entries together with their full Lithology
+    /// tab contents. Used by the extraction modal that bulk-adds 1–n stratigraphies extracted from a
+    /// profile. All stratigraphies must belong to the same borehole. Name conflicts within the borehole
+    /// are resolved server-side by appending " (N)" suffixes so the client can submit naive names like
+    /// "report_1", "report_2", ... and let the server disambiguate.
+    /// </summary>
+    [HttpPost]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult<Collection<StratigraphyWithLithology>>> CreateAsync(Collection<StratigraphyWithLithology> stratigraphies)
+    {
+        if (stratigraphies == null || stratigraphies.Count == 0) return BadRequest();
+
+        var boreholeIds = stratigraphies.Select(s => s.Stratigraphy?.BoreholeId ?? 0).Distinct().ToList();
+        if (boreholeIds.Count != 1 || boreholeIds[0] == 0) return BadRequest("All stratigraphies must belong to the same borehole.");
+        var boreholeId = boreholeIds[0];
+
+        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
+        {
+            return Unauthorized();
+        }
+
+        try
+        {
+            var existingStratigraphyNames = await context.Stratigraphies
+                .Where(s => s.BoreholeId == boreholeId)
+                .Select(s => s.Name)
+                .ToListAsync()
+                .ConfigureAwait(false);
+
+            var takenNames = existingStratigraphyNames.OfType<string>().ToHashSet(StringComparer.Ordinal);
+            var boreholeHasExistingStratigraphy = existingStratigraphyNames.Count > 0;
+            Stratigraphy? designatedPrimary = null;
+
+            foreach (var entry in stratigraphies)
+            {
+                var stratigraphy = entry.Stratigraphy;
+                stratigraphy.Id = 0;
+
+                ApplyUniqueName(stratigraphy, takenNames);
+                if (!string.IsNullOrEmpty(stratigraphy.Name)) takenNames.Add(stratigraphy.Name);
+
+                // First-ever stratigraphy on the borehole auto-promotes to primary; an explicit
+                // IsPrimary=true on any entry wins and demotes everything else (in-batch + DB).
+                if (designatedPrimary == null && (stratigraphy.IsPrimary || !boreholeHasExistingStratigraphy))
+                {
+                    designatedPrimary = stratigraphy;
+                    stratigraphy.IsPrimary = true;
+                }
+                else
+                {
+                    stratigraphy.IsPrimary = false;
+                }
+
+                // Strip stratigraphy-level navigation collections that aren't part of this endpoint.
+                stratigraphy.ChronostratigraphyLayers = null;
+                stratigraphy.LithostratigraphyLayers = null;
+
+                // Attach the three child collections to the stratigraphy so a single AddAsync cascades
+                // the whole subgraph; EF assigns Ids and fills in StratigraphyId during SaveChanges.
+                foreach (var lithology in entry.Lithologies)
+                {
+                    lithology.Id = 0;
+                    lithology.StratigraphyId = 0;
+                    await PrepareLithologyDescriptionsAsync(lithology).ConfigureAwait(false);
+                    await PrepareNewLithologyForSaveAsync(lithology).ConfigureAwait(false);
+                }
+
+                stratigraphy.Lithologies = entry.Lithologies.ToList();
+
+                foreach (var description in entry.LithologicalDescriptions)
+                {
+                    description.Id = 0;
+                    description.StratigraphyId = 0;
+                }
+
+                stratigraphy.LithologicalDescriptions = entry.LithologicalDescriptions.ToList();
+
+                foreach (var faciesDescription in entry.FaciesDescriptions)
+                {
+                    faciesDescription.Id = 0;
+                    faciesDescription.StratigraphyId = 0;
+                }
+
+                stratigraphy.FaciesDescriptions = entry.FaciesDescriptions.ToList();
+
+                await context.AddAsync(stratigraphy).ConfigureAwait(false);
+            }
+
+            // If the batch installs a primary, demote any prior primaries on the borehole — in-memory
+            // edits to tracked entities ride along on the trailing SaveChangesAsync.
+            if (designatedPrimary != null)
+            {
+                var priorPrimaries = await context.Stratigraphies
+                    .Where(s => s.BoreholeId == boreholeId && s.IsPrimary && s.Id != 0)
+                    .ToListAsync()
+                    .ConfigureAwait(false);
+                foreach (var prior in priorPrimaries)
+                {
+                    prior.IsPrimary = false;
+                }
+            }
+
+            await context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+
+            var responses = new Collection<StratigraphyWithLithology>();
+            foreach (var entry in stratigraphies)
+            {
+                responses.Add(await BuildResponseAsync(entry.Stratigraphy.Id).ConfigureAwait(false));
+            }
+
+            return Ok(responses);
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            const string message = "An error occurred while creating the stratigraphies.";
+            logger.LogError(ex, message);
+            return Problem(message);
+        }
+    }
+
+    private static void ApplyUniqueName(Stratigraphy stratigraphy, HashSet<string> takenNames)
+    {
+        if (string.IsNullOrEmpty(stratigraphy.Name)) return;
+
+        const int maxAttempts = 100;
+        var baseName = stratigraphy.Name;
+        var attempt = 0;
+        while (takenNames.Contains(stratigraphy.Name))
+        {
+            attempt++;
+            if (attempt > maxAttempts)
+            {
+                throw new InvalidOperationException($"Could not find a unique name based on '{baseName}' within {maxAttempts} attempts.");
+            }
+
+            stratigraphy.Name = $"{baseName} ({attempt})";
+        }
+    }
+
+    /// <summary>
+    /// Updates the full Lithology tab contents of an existing stratigraphy. The request carries the
+    /// desired final state — the sync helpers stage the create/update/delete edits on the change
+    /// tracker and a single SaveChangesAsync at the end persists them atomically.
+    /// </summary>
+    [HttpPut("{stratigraphyId:int}")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult<StratigraphyWithLithology>> UpdateContentsAsync(int stratigraphyId, LithologyTabContents contents)
+    {
+        if (contents == null) return BadRequest();
+
+        var stratigraphy = await context.Stratigraphies
+            .SingleOrDefaultAsync(s => s.Id == stratigraphyId)
+            .ConfigureAwait(false);
+
+        if (stratigraphy == null) return NotFound();
+
+        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false))
+        {
+            return Unauthorized();
+        }
+
+        if (!ValidateChildStratigraphyIds(contents, stratigraphyId, out var validationError))
+        {
+            return BadRequest(validationError);
+        }
+
+        try
+        {
+            await SyncLithologiesAsync(stratigraphyId, contents.Lithologies).ConfigureAwait(false);
+            await SyncLithologicalDescriptionsAsync(stratigraphyId, contents.LithologicalDescriptions).ConfigureAwait(false);
+            await SyncFaciesDescriptionsAsync(stratigraphyId, contents.FaciesDescriptions).ConfigureAwait(false);
+
+            await context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+
+            return Ok(await BuildResponseAsync(stratigraphyId).ConfigureAwait(false));
+        }
+        catch (InvalidOperationException ex)
+        {
+            return BadRequest(ex.Message);
+        }
+        catch (Exception ex)
+        {
+            const string message = "An error occurred while updating the lithology tab contents.";
+            logger.LogError(ex, message);
+            return Problem(message);
+        }
+    }
+
+    private static bool ValidateChildStratigraphyIds(LithologyTabContents contents, int stratigraphyId, out string? error)
+    {
+        bool MatchesOrUnset(int candidate) => candidate == 0 || candidate == stratigraphyId;
+
+        if ((contents.Lithologies ?? []).Any(l => !MatchesOrUnset(l.StratigraphyId)))
+        {
+            error = "All lithologies must reference the path stratigraphyId.";
+            return false;
+        }
+
+        if ((contents.LithologicalDescriptions ?? []).Any(d => !MatchesOrUnset(d.StratigraphyId)))
+        {
+            error = "All lithological descriptions must reference the path stratigraphyId.";
+            return false;
+        }
+
+        if ((contents.FaciesDescriptions ?? []).Any(d => !MatchesOrUnset(d.StratigraphyId)))
+        {
+            error = "All facies descriptions must reference the path stratigraphyId.";
+            return false;
+        }
+
+        error = null;
+        return true;
+    }
+
+    private async Task SyncLithologiesAsync(int stratigraphyId, ICollection<Lithology> incoming)
+    {
+        var existingById = await context.LithologiesWithIncludes
+            .Where(l => l.StratigraphyId == stratigraphyId)
+            .ToDictionaryAsync(l => l.Id)
+            .ConfigureAwait(false);
+
+        var incomingIds = incoming.Where(l => l.Id != 0).Select(l => l.Id).ToHashSet();
+        foreach (var (id, lithologyToDelete) in existingById)
+        {
+            if (!incomingIds.Contains(id))
+            {
+                context.Remove(lithologyToDelete);
+            }
+        }
+
+        foreach (var lithology in incoming)
+        {
+            lithology.StratigraphyId = stratigraphyId;
+
+            if (lithology.Id == 0)
+            {
+                await PrepareLithologyDescriptionsAsync(lithology).ConfigureAwait(false);
+                await PrepareNewLithologyForSaveAsync(lithology).ConfigureAwait(false);
+                await context.AddAsync(lithology).ConfigureAwait(false);
+                continue;
+            }
+
+            if (!existingById.TryGetValue(lithology.Id, out var existingLithology))
+            {
+                throw new InvalidOperationException($"Lithology {lithology.Id} does not belong to stratigraphy {stratigraphyId}.");
+            }
+
+            await PrepareLithologyDescriptionsAsync(lithology, existingLithology).ConfigureAwait(false);
+            await PrepareEditedLithologyForSaveAsync(lithology, existingLithology).ConfigureAwait(false);
+            context.Entry(existingLithology).CurrentValues.SetValues(lithology);
+        }
+    }
+
+    private async Task SyncLithologicalDescriptionsAsync(int stratigraphyId, ICollection<LithologicalDescription> incoming)
+    {
+        var existingById = await context.LithologicalDescriptions
+            .Where(d => d.StratigraphyId == stratigraphyId)
+            .ToDictionaryAsync(d => d.Id)
+            .ConfigureAwait(false);
+
+        var incomingIds = incoming.Where(d => d.Id != 0).Select(d => d.Id).ToHashSet();
+        foreach (var (id, descriptionToDelete) in existingById)
+        {
+            if (!incomingIds.Contains(id))
+            {
+                context.Remove(descriptionToDelete);
+            }
+        }
+
+        foreach (var description in incoming)
+        {
+            description.StratigraphyId = stratigraphyId;
+
+            if (description.Id == 0)
+            {
+                await context.AddAsync(description).ConfigureAwait(false);
+                continue;
+            }
+
+            if (!existingById.TryGetValue(description.Id, out var existingDescription))
+            {
+                throw new InvalidOperationException($"LithologicalDescription {description.Id} does not belong to stratigraphy {stratigraphyId}.");
+            }
+
+            context.Entry(existingDescription).CurrentValues.SetValues(description);
+        }
+    }
+
+    private async Task SyncFaciesDescriptionsAsync(int stratigraphyId, ICollection<FaciesDescription> incoming)
+    {
+        var existingById = await context.FaciesDescriptions
+            .Where(d => d.StratigraphyId == stratigraphyId)
+            .ToDictionaryAsync(d => d.Id)
+            .ConfigureAwait(false);
+
+        var incomingIds = incoming.Where(d => d.Id != 0).Select(d => d.Id).ToHashSet();
+        foreach (var (id, descriptionToDelete) in existingById)
+        {
+            if (!incomingIds.Contains(id))
+            {
+                context.Remove(descriptionToDelete);
+            }
+        }
+
+        foreach (var description in incoming)
+        {
+            description.StratigraphyId = stratigraphyId;
+
+            if (description.Id == 0)
+            {
+                await context.AddAsync(description).ConfigureAwait(false);
+                continue;
+            }
+
+            if (!existingById.TryGetValue(description.Id, out var existingDescription))
+            {
+                throw new InvalidOperationException($"FaciesDescription {description.Id} does not belong to stratigraphy {stratigraphyId}.");
+            }
+
+            context.Entry(existingDescription).CurrentValues.SetValues(description);
+        }
+    }
+
+    private async Task<StratigraphyWithLithology> BuildResponseAsync(int stratigraphyId)
+    {
+        var stratigraphy = await context.Stratigraphies
             .AsNoTracking()
+            .SingleAsync(s => s.Id == stratigraphyId)
+            .ConfigureAwait(false);
+
+        var contents = await LoadTabContentsAsync(stratigraphyId).ConfigureAwait(false);
+
+        return new StratigraphyWithLithology
+        {
+            Stratigraphy = stratigraphy,
+            Lithologies = contents.Lithologies,
+            LithologicalDescriptions = contents.LithologicalDescriptions,
+            FaciesDescriptions = contents.FaciesDescriptions,
+        };
+    }
+
+    private async Task<LithologyTabContents> LoadTabContentsAsync(int stratigraphyId)
+    {
+        var lithologies = await context.LithologiesWithProjection
             .Where(l => l.StratigraphyId == stratigraphyId)
             .OrderBy(l => l.FromDepth)
             .ToListAsync()
             .ConfigureAwait(false);
-    }
 
-    /// <summary>
-    /// Asynchronously gets the <see cref="Lithology"/> with the specified <paramref name="id"/>.
-    /// </summary>
-    /// <param name="id">The id of lithology to get.</param>
-    [HttpGet("{id}")]
-    [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<Lithology>> GetByIdAsync(int id)
-    {
-        var lithology = await Context.LithologiesWithProjection // LithologiesWithProjection is used to return only CodelistIds instead of the whole codeslists to the client
+        var lithologicalDescriptions = await context.LithologicalDescriptions
             .AsNoTracking()
-            .SingleOrDefaultAsync(l => l.Id == id)
+            .Where(d => d.StratigraphyId == stratigraphyId)
+            .ToListAsync()
             .ConfigureAwait(false);
 
-        if (lithology == null)
+        var faciesDescriptions = await context.FaciesDescriptionsWithIncludes
+            .AsNoTracking()
+            .Where(d => d.StratigraphyId == stratigraphyId)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return new LithologyTabContents
         {
-            return NotFound();
-        }
-
-        var boreholeId = await GetBoreholeId(lithology).ConfigureAwait(false);
-        if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
-
-        return Ok(lithology);
+            Lithologies = new(lithologies),
+            LithologicalDescriptions = new(lithologicalDescriptions),
+            FaciesDescriptions = new(faciesDescriptions),
+        };
     }
-
-    /// <inheritdoc />
-    [Authorize(Policy = PolicyNames.Viewer)]
-    public override async Task<ActionResult<Lithology>> CreateAsync(Lithology entity)
-    {
-        try
-        {
-            if (entity == null) return BadRequest();
-
-            var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
-            if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
-
-            await PrepareLithologyDescriptionsAsync(entity).ConfigureAwait(false);
-            await PrepareNewLithologyForSaveAsync(entity).ConfigureAwait(false);
-            return await base.CreateAsync(entity).ConfigureAwait(false);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            var message = "An error ocurred while creating the stratigraphy.";
-            Logger.LogError(ex, message);
-            return Problem(message);
-        }
-    }
-
-    /// <summary>
-    /// Asynchronously creates multiple <see cref="Lithology"/> entities in a single operation.
-    /// </summary>
-    /// <param name="entities">The collection of lithologies to create.</param>
-    /// <returns>The created lithologies.</returns>
-    [HttpPost("bulk")]
-    [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<IEnumerable<Lithology>>> BulkCreateAsync(IEnumerable<Lithology> entities)
-    {
-        try
-        {
-            var entityList = entities?.ToList();
-            if (entities == null || entityList.Count == 0)
-            {
-                return BadRequest("No lithologies provided");
-            }
-
-            // Verify all entities share the same stratigraphyId
-            var stratigraphyIds = entityList.Select(e => e.StratigraphyId).Distinct().ToList();
-            if (stratigraphyIds.Count != 1)
-            {
-                return BadRequest("All lithologies must belong to the same stratigraphy");
-            }
-
-            var stratigraphyId = stratigraphyIds.Single();
-            var stratigraphy = await Context.Stratigraphies
-                .AsNoTracking()
-                .SingleOrDefaultAsync(x => x.Id == stratigraphyId)
-                .ConfigureAwait(false);
-
-            if (stratigraphy == null)
-            {
-                return NotFound("Stratigraphy not found");
-            }
-
-            if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), stratigraphy.BoreholeId).ConfigureAwait(false)) return Unauthorized();
-
-            // Prepare each lithology for saving
-            foreach (var entity in entityList)
-            {
-                await PrepareLithologyDescriptionsAsync(entity).ConfigureAwait(false);
-                await PrepareNewLithologyForSaveAsync(entity).ConfigureAwait(false);
-            }
-
-            await Context.Lithologies.AddRangeAsync(entities).ConfigureAwait(false);
-
-            try
-            {
-                await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
-                return Ok(entities);
-            }
-            catch (Exception ex)
-            {
-                var errorMessage = "An error occurred while saving the lithologies.";
-                Logger?.LogError(ex, errorMessage);
-                return Problem(errorMessage);
-            }
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            var message = "An error occurred while processing the lithologies.";
-            Logger.LogError(ex, message);
-            return Problem(message);
-        }
-    }
-
-    /// <inheritdoc />
-    [Authorize(Policy = PolicyNames.Viewer)]
-    public async override Task<ActionResult<Lithology>> EditAsync(Lithology entity)
-    {
-        if (entity == null)
-        {
-            return BadRequest(ModelState);
-        }
-
-        var boreholeId = await GetBoreholeId(entity).ConfigureAwait(false);
-        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
-
-        var existingLithology = await Context.LithologiesWithIncludes
-            .SingleOrDefaultAsync(l => l.Id == entity.Id).ConfigureAwait(false);
-
-        if (existingLithology == null)
-        {
-            return NotFound();
-        }
-
-        try
-        {
-            await PrepareLithologyDescriptionsAsync(entity, existingLithology).ConfigureAwait(false);
-            await PrepareEditedLithologyForSaveAsync(entity, existingLithology).ConfigureAwait(false);
-            Context.Entry(existingLithology).CurrentValues.SetValues(entity);
-
-            await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
-            return await GetByIdAsync(entity.Id).ConfigureAwait(false);
-        }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            var errorMessage = "An error occurred while saving the entity changes.";
-            Logger?.LogError(ex, errorMessage);
-            return Problem(errorMessage);
-        }
-    }
-
-    /// <inheritdoc />
-    [Authorize(Policy = PolicyNames.Viewer)]
-    public override Task<IActionResult> DeleteAsync(int id) => base.DeleteAsync(id);
 
     private async Task PrepareLithologyDescriptionsAsync(Lithology entity, Lithology? existingLithology = null)
     {
@@ -220,9 +433,12 @@ public class LithologyController : BoreholeControllerBase<Lithology>
 
         if (entity.IsUnconsolidated == null)
         {
-            // Unspecified lithologies carry no descriptions, no bedding, and no share.
+            // Unspecified lithologies are deliberately stripped: only depth + notes + IsUnconsolidated
+            // (=null) + HasBedding (forced false) survive. Every categorization-specific field is
+            // cleared here or in PrepareNewLithologyForSaveAsync / PrepareEditedLithologyForSaveAsync.
             entity.HasBedding = false;
             entity.Share = null;
+            entity.AlterationDegreeId = null;
             entity.LithologyDescriptions = [];
         }
         else if (!entity.HasBedding)
@@ -231,25 +447,24 @@ public class LithologyController : BoreholeControllerBase<Lithology>
             entity.LithologyDescriptions = entity.LithologyDescriptions.Where(ld => ld.IsFirst).ToList();
         }
 
-        // Remove old lithology descriptions
-        var currentLithologyDescriptionIds = entity.LithologyDescriptions?.Select(ld => ld.Id).ToList();
+        var currentLithologyDescriptionIds = entity.LithologyDescriptions?.Select(ld => ld.Id).ToList() ?? [];
         var existingDescriptions = existingLithology?.LithologyDescriptions?.ToList() ?? [];
         var descriptionsToRemove = existingDescriptions.Where(ld => !currentLithologyDescriptionIds.Contains(ld.Id)).ToList();
 
         foreach (var lithologyDescription in descriptionsToRemove)
         {
-            Context.Remove(lithologyDescription);
+            context.Remove(lithologyDescription);
             existingDescriptions.Remove(lithologyDescription);
         }
 
-        foreach (var lithologyDescription in entity.LithologyDescriptions)
+        foreach (var lithologyDescription in entity.LithologyDescriptions ?? [])
         {
             if (lithologyDescription.Id == 0)
             {
                 await PrepareNewLithologyDescriptionForSaveAsync(lithologyDescription, entity.IsUnconsolidated).ConfigureAwait(false);
                 if (entity.Id != 0)
                 {
-                    Context.Add(lithologyDescription);
+                    context.Add(lithologyDescription);
                 }
             }
             else
@@ -258,7 +473,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
                 if (existingDescription != null)
                 {
                     await PrepareEditedLithologyDescriptionAsync(lithologyDescription, existingDescription, entity.IsUnconsolidated).ConfigureAwait(false);
-                    Context.Entry(existingDescription).CurrentValues.SetValues(lithologyDescription);
+                    context.Entry(existingDescription).CurrentValues.SetValues(lithologyDescription);
                 }
             }
         }
@@ -268,25 +483,23 @@ public class LithologyController : BoreholeControllerBase<Lithology>
     {
         if (isUnconsolidated == true)
         {
-            // Set unconsolidated codes
-            var organicComponentCodes = await Context.Codelists.Where(c => lithologyDescription.ComponentUnconOrganicCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-            lithologyDescription.LithologyDescriptionComponentUnconOrganicCodes = organicComponentCodes.Select(c => new LithologyDescriptionComponentUnconOrganicCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+            var organicComponentCodes = await context.Codelists.Where(c => lithologyDescription.ComponentUnconOrganicCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+            lithologyDescription.LithologyDescriptionComponentUnconOrganicCodes = organicComponentCodes.Select(c => new LithologyDescriptionComponentUnconOrganicCodes { Codelist = c, CodelistId = c.Id }).ToList();
 
-            var debrisCodes = await Context.Codelists.Where(c => lithologyDescription.ComponentUnconDebrisCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-            lithologyDescription.LithologyDescriptionComponentUnconDebrisCodes = debrisCodes.Select(c => new LithologyDescriptionComponentUnconDebrisCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+            var debrisCodes = await context.Codelists.Where(c => lithologyDescription.ComponentUnconDebrisCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+            lithologyDescription.LithologyDescriptionComponentUnconDebrisCodes = debrisCodes.Select(c => new LithologyDescriptionComponentUnconDebrisCodes { Codelist = c, CodelistId = c.Id }).ToList();
 
-            var grainShapeCodes = await Context.Codelists.Where(c => lithologyDescription.GrainShapeCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-            lithologyDescription.LithologyDescriptionGrainShapeCodes = grainShapeCodes.Select(c => new LithologyDescriptionGrainShapeCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+            var grainShapeCodes = await context.Codelists.Where(c => lithologyDescription.GrainShapeCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+            lithologyDescription.LithologyDescriptionGrainShapeCodes = grainShapeCodes.Select(c => new LithologyDescriptionGrainShapeCodes { Codelist = c, CodelistId = c.Id }).ToList();
 
-            var grainAngularityCodes = await Context.Codelists.Where(c => lithologyDescription.GrainAngularityCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-            lithologyDescription.LithologyDescriptionGrainAngularityCodes = grainAngularityCodes.Select(c => new LithologyDescriptionGrainAngularityCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+            var grainAngularityCodes = await context.Codelists.Where(c => lithologyDescription.GrainAngularityCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+            lithologyDescription.LithologyDescriptionGrainAngularityCodes = grainAngularityCodes.Select(c => new LithologyDescriptionGrainAngularityCodes { Codelist = c, CodelistId = c.Id }).ToList();
 
-            var unconCoarseCodes = await Context.Codelists.Where(c => lithologyDescription.LithologyUnconDebrisCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-            lithologyDescription.LithologyDescriptionLithologyUnconDebrisCodes = unconCoarseCodes.Select(c => new LithologyDescriptionLithologyUnconDebrisCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+            var unconCoarseCodes = await context.Codelists.Where(c => lithologyDescription.LithologyUnconDebrisCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+            lithologyDescription.LithologyDescriptionLithologyUnconDebrisCodes = unconCoarseCodes.Select(c => new LithologyDescriptionLithologyUnconDebrisCodes { Codelist = c, CodelistId = c.Id }).ToList();
         }
         else
         {
-            // Reset unconsolidated codes for consolidated or undefined rock type
             lithologyDescription.LithologyUnconMainId = null;
             lithologyDescription.LithologyUncon2Id = null;
             lithologyDescription.LithologyUncon3Id = null;
@@ -304,22 +517,20 @@ public class LithologyController : BoreholeControllerBase<Lithology>
 
         if (isUnconsolidated == false)
         {
-            // Set consolidated codes
-            var componentConParticleCodes = await Context.Codelists.Where(c => lithologyDescription.ComponentConParticleCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-            lithologyDescription.LithologyDescriptionComponentConParticleCodes = componentConParticleCodes.Select(c => new LithologyDescriptionComponentConParticleCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+            var componentConParticleCodes = await context.Codelists.Where(c => lithologyDescription.ComponentConParticleCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+            lithologyDescription.LithologyDescriptionComponentConParticleCodes = componentConParticleCodes.Select(c => new LithologyDescriptionComponentConParticleCodes { Codelist = c, CodelistId = c.Id }).ToList();
 
-            var componentConMineralCodes = await Context.Codelists.Where(c => lithologyDescription.ComponentConMineralCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-            lithologyDescription.LithologyDescriptionComponentConMineralCodes = componentConMineralCodes.Select(c => new LithologyDescriptionComponentConMineralCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+            var componentConMineralCodes = await context.Codelists.Where(c => lithologyDescription.ComponentConMineralCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+            lithologyDescription.LithologyDescriptionComponentConMineralCodes = componentConMineralCodes.Select(c => new LithologyDescriptionComponentConMineralCodes { Codelist = c, CodelistId = c.Id }).ToList();
 
-            var structureSynGenCodes = await Context.Codelists.Where(c => lithologyDescription.StructureSynGenCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-            lithologyDescription.LithologyDescriptionStructureSynGenCodes = structureSynGenCodes.Select(c => new LithologyDescriptionStructureSynGenCodes() { Codelist = c, CodelistId = c.Id }).ToList();
+            var structureSynGenCodes = await context.Codelists.Where(c => lithologyDescription.StructureSynGenCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+            lithologyDescription.LithologyDescriptionStructureSynGenCodes = structureSynGenCodes.Select(c => new LithologyDescriptionStructureSynGenCodes { Codelist = c, CodelistId = c.Id }).ToList();
 
-            var structurePostGenCodes = await Context.Codelists.Where(c => lithologyDescription.StructurePostGenCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
-            lithologyDescription.LithologyDescriptionStructurePostGenCodes = [.. structurePostGenCodes.Select(c => new LithologyDescriptionStructurePostGenCodes() { Codelist = c, CodelistId = c.Id })];
+            var structurePostGenCodes = await context.Codelists.Where(c => lithologyDescription.StructurePostGenCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+            lithologyDescription.LithologyDescriptionStructurePostGenCodes = [.. structurePostGenCodes.Select(c => new LithologyDescriptionStructurePostGenCodes { Codelist = c, CodelistId = c.Id })];
         }
         else
         {
-            // Reset consolidated codes for unconsolidated or undefined rock type
             lithologyDescription.LithologyConId = null;
             lithologyDescription.GrainSizeId = null;
             lithologyDescription.GrainAngularityId = null;
@@ -337,7 +548,6 @@ public class LithologyController : BoreholeControllerBase<Lithology>
     {
         if (isUnconsolidated == true)
         {
-            // Set unconsolidated codes
             await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionComponentUnconOrganicCodes!, lithologyDescription.ComponentUnconOrganicCodelistIds!).ConfigureAwait(false);
             await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionComponentUnconDebrisCodes!, lithologyDescription.ComponentUnconDebrisCodelistIds!).ConfigureAwait(false);
             await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionGrainShapeCodes!, lithologyDescription.GrainShapeCodelistIds!).ConfigureAwait(false);
@@ -346,7 +556,6 @@ public class LithologyController : BoreholeControllerBase<Lithology>
         }
         else
         {
-            // Reset unconsolidated codes for consolidated or undefined rock type
             lithologyDescription.LithologyUnconMainId = null;
             lithologyDescription.LithologyUncon2Id = null;
             lithologyDescription.LithologyUncon3Id = null;
@@ -364,7 +573,6 @@ public class LithologyController : BoreholeControllerBase<Lithology>
 
         if (isUnconsolidated == false)
         {
-            // Set consolidated codes
             await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionComponentConParticleCodes!, lithologyDescription.ComponentConParticleCodelistIds!).ConfigureAwait(false);
             await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionComponentConMineralCodes!, lithologyDescription.ComponentConMineralCodelistIds!).ConfigureAwait(false);
             await UpdateLithologyDescriptionCodesAsync(lithologyDescription.Id, existingDescription.LithologyDescriptionStructureSynGenCodes!, lithologyDescription.StructureSynGenCodelistIds!).ConfigureAwait(false);
@@ -372,7 +580,6 @@ public class LithologyController : BoreholeControllerBase<Lithology>
         }
         else
         {
-            // Reset consolidated codes for unconsolidated or undefined rock type
             lithologyDescription.LithologyConId = null;
             lithologyDescription.GrainSizeId = null;
             lithologyDescription.GrainAngularityId = null;
@@ -390,16 +597,14 @@ public class LithologyController : BoreholeControllerBase<Lithology>
     {
         if (entity.IsUnconsolidated == true)
         {
-            // Set unconsolidated codes
-            var uscsTypeCodes = await Context.Codelists.Where(c => entity.UscsTypeCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+            var uscsTypeCodes = await context.Codelists.Where(c => entity.UscsTypeCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
             entity.LithologyUscsTypeCodes = uscsTypeCodes.Select(c => new LithologyUscsTypeCodes { Codelist = c, CodelistId = c.Id }).ToList();
 
-            var rockConditionCodes = await Context.Codelists.Where(c => entity.RockConditionCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+            var rockConditionCodes = await context.Codelists.Where(c => entity.RockConditionCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
             entity.LithologyRockConditionCodes = rockConditionCodes.Select(c => new LithologyRockConditionCodes { Codelist = c, CodelistId = c.Id }).ToList();
         }
         else
         {
-            // Reset unconsolidated codes for consolidated or undefined rock type
             entity.CompactnessId = null;
             entity.CohesionId = null;
             entity.HumidityId = null;
@@ -413,13 +618,11 @@ public class LithologyController : BoreholeControllerBase<Lithology>
 
         if (entity.IsUnconsolidated == false)
         {
-            // Set consolidated codes
-            var textureMetaCodes = await Context.Codelists.Where(c => entity.TextureMetaCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
+            var textureMetaCodes = await context.Codelists.Where(c => entity.TextureMetaCodelistIds.Contains(c.Id)).ToListAsync().ConfigureAwait(false);
             entity.LithologyTextureMetaCodes = textureMetaCodes.Select(c => new LithologyTextureMetaCodes { Codelist = c, CodelistId = c.Id }).ToList();
         }
         else
         {
-            // Reset consolidated codes for unconsolidated or undefined rock type
             entity.LithologyTextureMetaCodes = [];
         }
     }
@@ -428,13 +631,11 @@ public class LithologyController : BoreholeControllerBase<Lithology>
     {
         if (entity.IsUnconsolidated == true)
         {
-            // Set unconsolidated codes
             await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyUscsTypeCodes!, entity.UscsTypeCodelistIds!).ConfigureAwait(false);
             await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyRockConditionCodes!, entity.RockConditionCodelistIds!).ConfigureAwait(false);
         }
         else
         {
-            // Reset unconsolidated codes for consolidated or undefined rock type
             entity.CompactnessId = null;
             entity.CohesionId = null;
             entity.HumidityId = null;
@@ -448,12 +649,10 @@ public class LithologyController : BoreholeControllerBase<Lithology>
 
         if (entity.IsUnconsolidated == false)
         {
-            // Set consolidated codes
             await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyTextureMetaCodes!, entity.TextureMetaCodelistIds!).ConfigureAwait(false);
         }
         else
         {
-            // Reset consolidated codes for unconsolidated or undefined rock type
             await UpdateLithologyCodesAsync(existingLithology.Id, existingLithology.LithologyTextureMetaCodes!, []).ConfigureAwait(false);
         }
     }
@@ -464,81 +663,43 @@ public class LithologyController : BoreholeControllerBase<Lithology>
         newCodelistIds = newCodelistIds?.ToList() ?? [];
         existingCodes ??= [];
 
-        // Remove codes not in newCodelistIds
         var codesToRemove = existingCodes.Where(lithologyCode => !newCodelistIds.Contains(lithologyCode.CodelistId)).ToList();
         foreach (var lithologyCode in codesToRemove)
         {
-            Context.Remove(lithologyCode);
+            context.Remove(lithologyCode);
         }
 
-        // Add codes that are in newCodelistIds but not in existingCodes
         var idsToAdd = newCodelistIds.Where(id => !existingCodes.Any(lc => lc.CodelistId == id)).ToList();
         foreach (var id in idsToAdd)
         {
-            var codelist = await Context.Codelists.FindAsync(id).ConfigureAwait(false);
+            var codelist = await context.Codelists.FindAsync(id).ConfigureAwait(false);
             if (codelist != null)
             {
-                var newLithologyCode = CreateLithologyCode<T>(lithologyId, codelist);
-                existingCodes.Add(newLithologyCode);
+                existingCodes.Add(new T { CodelistId = codelist.Id, LithologyId = lithologyId });
             }
         }
     }
 
-    private T CreateLithologyCode<T>(int lithologyId, Codelist codelist)
-        where T : class, ILithologyCode, new()
-    {
-        return new T
-        {
-            CodelistId = codelist.Id,
-            LithologyId = lithologyId,
-        };
-    }
-
     private async Task UpdateLithologyDescriptionCodesAsync<T>(int lithologyDescriptionId, IList<T> existingCodes, ICollection<int> newCodelistIds)
-    where T : class, ILithologyDescriptionCode, new()
+        where T : class, ILithologyDescriptionCode, new()
     {
         newCodelistIds = newCodelistIds?.ToList() ?? [];
         existingCodes ??= [];
 
-        // Remove codes not in newCodelistIds
         var codesToRemove = existingCodes.Where(lithologyCode => !newCodelistIds.Contains(lithologyCode.CodelistId)).ToList();
         foreach (var lithologyCode in codesToRemove)
         {
-            Context.Remove(lithologyCode);
+            context.Remove(lithologyCode);
         }
 
-        // Add codes that are in newCodelistIds but not in existingCodes
         var idsToAdd = newCodelistIds.Where(id => !existingCodes.Any(lc => lc.CodelistId == id)).ToList();
         foreach (var id in idsToAdd)
         {
-            var codelist = await Context.Codelists.FindAsync(id).ConfigureAwait(false);
+            var codelist = await context.Codelists.FindAsync(id).ConfigureAwait(false);
             if (codelist != null)
             {
-                var newLithologyDescriptionCode = CreateLithologyDescriptionCode<T>(lithologyDescriptionId, codelist);
-                existingCodes.Add(newLithologyDescriptionCode);
+                existingCodes.Add(new T { CodelistId = codelist.Id, LithologyDescriptionId = lithologyDescriptionId });
             }
         }
-    }
-
-    private T CreateLithologyDescriptionCode<T>(int lithologyDescriptionId, Codelist codelist)
-    where T : class, ILithologyDescriptionCode, new()
-    {
-        return new T
-        {
-            CodelistId = codelist.Id,
-            LithologyDescriptionId = lithologyDescriptionId,
-        };
-    }
-
-    /// <inheritdoc />
-    protected override async Task<int?> GetBoreholeId(Lithology entity)
-    {
-        if (entity == null) return default;
-
-        var stratigraphy = await Context.Stratigraphies
-            .AsNoTracking()
-            .SingleOrDefaultAsync(d => d.Id == entity.StratigraphyId)
-            .ConfigureAwait(false);
-        return stratigraphy?.BoreholeId;
     }
 }

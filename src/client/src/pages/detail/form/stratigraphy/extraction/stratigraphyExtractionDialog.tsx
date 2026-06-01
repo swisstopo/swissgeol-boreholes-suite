@@ -27,9 +27,9 @@ import {
 import { useBoreholesNavigate } from "../../../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../../../hooks/useRequiredParams.ts";
 import { prepareDataForSubmit } from "../components/lithologyTable/lithologyTableUtils.ts";
+import { useAddExtractedStratigraphies } from "../stratigraphy.ts";
 import { StratigraphyExtractionItemState } from "./stratigraphyExtractionItem.tsx";
 import { StratigraphyExtractionView } from "./stratigraphyExtractionView.tsx";
-import { useBulkAddMutation } from "./useBulkAddMutations.ts";
 
 interface StratigraphyExtractionDialogProps {
   file: BoreholeAttachment;
@@ -54,7 +54,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   const [abortController, setAbortController] = useState<AbortController>();
   const { data: allExtractedStratigraphies = [], isLoading: isLoadingExtraction } = useExtractStratigraphies(file, 1);
   const { isLoading: isLoadingFileInfo } = useFileInfo(file?.id, 1);
-  const { mutateAsync: bulkAdd, isPending: isLoadingBulkAdd } = useBulkAddMutation();
+  const { mutateAsync: addExtractedStratigraphies, isPending: isLoadingBulkAdd } = useAddExtractedStratigraphies();
   const { id } = useRequiredParams<{ id: string }>();
   const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
@@ -127,7 +127,10 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
     });
 
     try {
-      const results = await bulkAdd({ boreholeId: Number(id), stratigraphies: stratigraphiesToSave });
+      const results = await addExtractedStratigraphies({
+        boreholeId: Number(id),
+        stratigraphies: stratigraphiesToSave,
+      });
 
       if (!results || results.length === 0) {
         showAlert(t("errorStratigraphySaving"), "error");
@@ -144,7 +147,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
     }
   }, [
     allExtractedStratigraphies.length,
-    bulkAdd,
+    addExtractedStratigraphies,
     checkedIndices,
     closeDialog,
     file,

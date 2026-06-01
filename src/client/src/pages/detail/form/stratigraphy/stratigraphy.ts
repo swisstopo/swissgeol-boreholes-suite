@@ -25,6 +25,13 @@ export interface Stratigraphy {
   chronostratigraphyLayers: Chronostratigraphy[] | null;
 }
 
+interface ExtractedStratigraphyInput {
+  name: string;
+  lithologicalDescriptions: Omit<LithologicalDescription, "id" | "stratigraphyId">[];
+  lithologies: Omit<Lithology, "id" | "stratigraphyId">[];
+  faciesDescriptions?: Omit<FaciesDescription, "id" | "stratigraphyId">[];
+}
+
 export interface BaseLayer {
   id: number;
   fromDepth: number | null;
@@ -166,14 +173,14 @@ export interface FaciesDescription extends BaseLayer {
   facies?: Codelist | null;
 }
 
-interface Chronostratigraphy {
-  id: number;
-  stratigraphyId: number;
+interface LithologyTabContents {
+  lithologies: Lithology[];
+  lithologicalDescriptions: LithologicalDescription[];
+  faciesDescriptions: FaciesDescription[];
 }
 
-interface Lithostratigraphy {
-  id: number;
-  stratigraphyId: number;
+interface StratigraphyWithLithology extends LithologyTabContents {
+  stratigraphy: Stratigraphy;
 }
 
 export const stratigraphiesQueryKey = "stratigraphies";
@@ -190,6 +197,8 @@ const invalidateStratigraphyQueries = (
 };
 
 const stratigraphyController = "stratigraphy";
+const lithologyTabQueryKey = "lithologyTab";
+const lithologyTabController = "lithology";
 
 export const useStratigraphiesByBoreholeId = (boreholeId?: number) =>
   useQuery({
@@ -260,6 +269,72 @@ export const useStratigraphyMutations = () => {
   };
 };
 
+export const useAddExtractedStratigraphies = () => {
+  const queryClient = useQueryClient();
+  const resetTabStatus = useResetTabStatus(["lithology"]);
+
+  return useMutation({
+    mutationFn: ({
+      boreholeId,
+      stratigraphies,
+    }: {
+      boreholeId: number;
+      stratigraphies: ExtractedStratigraphyInput[];
+    }): Promise<StratigraphyWithLithology[]> => {
+      // The backend resolves name conflicts within the borehole by appending " (N)" suffixes,
+      // so a re-imported PDF lands as `name_1`, `name_1 (1)`, `name_2`, `name_2 (1)` automatically.
+      const payload = stratigraphies.map(({ name, lithologicalDescriptions, lithologies, faciesDescriptions }) => ({
+        stratigraphy: { id: 0, name, isPrimary: false, boreholeId },
+        lithologies: lithologies.map(l => ({ ...l, id: 0, stratigraphyId: 0 }) as Lithology),
+        lithologicalDescriptions: lithologicalDescriptions.map(
+          d => ({ ...d, id: 0, stratigraphyId: 0 }) as LithologicalDescription,
+        ),
+        faciesDescriptions: (faciesDescriptions ?? []).map(
+          d => ({ ...d, id: 0, stratigraphyId: 0 }) as FaciesDescription,
+        ),
+      }));
+
+      return fetchApiV2WithApiError<StratigraphyWithLithology[]>(lithologyTabController, "POST", payload);
+    },
+    onSuccess: async results => {
+      resetTabStatus();
+      if (results.length === 0) return;
+      await queryClient.invalidateQueries({
+        queryKey: [stratigraphiesQueryKey, results[0].stratigraphy.boreholeId],
+      });
+      queryClient.invalidateQueries({ queryKey: [lithologyTabQueryKey, results[0].stratigraphy.id] });
+    },
+  });
+};
+
+export const useLithologyTabContents = (stratigraphyId?: number) =>
+  useQuery({
+    queryKey: [lithologyTabQueryKey, stratigraphyId],
+    queryFn: () => fetchApiV2WithApiError<LithologyTabContents>(`${lithologyTabController}/${stratigraphyId}`, "GET"),
+    enabled: !!stratigraphyId,
+  });
+
+export const useUpdateLithologyContents = () => {
+  const queryClient = useQueryClient();
+  const resetTabStatus = useResetTabStatus(["lithology"]);
+
+  return useMutation({
+    mutationFn: ({ stratigraphyId, contents }: { stratigraphyId: number; contents: LithologyTabContents }) =>
+      fetchApiV2WithApiError<StratigraphyWithLithology>(`${lithologyTabController}/${stratigraphyId}`, "PUT", contents),
+    onSuccess: response => {
+      resetTabStatus();
+      queryClient.invalidateQueries({
+        queryKey: [lithologyTabQueryKey, response.stratigraphy.id],
+      });
+    },
+  });
+};
+
+interface Chronostratigraphy {
+  id: number;
+  stratigraphyId: number;
+}
+
 const chronostratigraphiesQueryKey = "chronostratigraphies";
 
 export const useChronostratigraphies = (stratigraphyID?: number) =>
@@ -314,6 +389,11 @@ export const useChronostratigraphyMutations = () => {
     delete: useDeleteChronostratigraphy,
   };
 };
+
+interface Lithostratigraphy {
+  id: number;
+  stratigraphyId: number;
+}
 
 const lithostratigraphiesQueryKey = "lithostratigraphies";
 
