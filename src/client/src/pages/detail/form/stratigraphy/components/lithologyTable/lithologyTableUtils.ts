@@ -4,9 +4,6 @@ import { FaciesDescription } from "../../faciesDescription.ts";
 import { LithologicalDescription } from "../../lithologicalDescription.ts";
 import { Lithology } from "../../lithology.ts";
 
-// TODO: What does this mean when building the depth layers?
-// Sort by fromDepth, tie-breaking on toDepth, then clamp toDepth to the next item's fromDepth wherever they overlap.
-// Operates on server-loaded layers — boundaries are always real numbers; nulls are treated as 0 defensively.
 const cleanupOverlaps = <T extends BaseLayer>(items: T[]): T[] => {
   const sorted = items
     .map(item => ({ ...item }))
@@ -58,8 +55,6 @@ const fillLithologyGaps = (
     return fillers;
   };
 
-  // TODO: Is this correct?
-  // Operates on server-loaded lithologies — boundaries are real numbers; nulls treated as 0.
   if (sortedBoundaries.length > 0) {
     const minBoundary = sortedBoundaries[0];
     const maxBoundary = sortedBoundaries.at(-1)!;
@@ -130,9 +125,6 @@ const buildDepthLayers = (
 // start/end, not a foreign cut, so it doesn't count). A zero-thickness item owns exactly the
 // zero-thickness layer at its point.
 const assignDepthIds = <T extends BaseLayer>(items: T[], depthLayers: DepthLayer[]) => {
-  // TODO: What does this mean?
-  // Called from `getInitialDepthLayers` against server data, which never has unset boundaries.
-  // Skip any null-bounded layers/depths defensively to keep the comparisons total.
   const concreteLayers = depthLayers.filter(
     (l): l is DepthLayer & { fromDepth: number; toDepth: number } => l.fromDepth !== null && l.toDepth !== null,
   );
@@ -234,8 +226,6 @@ export const getInitialDepthLayers = (
   let cleanLithologies = cleanupOverlaps(lithologies);
 
   // 2. Fill gaps in the lithology column with empty, autocorrected lithologies; extend coverage to description range.
-  // TODO: What does this mean?
-  // Boundaries from server data are real numbers; drop any nulls defensively.
   const descriptionBoundaries: number[] = [
     ...cleanLithologicalDescriptions.flatMap(d => [d.fromDepth, d.toDepth]),
     ...cleanFaciesDescriptions.flatMap(d => [d.fromDepth, d.toDepth]),
