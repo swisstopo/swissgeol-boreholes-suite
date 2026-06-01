@@ -49,8 +49,8 @@ jobs:
       - name: Verify cluster access
         run: |
           kubectl config current-context
-          kubectl config view --minify
-          kubectl get namespace swissgeol-boreholes -v=6
+          kubectl cluster-info
+          kubectl get namespace swissgeol-boreholes
 
       - name: Install Helm
         uses: azure/setup-helm@dda3372f752e03dde6b3237bc9431cdc2f7a02a2 # v5.0.0
