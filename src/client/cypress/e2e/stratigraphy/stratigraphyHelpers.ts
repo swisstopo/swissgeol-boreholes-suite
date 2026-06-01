@@ -72,13 +72,13 @@ interface DragResizeDescriptionInput {
 }
 
 export const dragResizeDescription = ({
-                                        kind,
-                                        fromDepth,
-                                        toDepth,
-                                        side,
-                                        deltaRows,
-                                        rowHeight = 240,
-                                      }: DragResizeDescriptionInput) => {
+  kind,
+  fromDepth,
+  toDepth,
+  side,
+  deltaRows,
+  rowHeight = 240,
+}: DragResizeDescriptionInput) => {
   const columnPrefix = kind === "lithological" ? "lithologicalDescription" : "faciesDescription";
   const cellSelector = `[data-cy="${columnPrefix}-${fromDepth}-${toDepth}"]`;
   const handleSelector = `[data-cy="resize-description-${kind}-${side}-${fromDepth}-${toDepth}"]`;
