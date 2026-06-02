@@ -1,4 +1,4 @@
-﻿import { useContext, useEffect, useRef, useState } from "react";
+﻿import { SyntheticEvent, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useParams } from "react-router";
 import { CircularProgress, Stack, Typography } from "@mui/material";
@@ -107,7 +107,7 @@ export const CompletionPanel = () => {
     triggerCanSwitch();
   };
 
-  const handleCompletionChanged = (_event: React.SyntheticEvent | null, index: number) => {
+  const handleCompletionChanged = (_event: SyntheticEvent | null, index: number) => {
     if (state.editing) {
       setState({ ...state, switchTabTo: index, trySwitchTab: true });
     } else {
