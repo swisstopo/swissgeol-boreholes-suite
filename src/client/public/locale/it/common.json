@@ -387,7 +387,7 @@
   "msgCompletionEmpty": "Nessuna architettura di perforazione disponibile",
   "msgDeleteUser": "Volete davvero cancellare questo utente? Non è possibile annullare questa operazione",
   "msgDeleteWorkgroup": "Volete davvero cancellare questo gruppo di lavoro? Non è possibile annullare questa operazione",
-  "msgDepthsExtractionFailed": "Le profondità non hanno potuto essere estratte automaticamente. Si prega di completare le profondità.",
+  "msgDepthsExtractionFailed": "Non tutte le profondità hanno potuto essere estratte automaticamente. Si prega di completare le profondità mancanti.",
   "msgDisablingUser": "L'utente selezionato non può essere eliminato poiché al momento ci sono tracce di attività nel database",
   "msgDisablingWorkgroup": "Il gruppo di lavoro selezionato non può essere eliminato perché nel database sono assegnati dei fori",
   "msgFieldMeasurementsEmpty": "Nessuna misurazione in campo disponibile",

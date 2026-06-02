@@ -35,7 +35,7 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
   invalidateQueries,
 }: UseAttachmentsProps<T>) => {
   const { t } = useTranslation();
-  const { registerSaveHandler, registerResetHandler, unMount, markAsChanged } =
+  const { registerSaveHandler, registerResetHandler, unMount, setHasChanges } =
     useContext<SaveContextProps>(SaveContext);
   const { showAlert } = useContext(AlertContext);
   const reloadBoreholes = useReloadBoreholes();
@@ -126,8 +126,8 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
   }, [onLoad]);
 
   useEffect(() => {
-    markAsChanged(updatedRows.size > 0);
-  }, [markAsChanged, updatedRows]);
+    setHasChanges(updatedRows.size > 0);
+  }, [setHasChanges, updatedRows]);
 
   useEffect(() => {
     registerSaveHandler(onSave);

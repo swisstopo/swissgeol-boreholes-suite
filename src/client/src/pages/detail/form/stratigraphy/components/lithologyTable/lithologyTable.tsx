@@ -180,7 +180,6 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     toDepth: number | null,
     onAddInGap?: (depthId: string, fromDepth: number | null, toDepth: number | null) => void,
   ) => {
-    const onClick = onAddInGap ? () => onAddInGap(depthId, fromDepth, toDepth) : undefined;
     return (
       <StratigraphyTableDescriptionGap
         key={`${keyPrefix}-${index}-${fromDepth}-${depthId}`}
@@ -189,23 +188,32 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
           height: `${defaultRowHeight}px`,
         }}
         index={index}
-        onClick={onClick}
+        onClick={onAddInGap ? () => onAddInGap(depthId, fromDepth, toDepth) : undefined}
         onMouseEnter={() => handleItemMouseEnter([depthId])}
         onMouseLeave={handleItemMouseLeave}
       />
     );
   };
 
-  const renderActionCell = (
-    index: number,
-    keyPrefix: string,
-    layer: BaseLayer,
-    buildContent: (layer: BaseLayer) => ReactNode,
-    onEdit: (index: number) => void,
-    onDelete?: (index: number) => void,
-    resizeHandles?: ReactNode,
-    heightInRows?: number,
-  ) => (
+  const renderActionCell = ({
+    index,
+    keyPrefix,
+    layer,
+    buildContent,
+    onEdit,
+    onDelete,
+    resizeHandles,
+    heightInRows,
+  }: {
+    index: number;
+    keyPrefix: string;
+    layer: BaseLayer;
+    buildContent: (layer: BaseLayer) => ReactNode;
+    onEdit: (index: number) => void;
+    onDelete?: (index: number) => void;
+    resizeHandles?: ReactNode;
+    heightInRows?: number;
+  }) => (
     <StratigraphyTableActionCell
       key={`${keyPrefix}-${index}-${layer.fromDepth}-${layer.id}`}
       dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.toDepth}`}
@@ -275,20 +283,20 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
         cells.push(renderGapCell(depthIdx, keyPrefix, depth.id, depth.fromDepth, depth.toDepth, onAddInGap));
       } else if (!renderedItems.has(itemIdx)) {
         const layer = effectiveLayers[itemIdx];
-        const handles = resizableKind
+        const resizeHandles = resizableKind
           ? buildResizeHandles(resizableKind, itemIdx, layer, itemIndexByDepthId)
           : undefined;
         cells.push(
-          renderActionCell(
-            itemIdx,
+          renderActionCell({
+            index: itemIdx,
             keyPrefix,
             layer,
             buildContent,
             onEdit,
             onDelete,
-            handles,
-            layer.depthIds?.length ?? 1,
-          ),
+            resizeHandles,
+            heightInRows: layer.depthIds?.length ?? 1,
+          }),
         );
         renderedItems.add(itemIdx);
       }
