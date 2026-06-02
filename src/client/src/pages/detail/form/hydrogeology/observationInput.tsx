@@ -6,7 +6,6 @@ import { FormContainer } from "../../../../components/form/formContainer";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
 import { useGetCasingOptions } from "../completion/casingUtils.tsx";
-import { Casing } from "../completion/completionInterfaces.ts";
 import DepthInput from "./depthInput.tsx";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants.ts";
 import { ObservationInputProps } from "./Observation.ts";

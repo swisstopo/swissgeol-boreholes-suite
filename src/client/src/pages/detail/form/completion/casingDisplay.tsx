@@ -1,7 +1,7 @@
 ﻿import { useTranslation } from "react-i18next";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { deleteCasing } from "../../../../api/fetchApiV2.ts";
-import { useCodelists } from "../../../../components/codelist.ts";
+import { getCodelistLocalizedLabel, useCodelists } from "../../../../components/codelist.ts";
 import { DataDisplayCard } from "../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
@@ -59,10 +59,16 @@ const CasingDisplay = ({ item }: DataCardItemDisplayProps<Casing>) => {
                     {formatNumberForDisplay(element.toDepth)}
                   </TableCell>
                   <TableCell data-cy={`casingElements.${index}.kindId-formDisplay`}>
-                    {codelists.data?.find(d => d.id === element.kindId)?.[i18n.language] ?? ""}
+                    {getCodelistLocalizedLabel(
+                      codelists.data?.find(d => d.id === element.kindId),
+                      i18n.language,
+                    )}
                   </TableCell>
                   <TableCell data-cy={`casingElements.${index}.materialId-formDisplay`}>
-                    {codelists.data?.find(d => d.id === element.materialId)?.[i18n.language] ?? ""}
+                    {getCodelistLocalizedLabel(
+                      codelists.data?.find(d => d.id === element.materialId),
+                      i18n.language,
+                    )}
                   </TableCell>
                   <TableCell data-cy={`casingElements.${index}.innerDiameter-formDisplay`}>
                     {formatNumberForDisplay(element.innerDiameter)}

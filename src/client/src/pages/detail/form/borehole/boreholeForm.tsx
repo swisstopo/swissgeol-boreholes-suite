@@ -28,9 +28,9 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
   const formMethods: UseFormReturn<BoreholeFormInputs> = useForm<BoreholeFormInputs>({
     mode: "onChange",
     defaultValues: {
-      name: borehole.name ?? undefined,
-      originalName: borehole.originalName ?? undefined,
-      projectName: borehole.projectName ?? undefined,
+      name: borehole.name ?? "",
+      originalName: borehole.originalName ?? "",
+      projectName: borehole.projectName ?? "",
       restrictionId: borehole.restrictionId ?? null,
       restrictionUntil: borehole.restrictionUntil,
       nationalInterest: borehole.nationalInterest === true ? 1 : borehole.nationalInterest === false ? 0 : 2,
@@ -47,7 +47,7 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
       hasGroundwater: borehole.hasGroundwater === true ? 1 : borehole.hasGroundwater === false ? 0 : 2,
       topBedrockIntersected:
         borehole.topBedrockIntersected === true ? 1 : borehole.topBedrockIntersected === false ? 0 : 2,
-      remarks: borehole.remarks ?? undefined,
+      remarks: borehole.remarks ?? "",
     },
   });
 

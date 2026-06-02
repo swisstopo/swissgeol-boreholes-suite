@@ -276,9 +276,9 @@ export const CompletionPanel = () => {
     if (completionId === "new" && (state.switchTabTo === null || state.switchTabTo === -1)) {
       const tempCompletion: Completion = {
         id: 0,
-        boreholeId: boreholeId,
+        boreholeId: Number(boreholeId),
+        kindId: 0,
         name: null,
-        kindId: null,
         isPrimary: state.displayed.length === 0,
         abandonDate: null,
         notes: null,
@@ -339,7 +339,7 @@ export const CompletionPanel = () => {
                 return (
                   <BoreholeTab
                     data-cy={"completion-header-tab-" + index}
-                    label={item.name === null || item.name === "" ? t("common:np") : item.name}
+                    label={!item.name ? t("common:np") : item.name}
                     key={item.id.toString()}
                     hasContent={undefined}
                   />

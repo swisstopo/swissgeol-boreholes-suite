@@ -1,84 +1,11 @@
-﻿import { Codelist } from "../../../../components/codelist.ts";
+﻿import { Backfill, Casing, CasingElement, Completion, Instrumentation } from "../../../../api/generated";
 import { FormSelectValue } from "../../../../components/form/formSelect.tsx";
 
-export interface Completion {
-  id: number;
-  boreholeId: number | string;
-  name: string | null;
-  kindId: number | null;
-  isPrimary: boolean;
-  abandonDate: string | null;
-  notes: string | null;
-  kind?: Codelist;
-  created?: string;
-  casings?: Casing[];
-  backfills?: Backfill[];
-  instrumentations?: Instrumentation[];
-}
-
-export interface CasingElement {
-  id?: number;
-  fromDepth: number | null;
-  toDepth: number | null;
-  kindId: number | string;
-  materialId: number | string | null;
-  innerDiameter: number | null;
-  outerDiameter: number | null;
-}
-
-export interface Casing {
-  id: number;
-  completionId?: number;
-  boreholeId?: number;
-  name?: string;
-  dateStart?: string | null;
-  dateFinish?: string | null;
-  notes?: string;
-  fromDepth?: number | null;
-  toDepth?: number | null;
-  casingElements: CasingElement[];
-  completion?: { name: string };
-}
+export type { Backfill, Casing, CasingElement, Completion, Instrumentation };
 
 export interface CasingDepth {
   min: number | null;
   max: number | null;
-}
-
-interface CasingReference {
-  name?: string;
-  completion?: { name: string };
-}
-
-export interface Backfill {
-  id: number;
-  completionId?: number;
-  fromDepth: number | null;
-  toDepth: number | null;
-  kindId: number | null;
-  materialId: number | null;
-  casingId?: number | null;
-  isOpenBorehole?: boolean;
-  notes?: string;
-  casing?: CasingReference;
-  kind?: Codelist;
-  material?: Codelist;
-}
-
-export interface Instrumentation {
-  id: number;
-  completionId?: number;
-  fromDepth: number | null;
-  toDepth: number | null;
-  name: string;
-  kindId: number | null;
-  statusId: number | null;
-  casingId?: number | null;
-  isOpenBorehole?: boolean;
-  notes?: string;
-  casing?: CasingReference;
-  kind?: Codelist;
-  status?: Codelist;
 }
 
 export interface CasingOption extends FormSelectValue {
