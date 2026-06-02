@@ -1,4 +1,4 @@
-export const completionSchemaConstants = {
+﻿export const completionSchemaConstants = {
   completionKind: "completion_kind",
   instrumentationType: "instrument_type",
   instrumentationStatus: "instrument_status",

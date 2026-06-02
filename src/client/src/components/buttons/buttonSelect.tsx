@@ -37,6 +37,7 @@ interface ButtonSelectProps {
   textAlign?: "left" | "right";
   sx?: SxProps;
   className?: string;
+  onBeforeOpen?: (proceed: () => void) => void;
 }
 
 export const ButtonSelect: FC<ButtonSelectProps> = ({
@@ -54,13 +55,20 @@ export const ButtonSelect: FC<ButtonSelectProps> = ({
   textAlign,
   sx,
   className,
+  onBeforeOpen,
 }) => {
   const { t } = useTranslation();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
   const isOpen = Boolean(anchorEl);
 
   const handleClick = (event: MouseEvent<HTMLButtonElement>) => {
-    setAnchorEl(event.currentTarget);
+    const target = event.currentTarget;
+    const open = () => setAnchorEl(target);
+    if (onBeforeOpen) {
+      onBeforeOpen(open);
+    } else {
+      open();
+    }
   };
 
   const handleClose = () => {

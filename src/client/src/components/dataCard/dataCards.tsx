@@ -1,12 +1,20 @@
 import React, { ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Typography } from "@mui/material";
-import { FieldMeasurement, GroundwaterLevelMeasurement, Hydrotest, WaterIngress } from "../../api/generated";
+import {
+  Backfill,
+  Casing,
+  FieldMeasurement,
+  GroundwaterLevelMeasurement,
+  Hydrotest,
+  Instrumentation,
+  WaterIngress,
+} from "../../api/generated";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { AddButton } from "../buttons/buttons.tsx";
 import { FullPage, FullPageAlignLeft, FullPageCentered } from "../styledComponents.ts";
-import { DataCard, DataCardButtonContainer, DataCardContainer, DataCardItem } from "./dataCard.js";
-import { DataCardContext, DataCardSwitchContext } from "./dataCardContext.js";
+import { DataCard, DataCardButtonContainer, DataCardContainer, DataCardItem } from "./dataCard.tsx";
+import { DataCardContext, DataCardSwitchContext } from "./dataCardContext.tsx";
 
 interface DataCardsContainerProps {
   children: () => ReactNode;
@@ -26,6 +34,9 @@ export type DataCardEntity =
   | WaterIngress
   | GroundwaterLevelMeasurement
   | FieldMeasurement
+  | Backfill
+  | Casing
+  | Instrumentation
   | TempDatacardEntity;
 
 interface DataCardsProps<T extends DataCardEntity> {

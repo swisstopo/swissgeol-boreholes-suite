@@ -10,6 +10,7 @@ import { Lithology } from "../lithology.ts";
 interface StratigraphyInput {
   name: string;
   lithologicalDescriptions: Omit<LithologicalDescription, "id" | "stratigraphyId">[];
+  lithologies: Omit<Lithology, "id" | "stratigraphyId">[];
 }
 
 interface BulkAddResult {
@@ -55,27 +56,19 @@ export const useBulkAddMutation = () => {
     }): Promise<BulkAddResult[]> => {
       const results: BulkAddResult[] = [];
 
-      for (const { name, lithologicalDescriptions } of stratigraphies) {
+      for (const { name, lithologicalDescriptions, lithologies } of stratigraphies) {
         const newStratigraphy = await createStratigraphyWithUniqueName(name, boreholeId);
 
         const lithologiesPromise = fetchApiV2WithApiError<Lithology[]>(
           "lithology/bulk",
           "POST",
-          lithologicalDescriptions.map(ld => ({
-            id: 0,
-            toDepth: ld.toDepth,
-            fromDepth: ld.fromDepth,
-            isUnconsolidated: null,
-            hasBedding: false,
-            stratigraphyId: newStratigraphy.id,
-            lithologyDescriptions: [],
-          })),
+          lithologies.map(l => ({ ...l, id: 0, stratigraphyId: newStratigraphy.id })),
         );
 
         const lithologicalDescriptionsPromise = fetchApiV2WithApiError<LithologicalDescription[]>(
           "lithologicaldescription/bulk",
           "POST",
-          lithologicalDescriptions.map(l => ({ ...l, stratigraphyId: newStratigraphy.id })),
+          lithologicalDescriptions.map(l => ({ ...l, id: 0, stratigraphyId: newStratigraphy.id })),
         );
 
         const [addedLithologies, addedLithologicalDescriptions] = await Promise.all([

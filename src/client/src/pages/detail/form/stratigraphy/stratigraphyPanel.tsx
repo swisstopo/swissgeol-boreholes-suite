@@ -2,7 +2,7 @@ import { FC, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, use
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import { Box, Card, Chip, CircularProgress, Stack, Tooltip, Typography } from "@mui/material";
-import { Trash2 } from "lucide-react";
+import { Trash2, X } from "lucide-react";
 import CopyIcon from "../../../../assets/icons/copy.svg?react";
 import ExtractAiIcon from "../../../../assets/icons/extractAi.svg?react";
 import { useBorehole } from "../../../../api/borehole.ts";
@@ -19,9 +19,10 @@ import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams";
 import { formatDate } from "../../../../utils";
 import { EditStateContext } from "../../editStateContext";
-import { AddEmptyStratigraphyDialog } from "./addEmptyStratigraphyDialog.tsx";
-import { AddStratigraphyButton } from "./addStratigraphyButton";
+import { SaveContext } from "../../saveContext.tsx";
 import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel";
+import { AddEmptyStratigraphyDialog } from "./components/addEmptyStratigraphyDialog/addEmptyStratigraphyDialog.tsx";
+import { AddStratigraphyButton } from "./components/addStratigraphyButton.tsx";
 import { StratigraphyExtraction } from "./extraction/stratigraphyExtraction.tsx";
 import { LithologyPanel } from "./lithology/lithologyPanel.tsx";
 import LithostratigraphyPanel from "./lithostratigraphy/lithostratigraphyPanel";
@@ -45,6 +46,7 @@ export const StratigraphyPanel: FC = () => {
   const { editingEnabled } = useContext(EditStateContext);
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
+  const { hasChanges, triggerReset } = useContext(SaveContext);
 
   const sortedStratigraphies: Stratigraphy[] | undefined = useMemo(() => {
     if (!stratigraphies) return stratigraphies;
@@ -93,6 +95,32 @@ export const StratigraphyPanel: FC = () => {
       }
     },
     [sortedStratigraphies, navigateToStratigraphy],
+  );
+
+  const guardNewStratigraphyMenu = useCallback(
+    (proceed: () => void) => {
+      if (!hasChanges) {
+        proceed();
+        return;
+      }
+      showPrompt("messageDiscardUnsavedChanges", [
+        {
+          label: "cancel",
+          icon: <X />,
+          variant: "outlined",
+        },
+        {
+          label: "discardchanges",
+          icon: <Trash2 />,
+          variant: "contained",
+          action: () => {
+            triggerReset();
+            proceed();
+          },
+        },
+      ]);
+    },
+    [hasChanges, showPrompt, triggerReset],
   );
 
   const extractStratigraphyFromProfile = useCallback(() => {
@@ -211,6 +239,7 @@ export const StratigraphyPanel: FC = () => {
                       <AddStratigraphyButton
                         addEmptyStratigraphy={addEmptyStratigraphy}
                         extractStratigraphyFromProfile={extractStratigraphyFromProfile}
+                        onBeforeOpen={guardNewStratigraphyMenu}
                       />
                     </>
                   ) : (
@@ -236,6 +265,7 @@ export const StratigraphyPanel: FC = () => {
                   <AddStratigraphyButton
                     addEmptyStratigraphy={addEmptyStratigraphy}
                     extractStratigraphyFromProfile={extractStratigraphyFromProfile}
+                    onBeforeOpen={guardNewStratigraphyMenu}
                     sx={{ position: "absolute", top: 0, right: 0, mx: 2, my: 1 }}
                   />
                 )}

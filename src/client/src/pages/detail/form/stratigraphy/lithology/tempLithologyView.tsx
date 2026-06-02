@@ -3,33 +3,34 @@ import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { BaseLayer } from "../../../../../api/stratigraphy.ts";
 import { formatNumberForDisplay } from "../../../../../components/form/formUtils.ts";
-import { FaciesDescription } from "../faciesDescription.ts";
-import { LithologicalDescription } from "../lithologicalDescription.ts";
-import { Lithology } from "../lithology.ts";
+import { StratigraphyTableActionCell } from "../components/stratigraphyTableActionCell.tsx";
+import { StratigraphyTableDescriptionGap } from "../components/stratigraphyTableDescriptionGap.tsx";
+import { StratigraphyTableGap } from "../components/stratigraphyTableGap.tsx";
+import { StratigraphyTableHeaderCell } from "../components/stratigraphyTableHeaderCell.tsx";
 import {
-  StratigraphyTableActionCell,
+  defaultRowHeight,
   StratigraphyTableCell,
   StratigraphyTableColumn,
   StratigraphyTableContent,
-  StratigraphyTableDescriptionGap,
-  StratigraphyTableGap,
   StratigraphyTableHeader,
-  StratigraphyTableHeaderCell,
-} from "../stratigraphyTableComponents.tsx";
-import { computeCellHeight, defaultRowHeight, getLayersWithGaps } from "../stratigraphyUtils.ts";
+} from "../components/stratigraphyTablePrimitives.tsx";
+import { FaciesDescription } from "../faciesDescription.ts";
+import { LithologicalDescription } from "../lithologicalDescription.ts";
+import { Lithology } from "../lithology.ts";
+import { computeCellHeight, getLayersWithGaps } from "../stratigraphyUtils.ts";
 import { FaciesDescriptionLabels } from "./faciesDescriptionLabels.tsx";
 import { LithologyLabels } from "./lithologyLabels.tsx";
 import { useCompletedLayers } from "./useCompletedLayers.tsx";
 import { useLayerDepths } from "./useLayerDepths.tsx";
 
-interface LithologyContentEditProps {
+interface TempLithologyViewProps {
   lithologies: Lithology[];
   lithologicalDescriptions: LithologicalDescription[];
   faciesDescriptions: FaciesDescription[];
 }
 
 // Temporary Lithology View component (read-only, non-editable) to display lithology before panable/zoomable version is fully implemented.
-export const TempLithologyView: FC<LithologyContentEditProps> = ({
+export const TempLithologyView: FC<TempLithologyViewProps> = ({
   lithologies,
   lithologicalDescriptions,
   faciesDescriptions,
@@ -69,7 +70,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
       key={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
       dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
       sx={{
-        height: `${computeCellHeight(layer.fromDepth, layer.toDepth, depths)}px`,
+        height: `${computeCellHeight(layer.fromDepth ?? 0, layer.toDepth ?? 0, depths)}px`,
       }}
       index={index}
     />
@@ -85,7 +86,7 @@ export const TempLithologyView: FC<LithologyContentEditProps> = ({
       key={`${keyPrefix}-${layer.id}`}
       dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.toDepth}`}
       sx={{
-        height: `${computeCellHeight(layer.fromDepth, layer.toDepth, depths)}px`,
+        height: `${computeCellHeight(layer.fromDepth ?? 0, layer.toDepth ?? 0, depths)}px`,
       }}
       index={index}>
       {buildContent(layer)}

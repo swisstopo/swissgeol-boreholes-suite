@@ -2,7 +2,7 @@ import { useTranslation } from "react-i18next";
 import { Observation } from "../../../../api/generated";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
-import { useGetCasingName } from "../completion/casingUtils.jsx";
+import { useGetCasingName } from "../completion/casingUtils.tsx";
 
 const ObservationDisplay = ({
   observation,
@@ -38,22 +38,18 @@ const ObservationDisplay = ({
           {showDepthInputs && (
             <>
               <FormContainer direction="row">
-                <FormDisplay label="fromdepth" value={observation?.fromDepthM ?? null} type={FormValueType.Number} />
-                <FormDisplay
-                  label="fromDepthMasl"
-                  value={observation?.fromDepthMasl ?? null}
-                  type={FormValueType.Number}
-                />
+                <FormDisplay label="fromdepth" value={observation?.fromDepthM} type={FormValueType.Number} />
+                <FormDisplay label="fromDepthMasl" value={observation?.fromDepthMasl} type={FormValueType.Number} />
               </FormContainer>
               <FormContainer direction="row">
-                <FormDisplay label="todepth" value={observation?.toDepthM ?? null} type={FormValueType.Number} />
-                <FormDisplay label="toDepthMasl" value={observation?.toDepthMasl ?? null} type={FormValueType.Number} />
+                <FormDisplay label="todepth" value={observation?.toDepthM} type={FormValueType.Number} />
+                <FormDisplay label="toDepthMasl" value={observation?.toDepthMasl} type={FormValueType.Number} />
               </FormContainer>
             </>
           )}
           <FormContainer direction="row">
-            <FormDisplay label="startTime" value={observation?.startTime ?? null} type={FormValueType.DateTime} />
-            <FormDisplay label="endTime" value={observation?.endTime ?? null} type={FormValueType.DateTime} />
+            <FormDisplay label="startTime" value={observation?.startTime} type={FormValueType.DateTime} />
+            <FormDisplay label="endTime" value={observation?.endTime} type={FormValueType.DateTime} />
           </FormContainer>
           <FormDisplay
             label="duration"
@@ -64,10 +60,10 @@ const ObservationDisplay = ({
             }
           />
           <FormContainer direction="row">
-            <FormDisplay label="reliability" value={observation?.reliability ?? null} type={FormValueType.Domain} />
+            <FormDisplay label="reliability" value={observation?.reliability} type={FormValueType.Domain} />
             <FormDisplay label="casingName" value={getCasingNameWithCompletion(observation)} />
           </FormContainer>
-          <FormDisplay label="comment" value={observation?.comment ?? null} />
+          <FormDisplay label="comment" value={observation?.comment} />
         </>
       )}
     </>

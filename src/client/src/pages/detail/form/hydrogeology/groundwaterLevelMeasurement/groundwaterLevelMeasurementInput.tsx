@@ -4,7 +4,7 @@ import { DataInputCard } from "../../../../../components/dataCard/dataInputCard.
 import { FormContainer } from "../../../../../components/form/form.ts";
 import { FormDomainSelect } from "../../../../../components/form/formDomainSelect.tsx";
 import { parseFloatWithThousandsSeparator } from "../../../../../components/form/formUtils.ts";
-import { prepareCasingDataForSubmit } from "../../completion/casingUtils.jsx";
+import { prepareCasingDataForSubmit } from "../../completion/casingUtils.tsx";
 import DepthInput from "../depthInput.tsx";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
 import { ObservationType, prepareObservationDataForSubmit } from "../Observation.ts";

@@ -26,6 +26,8 @@ import {
 } from "../../../../../components/styledComponents.ts";
 import { useBoreholesNavigate } from "../../../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredParams } from "../../../../../hooks/useRequiredParams.ts";
+import { prepareDataForSubmit } from "../components/lithologyTable/lithologyTableUtils.ts";
+import { StratigraphyExtractionItemState } from "./stratigraphyExtractionItem.tsx";
 import { StratigraphyExtractionView } from "./stratigraphyExtractionView.tsx";
 import { useBulkAddMutation } from "./useBulkAddMutations.ts";
 
@@ -59,6 +61,15 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   const [activePage, setActivePage] = useState<number>(1);
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [checkedIndices, setCheckedIndices] = useState<Set<number>>(new Set());
+  const [itemStates, setItemStates] = useState<Map<number, StratigraphyExtractionItemState>>(new Map());
+
+  const handleItemStateChange = useCallback((index: number, state: StratigraphyExtractionItemState) => {
+    setItemStates(prev => {
+      const next = new Map(prev);
+      next.set(index, state);
+      return next;
+    });
+  }, []);
 
   useEffect(() => {
     // Auto-check the only stratigraphy when there is exactly one
@@ -106,10 +117,14 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
       return;
     }
 
-    const stratigraphiesToSave = validIndices.map(i => ({
-      name: getStratigraphyName(file, i),
-      lithologicalDescriptions: allExtractedStratigraphies[i].descriptions.map(ld => ({ ...ld, id: 0 })),
-    }));
+    const stratigraphiesToSave = validIndices.map(i => {
+      const itemState = itemStates.get(i);
+      return {
+        name: getStratigraphyName(file, i),
+        lithologicalDescriptions: (itemState?.tmpLithologicalDescriptions ?? []).map(prepareDataForSubmit),
+        lithologies: (itemState?.tmpLithologies ?? []).map(prepareDataForSubmit),
+      };
+    });
 
     try {
       const results = await bulkAdd({ boreholeId: Number(id), stratigraphies: stratigraphiesToSave });
@@ -119,7 +134,6 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
         return;
       }
 
-      showAlert(t("stratigraphySaved", { count: validIndices.length }), "success");
       closeDialog();
       navigateTo({
         path: `/${id}/stratigraphy/${results[0].stratigraphy.id}`,
@@ -129,21 +143,22 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
       showAlert(t("errorStratigraphySaving"), "error");
     }
   }, [
-    allExtractedStratigraphies,
+    allExtractedStratigraphies.length,
     bulkAdd,
     checkedIndices,
     closeDialog,
     file,
     id,
+    itemStates,
     location.hash,
     navigateTo,
     showAlert,
     t,
   ]);
 
-  const currentDescriptions = allExtractedStratigraphies[selectedIndex]?.descriptions ?? [];
   const hasMultiple = allExtractedStratigraphies.length > 1;
   const useDropdown = allExtractedStratigraphies.length > 3;
+  const hasErrorsInChecked = [...checkedIndices].some(i => itemStates.get(i)?.hasErrors === true);
 
   return (
     <Dialog open={open} onClose={handleClose} fullScreen>
@@ -204,9 +219,10 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
           file={file}
           activePage={activePage}
           setActivePage={setActivePage}
-          lithologicalDescriptions={currentDescriptions}
-          isLoading={isLoadingExtraction || isLoadingFileInfo || isLoadingBulkAdd}
-          currentPageRange={allExtractedStratigraphies[selectedIndex]?.pageNumbers}
+          allExtractedStratigraphies={allExtractedStratigraphies}
+          selectedIndex={selectedIndex}
+          onItemStateChange={handleItemStateChange}
+          isLoading={isLoadingExtraction || isLoadingFileInfo}
         />
       </DialogMainContent>
       <DialogFooterContainer>
@@ -236,7 +252,12 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
             <CancelButton onClick={closeDialog} />
             <BoreholesButton
               dataCy="add-stratigraphy-button"
-              disabled={checkedIndices.size === 0 || allExtractedStratigraphies.length === 0 || isLoadingBulkAdd}
+              disabled={
+                checkedIndices.size === 0 ||
+                allExtractedStratigraphies.length === 0 ||
+                isLoadingBulkAdd ||
+                hasErrorsInChecked
+              }
               variant="contained"
               color="primary"
               label={t("addStratigraphy", { count: Math.max(checkedIndices.size, 1) })}

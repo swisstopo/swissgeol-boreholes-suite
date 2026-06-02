@@ -50,7 +50,7 @@ export const useBoreholeDataAvailability = (borehole?: Borehole) => {
     const hasPhotos = (borehole.photos?.length ?? 0) > 0;
     const hasAttachments = hasProfiles || hasPhotos || hasDocuments;
     const hasCasings =
-      hasCompletion && (borehole.completions?.some(completion => (completion.casings?.length ?? 0) > 0) ?? false);
+      hasCompletion && (borehole.completions?.some(completion => (completion?.casings?.length ?? 0) > 0) ?? false);
     const hasBackfills =
       hasCompletion && (borehole.completions?.some(completion => (completion.backfills?.length ?? 0) > 0) ?? false);
     const hasInstrumentations =

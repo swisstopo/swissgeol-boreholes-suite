@@ -1,30 +1,34 @@
-import React, { useCallback, useContext, useEffect, useState } from "react";
+﻿import React, { ReactNode, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import { Stack } from "@mui/material";
-import PropTypes from "prop-types";
+import "../../../../api/apiInterfaces.ts";
 import { getBackfills, getCasings, getInstrumentation } from "../../../../api/fetchApiV2.ts";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.tsx";
 import { BoreholeTab, BoreholeTabContent, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
-import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.js";
-import Backfill from "./backfill.jsx";
-import Casing from "./casing.jsx";
-import Instrumentation from "./instrumentation.jsx";
+import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
+import { BackfillTab } from "./backfillTab.tsx";
+import { CasingTab } from "./casingTab.tsx";
+import { Backfill, Casing, CompletionContentProps, Instrumentation } from "./completionInterfaces.ts";
+import { InstrumentationTab } from "./instrumentationTab.tsx";
 
-const CompletionContentTabBox = props => {
-  return <BoreholeTabContent flex="1 0 0">{props.children()}</BoreholeTabContent>;
+interface CompletionContentTabBoxProps {
+  children: () => ReactNode;
+}
+
+const CompletionContentTabBox = ({ children }: CompletionContentTabBoxProps) => {
+  return <BoreholeTabContent flex="1 0 0">{children()}</BoreholeTabContent>;
 };
-CompletionContentTabBox.propTypes = { children: PropTypes.func.isRequired };
 const MemoizedCompletionContentTabBox = React.memo(CompletionContentTabBox);
 
-const CompletionContent = ({ completion, editingEnabled }) => {
+const CompletionContent = ({ completion, editingEnabled }: CompletionContentProps) => {
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
   const { navigateTo } = useBoreholesNavigate();
   const { hash } = useLocation();
   const { t } = useTranslation();
-  const [casings, setCasings] = useState([]);
-  const [instrumentation, setInstrumentation] = useState([]);
-  const [backfills, setBackfills] = useState([]);
+  const [casings, setCasings] = useState<Casing[]>([]);
+  const [instrumentation, setInstrumentation] = useState<Instrumentation[]>([]);
+  const [backfills, setBackfills] = useState<Backfill[]>([]);
   const tabs = [
     {
       label: t("casing"),
@@ -43,10 +47,10 @@ const CompletionContent = ({ completion, editingEnabled }) => {
     },
   ];
   const [activeIndex, setActiveIndex] = useState(0);
-  const [newIndex, setNewIndex] = useState(null);
+  const [newIndex, setNewIndex] = useState<number | null>(null);
   const [checkContentDirty, setCheckContentDirty] = useState(false);
 
-  const handleCompletionChanged = (event, index) => {
+  const handleCompletionChanged = (_event: React.SyntheticEvent | null, index: number) => {
     setNewIndex(index);
     setCheckContentDirty(true);
     triggerCanSwitch();
@@ -97,9 +101,9 @@ const CompletionContent = ({ completion, editingEnabled }) => {
 
   const renderTabContent = useCallback(() => {
     return (
-      (activeIndex === 0 && <Casing completionId={completion.id} editingEnabled={editingEnabled} />) ||
-      (activeIndex === 1 && <Instrumentation completionId={completion.id} editingEnabled={editingEnabled} />) ||
-      (activeIndex === 2 && <Backfill completionId={completion.id} editingEnabled={editingEnabled} />)
+      (activeIndex === 0 && <CasingTab completionId={completion.id} editingEnabled={editingEnabled} />) ||
+      (activeIndex === 1 && <InstrumentationTab completionId={completion.id} editingEnabled={editingEnabled} />) ||
+      (activeIndex === 2 && <BackfillTab completionId={completion.id} editingEnabled={editingEnabled} />)
     );
   }, [activeIndex, completion.id, editingEnabled]);
 
@@ -107,11 +111,11 @@ const CompletionContent = ({ completion, editingEnabled }) => {
     <Stack direction="column" flex="1 0 0">
       <Stack direction="row" justifyContent="space-between" alignItems="center" flex="0 1 auto">
         <BoreholeTabs value={activeIndex} onChange={handleCompletionChanged}>
-          {tabs.map((tab, index) => (
+          {tabs.map(tab => (
             <BoreholeTab
               data-cy={"completion-content-tab-" + tab.hash.replace("#", "")}
               label={tab.label === null || tab.label === "" ? t("common:np") : tab.label}
-              key={index}
+              key={tab.hash}
               hasContent={tab.hasContent}
             />
           ))}
@@ -121,13 +125,6 @@ const CompletionContent = ({ completion, editingEnabled }) => {
       <MemoizedCompletionContentTabBox children={renderTabContent} />
     </Stack>
   );
-};
-
-CompletionContent.propTypes = {
-  completion: PropTypes.shape({
-    id: PropTypes.oneOfType([PropTypes.string, PropTypes.number]).isRequired,
-  }).isRequired,
-  editingEnabled: PropTypes.bool.isRequired,
 };
 
 export default CompletionContent;

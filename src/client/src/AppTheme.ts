@@ -11,6 +11,7 @@ const themePalette: AppThemePalette = {
   primary: {
     main: "#337083",
     contrastText: "#ffffff",
+    muted: "rgba(51, 112, 131, 0.3)",
   },
   secondary: {
     main: "#1c2834",
@@ -612,6 +613,13 @@ export const theme = createTheme({
         filledInfo: {
           backgroundColor: themePalette.background.default,
           color: themePalette.primary.main,
+        },
+        standardError: {
+          color: themePalette.error.main,
+          border: `1px solid ${themePalette.error.main}`,
+          "& .MuiAlert-icon": {
+            color: themePalette.error.main,
+          },
         },
       },
     },

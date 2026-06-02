@@ -1,42 +1,65 @@
 import { FC, useState } from "react";
-import { Box, Stack } from "@mui/material";
+import { useTranslation } from "react-i18next";
+import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import { BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
+import { ExtractedStratigraphy } from "../../../../../api/dataextraction.ts";
 import { theme } from "../../../../../AppTheme.ts";
 import { ExtractionImageContainer } from "../../../labeling/extractionImageContainer.tsx";
 import { PageSelection } from "../../../labeling/pageSelection.tsx";
-import { ExtractedLithologicalDescription } from "../lithologicalDescription.ts";
-import { useCompletedLayers } from "../lithology/useCompletedLayers.tsx";
-import { ExtractedStratigraphyTable } from "./extractedStratigraphyTable.tsx";
 import { PagesBadge } from "./pagesBadge.tsx";
+import { StratigraphyExtractionItem, StratigraphyExtractionItemState } from "./stratigraphyExtractionItem.tsx";
 
 interface StratigraphyExtractionViewProps {
   file: BoreholeAttachment;
-  lithologicalDescriptions: ExtractedLithologicalDescription[];
+  allExtractedStratigraphies: ExtractedStratigraphy[];
+  selectedIndex: number;
+  onItemStateChange: (index: number, state: StratigraphyExtractionItemState) => void;
   isLoading: boolean;
   activePage: number;
   setActivePage: (page: number) => void;
-  currentPageRange?: number[];
 }
 
 export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = ({
   file,
-  lithologicalDescriptions,
+  allExtractedStratigraphies,
+  selectedIndex,
+  onItemStateChange,
   isLoading,
   activePage,
   setActivePage,
-  currentPageRange,
 }) => {
-  const { completedLayers: completedLithologicalDescriptions } = useCompletedLayers(lithologicalDescriptions);
+  const { t } = useTranslation();
   const [pageCount, setPageCount] = useState<number>();
+
+  const selectedStratigraphy = allExtractedStratigraphies[selectedIndex];
+  const currentPageRange = selectedStratigraphy?.pageNumbers;
+  const rawDescriptions = selectedStratigraphy?.descriptions ?? [];
+
+  const renderExtractionItems = () => {
+    if (isLoading) {
+      return (
+        <Stack sx={{ height: "100%", width: "100%" }} justifyContent="center" alignItems="center">
+          <CircularProgress />
+        </Stack>
+      );
+    }
+    if (allExtractedStratigraphies.length === 0) {
+      return <Typography>{t("msgNoStratigraphyExtracted")}</Typography>;
+    }
+    return allExtractedStratigraphies.map((stratigraphy, index) => (
+      <StratigraphyExtractionItem
+        key={`stratigraphy-${stratigraphy.pageNumbers.join("-")}`}
+        index={index}
+        descriptions={stratigraphy.descriptions}
+        visible={index === selectedIndex}
+        onStateChange={onItemStateChange}
+      />
+    ));
+  };
 
   return (
     <Stack direction="row" sx={{ height: "100%", minHeight: 0 }}>
-      <Stack sx={{ flex: 1, minHeight: 0, overflow: "auto", padding: 3 }}>
-        <ExtractedStratigraphyTable
-          lithologicalDescriptions={completedLithologicalDescriptions}
-          isLoading={isLoading}
-        />
-      </Stack>
+      <Stack sx={{ flex: 1, minHeight: 0, overflow: "auto", padding: 3 }}>{renderExtractionItems()}</Stack>
       <Stack
         justifyContent="space-between"
         sx={{
@@ -49,7 +72,7 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
         }}>
         <PagesBadge currentPageRange={currentPageRange} />
         <ExtractionImageContainer
-          extractedDescriptions={lithologicalDescriptions}
+          extractedDescriptions={rawDescriptions}
           currentPageNumber={activePage}
           selectedFile={file}
           activePage={activePage}

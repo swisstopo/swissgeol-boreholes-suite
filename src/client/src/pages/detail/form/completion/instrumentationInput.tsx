@@ -1,17 +1,18 @@
-import { useEffect, useState } from "react";
+﻿import { useEffect, useState } from "react";
 import { addInstrumentation, getCasings, updateInstrumentation } from "../../../../api/fetchApiV2.ts";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard.tsx";
 import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
-import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils.jsx";
-import { completionSchemaConstants } from "./completionSchemaConstants.js";
-import { prepareEntityDataForSubmit } from "./completionUtils.js";
+import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils.tsx";
+import { Casing, DataCardItemInputProps, Instrumentation } from "./completionInterfaces.ts";
+import { completionSchemaConstants } from "./completionSchemaConstants.ts";
+import { prepareEntityDataForSubmit } from "./completionUtils.ts";
 
-const InstrumentationInput = ({ item, parentId }) => {
-  const [casings, setCasings] = useState([]);
+const InstrumentationInput = ({ item, parentId }: DataCardItemInputProps<Instrumentation>) => {
+  const [casings, setCasings] = useState<Casing[]>([]);
   const getCasingOptions = useGetCasingOptions();
 
-  const prepareFormDataForSubmit = data => {
+  const prepareFormDataForSubmit = (data: Instrumentation): Instrumentation => {
     data = prepareCasingDataForSubmit(data);
     data = prepareEntityDataForSubmit(data, parentId);
     return data;
@@ -26,7 +27,7 @@ const InstrumentationInput = ({ item, parentId }) => {
   }, [parentId]);
 
   return (
-    <DataInputCard
+    <DataInputCard<Instrumentation>
       item={item}
       addData={addInstrumentation}
       updateData={updateInstrumentation}

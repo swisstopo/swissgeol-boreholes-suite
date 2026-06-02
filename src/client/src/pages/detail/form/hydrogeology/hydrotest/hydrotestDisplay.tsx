@@ -20,15 +20,11 @@ export const HydrotestDisplay: FC<{ item: Hydrotest }> = ({ item }) => {
     <DataDisplayCard<Hydrotest> item={item} deleteData={deleteHydrotest} entityName={"hydrotest"}>
       <ObservationDisplay observation={item} />
       <FormContainer direction="row">
-        <FormDisplay label="hydrotestKind" value={item?.kindCodelists ?? null} type={FormValueType.Domain} />
-        <FormDisplay label="flowDirection" value={item?.flowDirectionCodelists ?? null} type={FormValueType.Domain} />
+        <FormDisplay label="hydrotestKind" value={item?.kindCodelists} type={FormValueType.Domain} />
+        <FormDisplay label="flowDirection" value={item?.flowDirectionCodelists} type={FormValueType.Domain} />
       </FormContainer>
       <FormContainer direction="row">
-        <FormDisplay
-          label="evaluationMethod"
-          value={item?.evaluationMethodCodelists ?? null}
-          type={FormValueType.Domain}
-        />
+        <FormDisplay label="evaluationMethod" value={item?.evaluationMethodCodelists} type={FormValueType.Domain} />
       </FormContainer>
       {(item?.hydrotestResults?.length ?? 0) > 0 && (
         <FormResultTableDisplay<HydrotestResult>

@@ -2,27 +2,21 @@ import { FC, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
+import { FormValueType } from "../../../../../../components/form/form.ts";
 import { FormContainer } from "../../../../../../components/form/formContainer.tsx";
 import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
 import { FormDomainSelect } from "../../../../../../components/form/formDomainSelect.tsx";
+import { FormInput } from "../../../../../../components/form/formInput.tsx";
 import { useFormDirty } from "../../../../../../components/form/useFormDirty.tsx";
 import { FaciesDescription } from "../../faciesDescription.ts";
-import { BasicDataFormSection } from "./basicDataFormSection.tsx";
 import { RemarksFormSection } from "./remarksFormSection.tsx";
 
 interface FaciesDescriptionModalProps {
   description: FaciesDescription | undefined;
-  fromDepths: number[];
-  toDepths: number[];
   updateFaciesDescription: (description: FaciesDescription, hasChanges: boolean) => void;
 }
 
-export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
-  description,
-  fromDepths,
-  toDepths,
-  updateFaciesDescription,
-}) => {
+export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({ description, updateFaciesDescription }) => {
   const { t } = useTranslation();
   const formMethods = useForm<FaciesDescription>({ mode: "all" });
   const { formState, getValues } = formMethods;
@@ -46,10 +40,11 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
       delete values.facies;
       if (String(values.faciesId) === "") values.faciesId = null;
 
-      updateFaciesDescription(
-        { ...description, ...values } as FaciesDescription,
-        isDirty || (Boolean(description?.isGap) && isValid),
-      );
+      // A new description (id===0, built by the gap-click handler) must commit on Apply even
+      // when the user didn't type anything — that's how an empty placeholder description is
+      // attached to the clicked gap.
+      const isNew = description?.id === 0;
+      updateFaciesDescription({ ...description, ...values } as FaciesDescription, isDirty || (isNew && isValid));
     }
   };
 
@@ -63,7 +58,22 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({
       <FormProvider {...formMethods}>
         <BoreholesCard data-cy="facies-description-basic-data" title={t("basicData")}>
           <FormContainer>
-            <BasicDataFormSection fromDepths={fromDepths} toDepths={toDepths} />
+            <FormContainer direction={"row"}>
+              <FormInput
+                fieldName={"fromDepth"}
+                label={"fromdepth"}
+                readonly={true}
+                value={description?.fromDepth}
+                type={FormValueType.Number}
+              />
+              <FormInput
+                fieldName={"toDepth"}
+                label={"todepth"}
+                readonly={true}
+                value={description?.toDepth}
+                type={FormValueType.Number}
+              />
+            </FormContainer>
             <FormContainer direction={"row"}>
               <FormDomainSelect fieldName={"faciesId"} label={"facies"} schemaName={"facies_con"} />
             </FormContainer>
