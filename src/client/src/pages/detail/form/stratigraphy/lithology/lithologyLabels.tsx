@@ -15,7 +15,6 @@ const getBeddingShare = (lithology: Lithology, index: number) => {
   return beddingShare;
 };
 
-// Todo: should all these helper function be custom hooks so that translations and getCodelist can be used directly?
 const buildUnconsolidatedPrimaryString = (
   t: TFunction,
   description: LithologyDescription,
