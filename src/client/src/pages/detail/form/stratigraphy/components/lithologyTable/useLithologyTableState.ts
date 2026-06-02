@@ -12,7 +12,7 @@ import {
   removeDepthIdReferences,
 } from "./lithologyTableUtils.ts";
 
-export type DepthDeleteAction = "extendLower" | "extendUpper" | "reduceBoreholeEnd" | "raiseBoreholeStart";
+export type DepthDeleteAction = "extendLower" | "extendUpper" | "reduceBoreholeEnd" | "increaseBoreholeStart";
 export type DepthInsertPosition = "before" | "after";
 
 export interface LithologyTableState {
@@ -291,7 +291,7 @@ export const useLithologyTableState = (
       // disappearing edge — drag it onto the remaining edge.
       if (
         refsDeleted &&
-        (action === "extendUpper" || action === "raiseBoreholeStart") &&
+        (action === "extendUpper" || action === "increaseBoreholeStart") &&
         item.fromDepth === depthLayerToDelete.fromDepth
       ) {
         return { ...item, fromDepth: depthLayerToDelete.toDepth, depthIds: newDepthIds };
