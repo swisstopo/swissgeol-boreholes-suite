@@ -249,7 +249,7 @@ export const CompletionPanel = () => {
 
   const onDeleteConfirmed = () => {
     const newTabIndex = state.index > 0 ? state.index - 1 : 0;
-    setState({ ...state, switchTabTo: newTabIndex });
+    setState({ ...state, switchTabTo: newTabIndex, selected: null });
     deleteCompletion(state.selected!.id).then(() => {
       loadData();
       reloadBoreholes();
