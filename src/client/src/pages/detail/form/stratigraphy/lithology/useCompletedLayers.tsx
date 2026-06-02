@@ -4,7 +4,8 @@ import { LayerDepth, Lithology } from "../lithology.ts";
 
 export function useCompletedLayers(layers: BaseLayer[] = [], layerDepths?: LayerDepth[]) {
   const completedLayers = useMemo(() => {
-    const sortedLayers = [...layers].sort((a, b) => a.fromDepth - b.fromDepth);
+    // Server-loaded read-only path — boundaries are real numbers; null treated as 0 defensively.
+    const sortedLayers = [...layers].sort((a, b) => (a.fromDepth ?? 0) - (b.fromDepth ?? 0));
     const resultLayers: BaseLayer[] = [];
 
     // Helper to check if a layer is Lithology (by property presence)
@@ -17,11 +18,12 @@ export function useCompletedLayers(layers: BaseLayer[] = [], layerDepths?: Layer
       const sortedDepths = [...layerDepths].sort((a, b) => a.fromDepth - b.fromDepth);
       const firstDepth = sortedDepths.at(0)?.fromDepth;
       const firstLayer = sortedLayers.at(0);
-      if (firstDepth !== undefined && firstLayer && firstDepth < firstLayer.fromDepth) {
+      const firstLayerFrom = firstLayer?.fromDepth ?? 0;
+      if (firstDepth !== undefined && firstLayer && firstDepth < firstLayerFrom) {
         const gapLayer: BaseLayer = {
           id: 0,
           fromDepth: firstDepth,
-          toDepth: firstLayer.fromDepth,
+          toDepth: firstLayerFrom,
           isGap: true,
           stratigraphyId: firstLayer.stratigraphyId,
           ...(isLithology(firstLayer) && { hasBedding: false, isUnconsolidated: true }),
@@ -32,14 +34,16 @@ export function useCompletedLayers(layers: BaseLayer[] = [], layerDepths?: Layer
 
     let lastDepth = 0;
     sortedLayers.forEach((layer, index) => {
+      const layerFrom = layer.fromDepth ?? 0;
+      const layerTo = layer.toDepth ?? 0;
       // If there's a gap between this layer and the previous depth, add a gap filler
-      if (layer.fromDepth > lastDepth && index > 0) {
+      if (layerFrom > lastDepth && index > 0) {
         const prev = resultLayers.at(-1);
         if (prev) {
           const gapLayer: BaseLayer = {
             id: 0,
             fromDepth: lastDepth,
-            toDepth: layer.fromDepth,
+            toDepth: layerFrom,
             isGap: true,
             stratigraphyId: layer.stratigraphyId,
             ...(isLithology(prev) && { hasBedding: false, isUnconsolidated: prev.isUnconsolidated ?? true }),
@@ -49,7 +53,7 @@ export function useCompletedLayers(layers: BaseLayer[] = [], layerDepths?: Layer
       }
 
       resultLayers.push({ ...layer, isGap: false });
-      lastDepth = layer.toDepth;
+      lastDepth = layerTo;
     });
 
     // Add gap at end if needed
@@ -57,11 +61,12 @@ export function useCompletedLayers(layers: BaseLayer[] = [], layerDepths?: Layer
       const sortedDepths = [...layerDepths].sort((a, b) => a.fromDepth - b.fromDepth);
       const lastDepthValue = sortedDepths.at(-1)?.toDepth;
       const lastLayer = sortedLayers.at(-1);
-      if (lastLayer && lastDepthValue !== undefined && lastLayer.toDepth < lastDepthValue) {
+      const lastLayerTo = lastLayer?.toDepth ?? 0;
+      if (lastLayer && lastDepthValue !== undefined && lastLayerTo < lastDepthValue) {
         const prev = resultLayers.at(-1);
         const gapLayer: BaseLayer = {
           id: 0,
-          fromDepth: lastLayer.toDepth,
+          fromDepth: lastLayerTo,
           toDepth: lastDepthValue,
           isGap: true,
           stratigraphyId: lastLayer.stratigraphyId,

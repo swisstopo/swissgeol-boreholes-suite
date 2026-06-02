@@ -77,6 +77,8 @@ export const FormInput: FC<FormInputProps> = ({
   // flash empty and then jump to the value, and that jump would be treated as a user change.
   const controlledValue = toFormatterValue(watchedValue ?? value);
 
+  const isReadOnlyNumberInput = isNumberInput && isReadOnly;
+
   const getDefaultValue = (value: string | number | Date | undefined | null) => {
     if (value == undefined) {
       return "";
@@ -89,6 +91,34 @@ export const FormInput: FC<FormInputProps> = ({
   };
 
   const formFieldError = getFormFieldError(fieldName, errors);
+
+  const registerProps = register(fieldName, {
+    required: required ? "required" : false,
+    validate: value => {
+      if (value === "") {
+        return true;
+      }
+      if (isDateInput || isDateTimeInput) {
+        const date = new Date(value);
+        return isValid(date) && date.getFullYear() > 1800 && date.getFullYear() < 3000;
+      }
+      return true;
+    },
+    onChange: e => {
+      setValue(fieldName, e.target.value, { shouldValidate: true });
+      if (onUpdate) {
+        onUpdate(e.target.value);
+      }
+    },
+  });
+  // Read-only number fields: drop the DOM ref that react-hook-form would normally use.
+  // Without this, a form reset (e.g. switching the rock type) writes the raw value
+  // "1123" straight into the input and erases NumericFormat's formatted "1'123" — the
+  // formatting only comes back the next time the user clicks into the field. Editable
+  // fields still need the ref so the form can validate user input.
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const { ref: _ref, ...registerPropsWithoutRef } = registerProps;
+  const fieldProps = isReadOnlyNumberInput ? registerPropsWithoutRef : registerProps;
 
   return (
     <TextField
@@ -106,25 +136,7 @@ export const FormInput: FC<FormInputProps> = ({
       placeholder={placeholder && t(placeholder)}
       rows={rows}
       label={labelWithTooltip}
-      {...register(fieldName, {
-        required: required ? "required" : false,
-        validate: value => {
-          if (value === "") {
-            return true;
-          }
-          if (isDateInput || isDateTimeInput) {
-            const date = new Date(value);
-            return isValid(date) && date.getFullYear() > 1800 && date.getFullYear() < 3000;
-          }
-          return true;
-        },
-        onChange: e => {
-          setValue(fieldName, e.target.value, { shouldValidate: true });
-          if (onUpdate) {
-            onUpdate(e.target.value);
-          }
-        },
-      })}
+      {...fieldProps}
       defaultValue={getDefaultValue(value)}
       value={isNumberInput ? controlledValue : undefined}
       disabled={disabled || false}

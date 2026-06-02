@@ -25,7 +25,7 @@ export const LogPanel: FC = () => {
   const { id: boreholeId } = useRequiredParams();
   const [selectedLogRunId, setSelectedLogRunId] = useState<string | undefined>();
   const [isImporting, setIsImporting] = useState<boolean>(false);
-  const { registerSaveHandler, registerResetHandler, unMount, markAsChanged, hasChanges, triggerReset } =
+  const { registerSaveHandler, registerResetHandler, unMount, setHasChanges, hasChanges, triggerReset } =
     useContext(SaveContext);
   const { showPrompt } = useContext(PromptContext);
   const showApiErrorAlert = useApiErrorAlert();
@@ -82,7 +82,7 @@ export const LogPanel: FC = () => {
     (selectedId: string | undefined, item: LogRun, hasChanges: boolean) => {
       setTmpLogRuns(prev => {
         if (hasChanges) {
-          markAsChanged(true);
+          setHasChanges(true);
 
           if (selectedId != "new" && selectedId !== undefined) {
             return prev.map(l => (l.item.tmpId === selectedId ? { item, hasChanges: true } : l));
@@ -95,7 +95,7 @@ export const LogPanel: FC = () => {
         return prev;
       });
     },
-    [markAsChanged, setTmpLogRuns],
+    [setHasChanges, setTmpLogRuns],
   );
 
   const updateTmpLogRun = useCallback(

@@ -25,8 +25,8 @@ export interface Stratigraphy {
 
 export interface BaseLayer {
   id: number;
-  fromDepth: number;
-  toDepth: number;
+  fromDepth: number | null;
+  toDepth: number | null;
   stratigraphyId: number;
   stratigraphy?: Stratigraphy;
   created?: NullableDateString;
@@ -37,16 +37,16 @@ export interface BaseLayer {
   updatedBy?: User;
   isGap?: boolean;
   isUnconsolidated?: boolean | null;
+  depthIds?: string[];
+  isAutoCorrected?: boolean;
 }
 
-export interface MinimalLayer {
-  id: number;
-  fromDepth?: number;
-  toDepth?: number;
-  stratigraphyId: number;
-  isGap?: boolean;
-  isUnconsolidated?: boolean | null;
-  hasBedding?: boolean;
+export interface DepthLayer {
+  id: string;
+  fromDepth: number | null;
+  toDepth: number | null;
+  hasFromDepthError?: boolean;
+  hasToDepthError?: boolean;
 }
 
 interface Chronostratigraphy {

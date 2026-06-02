@@ -6,7 +6,7 @@ import { EditStateContext } from "../../../editStateContext.tsx";
 import { useFaciesDescriptions } from "../faciesDescription.ts";
 import { useLithologicalDescriptions } from "../lithologicalDescription.ts";
 import { useLithologies } from "../lithology.ts";
-import { LithologyContentEdit } from "./lithologyContentEdit.tsx";
+import { LithologyPanelEdit } from "./lithologyPanelEdit.tsx";
 import { TempLithologyView } from "./tempLithologyView.tsx";
 
 export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) => {
@@ -17,7 +17,6 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
     useLithologicalDescriptions(stratigraphyId);
   const { data: faciesDescriptions, isLoading: isLoadingFaciesDescription } = useFaciesDescriptions(stratigraphyId);
 
-  // Loading state
   if (isLoadingLithologies || isLoadingLithologicalDescriptions || isLoadingFaciesDescription) {
     return (
       <FullPageCentered>
@@ -28,10 +27,9 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
 
   if (!lithologies || !lithologicalDescriptions || !faciesDescriptions) return null;
 
-  // Edit mode
   if (editingEnabled) {
     return (
-      <LithologyContentEdit
+      <LithologyPanelEdit
         stratigraphyId={stratigraphyId}
         lithologies={lithologies}
         lithologicalDescriptions={lithologicalDescriptions}
@@ -40,16 +38,14 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
     );
   }
 
-  // View mode
   if (lithologies.length === 0 && lithologicalDescriptions.length === 0 && faciesDescriptions.length === 0) {
     return <Box>{t("msgLithologyEmpty")}</Box>;
-  } else {
-    return (
-      <TempLithologyView
-        lithologies={lithologies}
-        lithologicalDescriptions={lithologicalDescriptions}
-        faciesDescriptions={faciesDescriptions}
-      />
-    );
   }
+  return (
+    <TempLithologyView
+      lithologies={lithologies}
+      lithologicalDescriptions={lithologicalDescriptions}
+      faciesDescriptions={faciesDescriptions}
+    />
+  );
 };

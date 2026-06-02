@@ -9,7 +9,7 @@ import { SaveContext, SaveContextProps } from "./saveContext.tsx";
 
 export const SaveBar = () => {
   const { t } = useTranslation();
-  const { showSaveFeedback, hasChanges, isSaving, triggerSave, triggerReset } =
+  const { showSaveFeedback, hasChanges, hasErrors, isSaving, triggerSave, triggerReset } =
     useContext<SaveContextProps>(SaveContext);
 
   const changesMessage = (
@@ -48,7 +48,7 @@ export const SaveBar = () => {
       </Stack>
       <Stack spacing={1} direction="row">
         <DeleteButton disabled={!hasChanges || isSaving} label="discardchanges" onClick={triggerReset} />
-        <SaveButton disabled={!hasChanges || isSaving} variant="contained" onClick={triggerSave} />
+        <SaveButton disabled={!hasChanges || isSaving || hasErrors} variant="contained" onClick={triggerSave} />
       </Stack>
       {isSaving && <LoadingBackdrop open={isSaving} sx={{ zIndex: theme.zIndex.modal }} />}
     </Stack>

@@ -49,7 +49,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
   const [filterVisible, setFilterVisible] = useState(false);
   const [sectionFilters, setSectionFilters] = useState<SectionFilter[]>();
 
-  const { markAsChanged } = useContext(SaveContext);
+  const { setHasChanges } = useContext(SaveContext);
   const { data: codelists } = useCodelists();
   const { isExporting, setIsExporting, startExport, exportItems } = useLogExport(exportLogRuns, selectionModel, runs);
 
@@ -153,7 +153,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
 
   const deleteLogRun = (selectedRows: GridRowSelectionModel) => {
     setTmpLogRuns(prev => prev.filter(run => run.item.tmpId !== undefined && !selectedRows.includes(run.item.tmpId)));
-    markAsChanged(true);
+    setHasChanges(true);
   };
 
   const columns = useMemo<GridColDef<LogRun>[]>(

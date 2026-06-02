@@ -22,11 +22,11 @@ export const useFormDirty = <T extends FieldValues>({ formState }: UseFormDirtyP
  * @param formState
  */
 export const useFormDirtyMarkAsChanged = <T extends FieldValues>({ formState }: UseFormDirtyProps<T>) => {
-  const { markAsChanged } = useContext(SaveContext);
+  const { setHasChanges } = useContext(SaveContext);
   const isDirty = useFormDirty({ formState });
 
   useEffect(() => {
-    markAsChanged(isDirty);
-    return () => markAsChanged(false);
-  }, [isDirty, markAsChanged]);
+    setHasChanges(isDirty);
+    return () => setHasChanges(false);
+  }, [isDirty, setHasChanges]);
 };

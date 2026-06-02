@@ -4,7 +4,6 @@ import {
   evaluateMultiSelect,
   evaluateSelect,
   evaluateTextarea,
-  formatWithThousandsSeparator,
   isDisabled,
   setInput,
   setSelect,
@@ -74,8 +73,6 @@ interface ConsolidatedLithologyFormValues extends LithologyFormValues {
 interface LithologicalDescriptionFormValues {
   fromDepth?: number;
   toDepth?: number;
-  fromDepthOptionsLength?: number;
-  toDepthOptionsLength?: number;
   description?: string;
 }
 
@@ -187,8 +184,6 @@ const fillUnconsoldiateLithologyDescriptionForm = (values: UnconsolidatedLitholo
 };
 
 export const fillUnconsolidatedLithologyForm = (values: UnconsolidatedLithologyFormValues) => {
-  if (values.fromDepth !== undefined) setInput("fromDepth", values.fromDepth);
-  if (values.toDepth !== undefined) setInput("toDepth", values.toDepth);
   if (values.hasBedding !== undefined) {
     toggleCheckbox("hasBedding");
     if (values.share !== undefined) {
@@ -317,8 +312,6 @@ const fillConsoldiateLithologyDescriptionForm = (values: ConsolidatedLithologyDe
 };
 
 export const fillConsolidatedLithologyForm = (values: ConsolidatedLithologyFormValues) => {
-  if (values.fromDepth !== undefined) setInput("fromDepth", values.fromDepth);
-  if (values.toDepth !== undefined) setInput("toDepth", values.toDepth);
   if (values.hasBedding) {
     toggleCheckbox("hasBedding");
     if (values.share !== undefined) {
@@ -386,27 +379,23 @@ export const evaluateConsolidatedLithologyForm = (values: ConsolidatedLithologyF
 };
 
 export const fillLithologicalDescriptionForm = (values: LithologicalDescriptionFormValues) => {
-  if (values.fromDepth !== undefined) setSelect("fromDepth", values.fromDepth, values.fromDepthOptionsLength);
-  if (values.toDepth !== undefined) setSelect("toDepth", values.toDepth, values.toDepthOptionsLength);
   if (values.description !== undefined) setInput("description", values.description);
 };
 
 export const evaluateLithologicalDescriptionForm = (values: LithologicalDescriptionFormValues) => {
-  if (values.fromDepth !== undefined) evaluateSelect("fromDepth", formatWithThousandsSeparator(values.fromDepth));
-  if (values.toDepth !== undefined) evaluateSelect("toDepth", formatWithThousandsSeparator(values.toDepth));
+  if (values.fromDepth !== undefined) evaluateInput("fromDepth", values.fromDepth);
+  if (values.toDepth !== undefined) evaluateInput("toDepth", values.toDepth);
   if (values.description !== undefined) evaluateTextarea("description", values.description);
 };
 
 export const fillFaciesDescriptionForm = (values: FaciesDescriptionFormValues) => {
-  if (values.fromDepth !== undefined) setSelect("fromDepth", values.fromDepth, values.fromDepthOptionsLength);
-  if (values.toDepth !== undefined) setSelect("toDepth", values.toDepth, values.toDepthOptionsLength);
   if (values.faciesId !== undefined) setSelect("faciesId", values.faciesId as number);
   if (values.description !== undefined) setInput("description", values.description);
 };
 
 export const evaluateFaciesDescriptionForm = (values: FaciesDescriptionFormValues) => {
-  if (values.fromDepth !== undefined) evaluateSelect("fromDepth", formatWithThousandsSeparator(values.fromDepth));
-  if (values.toDepth !== undefined) evaluateSelect("toDepth", formatWithThousandsSeparator(values.toDepth));
+  if (values.fromDepth !== undefined) evaluateInput("fromDepth", values.fromDepth);
+  if (values.toDepth !== undefined) evaluateInput("toDepth", values.toDepth);
   if (values.faciesId !== undefined) evaluateSelect("faciesId", values.faciesId);
   if (values.description !== undefined) evaluateTextarea("description", values.description);
 };
