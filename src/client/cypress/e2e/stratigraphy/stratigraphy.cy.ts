@@ -382,14 +382,14 @@ describe("Tests for stratigraphy", () => {
         cy.dataCy("button-select-popover").should("not.exist");
 
         // Cancel keeps the dirty state and the menu stays closed.
-        handlePrompt("messageDiscardUnsavedChanges", "cancel");
+        handlePrompt("There are unsaved changes. Do you want to discard all changes?", "cancel");
         cy.dataCy("prompt").should("not.exist");
         cy.dataCy("button-select-popover").should("not.exist");
         verifyUnsavedChanges(true);
 
         // Click again; this time discard. The reset clears changes and the menu opens.
         cy.dataCy("addStratigraphy-button-select").click();
-        handlePrompt("messageDiscardUnsavedChanges", "discardchanges");
+        handlePrompt("There are unsaved changes. Do you want to discard all changes?", "discardchanges");
         cy.dataCy("button-select-popover").should("be.visible");
         verifyNoUnsavedChanges();
 
