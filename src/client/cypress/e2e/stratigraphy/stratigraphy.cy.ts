@@ -375,7 +375,7 @@ describe("Tests for stratigraphy", () => {
 
         // Flip hasChanges → true via a lithology edit.
         cy.dataCy("add-row-button").click();
-        verifyUnsavedChanges();
+        verifyUnsavedChanges(true);
 
         // Click "New stratigraphy". The prompt intercepts BEFORE the dropdown opens.
         cy.dataCy("addStratigraphy-button-select").click();
@@ -385,7 +385,7 @@ describe("Tests for stratigraphy", () => {
         handlePrompt("messageDiscardUnsavedChanges", "cancel");
         cy.dataCy("prompt").should("not.exist");
         cy.dataCy("button-select-popover").should("not.exist");
-        verifyUnsavedChanges();
+        verifyUnsavedChanges(true);
 
         // Click again; this time discard. The reset clears changes and the menu opens.
         cy.dataCy("addStratigraphy-button-select").click();
