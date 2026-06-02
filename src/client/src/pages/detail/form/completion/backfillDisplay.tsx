@@ -14,13 +14,13 @@ const BackfillDisplay = ({ item }: DataCardItemDisplayProps<Backfill>) => {
         <FormDisplay label="todepth" value={item?.toDepth} type={FormValueType.Number} />
       </FormContainer>
       <FormContainer direction="row">
-        <FormDisplay label="kindBackfill" value={item?.kind ?? null} type={FormValueType.Domain} />
-        <FormDisplay label="materialBackfill" value={item?.material ?? null} type={FormValueType.Domain} />
+        <FormDisplay label="kindBackfill" value={item?.kind} type={FormValueType.Domain} />
+        <FormDisplay label="materialBackfill" value={item?.material} type={FormValueType.Domain} />
       </FormContainer>
       <FormContainer>
         <FormDisplay label="casingName" value={getCasingNameWithCompletion(item)} />
       </FormContainer>
-      <FormDisplay label="notes" value={item?.notes ?? null} />
+      <FormDisplay label="notes" value={item?.notes} />
     </DataDisplayCard>
   );
 };

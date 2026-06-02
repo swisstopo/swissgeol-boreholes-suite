@@ -16,16 +16,16 @@ const CasingDisplay = ({ item }: DataCardItemDisplayProps<Casing>) => {
 
   return (
     <DataDisplayCard item={item} deleteData={deleteCasing} entityName={"casing"}>
-      <FormDisplay label="name" value={item?.name ?? null} />
+      <FormDisplay label="name" value={item?.name} />
       <FormContainer direction="row">
         <FormDisplay label="fromdepth" value={depth.min} type={FormValueType.Number} />
         <FormDisplay label="todepth" value={depth.max} type={FormValueType.Number} />
       </FormContainer>
       <FormContainer direction="row">
-        <FormDisplay label="dateStartCasing" value={item?.dateStart ?? null} type={FormValueType.Date} />
-        <FormDisplay label="dateFinishCasing" value={item?.dateFinish ?? null} type={FormValueType.Date} />
+        <FormDisplay label="dateStartCasing" value={item?.dateStart} type={FormValueType.Date} />
+        <FormDisplay label="dateFinishCasing" value={item?.dateFinish} type={FormValueType.Date} />
       </FormContainer>
-      <FormDisplay label="notes" value={item?.notes ?? null} />
+      <FormDisplay label="notes" value={item?.notes} />
       <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("casingElements")}</Typography>
       <TableContainer>
         <Table>

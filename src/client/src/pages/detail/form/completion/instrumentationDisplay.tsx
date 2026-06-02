@@ -18,10 +18,10 @@ const InstrumentationDisplay = ({ item }: DataCardItemDisplayProps<Instrumentati
         <FormDisplay label="casingName" value={getCasingNameWithCompletion(item)} />
       </FormContainer>
       <FormContainer direction="row">
-        <FormDisplay label="kindInstrument" value={item?.kind ?? null} type={FormValueType.Domain} />
-        <FormDisplay label="statusInstrument" value={item?.status ?? null} type={FormValueType.Domain} />
+        <FormDisplay label="kindInstrument" value={item?.kind} type={FormValueType.Domain} />
+        <FormDisplay label="statusInstrument" value={item?.status} type={FormValueType.Domain} />
       </FormContainer>
-      <FormDisplay label="notes" value={item?.notes ?? null} />
+      <FormDisplay label="notes" value={item?.notes} />
     </DataDisplayCard>
   );
 };

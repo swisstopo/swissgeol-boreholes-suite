@@ -25,7 +25,7 @@ const CompletionHeaderDisplay = ({
         <FormContainer direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap">
           <FormDisplay label="name" value={completion?.name} sx={{ flex: "1 1 180px" }} />
           <FormContainer direction="row" justifyContent="space-between" alignItems="center" flex={"0 0 400px"}>
-            <FormDisplay label="completionKind" value={completion?.kind ?? null} type={FormValueType.Domain} />
+            <FormDisplay label="completionKind" value={completion?.kind} type={FormValueType.Domain} />
             <FormDisplay label="mainCompletion" value={completion?.isPrimary} type={FormValueType.Boolean} />
           </FormContainer>
         </FormContainer>
@@ -42,8 +42,8 @@ const CompletionHeaderDisplay = ({
             </FormContainer>
             {editingEnabled && (
               <DataCardButtonContainer>
-                <CopyButton onClick={() => copyCompletion()} />
-                <DeleteButton onClick={() => deleteCompletion()} />
+                <CopyButton onClick={copyCompletion} />
+                <DeleteButton onClick={deleteCompletion} />
                 <EditButton label="edit" onClick={() => setEditing(true)} />
               </DataCardButtonContainer>
             )}
