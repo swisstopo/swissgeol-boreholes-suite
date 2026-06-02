@@ -293,8 +293,8 @@ export const useAddExtractedStratigraphies = () => {
       return fetchApiV2WithApiError<StratigraphyWithLithology[]>(lithologyTabController, "POST", payload);
     },
     onSuccess: async results => {
-      resetTabStatus();
       if (results.length === 0) return;
+      resetTabStatus();
       await queryClient.invalidateQueries({
         queryKey: [stratigraphiesQueryKey, results[0].stratigraphy.boreholeId],
       });
