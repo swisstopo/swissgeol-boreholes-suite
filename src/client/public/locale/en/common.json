@@ -316,6 +316,7 @@
   "importLogRuns": "Import LOG runs from CSV file",
   "importLogRunsDescription": "Upload a CSV file containing the LOG run definitions (required).",
   "inactive": "Inactive",
+  "increaseBoreholeStartDepth": "Increase borehole start depth",
   "inner": "inner",
   "instrumentation": "Instrumentation",
   "invalidJsonBoreholeArray": "The provided file is not an array of boreholes or is not in a valid JSON format.",

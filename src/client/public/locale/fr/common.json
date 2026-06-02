@@ -316,6 +316,7 @@
   "importLogRuns": "Importer des runs LOG depuis un fichier CSV",
   "importLogRunsDescription": "Téléchargez un fichier CSV contenant les définitions des runs LOG (obligatoire).",
   "inactive": "Inactif",
+  "increaseBoreholeStartDepth": "Augmenter la profondeur initiale du forage",
   "inner": "intérieur",
   "instrumentation": "Instrumentation",
   "invalidJsonBoreholeArray": "Le fichier fourni n'est pas un tableau de forages ou n'a pas un format JSON valide.",

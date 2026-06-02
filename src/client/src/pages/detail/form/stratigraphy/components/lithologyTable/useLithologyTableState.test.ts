@@ -403,6 +403,21 @@ describe("useLithologyTableState", () => {
       expect(result.current.depths).toHaveLength(1);
       expect(result.current.depths[0]).toMatchObject({ fromDepth: 0, toDepth: 50 });
     });
+
+    it("increases the borehole start ('increaseBoreholeStart') without affecting the neighbor", () => {
+      const { result } = renderState({
+        lithologies: [
+          lithology({ id: 1, fromDepth: 0, toDepth: 50 }),
+          lithology({ id: 2, fromDepth: 50, toDepth: 100 }),
+        ],
+      });
+      const firstId = result.current.depths[0].id;
+      act(() => result.current.handleDeleteDepthLayer(firstId, "increaseBoreholeStart"));
+      expect(result.current.depths).toHaveLength(1);
+      expect(result.current.depths[0]).toMatchObject({ fromDepth: 50, toDepth: 100 });
+      expect(result.current.tmpLithologies.find(l => l.id === 1)).toBeUndefined();
+      expect(result.current.tmpLithologies.find(l => l.id === 2)!.fromDepth).toBe(50);
+    });
   });
 
   describe("handleDeleteDescription", () => {

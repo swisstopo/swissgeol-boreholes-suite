@@ -316,6 +316,7 @@
   "importLogRuns": "Importare run LOG da file CSV",
   "importLogRunsDescription": "Caricare un file CSV con le definizioni dei run LOG (obbligatorio).",
   "inactive": "Inattivo",
+  "increaseBoreholeStartDepth": "Aumentare la profondità iniziale della perforazione",
   "inner": "interno",
   "instrumentation": "Strumentazione",
   "invalidJsonBoreholeArray": "Il file fornito non è un array di perforazioni o non ha un formato JSON valido.",

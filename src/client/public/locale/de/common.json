@@ -316,6 +316,7 @@
   "importLogRuns": "LOG Runs aus CSV-Datei importieren",
   "importLogRunsDescription": "Laden Sie eine CSV-Datei mit den LOG Runs hoch (erforderlich).",
   "inactive": "Inaktiv",
+  "increaseBoreholeStartDepth": "Anfangstiefe der Bohrung erhöhen",
   "inner": "innen",
   "instrumentation": "Instrumentierung",
   "invalidJsonBoreholeArray": "Die hochgeladene Datei ist kein Bohrungen-Array oder hat kein gültiges JSON-Format.",
