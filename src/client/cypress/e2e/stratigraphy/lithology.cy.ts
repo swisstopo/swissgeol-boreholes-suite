@@ -1,6 +1,6 @@
 import { discardChanges, saveWithSaveBar, verifyUnsavedChanges } from "../helpers/buttonHelpers";
-import { evaluateInput, evaluateSelect, setSelect } from "../helpers/formHelpers";
-import { stopBoreholeEditing } from "../helpers/testHelpers";
+import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
+import { handlePrompt, stopBoreholeEditing } from "../helpers/testHelpers";
 import {
   evaluateConsolidatedLithologyForm,
   evaluateFaciesDescriptionForm,
@@ -1174,5 +1174,79 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
     hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, isGap: true });
     hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, toDepth: 1123 });
+  });
+
+  it("edits the lithological description from the lithology modal", () => {
+    openStratigraphyWith3Lithologies();
+
+    // Open the first lithology layer — the new description card should be visible and empty.
+    openLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
+    cy.dataCy("lithology-lithological-description").should("be.visible");
+    cy.dataCy("shared-lithological-description-notice").should("not.exist");
+
+    // Type a description and apply via the modal's apply button.
+    setInput("lithologicalDescription.description", "Mittelkies aus dem Lithology-Modal");
+    closeLayerModal();
+
+    // The LD column now shows a layer with the typed text for that depth range.
+    checkLayerCardContent({
+      layerType: LayerType.lithologicalDescription,
+      fromDepth: 0,
+      toDepth: 355,
+      content: ["Mittelkies aus dem Lithology-Modal"],
+    });
+
+    // Reopen the lithology modal and confirm the text persists in the form.
+    openLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
+    cy.dataCy("lithologicalDescription.description-formInput")
+      .find("textarea")
+      .first()
+      .should("have.value", "Mittelkies aus dem Lithology-Modal");
+    closeLayerModal();
+
+    // Persist via the global save handler and check the lithological description survives a reload.
+    saveWithSaveBar();
+    stopBoreholeEditing();
+    checkLayerCardContent({
+      layerType: LayerType.lithologicalDescription,
+      fromDepth: 0,
+      toDepth: 355,
+      content: ["Mittelkies aus dem Lithology-Modal"],
+    });
+  });
+
+  it("warns when editing a description shared by multiple lithology layers", () => {
+    openStratigraphyWith3Lithologies();
+
+    // Add an LD that spans the first two lithology layers by creating it in the first gap and
+    // dragging its bottom handle down by one row.
+    openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
+    fillLithologicalDescriptionForm({ description: "Originalbeschreibung" });
+    closeLayerModal();
+    dragResizeDescription({
+      kind: "lithological",
+      fromDepth: 0,
+      toDepth: 355,
+      side: "bottom",
+      deltaRows: 1,
+    });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 1123 });
+
+    // Opening the first lithology shows the shared-layers notice.
+    openLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
+    cy.dataCy("shared-lithological-description-notice").should("be.visible");
+
+    // Change the description and apply — the prompt should appear.
+    setInput("lithologicalDescription.description", "Aktualisierte Beschreibung");
+    cy.dataCy("apply-button").click();
+    handlePrompt(null, "continue");
+
+    // Both lithology layers in the spanning LD should now show the updated text.
+    checkLayerCardContent({
+      layerType: LayerType.lithologicalDescription,
+      fromDepth: 0,
+      toDepth: 1123,
+      content: ["Aktualisierte Beschreibung"],
+    });
   });
 });
