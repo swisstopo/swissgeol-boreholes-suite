@@ -178,7 +178,6 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     toDepth: number | null,
     onAddInGap?: (depthId: string, fromDepth: number | null, toDepth: number | null) => void,
   ) => {
-    const onClick = onAddInGap ? () => onAddInGap(depthId, fromDepth, toDepth) : undefined;
     return (
       <StratigraphyTableDescriptionGap
         key={`${keyPrefix}-${index}-${fromDepth}-${depthId}`}
@@ -187,7 +186,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
           height: `${defaultRowHeight}px`,
         }}
         index={index}
-        onClick={onClick}
+        onClick={onAddInGap ? () => onAddInGap(depthId, fromDepth, toDepth) : undefined}
         onMouseEnter={() => handleItemMouseEnter([depthId])}
         onMouseLeave={handleItemMouseLeave}
       />
