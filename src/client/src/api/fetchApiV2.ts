@@ -247,7 +247,7 @@ export const getInstrumentation = async (completionId: number): Promise<Instrume
   return await fetchApiV2Legacy(`instrumentation?completionId=${completionId}`, "GET");
 };
 
-export const addInstrumentation = async (instrumentation: Instrumentation): Promise<void> => {
+export const addInstrumentation = async (instrumentation: Instrumentation): Promise<Instrumentation> => {
   return await fetchApiV2Legacy("instrumentation", "POST", instrumentation);
 };
 
@@ -263,7 +263,7 @@ export const getBackfills = async (completionId: number): Promise<Backfill[]> =>
   return await fetchApiV2Legacy(`backfill?completionId=${completionId}`, "GET");
 };
 
-export const addBackfill = async (backfill: Backfill): Promise<void> => {
+export const addBackfill = async (backfill: Backfill): Promise<Backfill> => {
   return await fetchApiV2Legacy("backfill", "POST", backfill);
 };
 

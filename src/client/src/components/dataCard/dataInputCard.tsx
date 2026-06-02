@@ -14,7 +14,7 @@ import { useUnsavedChangesPrompt } from "./useUnsavedChangesPrompt.tsx";
 
 interface DataInputCardProps<T extends FieldValues> {
   item: T;
-  addData: (data: T) => Promise<void>;
+  addData: (data: T) => Promise<T>;
   updateData: (data: T) => Promise<void>;
   entityName: TabName;
   prepareFormDataForSubmit: (data: T) => T;
