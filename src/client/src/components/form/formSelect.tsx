@@ -159,8 +159,7 @@ export const FormSelect: FC<FormSelectProps> = ({
               );
             }}
             disabled={disabled}
-            // We need to allow null as a type MUI's Autocomplete uses TypeScript's conditional types — when DisableClearable is literal true, the value type becomes NonNullable<T> (no null). By widening true to boolean, TypeScript
-            // distributes the conditional over both true | false, resulting in T | T | null = T | null. The clear button is still hidden at runtime (the value is still true), but the type system now correctly allows null as a value.
+            // Typescript quirk: By asserting "true as boolean", MUI's Autocomplete component allows null for the value type.
             disableClearable={true as boolean}
           />
         );
