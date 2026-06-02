@@ -32,7 +32,7 @@ jobs:
 
       - name: Collect Docker image metadata (api-legacy)
         id: meta-api-legacy
-        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
         with:
           images: ${{ env.BASE_IMAGE_NAME }}-api-legacy
           labels: |
@@ -47,7 +47,7 @@ jobs:
 
       - name: Collect Docker image metadata (api)
         id: meta-api
-        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
         with:
           images: ${{ env.BASE_IMAGE_NAME }}-api
           labels: |
@@ -62,7 +62,7 @@ jobs:
 
       - name: Collect Docker image metadata (client)
         id: meta-client
-        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
         with:
           images: ${{ env.BASE_IMAGE_NAME }}-client
           labels: |
@@ -77,7 +77,7 @@ jobs:
 
       - name: Collect Docker image metadata (view-sync)
         id: meta-view-sync
-        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
         with:
           images: ${{ env.BASE_IMAGE_NAME }}-view-sync
           labels: |
@@ -92,7 +92,7 @@ jobs:
 
       - name: Collect Docker image metadata (extern-sync)
         id: meta-extern-sync
-        uses: docker/metadata-action@030e881283bb7a6894de51c315a6bfe6a94e05cf # v6.0.0
+        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
         with:
           images: ${{ env.BASE_IMAGE_NAME }}-extern-sync
           labels: |
@@ -106,14 +106,14 @@ jobs:
             type=semver,pattern=v{{version}},value=${{ env.VERSION }}
 
       - name: Log in to the GitHub container registry
-        uses: docker/login-action@4907a6ddec9925e35a0a9e82d7399ccc52663121 # v4.1.0
+        uses: docker/login-action@650006c6eb7dba73a995cc03b0b2d7f5ca915bee # v4.2.0
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.repository_owner  }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image (api-legacy)
-        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
         with:
           context: ./src/api-legacy
           push: true
@@ -126,7 +126,7 @@ jobs:
           cache-to: type=inline
 
       - name: Build and push Docker image (api)
-        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
         with:
           context: ./src
           file: ./src/api/Dockerfile
@@ -140,7 +140,7 @@ jobs:
           cache-to: type=inline
 
       - name: Build and push Docker image (client)
-        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
         with:
           context: ./src/client
           target: deploy
@@ -154,7 +154,7 @@ jobs:
           cache-to: type=inline
 
       - name: Build and push Docker image (view-sync)
-        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
         with:
           context: ./src/view-sync
           push: true
@@ -167,7 +167,7 @@ jobs:
           cache-to: type=inline
 
       - name: Build and push Docker image (extern-sync)
-        uses: docker/build-push-action@bcafcacb16a39f128d818304e6c9c0c18556b85f # v7.1.0
+        uses: docker/build-push-action@f9f3042f7e2789586610d6e8b85c8f03e5195baf # v7.2.0
         with:
           context: ./src
           file: ./src/extern-sync/Dockerfile
