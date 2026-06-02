@@ -4,7 +4,7 @@ import { describe, expect, it } from "vitest";
 import { FaciesDescription } from "../../faciesDescription.ts";
 import { LithologicalDescription } from "../../lithologicalDescription.ts";
 import { Lithology } from "../../lithology.ts";
-import { useLithologyTableState } from "./useLithologyTableState.ts";
+import { LithologyTableStateOptions, useLithologyTableState } from "./useLithologyTableState.ts";
 
 const lithology = (overrides: Partial<Lithology> = {}): Lithology => ({
   id: 0,
@@ -38,12 +38,13 @@ interface HookProps {
   lithologicalDescriptions: LithologicalDescription[];
   faciesDescriptions: FaciesDescription[];
   stratigraphyId: number;
+  options?: LithologyTableStateOptions;
 }
 
 const renderState = (initial: Partial<HookProps> = {}) =>
   renderHook(
-    ({ lithologies, lithologicalDescriptions, faciesDescriptions, stratigraphyId }: HookProps) =>
-      useLithologyTableState(lithologies, lithologicalDescriptions, faciesDescriptions, stratigraphyId),
+    ({ lithologies, lithologicalDescriptions, faciesDescriptions, stratigraphyId, options }: HookProps) =>
+      useLithologyTableState(lithologies, lithologicalDescriptions, faciesDescriptions, stratigraphyId, options),
     {
       initialProps: {
         lithologies: [],
@@ -484,6 +485,63 @@ describe("useLithologyTableState", () => {
         result.current.depths[1].id,
         result.current.depths[2].id,
       ]);
+    });
+  });
+
+  describe("resizeDescription with mergeDepthsOnDescriptionResize (extraction mode)", () => {
+    it("merges a gap row into the resized description's row and drops the orphaned placeholder lithology", () => {
+      // Mirrors extraction setup: no lithologies / no facies in input; descriptions drive depths.
+      // Two descriptions with a gap between them: [0,30] and [60,100] → depths [0,30], [30,60], [60,100].
+      const { result } = renderState({
+        lithologicalDescriptions: [
+          lithologicalDescription({ id: 10, fromDepth: 0, toDepth: 30, description: "a" }),
+          lithologicalDescription({ id: 11, fromDepth: 60, toDepth: 100, description: "c" }),
+        ],
+        options: { mergeDepthsOnDescriptionResize: true },
+      });
+      expect(result.current.depths).toHaveLength(3);
+      expect(result.current.tmpLithologies).toHaveLength(3);
+
+      // Grow description "a" from 0-30 to 0-60 — should swallow the 30-60 gap row.
+      act(() => result.current.resizeDescription("lithological", 0, 0, 60));
+
+      expect(result.current.depths).toHaveLength(2);
+      expect(result.current.depths.map(d => [d.fromDepth, d.toDepth])).toEqual([
+        [0, 60],
+        [60, 100],
+      ]);
+      // The placeholder lithology for the merged-away gap row is gone; the survivor extends to 60.
+      expect(result.current.tmpLithologies).toHaveLength(2);
+      expect(result.current.tmpLithologies[0]).toMatchObject({ fromDepth: 0, toDepth: 60 });
+      expect(result.current.tmpLithologies[0].depthIds).toEqual([result.current.depths[0].id]);
+      expect(result.current.tmpLithologies[1]).toMatchObject({ fromDepth: 60, toDepth: 100 });
+
+      // Resized description and the untouched sibling both point to live depth rows.
+      const resized = result.current.tmpLithologicalDescriptions.find(d => d.description === "a")!;
+      expect(resized.depthIds).toEqual([result.current.depths[0].id]);
+      const sibling = result.current.tmpLithologicalDescriptions.find(d => d.description === "c")!;
+      expect(sibling.depthIds).toEqual([result.current.depths[1].id]);
+
+      // No multi-row spanning → no error flags.
+      expect(result.current.hasErrors).toBe(false);
+    });
+
+    it("keeps the default (non-merging) behavior when the option is off", () => {
+      // Same data as the merging test, but without the opt-in.
+      const { result } = renderState({
+        lithologicalDescriptions: [
+          lithologicalDescription({ id: 10, fromDepth: 0, toDepth: 30 }),
+          lithologicalDescription({ id: 11, fromDepth: 60, toDepth: 100 }),
+        ],
+      });
+      act(() => result.current.resizeDescription("lithological", 0, 0, 60));
+      // Depth rows preserved; description now spans the first two rows.
+      expect(result.current.depths).toHaveLength(3);
+      expect(result.current.tmpLithologicalDescriptions[0].depthIds).toEqual([
+        result.current.depths[0].id,
+        result.current.depths[1].id,
+      ]);
+      expect(result.current.tmpLithologies).toHaveLength(3);
     });
   });
 
