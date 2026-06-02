@@ -14,7 +14,7 @@ export interface BoreholeFormInputs {
   restrictionUntil: NullableDateString;
   nationalInterest: NullableBooleanSelect;
   totalDepth: number | null;
-  depthPrecisionId: number;
+  depthPrecisionId: number | null;
   typeId: number | null;
   purposeId: number | null;
   statusId: number | null;
