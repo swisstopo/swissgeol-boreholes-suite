@@ -13,6 +13,8 @@ namespace BDMS.Controllers;
 [TestClass]
 public class LithologyControllerTest
 {
+    private const string RoundTripTestNotes = "Round-trip test";
+
     private BdmsContext context;
     private LithologyController controller;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
@@ -57,7 +59,7 @@ public class LithologyControllerTest
     public async Task GetByStratigraphyIdReturnsUnauthorizedWithoutViewRights()
     {
         controller.HttpContext.SetClaimsPrincipal("sub_unauthorized", PolicyNames.Viewer);
-        var stratigraphyId = context.Stratigraphies.First().Id;
+        var stratigraphyId = (await context.Stratigraphies.FirstAsync().ConfigureAwait(false)).Id;
 
         var response = await controller.GetByStratigraphyIdAsync(stratigraphyId).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(response.Result);
@@ -185,24 +187,11 @@ public class LithologyControllerTest
     }
 
     [TestMethod]
-    public async Task CreateReturnsBadRequestForNullRequest()
-    {
-        var response = await controller.CreateAsync(null!).ConfigureAwait(false);
-        ActionResultAssert.IsBadRequest(response.Result);
-    }
-
-    [TestMethod]
-    public async Task CreateReturnsBadRequestForEmptyBatch()
-    {
-        var response = await controller.CreateAsync(new Collection<StratigraphyWithLithology>()).ConfigureAwait(false);
-        ActionResultAssert.IsBadRequest(response.Result);
-    }
-
-    [TestMethod]
     public async Task CreateReturnsUnauthorizedForLockedBorehole()
     {
         SetupControllerWithAlwaysLockedBorehole();
-        var request = MakeBatch(MakeBatchEntry(context.Boreholes.First().Id, "should-fail", lithologyDepthFrom: 0));
+        var boreholeId = (await context.Boreholes.FirstAsync().ConfigureAwait(false)).Id;
+        var request = MakeBatch(MakeBatchEntry(boreholeId, "should-fail", lithologyDepthFrom: 0));
 
         var response = await controller.CreateAsync(request).ConfigureAwait(false);
         ActionResultAssert.IsUnauthorized(response.Result);
@@ -227,7 +216,7 @@ public class LithologyControllerTest
         Assert.AreEqual(true, saved.IsUnconsolidated);
         Assert.AreEqual(true, saved.HasBedding);
         Assert.AreEqual(70, saved.Share);
-        Assert.AreEqual("Round-trip test", saved.Notes);
+        Assert.AreEqual(RoundTripTestNotes, saved.Notes);
         Assert.AreEqual(100000175, saved.AlterationDegreeId);
         Assert.AreEqual(21102002, saved.CompactnessId);
         Assert.AreEqual(21116001, saved.CohesionId);
@@ -288,7 +277,7 @@ public class LithologyControllerTest
         Assert.AreEqual(false, saved.IsUnconsolidated);
         Assert.AreEqual(true, saved.HasBedding);
         Assert.AreEqual(70, saved.Share);
-        Assert.AreEqual("Round-trip test", saved.Notes);
+        Assert.AreEqual(RoundTripTestNotes, saved.Notes);
         Assert.AreEqual(100000175, saved.AlterationDegreeId);
         CollectionAssert.AreEquivalent(new List<int> { 100000470, 100000477 }, saved.TextureMetaCodelistIds!.ToList());
 
@@ -348,7 +337,7 @@ public class LithologyControllerTest
         // Preserved.
         Assert.AreEqual(10, saved.FromDepth);
         Assert.AreEqual(20, saved.ToDepth);
-        Assert.AreEqual("Round-trip test", saved.Notes);
+        Assert.AreEqual(RoundTripTestNotes, saved.Notes);
 
         // Forced regardless of input.
         Assert.IsNull(saved.IsUnconsolidated);
@@ -694,7 +683,7 @@ public class LithologyControllerTest
         IsUnconsolidated = isUnconsolidated,
         HasBedding = true,
         Share = 70,
-        Notes = "Round-trip test",
+        Notes = RoundTripTestNotes,
         AlterationDegreeId = 100000175,
         CompactnessId = 21102002,
         CohesionId = 21116001,

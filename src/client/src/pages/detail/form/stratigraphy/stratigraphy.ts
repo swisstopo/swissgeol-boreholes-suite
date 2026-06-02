@@ -285,13 +285,9 @@ export const useAddExtractedStratigraphies = () => {
       // so a re-imported PDF lands as `name_1`, `name_1 (1)`, `name_2`, `name_2 (1)` automatically.
       const payload = stratigraphies.map(({ name, lithologicalDescriptions, lithologies, faciesDescriptions }) => ({
         stratigraphy: { id: 0, name, isPrimary: false, boreholeId },
-        lithologies: lithologies.map(l => ({ ...l, id: 0, stratigraphyId: 0 }) as Lithology),
-        lithologicalDescriptions: lithologicalDescriptions.map(
-          d => ({ ...d, id: 0, stratigraphyId: 0 }) as LithologicalDescription,
-        ),
-        faciesDescriptions: (faciesDescriptions ?? []).map(
-          d => ({ ...d, id: 0, stratigraphyId: 0 }) as FaciesDescription,
-        ),
+        lithologies: lithologies.map(l => ({ ...l, id: 0, stratigraphyId: 0 })),
+        lithologicalDescriptions: lithologicalDescriptions.map(d => ({ ...d, id: 0, stratigraphyId: 0 })),
+        faciesDescriptions: (faciesDescriptions ?? []).map(d => ({ ...d, id: 0, stratigraphyId: 0 })),
       }));
 
       return fetchApiV2WithApiError<StratigraphyWithLithology[]>(lithologyTabController, "POST", payload);

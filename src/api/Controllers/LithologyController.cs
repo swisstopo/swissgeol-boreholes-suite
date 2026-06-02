@@ -4,6 +4,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
+using System.ComponentModel.DataAnnotations;
 
 namespace BDMS.Controllers;
 
@@ -58,13 +59,12 @@ public class LithologyController : ControllerBase
     /// </summary>
     [HttpPost]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<Collection<StratigraphyWithLithology>>> CreateAsync(Collection<StratigraphyWithLithology> stratigraphies)
+    public async Task<ActionResult<Collection<StratigraphyWithLithology>>> CreateAsync([Required, MinLength(1)] Collection<StratigraphyWithLithology> stratigraphies)
     {
-        if (stratigraphies == null || stratigraphies.Count == 0) return BadRequest();
-
-        var boreholeIds = stratigraphies.Select(s => s.Stratigraphy?.BoreholeId ?? 0).Distinct().ToList();
-        if (boreholeIds.Count != 1 || boreholeIds[0] == 0) return BadRequest("All stratigraphies must belong to the same borehole.");
-        var boreholeId = boreholeIds[0];
+        if (!TryGetSingleBoreholeId(stratigraphies, out var boreholeId))
+        {
+            return BadRequest("All stratigraphies must belong to the same borehole.");
+        }
 
         if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
         {
@@ -73,83 +73,11 @@ public class LithologyController : ControllerBase
 
         try
         {
-            var existingStratigraphyNames = await context.Stratigraphies
-                .Where(s => s.BoreholeId == boreholeId)
-                .Select(s => s.Name)
-                .ToListAsync()
-                .ConfigureAwait(false);
-
-            var takenNames = existingStratigraphyNames.OfType<string>().ToHashSet(StringComparer.Ordinal);
-            var boreholeHasExistingStratigraphy = existingStratigraphyNames.Count > 0;
-            Stratigraphy? designatedPrimary = null;
-
-            foreach (var entry in stratigraphies)
+            var takenNames = await LoadTakenStratigraphyNamesAsync(boreholeId).ConfigureAwait(false);
+            var hasDesignatedPrimary = await StageStratigraphiesForCreateAsync(stratigraphies, takenNames).ConfigureAwait(false);
+            if (hasDesignatedPrimary)
             {
-                var stratigraphy = entry.Stratigraphy;
-                stratigraphy.Id = 0;
-
-                ApplyUniqueName(stratigraphy, takenNames);
-                if (!string.IsNullOrEmpty(stratigraphy.Name)) takenNames.Add(stratigraphy.Name);
-
-                // First-ever stratigraphy on the borehole auto-promotes to primary; an explicit
-                // IsPrimary=true on any entry wins and demotes everything else (in-batch + DB).
-                if (designatedPrimary == null && (stratigraphy.IsPrimary || !boreholeHasExistingStratigraphy))
-                {
-                    designatedPrimary = stratigraphy;
-                    stratigraphy.IsPrimary = true;
-                }
-                else
-                {
-                    stratigraphy.IsPrimary = false;
-                }
-
-                // Strip stratigraphy-level navigation collections that aren't part of this endpoint.
-                stratigraphy.ChronostratigraphyLayers = null;
-                stratigraphy.LithostratigraphyLayers = null;
-
-                // Attach the three child collections to the stratigraphy so a single AddAsync cascades
-                // the whole subgraph; EF assigns Ids and fills in StratigraphyId during SaveChanges.
-                foreach (var lithology in entry.Lithologies)
-                {
-                    lithology.Id = 0;
-                    lithology.StratigraphyId = 0;
-                    await PrepareLithologyDescriptionsAsync(lithology).ConfigureAwait(false);
-                    await PrepareNewLithologyForSaveAsync(lithology).ConfigureAwait(false);
-                }
-
-                stratigraphy.Lithologies = entry.Lithologies.ToList();
-
-                foreach (var description in entry.LithologicalDescriptions)
-                {
-                    description.Id = 0;
-                    description.StratigraphyId = 0;
-                }
-
-                stratigraphy.LithologicalDescriptions = entry.LithologicalDescriptions.ToList();
-
-                foreach (var faciesDescription in entry.FaciesDescriptions)
-                {
-                    faciesDescription.Id = 0;
-                    faciesDescription.StratigraphyId = 0;
-                }
-
-                stratigraphy.FaciesDescriptions = entry.FaciesDescriptions.ToList();
-
-                await context.AddAsync(stratigraphy).ConfigureAwait(false);
-            }
-
-            // If the batch installs a primary, demote any prior primaries on the borehole — in-memory
-            // edits to tracked entities ride along on the trailing SaveChangesAsync.
-            if (designatedPrimary != null)
-            {
-                var priorPrimaries = await context.Stratigraphies
-                    .Where(s => s.BoreholeId == boreholeId && s.IsPrimary && s.Id != 0)
-                    .ToListAsync()
-                    .ConfigureAwait(false);
-                foreach (var prior in priorPrimaries)
-                {
-                    prior.IsPrimary = false;
-                }
+                await DemotePriorPrimariesAsync(boreholeId).ConfigureAwait(false);
             }
 
             await context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
@@ -174,25 +102,6 @@ public class LithologyController : ControllerBase
         }
     }
 
-    private static void ApplyUniqueName(Stratigraphy stratigraphy, HashSet<string> takenNames)
-    {
-        if (string.IsNullOrEmpty(stratigraphy.Name)) return;
-
-        const int maxAttempts = 100;
-        var baseName = stratigraphy.Name;
-        var attempt = 0;
-        while (takenNames.Contains(stratigraphy.Name))
-        {
-            attempt++;
-            if (attempt > maxAttempts)
-            {
-                throw new InvalidOperationException($"Could not find a unique name based on '{baseName}' within {maxAttempts} attempts.");
-            }
-
-            stratigraphy.Name = $"{baseName} ({attempt})";
-        }
-    }
-
     /// <summary>
     /// Updates the full Lithology tab contents of an existing stratigraphy. The request carries the
     /// desired final state — the sync helpers stage the create/update/delete edits on the change
@@ -200,10 +109,8 @@ public class LithologyController : ControllerBase
     /// </summary>
     [HttpPut("{stratigraphyId:int}")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<StratigraphyWithLithology>> UpdateContentsAsync(int stratigraphyId, LithologyTabContents contents)
+    public async Task<ActionResult<StratigraphyWithLithology>> UpdateContentsAsync(int stratigraphyId, [Required] LithologyTabContents contents)
     {
-        if (contents == null) return BadRequest();
-
         var stratigraphy = await context.Stratigraphies
             .SingleOrDefaultAsync(s => s.Id == stratigraphyId)
             .ConfigureAwait(false);
@@ -239,6 +146,122 @@ public class LithologyController : ControllerBase
             const string message = "An error occurred while updating the lithology tab contents.";
             logger.LogError(ex, message);
             return Problem(message);
+        }
+    }
+
+    private static bool TryGetSingleBoreholeId(Collection<StratigraphyWithLithology> stratigraphies, out int boreholeId)
+    {
+        var boreholeIds = stratigraphies.Select(s => s.Stratigraphy?.BoreholeId ?? 0).Distinct().ToList();
+        boreholeId = boreholeIds.Count == 1 ? boreholeIds[0] : 0;
+        return boreholeId != 0;
+    }
+
+    private async Task<HashSet<string>> LoadTakenStratigraphyNamesAsync(int boreholeId)
+    {
+        var existingStratigraphyNames = await context.Stratigraphies
+            .Where(s => s.BoreholeId == boreholeId)
+            .Select(s => s.Name)
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        return existingStratigraphyNames.OfType<string>().ToHashSet(StringComparer.Ordinal);
+    }
+
+    private async Task<bool> StageStratigraphiesForCreateAsync(
+        Collection<StratigraphyWithLithology> stratigraphies,
+        HashSet<string> takenNames)
+    {
+        var isFirstStratigaphy = takenNames.Count == 0;
+        var hasDesignatedPrimary = false;
+        foreach (var entry in stratigraphies)
+        {
+            var becomesPrimary = !hasDesignatedPrimary && (entry.Stratigraphy.IsPrimary || isFirstStratigaphy);
+            await StageStratigraphyForCreateAsync(entry, takenNames, becomesPrimary).ConfigureAwait(false);
+            hasDesignatedPrimary |= becomesPrimary;
+        }
+
+        return hasDesignatedPrimary;
+    }
+
+    private async Task StageStratigraphyForCreateAsync(StratigraphyWithLithology entry, HashSet<string> takenNames, bool becomesPrimary)
+    {
+        var stratigraphy = entry.Stratigraphy;
+        stratigraphy.Id = 0;
+
+        ApplyUniqueName(stratigraphy, takenNames);
+        if (!string.IsNullOrEmpty(stratigraphy.Name)) takenNames.Add(stratigraphy.Name);
+
+        // First-ever stratigraphy on the borehole auto-promotes to primary; an explicit
+        // IsPrimary=true on any entry wins and demotes everything else (in-batch + DB).
+        stratigraphy.IsPrimary = becomesPrimary;
+
+        // Strip stratigraphy-level navigation collections that aren't part of this endpoint.
+        stratigraphy.ChronostratigraphyLayers = null;
+        stratigraphy.LithostratigraphyLayers = null;
+
+        // Attach the three child collections to the stratigraphy so a single AddAsync cascades
+        // the whole subgraph; EF assigns Ids and fills in StratigraphyId during SaveChanges.
+        await PrepareNewLithologiesAsync(entry.Lithologies).ConfigureAwait(false);
+        stratigraphy.Lithologies = entry.Lithologies.ToList();
+
+        ResetChildIdentity(entry.LithologicalDescriptions);
+        stratigraphy.LithologicalDescriptions = entry.LithologicalDescriptions.ToList();
+
+        ResetChildIdentity(entry.FaciesDescriptions);
+        stratigraphy.FaciesDescriptions = entry.FaciesDescriptions.ToList();
+
+        await context.AddAsync(stratigraphy).ConfigureAwait(false);
+    }
+
+    private async Task PrepareNewLithologiesAsync(IEnumerable<Lithology> lithologies)
+    {
+        foreach (var lithology in lithologies)
+        {
+            lithology.Id = 0;
+            lithology.StratigraphyId = 0;
+            await PrepareLithologyDescriptionsAsync(lithology).ConfigureAwait(false);
+            await PrepareNewLithologyForSaveAsync(lithology).ConfigureAwait(false);
+        }
+    }
+
+    private static void ResetChildIdentity<T>(IEnumerable<T> items)
+        where T : IStratigraphyLayer, IIdentifyable
+    {
+        foreach (var item in items)
+        {
+            item.Id = 0;
+            item.StratigraphyId = 0;
+        }
+    }
+
+    private async Task DemotePriorPrimariesAsync(int boreholeId)
+    {
+        var priorPrimaries = await context.Stratigraphies
+            .Where(s => s.BoreholeId == boreholeId && s.IsPrimary && s.Id != 0)
+            .ToListAsync()
+            .ConfigureAwait(false);
+        foreach (var prior in priorPrimaries)
+        {
+            prior.IsPrimary = false;
+        }
+    }
+
+    private static void ApplyUniqueName(Stratigraphy stratigraphy, HashSet<string> takenNames)
+    {
+        if (string.IsNullOrEmpty(stratigraphy.Name)) return;
+
+        const int maxAttempts = 100;
+        var baseName = stratigraphy.Name;
+        var attempt = 0;
+        while (takenNames.Contains(stratigraphy.Name))
+        {
+            attempt++;
+            if (attempt > maxAttempts)
+            {
+                throw new InvalidOperationException($"Could not find a unique name based on '{baseName}' within {maxAttempts} attempts.");
+            }
+
+            stratigraphy.Name = $"{baseName} ({attempt})";
         }
     }
 
@@ -307,73 +330,45 @@ public class LithologyController : ControllerBase
         }
     }
 
-    private async Task SyncLithologicalDescriptionsAsync(int stratigraphyId, ICollection<LithologicalDescription> incoming)
+    private Task SyncLithologicalDescriptionsAsync(int stratigraphyId, ICollection<LithologicalDescription> incoming)
+        => SyncStratigraphyChildrenAsync(stratigraphyId, incoming, context.LithologicalDescriptions, nameof(LithologicalDescription));
+
+    private Task SyncFaciesDescriptionsAsync(int stratigraphyId, ICollection<FaciesDescription> incoming)
+        => SyncStratigraphyChildrenAsync(stratigraphyId, incoming, context.FaciesDescriptions, nameof(FaciesDescription));
+
+    private async Task SyncStratigraphyChildrenAsync<T>(int stratigraphyId, ICollection<T> incoming, DbSet<T> dbSet, string entityName)
+        where T : class, IStratigraphyLayer, IIdentifyable
     {
-        var existingById = await context.LithologicalDescriptions
+        var existingById = await dbSet
             .Where(d => d.StratigraphyId == stratigraphyId)
             .ToDictionaryAsync(d => d.Id)
             .ConfigureAwait(false);
 
         var incomingIds = incoming.Where(d => d.Id != 0).Select(d => d.Id).ToHashSet();
-        foreach (var (id, descriptionToDelete) in existingById)
+        foreach (var (id, toDelete) in existingById)
         {
             if (!incomingIds.Contains(id))
             {
-                context.Remove(descriptionToDelete);
+                context.Remove(toDelete);
             }
         }
 
-        foreach (var description in incoming)
+        foreach (var item in incoming)
         {
-            description.StratigraphyId = stratigraphyId;
+            item.StratigraphyId = stratigraphyId;
 
-            if (description.Id == 0)
+            if (item.Id == 0)
             {
-                await context.AddAsync(description).ConfigureAwait(false);
+                await context.AddAsync(item).ConfigureAwait(false);
                 continue;
             }
 
-            if (!existingById.TryGetValue(description.Id, out var existingDescription))
+            if (!existingById.TryGetValue(item.Id, out var existing))
             {
-                throw new InvalidOperationException($"LithologicalDescription {description.Id} does not belong to stratigraphy {stratigraphyId}.");
+                throw new InvalidOperationException($"{entityName} {item.Id} does not belong to stratigraphy {stratigraphyId}.");
             }
 
-            context.Entry(existingDescription).CurrentValues.SetValues(description);
-        }
-    }
-
-    private async Task SyncFaciesDescriptionsAsync(int stratigraphyId, ICollection<FaciesDescription> incoming)
-    {
-        var existingById = await context.FaciesDescriptions
-            .Where(d => d.StratigraphyId == stratigraphyId)
-            .ToDictionaryAsync(d => d.Id)
-            .ConfigureAwait(false);
-
-        var incomingIds = incoming.Where(d => d.Id != 0).Select(d => d.Id).ToHashSet();
-        foreach (var (id, descriptionToDelete) in existingById)
-        {
-            if (!incomingIds.Contains(id))
-            {
-                context.Remove(descriptionToDelete);
-            }
-        }
-
-        foreach (var description in incoming)
-        {
-            description.StratigraphyId = stratigraphyId;
-
-            if (description.Id == 0)
-            {
-                await context.AddAsync(description).ConfigureAwait(false);
-                continue;
-            }
-
-            if (!existingById.TryGetValue(description.Id, out var existingDescription))
-            {
-                throw new InvalidOperationException($"FaciesDescription {description.Id} does not belong to stratigraphy {stratigraphyId}.");
-            }
-
-            context.Entry(existingDescription).CurrentValues.SetValues(description);
+            context.Entry(existing).CurrentValues.SetValues(item);
         }
     }
 
@@ -657,48 +652,33 @@ public class LithologyController : ControllerBase
         }
     }
 
-    private async Task UpdateLithologyCodesAsync<T>(int lithologyId, IList<T> existingCodes, ICollection<int> newCodelistIds)
+    private Task UpdateLithologyCodesAsync<T>(int lithologyId, IList<T> existingCodes, ICollection<int> newCodelistIds)
         where T : class, ILithologyCode, new()
-    {
-        newCodelistIds = newCodelistIds?.ToList() ?? [];
-        existingCodes ??= [];
+        => SyncCodelistJoinsAsync(existingCodes, newCodelistIds, c => c.CodelistId, codelistId => new T { CodelistId = codelistId, LithologyId = lithologyId });
 
-        var codesToRemove = existingCodes.Where(lithologyCode => !newCodelistIds.Contains(lithologyCode.CodelistId)).ToList();
-        foreach (var lithologyCode in codesToRemove)
-        {
-            context.Remove(lithologyCode);
-        }
-
-        var idsToAdd = newCodelistIds.Where(id => !existingCodes.Any(lc => lc.CodelistId == id)).ToList();
-        foreach (var id in idsToAdd)
-        {
-            var codelist = await context.Codelists.FindAsync(id).ConfigureAwait(false);
-            if (codelist != null)
-            {
-                existingCodes.Add(new T { CodelistId = codelist.Id, LithologyId = lithologyId });
-            }
-        }
-    }
-
-    private async Task UpdateLithologyDescriptionCodesAsync<T>(int lithologyDescriptionId, IList<T> existingCodes, ICollection<int> newCodelistIds)
+    private Task UpdateLithologyDescriptionCodesAsync<T>(int lithologyDescriptionId, IList<T> existingCodes, ICollection<int> newCodelistIds)
         where T : class, ILithologyDescriptionCode, new()
+        => SyncCodelistJoinsAsync(existingCodes, newCodelistIds, c => c.CodelistId, codelistId => new T { CodelistId = codelistId, LithologyDescriptionId = lithologyDescriptionId });
+
+    private async Task SyncCodelistJoinsAsync<T>(IList<T> existingCodes, ICollection<int> newCodelistIds, Func<T, int> getCodelistId, Func<int, T> createJoin)
+        where T : class
     {
         newCodelistIds = newCodelistIds?.ToList() ?? [];
         existingCodes ??= [];
 
-        var codesToRemove = existingCodes.Where(lithologyCode => !newCodelistIds.Contains(lithologyCode.CodelistId)).ToList();
-        foreach (var lithologyCode in codesToRemove)
+        var codesToRemove = existingCodes.Where(code => !newCodelistIds.Contains(getCodelistId(code))).ToList();
+        foreach (var code in codesToRemove)
         {
-            context.Remove(lithologyCode);
+            context.Remove(code);
         }
 
-        var idsToAdd = newCodelistIds.Where(id => !existingCodes.Any(lc => lc.CodelistId == id)).ToList();
+        var idsToAdd = newCodelistIds.Where(id => !existingCodes.Any(c => getCodelistId(c) == id)).ToList();
         foreach (var id in idsToAdd)
         {
             var codelist = await context.Codelists.FindAsync(id).ConfigureAwait(false);
             if (codelist != null)
             {
-                existingCodes.Add(new T { CodelistId = codelist.Id, LithologyDescriptionId = lithologyDescriptionId });
+                existingCodes.Add(createJoin(codelist.Id));
             }
         }
     }
