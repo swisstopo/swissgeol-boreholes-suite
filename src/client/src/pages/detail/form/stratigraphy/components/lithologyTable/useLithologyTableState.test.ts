@@ -93,6 +93,18 @@ describe("useLithologyTableState", () => {
       const first = result.current.tmpLithologies.find(l => l.id === 1)!;
       expect(first.toDepth).toBe(10);
       expect(first.isAutoCorrected).toBe(true);
+      expect(result.current.hasUnsavedChanges).toBe(true);
+    });
+
+    it("does not flag unsaved changes when input lithologies need no correction", () => {
+      const { result } = renderState({
+        lithologies: [
+          lithology({ id: 1, fromDepth: 0, toDepth: 50 }),
+          lithology({ id: 2, fromDepth: 50, toDepth: 100 }),
+        ],
+      });
+      expect(result.current.tmpLithologies.every(l => !l.isAutoCorrected)).toBe(true);
+      expect(result.current.hasUnsavedChanges).toBe(false);
     });
 
     it("fills lithology gaps with empty auto-corrected lithologies", () => {
@@ -108,6 +120,7 @@ describe("useLithologyTableState", () => {
       expect(gapFiller).toBeDefined();
       expect(gapFiller!.id).toBe(0); // new, unsaved
       expect(gapFiller!.isAutoCorrected).toBe(true);
+      expect(result.current.hasUnsavedChanges).toBe(true);
     });
 
     it("introduces depth boundaries from descriptions even when no lithology owns them", () => {

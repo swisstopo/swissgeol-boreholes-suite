@@ -80,7 +80,7 @@ export const useLithologyTableState = (
     setTmpLithologies(cleanLithologies);
     setTmpLithologicalDescriptions(cleanLithologicalDescriptions);
     setTmpFaciesDescriptions(cleanFaciesDescriptions);
-    setHasUnsavedChanges(false);
+    setHasUnsavedChanges(cleanLithologies.some(l => l.isAutoCorrected));
   };
 
   if (seedInputHash !== seededInputHash) {
