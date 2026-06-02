@@ -452,6 +452,8 @@ export const useLithologyTableState = (
       newDepths = merged.depths;
       const mergedIds = merged.mergedIds;
       const survivorDepth = newDepths.find(d => d.id === survivorId);
+      const isMerged = (id: string) => mergedIds.has(id);
+      const isNotMerged = (id: string) => !mergedIds.has(id);
 
       // Drop placeholder lithologies whose only depthId was merged away; extend the survivor's toDepth.
       newLithologies = tmpLithologies
@@ -459,7 +461,7 @@ export const useLithologyTableState = (
           const ids = l.depthIds;
           if (!ids || ids.length === 0) return true;
           // Keep if at least one depthId is not merged (covers the survivor and unrelated rows).
-          return ids.some(id => !mergedIds.has(id));
+          return ids.some(isNotMerged);
         })
         .map(l => {
           if (!l.depthIds?.includes(survivorId)) return l;
@@ -477,8 +479,8 @@ export const useLithologyTableState = (
           if (isResizedColumn && i === index) {
             return { ...item, depthIds: [survivorId] };
           }
-          if (!item.depthIds?.some(id => mergedIds.has(id))) return item;
-          return { ...item, depthIds: item.depthIds.filter(id => !mergedIds.has(id)) };
+          if (!item.depthIds?.some(isMerged)) return item;
+          return { ...item, depthIds: item.depthIds.filter(isNotMerged) };
         });
 
       newLithologicalDescriptions = cleanItems(newLithologicalDescriptions, kind === "lithological");
