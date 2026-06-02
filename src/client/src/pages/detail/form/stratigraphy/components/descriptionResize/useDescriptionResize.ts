@@ -1,7 +1,7 @@
 import { MouseEvent, RefObject, useEffect, useMemo, useRef, useState } from "react";
-import { BaseLayer, DepthLayer } from "../../../../../../api/stratigraphy.ts";
 import { FaciesDescription } from "../../faciesDescription.ts";
 import { LithologicalDescription } from "../../lithologicalDescription.ts";
+import { BaseLayer, DepthLayer } from "../../stratigraphy.ts";
 
 export type ResizeKind = "lithological" | "facies";
 export type ResizeSide = "top" | "bottom";
