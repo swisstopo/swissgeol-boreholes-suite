@@ -458,6 +458,7 @@
   "qt_depth": "+/- Lunghezza della perforazione [m MD]",
   "qt_reference_elevation": "+/- Riferimento della quota [m]",
   "quantity": "Quantità",
+  "raiseBoreholeStartDepth": "Aumentare la profondità iniziale della perforazione",
   "reduceBoreholeEndDepth": "Ridurre la profondità finale della perforazione",
   "reference_elevation": "Riferimento della quota [m s.l.m.]",
   "reference_elevation_from": "Riferimento della quota (da)",

@@ -457,6 +457,7 @@
   "qt_depth": "+/- Borehole length [m MD]",
   "qt_reference_elevation": "+/- Reference Elevation [m]",
   "quantity": "Quantity",
+  "raiseBoreholeStartDepth": "Raise borehole start depth",
   "reduceBoreholeEndDepth": "Reduce borehole end depth",
   "reference_elevation": "Reference elevation [m a.s.l.]",
   "reference_elevation_from": "Reference Elevation (from)",

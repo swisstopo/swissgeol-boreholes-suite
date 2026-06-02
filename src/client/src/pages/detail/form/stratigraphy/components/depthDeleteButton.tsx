@@ -40,7 +40,7 @@ export const DepthDeleteButton: FC<DepthDeleteButtonProps> = ({
 
   const handleClick = (event: MouseEvent<HTMLElement>) => {
     event.stopPropagation();
-    if (isFirst || isOnly) {
+    if (isOnly) {
       onDelete(depth.id, "extendLower");
       return;
     }
@@ -96,8 +96,10 @@ export const DepthDeleteButton: FC<DepthDeleteButtonProps> = ({
             },
           },
         }}>
-        <MenuItem onClick={() => handleAction("extendUpper")} data-cy="extend-upper-layer-downward">
-          {t("extendUpperLayerDownward")}
+        <MenuItem
+          onClick={() => handleAction(isFirst ? "raiseBoreholeStart" : "extendUpper")}
+          data-cy={isFirst ? "raise-borehole-start-depth" : "extend-upper-layer-downward"}>
+          {isFirst ? t("raiseBoreholeStartDepth") : t("extendUpperLayerDownward")}
         </MenuItem>
         <MenuItem
           onClick={() => handleAction(isLast ? "reduceBoreholeEnd" : "extendLower")}

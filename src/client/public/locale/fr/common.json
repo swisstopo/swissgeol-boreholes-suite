@@ -459,6 +459,7 @@
   "qt_depth": "+/- Longueur du forage [m MD]",
   "qt_reference_elevation": "+/- Référence altitudinale [m]",
   "quantity": "Quantité",
+  "raiseBoreholeStartDepth": "Augmenter la profondeur initiale du forage",
   "reduceBoreholeEndDepth": "Réduire la profondeur finale du forage",
   "reference_elevation": "Référence altitudinale [m s.m.]",
   "reference_elevation_from": "Référence altitudinale (de)",

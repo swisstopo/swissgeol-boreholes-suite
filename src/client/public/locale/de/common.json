@@ -458,6 +458,7 @@
   "qt_depth": "+/- Bohrlochlänge [m MD]",
   "qt_reference_elevation": "+/- Referenz Ansatzhöhe [m]",
   "quantity": "Menge",
+  "raiseBoreholeStartDepth": "Anfangstiefe der Bohrung erhöhen",
   "reduceBoreholeEndDepth": "Endtiefe der Bohrung reduzieren",
   "reference_elevation": "Referenz Ansatzhöhe [m ü.M.]",
   "reference_elevation_from": "Referenz Ansatzhöhe (von)",
