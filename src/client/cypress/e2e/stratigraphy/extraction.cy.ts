@@ -60,7 +60,6 @@ describe("Tests for stratigraphy extraction", () => {
     cy.wait([
       "@stratigraphy_by_borehole_GET",
       "@lithology_by_stratigraphyId_GET",
-      "@lithologicaldescription_by_stratigraphyId_GET",
       "@getAllAttachments",
       "@borehole_by_id",
     ]);
@@ -172,18 +171,13 @@ describe("Tests for stratigraphy extraction", () => {
     // Button label reflects both being checked.
     cy.dataCy("add-stratigraphy-button").should("contain", "2");
 
-    // Save — two stratigraphy POSTs should fire, one per selected stratigraphy.
+    // Save — one bulk POST to /api/v2/lithology carries both selected stratigraphies.
     cy.dataCy("add-stratigraphy-button").click();
 
-    // BulkAdd posts the two stratigraphies sequentially; wait for both before asserting on them.
-    cy.wait("@stratigraphy_POST", { timeout: 60000 });
-    cy.wait("@stratigraphy_POST", { timeout: 60000 });
-
-    // Verify both POSTs were made with the expected per-index names.
-    cy.get("@stratigraphy_POST.all").then(interceptions => {
-      // @ts-expect-error - unknown type for interception
-      const names = interceptions.map(i => i.request.body?.name).filter(Boolean);
-      cy.log("Observed stratigraphy POST names: " + JSON.stringify(names));
+    cy.wait("@lithology_POST", { timeout: 60000 }).then(interception => {
+      const items = interception.request.body as Array<{ stratigraphy?: { name?: string } }>;
+      const names = items.map(i => i.stratigraphy?.name).filter(Boolean);
+      cy.log("Observed lithology POST stratigraphy names: " + JSON.stringify(names));
       expect(names).to.include("2-Bohrungen_1");
       expect(names).to.include("2-Bohrungen_2");
     });
@@ -237,8 +231,9 @@ describe("Tests for stratigraphy extraction", () => {
       cy.wait(["@getAllAttachments", "@upload-files", "@extract-stratigraphy-mock"]);
 
       cy.dataCy("add-stratigraphy-button").click();
-      cy.wait("@stratigraphy_POST", { timeout: 60000 }).then(interception => {
-        cy.wrap((interception.response!.body as { id: number }).id).as("extractedId");
+      cy.wait("@lithology_POST", { timeout: 60000 }).then(interception => {
+        const body = interception.response!.body as Array<{ stratigraphy: { id: number } }>;
+        cy.wrap(body[0].stratigraphy.id).as("extractedId");
       });
 
       // The URL should navigate to the newly extracted stratigraphy, not back to the primary.
