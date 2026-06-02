@@ -22,7 +22,7 @@ export interface LithologyTableState {
   tmpFaciesDescriptions: FaciesDescription[];
   stratigraphyId: number;
 
-  updateDepthBoundaries: (depthId: string, side: "from" | "to", newValue: number) => void;
+  updateDepthBoundaries: (depthId: string, side: "from" | "to", newValue: number | null) => void;
   handleAddDepthLayer: () => void;
   handleInsertDepthRow: (adjacentDepthId: string, position: DepthInsertPosition) => void;
   handleDeleteDepthLayer: (depthId: string, action: DepthDeleteAction) => void;
@@ -120,7 +120,7 @@ export const useLithologyTableState = (
     setHasUnsavedChanges(!matchesBaseline);
   };
 
-  const updateDepthBoundaries = (depthId: string, side: "from" | "to", newValue: number) => {
+  const updateDepthBoundaries = (depthId: string, side: "from" | "to", newValue: number | null) => {
     const primaryIndex = depths.findIndex(d => d.id === depthId);
     if (primaryIndex < 0) return;
     const primary = depths[primaryIndex];
@@ -156,10 +156,12 @@ export const useLithologyTableState = (
         for (const id of item.depthIds) {
           const updSide = sideUpdates.get(id);
           if (!updSide) continue;
-          if (updSide === "from" && item.fromDepth === oldValue) {
+          // Transitioning from `null` = the user just filled in a previously unset boundary.
+          // The owning lithology/description has a numeric placeholder — overwrite directly.
+          if (updSide === "from" && (oldValue === null || item.fromDepth === oldValue)) {
             newFromDepth = newValue;
             changed = true;
-          } else if (updSide === "to" && item.toDepth === oldValue) {
+          } else if (updSide === "to" && (oldValue === null || item.toDepth === oldValue)) {
             newToDepth = newValue;
             changed = true;
           }
@@ -184,19 +186,27 @@ export const useLithologyTableState = (
     const parentIndex = depths.findIndex(d => d.id === parentDepthId);
     if (parentIndex < 0) return;
     const parent = depths[parentIndex];
-    const boundary = position === "before" ? parent.fromDepth : parent.toDepth;
     const insertIndex = position === "before" ? parentIndex : parentIndex + 1;
+    const sharedBoundary: number | null = position === "before" ? parent.fromDepth : parent.toDepth;
+    const isAppendAtEnd = position === "after" && parentIndex === depths.length - 1;
+
     const aboveId = insertIndex > 0 ? depths[insertIndex - 1].id : null;
     const belowId = insertIndex < depths.length ? depths[insertIndex].id : null;
 
     const newDepthLayer: DepthLayer = {
       id: uuidv4(),
-      fromDepth: boundary,
-      toDepth: boundary,
+      fromDepth: sharedBoundary,
+      toDepth: isAppendAtEnd ? null : sharedBoundary,
     };
     const aboveLithology = aboveId ? tmpLithologies.find(l => l.depthIds?.includes(aboveId)) : undefined;
     const newLithology: Lithology = {
-      ...createEmptyLithology(boundary, boundary, stratigraphyId, aboveLithology?.isUnconsolidated ?? true, false),
+      ...createEmptyLithology(
+        newDepthLayer.fromDepth,
+        newDepthLayer.toDepth,
+        stratigraphyId,
+        aboveLithology?.isUnconsolidated ?? true,
+        false,
+      ),
       depthIds: [newDepthLayer.id],
     };
 
@@ -234,9 +244,9 @@ export const useLithologyTableState = (
       handleInsertDepthRow(lastDepth.id, "after");
       return;
     }
-    const newDepthLayer: DepthLayer = { id: uuidv4(), fromDepth: 0, toDepth: 0 };
+    const newDepthLayer: DepthLayer = { id: uuidv4(), fromDepth: null, toDepth: null };
     const newLithology: Lithology = {
-      ...createEmptyLithology(0, 0, stratigraphyId, true, false),
+      ...createEmptyLithology(newDepthLayer.fromDepth, newDepthLayer.toDepth, stratigraphyId, true, false),
       depthIds: [newDepthLayer.id],
     };
     commitChanges(
@@ -407,6 +417,7 @@ export const useLithologyTableState = (
 
     // Determine which depth rows fall fully inside the new range (mirrors assignDepthIds).
     const candidateDepths = depths.filter(d => {
+      if (d.fromDepth === null || d.toDepth === null) return false;
       if (d.fromDepth === d.toDepth) return d.fromDepth > newFromDepth && d.fromDepth < newToDepth;
       return d.fromDepth >= newFromDepth && d.toDepth <= newToDepth;
     });

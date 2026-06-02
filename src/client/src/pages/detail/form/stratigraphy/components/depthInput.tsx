@@ -7,36 +7,51 @@ import { getFieldBorderColor, parseFloatWithThousandsSeparator } from "../../../
 import { NumericFormatWithThousandSeparator } from "../../../../../components/form/numericFormatWithThousandSeparator.tsx";
 
 interface DepthInputProps {
-  value: number;
+  value: number | null;
   hasError?: boolean;
-  onCommit: (newDepth: number) => void;
+  onCommit: (newDepth: number | null) => void;
   position?: "first" | "last" | "default";
   dataCy?: string;
 }
 
+const toText = (value: number | null) => (value === null ? "" : String(value));
+
 export const DepthInput: FC<DepthInputProps> = ({ value, hasError, onCommit, position = "default", dataCy }) => {
   const { t } = useTranslation();
-  const [textValue, setTextValue] = useState<string>(String(value));
+  const [textValue, setTextValue] = useState<string>(toText(value));
 
   useEffect(() => {
-    setTextValue(String(value));
+    setTextValue(toText(value));
   }, [value]);
 
-  const commit = () => {
-    const parsed = parseFloatWithThousandsSeparator(textValue);
-    if (parsed === null || Number.isNaN(parsed)) {
-      setTextValue(String(value));
-      return;
+  const tryCommit = (text: string): boolean => {
+    if (text.trim() === "") {
+      if (value !== null) onCommit(null);
+      return true;
     }
-    if (parsed === value) return;
-    onCommit(parsed);
+    const parsed = parseFloatWithThousandsSeparator(text);
+    if (parsed === null || Number.isNaN(parsed)) return false;
+    if (parsed !== value) onCommit(parsed);
+    return true;
+  };
+
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const newText = e.target.value;
+    setTextValue(newText);
+    tryCommit(newText);
+  };
+
+  const handleBlur = () => {
+    if (!tryCommit(textValue)) {
+      setTextValue(toText(value));
+    }
   };
 
   const handleKeyDown = (e: KeyboardEvent<HTMLInputElement>) => {
     if (e.key === "Enter") {
       (e.target as HTMLInputElement).blur();
     } else if (e.key === "Escape") {
-      setTextValue(String(value));
+      setTextValue(toText(value));
       (e.target as HTMLInputElement).blur();
     }
   };
@@ -58,12 +73,11 @@ export const DepthInput: FC<DepthInputProps> = ({ value, hasError, onCommit, pos
       size="small"
       type={FormValueType.Text}
       value={textValue}
-      onChange={(e: ChangeEvent<HTMLInputElement>) => setTextValue(e.target.value)}
-      onBlur={commit}
+      onChange={handleChange}
+      onBlur={handleBlur}
       onKeyDown={handleKeyDown}
       onClick={(e: MouseEvent) => e.stopPropagation()}
       error={!!hasError}
-      data-cy={dataCy}
       sx={{
         position: "absolute",
         left: "50%",
@@ -73,6 +87,7 @@ export const DepthInput: FC<DepthInputProps> = ({ value, hasError, onCommit, pos
         ...getPositionStyles(),
       }}
       slotProps={{
+        htmlInput: { "data-cy": dataCy },
         input: {
           // eslint-disable-next-line @typescript-eslint/no-explicit-any
           inputComponent: NumericFormatWithThousandSeparator as any,

@@ -363,4 +363,40 @@ describe("Tests for stratigraphy", () => {
       });
     });
   });
+
+  it("prompts to discard unsaved lithology edits before opening the new-stratigraphy menu", () => {
+    createBorehole({ originalName: "DISCARDPLOT" }).as("borehole_id");
+    cy.get("@borehole_id").then(boreholeId => {
+      createStratigraphy({ boreholeId, name: "DRAFTSTRAT" }).as("stratigraphy_id");
+      cy.get("@stratigraphy_id").then(stratigraphyId => {
+        goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy/${stratigraphyId}?dev=true`);
+        cy.wait(["@stratigraphy_by_borehole_GET", "@lithology_by_stratigraphyId_GET"]);
+        startBoreholeEditing();
+
+        // Flip hasChanges → true via a lithology edit.
+        cy.dataCy("add-row-button").click();
+        verifyUnsavedChanges(true);
+
+        // Click "New stratigraphy". The prompt intercepts BEFORE the dropdown opens.
+        cy.dataCy("addStratigraphy-button-select").click();
+        cy.dataCy("button-select-popover").should("not.exist");
+
+        // Cancel keeps the dirty state and the menu stays closed.
+        handlePrompt("There are unsaved changes. Do you want to discard all changes?", "cancel");
+        cy.dataCy("prompt").should("not.exist");
+        cy.dataCy("button-select-popover").should("not.exist");
+        verifyUnsavedChanges(true);
+
+        // Click again; this time discard. The reset clears changes and the menu opens.
+        cy.dataCy("addStratigraphy-button-select").click();
+        handlePrompt("There are unsaved changes. Do you want to discard all changes?", "discardchanges");
+        cy.dataCy("button-select-popover").should("be.visible");
+        verifyNoUnsavedChanges();
+
+        // Pick "Add empty" from the now-open menu — the dialog opens without further prompts.
+        cy.dataCy("addEmpty-button-select-item").click();
+        cy.dataCy("add-empty-stratigraphy-dialog").should("be.visible");
+      });
+    });
+  });
 });

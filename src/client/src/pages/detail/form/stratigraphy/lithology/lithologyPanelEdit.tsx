@@ -1,9 +1,8 @@
 import { FC, useCallback, useContext, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { BaseLayer } from "../../../../../api/stratigraphy.ts";
-import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
 import { SaveContext } from "../../../saveContext.tsx";
 import { LithologyTable } from "../components/lithologyTable/lithologyTable.tsx";
+import { prepareDataForSubmit } from "../components/lithologyTable/lithologyTableUtils.ts";
 import { useLithologyTableState } from "../components/lithologyTable/useLithologyTableState.ts";
 import { FaciesDescription, useFaciesDescriptionMutations } from "../faciesDescription.ts";
 import { LithologicalDescription, useLithologicalDescriptionMutations } from "../lithologicalDescription.ts";
@@ -16,13 +15,6 @@ interface LithologyPanelEditProps {
   lithologicalDescriptions: LithologicalDescription[];
   faciesDescriptions: FaciesDescription[];
 }
-
-const prepareDataForSubmit = <T extends BaseLayer>(item: T): T => {
-  const copy = { ...item } as T & { depthIds?: unknown; isAutoCorrected?: unknown };
-  delete copy.depthIds;
-  delete copy.isAutoCorrected;
-  return copy;
-};
 
 interface ColumnDiff<T> {
   toDelete: T[];
@@ -52,9 +44,7 @@ export const LithologyPanelEdit: FC<LithologyPanelEditProps> = ({
   lithologicalDescriptions,
   faciesDescriptions,
 }) => {
-  const { t } = useTranslation();
-  const { showAlert } = useContext(AlertContext);
-  const { markAsChanged } = useContext(SaveContext);
+  const { setHasChanges, setHasErrors } = useContext(SaveContext);
   const { registerSaveHandler, registerResetHandler } = useContext<StratigraphyContextProps>(StratigraphyContext);
 
   const {
@@ -84,15 +74,14 @@ export const LithologyPanelEdit: FC<LithologyPanelEditProps> = ({
   );
 
   useEffect(() => {
-    markAsChanged(lithologyTableState.hasUnsavedChanges);
-  }, [lithologyTableState.hasUnsavedChanges, markAsChanged]);
+    setHasChanges(lithologyTableState.hasUnsavedChanges);
+  }, [lithologyTableState.hasUnsavedChanges, setHasChanges]);
+
+  useEffect(() => {
+    setHasErrors(lithologyTableState.hasErrors);
+  }, [lithologyTableState.hasErrors, setHasErrors]);
 
   const onSave = useCallback(async () => {
-    if (lithologyTableState.hasErrors) {
-      showAlert(t("gapOrOverlayErrorCannotSave"), "error");
-      return false;
-    }
-
     // Strip view-only fields once so the buckets are directly comparable to server data and
     // ready to ship to the API without further per-item transformation.
     const tmpLithologies = lithologyTableState.tmpLithologies.map(prepareDataForSubmit);
@@ -139,8 +128,6 @@ export const LithologyPanelEdit: FC<LithologyPanelEditProps> = ({
     invalidateLithologyQueries,
     invalidateLithologicalDescriptionQueries,
     invalidateFaciesDescriptionQueries,
-    showAlert,
-    t,
   ]);
 
   const onReset = useCallback(() => {

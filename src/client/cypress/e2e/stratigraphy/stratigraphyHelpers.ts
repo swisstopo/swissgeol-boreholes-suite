@@ -45,10 +45,21 @@ export const addLithology = () => {
   cy.dataCy("add-row-button").click();
 };
 
-export const setDepth = (currentFromDepth: number, currentToDepth: number, side: "from" | "to", newDepth: number) => {
+export const setDepth = (
+  currentFromDepth: number | null,
+  currentToDepth: number | null,
+  side: "from" | "to",
+  newDepth: number,
+) => {
   const selector = `[data-cy="depth-${side}-${currentFromDepth}-${currentToDepth}-input"]`;
   cy.get(selector).clear();
   cy.get(selector).type(`${newDepth}{enter}`);
+};
+
+export const insertDepthRow = (fromDepth: number | null, toDepth: number | null, position: "before" | "after") => {
+  cy.dataCy(`depth-${fromDepth}-${toDepth}`).scrollIntoView();
+  cy.dataCy(`depth-${fromDepth}-${toDepth}`).realHover({ position: position === "before" ? "top" : "bottom" });
+  cy.dataCy(`insert-depth-${position}-${fromDepth}-${toDepth}-button`).click({ force: true });
 };
 
 interface DragResizeDescriptionInput {
@@ -81,12 +92,6 @@ export const dragResizeDescription = ({
     cy.get("body").trigger("mousemove", { clientX: startX, clientY: endY });
     cy.get("body").trigger("mouseup", { clientX: startX, clientY: endY });
   });
-};
-
-export const insertDepthRow = (fromDepth: number, toDepth: number, position: "before" | "after") => {
-  cy.dataCy(`depth-${fromDepth}-${toDepth}`).scrollIntoView();
-  cy.dataCy(`depth-${fromDepth}-${toDepth}`).realHover({ position: position === "before" ? "top" : "bottom" });
-  cy.dataCy(`insert-depth-${position}-${fromDepth}-${toDepth}-button`).click({ force: true });
 };
 
 export const hasLayer = ({ layerType, fromDepth, toDepth, isGap, exists = true }: HasLayerInput) => {
@@ -130,10 +135,10 @@ export const checkDepthColumn = (depths: [number, number][]) => {
   });
 };
 
-export const hasDepthError = (fromDepth: number, toDepth: number) => {
+export const hasDepthError = (fromDepth: number | null, toDepth: number | null) => {
   cy.dataCy(`depth-${fromDepth}-${toDepth}`).find(".Mui-error").should("exist");
 };
 
-export const hasNoDepthError = (fromDepth: number, toDepth: number) => {
+export const hasNoDepthError = (fromDepth: number | null, toDepth: number | null) => {
   cy.dataCy(`depth-${fromDepth}-${toDepth}`).find(".Mui-error").should("not.exist");
 };

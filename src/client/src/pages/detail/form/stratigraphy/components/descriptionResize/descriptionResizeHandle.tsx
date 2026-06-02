@@ -6,8 +6,8 @@ import { ResizeKind, ResizeSide } from "./useDescriptionResize.ts";
 interface DescriptionResizeHandleProps {
   kind: ResizeKind;
   side: ResizeSide;
-  fromDepth: number;
-  toDepth: number;
+  fromDepth: number | null;
+  toDepth: number | null;
   onMouseDown: (event: MouseEvent<HTMLElement>) => void;
 }
 

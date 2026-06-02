@@ -5,7 +5,7 @@ export function useLayerDepths(lithologies: Lithology[]) {
   const depths = useMemo(() => {
     const layerDepths: LayerDepth[] = [];
     lithologies.forEach(l => {
-      layerDepths.push({ fromDepth: l.fromDepth, toDepth: l.toDepth, lithologyId: l.id });
+      layerDepths.push({ fromDepth: l.fromDepth ?? 0, toDepth: l.toDepth ?? 0, lithologyId: l.id });
     });
     layerDepths.sort((a, b) => a.fromDepth - b.fromDepth);
     const filledLayerDepths: LayerDepth[] = [];

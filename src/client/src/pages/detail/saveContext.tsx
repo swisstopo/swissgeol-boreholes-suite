@@ -1,12 +1,25 @@
-import { createContext, FC, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  FC,
+  PropsWithChildren,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useLocation } from "react-router";
 
 export interface SaveContextProps {
   showSaveBar: boolean;
   showSaveFeedback: boolean;
   hasChanges: boolean;
+  hasErrors: boolean;
   isSaving: boolean;
-  markAsChanged: (hasChanges: boolean) => void;
+  setHasChanges: Dispatch<SetStateAction<boolean>>;
+  setHasErrors: Dispatch<SetStateAction<boolean>>;
   registerSaveHandler: (handler: SaveHandler) => void;
   triggerSave: () => void;
   registerResetHandler: (handler: ResetHandler) => void;
@@ -21,8 +34,10 @@ export const SaveContext = createContext<SaveContextProps>({
   showSaveBar: false,
   showSaveFeedback: false,
   hasChanges: false,
+  hasErrors: false,
   isSaving: false,
-  markAsChanged: () => {},
+  setHasChanges: () => {},
+  setHasErrors: () => {},
   registerSaveHandler: () => {},
   triggerSave: () => {},
   registerResetHandler: () => {},
@@ -33,6 +48,7 @@ export const SaveContext = createContext<SaveContextProps>({
 export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
   const location = useLocation();
   const [hasChanges, setHasChanges] = useState(false);
+  const [hasErrors, setHasErrors] = useState(false);
   const [showSaveFeedback, setShowSaveFeedback] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
   const saveHandlerRef = useRef<SaveHandler | null>(null);
@@ -44,16 +60,13 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
     return hasSaveHandler && hasResetHandler;
   }, [hasSaveHandler, hasResetHandler]);
 
-  const markAsChanged = useCallback((hasChanged: boolean) => {
-    setHasChanges(hasChanged);
-  }, []);
-
   const registerSaveHandler = useCallback((handler: SaveHandler) => {
     saveHandlerRef.current = handler;
     setHasSaveHandler(true);
   }, []);
 
   const triggerSave = useCallback(async () => {
+    if (hasErrors) return;
     if (saveHandlerRef.current) {
       setIsSaving(true);
       try {
@@ -67,7 +80,7 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
         setIsSaving(false);
       }
     }
-  }, []);
+  }, [hasErrors]);
 
   const registerResetHandler = useCallback((handler: ResetHandler) => {
     resetHandlerRef.current = handler;
@@ -86,6 +99,7 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
     setHasSaveHandler(false);
     resetHandlerRef.current = null;
     setHasResetHandler(false);
+    setHasErrors(false);
   }, []);
 
   useEffect(() => {
@@ -115,8 +129,10 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
       showSaveBar,
       showSaveFeedback,
       hasChanges,
+      hasErrors,
       isSaving,
-      markAsChanged,
+      setHasChanges,
+      setHasErrors,
       registerSaveHandler,
       triggerSave,
       registerResetHandler,
@@ -125,8 +141,8 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
     };
   }, [
     hasChanges,
+    hasErrors,
     isSaving,
-    markAsChanged,
     registerResetHandler,
     registerSaveHandler,
     showSaveBar,

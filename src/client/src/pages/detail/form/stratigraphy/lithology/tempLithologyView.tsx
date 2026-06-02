@@ -70,7 +70,7 @@ export const TempLithologyView: FC<TempLithologyViewProps> = ({
       key={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
       dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.id}`}
       sx={{
-        height: `${computeCellHeight(layer.fromDepth, layer.toDepth, depths)}px`,
+        height: `${computeCellHeight(layer.fromDepth ?? 0, layer.toDepth ?? 0, depths)}px`,
       }}
       index={index}
     />
@@ -86,7 +86,7 @@ export const TempLithologyView: FC<TempLithologyViewProps> = ({
       key={`${keyPrefix}-${layer.id}`}
       dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.toDepth}`}
       sx={{
-        height: `${computeCellHeight(layer.fromDepth, layer.toDepth, depths)}px`,
+        height: `${computeCellHeight(layer.fromDepth ?? 0, layer.toDepth ?? 0, depths)}px`,
       }}
       index={index}>
       {buildContent(layer)}

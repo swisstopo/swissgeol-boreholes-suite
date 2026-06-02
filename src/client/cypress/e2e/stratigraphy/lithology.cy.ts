@@ -35,7 +35,15 @@ import {
 
 const addLithologyAtDepth = (fromDepth: number, toDepth: number) => {
   addLithology();
-  setDepth(fromDepth, fromDepth, "to", toDepth);
+  // First-row case (empty stratigraphy): the new row is (null, null) — set fromDepth first.
+  // Subsequent-row case: the new row is appended as (prevToDepth, null), so fromDepth is
+  // already set when prevToDepth matches the requested fromDepth.
+  cy.get("body").then($body => {
+    if ($body.find('[data-cy="depth-from-null-null-input"]').length > 0) {
+      setDepth(null, null, "from", fromDepth);
+    }
+  });
+  setDepth(fromDepth, null, "to", toDepth);
   openLayer({ layerType: LayerType.lithology, fromDepth, toDepth });
 };
 
@@ -386,9 +394,9 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       content: ["[MGr-co]: medium gravel, stony / with stones"],
     });
 
-    // Add the middle row as an auto-corrected empty lithology, then add the bottom consolidated lithology.
+    // Add the middle row as an empty lithology, then add the bottom consolidated lithology.
     addLithology();
-    setDepth(355, 355, "to", 798);
+    setDepth(355, null, "to", 798);
     addLithologyAtDepth(798, 1123);
     isUnconsolidatedForm(true);
     switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
@@ -592,7 +600,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
     closeLayerModal();
     addLithology();
-    openLayer({ layerType: LayerType.lithology, fromDepth: 20, toDepth: 20 });
+    openLayer({ layerType: LayerType.lithology, fromDepth: 20, toDepth: null });
 
     // If previous layer was consolidated, new layer is also consolidated
     isUnconsolidatedForm(false);
@@ -834,14 +842,12 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     });
   });
 
-  it("flags zero-thickness depth rows added via add-row as errors", () => {
+  it("flags newly-added depth rows with unset toDepth as errors", () => {
     openNewStratigraphy();
     addLithology();
-    // The new row is appended as a (0,0) zero-thickness row — should be flagged red on both
-    // boundaries until the user extends it.
-    hasDepthError(0, 0);
-
-    setDepth(0, 0, "to", 50);
+    hasDepthError(null, null);
+    setDepth(null, null, "from", 0);
+    setDepth(0, null, "to", 50);
     hasNoDepthError(0, 50);
   });
 
@@ -874,9 +880,10 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     insertDepthRow(70, 100, "before");
     hasDepthError(70, 70);
 
-    // New row at the very bottom via "+" on the lower edge of the last cell.
+    // New row at the very bottom via "+" on the lower edge of the last cell — appended at
+    // the end, so toDepth stays unset (null) and only the toDepth side is flagged.
     insertDepthRow(70, 100, "after");
-    hasDepthError(100, 100);
+    hasDepthError(100, null);
 
     // The original lithologies are still in place, plus four new autocorrected empty lithologies (one per inserted zt depth row).
     hasLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 0 });
@@ -885,7 +892,9 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasLayer({ layerType: LayerType.lithology, fromDepth: 30, toDepth: 70 });
     hasLayer({ layerType: LayerType.lithology, fromDepth: 70, toDepth: 70 });
     hasLayer({ layerType: LayerType.lithology, fromDepth: 70, toDepth: 100 });
-    hasLayer({ layerType: LayerType.lithology, fromDepth: 100, toDepth: 100 });
+    // The appended-at-end lithology mirrors the depth row's (100, null) — toDepth stays
+    // unset until the user enters a value.
+    hasLayer({ layerType: LayerType.lithology, fromDepth: 100, toDepth: null });
   });
 
   it("adds, edits and resizes lithological descriptions across gap rows", () => {

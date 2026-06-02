@@ -18,8 +18,12 @@ export const verifyNoUnsavedChanges = () => {
   cy.contains("Unsaved changes").should("not.exist");
 };
 
-export const verifyUnsavedChanges = () => {
-  cy.dataCy("save-button").should("not.be.disabled");
+export const verifyUnsavedChanges = (hasError?: boolean) => {
+  if (hasError) {
+    cy.dataCy("save-button").should("be.disabled");
+  } else {
+    cy.dataCy("save-button").should("not.be.disabled");
+  }
   cy.dataCy("discardchanges-button").should("not.be.disabled");
   cy.contains("Unsaved changes").should("exist");
 };

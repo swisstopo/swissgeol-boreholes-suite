@@ -232,24 +232,27 @@ describe("useLithologyTableState", () => {
   });
 
   describe("handleAddDepthLayer", () => {
-    it("creates a (0,0) zero-thickness row and an empty lithology on an empty stratigraphy", () => {
+    it("creates a (null, null) row and an empty lithology on an empty stratigraphy", () => {
       const { result } = renderState();
       act(() => result.current.handleAddDepthLayer());
       expect(result.current.depths).toHaveLength(1);
-      expect(result.current.depths[0]).toMatchObject({ fromDepth: 0, toDepth: 0 });
+      expect(result.current.depths[0]).toMatchObject({ fromDepth: null, toDepth: null });
+      expect(result.current.depths[0].hasFromDepthError).toBe(true);
+      expect(result.current.depths[0].hasToDepthError).toBe(true);
       expect(result.current.tmpLithologies).toHaveLength(1);
       expect(result.current.tmpLithologies[0].id).toBe(0);
       expect(result.current.tmpLithologies[0].isUnconsolidated).toBe(true);
       expect(result.current.tmpLithologies[0].isAutoCorrected).toBe(false);
     });
 
-    it("appends a (lastTo,lastTo) zero-thickness row inheriting isUnconsolidated", () => {
+    it("appends a (lastTo, null) row inheriting isUnconsolidated and flagged as unset", () => {
       const { result } = renderState({
         lithologies: [lithology({ id: 1, fromDepth: 0, toDepth: 50, isUnconsolidated: false })],
       });
       act(() => result.current.handleAddDepthLayer());
       const added = result.current.depths.at(-1)!;
-      expect(added).toMatchObject({ fromDepth: 50, toDepth: 50 });
+      expect(added).toMatchObject({ fromDepth: 50, toDepth: null });
+      expect(added.hasToDepthError).toBe(true);
       const addedLithology = result.current.tmpLithologies.at(-1)!;
       expect(addedLithology.isUnconsolidated).toBe(false);
       expect(addedLithology.isAutoCorrected).toBe(false);

@@ -104,7 +104,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     setSelectedFaciesDescription(undefined);
   };
 
-  const handleAddLithologicalDescriptionInGap = (depthId: string, fromDepth: number, toDepth: number) => {
+  const handleAddLithologicalDescriptionInGap = (depthId: string, fromDepth: number | null, toDepth: number | null) => {
     setSelectedLithologicalDescription({
       id: 0,
       stratigraphyId,
@@ -114,7 +114,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     });
   };
 
-  const handleAddFaciesDescriptionInGap = (depthId: string, fromDepth: number, toDepth: number) => {
+  const handleAddFaciesDescriptionInGap = (depthId: string, fromDepth: number | null, toDepth: number | null) => {
     setSelectedFaciesDescription({
       id: 0,
       stratigraphyId,
@@ -174,9 +174,9 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     index: number,
     keyPrefix: string,
     depthId: string,
-    fromDepth: number,
-    toDepth: number,
-    onAddInGap?: (depthId: string, fromDepth: number, toDepth: number) => void,
+    fromDepth: number | null,
+    toDepth: number | null,
+    onAddInGap?: (depthId: string, fromDepth: number | null, toDepth: number | null) => void,
   ) => {
     return (
       <StratigraphyTableDescriptionGap
@@ -239,7 +239,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     buildContent: (layer: BaseLayer) => ReactNode,
     onEdit: (index: number) => void,
     onDelete?: (index: number) => void,
-    onAddInGap?: (depthId: string, fromDepth: number, toDepth: number) => void,
+    onAddInGap?: (depthId: string, fromDepth: number | null, toDepth: number | null) => void,
     resizableKind?: ResizeKind,
   ): ReactNode[] => {
     // Apply the in-flight resize preview to the matching description (only the description's
@@ -250,6 +250,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
             if (i !== activeDrag.itemIdx) return layer;
             const newDepthIds = depths
               .filter(d => {
+                if (d.fromDepth === null || d.toDepth === null) return false;
                 if (d.fromDepth === d.toDepth) {
                   return d.fromDepth > previewRange.fromDepth && d.fromDepth < previewRange.toDepth;
                 }
@@ -324,7 +325,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                 const isMenuOpenForThis = openMenuDepthId === depth.id;
                 return (
                   <DepthColumnCell
-                    key={`${depth.id}-depth-${depth.fromDepth}-${depth.toDepth}`}
+                    key={depth.id}
                     depth={depth}
                     showHoverContent={isMenuOpenForThis || isHoveredViaItem}
                     isDeletePreview={deletePreviewDepth?.id === depth.id}>
