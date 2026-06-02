@@ -183,7 +183,7 @@ interface StratigraphyWithLithology extends LithologyTabContents {
   stratigraphy: Stratigraphy;
 }
 
-export const stratigraphiesQueryKey = "stratigraphies";
+const stratigraphiesQueryKey = "stratigraphies";
 
 const invalidateStratigraphyQueries = (
   queryClient: ReturnType<typeof useQueryClient>,
