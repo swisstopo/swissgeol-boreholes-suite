@@ -1,4 +1,4 @@
-import { FC, ReactNode, useMemo, useState } from "react";
+import { FC, ReactNode, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { BaseLayer } from "../../../../../../api/stratigraphy.ts";
@@ -82,11 +82,13 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
   };
   const handleItemMouseLeave = () => setHoveredItemDepthIds(new Set());
 
+  const tableRef = useRef<HTMLDivElement>(null);
   const { activeDrag, previewRange, startResizeDrag } = useDescriptionResize({
     depths,
     tmpLithologicalDescriptions,
     tmpFaciesDescriptions,
     resizeDescription,
+    containerRef: tableRef,
   });
 
   const handleLithologyUpdate = (updated: Lithology, hasChanges: boolean) => {
@@ -305,7 +307,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
   };
 
   return (
-    <Stack gap={1.5}>
+    <Stack gap={1.5} ref={tableRef}>
       <Stack>
         <StratigraphyTableHeader>
           <StratigraphyTableHeaderCell sx={{ flex: "0 0 128px" }} label={t("depth")} />
