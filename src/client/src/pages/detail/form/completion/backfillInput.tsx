@@ -1,24 +1,28 @@
-import { addBackfill, updateBackfill } from "../../../../api/fetchApiV2.ts";
+﻿import { addBackfill, updateBackfill } from "../../../../api/fetchApiV2.ts";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard.tsx";
 import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { useCasings } from "./casing.ts";
-import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils";
-import { completionSchemaConstants } from "./completionSchemaConstants";
-import { prepareEntityDataForSubmit } from "./completionUtils.js";
+import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils.tsx";
+import { Backfill, DataCardItemInputProps } from "./completionInterfaces.ts";
+import { completionSchemaConstants } from "./completionSchemaConstants.ts";
+import { prepareEntityDataForSubmit } from "./completionUtils.ts";
 
-const BackfillInput = ({ item, parentId }) => {
-  const getCasingOptions = useGetCasingOptions();
+const BackfillInput = ({ item, parentId }: DataCardItemInputProps<Backfill>) => {
   const { data: casings = [] } = useCasings(parentId);
 
-  const prepareFormDataForSubmit = data => {
+  const getCasingOptions = useGetCasingOptions();
+  const casingOptions = getCasingOptions(casings);
+
+  const prepareFormDataForSubmit = (data: Backfill): Backfill => {
     data = prepareCasingDataForSubmit(data);
     data = prepareEntityDataForSubmit(data, parentId);
     return data;
   };
 
+  if (!casingOptions) return null;
   return (
-    <DataInputCard
+    <DataInputCard<Backfill>
       item={item}
       addData={addBackfill}
       updateData={updateBackfill}
@@ -61,7 +65,7 @@ const BackfillInput = ({ item, parentId }) => {
           fieldName="casingId"
           label="casingName"
           selected={item.isOpenBorehole ? -1 : item.casingId}
-          values={getCasingOptions(casings)}
+          values={casingOptions}
         />
       </FormContainer>
       <FormContainer>

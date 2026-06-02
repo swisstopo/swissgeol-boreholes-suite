@@ -1,7 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
-import { useGetCasingName } from "../completion/casingUtils.jsx";
+import { useGetCasingName } from "../completion/casingUtils.tsx";
 import { Observation } from "./Observation.ts";
 
 const ObservationDisplay = ({
@@ -60,7 +60,7 @@ const ObservationDisplay = ({
             }
           />
           <FormContainer direction="row">
-            <FormDisplay label="reliability" value={observation?.reliability ?? null} type={FormValueType.Domain} />
+            <FormDisplay label="reliability" value={observation?.reliability} type={FormValueType.Domain} />
             <FormDisplay label="casingName" value={getCasingNameWithCompletion(observation)} />
           </FormContainer>
           <FormDisplay label="comment" value={observation?.comment} />

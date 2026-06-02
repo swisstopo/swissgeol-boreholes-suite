@@ -9,7 +9,7 @@ import { formatNumberForDisplay } from "./formUtils.ts";
 interface FormDisplayProps {
   prefix?: string;
   label: string;
-  value: string | string[] | number | number[] | boolean | Codelist | Codelist[] | null;
+  value: string | string[] | number | number[] | boolean | Codelist | Codelist[] | null | undefined;
   type?: FormValueType;
   sx?: SxProps;
 }
@@ -52,7 +52,7 @@ export const FormDisplay: FC<FormDisplayProps> = ({ prefix, label, value, type, 
   };
 
   const formatValue = (
-    value: string | string[] | number | number[] | boolean | Codelist | Codelist[] | null,
+    value: string | string[] | number | number[] | boolean | Codelist | Codelist[] | null | undefined,
   ): string => {
     if (Array.isArray(value)) {
       if (value.length === 0) {

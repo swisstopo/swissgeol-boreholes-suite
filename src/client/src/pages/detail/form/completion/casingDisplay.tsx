@@ -1,18 +1,18 @@
-import { useTranslation } from "react-i18next";
+﻿import { useTranslation } from "react-i18next";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { deleteCasing } from "../../../../api/fetchApiV2.ts";
 import { useCodelists } from "../../../../components/codelist.ts";
 import { DataDisplayCard } from "../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
-import { formatNumberForDisplay } from "../../../../components/form/formUtils.js";
-import { extractCasingDepth } from "./casingUtils";
+import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
+import { extractCasingDepth } from "./casingUtils.tsx";
+import { Casing, DataCardItemDisplayProps } from "./completionInterfaces.ts";
 
-const CasingDisplay = props => {
-  const { item } = props;
+const CasingDisplay = ({ item }: DataCardItemDisplayProps<Casing>) => {
   const { t, i18n } = useTranslation();
   const codelists = useCodelists();
 
-  var depth = extractCasingDepth(item);
+  const depth = extractCasingDepth(item);
 
   return (
     <DataDisplayCard item={item} deleteData={deleteCasing} entityName={"casing"}>
@@ -49,9 +49,9 @@ const CasingDisplay = props => {
           </TableHead>
           <TableBody>
             {item?.casingElements
-              ?.sort((a, b) => a.fromDepth - b.fromDepth)
+              ?.toSorted((a, b) => (a.fromDepth ?? 0) - (b.fromDepth ?? 0))
               .map((element, index) => (
-                <TableRow key={index} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                <TableRow key={element.id ?? index} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                   <TableCell component="th" scope="row" data-cy={`casingElements.${index}.fromDepth-formDisplay`}>
                     {formatNumberForDisplay(element.fromDepth)}
                   </TableCell>

@@ -121,8 +121,8 @@ export const FormSelect: FC<FormSelectProps> = ({
             isOptionEqualToValue={(option, value) => option.key === value.key}
             value={
               field.value === null || field.value === undefined
-                ? undefined
-                : menuItems.find(opt => opt.value === field.value)
+                ? null
+                : (menuItems.find(opt => opt.value === field.value) ?? null)
             }
             onChange={(_, newValue) => {
               if (newValue?.label.toLowerCase() === t("reset").toLowerCase()) {
@@ -159,7 +159,8 @@ export const FormSelect: FC<FormSelectProps> = ({
               );
             }}
             disabled={disabled}
-            disableClearable
+            // Typescript quirk: By asserting "true as boolean", MUI's Autocomplete component allows null for the value type.
+            disableClearable={true as boolean}
           />
         );
       }}

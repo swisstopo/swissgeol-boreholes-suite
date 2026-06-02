@@ -14,6 +14,9 @@
 - Lithology rock type can now be left unspecified (in addition to unconsolidated and consolidated). Stratigraphy extraction creates lithologies as unspecified by default.
 - Redesigned lithology table to edit depths in the table overview and stratigraphy extraction.
 
+### Fixed
+- Fixed bug where casing name was not correctly displayed in the select on the backfill card.
+
 ## v2.1.1631 - 2026-05-13
 
 ### Added

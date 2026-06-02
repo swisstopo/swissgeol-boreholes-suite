@@ -4,7 +4,7 @@ import { BoreholeV2 } from "../../api/borehole.ts";
 import { theme } from "../../AppTheme";
 import { Attachments } from "./attachments/attachments.tsx";
 import { BoreholePanel } from "./form/borehole/boreholePanel.tsx";
-import Completion from "./form/completion/completion.jsx";
+import { CompletionPanel } from "./form/completion/completionPanel.tsx";
 import { FieldMeasurement } from "./form/hydrogeology/fieldMeasurement/fieldMeasurement.tsx";
 import GroundwaterLevelMeasurement from "./form/hydrogeology/groundwaterLevelMeasurement/groundwaterLevelMeasurement.tsx";
 import Hydrotest from "./form/hydrogeology/hydrotest/hydrotest.tsx";
@@ -52,8 +52,8 @@ export const DetailPageContent = ({ borehole, panelOpen }: DetailPageContentProp
             <Route path="hydrogeology/fieldmeasurement" element={<FieldMeasurement />} />
             <Route path="hydrogeology/hydrotest" element={<Hydrotest />} />
             <Route path="hydrogeology" element={<Navigate to="hydrogeology/wateringress" replace />} />
-            <Route path="completion/:completionId" element={<Completion />} />
-            <Route path="completion" element={<Completion />} />
+            <Route path="completion/:completionId" element={<CompletionPanel />} />
+            <Route path="completion" element={<CompletionPanel />} />
             <Route path="log" element={<LogPanel />} />
             <Route path="status" element={<WorkflowView />} />
             <Route path="" element={<Navigate to="location" replace />} />

@@ -2,7 +2,7 @@ import { FC } from "react";
 import { DataInputCard } from "../../../../../components/dataCard/dataInputCard.js";
 import { FormContainer } from "../../../../../components/form/form.ts";
 import { FormDomainSelect } from "../../../../../components/form/formDomainSelect.tsx";
-import { prepareCasingDataForSubmit } from "../../completion/casingUtils.jsx";
+import { prepareCasingDataForSubmit } from "../../completion/casingUtils.tsx";
 import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
 import { ObservationType, prepareObservationDataForSubmit } from "../Observation.ts";
 import ObservationInput from "../observationInput.tsx";

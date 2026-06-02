@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
-import { Casing } from "../../../../api/apiInterfaces.ts";
 import { getCasingsByBoreholeId } from "../../../../api/fetchApiV2.js";
 import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormContainer } from "../../../../components/form/formContainer";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
-import { useGetCasingOptions } from "../completion/casingUtils.jsx";
+import { useGetCasingOptions } from "../completion/casingUtils.tsx";
+import { Casing } from "../completion/completionInterfaces.ts";
 import DepthInput from "./depthInput.tsx";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants.ts";
 import { ObservationInputProps } from "./Observation.ts";

@@ -82,8 +82,12 @@ describe("Backfill crud tests", () => {
     cy.contains("222");
     evaluateDisplayValue("casingName", "test backfill - casing-1");
 
+    // value is preserved after hard reload
+    cy.reload(true);
+    evaluateDisplayValue("casingName", "test backfill - casing-1");
     startEditing();
     cy.wait("@casing_by_completion_GET");
+    evaluateSelect("casingId", "test backfill - casing-1");
     setSelect("casingId", 1);
     saveForm();
     evaluateDisplayValue("casingName", "open hole");
