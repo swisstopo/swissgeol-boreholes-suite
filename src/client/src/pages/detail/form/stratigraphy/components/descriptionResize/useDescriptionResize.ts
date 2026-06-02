@@ -1,4 +1,4 @@
-import { MouseEvent, useEffect, useMemo, useRef, useState } from "react";
+import { MouseEvent, RefObject, useEffect, useMemo, useRef, useState } from "react";
 import { BaseLayer, DepthLayer, FaciesDescription, LithologicalDescription } from "../../stratigraphy.ts";
 
 export type ResizeKind = "lithological" | "facies";
@@ -25,6 +25,7 @@ interface UseDescriptionResizeArgs {
   tmpLithologicalDescriptions: LithologicalDescription[];
   tmpFaciesDescriptions: FaciesDescription[];
   resizeDescription: (kind: ResizeKind, itemIdx: number, fromDepth: number, toDepth: number) => void;
+  containerRef: RefObject<HTMLElement | null>;
 }
 
 interface UseDescriptionResizeReturn {
@@ -56,6 +57,7 @@ export const useDescriptionResize = ({
   tmpLithologicalDescriptions,
   tmpFaciesDescriptions,
   resizeDescription,
+  containerRef,
 }: UseDescriptionResizeArgs): UseDescriptionResizeReturn => {
   const [activeDrag, setActiveDrag] = useState<ResizeDrag | null>(null);
   const [previewRange, setPreviewRange] = useState<PreviewRange | null>(null);
@@ -79,9 +81,12 @@ export const useDescriptionResize = ({
 
     // Cache the depth-row DOM elements. We use their `getBoundingClientRect()` on every
     // event to figure out which row the cursor is over — this automatically tracks any
-    // scroll (window or container) without us having to do pixel math.
+    // scroll (window or container) without us having to do pixel math. Scope the lookup to
+    // the owning table so we don't accidentally hit a same-named cell in a sibling table
+    // hidden via display:none (see comment on containerRef).
+    const root: ParentNode = containerRef.current ?? document;
     const depthEls: (HTMLElement | null)[] = depths.map(d =>
-      document.querySelector<HTMLElement>(`[data-cy="depth-${d.fromDepth}-${d.toDepth}"]`),
+      root.querySelector<HTMLElement>(`[data-cy="depth-${d.fromDepth}-${d.toDepth}"]`),
     );
 
     const ownedBySibling = (depthIdx: number) => {
@@ -195,7 +200,7 @@ export const useDescriptionResize = ({
       document.removeEventListener("scroll", onScroll, { capture: true });
       document.body.style.cursor = "";
     };
-  }, [activeDrag, depths, dragColumnItems]);
+  }, [activeDrag, depths, dragColumnItems, containerRef]);
 
   const startResizeDrag = (
     event: MouseEvent<HTMLElement>,

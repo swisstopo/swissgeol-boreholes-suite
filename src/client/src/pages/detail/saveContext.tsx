@@ -1,4 +1,15 @@
-import { createContext, FC, PropsWithChildren, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import {
+  createContext,
+  Dispatch,
+  FC,
+  PropsWithChildren,
+  SetStateAction,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useLocation } from "react-router";
 
 export interface SaveContextProps {
@@ -7,8 +18,8 @@ export interface SaveContextProps {
   hasChanges: boolean;
   hasErrors: boolean;
   isSaving: boolean;
-  markAsChanged: (hasChanges: boolean) => void;
-  markHasErrors: (hasErrors: boolean) => void;
+  setHasChanges: Dispatch<SetStateAction<boolean>>;
+  setHasErrors: Dispatch<SetStateAction<boolean>>;
   registerSaveHandler: (handler: SaveHandler) => void;
   triggerSave: () => void;
   registerResetHandler: (handler: ResetHandler) => void;
@@ -25,8 +36,8 @@ export const SaveContext = createContext<SaveContextProps>({
   hasChanges: false,
   hasErrors: false,
   isSaving: false,
-  markAsChanged: () => {},
-  markHasErrors: () => {},
+  setHasChanges: () => {},
+  setHasErrors: () => {},
   registerSaveHandler: () => {},
   triggerSave: () => {},
   registerResetHandler: () => {},
@@ -48,14 +59,6 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
   const showSaveBar = useMemo(() => {
     return hasSaveHandler && hasResetHandler;
   }, [hasSaveHandler, hasResetHandler]);
-
-  const markAsChanged = useCallback((hasChanged: boolean) => {
-    setHasChanges(hasChanged);
-  }, []);
-
-  const markHasErrors = useCallback((value: boolean) => {
-    setHasErrors(value);
-  }, []);
 
   const registerSaveHandler = useCallback((handler: SaveHandler) => {
     saveHandlerRef.current = handler;
@@ -128,8 +131,8 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
       hasChanges,
       hasErrors,
       isSaving,
-      markAsChanged,
-      markHasErrors,
+      setHasChanges,
+      setHasErrors,
       registerSaveHandler,
       triggerSave,
       registerResetHandler,
@@ -140,8 +143,6 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
     hasChanges,
     hasErrors,
     isSaving,
-    markAsChanged,
-    markHasErrors,
     registerResetHandler,
     registerSaveHandler,
     showSaveBar,

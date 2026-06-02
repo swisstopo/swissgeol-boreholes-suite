@@ -8,6 +8,7 @@ interface AddStratigraphyButtonProps {
   addEmptyStratigraphy: () => void;
   extractStratigraphyFromProfile: () => void;
   sx?: SxProps;
+  onBeforeOpen?: (proceed: () => void) => void;
 }
 
 enum Actions {
@@ -19,6 +20,7 @@ export const AddStratigraphyButton: FC<AddStratigraphyButtonProps> = ({
   addEmptyStratigraphy,
   extractStratigraphyFromProfile,
   sx,
+  onBeforeOpen,
 }) => {
   const { t } = useTranslation();
 
@@ -41,6 +43,7 @@ export const AddStratigraphyButton: FC<AddStratigraphyButtonProps> = ({
             break;
         }
       }}
+      onBeforeOpen={onBeforeOpen}
       anchorOrigin={{ vertical: "bottom", horizontal: "right" }}
       transformOrigin={{ vertical: "top", horizontal: "right" }}
       sx={{ height: "36px", ...sx }}

@@ -9,8 +9,12 @@ import {
   removeDepthIdReferences,
 } from "./lithologyTableUtils.ts";
 
-export type DepthDeleteAction = "extendLower" | "extendUpper" | "reduceBoreholeEnd";
+export type DepthDeleteAction = "extendLower" | "extendUpper" | "reduceBoreholeEnd" | "increaseBoreholeStart";
 export type DepthInsertPosition = "before" | "after";
+
+export interface LithologyTableStateOptions {
+  mergeDepthsOnDescriptionResize?: boolean;
+}
 
 export interface LithologyTableState {
   depths: DepthLayer[];
@@ -40,7 +44,9 @@ export const useLithologyTableState = (
   initialLithologicalDescriptions: LithologicalDescription[],
   initialFaciesDescriptions: FaciesDescription[],
   stratigraphyId: number,
+  options: LithologyTableStateOptions = {},
 ): LithologyTableState => {
+  const { mergeDepthsOnDescriptionResize = false } = options;
   const [depths, setDepths] = useState<DepthLayer[]>([]);
   const [tmpLithologies, setTmpLithologies] = useState<Lithology[]>([]);
   const [tmpLithologicalDescriptions, setTmpLithologicalDescriptions] = useState<LithologicalDescription[]>([]);
@@ -77,7 +83,7 @@ export const useLithologyTableState = (
     setTmpLithologies(cleanLithologies);
     setTmpLithologicalDescriptions(cleanLithologicalDescriptions);
     setTmpFaciesDescriptions(cleanFaciesDescriptions);
-    setHasUnsavedChanges(false);
+    setHasUnsavedChanges(cleanLithologies.some(l => l.isAutoCorrected));
   };
 
   if (seedInputHash !== seededInputHash) {
@@ -296,7 +302,11 @@ export const useLithologyTableState = (
 
       // Shift items that referenced the deleted depth layer whose boundary sat on the
       // disappearing edge — drag it onto the remaining edge.
-      if (refsDeleted && action === "extendUpper" && item.fromDepth === depthLayerToDelete.fromDepth) {
+      if (
+        refsDeleted &&
+        (action === "extendUpper" || action === "increaseBoreholeStart") &&
+        item.fromDepth === depthLayerToDelete.fromDepth
+      ) {
         return { ...item, fromDepth: depthLayerToDelete.toDepth, depthIds: newDepthIds };
       }
       if (
@@ -431,10 +441,59 @@ export const useLithologyTableState = (
       depthIds: candidateDepths.map(d => d.id),
     };
     const newList = list.map((item, i) => (i === index ? updated : item));
-    const newLithologicalDescriptions = kind === "lithological" ? newList : tmpLithologicalDescriptions;
-    const newFaciesDescriptions = kind === "facies" ? newList : tmpFaciesDescriptions;
+    let newLithologicalDescriptions = kind === "lithological" ? newList : tmpLithologicalDescriptions;
+    let newFaciesDescriptions = kind === "facies" ? newList : tmpFaciesDescriptions;
+    let newDepths = depths;
+    let newLithologies = tmpLithologies;
 
-    commitChanges(depths, tmpLithologies, newLithologicalDescriptions, newFaciesDescriptions);
+    if (mergeDepthsOnDescriptionResize && candidateDepths.length > 1) {
+      const survivorId = candidateDepths[0].id;
+      const candidatesToMerge = new Set(candidateDepths.slice(1).map(d => d.id));
+      const merged = mergeAdjacentDepths(depths, candidatesToMerge);
+      newDepths = merged.depths;
+      const mergedIds = merged.mergedIds;
+      const survivorDepth = newDepths.find(d => d.id === survivorId);
+      const isMerged = (id: string) => mergedIds.has(id);
+      const isNotMerged = (id: string) => !mergedIds.has(id);
+
+      // Drop placeholder lithologies whose only depthId was merged away; extend the survivor's toDepth.
+      newLithologies = tmpLithologies
+        .filter(l => {
+          const ids = l.depthIds;
+          if (!ids || ids.length === 0) return true;
+          // Keep if at least one depthId is not merged (covers the survivor and unrelated rows).
+          return ids.some(isNotMerged);
+        })
+        .map(l => {
+          if (!l.depthIds?.includes(survivorId)) return l;
+          return {
+            ...l,
+            toDepth: survivorDepth?.toDepth ?? l.toDepth,
+            depthIds: [survivorId],
+          };
+        });
+
+      // Resized description now points only to the survivor row; other items in either column
+      // get any merged depthIds stripped so refs stay valid.
+      const cleanItems = <T extends BaseLayer>(items: T[], isResizedColumn: boolean): T[] =>
+        items.map((item, i) => {
+          if (isResizedColumn && i === index) {
+            return { ...item, depthIds: [survivorId] };
+          }
+          if (!item.depthIds?.some(isMerged)) return item;
+          return { ...item, depthIds: item.depthIds.filter(isNotMerged) };
+        });
+
+      newLithologicalDescriptions = cleanItems(newLithologicalDescriptions, kind === "lithological");
+      newFaciesDescriptions = cleanItems(newFaciesDescriptions, kind === "facies");
+    }
+
+    commitChanges(
+      flagErrors(newDepths, newLithologies),
+      newLithologies,
+      newLithologicalDescriptions,
+      newFaciesDescriptions,
+    );
   };
 
   const hasErrors = depths.some(d => d.hasFromDepthError || d.hasToDepthError);

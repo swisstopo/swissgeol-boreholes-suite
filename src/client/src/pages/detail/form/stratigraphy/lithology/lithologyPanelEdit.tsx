@@ -19,7 +19,7 @@ export const LithologyPanelEdit: FC<LithologyPanelEditProps> = ({
   lithologicalDescriptions,
   faciesDescriptions,
 }) => {
-  const { markAsChanged, markHasErrors } = useContext(SaveContext);
+  const { setHasChanges, setHasErrors } = useContext(SaveContext);
   const { registerSaveHandler, registerResetHandler } = useContext<StratigraphyContextProps>(StratigraphyContext);
 
   const { mutateAsync: updateContents } = useUpdateLithologyContents();
@@ -32,12 +32,12 @@ export const LithologyPanelEdit: FC<LithologyPanelEditProps> = ({
   );
 
   useEffect(() => {
-    markAsChanged(lithologyTableState.hasUnsavedChanges);
-  }, [lithologyTableState.hasUnsavedChanges, markAsChanged]);
+    setHasChanges(lithologyTableState.hasUnsavedChanges);
+  }, [lithologyTableState.hasUnsavedChanges, setHasChanges]);
 
   useEffect(() => {
-    markHasErrors(lithologyTableState.hasErrors);
-  }, [lithologyTableState.hasErrors, markHasErrors]);
+    setHasErrors(lithologyTableState.hasErrors);
+  }, [lithologyTableState.hasErrors, setHasErrors]);
 
   const onSave = useCallback(async () => {
     await updateContents({

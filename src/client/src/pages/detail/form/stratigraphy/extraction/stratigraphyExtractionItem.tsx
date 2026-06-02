@@ -30,7 +30,9 @@ export const StratigraphyExtractionItem: FC<StratigraphyExtractionItemProps> = (
   onStateChange,
 }) => {
   const { t } = useTranslation();
-  const state = useLithologyTableState([] as Lithology[], descriptions, [] as FaciesDescription[], 0);
+  const state = useLithologyTableState([] as Lithology[], descriptions, [] as FaciesDescription[], 0, {
+    mergeDepthsOnDescriptionResize: true,
+  });
   const { tmpLithologies, tmpLithologicalDescriptions, hasErrors } = state;
 
   useEffect(() => {

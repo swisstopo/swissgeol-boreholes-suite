@@ -1,4 +1,4 @@
-import { FC, ReactNode, useMemo, useState } from "react";
+import { FC, ReactNode, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { theme } from "../../../../../../AppTheme.ts";
@@ -79,11 +79,13 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
   };
   const handleItemMouseLeave = () => setHoveredItemDepthIds(new Set());
 
+  const tableRef = useRef<HTMLDivElement>(null);
   const { activeDrag, previewRange, startResizeDrag } = useDescriptionResize({
     depths,
     tmpLithologicalDescriptions,
     tmpFaciesDescriptions,
     resizeDescription,
+    containerRef: tableRef,
   });
 
   const handleLithologyUpdate = (updated: Lithology, hasChanges: boolean) => {
@@ -175,7 +177,6 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     toDepth: number | null,
     onAddInGap?: (depthId: string, fromDepth: number | null, toDepth: number | null) => void,
   ) => {
-    const onClick = onAddInGap ? () => onAddInGap(depthId, fromDepth, toDepth) : undefined;
     return (
       <StratigraphyTableDescriptionGap
         key={`${keyPrefix}-${index}-${fromDepth}-${depthId}`}
@@ -184,23 +185,32 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
           height: `${defaultRowHeight}px`,
         }}
         index={index}
-        onClick={onClick}
+        onClick={onAddInGap ? () => onAddInGap(depthId, fromDepth, toDepth) : undefined}
         onMouseEnter={() => handleItemMouseEnter([depthId])}
         onMouseLeave={handleItemMouseLeave}
       />
     );
   };
 
-  const renderActionCell = (
-    index: number,
-    keyPrefix: string,
-    layer: BaseLayer,
-    buildContent: (layer: BaseLayer) => ReactNode,
-    onEdit: (index: number) => void,
-    onDelete?: (index: number) => void,
-    resizeHandles?: ReactNode,
-    heightInRows?: number,
-  ) => (
+  const renderActionCell = ({
+    index,
+    keyPrefix,
+    layer,
+    buildContent,
+    onEdit,
+    onDelete,
+    resizeHandles,
+    heightInRows,
+  }: {
+    index: number;
+    keyPrefix: string;
+    layer: BaseLayer;
+    buildContent: (layer: BaseLayer) => ReactNode;
+    onEdit: (index: number) => void;
+    onDelete?: (index: number) => void;
+    resizeHandles?: ReactNode;
+    heightInRows?: number;
+  }) => (
     <StratigraphyTableActionCell
       key={`${keyPrefix}-${index}-${layer.fromDepth}-${layer.id}`}
       dataCy={`${keyPrefix}-${layer.fromDepth}-${layer.toDepth}`}
@@ -270,20 +280,20 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
         cells.push(renderGapCell(depthIdx, keyPrefix, depth.id, depth.fromDepth, depth.toDepth, onAddInGap));
       } else if (!renderedItems.has(itemIdx)) {
         const layer = effectiveLayers[itemIdx];
-        const handles = resizableKind
+        const resizeHandles = resizableKind
           ? buildResizeHandles(resizableKind, itemIdx, layer, itemIndexByDepthId)
           : undefined;
         cells.push(
-          renderActionCell(
-            itemIdx,
+          renderActionCell({
+            index: itemIdx,
             keyPrefix,
             layer,
             buildContent,
             onEdit,
             onDelete,
-            handles,
-            layer.depthIds?.length ?? 1,
-          ),
+            resizeHandles,
+            heightInRows: layer.depthIds?.length ?? 1,
+          }),
         );
         renderedItems.add(itemIdx);
       }
@@ -294,7 +304,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
   };
 
   return (
-    <Stack gap={1.5}>
+    <Stack gap={1.5} ref={tableRef}>
       <Stack>
         <StratigraphyTableHeader>
           <StratigraphyTableHeaderCell sx={{ flex: "0 0 128px" }} label={t("depth")} />
