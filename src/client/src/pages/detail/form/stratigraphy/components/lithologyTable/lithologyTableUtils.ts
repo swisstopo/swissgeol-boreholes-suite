@@ -125,7 +125,7 @@ const buildDepthLayers = (
 // start/end, not a foreign cut, so it doesn't count). A zero-thickness item owns exactly the
 // zero-thickness layer at its point.
 const assignDepthIds = <T extends BaseLayer>(items: T[], depthLayers: DepthLayer[]) => {
-  const concreteLayers = depthLayers.filter(
+  const definedLayers = depthLayers.filter(
     (l): l is DepthLayer & { fromDepth: number; toDepth: number } => l.fromDepth !== null && l.toDepth !== null,
   );
   for (const item of items) {
@@ -133,9 +133,9 @@ const assignDepthIds = <T extends BaseLayer>(items: T[], depthLayers: DepthLayer
     const itemFrom = item.fromDepth;
     const itemTo = item.toDepth;
     if (itemFrom === itemTo) {
-      item.depthIds = concreteLayers.filter(l => l.fromDepth === itemFrom && l.toDepth === itemFrom).map(l => l.id);
+      item.depthIds = definedLayers.filter(l => l.fromDepth === itemFrom && l.toDepth === itemFrom).map(l => l.id);
     } else {
-      item.depthIds = concreteLayers
+      item.depthIds = definedLayers
         .filter(l => {
           if (l.fromDepth < l.toDepth) {
             return l.fromDepth >= itemFrom && l.toDepth <= itemTo;
