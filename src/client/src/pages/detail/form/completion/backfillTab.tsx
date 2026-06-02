@@ -12,11 +12,10 @@ export const BackfillTab = ({ completionId }: CompletionTabProps) => {
   const sortDisplayed = useCallback((a: Backfill, b: Backfill) => {
     const aName = a.casingId ? a.casing?.name : null;
     const bName = b.casingId ? b.casing?.name : null;
-    if (aName !== bName) {
-      return (aName ?? "") < (bName ?? "") ? -1 : 1;
-    } else {
+    if (aName === bName) {
       return sortByDepth(a, b, "fromDepth", "toDepth");
     }
+    return (aName ?? "") < (bName ?? "") ? -1 : 1;
   }, []);
 
   return (

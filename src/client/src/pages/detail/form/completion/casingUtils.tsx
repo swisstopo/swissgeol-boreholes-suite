@@ -60,12 +60,11 @@ export const useGetCasingOptions = () => {
   ): CasingOption[] => {
     const options: CasingOption[] = [{ key: -1, name: t("openBorehole") }];
     casings
-      .sort((a, b) => {
-        if (a.name !== b.name) {
-          return (a.name ?? "") < (b.name ?? "") ? -1 : 1;
-        } else {
+      .toSorted((a, b) => {
+        if (a.name === b.name) {
           return 0;
         }
+        return (a.name ?? "") < (b.name ?? "") ? -1 : 1;
       })
       .forEach(casing => {
         if (casing.id != null) {

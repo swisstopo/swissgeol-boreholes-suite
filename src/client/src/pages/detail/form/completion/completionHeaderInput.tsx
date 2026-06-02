@@ -23,7 +23,8 @@ const CompletionHeaderInput = ({
   cancelChanges,
   saveCompletion,
   trySwitchTab,
-  switchTabs,
+  confirmTabSwitch,
+  cancelTabSwitch,
 }: CompletionHeaderInputProps) => {
   const { showPrompt } = useContext(PromptContext);
   const formMethods = useForm({ mode: "all" });
@@ -54,14 +55,14 @@ const CompletionHeaderInput = ({
           {
             label: "cancel",
             action: () => {
-              switchTabs(false);
+              cancelTabSwitch();
             },
           },
           {
             label: "reset",
             action: () => {
               formMethods.reset(selectedCompletion);
-              switchTabs(true);
+              confirmTabSwitch();
             },
           },
           {
@@ -73,7 +74,7 @@ const CompletionHeaderInput = ({
           },
         ]);
       } else {
-        switchTabs(true);
+        confirmTabSwitch();
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -97,65 +98,63 @@ const CompletionHeaderInput = ({
     );
 
   return (
-    <>
-      <FormProvider {...formMethods}>
-        <form onSubmit={formMethods.handleSubmit(submitForm)}>
-          <FormContainer>
-            <FormContainer
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
-              flexWrap="wrap"
-              marginRight={"10px"}>
-              <FormInput
-                fieldName="name"
-                label="name"
-                required={true}
-                value={selectedCompletion?.name}
-                sx={{ flex: "1 1 180px" }}
-              />
-              <FormDomainSelect
-                fieldName="kindId"
-                label="completionKind"
-                selected={selectedCompletion?.kindId}
-                required={true}
-                schemaName={completionSchemaConstants.completionKind}
-                prefilteredDomains={schemaData}
-              />
-            </FormContainer>
-            <FormContainer direction="row" justifyContent="space-between" flexWrap="wrap">
-              <FormInput
-                fieldName="notes"
-                label="notes"
-                multiline={true}
-                value={selectedCompletion?.notes}
-                sx={{ flex: "1 1 180px" }}
-              />
-              <FormInput
-                fieldName="abandonDate"
-                label="dateAbandonmentCompletion"
-                type={FormValueType.Date}
-                value={selectedCompletion?.abandonDate}
-              />
-            </FormContainer>
-            <FormContainer direction="row-reverse" justifyContent="space-between" flexWrap="wrap">
-              <FormCheckbox fieldName="isPrimary" label="mainCompletion" disabled={completion.isPrimary} />
-            </FormContainer>
-            <SaveAndCancelButtons
-              onCancel={() => {
-                formMethods.reset(selectedCompletion);
-                cancelChanges();
-              }}
-              onSave={async () => {
-                resetTabStatus();
-                formMethods.handleSubmit(submitForm)();
-              }}
-              saveDisabled={!formMethods.formState.isValid}
+    <FormProvider {...formMethods}>
+      <form onSubmit={formMethods.handleSubmit(submitForm)}>
+        <FormContainer>
+          <FormContainer
+            direction="row"
+            justifyContent="space-between"
+            alignItems="center"
+            flexWrap="wrap"
+            marginRight={"10px"}>
+            <FormInput
+              fieldName="name"
+              label="name"
+              required={true}
+              value={selectedCompletion?.name}
+              sx={{ flex: "1 1 180px" }}
+            />
+            <FormDomainSelect
+              fieldName="kindId"
+              label="completionKind"
+              selected={selectedCompletion?.kindId}
+              required={true}
+              schemaName={completionSchemaConstants.completionKind}
+              prefilteredDomains={schemaData}
             />
           </FormContainer>
-        </form>
-      </FormProvider>
-    </>
+          <FormContainer direction="row" justifyContent="space-between" flexWrap="wrap">
+            <FormInput
+              fieldName="notes"
+              label="notes"
+              multiline={true}
+              value={selectedCompletion?.notes}
+              sx={{ flex: "1 1 180px" }}
+            />
+            <FormInput
+              fieldName="abandonDate"
+              label="dateAbandonmentCompletion"
+              type={FormValueType.Date}
+              value={selectedCompletion?.abandonDate}
+            />
+          </FormContainer>
+          <FormContainer direction="row-reverse" justifyContent="space-between" flexWrap="wrap">
+            <FormCheckbox fieldName="isPrimary" label="mainCompletion" disabled={completion.isPrimary} />
+          </FormContainer>
+          <SaveAndCancelButtons
+            onCancel={() => {
+              formMethods.reset(selectedCompletion);
+              cancelChanges();
+            }}
+            onSave={async () => {
+              resetTabStatus();
+              formMethods.handleSubmit(submitForm)();
+            }}
+            saveDisabled={!formMethods.formState.isValid}
+          />
+        </FormContainer>
+      </form>
+    </FormProvider>
   );
 };
 export default CompletionHeaderInput;

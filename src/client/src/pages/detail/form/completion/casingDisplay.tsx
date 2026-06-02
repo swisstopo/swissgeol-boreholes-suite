@@ -49,9 +49,9 @@ const CasingDisplay = ({ item }: DataCardItemDisplayProps<Casing>) => {
           </TableHead>
           <TableBody>
             {item?.casingElements
-              ?.sort((a, b) => (a.fromDepth ?? 0) - (b.fromDepth ?? 0))
+              ?.toSorted((a, b) => (a.fromDepth ?? 0) - (b.fromDepth ?? 0))
               .map((element, index) => (
-                <TableRow key={index} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
+                <TableRow key={element.id ?? index} sx={{ "&:last-child td, &:last-child th": { border: 0 } }}>
                   <TableCell component="th" scope="row" data-cy={`casingElements.${index}.fromDepth-formDisplay`}>
                     {formatNumberForDisplay(element.fromDepth)}
                   </TableCell>

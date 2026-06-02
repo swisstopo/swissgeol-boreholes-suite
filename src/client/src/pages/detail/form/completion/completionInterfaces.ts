@@ -17,6 +17,7 @@ export interface Completion {
 }
 
 export interface CasingElement {
+  id?: number;
   fromDepth: number | null;
   toDepth: number | null;
   kindId: number | string;
@@ -103,7 +104,8 @@ export interface CompletionHeaderInputProps {
   cancelChanges: () => void;
   saveCompletion: (completion: Completion) => void;
   trySwitchTab: boolean;
-  switchTabs: (continueSwitching: boolean) => void;
+  confirmTabSwitch: () => void;
+  cancelTabSwitch: () => void;
 }
 
 export interface CompletionPanelState {

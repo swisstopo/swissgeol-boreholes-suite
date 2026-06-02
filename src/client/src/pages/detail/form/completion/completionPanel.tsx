@@ -84,7 +84,7 @@ export const CompletionPanel = () => {
   const loadData = () => {
     setIsLoading(true);
     if (boreholeId && mounted.current) {
-      getCompletions(parseInt(boreholeId, 10)).then(response => {
+      getCompletions(Number.parseInt(boreholeId, 10)).then(response => {
         if (response?.length > 0) {
           // Display primary completion first then order by created date
           response.sort((a, b) => {
@@ -116,68 +116,68 @@ export const CompletionPanel = () => {
     }
   };
 
-  const switchTabs = (continueSwitching: boolean) => {
-    if (continueSwitching) {
-      checkIfContentIsDirty();
-    } else {
-      setState({
-        ...state,
-        switchTabTo: null,
-        trySwitchTab: false,
-        editing: state.editing,
-      });
+  const confirmTabSwitch = () => {
+    checkIfContentIsDirty();
+  };
+
+  const cancelTabSwitch = () => {
+    setState({
+      ...state,
+      switchTabTo: null,
+      trySwitchTab: false,
+      editing: state.editing,
+    });
+  };
+
+  const handlePendingSave = () => {
+    if (canSwitch !== 0 && completionToBeSaved !== null) {
+      saveCompletion(completionToBeSaved, canSwitch === -1);
     }
   };
 
-  useEffect(() => {
-    if (checkContentDirty) {
-      if (canSwitch !== 0 && completionToBeSaved !== null) {
-        saveCompletion(completionToBeSaved, canSwitch === -1);
-      }
+  const navigateAfterSwitch = () => {
+    if (canSwitch !== 1 || state.switchTabTo === null) return;
 
-      if (canSwitch === 1 && state.switchTabTo !== null) {
-        if (state.switchTabTo === -1) {
-          updateHistory("new");
-        } else if (state.selected?.id === 0) {
-          const newCompletionList = state.displayed.slice(0, -1);
-          if (newCompletionList.length === 0) {
-            navigateTo({ path: "/" + boreholeId + "/completion" });
-            resetState();
-          } else {
-            updateHistory(newCompletionList[state.switchTabTo].id);
-          }
-        } else {
-          updateHistory(state.displayed[state.switchTabTo].id);
-        }
-      }
+    if (state.switchTabTo === -1) {
+      updateHistory("new");
+      return;
+    }
 
-      if (completionToBeSaved !== null && canSwitch === -1) {
-        const displayed = state.displayed;
-        const index = displayed.findIndex(item => item.id === completionToBeSaved.id);
-        displayed[index] = completionToBeSaved;
-
-        setState({
-          ...state,
-          displayed: displayed,
-          selected: completionToBeSaved,
-          switchTabTo: null,
-          trySwitchTab: false,
-          editing: false,
-        });
+    if (state.selected?.id === 0) {
+      const newCompletionList = state.displayed.slice(0, -1);
+      if (newCompletionList.length === 0) {
+        navigateTo({ path: "/" + boreholeId + "/completion" });
+        resetState();
       } else {
-        setState({
-          ...state,
-          switchTabTo: null,
-          trySwitchTab: false,
-          editing: false,
-        });
+        updateHistory(newCompletionList[state.switchTabTo].id);
       }
+      return;
+    }
 
-      if (canSwitch !== 0) {
-        setCompletionToBeSaved(null);
-        resetCanSwitch();
-        setCheckContentDirty(false);
-      }
+    updateHistory(state.displayed[state.switchTabTo].id);
+  };
+
+  const getStateAfterSwitch = (): Partial<CompletionPanelState> => {
+    if (completionToBeSaved !== null && canSwitch === -1) {
+      const displayed = [...state.displayed];
+      const index = displayed.findIndex(item => item.id === completionToBeSaved.id);
+      displayed[index] = completionToBeSaved;
+      return { displayed, selected: completionToBeSaved, switchTabTo: null, trySwitchTab: false, editing: false };
+    }
+    return { switchTabTo: null, trySwitchTab: false, editing: false };
+  };
+
+  useEffect(() => {
+    if (!checkContentDirty) return;
+
+    handlePendingSave();
+    navigateAfterSwitch();
+    setState({ ...state, ...getStateAfterSwitch() });
+
+    if (canSwitch !== 0) {
+      setCompletionToBeSaved(null);
+      resetCanSwitch();
+      setCheckContentDirty(false);
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canSwitch]);
@@ -296,10 +296,10 @@ export const CompletionPanel = () => {
       let index;
       if (state.switchTabTo != null) {
         index = state.switchTabTo;
-      } else if (completionId != null) {
-        index = completions.findIndex(c => c.id === parseInt(completionId, 10));
-      } else {
+      } else if (completionId == null) {
         index = completions.findIndex(c => c.isPrimary);
+      } else {
+        index = completions.findIndex(c => c.id === Number.parseInt(completionId, 10));
       }
       setState({
         ...state,
@@ -330,73 +330,70 @@ export const CompletionPanel = () => {
   }, [editingEnabled]);
 
   return (
-    <>
-      <FullPage>
-        <Stack flex="0 1 auto">
-          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ marginRight: "5px" }}>
-            <BoreholeTabs value={state.index} onChange={handleCompletionChanged}>
-              {state.displayed?.length > 0 &&
-                state.displayed.map((item, index) => {
-                  return (
-                    <BoreholeTab
-                      data-cy={"completion-header-tab-" + index}
-                      label={item.name === null || item.name === "" ? t("common:np") : item.name}
-                      key={item.id.toString()}
-                      hasContent={undefined}
-                    />
-                  );
-                })}
-            </BoreholeTabs>
-            {editingEnabled && (
-              <AddButton
-                label="addCompletion"
-                disabled={state.selected?.id === 0}
-                onClick={() => {
-                  handleCompletionChanged(null, -1);
-                }}
+    <FullPage>
+      <Stack flex="0 1 auto">
+        <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ marginRight: "5px" }}>
+          <BoreholeTabs value={state.index} onChange={handleCompletionChanged}>
+            {state.displayed?.length > 0 &&
+              state.displayed.map((item, index) => {
+                return (
+                  <BoreholeTab
+                    data-cy={"completion-header-tab-" + index}
+                    label={item.name === null || item.name === "" ? t("common:np") : item.name}
+                    key={item.id.toString()}
+                    hasContent={undefined}
+                  />
+                );
+              })}
+          </BoreholeTabs>
+          {editingEnabled && (
+            <AddButton
+              label="addCompletion"
+              disabled={state.selected?.id === 0}
+              onClick={() => {
+                handleCompletionChanged(null, -1);
+              }}
+            />
+          )}
+        </Stack>
+        {state.selected != null && (
+          <BoreholeTabContent sx={{ padding: "18px" }} data-cy="completion-header">
+            {state.editing ? (
+              <CompletionHeaderInput
+                completion={state.selected}
+                editing={state.editing}
+                cancelChanges={cancelChanges}
+                saveCompletion={checkSwitchBeforeSave}
+                trySwitchTab={state.trySwitchTab ?? false}
+                confirmTabSwitch={confirmTabSwitch}
+                cancelTabSwitch={cancelTabSwitch}
+              />
+            ) : (
+              <CompletionHeaderDisplay
+                completion={state.selected}
+                setEditing={shouldEdit => setState({ ...state, editing: shouldEdit })}
+                copyCompletion={copySelectedCompletion}
+                deleteCompletion={deleteSelectedCompletion}
               />
             )}
+          </BoreholeTabContent>
+        )}
+      </Stack>
+      <Stack flex="1 0 0" marginTop="10px">
+        {isLoading && (
+          <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
+            <CircularProgress />
           </Stack>
-          {state.selected != null && (
-            <>
-              <BoreholeTabContent sx={{ padding: "18px" }} data-cy="completion-header">
-                {state.editing ? (
-                  <CompletionHeaderInput
-                    completion={state.selected}
-                    editing={state.editing}
-                    cancelChanges={cancelChanges}
-                    saveCompletion={checkSwitchBeforeSave}
-                    trySwitchTab={state.trySwitchTab ?? false}
-                    switchTabs={continueSwitching => {
-                      switchTabs(continueSwitching);
-                    }}
-                  />
-                ) : (
-                  <CompletionHeaderDisplay
-                    completion={state.selected}
-                    setEditing={shouldEdit => setState({ ...state, editing: shouldEdit })}
-                    copyCompletion={copySelectedCompletion}
-                    deleteCompletion={deleteSelectedCompletion}
-                  />
-                )}
-              </BoreholeTabContent>
-            </>
-          )}
-        </Stack>
-        <Stack flex="1 0 0" marginTop="10px">
-          {isLoading ? (
-            <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
-              <CircularProgress />
-            </Stack>
-          ) : state.selected === null ? (
-            <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
-              <Typography variant="fullPageMessage">{t("msgCompletionEmpty")}</Typography>
-            </Stack>
-          ) : (
-            state.selected?.id > 0 && <CompletionContent completion={state.selected} editingEnabled={editingEnabled} />
-          )}
-        </Stack>
-      </FullPage>
-    </>
+        )}
+        {!isLoading && state.selected === null && (
+          <Stack alignItems="center" justifyContent="center" sx={{ flexGrow: 1 }}>
+            <Typography variant="fullPageMessage">{t("msgCompletionEmpty")}</Typography>
+          </Stack>
+        )}
+        {!isLoading && state.selected !== null && state.selected.id > 0 && (
+          <CompletionContent completion={state.selected} editingEnabled={editingEnabled} />
+        )}
+      </Stack>
+    </FullPage>
   );
 };

@@ -132,117 +132,110 @@ const CasingInput = ({ item, parentId }: DataCardItemInputProps<Casing>) => {
   }, [getValues().casingElements]);
 
   return (
-    <>
-      <FormProvider {...formMethods}>
-        <form onSubmit={handleSubmit(submitForm)}>
-          <FormContainer>
-            <FormInput fieldName="name" label="name" value={item.name} required={true} />
-            <FormContainer direction="row">
-              <FormInput fieldName="fromDepth" label="fromdepth" disabled={true} />
-              <FormInput fieldName="toDepth" label="todepth" disabled={true} />
-            </FormContainer>
-            <FormContainer direction="row">
-              <FormInput
-                fieldName="dateStart"
-                label="dateStartCasing"
-                value={item.dateStart}
-                type={FormValueType.Date}
-              />
-              <FormInput
-                fieldName="dateFinish"
-                label="dateFinishCasing"
-                value={item.dateFinish}
-                type={FormValueType.Date}
-              />
-            </FormContainer>
-            <FormContainer direction="row">
-              <FormInput fieldName="notes" label="notes" multiline={true} value={item.notes} />
-            </FormContainer>
-            <Box
-              sx={{
-                paddingBottom: "8.5px",
-                marginRight: "8px !important",
-                marginTop: "18px !important",
-              }}>
-              <FormContainer direction={"row"} justifyContent={"space-between"}>
-                <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("casingElements")}</Typography>
-                <AddButton
-                  label="addCasingElement"
-                  onClick={() => {
-                    addCasingElement();
-                  }}
-                />
-              </FormContainer>
-              {fields
-                .sort((a, b) => (a.fromDepth ?? Infinity) - (b.fromDepth ?? Infinity))
-                .map((field, index) => (
-                  <>
-                    <Stack direction={"row"} key={field.id} marginTop="8px" data-cy={`casingElement-${index}`}>
-                      <FormContainer>
-                        <FormContainer direction="row">
-                          <FormInput
-                            fieldName={`casingElements.${index}.fromDepth`}
-                            label="fromdepth"
-                            value={field.fromDepth}
-                            type={FormValueType.Number}
-                            required={true}
-                            onUpdate={updateDepth}
-                          />
-                          <FormInput
-                            fieldName={`casingElements.${index}.toDepth`}
-                            label="todepth"
-                            value={field.toDepth}
-                            type={FormValueType.Number}
-                            required={true}
-                            onUpdate={updateDepth}
-                          />
-                          <FormDomainSelect
-                            fieldName={`casingElements.${index}.kindId`}
-                            label="kindCasingLayer"
-                            selected={typeof field.kindId === "number" ? field.kindId : null}
-                            required={true}
-                            schemaName={completionSchemaConstants.casingType}
-                          />
-                        </FormContainer>
-                        <FormContainer direction="row">
-                          <FormDomainSelect
-                            fieldName={`casingElements.${index}.materialId`}
-                            label="materialCasingLayer"
-                            selected={typeof field.materialId === "number" ? field.materialId : null}
-                            schemaName={completionSchemaConstants.casingMaterial}
-                          />
-                          <FormInput
-                            fieldName={`casingElements.${index}.innerDiameter`}
-                            label="casingInnerDiameter"
-                            value={field.innerDiameter}
-                            type={FormValueType.Number}
-                          />
-                          <FormInput
-                            fieldName={`casingElements.${index}.outerDiameter`}
-                            label="casingOuterDiameter"
-                            value={field.outerDiameter}
-                            type={FormValueType.Number}
-                          />
-                        </FormContainer>
-                      </FormContainer>
-                      <IconButton
-                        onClick={() => remove(index)}
-                        data-cy={`casingElements.${index}.delete`}
-                        disabled={fields.length === 1}
-                        color="error"
-                        sx={{ marginTop: "10px !important" }}>
-                        <Delete />
-                      </IconButton>
-                    </Stack>
-                    {index < fields.length - 1 && <Divider sx={{ marginTop: "15px" }} />}
-                  </>
-                ))}
-            </Box>
+    <FormProvider {...formMethods}>
+      <form onSubmit={handleSubmit(submitForm)}>
+        <FormContainer>
+          <FormInput fieldName="name" label="name" value={item.name} required={true} />
+          <FormContainer direction="row">
+            <FormInput fieldName="fromDepth" label="fromdepth" disabled={true} />
+            <FormInput fieldName="toDepth" label="todepth" disabled={true} />
           </FormContainer>
-          <DataCardSaveAndCancelButtons formMethods={formMethods} submitForm={submitForm} />
-        </form>
-      </FormProvider>
-    </>
+          <FormContainer direction="row">
+            <FormInput fieldName="dateStart" label="dateStartCasing" value={item.dateStart} type={FormValueType.Date} />
+            <FormInput
+              fieldName="dateFinish"
+              label="dateFinishCasing"
+              value={item.dateFinish}
+              type={FormValueType.Date}
+            />
+          </FormContainer>
+          <FormContainer direction="row">
+            <FormInput fieldName="notes" label="notes" multiline={true} value={item.notes} />
+          </FormContainer>
+          <Box
+            sx={{
+              paddingBottom: "8.5px",
+              marginRight: "8px !important",
+              marginTop: "18px !important",
+            }}>
+            <FormContainer direction={"row"} justifyContent={"space-between"}>
+              <Typography sx={{ mr: 1, mt: 2, fontWeight: "bold" }}>{t("casingElements")}</Typography>
+              <AddButton
+                label="addCasingElement"
+                onClick={() => {
+                  addCasingElement();
+                }}
+              />
+            </FormContainer>
+            {fields
+              .sort((a, b) => (a.fromDepth ?? Infinity) - (b.fromDepth ?? Infinity))
+              .map((field, index) => (
+                <>
+                  <Stack direction={"row"} key={field.id} marginTop="8px" data-cy={`casingElement-${index}`}>
+                    <FormContainer>
+                      <FormContainer direction="row">
+                        <FormInput
+                          fieldName={`casingElements.${index}.fromDepth`}
+                          label="fromdepth"
+                          value={field.fromDepth}
+                          type={FormValueType.Number}
+                          required={true}
+                          onUpdate={updateDepth}
+                        />
+                        <FormInput
+                          fieldName={`casingElements.${index}.toDepth`}
+                          label="todepth"
+                          value={field.toDepth}
+                          type={FormValueType.Number}
+                          required={true}
+                          onUpdate={updateDepth}
+                        />
+                        <FormDomainSelect
+                          fieldName={`casingElements.${index}.kindId`}
+                          label="kindCasingLayer"
+                          selected={typeof field.kindId === "number" ? field.kindId : null}
+                          required={true}
+                          schemaName={completionSchemaConstants.casingType}
+                        />
+                      </FormContainer>
+                      <FormContainer direction="row">
+                        <FormDomainSelect
+                          fieldName={`casingElements.${index}.materialId`}
+                          label="materialCasingLayer"
+                          selected={typeof field.materialId === "number" ? field.materialId : null}
+                          schemaName={completionSchemaConstants.casingMaterial}
+                        />
+                        <FormInput
+                          fieldName={`casingElements.${index}.innerDiameter`}
+                          label="casingInnerDiameter"
+                          value={field.innerDiameter}
+                          type={FormValueType.Number}
+                        />
+                        <FormInput
+                          fieldName={`casingElements.${index}.outerDiameter`}
+                          label="casingOuterDiameter"
+                          value={field.outerDiameter}
+                          type={FormValueType.Number}
+                        />
+                      </FormContainer>
+                    </FormContainer>
+                    <IconButton
+                      onClick={() => remove(index)}
+                      data-cy={`casingElements.${index}.delete`}
+                      disabled={fields.length === 1}
+                      color="error"
+                      sx={{ marginTop: "10px !important" }}>
+                      <Delete />
+                    </IconButton>
+                  </Stack>
+                  {index < fields.length - 1 && <Divider sx={{ marginTop: "15px" }} />}
+                </>
+              ))}
+          </Box>
+        </FormContainer>
+        <DataCardSaveAndCancelButtons formMethods={formMethods} submitForm={submitForm} />
+      </form>
+    </FormProvider>
   );
 };
 

@@ -20,43 +20,41 @@ const CompletionHeaderDisplay = ({
   };
 
   return (
-    <>
-      <Stack data-cy="completion-header-display" direction="column" aria-expanded={expanded}>
-        <FormContainer direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap">
-          <FormDisplay label="name" value={completion?.name} sx={{ flex: "1 1 180px" }} />
-          <FormContainer direction="row" justifyContent="space-between" alignItems="center" flex={"0 0 400px"}>
-            <FormDisplay label="completionKind" value={completion?.kind} type={FormValueType.Domain} />
-            <FormDisplay label="mainCompletion" value={completion?.isPrimary} type={FormValueType.Boolean} />
-          </FormContainer>
+    <Stack data-cy="completion-header-display" direction="column" aria-expanded={expanded}>
+      <FormContainer direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap">
+        <FormDisplay label="name" value={completion?.name} sx={{ flex: "1 1 180px" }} />
+        <FormContainer direction="row" justifyContent="space-between" alignItems="center" flex={"0 0 400px"}>
+          <FormDisplay label="completionKind" value={completion?.kind} type={FormValueType.Domain} />
+          <FormDisplay label="mainCompletion" value={completion?.isPrimary} type={FormValueType.Boolean} />
         </FormContainer>
-        {expanded && (
-          <>
-            <FormContainer direction="row" justifyContent="space-between" flexWrap="wrap">
-              <FormDisplay label="notes" value={completion?.notes} sx={{ flex: "1 1 180px" }} />
-              <FormDisplay
-                label="dateAbandonmentCompletion"
-                value={completion?.abandonDate}
-                type={FormValueType.Date}
-                sx={{ flex: "0 0 400px" }}
-              />
-            </FormContainer>
-            {editingEnabled && (
-              <DataCardButtonContainer>
-                <CopyButton onClick={copyCompletion} />
-                <DeleteButton onClick={deleteCompletion} />
-                <EditButton label="edit" onClick={() => setEditing(true)} />
-              </DataCardButtonContainer>
-            )}
-          </>
-        )}
-        <IconButton
-          onClick={toggleHeader}
-          sx={{ paddingBottom: "0", "&:hover": { backgroundColor: "transparent" } }}
-          data-cy="completion-toggle-header">
-          {expanded ? <ChevronUp /> : <ChevronDown />}
-        </IconButton>
-      </Stack>
-    </>
+      </FormContainer>
+      {expanded && (
+        <>
+          <FormContainer direction="row" justifyContent="space-between" flexWrap="wrap">
+            <FormDisplay label="notes" value={completion?.notes} sx={{ flex: "1 1 180px" }} />
+            <FormDisplay
+              label="dateAbandonmentCompletion"
+              value={completion?.abandonDate}
+              type={FormValueType.Date}
+              sx={{ flex: "0 0 400px" }}
+            />
+          </FormContainer>
+          {editingEnabled && (
+            <DataCardButtonContainer>
+              <CopyButton onClick={copyCompletion} />
+              <DeleteButton onClick={deleteCompletion} />
+              <EditButton label="edit" onClick={() => setEditing(true)} />
+            </DataCardButtonContainer>
+          )}
+        </>
+      )}
+      <IconButton
+        onClick={toggleHeader}
+        sx={{ paddingBottom: "0", "&:hover": { backgroundColor: "transparent" } }}
+        data-cy="completion-toggle-header">
+        {expanded ? <ChevronUp /> : <ChevronDown />}
+      </IconButton>
+    </Stack>
   );
 };
 export default CompletionHeaderDisplay;

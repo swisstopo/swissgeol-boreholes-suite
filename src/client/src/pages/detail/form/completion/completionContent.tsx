@@ -111,11 +111,11 @@ const CompletionContent = ({ completion, editingEnabled }: CompletionContentProp
     <Stack direction="column" flex="1 0 0">
       <Stack direction="row" justifyContent="space-between" alignItems="center" flex="0 1 auto">
         <BoreholeTabs value={activeIndex} onChange={handleCompletionChanged}>
-          {tabs.map((tab, index) => (
+          {tabs.map(tab => (
             <BoreholeTab
               data-cy={"completion-content-tab-" + tab.hash.replace("#", "")}
               label={tab.label === null || tab.label === "" ? t("common:np") : tab.label}
-              key={index.toString()}
+              key={tab.hash}
               hasContent={tab.hasContent}
             />
           ))}
