@@ -37,7 +37,7 @@
     "@testing-library/react": "^16.3.2",
     "@types/proj4": "^2.5.5",
     "@uidotdev/usehooks": "^2.4.1",
-    "axios": "^1.15.0",
+    "axios": "^1.16.0",
     "d3": "^7.9.0",
     "date-fns": "^2.30.0",
     "express": "^4.21.2",
