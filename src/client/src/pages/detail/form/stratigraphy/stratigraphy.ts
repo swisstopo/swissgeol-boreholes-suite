@@ -281,8 +281,6 @@ export const useAddExtractedStratigraphies = () => {
       boreholeId: number;
       stratigraphies: ExtractedStratigraphyInput[];
     }): Promise<StratigraphyWithLithology[]> => {
-      // The backend resolves name conflicts within the borehole by appending " (N)" suffixes,
-      // so a re-imported PDF lands as `name_1`, `name_1 (1)`, `name_2`, `name_2 (1)` automatically.
       const payload = stratigraphies.map(({ name, lithologicalDescriptions, lithologies, faciesDescriptions }) => ({
         stratigraphy: { id: 0, name, isPrimary: false, boreholeId },
         lithologies: lithologies.map(l => ({ ...l, id: 0, stratigraphyId: 0 })),
@@ -298,7 +296,6 @@ export const useAddExtractedStratigraphies = () => {
       await queryClient.invalidateQueries({
         queryKey: [stratigraphiesQueryKey, results[0].stratigraphy.boreholeId],
       });
-      queryClient.invalidateQueries({ queryKey: [lithologyTabQueryKey, results[0].stratigraphy.id] });
     },
   });
 };
