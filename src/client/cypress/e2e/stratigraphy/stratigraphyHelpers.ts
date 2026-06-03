@@ -68,17 +68,9 @@ interface DragResizeDescriptionInput {
   toDepth: number;
   side: "top" | "bottom";
   deltaRows: number; // How many depth-row heights to drag. Positive = downward (towards larger depths).
-  rowHeight?: number; // Depth-row pixel height. Defaults to 240 (`defaultRowHeight` in `lithologyTableUtils.ts`).
 }
 
-export const dragResizeDescription = ({
-  kind,
-  fromDepth,
-  toDepth,
-  side,
-  deltaRows,
-  rowHeight = 240,
-}: DragResizeDescriptionInput) => {
+export const dragResizeDescription = ({ kind, fromDepth, toDepth, side, deltaRows }: DragResizeDescriptionInput) => {
   const columnPrefix = kind === "lithological" ? "lithologicalDescription" : "faciesDescription";
   const cellSelector = `[data-cy="${columnPrefix}-${fromDepth}-${toDepth}"]`;
   const handleSelector = `[data-cy="resize-description-${kind}-${side}-${fromDepth}-${toDepth}"]`;
@@ -87,10 +79,30 @@ export const dragResizeDescription = ({
     const rect = $handle[0].getBoundingClientRect();
     const startX = rect.left + rect.width / 2;
     const startY = rect.top + rect.height / 2;
-    const endY = startY + deltaRows * rowHeight;
     cy.get(handleSelector).trigger("mousedown", { clientX: startX, clientY: startY, button: 0 });
-    cy.get("body").trigger("mousemove", { clientX: startX, clientY: endY });
-    cy.get("body").trigger("mouseup", { clientX: startX, clientY: endY });
+
+    // Instead of computing endY from a fixed pixel offset (which breaks when the page scrolls
+    // between mousedown and mousemove), find the actual target depth-row element and read its
+    // current viewport position. This makes the drag immune to intermediate scroll changes.
+    cy.document().then(doc => {
+      const depthRows = Array.from(doc.querySelectorAll<HTMLElement>('[data-cy^="depth-"]'))
+        .map(el => {
+          const attr = el.getAttribute("data-cy") ?? "";
+          const m = attr.match(/^depth-([\d.]+)-([\d.]+)$/);
+          return m ? { el, from: parseFloat(m[1]), to: parseFloat(m[2]) } : null;
+        })
+        .filter((r): r is { el: HTMLElement; from: number; to: number } => r !== null);
+
+      // Find the boundary row: for "bottom" drag it's the last row of the current description,
+      // for "top" drag it's the first row.
+      const boundaryIdx = depthRows.findIndex(r => (side === "bottom" ? r.to === toDepth : r.from === fromDepth));
+      const targetRow = depthRows[boundaryIdx + deltaRows];
+      const targetRect = targetRow.el.getBoundingClientRect();
+      const endY = targetRect.top + targetRect.height / 2;
+
+      cy.get("body").trigger("mousemove", { clientX: startX, clientY: endY });
+      cy.get("body").trigger("mouseup", { clientX: startX, clientY: endY });
+    });
   });
 };
 

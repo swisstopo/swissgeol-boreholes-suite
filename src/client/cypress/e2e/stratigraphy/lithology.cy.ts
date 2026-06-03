@@ -1215,7 +1215,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     });
   });
 
-  it.only("warns when editing a description shared by multiple lithology layers", () => {
+  it("warns when editing a description shared by multiple lithology layers", () => {
     createStratigraphyWith3Lithologies();
 
     // Add a lithological description that spans the first two lithology layers by creating it in the first gap and
