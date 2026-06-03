@@ -249,6 +249,7 @@ public class LithologyController : BoreholeControllerBase<Lithology>
                 await PrepareNewLithologyDescriptionForSaveAsync(lithologyDescription, entity.IsUnconsolidated).ConfigureAwait(false);
                 if (entity.Id != 0)
                 {
+                    lithologyDescription.LithologyId = entity.Id;
                     Context.Add(lithologyDescription);
                 }
             }

@@ -70,7 +70,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
         lithology.lithologyDescriptions = [
           {
             id: 0,
-            lithologyId: 0,
+            lithologyId: lithology.id,
             isFirst: true,
           },
         ];
