@@ -37,6 +37,8 @@ interface UseGapRangeSelectReturn {
 // commits here — even one the filled-cell clamp shrinks back to a single row.
 const dragThresholdPx = 4;
 
+const sameSet = (a: ReadonlySet<string>, b: ReadonlySet<string>) => a.size === b.size && [...a].every(id => b.has(id));
+
 /**
  * Owns the in-progress drag-to-select state for empty description cells (gaps). Pressing on a
  * gap and dragging over adjacent gaps collects a contiguous run of empty rows; on mouseup the
@@ -120,10 +122,7 @@ export const useGapRangeSelect = ({
       movedThresholdPx: dragThresholdPx,
       onMove: clientY => {
         const next = new Set(computeSelectedIdxs(clientY).map(i => depthsSnapshot[i].id));
-        setPreviewDepthIds(prev => {
-          if (prev.size === next.size && [...prev].every(id => next.has(id))) return prev;
-          return next;
-        });
+        setPreviewDepthIds(prev => (sameSet(prev, next) ? prev : next));
       },
       onEnd: ({ committed, lastClientY, moved }) => {
         teardownRef.current = null;
