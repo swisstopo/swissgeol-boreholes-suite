@@ -274,15 +274,18 @@ export const CompletionPanel = () => {
       return;
     }
     if (completionId === "new" && (state.switchTabTo === null || state.switchTabTo === -1)) {
-      const tempCompletion: Completion = {
+      // The generated Completion type has kindId as non-nullable number, but in the UI we need
+      // the field to start empty until the user picks a kind. Keep it null so react-hook-form
+      // treats the required field as missing and disables save until a kind is selected.
+      const tempCompletion = {
         id: 0,
         boreholeId: Number(boreholeId),
-        kindId: 0,
+        kindId: null,
         name: null,
         isPrimary: state.displayed.length === 0,
         abandonDate: null,
         notes: null,
-      };
+      } as unknown as Completion;
       const displayed = completions?.length > 0 ? completions : [];
       setState({
         ...state,
