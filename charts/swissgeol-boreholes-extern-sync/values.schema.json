@@ -50,18 +50,7 @@
       "type": "object",
       "additionalProperties": false,
       "properties": {
-        "host": { "type": ["string", "null"], "minLength": 1 },
-        "port": {
-          "anyOf": [
-            { "type": "integer", "minimum": 1, "maximum": 65535 },
-            { "type": "string", "pattern": "^[0-9]{1,5}$" },
-            { "type": "null" }
-          ],
-          "default": 5432
-        },
-        "name": { "type": ["string", "null"], "minLength": 1 },
-        "username": { "type": ["string", "null"] },
-        "password": { "type": ["string", "null"] }
+        "connectionString": { "type": ["string", "null"], "minLength": 1 }
       }
     }
   }

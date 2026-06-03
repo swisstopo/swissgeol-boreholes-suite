@@ -54,14 +54,8 @@ helm install swissgeol-boreholes-extern-sync swissgeol-boreholes/swissgeol-boreh
   --create-namespace \
   --set configuration.targetDefaultWorkgroupName="Sync" \
   --set configuration.targetDefaultUserSub="sub_admin" \
-  --set db.source.host="source-db.example.com" \
-  --set db.source.name="source_db" \
-  --set db.source.username="srcuser" \
-  --set db.source.password="srcpass" \
-  --set db.target.host="target-db.example.com" \
-  --set db.target.name="target_db" \
-  --set db.target.username="tgtuser" \
-  --set db.target.password="tgtpass"
+  --set db.source.connectionString="Host=source-db.example.com;Port=5432;Database=source_db;Username=srcuser;Password=srcpass" \
+  --set db.target.connectionString="Host=target-db.example.com;Port=5432;Database=target_db;Username=tgtuser;Password=tgtpass"
 ```
 
 ## Configuring the Chart
@@ -78,24 +72,16 @@ helm install swissgeol-boreholes-extern-sync swissgeol-boreholes/swissgeol-boreh
 
 ### Secret parameters
 
-Database values are assembled into connection strings and stored in a Kubernetes Secret.
+Each database connection string is supplied as one complete value and stored in a Kubernetes Secret. The sync job reads them directly (`CONNECTIONSTRINGS__SourceBdmsContext` / `CONNECTIONSTRINGS__TargetBdmsContext`).
 
-| Parameter            | Description              | Used in Secret Key                  |
-| -------------------- | ------------------------ | ----------------------------------- |
-| `db.source.host`     | Source database host     | `sourceDatabaseConnectionString`    |
-| `db.source.port`     | Source database port     | `sourceDatabaseConnectionString`    |
-| `db.source.name`     | Source database name     | `sourceDatabaseConnectionString`    |
-| `db.source.username` | Source database username | `sourceDatabaseConnectionString`    |
-| `db.source.password` | Source database password | `sourceDatabaseConnectionString`    |
-| `db.target.host`     | Target database host     | `targetDatabaseConnectionString`    |
-| `db.target.port`     | Target database port     | `targetDatabaseConnectionString`    |
-| `db.target.name`     | Target database name     | `targetDatabaseConnectionString`    |
-| `db.target.username` | Target database username | `targetDatabaseConnectionString`    |
-| `db.target.password` | Target database password | `targetDatabaseConnectionString`    |
+| Parameter                    | Description                     | Secret Key                       |
+| ---------------------------- | ------------------------------- | -------------------------------- |
+| `db.source.connectionString` | Source database connection string | `sourceDatabaseConnectionString` |
+| `db.target.connectionString` | Target database connection string | `targetDatabaseConnectionString` |
 
 ### Upgrade / Migration
 
-If upgrading from a version where database host/name were in the ConfigMap, set them once via `--set` or `kubectl edit secret` after the first upgrade. The three-tier pattern will preserve them on subsequent upgrades.
+Connection strings are stored under the same Secret keys as before, so existing deployments need no action: an upgrade without `--set` preserves the values already in the Secret. To change a connection string, set it once via `--set db.source.connectionString=<value>` (or `kubectl edit secret`). An empty or missing connection string fails the deploy rather than writing a blank value.
 
 For a full list of values, you can check the `values.yaml` file or use the `helm show values swissgeol-boreholes/swissgeol-boreholes-extern-sync` command. Refer to the corresponding Helm [documentation](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing) for more information on how to override settings in a YAML formatted file.
 
