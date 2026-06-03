@@ -4,6 +4,7 @@
 
 ### Added
 - Added new codelist entry `VSP` to `log_tool_type` schema.
+- Functionality to edit lithological descriptions from the lithology modal.
   
 ### Changed
 - Deleted unused Swiss coordinate reference systems.
