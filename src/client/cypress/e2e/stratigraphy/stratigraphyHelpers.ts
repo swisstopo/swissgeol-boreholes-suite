@@ -31,7 +31,7 @@ export enum LayerType {
   faciesDescription = "faciesDescription",
 }
 
-export type DescriptionKind = "lithological" | "facies";
+type DescriptionKind = "lithological" | "facies";
 
 const descriptionColumn: Record<DescriptionKind, LayerType> = {
   lithological: LayerType.lithologicalDescription,
