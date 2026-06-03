@@ -1,9 +1,8 @@
 ﻿using Amazon.S3;
 using BDMS.Models;
-using BDMS.Services;
 using System.Text.RegularExpressions;
 
-namespace BDMS;
+namespace BDMS.Services;
 
 public class PhotoCloudService : CloudServiceBase
 {
