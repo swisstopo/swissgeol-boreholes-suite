@@ -3,10 +3,10 @@ import { useTranslation } from "react-i18next";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
 import { ApiError } from "../../../../../../api/apiInterfaces.ts";
 import { Stratigraphy } from "../../../../../../api/generated";
-import { useStratigraphyMutations } from "../../../../../../api/stratigraphy.ts";
 import { BoreholesButton, CancelButton } from "../../../../../../components/buttons/buttons.tsx";
 import { getFieldBorderColor } from "../../../../../../components/form/formUtils.ts";
 import { useApiErrorAlert } from "../../../../../../hooks/useShowAlertOnError.tsx";
+import { useStratigraphyMutations } from "../../stratigraphy.ts";
 
 interface AddEmptyStratigraphyDialogProps {
   open: boolean;
