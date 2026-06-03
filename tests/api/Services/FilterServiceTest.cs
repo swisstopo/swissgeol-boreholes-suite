@@ -1449,6 +1449,7 @@ public class FilterServiceTest
             .Where(b => b.RestrictionId.HasValue)
             .Select(b => b.RestrictionId.Value)
             .Distinct()
+            .OrderBy(id => id)
             .Take(2)
             .ToListAsync();
 
