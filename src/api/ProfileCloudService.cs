@@ -1,6 +1,7 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using BDMS.Models;
+using BDMS.Services;
 using Microsoft.EntityFrameworkCore;
 
 namespace BDMS;

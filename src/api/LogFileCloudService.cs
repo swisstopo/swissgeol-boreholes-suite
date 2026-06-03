@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using BDMS.Models;
+using BDMS.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
