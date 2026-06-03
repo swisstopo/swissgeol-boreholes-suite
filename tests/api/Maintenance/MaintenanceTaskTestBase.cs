@@ -1,10 +1,9 @@
-﻿using BDMS.Maintenance;
-using BDMS.Services;
+﻿using BDMS.Services;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Moq;
 
-namespace BDMS;
+namespace BDMS.Maintenance;
 
 /// <summary>
 /// Abstract base class for maintenance task tests.
