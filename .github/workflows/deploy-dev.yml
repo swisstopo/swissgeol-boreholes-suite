@@ -46,12 +46,6 @@ jobs:
           AWS_REGION: ${{ secrets.AWS_REGION }}
         run: aws eks update-kubeconfig --name dev --region "$AWS_REGION"
 
-      - name: Verify cluster access
-        run: |
-          kubectl config current-context
-          kubectl cluster-info
-          kubectl get namespace swissgeol-boreholes
-
       - name: Install Helm
         uses: azure/setup-helm@dda3372f752e03dde6b3237bc9431cdc2f7a02a2 # v5.0.0
 
