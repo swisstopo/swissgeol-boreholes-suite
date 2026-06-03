@@ -1188,7 +1188,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     setInput("lithologicalDescription.description", "Mittelkies aus dem Lithology-Modal");
     closeLayerModal();
 
-    // The LD column now shows a layer with the typed text for that depth range.
+    // The lithological description column now shows a layer with the typed text for that depth range.
     checkLayerCardContent({
       layerType: LayerType.lithologicalDescription,
       fromDepth: 0,
@@ -1218,7 +1218,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
   it("warns when editing a description shared by multiple lithology layers", () => {
     createStratigraphyWith3Lithologies();
 
-    // Add an LD that spans the first two lithology layers by creating it in the first gap and
+    // Add a lithological description that spans the first two lithology layers by creating it in the first gap and
     // dragging its bottom handle down by one row.
     openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
     fillLithologicalDescriptionForm({ description: "Originalbeschreibung" });
@@ -1241,7 +1241,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     cy.dataCy("apply-button").click();
     handlePrompt(null, "continue");
 
-    // Both lithology layers in the spanning LD should now show the updated text.
+    // Both lithology layers in the spanning lithological description should now show the updated text.
     checkLayerCardContent({
       layerType: LayerType.lithologicalDescription,
       fromDepth: 0,
