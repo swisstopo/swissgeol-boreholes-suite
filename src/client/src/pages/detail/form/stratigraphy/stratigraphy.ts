@@ -166,6 +166,26 @@ export interface FaciesDescription extends BaseLayer {
   facies?: Codelist | null;
 }
 
+export interface LithologyTabContents {
+  lithologies: Lithology[];
+  lithologicalDescriptions: LithologicalDescription[];
+  faciesDescriptions: FaciesDescription[];
+}
+
+// Used both as the combined-save request payload and as the response (the server returns the saved
+// stratigraphy together with the loaded lithology tab contents).
+export interface StratigraphyTabEdit {
+  stratigraphy: Stratigraphy;
+  lithologyTab?: LithologyTabContents;
+}
+
+interface ExtractedStratigraphyInput {
+  name: string;
+  lithologicalDescriptions: Omit<LithologicalDescription, "id" | "stratigraphyId">[];
+  lithologies: Omit<Lithology, "id" | "stratigraphyId">[];
+  faciesDescriptions?: Omit<FaciesDescription, "id" | "stratigraphyId">[];
+}
+
 interface Chronostratigraphy {
   id: number;
   stratigraphyId: number;
@@ -176,7 +196,7 @@ interface Lithostratigraphy {
   stratigraphyId: number;
 }
 
-export const stratigraphiesQueryKey = "stratigraphies";
+const stratigraphiesQueryKey = "stratigraphies";
 
 const invalidateStratigraphyQueries = (
   queryClient: ReturnType<typeof useQueryClient>,
@@ -190,6 +210,7 @@ const invalidateStratigraphyQueries = (
 };
 
 const stratigraphyController = "stratigraphy";
+const lithologyTabQueryKey = "lithologyTab";
 
 export const useStratigraphiesByBoreholeId = (boreholeId?: number) =>
   useQuery({
@@ -204,9 +225,13 @@ export const useStratigraphyMutations = () => {
   const queryClient = useQueryClient();
   const resetTabStatus = useResetTabStatus(["lithology", "lithostratigraphy", "chronostratigraphy"]);
 
+  // A header-only create (no tab content). The server rejects duplicate names with a mustBeUnique
+  // error (resolveNameConflicts is not set), which the add dialog surfaces on the name field.
   const useAddStratigraphy = useMutation({
     mutationFn: async (stratigraphy: Stratigraphy) => {
-      const created = await fetchApiV2WithApiError<Stratigraphy>(stratigraphyController, "POST", stratigraphy);
+      const created = await fetchApiV2WithApiError<StratigraphyTabEdit[]>(stratigraphyController, "POST", [
+        { stratigraphy },
+      ]);
       resetTabStatus();
       await queryClient.invalidateQueries({
         queryKey: [stratigraphiesQueryKey, Number(stratigraphy.boreholeId)],
@@ -214,27 +239,13 @@ export const useStratigraphyMutations = () => {
       await queryClient.invalidateQueries({
         queryKey: [boreholeQueryKey, Number(stratigraphy.boreholeId)],
       });
-      return created;
+      return created[0].stratigraphy;
     },
   });
 
   const useCopyStratigraphy = useMutation({
     mutationFn: async (stratigraphy: Stratigraphy) => {
       return await fetchApiV2WithApiError<number>(`${stratigraphyController}/copy?id=${stratigraphy.id}`, "POST");
-    },
-    onSuccess: (_data, stratigraphy) => {
-      resetTabStatus();
-      invalidateStratigraphyQueries(queryClient, Number(stratigraphy.boreholeId), false);
-    },
-  });
-
-  const useUpdateStratigraphy = useMutation({
-    mutationFn: async (stratigraphy: Stratigraphy) => {
-      // remove derived objects
-      delete stratigraphy.createdBy;
-      delete stratigraphy.updatedBy;
-
-      return await fetchApiV2WithApiError<Stratigraphy>(stratigraphyController, "PUT", stratigraphy);
     },
     onSuccess: (_data, stratigraphy) => {
       resetTabStatus();
@@ -255,9 +266,81 @@ export const useStratigraphyMutations = () => {
   return {
     add: useAddStratigraphy,
     copy: useCopyStratigraphy,
-    update: useUpdateStratigraphy,
     delete: useDeleteStratigraphy,
   };
+};
+
+// Loads the full contents of the Lithology tab (lithologies + lithological/facies descriptions).
+export const useLithologyTabContents = (stratigraphyId?: number) =>
+  useQuery({
+    queryKey: [lithologyTabQueryKey, stratigraphyId],
+    queryFn: () =>
+      fetchApiV2WithApiError<LithologyTabContents>(`${stratigraphyController}/${stratigraphyId}/lithology`, "GET"),
+    enabled: !!stratigraphyId,
+  });
+
+// The single combined save for the stratigraphy detail page: persists the header and (optionally) the
+// active tab's content in one request. The lithology tab passes its contents; the chrono/litho tabs
+// pass only the header (lithology omitted).
+export const useUpdateStratigraphyWithContents = () => {
+  const queryClient = useQueryClient();
+  const resetTabStatus = useResetTabStatus(["lithology", "lithostratigraphy", "chronostratigraphy"]);
+
+  return useMutation({
+    mutationFn: async (edit: StratigraphyTabEdit) => {
+      const stratigraphy = { ...edit.stratigraphy };
+      delete stratigraphy.createdBy;
+      delete stratigraphy.updatedBy;
+      return await fetchApiV2WithApiError<StratigraphyTabEdit>(stratigraphyController, "PUT", {
+        ...edit,
+        stratigraphy,
+      });
+    },
+    onSuccess: response => {
+      resetTabStatus();
+      invalidateStratigraphyQueries(queryClient, Number(response.stratigraphy.boreholeId), false);
+      queryClient.invalidateQueries({ queryKey: [lithologyTabQueryKey, response.stratigraphy.id] });
+    },
+  });
+};
+
+// Bulk-creates 1-n stratigraphies with their lithology contents from the extraction modal. Passes
+// resolveNameConflicts so the server disambiguates the generated names by appending " (N)".
+export const useAddExtractedStratigraphies = () => {
+  const queryClient = useQueryClient();
+  const resetTabStatus = useResetTabStatus(["lithology"]);
+
+  return useMutation({
+    mutationFn: ({
+      boreholeId,
+      stratigraphies,
+    }: {
+      boreholeId: number;
+      stratigraphies: ExtractedStratigraphyInput[];
+    }): Promise<StratigraphyTabEdit[]> => {
+      const payload = stratigraphies.map(({ name, lithologicalDescriptions, lithologies, faciesDescriptions }) => ({
+        stratigraphy: { id: 0, name, isPrimary: false, boreholeId },
+        lithologyTab: {
+          lithologies: lithologies.map(l => ({ ...l, id: 0, stratigraphyId: 0 })),
+          lithologicalDescriptions: lithologicalDescriptions.map(d => ({ ...d, id: 0, stratigraphyId: 0 })),
+          faciesDescriptions: (faciesDescriptions ?? []).map(d => ({ ...d, id: 0, stratigraphyId: 0 })),
+        },
+      }));
+
+      return fetchApiV2WithApiError<StratigraphyTabEdit[]>(
+        `${stratigraphyController}?resolveNameConflicts=true`,
+        "POST",
+        payload,
+      );
+    },
+    onSuccess: async results => {
+      if (results.length === 0) return;
+      resetTabStatus();
+      await queryClient.invalidateQueries({
+        queryKey: [stratigraphiesQueryKey, results[0].stratigraphy.boreholeId],
+      });
+    },
+  });
 };
 
 const chronostratigraphiesQueryKey = "chronostratigraphies";

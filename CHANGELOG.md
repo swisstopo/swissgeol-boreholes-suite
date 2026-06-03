@@ -13,6 +13,7 @@
 - Reference Codelist instead of enum for OriginalReferenceSystem in borehole.
 - Lithology rock type can now be left unspecified (in addition to unconsolidated and consolidated). Stratigraphy extraction creates lithologies as unspecified by default.
 - Redesigned lithology table to edit depths in the table overview and stratigraphy extraction.
+- The lithology tab and stratigraphy header are now saved together in a single request, and stratigraphy extraction creates stratigraphies with their lithology contents in one operation.
 
 ### Fixed
 - Fixed bug where casing name was not correctly displayed in the select on the backfill card.

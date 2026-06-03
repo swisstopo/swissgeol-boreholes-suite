@@ -9,7 +9,7 @@ import { FormInput } from "../../../../components/form/formInput.tsx";
 import { ensureDatetime } from "../../../../components/form/formUtils.ts";
 import { useFormDirtyMarkAsChanged } from "../../../../components/form/useFormDirty.tsx";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
-import { Stratigraphy, useStratigraphyMutations } from "./stratigraphy.ts";
+import { Stratigraphy } from "./stratigraphy.ts";
 import { StratigraphyContext, StratigraphyContextProps } from "./stratigraphyContext.tsx";
 
 interface StratigraphyFormProps {
@@ -19,9 +19,6 @@ interface StratigraphyFormProps {
 
 export const StratigraphyForm: FC<StratigraphyFormProps> = ({ selectedStratigraphy, stratigraphyCount }) => {
   const { t } = useTranslation();
-  const {
-    update: { mutateAsync: updateStratigraphy },
-  } = useStratigraphyMutations();
   const formMethods = useForm<Stratigraphy>({ mode: "all" });
   const { formState, getValues } = formMethods;
   useFormDirtyMarkAsChanged({ formState });
@@ -37,30 +34,27 @@ export const StratigraphyForm: FC<StratigraphyFormProps> = ({ selectedStratigrap
     }
   }, [formMethods, selectedStratigraphy]);
 
-  const onSave = useCallback(async () => {
-    if (!selectedStratigraphy) return false;
-
+  const getPayload = useCallback(() => {
     const values = getValues();
-    values.date = values.date ? ensureDatetime(values.date.toString()) : null;
-    await updateStratigraphy(
-      { ...selectedStratigraphy, ...values },
-      {
-        onError: (error: ApiError) => {
-          if (error.messageKey === "mustBeUnique") {
-            formMethods.setError("name", { type: "manual", message: t(error.messageKey) });
-          } else {
-            showApiErrorAlert(error);
-          }
-        },
-      },
-    );
-    return true;
-  }, [formMethods, getValues, selectedStratigraphy, showApiErrorAlert, t, updateStratigraphy]);
+    const date = values.date ? ensureDatetime(values.date.toString()) : null;
+    return { stratigraphy: { ...selectedStratigraphy, ...values, date } };
+  }, [getValues, selectedStratigraphy]);
+
+  const onSaveError = useCallback(
+    (error: ApiError) => {
+      if (error.messageKey === "mustBeUnique") {
+        formMethods.setError("name", { type: "manual", message: t(error.messageKey) });
+      } else {
+        showApiErrorAlert(error);
+      }
+    },
+    [formMethods, showApiErrorAlert, t],
+  );
 
   useEffect(() => {
-    registerSaveHandler(onSave, "stratigraphy");
+    registerSaveHandler(getPayload, "stratigraphy", onSaveError);
     registerResetHandler(resetForm, "stratigraphy");
-  }, [onSave, registerResetHandler, registerSaveHandler, resetForm]);
+  }, [getPayload, onSaveError, registerResetHandler, registerSaveHandler, resetForm]);
 
   useEffect(() => {
     resetForm();
