@@ -8,7 +8,7 @@ import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
 import { FormDomainSelect } from "../../../../../../components/form/formDomainSelect.tsx";
 import { FormInput } from "../../../../../../components/form/formInput.tsx";
 import { useFormDirty } from "../../../../../../components/form/useFormDirty.tsx";
-import { FaciesDescription } from "../../faciesDescription.ts";
+import { FaciesDescription } from "../../stratigraphy.ts";
 import { RemarksFormSection } from "./remarksFormSection.tsx";
 
 interface FaciesDescriptionModalProps {

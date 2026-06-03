@@ -1,10 +1,9 @@
 ﻿using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 
-namespace BDMS;
+namespace BDMS.Services;
 
 [TestClass]
 public class BoreholePermissionServiceTest

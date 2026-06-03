@@ -1,7 +1,7 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 
-namespace BDMS;
+namespace BDMS.Services;
 
 /// <summary>
 /// Base service to interact with cloud storage.

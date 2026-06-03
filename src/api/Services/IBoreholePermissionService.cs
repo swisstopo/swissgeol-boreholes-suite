@@ -1,6 +1,6 @@
 ﻿using BDMS.Models;
 
-namespace BDMS;
+namespace BDMS.Services;
 
 /// <summary>
 /// Provides methods for checking if a user is allowed to access a borehole or workgroup.

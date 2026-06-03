@@ -66,9 +66,7 @@ export const setInput = (fieldName: string, value: string | number, parent?: str
   const selector = createBaseSelector(parent) + `[data-cy="${fieldName}-formInput"]`;
   cy.get(selector).click();
   cy.focused().clear();
-  cy.get(selector).type(String(value), {
-    delay: 10,
-  });
+  cy.get(selector).type(String(value));
   // clear focus after typing
   cy.get("body").click(0, 0);
 };

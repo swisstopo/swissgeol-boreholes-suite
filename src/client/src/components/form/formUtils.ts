@@ -1,7 +1,7 @@
 import { NullableBooleanSelect, NullableNumberString } from "../../api/apiInterfaces.ts";
 import { theme } from "../../AppTheme.ts";
 import { LogRun } from "../../pages/detail/form/log/logInterfaces.ts";
-import { Lithology } from "../../pages/detail/form/stratigraphy/lithology.ts";
+import { Lithology } from "../../pages/detail/form/stratigraphy/stratigraphy.ts";
 import { FormError, FormErrors } from "./form.ts";
 
 /**

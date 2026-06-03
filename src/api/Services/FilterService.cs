@@ -4,7 +4,7 @@ using NetTopologySuite.Features;
 using NetTopologySuite.Geometries;
 using System.Linq.Expressions;
 
-namespace BDMS;
+namespace BDMS.Services;
 
 /// <summary>
 /// Provides methods for filtering boreholes based on various criteria.

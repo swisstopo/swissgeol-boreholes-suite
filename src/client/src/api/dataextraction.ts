@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { User } from "../api-lib/ReduxStateInterfaces.ts";
-import { ExtractedLithologicalDescription } from "../pages/detail/form/stratigraphy/lithologicalDescription.ts";
+import { ExtractedLithologicalDescription } from "../pages/detail/form/stratigraphy/stratigraphy.ts";
 import store from "../reducers";
 import { ApiError, BoreholeAttachment } from "./apiInterfaces.ts";
 import { getAuthorizationHeader } from "./authentication.ts";

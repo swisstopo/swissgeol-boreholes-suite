@@ -1,5 +1,5 @@
 import { useMemo } from "react";
-import { LayerDepth, Lithology } from "../lithology.ts";
+import { LayerDepth, Lithology } from "../stratigraphy.ts";
 
 export function useLayerDepths(lithologies: Lithology[]) {
   const depths = useMemo(() => {

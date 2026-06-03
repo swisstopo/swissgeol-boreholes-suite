@@ -10,7 +10,7 @@ import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
 import { FormInput } from "../../../../../../components/form/formInput.tsx";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
 import { capitalizeFirstLetter } from "../../../../../../utils.ts";
-import { Lithology } from "../../lithology.ts";
+import { Lithology } from "../../stratigraphy.ts";
 import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
 import { LithologyUnconsolidatedForm } from "./lithologyUnconsolidatedForm.tsx";
 import { prepareLithologyForSubmit, validateLithologyUnconValues } from "./lithologyUtils.ts";

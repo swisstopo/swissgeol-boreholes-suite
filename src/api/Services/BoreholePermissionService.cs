@@ -1,7 +1,7 @@
 ﻿using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
 
-namespace BDMS;
+namespace BDMS.Services;
 
 /// <inheritdoc cref="IBoreholePermissionService" />
 public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePermissionService> logger, TimeProvider timeProvider) : IBoreholePermissionService

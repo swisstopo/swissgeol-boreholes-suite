@@ -4,9 +4,9 @@ import { Stack } from "@mui/material";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { Trash2 } from "lucide-react";
-import { DepthLayer } from "../../../../../api/stratigraphy.ts";
 import { theme } from "../../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../../components/buttons/buttons.tsx";
+import { DepthLayer } from "../stratigraphy.ts";
 import { DepthDeleteAction } from "./lithologyTable/useLithologyTableState.ts";
 
 interface DepthDeleteButtonProps {

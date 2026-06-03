@@ -1,14 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
-import { Codelist } from "../../../../api/generated";
-import { BaseLayer } from "../../../../api/stratigraphy.ts";
+import { FaciesDescription } from "../../../../api/generated";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
-
-export interface FaciesDescription extends BaseLayer {
-  description?: string;
-  faciesId?: number | null;
-  facies?: Codelist | null;
-}
 
 const fetchFaciesDescriptionsByProfileId = async (profileId: number): Promise<FaciesDescription[]> => {
   return await fetchApiV2WithApiError<FaciesDescription[]>(`faciesdescription?stratigraphyId=${profileId}`, "GET");
