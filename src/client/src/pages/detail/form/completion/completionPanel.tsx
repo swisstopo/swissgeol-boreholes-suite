@@ -11,6 +11,7 @@ import {
   getCompletions,
   updateCompletion,
 } from "../../../../api/fetchApiV2.ts";
+import { Completion } from "../../../../api/generated";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
@@ -22,7 +23,7 @@ import { EditStateContext } from "../../editStateContext.tsx";
 import CompletionContent from "./completionContent.tsx";
 import CompletionHeaderDisplay from "./completionHeaderDisplay.tsx";
 import CompletionHeaderInput from "./completionHeaderInput.tsx";
-import { Completion, CompletionPanelState } from "./completionInterfaces.ts";
+import { CompletionPanelState } from "./completionInterfaces.ts";
 
 export const CompletionPanel = () => {
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);

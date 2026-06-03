@@ -1,12 +1,13 @@
 ﻿import { useTranslation } from "react-i18next";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { deleteCasing } from "../../../../api/fetchApiV2.ts";
+import { Casing } from "../../../../api/generated";
 import { getCodelistLocalizedLabel, useCodelists } from "../../../../components/codelist.ts";
 import { DataDisplayCard } from "../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
 import { extractCasingDepth } from "./casingUtils.tsx";
-import { Casing, DataCardItemDisplayProps } from "./completionInterfaces.ts";
+import { DataCardItemDisplayProps } from "./completionInterfaces.ts";
 
 const CasingDisplay = ({ item }: DataCardItemDisplayProps<Casing>) => {
   const { t, i18n } = useTranslation();

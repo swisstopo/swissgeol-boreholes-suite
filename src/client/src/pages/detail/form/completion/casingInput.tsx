@@ -5,6 +5,7 @@ import Delete from "@mui/icons-material/Delete";
 import { Box, Divider, IconButton, Stack, Typography } from "@mui/material";
 import { useReloadBoreholes } from "../../../../api/borehole.ts";
 import { addCasing, updateCasing } from "../../../../api/fetchApiV2.ts";
+import { Casing } from "../../../../api/generated";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardContext } from "../../../../components/dataCard/dataCardContext.tsx";
 import { DataCardSaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.tsx";
@@ -16,7 +17,7 @@ import { useFormDirtyMarkAsChanged } from "../../../../components/form/useFormDi
 import { useValidateFormOnMount } from "../../../../components/form/useValidateFormOnMount.tsx";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { extractCasingDepth } from "./casingUtils.tsx";
-import { Casing, DataCardItemInputProps } from "./completionInterfaces.ts";
+import { DataCardItemInputProps } from "./completionInterfaces.ts";
 import { completionSchemaConstants } from "./completionSchemaConstants.ts";
 import { prepareEntityDataForSubmit } from "./completionUtils.ts";
 

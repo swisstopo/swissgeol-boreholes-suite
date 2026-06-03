@@ -1,7 +1,5 @@
-﻿import { Backfill, Casing, Completion, Instrumentation } from "../../../../api/generated";
+﻿import { Completion } from "../../../../api/generated";
 import { FormSelectValue } from "../../../../components/form/formSelect.tsx";
-
-export type { Backfill, Casing, Completion, Instrumentation };
 
 export interface CasingDepth {
   min: number | null;
