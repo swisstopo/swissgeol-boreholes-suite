@@ -354,8 +354,6 @@ public class LithologyTabContentServiceTest
     [TestMethod]
     public async Task SyncCreatesUpdatesAndDeletesLithologiesInOneCall()
     {
-        var stratigraphyId = context.Stratigraphies.First().Id;
-
         // Start with two lithologies.
         var stratigraphy = new Stratigraphy
         {

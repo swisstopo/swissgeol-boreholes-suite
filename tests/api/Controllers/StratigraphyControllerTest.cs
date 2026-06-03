@@ -240,13 +240,13 @@ public class StratigraphyControllerTest
         var created = ActionResultAssert.IsOkObjectResult<Collection<StratigraphyTabEdit>>(createResult.Result).Single();
 
         Assert.AreEqual(1, created.LithologyTab!.Lithologies.Count);
-        Assert.AreEqual("Created with stratigraphy", created.LithologyTab!.Lithologies.First().Notes);
+        Assert.AreEqual("Created with stratigraphy", created.LithologyTab!.Lithologies[0].Notes);
 
         // The lithology can be loaded through the dedicated lithology contents endpoint.
         var getResult = await controller.GetLithologyContentsAsync(created.Stratigraphy.Id);
         var contents = ActionResultAssert.IsOkObjectResult<LithologyTabContents>(getResult.Result);
         Assert.AreEqual(1, contents.Lithologies.Count);
-        Assert.AreEqual("Created with stratigraphy", contents.Lithologies.First().Notes);
+        Assert.AreEqual("Created with stratigraphy", contents.Lithologies[0].Notes);
     }
 
     [TestMethod]
@@ -541,7 +541,7 @@ public class StratigraphyControllerTest
         => controller.EditStratigraphyAsync(new StratigraphyTabEdit { Stratigraphy = stratigraphy! });
 
     private static Stratigraphy GetCreatedStratigraphy(ActionResult<Collection<StratigraphyTabEdit>> createResult)
-        => ActionResultAssert.IsOkObjectResult<Collection<StratigraphyTabEdit>>(createResult.Result).First().Stratigraphy;
+        => ActionResultAssert.IsOkObjectResult<Collection<StratigraphyTabEdit>>(createResult.Result)[0].Stratigraphy;
 
     private static Stratigraphy GetEditedStratigraphy(ActionResult<StratigraphyTabEdit> editResult)
         => ActionResultAssert.IsOkObjectResult<StratigraphyTabEdit>(editResult.Result).Stratigraphy;
