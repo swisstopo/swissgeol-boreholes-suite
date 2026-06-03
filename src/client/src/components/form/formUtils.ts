@@ -1,4 +1,4 @@
-import { NullableBooleanSelect } from "../../api/apiInterfaces.ts";
+import { NullableBooleanSelect, NullableNumberString } from "../../api/apiInterfaces.ts";
 import { theme } from "../../AppTheme.ts";
 import { LogRun } from "../../pages/detail/form/log/logInterfaces.ts";
 import { Lithology } from "../../pages/detail/form/stratigraphy/lithology.ts";
@@ -69,13 +69,13 @@ const formatWithThousandsSeparator = (minDecimals: number, maxDecimals: number, 
 /**
  * Formats a number with thousands separators and a minimum number of decimal places.
  * If the number is less than 0.001 and has more than 3 decimal places, the number is formatted with scientific notation.
- * @param {number | string | null | undefined} value The number to format.
+ * @param {NullableNumberString | undefined} value The number to format.
  * @param {number} minDecimals The minimum number of decimal places to display (defaults to 0).
  * @param {number} maxDecimals The maximum number of decimal places to display (defaults to 3).
  * @returns The formatted number.
  */
 export const formatNumberForDisplay = (
-  value?: number | string | null,
+  value?: NullableNumberString,
   minDecimals: number = 0,
   maxDecimals: number = 3,
 ): string => {

@@ -16,6 +16,7 @@ export class ApiError extends Error {
 
 export type NullableDateString = Date | string | null;
 export type NullableBooleanSelect = number | boolean | null; // Number as select options parsed to boolean
+export type NullableNumberString = number | string | null; // Number that need to be parsed as string with thousands separator
 
 export enum EntityType {
   user = "User",
