@@ -1,10 +1,9 @@
 ﻿using Amazon.S3;
 using BDMS.Models;
-using BDMS.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
-namespace BDMS;
+namespace BDMS.Services;
 
 /// <summary>
 /// Service to manage log files in the cloud storage.
