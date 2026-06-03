@@ -1,6 +1,6 @@
 import { FC, ReactNode } from "react";
-import { DepthLayer } from "../../../../../api/stratigraphy.ts";
 import { theme } from "../../../../../AppTheme.ts";
+import { DepthLayer } from "../stratigraphy.ts";
 import { defaultRowHeight, StratigraphyTableCell } from "./stratigraphyTablePrimitives.tsx";
 
 interface DepthColumnCellProps {

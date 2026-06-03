@@ -1,6 +1,5 @@
-import { BaseLayer } from "../../../../api/stratigraphy.ts";
 import { defaultRowHeight } from "./components/stratigraphyTablePrimitives.tsx";
-import { LayerDepth, Lithology } from "./lithology.ts";
+import { BaseLayer, LayerDepth, Lithology } from "./stratigraphy.ts";
 
 export const computeCellHeight = (fromDepth: number, toDepth: number, depths: LayerDepth[]) => {
   const startIndex = depths.findIndex(l => l.fromDepth === fromDepth);

@@ -3,9 +3,12 @@ import { useTranslation } from "react-i18next";
 import { Alert, Stack } from "@mui/material";
 import { LithologyTable } from "../components/lithologyTable/lithologyTable.tsx";
 import { useLithologyTableState } from "../components/lithologyTable/useLithologyTableState.ts";
-import { FaciesDescription } from "../faciesDescription.ts";
-import { ExtractedLithologicalDescription, LithologicalDescription } from "../lithologicalDescription.ts";
-import { Lithology } from "../lithology.ts";
+import {
+  ExtractedLithologicalDescription,
+  FaciesDescription,
+  LithologicalDescription,
+  Lithology,
+} from "../stratigraphy.ts";
 
 export interface StratigraphyExtractionItemState {
   tmpLithologies: Lithology[];
