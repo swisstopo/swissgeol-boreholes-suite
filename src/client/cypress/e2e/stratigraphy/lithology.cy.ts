@@ -1,6 +1,6 @@
 import { discardChanges, saveWithSaveBar, verifyUnsavedChanges } from "../helpers/buttonHelpers";
 import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
-import { handlePrompt, stopBoreholeEditing } from "../helpers/testHelpers";
+import { createStratigraphyWith3Lithologies, handlePrompt, stopBoreholeEditing } from "../helpers/testHelpers";
 import {
   evaluateConsolidatedLithologyForm,
   evaluateFaciesDescriptionForm,
@@ -74,7 +74,7 @@ const openStratigraphyWith3Lithologies = () => {
 };
 
 const createCompleteLayerGrid = () => {
-  openStratigraphyWith3Lithologies();
+  createStratigraphyWith3Lithologies();
   // Click each gap to create a description spanning exactly that gap's depth range.
   openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
   fillLithologicalDescriptionForm({});
@@ -964,7 +964,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
   });
 
   it("adds, edits and resizes facies descriptions across gap rows", () => {
-    openStratigraphyWith3Lithologies();
+    createStratigraphyWith3Lithologies();
 
     // Create a facies description from the first gap.
     openLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
@@ -1177,7 +1177,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
   });
 
   it("edits the lithological description from the lithology modal", () => {
-    openStratigraphyWith3Lithologies();
+    createStratigraphyWith3Lithologies();
 
     // Open the first lithology layer — the new description card should be visible and empty.
     openLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
@@ -1216,7 +1216,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
   });
 
   it("warns when editing a description shared by multiple lithology layers", () => {
-    openStratigraphyWith3Lithologies();
+    createStratigraphyWith3Lithologies();
 
     // Add an LD that spans the first two lithology layers by creating it in the first gap and
     // dragging its bottom handle down by one row.
