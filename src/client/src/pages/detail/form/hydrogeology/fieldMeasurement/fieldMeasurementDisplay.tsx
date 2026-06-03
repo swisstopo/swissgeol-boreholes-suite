@@ -50,7 +50,7 @@ export const FieldMeasurementDisplay: FC<{ item: FieldMeasurement }> = ({ item }
               )}
             </TableCell>
             <TableCell sx={styles} data-cy={`fieldMeasurementResult.${index}.value-formDisplay`}>
-              {result?.value && result?.parameterId && (
+              {result?.value != null && result?.parameterId != null && (
                 <>
                   <span>{formatNumberForDisplay(result?.value) + " "}</span>
                   {getFieldMeasurementParameterUnits(result.parameterId, codelists.data)}
