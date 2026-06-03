@@ -1,10 +1,9 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using BDMS.Models;
-using BDMS.Services;
 using Microsoft.EntityFrameworkCore;
 
-namespace BDMS;
+namespace BDMS.Services;
 
 /// <summary>
 /// Represents a service to manage <see cref="Profile"/> in the cloud storage.
