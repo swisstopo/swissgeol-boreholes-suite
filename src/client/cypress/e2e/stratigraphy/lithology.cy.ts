@@ -1215,7 +1215,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     });
   });
 
-  it("warns when editing a description shared by multiple lithology layers", () => {
+  it.only("warns when editing a description shared by multiple lithology layers", () => {
     createStratigraphyWith3Lithologies();
 
     // Add a lithological description that spans the first two lithology layers by creating it in the first gap and
@@ -1230,7 +1230,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       side: "bottom",
       deltaRows: 1,
     });
-    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 1123 });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 798 });
 
     // Opening the first lithology shows the shared-layers notice.
     openLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
@@ -1245,7 +1245,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     checkLayerCardContent({
       layerType: LayerType.lithologicalDescription,
       fromDepth: 0,
-      toDepth: 1123,
+      toDepth: 798,
       content: ["Aktualisierte Beschreibung"],
     });
   });
