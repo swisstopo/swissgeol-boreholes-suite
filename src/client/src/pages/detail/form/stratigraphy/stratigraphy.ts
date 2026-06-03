@@ -33,6 +33,7 @@ export interface DepthLayer {
   hasToDepthError?: boolean;
 }
 
+// Todo use openapi generated types for Lithology and LithologyDescription, LithologyDescription, FaciesDescription, Chronostratigraphy and Lithostratigraphy.
 export interface LithologyDescription {
   id: number;
   lithologyId: number;
