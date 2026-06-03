@@ -16,11 +16,13 @@ import {
 } from "./lithologyHelpers";
 import {
   addLithology,
+  cancelDragSelectDescriptionGaps,
   checkDepthColumn,
   checkLayerCardContent,
   closeLayerModal,
   deleteLayer,
   dragResizeDescription,
+  dragSelectDescriptionGaps,
   hasDepthError,
   hasGapsAt,
   hasLayer,
@@ -1174,5 +1176,85 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
     hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, isGap: true });
     hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, toDepth: 1123 });
+  });
+
+  it("drag-selects multiple empty lithological description gaps into one description", () => {
+    openStratigraphyWith3Lithologies();
+
+    // Press on the top gap and drag down one row → the top two empty rows are selected and the
+    // modal opens for the combined (0, 798) range.
+    dragSelectDescriptionGaps({ kind: "lithological", fromDepth: 0, deltaRows: 1 });
+    fillLithologicalDescriptionForm({ description: "lithological description 0 - 798" });
+    closeLayerModal();
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 798 });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, isGap: true });
+
+    // Save, reload and verify the combined description persisted.
+    saveWithSaveBar();
+    stopBoreholeEditing();
+    hasLayersAt(LayerType.lithology, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+    checkLayerCardContent({
+      layerType: LayerType.lithologicalDescription,
+      fromDepth: 0,
+      toDepth: 798,
+      content: ["lithological description 0 - 798"],
+    });
+    hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
+  });
+
+  it("drag-selects multiple empty facies description gaps into one description", () => {
+    openStratigraphyWith3Lithologies();
+
+    dragSelectDescriptionGaps({ kind: "facies", fromDepth: 0, deltaRows: 1 });
+    fillFaciesDescriptionForm({ faciesId: 1, description: "facies description 0 - 798" });
+    closeLayerModal();
+    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, toDepth: 798 });
+    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, isGap: true });
+
+    saveWithSaveBar();
+    stopBoreholeEditing();
+    checkLayerCardContent({
+      layerType: LayerType.faciesDescription,
+      fromDepth: 0,
+      toDepth: 798,
+      content: ["terrestrial", "facies description 0 - 798"],
+    });
+    hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
+  });
+
+  it("clamps a description gap drag-selection at an already-filled cell", () => {
+    openStratigraphyWith3Lithologies();
+
+    // Fill the middle row first.
+    openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, isGap: true });
+    fillLithologicalDescriptionForm({ description: "lithological description 355 - 798" });
+    closeLayerModal();
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, toDepth: 798 });
+
+    // Drag from the top gap down across the filled middle row → the selection clamps to the
+    // top row only, and the modal opens for that regularly-selected (0, 355) row.
+    dragSelectDescriptionGaps({ kind: "lithological", fromDepth: 0, deltaRows: 2 });
+    fillLithologicalDescriptionForm({ description: "lithological description 0 - 355" });
+    closeLayerModal();
+
+    // The new top description spans only the first row; the filled middle row is untouched and
+    // the bottom row stays an empty gap.
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 355 });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 355, toDepth: 798 });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 798, isGap: true });
+  });
+
+  it("cancels a description gap drag-selection with Escape", () => {
+    openStratigraphyWith3Lithologies();
+
+    cancelDragSelectDescriptionGaps({ kind: "lithological", fromDepth: 0, deltaRows: 1 });
+
+    // No modal opened and the gaps are untouched.
+    cy.dataCy("apply-button").should("not.exist");
+    hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
   });
 });

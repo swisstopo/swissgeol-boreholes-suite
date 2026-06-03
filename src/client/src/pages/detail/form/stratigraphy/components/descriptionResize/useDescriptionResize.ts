@@ -1,11 +1,16 @@
 import { MouseEvent, RefObject, useEffect, useMemo, useRef, useState } from "react";
-import { BaseLayer, DepthLayer, FaciesDescription, LithologicalDescription } from "../../stratigraphy.ts";
+import {
+  BaseLayer,
+  DepthLayer,
+  DescriptionKind,
+  FaciesDescription,
+  LithologicalDescription,
+} from "../../stratigraphy.ts";
 
-export type ResizeKind = "lithological" | "facies";
 export type ResizeSide = "top" | "bottom";
 
 interface ResizeDrag {
-  kind: ResizeKind;
+  kind: DescriptionKind;
   itemIdx: number;
   side: ResizeSide;
   startClientY: number;
@@ -24,7 +29,7 @@ interface UseDescriptionResizeArgs {
   depths: DepthLayer[];
   tmpLithologicalDescriptions: LithologicalDescription[];
   tmpFaciesDescriptions: FaciesDescription[];
-  resizeDescription: (kind: ResizeKind, itemIdx: number, fromDepth: number, toDepth: number) => void;
+  resizeDescription: (kind: DescriptionKind, itemIdx: number, fromDepth: number, toDepth: number) => void;
   containerRef: RefObject<HTMLElement | null>;
 }
 
@@ -33,7 +38,7 @@ interface UseDescriptionResizeReturn {
   previewRange: PreviewRange | null;
   startResizeDrag: (
     event: MouseEvent<HTMLElement>,
-    kind: ResizeKind,
+    kind: DescriptionKind,
     itemIdx: number,
     layer: BaseLayer,
     side: ResizeSide,
@@ -204,7 +209,7 @@ export const useDescriptionResize = ({
 
   const startResizeDrag = (
     event: MouseEvent<HTMLElement>,
-    kind: ResizeKind,
+    kind: DescriptionKind,
     itemIdx: number,
     layer: BaseLayer,
     side: ResizeSide,
