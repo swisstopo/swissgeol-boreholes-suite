@@ -3,13 +3,12 @@ using Amazon.S3.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
-using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.Security.Claims;
 using System.Text;
 using static BDMS.Helpers;
 
-namespace BDMS;
+namespace BDMS.Services;
 
 [TestClass]
 public class ProfileCloudServiceTest

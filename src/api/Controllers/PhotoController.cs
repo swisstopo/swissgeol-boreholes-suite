@@ -1,5 +1,6 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
+using BDMS.Services;
 using ImageMagick;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;

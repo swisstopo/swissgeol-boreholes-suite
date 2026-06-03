@@ -5,7 +5,7 @@ using Moq.Protected;
 using System.Net;
 using static BDMS.Helpers;
 
-namespace BDMS;
+namespace BDMS.Services;
 
 [TestClass]
 public class CoordinateServiceTest
