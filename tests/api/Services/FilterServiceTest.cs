@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 
-namespace BDMS;
+namespace BDMS.Services;
 
 [TestClass]
 public class FilterServiceTest

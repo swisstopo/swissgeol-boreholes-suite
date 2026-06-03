@@ -1,6 +1,6 @@
 ﻿using BDMS.Models;
 
-namespace BDMS;
+namespace BDMS.Services;
 
 /// <summary>
 /// Provides methods for filtering boreholes based on various criteria.
