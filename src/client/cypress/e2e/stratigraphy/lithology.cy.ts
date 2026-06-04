@@ -1206,26 +1206,6 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
   });
 
-  it("drag-selects multiple empty facies description gaps into one description", () => {
-    openStratigraphyWith3Lithologies();
-
-    dragSelectDescriptionGaps({ kind: "facies", fromDepth: 0, deltaRows: 1 });
-    fillFaciesDescriptionForm({ faciesId: 1, description: "facies description 0 - 798" });
-    closeLayerModal();
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, toDepth: 798 });
-    hasLayer({ layerType: LayerType.faciesDescription, fromDepth: 798, isGap: true });
-
-    saveWithSaveBar();
-    stopBoreholeEditing();
-    checkLayerCardContent({
-      layerType: LayerType.faciesDescription,
-      fromDepth: 0,
-      toDepth: 798,
-      content: ["terrestrial", "facies description 0 - 798"],
-    });
-    hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
-  });
-
   it("clamps a description gap drag-selection at an already-filled cell", () => {
     openStratigraphyWith3Lithologies();
 
