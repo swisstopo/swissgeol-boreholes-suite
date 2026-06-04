@@ -45,7 +45,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   // --- Utility functions ---
   const updateFormValues = useCallback(
-    (refSystem: string, locationX: number | null, locationY: number | null, precisionX: number, precisionY: number) => {
+    (refSystem: string, locationX: number | null | undefined, locationY: number | null | undefined, precisionX: number, precisionY: number) => {
       const locationXString = (locationX && locationX?.toFixed(precisionX)) || "";
       const locationYString = (locationY && locationY?.toFixed(precisionY)) || "";
       setValuesForReferenceSystem(refSystem, locationXString, locationYString);
@@ -109,15 +109,15 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
       // Update form values for both reference systems
       updateFormValues(
         ReferenceSystemKey.LV95,
-        borehole.locationX ?? null,
-        borehole.locationY ?? null,
+        borehole.locationX,
+        borehole.locationY,
         borehole.precisionLocationX ?? 0,
         borehole.precisionLocationY ?? 0,
       );
       updateFormValues(
         ReferenceSystemKey.LV03,
-        borehole.locationXLV03 ?? null,
-        borehole.locationYLV03 ?? null,
+        borehole.locationXLV03,
+        borehole.locationYLV03,
         borehole.precisionLocationXLV03 ?? 0,
         borehole.precisionLocationYLV03 ?? 0,
       );

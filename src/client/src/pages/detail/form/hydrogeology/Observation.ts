@@ -31,10 +31,10 @@ export interface DepthInputProps {
   depthFields: Array<{
     fieldNameMD: string;
     labelMD: string;
-    getValueMD: () => number | null; // function to get the Measured Depth from the observation
+    getValueMD: () => number | null | undefined; // function to get the Measured Depth from the observation
     fieldNameMasl: string;
     labelMasl: string;
-    getValueMasl: () => number | null; // function to get the Meters above sea level Depth from the observation
+    getValueMasl: () => number | null | undefined; // function to get the Meters above sea level Depth from the observation
   }>;
 }
 
@@ -49,10 +49,10 @@ export function prepareObservationDataForSubmit<
     ...data,
     startTime: getIsoDateIfDefined(data?.startTime),
     endTime: getIsoDateIfDefined(data?.endTime),
-    fromDepthM: parseFloatWithThousandsSeparator(data?.fromDepthM ?? null),
-    toDepthM: parseFloatWithThousandsSeparator(data?.toDepthM ?? null),
-    fromDepthMasl: parseFloatWithThousandsSeparator(data?.fromDepthMasl ?? null),
-    toDepthMasl: parseFloatWithThousandsSeparator(data?.toDepthMasl ?? null),
+    fromDepthM: parseFloatWithThousandsSeparator(data?.fromDepthM),
+    toDepthM: parseFloatWithThousandsSeparator(data?.toDepthM),
+    fromDepthMasl: parseFloatWithThousandsSeparator(data?.fromDepthMasl),
+    toDepthMasl: parseFloatWithThousandsSeparator(data?.toDepthMasl),
     boreholeId: parentId,
   } as T;
 }

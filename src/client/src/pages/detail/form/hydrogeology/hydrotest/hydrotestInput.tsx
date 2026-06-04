@@ -154,7 +154,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
     const currentUnits: Record<number, string> = {};
 
     getValues().hydrotestResults?.forEach((element, index) => {
-      currentUnits[index] = getHydrotestParameterUnits(element.parameterId ?? null, codelists.data);
+      currentUnits[index] = getHydrotestParameterUnits(element.parameterId, codelists.data);
     });
 
     setUnits(currentUnits);

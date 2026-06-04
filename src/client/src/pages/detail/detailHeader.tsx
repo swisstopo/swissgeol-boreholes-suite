@@ -55,7 +55,7 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
     if (!editing) {
       updateBorehole({ ...borehole, locked: null, lockedById: null });
     } else {
-      updateBorehole({ ...borehole, locked: new Date().toISOString(), lockedById: currentUser.id ?? null });
+      updateBorehole({ ...borehole, locked: new Date().toISOString(), lockedById: currentUser.id });
     }
   };
 
