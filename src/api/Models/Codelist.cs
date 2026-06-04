@@ -15,6 +15,7 @@ public class Codelist : IIdentifyable
     [Key]
     [Column("id")]
     [Required]
+    [JsonRequired]
     public int Id { get; set; }
 
     /// <summary>
