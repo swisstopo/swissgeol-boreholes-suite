@@ -2,13 +2,14 @@ import { FC, useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { TextField, Typography } from "@mui/material";
 import { GridColDef, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui/x-data-grid";
-import { Profile } from "../../../../api/generated";
+import { OcrStatus, Profile } from "../../../../api/generated";
 import {
   deleteProfile,
   downloadProfile,
   getProfiles,
   updateProfile,
   uploadProfile,
+  useProfileOcrStatus,
   useProfiles,
   useReloadProfiles,
 } from "../../../../api/profile.ts";
@@ -29,6 +30,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const showApiErrorAlert = useApiErrorAlert();
   const { data: profiles, isLoading: isLoadingProfiles } = useProfiles(Number(boreholeId));
   const reloadProfiles = useReloadProfiles(Number(boreholeId));
+  const { data: ocrStatuses } = useProfileOcrStatus(editingEnabled ? boreholeId : undefined);
 
   const loadAttachments = useCallback(async () => {
     return await getProfiles(boreholeId);
@@ -113,8 +115,8 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
     [updateDescription, updatedRows],
   );
 
-  const columns = useMemo<GridColDef<Profile>[]>(
-    () => [
+  const columns = useMemo<GridColDef<Profile>[]>(() => {
+    const baseColumns: GridColDef<Profile>[] = [
       {
         field: "name",
         headerName: t("name"),
@@ -157,9 +159,25 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         renderHeader: getPublicColumnHeader,
         renderCell: getPublicColumnCell,
       },
-    ],
-    [t, editingEnabled, getPublicColumnHeader, getPublicColumnCell, getDescriptionField],
-  );
+    ];
+
+    if (editingEnabled) {
+      baseColumns.push({
+        field: "ocrStatus",
+        headerName: t("ocrStatus"),
+        sortable: false,
+        resizable: false,
+        width: 160,
+        valueGetter: (_value, row) => ocrStatuses?.find(s => s.id === row.id)?.ocrStatus ?? row.ocrStatus,
+        renderCell: ({ value }) => {
+          const status = (value ?? "Created") as OcrStatus;
+          return <Typography data-cy={`ocr-status-${status}`}>{t(`ocrStatuses.${status}`)}</Typography>;
+        },
+      });
+    }
+
+    return baseColumns;
+  }, [t, editingEnabled, getPublicColumnHeader, getPublicColumnCell, getDescriptionField, ocrStatuses]);
 
   return (
     <AttachmentContent<Profile>

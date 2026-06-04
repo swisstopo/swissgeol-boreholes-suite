@@ -2269,6 +2269,11 @@ export type Observation = {
  */
 export type ObservationType = 0 | 1 | 2 | 3 | 4;
 
+/**
+ * Lifecycle status of OCR processing for a BDMS.Models.Profile file.
+ */
+export type OcrStatus = "Created" | "Processing" | "Success" | "Error" | "WillNotBeProcessed";
+
 export type OgcGeometryType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
 
 /**
@@ -2468,12 +2473,21 @@ export type Profile = {
    * Gets or sets whether the BDMS.Models.Profile is publicly visible.
    */
   public?: boolean | null;
+  ocrStatus?: OcrStatus;
   createdById?: number | null;
   createdBy?: User;
   created?: string | null;
   updatedById?: number | null;
   updatedBy?: User;
   updated?: string | null;
+};
+
+/**
+ * Lightweight projection of BDMS.Models.Profile OCR status for polling.
+ */
+export type ProfileOcrStatus = {
+  id?: number;
+  ocrStatus?: OcrStatus;
 };
 
 /**
@@ -5028,6 +5042,7 @@ export type ProfileWritable = {
    * Gets or sets whether the BDMS.Models.Profile is publicly visible.
    */
   public?: boolean | null;
+  ocrStatus?: OcrStatus;
   createdById?: number | null;
   createdBy?: UserWritable;
   created?: string | null;
@@ -7926,6 +7941,30 @@ export type GetApiVbyVersionProfileGetallforboreholeResponses = {
 
 export type GetApiVbyVersionProfileGetallforboreholeResponse =
   GetApiVbyVersionProfileGetallforboreholeResponses[keyof GetApiVbyVersionProfileGetallforboreholeResponses];
+
+export type GetApiVbyVersionProfileGetocrstatusforboreholeData = {
+  body?: never;
+  path: {
+    version: string;
+  };
+  query: {
+    /**
+     * The id of the BDMS.Models.Borehole.
+     */
+    boreholeId: number;
+  };
+  url: "/api/v{version}/profile/getocrstatusforborehole";
+};
+
+export type GetApiVbyVersionProfileGetocrstatusforboreholeResponses = {
+  /**
+   * OK
+   */
+  200: Array<ProfileOcrStatus>;
+};
+
+export type GetApiVbyVersionProfileGetocrstatusforboreholeResponse =
+  GetApiVbyVersionProfileGetocrstatusforboreholeResponses[keyof GetApiVbyVersionProfileGetocrstatusforboreholeResponses];
 
 export type DeleteApiVbyVersionProfileByIdData = {
   body?: never;
