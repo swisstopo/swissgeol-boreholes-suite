@@ -27,7 +27,7 @@ export const DetailPage: FC = () => {
   const { data: borehole, isLoading } = useBorehole(parseInt(id));
   const { data: currentUser } = useCurrentUser();
   useBlockNavigation();
-  useBoreholeDocumentTitle(borehole?.name ?? undefined);
+  useBoreholeDocumentTitle(borehole?.name);
 
   useEffect(() => {
     setEditingEnabled(borehole?.locked !== null && borehole?.lockedById === currentUser?.id);

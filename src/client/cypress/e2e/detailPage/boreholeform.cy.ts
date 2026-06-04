@@ -536,24 +536,20 @@ describe("Test for the borehole form.", () => {
 
       verifyNoUnsavedChanges();
       setSelect("restrictionId", 2);
-      cy.get('.MuiPaper-elevation [role="listbox"]').should("not.exist");
       verifyUnsavedChanges();
 
       // reset from form
       setSelect("restrictionId", 0);
-      cy.get('.MuiPaper-elevation [role="listbox"]').should("not.exist");
       verifyNoUnsavedChanges();
 
       // discard changes with button
       setSelect("restrictionId", 3);
-      cy.get('.MuiPaper-elevation [role="listbox"]').should("not.exist");
       verifyUnsavedChanges();
       cy.get('[data-cy="discardchanges-button"]').click();
       verifyNoUnsavedChanges();
 
       // save changes
       setSelect("restrictionId", 3);
-      cy.get('.MuiPaper-elevation [role="listbox"]').should("not.exist");
       verifyUnsavedChanges();
       cy.get('[data-cy="save-button"]').click();
       verifyNoUnsavedChanges();

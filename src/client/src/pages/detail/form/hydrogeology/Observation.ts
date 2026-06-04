@@ -47,8 +47,8 @@ export function prepareObservationDataForSubmit<
   delete data.reliability;
   return {
     ...data,
-    startTime: getIsoDateIfDefined(data?.startTime ?? null),
-    endTime: getIsoDateIfDefined(data?.endTime ?? null),
+    startTime: getIsoDateIfDefined(data?.startTime),
+    endTime: getIsoDateIfDefined(data?.endTime),
     fromDepthM: parseFloatWithThousandsSeparator(data?.fromDepthM ?? null),
     toDepthM: parseFloatWithThousandsSeparator(data?.toDepthM ?? null),
     fromDepthMasl: parseFloatWithThousandsSeparator(data?.fromDepthMasl ?? null),

@@ -139,7 +139,7 @@ Ein Hotfix-Release wird erstellt, indem vom letzten Release-Git-Tag ein neuer Br
 - Neue Komponenten werden in Typescript geschrieben.
 - Es werden bevorzugt Interfaces statt Types verwendet.
 - **API-Typen werden aus der OpenAPI-Spezifikation generiert** (siehe Abschnitt [OpenAPI Codegen](#openapi-codegen) unten). Das generierte File [`types.gen.ts`](./src/client/src/api/generated/types.gen.ts) darf **nicht manuell bearbeitet** werden.
-- Verbleibende hand-geschriebene Interfaces für API Calls befinden sich unter [apiInterfaces.ts](./src/client/src/api/apiInterfaces.ts) ([ReduxStateInterfaces.ts](./src/client/src/api-lib/ReduxStateInterfaces.ts) für das Legacy API).
+- Verbleibende hand-geschriebene Interfaces für API Calls werden in den entsprechenden domänenspezifischen Files (z.B. `stratigraphy.ts`) definiert oder – für das Legacy API – in [ReduxStateInterfaces.ts](./src/client/src/api-lib/ReduxStateInterfaces.ts).
 - Existieren mehrere Interfaces für eine Komponente, werden sie in einem separaten File neben der Komponente abgelegt.
 - Das Interface für die React props der Komponente kann im selben File mit der Komponente definiert werden.
 

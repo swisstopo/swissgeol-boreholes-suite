@@ -343,7 +343,7 @@ export const CompletionPanel = () => {
                 return (
                   <BoreholeTab
                     data-cy={"completion-header-tab-" + index}
-                    label={item.name || t("common:np")}
+                    label={item.name || t("np")}
                     key={item.id.toString()}
                     hasContent={undefined}
                   />

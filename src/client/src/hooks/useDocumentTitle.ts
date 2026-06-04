@@ -15,7 +15,7 @@ const routeToTranslationKey: Record<string, string> = {
  * Sets the document title to include the borehole name and the current tab name.
  * Resets to the default title on unmount.
  */
-export const useBoreholeDocumentTitle = (boreholeName: string | undefined) => {
+export const useBoreholeDocumentTitle = (boreholeName: string | undefined | null) => {
   const { t } = useTranslation();
   const location = useLocation();
 

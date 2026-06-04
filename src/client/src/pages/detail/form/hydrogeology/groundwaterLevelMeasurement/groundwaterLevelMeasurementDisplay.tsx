@@ -13,11 +13,11 @@ export const GroundwaterLevelMeasurementDisplay: FC<{ item: GroundwaterLevelMeas
       entityName={"groundwaterLevelMeasurement"}>
       <ObservationDisplay observation={item} showDepthInputs={false} />
       <FormContainer direction="row">
-        <FormDisplay label="gwlm_kind" value={item?.kind ?? null} type={FormValueType.Domain} />
+        <FormDisplay label="gwlm_kind" value={item?.kind} type={FormValueType.Domain} />
       </FormContainer>
       <FormContainer direction="row">
-        <FormDisplay label="gwlm_levelm" value={item?.levelM ?? null} type={FormValueType.Number} />
-        <FormDisplay label="gwlm_levelmasl" value={item?.levelMasl ?? null} type={FormValueType.Number} />
+        <FormDisplay label="gwlm_levelm" value={item?.levelM} type={FormValueType.Number} />
+        <FormDisplay label="gwlm_levelmasl" value={item?.levelMasl} type={FormValueType.Number} />
       </FormContainer>
     </DataDisplayCard>
   );
