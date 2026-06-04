@@ -358,15 +358,14 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
     private async Task<bool> StageEditsForCreateAsync(Collection<StratigraphyTabEdit> edits, HashSet<string> takenNames, bool resolveNameConflicts)
     {
         var isFirstStratigraphy = takenNames.Count == 0;
-        var hasDesignatedPrimary = false;
+        var primaryEdit = edits.FirstOrDefault(e => e.Stratigraphy.IsPrimary) ?? (isFirstStratigraphy ? edits[0] : null);
+
         foreach (var edit in edits)
         {
-            var becomesPrimary = !hasDesignatedPrimary && (edit.Stratigraphy.IsPrimary || isFirstStratigraphy);
-            await StageEditForCreateAsync(edit, takenNames, becomesPrimary, resolveNameConflicts).ConfigureAwait(false);
-            hasDesignatedPrimary |= becomesPrimary;
+            await StageEditForCreateAsync(edit, takenNames, ReferenceEquals(edit, primaryEdit), resolveNameConflicts).ConfigureAwait(false);
         }
 
-        return hasDesignatedPrimary;
+        return primaryEdit != null;
     }
 
     private async Task StageEditForCreateAsync(StratigraphyTabEdit edit, HashSet<string> takenNames, bool becomesPrimary, bool resolveNameConflicts)
