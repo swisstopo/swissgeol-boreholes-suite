@@ -167,7 +167,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
                                 isFirst: true,
                               },
                             ],
-                      notes: "",
+                      notes: currentValues.notes,
                       lithologicalDescription: {
                         description: currentValues.lithologicalDescription?.description ?? "",
                       },
