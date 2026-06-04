@@ -614,13 +614,17 @@ export const createStratigraphy = ({ boreholeId, name, isPrimary = true, date = 
       .request({
         method: "POST",
         url: "/api/v2/stratigraphy",
-        body: {
-          id: 0,
-          boreholeId: boreholeId,
-          name: name,
-          isPrimary: isPrimary,
-          date: date,
-        },
+        body: [
+          {
+            stratigraphy: {
+              id: 0,
+              boreholeId: boreholeId,
+              name: name,
+              isPrimary: isPrimary,
+              date: date,
+            },
+          },
+        ],
         cache: "no-cache",
         credentials: "same-origin",
         headers: {
@@ -629,7 +633,7 @@ export const createStratigraphy = ({ boreholeId, name, isPrimary = true, date = 
         auth: bearerAuth(token),
       })
       .then(res => {
-        return cy.wrap(res.body.id);
+        return cy.wrap(res.body[0].stratigraphy.id);
       });
   });
 };
