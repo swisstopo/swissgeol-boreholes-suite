@@ -1,53 +1,53 @@
-import { FC } from "react";
+import { FC, MouseEvent } from "react";
 import { Stack, SxProps } from "@mui/material";
 import { theme } from "../../../../../AppTheme.ts";
 import { LayerAddButton } from "./layerAddButton.tsx";
 import { StratigraphyTableCell, StratigraphyTableCellRow } from "./stratigraphyTablePrimitives.tsx";
 
 interface StratigraphyTableDescriptionGapProps {
-  index: number;
-  onClick?: (index: number) => void;
+  onMouseDown?: (event: MouseEvent<HTMLElement>) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
+  isSelected?: boolean;
   sx?: SxProps;
   dataCy?: string;
 }
 
 export const StratigraphyTableDescriptionGap: FC<StratigraphyTableDescriptionGapProps> = ({
-  index,
-  onClick,
+  onMouseDown,
   onMouseEnter,
   onMouseLeave,
+  isSelected,
   sx,
   dataCy,
-}) => (
-  <StratigraphyTableCell
-    sx={{
-      padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
-      backgroundColor: theme.palette.background.lightgrey,
+}) => {
+  const interactive = !!onMouseDown;
+  return (
+    <StratigraphyTableCell
+      sx={{
+        padding: `${theme.spacing(1)} ${theme.spacing(2)}`,
+        backgroundColor: isSelected ? theme.palette.background.listItemActive : theme.palette.background.lightgrey,
+        ...(isSelected && { userSelect: "none" }),
 
-      ...(onClick && {
-        "&:hover": {
-          backgroundColor: theme.palette.background.grey,
+        ...(interactive && {
           cursor: "pointer",
-        },
-      }),
-      ...sx,
-    }}
-    data-cy={`${dataCy}-gap`}
-    onMouseEnter={onMouseEnter}
-    onMouseLeave={onMouseLeave}
-    onClick={() => {
-      if (onClick) {
-        onClick(index);
-      }
-    }}>
-    <StratigraphyTableCellRow />
-    {onClick && (
-      <Stack direction="row" justifyContent="center" alignItems="center">
-        <LayerAddButton dataCy={`${dataCy}-add-button`} />
-      </Stack>
-    )}
-    <StratigraphyTableCellRow />
-  </StratigraphyTableCell>
-);
+          "&:hover": {
+            backgroundColor: isSelected ? theme.palette.background.listItemActive : theme.palette.background.grey,
+          },
+        }),
+        ...sx,
+      }}
+      data-cy={`${dataCy}-gap`}
+      onMouseDown={onMouseDown}
+      onMouseEnter={onMouseEnter}
+      onMouseLeave={onMouseLeave}>
+      <StratigraphyTableCellRow />
+      {interactive && (
+        <Stack direction="row" justifyContent="center" alignItems="center">
+          <LayerAddButton dataCy={`${dataCy}-add-button`} />
+        </Stack>
+      )}
+      <StratigraphyTableCellRow />
+    </StratigraphyTableCell>
+  );
+};

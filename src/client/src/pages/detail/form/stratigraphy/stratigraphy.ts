@@ -7,6 +7,8 @@ import { fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
 import { Codelist } from "../../../../components/codelist.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 
+export type DescriptionKind = "lithological" | "facies";
+
 export interface Stratigraphy {
   id: number;
   boreholeId: number;
