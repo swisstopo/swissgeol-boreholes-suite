@@ -4,6 +4,7 @@
 
 ### Added
 - Added new codelist entry `VSP` to `log_tool_type` schema.
+  - The OCR status for attached files is now displayed in the attachments table.
   
 ### Changed
 - Deleted unused Swiss coordinate reference systems.
