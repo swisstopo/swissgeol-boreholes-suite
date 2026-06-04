@@ -63,6 +63,12 @@ public class Profile : IIdentifyable, IChangeTracking
     [Column("public")]
     public bool? Public { get; set; }
 
+    /// <summary>
+    /// Gets or sets the OCR processing status of this <see cref="Profile"/>'s file.
+    /// </summary>
+    [Column("ocr_status")]
+    public OcrStatus OcrStatus { get; set; } = OcrStatus.Created;
+
     /// <inheritdoc />
     [Column("creator")]
     public int? CreatedById { get; set; }
