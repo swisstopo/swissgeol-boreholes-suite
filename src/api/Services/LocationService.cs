@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Text;
 using System.Text.Json;
 
-namespace BDMS;
+namespace BDMS.Services;
 
 /// <summary>
 /// Retrieves location information (country, canton, municipality) from the swisstopo identify API.

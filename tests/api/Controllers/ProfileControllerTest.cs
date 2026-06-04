@@ -1,6 +1,7 @@
 ﻿using Amazon.S3;
 using BDMS.Authentication;
 using BDMS.Models;
+using BDMS.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;

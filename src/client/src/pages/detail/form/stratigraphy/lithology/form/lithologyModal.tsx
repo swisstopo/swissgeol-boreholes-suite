@@ -12,8 +12,7 @@ import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
 import { FormInput } from "../../../../../../components/form/formInput.tsx";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
 import { capitalizeFirstLetter } from "../../../../../../utils.ts";
-import { LithologicalDescription } from "../../lithologicalDescription.ts";
-import { Lithology, LithologyFormValues } from "../../lithology.ts";
+import { LithologicalDescription, Lithology, LithologyFormValues } from "../../stratigraphy.ts";
 import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
 import { LithologyUnconsolidatedForm } from "./lithologyUnconsolidatedForm.tsx";
 import {

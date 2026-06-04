@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
 import type { TFunction } from "i18next";
 import { useCodelistDisplayValues } from "../../../../../components/codelist.ts";
-import { Lithology, LithologyDescription } from "../lithology";
+import { Lithology, LithologyDescription } from "../stratigraphy.ts";
 
 const uselessStrings = new Set(["keine Angabe", "sans indication", "senza indicazioni", "not specified"]);
 
@@ -15,7 +15,6 @@ const getBeddingShare = (lithology: Lithology, index: number) => {
   return beddingShare;
 };
 
-// Todo: should all these helper function be custom hooks so that translations and getCodelist can be used directly?
 const buildUnconsolidatedPrimaryString = (
   t: TFunction,
   description: LithologyDescription,

@@ -5,7 +5,7 @@ import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
 import { FormContainer, FormInput, FormValueType } from "../../../../../../components/form/form.ts";
 import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
 import { useFormDirty } from "../../../../../../components/form/useFormDirty.tsx";
-import { LithologicalDescription } from "../../lithologicalDescription.ts";
+import { LithologicalDescription } from "../../stratigraphy.ts";
 import { RemarksFormSection } from "./remarksFormSection.tsx";
 
 interface LithologicalDescriptionModalProps {

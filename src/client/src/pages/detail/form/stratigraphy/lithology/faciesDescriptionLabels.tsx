@@ -1,7 +1,7 @@
 import { FC } from "react";
 import { Typography } from "@mui/material";
 import { useCodelistDisplayValues } from "../../../../../components/codelist.ts";
-import { FaciesDescription } from "../faciesDescription.ts";
+import { FaciesDescription } from "../stratigraphy.ts";
 
 interface FaciesDescriptionLabelsProps {
   description: FaciesDescription;

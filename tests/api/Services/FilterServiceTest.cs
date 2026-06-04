@@ -2,7 +2,7 @@
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 
-namespace BDMS;
+namespace BDMS.Services;
 
 [TestClass]
 public class FilterServiceTest
@@ -1449,6 +1449,7 @@ public class FilterServiceTest
             .Where(b => b.RestrictionId.HasValue)
             .Select(b => b.RestrictionId.Value)
             .Distinct()
+            .OrderBy(id => id)
             .Take(2)
             .ToListAsync();
 

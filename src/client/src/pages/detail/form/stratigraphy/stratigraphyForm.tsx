@@ -2,7 +2,6 @@ import { FC, useCallback, useContext, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { ApiError } from "../../../../api/apiInterfaces.ts";
-import { Stratigraphy, useStratigraphyMutations } from "../../../../api/stratigraphy.ts";
 import { FormValueType } from "../../../../components/form/form.ts";
 import { FormCheckbox } from "../../../../components/form/formCheckbox.tsx";
 import { FormContainer } from "../../../../components/form/formContainer.tsx";
@@ -10,6 +9,7 @@ import { FormInput } from "../../../../components/form/formInput.tsx";
 import { ensureDatetime } from "../../../../components/form/formUtils.ts";
 import { useFormDirtyMarkAsChanged } from "../../../../components/form/useFormDirty.tsx";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
+import { Stratigraphy, useStratigraphyMutations } from "./stratigraphy.ts";
 import { StratigraphyContext, StratigraphyContextProps } from "./stratigraphyContext.tsx";
 
 interface StratigraphyFormProps {

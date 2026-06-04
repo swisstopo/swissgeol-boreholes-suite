@@ -1,7 +1,6 @@
 import { FormErrors } from "../../../../../../components/form/form.ts";
 import { buildErrorStructure, parseFloatWithThousandsSeparator } from "../../../../../../components/form/formUtils.ts";
-import { LithologicalDescription } from "../../lithologicalDescription.ts";
-import { Lithology, LithologyDescription, LithologyFormValues } from "../../lithology.ts";
+import { LithologicalDescription, Lithology, LithologyDescription, LithologyFormValues } from "../../stratigraphy.ts";
 
 export const prepareLithologyForSubmit = (values: LithologyFormValues) => {
   values.fromDepth = parseFloatWithThousandsSeparator(values.fromDepth)!;

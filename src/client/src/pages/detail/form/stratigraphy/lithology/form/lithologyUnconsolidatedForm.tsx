@@ -10,7 +10,12 @@ import {
   FormDomainMultiSelect,
   FormDomainSelect,
 } from "../../../../../../components/form/form.ts";
-import { Lithology, LithologyDescription, LithologyDescriptionEditForm, LithologyEditForm } from "../../lithology.ts";
+import {
+  Lithology,
+  LithologyDescription,
+  LithologyDescriptionEditForm,
+  LithologyEditForm,
+} from "../../stratigraphy.ts";
 import { useLithologyDescriptionShareSync } from "../useLithologyDescriptionShareSync.ts";
 import { LithologyDescriptionForm } from "./lithologyDescriptionForm.tsx";
 

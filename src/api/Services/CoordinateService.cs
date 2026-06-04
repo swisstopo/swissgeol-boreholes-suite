@@ -3,7 +3,7 @@ using NetTopologySuite.Geometries;
 using System.Globalization;
 using System.Text.Json;
 
-namespace BDMS;
+namespace BDMS.Services;
 
 /// <summary>
 /// Transforms coordinates between LV03 and LV95 reference systems using the swisstopo reframe API.

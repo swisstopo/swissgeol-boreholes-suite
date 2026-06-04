@@ -1,6 +1,6 @@
 import { FC } from "react";
 import { Stack } from "@mui/material";
-import { DepthLayer } from "../../../../../api/stratigraphy.ts";
+import { DepthLayer } from "../stratigraphy.ts";
 import { LayerAddButton } from "./layerAddButton.tsx";
 import { DepthInsertPosition } from "./lithologyTable/useLithologyTableState.ts";
 

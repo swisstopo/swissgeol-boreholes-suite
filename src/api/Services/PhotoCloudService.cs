@@ -2,7 +2,7 @@
 using BDMS.Models;
 using System.Text.RegularExpressions;
 
-namespace BDMS;
+namespace BDMS.Services;
 
 public class PhotoCloudService : CloudServiceBase
 {
