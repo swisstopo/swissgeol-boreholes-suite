@@ -1,6 +1,13 @@
 import { useMemo, useRef, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
-import { BaseLayer, DepthLayer, FaciesDescription, LithologicalDescription, Lithology } from "../../stratigraphy.ts";
+import {
+  BaseLayer,
+  DepthLayer,
+  DescriptionKind,
+  FaciesDescription,
+  LithologicalDescription,
+  Lithology,
+} from "../../stratigraphy.ts";
 import {
   createEmptyLithology,
   flagErrors,
@@ -9,7 +16,7 @@ import {
   removeDepthIdReferences,
 } from "./lithologyTableUtils.ts";
 
-export type DepthDeleteAction = "extendLower" | "extendUpper" | "reduceBoreholeEnd" | "increaseBoreholeStart";
+export type DepthDeleteAction = "extendLower" | "extendUpper" | "reduceEnd" | "increaseStart";
 export type DepthInsertPosition = "before" | "after";
 
 export interface LithologyTableStateOptions {
@@ -27,12 +34,12 @@ export interface LithologyTableState {
   handleAddDepthLayer: () => void;
   handleInsertDepthRow: (adjacentDepthId: string, position: DepthInsertPosition) => void;
   handleDeleteDepthLayer: (depthId: string, action: DepthDeleteAction) => void;
-  handleDeleteDescription: (kind: "lithological" | "facies", index: number) => void;
+  handleDeleteDescription: (kind: DescriptionKind, index: number) => void;
   updateTmpLithology: (updated: Lithology, hasChanges: boolean) => void;
   updateTmpLithologicalDescription: (updated: LithologicalDescription, hasChanges: boolean) => void;
   updateTmpFaciesDescription: (updated: FaciesDescription, hasChanges: boolean) => void;
 
-  resizeDescription: (kind: "lithological" | "facies", index: number, newFromDepth: number, newToDepth: number) => void;
+  resizeDescription: (kind: DescriptionKind, index: number, newFromDepth: number, newToDepth: number) => void;
 
   hasErrors: boolean;
   hasUnsavedChanges: boolean;
@@ -304,14 +311,14 @@ export const useLithologyTableState = (
       // disappearing edge — drag it onto the remaining edge.
       if (
         refsDeleted &&
-        (action === "extendUpper" || action === "increaseBoreholeStart") &&
+        (action === "extendUpper" || action === "increaseStart") &&
         item.fromDepth === depthLayerToDelete.fromDepth
       ) {
         return { ...item, fromDepth: depthLayerToDelete.toDepth, depthIds: newDepthIds };
       }
       if (
         refsDeleted &&
-        (action === "extendLower" || action === "reduceBoreholeEnd") &&
+        (action === "extendLower" || action === "reduceEnd") &&
         item.toDepth === depthLayerToDelete.toDepth
       ) {
         return { ...item, toDepth: depthLayerToDelete.fromDepth, depthIds: newDepthIds };
@@ -336,7 +343,7 @@ export const useLithologyTableState = (
     );
   };
 
-  const handleDeleteDescription = (kind: "lithological" | "facies", index: number) => {
+  const handleDeleteDescription = (kind: DescriptionKind, index: number) => {
     const list = kind === "lithological" ? tmpLithologicalDescriptions : tmpFaciesDescriptions;
     if (index < 0 || index >= list.length) return;
     const deletedItem = list[index];
@@ -410,12 +417,7 @@ export const useLithologyTableState = (
     commitChanges(depths, tmpLithologies, tmpLithologicalDescriptions, newDescs);
   };
 
-  const resizeDescription = (
-    kind: "lithological" | "facies",
-    index: number,
-    newFromDepth: number,
-    newToDepth: number,
-  ) => {
+  const resizeDescription = (kind: DescriptionKind, index: number, newFromDepth: number, newToDepth: number) => {
     const list = kind === "lithological" ? tmpLithologicalDescriptions : tmpFaciesDescriptions;
     if (index < 0 || index >= list.length) return;
     if (newFromDepth >= newToDepth) return;
