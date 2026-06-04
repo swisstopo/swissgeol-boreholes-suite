@@ -69,12 +69,10 @@ export const useDescriptionResize = ({
   const [activeDrag, setActiveDrag] = useState<ResizeDrag | null>(null);
   const [previewRange, setPreviewRange] = useState<PreviewRange | null>(null);
 
-  // Latest props read at mousedown time — snapshotted into the drag closure so the listeners
-  // never depend on a stale render.
+  // `resizeDescription` is invoked later (on mouseup), so read it through a ref to call the
+  // latest version at commit time. Depths and column items, by contrast, are read synchronously
+  // at mousedown and frozen for the gesture, so they don't need refs (see startResizeDrag).
   const resizeDescriptionRef = useLatestRef(resizeDescription);
-  const depthsRef = useLatestRef(depths);
-  const lithologicalRef = useLatestRef(tmpLithologicalDescriptions);
-  const faciesRef = useLatestRef(tmpFaciesDescriptions);
 
   // Teardown for an in-progress drag, so an unmount mid-drag still removes the listeners.
   const teardownRef = useRef<(() => void) | null>(null);
@@ -88,12 +86,11 @@ export const useDescriptionResize = ({
     side: ResizeSide,
   ) => {
     event.preventDefault(); //  Without the browser's native drag/text-selection kicks in and the resize/selection doesn't track reliably
-    const depthsSnapshot = depthsRef.current;
     const ids = layer.depthIds ?? [];
     if (ids.length === 0) return;
     if (layer.fromDepth === null || layer.toDepth === null) return;
-    const firstDepthIdx = depthsSnapshot.findIndex(d => d.id === ids[0]);
-    const lastDepthIdx = depthsSnapshot.findIndex(d => d.id === ids.at(-1));
+    const firstDepthIdx = depths.findIndex(d => d.id === ids[0]);
+    const lastDepthIdx = depths.findIndex(d => d.id === ids.at(-1));
     if (firstDepthIdx < 0 || lastDepthIdx < 0) return;
 
     teardownRef.current?.(); // Defensive — normally already cleaned up.
@@ -111,12 +108,12 @@ export const useDescriptionResize = ({
     setPreviewRange({ fromDepth: layer.fromDepth, toDepth: layer.toDepth });
 
     const root: ParentNode = containerRef.current ?? document;
-    const depthEls = queryDepthRowElements(root, depthsSnapshot);
+    const depthEls = queryDepthRowElements(root, depths);
 
     // Same-column items — used by the clamping logic during mousemove.
-    const columnItems: BaseLayer[] = kind === "lithological" ? lithologicalRef.current : faciesRef.current;
+    const columnItems: BaseLayer[] = kind === "lithological" ? tmpLithologicalDescriptions : tmpFaciesDescriptions;
     const ownedBySibling = (depthIdx: number) => {
-      const depthId = depthsSnapshot[depthIdx]?.id;
+      const depthId = depths[depthIdx]?.id;
       if (!depthId) return false;
       return columnItems.some((item, i) => i !== itemIdx && item.depthIds?.includes(depthId));
     };
@@ -124,7 +121,7 @@ export const useDescriptionResize = ({
     // Clamp the new bottom edge: start from the cursor's row but stop at the first sibling-owned
     // row we'd cross. The drag can never reduce the description below its original range.
     const clampBottom = (targetIdx: number): number => {
-      let newLastIdx = Math.max(firstDepthIdx, Math.min(depthsSnapshot.length - 1, targetIdx));
+      let newLastIdx = Math.max(firstDepthIdx, Math.min(depths.length - 1, targetIdx));
       if (newLastIdx > lastDepthIdx) {
         for (let i = lastDepthIdx + 1; i <= newLastIdx; i++) {
           if (ownedBySibling(i)) {
@@ -151,13 +148,13 @@ export const useDescriptionResize = ({
     };
 
     const computePreview = (clientY: number): PreviewRange => {
-      const targetIdx = findDepthIdxAtClientY(depthEls, clientY, depthsSnapshot.length - 1);
+      const targetIdx = findDepthIdxAtClientY(depthEls, clientY, depths.length - 1);
       if (side === "bottom") {
         const lastIdx = clampBottom(targetIdx);
-        return { fromDepth: drag.initialFromDepth, toDepth: depthsSnapshot[lastIdx].toDepth ?? drag.initialToDepth };
+        return { fromDepth: drag.initialFromDepth, toDepth: depths[lastIdx].toDepth ?? drag.initialToDepth };
       }
       const firstIdx = clampTop(targetIdx);
-      return { fromDepth: depthsSnapshot[firstIdx].fromDepth ?? drag.initialFromDepth, toDepth: drag.initialToDepth };
+      return { fromDepth: depths[firstIdx].fromDepth ?? drag.initialFromDepth, toDepth: drag.initialToDepth };
     };
 
     teardownRef.current = beginVerticalRowDrag({

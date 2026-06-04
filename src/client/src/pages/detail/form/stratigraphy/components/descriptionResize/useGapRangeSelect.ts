@@ -57,12 +57,10 @@ export const useGapRangeSelect = ({
   const [activeSelection, setActiveSelection] = useState<GapSelection | null>(null);
   const [previewDepthIds, setPreviewDepthIds] = useState<ReadonlySet<string>>(new Set());
 
-  // Latest props read at mousedown time — snapshotted into the drag closure so the listeners
-  // never depend on a stale render.
+  // `onCommit` is invoked later (on mouseup), so read it through a ref to call the latest
+  // version at commit time. Depths and column items, by contrast, are read synchronously at
+  // mousedown and frozen for the gesture, so they don't need refs (see startGapSelect).
   const onCommitRef = useLatestRef(onCommit);
-  const depthsRef = useLatestRef(depths);
-  const lithologicalRef = useLatestRef(tmpLithologicalDescriptions);
-  const faciesRef = useLatestRef(tmpFaciesDescriptions);
 
   // Teardown for an in-progress drag, so an unmount mid-drag still removes the listeners.
   const teardownRef = useRef<(() => void) | null>(null);
@@ -70,33 +68,32 @@ export const useGapRangeSelect = ({
 
   const startGapSelect = (event: MouseEvent<HTMLElement>, kind: DescriptionKind, startDepthIdx: number) => {
     if (event.button !== 0) return;
-    const depthsSnapshot = depthsRef.current;
-    if (startDepthIdx < 0 || startDepthIdx >= depthsSnapshot.length) return;
+    if (startDepthIdx < 0 || startDepthIdx >= depths.length) return;
 
     teardownRef.current?.(); // Defensive — normally already cleaned up.
 
     const anchorIdx = startDepthIdx;
     setActiveSelection({ kind, anchorIdx });
-    setPreviewDepthIds(new Set([depthsSnapshot[anchorIdx].id]));
+    setPreviewDepthIds(new Set([depths[anchorIdx].id]));
 
     const root: ParentNode = containerRef.current ?? document;
-    const depthEls = queryDepthRowElements(root, depthsSnapshot);
+    const depthEls = queryDepthRowElements(root, depths);
 
     // Depth rows already owned by an item in this column — the selection must stop before them.
-    const columnItems: BaseLayer[] = kind === "lithological" ? lithologicalRef.current : faciesRef.current;
+    const columnItems: BaseLayer[] = kind === "lithological" ? tmpLithologicalDescriptions : tmpFaciesDescriptions;
     const ownedDepthIds = new Set<string>();
     for (const item of columnItems) {
       for (const id of item.depthIds ?? []) ownedDepthIds.add(id);
     }
     const isOwned = (idx: number) => {
-      const id = depthsSnapshot[idx]?.id;
+      const id = depths[idx]?.id;
       return id ? ownedDepthIds.has(id) : false;
     };
 
     // Contiguous run of gaps between the anchor and the pointer, clamped at the first
     // column-owned row encountered while walking away from the anchor.
     const computeSelectedIdxs = (clientY: number): number[] => {
-      const pointer = findDepthIdxAtClientY(depthEls, clientY, depthsSnapshot.length - 1);
+      const pointer = findDepthIdxAtClientY(depthEls, clientY, depths.length - 1);
       let firstSelectedIdx = anchorIdx;
       let lastSelectedIdx = anchorIdx;
       if (pointer > anchorIdx) {
@@ -119,7 +116,7 @@ export const useGapRangeSelect = ({
       startClientY: event.clientY,
       movedThresholdPx: dragThresholdPx,
       onMove: clientY => {
-        const next = new Set(computeSelectedIdxs(clientY).map(i => depthsSnapshot[i].id));
+        const next = new Set(computeSelectedIdxs(clientY).map(i => depths[i].id));
         setPreviewDepthIds(prev => (sameSet(prev, next) ? prev : next));
       },
       onEnd: ({ committed, lastClientY, moved }) => {
@@ -127,7 +124,7 @@ export const useGapRangeSelect = ({
         setActiveSelection(null);
         setPreviewDepthIds(new Set());
         if (!committed || !moved) return;
-        const selectedDepthIds = computeSelectedIdxs(lastClientY).map(i => depthsSnapshot[i].id);
+        const selectedDepthIds = computeSelectedIdxs(lastClientY).map(i => depths[i].id);
         if (selectedDepthIds.length === 0) return;
         onCommitRef.current(kind, selectedDepthIds);
         swallowNextClick();
