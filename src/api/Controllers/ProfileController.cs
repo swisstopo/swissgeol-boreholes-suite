@@ -182,9 +182,6 @@ public class ProfileController : ControllerBase
             .ConfigureAwait(false);
     }
 
-    /// <summary>Lightweight projection of <see cref="Profile"/> OCR status for polling.</summary>
-    public sealed record ProfileOcrStatus(int Id, OcrStatus OcrStatus);
-
     /// <summary>
     /// Lists only the OCR status of every <see cref="Profile"/> attached to a borehole.
     /// Designed for polling: returns a minimal payload <c>[{id, ocrStatus}]</c>.
@@ -204,8 +201,6 @@ public class ProfileController : ControllerBase
             .ToListAsync()
             .ConfigureAwait(false);
     }
-
-
 
     /// <summary>
     /// Deletes a <see cref="Profile"/> and removes its file from cloud storage.
