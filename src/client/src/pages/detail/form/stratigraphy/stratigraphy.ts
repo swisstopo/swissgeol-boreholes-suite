@@ -298,7 +298,7 @@ export const useUpdateStratigraphyWithContents = () => {
     },
     onSuccess: response => {
       resetTabStatus();
-      invalidateStratigraphyQueries(queryClient, Number(response.stratigraphy.boreholeId), false);
+      invalidateStratigraphyQueries(queryClient, Number(response.stratigraphy.boreholeId), true);
       queryClient.invalidateQueries({ queryKey: [lithologyTabQueryKey, response.stratigraphy.id] });
     },
   });
@@ -366,6 +366,7 @@ export const useChronostratigraphyMutations = () => {
       queryClient.invalidateQueries({
         queryKey: [chronostratigraphiesQueryKey],
       });
+      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
     },
   });
   const useUpdateChronostratigraphy = useMutation({
@@ -377,6 +378,7 @@ export const useChronostratigraphyMutations = () => {
       queryClient.invalidateQueries({
         queryKey: [chronostratigraphiesQueryKey],
       });
+      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
     },
   });
   const useDeleteChronostratigraphy = useMutation({
@@ -388,6 +390,7 @@ export const useChronostratigraphyMutations = () => {
       queryClient.invalidateQueries({
         queryKey: [chronostratigraphiesQueryKey],
       });
+      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
     },
   });
 
@@ -421,6 +424,7 @@ export const useLithostratigraphyMutations = () => {
       queryClient.invalidateQueries({
         queryKey: [lithostratigraphiesQueryKey],
       });
+      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
     },
   });
   const useUpdateLithostratigraphy = useMutation({
@@ -432,6 +436,7 @@ export const useLithostratigraphyMutations = () => {
       queryClient.invalidateQueries({
         queryKey: [lithostratigraphiesQueryKey],
       });
+      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
     },
   });
   const useDeleteLithostratigraphy = useMutation({
@@ -443,6 +448,7 @@ export const useLithostratigraphyMutations = () => {
       queryClient.invalidateQueries({
         queryKey: [lithostratigraphiesQueryKey],
       });
+      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
     },
   });
 
