@@ -216,7 +216,7 @@ const evaluateCompleteUnconsolidatedLithologyForm = () => {
   });
 };
 
-const evaluateUnconsolidatedLithologyFormHasOnlyDepths = (fromDepth: number, toDepth: number) => {
+const evaluateUnconsolidatedLithologyFormHasOnlyDepthsAndNote = (fromDepth: number, toDepth: number, note: string) => {
   evaluateUnconsolidatedLithologyForm({
     fromDepth: fromDepth,
     toDepth: toDepth,
@@ -248,7 +248,7 @@ const evaluateUnconsolidatedLithologyFormHasOnlyDepths = (fromDepth: number, toD
     uscsDeterminationId: "",
     rockConditionCodelistIds: [],
     alterationDegreeId: "",
-    notes: "",
+    notes: note,
   });
 };
 
@@ -330,7 +330,7 @@ const evaluateCompleteConsolidatedLithologyForm = () => {
   });
 };
 
-const evaluateConsolidatedLithologyFormHasOnlyDepths = (fromDepth: number, toDepth: number) => {
+const evaluateConsolidatedLithologyFormHasOnlyDepthsAndNote = (fromDepth: number, toDepth: number, note: string) => {
   evaluateConsolidatedLithologyForm({
     fromDepth: fromDepth,
     toDepth: toDepth,
@@ -352,7 +352,7 @@ const evaluateConsolidatedLithologyFormHasOnlyDepths = (fromDepth: number, toDep
     ],
     textureMetaCodelistIds: [],
     alterationDegreeId: "",
-    notes: "",
+    notes: note,
   });
 };
 
@@ -539,13 +539,13 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
 
     // Should reset form when continuing with switch
     switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
-    evaluateConsolidatedLithologyFormHasOnlyDepths(0, 56);
+    evaluateConsolidatedLithologyFormHasOnlyDepthsAndNote(0, 56, "A unconsolidated rock note.");
 
     switchRockType(RockType.consolidated, RockType.unconsolidated, "Continue");
-    evaluateUnconsolidatedLithologyFormHasOnlyDepths(0, 56);
+    evaluateConsolidatedLithologyFormHasOnlyDepthsAndNote(0, 56, "A unconsolidated rock note.");
 
     switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
-    evaluateConsolidatedLithologyFormHasOnlyDepths(0, 56);
+    evaluateConsolidatedLithologyFormHasOnlyDepthsAndNote(0, 56, "A unconsolidated rock note.");
 
     fillCompleteConsolidatedLithologyForm();
     closeLayerModal();
@@ -559,10 +559,10 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     evaluateCompleteConsolidatedLithologyForm();
 
     switchRockType(RockType.consolidated, RockType.unconsolidated, "Continue");
-    evaluateUnconsolidatedLithologyFormHasOnlyDepths(0, 56);
+    evaluateUnconsolidatedLithologyFormHasOnlyDepthsAndNote(0, 56, "A consolidated rock note.");
 
     switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
-    evaluateConsolidatedLithologyFormHasOnlyDepths(0, 56);
+    evaluateUnconsolidatedLithologyFormHasOnlyDepthsAndNote(0, 56, "A consolidated rock note.");
   });
 
   it("supports the unspecified rock type", () => {
