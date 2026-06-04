@@ -45,7 +45,7 @@ public class FileOcrServiceTest
                 ItExpr.IsAny<CancellationToken>())
             .ReturnsAsync(() => queue.Dequeue());
 
-        var httpClient = new HttpClient(handlerMock.Object) { BaseAddress = new Uri("http://ocr.test/") };
+        var httpClient = new HttpClient(handlerMock.Object) { BaseAddress = new Uri("https://ocr.test/") };
         var factoryMock = new Mock<IHttpClientFactory>();
         factoryMock.Setup(f => f.CreateClient("OcrApi")).Returns(httpClient);
 
