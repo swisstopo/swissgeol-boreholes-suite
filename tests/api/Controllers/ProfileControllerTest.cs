@@ -183,6 +183,41 @@ public class ProfileControllerTest
     }
 
     [TestMethod]
+    public async Task GetOcrStatusForBoreholeReturnsIdAndStatusOnly()
+    {
+        var boreholeId = context.Boreholes.First().Id;
+        var profile = new Profile
+        {
+            BoreholeId = boreholeId,
+            Name = "x.pdf",
+            NameUuid = $"{Guid.NewGuid()}.pdf",
+            Type = "application/pdf",
+            OcrStatus = OcrStatus.Processing,
+        };
+        context.Profiles.Add(profile);
+        await context.SaveChangesAsync();
+
+        var result = await controller.GetOcrStatusForBorehole(boreholeId);
+
+        Assert.IsNotNull(result.Value);
+        var entry = result.Value.Single(p => p.Id == profile.Id);
+        Assert.AreEqual(OcrStatus.Processing, entry.OcrStatus);
+    }
+
+    [TestMethod]
+    public async Task GetOcrStatusForBoreholeReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync(SubAdmin, It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var boreholeId = context.Boreholes.First().Id;
+
+        var response = await controller.GetOcrStatusForBorehole(boreholeId);
+        ActionResultAssert.IsUnauthorized(response.Result);
+    }
+
+    [TestMethod]
     public async Task DeleteProfileShouldRemoveProfileAndDeleteFile()
     {
         var firstBoreholeId = context.Boreholes.First().Id;
