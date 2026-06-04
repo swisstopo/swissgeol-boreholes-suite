@@ -136,7 +136,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
         <ToggleButtonGroup
           value={field.value === null ? "unspecified" : field.value}
           onChange={(_, newToggleValue: RockTypeToggleValue | null) => {
-            if (newToggleValue === null) return;
+            if (newToggleValue === null) return; // user clicked the active button — ignore deselect
             const newValue: boolean | null = newToggleValue === "unspecified" ? null : newToggleValue;
             showPrompt(
               t("switchUnconsolidatedMessage", {
