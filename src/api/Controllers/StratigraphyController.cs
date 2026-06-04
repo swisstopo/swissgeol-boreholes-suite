@@ -437,7 +437,7 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
         }
     }
 
-    private ObjectResult NameMustBeUniqueProblem(IReadOnlyCollection<string> conflictingNames)
+    private ObjectResult NameMustBeUniqueProblem(List<string> conflictingNames)
     {
         var result = Problem(detail: "Name must be unique", type: ProblemType.UserError);
         var problemDetails = (ProblemDetails)result.Value!;
