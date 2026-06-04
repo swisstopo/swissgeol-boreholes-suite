@@ -90,7 +90,7 @@ const verticalDragByRows = ({ grabSelector, deltaRows, duringDrag }: VerticalDra
         .map(el => {
           const attr = el.getAttribute("data-cy") ?? "";
           const m = attr.match(/^depth-([\d.]+)-([\d.]+)$/);
-          return m ? { el, from: parseFloat(m[1]), to: parseFloat(m[2]) } : null;
+          return m ? { el, from: Number.parseFloat(m[1]), to: Number.parseFloat(m[2]) } : null;
         })
         .filter((r): r is { el: HTMLElement; from: number; to: number } => r !== null);
 
