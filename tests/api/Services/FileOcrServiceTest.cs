@@ -101,7 +101,7 @@ public class FileOcrServiceTest
     public async Task ProcessAsyncAlreadyTerminalSkipsOcrApi()
     {
         profile.OcrStatus = OcrStatus.Success;
-        context.SaveChanges();
+        await context.SaveChangesAsync();
 
         var (service, handler) = CreateTestService();
 
