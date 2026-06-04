@@ -1,13 +1,12 @@
-import { useTranslation } from "react-i18next";
 import { Button, Stack } from "@mui/material";
-import { capitalizeFirstLetter } from "../../../../utils.ts";
+import { useCapitalizedTranslation } from "../../../../hooks/useCapitalizedTranslation.ts";
 
 interface FilterResetProps {
   reset: () => void;
 }
 
 export const FilterReset = ({ reset }: FilterResetProps) => {
-  const { t } = useTranslation();
+  const ct = useCapitalizedTranslation();
   return (
     <Stack direction="row" justifyContent="space-around" sx={{ marginTop: "24px" }}>
       <Button
@@ -17,7 +16,7 @@ export const FilterReset = ({ reset }: FilterResetProps) => {
         onClick={() => {
           reset();
         }}>
-        {capitalizeFirstLetter(t("reset"))}
+        {ct("reset")}
       </Button>
     </Stack>
   );

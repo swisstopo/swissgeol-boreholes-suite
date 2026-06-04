@@ -7,7 +7,7 @@ import { Identifier, useBorehole } from "../../../../api/borehole.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../components/boreholesCard.tsx";
 import { AddButton, AddRowButton, StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
-import { getCodelistLocalizedLabel, useCodelists } from "../../../../components/codelist.ts";
+import { useCodelistLocalizedLabel, useCodelists } from "../../../../components/codelist.ts";
 import {
   FormContainer,
   FormDomainSelect,
@@ -23,7 +23,8 @@ import { IdentifiersFormInputs, IdentifiersFormSubmission } from "./identifiersP
 
 export const IdentifiersPanel: FC = () => {
   const { id } = useRequiredParams<{ id: string }>();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const getCodelistLabel = useCodelistLocalizedLabel();
   const { data: borehole } = useBorehole(Number.parseInt(id, 10));
   const { editingEnabled } = useContext(EditStateContext);
   const { data: codelists } = useCodelists();
@@ -148,10 +149,7 @@ export const IdentifiersPanel: FC = () => {
                 }
                 title={
                   editingEnabled
-                    ? getCodelistLocalizedLabel(
-                        codelists?.find(d => d.id === watchedCodelists?.[firstIndex]?.codelistId),
-                        i18n.language,
-                      )
+                    ? getCodelistLabel(codelists?.find(d => d.id === watchedCodelists?.[firstIndex]?.codelistId))
                     : ""
                 }>
                 <FormSegmentBox>
