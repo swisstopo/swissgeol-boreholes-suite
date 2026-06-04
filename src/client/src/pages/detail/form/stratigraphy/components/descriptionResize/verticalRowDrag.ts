@@ -1,6 +1,5 @@
 import { DepthLayer } from "../../stratigraphy.ts";
 
-
 /** Cache the depth-row DOM elements within `root`, in depth order (some entries may be null). */
 export const queryDepthRowElements = (root: ParentNode, depths: DepthLayer[]): (HTMLElement | null)[] =>
   depths.map(d => root.querySelector<HTMLElement>(`[data-cy="depth-${d.fromDepth}-${d.toDepth}"]`));
