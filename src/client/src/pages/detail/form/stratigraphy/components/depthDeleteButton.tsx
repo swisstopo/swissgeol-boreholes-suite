@@ -97,14 +97,14 @@ export const DepthDeleteButton: FC<DepthDeleteButtonProps> = ({
           },
         }}>
         <MenuItem
-          onClick={() => handleAction(isFirst ? "increaseBoreholeStart" : "extendUpper")}
-          data-cy={isFirst ? "increase-borehole-start-depth" : "extend-upper-layer-downward"}>
-          {isFirst ? t("increaseBoreholeStartDepth") : t("extendUpperLayerDownward")}
+          onClick={() => handleAction(isFirst ? "increaseStart" : "extendUpper")}
+          data-cy={isFirst ? "increase-start-depth" : "extend-upper-layer-downward"}>
+          {isFirst ? t("increaseStartDepth") : t("extendUpperLayerDownward")}
         </MenuItem>
         <MenuItem
-          onClick={() => handleAction(isLast ? "reduceBoreholeEnd" : "extendLower")}
-          data-cy={isLast ? "reduce-borehole-end-depth" : "extend-lower-layer-upward"}>
-          {isLast ? t("reduceBoreholeEndDepth") : t("extendLowerLayerUpward")}
+          onClick={() => handleAction(isLast ? "reduceEnd" : "extendLower")}
+          data-cy={isLast ? "reduce-end-depth" : "extend-lower-layer-upward"}>
+          {isLast ? t("reduceEndDepth") : t("extendLowerLayerUpward")}
         </MenuItem>
       </Menu>
     </Stack>

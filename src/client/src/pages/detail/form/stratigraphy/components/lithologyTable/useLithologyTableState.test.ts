@@ -389,7 +389,7 @@ describe("useLithologyTableState", () => {
       expect(result.current.tmpLithologies.find(l => l.id === 3)!.fromDepth).toBe(50);
     });
 
-    it("shrinks the borehole end ('reduceBoreholeEnd') without affecting the neighbor", () => {
+    it("shrinks the end ('reduceEnd') without affecting the neighbor", () => {
       const { result } = renderState({
         lithologies: [
           lithology({ id: 1, fromDepth: 0, toDepth: 50 }),
@@ -397,12 +397,12 @@ describe("useLithologyTableState", () => {
         ],
       });
       const lastId = result.current.depths[1].id;
-      act(() => result.current.handleDeleteDepthLayer(lastId, "reduceBoreholeEnd"));
+      act(() => result.current.handleDeleteDepthLayer(lastId, "reduceEnd"));
       expect(result.current.depths).toHaveLength(1);
       expect(result.current.depths[0]).toMatchObject({ fromDepth: 0, toDepth: 50 });
     });
 
-    it("increases the borehole start ('increaseBoreholeStart') without affecting the neighbor", () => {
+    it("increases the start ('increaseStart') without affecting the neighbor", () => {
       const { result } = renderState({
         lithologies: [
           lithology({ id: 1, fromDepth: 0, toDepth: 50 }),
@@ -410,7 +410,7 @@ describe("useLithologyTableState", () => {
         ],
       });
       const firstId = result.current.depths[0].id;
-      act(() => result.current.handleDeleteDepthLayer(firstId, "increaseBoreholeStart"));
+      act(() => result.current.handleDeleteDepthLayer(firstId, "increaseStart"));
       expect(result.current.depths).toHaveLength(1);
       expect(result.current.depths[0]).toMatchObject({ fromDepth: 50, toDepth: 100 });
       expect(result.current.tmpLithologies.find(l => l.id === 1)).toBeUndefined();
