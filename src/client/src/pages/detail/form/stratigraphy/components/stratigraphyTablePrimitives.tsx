@@ -27,6 +27,7 @@ export const StratigraphyTableContent = styled(Stack)(() => ({
 
 export const StratigraphyTableColumn = styled(Stack)(() => ({
   flex: "1",
+  minWidth: 0,
 }));
 
 export const StratigraphyTableCell = styled(Stack)(() => ({
