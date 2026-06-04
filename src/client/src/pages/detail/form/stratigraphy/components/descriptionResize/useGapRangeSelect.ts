@@ -99,21 +99,21 @@ export const useGapRangeSelect = ({
     // column-owned row encountered while walking away from the anchor.
     const computeSelectedIdxs = (clientY: number): number[] => {
       const pointer = findDepthIdxAtClientY(depthEls, clientY, depthsSnapshot.length - 1);
-      let lo = anchorIdx;
-      let hi = anchorIdx;
+      let firstSelectedIdx = anchorIdx;
+      let lastSelectedIdx = anchorIdx;
       if (pointer > anchorIdx) {
         for (let i = anchorIdx + 1; i <= pointer; i++) {
           if (isOwned(i)) break;
-          hi = i;
+          lastSelectedIdx = i;
         }
       } else if (pointer < anchorIdx) {
         for (let i = anchorIdx - 1; i >= pointer; i--) {
           if (isOwned(i)) break;
-          lo = i;
+          firstSelectedIdx = i;
         }
       }
       const idxs: number[] = [];
-      for (let i = lo; i <= hi; i++) idxs.push(i);
+      for (let i = firstSelectedIdx; i <= lastSelectedIdx; i++) idxs.push(i);
       return idxs;
     };
 
