@@ -404,6 +404,7 @@
   "msgWateringressEmpty": "Kein Wasserzutritt vorhanden",
   "mustBeUnique": "Wert muss eindeutig sein",
   "name": "Name",
+  "nameOrVersion": "Name/Version",
   "nationalInterest": "Nationales Interesse",
   "national_interest": "Nationales Interesse",
   "needHelpSeeDocumentation": "Brauchen Sie Hilfe? Mehr Details finden Sie in der Dokumentation",
@@ -526,9 +527,9 @@
     "Published": "Veröffentlicht"
   },
   "stratigraphy": "Stratigraphie",
+  "stratigraphyName": "Stratigraphiename",
   "stratigraphySaved_one": "Stratigraphie erfolgreich gespeichert.",
   "stratigraphySaved_other": "{{count}} Stratigraphien erfolgreich gespeichert.",
-  "stratigraphy_name": "Name/Version",
   "striae": "Striemung",
   "structurePostGen": "Postgenetische Struktur",
   "structureSynGen": "Syngenetische Struktur",

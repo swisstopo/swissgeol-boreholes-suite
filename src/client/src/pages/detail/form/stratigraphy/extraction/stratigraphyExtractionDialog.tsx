@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useCallback, useContext, useEffect, useState } from "react";
+import { FC, MouseEvent, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import {
@@ -14,7 +14,7 @@ import {
   Typography,
 } from "@mui/material";
 import { Stack } from "@mui/system";
-import { BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
+import { ApiError, BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
 import { useExtractStratigraphies, useFileInfo } from "../../../../../api/dataextraction.ts";
 import { theme } from "../../../../../AppTheme.ts";
 import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
@@ -38,10 +38,9 @@ interface StratigraphyExtractionDialogProps {
   setOpen: (open: boolean) => void;
 }
 
-const getStratigraphyName = (file: BoreholeAttachment, index: number): string => {
-  const baseName = file.name.replace(/\.[^/.]+$/, "");
-  return `${baseName}_${index + 1}`;
-};
+const getBaseName = (file: BoreholeAttachment): string => file.name.replace(/\.[^/.]+$/, "");
+const getDefaultStratigraphyName = (file: BoreholeAttachment, index: number, count: number): string =>
+  count === 1 ? getBaseName(file) : `${getBaseName(file)}_${index + 1}`;
 
 export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps> = ({
   file,
@@ -62,6 +61,9 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [checkedIndices, setCheckedIndices] = useState<Set<number>>(new Set());
   const [itemStates, setItemStates] = useState<Map<number, StratigraphyExtractionItemState>>(new Map());
+  const [names, setNames] = useState<Map<number, string>>(new Map());
+  const [conflictingNames, setConflictingNames] = useState<Set<string>>(new Set());
+  const initializedFileRef = useRef<string | null>(null);
 
   const handleItemStateChange = useCallback((index: number, state: StratigraphyExtractionItemState) => {
     setItemStates(prev => {
@@ -77,6 +79,47 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
       setCheckedIndices(new Set([0]));
     }
   }, [allExtractedStratigraphies.length, checkedIndices]);
+
+  useEffect(() => {
+    // Prefill the editable names once the extraction result is available (once per file).
+    if (allExtractedStratigraphies.length === 0 || initializedFileRef.current === file.name) return;
+    initializedFileRef.current = file.name;
+    const count = allExtractedStratigraphies.length;
+    setNames(
+      new Map(allExtractedStratigraphies.map((_, index) => [index, getDefaultStratigraphyName(file, index, count)])),
+    );
+  }, [allExtractedStratigraphies, file]);
+
+  const setName = useCallback((index: number, value: string) => {
+    setNames(prev => {
+      const next = new Map(prev);
+      next.set(index, value);
+      return next;
+    });
+    // Editing any name invalidates a previous server-side uniqueness result.
+    setConflictingNames(new Set());
+  }, []);
+
+  // Per-stratigraphy name validation, scoped to the stratigraphies that will be imported (checked):
+  // empty names, duplicates within the batch, and names the server reported as conflicting.
+  const nameErrors = useMemo(() => {
+    const errors = new Map<number, string>();
+    const checked = [...checkedIndices].filter(i => i >= 0 && i < allExtractedStratigraphies.length);
+    const trimmedByIndex = new Map(checked.map(i => [i, (names.get(i) ?? "").trim()]));
+    for (const i of checked) {
+      const name = trimmedByIndex.get(i)!;
+      if (name === "") {
+        errors.set(i, t("required"));
+      } else if (checked.some(j => j !== i && trimmedByIndex.get(j) === name)) {
+        errors.set(i, t("mustBeUnique"));
+      } else if (conflictingNames.has(name)) {
+        errors.set(i, t("mustBeUnique"));
+      }
+    }
+    return errors;
+  }, [checkedIndices, names, conflictingNames, allExtractedStratigraphies.length, t]);
+
+  const hasNameErrors = nameErrors.size > 0;
 
   const setSelectedIndexAndPage = (value: number) => {
     setSelectedIndex(value);
@@ -98,6 +141,9 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
       abortController.abort();
       setAbortController(undefined);
     }
+    setNames(new Map());
+    setConflictingNames(new Set());
+    initializedFileRef.current = null;
     setSelectedFile(undefined);
     setOpen(false);
   }, [abortController, setOpen, setSelectedFile]);
@@ -120,7 +166,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
     const stratigraphiesToSave = validIndices.map(i => {
       const itemState = itemStates.get(i);
       return {
-        name: getStratigraphyName(file, i),
+        name: (names.get(i) ?? "").trim(),
         lithologicalDescriptions: (itemState?.tmpLithologicalDescriptions ?? []).map(prepareDataForSubmit),
         lithologies: (itemState?.tmpLithologies ?? []).map(prepareDataForSubmit),
       };
@@ -139,18 +185,29 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
         path: `/${id}/stratigraphy/${results[0].stratigraphy.id}`,
         hash: location.hash,
       });
-    } catch {
-      showAlert(t("errorStratigraphySaving"), "error");
+    } catch (error) {
+      if (error instanceof ApiError && error.messageKey === "mustBeUnique") {
+        // Flag the offending name fields and jump to the first conflicting stratigraphy.
+        const conflicts = (error.details?.conflictingNames ?? []) as string[];
+        setConflictingNames(new Set(conflicts));
+        const firstConflict = validIndices.find(i => conflicts.includes((names.get(i) ?? "").trim()));
+        if (firstConflict !== undefined) {
+          setSelectedIndex(firstConflict);
+          setActivePage(allExtractedStratigraphies[firstConflict]?.pageNumbers[0] ?? 1);
+        }
+      } else {
+        showAlert(t("errorStratigraphySaving"), "error");
+      }
     }
   }, [
-    allExtractedStratigraphies.length,
+    allExtractedStratigraphies,
     bulkAdd,
     checkedIndices,
     closeDialog,
-    file,
     id,
     itemStates,
     location.hash,
+    names,
     navigateTo,
     showAlert,
     t,
@@ -184,7 +241,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
               }}>
               {allExtractedStratigraphies.map((_, index) => (
                 <ToggleButton
-                  key={getStratigraphyName(file, index)}
+                  key={`stratigraphy-toggle-${index}`}
                   value={index}
                   data-cy={`stratigraphy-toggle-item-${index}`}>
                   <Typography>{`${t("stratigraphy")} ${index + 1}`}</Typography>
@@ -204,7 +261,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
               }}>
               {allExtractedStratigraphies.map((_, index) => (
                 <MenuItem
-                  key={getStratigraphyName(file, index)}
+                  key={`stratigraphy-select-${index}`}
                   value={index}
                   data-cy={`stratigraphy-select-item-${index}`}>
                   {`${t("stratigraphy")} ${index + 1}`}
@@ -223,6 +280,9 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
           selectedIndex={selectedIndex}
           onItemStateChange={handleItemStateChange}
           isLoading={isLoadingExtraction || isLoadingFileInfo}
+          names={names}
+          nameErrors={nameErrors}
+          onNameChange={setName}
         />
       </DialogMainContent>
       <DialogFooterContainer>
@@ -256,7 +316,8 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
                 checkedIndices.size === 0 ||
                 allExtractedStratigraphies.length === 0 ||
                 isLoadingBulkAdd ||
-                hasErrorsInChecked
+                hasErrorsInChecked ||
+                hasNameErrors
               }
               variant="contained"
               color="primary"

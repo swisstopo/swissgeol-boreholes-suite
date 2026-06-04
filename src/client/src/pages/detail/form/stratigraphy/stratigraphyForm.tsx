@@ -65,7 +65,7 @@ export const StratigraphyForm: FC<StratigraphyFormProps> = ({ selectedStratigrap
       <FormContainer direction={"row"}>
         <FormInput
           fieldName={"name"}
-          label={"stratigraphy_name"}
+          label={"nameOrVersion"}
           value={selectedStratigraphy.name}
           type={FormValueType.Text}
           onUpdate={() => formMethods.clearErrors("name")}

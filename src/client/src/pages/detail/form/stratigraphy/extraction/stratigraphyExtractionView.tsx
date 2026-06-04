@@ -17,6 +17,9 @@ interface StratigraphyExtractionViewProps {
   isLoading: boolean;
   activePage: number;
   setActivePage: (page: number) => void;
+  names: Map<number, string>;
+  nameErrors: Map<number, string>;
+  onNameChange: (index: number, value: string) => void;
 }
 
 export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = ({
@@ -27,6 +30,9 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
   isLoading,
   activePage,
   setActivePage,
+  names,
+  nameErrors,
+  onNameChange,
 }) => {
   const { t } = useTranslation();
   const [pageCount, setPageCount] = useState<number>();
@@ -53,6 +59,9 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
         descriptions={stratigraphy.descriptions}
         visible={index === selectedIndex}
         onStateChange={onItemStateChange}
+        name={names.get(index) ?? ""}
+        nameError={nameErrors.get(index)}
+        onNameChange={onNameChange}
       />
     ));
   };
