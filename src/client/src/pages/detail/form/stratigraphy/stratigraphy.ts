@@ -7,6 +7,8 @@ import { fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
 import { Codelist, Stratigraphy, User } from "../../../../api/generated";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 
+export type DescriptionKind = "lithological" | "facies";
+
 export interface BaseLayer {
   id: number;
   fromDepth: number | null;

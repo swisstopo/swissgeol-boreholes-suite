@@ -8,13 +8,20 @@ import { FaciesDescriptionModal } from "../../lithology/form/faciesDescriptionMo
 import { LithologicalDescriptionModal } from "../../lithology/form/lithologicalDescriptionModal.tsx";
 import { LithologyModal } from "../../lithology/form/lithologyModal.tsx";
 import { LithologyLabels } from "../../lithology/lithologyLabels.tsx";
-import { BaseLayer, FaciesDescription, LithologicalDescription, Lithology } from "../../stratigraphy.ts";
+import {
+  BaseLayer,
+  DescriptionKind,
+  FaciesDescription,
+  LithologicalDescription,
+  Lithology,
+} from "../../stratigraphy.ts";
 import { DepthColumnCell } from "../depthColumnCell.tsx";
 import { DepthDeleteButton } from "../depthDeleteButton.tsx";
 import { DepthInput } from "../depthInput.tsx";
 import { DepthInsertButton } from "../depthInsertButton.tsx";
 import { DescriptionResizeHandle } from "../descriptionResize/descriptionResizeHandle.tsx";
-import { ResizeKind, useDescriptionResize } from "../descriptionResize/useDescriptionResize.ts";
+import { useDescriptionResize } from "../descriptionResize/useDescriptionResize.ts";
+import { useGapRangeSelect } from "../descriptionResize/useGapRangeSelect.ts";
 import { LayerAddButton } from "../layerAddButton.tsx";
 import { StratigraphyTableActionCell } from "../stratigraphyTableActionCell.tsx";
 import { StratigraphyTableDescriptionGap } from "../stratigraphyTableDescriptionGap.tsx";
@@ -103,29 +110,29 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     setSelectedFaciesDescription(undefined);
   };
 
-  const handleAddLithologicalDescriptionInGap = (depthId: string, fromDepth: number | null, toDepth: number | null) => {
-    setSelectedLithologicalDescription({
-      id: 0,
-      stratigraphyId,
-      fromDepth,
-      toDepth,
-      depthIds: [depthId],
-    });
+  const openDescriptionModalForRange = (kind: DescriptionKind, selectedDepthIds: string[]) => {
+    if (selectedDepthIds.length === 0) return;
+    const firstDepth = depths.find(d => d.id === selectedDepthIds[0]);
+    const lastDepth = depths.find(d => d.id === selectedDepthIds.at(-1));
+    if (!firstDepth || !lastDepth) return;
+    const range = { fromDepth: firstDepth.fromDepth, toDepth: lastDepth.toDepth, depthIds: selectedDepthIds };
+    if (kind === "lithological") {
+      setSelectedLithologicalDescription({ id: 0, stratigraphyId, ...range });
+    } else {
+      setSelectedFaciesDescription({ id: 0, stratigraphyId, faciesId: null, ...range });
+    }
   };
 
-  const handleAddFaciesDescriptionInGap = (depthId: string, fromDepth: number | null, toDepth: number | null) => {
-    setSelectedFaciesDescription({
-      id: 0,
-      stratigraphyId,
-      fromDepth,
-      toDepth,
-      faciesId: null,
-      depthIds: [depthId],
-    });
-  };
+  const { activeSelection, previewDepthIds, startGapSelect } = useGapRangeSelect({
+    depths,
+    tmpLithologicalDescriptions,
+    tmpFaciesDescriptions,
+    onCommit: openDescriptionModalForRange,
+    containerRef: tableRef,
+  });
 
   const buildResizeHandles = (
-    kind: ResizeKind,
+    kind: DescriptionKind,
     itemIdx: number,
     layer: BaseLayer,
     itemIndexByDepthId: Map<string, number>,
@@ -174,8 +181,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     keyPrefix: string,
     depthId: string,
     fromDepth: number | null,
-    toDepth: number | null,
-    onAddInGap?: (depthId: string, fromDepth: number | null, toDepth: number | null) => void,
+    selectableKind?: DescriptionKind,
   ) => {
     return (
       <StratigraphyTableDescriptionGap
@@ -184,8 +190,8 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
         sx={{
           height: `${defaultRowHeight}px`,
         }}
-        index={index}
-        onClick={onAddInGap ? () => onAddInGap(depthId, fromDepth, toDepth) : undefined}
+        onMouseDown={selectableKind ? event => startGapSelect(event, selectableKind, index) : undefined}
+        isSelected={!!selectableKind && selectableKind === activeSelection?.kind && previewDepthIds.has(depthId)}
         onMouseEnter={() => handleItemMouseEnter([depthId])}
         onMouseLeave={handleItemMouseLeave}
       />
@@ -238,8 +244,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     buildContent: (layer: BaseLayer) => ReactNode,
     onEdit: (index: number) => void,
     onDelete?: (index: number) => void,
-    onAddInGap?: (depthId: string, fromDepth: number | null, toDepth: number | null) => void,
-    resizableKind?: ResizeKind,
+    resizableKind?: DescriptionKind,
   ): ReactNode[] => {
     // Apply the in-flight resize preview to the matching description (only the description's
     // own column — preview is purely visual; commit happens on mouseup via resizeDescription).
@@ -277,7 +282,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     depths.forEach((depth, depthIdx) => {
       const itemIdx = itemIndexByDepthId.get(depth.id);
       if (itemIdx === undefined) {
-        cells.push(renderGapCell(depthIdx, keyPrefix, depth.id, depth.fromDepth, depth.toDepth, onAddInGap));
+        cells.push(renderGapCell(depthIdx, keyPrefix, depth.id, depth.fromDepth, resizableKind));
       } else if (!renderedItems.has(itemIdx)) {
         const layer = effectiveLayers[itemIdx];
         const resizeHandles = resizableKind
@@ -388,7 +393,6 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                   ),
                   index => setSelectedLithologicalDescription(tmpLithologicalDescriptions[index]),
                   index => handleDeleteDescription("lithological", index),
-                  handleAddLithologicalDescriptionInGap,
                   "lithological",
                 )}
               </StratigraphyTableColumn>
@@ -403,7 +407,6 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                   ),
                   index => setSelectedFaciesDescription(tmpFaciesDescriptions[index]),
                   index => handleDeleteDescription("facies", index),
-                  handleAddFaciesDescriptionInGap,
                   "facies",
                 )}
               </StratigraphyTableColumn>
