@@ -336,26 +336,13 @@ public class StratigraphyControllerTest
         ActionResultAssert.IsInternalServerError(createResult.Result, "Name must be unique");
         var problemDetails = (ProblemDetails)((ObjectResult)createResult.Result!).Value!;
         Assert.AreEqual("mustBeUnique", problemDetails.Extensions["messageKey"]);
+        CollectionAssert.AreEquivalent(
+            new List<string> { baseStratigraphy.Name! },
+            ((IEnumerable<string>)problemDetails.Extensions["conflictingNames"]!).ToList());
     }
 
     [TestMethod]
-    public async Task CreateWithExistingNameResolvesConflict()
-    {
-        var baseStratigraphy = await context.Stratigraphies.FirstAsync();
-
-        var stratigraphyToCreate = new Stratigraphy
-        {
-            BoreholeId = baseStratigraphy.BoreholeId,
-            Name = baseStratigraphy.Name,
-        };
-
-        var createResult = await CreateAsync(stratigraphyToCreate, resolveNameConflicts: true);
-        var created = GetCreatedStratigraphy(createResult);
-        Assert.AreEqual($"{baseStratigraphy.Name} (1)", created.Name);
-    }
-
-    [TestMethod]
-    public async Task CreateWithDuplicateInBatchNamesResolvesConflict()
+    public async Task CreateWithDuplicateInBatchNamesReturnsMustBeUnique()
     {
         var boreholeWithoutStratigraphy = await context.BoreholesWithIncludes.FirstAsync(b => !b.Stratigraphies.Any());
 
@@ -365,11 +352,15 @@ public class StratigraphyControllerTest
             new() { Stratigraphy = new Stratigraphy { BoreholeId = boreholeWithoutStratigraphy.Id, Name = "DUPLICATE" } },
         };
 
-        var createResult = await controller.CreateStratigraphiesAsync(edits, resolveNameConflicts: true);
-        var created = ActionResultAssert.IsOkObjectResult<Collection<StratigraphyTabEdit>>(createResult.Result);
-        var names = created.Select(c => c.Stratigraphy.Name).ToList();
+        var createResult = await controller.CreateStratigraphiesAsync(edits);
+        ActionResultAssert.IsInternalServerError(createResult.Result, "Name must be unique");
+        var problemDetails = (ProblemDetails)((ObjectResult)createResult.Result!).Value!;
+        Assert.AreEqual("mustBeUnique", problemDetails.Extensions["messageKey"]);
 
-        CollectionAssert.AreEquivalent(new List<string> { "DUPLICATE", "DUPLICATE (1)" }, names);
+        // The offending name is reported once so the client can flag the right row.
+        CollectionAssert.AreEquivalent(
+            new List<string> { "DUPLICATE" },
+            ((IEnumerable<string>)problemDetails.Extensions["conflictingNames"]!).ToList());
     }
 
     [TestMethod]
@@ -534,8 +525,8 @@ public class StratigraphyControllerTest
         ActionResultAssert.IsUnauthorized(result.Result);
     }
 
-    private Task<ActionResult<Collection<StratigraphyTabEdit>>> CreateAsync(Stratigraphy? stratigraphy, bool resolveNameConflicts = false)
-        => controller.CreateStratigraphiesAsync(new Collection<StratigraphyTabEdit> { new() { Stratigraphy = stratigraphy! } }, resolveNameConflicts);
+    private Task<ActionResult<Collection<StratigraphyTabEdit>>> CreateAsync(Stratigraphy? stratigraphy)
+        => controller.CreateStratigraphiesAsync(new Collection<StratigraphyTabEdit> { new() { Stratigraphy = stratigraphy! } });
 
     private Task<ActionResult<StratigraphyTabEdit>> EditAsync(Stratigraphy? stratigraphy)
         => controller.EditStratigraphyAsync(new StratigraphyTabEdit { Stratigraphy = stratigraphy! });

@@ -89,6 +89,7 @@ async function handleFetchError(response: Response) {
         responseContent.detail || responseContent.message,
         response.status,
         responseContent.messageKey,
+        responseContent,
       );
     }
   }

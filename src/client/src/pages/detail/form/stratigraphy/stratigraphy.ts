@@ -226,7 +226,7 @@ export const useStratigraphyMutations = () => {
   const resetTabStatus = useResetTabStatus(["lithology", "lithostratigraphy", "chronostratigraphy"]);
 
   // A header-only create (no tab content). The server rejects duplicate names with a mustBeUnique
-  // error (resolveNameConflicts is not set), which the add dialog surfaces on the name field.
+  // error, which the add dialog surfaces on the name field.
   const useAddStratigraphy = useMutation({
     mutationFn: async (stratigraphy: Stratigraphy) => {
       const created = await fetchApiV2WithApiError<StratigraphyTabEdit[]>(stratigraphyController, "POST", [
@@ -304,8 +304,6 @@ export const useUpdateStratigraphyWithContents = () => {
   });
 };
 
-// Bulk-creates 1-n stratigraphies with their lithology contents from the extraction modal. Passes
-// resolveNameConflicts so the server disambiguates the generated names by appending " (N)".
 export const useAddExtractedStratigraphies = () => {
   const queryClient = useQueryClient();
   const resetTabStatus = useResetTabStatus(["lithology"]);
@@ -327,11 +325,7 @@ export const useAddExtractedStratigraphies = () => {
         },
       }));
 
-      return fetchApiV2WithApiError<StratigraphyTabEdit[]>(
-        `${stratigraphyController}?resolveNameConflicts=true`,
-        "POST",
-        payload,
-      );
+      return fetchApiV2WithApiError<StratigraphyTabEdit[]>(stratigraphyController, "POST", payload);
     },
     onSuccess: async results => {
       if (results.length === 0) return;

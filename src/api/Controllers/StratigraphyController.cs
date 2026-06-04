@@ -178,18 +178,14 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
     /// Asynchronously creates one or more <see cref="Stratigraphy"/> entries, each together with the
     /// contents of one of its tabs (currently only the Lithology tab is implemented). Used both by the
     /// "add stratigraphy" action (a single header-only edit) and by the extraction modal that bulk-adds
-    /// 1–n stratigraphies with their lithology contents. All edits must target the same borehole. Name
-    /// conflicts within the borehole are resolved server-side by appending " (N)" suffixes.
+    /// 1–n stratigraphies with their lithology contents. All edits must target the same borehole; a
+    /// duplicate name (already on the borehole or repeated within the batch) is rejected with a
+    /// <c>mustBeUnique</c> error.
     /// </summary>
     /// <param name="edits">The stratigraphies (with optional tab content) to create.</param>
-    /// <param name="resolveNameConflicts">
-    /// When <c>true</c> (used by the extraction bulk-add) duplicate names are made unique server-side by
-    /// appending " (N)". When <c>false</c> (the default, used by the manual "add stratigraphy" action) a
-    /// duplicate name is rejected with a <c>mustBeUnique</c> error instead.
-    /// </param>
     [HttpPost]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<Collection<StratigraphyTabEdit>>> CreateStratigraphiesAsync([Required, MinLength(1)] Collection<StratigraphyTabEdit> edits, [FromQuery] bool resolveNameConflicts = false)
+    public async Task<ActionResult<Collection<StratigraphyTabEdit>>> CreateStratigraphiesAsync([Required, MinLength(1)] Collection<StratigraphyTabEdit> edits)
     {
         if (!TryGetSingleBoreholeId(edits, out var boreholeId))
         {
@@ -205,13 +201,13 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
         {
             var takenNames = await LoadTakenStratigraphyNamesAsync(boreholeId).ConfigureAwait(false);
 
-            // TODO: Decide on how to handle name conflicts from imports, extractions and manual inputs
-            if (!resolveNameConflicts && HasDuplicateName(edits, takenNames))
+            var conflictingNames = GetConflictingNames(edits, takenNames);
+            if (conflictingNames.Count > 0)
             {
-                return NameMustBeUniqueProblem();
+                return NameMustBeUniqueProblem(conflictingNames);
             }
 
-            var hasDesignatedPrimary = await StageEditsForCreateAsync(edits, takenNames, resolveNameConflicts).ConfigureAwait(false);
+            var hasDesignatedPrimary = await StageEditsForCreateAsync(edits, takenNames).ConfigureAwait(false);
             if (hasDesignatedPrimary)
             {
                 await DemotePriorPrimariesAsync(boreholeId).ConfigureAwait(false);
@@ -255,10 +251,9 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
             return Unauthorized();
         }
 
-        // TODO: Decide on how to handle name conflicts from imports, extractions and manual inputs
         if (!await IsNameUnique(entity).ConfigureAwait(false))
         {
-            return NameMustBeUniqueProblem();
+            return NameMustBeUniqueProblem([entity.Name!]);
         }
 
         var existingStratigraphy = await Context.Stratigraphies.FindAsync(entity.Id).ConfigureAwait(false);
@@ -342,42 +337,43 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
         return existingStratigraphyNames.OfType<string>().ToHashSet(StringComparer.Ordinal);
     }
 
-    private static bool HasDuplicateName(Collection<StratigraphyTabEdit> edits, HashSet<string> takenNames)
+    private static List<string> GetConflictingNames(Collection<StratigraphyTabEdit> edits, HashSet<string> takenNames)
     {
         var seen = new HashSet<string>(StringComparer.Ordinal);
+        var conflicting = new List<string>();
         foreach (var edit in edits)
         {
             var name = edit.Stratigraphy.Name;
             if (string.IsNullOrEmpty(name)) continue;
-            if (takenNames.Contains(name) || !seen.Add(name)) return true;
+
+            var existsOnBorehole = takenNames.Contains(name);
+            var duplicateInBatch = !seen.Add(name);
+            if ((existsOnBorehole || duplicateInBatch) && !conflicting.Contains(name))
+            {
+                conflicting.Add(name);
+            }
         }
 
-        return false;
+        return conflicting;
     }
 
-    private async Task<bool> StageEditsForCreateAsync(Collection<StratigraphyTabEdit> edits, HashSet<string> takenNames, bool resolveNameConflicts)
+    private async Task<bool> StageEditsForCreateAsync(Collection<StratigraphyTabEdit> edits, HashSet<string> takenNames)
     {
         var isFirstStratigraphy = takenNames.Count == 0;
         var primaryEdit = edits.FirstOrDefault(e => e.Stratigraphy.IsPrimary) ?? (isFirstStratigraphy ? edits[0] : null);
 
         foreach (var edit in edits)
         {
-            await StageEditForCreateAsync(edit, takenNames, ReferenceEquals(edit, primaryEdit), resolveNameConflicts).ConfigureAwait(false);
+            await StageEditForCreateAsync(edit, ReferenceEquals(edit, primaryEdit)).ConfigureAwait(false);
         }
 
         return primaryEdit != null;
     }
 
-    private async Task StageEditForCreateAsync(StratigraphyTabEdit edit, HashSet<string> takenNames, bool becomesPrimary, bool resolveNameConflicts)
+    private async Task StageEditForCreateAsync(StratigraphyTabEdit edit, bool becomesPrimary)
     {
         var stratigraphy = edit.Stratigraphy;
         stratigraphy.Id = 0;
-
-        if (resolveNameConflicts) ApplyUniqueName(stratigraphy, takenNames);
-        if (!string.IsNullOrEmpty(stratigraphy.Name)) takenNames.Add(stratigraphy.Name);
-
-        // First-ever stratigraphy on the borehole auto-promotes to primary; an explicit
-        // IsPrimary=true on any edit wins and demotes everything else (in-batch + DB).
         stratigraphy.IsPrimary = becomesPrimary;
 
         // Strip stratigraphy-level navigation collections that aren't part of this endpoint.
@@ -411,25 +407,6 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
         }
     }
 
-    private static void ApplyUniqueName(Stratigraphy stratigraphy, HashSet<string> takenNames)
-    {
-        if (string.IsNullOrEmpty(stratigraphy.Name)) return;
-
-        const int maxAttempts = 100;
-        var baseName = stratigraphy.Name;
-        var attempt = 0;
-        while (takenNames.Contains(stratigraphy.Name))
-        {
-            attempt++;
-            if (attempt > maxAttempts)
-            {
-                throw new InvalidOperationException($"Could not find a unique name based on '{baseName}' within {maxAttempts} attempts.");
-            }
-
-            stratigraphy.Name = $"{baseName} ({attempt})";
-        }
-    }
-
     private async Task<StratigraphyTabEdit> BuildResponseAsync(int stratigraphyId)
     {
         var stratigraphy = await Context.Stratigraphies
@@ -460,10 +437,17 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
         }
     }
 
-    private ObjectResult NameMustBeUniqueProblem()
+    private ObjectResult NameMustBeUniqueProblem(IReadOnlyCollection<string> conflictingNames)
     {
         var result = Problem(detail: "Name must be unique", type: ProblemType.UserError);
-        ((ProblemDetails)result.Value!).Extensions["messageKey"] = "mustBeUnique";
+        var problemDetails = (ProblemDetails)result.Value!;
+        problemDetails.Extensions["messageKey"] = "mustBeUnique";
+
+        if (conflictingNames.Count > 0)
+        {
+            problemDetails.Extensions["conflictingNames"] = conflictingNames;
+        }
+
         return result;
     }
 
