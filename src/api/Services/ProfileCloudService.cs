@@ -12,13 +12,18 @@ public class ProfileCloudService : CloudServiceBase
 {
     private readonly BdmsContext context;
     private readonly IHttpContextAccessor httpContextAccessor;
+    private readonly IServiceScopeFactory scopeFactory;
 
-    public ProfileCloudService(BdmsContext context, IConfiguration configuration, ILogger<ProfileCloudService> logger, IHttpContextAccessor httpContextAccessor, IAmazonS3 s3Client)
+    public ProfileCloudService(BdmsContext context, IConfiguration configuration, ILogger<ProfileCloudService> logger, IHttpContextAccessor httpContextAccessor, IAmazonS3 s3Client, IServiceScopeFactory scopeFactory)
         : base(logger, s3Client, configuration["S3:BUCKET_NAME"]!)
     {
         this.httpContextAccessor = httpContextAccessor;
         this.context = context;
+        this.scopeFactory = scopeFactory;
     }
+
+    private static bool IsOcrEligible(string contentType)
+        => string.Equals(contentType, "application/pdf", StringComparison.OrdinalIgnoreCase);
 
     /// <summary>
     /// Uploads a file to cloud storage and creates a <see cref="Profile"/> pointing at it.
@@ -44,6 +49,7 @@ public class ProfileCloudService : CloudServiceBase
             // S3 first: if upload fails we have no DB row pointing at a missing object.
             await UploadObject(fileStream, nameUuid, contentType).ConfigureAwait(false);
 
+            var isOcrEligible = IsOcrEligible(contentType);
             var profile = new Profile
             {
                 BoreholeId = boreholeId,
@@ -52,12 +58,34 @@ public class ProfileCloudService : CloudServiceBase
                 Type = contentType,
                 Description = description,
                 Public = isPublic,
+                OcrStatus = isOcrEligible ? OcrStatus.Created : OcrStatus.WillNotBeProcessed,
             };
 
             await context.Profiles.AddAsync(profile).ConfigureAwait(false);
             await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!).ConfigureAwait(false);
 
             if (transaction != null) await transaction.CommitAsync().ConfigureAwait(false);
+
+            // Fire-and-forget OCR for eligible files. A separate scope keeps the long-running OCR
+            // work decoupled from this request's DI scope (which is disposed when the response returns).
+            if (isOcrEligible)
+            {
+                var capturedId = profile.Id;
+                _ = Task.Run(async () =>
+                {
+                    try
+                    {
+                        using var scope = scopeFactory.CreateScope();
+                        var fileOcrService = scope.ServiceProvider.GetRequiredService<FileOcrService>();
+                        await fileOcrService.ProcessAsync(capturedId).ConfigureAwait(false);
+                    }
+                    catch (Exception ex)
+                    {
+                        Logger.LogError(ex, "Background OCR for profile {ProfileId} failed to start.", capturedId);
+                    }
+                });
+            }
+
             return profile;
         }
         catch (Exception ex)

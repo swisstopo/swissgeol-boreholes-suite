@@ -172,6 +172,16 @@ builder.Services.AddScoped<CoordinateService>();
 builder.Services.AddScoped<ProfileCloudService>();
 builder.Services.AddScoped<PhotoCloudService>();
 builder.Services.AddScoped<LogFileCloudService>();
+builder.Services.AddScoped<FileOcrService>();
+builder.Services.AddHostedService<FileOcrBackgroundService>();
+builder.Services.AddHttpClient("OcrApi", (sp, client) =>
+{
+    var config = sp.GetRequiredService<IConfiguration>();
+    var address = config["ReverseProxy:Clusters:ocrApi:Destinations:ocrApi:Address"]
+        ?? throw new InvalidOperationException("OCR API address is not configured.");
+    client.BaseAddress = new Uri(address);
+    client.Timeout = TimeSpan.FromMinutes(10);
+});
 builder.Services.AddSingleton<IAmazonS3>(sp =>
 {
     var s3ConfigSection = builder.Configuration.GetSection("S3");
