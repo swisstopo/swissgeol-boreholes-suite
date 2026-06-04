@@ -7,7 +7,7 @@ interface HeaderCellProps {
 }
 
 export const StratigraphyTableHeaderCell: FC<HeaderCellProps> = ({ label, sx }) => (
-  <Stack sx={{ flex: "1", justifyContent: "center", paddingX: 2, paddingY: 1, ...sx }}>
+  <Stack sx={{ flex: "1", minWidth: 0, justifyContent: "center", paddingX: 2, paddingY: 1, ...sx }}>
     <Typography variant="body2" fontWeight="700">
       {label}
     </Typography>
