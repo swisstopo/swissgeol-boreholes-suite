@@ -72,8 +72,6 @@ export const useGapRangeSelect = ({
     if (event.button !== 0) return;
     const depthsSnapshot = depthsRef.current;
     if (startDepthIdx < 0 || startDepthIdx >= depthsSnapshot.length) return;
-    event.stopPropagation();
-    event.preventDefault();
 
     teardownRef.current?.(); // Defensive — normally already cleaned up.
 

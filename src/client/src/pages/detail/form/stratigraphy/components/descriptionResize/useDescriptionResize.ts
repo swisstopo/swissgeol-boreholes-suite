@@ -87,8 +87,7 @@ export const useDescriptionResize = ({
     layer: BaseLayer,
     side: ResizeSide,
   ) => {
-    event.stopPropagation();
-    event.preventDefault();
+    event.preventDefault(); //  Without the browser's native drag/text-selection kicks in and the resize/selection doesn't track reliably
     const depthsSnapshot = depthsRef.current;
     const ids = layer.depthIds ?? [];
     if (ids.length === 0) return;
