@@ -33,10 +33,6 @@ interface UseGapRangeSelectReturn {
   startGapSelect: (event: MouseEvent<HTMLElement>, kind: DescriptionKind, startDepthIdx: number) => void;
 }
 
-// A pure click (no movement) is left to the gap cell's onClick; only a drag past this threshold
-// commits here — even one the filled-cell clamp shrinks back to a single row.
-const dragThresholdPx = 4;
-
 const sameSet = (a: ReadonlySet<string>, b: ReadonlySet<string>) => a.size === b.size && [...a].every(id => b.has(id));
 
 /**
@@ -114,16 +110,15 @@ export const useGapRangeSelect = ({
 
     teardownRef.current = beginVerticalRowDrag({
       startClientY: event.clientY,
-      movedThresholdPx: dragThresholdPx,
       onMove: clientY => {
         const next = new Set(computeSelectedIdxs(clientY).map(i => depths[i].id));
         setPreviewDepthIds(prev => (sameSet(prev, next) ? prev : next));
       },
-      onEnd: ({ committed, lastClientY, moved }) => {
+      onEnd: ({ committed, lastClientY }) => {
         teardownRef.current = null;
         setActiveSelection(null);
         setPreviewDepthIds(new Set());
-        if (!committed || !moved) return;
+        if (!committed) return;
         const selectedDepthIds = computeSelectedIdxs(lastClientY).map(i => depths[i].id);
         if (selectedDepthIds.length === 0) return;
         onCommitRef.current(kind, selectedDepthIds);

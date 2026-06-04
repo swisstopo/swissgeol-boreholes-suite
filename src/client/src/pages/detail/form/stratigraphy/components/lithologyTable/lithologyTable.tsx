@@ -110,27 +110,6 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     setSelectedFaciesDescription(undefined);
   };
 
-  const handleAddLithologicalDescriptionInGap = (depthId: string, fromDepth: number | null, toDepth: number | null) => {
-    setSelectedLithologicalDescription({
-      id: 0,
-      stratigraphyId,
-      fromDepth,
-      toDepth,
-      depthIds: [depthId],
-    });
-  };
-
-  const handleAddFaciesDescriptionInGap = (depthId: string, fromDepth: number | null, toDepth: number | null) => {
-    setSelectedFaciesDescription({
-      id: 0,
-      stratigraphyId,
-      fromDepth,
-      toDepth,
-      faciesId: null,
-      depthIds: [depthId],
-    });
-  };
-
   const openDescriptionModalForRange = (kind: DescriptionKind, selectedDepthIds: string[]) => {
     if (selectedDepthIds.length === 0) return;
     const firstDepth = depths.find(d => d.id === selectedDepthIds[0]);
@@ -202,8 +181,6 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     keyPrefix: string,
     depthId: string,
     fromDepth: number | null,
-    toDepth: number | null,
-    onAddInGap?: (depthId: string, fromDepth: number | null, toDepth: number | null) => void,
     selectableKind?: DescriptionKind,
   ) => {
     return (
@@ -213,8 +190,6 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
         sx={{
           height: `${defaultRowHeight}px`,
         }}
-        index={index}
-        onClick={onAddInGap ? () => onAddInGap(depthId, fromDepth, toDepth) : undefined}
         onMouseDown={selectableKind ? event => startGapSelect(event, selectableKind, index) : undefined}
         isSelected={!!selectableKind && selectableKind === activeSelection?.kind && previewDepthIds.has(depthId)}
         onMouseEnter={() => handleItemMouseEnter([depthId])}
@@ -269,7 +244,6 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     buildContent: (layer: BaseLayer) => ReactNode,
     onEdit: (index: number) => void,
     onDelete?: (index: number) => void,
-    onAddInGap?: (depthId: string, fromDepth: number | null, toDepth: number | null) => void,
     resizableKind?: DescriptionKind,
   ): ReactNode[] => {
     // Apply the in-flight resize preview to the matching description (only the description's
@@ -308,9 +282,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     depths.forEach((depth, depthIdx) => {
       const itemIdx = itemIndexByDepthId.get(depth.id);
       if (itemIdx === undefined) {
-        cells.push(
-          renderGapCell(depthIdx, keyPrefix, depth.id, depth.fromDepth, depth.toDepth, onAddInGap, resizableKind),
-        );
+        cells.push(renderGapCell(depthIdx, keyPrefix, depth.id, depth.fromDepth, resizableKind));
       } else if (!renderedItems.has(itemIdx)) {
         const layer = effectiveLayers[itemIdx];
         const resizeHandles = resizableKind
@@ -421,7 +393,6 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                   ),
                   index => setSelectedLithologicalDescription(tmpLithologicalDescriptions[index]),
                   index => handleDeleteDescription("lithological", index),
-                  handleAddLithologicalDescriptionInGap,
                   "lithological",
                 )}
               </StratigraphyTableColumn>
@@ -436,7 +407,6 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                   ),
                   index => setSelectedFaciesDescription(tmpFaciesDescriptions[index]),
                   index => handleDeleteDescription("facies", index),
-                  handleAddFaciesDescriptionInGap,
                   "facies",
                 )}
               </StratigraphyTableColumn>

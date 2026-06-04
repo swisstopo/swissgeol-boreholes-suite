@@ -5,8 +5,6 @@ import { LayerAddButton } from "./layerAddButton.tsx";
 import { StratigraphyTableCell, StratigraphyTableCellRow } from "./stratigraphyTablePrimitives.tsx";
 
 interface StratigraphyTableDescriptionGapProps {
-  index: number;
-  onClick?: (index: number) => void;
   onMouseDown?: (event: MouseEvent<HTMLElement>) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
@@ -16,8 +14,6 @@ interface StratigraphyTableDescriptionGapProps {
 }
 
 export const StratigraphyTableDescriptionGap: FC<StratigraphyTableDescriptionGapProps> = ({
-  index,
-  onClick,
   onMouseDown,
   onMouseEnter,
   onMouseLeave,
@@ -25,7 +21,7 @@ export const StratigraphyTableDescriptionGap: FC<StratigraphyTableDescriptionGap
   sx,
   dataCy,
 }) => {
-  const interactive = !!onClick || !!onMouseDown;
+  const interactive = !!onMouseDown;
   return (
     <StratigraphyTableCell
       sx={{
@@ -44,12 +40,7 @@ export const StratigraphyTableDescriptionGap: FC<StratigraphyTableDescriptionGap
       data-cy={`${dataCy}-gap`}
       onMouseDown={onMouseDown}
       onMouseEnter={onMouseEnter}
-      onMouseLeave={onMouseLeave}
-      onClick={() => {
-        if (onClick) {
-          onClick(index);
-        }
-      }}>
+      onMouseLeave={onMouseLeave}>
       <StratigraphyTableCellRow />
       {interactive && (
         <Stack direction="row" justifyContent="center" alignItems="center">

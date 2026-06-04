@@ -1,5 +1,6 @@
 import { DepthLayer } from "../../stratigraphy.ts";
 
+
 /** Cache the depth-row DOM elements within `root`, in depth order (some entries may be null). */
 export const queryDepthRowElements = (root: ParentNode, depths: DepthLayer[]): (HTMLElement | null)[] =>
   depths.map(d => root.querySelector<HTMLElement>(`[data-cy="depth-${d.fromDepth}-${d.toDepth}"]`));
@@ -41,32 +42,21 @@ export const swallowNextClick = () => {
 
 interface VerticalRowDragOptions {
   startClientY: number;
-  // Pixels the pointer must travel before the gesture counts as a drag (vs a click). Default 0.
-  movedThresholdPx?: number;
-  // Called on every mousemove and on scroll, with the current pointer Y.
-  onMove: (clientY: number) => void;
-  // Called exactly once when the drag ends: mouseup => committed, Escape => not committed.
-  onEnd: (result: { committed: boolean; lastClientY: number; moved: boolean }) => void;
+  onMove: (clientY: number) => void; // Called on every mousemove and on scroll, with the current pointer Y.
+  onEnd: (result: { committed: boolean; lastClientY: number }) => void; // Called exactly once when the drag ends: mouseup => committed, Escape => not committed.
 }
 
 /**
  * Installs window-level drag listeners SYNCHRONOUSLY — mousemove / mouseup, plus Escape-keydown
  * and scroll both in capture phase — and sets the `ns-resize` cursor. (Installing synchronously
  * rather than from a `useEffect` avoids missing a quick drag, since effects run only after
- * paint. Capture phase ensures we see Escape/scroll before an ancestor can stop them.) Tracks
- * the last pointer Y and whether it moved past `movedThresholdPx`.
+ * paint. Capture phase ensures we see Escape/scroll before an ancestor can stop them.)
  *
  * Returns a teardown that force-removes the listeners without invoking `onEnd` (e.g. on unmount).
  */
-export const beginVerticalRowDrag = ({
-  startClientY,
-  movedThresholdPx = 0,
-  onMove,
-  onEnd,
-}: VerticalRowDragOptions): (() => void) => {
+export const beginVerticalRowDrag = ({ startClientY, onMove, onEnd }: VerticalRowDragOptions): (() => void) => {
   document.body.style.cursor = "ns-resize";
   let lastClientY = startClientY;
-  let moved = false;
   let finished = false;
 
   const teardown = () => {
@@ -81,12 +71,11 @@ export const beginVerticalRowDrag = ({
     if (finished) return;
     finished = true;
     teardown();
-    onEnd({ committed, lastClientY, moved });
+    onEnd({ committed, lastClientY });
   };
 
   function handleMove(event: globalThis.MouseEvent) {
     lastClientY = event.clientY;
-    if (Math.abs(event.clientY - startClientY) > movedThresholdPx) moved = true;
     onMove(event.clientY);
   }
   function handleScroll() {
