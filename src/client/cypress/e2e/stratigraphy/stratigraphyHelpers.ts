@@ -72,20 +72,49 @@ export const insertDepthRow = (fromDepth: number | null, toDepth: number | null,
 interface VerticalDragByRowsInput {
   grabSelector: string; // Element to press on and measure from.
   deltaRows: number; // How many depth-row heights to drag. Positive = downward (towards larger depths).
-  rowHeight?: number; // Depth-row pixel height. Defaults to 240 (`defaultRowHeight`).
   duringDrag?: () => void; // Optional action after mousemove and before mouseup (e.g. press Escape).
 }
 
-const verticalDragByRows = ({ grabSelector, deltaRows, rowHeight = 240, duringDrag }: VerticalDragByRowsInput) => {
+const verticalDragByRows = ({ grabSelector, deltaRows, duringDrag }: VerticalDragByRowsInput) => {
   cy.get(grabSelector).then($el => {
     const rect = $el[0].getBoundingClientRect();
     const startX = rect.left + rect.width / 2;
     const startY = rect.top + rect.height / 2;
-    const endY = startY + deltaRows * rowHeight;
     cy.get(grabSelector).trigger("mousedown", { clientX: startX, clientY: startY, button: 0 });
-    cy.get("body").trigger("mousemove", { clientX: startX, clientY: endY });
-    duringDrag?.();
-    cy.get("body").trigger("mouseup", { clientX: startX, clientY: endY });
+
+    // Instead of computing endY from a fixed pixel offset (which breaks when the page scrolls
+    // between mousedown and mousemove), find the actual target depth-row element and read its
+    // current viewport position. This makes the drag immune to intermediate scroll changes.
+    cy.document().then(doc => {
+      const depthRows = Array.from(doc.querySelectorAll<HTMLElement>('[data-cy^="depth-"]'))
+        .map(el => {
+          const attr = el.getAttribute("data-cy") ?? "";
+          const m = attr.match(/^depth-([\d.]+)-([\d.]+)$/);
+          return m ? { el, from: parseFloat(m[1]), to: parseFloat(m[2]) } : null;
+        })
+        .filter((r): r is { el: HTMLElement; from: number; to: number } => r !== null);
+
+      // Find the depth row closest to the grab element's vertical center.
+      let closestIdx = 0;
+      let closestDist = Infinity;
+      depthRows.forEach((r, i) => {
+        const rowRect = r.el.getBoundingClientRect();
+        const rowCenterY = rowRect.top + rowRect.height / 2;
+        const dist = Math.abs(rowCenterY - startY);
+        if (dist < closestDist) {
+          closestDist = dist;
+          closestIdx = i;
+        }
+      });
+
+      const targetRow = depthRows[closestIdx + deltaRows];
+      const targetRect = targetRow.el.getBoundingClientRect();
+      const endY = targetRect.top + targetRect.height / 2;
+
+      cy.get("body").trigger("mousemove", { clientX: startX, clientY: endY });
+      duringDrag?.();
+      cy.get("body").trigger("mouseup", { clientX: startX, clientY: endY });
+    });
   });
 };
 
@@ -95,53 +124,33 @@ interface DragResizeDescriptionInput {
   toDepth: number;
   side: "top" | "bottom";
   deltaRows: number;
-  rowHeight?: number;
 }
 
-export const dragResizeDescription = ({
-  kind,
-  fromDepth,
-  toDepth,
-  side,
-  deltaRows,
-  rowHeight = 240,
-}: DragResizeDescriptionInput) => {
+export const dragResizeDescription = ({ kind, fromDepth, toDepth, side, deltaRows }: DragResizeDescriptionInput) => {
   const columnPrefix = descriptionColumn[kind];
   const cellSelector = `[data-cy="${columnPrefix}-${fromDepth}-${toDepth}"]`;
   const handleSelector = `[data-cy="resize-description-${kind}-${side}-${fromDepth}-${toDepth}"]`;
   cy.get(cellSelector).realHover();
-  verticalDragByRows({ grabSelector: handleSelector, deltaRows, rowHeight });
+  verticalDragByRows({ grabSelector: handleSelector, deltaRows });
 };
 
 interface DragSelectDescriptionGapsInput {
   kind: DescriptionKind;
   fromDepth: number;
   deltaRows: number;
-  rowHeight?: number;
 }
 
 const descriptionGapSelector = (kind: DescriptionKind, fromDepth: number) =>
   `[data-cy^="${descriptionColumn[kind]}-${fromDepth}-"][data-cy$="-gap"]`;
 
-export const dragSelectDescriptionGaps = ({
-  kind,
-  fromDepth,
-  deltaRows,
-  rowHeight = 240,
-}: DragSelectDescriptionGapsInput) => {
-  verticalDragByRows({ grabSelector: descriptionGapSelector(kind, fromDepth), deltaRows, rowHeight });
+export const dragSelectDescriptionGaps = ({ kind, fromDepth, deltaRows }: DragSelectDescriptionGapsInput) => {
+  verticalDragByRows({ grabSelector: descriptionGapSelector(kind, fromDepth), deltaRows });
 };
 
-export const cancelDragSelectDescriptionGaps = ({
-  kind,
-  fromDepth,
-  deltaRows,
-  rowHeight = 240,
-}: DragSelectDescriptionGapsInput) => {
+export const cancelDragSelectDescriptionGaps = ({ kind, fromDepth, deltaRows }: DragSelectDescriptionGapsInput) => {
   verticalDragByRows({
     grabSelector: descriptionGapSelector(kind, fromDepth),
     deltaRows,
-    rowHeight,
     duringDrag: () => cy.get("body").trigger("keydown", { key: "Escape" }),
   });
 };
