@@ -18,7 +18,7 @@ interface StratigraphyTableLayerCellProps {
   resizeHandles?: ReactNode;
 }
 
-// TODO: Fix AutoCorrected-Style. Either remove it or add the colors to the theme
+// TODO: Fix AutoCorrected-Style. Either remove it or add the colors to the theme: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2843
 export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = ({
   children,
   index,
@@ -69,9 +69,12 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
         gap={1}
         sx={{
           flex: "1 1 auto",
+          minWidth: 0,
           minHeight: 0,
           overflow: "hidden",
           justifyContent: isOverflowing ? "flex-start" : "center",
+          overflowWrap: "anywhere",
+          wordBreak: "break-word",
         }}>
         {children}
       </Stack>
