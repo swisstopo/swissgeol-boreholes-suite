@@ -1,5 +1,4 @@
-import { LithologicalDescription } from "../../lithologicalDescription.ts";
-import { Lithology } from "../../lithology.ts";
+import { LithologicalDescription, Lithology } from "../../stratigraphy.ts";
 
 export const findMatchingLithologicalDescription = (
   lithology: Lithology,
