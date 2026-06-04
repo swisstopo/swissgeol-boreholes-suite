@@ -1,6 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { LithologicalDescription } from "../../lithologicalDescription.ts";
-import { Lithology } from "../../lithology.ts";
+import { LithologicalDescription, Lithology } from "../../stratigraphy.ts";
 import { findMatchingLithologicalDescription } from "./lithologyDescriptionMatching.ts";
 
 const lithology = (overrides: Partial<Lithology> = {}): Lithology => ({
