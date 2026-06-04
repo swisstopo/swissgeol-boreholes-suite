@@ -31,6 +31,13 @@ export enum LayerType {
   faciesDescription = "faciesDescription",
 }
 
+type DescriptionKind = "lithological" | "facies";
+
+const descriptionColumn: Record<DescriptionKind, LayerType> = {
+  lithological: LayerType.lithologicalDescription,
+  facies: LayerType.faciesDescription,
+};
+
 export const openNewStratigraphy = () => {
   goToRouteAndAcceptTerms(`/`);
   newEditableBorehole().as("borehole_id");
@@ -62,13 +69,33 @@ export const insertDepthRow = (fromDepth: number | null, toDepth: number | null,
   cy.dataCy(`insert-depth-${position}-${fromDepth}-${toDepth}-button`).click({ force: true });
 };
 
+interface VerticalDragByRowsInput {
+  grabSelector: string; // Element to press on and measure from.
+  deltaRows: number; // How many depth-row heights to drag. Positive = downward (towards larger depths).
+  rowHeight?: number; // Depth-row pixel height. Defaults to 240 (`defaultRowHeight`).
+  duringDrag?: () => void; // Optional action after mousemove and before mouseup (e.g. press Escape).
+}
+
+const verticalDragByRows = ({ grabSelector, deltaRows, rowHeight = 240, duringDrag }: VerticalDragByRowsInput) => {
+  cy.get(grabSelector).then($el => {
+    const rect = $el[0].getBoundingClientRect();
+    const startX = rect.left + rect.width / 2;
+    const startY = rect.top + rect.height / 2;
+    const endY = startY + deltaRows * rowHeight;
+    cy.get(grabSelector).trigger("mousedown", { clientX: startX, clientY: startY, button: 0 });
+    cy.get("body").trigger("mousemove", { clientX: startX, clientY: endY });
+    duringDrag?.();
+    cy.get("body").trigger("mouseup", { clientX: startX, clientY: endY });
+  });
+};
+
 interface DragResizeDescriptionInput {
-  kind: "lithological" | "facies";
+  kind: DescriptionKind;
   fromDepth: number;
   toDepth: number;
   side: "top" | "bottom";
-  deltaRows: number; // How many depth-row heights to drag. Positive = downward (towards larger depths).
-  rowHeight?: number; // Depth-row pixel height. Defaults to 240 (`defaultRowHeight` in `lithologyTableUtils.ts`).
+  deltaRows: number;
+  rowHeight?: number;
 }
 
 export const dragResizeDescription = ({
@@ -79,18 +106,43 @@ export const dragResizeDescription = ({
   deltaRows,
   rowHeight = 240,
 }: DragResizeDescriptionInput) => {
-  const columnPrefix = kind === "lithological" ? "lithologicalDescription" : "faciesDescription";
+  const columnPrefix = descriptionColumn[kind];
   const cellSelector = `[data-cy="${columnPrefix}-${fromDepth}-${toDepth}"]`;
   const handleSelector = `[data-cy="resize-description-${kind}-${side}-${fromDepth}-${toDepth}"]`;
   cy.get(cellSelector).realHover();
-  cy.get(handleSelector).then($handle => {
-    const rect = $handle[0].getBoundingClientRect();
-    const startX = rect.left + rect.width / 2;
-    const startY = rect.top + rect.height / 2;
-    const endY = startY + deltaRows * rowHeight;
-    cy.get(handleSelector).trigger("mousedown", { clientX: startX, clientY: startY, button: 0 });
-    cy.get("body").trigger("mousemove", { clientX: startX, clientY: endY });
-    cy.get("body").trigger("mouseup", { clientX: startX, clientY: endY });
+  verticalDragByRows({ grabSelector: handleSelector, deltaRows, rowHeight });
+};
+
+interface DragSelectDescriptionGapsInput {
+  kind: DescriptionKind;
+  fromDepth: number;
+  deltaRows: number;
+  rowHeight?: number;
+}
+
+const descriptionGapSelector = (kind: DescriptionKind, fromDepth: number) =>
+  `[data-cy^="${descriptionColumn[kind]}-${fromDepth}-"][data-cy$="-gap"]`;
+
+export const dragSelectDescriptionGaps = ({
+  kind,
+  fromDepth,
+  deltaRows,
+  rowHeight = 240,
+}: DragSelectDescriptionGapsInput) => {
+  verticalDragByRows({ grabSelector: descriptionGapSelector(kind, fromDepth), deltaRows, rowHeight });
+};
+
+export const cancelDragSelectDescriptionGaps = ({
+  kind,
+  fromDepth,
+  deltaRows,
+  rowHeight = 240,
+}: DragSelectDescriptionGapsInput) => {
+  verticalDragByRows({
+    grabSelector: descriptionGapSelector(kind, fromDepth),
+    deltaRows,
+    rowHeight,
+    duringDrag: () => cy.get("body").trigger("keydown", { key: "Escape" }),
   });
 };
 
