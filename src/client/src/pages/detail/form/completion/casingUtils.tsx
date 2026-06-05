@@ -1,11 +1,13 @@
 ﻿import { useTranslation } from "react-i18next";
 import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
-import { Casing, CasingDepth, CasingOption } from "./completionInterfaces.ts";
+import { CasingDepth, CasingOption } from "./completionInterfaces.ts";
 
 /**
  * Extract the minimum and maximum depth of the casing elements from the casing object
  */
-export const extractCasingDepth = (casing: Pick<Casing, "casingElements">): CasingDepth => {
+export const extractCasingDepth = (casing: {
+  casingElements?: { fromDepth?: number | null; toDepth?: number | null }[];
+}): CasingDepth => {
   let min: number | null = null;
   let max: number | null = null;
   if (casing?.casingElements != null) {
@@ -25,8 +27,8 @@ interface CasingReferenceItem {
   isOpenBorehole?: boolean;
   casingId?: number | null;
   casing?: {
-    name?: string;
-    completion?: { name?: string };
+    name?: string | null;
+    completion?: { name?: string | null };
   };
 }
 
@@ -56,7 +58,7 @@ export const useGetCasingOptions = () => {
    * @returns An array of objects that contain the key and name of the available casings as well as the open borehole option
    */
   const getCasingOptions = (
-    casings: { id?: number; name?: string; completion?: { name: string } }[],
+    casings: { id?: number; name?: string | null; completion?: { name?: string | null } }[],
   ): CasingOption[] => {
     const options: CasingOption[] = [{ key: -1, name: t("openBorehole") }];
     casings

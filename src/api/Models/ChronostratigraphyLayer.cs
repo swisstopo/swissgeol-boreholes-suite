@@ -1,7 +1,6 @@
 ﻿using BDMS.Json;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
 
 namespace BDMS.Models;
 
@@ -14,10 +13,12 @@ public class ChronostratigraphyLayer : IStratigraphyLayerLegacy, IChangeTracking
     /// <inheritdoc />
     [Column("id")]
     [Key]
+    [Required]
     public int Id { get; set; }
 
     /// <inheritdoc />
     [Column("stratigraphy_id")]
+    [Required]
     public int StratigraphyId { get; set; }
 
     /// <inheritdoc />

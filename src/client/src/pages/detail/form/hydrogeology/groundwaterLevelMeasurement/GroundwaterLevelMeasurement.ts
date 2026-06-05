@@ -1,12 +1,5 @@
 import { fetchApiV2Legacy } from "../../../../../api/fetchApiV2.ts";
-import { Observation } from "../Observation.ts";
-
-export interface GroundwaterLevelMeasurement extends Observation {
-  levelM: number | null;
-  levelMasl: number | null;
-  kindId: number;
-  kind: string; // domain name
-}
+import { GroundwaterLevelMeasurement } from "../../../../../api/generated";
 
 export const getGroundwaterLevelMeasurements = async (boreholeId: number) => {
   return await fetchApiV2Legacy(`groundwaterlevelmeasurement?boreholeId=${boreholeId}`, "GET");

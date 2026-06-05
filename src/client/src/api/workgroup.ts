@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../auth/useBoreholesAuth.tsx";
-import { Role, Workgroup, WorkgroupRole } from "./apiInterfaces.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
+import { Role, Workgroup, UserWorkgroupRole as WorkgroupRole } from "./generated/types.gen";
 import { usersQueryKey } from "./user.ts";
 
 const fetchWorkgroups = async (): Promise<Workgroup[]> => await fetchApiV2WithApiError("workgroup", "GET");
@@ -15,7 +15,7 @@ const updateWorkgroup = async (workgroup: Workgroup) => {
   if (workgroup.disabledAt) {
     workgroup.disabledAt = new Date(workgroup.disabledAt).toISOString();
   }
-  workgroup.isDisabled = undefined;
+  (workgroup as { isDisabled?: boolean }).isDisabled = undefined;
 
   return await fetchApiV2WithApiError("workgroup", "PUT", workgroup);
 };

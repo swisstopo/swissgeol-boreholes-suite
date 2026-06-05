@@ -1,8 +1,9 @@
 import { FC, useCallback } from "react";
+import { WaterIngress as WaterIngressType } from "../../../../../api/generated";
 import { DataCards } from "../../../../../components/dataCard/dataCards.js";
 import { useRequiredParams } from "../../../../../hooks/useRequiredParams.ts";
 import { sortByDepth } from "../../sorter.jsx";
-import { getWaterIngress, WaterIngress as WaterIngressType } from "./WaterIngress.ts";
+import { getWaterIngress } from "./WaterIngress.ts";
 import WaterIngressDisplay from "./waterIngressDisplay.js";
 import WaterIngressInput from "./waterIngressInput.tsx";
 

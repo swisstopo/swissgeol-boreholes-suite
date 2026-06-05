@@ -1,28 +1,13 @@
 import { useCallback } from "react";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { getImageFromBlob } from "../utils.ts";
-import { ApiError, NullableDateString, User } from "./apiInterfaces.ts";
+import { ApiError } from "./apiInterfaces.ts";
 import { labelingFileFormat, matchesFileFormat, PanelTab } from "./dataextractionInterfaces.ts";
 import { download } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
 import { maxFileSizeBytes } from "./file.ts";
+import { Profile } from "./generated";
 import { processFileWithOCR } from "./ocr.ts";
-
-export interface Profile {
-  id: number;
-  boreholeId: number;
-  name: string;
-  nameUuid: string;
-  type: string;
-  description?: string;
-  public?: boolean;
-  createdById?: number;
-  createdBy?: User;
-  created?: NullableDateString;
-  updatedById?: number;
-  updatedBy?: User;
-  updated?: NullableDateString;
-}
 
 export async function uploadProfile(boreholeId: number, file: File): Promise<Profile> {
   if (file && file.size <= maxFileSizeBytes) {
@@ -86,7 +71,7 @@ export function useProfiles(boreholeId?: number, forLabeling: boolean = false) {
       const profiles = await getProfiles(Number(boreholeId));
 
       if (forLabeling) {
-        return profiles.filter(profile => matchesFileFormat(labelingFileFormat[PanelTab.profile], profile.type));
+        return profiles.filter(profile => matchesFileFormat(labelingFileFormat[PanelTab.profile], profile.type!));
       }
       return profiles;
     },

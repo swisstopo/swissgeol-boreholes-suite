@@ -77,6 +77,7 @@
     "@eslint/compat": "^1.2.7",
     "@eslint/eslintrc": "^3.3.5",
     "@eslint/js": "^9.39.4",
+    "@hey-api/openapi-ts": "^0.95.0",
     "@hookform/devtools": "^4.3.3",
     "@ianvs/prettier-plugin-sort-imports": "^4.3.1",
     "@tanstack/eslint-plugin-query": "^5.78.0",
@@ -124,6 +125,9 @@
     "ts": "tsc --noEmit",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.json --report-unused-disable-directives --max-warnings 0",
     "knip": "knip",
-    "cy": "cypress open"
+    "cy": "cypress open",
+    "openapi:fetch": "curl -fsSL http://localhost:5000/swagger/v2/swagger.json -o openapi/swagger.json",
+    "openapi:gen": "openapi-ts",
+    "openapi": "npm run openapi:fetch && npm run openapi:gen"
   }
 }

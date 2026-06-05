@@ -1,4 +1,5 @@
 ﻿using BDMS.Json;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Text.Json.Serialization;
 
@@ -10,6 +11,7 @@ public class BoreholeGeometryElement : IIdentifyable
     /// <inheritdoc />
     [JsonIgnore]
     [Column("id")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>
@@ -17,6 +19,7 @@ public class BoreholeGeometryElement : IIdentifyable
     /// </summary>
     [JsonIgnore]
     [Column("borehole_id")]
+    [Required]
     public int BoreholeId { get; set; }
 
     /// <summary>

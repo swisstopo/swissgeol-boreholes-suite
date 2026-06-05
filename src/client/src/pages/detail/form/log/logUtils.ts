@@ -1,4 +1,4 @@
-import { Codelist } from "../../../../components/codelist.ts";
+import { Codelist } from "../../../../api/generated";
 import { FormErrors } from "../../../../components/form/form.ts";
 import {
   buildErrorStructure,

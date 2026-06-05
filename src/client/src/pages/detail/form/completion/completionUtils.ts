@@ -1,8 +1,9 @@
-﻿import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
+﻿import { NullableNumberString } from "../../../../api/apiInterfaces.ts";
+import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 
 interface EntityWithDepth {
-  fromDepth?: number | string | null;
-  toDepth?: number | string | null;
+  fromDepth?: NullableNumberString;
+  toDepth?: NullableNumberString;
   completionId?: number;
 }
 

@@ -1,15 +1,14 @@
 import { FC, ReactNode } from "react";
-import { useTranslation } from "react-i18next";
 import { Box, Button, IconButton, Stack } from "@mui/material";
 import { IconButtonProps } from "@mui/material/IconButton/IconButton";
 import { ArrowDownToLine, Check, ChevronLeft, Pencil, Plus, Save, Trash2 } from "lucide-react";
 import CopyIcon from "../../assets/icons/copy.svg?react";
 import { theme } from "../../AppTheme.ts";
-import { capitalizeFirstLetter } from "../../utils.ts";
+import { useCapitalizedTranslation } from "../../hooks/useCapitalizedTranslation.ts";
 import { ButtonProps } from "./buttonsInterface";
 
 export const BoreholesBaseButton: FC<ButtonProps> = props => {
-  const { t } = useTranslation();
+  const ct = useCapitalizedTranslation();
   // As of now there is no variant "contained" with color "secondary" in the design system, fallback to "primary".
   const color = props.variant === "contained" ? "primary" : (props.color ?? "primary");
   return (
@@ -19,7 +18,7 @@ export const BoreholesBaseButton: FC<ButtonProps> = props => {
       color={color}
       endIcon={props.icon}
       sx={{ height: "36px", ...props.sx }}>
-      {props.label && capitalizeFirstLetter(t(props.label))}
+      {props.label && ct(props.label)}
     </Button>
   );
 };

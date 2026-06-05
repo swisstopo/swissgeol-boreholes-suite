@@ -1,29 +1,13 @@
 import { UseFormReturn } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { NullableDateString, User } from "../../../../api/apiInterfaces.ts";
-import { boreholeQueryKey, BoreholeV2 } from "../../../../api/borehole.ts";
+import { NullableDateString } from "../../../../api/apiInterfaces.ts";
+import { boreholeQueryKey } from "../../../../api/borehole.ts";
 import { ExtractionBoundingBox } from "../../../../api/dataextractionInterfaces.ts";
 import { fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
-import { Codelist } from "../../../../components/codelist.ts";
+import { Codelist, Stratigraphy, User } from "../../../../api/generated";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 
-export interface Stratigraphy {
-  id: number;
-  boreholeId: number;
-  borehole: BoreholeV2 | null;
-  name: string | null;
-  date: string | null;
-  isPrimary: boolean;
-  created: NullableDateString;
-  createdById: number | null;
-  createdBy?: User;
-  updated: NullableDateString;
-  updatedById: number | null;
-  updatedBy?: User;
-  lithologies: Lithology[] | null;
-  lithostratigraphyLayers: Lithostratigraphy[] | null;
-  chronostratigraphyLayers: Chronostratigraphy[] | null;
-}
+export type DescriptionKind = "lithological" | "facies";
 
 export interface BaseLayer {
   id: number;
@@ -51,6 +35,7 @@ export interface DepthLayer {
   hasToDepthError?: boolean;
 }
 
+// Todo use openapi generated types for Lithology and LithologyDescription, LithologyDescription, FaciesDescription, Chronostratigraphy and Lithostratigraphy.
 export interface LithologyDescription {
   id: number;
   lithologyId: number;

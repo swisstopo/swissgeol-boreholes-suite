@@ -14,6 +14,8 @@ public class Codelist : IIdentifyable
     /// <inheritdoc />
     [Key]
     [Column("id")]
+    [Required]
+    [JsonRequired]
     public int Id { get; set; }
 
     /// <summary>

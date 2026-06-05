@@ -1,8 +1,9 @@
 import { FC } from "react";
+import { WaterIngress } from "../../../../../api/generated";
 import { DataDisplayCard } from "../../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../../components/form/form.ts";
 import ObservationDisplay from "../observationDisplay.tsx";
-import { deleteWaterIngress, WaterIngress } from "./WaterIngress.ts";
+import { deleteWaterIngress } from "./WaterIngress.ts";
 
 const WaterIngressDisplay: FC<{ item: WaterIngress }> = ({ item }) => {
   return (

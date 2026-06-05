@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
+import { useForm, UseFormReturn } from "react-hook-form";
 import { Card, Stack } from "@mui/material";
 import { getBoreholeGeometryDepthTVD } from "../../../../api/fetchApiV2.ts";
 import {
@@ -25,29 +25,29 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
     return value ? Math.round(value * 100) / 100 : null;
   };
 
-  const formMethods = useForm<BoreholeFormInputs>({
+  const formMethods: UseFormReturn<BoreholeFormInputs> = useForm<BoreholeFormInputs>({
     mode: "onChange",
     defaultValues: {
-      name: borehole.name,
-      originalName: borehole.originalName,
-      projectName: borehole.projectName,
-      restrictionId: borehole.restrictionId,
+      name: borehole.name ?? "",
+      originalName: borehole.originalName ?? "",
+      projectName: borehole.projectName ?? "",
+      restrictionId: borehole.restrictionId ?? null,
       restrictionUntil: borehole.restrictionUntil,
       nationalInterest: borehole.nationalInterest === true ? 1 : borehole.nationalInterest === false ? 0 : 2,
-      typeId: borehole.typeId,
-      purposeId: borehole.purposeId,
-      statusId: borehole.statusId,
+      typeId: borehole.typeId ?? null,
+      purposeId: borehole.purposeId ?? null,
+      statusId: borehole.statusId ?? null,
       totalDepth: borehole.totalDepth,
-      depthPrecisionId: borehole.depthPrecisionId,
+      depthPrecisionId: borehole.depthPrecisionId ?? null,
       topBedrockFreshMd: borehole.topBedrockFreshMd,
       topBedrockWeatheredMd: borehole.topBedrockWeatheredMd,
-      lithologyTopBedrockId: borehole.lithologyTopBedrockId,
-      lithostratigraphyTopBedrockId: borehole.lithostratigraphyTopBedrockId,
-      chronostratigraphyTopBedrockId: borehole.chronostratigraphyTopBedrockId,
+      lithologyTopBedrockId: borehole.lithologyTopBedrockId ?? null,
+      lithostratigraphyTopBedrockId: borehole.lithostratigraphyTopBedrockId ?? null,
+      chronostratigraphyTopBedrockId: borehole.chronostratigraphyTopBedrockId ?? null,
       hasGroundwater: borehole.hasGroundwater === true ? 1 : borehole.hasGroundwater === false ? 0 : 2,
       topBedrockIntersected:
         borehole.topBedrockIntersected === true ? 1 : borehole.topBedrockIntersected === false ? 0 : 2,
-      remarks: borehole.remarks,
+      remarks: borehole.remarks ?? "",
     },
   });
 

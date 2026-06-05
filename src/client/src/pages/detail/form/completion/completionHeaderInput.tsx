@@ -2,6 +2,7 @@
 import { FieldValues, FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { CircularProgress } from "@mui/material";
+import { Completion } from "../../../../api/generated";
 import { useCodelistSchema } from "../../../../components/codelist.ts";
 import { SaveAndCancelButtons } from "../../../../components/dataCard/saveAndCancelButtons.tsx";
 import {
@@ -15,7 +16,7 @@ import { useValidateFormOnMount } from "../../../../components/form/useValidateF
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
-import { Completion, CompletionHeaderInputProps } from "./completionInterfaces.ts";
+import { CompletionHeaderInputProps } from "./completionInterfaces.ts";
 import { completionSchemaConstants } from "./completionSchemaConstants.ts";
 
 const CompletionHeaderInput = ({

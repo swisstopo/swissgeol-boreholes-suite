@@ -1,11 +1,12 @@
 ﻿import { useCallback } from "react";
 import { getCasings } from "../../../../api/fetchApiV2.ts";
+import { Casing } from "../../../../api/generated";
 import { DataCards } from "../../../../components/dataCard/dataCards.tsx";
 import { sortByDepth } from "../sorter.jsx";
 import CasingDisplay from "./casingDisplay.tsx";
 import CasingInput from "./casingInput.tsx";
 import { extractCasingDepth } from "./casingUtils.tsx";
-import { Casing, CompletionTabProps } from "./completionInterfaces.ts";
+import { CompletionTabProps } from "./completionInterfaces.ts";
 
 export const CasingTab = ({ completionId }: CompletionTabProps) => {
   const renderInput = useCallback((props: { item: Casing; parentId: number }) => <CasingInput {...props} />, []);

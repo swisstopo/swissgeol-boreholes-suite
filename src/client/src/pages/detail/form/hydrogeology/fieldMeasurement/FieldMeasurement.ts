@@ -1,16 +1,5 @@
 import { fetchApiV2Legacy } from "../../../../../api/fetchApiV2.ts";
-import { Observation } from "../Observation.ts";
-
-export interface FieldMeasurement extends Observation {
-  fieldMeasurementResults: FieldMeasurementResult[];
-}
-
-export interface FieldMeasurementResult {
-  id?: number;
-  sampleTypeId: number | null;
-  parameterId: number | null;
-  value: number | null;
-}
+import { FieldMeasurement } from "../../../../../api/generated";
 
 export interface FieldMeasurementInputProps {
   item: FieldMeasurement;
