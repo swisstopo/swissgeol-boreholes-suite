@@ -63,28 +63,16 @@ public class LithologyTabContentService(BdmsContext context) : ILithologyTabCont
     /// <inheritdoc />
     public bool ValidateChildStratigraphyIds(LithologyTabContents contents, int stratigraphyId, out string? errorMessage)
     {
-        bool MatchesOrUnset(int candidate) => candidate == 0 || candidate == stratigraphyId;
+        string? Validate(IEnumerable<IStratigraphyLayer>? items, string childName) =>
+            (items ?? []).Any(item => item.StratigraphyId != 0 && item.StratigraphyId != stratigraphyId)
+                ? $"All {childName} must reference the path stratigraphyId."
+                : null;
 
-        if ((contents.Lithologies ?? []).Any(l => !MatchesOrUnset(l.StratigraphyId)))
-        {
-            errorMessage = "All lithologies must reference the path stratigraphyId.";
-            return false;
-        }
+        errorMessage = Validate(contents.Lithologies, "lithologies")
+            ?? Validate(contents.LithologicalDescriptions, "lithological descriptions")
+            ?? Validate(contents.FaciesDescriptions, "facies descriptions");
 
-        if ((contents.LithologicalDescriptions ?? []).Any(d => !MatchesOrUnset(d.StratigraphyId)))
-        {
-            errorMessage = "All lithological descriptions must reference the path stratigraphyId.";
-            return false;
-        }
-
-        if ((contents.FaciesDescriptions ?? []).Any(d => !MatchesOrUnset(d.StratigraphyId)))
-        {
-            errorMessage = "All facies descriptions must reference the path stratigraphyId.";
-            return false;
-        }
-
-        errorMessage = null;
-        return true;
+        return errorMessage == null;
     }
 
     private async Task PrepareNewLithologiesAsync(IEnumerable<Lithology> lithologies)
