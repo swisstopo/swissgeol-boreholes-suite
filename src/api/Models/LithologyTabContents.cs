@@ -3,7 +3,7 @@
 namespace BDMS.Models;
 
 /// <summary>
-/// The full editable contents of the Lithology tab of a stratigraphy:
+/// The full editable contents of the Lithology tab of a <see cref="Stratigraphy"/>:
 /// the three sibling collections that <see cref="Services.LithologyTabContentService"/> manages
 /// together as a single unit.
 /// </summary>
