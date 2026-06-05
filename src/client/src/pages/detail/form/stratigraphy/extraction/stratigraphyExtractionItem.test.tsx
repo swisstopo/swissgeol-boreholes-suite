@@ -50,8 +50,6 @@ const renderItem = () =>
       descriptions={[] as ExtractedLithologicalDescription[]}
       visible
       onStateChange={vi.fn()}
-      name="Layer A"
-      onNameChange={vi.fn()}
     />,
   );
 
@@ -92,8 +90,6 @@ describe("StratigraphyExtractionItem depth-extraction alert", () => {
         descriptions={[] as ExtractedLithologicalDescription[]}
         visible
         onStateChange={vi.fn()}
-        name="Layer A"
-        onNameChange={vi.fn()}
       />,
     );
     expect(alert()).toBeNull();
@@ -112,8 +108,6 @@ describe("StratigraphyExtractionItem depth-extraction alert", () => {
         descriptions={[] as ExtractedLithologicalDescription[]}
         visible
         onStateChange={vi.fn()}
-        name="Layer A"
-        onNameChange={vi.fn()}
       />,
     );
     expect(alert()).toBeNull();
