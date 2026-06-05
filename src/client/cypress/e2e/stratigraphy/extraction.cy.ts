@@ -184,6 +184,58 @@ describe("Tests for stratigraphy extraction", () => {
     });
   });
 
+  it("disables saving while a selected stratigraphy name is empty or duplicated", () => {
+    const makeBorehole = (index: number, materialText: string, endDepth: number) => ({
+      id: `borehole-${index}`,
+      page_numbers: [1],
+      layers: [
+        {
+          start: { depth: 0, bounding_boxes: [] },
+          end: { depth: endDepth, bounding_boxes: [] },
+          material_description: { text: materialText, bounding_boxes: [] },
+        },
+      ],
+    });
+
+    cy.intercept("POST", "dataextraction/api/V1/extract_stratigraphy", {
+      statusCode: 200,
+      body: { boreholes: [makeBorehole(1, "Humus", 1.5), makeBorehole(2, "Sand", 2)] },
+    }).as("extract-stratigraphy-names");
+
+    createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "2-Bohrungen.pdf");
+    cy.wait("@extract-stratigraphy-names", { timeout: 240000 });
+
+    // Names are prefilled from the file base name with a numbered suffix.
+    cy.dataCy("stratigraphy-name-input-0").find("input").should("have.value", "2-Bohrungen_1");
+
+    // Check the first (default-selected) stratigraphy: a valid name allows saving.
+    cy.dataCy("add-stratigraphy-checkbox-1").click();
+    cy.dataCy("add-stratigraphy-button").should("not.be.disabled");
+
+    // Clearing a checked stratigraphy's name flags the field and blocks saving.
+    cy.dataCy("stratigraphy-name-input-0").find("input").clear();
+    cy.dataCy("stratigraphy-name-input-0").find("input").should("have.attr", "aria-invalid", "true");
+    cy.dataCy("add-stratigraphy-button").should("be.disabled");
+
+    // A unique name clears the error and re-enables saving.
+    cy.dataCy("stratigraphy-name-input-0").find("input").type("Alpha");
+    cy.dataCy("stratigraphy-name-input-0").find("input").should("have.attr", "aria-invalid", "false");
+    cy.dataCy("add-stratigraphy-button").should("not.be.disabled");
+
+    // Check the second stratigraphy and give it the same name: both are flagged as not unique.
+    cy.dataCy("stratigraphy-toggle-item-1").click();
+    cy.dataCy("add-stratigraphy-checkbox-2").click();
+    cy.dataCy("stratigraphy-name-input-1").find("input").clear();
+    cy.dataCy("stratigraphy-name-input-1").find("input").type("Alpha");
+    cy.dataCy("stratigraphy-name-input-1").find("input").should("have.attr", "aria-invalid", "true");
+    cy.dataCy("add-stratigraphy-button").should("be.disabled");
+
+    // Making the second name unique again resolves the conflict.
+    cy.dataCy("stratigraphy-name-input-1").find("input").clear();
+    cy.dataCy("stratigraphy-name-input-1").find("input").type("Beta");
+    cy.dataCy("add-stratigraphy-button").should("not.be.disabled");
+  });
+
   it("displays message if nothing could be extracted from file", () => {
     createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "import/borehole_attachment_3.pdf");
     cy.wait(["@extraction-file-info"]);
