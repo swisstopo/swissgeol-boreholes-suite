@@ -89,7 +89,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             onClick={() => {
               navigateTo({ path: `/${id}/borehole` });
             }}>
-            {ct("borehole")}{" "}
+            {ct("borehole")}
           </SgcMenuItem>
           <SgcMenuItem
             active={location.pathname.includes(`/${id}/stratigraphy`)}
@@ -101,7 +101,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             onClick={() => {
               navigateTo({ path: `/${id}/stratigraphy` });
             }}>
-            {ct("stratigraphy")}{" "}
+            {ct("stratigraphy")}
           </SgcMenuItem>
           <SgcMenuItem
             active={location.pathname.includes(`/${id}/completion`)}
@@ -111,7 +111,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             onClick={() => {
               navigateTo({ path: `/${id}/completion` });
             }}>
-            {ct("completion")}{" "}
+            {ct("completion")}
           </SgcMenuItem>
           <SgcMenuItem
             active={false}
