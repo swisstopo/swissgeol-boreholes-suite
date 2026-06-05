@@ -1,5 +1,6 @@
 import Layer from "ol/layer/Layer";
 import VectorSource from "ol/source/Vector";
+import { evaluateInput, hasError, setInput } from "../helpers/formHelpers";
 import { createBorehole, goToDetailRouteAndAcceptTerms, startBoreholeEditing } from "../helpers/testHelpers";
 import { MapDomId, WindowWithMaps } from "../helpers/window.ts";
 
@@ -206,33 +207,32 @@ describe("Tests for stratigraphy extraction", () => {
     cy.wait("@extract-stratigraphy-names", { timeout: 240000 });
 
     // Names are prefilled from the file base name with a numbered suffix.
-    cy.dataCy("stratigraphy-name-input-0").find("input").should("have.value", "2-Bohrungen_1");
+    evaluateInput("stratigraphy-name-0", "2-Bohrungen_1");
 
     // Check the first (default-selected) stratigraphy: a valid name allows saving.
     cy.dataCy("add-stratigraphy-checkbox-1").click();
     cy.dataCy("add-stratigraphy-button").should("not.be.disabled");
 
     // Clearing a checked stratigraphy's name flags the field and blocks saving.
-    cy.dataCy("stratigraphy-name-input-0").find("input").clear();
-    cy.dataCy("stratigraphy-name-input-0").find("input").should("have.attr", "aria-invalid", "true");
+    setInput("stratigraphy-name-0", " ");
+    hasError("stratigraphy-name-0", true);
     cy.dataCy("add-stratigraphy-button").should("be.disabled");
 
     // A unique name clears the error and re-enables saving.
-    cy.dataCy("stratigraphy-name-input-0").find("input").type("Alpha");
-    cy.dataCy("stratigraphy-name-input-0").find("input").should("have.attr", "aria-invalid", "false");
+    setInput("stratigraphy-name-0", "Alpha");
+    hasError("stratigraphy-name-0", false);
     cy.dataCy("add-stratigraphy-button").should("not.be.disabled");
 
     // Check the second stratigraphy and give it the same name: both are flagged as not unique.
     cy.dataCy("stratigraphy-toggle-item-1").click();
     cy.dataCy("add-stratigraphy-checkbox-2").click();
-    cy.dataCy("stratigraphy-name-input-1").find("input").clear();
-    cy.dataCy("stratigraphy-name-input-1").find("input").type("Alpha");
-    cy.dataCy("stratigraphy-name-input-1").find("input").should("have.attr", "aria-invalid", "true");
+    setInput("stratigraphy-name-1", "Alpha");
+    hasError("stratigraphy-name-1", true);
     cy.dataCy("add-stratigraphy-button").should("be.disabled");
 
     // Making the second name unique again resolves the conflict.
-    cy.dataCy("stratigraphy-name-input-1").find("input").clear();
-    cy.dataCy("stratigraphy-name-input-1").find("input").type("Beta");
+    setInput("stratigraphy-name-1", "Beta");
+    hasError("stratigraphy-name-1", false);
     cy.dataCy("add-stratigraphy-button").should("not.be.disabled");
   });
 
