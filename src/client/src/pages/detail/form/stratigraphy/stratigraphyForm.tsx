@@ -22,7 +22,7 @@ export const StratigraphyForm: FC<StratigraphyFormProps> = ({ selectedStratigrap
   const formMethods = useForm<Stratigraphy>({ mode: "all" });
   const { formState, getValues } = formMethods;
   useFormDirtyMarkAsChanged({ formState });
-  const { registerSaveHandler, registerResetHandler } = useContext<StratigraphyContextProps>(StratigraphyContext);
+  const { registerHeader } = useContext<StratigraphyContextProps>(StratigraphyContext);
   const showApiErrorAlert = useApiErrorAlert();
 
   const resetForm = useCallback(() => {
@@ -34,10 +34,10 @@ export const StratigraphyForm: FC<StratigraphyFormProps> = ({ selectedStratigrap
     }
   }, [formMethods, selectedStratigraphy]);
 
-  const getPayload = useCallback(() => {
+  const getPayload = useCallback((): Stratigraphy => {
     const values = getValues();
     const date = values.date ? ensureDatetime(values.date.toString()) : null;
-    return { stratigraphy: { ...selectedStratigraphy, ...values, date } };
+    return { ...selectedStratigraphy, ...values, date };
   }, [getValues, selectedStratigraphy]);
 
   const onSaveError = useCallback(
@@ -52,9 +52,8 @@ export const StratigraphyForm: FC<StratigraphyFormProps> = ({ selectedStratigrap
   );
 
   useEffect(() => {
-    registerSaveHandler(getPayload, "stratigraphy", onSaveError);
-    registerResetHandler(resetForm, "stratigraphy");
-  }, [getPayload, onSaveError, registerResetHandler, registerSaveHandler, resetForm]);
+    registerHeader({ getPayload, onSaveError, reset: resetForm });
+  }, [getPayload, onSaveError, resetForm, registerHeader]);
 
   useEffect(() => {
     resetForm();
