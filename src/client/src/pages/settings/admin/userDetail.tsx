@@ -3,7 +3,8 @@ import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, Checkbox, Chip, Stack, Typography } from "@mui/material";
 import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { Trash2, X } from "lucide-react";
-import { User, Workgroup, WorkgroupRole } from "../../../api/apiInterfaces.ts";
+import { WorkgroupRole } from "../../../api/apiInterfaces.ts";
+import { Role, User, Workgroup } from "../../../api/generated";
 import { useSelectedUser, useUserMutations } from "../../../api/user.ts";
 import { useWorkgroupMutations } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
@@ -15,10 +16,12 @@ import { AddWorkgroupRoleDialog } from "./dialogs/addWorkgroupRoleDialog.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 
+type WorkgroupWithRoles = Workgroup & { roles: Role[] };
+
 export const UserDetail: FC = () => {
   const { id } = useRequiredParams<{ id: string }>();
   const { t } = useTranslation();
-  const [userWorkgroups, setUserWorkgroups] = useState<Workgroup[]>();
+  const [userWorkgroups, setUserWorkgroups] = useState<WorkgroupWithRoles[]>();
   const [workgroupDialogOpen, setWorkgroupDialogOpen] = useState(false);
   const [filterModel, setFilterModel] = useState<GridFilterModel>();
   const { workgroupNameColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
@@ -160,7 +163,7 @@ export const UserDetail: FC = () => {
         />
         <CardContent sx={{ pt: 4, px: 3 }}>
           {userWorkgroups && userWorkgroups?.length > 0 && (
-            <Table<Workgroup>
+            <Table<WorkgroupWithRoles>
               rows={userWorkgroups}
               columns={columns}
               filterModel={filterModel}

@@ -1,8 +1,9 @@
 ﻿import { deleteInstrumentation } from "../../../../api/fetchApiV2.ts";
+import { Instrumentation } from "../../../../api/generated";
 import { DataDisplayCard } from "../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import { useGetCasingName } from "./casingUtils.tsx";
-import { DataCardItemDisplayProps, Instrumentation } from "./completionInterfaces.ts";
+import { DataCardItemDisplayProps } from "./completionInterfaces.ts";
 
 const InstrumentationDisplay = ({ item }: DataCardItemDisplayProps<Instrumentation>) => {
   const { getCasingNameWithCompletion } = useGetCasingName();

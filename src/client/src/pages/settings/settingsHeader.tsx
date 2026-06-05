@@ -8,13 +8,14 @@ import { theme } from "../../AppTheme.ts";
 import { DeleteButton, ReturnButton } from "../../components/buttons/buttons.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
 import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
+import { useCapitalizedTranslation } from "../../hooks/useCapitalizedTranslation.ts";
 import { useDeleteUserPrompts, useDeleteWorkgroupPrompts } from "../../hooks/useDeleteEntityPrompts.tsx";
-import { capitalizeFirstLetter } from "../../utils.ts";
 
 export const SettingsHeader: FC = () => {
   const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
   const { t } = useTranslation();
+  const ct = useCapitalizedTranslation();
   const { showDeleteUserWarning } = useDeleteUserPrompts();
   const { showDeleteWorkgroupWarning } = useDeleteWorkgroupPrompts();
   const {
@@ -35,7 +36,7 @@ export const SettingsHeader: FC = () => {
     const updatedUser = {
       ...selectedUser!,
       isDisabled: isDisabled,
-      disabledAt: isDisabled ? new Date() : undefined,
+      disabledAt: isDisabled ? new Date().toISOString() : undefined,
     };
     updateUser(updatedUser);
   };
@@ -44,7 +45,7 @@ export const SettingsHeader: FC = () => {
     const updatedWorkgroup = {
       ...selectedWorkgroup!,
       isDisabled: isDisabled,
-      disabledAt: isDisabled ? new Date() : undefined,
+      disabledAt: isDisabled ? new Date().toISOString() : undefined,
     };
     updateWorkgroup(updatedWorkgroup);
   };
@@ -67,8 +68,8 @@ export const SettingsHeader: FC = () => {
   };
 
   const getTitle = () => {
-    if (selectedUser) return capitalizeFirstLetter(t(selectedUser?.name));
-    else if (selectedWorkgroup) return capitalizeFirstLetter(t(selectedWorkgroup.name));
+    if (selectedUser) return ct(selectedUser?.name);
+    else if (selectedWorkgroup) return ct(selectedWorkgroup.name);
     else return t("header_settings");
   };
 

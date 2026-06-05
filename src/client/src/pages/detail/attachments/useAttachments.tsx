@@ -10,7 +10,7 @@ import { TabName } from "../form/workflow/workflow.ts";
 import { SaveContext, SaveContextProps } from "../saveContext.tsx";
 
 interface AttachmentWithPublicState {
-  public?: boolean;
+  public?: boolean | null;
 }
 
 interface UseAttachmentsProps<T extends AttachmentWithPublicState> {

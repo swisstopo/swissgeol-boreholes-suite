@@ -1,4 +1,5 @@
 ﻿using NetTopologySuite.Features;
+using System.ComponentModel.DataAnnotations;
 
 namespace BDMS.Models;
 
@@ -29,6 +30,7 @@ public record FilterResponse(
 public class BoreholeListItem
 {
     /// <inheritdoc cref="Borehole.Id"/>
+    [Required]
     public int Id { get; set; }
 
     /// <inheritdoc cref="Borehole.OriginalName"/>

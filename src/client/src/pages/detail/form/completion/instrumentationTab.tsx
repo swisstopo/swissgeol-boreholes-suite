@@ -1,8 +1,9 @@
 ﻿import { useCallback } from "react";
 import { getInstrumentation } from "../../../../api/fetchApiV2.ts";
+import { Instrumentation } from "../../../../api/generated";
 import { DataCards } from "../../../../components/dataCard/dataCards.tsx";
 import { sortByDepth } from "../sorter.jsx";
-import { CompletionTabProps, Instrumentation } from "./completionInterfaces.ts";
+import { CompletionTabProps } from "./completionInterfaces.ts";
 import InstrumentationDisplay from "./instrumentationDisplay.tsx";
 import InstrumentationInput from "./instrumentationInput.tsx";
 

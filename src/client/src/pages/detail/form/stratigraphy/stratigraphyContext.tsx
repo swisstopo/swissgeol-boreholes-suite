@@ -1,12 +1,8 @@
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef } from "react";
 import { ApiError } from "../../../../api/apiInterfaces.ts";
+import { Stratigraphy } from "../../../../api/generated";
 import { SaveContext, SaveContextProps } from "../../saveContext.tsx";
-import {
-  LithologyTabContents,
-  Stratigraphy,
-  StratigraphyTabEdit,
-  useUpdateStratigraphyWithContents,
-} from "./stratigraphy.ts";
+import { LithologyTabContents, StratigraphyTabEdit, useUpdateStratigraphyWithContents } from "./stratigraphy.ts";
 
 export interface StratigraphyContextProps {
   registerSaveHandler: (

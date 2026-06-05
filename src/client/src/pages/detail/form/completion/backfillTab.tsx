@@ -1,10 +1,11 @@
 ﻿import { useCallback } from "react";
 import { getBackfills } from "../../../../api/fetchApiV2.ts";
+import { Backfill } from "../../../../api/generated/types.gen.ts";
 import { DataCards } from "../../../../components/dataCard/dataCards.tsx";
 import { sortByDepth } from "../sorter.jsx";
 import BackfillDisplay from "./backfillDisplay.tsx";
 import BackfillInput from "./backfillInput.tsx";
-import { Backfill, CompletionTabProps } from "./completionInterfaces.ts";
+import { CompletionTabProps } from "./completionInterfaces.ts";
 
 export const BackfillTab = ({ completionId }: CompletionTabProps) => {
   const renderInput = useCallback((props: { item: Backfill; parentId: number }) => <BackfillInput {...props} />, []);

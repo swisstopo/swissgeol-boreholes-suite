@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
 
@@ -10,6 +11,7 @@ public class LithologyTextureMetaCodes : ILithologyCode
 {
     /// <inheritdoc/>
     [Column("lithology_id")]
+    [Required]
     public int LithologyId { get; set; }
 
     /// <inheritdoc/>
@@ -17,6 +19,7 @@ public class LithologyTextureMetaCodes : ILithologyCode
 
     /// <inheritdoc/>
     [Column("texture_meta_id")]
+    [Required]
     public int CodelistId { get; set; }
 
     /// <inheritdoc/>

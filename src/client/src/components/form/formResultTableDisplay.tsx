@@ -1,8 +1,7 @@
 import React, { ReactNode } from "react";
 import { useTranslation } from "react-i18next";
 import { Table, TableBody, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
-import { FieldMeasurementResult } from "../../pages/detail/form/hydrogeology/fieldMeasurement/FieldMeasurement.ts";
-import { HydrotestResult } from "../../pages/detail/form/hydrogeology/hydrotest/Hydrotest.ts";
+import { FieldMeasurementResult, HydrotestResult } from "../../api/generated";
 import { tableCellStyles, tableHeaderStyles } from "./formResultTableDisplayStyles.ts";
 
 type TestResults = HydrotestResult | FieldMeasurementResult;

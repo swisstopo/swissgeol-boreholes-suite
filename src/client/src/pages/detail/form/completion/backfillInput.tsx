@@ -1,10 +1,11 @@
 ﻿import { addBackfill, updateBackfill } from "../../../../api/fetchApiV2.ts";
+import { Backfill } from "../../../../api/generated";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard.tsx";
 import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { useCasings } from "./casing.ts";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils.tsx";
-import { Backfill, DataCardItemInputProps } from "./completionInterfaces.ts";
+import { DataCardItemInputProps } from "./completionInterfaces.ts";
 import { completionSchemaConstants } from "./completionSchemaConstants.ts";
 import { prepareEntityDataForSubmit } from "./completionUtils.ts";
 

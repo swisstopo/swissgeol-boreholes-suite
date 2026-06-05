@@ -138,7 +138,8 @@ Ein Hotfix-Release wird erstellt, indem vom letzten Release-Git-Tag ein neuer Br
 
 - Neue Komponenten werden in Typescript geschrieben.
 - Es werden bevorzugt Interfaces statt Types verwendet.
-- Interfaces, die API Calls abbilden, werden unter [apiInterfaces.ts](./src/client/api/apiInterfaces.ts) definiert ([ReduxStateInterfaces.ts](./src/client/src/api-lib/ReduxStateInterfaces.ts) für das Legacy API).
+- **API-Typen werden aus der OpenAPI-Spezifikation generiert** (siehe Abschnitt [OpenAPI Codegen](#openapi-codegen) unten). Das generierte File [`types.gen.ts`](./src/client/src/api/generated/types.gen.ts) darf **nicht manuell bearbeitet** werden.
+- Verbleibende hand-geschriebene Interfaces für API Calls werden in den entsprechenden domänenspezifischen Files (z.B. `stratigraphy.ts`) definiert oder – für das Legacy API – in [ReduxStateInterfaces.ts](./src/client/src/api-lib/ReduxStateInterfaces.ts).
 - Existieren mehrere Interfaces für eine Komponente, werden sie in einem separaten File neben der Komponente abgelegt.
 - Das Interface für die React props der Komponente kann im selben File mit der Komponente definiert werden.
 
@@ -152,6 +153,27 @@ Ein Hotfix-Release wird erstellt, indem vom letzten Release-Git-Tag ein neuer Br
 - Neue Endpoints werden immer im .NET API erstellt. Das Python Legacy API wird nicht erweitert.
 - Redux wird nicht mehr erweitert. Datenabfragen werden mit dem Javascript [Fetch API](https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API) (siehe [fetchApiV2.ts](src/client/src/api/fetchApiV2.ts)) oder wo sinnvoll mit `useQuery` von `tanstack-query` gemacht.
 - Wenn Abfragen aus dem Redux Store in neuen Komponenten gebraucht werden, sollten die React hooks `useSelector` und `useDispatch` verwendet werden.
+
+#### OpenAPI Codegen
+
+Die TypeScript-Typen für das .NET REST API v2 werden automatisch aus der OpenAPI-Spezifikation generiert.
+
+**Workflow bei API-Änderungen:**
+
+1. .NET API lokal starten (z.B. via `docker-compose up` oder Visual Studio)
+2. OpenAPI-Spec aktualisieren und Typen neu generieren:
+   ```bash
+   cd src/client
+   npm run openapi        # holt swagger.json vom laufenden Server und generiert types.gen.ts
+   # oder einzeln:
+   npm run openapi:fetch  # nur swagger.json aktualisieren
+   npm run openapi:gen    # nur Typen aus bestehendem swagger.json generieren
+   ```
+3. Generiertes File [`src/client/src/api/generated/types.gen.ts`](./src/client/src/api/generated/types.gen.ts) via Git committen.
+
+**Konfiguration:** [`src/client/openapi-ts.config.ts`](./src/client/openapi-ts.config.ts)
+
+> ⚠️ `types.gen.ts` wird durch das Tool überschrieben – nie manuell bearbeiten.
 
 #### Error Handling
 ##### Erwartbare Fehler

@@ -1,5 +1,6 @@
 import { FC } from "react";
-import { Codelist, useCodelists } from "../../../../components/codelist.ts";
+import { Codelist } from "../../../../api/generated";
+import { useCodelists } from "../../../../components/codelist.ts";
 import {
   FormContainer,
   FormDomainSelect,

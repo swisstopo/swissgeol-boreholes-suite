@@ -12,6 +12,7 @@ public class Workflow : IIdentifyable
     /// <inheritdoc />
     [Key]
     [Column("id")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>
@@ -30,6 +31,7 @@ public class Workflow : IIdentifyable
     /// Gets or sets the id of the <see cref="Borehole"/>.
     /// </summary>
     [Column("borehole_id")]
+    [Required]
     public int BoreholeId { get; set; }
 
     /// <summary>
@@ -41,6 +43,7 @@ public class Workflow : IIdentifyable
     /// Gets or sets the id of the <see cref="ReviewedTabs"/>.
     /// </summary>
     [Column("reviewed_tabs_id")]
+    [Required]
     public int ReviewedTabsId { get; set; }
 
     /// <summary>
@@ -52,6 +55,7 @@ public class Workflow : IIdentifyable
     /// Gets or sets the id of the <see cref="PublishedTabs"/>.
     /// </summary>
     [Column("published_tabs_id")]
+    [Required]
     public int PublishedTabsId { get; set; }
 
     /// <summary>

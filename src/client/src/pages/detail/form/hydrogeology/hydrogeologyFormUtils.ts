@@ -1,3 +1,3 @@
-export const getIsoDateIfDefined = (date: string | null) => {
+export const getIsoDateIfDefined = (date: string | null | undefined) => {
   return date ? date + ":00.000Z" : null;
 };

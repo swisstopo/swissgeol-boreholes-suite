@@ -14,6 +14,7 @@ public class TabStatus : IIdentifyable
     /// <inheritdoc />
     [Key]
     [Column("tab_status_id")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>

@@ -1,10 +1,11 @@
 import { FC, MouseEvent } from "react";
 import { Box } from "@mui/material";
 import { theme } from "../../../../../../AppTheme.ts";
-import { ResizeKind, ResizeSide } from "./useDescriptionResize.ts";
+import { DescriptionKind } from "../../stratigraphy.ts";
+import { ResizeSide } from "./useDescriptionResize.ts";
 
 interface DescriptionResizeHandleProps {
-  kind: ResizeKind;
+  kind: DescriptionKind;
   side: ResizeSide;
   fromDepth: number | null;
   toDepth: number | null;

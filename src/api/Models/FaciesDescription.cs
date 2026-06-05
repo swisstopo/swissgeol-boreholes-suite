@@ -14,10 +14,12 @@ public class FaciesDescription : IStratigraphyLayer, IChangeTracking, IIdentifya
     /// <inheritdoc />
     [Column("id")]
     [Key]
+    [Required]
     public int Id { get; set; }
 
     /// <inheritdoc />
     [Column("stratigraphy_id")]
+    [Required]
     public int StratigraphyId { get; set; }
 
     /// <inheritdoc />

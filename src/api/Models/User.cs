@@ -12,6 +12,7 @@ public class User : IIdentifyable
     /// <inheritdoc />
     [Key]
     [Column("id")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>

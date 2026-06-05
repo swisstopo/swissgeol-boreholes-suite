@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
+import { Observation } from "../../../../api/generated";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
 import { useGetCasingName } from "../completion/casingUtils.tsx";
-import { Observation } from "./Observation.ts";
 
 const ObservationDisplay = ({
   observation,

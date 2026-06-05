@@ -1,8 +1,7 @@
 import { FC } from "react";
-import { useTranslation } from "react-i18next";
 import { Box, Button, Stack } from "@mui/material";
 import { WorkflowStatus } from "@swissgeol/ui-core";
-import { capitalizeFirstLetter } from "../../../../utils";
+import { useCapitalizedTranslation } from "../../../../hooks/useCapitalizedTranslation.ts";
 import { FilterKey } from "../../useBoreholeUrlParams.ts";
 
 interface StatusFilterProps {
@@ -12,7 +11,7 @@ interface StatusFilterProps {
 }
 
 export const StatusFilter: FC<StatusFilterProps> = ({ selectedWorkflowStatus, setFilterField, counts }) => {
-  const { t } = useTranslation();
+  const ct = useCapitalizedTranslation();
 
   const workflowStatus = [
     WorkflowStatus.Draft,
@@ -37,7 +36,7 @@ export const StatusFilter: FC<StatusFilterProps> = ({ selectedWorkflowStatus, se
           // Disable when count information is available and there would be zero matches,
           // unless the option is already selected (so the user can always clear).
           const disabled = hasCount && !isSelected && count < 1;
-          const statusLabel = capitalizeFirstLetter(t(`statuses.${status}`));
+          const statusLabel = ct(`statuses.${status}`);
           const label = hasCount ? `${statusLabel} (${count})` : statusLabel;
           return (
             <Button

@@ -4,12 +4,13 @@ import { useLocation } from "react-router";
 import { Stack } from "@mui/material";
 import "../../../../api/apiInterfaces.ts";
 import { getBackfills, getCasings, getInstrumentation } from "../../../../api/fetchApiV2.ts";
+import { Backfill, Casing, Instrumentation } from "../../../../api/generated";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.tsx";
 import { BoreholeTab, BoreholeTabContent, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
 import { BackfillTab } from "./backfillTab.tsx";
 import { CasingTab } from "./casingTab.tsx";
-import { Backfill, Casing, CompletionContentProps, Instrumentation } from "./completionInterfaces.ts";
+import { CompletionContentProps } from "./completionInterfaces.ts";
 import { InstrumentationTab } from "./instrumentationTab.tsx";
 
 interface CompletionContentTabBoxProps {
@@ -114,7 +115,7 @@ const CompletionContent = ({ completion, editingEnabled }: CompletionContentProp
           {tabs.map(tab => (
             <BoreholeTab
               data-cy={"completion-content-tab-" + tab.hash.replace("#", "")}
-              label={tab.label === null || tab.label === "" ? t("common:np") : tab.label}
+              label={tab.label === null || tab.label === "" ? t("np") : tab.label}
               key={tab.hash}
               hasContent={tab.hasContent}
             />

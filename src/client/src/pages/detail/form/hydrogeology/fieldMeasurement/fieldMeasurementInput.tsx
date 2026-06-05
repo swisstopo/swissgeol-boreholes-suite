@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 import { useReloadBoreholes } from "../../../../../api/borehole.ts";
+import { FieldMeasurement, FieldMeasurementResult } from "../../../../../api/generated";
 import { AddButton } from "../../../../../components/buttons/buttons.tsx";
 import { useCodelists } from "../../../../../components/codelist.ts";
 import { DataCardContext } from "../../../../../components/dataCard/dataCardContext.tsx";
@@ -20,12 +21,18 @@ import { hydrogeologySchemaConstants } from "../hydrogeologySchemaConstants.ts";
 import { ObservationType, prepareObservationDataForSubmit } from "../Observation.ts";
 import ObservationInput from "../observationInput.tsx";
 import { getFieldMeasurementParameterUnits } from "../parameterUnits.js";
-import {
-  addFieldMeasurement,
-  FieldMeasurement,
-  FieldMeasurementInputProps,
-  updateFieldMeasurement,
-} from "./FieldMeasurement.ts";
+import { addFieldMeasurement, FieldMeasurementInputProps, updateFieldMeasurement } from "./FieldMeasurement.ts";
+
+interface FieldMeasurementResultFormData {
+  id?: number;
+  sampleTypeId?: number | null;
+  parameterId?: number | null;
+  value?: number | null;
+}
+
+type FieldMeasurementFormData = Omit<FieldMeasurement, "fieldMeasurementResults"> & {
+  fieldMeasurementResults?: FieldMeasurementResultFormData[] | null;
+};
 
 export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, parentId }) => {
   const { t } = useTranslation();
@@ -34,11 +41,11 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
   const reloadBoreholes = useReloadBoreholes();
   const resetTabStatus = useResetTabStatus(["fieldMeasurement"]);
 
-  const formMethods = useForm<FieldMeasurement>({
+  const formMethods = useForm<FieldMeasurementFormData>({
     mode: "all",
     defaultValues: {
       fieldMeasurementResults: item?.fieldMeasurementResults || [
-        { parameterId: null, value: null, sampleTypeId: null },
+        { parameterId: undefined, value: undefined, sampleTypeId: undefined },
       ],
     },
   });
@@ -49,12 +56,12 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
   });
   const [units, setUnits] = useState<Record<number, string>>({});
 
-  const submitForm = (data: FieldMeasurement) => {
+  const submitForm = (data: FieldMeasurementFormData) => {
     resetTabStatus();
-    data = prepareFormDataForSubmit(data);
+    const prepared = prepareFormDataForSubmit(data);
     if (item.id === 0) {
       addFieldMeasurement({
-        ...data,
+        ...prepared,
       }).then(() => {
         triggerReload();
         reloadBoreholes();
@@ -62,7 +69,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
     } else {
       updateFieldMeasurement({
         ...item,
-        ...data,
+        ...prepared,
       }).then(() => {
         triggerReload();
       });
@@ -81,7 +88,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
   useEffect(() => {
     trigger("fieldMeasurementResults");
     let currentUnits = {};
-    getValues()["fieldMeasurementResults"].forEach((element, index) => {
+    getValues()["fieldMeasurementResults"]?.forEach((element, index) => {
       currentUnits = {
         ...currentUnits,
         [index]: getFieldMeasurementParameterUnits(element.parameterId as number, codelists.data),
@@ -91,22 +98,21 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getValues()["fieldMeasurementResults"]]);
 
-  const prepareFormDataForSubmit = (data: FieldMeasurement) => {
-    data = prepareCasingDataForSubmit(data);
-    data = prepareObservationDataForSubmit(data, parentId);
-    data.type = ObservationType.fieldMeasurement;
+  const prepareFormDataForSubmit = (data: FieldMeasurementFormData): FieldMeasurement => {
+    let prepared: FieldMeasurement = prepareCasingDataForSubmit(data) as FieldMeasurement;
+    prepared = prepareObservationDataForSubmit(prepared, parentId);
+    prepared.type = ObservationType.fieldMeasurement;
 
     if (data.fieldMeasurementResults) {
-      data.fieldMeasurementResults = data.fieldMeasurementResults.map(r => {
-        return {
-          id: r.id,
-          sampleTypeId: r.sampleTypeId,
-          parameterId: r.parameterId,
-          value: parseFloatWithThousandsSeparator(r.value),
-        };
-      });
+      prepared.fieldMeasurementResults = data.fieldMeasurementResults.map(r => ({
+        id: r.id ?? 0,
+        sampleTypeId: r.sampleTypeId ?? 0,
+        parameterId: r.parameterId ?? 0,
+        fieldMeasurementId: 0,
+        value: parseFloatWithThousandsSeparator(r.value) ?? undefined,
+      })) as FieldMeasurementResult[];
     }
-    return data;
+    return prepared;
   };
 
   return (
@@ -125,7 +131,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
               <AddButton
                 label="addFieldMeasurementResult"
                 onClick={() => {
-                  append({ parameterId: null, value: null, sampleTypeId: null }, { shouldFocus: false });
+                  append({ parameterId: undefined, value: undefined, sampleTypeId: undefined }, { shouldFocus: false });
                 }}
               />
             </FormContainer>

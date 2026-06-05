@@ -13,6 +13,7 @@ public class MaintenanceTaskLog : IIdentifyable
     /// <inheritdoc />
     [Key]
     [Column("id")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>

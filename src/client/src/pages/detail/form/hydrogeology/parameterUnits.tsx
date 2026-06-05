@@ -1,4 +1,4 @@
-import { Codelist } from "../../../../components/codelist.ts";
+import { Codelist } from "../../../../api/generated";
 
 interface Units {
   [key: number]: string;
@@ -61,7 +61,7 @@ const FieldMeasurementParameterUnits: Units = {
   7: "mg/L",
 };
 
-export const getHydrotestParameterUnits = (parameterId: number | null, codelists: Codelist[]): string => {
+export const getHydrotestParameterUnits = (parameterId: number | null | undefined, codelists: Codelist[]): string => {
   if (!parameterId) {
     return "";
   }
@@ -77,5 +77,5 @@ function getParameterUnit(parameterId: number, units: Units, codelists: Codelist
     return "";
   }
   const geolcode = codelists.find((d: Codelist) => d.id === parameterId)?.geolcode;
-  return geolcode !== undefined ? units[geolcode] : "";
+  return geolcode != null ? units[geolcode] : "";
 }

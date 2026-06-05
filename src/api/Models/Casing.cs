@@ -1,5 +1,6 @@
 ﻿using BDMS.Json;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
@@ -13,6 +14,7 @@ public class Casing : IChangeTracking, IIdentifyable
     /// <inheritdoc />
     [IncludeInExport]
     [Column("id")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>
@@ -20,6 +22,7 @@ public class Casing : IChangeTracking, IIdentifyable
     /// </summary>
     [IncludeInExport]
     [Column("completion_id")]
+    [Required]
     public int CompletionId { get; set; }
 
     /// <summary>

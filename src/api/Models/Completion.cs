@@ -1,5 +1,6 @@
 ﻿using BDMS.Json;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
@@ -13,12 +14,14 @@ public class Completion : IChangeTracking, IIdentifyable
     /// <inheritdoc />
     [IncludeInExport]
     [Column("id")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>
     /// Gets or sets foreign key for the <see cref="Models.Borehole"/> of this <see cref="Completion"/>.
     /// </summary>
     [Column("borehole_id")]
+    [Required]
     public int BoreholeId { get; set; }
 
     /// <summary>
@@ -45,6 +48,7 @@ public class Completion : IChangeTracking, IIdentifyable
     /// </summary>
     [IncludeInExport]
     [Column("kind_id")]
+    [Required]
     public int KindId { get; set; }
 
     /// <summary>

@@ -1,6 +1,7 @@
+import { LithologyDescription } from "../../../../../../api/generated";
 import { FormErrors } from "../../../../../../components/form/form.ts";
 import { buildErrorStructure, parseFloatWithThousandsSeparator } from "../../../../../../components/form/formUtils.ts";
-import { Lithology, LithologyDescription } from "../../stratigraphy.ts";
+import { Lithology } from "../../stratigraphy.ts";
 
 export const prepareLithologyForSubmit = (values: Lithology) => {
   values.fromDepth = parseFloatWithThousandsSeparator(values.fromDepth)!;
@@ -72,7 +73,7 @@ export const prepareLithologyForSubmit = (values: Lithology) => {
 };
 
 export const validateLithologyUnconValues = (
-  descriptions: LithologyDescription[] | undefined,
+  descriptions: LithologyDescription[] | null | undefined,
   errors: FormErrors,
   isUnconsolidated: boolean | null | undefined,
 ) => {

@@ -1,5 +1,6 @@
 import { FC } from "react";
-import { Codelist, CodelistLabelStyle, useCodelistLabel, useCodelists } from "../codelist.ts";
+import { Codelist } from "../../api/generated";
+import { CodelistLabelStyle, useCodelistLabel, useCodelists } from "../codelist.ts";
 import { FormMultiSelect } from "./form.ts";
 import { FormMultiSelectProps } from "./formMultiSelect.tsx";
 import { FormSelectMenuItem } from "./formSelect.tsx";
@@ -23,7 +24,7 @@ export const FormDomainMultiSelect: FC<FormDomainMultiSelectProps> = props => {
       values={
         (prefilteredDomains ?? codelists)
           ?.filter((d: Codelist) => d.schema === schemaName)
-          .sort((a: Codelist, b: Codelist) => a.order - b.order)
+          .sort((a: Codelist, b: Codelist) => (a.order ?? 0) - (b.order ?? 0))
           .map((d: Codelist) => ({
             key: d.id,
             name: getLabel(d),

@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
-import { Codelist, CodelistLabelStyle, useCodelistLabel, useCodelists } from "../codelist.ts";
+import { Codelist } from "../../api/generated";
+import { CodelistLabelStyle, useCodelistLabel, useCodelists } from "../codelist.ts";
 import { FormSelect } from "./form";
 import { FormSelectProps, FormSelectValue } from "./formSelect.tsx";
 
@@ -36,7 +37,7 @@ export const FormDomainSelect: FC<FormDomainSelectProps> = props => {
         })) ?? []),
         ...((prefilteredDomains ?? domains)
           ?.filter((d: Codelist) => d.schema === schemaName)
-          .sort((a: Codelist, b: Codelist) => a.order - b.order)
+          .sort((a: Codelist, b: Codelist) => (a.order ?? 0) - (b.order ?? 0))
           .map((d: Codelist) => ({
             key: d.id,
             name: getLabel(d),

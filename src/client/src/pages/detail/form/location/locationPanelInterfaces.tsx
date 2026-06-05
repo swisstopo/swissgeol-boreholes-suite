@@ -1,11 +1,8 @@
-import { BoreholeV2 } from "../../../../api/borehole.ts";
-import { Profile } from "../../../../api/profile.ts";
-import { Codelist } from "../../../../components/codelist.ts";
+import { Borehole, Codelist, Profile } from "../../../../api/generated";
 import { Workflow } from "../workflow/workflow.ts";
-import { ReferenceSystemCode } from "./coordinateSegmentInterfaces.ts";
 
 export interface LocationBaseProps {
-  borehole: BoreholeV2;
+  borehole: Borehole;
 }
 
 export interface LocationPanelProps extends LocationBaseProps {
@@ -18,7 +15,7 @@ interface LocationFormBaseInputs {
   referenceElevation: number | string | null; // Number with thousands separator then parsed to number
   referenceElevationPrecisionId: number | null;
   referenceElevationTypeId: number | null;
-  originalReferenceSystemId: ReferenceSystemCode | null;
+  originalReferenceSystemId: number | null;
   hrsId?: number;
   country: string;
   canton: string;

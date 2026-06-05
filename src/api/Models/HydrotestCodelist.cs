@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
 
@@ -9,11 +10,13 @@ namespace BDMS.Models;
 public class HydrotestCodelist
 {
     [Column("id_ht_fk")]
+    [Required]
     public int HydrotestId { get; set; }
 
     public Hydrotest Hydrotest { get; set; }
 
     [Column("id_cli_fk")]
+    [Required]
     public int CodelistId { get; set; }
 
     public Codelist Codelist { get; set; }

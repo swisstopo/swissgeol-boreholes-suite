@@ -1,21 +1,17 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Divider, Stack, TextField, Typography } from "@mui/material";
+import { Codelist, LithologyDescription } from "../../../../../../api/generated";
 import { theme } from "../../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
-import { Codelist, CodelistLabelStyle, useCodelistSchema } from "../../../../../../components/codelist.ts";
+import { CodelistLabelStyle, useCodelistSchema } from "../../../../../../components/codelist.ts";
 import {
   FormCheckbox,
   FormContainer,
   FormDomainMultiSelect,
   FormDomainSelect,
 } from "../../../../../../components/form/form.ts";
-import {
-  Lithology,
-  LithologyDescription,
-  LithologyDescriptionEditForm,
-  LithologyEditForm,
-} from "../../stratigraphy.ts";
+import { Lithology, LithologyDescriptionEditForm, LithologyEditForm } from "../../stratigraphy.ts";
 import { useLithologyDescriptionShareSync } from "../useLithologyDescriptionShareSync.ts";
 import { LithologyDescriptionForm } from "./lithologyDescriptionForm.tsx";
 
@@ -155,7 +151,7 @@ export const LithologyUnconsolidatedForm: FC<LithologyEditForm> = ({ lithologyId
     description: LithologyDescription,
     field: string,
     idField: string,
-    codelist: { id: number | string; code: string }[],
+    codelist: { id: number | string; code?: string }[],
   ): string | undefined => {
     if (description[field as keyof LithologyDescription]) {
       return (description[field as keyof LithologyDescription] as Codelist)?.code;
@@ -172,7 +168,7 @@ export const LithologyUnconsolidatedForm: FC<LithologyEditForm> = ({ lithologyId
   const buildLithologyUnconEnCode = useCallback(
     (values: Lithology) => {
       let enCode = "";
-      const descriptions: LithologyDescription[] | undefined = values.lithologyDescriptions;
+      const descriptions: LithologyDescription[] | null | undefined = values.lithologyDescriptions;
       if (descriptions && descriptions.length > 0) {
         enCode = descriptions
           ?.map(description => {
