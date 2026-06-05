@@ -11,15 +11,23 @@ namespace BDMS.Controllers;
 
 [ApiController]
 [Route("api/v{version:apiVersion}/[controller]")]
-public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
+public class StratigraphyController : ControllerBase
 {
     private readonly ILithologyTabContentService lithologyTabContentService;
 
     public StratigraphyController(BdmsContext context, ILogger<StratigraphyController> logger, IBoreholePermissionService boreholePermissionService, ILithologyTabContentService lithologyTabContentService)
-        : base(context, logger, boreholePermissionService)
     {
+        Context = context;
+        Logger = logger;
+        BoreholePermissionService = boreholePermissionService;
         this.lithologyTabContentService = lithologyTabContentService;
     }
+
+    private BdmsContext Context { get; }
+
+    private ILogger<StratigraphyController> Logger { get; }
+
+    private IBoreholePermissionService BoreholePermissionService { get; }
 
     /// <summary>
     /// Asynchronously gets the <see cref="Stratigraphy"/>s, filtered by <paramref name="boreholeId"/>.
@@ -138,9 +146,13 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
         }
     }
 
-    /// <inheritdoc />
+    /// <summary>
+    /// Asynchronously deletes the <see cref="Stratigraphy"/> with the specified <paramref name="id"/>.
+    /// </summary>
+    /// <param name="id">The id of the stratigraphy to delete.</param>
+    [HttpDelete]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public override async Task<IActionResult> DeleteAsync(int id)
+    public async Task<IActionResult> DeleteAsync(int id)
     {
         try
         {
@@ -295,30 +307,6 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
             Logger.LogError(ex, message);
             return Problem(message);
         }
-    }
-
-    /// <summary>
-    /// The base create action is replaced by <see cref="CreateStratigraphiesAsync"/>, which accepts the
-    /// combined stratigraphy + tab-content payload.
-    /// </summary>
-    [NonAction]
-    public override Task<ActionResult<Stratigraphy>> CreateAsync(Stratigraphy entity)
-        => throw new NotSupportedException("Use the combined create endpoint that accepts stratigraphy tab edits.");
-
-    /// <summary>
-    /// The base edit action is replaced by <see cref="EditStratigraphyAsync"/>, which accepts the
-    /// combined stratigraphy + tab-content payload.
-    /// </summary>
-    [NonAction]
-    public override Task<ActionResult<Stratigraphy>> EditAsync(Stratigraphy entity)
-        => throw new NotSupportedException("Use the combined update endpoint that accepts a stratigraphy tab edit.");
-
-    /// <inheritdoc />
-    protected override Task<int?> GetBoreholeId(Stratigraphy entity)
-    {
-        if (entity == null) return Task.FromResult<int?>(default);
-
-        return Task.FromResult<int?>(entity.BoreholeId);
     }
 
     private static bool TryGetSingleBoreholeId(Collection<StratigraphyTabEdit> edits, out int boreholeId)
