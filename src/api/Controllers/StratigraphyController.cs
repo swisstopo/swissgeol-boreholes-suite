@@ -235,10 +235,6 @@ public class StratigraphyController : ControllerBase
 
             return Ok(responses);
         }
-        catch (InvalidOperationException ex)
-        {
-            return BadRequest(ex.Message);
-        }
         catch (Exception ex)
         {
             const string message = "An error ocurred while creating the stratigraphy.";
