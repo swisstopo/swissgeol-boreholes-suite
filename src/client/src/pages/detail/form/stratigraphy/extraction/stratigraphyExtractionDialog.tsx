@@ -38,7 +38,7 @@ interface StratigraphyExtractionDialogProps {
   setOpen: (open: boolean) => void;
 }
 
-const getBaseName = (file: BoreholeAttachment): string => file.name.replace(/\.[^/.]+$/, "");
+const getBaseName = (file: BoreholeAttachment): string => (file.name ?? "").replace(/\.[^/.]+$/, "");
 const getDefaultStratigraphyName = (file: BoreholeAttachment, index: number, count: number): string =>
   count === 1 ? getBaseName(file) : `${getBaseName(file)}_${index + 1}`;
 
@@ -63,7 +63,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   const [itemStates, setItemStates] = useState<Map<number, StratigraphyExtractionItemState>>(new Map());
   const [names, setNames] = useState<Map<number, string>>(new Map());
   const [conflictingNames, setConflictingNames] = useState<Set<string>>(new Set());
-  const initializedFileRef = useRef<string | null>(null);
+  const initializedFileRef = useRef<string | undefined>(undefined);
 
   const handleItemStateChange = useCallback((index: number, state: StratigraphyExtractionItemState) => {
     setItemStates(prev => {
@@ -143,7 +143,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
     }
     setNames(new Map());
     setConflictingNames(new Set());
-    initializedFileRef.current = null;
+    initializedFileRef.current = undefined;
     setSelectedFile(undefined);
     setOpen(false);
   }, [abortController, setOpen, setSelectedFile]);
@@ -239,9 +239,9 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
                 boxShadow: "none",
                 border: `1px solid ${theme.palette.border.light}`,
               }}>
-              {allExtractedStratigraphies.map((_, index) => (
+              {allExtractedStratigraphies.map((stratigraphy, index) => (
                 <ToggleButton
-                  key={`stratigraphy-toggle-${index}`}
+                  key={`stratigraphy-toggle-${stratigraphy.pageNumbers.join("-")}`}
                   value={index}
                   data-cy={`stratigraphy-toggle-item-${index}`}>
                   <Typography>{`${t("stratigraphy")} ${index + 1}`}</Typography>
@@ -259,9 +259,9 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
                 minWidth: 200,
                 backgroundColor: theme.palette.background.default,
               }}>
-              {allExtractedStratigraphies.map((_, index) => (
+              {allExtractedStratigraphies.map((stratigraphy, index) => (
                 <MenuItem
-                  key={`stratigraphy-select-${index}`}
+                  key={`stratigraphy-select-${stratigraphy.pageNumbers.join("-")}`}
                   value={index}
                   data-cy={`stratigraphy-select-item-${index}`}>
                   {`${t("stratigraphy")} ${index + 1}`}
