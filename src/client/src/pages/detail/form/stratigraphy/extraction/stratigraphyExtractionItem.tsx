@@ -1,4 +1,4 @@
-import { FC, useEffect } from "react";
+import { FC, useEffect, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Alert, Stack } from "@mui/material";
 import { LithologyTable } from "../components/lithologyTable/lithologyTable.tsx";
@@ -39,7 +39,18 @@ export const StratigraphyExtractionItem: FC<StratigraphyExtractionItemProps> = (
     onStateChange(index, { tmpLithologies, tmpLithologicalDescriptions, hasErrors });
   }, [index, tmpLithologies, tmpLithologicalDescriptions, hasErrors, onStateChange]);
 
-  const hasUnsetDepths = tmpLithologicalDescriptions.some(d => d.fromDepth === null || d.toDepth === null);
+  // Capture whether the depths were already unset in the extraction result (once, on first seed).
+  // The alert only reports a failed depth extraction: it shows while the extracted depths remain
+  // unset and disappears once they are filled. Depths the user clears afterwards surface as a
+  // per-field error in the table, not this alert.
+  const initialHasUnsetDepthsRef = useRef<boolean | null>(null);
+  if (initialHasUnsetDepthsRef.current === null && tmpLithologicalDescriptions.length > 0) {
+    initialHasUnsetDepthsRef.current = tmpLithologicalDescriptions.some(
+      d => d.fromDepth === null || d.toDepth === null,
+    );
+  }
+  const currentHasUnsetDepths = tmpLithologicalDescriptions.some(d => d.fromDepth === null || d.toDepth === null);
+  const hasUnsetDepths = initialHasUnsetDepthsRef.current === true && currentHasUnsetDepths;
 
   return (
     <Stack gap={2} sx={{ display: visible ? "flex" : "none" }}>
