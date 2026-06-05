@@ -251,9 +251,11 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
             return Unauthorized();
         }
 
-        if (!await IsNameUnique(entity).ConfigureAwait(false))
+        var takenNames = await LoadTakenStratigraphyNamesAsync(entity.BoreholeId, entity.Id).ConfigureAwait(false);
+        var conflictingNames = GetConflictingNames([edit], takenNames);
+        if (conflictingNames.Count > 0)
         {
-            return NameMustBeUniqueProblem([entity.Name!]);
+            return NameMustBeUniqueProblem(conflictingNames);
         }
 
         var existingStratigraphy = await Context.Stratigraphies.FindAsync(entity.Id).ConfigureAwait(false);
@@ -326,10 +328,10 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
         return boreholeId != 0;
     }
 
-    private async Task<HashSet<string>> LoadTakenStratigraphyNamesAsync(int boreholeId)
+    private async Task<HashSet<string>> LoadTakenStratigraphyNamesAsync(int boreholeId, int? excludeStratigraphyId = null)
     {
         var existingStratigraphyNames = await Context.Stratigraphies
-            .Where(s => s.BoreholeId == boreholeId)
+            .Where(s => s.BoreholeId == boreholeId && (excludeStratigraphyId == null || s.Id != excludeStratigraphyId))
             .Select(s => s.Name)
             .ToListAsync()
             .ConfigureAwait(false);
@@ -449,19 +451,5 @@ public class StratigraphyController : BoreholeControllerBase<Stratigraphy>
         }
 
         return result;
-    }
-
-    private async Task<bool> IsNameUnique(Stratigraphy entity)
-    {
-        if (string.IsNullOrEmpty(entity.Name))
-        {
-            return true;
-        }
-
-        var hasBoreholeStratigraphiesWithSameName = await Context.Stratigraphies
-                .AnyAsync(s => s.BoreholeId == entity.BoreholeId && s.Id != entity.Id && s.Name == entity.Name)
-                .ConfigureAwait(false);
-
-        return !hasBoreholeStratigraphiesWithSameName;
     }
 }
