@@ -4,7 +4,15 @@ import { NullableDateString } from "../../../../api/apiInterfaces.ts";
 import { boreholeQueryKey } from "../../../../api/borehole.ts";
 import { ExtractionBoundingBox } from "../../../../api/dataextractionInterfaces.ts";
 import { fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
-import { Codelist, Stratigraphy, User } from "../../../../api/generated";
+import {
+  ChronostratigraphyLayer,
+  FaciesDescription as GeneratedFaciesDescription,
+  LithologicalDescription as GeneratedLithologicalDescription,
+  Lithology as GeneratedLithology,
+  LithostratigraphyLayer,
+  Stratigraphy,
+  User,
+} from "../../../../api/generated";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 
 export type DescriptionKind = "lithological" | "facies";
@@ -35,87 +43,14 @@ export interface DepthLayer {
   hasToDepthError?: boolean;
 }
 
-// Todo use openapi generated types for Lithology and LithologyDescription, LithologyDescription, FaciesDescription, Chronostratigraphy and Lithostratigraphy.
-export interface LithologyDescription {
-  id: number;
-  lithologyId: number;
-  lithology?: Lithology;
-  isFirst: boolean;
-  colorPrimaryId?: number | null;
-  colorPrimary?: Codelist;
-  colorSecondaryId?: number | null;
-  colorSecondary?: Codelist;
-  lithologyUnconMainId?: number | null;
-  lithologyUnconMain?: Codelist;
-  lithologyUncon2Id?: number | null;
-  lithologyUncon2?: Codelist;
-  lithologyUncon3Id?: number | null;
-  lithologyUncon3?: Codelist;
-  lithologyUncon4Id?: number | null;
-  lithologyUncon4?: Codelist;
-  lithologyUncon5Id?: number | null;
-  lithologyUncon5?: Codelist;
-  lithologyUncon6Id?: number | null;
-  lithologyUncon6?: Codelist;
-  componentUnconOrganicCodelistIds?: number[];
-  componentUnconOrganicCodelists?: Codelist[];
-  componentUnconDebrisCodelistIds?: number[];
-  componentUnconDebrisCodelists?: Codelist[];
-  grainShapeCodelistIds?: number[];
-  grainShapeCodelists?: Codelist[];
-  grainAngularityCodelistIds?: number[];
-  grainAngularityCodelists?: Codelist[];
-  hasStriae?: boolean;
-  lithologyUnconDebrisCodelistIds?: number[];
-  lithologyUnconDebrisCodelists?: Codelist[];
-  lithologyConId?: number | null;
-  lithologyCon?: Codelist;
-  componentConParticleCodelistIds?: number[];
-  componentConParticleCodelists?: Codelist[];
-  componentConMineralCodelistIds?: number[];
-  componentConMineralCodelists?: Codelist[];
-  grainSizeId?: number | null;
-  grainSize?: Codelist;
-  grainAngularityId?: number | null;
-  grainAngularity?: Codelist;
-  gradationId?: number | null;
-  gradation?: Codelist;
-  cementationId?: number | null;
-  cementation?: Codelist;
-  structureSynGenCodelistIds?: number[];
-  structureSynGenCodelists?: Codelist[];
-  structurePostGenCodelistIds?: number[];
-  structurePostGenCodelists?: Codelist[];
-}
-
-export interface Lithology extends BaseLayer {
-  isUnconsolidated: boolean | null;
-  hasBedding: boolean;
-  share?: number;
-  shareInverse?: number;
-  lithologyDescriptions?: LithologyDescription[];
-  alterationDegreeId?: number | null;
-  alterationDegree?: Codelist;
-  notes?: string;
-  compactnessId?: number | null;
-  compactness?: Codelist;
-  cohesionId?: number | null;
-  cohesion?: Codelist;
-  humidityId?: number | null;
-  humidity?: Codelist;
-  consistencyId?: number | null;
-  consistency?: Codelist;
-  plasticityId?: number | null;
-  plasticity?: Codelist;
-  uscsTypeCodelistIds?: number[];
-  uscsTypeCodelists?: Codelist[];
-  uscsDeterminationId?: number | null;
-  uscsDetermination?: Codelist;
-  rockConditionCodelistIds?: number[];
-  rockConditionCodelists?: Codelist[];
-  textureMetaCodelistIds?: number[];
-  textureMetaCodelists?: Codelist[];
-}
+export type Lithology = BaseLayer &
+  Omit<GeneratedLithology, keyof BaseLayer> & {
+    // Kept required (the generated model has it optional) because the lithology form always tracks a
+    // consolidation state — null means "unspecified".
+    isUnconsolidated: boolean | null;
+    // Client-only mirror of `share` for the second bedding description's input (100 - share).
+    shareInverse?: number;
+  };
 
 export interface LayerDepth {
   fromDepth: number;
@@ -135,9 +70,7 @@ export interface LithologyDescriptionEditForm extends LithologyEditForm {
   hasBedding?: boolean;
 }
 
-export interface LithologicalDescription extends BaseLayer {
-  description?: string;
-}
+export type LithologicalDescription = BaseLayer & Omit<GeneratedLithologicalDescription, keyof BaseLayer>;
 
 export interface ExtractedLithologicalDescription extends LithologicalDescription {
   startDepthBoundingBoxes: ExtractionBoundingBox[];
@@ -145,11 +78,7 @@ export interface ExtractedLithologicalDescription extends LithologicalDescriptio
   descriptionBoundingBoxes: ExtractionBoundingBox[];
 }
 
-export interface FaciesDescription extends BaseLayer {
-  description?: string;
-  faciesId?: number | null;
-  facies?: Codelist | null;
-}
+export type FaciesDescription = BaseLayer & Omit<GeneratedFaciesDescription, keyof BaseLayer>;
 
 export interface LithologyTabContents {
   lithologies: Lithology[];
@@ -169,16 +98,6 @@ interface ExtractedStratigraphyInput {
   lithologicalDescriptions: Omit<LithologicalDescription, "id" | "stratigraphyId">[];
   lithologies: Omit<Lithology, "id" | "stratigraphyId">[];
   faciesDescriptions?: Omit<FaciesDescription, "id" | "stratigraphyId">[];
-}
-
-interface Chronostratigraphy {
-  id: number;
-  stratigraphyId: number;
-}
-
-interface Lithostratigraphy {
-  id: number;
-  stratigraphyId: number;
 }
 
 const stratigraphiesQueryKey = "stratigraphies";
@@ -337,7 +256,7 @@ export const useChronostratigraphyMutations = () => {
   const queryClient = useQueryClient();
   const resetTabStatus = useResetTabStatus(["chronostratigraphy"]);
   const useAddChronostratigraphy = useMutation({
-    mutationFn: async (chronostratigraphy: Chronostratigraphy) => {
+    mutationFn: async (chronostratigraphy: ChronostratigraphyLayer) => {
       return await fetchApiV2WithApiError("chronostratigraphy", "POST", chronostratigraphy);
     },
     onSuccess: () => {
@@ -349,7 +268,7 @@ export const useChronostratigraphyMutations = () => {
     },
   });
   const useUpdateChronostratigraphy = useMutation({
-    mutationFn: async (chronostratigraphy: Chronostratigraphy) => {
+    mutationFn: async (chronostratigraphy: ChronostratigraphyLayer) => {
       return await fetchApiV2WithApiError("chronostratigraphy", "PUT", chronostratigraphy);
     },
     onSuccess: () => {
@@ -395,7 +314,7 @@ export const useLithostratigraphyMutations = () => {
   const queryClient = useQueryClient();
   const resetTabStatus = useResetTabStatus(["lithostratigraphy"]);
   const useAddLithostratigraphy = useMutation({
-    mutationFn: async (lithostratigraphy: Lithostratigraphy) => {
+    mutationFn: async (lithostratigraphy: LithostratigraphyLayer) => {
       return await fetchApiV2WithApiError("lithostratigraphy", "POST", lithostratigraphy);
     },
     onSuccess: () => {
@@ -407,7 +326,7 @@ export const useLithostratigraphyMutations = () => {
     },
   });
   const useUpdateLithostratigraphy = useMutation({
-    mutationFn: async (lithostratigraphy: Lithostratigraphy) => {
+    mutationFn: async (lithostratigraphy: LithostratigraphyLayer) => {
       return await fetchApiV2WithApiError("lithostratigraphy", "PUT", lithostratigraphy);
     },
     onSuccess: () => {
