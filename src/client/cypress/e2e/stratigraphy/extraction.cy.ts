@@ -42,7 +42,11 @@ function createBoreholeAndStartExtraction(boreholeName: string, filePath: string
   });
 }
 
-function makeBorehole(index: number, materialText: string, endDepth: number) {
+// Builds one fake "borehole" entry in the shape the Python extraction service returns from
+// extract_stratigraphy, so tests can stub that endpoint without running the real extraction.
+// Each entry has a single layer spanning depth 0 to endDepth with the given material description.
+// The frontend later turns each of these into one extracted stratigraphy shown in the dialog.
+function makeExtractionBorehole(index: number, materialText: string, endDepth: number) {
   return {
     id: `borehole-${index}`,
     page_numbers: [1],
@@ -95,10 +99,10 @@ describe("Tests for stratigraphy extraction", () => {
     // Build a mock response with 4 boreholes to trigger the dropdown UI (threshold is > 3).
     const fourBoreholeResponse = {
       boreholes: [
-        makeBorehole(1, "Humus", 1.5),
-        makeBorehole(2, "Sand", 2),
-        makeBorehole(3, "Kies", 3),
-        makeBorehole(4, "Ton", 4),
+        makeExtractionBorehole(1, "Humus", 1.5),
+        makeExtractionBorehole(2, "Sand", 2),
+        makeExtractionBorehole(3, "Kies", 3),
+        makeExtractionBorehole(4, "Ton", 4),
       ],
     };
 
@@ -190,7 +194,7 @@ describe("Tests for stratigraphy extraction", () => {
   it("disables saving while a selected stratigraphy name is empty or duplicated", () => {
     cy.intercept("POST", "dataextraction/api/V1/extract_stratigraphy", {
       statusCode: 200,
-      body: { boreholes: [makeBorehole(1, "Humus", 1.5), makeBorehole(2, "Sand", 2)] },
+      body: { boreholes: [makeExtractionBorehole(1, "Humus", 1.5), makeExtractionBorehole(2, "Sand", 2)] },
     }).as("extract-stratigraphy-names");
 
     createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "2-Bohrungen.pdf");
