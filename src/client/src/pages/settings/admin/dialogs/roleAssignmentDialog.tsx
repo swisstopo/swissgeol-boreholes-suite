@@ -11,8 +11,11 @@ import {
   Typography,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { EntityType, Role, User, Workgroup } from "../../../../api/apiInterfaces.ts";
+import { EntityType } from "../../../../api/apiInterfaces.ts";
+import { Role, User, Workgroup } from "../../../../api/generated";
 import { AddButton, CancelButton } from "../../../../components/buttons/buttons.tsx";
+
+const allRoles: Role[] = ["View", "Editor", "Controller", "Validator", "Publisher"];
 
 interface RoleAssignmentDialogProps<T> {
   open: boolean;
@@ -101,7 +104,7 @@ export const RoleAssignmentDialog = <T,>({
               onChange={event => {
                 setRole(event.target.value as Role);
               }}>
-              {Object.values(Role).map(role => (
+              {allRoles.map(role => (
                 <MenuItem key={role} value={role}>
                   {role}
                 </MenuItem>

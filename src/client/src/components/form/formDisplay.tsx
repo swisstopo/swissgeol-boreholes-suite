@@ -2,7 +2,7 @@ import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, SxProps, Typography } from "@mui/material";
 import { Language } from "@swissgeol/ui-core";
-import { Codelist } from "../codelist.ts";
+import { Codelist } from "../../api/generated";
 import { FormValueType } from "./form";
 import { formatNumberForDisplay } from "./formUtils.ts";
 
@@ -45,7 +45,7 @@ export const FormDisplay: FC<FormDisplayProps> = ({ prefix, label, value, type, 
       return value ? t("yes") : t("no");
     } else if (type === FormValueType.Domain) {
       const codelist = value as Codelist;
-      return codelist[i18n.language as Language];
+      return codelist[i18n.language as Language] ?? "";
     } else {
       return value as string;
     }

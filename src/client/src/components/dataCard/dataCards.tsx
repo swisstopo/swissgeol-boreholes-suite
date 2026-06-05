@@ -1,12 +1,16 @@
 import React, { ReactNode, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress, Typography } from "@mui/material";
+import {
+  Backfill,
+  Casing,
+  FieldMeasurement,
+  GroundwaterLevelMeasurement,
+  Hydrotest,
+  Instrumentation,
+  WaterIngress,
+} from "../../api/generated";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
-import { Backfill, Casing, Instrumentation } from "../../pages/detail/form/completion/completionInterfaces.ts";
-import { FieldMeasurement } from "../../pages/detail/form/hydrogeology/fieldMeasurement/FieldMeasurement.ts";
-import { GroundwaterLevelMeasurement } from "../../pages/detail/form/hydrogeology/groundwaterLevelMeasurement/GroundwaterLevelMeasurement.ts";
-import { Hydrotest } from "../../pages/detail/form/hydrogeology/hydrotest/Hydrotest.ts";
-import { WaterIngress } from "../../pages/detail/form/hydrogeology/waterIngress/WaterIngress.ts";
 import { AddButton } from "../buttons/buttons.tsx";
 import { FullPage, FullPageAlignLeft, FullPageCentered } from "../styledComponents.ts";
 import { DataCard, DataCardButtonContainer, DataCardContainer, DataCardItem } from "./dataCard.tsx";

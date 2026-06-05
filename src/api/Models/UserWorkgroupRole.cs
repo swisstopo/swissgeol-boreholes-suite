@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace BDMS.Models;
 
@@ -12,6 +13,7 @@ public class UserWorkgroupRole
     /// Gets or sets the foreign key to the <see cref="User"/> entity.
     /// </summary>
     [Column("user_id")]
+    [Required]
     public int UserId { get; set; }
 
     /// <summary>
@@ -23,6 +25,7 @@ public class UserWorkgroupRole
     /// Gets or sets the foreign key to the <see cref="Workgroup"/> entity.
     /// </summary>
     [Column("workgroup_id")]
+    [Required]
     public int WorkgroupId { get; set; }
 
     /// <summary>

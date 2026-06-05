@@ -1,4 +1,6 @@
-﻿namespace BDMS.Models;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace BDMS.Models;
 
 /// <summary>
 /// A lithology inside a <see cref="Models.Stratigraphy"/> with defined depth. This is a legacy interface for existing chronostratigraphy and lithostratigraphy. After they have been migrated they should use <see cref="Models.IStratigraphyLayer"/>.
@@ -8,6 +10,7 @@ public interface IStratigraphyLayerLegacy
     /// <summary>
     /// Gets or sets foreign key for the <see cref="Models.Stratigraphy"/> of this <see cref="IStratigraphyLayer"/>.
     /// </summary>
+    [Required]
     public int StratigraphyId { get; set; }
 
     /// <summary>

@@ -153,7 +153,6 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
         country={borehole.country}
         canton={borehole.canton}
         municipality={borehole.municipality}
-        formMethods={formMethods}
       />
     </Stack>
   );

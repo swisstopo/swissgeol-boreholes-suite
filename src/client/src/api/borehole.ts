@@ -1,98 +1,22 @@
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { FeatureCollection, Geometry } from "geojson";
-import { Codelist, useCodelistDisplayValues } from "../components/codelist.ts";
-import { Photo } from "../pages/detail/attachments/tabs/photo.ts";
-import { Completion } from "../pages/detail/form/completion/completionInterfaces.ts";
-import { Observation } from "../pages/detail/form/hydrogeology/Observation.ts";
+import { useCodelistDisplayValues } from "../components/codelist.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
-import { ReferenceSystemCode } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
-import { LogRun } from "../pages/detail/form/log/logInterfaces.ts";
-import { Stratigraphy } from "../pages/detail/form/stratigraphy/stratigraphy.ts";
-import { Workflow } from "../pages/detail/form/workflow/workflow.ts";
 import { SessionKeys } from "../pages/overview/SessionKey.ts";
-import { Document, NullableDateString, User, Workgroup } from "./apiInterfaces.ts";
-import { BoreholeGeometry } from "./boreholeGeometry.ts";
+import { NullableDateString } from "./apiInterfaces.ts";
 import { download, downloadData } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
-import { Profile } from "./profile.ts";
-import { Section } from "./section.ts";
+import { Borehole, BoreholeCodelist, Codelist } from "./generated";
 import { useCurrentUser } from "./user.ts";
 
-export interface BasicIdentifier {
-  id?: number;
-  boreholeId: number;
-  codelistId: number | null;
+export interface BasicIdentifier extends BoreholeCodelist {
   codelist?: Codelist;
-  value: string;
-  comment?: string | null;
 }
 
 // Avoids circular reference for BoreholeV2
 export interface Identifier extends BasicIdentifier {
-  borehole?: BoreholeV2 | null;
-}
-
-export interface BoreholeV2 {
-  lithologyTopBedrockId: number;
-  lithostratigraphyTopBedrockId: number;
-  chronostratigraphyTopBedrockId: number;
-  hasGroundwater: boolean | null;
-  topBedrockWeatheredMd: number;
-  topBedrockFreshMd: number;
-  topBedrockIntersected: boolean | null;
-  depthPrecisionId: number;
-  totalDepth: number;
-  purposeId: number;
-  typeId: number;
-  remarks: string;
-  statusId: number;
-  workflow: Workflow | null;
-  boreholeCodelists: BasicIdentifier[];
-  workgroupId: number;
-  workgroup: Workgroup;
-  originalReferenceSystemId: ReferenceSystemCode;
-  originalReferenceSystem: Codelist | null;
-  precisionLocationYLV03: number;
-  precisionLocationXLV03: number;
-  precisionLocationY: number;
-  precisionLocationX: number;
-  locationXLV03: number | null;
-  locationYLV03: number | null;
-  id: number;
-  locationX: number | null;
-  locationY: number | null;
-  municipality: string;
-  country: string;
-  canton: string;
-  name: string;
-  originalName: string;
-  projectName: number;
-  restrictionId: number;
-  restrictionUntil: NullableDateString;
-  nationalInterest: boolean | null;
-  elevationZ: number | string; // Number with thousands separator then parsed to number
-  elevationPrecisionId: number;
-  referenceElevation: number | string; // Number with thousands separator then parsed to number
-  referenceElevationPrecisionId: number;
-  referenceElevationTypeId: number;
-  locationPrecisionId: number | null;
-  hrsId: number;
-  updated: NullableDateString;
-  updatedById: number;
-  updatedBy: User;
-  stratigraphies: Stratigraphy[] | null;
-  logRuns: LogRun[] | null;
-  locked: NullableDateString;
-  lockedById: number | null;
-  completions: Completion[] | null;
-  observations: Observation[] | null;
-  sections: Section[] | null;
-  boreholeGeometry: BoreholeGeometry[] | null;
-  profiles: Profile[] | null;
-  photos: Photo[] | null;
-  documents: Document[] | null;
-  geometry: BoreholeGeometry | null;
+  borehole?: Borehole | null;
 }
 
 const getIdQuery = (ids: number[] | GridRowSelectionModel) => ids.map(id => `ids=${id}`).join("&");
@@ -115,8 +39,8 @@ export const importBoreholesZip = async (workgroupId: number | null, combinedFor
   return await upload(`import/zip?workgroupId=${workgroupId}`, "POST", combinedFormData);
 };
 
-const createBorehole = async (workgroupId: number): Promise<BoreholeV2> => {
-  return await fetchApiV2WithApiError<BoreholeV2>(`borehole`, "POST", {
+const createBorehole = async (workgroupId: number): Promise<Borehole> => {
+  return await fetchApiV2WithApiError<Borehole>(`borehole`, "POST", {
     workgroupId,
     originalReferenceSystemId: referenceSystems.LV95.code,
     hrsId: defaultHrsId,
@@ -136,12 +60,12 @@ export const exportJsonWithAttachmentsBorehole = async (boreholeIds: number[] | 
   return await download(`boreholeexport/zip?${getIdQuery(boreholeIds)}`);
 };
 
-const fetchBoreholeById = async (id: number): Promise<BoreholeV2> => {
-  return await fetchApiV2WithApiError<BoreholeV2>(`borehole/${id}`, "GET");
+const fetchBoreholeById = async (id: number): Promise<Borehole> => {
+  return await fetchApiV2WithApiError<Borehole>(`borehole/${id}`, "GET");
 };
 
-const updateBorehole = async (borehole: BoreholeV2): Promise<BoreholeV2> => {
-  return await fetchApiV2WithApiError<BoreholeV2>("borehole", "PUT", borehole);
+const updateBorehole = async (borehole: Borehole): Promise<Borehole> => {
+  return await fetchApiV2WithApiError<Borehole>("borehole", "PUT", borehole);
 };
 const deleteBorehole = async (id: number) => await fetchApiV2WithApiError(`borehole?id=${id}`, "DELETE");
 
@@ -161,13 +85,15 @@ export const useBorehole = (id: number) => {
     queryFn: async () => {
       const borehole = await fetchBoreholeById(id);
       // Sort boreholeCodelists by codelist name, then by value, for consistent display order in the UI
-      const orderedBoreholeCodelists = borehole.boreholeCodelists.toSorted((a, b) => {
-        const nameCompare = getCodelistName(a.codelistId ?? 0).text.localeCompare(
-          getCodelistName(b.codelistId ?? 0).text,
-        );
-        if (nameCompare !== 0) return nameCompare;
-        return (a.value ?? "").localeCompare(b.value ?? "");
-      });
+      const orderedBoreholeCodelists = (borehole.boreholeCodelists ?? []).toSorted(
+        (a: BoreholeCodelist, b: BoreholeCodelist) => {
+          const nameCompare = getCodelistName(a.codelistId ?? 0).text.localeCompare(
+            getCodelistName(b.codelistId ?? 0).text,
+          );
+          if (nameCompare !== 0) return nameCompare;
+          return (a.value ?? "").localeCompare(b.value ?? "");
+        },
+      );
       return { ...borehole, boreholeCodelists: orderedBoreholeCodelists };
     },
     enabled: !!id,
@@ -208,7 +134,7 @@ export const useBoreholeMutations = () => {
   });
 
   const useUpdateBorehole = useMutation({
-    mutationFn: async (borehole: BoreholeV2) => {
+    mutationFn: async (borehole: Borehole) => {
       return await updateBorehole(borehole);
     },
     onSuccess: (_, borehole) => {

@@ -127,7 +127,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
               files.map(file => (
                 <FileButton
                   key={file.name}
-                  label={file.name}
+                  label={file.name!}
                   icon={activeTab === PanelTab.profile ? <FileTextIcon /> : <FileImageIcon />}
                   onClick={() => setSelectedFile(file)}
                 />

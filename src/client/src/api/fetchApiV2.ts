@@ -1,10 +1,9 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
-import { Backfill, Casing, Completion, Instrumentation } from "../pages/detail/form/completion/completionInterfaces.ts";
 import store from "../reducers";
-import { ApiError, Document, DocumentUpdate, GeometryFormat } from "./apiInterfaces";
+import { ApiError, GeometryFormat } from "./apiInterfaces";
 import { getAuthorizationHeader } from "./authentication.ts";
-import { Section } from "./section.ts";
+import { Backfill, Casing, Completion, Document, DocumentUpdate, Instrumentation, Section } from "./generated";
 
 /**
  * Base function to make API calls to the v2 API.
@@ -251,7 +250,7 @@ export const addInstrumentation = async (instrumentation: Instrumentation): Prom
   return await fetchApiV2Legacy("instrumentation", "POST", instrumentation);
 };
 
-export const updateInstrumentation = async (instrumentation: Instrumentation): Promise<void> => {
+export const updateInstrumentation = async (instrumentation: Instrumentation): Promise<Instrumentation> => {
   return await fetchApiV2Legacy("instrumentation", "PUT", instrumentation);
 };
 
@@ -267,7 +266,7 @@ export const addBackfill = async (backfill: Backfill): Promise<Backfill> => {
   return await fetchApiV2Legacy("backfill", "POST", backfill);
 };
 
-export const updateBackfill = async (backfill: Backfill): Promise<void> => {
+export const updateBackfill = async (backfill: Backfill): Promise<Backfill> => {
   return await fetchApiV2Legacy("backfill", "PUT", backfill);
 };
 

@@ -14,10 +14,12 @@ public class LithostratigraphyLayer : IStratigraphyLayerLegacy, IChangeTracking,
     /// <inheritdoc />
     [Key]
     [Column("id")]
+    [Required]
     public int Id { get; set; }
 
     /// <inheritdoc />
     [Column("stratigraphy_id")]
+    [Required]
     public int StratigraphyId { get; set; }
 
     /// <inheritdoc />

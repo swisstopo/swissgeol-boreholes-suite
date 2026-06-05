@@ -3,16 +3,17 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import { Box, Stack } from "@mui/material";
 import { SgcMenuItem } from "@swissgeol/ui-core-react";
-import { BoreholeV2, useBoreholeStatusEditable } from "../../api/borehole.ts";
+import { useBoreholeStatusEditable } from "../../api/borehole.ts";
+import { Borehole } from "../../api/generated";
 import { useAuth } from "../../auth/useBoreholesAuth.tsx";
 import { useBoreholeDataAvailability } from "../../hooks/useBoreholeDataAvailability.ts";
 import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
+import { useCapitalizedTranslation } from "../../hooks/useCapitalizedTranslation.ts";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
-import { capitalizeFirstLetter } from "../../utils";
 import { TabStatus } from "./form/workflow/workflow.ts";
 
 interface DetailSideNavProps {
-  borehole: BoreholeV2;
+  borehole: Borehole;
 }
 
 export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
@@ -21,6 +22,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const { data: canChangeStatus } = useBoreholeStatusEditable(parseInt(id));
   const location = useLocation();
   const { t } = useTranslation();
+  const ct = useCapitalizedTranslation();
   const auth = useAuth();
   const { navigateTo } = useBoreholesNavigate();
 
@@ -45,8 +47,8 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   if (!borehole.workflow) return null;
 
   const isReviewed = (tabKeys: Array<keyof TabStatus>) => {
-    if (tabKeys.every(key => borehole.workflow?.reviewedTabs[key])) return "true";
-    if (tabKeys.some(key => borehole.workflow?.reviewedTabs[key])) return "partial";
+    if (tabKeys.every(key => borehole.workflow?.reviewedTabs?.[key])) return "true";
+    if (tabKeys.some(key => borehole.workflow?.reviewedTabs?.[key])) return "partial";
     return "false";
   };
 
@@ -69,7 +71,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             onClick={() => {
               navigateTo({ path: `/${id}/identifiers` });
             }}>
-            {capitalizeFirstLetter(t("ids"))}
+            {ct("ids")}
           </SgcMenuItem>
           <SgcMenuItem
             active={location.pathname === `/${id}/location`}
@@ -78,7 +80,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             onClick={() => {
               navigateTo({ path: `/${id}/location` });
             }}>
-            {capitalizeFirstLetter(t("location"))}
+            {ct("location")}
           </SgcMenuItem>
           <SgcMenuItem
             active={location.pathname === `/${id}/borehole`}
@@ -87,7 +89,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             onClick={() => {
               navigateTo({ path: `/${id}/borehole` });
             }}>
-            {capitalizeFirstLetter(t("borehole"))}{" "}
+            {ct("borehole")}{" "}
           </SgcMenuItem>
           <SgcMenuItem
             active={location.pathname.includes(`/${id}/stratigraphy`)}
@@ -99,7 +101,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             onClick={() => {
               navigateTo({ path: `/${id}/stratigraphy` });
             }}>
-            {capitalizeFirstLetter(t("stratigraphy"))}{" "}
+            {ct("stratigraphy")}{" "}
           </SgcMenuItem>
           <SgcMenuItem
             active={location.pathname.includes(`/${id}/completion`)}
@@ -109,7 +111,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             onClick={() => {
               navigateTo({ path: `/${id}/completion` });
             }}>
-            {capitalizeFirstLetter(t("completion"))}{" "}
+            {ct("completion")}{" "}
           </SgcMenuItem>
           <SgcMenuItem
             active={false}
@@ -122,7 +124,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             onClick={() => {
               setHydrogeologyIsVisible(!hydrogeologyIsVisible);
             }}>
-            {capitalizeFirstLetter(t("hydrogeology"))}
+            {ct("hydrogeology")}
           </SgcMenuItem>
           {hydrogeologyIsVisible && (
             <>
@@ -135,7 +137,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 onClick={() => {
                   navigateTo({ path: `/${id}/hydrogeology/wateringress` });
                 }}>
-                {capitalizeFirstLetter(t("waterIngress"))}
+                {ct("waterIngress")}
               </SgcMenuItem>
               <SgcMenuItem
                 active={location.pathname === `/${id}/hydrogeology/groundwaterlevelmeasurement`}
@@ -146,7 +148,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 onClick={() => {
                   navigateTo({ path: `/${id}/hydrogeology/groundwaterlevelmeasurement` });
                 }}>
-                {capitalizeFirstLetter(t("groundwaterLevelMeasurement"))}
+                {ct("groundwaterLevelMeasurement")}
               </SgcMenuItem>
               <SgcMenuItem
                 active={location.pathname === `/${id}/hydrogeology/fieldmeasurement`}
@@ -157,7 +159,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 onClick={() => {
                   navigateTo({ path: `/${id}/hydrogeology/fieldmeasurement` });
                 }}>
-                {capitalizeFirstLetter(t("fieldMeasurement"))}
+                {ct("fieldMeasurement")}
               </SgcMenuItem>
               <SgcMenuItem
                 active={location.pathname === `/${id}/hydrogeology/hydrotest`}
@@ -168,7 +170,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
                 onClick={() => {
                   navigateTo({ path: `/${id}/hydrogeology/hydrotest` });
                 }}>
-                {capitalizeFirstLetter(t("hydrotest"))}
+                {ct("hydrotest")}
               </SgcMenuItem>
             </>
           )}
@@ -190,7 +192,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             onClick={() => {
               navigateTo({ path: `/${id}/attachments` });
             }}>
-            {capitalizeFirstLetter(t("attachments"))}
+            {ct("attachments")}
           </SgcMenuItem>
           {!auth.anonymousModeEnabled && canChangeStatus && (
             <SgcMenuItem
@@ -199,7 +201,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
               onClick={() => {
                 navigateTo({ path: `/${id}/status` });
               }}>
-              {capitalizeFirstLetter(t("status"))}
+              {ct("status")}
             </SgcMenuItem>
           )}
         </Box>

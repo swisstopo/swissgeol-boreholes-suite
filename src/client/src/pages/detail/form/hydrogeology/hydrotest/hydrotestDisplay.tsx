@@ -1,7 +1,8 @@
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { TableCell } from "@mui/material";
-import { Codelist, useCodelists } from "../../../../../components/codelist.ts";
+import { Codelist, Hydrotest, HydrotestResult } from "../../../../../api/generated";
+import { useCodelistLocalizedLabel, useCodelists } from "../../../../../components/codelist.ts";
 import { DataDisplayCard } from "../../../../../components/dataCard/dataDisplayCard.js";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../../components/form/form.ts";
 import { FormResultTableDisplay } from "../../../../../components/form/formResultTableDisplay.tsx";
@@ -9,11 +10,12 @@ import { parameterTableHeaderStyles } from "../../../../../components/form/formR
 import { formatNumberForDisplay } from "../../../../../components/form/formUtils.ts";
 import ObservationDisplay from "../observationDisplay.tsx";
 import { getHydrotestParameterUnits } from "../parameterUnits.tsx";
-import { deleteHydrotest, Hydrotest, HydrotestResult } from "./Hydrotest.ts";
+import { deleteHydrotest } from "./Hydrotest.ts";
 
 export const HydrotestDisplay: FC<{ item: Hydrotest }> = ({ item }) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const codelists = useCodelists();
+  const getCodelistLabel = useCodelistLocalizedLabel();
 
   return (
     <DataDisplayCard<Hydrotest> item={item} deleteData={deleteHydrotest} entityName={"hydrotest"}>
@@ -25,10 +27,10 @@ export const HydrotestDisplay: FC<{ item: Hydrotest }> = ({ item }) => {
       <FormContainer direction="row">
         <FormDisplay label="evaluationMethod" value={item?.evaluationMethodCodelists} type={FormValueType.Domain} />
       </FormContainer>
-      {item?.hydrotestResults?.length > 0 && (
+      {(item?.hydrotestResults?.length ?? 0) > 0 && (
         <FormResultTableDisplay<HydrotestResult>
           title={t("hydrotestResult")}
-          results={item?.hydrotestResults}
+          results={item?.hydrotestResults ?? []}
           renderHeader={styles => (
             <>
               <TableCell sx={{ ...styles, paddingRight: 0 }}>{t("parameter")}</TableCell>
@@ -47,7 +49,7 @@ export const HydrotestDisplay: FC<{ item: Hydrotest }> = ({ item }) => {
                   ...parameterTableHeaderStyles,
                 }}
                 data-cy={`hydrotestResult.${index}.parameter-formDisplay`}>
-                {codelists.data?.find((d: Codelist) => d.id === result.parameterId)?.[i18n.language] ?? ""}
+                {getCodelistLabel(codelists.data?.find((d: Codelist) => d.id === result.parameterId))}
               </TableCell>
               <TableCell sx={styles} data-cy={`hydrotestResult.${index}.value-formDisplay`}>
                 {result?.value && (

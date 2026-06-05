@@ -1,8 +1,9 @@
 ﻿import { deleteBackfill } from "../../../../api/fetchApiV2.ts";
+import { Backfill } from "../../../../api/generated";
 import { DataDisplayCard } from "../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import { useGetCasingName } from "./casingUtils.tsx";
-import { Backfill, DataCardItemDisplayProps } from "./completionInterfaces.ts";
+import { DataCardItemDisplayProps } from "./completionInterfaces.ts";
 
 const BackfillDisplay = ({ item }: DataCardItemDisplayProps<Backfill>) => {
   const { getCasingNameWithCompletion } = useGetCasingName();

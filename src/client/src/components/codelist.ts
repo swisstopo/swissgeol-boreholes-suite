@@ -2,21 +2,21 @@ import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { fetchApiV2WithApiError } from "../api/fetchApiV2.ts";
+import { Codelist } from "../api/generated";
 
-export interface Codelist {
-  order: number;
-  id: number;
-  geolcode: number;
-  schema: string;
-  de: string;
-  en: string;
-  fr: string;
-  it: string;
-  conf: string;
-  path: string;
-  code: string;
-  [key: string]: string | number;
-}
+const getCodelistLocalizedLabel = (codelist: Codelist | undefined, language: string): string => {
+  if (!codelist) return "";
+  const lang = language as keyof Pick<Codelist, "en" | "de" | "fr" | "it" | "ro">;
+  return String(codelist[lang] ?? codelist.en ?? "");
+};
+
+export const useCodelistLocalizedLabel = () => {
+  const { i18n } = useTranslation();
+  return useCallback(
+    (codelist: Codelist | undefined) => getCodelistLocalizedLabel(codelist, i18n.language),
+    [i18n.language],
+  );
+};
 
 export enum CodelistLabelStyle {
   TextOnly = "textOnly", // Text only in dropdown and chips
@@ -31,7 +31,7 @@ export const useCodelistLabel = (labelStyle: CodelistLabelStyle) => {
     (d: Codelist) => {
       if (labelStyle === CodelistLabelStyle.CodeOnly) return String(d.code);
 
-      let label = String(d[i18n.language]);
+      let label = getCodelistLocalizedLabel(d, i18n.language);
       if (labelStyle === CodelistLabelStyle.TextAndCode || labelStyle === CodelistLabelStyle.TextAndCodeChipsCodeOnly) {
         label += ` (${String(d.code)})`;
       }
@@ -79,7 +79,9 @@ export const useCodelistDisplayValues = () => {
   return useCallback(
     (id: number) => {
       const codelist = codelists?.find(item => item.id === id);
-      return codelist ? { text: codelist[i18n.language] as string, code: codelist.code } : { text: "", code: "" };
+      return codelist
+        ? { text: getCodelistLocalizedLabel(codelist, i18n.language), code: codelist.code ?? "" }
+        : { text: "", code: "" };
     },
     [codelists, i18n.language],
   );

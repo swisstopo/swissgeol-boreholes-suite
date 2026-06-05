@@ -13,11 +13,12 @@ import {
   PanelTab,
 } from "../../../api/dataextractionInterfaces.ts";
 import { FileSizeLimit, maxFileSizeBytes } from "../../../api/file.ts";
-import { Profile, uploadProfile, useProfiles, useReloadProfiles } from "../../../api/profile.ts";
+import { Photo, Profile } from "../../../api/generated";
+import { uploadProfile, useProfiles, useReloadProfiles } from "../../../api/profile.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
-import { Photo, uploadPhoto, usePhotoImage, usePhotos, useReloadPhotos } from "../attachments/tabs/photo.ts";
+import { uploadPhoto, usePhotoImage, usePhotos, useReloadPhotos } from "../attachments/tabs/photo.ts";
 import { FloatingExtractionFeedback } from "./floatingExtractionFeedback.tsx";
 import { useLabelingContext } from "./labelingContext.tsx";
 import { LabelingExtraction } from "./labelingExtraction.tsx";

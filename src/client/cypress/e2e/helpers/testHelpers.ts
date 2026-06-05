@@ -707,8 +707,6 @@ export const createCasing = ({
   });
 };
 
-type NullableId = number | string | null;
-
 export const createTestCasing = (boreholeId: number | string, completionId: number | string) =>
   createCasing({
     name: "casing-1",
@@ -735,7 +733,7 @@ interface ObservationInput {
   boreholeId: number | string;
   startTime: string;
   reliabilityId: number;
-  casingId?: NullableId;
+  casingId?: number | null;
   fromDepthM?: number | null;
   toDepthM?: number | null;
 }
@@ -848,7 +846,7 @@ export const createHydrotest = ({
 
 interface BackfillInput {
   completionId: number | string;
-  casingId?: number | string | null;
+  casingId?: number | null;
   materialId?: number | null;
   kindId?: number | null;
   fromDepth: number;
@@ -886,8 +884,8 @@ export const createBackfill = ({
 };
 
 interface InstrumentInput {
-  completionId: number | string;
-  casingId?: number | string | null;
+  completionId: number;
+  casingId?: number | null;
   name: string;
   statusId?: number | null;
   kindId?: number | null;

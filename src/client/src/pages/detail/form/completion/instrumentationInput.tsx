@@ -1,10 +1,11 @@
 ﻿import { useEffect, useState } from "react";
 import { addInstrumentation, getCasings, updateInstrumentation } from "../../../../api/fetchApiV2.ts";
+import { Casing, Instrumentation } from "../../../../api/generated";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard.tsx";
 import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
 import { prepareCasingDataForSubmit, useGetCasingOptions } from "./casingUtils.tsx";
-import { Casing, DataCardItemInputProps, Instrumentation } from "./completionInterfaces.ts";
+import { DataCardItemInputProps } from "./completionInterfaces.ts";
 import { completionSchemaConstants } from "./completionSchemaConstants.ts";
 import { prepareEntityDataForSubmit } from "./completionUtils.ts";
 

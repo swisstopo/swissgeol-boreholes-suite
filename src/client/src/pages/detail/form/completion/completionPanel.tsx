@@ -11,6 +11,7 @@ import {
   getCompletions,
   updateCompletion,
 } from "../../../../api/fetchApiV2.ts";
+import { Completion } from "../../../../api/generated";
 import { AddButton } from "../../../../components/buttons/buttons.tsx";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
@@ -22,7 +23,7 @@ import { EditStateContext } from "../../editStateContext.tsx";
 import CompletionContent from "./completionContent.tsx";
 import CompletionHeaderDisplay from "./completionHeaderDisplay.tsx";
 import CompletionHeaderInput from "./completionHeaderInput.tsx";
-import { Completion, CompletionPanelState } from "./completionInterfaces.ts";
+import { CompletionPanelState } from "./completionInterfaces.ts";
 
 export const CompletionPanel = () => {
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
@@ -274,15 +275,18 @@ export const CompletionPanel = () => {
       return;
     }
     if (completionId === "new" && (state.switchTabTo === null || state.switchTabTo === -1)) {
-      const tempCompletion: Completion = {
+      // The generated Completion type has kindId as non-nullable number, but in the UI we need
+      // the field to start empty until the user picks a kind. Keep it null so react-hook-form
+      // treats the required field as missing and disables save until a kind is selected.
+      const tempCompletion = {
         id: 0,
-        boreholeId: boreholeId,
-        name: null,
+        boreholeId: Number(boreholeId),
         kindId: null,
+        name: null,
         isPrimary: state.displayed.length === 0,
         abandonDate: null,
         notes: null,
-      };
+      } as unknown as Completion;
       const displayed = completions?.length > 0 ? completions : [];
       setState({
         ...state,
@@ -339,7 +343,7 @@ export const CompletionPanel = () => {
                 return (
                   <BoreholeTab
                     data-cy={"completion-header-tab-" + index}
-                    label={item.name === null || item.name === "" ? t("common:np") : item.name}
+                    label={item.name || t("np")}
                     key={item.id.toString()}
                     hasContent={undefined}
                   />

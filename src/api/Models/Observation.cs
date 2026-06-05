@@ -16,6 +16,7 @@ public class Observation : IChangeTracking, IIdentifyable, ICasingReference
     /// </summary>
     [Key]
     [Column("id")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>
@@ -122,6 +123,7 @@ public class Observation : IChangeTracking, IIdentifyable, ICasingReference
     /// Gets or sets the <see cref="Observation"/>'s borehole id.
     /// </summary>
     [Column("borehole_id")]
+    [Required]
     public int BoreholeId { get; set; }
 
     /// <summary>

@@ -1,6 +1,7 @@
 import { FC, useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { GridColDef, GridRowId, useGridApiRef } from "@mui/x-data-grid";
+import { Photo } from "../../../../api/generated";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 import { formatDate } from "../../../../utils.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
@@ -10,7 +11,6 @@ import {
   deletePhotos,
   exportPhotos,
   getPhotosByBoreholeId,
-  Photo,
   updatePhotos,
   uploadPhoto,
   usePhotos,
