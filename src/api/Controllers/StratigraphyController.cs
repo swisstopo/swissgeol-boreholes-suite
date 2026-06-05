@@ -222,7 +222,7 @@ public class StratigraphyController : ControllerBase
             var hasDesignatedPrimary = await StageEditsForCreateAsync(edits, takenNames).ConfigureAwait(false);
             if (hasDesignatedPrimary)
             {
-                await DemotePriorPrimariesAsync(boreholeId).ConfigureAwait(false);
+                await DemoteOtherPrimariesAsync(boreholeId, keepStratigraphyId: 0).ConfigureAwait(false);
             }
 
             await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
@@ -290,7 +290,7 @@ public class StratigraphyController : ControllerBase
 
             if (entity.IsPrimary)
             {
-                await StageOtherPrimaryStratigraphiesResetAsync(entity).ConfigureAwait(false);
+                await DemoteOtherPrimariesAsync(entity.BoreholeId, keepStratigraphyId: entity.Id).ConfigureAwait(false);
             }
 
             await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
@@ -385,15 +385,16 @@ public class StratigraphyController : ControllerBase
         await Context.AddAsync(stratigraphy).ConfigureAwait(false);
     }
 
-    private async Task DemotePriorPrimariesAsync(int boreholeId)
+    private async Task DemoteOtherPrimariesAsync(int boreholeId, int keepStratigraphyId)
     {
-        var priorPrimaries = await Context.Stratigraphies
-            .Where(s => s.BoreholeId == boreholeId && s.IsPrimary && s.Id != 0)
+        var otherPrimaries = await Context.Stratigraphies
+            .Where(s => s.BoreholeId == boreholeId && s.IsPrimary && s.Id != keepStratigraphyId)
             .ToListAsync()
             .ConfigureAwait(false);
-        foreach (var prior in priorPrimaries)
+
+        foreach (var primary in otherPrimaries)
         {
-            prior.IsPrimary = false;
+            primary.IsPrimary = false;
         }
     }
 
@@ -411,20 +412,6 @@ public class StratigraphyController : ControllerBase
             Stratigraphy = stratigraphy,
             LithologyTab = contents,
         };
-    }
-
-    private async Task StageOtherPrimaryStratigraphiesResetAsync(Stratigraphy entity)
-    {
-        var otherPrimaryStratigraphies = await Context.Stratigraphies
-            .Where(s => s.BoreholeId == entity.BoreholeId && s.IsPrimary && s.Id != entity.Id)
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        foreach (var other in otherPrimaryStratigraphies)
-        {
-            other.IsPrimary = false;
-            Context.Update(other);
-        }
     }
 
     private ObjectResult NameMustBeUniqueProblem(List<string> conflictingNames)
