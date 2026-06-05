@@ -42,6 +42,20 @@ function createBoreholeAndStartExtraction(boreholeName: string, filePath: string
   });
 }
 
+function makeBorehole(index: number, materialText: string, endDepth: number) {
+  return {
+    id: `borehole-${index}`,
+    page_numbers: [1],
+    layers: [
+      {
+        start: { depth: 0, bounding_boxes: [] },
+        end: { depth: endDepth, bounding_boxes: [] },
+        material_description: { text: materialText, bounding_boxes: [] },
+      },
+    ],
+  };
+}
+
 describe("Tests for stratigraphy extraction", () => {
   it("Extracts stratigraphy and shows bounding boxes", () => {
     createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "test_profile.pdf");
@@ -79,18 +93,6 @@ describe("Tests for stratigraphy extraction", () => {
 
   it("shows dropdown and supports check/uncheck for multiple extracted stratigraphies", () => {
     // Build a mock response with 4 boreholes to trigger the dropdown UI (threshold is > 3).
-    const makeBorehole = (index: number, materialText: string, endDepth: number) => ({
-      id: `borehole-${index}`,
-      page_numbers: [1],
-      layers: [
-        {
-          start: { depth: 0, bounding_boxes: [] },
-          end: { depth: endDepth, bounding_boxes: [] },
-          material_description: { text: materialText, bounding_boxes: [] },
-        },
-      ],
-    });
-
     const fourBoreholeResponse = {
       boreholes: [
         makeBorehole(1, "Humus", 1.5),
@@ -186,18 +188,6 @@ describe("Tests for stratigraphy extraction", () => {
   });
 
   it("disables saving while a selected stratigraphy name is empty or duplicated", () => {
-    const makeBorehole = (index: number, materialText: string, endDepth: number) => ({
-      id: `borehole-${index}`,
-      page_numbers: [1],
-      layers: [
-        {
-          start: { depth: 0, bounding_boxes: [] },
-          end: { depth: endDepth, bounding_boxes: [] },
-          material_description: { text: materialText, bounding_boxes: [] },
-        },
-      ],
-    });
-
     cy.intercept("POST", "dataextraction/api/V1/extract_stratigraphy", {
       statusCode: 200,
       body: { boreholes: [makeBorehole(1, "Humus", 1.5), makeBorehole(2, "Sand", 2)] },
