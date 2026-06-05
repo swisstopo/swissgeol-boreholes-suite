@@ -3,7 +3,7 @@ import { SaveContext } from "../../../saveContext.tsx";
 import { LithologyTable } from "../components/lithologyTable/lithologyTable.tsx";
 import { prepareDataForSubmit } from "../components/lithologyTable/lithologyTableUtils.ts";
 import { useLithologyTableState } from "../components/lithologyTable/useLithologyTableState.ts";
-import { FaciesDescription, LithologicalDescription, Lithology } from "../stratigraphy.ts";
+import { FaciesDescription, LithologicalDescription, Lithology, LithologyTabContents } from "../stratigraphy.ts";
 import { StratigraphyContext, StratigraphyContextProps } from "../stratigraphyContext.tsx";
 
 interface LithologyPanelEditProps {
@@ -20,7 +20,7 @@ export const LithologyPanelEdit: FC<LithologyPanelEditProps> = ({
   faciesDescriptions,
 }) => {
   const { setHasChanges, setHasErrors } = useContext(SaveContext);
-  const { registerSaveHandler, registerResetHandler } = useContext<StratigraphyContextProps>(StratigraphyContext);
+  const { registerLithologyTab } = useContext<StratigraphyContextProps>(StratigraphyContext);
 
   const lithologyTableState = useLithologyTableState(
     lithologies,
@@ -38,12 +38,10 @@ export const LithologyPanelEdit: FC<LithologyPanelEditProps> = ({
   }, [lithologyTableState.hasErrors, setHasErrors]);
 
   const getPayload = useCallback(
-    () => ({
-      lithology: {
-        lithologies: lithologyTableState.tmpLithologies.map(prepareDataForSubmit),
-        lithologicalDescriptions: lithologyTableState.tmpLithologicalDescriptions.map(prepareDataForSubmit),
-        faciesDescriptions: lithologyTableState.tmpFaciesDescriptions.map(prepareDataForSubmit),
-      },
+    (): LithologyTabContents => ({
+      lithologies: lithologyTableState.tmpLithologies.map(prepareDataForSubmit),
+      lithologicalDescriptions: lithologyTableState.tmpLithologicalDescriptions.map(prepareDataForSubmit),
+      faciesDescriptions: lithologyTableState.tmpFaciesDescriptions.map(prepareDataForSubmit),
     }),
     [lithologyTableState],
   );
@@ -53,9 +51,9 @@ export const LithologyPanelEdit: FC<LithologyPanelEditProps> = ({
   }, [lithologyTableState]);
 
   useEffect(() => {
-    registerSaveHandler(getPayload, "lithology");
-    registerResetHandler(onReset, "lithology");
-  }, [getPayload, onReset, registerSaveHandler, registerResetHandler]);
+    registerLithologyTab({ getPayload, reset: onReset });
+    return () => registerLithologyTab(null);
+  }, [getPayload, onReset, registerLithologyTab]);
 
   return <LithologyTable state={lithologyTableState} />;
 };
