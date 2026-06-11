@@ -1,25 +1,23 @@
 ﻿import { goToRouteAndAcceptTerms } from "../helpers/testHelpers";
 
+const verifyNotFoundPageWithNavigation = (route: string, expectedMessage: string) => {
+  goToRouteAndAcceptTerms(route);
+  cy.contains(expectedMessage).should("be.visible");
+  cy.get('[data-cy="backtooverview-button"]').click();
+  cy.url().should("eq", Cypress.config().baseUrl + "/");
+  cy.get('[data-cy="boreholes-number-preview"]').should("be.visible");
+};
+
 describe("Error boundaries", () => {
-  it("shows a not found message when navigating to a non-existing borehole", () => {
-    goToRouteAndAcceptTerms("/9999999");
-    cy.contains("The requested borehole could not be found.").should("be.visible");
-    cy.get('[data-cy="backtooverview-button"]').should("be.visible");
-    cy.get('[data-cy="backtooverview-button"]').click();
-    cy.url().should("eq", Cypress.config().baseUrl + "/");
-    cy.get('[data-cy="boreholes-number-preview"]').should("be.visible");
+  it("shows a not found message for a non-existing borehole and navigates back", () => {
+    verifyNotFoundPageWithNavigation("/9999999", "The requested borehole could not be found.");
   });
 
-  it("shows a not found message when navigating to a borehole with a non-numeric id", () => {
-    goToRouteAndAcceptTerms("/abc");
-    cy.contains("The requested page could not be found.").should("be.visible");
-    cy.get('[data-cy="backtooverview-button"]').should("be.visible");
-    cy.get('[data-cy="backtooverview-button"]').click();
-    cy.url().should("eq", Cypress.config().baseUrl + "/");
-    cy.get('[data-cy="boreholes-number-preview"]').should("be.visible");
+  it("shows a not found message for a non-numeric id and navigates back", () => {
+    verifyNotFoundPageWithNavigation("/abc", "The requested page could not be found.");
   });
 
-  it("shows a not found message when navigating to a borehole with an id exceeding Int32 range", () => {
+  it("shows a not found message for an id exceeding Int32 range", () => {
     goToRouteAndAcceptTerms("/146246425545464");
     cy.contains("The requested page could not be found.").should("be.visible");
     cy.get('[data-cy="backtooverview-button"]').should("be.visible");
