@@ -6,7 +6,7 @@ import { Stack } from "@mui/system";
 import { GridColDef, GridRowId, GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
 import Filter2Icon from "../../../../assets/icons/filter2.svg?react";
 import { ExportButton, ToggleButton } from "../../../../components/buttons/buttons.tsx";
-import { CodelistLabelStyle, getCodelistLocalizedLabel, useCodelists } from "../../../../components/codelist.ts";
+import { CodelistLabelStyle, useCodelistLocalizedLabel, useCodelists } from "../../../../components/codelist.ts";
 import { ExportDialog } from "../../../../components/export/exportDialog.tsx";
 import { FormBooleanSelect } from "../../../../components/form/formBooleanSelect.tsx";
 import { FormContainer } from "../../../../components/form/formContainer.tsx";
@@ -31,7 +31,8 @@ interface LogFileTableProps {
 }
 
 export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const getCodelistLabel = useCodelistLocalizedLabel();
   const apiRef = useGridApiRef();
   const [updatedRows, setUpdatedRows] = useState<Map<GridRowId, LogFile>>(new Map());
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
@@ -130,9 +131,9 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
   const getCodelistValue = useCallback(
     (id: number) => {
       const code = codelists.find(code => code.id === id);
-      return getCodelistLocalizedLabel(code, i18n.language);
+      return getCodelistLabel(code);
     },
-    [codelists, i18n.language],
+    [codelists, getCodelistLabel],
   );
 
   const columns = useMemo<GridColDef<LogFile>[]>(

@@ -1,32 +1,16 @@
-import { useEffect } from "react";
-import { UseFormReturn } from "react-hook-form";
 import { InputAdornment } from "@mui/material";
 import { Card, CardContent } from "@mui/material/";
 import { MapPin } from "lucide-react";
 import { FormContainer, FormValueType } from "../../../../components/form/form";
 import { FormInput } from "../../../../components/form/formInput";
-import { LocationFormInputs } from "./locationPanelInterfaces.tsx";
 
 interface CantonMunicipalitySegmentProps {
-  country: string;
-  canton: string;
-  municipality: string;
-  formMethods: UseFormReturn<LocationFormInputs>;
+  country?: string | null;
+  canton?: string | null;
+  municipality?: string | null;
 }
 
-const CantonMunicipalitySegment = ({ country, canton, municipality, formMethods }: CantonMunicipalitySegmentProps) => {
-  useEffect(() => {
-    formMethods.setValue("country", country);
-  }, [formMethods, country]);
-
-  useEffect(() => {
-    formMethods.setValue("canton", canton);
-  }, [formMethods, canton]);
-
-  useEffect(() => {
-    formMethods.setValue("municipality", municipality);
-  }, [formMethods, municipality]);
-
+const CantonMunicipalitySegment = ({ country, canton, municipality }: CantonMunicipalitySegmentProps) => {
   return (
     <Card>
       <CardContent sx={{ pt: 4, px: 3 }}>
@@ -35,7 +19,7 @@ const CantonMunicipalitySegment = ({ country, canton, municipality, formMethods 
             fieldName={"country"}
             label="country"
             type={FormValueType.Text}
-            value={country ?? ""}
+            value={country}
             inputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -49,7 +33,7 @@ const CantonMunicipalitySegment = ({ country, canton, municipality, formMethods 
             fieldName={"canton"}
             label="canton"
             type={FormValueType.Text}
-            value={canton ?? ""}
+            value={canton}
             inputProps={{
               endAdornment: (
                 <InputAdornment position="end">
@@ -63,7 +47,7 @@ const CantonMunicipalitySegment = ({ country, canton, municipality, formMethods 
             fieldName={"municipality"}
             label="city"
             type={FormValueType.Text}
-            value={municipality ?? ""}
+            value={municipality}
             inputProps={{
               endAdornment: (
                 <InputAdornment position="end">

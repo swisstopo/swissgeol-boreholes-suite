@@ -21,27 +21,14 @@ configuration:
   targetDefaultUserSub: sub_admin
 
 # Database configuration (source and target)
-# All database values are stored as secrets and assembled into connection strings.
+# Each connection string is stored as a secret and read directly by the sync job
+# (CONNECTIONSTRINGS__SourceBdmsContext / CONNECTIONSTRINGS__TargetBdmsContext).
 db:
   source:
-    # -- The hostname of the source database server (stored as secret)
-    host:
-    # -- The port of the source database server (stored as secret)
-    port: 5432
-    # -- The name of the source database (stored as secret)
-    name:
-    # -- The username for the source database (stored as secret)
-    username:
-    # -- The password for the source database (stored as secret)
-    password:
+    # -- The full connection string of the source database (stored as secret)
+    # -- e.g. Host=db;Port=5432;Database=bdms;Username=user;Password=pass
+    connectionString:
   target:
-    # -- The hostname of the target database server (stored as secret)
-    host:
-    # -- The port of the target database server (stored as secret)
-    port:
-    # -- The name of the target database (stored as secret)
-    name:
-    # -- The username for the target database (stored as secret)
-    username:
-    # -- The password for the target database (stored as secret)
-    password:
+    # -- The full connection string of the target database (stored as secret)
+    # -- e.g. Host=db;Port=5432;Database=bdms;Username=user;Password=pass
+    connectionString:

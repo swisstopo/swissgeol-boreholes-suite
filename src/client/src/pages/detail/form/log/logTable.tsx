@@ -7,7 +7,7 @@ import { GridColDef, GridEventListener, GridRowSelectionModel, useGridApiRef } f
 import Filter2Icon from "../../../../assets/icons/filter2.svg?react";
 import { getSectionsByBoreholeId } from "../../../../api/fetchApiV2.ts";
 import { DeleteButton, ExportButton, ToggleButton } from "../../../../components/buttons/buttons.tsx";
-import { CodelistLabelStyle, getCodelistLocalizedLabel, useCodelists } from "../../../../components/codelist.ts";
+import { CodelistLabelStyle, useCodelistLocalizedLabel, useCodelists } from "../../../../components/codelist.ts";
 import { ExportDialog } from "../../../../components/export/exportDialog.tsx";
 import { FormContainer, FormDomainMultiSelect, FormMultiSelect } from "../../../../components/form/form.ts";
 import { FormMultiSelectValue } from "../../../../components/form/formMultiSelect.tsx";
@@ -43,7 +43,8 @@ interface LogTableProps {
 
 export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSelectedLogRunId, setTmpLogRuns }) => {
   const { editingEnabled } = useContext(EditStateContext);
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const getCodelistLabel = useCodelistLocalizedLabel();
   const apiRef = useGridApiRef();
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const [filterVisible, setFilterVisible] = useState(false);
@@ -183,7 +184,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
         field: "boreholeStatusId",
         valueGetter: (value: number) => {
           const boreholeStatusCode = codelists?.find(d => d.id === value);
-          return getCodelistLocalizedLabel(boreholeStatusCode, i18n.language);
+          return getCodelistLabel(boreholeStatusCode);
         },
         headerName: t("boreholeStatus"),
         flex: 1,
@@ -200,7 +201,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
         flex: 1,
       },
     ],
-    [t, codelists, i18n.language],
+    [t, codelists, getCodelistLabel],
   );
 
   return (

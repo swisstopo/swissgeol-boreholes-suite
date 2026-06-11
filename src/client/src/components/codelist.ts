@@ -4,10 +4,18 @@ import { useQuery, useSuspenseQuery } from "@tanstack/react-query";
 import { fetchApiV2WithApiError } from "../api/fetchApiV2.ts";
 import { Codelist } from "../api/generated";
 
-export const getCodelistLocalizedLabel = (codelist: Codelist | undefined, language: string): string => {
+const getCodelistLocalizedLabel = (codelist: Codelist | undefined, language: string): string => {
   if (!codelist) return "";
   const lang = language as keyof Pick<Codelist, "en" | "de" | "fr" | "it" | "ro">;
   return String(codelist[lang] ?? codelist.en ?? "");
+};
+
+export const useCodelistLocalizedLabel = () => {
+  const { i18n } = useTranslation();
+  return useCallback(
+    (codelist: Codelist | undefined) => getCodelistLocalizedLabel(codelist, i18n.language),
+    [i18n.language],
+  );
 };
 
 export enum CodelistLabelStyle {

@@ -61,7 +61,7 @@ const FieldMeasurementParameterUnits: Units = {
   7: "mg/L",
 };
 
-export const getHydrotestParameterUnits = (parameterId: number | null, codelists: Codelist[]): string => {
+export const getHydrotestParameterUnits = (parameterId: number | null | undefined, codelists: Codelist[]): string => {
   if (!parameterId) {
     return "";
   }

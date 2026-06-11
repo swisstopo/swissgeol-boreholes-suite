@@ -2,7 +2,7 @@
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { deleteCasing } from "../../../../api/fetchApiV2.ts";
 import { Casing } from "../../../../api/generated";
-import { getCodelistLocalizedLabel, useCodelists } from "../../../../components/codelist.ts";
+import { useCodelistLocalizedLabel, useCodelists } from "../../../../components/codelist.ts";
 import { DataDisplayCard } from "../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
 import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
@@ -10,8 +10,9 @@ import { extractCasingDepth } from "./casingUtils.tsx";
 import { DataCardItemDisplayProps } from "./completionInterfaces.ts";
 
 const CasingDisplay = ({ item }: DataCardItemDisplayProps<Casing>) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const codelists = useCodelists();
+  const getCodelistLabel = useCodelistLocalizedLabel();
 
   const depth = extractCasingDepth(item);
 
@@ -60,16 +61,10 @@ const CasingDisplay = ({ item }: DataCardItemDisplayProps<Casing>) => {
                     {formatNumberForDisplay(element.toDepth)}
                   </TableCell>
                   <TableCell data-cy={`casingElements.${index}.kindId-formDisplay`}>
-                    {getCodelistLocalizedLabel(
-                      codelists.data?.find(d => d.id === element.kindId),
-                      i18n.language,
-                    )}
+                    {getCodelistLabel(codelists.data?.find(d => d.id === element.kindId))}
                   </TableCell>
                   <TableCell data-cy={`casingElements.${index}.materialId-formDisplay`}>
-                    {getCodelistLocalizedLabel(
-                      codelists.data?.find(d => d.id === element.materialId),
-                      i18n.language,
-                    )}
+                    {getCodelistLabel(codelists.data?.find(d => d.id === element.materialId))}
                   </TableCell>
                   <TableCell data-cy={`casingElements.${index}.innerDiameter-formDisplay`}>
                     {formatNumberForDisplay(element.innerDiameter)}

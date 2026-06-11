@@ -2,7 +2,7 @@ import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { TableCell } from "@mui/material";
 import { Codelist, FieldMeasurement, FieldMeasurementResult } from "../../../../../api/generated";
-import { getCodelistLocalizedLabel, useCodelists } from "../../../../../components/codelist.ts";
+import { useCodelistLocalizedLabel, useCodelists } from "../../../../../components/codelist.ts";
 import { DataDisplayCard } from "../../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormResultTableDisplay } from "../../../../../components/form/formResultTableDisplay.js";
 import { parameterTableHeaderStyles } from "../../../../../components/form/formResultTableDisplayStyles.js";
@@ -13,7 +13,8 @@ import { deleteFieldMeasurement } from "./FieldMeasurement.ts";
 
 export const FieldMeasurementDisplay: FC<{ item: FieldMeasurement }> = ({ item }) => {
   const codelists = useCodelists();
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
+  const getCodelistLabel = useCodelistLocalizedLabel();
 
   return (
     <DataDisplayCard<FieldMeasurement> item={item} deleteData={deleteFieldMeasurement} entityName={"fieldMeasurement"}>
@@ -31,10 +32,7 @@ export const FieldMeasurementDisplay: FC<{ item: FieldMeasurement }> = ({ item }
         renderBody={(result, index, styles) => (
           <>
             <TableCell sx={styles} data-cy={`fieldMeasurementResult.${index}.sampleType-formDisplay`}>
-              {getCodelistLocalizedLabel(
-                codelists.data?.find((d: Codelist) => d.id === result.sampleTypeId),
-                i18n.language,
-              )}
+              {getCodelistLabel(codelists.data?.find((d: Codelist) => d.id === result.sampleTypeId))}
             </TableCell>
             <TableCell
               component="th"
@@ -44,10 +42,7 @@ export const FieldMeasurementDisplay: FC<{ item: FieldMeasurement }> = ({ item }
                 ...parameterTableHeaderStyles,
               }}
               data-cy={`fieldMeasurementResult.${index}.parameter-formDisplay`}>
-              {getCodelistLocalizedLabel(
-                codelists.data?.find((d: Codelist) => d.id === result.parameterId),
-                i18n.language,
-              )}
+              {getCodelistLabel(codelists.data?.find((d: Codelist) => d.id === result.parameterId))}
             </TableCell>
             <TableCell sx={styles} data-cy={`fieldMeasurementResult.${index}.value-formDisplay`}>
               {result?.value != null && result?.parameterId != null && (

@@ -10,8 +10,8 @@ const WaterIngressDisplay: FC<{ item: WaterIngress }> = ({ item }) => {
     <DataDisplayCard<WaterIngress> item={item} deleteData={deleteWaterIngress} entityName={"waterIngress"}>
       <ObservationDisplay observation={item} />
       <FormContainer direction="row">
-        <FormDisplay label="quantity" value={item?.quantity ?? null} type={FormValueType.Domain} />
-        <FormDisplay label="conditions" value={item?.conditions ?? null} type={FormValueType.Domain} />
+        <FormDisplay label="quantity" value={item?.quantity} type={FormValueType.Domain} />
+        <FormDisplay label="conditions" value={item?.conditions} type={FormValueType.Domain} />
       </FormContainer>
     </DataDisplayCard>
   );

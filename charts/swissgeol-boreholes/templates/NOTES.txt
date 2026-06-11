@@ -1,0 +1,10 @@
+{{- $existingSecret := (lookup "v1" "Secret" .Release.Namespace (printf "%s-secrets" .Release.Name)) }}
+{{- $awsRoleArn := .Values.ocr.awsRoleArn | default "" }}
+{{- if and (not $awsRoleArn) $existingSecret }}
+  {{- if hasKey $existingSecret.data "awsRoleArn" }}
+    {{- $awsRoleArn = index $existingSecret.data "awsRoleArn" | b64dec }}
+  {{- end }}
+{{- end }}
+{{- if not $awsRoleArn }}
+WARNING: ocr.awsRoleArn is empty. OCR ServiceAccount has no IRSA role; set --set ocr.awsRoleArn=<arn> if OCR needs AWS.
+{{- end }}

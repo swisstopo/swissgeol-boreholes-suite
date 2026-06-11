@@ -115,7 +115,7 @@ const CompletionContent = ({ completion, editingEnabled }: CompletionContentProp
           {tabs.map(tab => (
             <BoreholeTab
               data-cy={"completion-content-tab-" + tab.hash.replace("#", "")}
-              label={tab.label === null || tab.label === "" ? t("common:np") : tab.label}
+              label={tab.label === null || tab.label === "" ? t("np") : tab.label}
               key={tab.hash}
               hasContent={tab.hasContent}
             />

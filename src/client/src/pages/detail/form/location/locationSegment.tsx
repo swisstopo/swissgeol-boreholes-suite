@@ -150,10 +150,9 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
         </Grid>
       </Card>
       <CantonMunicipalitySegment
-        country={borehole.country ?? ""}
-        canton={borehole.canton ?? ""}
-        municipality={borehole.municipality ?? ""}
-        formMethods={formMethods}
+        country={borehole.country}
+        canton={borehole.canton}
+        municipality={borehole.municipality}
       />
     </Stack>
   );

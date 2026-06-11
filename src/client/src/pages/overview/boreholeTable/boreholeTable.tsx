@@ -31,7 +31,7 @@ import { LockKeyhole } from "lucide-react";
 import { BoreholeListItem } from "../../../api/borehole.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBoreholesAuth.tsx";
-import { getCodelistLocalizedLabel, useCodelists } from "../../../components/codelist.ts";
+import { useCodelistLocalizedLabel, useCodelists } from "../../../components/codelist.ts";
 import { formatNumberForDisplay } from "../../../components/form/formUtils.ts";
 import { FullPageCentered } from "../../../components/styledComponents.ts";
 import { Table } from "../../../components/table/table.tsx";
@@ -67,9 +67,10 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   setHover,
   rowsToHighlight,
 }: BoreholeTableProps) => {
-  const { t, i18n } = useTranslation();
+  const { t } = useTranslation();
   const { navigateTo } = useBoreholesNavigate();
   const codelists = useCodelists();
+  const getCodelistLabel = useCodelistLocalizedLabel();
   const apiRef = useGridApiRef();
   const auth = useAuth();
   const firstRender = useRef(true);
@@ -165,10 +166,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     {
       field: "typeId",
       valueGetter: (value: number) => {
-        return getCodelistLocalizedLabel(
-          codelists.data?.find((d: { id: number }) => d.id === value),
-          i18n.language,
-        );
+        return getCodelistLabel(codelists.data?.find((d: { id: number }) => d.id === value));
       },
       headerName: t("borehole_type"),
       flex: 1,
@@ -182,10 +180,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     {
       field: "purposeId",
       valueGetter: (value: number) => {
-        return getCodelistLocalizedLabel(
-          codelists.data?.find((d: { id: number }) => d.id === value),
-          i18n.language,
-        );
+        return getCodelistLabel(codelists.data?.find((d: { id: number }) => d.id === value));
       },
       headerName: t("purpose"),
       flex: 1,

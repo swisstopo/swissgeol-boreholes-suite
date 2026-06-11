@@ -52,10 +52,10 @@ const GroundwaterLevelMeasurementInput: FC<{ item: GroundwaterLevelMeasurement; 
           {
             fieldNameMD: "levelM",
             labelMD: "gwlm_levelm",
-            getValueMD: () => item.levelM ?? null,
+            getValueMD: () => item.levelM,
             fieldNameMasl: "levelMasl",
             labelMasl: "gwlm_levelmasl",
-            getValueMasl: () => item.levelMasl ?? null,
+            getValueMasl: () => item.levelMasl,
           },
         ]}
       />
