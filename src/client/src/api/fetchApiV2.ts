@@ -173,7 +173,7 @@ export const useBoreholeGeometry = (boreholeId?: number) =>
     enabled: !!boreholeId,
   });
 
-export interface GeometryFormat {
+interface GeometryFormat {
   csvHeader: string;
 }
 
