@@ -1,5 +1,5 @@
 import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { ApiError } from "../../../../../api/apiInterfaces.ts";
+import { ApiError } from "../../../../../api/errorClasses.ts";
 import { fetchApiV2WithApiError } from "../../../../../api/fetchApiV2.ts";
 import { Stratigraphy } from "../../../../../api/generated";
 import { useResetTabStatus } from "../../../../../hooks/useResetTabStatus.ts";

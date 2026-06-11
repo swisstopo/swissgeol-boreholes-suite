@@ -3,8 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, Checkbox, Chip, Stack, Typography } from "@mui/material";
 import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { Trash2, X } from "lucide-react";
-import { WorkgroupRole } from "../../../api/apiInterfaces.ts";
-import { Role, User, Workgroup } from "../../../api/generated";
+import { Role, User, UserWorkgroupRole, Workgroup } from "../../../api/generated";
 import { useSelectedUser, useUserMutations } from "../../../api/user.ts";
 import { useWorkgroupMutations } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
@@ -39,7 +38,7 @@ export const UserDetail: FC = () => {
     const { workgroupRoles } = user;
     if (!workgroupRoles || workgroupRoles.length < 1) return [];
     const workgroupsMap = new Map();
-    workgroupRoles.forEach((r: WorkgroupRole) => {
+    workgroupRoles.forEach((r: UserWorkgroupRole) => {
       if (workgroupsMap.has(r.workgroupId)) {
         workgroupsMap.get(r.workgroupId).roles.push(r.role);
       } else {

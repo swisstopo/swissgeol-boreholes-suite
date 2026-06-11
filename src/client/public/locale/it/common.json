@@ -438,6 +438,7 @@
   "overViewErrorMessage": "Si è verificato un errore durante l'accesso alla pagina panoramica su Swissgeol Boreholes",
   "overcoring": "alesatura/tecnica di overcoring",
   "overlay": "Mappe visualizzate",
+  "pageNotFound": "La pagina richiesta non è stata trovata.",
   "pageRange": "Pagina {{start}} - {{end}}",
   "parameter": "Parametro",
   "pass": "Passaggio",

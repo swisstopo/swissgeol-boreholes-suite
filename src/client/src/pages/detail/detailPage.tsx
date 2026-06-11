@@ -1,13 +1,10 @@
 import { FC, Suspense, useContext, useEffect } from "react";
-import { useTranslation } from "react-i18next";
 import { Box, CircularProgress, Stack } from "@mui/material";
-import { ApiError } from "../../api/apiInterfaces.ts";
 import { useBorehole } from "../../api/borehole.ts";
 import { useCurrentUser } from "../../api/user.ts";
 import { SidePanelToggleButton } from "../../components/buttons/labelingButtons.tsx";
 import { GoogleAnalytics } from "../../components/GoogleAnalytics.tsx";
 import { FullPageCentered, LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
-import { NotFoundPage } from "../../error/notFoundPage.tsx";
 import { useBlockNavigation } from "../../hooks/useBlockNavigation.tsx";
 import { useBoreholeDocumentTitle } from "../../hooks/useDocumentTitle.ts";
 import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
@@ -27,9 +24,8 @@ export const DetailPage: FC = () => {
   const { showSaveBar } = useContext<SaveContextProps>(SaveContext);
   const { analyticsId } = useContext<AnalyticsContextProps>(AnalyticsContext);
   const { id } = useRequiredParams<{ id: string }>();
-  const { data: borehole, isLoading, error } = useBorehole(id);
+  const { data: borehole, isLoading } = useBorehole(id);
   const { data: currentUser } = useCurrentUser();
-  const { t } = useTranslation();
 
   useBlockNavigation();
   useBoreholeDocumentTitle(borehole?.name);
@@ -37,10 +33,6 @@ export const DetailPage: FC = () => {
   useEffect(() => {
     setEditingEnabled(borehole?.locked !== null && borehole?.lockedById === currentUser?.id);
   }, [borehole?.locked, borehole?.lockedById, setEditingEnabled, currentUser?.id]);
-
-  if (error instanceof ApiError && error.status === 404) {
-    return <NotFoundPage message={t("boreholeNotFound")} />;
-  }
 
   if (isLoading || !borehole)
     return (

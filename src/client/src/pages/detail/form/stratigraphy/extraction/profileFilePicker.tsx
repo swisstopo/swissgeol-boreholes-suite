@@ -3,9 +3,9 @@ import { useTranslation } from "react-i18next";
 import { CircularProgress, Dialog, DialogProps, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { FileTextIcon } from "lucide-react";
-import { BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
 import { labelingFileFormat } from "../../../../../api/dataextractionInterfaces.ts";
 import { uploadProfile, useProfiles, useReloadProfiles } from "../../../../../api/profile.ts";
+import { BoreholeAttachment } from "../../../../../api/unionTypes.ts";
 import { AddFileButton } from "../../../../../components/buttons/addFileButton.tsx";
 import { CancelButton, FileButton } from "../../../../../components/buttons/buttons.tsx";
 import {

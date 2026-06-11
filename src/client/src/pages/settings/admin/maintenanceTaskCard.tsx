@@ -2,7 +2,7 @@ import { FC, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Checkbox, Chip, FormControlLabel, Stack, Tooltip, Typography } from "@mui/material";
 import { Info } from "lucide-react";
-import { ApiError } from "../../../api/apiInterfaces.ts";
+import { ApiError } from "../../../api/errorClasses.ts";
 import { MaintenanceTaskState, MaintenanceTaskType, useStartMaintenanceTask } from "../../../api/maintenance.ts";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { BoreholesCard } from "../../../components/boreholesCard.tsx";

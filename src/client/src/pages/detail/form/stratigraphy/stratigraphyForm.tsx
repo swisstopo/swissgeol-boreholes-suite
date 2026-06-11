@@ -1,7 +1,7 @@
 import { FC, useCallback, useContext, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { ApiError } from "../../../../api/apiInterfaces.ts";
+import { ApiError } from "../../../../api/errorClasses.ts";
 import { Stratigraphy } from "../../../../api/generated";
 import { FormValueType } from "../../../../components/form/form.ts";
 import { FormCheckbox } from "../../../../components/form/formCheckbox.tsx";

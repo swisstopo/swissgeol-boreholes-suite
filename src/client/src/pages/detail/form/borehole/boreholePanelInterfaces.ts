@@ -1,5 +1,5 @@
-import { NullableBooleanSelect, NullableDateString } from "../../../../api/apiInterfaces.ts";
 import { Borehole, Profile } from "../../../../api/generated";
+import { NullableBooleanSelect, NullableDateString } from "../../../../api/unionTypes.ts";
 import { Workflow } from "../workflow/workflow.ts";
 
 export interface BoreholeProps {

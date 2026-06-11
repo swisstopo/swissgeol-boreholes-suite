@@ -438,6 +438,7 @@
   "overViewErrorMessage": " Beim Zugriff auf die Übersichtsseite von Swissgeol Boreholes ist ein Fehler aufgetreten",
   "overcoring": "aufgebohrt/überkernt",
   "overlay": "Dargestellte Karten",
+  "pageNotFound": "Die angeforderte Seite konnte nicht gefunden werden.",
   "pageRange": "Seite {{start}} - {{end}}",
   "parameter": "Parameter",
   "pass": "Pass",

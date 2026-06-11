@@ -1,10 +1,10 @@
 import { UseFormReturn } from "react-hook-form";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
-import { NullableDateString } from "../../../../api/apiInterfaces.ts";
 import { boreholeQueryKey } from "../../../../api/borehole.ts";
 import { ExtractionBoundingBox } from "../../../../api/dataextractionInterfaces.ts";
 import { fetchApiV2WithApiError } from "../../../../api/fetchApiV2.ts";
 import { Codelist, Stratigraphy, User } from "../../../../api/generated";
+import { NullableDateString } from "../../../../api/unionTypes.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 
 export type DescriptionKind = "lithological" | "facies";

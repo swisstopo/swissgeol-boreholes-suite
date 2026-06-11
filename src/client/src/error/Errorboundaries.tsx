@@ -1,8 +1,10 @@
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router";
 import { Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
-import { CircleAlert, RotateCcw } from "lucide-react";
+import { ChevronLeft, CircleAlert, RotateCcw } from "lucide-react";
+import { ApiError, InvalidRouteParamError } from "../api/errorClasses.ts";
 import { BoreholesButton } from "../components/buttons/buttons.tsx";
 
 const DevError = ({ error }: { error: unknown }) => {
@@ -22,6 +24,26 @@ const DevError = ({ error }: { error: unknown }) => {
   );
 };
 
+const BackToOverviewWithMessage = ({ message, reset }: { message: string; reset: (() => void) | undefined }) => {
+  const navigate = useNavigate();
+  return (
+    <Stack p={8} spacing={2}>
+      <Typography variant="h4">{message}</Typography>
+      <Box>
+        <BoreholesButton
+          label="backToOverview"
+          variant="contained"
+          onClick={() => {
+            navigate("/");
+            reset?.();
+          }}
+          startIcon={<ChevronLeft />}
+        />
+      </Box>
+    </Stack>
+  );
+};
+
 const FallbackComponent = ({
   error,
   resetErrorBoundary,
@@ -33,6 +55,15 @@ const FallbackComponent = ({
 }) => {
   const { t } = useTranslation();
   const isDevelopment = process.env.NODE_ENV === "development";
+
+  if (error instanceof InvalidRouteParamError) {
+    return <BackToOverviewWithMessage message={error.userMessage} reset={resetErrorBoundary} />;
+  }
+
+  if (error instanceof ApiError && error.status === 404) {
+    return <BackToOverviewWithMessage message={t("boreholeNotFound")} reset={resetErrorBoundary} />;
+  }
+
   return (
     <Stack p={8} spacing={2}>
       <Stack direction="row" spacing={2}>

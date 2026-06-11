@@ -1,7 +1,7 @@
 import { FC } from "react";
-import { EntityType } from "../../../../api/apiInterfaces.ts";
 import { Role, Workgroup } from "../../../../api/generated";
 import { useWorkgroupMutations, useWorkgroups, workgroupQueryKey } from "../../../../api/workgroup.ts";
+import { EntityType } from "./entityType.ts";
 import { RoleAssignmentDialog } from "./roleAssignmentDialog.tsx";
 
 interface AddWorkgroupRoleDialogProps {

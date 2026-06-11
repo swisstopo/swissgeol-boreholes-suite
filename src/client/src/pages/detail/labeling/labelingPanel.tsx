@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { Alert, Box, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
 import { styled } from "@mui/system";
 import { PanelBottom, PanelRight } from "lucide-react";
-import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
 import { useFileInfo } from "../../../api/dataextraction.ts";
 import {
   ExtractionState,
@@ -15,6 +14,7 @@ import {
 import { FileSizeLimit, maxFileSizeBytes } from "../../../api/file.ts";
 import { Photo, Profile } from "../../../api/generated";
 import { uploadProfile, useProfiles, useReloadProfiles } from "../../../api/profile.ts";
+import { BoreholeAttachment } from "../../../api/unionTypes.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
 import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";

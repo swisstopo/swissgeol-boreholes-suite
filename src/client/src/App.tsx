@@ -8,7 +8,7 @@ import { Language, SwissgeolCoreI18n } from "@swissgeol/ui-core";
 import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { NuqsAdapter } from "nuqs/adapters/react-router/v7";
-import { ApiError } from "./api/apiInterfaces.ts";
+import { ApiError } from "./api/errorClasses.ts";
 import { theme } from "./AppTheme";
 import { BoreholesAuthProvider } from "./auth/BoreholesAuthProvider.tsx";
 import { AlertBanner } from "./components/alert/alertBanner";
@@ -92,6 +92,9 @@ const QueryClientInitializer: FC<PropsWithChildren> = ({ children }) => {
           queries: {
             retry: isCypress ? false : 3,
             throwOnError: (error, query) => {
+              if (error instanceof ApiError && error.status === 404) {
+                return true;
+              }
               if (error instanceof ApiError) {
                 return false;
               }

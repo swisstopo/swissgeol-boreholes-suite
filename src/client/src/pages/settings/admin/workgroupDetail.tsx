@@ -5,8 +5,7 @@ import { Card, CardContent, CardHeader, Chip, Stack } from "@mui/material";
 import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { Trash2, X } from "lucide-react";
 import _ from "lodash";
-import { WorkgroupRole } from "../../../api/apiInterfaces.ts";
-import { User } from "../../../api/generated";
+import { User, UserWorkgroupRole } from "../../../api/generated";
 import { useUsers } from "../../../api/user.ts";
 import { useSelectedWorkgroup, useWorkgroupMutations } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
@@ -63,7 +62,7 @@ export const WorkgroupDetail: FC = () => {
   useEffect(() => {
     if (users) {
       const usersInWorkgroup = users.filter((user: User) =>
-        user.workgroupRoles?.some((wgr: WorkgroupRole) => wgr.workgroupId === id),
+        user.workgroupRoles?.some((wgr: UserWorkgroupRole) => wgr.workgroupId === id),
       );
       setWorkgroupUsers(usersInWorkgroup);
     }
@@ -102,10 +101,10 @@ export const WorkgroupDetail: FC = () => {
   };
 
   const renderRoleChips = (params: GridRenderCellParams<object[]>) => {
-    const workgroupRoles = params.value.filter((role: WorkgroupRole) => role.workgroupId === id);
+    const workgroupRoles = params.value.filter((role: UserWorkgroupRole) => role.workgroupId === id);
     return (
       <Stack direction="row" gap={1} p={1.2} sx={{ flexWrap: "wrap" }}>
-        {workgroupRoles.map((workgroupRole: WorkgroupRole) => (
+        {workgroupRoles.map((workgroupRole: UserWorkgroupRole) => (
           <Chip
             key={workgroupRole.role}
             label={workgroupRole.role!.toUpperCase()}

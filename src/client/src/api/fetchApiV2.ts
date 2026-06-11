@@ -1,8 +1,8 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
 import store from "../reducers";
-import { ApiError, GeometryFormat } from "./apiInterfaces";
 import { getAuthorizationHeader } from "./authentication.ts";
+import { ApiError } from "./errorClasses.ts";
 import { Backfill, Casing, Completion, Document, DocumentUpdate, Instrumentation, Section } from "./generated";
 
 /**
@@ -172,6 +172,10 @@ export const useBoreholeGeometry = (boreholeId?: number) =>
     },
     enabled: !!boreholeId,
   });
+
+export interface GeometryFormat {
+  csvHeader: string;
+}
 
 export const getBoreholeGeometryFormats = async (): Promise<GeometryFormat[]> => {
   return await fetchApiV2Legacy("boreholegeometry/geometryformats", "GET");
