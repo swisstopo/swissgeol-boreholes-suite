@@ -76,15 +76,24 @@ interface VerticalDragByRowsInput {
 }
 
 const verticalDragByRows = ({ grabSelector, deltaRows, duringDrag }: VerticalDragByRowsInput) => {
+  // Resize handles are only 3px tall, so a Cypress auto-scroll between rect capture and the
+  // mousedown dispatch can land the click outside the handle entirely. Disable scrollBehavior
+  // and capture coordinates immediately before each dispatch so the synthetic clientX/Y always
+  // match the element's *current* viewport position.
   cy.get(grabSelector).then($el => {
-    const rect = $el[0].getBoundingClientRect();
+    const handle = $el[0];
+    const rect = handle.getBoundingClientRect();
     const startX = rect.left + rect.width / 2;
     const startY = rect.top + rect.height / 2;
-    cy.get(grabSelector).trigger("mousedown", { clientX: startX, clientY: startY, button: 0 });
+    cy.wrap(handle).trigger("mousedown", {
+      clientX: startX,
+      clientY: startY,
+      button: 0,
+      scrollBehavior: false,
+    });
 
-    // Instead of computing endY from a fixed pixel offset (which breaks when the page scrolls
-    // between mousedown and mousemove), find the actual target depth-row element and read its
-    // current viewport position. This makes the drag immune to intermediate scroll changes.
+    // Find the target depth row by DOM hit-testing *after* the mousedown has landed, so any
+    // intermediate scroll changes are reflected in the row positions we use for endY.
     cy.document().then(doc => {
       const depthRows = Array.from(doc.querySelectorAll<HTMLElement>('[data-cy^="depth-"]'))
         .map(el => {
@@ -94,13 +103,15 @@ const verticalDragByRows = ({ grabSelector, deltaRows, duringDrag }: VerticalDra
         })
         .filter((r): r is { el: HTMLElement; from: number; to: number } => r !== null);
 
-      // Find the depth row closest to the grab element's vertical center.
+      // Find the depth row closest to the grab element's *current* vertical center.
+      const handleRect = handle.getBoundingClientRect();
+      const handleCenterY = handleRect.top + handleRect.height / 2;
       let closestIdx = 0;
       let closestDist = Infinity;
       depthRows.forEach((r, i) => {
         const rowRect = r.el.getBoundingClientRect();
         const rowCenterY = rowRect.top + rowRect.height / 2;
-        const dist = Math.abs(rowCenterY - startY);
+        const dist = Math.abs(rowCenterY - handleCenterY);
         if (dist < closestDist) {
           closestDist = dist;
           closestIdx = i;
@@ -111,9 +122,9 @@ const verticalDragByRows = ({ grabSelector, deltaRows, duringDrag }: VerticalDra
       const targetRect = targetRow.el.getBoundingClientRect();
       const endY = targetRect.top + targetRect.height / 2;
 
-      cy.get("body").trigger("mousemove", { clientX: startX, clientY: endY });
+      cy.get("body").trigger("mousemove", { clientX: startX, clientY: endY, scrollBehavior: false });
       duringDrag?.();
-      cy.get("body").trigger("mouseup", { clientX: startX, clientY: endY });
+      cy.get("body").trigger("mouseup", { clientX: startX, clientY: endY, scrollBehavior: false });
     });
   });
 };
