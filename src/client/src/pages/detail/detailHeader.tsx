@@ -147,7 +147,7 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
           label="export"
           onClick={hasChanges ? startExportWithUnsavedChanges : () => setIsExporting(true)}
         />
-        {id && editableByCurrentUser && (
+        {editableByCurrentUser && (
           <>
             {editingEnabled ? (
               <>
