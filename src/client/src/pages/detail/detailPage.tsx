@@ -1,6 +1,5 @@
 import { FC, Suspense, useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { ApiError } from "../../api/apiInterfaces.ts";
 import { useBorehole } from "../../api/borehole.ts";
