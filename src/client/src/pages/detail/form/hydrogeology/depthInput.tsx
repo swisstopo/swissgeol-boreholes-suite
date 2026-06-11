@@ -34,11 +34,11 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
       let result = null;
       switch (outputUnit) {
         case ObservationDepthUnitType.measuredDepth: {
-          result = await getBoreholeGeometryDepthMDFromMasl(Number(boreholeId), inputParsed);
+          result = await getBoreholeGeometryDepthMDFromMasl(boreholeId, inputParsed);
           break;
         }
         case ObservationDepthUnitType.masl: {
-          result = await getBoreholeGeometryDepthMasl(Number(boreholeId), inputParsed);
+          result = await getBoreholeGeometryDepthMasl(boreholeId, inputParsed);
           break;
         }
         default:

@@ -67,12 +67,12 @@ const LabelingPanel: FC = () => {
   const isPhotoSelected = selectedAttachment && "fromDepth" in selectedAttachment;
   const selectedFile: Profile | undefined = isPhotoSelected ? undefined : selectedAttachment;
   const selectedPhoto: Photo | undefined = isPhotoSelected ? selectedAttachment : undefined;
-  const { data: profiles, isLoading: isLoadingProfiles } = useProfiles(Number(boreholeId), true);
+  const { data: profiles, isLoading: isLoadingProfiles } = useProfiles(boreholeId, true);
   const { data: fileInfo, isLoading: isLoadingFileInfo } = useFileInfo(selectedFile?.id, activePage);
-  const { data: photos, isLoading: isLoadingPhotos } = usePhotos(Number(boreholeId));
+  const { data: photos, isLoading: isLoadingPhotos } = usePhotos(boreholeId);
   const { data: image, isLoading: isLoadingImage } = usePhotoImage(selectedPhoto?.id);
-  const reloadProfiles = useReloadProfiles(Number(boreholeId));
-  const reloadPhotos = useReloadPhotos(Number(boreholeId));
+  const reloadProfiles = useReloadProfiles(boreholeId);
+  const reloadPhotos = useReloadPhotos(boreholeId);
   useEffect(() => {
     let timer: NodeJS.Timeout;
     if (alertIsOpen && autoHideDuration !== null) {
@@ -90,11 +90,11 @@ const LabelingPanel: FC = () => {
     async (file: File) => {
       try {
         if (panelTab === PanelTab.profile) {
-          const fileResponse = await uploadProfile(Number(boreholeId), file);
+          const fileResponse = await uploadProfile(boreholeId, file);
           setSelectedAttachment(fileResponse);
           reloadProfiles();
         } else {
-          const photoResponse = await uploadPhoto(Number(boreholeId), file);
+          const photoResponse = await uploadPhoto(boreholeId, file);
           setSelectedAttachment(photoResponse);
           reloadPhotos();
         }

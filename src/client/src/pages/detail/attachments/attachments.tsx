@@ -11,8 +11,7 @@ import { Profiles } from "./tabs/profiles.tsx";
 
 export const Attachments: FC = () => {
   const { t } = useTranslation();
-  const { id } = useRequiredParams<{ id: string }>();
-  const boreholeId = parseInt(id);
+  const { id: boreholeId } = useRequiredParams<{ id: string }>();
   const { data: borehole } = useBorehole(boreholeId);
   const { hasPhotos, hasProfiles, hasDocuments } = useBoreholeDataAvailability(borehole);
 

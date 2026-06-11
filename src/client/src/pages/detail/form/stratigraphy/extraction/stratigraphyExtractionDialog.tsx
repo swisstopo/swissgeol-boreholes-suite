@@ -127,7 +127,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
     });
 
     try {
-      const results = await bulkAdd({ boreholeId: Number(id), stratigraphies: stratigraphiesToSave });
+      const results = await bulkAdd({ boreholeId: id, stratigraphies: stratigraphiesToSave });
 
       if (!results || results.length === 0) {
         showAlert(t("errorStratigraphySaving"), "error");

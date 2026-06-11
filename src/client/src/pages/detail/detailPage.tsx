@@ -27,7 +27,7 @@ export const DetailPage: FC = () => {
   const { showSaveBar } = useContext<SaveContextProps>(SaveContext);
   const { analyticsId } = useContext<AnalyticsContextProps>(AnalyticsContext);
   const { id } = useRequiredParams<{ id: string }>();
-  const { data: borehole, isLoading, error } = useBorehole(parseInt(id));
+  const { data: borehole, isLoading, error } = useBorehole(id);
   const { data: currentUser } = useCurrentUser();
   const { t } = useTranslation();
 

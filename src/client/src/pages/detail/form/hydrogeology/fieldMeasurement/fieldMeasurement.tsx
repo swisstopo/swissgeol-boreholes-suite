@@ -24,7 +24,7 @@ export const FieldMeasurement = () => {
 
   return (
     <DataCards<FieldMeasurementType>
-      parentId={parseInt(boreholeId)}
+      parentId={boreholeId}
       getData={getFieldMeasurements}
       cyLabel="fieldMeasurement"
       addLabel="addFieldMeasurement"

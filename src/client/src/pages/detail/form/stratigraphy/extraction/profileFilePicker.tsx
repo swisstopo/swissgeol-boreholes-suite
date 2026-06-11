@@ -15,7 +15,7 @@ import {
 } from "../../../../../components/styledComponents.ts";
 
 interface ProfileFilePickerProps {
-  boreholeId: string;
+  boreholeId: number;
   open: boolean;
   setOpen: (open: boolean) => void;
   setSelectedFile: (file: BoreholeAttachment | undefined) => void;
@@ -23,8 +23,8 @@ interface ProfileFilePickerProps {
 
 export const ProfileFilePicker: FC<ProfileFilePickerProps> = ({ boreholeId, open, setOpen, setSelectedFile }) => {
   const { t } = useTranslation();
-  const { data: profiles, isLoading: isLoadingFiles } = useProfiles(Number(boreholeId), true);
-  const reloadProfiles = useReloadProfiles(Number(boreholeId));
+  const { data: profiles, isLoading: isLoadingFiles } = useProfiles(boreholeId, true);
+  const reloadProfiles = useReloadProfiles(boreholeId);
 
   const closeDialog = useCallback(() => {
     setOpen(false);
@@ -44,7 +44,7 @@ export const ProfileFilePicker: FC<ProfileFilePickerProps> = ({ boreholeId, open
 
   const addFile = useCallback(
     async (file: File) => {
-      const fileResponse = await uploadProfile(Number(boreholeId), file);
+      const fileResponse = await uploadProfile(boreholeId, file);
       selectFile(fileResponse);
       reloadProfiles();
     },

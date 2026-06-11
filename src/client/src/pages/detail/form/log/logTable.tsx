@@ -34,7 +34,7 @@ interface LogRunFilter {
 }
 
 interface LogTableProps {
-  boreholeId: string;
+  boreholeId: number;
   runs: LogRun[];
   isLoading: boolean;
   setSelectedLogRunId: Dispatch<SetStateAction<string | undefined>>;
@@ -119,7 +119,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
 
   useEffect(() => {
     if (!sectionFilters) {
-      getSectionsByBoreholeId(Number(boreholeId)).then(sections => {
+      getSectionsByBoreholeId(boreholeId).then(sections => {
         const filters: SectionFilter[] = [];
         for (const section of sections) {
           for (const element of section.sectionElements ?? []) {

@@ -19,7 +19,7 @@ interface DetailSideNavProps {
 export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const [hydrogeologyIsVisible, setHydrogeologyIsVisible] = useState(false);
   const { id } = useRequiredParams<{ id: string }>();
-  const { data: canChangeStatus } = useBoreholeStatusEditable(parseInt(id));
+  const { data: canChangeStatus } = useBoreholeStatusEditable(id);
   const location = useLocation();
   const { t } = useTranslation();
   const ct = useCapitalizedTranslation();

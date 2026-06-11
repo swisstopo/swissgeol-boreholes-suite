@@ -29,7 +29,7 @@ const GroundwaterLevelMeasurement: FC = () => {
 
   return (
     <DataCards<GroundwaterLevelMeasurementType>
-      parentId={parseInt(boreholeId)}
+      parentId={boreholeId}
       getData={getGroundwaterLevelMeasurements}
       cyLabel="groundwaterLevelMeasurement"
       addLabel="addGroundwaterLevelMeasurement"

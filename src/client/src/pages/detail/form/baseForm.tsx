@@ -32,7 +32,7 @@ export const BaseForm = <T extends FieldValues>({
   const { registerSaveHandler, registerResetHandler, unMount } = useContext(SaveContext);
   const { setExtractionObject } = useLabelingContext();
   const { id } = useRequiredParams<{ id: string }>();
-  const { data: borehole } = useBorehole(parseInt(id, 10));
+  const { data: borehole } = useBorehole(id);
   const {
     update: { mutateAsync: updateBorehole },
   } = useBoreholeMutations();

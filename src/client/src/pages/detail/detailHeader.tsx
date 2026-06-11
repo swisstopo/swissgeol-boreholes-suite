@@ -39,7 +39,7 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
   const { id } = useRequiredParams<{ id: string }>();
   const { navigateTo } = useBoreholesNavigate();
   const { data: currentUser } = useCurrentUser();
-  const { data: editableByCurrentUser } = useBoreholeEditable(parseInt(id));
+  const { data: editableByCurrentUser } = useBoreholeEditable(id);
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled, setEditingEnabled } = useContext(EditStateContext);

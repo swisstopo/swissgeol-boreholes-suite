@@ -29,7 +29,7 @@ export const LogPanel: FC = () => {
     useContext(SaveContext);
   const { showPrompt } = useContext(PromptContext);
   const showApiErrorAlert = useApiErrorAlert();
-  const { data: logRuns = [], isLoading } = useLogsByBoreholeId(Number(boreholeId));
+  const { data: logRuns = [], isLoading } = useLogsByBoreholeId(boreholeId);
   const [tmpLogRuns, setTmpLogRuns] = useState<LogRunChangeTracker[]>([]);
   const tmpLogRunsFlat: LogRun[] = useMemo(() => tmpLogRuns.map(l => l.item as LogRun), [tmpLogRuns]);
 
@@ -44,7 +44,7 @@ export const LogPanel: FC = () => {
     if (selectedLogRunId === "new") {
       return {
         id: 0,
-        boreholeId: Number(boreholeId),
+        boreholeId: boreholeId,
         tmpId: "new",
       } as LogRun;
     }
@@ -120,7 +120,7 @@ export const LogPanel: FC = () => {
     for (const logRun of tmpLogRuns.filter(l => l.hasChanges).map(l => l.item)) {
       prepareLogRunForSubmit(logRun);
       if (logRun.id === 0) {
-        const createdLogRun = await addLogRun({ ...logRun, boreholeId: Number(boreholeId), logFiles: [] });
+        const createdLogRun = await addLogRun({ ...logRun, boreholeId: boreholeId, logFiles: [] });
         if (logRun.logFiles && logRun.logFiles.length > 0) {
           await updateLogRun({ ...createdLogRun, logFiles: logRun.logFiles });
         }

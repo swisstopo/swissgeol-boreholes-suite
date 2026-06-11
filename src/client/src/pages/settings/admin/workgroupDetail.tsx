@@ -29,7 +29,7 @@ export const WorkgroupDetail: FC = () => {
 
   const { workgroupDetailTableSortModel, setWorkgroupDetailTableSortModel } =
     useContext(WorkgroupAdministrationContext);
-  const { data: selectedWorkgroup } = useSelectedWorkgroup(parseInt(id));
+  const { data: selectedWorkgroup } = useSelectedWorkgroup(id);
   const {
     removeAllRoles: { mutate: removeAllWorkgroupRolesForUser },
     update: { mutate: updateWorkgroup },
@@ -63,7 +63,7 @@ export const WorkgroupDetail: FC = () => {
   useEffect(() => {
     if (users) {
       const usersInWorkgroup = users.filter((user: User) =>
-        user.workgroupRoles?.some((wgr: WorkgroupRole) => wgr.workgroupId === parseInt(id)),
+        user.workgroupRoles?.some((wgr: WorkgroupRole) => wgr.workgroupId === id),
       );
       setWorkgroupUsers(usersInWorkgroup);
     }
@@ -102,7 +102,7 @@ export const WorkgroupDetail: FC = () => {
   };
 
   const renderRoleChips = (params: GridRenderCellParams<object[]>) => {
-    const workgroupRoles = params.value.filter((role: WorkgroupRole) => role.workgroupId === parseInt(id));
+    const workgroupRoles = params.value.filter((role: WorkgroupRole) => role.workgroupId === id);
     return (
       <Stack direction="row" gap={1} p={1.2} sx={{ flexWrap: "wrap" }}>
         {workgroupRoles.map((workgroupRole: WorkgroupRole) => (
@@ -191,7 +191,7 @@ export const WorkgroupDetail: FC = () => {
       <AddUserDialog
         open={userDialogOpen}
         setOpen={setUserDialogOpen}
-        workgroupId={parseInt(id)} //
+        workgroupId={id} //
       />
     </Stack>
   );

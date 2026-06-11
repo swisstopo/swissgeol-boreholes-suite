@@ -17,7 +17,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
 
   useEffect(() => {
     if (boreholeId) {
-      getCasingsByBoreholeId(Number(boreholeId)).then(casings => {
+      getCasingsByBoreholeId(boreholeId).then(casings => {
         setCasings(casings);
       });
     }

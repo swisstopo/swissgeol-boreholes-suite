@@ -24,7 +24,7 @@ const Hydrotest = () => {
 
   return (
     <DataCards<HydrotestType>
-      parentId={parseInt(boreholeId)}
+      parentId={boreholeId}
       getData={getHydrotests}
       cyLabel="hydrotest"
       addLabel="addHydrotest"

@@ -24,7 +24,7 @@ const WaterIngress: FC = () => {
 
   return (
     <DataCards<WaterIngressType>
-      parentId={parseInt(boreholeId)}
+      parentId={boreholeId}
       getData={getWaterIngress}
       cyLabel="waterIngress"
       addLabel="addWaterIngress"

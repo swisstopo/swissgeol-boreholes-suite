@@ -85,7 +85,7 @@ export const CompletionPanel = () => {
   const loadData = () => {
     setIsLoading(true);
     if (boreholeId && mounted.current) {
-      getCompletions(Number.parseInt(boreholeId, 10)).then(response => {
+      getCompletions(boreholeId).then(response => {
         if (response?.length > 0) {
           // Display primary completion first then order by created date
           response.sort((a, b) => {
@@ -280,7 +280,7 @@ export const CompletionPanel = () => {
       // treats the required field as missing and disables save until a kind is selected.
       const tempCompletion = {
         id: 0,
-        boreholeId: Number(boreholeId),
+        boreholeId: boreholeId,
         kindId: null,
         name: null,
         isPrimary: state.displayed.length === 0,

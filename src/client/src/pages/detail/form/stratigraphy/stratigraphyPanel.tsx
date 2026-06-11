@@ -36,8 +36,8 @@ export const StratigraphyPanel: FC = () => {
   const { id: boreholeId, stratigraphyId } = useRequiredParams();
   const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
-  const { data: stratigraphies } = useStratigraphiesByBoreholeId(Number(boreholeId));
-  const { data: borehole } = useBorehole(Number(boreholeId));
+  const { data: stratigraphies } = useStratigraphiesByBoreholeId(boreholeId);
+  const { data: borehole } = useBorehole(boreholeId);
   const { hasLithology, hasLithostratigraphy, hasChronostratigraphy } = useBoreholeDataAvailability(borehole);
   const {
     copy: { mutateAsync: copyStratigraphy },
@@ -58,7 +58,7 @@ export const StratigraphyPanel: FC = () => {
   }, [stratigraphies]);
 
   const selectedTabIndex: number = useMemo(
-    () => sortedStratigraphies?.findIndex(x => x.id === Number(stratigraphyId)) ?? -1,
+    () => sortedStratigraphies?.findIndex(x => x.id === stratigraphyId) ?? -1,
     [sortedStratigraphies, stratigraphyId],
   );
 
@@ -170,7 +170,7 @@ export const StratigraphyPanel: FC = () => {
     }
     if (
       sortedStratigraphies?.length &&
-      (stratigraphyId === undefined || !sortedStratigraphies.some(x => x.id === Number(stratigraphyId)))
+      (stratigraphyId === undefined || !sortedStratigraphies.some(x => x.id === stratigraphyId))
     ) {
       const primaryId = sortedStratigraphies.find(x => x.isPrimary)?.id ?? sortedStratigraphies[0].id ?? -1;
       navigateToStratigraphy(primaryId === -1 ? undefined : primaryId, true);
@@ -359,7 +359,7 @@ export const StratigraphyPanel: FC = () => {
       <AddEmptyStratigraphyDialog
         open={addDialogOpen}
         onClose={() => setAddDialogOpen(false)}
-        boreholeId={Number(boreholeId)}
+        boreholeId={boreholeId}
         isFirstStratigraphy={!stratigraphies?.length}
         onCreated={id => navigateToStratigraphy(id, true)}
       />

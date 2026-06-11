@@ -91,7 +91,7 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
 
     return importMutation
       .mutateAsync({
-        boreholeId: Number(boreholeId),
+        boreholeId: boreholeId,
         formData,
         attachmentsPerRun,
       })

@@ -25,7 +25,7 @@ export const IdentifiersPanel: FC = () => {
   const { id } = useRequiredParams<{ id: string }>();
   const { t } = useTranslation();
   const getCodelistLabel = useCodelistLocalizedLabel();
-  const { data: borehole } = useBorehole(Number.parseInt(id, 10));
+  const { data: borehole } = useBorehole(id);
   const { editingEnabled } = useContext(EditStateContext);
   const { data: codelists } = useCodelists();
 
