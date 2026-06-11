@@ -91,6 +91,9 @@ async function handleFetchError(response: Response) {
       );
     }
   }
+  if (response.status === 404) {
+    throw new ApiError(responseContent?.title ?? "Not Found", 404);
+  }
   throw new Error(responseContent);
 }
 
