@@ -218,6 +218,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         {
             return NotFound();
         }
+
         if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), id).ConfigureAwait(false)) return Unauthorized();
 
         return Ok(borehole);
