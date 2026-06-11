@@ -56,7 +56,7 @@ export const ProfileFilePicker: FC<ProfileFilePickerProps> = ({ boreholeId, open
       profiles.map(profile => (
         <FileButton
           key={profile.name}
-          label={profile.name}
+          label={profile.name!}
           icon={<FileTextIcon />}
           onClick={() => selectFile(profile)}
         />

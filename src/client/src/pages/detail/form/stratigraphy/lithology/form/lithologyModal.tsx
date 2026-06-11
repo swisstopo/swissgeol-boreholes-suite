@@ -11,7 +11,7 @@ import { FormContainer } from "../../../../../../components/form/formContainer.t
 import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
 import { FormInput } from "../../../../../../components/form/formInput.tsx";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
-import { capitalizeFirstLetter } from "../../../../../../utils.ts";
+import { useCapitalizedTranslation } from "../../../../../../hooks/useCapitalizedTranslation.ts";
 import { LithologicalDescription, Lithology, LithologyFormValues } from "../../stratigraphy.ts";
 import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
 import { LithologyUnconsolidatedForm } from "./lithologyUnconsolidatedForm.tsx";
@@ -44,6 +44,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
   updateLithologicalDescription,
 }) => {
   const { t } = useTranslation();
+  const ct = useCapitalizedTranslation();
   const formMethods = useForm<LithologyFormValues>({
     mode: "all",
     resolver: async values => {
@@ -183,13 +184,13 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
             border: `1px solid ${theme.palette.border.light}`,
           }}>
           <ToggleButton value={true}>
-            <Typography>{capitalizeFirstLetter(t("unconsolidated"))}</Typography>
+            <Typography>{ct("unconsolidated")}</Typography>
           </ToggleButton>
           <ToggleButton value={false}>
-            <Typography>{capitalizeFirstLetter(t("consolidated"))}</Typography>
+            <Typography>{ct("consolidated")}</Typography>
           </ToggleButton>
           <ToggleButton value="unspecified">
-            <Typography>{capitalizeFirstLetter(t("unspecified"))}</Typography>
+            <Typography>{ct("unspecified")}</Typography>
           </ToggleButton>
         </ToggleButtonGroup>
       )}

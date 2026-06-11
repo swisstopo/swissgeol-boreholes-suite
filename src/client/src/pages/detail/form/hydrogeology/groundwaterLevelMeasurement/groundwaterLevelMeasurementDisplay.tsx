@@ -1,8 +1,9 @@
 import { FC } from "react";
+import { GroundwaterLevelMeasurement } from "../../../../../api/generated";
 import { DataDisplayCard } from "../../../../../components/dataCard/dataDisplayCard.js";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../../components/form/form.ts";
 import ObservationDisplay from "../observationDisplay.tsx";
-import { deleteGroundwaterLevelMeasurement, GroundwaterLevelMeasurement } from "./GroundwaterLevelMeasurement.ts";
+import { deleteGroundwaterLevelMeasurement } from "./GroundwaterLevelMeasurement.ts";
 
 export const GroundwaterLevelMeasurementDisplay: FC<{ item: GroundwaterLevelMeasurement }> = ({ item }) => {
   return (

@@ -2,7 +2,7 @@ import { useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { Trash2, X } from "lucide-react";
 import { UseMutateFunction, useQueryClient } from "@tanstack/react-query";
-import { User, Workgroup } from "../api/apiInterfaces.ts";
+import { User, Workgroup } from "../api/generated";
 import { usersQueryKey, useUserMutations } from "../api/user.ts";
 import { useWorkgroupMutations, workgroupQueryKey } from "../api/workgroup.ts";
 import { PromptContext } from "../components/prompt/promptContext.tsx";

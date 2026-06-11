@@ -1,5 +1,4 @@
-import { Photo } from "../pages/detail/attachments/tabs/photo.ts";
-import { Profile } from "./profile.ts";
+import { Photo, Profile } from "./generated";
 
 export class ApiError extends Error {
   status?: number;
@@ -15,70 +14,9 @@ export class ApiError extends Error {
   }
 }
 
-export enum Role {
-  View = "View",
-  Editor = "Editor",
-  Controller = "Controller",
-  Validator = "Validator",
-  Publisher = "Publisher",
-}
-
 export type NullableDateString = Date | string | null;
 export type NullableBooleanSelect = number | boolean | null; // Number as select options parsed to boolean
-
-export interface Workgroup {
-  id: number;
-  name: string;
-  isDisabled?: boolean;
-  disabledAt?: NullableDateString;
-  createdAt?: NullableDateString;
-  settings?: string;
-  boreholeCount: number;
-  roles?: Role[];
-}
-
-export interface WorkgroupRole {
-  userId: number;
-  workgroupId: number;
-  role: Role;
-  isActive?: boolean;
-  workgroup?: Workgroup;
-}
-
-interface Term {
-  id: number;
-  isDraft: boolean;
-  textEn: string;
-  textDe?: string;
-  textFr?: string;
-  textIt?: string;
-  textRo?: string;
-  creation: Date;
-  expiration?: Date;
-}
-
-interface TermsAccepted {
-  userId: number;
-  termId: number;
-  term: Term;
-  acceptedAt: Date;
-}
-
-export interface User {
-  id: number;
-  subjectId: string;
-  name: string;
-  firstName: string;
-  lastName: string;
-  isAdmin: boolean;
-  deletable: boolean;
-  isDisabled?: boolean;
-  disabledAt?: NullableDateString;
-  createdAt?: NullableDateString;
-  settings?: string;
-  workgroupRoles?: WorkgroupRole[];
-  termsAccepted?: TermsAccepted[];
-}
+export type NullableNumberString = number | string | null; // Number that need to be parsed as string with thousands separator
 
 export enum EntityType {
   user = "User",
@@ -89,23 +27,6 @@ export interface GeometryFormat {
   csvHeader: string;
 }
 
-export interface Document {
-  id: number;
-  boreholeId: number;
-  url: string;
-  description?: string;
-  public: boolean;
-  createdBy?: User;
-  created?: NullableDateString;
-  updatedBy?: User;
-  updated?: NullableDateString;
-}
-
-export interface DocumentUpdate {
-  id: number;
-  url: string;
-  description?: string;
-  public: boolean;
-}
-
 export type BoreholeAttachment = Profile | Photo;
+
+export type { UserWorkgroupRole as WorkgroupRole } from "./generated/types.gen";

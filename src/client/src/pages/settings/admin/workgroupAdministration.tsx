@@ -2,7 +2,7 @@ import { FC, MouseEvent, useCallback, useContext, useMemo, useState } from "reac
 import { useTranslation } from "react-i18next";
 import { Chip, Stack } from "@mui/material";
 import { GridColDef, GridEventListener, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
-import { Role, Workgroup } from "../../../api/apiInterfaces.ts";
+import { Role, Workgroup } from "../../../api/generated";
 import { useUsers } from "../../../api/user.ts";
 import { useWorkgroups } from "../../../api/workgroup.ts";
 import { Table } from "../../../components/table/table.tsx";
@@ -11,6 +11,8 @@ import { useDeleteWorkgroupPrompts } from "../../../hooks/useDeleteEntityPrompts
 import { AdministrationTableWrapper } from "./administrationTableWrapper.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
+
+const allRoles: Role[] = ["View", "Editor", "Controller", "Validator", "Publisher"];
 
 export const WorkgroupAdministration: FC = () => {
   const { t } = useTranslation();
@@ -28,7 +30,7 @@ export const WorkgroupAdministration: FC = () => {
     if (!userWorkgroupRoles || userWorkgroupRoles.length === 0) return null;
     return (
       <Stack direction="row" gap={1} p={1.2} sx={{ flexWrap: "wrap" }}>
-        {Object.values(Role).map(role => {
+        {allRoles.map(role => {
           const usersPerRole = userWorkgroupRoles.filter(
             u => u!.workgroupId === params.row.id && u!.role === role,
           ).length;

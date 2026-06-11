@@ -1,8 +1,9 @@
 import { useCallback } from "react";
+import { Hydrotest as HydrotestType } from "../../../../../api/generated";
 import { DataCards } from "../../../../../components/dataCard/dataCards";
 import { useRequiredParams } from "../../../../../hooks/useRequiredParams.ts";
 import { sortByDepth } from "../../sorter.jsx";
-import { getHydrotests, Hydrotest as HydrotestType } from "./Hydrotest";
+import { getHydrotests } from "./Hydrotest";
 import { HydrotestDisplay } from "./hydrotestDisplay";
 import { HydrotestInput } from "./hydrotestInput";
 

@@ -12,8 +12,8 @@ import {
   WorkflowStatus,
 } from "@swissgeol/ui-core";
 import { SgcWorkflow } from "@swissgeol/ui-core-react";
-import { Role as LegacyRole } from "../../../../api/apiInterfaces.ts";
 import { useBorehole, useBoreholeStatusEditable } from "../../../../api/borehole.ts";
+import { Role as LegacyRole } from "../../../../api/generated/types.gen";
 import { useCurrentUser, useEditorUsersOnWorkgroup } from "../../../../api/user.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { restrictionFreeCode } from "../../../../components/codelist.ts";
@@ -138,10 +138,10 @@ export const WorkflowView = () => {
 
   const mapMaxRole = (roles?: LegacyRole[]): Role => {
     if (!roles || roles.length === 0) return Role.Reader;
-    if (roles.includes(LegacyRole.Publisher)) return Role.Publisher;
-    if (roles.includes(LegacyRole.Validator)) return Role.Reviewer;
-    if (roles.includes(LegacyRole.Controller)) return Role.Reviewer;
-    if (roles.includes(LegacyRole.Editor)) return Role.Editor;
+    if (roles.includes("Publisher")) return Role.Publisher;
+    if (roles.includes("Validator")) return Role.Reviewer;
+    if (roles.includes("Controller")) return Role.Reviewer;
+    if (roles.includes("Editor")) return Role.Editor;
     return Role.Reader;
   };
 
@@ -154,7 +154,7 @@ export const WorkflowView = () => {
 
   const availableAssignees = editorUsersForWorkgroup?.map(user => ({
     ...user,
-    role: mapMaxRole(user.workgroupRoles?.map(wgr => wgr.role)),
+    role: mapMaxRole(user.workgroupRoles?.map(wgr => wgr.role).filter((r): r is LegacyRole => r !== undefined)),
   }));
 
   if (!workflow || !currentUser || !availableAssignees) return null;

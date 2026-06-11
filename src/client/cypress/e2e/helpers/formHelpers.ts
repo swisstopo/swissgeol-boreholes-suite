@@ -126,6 +126,7 @@ export const openDropdown = (selector: string) => {
 const selectDropdownOption = (index: number) => {
   cy.get('.MuiPaper-elevation [role="listbox"]').find("li").eq(index).scrollIntoView();
   cy.get('.MuiPaper-elevation [role="listbox"]').find("li").eq(index).click();
+  cy.get('.MuiPaper-elevation [role="listbox"]').should("not.exist");
 };
 
 /**

@@ -13,12 +13,14 @@ public class Document : IIdentifyable, IChangeTracking
     /// <inheritdoc />
     [Key]
     [Column("id")]
+    [Required]
     public int Id { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Borehole"/> id.
     /// </summary>
     [Column("borehole_id")]
+    [Required]
     public int BoreholeId { get; set; }
 
     /// <summary>

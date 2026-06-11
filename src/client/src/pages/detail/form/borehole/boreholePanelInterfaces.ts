@@ -1,29 +1,28 @@
 import { NullableBooleanSelect, NullableDateString } from "../../../../api/apiInterfaces.ts";
-import { BoreholeV2 } from "../../../../api/borehole.ts";
-import { Profile } from "../../../../api/profile.ts";
+import { Borehole, Profile } from "../../../../api/generated";
 import { Workflow } from "../workflow/workflow.ts";
 
 export interface BoreholeProps {
-  borehole: BoreholeV2;
+  borehole: Borehole;
 }
 
 export interface BoreholeFormInputs {
   name: string;
   originalName: string;
-  projectName: number;
+  projectName: string;
   restrictionId: number | null;
   restrictionUntil: NullableDateString;
   nationalInterest: NullableBooleanSelect;
   totalDepth: number | null;
-  depthPrecisionId: number;
-  typeId: number;
-  purposeId: number;
-  statusId: number;
+  depthPrecisionId: number | null;
+  typeId: number | null;
+  purposeId: number | null;
+  statusId: number | null;
   topBedrockFreshMd: number | null;
   topBedrockWeatheredMd: number | null;
-  lithologyTopBedrockId: number;
-  lithostratigraphyTopBedrockId: number;
-  chronostratigraphyTopBedrockId: number;
+  lithologyTopBedrockId: number | null;
+  lithostratigraphyTopBedrockId: number | null;
+  chronostratigraphyTopBedrockId: number | null;
   hasGroundwater: NullableBooleanSelect;
   remarks: string;
   topBedrockIntersected: NullableBooleanSelect;

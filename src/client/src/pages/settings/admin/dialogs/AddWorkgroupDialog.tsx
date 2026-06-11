@@ -1,7 +1,7 @@
 import { FC, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
-import { Workgroup } from "../../../../api/apiInterfaces.ts";
+import { Workgroup } from "../../../../api/generated";
 import { useWorkgroupMutations } from "../../../../api/workgroup.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { AddButton, CancelButton } from "../../../../components/buttons/buttons.tsx";

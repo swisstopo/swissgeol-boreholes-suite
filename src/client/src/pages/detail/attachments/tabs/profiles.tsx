@@ -2,11 +2,11 @@ import { FC, useCallback, useContext, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { TextField, Typography } from "@mui/material";
 import { GridColDef, GridRenderCellParams, GridRowId, useGridApiRef } from "@mui/x-data-grid";
+import { Profile } from "../../../../api/generated";
 import {
   deleteProfile,
   downloadProfile,
   getProfiles,
-  Profile,
   updateProfile,
   uploadProfile,
   useProfiles,
