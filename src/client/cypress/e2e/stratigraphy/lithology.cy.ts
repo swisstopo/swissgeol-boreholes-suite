@@ -542,7 +542,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     evaluateConsolidatedLithologyFormHasOnlyDepthsAndNote(0, 56, "A unconsolidated rock note.");
 
     switchRockType(RockType.consolidated, RockType.unconsolidated, "Continue");
-    evaluateConsolidatedLithologyFormHasOnlyDepthsAndNote(0, 56, "A unconsolidated rock note.");
+    evaluateUnconsolidatedLithologyFormHasOnlyDepthsAndNote(0, 56, "A unconsolidated rock note.");
 
     switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
     evaluateConsolidatedLithologyFormHasOnlyDepthsAndNote(0, 56, "A unconsolidated rock note.");
@@ -562,7 +562,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     evaluateUnconsolidatedLithologyFormHasOnlyDepthsAndNote(0, 56, "A consolidated rock note.");
 
     switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
-    evaluateUnconsolidatedLithologyFormHasOnlyDepthsAndNote(0, 56, "A consolidated rock note.");
+    evaluateConsolidatedLithologyFormHasOnlyDepthsAndNote(0, 56, "A consolidated rock note.");
   });
 
   it("supports the unspecified rock type", () => {
