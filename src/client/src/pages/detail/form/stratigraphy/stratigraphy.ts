@@ -117,6 +117,10 @@ export interface Lithology extends BaseLayer {
   textureMetaCodelists?: Codelist[];
 }
 
+export interface LithologyFormValues extends Lithology {
+  lithologicalDescription?: { description?: string };
+}
+
 export interface LayerDepth {
   fromDepth: number;
   toDepth: number;
