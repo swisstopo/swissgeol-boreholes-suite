@@ -188,7 +188,10 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
     } catch (error) {
       if (error instanceof ApiError && error.messageKey === "mustBeUnique") {
         // Flag the offending name fields and jump to the first conflicting stratigraphy.
-        const conflicts = (error.details?.conflictingNames ?? []) as string[];
+        const rawConflicts = error.details?.conflictingNames;
+        const conflicts = Array.isArray(rawConflicts)
+          ? rawConflicts.filter((x): x is string => typeof x === "string")
+          : [];
         setConflictingNames(new Set(conflicts));
         const firstConflict = validIndices.find(i => conflicts.includes((names.get(i) ?? "").trim()));
         if (firstConflict !== undefined) {

@@ -8,6 +8,7 @@ import { ExtractedStratigraphy } from "../../../../../api/dataextraction.ts";
 import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
 import { AlertContextInterface } from "../../../../../components/alert/alertInterfaces.ts";
 import { StratigraphyExtractionDialog } from "./stratigraphyExtractionDialog.tsx";
+import { StratigraphyExtractionViewProps } from "./stratigraphyExtractionView.tsx";
 
 // The codebase tags elements with data-cy; map Testing Library's getByTestId to it.
 configure({ testIdAttribute: "data-cy" });
@@ -50,12 +51,7 @@ vi.mock("./stratigraphyExtractionView.tsx", () => ({
     names,
     nameErrors,
     onNameChange,
-  }: {
-    allExtractedStratigraphies: ExtractedStratigraphy[];
-    names: Map<number, string>;
-    nameErrors: Map<number, string>;
-    onNameChange: (index: number, value: string) => void;
-  }) => (
+  }: StratigraphyExtractionViewProps) => (
     <div>
       {allExtractedStratigraphies.map((_, index) => (
         <div key={index}>

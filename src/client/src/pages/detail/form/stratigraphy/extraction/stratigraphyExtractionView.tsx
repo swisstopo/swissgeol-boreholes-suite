@@ -9,7 +9,7 @@ import { PageSelection } from "../../../labeling/pageSelection.tsx";
 import { PagesBadge } from "./pagesBadge.tsx";
 import { StratigraphyExtractionItem, StratigraphyExtractionItemState } from "./stratigraphyExtractionItem.tsx";
 
-interface StratigraphyExtractionViewProps {
+export interface StratigraphyExtractionViewProps {
   file: BoreholeAttachment;
   allExtractedStratigraphies: ExtractedStratigraphy[];
   selectedIndex: number;
