@@ -254,20 +254,25 @@ public class StratigraphyController : ControllerBase
     {
         var entity = edit.Stratigraphy;
 
-        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), entity.BoreholeId).ConfigureAwait(false))
+        var existingStratigraphy = await Context.Stratigraphies.FindAsync(entity.Id).ConfigureAwait(false);
+        if (existingStratigraphy == null) return NotFound();
+
+        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), existingStratigraphy.BoreholeId).ConfigureAwait(false))
         {
             return Unauthorized();
         }
 
-        var takenNames = await LoadTakenStratigraphyNamesAsync(entity.BoreholeId, entity.Id).ConfigureAwait(false);
+        if (entity.BoreholeId != existingStratigraphy.BoreholeId)
+        {
+            return BadRequest("The borehole of a stratigraphy cannot be changed.");
+        }
+
+        var takenNames = await LoadTakenStratigraphyNamesAsync(existingStratigraphy.BoreholeId, entity.Id).ConfigureAwait(false);
         var conflictingNames = GetConflictingNames([edit], takenNames);
         if (conflictingNames.Count > 0)
         {
             return NameMustBeUniqueProblem(conflictingNames);
         }
-
-        var existingStratigraphy = await Context.Stratigraphies.FindAsync(entity.Id).ConfigureAwait(false);
-        if (existingStratigraphy == null) return NotFound();
 
         if (edit.LithologyTab != null && !lithologyTabContentService.ValidateChildStratigraphyIds(edit.LithologyTab, entity.Id, out var validationError))
         {
