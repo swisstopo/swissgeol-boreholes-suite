@@ -3,7 +3,7 @@ import { goToRouteAndAcceptTerms, newEditableBorehole } from "../helpers/testHel
 
 interface LayerInput {
   layerType: string;
-  fromDepth: number;
+  fromDepth: number | null;
   toDepth?: number | null;
   isGap?: boolean;
 }
@@ -98,7 +98,7 @@ const verticalDragByRows = ({ grabSelector, deltaRows, duringDrag }: VerticalDra
       const depthRows = Array.from(doc.querySelectorAll<HTMLElement>('[data-cy^="depth-"]'))
         .map(el => {
           const attr = el.getAttribute("data-cy") ?? "";
-          const m = attr.match(/^depth-([\d.]+)-([\d.]+)$/);
+          const m = attr.match(/^depth-([\d.]+|null)-([\d.]+|null)$/);
           return m ? { el, from: Number.parseFloat(m[1]), to: Number.parseFloat(m[2]) } : null;
         })
         .filter((r): r is { el: HTMLElement; from: number; to: number } => r !== null);
@@ -131,8 +131,8 @@ const verticalDragByRows = ({ grabSelector, deltaRows, duringDrag }: VerticalDra
 
 interface DragResizeDescriptionInput {
   kind: DescriptionKind;
-  fromDepth: number;
-  toDepth: number;
+  fromDepth: number | null;
+  toDepth: number | null;
   side: "top" | "bottom";
   deltaRows: number;
 }

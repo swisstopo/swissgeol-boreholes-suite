@@ -965,6 +965,59 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
   });
 
+  it("resizes a description into open-ended depth rows, stopping at the dragged row", () => {
+    openNewStratigraphy();
+    addLithologyAtDepth(0, 50);
+    fillUnconsolidatedLithologyForm({});
+    closeLayerModal();
+    // Two stacked open-ended rows appended at the bottom: (50, null) then (null, null).
+    addLithology();
+    addLithology();
+    hasLayer({ layerType: LayerType.lithology, fromDepth: 50, toDepth: null });
+    hasDepthError(50, null);
+    hasDepthError(null, null);
+
+    // Description spanning the first (defined) row only.
+    openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
+    fillLithologicalDescriptionForm({ description: "open ended" });
+    closeLayerModal();
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 50 });
+
+    // Drag the bottom edge down one row, onto the (50, null) row: even though its end depth is
+    // undefined the description extends open-ended. It must stop there and NOT swallow the
+    // (null, null) row below — both open rows share a null end, so only the dragged row counts.
+    dragResizeDescription({ kind: "lithological", fromDepth: 0, toDepth: 50, side: "bottom", deltaRows: 1 });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: null });
+    // The bottom (null, null) row is still a gap in the description column → the drag stopped above it.
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: null, isGap: true });
+    // Saving stays blocked while the depth is still undefined.
+    hasDepthError(50, null);
+  });
+
+  it("shrinks an open-ended description back to a defined depth", () => {
+    openNewStratigraphy();
+    addLithologyAtDepth(0, 50);
+    fillUnconsolidatedLithologyForm({});
+    closeLayerModal();
+    addLithology(); // (50, null)
+    addLithology(); // (null, null)
+
+    // Extend a description open-ended across all three rows.
+    openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
+    fillLithologicalDescriptionForm({ description: "open ended" });
+    closeLayerModal();
+    dragResizeDescription({ kind: "lithological", fromDepth: 0, toDepth: 50, side: "bottom", deltaRows: 2 });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: null });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: null, isGap: true, exists: false });
+
+    // Pull the open bottom edge back up two rows (the null border no longer blocks the grab) → it
+    // ends at 50 again and the open rows become gaps once more.
+    dragResizeDescription({ kind: "lithological", fromDepth: 0, toDepth: null, side: "bottom", deltaRows: -2 });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 50 });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 50, isGap: true });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: null, isGap: true });
+  });
+
   it("adds, edits and resizes facies descriptions across gap rows", () => {
     createStratigraphyWith3Lithologies();
 
