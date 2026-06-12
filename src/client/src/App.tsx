@@ -19,7 +19,13 @@ import HeaderComponent from "./components/header/headerComponent";
 import { Prompt } from "./components/prompt/prompt";
 import { PromptProvider } from "./components/prompt/promptContext";
 import { AppBox } from "./components/styledComponents";
-import { DetailError, GlobalError, OverviewError, SettingsError } from "./error/Errorboundaries.tsx";
+import {
+  DetailError,
+  GlobalError,
+  OverviewError,
+  RouteErrorBoundary,
+  SettingsError,
+} from "./error/Errorboundaries.tsx";
 import i18n from "./i18n";
 import { DetailPage } from "./pages/detail/detailPage";
 import { EditStateProvider } from "./pages/detail/editStateContext.tsx";
@@ -37,15 +43,15 @@ const router = createBrowserRouter([
   {
     path: "/setting/*",
     element: (
-      <ErrorBoundary FallbackComponent={SettingsError}>
+      <RouteErrorBoundary fallback={SettingsError}>
         <SettingsPage />
-      </ErrorBoundary>
+      </RouteErrorBoundary>
     ),
   },
   {
     path: "/:id/*",
     element: (
-      <ErrorBoundary FallbackComponent={DetailError}>
+      <RouteErrorBoundary fallback={DetailError}>
         <LabelingProvider>
           <EditStateProvider>
             <SaveProvider>
@@ -53,17 +59,17 @@ const router = createBrowserRouter([
             </SaveProvider>
           </EditStateProvider>
         </LabelingProvider>
-      </ErrorBoundary>
+      </RouteErrorBoundary>
     ),
   },
   {
     path: "/",
     element: (
-      <ErrorBoundary FallbackComponent={OverviewError}>
+      <RouteErrorBoundary fallback={OverviewError}>
         <NuqsAdapter>
           <OverviewPage />
         </NuqsAdapter>
-      </ErrorBoundary>
+      </RouteErrorBoundary>
     ),
   },
   {

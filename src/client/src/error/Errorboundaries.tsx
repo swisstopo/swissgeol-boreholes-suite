@@ -1,6 +1,7 @@
-import { FC } from "react";
+import { ComponentType, FC, PropsWithChildren } from "react";
+import { ErrorBoundary, FallbackProps } from "react-error-boundary";
 import { useTranslation } from "react-i18next";
-import { useNavigate } from "react-router";
+import { useLocation, useNavigate } from "react-router";
 import { Typography } from "@mui/material";
 import { Box, Stack } from "@mui/system";
 import { ChevronLeft, CircleAlert, RotateCcw } from "lucide-react";
@@ -24,8 +25,9 @@ const DevError = ({ error }: { error: unknown }) => {
   );
 };
 
-const BackToOverviewWithMessage = ({ message, reset }: { message: string; reset: (() => void) | undefined }) => {
+const BackToOverviewWithMessage = ({ message }: { message: string }) => {
   const navigate = useNavigate();
+
   return (
     <Stack p={8} spacing={2}>
       <Typography variant="h4">{message}</Typography>
@@ -33,10 +35,10 @@ const BackToOverviewWithMessage = ({ message, reset }: { message: string; reset:
         <BoreholesButton
           label="backToOverview"
           variant="contained"
-          onClick={() => {
-            navigate("/");
-            reset?.();
-          }}
+          // The route-level boundary (RouteErrorBoundary) is keyed to the location and resets
+          // itself when the path changes, so navigating away is enough to clear the error.
+          // No manual reset/setTimeout is needed, which avoids racing react-router navigation.
+          onClick={() => navigate("/", { replace: true })}
           startIcon={<ChevronLeft />}
         />
       </Box>
@@ -57,11 +59,11 @@ const FallbackComponent = ({
   const isDevelopment = process.env.NODE_ENV === "development";
 
   if (error instanceof InvalidRouteParamError) {
-    return <BackToOverviewWithMessage message={error.userMessage} reset={resetErrorBoundary} />;
+    return <BackToOverviewWithMessage message={error.userMessage} />;
   }
 
   if (error instanceof ApiError && error.status === 404) {
-    return <BackToOverviewWithMessage message={t("boreholeNotFound")} reset={resetErrorBoundary} />;
+    return <BackToOverviewWithMessage message={t("boreholeNotFound")} />;
   }
 
   return (
@@ -84,6 +86,22 @@ interface ErrorFallbackProps {
   error: unknown;
   resetErrorBoundary?: () => void;
 }
+
+/**
+ * Wraps a route element in an ErrorBoundary keyed to the current path, so navigating away
+ * resets the error in the same render that swaps in the new route.
+ */
+export const RouteErrorBoundary: FC<PropsWithChildren<{ fallback: ComponentType<FallbackProps> }>> = ({
+  fallback,
+  children,
+}) => {
+  const { pathname } = useLocation();
+  return (
+    <ErrorBoundary FallbackComponent={fallback} resetKeys={[pathname]}>
+      {children}
+    </ErrorBoundary>
+  );
+};
 
 export const GlobalError: FC<ErrorFallbackProps> = ({ error, resetErrorBoundary }) => {
   return <FallbackComponent error={error} resetErrorBoundary={resetErrorBoundary} title={"globalErrorMessage"} />;
