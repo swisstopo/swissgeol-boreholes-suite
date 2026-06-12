@@ -567,6 +567,161 @@ describe("useLithologyTableState", () => {
     });
   });
 
+  describe("resizeDescription into an open-ended bottom layer", () => {
+    it("extends a description into a bottom layer that has no end depth yet (open-ended)", () => {
+      const { result } = renderState({
+        lithologies: [
+          lithology({ id: 1, fromDepth: 0, toDepth: 50 }),
+          lithology({ id: 2, fromDepth: 50, toDepth: 100 }),
+        ],
+        lithologicalDescriptions: [lithologicalDescription({ id: 10, fromDepth: 0, toDepth: 50 })],
+      });
+
+      // Append a new bottom row with no end depth, mirroring "add layer" in the UI.
+      act(() => result.current.handleAddDepthLayer());
+      expect(result.current.depths).toHaveLength(3);
+      expect(result.current.depths[2]).toMatchObject({ fromDepth: 100, toDepth: null });
+      expect(result.current.hasErrors).toBe(true);
+
+      // Drag the description down into the open row (toDepth = null).
+      act(() => result.current.resizeDescription("lithological", 0, 0, null));
+      const grown = result.current.tmpLithologicalDescriptions[0];
+      expect(grown.fromDepth).toBe(0);
+      expect(grown.toDepth).toBeNull();
+      expect(grown.depthIds).toEqual(result.current.depths.map(d => d.id));
+      // Saving stays blocked until the end depth is defined.
+      expect(result.current.hasErrors).toBe(true);
+    });
+
+    it("fills the open description's end depth once the bottom layer's end depth is set", () => {
+      const { result } = renderState({
+        lithologies: [lithology({ id: 1, fromDepth: 0, toDepth: 50 })],
+        lithologicalDescriptions: [lithologicalDescription({ id: 10, fromDepth: 0, toDepth: 50 })],
+      });
+      act(() => result.current.handleAddDepthLayer());
+      act(() => result.current.resizeDescription("lithological", 0, 0, null));
+      expect(result.current.tmpLithologicalDescriptions[0].toDepth).toBeNull();
+
+      const openRow = result.current.depths.at(-1)!;
+      act(() => result.current.updateDepthBoundaries(openRow.id, "to", 120));
+
+      expect(result.current.tmpLithologicalDescriptions[0].toDepth).toBe(120);
+      expect(result.current.depths.at(-1)).toMatchObject({ toDepth: 120 });
+      expect(result.current.hasErrors).toBe(false);
+    });
+
+    it("shrinks an open-ended (null end) description that spans multiple rows back to a numeric end", () => {
+      const { result } = renderState({
+        lithologies: [
+          lithology({ id: 1, fromDepth: 0, toDepth: 50 }),
+          lithology({ id: 2, fromDepth: 50, toDepth: 100 }),
+        ],
+        lithologicalDescriptions: [lithologicalDescription({ id: 10, fromDepth: 0, toDepth: 50 })],
+      });
+      act(() => result.current.handleAddDepthLayer()); // append (100, null)
+      // Extend the description open-ended down to the bottom (spans all three rows).
+      act(() => result.current.resizeDescription("lithological", 0, 0, null));
+      expect(result.current.tmpLithologicalDescriptions[0].toDepth).toBeNull();
+      expect(result.current.tmpLithologicalDescriptions[0].depthIds).toHaveLength(3);
+
+      // Pull the open bottom edge back up so it ends at 50 again.
+      act(() => result.current.resizeDescription("lithological", 0, 0, 50));
+      const shrunk = result.current.tmpLithologicalDescriptions[0];
+      expect(shrunk.toDepth).toBe(50);
+      expect(shrunk.depthIds).toEqual([result.current.depths[0].id]);
+    });
+  });
+
+  describe("resizeDescription through stacked open rows (both depths null)", () => {
+    it("extends a description down through a row whose start and end depth are both null", () => {
+      const { result } = renderState({
+        lithologies: [lithology({ id: 1, fromDepth: 0, toDepth: 50 })],
+        lithologicalDescriptions: [lithologicalDescription({ id: 10, fromDepth: 0, toDepth: 50 })],
+      });
+
+      // Append two open-ended rows; the second ends up with both depths null.
+      act(() => result.current.handleAddDepthLayer());
+      act(() => result.current.handleAddDepthLayer());
+      expect(result.current.depths).toHaveLength(3);
+      expect(result.current.depths[1]).toMatchObject({ fromDepth: 50, toDepth: null });
+      expect(result.current.depths[2]).toMatchObject({ fromDepth: null, toDepth: null });
+
+      // Drag the description down to the bottom; it should claim both open rows.
+      act(() => result.current.resizeDescription("lithological", 0, 0, null));
+      const grown = result.current.tmpLithologicalDescriptions[0];
+      expect(grown.fromDepth).toBe(0);
+      expect(grown.toDepth).toBeNull();
+      expect(grown.depthIds).toEqual(result.current.depths.map(d => d.id));
+      expect(result.current.hasErrors).toBe(true);
+    });
+
+    it("claims only the rows the drag covered, not every open row below, when given explicit depthIds", () => {
+      const { result } = renderState({
+        lithologies: [lithology({ id: 1, fromDepth: 0, toDepth: 50 })],
+        lithologicalDescriptions: [lithologicalDescription({ id: 10, fromDepth: 0, toDepth: 50 })],
+      });
+      act(() => result.current.handleAddDepthLayer()); // (50, null)
+      act(() => result.current.handleAddDepthLayer()); // (null, null)
+      const [d0, d1, d2] = result.current.depths.map(d => d.id);
+
+      // Drag stopped at the first open row — both open rows share a null end, so only the explicit
+      // span tells them apart. It must stop at d1 and not swallow d2.
+      act(() => result.current.resizeDescription("lithological", 0, 0, null, [d0, d1]));
+      expect(result.current.tmpLithologicalDescriptions[0].depthIds).toEqual([d0, d1]);
+
+      // Dragging further down to the second open row then extends onto d2.
+      act(() => result.current.resizeDescription("lithological", 0, 0, null, [d0, d1, d2]));
+      expect(result.current.tmpLithologicalDescriptions[0].depthIds).toEqual([d0, d1, d2]);
+    });
+  });
+
+  describe("resizeDescription into an open-ended top layer", () => {
+    it("extends a description into a top layer that has no start depth yet (open-ended)", () => {
+      const { result } = renderState({
+        lithologies: [
+          lithology({ id: 1, fromDepth: 0, toDepth: 50 }),
+          lithology({ id: 2, fromDepth: 50, toDepth: 100 }),
+        ],
+        lithologicalDescriptions: [lithologicalDescription({ id: 10, fromDepth: 50, toDepth: 100 })],
+      });
+
+      // Clear the top row's start depth → it becomes open-ended at the top.
+      const topRow = result.current.depths[0];
+      act(() => result.current.updateDepthBoundaries(topRow.id, "from", null));
+      expect(result.current.depths[0]).toMatchObject({ fromDepth: null, toDepth: 50 });
+      expect(result.current.hasErrors).toBe(true);
+
+      // Drag the description up into the open top row (fromDepth = null).
+      act(() => result.current.resizeDescription("lithological", 0, null, 100));
+      const grown = result.current.tmpLithologicalDescriptions[0];
+      expect(grown.fromDepth).toBeNull();
+      expect(grown.toDepth).toBe(100);
+      expect(grown.depthIds).toEqual(result.current.depths.map(d => d.id));
+      // Saving stays blocked until the start depth is defined.
+      expect(result.current.hasErrors).toBe(true);
+    });
+
+    it("fills the open description's start depth once the top layer's start depth is set", () => {
+      const { result } = renderState({
+        lithologies: [
+          lithology({ id: 1, fromDepth: 0, toDepth: 50 }),
+          lithology({ id: 2, fromDepth: 50, toDepth: 100 }),
+        ],
+        lithologicalDescriptions: [lithologicalDescription({ id: 10, fromDepth: 50, toDepth: 100 })],
+      });
+      const topRow = result.current.depths[0];
+      act(() => result.current.updateDepthBoundaries(topRow.id, "from", null));
+      act(() => result.current.resizeDescription("lithological", 0, null, 100));
+      expect(result.current.tmpLithologicalDescriptions[0].fromDepth).toBeNull();
+
+      act(() => result.current.updateDepthBoundaries(result.current.depths[0].id, "from", 10));
+
+      expect(result.current.tmpLithologicalDescriptions[0].fromDepth).toBe(10);
+      expect(result.current.depths[0]).toMatchObject({ fromDepth: 10 });
+      expect(result.current.hasErrors).toBe(false);
+    });
+  });
+
   describe("resizeDescription with mergeDepthsOnDescriptionResize (extraction mode)", () => {
     it("merges a gap row into the resized description's row and drops the orphaned placeholder lithology", () => {
       // Mirrors extraction setup: no lithologies / no facies in input; descriptions drive depths.
