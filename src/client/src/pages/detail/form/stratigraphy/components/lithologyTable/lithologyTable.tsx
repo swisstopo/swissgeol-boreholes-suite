@@ -387,7 +387,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                   `lithologicalDescription`,
                   tmpLithologicalDescriptions,
                   layer => (
-                    <Typography variant="body1" fontWeight={700}>
+                    <Typography variant="body1" fontWeight={700} sx={{ whiteSpace: "pre-line" }}>
                       {(layer as LithologicalDescription).description}
                     </Typography>
                   ),
