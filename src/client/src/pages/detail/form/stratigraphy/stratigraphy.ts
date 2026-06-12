@@ -56,14 +56,6 @@ export interface LithologyFormValues extends Lithology {
   lithologicalDescription?: { description?: string };
 }
 
-export interface LayerDepth {
-  fromDepth: number;
-  toDepth: number;
-  lithologyId: number;
-  hasFromDepthError?: boolean;
-  hasToDepthError?: boolean;
-}
-
 export interface LithologyEditForm {
   lithologyId: number;
   formMethods: UseFormReturn<Lithology>;

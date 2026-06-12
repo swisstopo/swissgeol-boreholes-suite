@@ -10,6 +10,7 @@ interface StratigraphyTableLayerCellProps {
   index: number;
   onHoverClick?: (index: number) => void;
   onClick?: (index: number) => void;
+  onCopy?: (text: string) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   sx?: SxProps;
@@ -24,6 +25,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
   index,
   onHoverClick,
   onClick,
+  onCopy,
   onMouseEnter,
   onMouseLeave,
   sx,
@@ -52,7 +54,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
         "& .hover-content": { visibility: "hidden" },
         "&:hover": {
           backgroundColor: isAutoCorrected ? "#FFBD99" : theme.palette.background.grey,
-          cursor: "pointer",
+          cursor: isEditing ? "pointer" : "default",
           "& .hover-content": { visibility: "visible" },
         },
         ...sx,
@@ -79,7 +81,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
         {children}
       </Stack>
       {resizeHandles}
-      {onHoverClick && (
+      {(onHoverClick || onCopy) && (
         <Stack
           className="hover-content"
           sx={{
@@ -96,7 +98,11 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
             dataCy={isEditing ? "deleteLayer-button" : "copyLayer-button"}
             onClick={e => {
               e.stopPropagation();
-              onHoverClick(index);
+              if (isEditing) {
+                onHoverClick?.(index);
+              } else {
+                onCopy?.(stackRef.current?.innerText ?? stackRef.current?.textContent ?? "");
+              }
             }}
             color={"primaryInverse"}
             sx={{

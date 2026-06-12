@@ -11,7 +11,10 @@ export const AlertBanner = () => {
         anchorOrigin={{ vertical: "top", horizontal: "center" }}
         autoHideDuration={alertContext.autoHideDuration}
         onClose={alertContext.closeAlert}>
-        <Alert variant="filled" severity={alertContext.severity} onClose={alertContext.closeAlert}>
+        <Alert
+          variant={alertContext.variant ?? "filled"}
+          severity={alertContext.severity}
+          onClose={alertContext.closeAlert}>
           {alertContext.text}
         </Alert>
       </Snackbar>
