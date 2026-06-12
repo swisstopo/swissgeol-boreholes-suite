@@ -1,6 +1,11 @@
 import { discardChanges, saveWithSaveBar, verifyUnsavedChanges } from "../helpers/buttonHelpers";
 import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
-import { createStratigraphyWith3Lithologies, handlePrompt, stopBoreholeEditing } from "../helpers/testHelpers";
+import {
+  createStratigraphyWith3Lithologies,
+  handlePrompt,
+  selectLanguage,
+  stopBoreholeEditing,
+} from "../helpers/testHelpers";
 import {
   evaluateConsolidatedLithologyForm,
   evaluateFaciesDescriptionForm,
@@ -47,6 +52,17 @@ const addLithologyAtDepth = (fromDepth: number, toDepth: number) => {
   });
   setDepth(fromDepth, null, "to", toDepth);
   openLayer({ layerType: LayerType.lithology, fromDepth, toDepth });
+};
+
+const copyCellAndAssertClipboard = (cellDataCy: string, expectedText: string) => {
+  cy.get(`[data-cy="${cellDataCy}"]`).realHover();
+  cy.get(`[data-cy="${cellDataCy}"]`).find('[data-cy="copyLayer-button"]').click({ force: true });
+  cy.contains("In die Zwischenablage kopiert").should("be.visible");
+  cy.window()
+    .then(win => win.navigator.clipboard.readText())
+    // Assert the complete copied content, preserving the internal line breaks between a cell's
+    // label and description; only outer whitespace is trimmed.
+    .then(text => expect(text.trim()).to.equal(expectedText));
 };
 
 const openStratigraphyWith3Lithologies = () => {
@@ -1310,5 +1326,44 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       toDepth: 798,
       content: ["Aktualisierte Beschreibung"],
     });
+  });
+
+  it("shows lithologies read-only with depth labels and copyable cells when not editing", () => {
+    openNewStratigraphy();
+    // Pin the language so the copied label strings are deterministic (the app otherwise falls back
+    // to the browser/persisted locale).
+    selectLanguage("de");
+    addLithologyAtDepth(0, 355);
+    fillUnconsolidatedLithologyForm({
+      lithologyDescriptions: [{ lithologyUnconMainId: 9, lithologyUncon2Id: 3 }],
+    });
+    closeLayerModal();
+    openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
+    fillLithologicalDescriptionForm({ description: "lithological description 0 - 355" });
+    closeLayerModal();
+    openLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
+    fillFaciesDescriptionForm({ faciesId: 1, description: "facies description 0 - 355" });
+    closeLayerModal();
+    saveWithSaveBar();
+    stopBoreholeEditing();
+
+    // Read-only view hides all editing affordances.
+    cy.dataCy("add-row-button").should("not.exist");
+    cy.get('[data-cy="depth-from-0-355-input"]').should("not.exist");
+
+    // Depth boundaries render as standalone labels instead of editable inputs.
+    cy.dataCy("depth-from-0-355-label").should("contain", "0");
+    cy.dataCy("depth-to-0-355-label").should("contain", "355");
+
+    // Clicking a cell no longer opens the edit modal.
+    cy.get('[data-cy="lithology-0-355"]').click();
+    cy.dataCy("apply-button").should("not.exist");
+
+    // Hovering any cell reveals a copy button that copies its full text to the clipboard.
+    copyCellAndAssertClipboard("lithology-0-355", "[FGr-co]: Feinkies, steinig / mit Steinen");
+    copyCellAndAssertClipboard("lithologicalDescription-0-355", "lithological description 0 - 355");
+    // The facies cell stacks the facies label above the description (separated by a blank line),
+    // so both are copied.
+    copyCellAndAssertClipboard("faciesDescription-0-355", "terrestrisch\n\nfacies description 0 - 355");
   });
 });
