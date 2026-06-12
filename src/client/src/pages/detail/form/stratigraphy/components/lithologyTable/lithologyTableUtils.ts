@@ -154,8 +154,8 @@ const assignDepthIds = <T extends BaseLayer>(items: T[], depthLayers: DepthLayer
 // the splice anchor so a failed-depth row lands directly below its predecessor.
 const lastDepthIdBefore = <T extends BaseLayer>(items: T[], index: number): string | null => {
   for (let i = index - 1; i >= 0; i--) {
-    const ids = items[i].depthIds;
-    if (ids && ids.length > 0) return ids[ids.length - 1];
+    const last = items[i].depthIds?.at(-1);
+    if (last != null) return last;
   }
   return null;
 };
