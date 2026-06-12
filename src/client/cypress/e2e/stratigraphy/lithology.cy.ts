@@ -1,11 +1,6 @@
 import { discardChanges, saveWithSaveBar, verifyUnsavedChanges } from "../helpers/buttonHelpers";
 import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
-import {
-  createStratigraphyWith3Lithologies,
-  handlePrompt,
-  selectLanguage,
-  stopBoreholeEditing,
-} from "../helpers/testHelpers";
+import { createStratigraphyWith3Lithologies, handlePrompt, stopBoreholeEditing } from "../helpers/testHelpers";
 import {
   evaluateConsolidatedLithologyForm,
   evaluateFaciesDescriptionForm,
@@ -57,7 +52,7 @@ const addLithologyAtDepth = (fromDepth: number, toDepth: number) => {
 const copyCellAndAssertClipboard = (cellDataCy: string, expectedText: string) => {
   cy.get(`[data-cy="${cellDataCy}"]`).realHover();
   cy.get(`[data-cy="${cellDataCy}"]`).find('[data-cy="copyLayer-button"]').click({ force: true });
-  cy.contains("In die Zwischenablage kopiert").should("be.visible");
+  cy.contains("Copied to clipboard").should("be.visible");
   cy.window()
     .then(win => win.navigator.clipboard.readText())
     // Assert the complete copied content, preserving the internal line breaks between a cell's
@@ -1330,9 +1325,6 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
 
   it("shows lithologies read-only with depth labels and copyable cells when not editing", () => {
     openNewStratigraphy();
-    // Pin the language so the copied label strings are deterministic (the app otherwise falls back
-    // to the browser/persisted locale).
-    selectLanguage("de");
     addLithologyAtDepth(0, 355);
     fillUnconsolidatedLithologyForm({
       lithologyDescriptions: [{ lithologyUnconMainId: 9, lithologyUncon2Id: 3 }],
@@ -1360,10 +1352,10 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     cy.dataCy("apply-button").should("not.exist");
 
     // Hovering any cell reveals a copy button that copies its full text to the clipboard.
-    copyCellAndAssertClipboard("lithology-0-355", "[FGr-co]: Feinkies, steinig / mit Steinen");
+    copyCellAndAssertClipboard("lithology-0-355", "[FGr-co]: fine gravel, stony / with stones");
     copyCellAndAssertClipboard("lithologicalDescription-0-355", "lithological description 0 - 355");
     // The facies cell stacks the facies label above the description (separated by a blank line),
     // so both are copied.
-    copyCellAndAssertClipboard("faciesDescription-0-355", "terrestrisch\n\nfacies description 0 - 355");
+    copyCellAndAssertClipboard("faciesDescription-0-355", "terrestrial\n\nfacies description 0 - 355");
   });
 });
