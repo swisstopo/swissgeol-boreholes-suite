@@ -149,7 +149,7 @@ export const useDescriptionResize = ({
         const next = computePreview(clientY);
         // Span length is the reliable change signal: the moving edge grows/shrinks a fixed-anchor run,
         // so a different target always changes the count even when the (open) bound value stays null.
-        setPreviewRange(prev => (prev && prev.depthIds.length === next.depthIds.length ? prev : next));
+        setPreviewRange(prev => (prev?.depthIds.length === next.depthIds.length ? prev : next));
       },
       onEnd: ({ committed, lastClientY }) => {
         teardownRef.current = null;
