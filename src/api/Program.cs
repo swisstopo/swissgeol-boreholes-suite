@@ -213,6 +213,7 @@ builder.Services
 
 builder.Services.AddScoped<IBoreholePermissionService, BoreholePermissionService>();
 builder.Services.AddScoped<IFilterService, FilterService>();
+builder.Services.AddScoped<ILithologyTabContentService, LithologyTabContentService>();
 builder.Services.AddSingleton(TimeProvider.System);
 builder.Services.AddSingleton<IMaintenanceTask, LocationMigrationTask>();
 builder.Services.AddSingleton<IMaintenanceTask, CoordinateMigrationTask>();
