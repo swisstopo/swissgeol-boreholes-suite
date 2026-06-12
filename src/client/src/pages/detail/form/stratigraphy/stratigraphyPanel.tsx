@@ -134,8 +134,7 @@ export const StratigraphyPanel: FC = () => {
   const deleteSelectedStratigraphy = useCallback(async () => {
     if (!selectedStratigraphy) return;
     await deleteStratigraphy(selectedStratigraphy);
-    navigateToStratigraphy(undefined, true);
-  }, [deleteStratigraphy, navigateToStratigraphy, selectedStratigraphy]);
+  }, [deleteStratigraphy, selectedStratigraphy]);
 
   const onCopy = useCallback(async () => {
     if (selectedStratigraphy) {
