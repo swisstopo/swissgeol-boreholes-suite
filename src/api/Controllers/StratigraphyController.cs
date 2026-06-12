@@ -219,7 +219,11 @@ public class StratigraphyController : ControllerBase
                 return NameMustBeUniqueProblem(conflictingNames);
             }
 
-            var hasDesignatedPrimary = await StageEditsForCreateAsync(edits, takenNames).ConfigureAwait(false);
+            var boreholeHasStratigraphy = await Context.Stratigraphies
+                .AnyAsync(s => s.BoreholeId == boreholeId)
+                .ConfigureAwait(false);
+
+            var hasDesignatedPrimary = await StageEditsForCreateAsync(edits, isFirstStratigraphy: !boreholeHasStratigraphy).ConfigureAwait(false);
             if (hasDesignatedPrimary)
             {
                 await DemotePreviousPrimaryAsync(boreholeId, keepStratigraphyId: 0).ConfigureAwait(false);
@@ -348,9 +352,8 @@ public class StratigraphyController : ControllerBase
         return conflicting;
     }
 
-    private async Task<bool> StageEditsForCreateAsync(Collection<StratigraphyTabEdit> edits, HashSet<string> takenNames)
+    private async Task<bool> StageEditsForCreateAsync(Collection<StratigraphyTabEdit> edits, bool isFirstStratigraphy)
     {
-        var isFirstStratigraphy = takenNames.Count == 0;
         var primaryEdit = edits.FirstOrDefault(e => e.Stratigraphy.IsPrimary) ?? (isFirstStratigraphy ? edits[0] : null);
 
         foreach (var edit in edits)
