@@ -464,6 +464,30 @@ export const createBoreholeWithCompleteDataset = () => {
   });
 };
 
+export const createStratigraphyWith3Lithologies = () => {
+  createBorehole({
+    stratigraphies: [
+      {
+        id: 0,
+        boreholeId: 0,
+        isPrimary: true,
+        name: "New Stratigraphy",
+        lithologies: [
+          { id: 0, stratigraphyId: 0, fromDepth: 0, toDepth: 355, isUnconsolidated: true },
+          { id: 0, stratigraphyId: 0, fromDepth: 355, toDepth: 798, isUnconsolidated: true },
+          { id: 0, stratigraphyId: 0, fromDepth: 798, toDepth: 1123, isUnconsolidated: true },
+        ],
+      },
+    ],
+  }).as("borehole_id");
+  cy.get("@borehole_id").then(boreholeId => {
+    goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy`);
+    cy.wait("@stratigraphy_by_borehole_GET");
+    startBoreholeEditing();
+    cy.wait("@lithology_by_stratigraphyId_GET");
+  });
+};
+
 export const startBoreholeEditing = () => {
   startEditing("detail-header");
   cy.wait(["@update-borehole", "@borehole_by_id"]);

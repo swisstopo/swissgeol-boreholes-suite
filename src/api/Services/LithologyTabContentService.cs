@@ -218,6 +218,7 @@ public class LithologyTabContentService(BdmsContext context) : ILithologyTabCont
                 await PrepareNewLithologyDescriptionForSaveAsync(lithologyDescription, entity.IsUnconsolidated).ConfigureAwait(false);
                 if (entity.Id != 0)
                 {
+                    lithologyDescription.LithologyId = entity.Id;
                     context.Add(lithologyDescription);
                 }
             }
