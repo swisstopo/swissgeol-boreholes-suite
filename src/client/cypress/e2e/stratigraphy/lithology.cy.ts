@@ -1,6 +1,6 @@
 import { discardChanges, saveWithSaveBar, verifyUnsavedChanges } from "../helpers/buttonHelpers";
-import { evaluateInput, evaluateSelect, setSelect } from "../helpers/formHelpers";
-import { stopBoreholeEditing } from "../helpers/testHelpers";
+import { evaluateInput, evaluateSelect, setInput, setSelect } from "../helpers/formHelpers";
+import { createStratigraphyWith3Lithologies, handlePrompt, stopBoreholeEditing } from "../helpers/testHelpers";
 import {
   evaluateConsolidatedLithologyForm,
   evaluateFaciesDescriptionForm,
@@ -76,7 +76,7 @@ const openStratigraphyWith3Lithologies = () => {
 };
 
 const createCompleteLayerGrid = () => {
-  openStratigraphyWith3Lithologies();
+  createStratigraphyWith3Lithologies();
   // Click each gap to create a description spanning exactly that gap's depth range.
   openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
   fillLithologicalDescriptionForm({});
@@ -216,7 +216,7 @@ const evaluateCompleteUnconsolidatedLithologyForm = () => {
   });
 };
 
-const evaluateUnconsolidatedLithologyFormHasOnlyDepths = (fromDepth: number, toDepth: number) => {
+const evaluateUnconsolidatedLithologyFormHasOnlyDepthsAndNote = (fromDepth: number, toDepth: number, note: string) => {
   evaluateUnconsolidatedLithologyForm({
     fromDepth: fromDepth,
     toDepth: toDepth,
@@ -248,7 +248,7 @@ const evaluateUnconsolidatedLithologyFormHasOnlyDepths = (fromDepth: number, toD
     uscsDeterminationId: "",
     rockConditionCodelistIds: [],
     alterationDegreeId: "",
-    notes: "",
+    notes: note,
   });
 };
 
@@ -330,7 +330,7 @@ const evaluateCompleteConsolidatedLithologyForm = () => {
   });
 };
 
-const evaluateConsolidatedLithologyFormHasOnlyDepths = (fromDepth: number, toDepth: number) => {
+const evaluateConsolidatedLithologyFormHasOnlyDepthsAndNote = (fromDepth: number, toDepth: number, note: string) => {
   evaluateConsolidatedLithologyForm({
     fromDepth: fromDepth,
     toDepth: toDepth,
@@ -352,7 +352,7 @@ const evaluateConsolidatedLithologyFormHasOnlyDepths = (fromDepth: number, toDep
     ],
     textureMetaCodelistIds: [],
     alterationDegreeId: "",
-    notes: "",
+    notes: note,
   });
 };
 
@@ -539,13 +539,13 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
 
     // Should reset form when continuing with switch
     switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
-    evaluateConsolidatedLithologyFormHasOnlyDepths(0, 56);
+    evaluateConsolidatedLithologyFormHasOnlyDepthsAndNote(0, 56, "A unconsolidated rock note.");
 
     switchRockType(RockType.consolidated, RockType.unconsolidated, "Continue");
-    evaluateUnconsolidatedLithologyFormHasOnlyDepths(0, 56);
+    evaluateUnconsolidatedLithologyFormHasOnlyDepthsAndNote(0, 56, "A unconsolidated rock note.");
 
     switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
-    evaluateConsolidatedLithologyFormHasOnlyDepths(0, 56);
+    evaluateConsolidatedLithologyFormHasOnlyDepthsAndNote(0, 56, "A unconsolidated rock note.");
 
     fillCompleteConsolidatedLithologyForm();
     closeLayerModal();
@@ -559,10 +559,10 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     evaluateCompleteConsolidatedLithologyForm();
 
     switchRockType(RockType.consolidated, RockType.unconsolidated, "Continue");
-    evaluateUnconsolidatedLithologyFormHasOnlyDepths(0, 56);
+    evaluateUnconsolidatedLithologyFormHasOnlyDepthsAndNote(0, 56, "A consolidated rock note.");
 
     switchRockType(RockType.unconsolidated, RockType.consolidated, "Continue");
-    evaluateConsolidatedLithologyFormHasOnlyDepths(0, 56);
+    evaluateConsolidatedLithologyFormHasOnlyDepthsAndNote(0, 56, "A consolidated rock note.");
   });
 
   it("supports the unspecified rock type", () => {
@@ -966,7 +966,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
   });
 
   it("adds, edits and resizes facies descriptions across gap rows", () => {
-    openStratigraphyWith3Lithologies();
+    createStratigraphyWith3Lithologies();
 
     // Create a facies description from the first gap.
     openLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
@@ -1236,5 +1236,79 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     // No modal opened and the gaps are untouched.
     cy.dataCy("apply-button").should("not.exist");
     hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
+  });
+
+  it("edits the lithological description from the lithology modal", () => {
+    createStratigraphyWith3Lithologies();
+
+    // Open the first lithology layer — the new description card should be visible and empty.
+    openLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
+    cy.dataCy("lithology-lithological-description").should("be.visible");
+    cy.dataCy("shared-lithological-description-notice").should("not.exist");
+
+    // Type a description and apply via the modal's apply button.
+    setInput("lithologicalDescription.description", "Mittelkies aus dem Lithology-Modal");
+    closeLayerModal();
+
+    // The lithological description column now shows a layer with the typed text for that depth range.
+    checkLayerCardContent({
+      layerType: LayerType.lithologicalDescription,
+      fromDepth: 0,
+      toDepth: 355,
+      content: ["Mittelkies aus dem Lithology-Modal"],
+    });
+
+    // Reopen the lithology modal and confirm the text persists in the form.
+    openLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
+    cy.dataCy("lithologicalDescription.description-formInput")
+      .find("textarea")
+      .first()
+      .should("have.value", "Mittelkies aus dem Lithology-Modal");
+    closeLayerModal();
+
+    // Persist via the global save handler and check the lithological description survives a reload.
+    saveWithSaveBar();
+    stopBoreholeEditing();
+    checkLayerCardContent({
+      layerType: LayerType.lithologicalDescription,
+      fromDepth: 0,
+      toDepth: 355,
+      content: ["Mittelkies aus dem Lithology-Modal"],
+    });
+  });
+
+  it("warns when editing a description shared by multiple lithology layers", () => {
+    createStratigraphyWith3Lithologies();
+
+    // Add a lithological description that spans the first two lithology layers by creating it in the first gap and
+    // dragging its bottom handle down by one row.
+    openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
+    fillLithologicalDescriptionForm({ description: "Originalbeschreibung" });
+    closeLayerModal();
+    dragResizeDescription({
+      kind: "lithological",
+      fromDepth: 0,
+      toDepth: 355,
+      side: "bottom",
+      deltaRows: 1,
+    });
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 798 });
+
+    // Opening the first lithology shows the shared-layers notice.
+    openLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
+    cy.dataCy("shared-lithological-description-notice").should("be.visible");
+
+    // Change the description and apply — the prompt should appear.
+    setInput("lithologicalDescription.description", "Aktualisierte Beschreibung");
+    cy.dataCy("apply-button").click();
+    handlePrompt(null, "continue");
+
+    // Both lithology layers in the spanning lithological description should now show the updated text.
+    checkLayerCardContent({
+      layerType: LayerType.lithologicalDescription,
+      fromDepth: 0,
+      toDepth: 798,
+      content: ["Aktualisierte Beschreibung"],
+    });
   });
 });

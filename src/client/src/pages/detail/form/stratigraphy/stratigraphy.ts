@@ -52,6 +52,10 @@ export type Lithology = BaseLayer &
     shareInverse?: number;
   };
 
+export interface LithologyFormValues extends Lithology {
+  lithologicalDescription?: { description?: string };
+}
+
 export interface LayerDepth {
   fromDepth: number;
   toDepth: number;
