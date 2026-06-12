@@ -1,5 +1,5 @@
-import {MouseEvent, RefObject, useEffect, useRef, useState} from "react";
-import {useLatestRef} from "../../../../../../hooks/useLatestRef.ts";
+import { MouseEvent, RefObject, useEffect, useRef, useState } from "react";
+import { useLatestRef } from "../../../../../../hooks/useLatestRef.ts";
 import {
   BaseLayer,
   DepthLayer,
@@ -7,12 +7,7 @@ import {
   FaciesDescription,
   LithologicalDescription,
 } from "../../stratigraphy.ts";
-import {
-  beginVerticalRowDrag,
-  findDepthIdxAtClientY,
-  queryDepthRowElements,
-  swallowNextClick,
-} from "./verticalRowDrag.ts";
+import { beginVerticalRowDrag, queryDepthRowElements, resolveRowRange, swallowNextClick } from "./verticalRowDrag.ts";
 
 export type ResizeSide = "top" | "bottom";
 
@@ -124,62 +119,32 @@ export const useDescriptionResize = ({
       return columnItems.some((item, i) => i !== itemIdx && item.depthIds?.includes(depthId));
     };
 
-    // Clamp the new bottom edge: start from the cursor's row but stop at the first sibling-owned
-    // row we'd cross. The drag can never reduce the description below its original range.
-    const clampBottom = (targetIdx: number): number => {
-      let newLastIdx = Math.max(firstDepthIdx, Math.min(depths.length - 1, targetIdx));
-      if (newLastIdx > lastDepthIdx) {
-        for (let i = lastDepthIdx + 1; i <= newLastIdx; i++) {
-          if (ownedBySibling(i)) {
-            newLastIdx = i - 1;
-            break;
-          }
-        }
-      }
-      return newLastIdx;
-    };
+    const anchorIdx = side === "bottom" ? firstDepthIdx : lastDepthIdx;
+    const minIdx = side === "bottom" ? firstDepthIdx : 0;
+    const maxIdx = side === "bottom" ? depths.length - 1 : lastDepthIdx;
 
-    // Mirror of clampBottom for the top edge.
-    const clampTop = (targetIdx: number): number => {
-      let newFirstIdx = Math.max(0, Math.min(lastDepthIdx, targetIdx));
-      if (newFirstIdx < firstDepthIdx) {
-        for (let i = firstDepthIdx - 1; i >= newFirstIdx; i--) {
-          if (ownedBySibling(i)) {
-            newFirstIdx = i + 1;
-            break;
-          }
-        }
-      }
-      return newFirstIdx;
-    };
+    // Row the moving edge currently points at (the row the cursor is within). Persisted across
+    // mousemoves so the within-cell snap tracks from it.
+    let pointerIdx = side === "bottom" ? lastDepthIdx : firstDepthIdx;
 
     const spanIds = (first: number, last: number) => depths.slice(first, last + 1).map(d => d.id);
 
     const computePreview = (clientY: number): PreviewRange => {
-      const targetIdx = findDepthIdxAtClientY(depthEls, clientY, depths.length - 1);
+      const range = resolveRowRange(depthEls, clientY, anchorIdx, pointerIdx, ownedBySibling, minIdx, maxIdx);
+      pointerIdx = range.pointerIdx;
+      const depthIds = spanIds(range.firstIdx, range.lastIdx);
+      // Snap the moving edge to its target row's depth. A null there is the not-yet-defined open
+      // layer, so the description stays open-ended on that side; depthIds carries the exact span,
+      // which tells consecutive open rows apart (their shared null bound can't).
       if (side === "bottom") {
-        const lastIdx = clampBottom(targetIdx);
-        // Snap to the target row's end depth — null when it's the not-yet-defined bottom layer, which
-        // extends the description open-ended (the commit and save guard handle the null downstream).
-        // depthIds carries the exact span so consecutive open rows are told apart by the target row.
-        return {
-          fromDepth: drag.initialFromDepth,
-          toDepth: depths[lastIdx].toDepth,
-          depthIds: spanIds(firstDepthIdx, lastIdx),
-        };
+        return { fromDepth: drag.initialFromDepth, toDepth: depths[range.lastIdx].toDepth, depthIds };
       }
-      const firstIdx = clampTop(targetIdx);
-      // Snap to the target row's start depth — null when it's the not-yet-defined top layer, which
-      // extends the description open-ended upward (the commit and save guard handle the null).
-      return {
-        fromDepth: depths[firstIdx].fromDepth,
-        toDepth: drag.initialToDepth,
-        depthIds: spanIds(firstIdx, lastDepthIdx),
-      };
+      return { fromDepth: depths[range.firstIdx].fromDepth, toDepth: drag.initialToDepth, depthIds };
     };
 
     teardownRef.current = beginVerticalRowDrag({
       startClientY: event.clientY,
+      cursor: "ns-resize",
       onMove: clientY => {
         const next = computePreview(clientY);
         // Span length is the reliable change signal: the moving edge grows/shrinks a fixed-anchor run,

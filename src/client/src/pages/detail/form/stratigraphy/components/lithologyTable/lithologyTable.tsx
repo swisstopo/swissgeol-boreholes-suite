@@ -155,9 +155,11 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
       if (depthIdx < 0 || depthIdx >= depths.length) return false;
       return !itemIndexByDepthId.has(depths[depthIdx].id);
     };
+    const isActive = (side: "top" | "bottom") =>
+      activeDrag?.kind === kind && activeDrag.itemIdx === itemIdx && activeDrag.side === side;
     const canShrink = ids.length > 1;
-    const showTop = hasGap(firstIdx - 1) || canShrink;
-    const showBottom = hasGap(lastIdx + 1) || canShrink;
+    const showTop = hasGap(firstIdx - 1) || canShrink || isActive("top");
+    const showBottom = hasGap(lastIdx + 1) || canShrink || isActive("bottom");
     if (!showTop && !showBottom) return null;
     return (
       <>
@@ -168,6 +170,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
             side="top"
             fromDepth={layer.fromDepth}
             toDepth={layer.toDepth}
+            isActive={isActive("top")}
             onMouseDown={event => startResizeDrag(event, kind, itemIdx, layer, "top")}
           />
         )}
@@ -178,6 +181,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
             side="bottom"
             fromDepth={layer.fromDepth}
             toDepth={layer.toDepth}
+            isActive={isActive("bottom")}
             onMouseDown={event => startResizeDrag(event, kind, itemIdx, layer, "bottom")}
           />
         )}

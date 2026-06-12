@@ -9,6 +9,7 @@ interface DescriptionResizeHandleProps {
   side: ResizeSide;
   fromDepth: number | null;
   toDepth: number | null;
+  isActive?: boolean;
   onMouseDown: (event: MouseEvent<HTMLElement>) => void;
 }
 
@@ -17,10 +18,11 @@ export const DescriptionResizeHandle: FC<DescriptionResizeHandleProps> = ({
   side,
   fromDepth,
   toDepth,
+  isActive = false,
   onMouseDown,
 }) => (
   <Box
-    className="hover-content"
+    className={isActive ? undefined : "hover-content"}
     data-cy={`resize-description-${kind}-${side}-${fromDepth}-${toDepth}`}
     onMouseDown={onMouseDown}
     sx={{
@@ -44,9 +46,9 @@ export const DescriptionResizeHandle: FC<DescriptionResizeHandleProps> = ({
       },
       "& > .resize-handle-pill": {
         height: "3px",
-        width: "40px",
+        width: isActive ? "100%" : "40px",
         borderRadius: "8px",
-        backgroundColor: theme.palette.primary.muted,
+        backgroundColor: isActive ? theme.palette.primary.main : theme.palette.primary.muted,
         transition: "width 150ms ease-out, background-color 150ms ease-out",
       },
       "&:hover > .resize-handle-pill": {
