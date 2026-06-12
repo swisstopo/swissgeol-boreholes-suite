@@ -1,8 +1,8 @@
 import { FormErrors } from "../../../../../../components/form/form.ts";
 import { buildErrorStructure, parseFloatWithThousandsSeparator } from "../../../../../../components/form/formUtils.ts";
-import { Lithology, LithologyDescription } from "../../stratigraphy.ts";
+import { LithologicalDescription, Lithology, LithologyDescription, LithologyFormValues } from "../../stratigraphy.ts";
 
-export const prepareLithologyForSubmit = (values: Lithology) => {
+export const prepareLithologyForSubmit = (values: LithologyFormValues) => {
   values.fromDepth = parseFloatWithThousandsSeparator(values.fromDepth)!;
   values.toDepth = parseFloatWithThousandsSeparator(values.toDepth)!;
 
@@ -20,6 +20,7 @@ export const prepareLithologyForSubmit = (values: Lithology) => {
   delete values.createdBy;
   delete values.updatedBy;
   delete values.stratigraphy;
+  delete values.lithologicalDescription;
   if (String(values.share) === "") delete values.share;
   if (String(values.alterationDegreeId) === "") values.alterationDegreeId = null;
   if (String(values.compactnessId) === "") values.compactnessId = null;
@@ -106,4 +107,20 @@ export const validateLithologyUnconValues = (
   if (Object.keys(flatErrors).length > 0) {
     buildErrorStructure(flatErrors, errors);
   }
+};
+
+export const buildLithologicalDescription = (
+  matching: LithologicalDescription | undefined,
+  lithology: Lithology,
+  text: string,
+): LithologicalDescription => {
+  if (matching) return { ...matching, description: text };
+  return {
+    id: 0,
+    stratigraphyId: lithology.stratigraphyId,
+    fromDepth: lithology.fromDepth,
+    toDepth: lithology.toDepth,
+    depthIds: [...(lithology.depthIds ?? [])],
+    description: text,
+  };
 };

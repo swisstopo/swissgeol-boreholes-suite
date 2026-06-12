@@ -2,6 +2,8 @@ import { FC, useContext, useEffect } from "react";
 import { Controller, FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Stack } from "@mui/system";
+import { Info } from "lucide-react";
 import { theme } from "../../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
 import { FormErrors, FormValueType } from "../../../../../../components/form/form.ts";
@@ -10,15 +12,21 @@ import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
 import { FormInput } from "../../../../../../components/form/formInput.tsx";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
 import { useCapitalizedTranslation } from "../../../../../../hooks/useCapitalizedTranslation.ts";
-import { Lithology } from "../../stratigraphy.ts";
+import { LithologicalDescription, Lithology, LithologyFormValues } from "../../stratigraphy.ts";
 import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
 import { LithologyUnconsolidatedForm } from "./lithologyUnconsolidatedForm.tsx";
-import { prepareLithologyForSubmit, validateLithologyUnconValues } from "./lithologyUtils.ts";
+import {
+  buildLithologicalDescription,
+  prepareLithologyForSubmit,
+  validateLithologyUnconValues,
+} from "./lithologyUtils.ts";
 import { RemarksFormSection } from "./remarksFormSection.tsx";
 
 interface LithologyEditModalProps {
   lithology: Lithology | undefined;
+  lithologicalDescription: LithologicalDescription | undefined;
   updateLithology: (lithology: Lithology, hasChanges: boolean) => void;
+  updateLithologicalDescription: (description: LithologicalDescription, hasChanges: boolean) => void;
 }
 
 type RockTypeToggleValue = boolean | "unspecified";
@@ -29,10 +37,15 @@ const labelKey = (value: boolean | null | "unspecified"): "unconsolidated" | "co
   return "unspecified";
 };
 
-export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateLithology }) => {
+export const LithologyModal: FC<LithologyEditModalProps> = ({
+  lithology,
+  lithologicalDescription,
+  updateLithology,
+  updateLithologicalDescription,
+}) => {
   const { t } = useTranslation();
   const ct = useCapitalizedTranslation();
-  const formMethods = useForm<Lithology>({
+  const formMethods = useForm<LithologyFormValues>({
     mode: "all",
     resolver: async values => {
       const errors: FormErrors = {};
@@ -45,6 +58,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
   });
   const { formState, getValues } = formMethods;
   const { showPrompt } = useContext(PromptContext);
+  const sharedLithologyCount = lithologicalDescription?.depthIds?.length ?? 0;
 
   useEffect(() => {
     if (lithology) {
@@ -56,15 +70,18 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
         lithology.lithologyDescriptions = [
           {
             id: 0,
-            lithologyId: 0,
+            lithologyId: lithology.id,
             isFirst: true,
           },
         ];
       }
 
-      formMethods.reset(lithology);
+      formMethods.reset({
+        ...lithology,
+        lithologicalDescription: { description: lithologicalDescription?.description ?? "" },
+      });
     }
-  }, [lithology, formMethods]);
+  }, [lithology, lithologicalDescription, formMethods]);
 
   const isUnconsolidated = formMethods.watch("isUnconsolidated");
 
@@ -75,10 +92,39 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
   const applyDialog = async () => {
     const values = getValues();
     const isValid = await formMethods.trigger();
-    const hasChanges = JSON.stringify(lithology) !== JSON.stringify(values);
-    if (!hasChanges || isValid) {
-      prepareLithologyForSubmit(values);
-      updateLithology({ ...lithology, ...values } as Lithology, hasChanges || (Boolean(lithology?.isGap) && isValid));
+
+    const descriptionValue = (values.lithologicalDescription?.description ?? "").trim();
+    const originalDescription = lithologicalDescription?.description ?? "";
+    const lithologicalDescriptionChanged = descriptionValue !== originalDescription;
+
+    const lithologyValues = { ...values };
+    prepareLithologyForSubmit(lithologyValues);
+
+    const lithologyHasChanges = JSON.stringify(lithology) !== JSON.stringify(lithologyValues);
+    if (!lithologyHasChanges && !lithologicalDescriptionChanged) {
+      updateLithology(lithology as Lithology, false);
+      return;
+    }
+    if (!isValid) return;
+
+    const updateLithologyWithLithologicalDesciption = () => {
+      const merged = { ...lithology, ...lithologyValues } as Lithology;
+      updateLithology(merged, lithologyHasChanges || (Boolean(lithology?.isGap) && isValid));
+      if (lithologicalDescriptionChanged && (lithologicalDescription || (lithology?.depthIds?.length ?? 0) > 0)) {
+        updateLithologicalDescription(
+          buildLithologicalDescription(lithologicalDescription, lithology as Lithology, descriptionValue),
+          true,
+        );
+      }
+    };
+
+    if (lithologicalDescriptionChanged && sharedLithologyCount > 1) {
+      showPrompt(t("confirmEditSharedLithologicalDescription", { count: sharedLithologyCount }), [
+        { label: "cancel", action: () => {} },
+        { label: "continue", variant: "contained", action: updateLithologyWithLithologicalDesciption },
+      ]);
+    } else {
+      updateLithologyWithLithologicalDesciption();
     }
   };
 
@@ -99,10 +145,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
                 new: t(labelKey(newToggleValue)),
               }),
               [
-                {
-                  label: "cancel",
-                  action: () => {},
-                },
+                { label: "cancel", action: () => {} },
                 {
                   label: "continue",
                   variant: "contained",
@@ -125,7 +168,10 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
                                 isFirst: true,
                               },
                             ],
-                      notes: "",
+                      notes: currentValues.notes,
+                      lithologicalDescription: {
+                        description: currentValues.lithologicalDescription?.description ?? "",
+                      },
                     });
                   },
                 },
@@ -180,19 +226,26 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({ lithology, updateL
             </FormContainer>
           </FormContainer>
         </BoreholesCard>
-        {/* // TODO: Load description from lithological descriptions based on depths https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2386 */}
-        {/*<BoreholesCard data-cy="lithology-lithological-description" title={t("lithologyLayerDescription")}>*/}
-        {/*  <FormContainer>*/}
-        {/*    <FormInput*/}
-        {/*      fieldName={"description"}*/}
-        {/*      label={"description"}*/}
-        {/*      value={""}*/}
-        {/*      multiline={true}*/}
-        {/*      rows={3}*/}
-        {/*      readonly={true}*/}
-        {/*    />*/}
-        {/*  </FormContainer>*/}
-        {/*</BoreholesCard>*/}
+        <BoreholesCard data-cy="lithology-lithological-description" title={t("lithologyLayerDescription")}>
+          <FormContainer>
+            <Stack gap={1}>
+              <FormInput
+                fieldName="lithologicalDescription.description"
+                label="description"
+                multiline={true}
+                rows={3}
+              />
+              {sharedLithologyCount > 1 && (
+                <Stack direction="row" sx={{ color: theme.palette.primary.main }} gap={1}>
+                  <Info />
+                  <Typography variant="h6" data-cy="shared-lithological-description-notice">
+                    {t("sharedLithologicalDescriptionNotice", { count: sharedLithologyCount })}
+                  </Typography>
+                </Stack>
+              )}
+            </Stack>
+          </FormContainer>
+        </BoreholesCard>
         {lithology && isUnconsolidated === true && (
           <LithologyUnconsolidatedForm lithologyId={lithology.id} formMethods={formMethods} />
         )}
