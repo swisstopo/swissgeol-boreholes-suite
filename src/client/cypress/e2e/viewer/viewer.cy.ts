@@ -71,7 +71,7 @@ describe("Viewer tests", () => {
     navigateInBorehole(BoreholeTab.geometry);
     cy.contains("Top view").should("exist");
     navigateInSidebar(SidebarMenuItem.stratigraphy);
-    cy.wait(["@lithology_by_stratigraphyId_GET", "@lithological_description", "@facies_description"]);
+    cy.wait("@lithology_by_stratigraphyId_GET");
     cy.contains("Kaia Macejkovic").should("exist");
     navigateInStratigraphy(StratigraphyTab.chronostratigraphy);
     cy.contains("Phanerozoic").should("exist");

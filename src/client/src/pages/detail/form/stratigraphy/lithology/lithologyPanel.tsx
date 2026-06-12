@@ -3,21 +3,16 @@ import { useTranslation } from "react-i18next";
 import { Box, CircularProgress } from "@mui/material";
 import { FullPageCentered } from "../../../../../components/styledComponents.ts";
 import { EditStateContext } from "../../../editStateContext.tsx";
-import { useFaciesDescriptions } from "../faciesDescription.ts";
-import { useLithologicalDescriptions } from "../lithologicalDescription.ts";
-import { useLithologies } from "../lithology.ts";
+import { useLithologyTabContents } from "../stratigraphy.ts";
 import { LithologyPanelEdit } from "./lithologyPanelEdit.tsx";
 import { TempLithologyView } from "./tempLithologyView.tsx";
 
 export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
-  const { data: lithologies, isLoading: isLoadingLithologies } = useLithologies(stratigraphyId);
-  const { data: lithologicalDescriptions, isLoading: isLoadingLithologicalDescriptions } =
-    useLithologicalDescriptions(stratigraphyId);
-  const { data: faciesDescriptions, isLoading: isLoadingFaciesDescription } = useFaciesDescriptions(stratigraphyId);
+  const { data: tabContents, isLoading } = useLithologyTabContents(stratigraphyId);
 
-  if (isLoadingLithologies || isLoadingLithologicalDescriptions || isLoadingFaciesDescription) {
+  if (isLoading) {
     return (
       <FullPageCentered>
         <CircularProgress />
@@ -25,7 +20,9 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
     );
   }
 
-  if (!lithologies || !lithologicalDescriptions || !faciesDescriptions) return null;
+  if (!tabContents) return null;
+
+  const { lithologies, lithologicalDescriptions, faciesDescriptions } = tabContents;
 
   if (editingEnabled) {
     return (
