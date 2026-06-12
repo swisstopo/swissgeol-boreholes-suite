@@ -532,8 +532,6 @@ describe("Tests the publication workflow.", () => {
         "@stratigraphy_by_borehole_GET",
         "@stratigraphy_GET",
         "@lithology_by_stratigraphyId_GET",
-        "@lithological_description",
-        "@facies_description",
         "@layer",
       ]);
 

@@ -1,23 +1,28 @@
 import { createContext, FC, PropsWithChildren, useCallback, useContext, useEffect, useMemo, useRef } from "react";
+import { ApiError } from "../../../../api/apiInterfaces.ts";
+import { Stratigraphy } from "../../../../api/generated";
 import { SaveContext, SaveContextProps } from "../../saveContext.tsx";
+import { LithologyTabContents, StratigraphyTabEdit, useUpdateStratigraphyWithContents } from "./stratigraphy.ts";
 
-export interface StratigraphyContextProps {
-  registerSaveHandler: (handler: SaveHandler, registeringComponent: RegisteringComponentType) => void;
-  registerResetHandler: (handler: ResetHandler, registeringComponent: RegisteringComponentType) => void;
+interface StratigraphyHeaderRegistration {
+  getPayload: () => Stratigraphy;
+  onSaveError: (error: ApiError) => void;
+  reset: () => void;
 }
 
-type SaveHandler = () => Promise<boolean>;
-type ResetHandler = () => void;
-type RegisteringComponentType = "stratigraphy" | "lithology";
+interface LithologyTabRegistration {
+  getPayload: () => LithologyTabContents;
+  reset: () => void;
+}
 
-interface HandlerItem<T> {
-  handler: T;
-  registeringComponent: RegisteringComponentType;
+export interface StratigraphyContextProps {
+  registerHeader: (registration: StratigraphyHeaderRegistration) => void;
+  registerLithologyTab: (registration: LithologyTabRegistration | null) => void;
 }
 
 export const StratigraphyContext = createContext<StratigraphyContextProps>({
-  registerSaveHandler: () => {},
-  registerResetHandler: () => {},
+  registerHeader: () => {},
+  registerLithologyTab: () => {},
 });
 
 export const StratigraphyProvider: FC<PropsWithChildren> = ({ children }) => {
@@ -26,44 +31,40 @@ export const StratigraphyProvider: FC<PropsWithChildren> = ({ children }) => {
     registerResetHandler: registerOnReset,
     unMount,
   } = useContext<SaveContextProps>(SaveContext);
-  const saveHandlersRef = useRef<HandlerItem<SaveHandler>[]>([]);
-  const resetHandlersRef = useRef<HandlerItem<ResetHandler>[]>([]);
+  const { mutateAsync: updateStratigraphyWithContents } = useUpdateStratigraphyWithContents();
+  const headerRef = useRef<StratigraphyHeaderRegistration | null>(null);
+  const lithologyTabRef = useRef<LithologyTabRegistration | null>(null);
 
-  const registerSaveHandler = useCallback((handler: SaveHandler, registeringComponent: RegisteringComponentType) => {
-    const exists = saveHandlersRef.current.some(h => h.registeringComponent === registeringComponent);
-    if (exists) {
-      saveHandlersRef.current = saveHandlersRef.current.map(h =>
-        h.registeringComponent === registeringComponent ? { handler, registeringComponent } : h,
-      );
-    } else {
-      saveHandlersRef.current.push({ handler, registeringComponent });
-    }
+  const registerHeader = useCallback((registration: StratigraphyHeaderRegistration) => {
+    headerRef.current = registration;
   }, []);
 
-  const registerResetHandler = useCallback((handler: ResetHandler, registeringComponent: RegisteringComponentType) => {
-    const exists = resetHandlersRef.current.some(h => h.registeringComponent === registeringComponent);
-    if (exists) {
-      resetHandlersRef.current = resetHandlersRef.current.map(h =>
-        h.registeringComponent === registeringComponent ? { handler, registeringComponent } : h,
-      );
-    } else {
-      resetHandlersRef.current.push({ handler, registeringComponent });
-    }
+  const registerLithologyTab = useCallback((registration: LithologyTabRegistration | null) => {
+    lithologyTabRef.current = registration;
   }, []);
 
   const onReset = useCallback(() => {
-    for (const handlerItem of resetHandlersRef.current) {
-      handlerItem.handler();
-    }
+    headerRef.current?.reset();
+    lithologyTabRef.current?.reset();
   }, []);
 
   const onSave = useCallback(async () => {
-    for (const handlerItem of saveHandlersRef.current) {
-      const result = await handlerItem.handler();
-      if (!result) return false;
+    const header = headerRef.current;
+    // The header is always present on the stratigraphy page; without it there is nothing to save.
+    if (!header) return false;
+
+    const edit: StratigraphyTabEdit = {
+      stratigraphy: header.getPayload(),
+      lithologyTab: lithologyTabRef.current?.getPayload(),
+    };
+    try {
+      await updateStratigraphyWithContents(edit);
+      return true;
+    } catch (error) {
+      if (error instanceof ApiError) header.onSaveError(error);
+      return false;
     }
-    return true;
-  }, []);
+  }, [updateStratigraphyWithContents]);
 
   useEffect(() => {
     registerOnSave(onSave);
@@ -73,12 +74,10 @@ export const StratigraphyProvider: FC<PropsWithChildren> = ({ children }) => {
     };
   }, [registerOnSave, registerOnReset, onSave, onReset, unMount]);
 
-  const contextValue = useMemo(() => {
-    return {
-      registerSaveHandler,
-      registerResetHandler,
-    };
-  }, [registerSaveHandler, registerResetHandler]);
+  const contextValue = useMemo(
+    () => ({ registerHeader, registerLithologyTab }),
+    [registerHeader, registerLithologyTab],
+  );
 
   return <StratigraphyContext.Provider value={contextValue}>{children}</StratigraphyContext.Provider>;
 };

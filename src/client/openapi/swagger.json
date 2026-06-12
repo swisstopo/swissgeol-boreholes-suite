@@ -2220,254 +2220,6 @@
         }
       }
     },
-    "/api/v{version}/faciesdescription": {
-      "get": {
-        "tags": [
-          "FaciesDescription"
-        ],
-        "summary": "Asynchronously gets the BDMS.Models.FaciesDescriptions, filtered by stratigraphyId.",
-        "parameters": [
-          {
-            "name": "stratigraphyId",
-            "in": "query",
-            "description": "The id of the stratigraphy referenced in the facies descriptions to get.",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/FaciesDescription"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/FaciesDescription"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/FaciesDescription"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "FaciesDescription"
-        ],
-        "parameters": [
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FaciesDescription"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FaciesDescription"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/FaciesDescription"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/FaciesDescription"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FaciesDescription"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FaciesDescription"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "FaciesDescription"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "FaciesDescription"
-        ],
-        "parameters": [
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FaciesDescription"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/FaciesDescription"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/FaciesDescription"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/FaciesDescription"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FaciesDescription"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FaciesDescription"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v{version}/faciesdescription/{id}": {
-      "get": {
-        "tags": [
-          "FaciesDescription"
-        ],
-        "summary": "Asynchronously gets the BDMS.Models.FaciesDescription with the specified id.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "The id of the facies description to get.",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/FaciesDescription"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FaciesDescription"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/FaciesDescription"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
     "/api/v{version}/fieldmeasurement": {
       "get": {
         "tags": [
@@ -3533,658 +3285,6 @@
               "text/json": {
                 "schema": {
                   "$ref": "#/components/schemas/Instrumentation"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v{version}/lithologicaldescription": {
-      "get": {
-        "tags": [
-          "LithologicalDescription"
-        ],
-        "summary": "Asynchronously gets the BDMS.Models.LithologicalDescriptions, filtered by stratigraphyId.",
-        "parameters": [
-          {
-            "name": "stratigraphyId",
-            "in": "query",
-            "description": "The id of the stratigraphy referenced in the lithological descriptions to get.",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LithologicalDescription"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LithologicalDescription"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LithologicalDescription"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "LithologicalDescription"
-        ],
-        "parameters": [
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LithologicalDescription"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LithologicalDescription"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/LithologicalDescription"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/LithologicalDescription"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LithologicalDescription"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LithologicalDescription"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "LithologicalDescription"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "LithologicalDescription"
-        ],
-        "parameters": [
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LithologicalDescription"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/LithologicalDescription"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/LithologicalDescription"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/LithologicalDescription"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LithologicalDescription"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LithologicalDescription"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v{version}/lithologicaldescription/{id}": {
-      "get": {
-        "tags": [
-          "LithologicalDescription"
-        ],
-        "summary": "Asynchronously gets the BDMS.Models.LithologicalDescription with the specified id.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "The id of the lithological description to get.",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/LithologicalDescription"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LithologicalDescription"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/LithologicalDescription"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v{version}/lithologicaldescription/bulk": {
-      "post": {
-        "tags": [
-          "LithologicalDescription"
-        ],
-        "summary": "Asynchronously creates multiple BDMS.Models.LithologicalDescription entities in a single operation.",
-        "parameters": [
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "The collection of lithological descriptions to create.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/LithologicalDescription"
-                }
-              }
-            },
-            "text/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/LithologicalDescription"
-                }
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/LithologicalDescription"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LithologicalDescription"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LithologicalDescription"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/LithologicalDescription"
-                  }
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v{version}/lithology": {
-      "get": {
-        "tags": [
-          "Lithology"
-        ],
-        "summary": "Asynchronously gets the BDMS.Models.Lithologys, filtered by stratigraphyId.",
-        "parameters": [
-          {
-            "name": "stratigraphyId",
-            "in": "query",
-            "description": "The id of the stratigraphy containing the lithologies to get.",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Lithology"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Lithology"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Lithology"
-                  }
-                }
-              }
-            }
-          }
-        }
-      },
-      "post": {
-        "tags": [
-          "Lithology"
-        ],
-        "parameters": [
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Lithology"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Lithology"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Lithology"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Lithology"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Lithology"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Lithology"
-                }
-              }
-            }
-          }
-        }
-      },
-      "put": {
-        "tags": [
-          "Lithology"
-        ],
-        "parameters": [
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Lithology"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/Lithology"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/Lithology"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Lithology"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Lithology"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Lithology"
-                }
-              }
-            }
-          }
-        }
-      },
-      "delete": {
-        "tags": [
-          "Lithology"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "query",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/v{version}/lithology/{id}": {
-      "get": {
-        "tags": [
-          "Lithology"
-        ],
-        "summary": "Asynchronously gets the BDMS.Models.Lithology with the specified id.",
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "description": "The id of lithology to get.",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "$ref": "#/components/schemas/Lithology"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Lithology"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "$ref": "#/components/schemas/Lithology"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v{version}/lithology/bulk": {
-      "post": {
-        "tags": [
-          "Lithology"
-        ],
-        "summary": "Asynchronously creates multiple BDMS.Models.Lithology entities in a single operation.",
-        "parameters": [
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "The collection of lithologies to create.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Lithology"
-                }
-              }
-            },
-            "text/json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Lithology"
-                }
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "type": "array",
-                "items": {
-                  "$ref": "#/components/schemas/Lithology"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Lithology"
-                  }
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Lithology"
-                  }
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "array",
-                  "items": {
-                    "$ref": "#/components/schemas/Lithology"
-                  }
                 }
               }
             }
@@ -6153,10 +5253,12 @@
         "tags": [
           "Stratigraphy"
         ],
+        "summary": "Asynchronously deletes the BDMS.Models.Stratigraphy with the specified id.",
         "parameters": [
           {
             "name": "id",
             "in": "query",
+            "description": "The id of the stratigraphy to delete.",
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -6181,6 +5283,7 @@
         "tags": [
           "Stratigraphy"
         ],
+        "summary": "Asynchronously creates one or more BDMS.Models.Stratigraphy entries, each together with the\r\ncontents of one of its tabs (currently only the Lithology tab is implemented). Used both by the\r\n\"add stratigraphy\" action (a single header-only edit) and by the extraction modal that bulk-adds\r\n1–n stratigraphies with their lithology contents. All edits must target the same borehole; a\r\nduplicate name (already on the borehole or repeated within the batch) is rejected with a\r\n`mustBeUnique` error.",
         "parameters": [
           {
             "name": "version",
@@ -6192,23 +5295,37 @@
           }
         ],
         "requestBody": {
+          "description": "The stratigraphies (with optional tab content) to create.",
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Stratigraphy"
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/StratigraphyTabEdit"
+                }
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/Stratigraphy"
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/StratigraphyTabEdit"
+                }
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/Stratigraphy"
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "$ref": "#/components/schemas/StratigraphyTabEdit"
+                }
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -6216,17 +5333,26 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/Stratigraphy"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StratigraphyTabEdit"
+                  }
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Stratigraphy"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StratigraphyTabEdit"
+                  }
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Stratigraphy"
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/StratigraphyTabEdit"
+                  }
                 }
               }
             }
@@ -6237,6 +5363,7 @@
         "tags": [
           "Stratigraphy"
         ],
+        "summary": "Asynchronously updates a BDMS.Models.Stratigraphy header together with the contents of one of\r\nits tabs (currently only the Lithology tab is implemented). The whole edit is persisted in a\r\nsingle transaction.",
         "parameters": [
           {
             "name": "version",
@@ -6251,20 +5378,21 @@
           "content": {
             "application/json": {
               "schema": {
-                "$ref": "#/components/schemas/Stratigraphy"
+                "$ref": "#/components/schemas/StratigraphyTabEdit"
               }
             },
             "text/json": {
               "schema": {
-                "$ref": "#/components/schemas/Stratigraphy"
+                "$ref": "#/components/schemas/StratigraphyTabEdit"
               }
             },
             "application/*+json": {
               "schema": {
-                "$ref": "#/components/schemas/Stratigraphy"
+                "$ref": "#/components/schemas/StratigraphyTabEdit"
               }
             }
-          }
+          },
+          "required": true
         },
         "responses": {
           "200": {
@@ -6272,17 +5400,67 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "$ref": "#/components/schemas/Stratigraphy"
+                  "$ref": "#/components/schemas/StratigraphyTabEdit"
                 }
               },
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Stratigraphy"
+                  "$ref": "#/components/schemas/StratigraphyTabEdit"
                 }
               },
               "text/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/Stratigraphy"
+                  "$ref": "#/components/schemas/StratigraphyTabEdit"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/stratigraphy/{stratigraphyId}/lithology": {
+      "get": {
+        "tags": [
+          "Stratigraphy"
+        ],
+        "summary": "Asynchronously gets the full contents of the Lithology tab for the given stratigraphyId.",
+        "parameters": [
+          {
+            "name": "stratigraphyId",
+            "in": "path",
+            "description": "The id of the stratigraphy whose lithology tab contents to get.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/LithologyTabContents"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LithologyTabContents"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/LithologyTabContents"
                 }
               }
             }
@@ -11097,6 +10275,34 @@
         "additionalProperties": false,
         "description": "Join table entity for a BDMS.Models.Codelist with the schemaName 'rock_condition' attached to a BDMS.Models.Lithology."
       },
+      "LithologyTabContents": {
+        "type": "object",
+        "properties": {
+          "lithologies": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/Lithology"
+            },
+            "description": "Gets or sets the BDMS.Models.Lithology rows of the stratigraphy."
+          },
+          "lithologicalDescriptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/LithologicalDescription"
+            },
+            "description": "Gets or sets the BDMS.Models.LithologicalDescription rows of the stratigraphy."
+          },
+          "faciesDescriptions": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/FaciesDescription"
+            },
+            "description": "Gets or sets the BDMS.Models.FaciesDescription rows of the stratigraphy."
+          }
+        },
+        "additionalProperties": false,
+        "description": "The full editable contents of the Lithology tab of a BDMS.Models.Stratigraphy:\r\nthe three sibling collections that BDMS.Services.LithologyTabContentService manages\r\ntogether as a single unit."
+      },
       "LithologyTextureMetaCodes": {
         "required": [
           "codelistId",
@@ -12555,6 +11761,19 @@
         },
         "additionalProperties": false,
         "description": "Represents a stratigraphy entity in the database."
+      },
+      "StratigraphyTabEdit": {
+        "type": "object",
+        "properties": {
+          "stratigraphy": {
+            "$ref": "#/components/schemas/Stratigraphy"
+          },
+          "lithologyTab": {
+            "$ref": "#/components/schemas/LithologyTabContents"
+          }
+        },
+        "additionalProperties": false,
+        "description": "A single combined edit of a BDMS.Models.StratigraphyTabEdit.Stratigraphy together with the contents of one of its tabs.\r\nUsed by the combined stratigraphy create/update endpoints both as the request payload and as the\r\nresponse, so that the stratigraphy header and the active tab's content are persisted (and returned)\r\nin one transactional command. A header-only edit (e.g. creating an empty stratigraphy) leaves\r\nBDMS.Models.StratigraphyTabEdit.LithologyTab`null`. Only the lithology tab is implemented for now; further tabs\r\n(chronostratigraphy, lithostratigraphy) can add their own slots later."
       },
       "TabStatus": {
         "required": [
