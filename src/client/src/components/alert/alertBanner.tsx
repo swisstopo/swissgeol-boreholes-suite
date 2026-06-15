@@ -12,7 +12,7 @@ export const AlertBanner = () => {
         autoHideDuration={alertContext.autoHideDuration}
         onClose={alertContext.closeAlert}>
         <Alert
-          variant={alertContext.variant ?? "filled"}
+          variant={alertContext.variant}
           severity={alertContext.severity}
           onClose={alertContext.closeAlert}>
           {alertContext.text}
