@@ -407,6 +407,7 @@
   "msgWateringressEmpty": "No water ingress available",
   "mustBeUnique": "Value must be unique",
   "name": "Name",
+  "nameOrVersion": "Name/Version",
   "nationalInterest": "National interest",
   "national_interest": "National interest",
   "needHelpSeeDocumentation": "Need help? See documentation for more details",
@@ -530,9 +531,9 @@
     "Published": "Published"
   },
   "stratigraphy": "Stratigraphy",
+  "stratigraphyName": "Stratigraphy name",
   "stratigraphySaved_one": "Stratigraphy successfully saved.",
   "stratigraphySaved_other": "{{count}} stratigraphies successfully saved.",
-  "stratigraphy_name": "Name/Version",
   "striae": "Striations",
   "structurePostGen": "Postgenetic structure",
   "structureSynGen": "Syngenetic structure",
