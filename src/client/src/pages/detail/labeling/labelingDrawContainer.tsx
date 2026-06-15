@@ -158,6 +158,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
           }); // Fix bug where sometimes two interactions where added on initial render
 
         const dragBox = new DragBox();
+        dragBox.set("type", "dragBox");
         dragBox.on("boxstart", () => {
           if (tooltipRef?.current) {
             map.un("pointermove" as const, onPointerMove);
