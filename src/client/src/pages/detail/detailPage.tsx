@@ -7,7 +7,7 @@ import { GoogleAnalytics } from "../../components/GoogleAnalytics.tsx";
 import { FullPageCentered, LayoutBox, MainContentBox, SidebarBox } from "../../components/styledComponents.ts";
 import { useBlockNavigation } from "../../hooks/useBlockNavigation.tsx";
 import { useBoreholeDocumentTitle } from "../../hooks/useDocumentTitle.ts";
-import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../hooks/useRequiredId.ts";
 import { AnalyticsContext, AnalyticsContextProps } from "../../term/analyticsContext.tsx";
 import DetailHeader from "./detailHeader.tsx";
 import { DetailPageContent } from "./detailPageContent.tsx";
@@ -23,7 +23,7 @@ export const DetailPage: FC = () => {
   const { editingEnabled, setEditingEnabled } = useContext(EditStateContext);
   const { showSaveBar } = useContext<SaveContextProps>(SaveContext);
   const { analyticsId } = useContext<AnalyticsContextProps>(AnalyticsContext);
-  const { id } = useRequiredParams<{ id: string }>();
+  const id = useRequiredId();
   const { data: borehole, isLoading } = useBorehole(id);
   const { data: currentUser } = useCurrentUser();
 

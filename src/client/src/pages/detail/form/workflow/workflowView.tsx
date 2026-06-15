@@ -20,7 +20,7 @@ import { restrictionFreeCode } from "../../../../components/codelist.ts";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { useBoreholeDataAvailability } from "../../../../hooks/useBoreholeDataAvailability.ts";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
-import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import {
   TabStatusChangeRequest,
@@ -32,7 +32,7 @@ import {
 } from "./workflow.ts";
 
 export const WorkflowView = () => {
-  const { id: boreholeId } = useRequiredParams<{ id: string }>();
+  const boreholeId = useRequiredId();
   const { data: borehole } = useBorehole(boreholeId);
   const { data: workflow, isLoading } = useWorkflow(boreholeId);
   const { data: currentUser, isLoading: isCurrentUserLoading } = useCurrentUser();

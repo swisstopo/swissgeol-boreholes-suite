@@ -17,7 +17,7 @@ import { uploadProfile, useProfiles, useReloadProfiles } from "../../../api/prof
 import { BoreholeAttachment } from "../../../api/unionTypes.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
-import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../hooks/useRequiredId.ts";
 import { uploadPhoto, usePhotoImage, usePhotos, useReloadPhotos } from "../attachments/tabs/photo.ts";
 import { FloatingExtractionFeedback } from "./floatingExtractionFeedback.tsx";
 import { useLabelingContext } from "./labelingContext.tsx";
@@ -57,7 +57,7 @@ export const LabelingAlert = styled(Alert)({
 
 const LabelingPanel: FC = () => {
   const { t } = useTranslation();
-  const { id: boreholeId } = useRequiredParams<{ id: string }>();
+  const boreholeId = useRequiredId();
   const { panelPosition, setPanelPosition, extractionState, cancelRequest, panelTab } = useLabelingContext();
   const [selectedAttachment, setSelectedAttachment] = useState<BoreholeAttachment>();
   const [activePage, setActivePage] = useState<number>(1);

@@ -25,7 +25,7 @@ import {
   DialogMainContent,
 } from "../../../../../components/styledComponents.ts";
 import { useBoreholesNavigate } from "../../../../../hooks/useBoreholesNavigate.tsx";
-import { useRequiredParams } from "../../../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../../../hooks/useRequiredId.ts";
 import { prepareDataForSubmit } from "../components/lithologyTable/lithologyTableUtils.ts";
 import { StratigraphyExtractionItemState } from "./stratigraphyExtractionItem.tsx";
 import { StratigraphyExtractionView } from "./stratigraphyExtractionView.tsx";
@@ -55,7 +55,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   const { data: allExtractedStratigraphies = [], isLoading: isLoadingExtraction } = useExtractStratigraphies(file, 1);
   const { isLoading: isLoadingFileInfo } = useFileInfo(file?.id, 1);
   const { mutateAsync: bulkAdd, isPending: isLoadingBulkAdd } = useBulkAddMutation();
-  const { id } = useRequiredParams<{ id: string }>();
+  const id = useRequiredId();
   const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
   const [activePage, setActivePage] = useState<number>(1);

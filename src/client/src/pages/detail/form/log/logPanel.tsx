@@ -8,7 +8,7 @@ import { AddButton, BoreholesBaseButton } from "../../../../components/buttons/b
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
-import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { SaveContext } from "../../saveContext.tsx";
@@ -22,7 +22,7 @@ import { prepareLogRunForSubmit } from "./logUtils.ts";
 export const LogPanel: FC = () => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
-  const { id: boreholeId } = useRequiredParams();
+  const boreholeId = useRequiredId();
   const [selectedLogRunId, setSelectedLogRunId] = useState<string | undefined>();
   const [isImporting, setIsImporting] = useState<boolean>(false);
   const { registerSaveHandler, registerResetHandler, unMount, setHasChanges, hasChanges, triggerReset } =

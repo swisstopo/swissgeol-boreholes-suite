@@ -1,14 +1,14 @@
 import { FC, useCallback } from "react";
 import { GroundwaterLevelMeasurement as GroundwaterLevelMeasurementType } from "../../../../../api/generated";
 import { DataCards } from "../../../../../components/dataCard/dataCards.js";
-import { useRequiredParams } from "../../../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../../../hooks/useRequiredId.ts";
 import { sortByDepth } from "../../sorter.jsx";
 import { getGroundwaterLevelMeasurements } from "./GroundwaterLevelMeasurement.ts";
 import { GroundwaterLevelMeasurementDisplay } from "./groundwaterLevelMeasurementDisplay.tsx";
 import GroundwaterLevelMeasurementInput from "./groundwaterLevelMeasurementInput.tsx";
 
 const GroundwaterLevelMeasurement: FC = () => {
-  const { id: boreholeId } = useRequiredParams<{ id: string }>();
+  const boreholeId = useRequiredId();
   const renderInput = useCallback(
     (props: { item: GroundwaterLevelMeasurementType; parentId: number }) => (
       <GroundwaterLevelMeasurementInput {...props} />

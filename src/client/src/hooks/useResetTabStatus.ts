@@ -1,10 +1,10 @@
 import { GenericWorkflowSelection } from "@swissgeol/ui-core";
 import { useBorehole } from "../api/borehole.ts";
 import { TabName, TabType, useWorkflowMutation } from "../pages/detail/form/workflow/workflow.ts";
-import { useRequiredParams } from "./useRequiredParams.ts";
+import { useRequiredId } from "./useRequiredId.ts";
 
 export const useResetTabStatus = (tabsToReset: TabName[]) => {
-  const { id } = useRequiredParams<{ id: string }>();
+  const id = useRequiredId();
   const { data: borehole, isLoading } = useBorehole(id);
   const {
     updateTabStatus: { mutate: updateTabStatus },

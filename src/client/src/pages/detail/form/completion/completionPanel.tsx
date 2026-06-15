@@ -18,7 +18,7 @@ import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPage } from "../../../../components/styledComponents.ts";
 import { BoreholeTab, BoreholeTabContent, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
-import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import CompletionContent from "./completionContent.tsx";
 import CompletionHeaderDisplay from "./completionHeaderDisplay.tsx";
@@ -29,7 +29,7 @@ export const CompletionPanel = () => {
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled } = useContext(EditStateContext);
-  const { id: boreholeId } = useRequiredParams();
+  const boreholeId = useRequiredId();
   const { completionId } = useParams();
   const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();

@@ -1,11 +1,15 @@
 ﻿import { goToRouteAndAcceptTerms } from "../helpers/testHelpers";
 
-const verifyNotFoundPageWithNavigation = (route: string, expectedMessage: string) => {
-  goToRouteAndAcceptTerms(route);
-  cy.contains(expectedMessage).should("be.visible");
+const goBackToOverviewAndVerifyNavigation = () => {
   cy.get('[data-cy="backtooverview-button"]').click();
   cy.url().should("eq", Cypress.config().baseUrl + "/");
   cy.get('[data-cy="boreholes-number-preview"]').should("be.visible");
+};
+
+const verifyNotFoundPageWithNavigation = (route: string, expectedMessage: string) => {
+  goToRouteAndAcceptTerms(route);
+  cy.contains(expectedMessage).should("be.visible");
+  goBackToOverviewAndVerifyNavigation();
 };
 
 describe("Error boundaries", () => {
@@ -20,7 +24,7 @@ describe("Error boundaries", () => {
   it("shows a not found message for an id exceeding Int32 range", () => {
     goToRouteAndAcceptTerms("/146246425545464");
     cy.contains("The requested page could not be found.").should("be.visible");
-    cy.get('[data-cy="backtooverview-button"]').should("be.visible");
+    goBackToOverviewAndVerifyNavigation();
   });
 
   it("shows a generic error message when the detail page encounters an unexpected error", () => {

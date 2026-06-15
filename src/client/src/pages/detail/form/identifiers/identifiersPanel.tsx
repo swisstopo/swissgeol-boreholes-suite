@@ -16,13 +16,13 @@ import {
   FormValueType,
 } from "../../../../components/form/form.ts";
 import { FormSegmentBox } from "../../../../components/styledComponents";
-import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { BaseForm } from "../baseForm.tsx";
 import { IdentifiersFormInputs, IdentifiersFormSubmission } from "./identifiersPanelInterfaces.ts";
 
 export const IdentifiersPanel: FC = () => {
-  const { id } = useRequiredParams<{ id: string }>();
+  const id = useRequiredId();
   const { t } = useTranslation();
   const getCodelistLabel = useCodelistLocalizedLabel();
   const { data: borehole } = useBorehole(id);

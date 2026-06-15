@@ -10,7 +10,7 @@ import { theme } from "../../../AppTheme.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { Table } from "../../../components/table/table.tsx";
-import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../hooks/useRequiredId.ts";
 import { AddWorkgroupRoleDialog } from "./dialogs/addWorkgroupRoleDialog.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
@@ -18,7 +18,7 @@ import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 type WorkgroupWithRoles = Workgroup & { roles: Role[] };
 
 export const UserDetail: FC = () => {
-  const { id } = useRequiredParams<{ id: string }>();
+  const id = useRequiredId();
   const { t } = useTranslation();
   const [userWorkgroups, setUserWorkgroups] = useState<WorkgroupWithRoles[]>();
   const [workgroupDialogOpen, setWorkgroupDialogOpen] = useState(false);

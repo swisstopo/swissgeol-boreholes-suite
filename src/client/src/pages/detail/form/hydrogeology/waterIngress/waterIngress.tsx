@@ -1,14 +1,14 @@
 import { FC, useCallback } from "react";
 import { WaterIngress as WaterIngressType } from "../../../../../api/generated";
 import { DataCards } from "../../../../../components/dataCard/dataCards.js";
-import { useRequiredParams } from "../../../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../../../hooks/useRequiredId.ts";
 import { sortByDepth } from "../../sorter.jsx";
 import { getWaterIngress } from "./WaterIngress.ts";
 import WaterIngressDisplay from "./waterIngressDisplay.js";
 import WaterIngressInput from "./waterIngressInput.tsx";
 
 const WaterIngress: FC = () => {
-  const { id: boreholeId } = useRequiredParams<{ id: string }>();
+  const boreholeId = useRequiredId();
   const renderInput = useCallback(
     (props: { item: WaterIngressType; parentId: number }) => <WaterIngressInput {...props} />,
     [],

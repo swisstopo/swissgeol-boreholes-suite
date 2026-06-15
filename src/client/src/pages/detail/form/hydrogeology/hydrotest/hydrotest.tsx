@@ -1,14 +1,14 @@
 import { useCallback } from "react";
 import { Hydrotest as HydrotestType } from "../../../../../api/generated";
 import { DataCards } from "../../../../../components/dataCard/dataCards";
-import { useRequiredParams } from "../../../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../../../hooks/useRequiredId.ts";
 import { sortByDepth } from "../../sorter.jsx";
 import { getHydrotests } from "./Hydrotest";
 import { HydrotestDisplay } from "./hydrotestDisplay";
 import { HydrotestInput } from "./hydrotestInput";
 
 const Hydrotest = () => {
-  const { id: boreholeId } = useRequiredParams<{ id: string }>();
+  const boreholeId = useRequiredId();
   const renderInput = useCallback(
     (props: { item: HydrotestType; parentId: number }) => <HydrotestInput {...props} />,
     [],
