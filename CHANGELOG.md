@@ -20,6 +20,7 @@
 ### Fixed
 - Fixed bug where casing name was not correctly displayed in the select on the backfill card.
 - Long descriptions in the stratigraphy lithology table now wrap to a new line instead of widening the cell.
+- Prevent navigate to previously deleted stratigraphy.
 
 ## v2.1.1631 - 2026-05-13
 

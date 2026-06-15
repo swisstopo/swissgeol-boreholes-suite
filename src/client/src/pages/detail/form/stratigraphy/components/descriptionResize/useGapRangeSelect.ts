@@ -7,12 +7,7 @@ import {
   FaciesDescription,
   LithologicalDescription,
 } from "../../stratigraphy.ts";
-import {
-  beginVerticalRowDrag,
-  findDepthIdxAtClientY,
-  queryDepthRowElements,
-  swallowNextClick,
-} from "./verticalRowDrag.ts";
+import { beginVerticalRowDrag, queryDepthRowElements, resolveRowRange, swallowNextClick } from "./verticalRowDrag.ts";
 
 interface GapSelection {
   kind: DescriptionKind;
@@ -86,30 +81,21 @@ export const useGapRangeSelect = ({
       return id ? ownedDepthIds.has(id) : false;
     };
 
-    // Contiguous run of gaps between the anchor and the pointer, clamped at the first
-    // column-owned row encountered while walking away from the anchor.
+    // Row the cursor currently points at. Persisted across mousemoves so the within-cell snap
+    // tracks from it. The selection runs both ways from the anchor across the full column.
+    let pointerIdx = anchorIdx;
+
     const computeSelectedIdxs = (clientY: number): number[] => {
-      const pointer = findDepthIdxAtClientY(depthEls, clientY, depths.length - 1);
-      let firstSelectedIdx = anchorIdx;
-      let lastSelectedIdx = anchorIdx;
-      if (pointer > anchorIdx) {
-        for (let i = anchorIdx + 1; i <= pointer; i++) {
-          if (isOwned(i)) break;
-          lastSelectedIdx = i;
-        }
-      } else if (pointer < anchorIdx) {
-        for (let i = anchorIdx - 1; i >= pointer; i--) {
-          if (isOwned(i)) break;
-          firstSelectedIdx = i;
-        }
-      }
+      const range = resolveRowRange(depthEls, clientY, anchorIdx, pointerIdx, isOwned, 0, depths.length - 1);
+      pointerIdx = range.pointerIdx;
       const idxs: number[] = [];
-      for (let i = firstSelectedIdx; i <= lastSelectedIdx; i++) idxs.push(i);
+      for (let i = range.firstIdx; i <= range.lastIdx; i++) idxs.push(i);
       return idxs;
     };
 
     teardownRef.current = beginVerticalRowDrag({
       startClientY: event.clientY,
+      cursor: "crosshair",
       onMove: clientY => {
         const next = new Set(computeSelectedIdxs(clientY).map(i => depths[i].id));
         setPreviewDepthIds(prev => (sameSet(prev, next) ? prev : next));

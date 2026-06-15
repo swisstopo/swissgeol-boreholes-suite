@@ -1,5 +1,6 @@
 import Layer from "ol/layer/Layer";
 import VectorSource from "ol/source/Vector";
+import { evaluateInput, hasError, setInput } from "../helpers/formHelpers";
 import { createBorehole, goToDetailRouteAndAcceptTerms, startBoreholeEditing } from "../helpers/testHelpers";
 import { MapDomId, WindowWithMaps } from "../helpers/window.ts";
 
@@ -41,6 +42,24 @@ function createBoreholeAndStartExtraction(boreholeName: string, filePath: string
   });
 }
 
+// Builds one fake "borehole" entry in the shape the Python extraction service returns from
+// extract_stratigraphy, so tests can stub that endpoint without running the real extraction.
+// Each entry has a single layer spanning depth 0 to endDepth with the given material description.
+// The frontend later turns each of these into one extracted stratigraphy shown in the dialog.
+function makeExtractionBorehole(index: number, materialText: string, endDepth: number) {
+  return {
+    id: `borehole-${index}`,
+    page_numbers: [1],
+    layers: [
+      {
+        start: { depth: 0, bounding_boxes: [] },
+        end: { depth: endDepth, bounding_boxes: [] },
+        material_description: { text: materialText, bounding_boxes: [] },
+      },
+    ],
+  };
+}
+
 describe("Tests for stratigraphy extraction", () => {
   it("Extracts stratigraphy and shows bounding boxes", () => {
     createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "test_profile.pdf");
@@ -78,24 +97,12 @@ describe("Tests for stratigraphy extraction", () => {
 
   it("shows dropdown and supports check/uncheck for multiple extracted stratigraphies", () => {
     // Build a mock response with 4 boreholes to trigger the dropdown UI (threshold is > 3).
-    const makeBorehole = (index: number, materialText: string, endDepth: number) => ({
-      id: `borehole-${index}`,
-      page_numbers: [1],
-      layers: [
-        {
-          start: { depth: 0, bounding_boxes: [] },
-          end: { depth: endDepth, bounding_boxes: [] },
-          material_description: { text: materialText, bounding_boxes: [] },
-        },
-      ],
-    });
-
     const fourBoreholeResponse = {
       boreholes: [
-        makeBorehole(1, "Humus", 1.5),
-        makeBorehole(2, "Sand", 2),
-        makeBorehole(3, "Kies", 3),
-        makeBorehole(4, "Ton", 4),
+        makeExtractionBorehole(1, "Humus", 1.5),
+        makeExtractionBorehole(2, "Sand", 2),
+        makeExtractionBorehole(3, "Kies", 3),
+        makeExtractionBorehole(4, "Ton", 4),
       ],
     };
 
@@ -105,7 +112,7 @@ describe("Tests for stratigraphy extraction", () => {
     }).as("extract-stratigraphy-multi");
 
     createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "2-Bohrungen.pdf");
-    cy.wait("@extract-stratigraphy-multi", { timeout: 240000 });
+    cy.wait("@extract-stratigraphy-multi");
 
     // With >3 stratigraphies the dropdown is shown instead of the ToggleButtonGroup.
     cy.dataCy("stratigraphy-select").should("exist");
@@ -182,6 +189,45 @@ describe("Tests for stratigraphy extraction", () => {
       expect(names).to.include("2-Bohrungen_1");
       expect(names).to.include("2-Bohrungen_2");
     });
+  });
+
+  it("disables saving while a selected stratigraphy name is empty or duplicated", () => {
+    cy.intercept("POST", "dataextraction/api/V1/extract_stratigraphy", {
+      statusCode: 200,
+      body: { boreholes: [makeExtractionBorehole(1, "Humus", 1.5), makeExtractionBorehole(2, "Sand", 2)] },
+    }).as("extract-stratigraphy-names");
+
+    createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "2-Bohrungen.pdf");
+    cy.wait("@extract-stratigraphy-names");
+
+    // Names are prefilled from the file base name with a numbered suffix.
+    evaluateInput("stratigraphy-name-0", "2-Bohrungen_1");
+
+    // Check the first (default-selected) stratigraphy: a valid name allows saving.
+    cy.dataCy("add-stratigraphy-checkbox-1").click();
+    cy.dataCy("add-stratigraphy-button").should("not.be.disabled");
+
+    // Clearing a checked stratigraphy's name flags the field and blocks saving.
+    setInput("stratigraphy-name-0", " ");
+    hasError("stratigraphy-name-0", true);
+    cy.dataCy("add-stratigraphy-button").should("be.disabled");
+
+    // A unique name clears the error and re-enables saving.
+    setInput("stratigraphy-name-0", "Alpha");
+    hasError("stratigraphy-name-0", false);
+    cy.dataCy("add-stratigraphy-button").should("not.be.disabled");
+
+    // Check the second stratigraphy and give it the same name: both are flagged as not unique.
+    cy.dataCy("stratigraphy-toggle-item-1").click();
+    cy.dataCy("add-stratigraphy-checkbox-2").click();
+    setInput("stratigraphy-name-1", "Alpha");
+    hasError("stratigraphy-name-1", true);
+    cy.dataCy("add-stratigraphy-button").should("be.disabled");
+
+    // Making the second name unique again resolves the conflict.
+    setInput("stratigraphy-name-1", "Beta");
+    hasError("stratigraphy-name-1", false);
+    cy.dataCy("add-stratigraphy-button").should("not.be.disabled");
   });
 
   it("displays message if nothing could be extracted from file", () => {
