@@ -7,12 +7,7 @@ import {
   FaciesDescription,
   LithologicalDescription,
 } from "../../stratigraphy.ts";
-import {
-  beginVerticalRowDrag,
-  findDepthIdxAtClientY,
-  queryDepthRowElements,
-  swallowNextClick,
-} from "./verticalRowDrag.ts";
+import { beginVerticalRowDrag, queryDepthRowElements, resolveRowRange, swallowNextClick } from "./verticalRowDrag.ts";
 
 export type ResizeSide = "top" | "bottom";
 
@@ -118,47 +113,26 @@ export const useDescriptionResize = ({
       return columnItems.some((item, i) => i !== itemIdx && item.depthIds?.includes(depthId));
     };
 
-    // Clamp the new bottom edge: start from the cursor's row but stop at the first sibling-owned
-    // row we'd cross. The drag can never reduce the description below its original range.
-    const clampBottom = (targetIdx: number): number => {
-      let newLastIdx = Math.max(firstDepthIdx, Math.min(depths.length - 1, targetIdx));
-      if (newLastIdx > lastDepthIdx) {
-        for (let i = lastDepthIdx + 1; i <= newLastIdx; i++) {
-          if (ownedBySibling(i)) {
-            newLastIdx = i - 1;
-            break;
-          }
-        }
-      }
-      return newLastIdx;
-    };
+    const anchorIdx = side === "bottom" ? firstDepthIdx : lastDepthIdx;
+    const minIdx = side === "bottom" ? firstDepthIdx : 0;
+    const maxIdx = side === "bottom" ? depths.length - 1 : lastDepthIdx;
 
-    // Mirror of clampBottom for the top edge.
-    const clampTop = (targetIdx: number): number => {
-      let newFirstIdx = Math.max(0, Math.min(lastDepthIdx, targetIdx));
-      if (newFirstIdx < firstDepthIdx) {
-        for (let i = firstDepthIdx - 1; i >= newFirstIdx; i--) {
-          if (ownedBySibling(i)) {
-            newFirstIdx = i + 1;
-            break;
-          }
-        }
-      }
-      return newFirstIdx;
-    };
+    // Row the moving edge currently points at (the row the cursor is within). Persisted across
+    // mousemoves so the within-cell snap tracks from it.
+    let pointerIdx = side === "bottom" ? lastDepthIdx : firstDepthIdx;
 
     const computePreview = (clientY: number): PreviewRange => {
-      const targetIdx = findDepthIdxAtClientY(depthEls, clientY, depths.length - 1);
+      const range = resolveRowRange(depthEls, clientY, anchorIdx, pointerIdx, ownedBySibling, minIdx, maxIdx);
+      pointerIdx = range.pointerIdx;
       if (side === "bottom") {
-        const lastIdx = clampBottom(targetIdx);
-        return { fromDepth: drag.initialFromDepth, toDepth: depths[lastIdx].toDepth ?? drag.initialToDepth };
+        return { fromDepth: drag.initialFromDepth, toDepth: depths[range.lastIdx].toDepth ?? drag.initialToDepth };
       }
-      const firstIdx = clampTop(targetIdx);
-      return { fromDepth: depths[firstIdx].fromDepth ?? drag.initialFromDepth, toDepth: drag.initialToDepth };
+      return { fromDepth: depths[range.firstIdx].fromDepth ?? drag.initialFromDepth, toDepth: drag.initialToDepth };
     };
 
     teardownRef.current = beginVerticalRowDrag({
       startClientY: event.clientY,
+      cursor: "ns-resize",
       onMove: clientY => {
         const next = computePreview(clientY);
         setPreviewRange(prev => (prev?.fromDepth === next.fromDepth && prev?.toDepth === next.toDepth ? prev : next));
