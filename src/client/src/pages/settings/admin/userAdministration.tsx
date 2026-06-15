@@ -3,8 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Checkbox, Chip, Stack, Tooltip } from "@mui/material";
 import { GridColDef, GridEventListener, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { useQueryClient } from "@tanstack/react-query";
-import { WorkgroupRole } from "../../../api/apiInterfaces.ts";
-import { User } from "../../../api/generated";
+import { User, UserWorkgroupRole } from "../../../api/generated";
 import { usersQueryKey, useUserMutations, useUsers } from "../../../api/user.ts";
 import { Table } from "../../../components/table/table.tsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
@@ -50,7 +49,7 @@ export const UserAdministration: FC = () => {
     );
   };
 
-  const renderWorkgroupChips = (params: GridRenderCellParams<WorkgroupRole[]>) => {
+  const renderWorkgroupChips = (params: GridRenderCellParams<UserWorkgroupRole[]>) => {
     const averageCharacterWidth = 7.5;
     const chipPadding = 16;
     const chipsGap = 8;
@@ -63,7 +62,9 @@ export const UserAdministration: FC = () => {
 
     const uniqueWorkgroups: string[] = [
       ...new Set<string>(
-        params.value?.map((role: WorkgroupRole) => role.workgroup?.name).filter((name: string) => name !== undefined),
+        params.value
+          ?.map((role: UserWorkgroupRole) => role.workgroup?.name)
+          .filter((name: string) => name !== undefined),
       ),
     ];
 

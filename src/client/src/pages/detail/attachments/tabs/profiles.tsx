@@ -27,8 +27,8 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const { editingEnabled } = useContext(EditStateContext);
   const apiRef = useGridApiRef();
   const showApiErrorAlert = useApiErrorAlert();
-  const { data: profiles, isLoading: isLoadingProfiles } = useProfiles(Number(boreholeId));
-  const reloadProfiles = useReloadProfiles(Number(boreholeId));
+  const { data: profiles, isLoading: isLoadingProfiles } = useProfiles(boreholeId);
+  const reloadProfiles = useReloadProfiles(boreholeId);
 
   const loadAttachments = useCallback(async () => {
     return await getProfiles(boreholeId);

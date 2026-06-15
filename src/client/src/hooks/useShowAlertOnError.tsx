@@ -1,7 +1,7 @@
 import { useCallback, useContext, useEffect } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertColor } from "@mui/material";
-import { ApiError } from "../api/apiInterfaces.ts";
+import { ApiError } from "../api/errorClasses.ts";
 import { AlertContext } from "../components/alert/alertContext.tsx";
 
 export function useApiErrorAlert(severity: AlertColor = "error") {

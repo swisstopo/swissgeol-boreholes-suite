@@ -1,7 +1,7 @@
 import { useCallback } from "react";
 import { useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
-import { ApiError } from "../../../../api/apiInterfaces.ts";
 import { download } from "../../../../api/download.ts";
+import { ApiError } from "../../../../api/errorClasses.ts";
 import { fetchApiV2Base, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../../../../api/fetchApiV2.ts";
 import { Photo } from "../../../../api/generated";
 import { getImageFromBlob } from "../../../../utils.ts";

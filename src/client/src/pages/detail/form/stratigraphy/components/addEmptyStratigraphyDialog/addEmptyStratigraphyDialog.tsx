@@ -1,7 +1,7 @@
 import { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack, TextField, Typography } from "@mui/material";
-import { ApiError } from "../../../../../../api/apiInterfaces.ts";
+import { ApiError } from "../../../../../../api/errorClasses.ts";
 import { Stratigraphy } from "../../../../../../api/generated";
 import { BoreholesButton, CancelButton } from "../../../../../../components/buttons/buttons.tsx";
 import { getFieldBorderColor } from "../../../../../../components/form/formUtils.ts";

@@ -18,7 +18,7 @@ import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPage } from "../../../../components/styledComponents.ts";
 import { BoreholeTab, BoreholeTabContent, BoreholeTabs } from "../../../../components/styledTabComponents.tsx";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
-import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import CompletionContent from "./completionContent.tsx";
 import CompletionHeaderDisplay from "./completionHeaderDisplay.tsx";
@@ -29,7 +29,7 @@ export const CompletionPanel = () => {
   const { resetCanSwitch, triggerCanSwitch, canSwitch } = useContext(DataCardExternalContext);
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled } = useContext(EditStateContext);
-  const { id: boreholeId } = useRequiredParams();
+  const boreholeId = useRequiredId();
   const { completionId } = useParams();
   const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
@@ -85,7 +85,7 @@ export const CompletionPanel = () => {
   const loadData = () => {
     setIsLoading(true);
     if (boreholeId && mounted.current) {
-      getCompletions(Number.parseInt(boreholeId, 10)).then(response => {
+      getCompletions(boreholeId).then(response => {
         if (response?.length > 0) {
           // Display primary completion first then order by created date
           response.sort((a, b) => {
@@ -280,7 +280,7 @@ export const CompletionPanel = () => {
       // treats the required field as missing and disables save until a kind is selected.
       const tempCompletion = {
         id: 0,
-        boreholeId: Number(boreholeId),
+        boreholeId: boreholeId,
         kindId: null,
         name: null,
         isPrimary: state.displayed.length === 0,

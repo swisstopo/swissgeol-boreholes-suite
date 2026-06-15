@@ -4,7 +4,7 @@ import { Stack, Typography } from "@mui/material";
 import { BoreholesCard } from "../../../../components/boreholesCard.tsx";
 import { FormContainer, FormDialog } from "../../../../components/form/form.ts";
 import { LoadingBackdrop } from "../../../../components/loadingBackdrop.tsx";
-import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { FileDropzone } from "./fileDropzone.tsx";
 import { LogImportError, LogImportValidationError, useImportLogs } from "./log.ts";
 import { parseLogFilesCsv } from "./logUtils.ts";
@@ -46,7 +46,7 @@ const ImportErrorSection: FC<{
 
 export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIsImporting }) => {
   const { t } = useTranslation();
-  const { id: boreholeId } = useRequiredParams();
+  const boreholeId = useRequiredId();
   const [logRunFile, setLogRunFile] = useState<File>();
   const [logFileFile, setLogFileFile] = useState<File>();
   const [requiredFilesPerRun, setRequiredFilesPerRun] = useState<Record<string, string[]>>({});
@@ -91,7 +91,7 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
 
     return importMutation
       .mutateAsync({
-        boreholeId: Number(boreholeId),
+        boreholeId: boreholeId,
         formData,
         attachmentsPerRun,
       })

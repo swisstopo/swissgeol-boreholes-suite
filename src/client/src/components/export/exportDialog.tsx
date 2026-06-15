@@ -1,7 +1,7 @@
 import { Dispatch, SetStateAction, useCallback, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack } from "@mui/material";
-import { ApiError } from "../../api/apiInterfaces.ts";
+import { ApiError } from "../../api/errorClasses.ts";
 import { AlertContext } from "../alert/alertContext.tsx";
 import { CancelButton, ExportButton } from "../buttons/buttons.tsx";
 import { LoadingBackdrop } from "../loadingBackdrop.tsx";

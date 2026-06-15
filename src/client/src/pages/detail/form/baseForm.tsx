@@ -5,7 +5,7 @@ import { DevTool } from "../../../../hookformDevtools.ts";
 import { useBorehole, useBoreholeMutations } from "../../../api/borehole.ts";
 import { findFirstErrorRef } from "../../../components/form/formUtils.ts";
 import { useFormDirtyMarkAsChanged } from "../../../components/form/useFormDirty.tsx";
-import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../hooks/useRequiredId.ts";
 import { useResetTabStatus } from "../../../hooks/useResetTabStatus.ts";
 import { useLabelingContext } from "../labeling/labelingContext.tsx";
 import { SaveContext } from "../saveContext.tsx";
@@ -31,8 +31,8 @@ export const BaseForm = <T extends FieldValues>({
 }: BaseFormProps<T>) => {
   const { registerSaveHandler, registerResetHandler, unMount } = useContext(SaveContext);
   const { setExtractionObject } = useLabelingContext();
-  const { id } = useRequiredParams<{ id: string }>();
-  const { data: borehole } = useBorehole(parseInt(id, 10));
+  const id = useRequiredId();
+  const { data: borehole } = useBorehole(id);
   const {
     update: { mutateAsync: updateBorehole },
   } = useBoreholeMutations();

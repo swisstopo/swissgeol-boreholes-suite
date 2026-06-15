@@ -4,15 +4,14 @@ import { Box } from "@mui/material";
 import { useBorehole } from "../../../api/borehole.ts";
 import { Tab, TabPanel } from "../../../components/tabs/tabPanel.tsx";
 import { useBoreholeDataAvailability } from "../../../hooks/useBoreholeDataAvailability.ts";
-import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../hooks/useRequiredId.ts";
 import { Documents } from "./tabs/documents.tsx";
 import { Photos } from "./tabs/photos.tsx";
 import { Profiles } from "./tabs/profiles.tsx";
 
 export const Attachments: FC = () => {
   const { t } = useTranslation();
-  const { id } = useRequiredParams<{ id: string }>();
-  const boreholeId = parseInt(id);
+  const boreholeId = useRequiredId();
   const { data: borehole } = useBorehole(boreholeId);
   const { hasPhotos, hasProfiles, hasDocuments } = useBoreholeDataAvailability(borehole);
 

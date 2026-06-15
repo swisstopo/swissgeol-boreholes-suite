@@ -1,4 +1,4 @@
-import { ApiError } from "./apiInterfaces.ts";
+import { ApiError } from "./errorClasses.ts";
 import { fetchApiV2Base } from "./fetchApiV2.ts";
 
 const getFallbackFileName = (url: string): string => {

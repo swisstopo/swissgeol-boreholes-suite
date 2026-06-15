@@ -1,5 +1,5 @@
-import { NullableDateString } from "../../../../api/apiInterfaces.ts";
 import { Codelist, User } from "../../../../api/generated";
+import { NullableDateString } from "../../../../api/unionTypes.ts";
 
 export interface LogRunChangeTracker {
   item: LogRun;
