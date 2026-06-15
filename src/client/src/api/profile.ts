@@ -96,10 +96,10 @@ export function useProfileOcrStatus(boreholeId?: number) {
     enabled: !!boreholeId,
     queryKey: [profileOcrStatusQueryKey, boreholeId],
     queryFn: async (): Promise<ProfileOcrStatus[]> => {
-      return (await fetchApiV2Legacy(
+      return await fetchApiV2WithApiError<ProfileOcrStatus[]>(
         `profile/getOcrStatusForBorehole?boreholeId=${boreholeId}`,
         "GET",
-      )) as ProfileOcrStatus[];
+      );
     },
     refetchInterval: ({ state: { data } }) => decidePollInterval(data),
   });
