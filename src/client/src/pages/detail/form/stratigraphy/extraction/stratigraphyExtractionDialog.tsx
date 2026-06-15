@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
+import { FC, MouseEvent, useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import {
@@ -61,9 +61,8 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   const [selectedIndex, setSelectedIndex] = useState<number>(0);
   const [checkedIndices, setCheckedIndices] = useState<Set<number>>(new Set());
   const [itemStates, setItemStates] = useState<Map<number, StratigraphyExtractionItemState>>(new Map());
-  const [names, setNames] = useState<Map<number, string>>(new Map());
+  const [editedNames, setEditedNames] = useState<Map<number, string>>(new Map());
   const [conflictingNames, setConflictingNames] = useState<Set<string>>(new Set());
-  const initializedFileRef = useRef<string | undefined>(undefined);
 
   const handleItemStateChange = useCallback((index: number, state: StratigraphyExtractionItemState) => {
     setItemStates(prev => {
@@ -80,18 +79,19 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
     }
   }, [allExtractedStratigraphies.length, checkedIndices]);
 
-  useEffect(() => {
-    // Prefill the editable names once the extraction result is available (once per file).
-    if (allExtractedStratigraphies.length === 0 || initializedFileRef.current === file.name) return;
-    initializedFileRef.current = file.name;
+  // The displayed name per stratigraphy: the default derived from the file name, overridden by any edit.
+  const names = useMemo(() => {
     const count = allExtractedStratigraphies.length;
-    setNames(
-      new Map(allExtractedStratigraphies.map((_, index) => [index, getDefaultStratigraphyName(file, index, count)])),
+    return new Map(
+      allExtractedStratigraphies.map((_, index) => [
+        index,
+        editedNames.get(index) ?? getDefaultStratigraphyName(file, index, count),
+      ]),
     );
-  }, [allExtractedStratigraphies, file]);
+  }, [allExtractedStratigraphies, editedNames, file]);
 
   const setName = useCallback((index: number, value: string) => {
-    setNames(prev => {
+    setEditedNames(prev => {
       const next = new Map(prev);
       next.set(index, value);
       return next;
@@ -141,9 +141,8 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
       abortController.abort();
       setAbortController(undefined);
     }
-    setNames(new Map());
+    setEditedNames(new Map());
     setConflictingNames(new Set());
-    initializedFileRef.current = undefined;
     setSelectedFile(undefined);
     setOpen(false);
   }, [abortController, setOpen, setSelectedFile]);
