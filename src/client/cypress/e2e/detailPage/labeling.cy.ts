@@ -57,11 +57,7 @@ const drawBox = (x1: number, y1: number, x2: number, y2: number) => {
     const labelingWindow = win as WindowWithMaps;
     const interactions = labelingWindow["labeling-map"]?.getInteractions().getArray();
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(
-      interactions?.some(interaction => {
-        return interaction.constructor.name === "DragBox";
-      }),
-    ).to.be.true;
+    expect(interactions?.some(interaction => interaction.get("type") === "dragBox")).to.be.true;
   });
   cy.get('[data-cy="labeling-panel"]')
     .realMouseDown({ position: "topLeft", x: x1, y: y1 })
@@ -74,11 +70,7 @@ const drawBox = (x1: number, y1: number, x2: number, y2: number) => {
     const labelingWindow = win as WindowWithMaps;
     const interactions = labelingWindow["labeling-map"]?.getInteractions().getArray();
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(
-      interactions?.some(interaction => {
-        return interaction.constructor.name === "DragBox";
-      }),
-    ).to.be.false;
+    expect(interactions?.some(interaction => interaction.get("type") === "dragBox")).to.be.false;
   });
 };
 
@@ -95,7 +87,7 @@ const waitForLabelingImageLoaded = () => {
     const labelingWindow = win as WindowWithMaps;
     const layers = labelingWindow["labeling-map"]?.getLayers().getArray();
     // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(layers?.some(layer => layer.constructor.name === "ImageLayer")).to.be.true;
+    expect(layers?.some(layer => layer.get("type") === "image")).to.be.true;
   });
 };
 
@@ -309,7 +301,7 @@ describe("Test labeling tool", () => {
       const labelingWindow = win as WindowWithMaps;
       const interactions = labelingWindow["labeling-map"]?.getInteractions().getArray() || [];
       // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-      expect(interactions.some(interaction => interaction.constructor.name === "Draw")).to.be.false;
+      expect(interactions.some(interaction => interaction.get("type") === "dragBox")).to.be.false;
     });
     stopBoreholeEditing();
     cy.dataCy("editingstop-button").should("not.exist");

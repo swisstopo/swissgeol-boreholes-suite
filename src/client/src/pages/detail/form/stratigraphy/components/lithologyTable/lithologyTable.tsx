@@ -21,7 +21,7 @@ import { DepthDeleteButton } from "../depthDeleteButton.tsx";
 import { DepthInput } from "../depthInput.tsx";
 import { DepthInsertButton } from "../depthInsertButton.tsx";
 import { DescriptionResizeHandle } from "../descriptionResize/descriptionResizeHandle.tsx";
-import { useDescriptionResize } from "../descriptionResize/useDescriptionResize.ts";
+import { ResizeSide, useDescriptionResize } from "../descriptionResize/useDescriptionResize.ts";
 import { useGapRangeSelect } from "../descriptionResize/useGapRangeSelect.ts";
 import { LayerAddButton } from "../layerAddButton.tsx";
 import { StratigraphyTableActionCell } from "../stratigraphyTableActionCell.tsx";
@@ -155,7 +155,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
       if (depthIdx < 0 || depthIdx >= depths.length) return false;
       return !itemIndexByDepthId.has(depths[depthIdx].id);
     };
-    const isActive = (side: "top" | "bottom") =>
+    const isActive = (side: ResizeSide) =>
       activeDrag?.kind === kind && activeDrag.itemIdx === itemIdx && activeDrag.side === side;
     const canShrink = ids.length > 1;
     const showTop = hasGap(firstIdx - 1) || canShrink || isActive("top");
