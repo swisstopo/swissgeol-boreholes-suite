@@ -11,12 +11,17 @@ namespace BDMS.Services;
 /// </summary>
 public class FileOcrBackgroundService : BackgroundService
 {
+    internal const int DefaultMaxDegreeOfParallelism = 4;
+    internal static readonly TimeSpan PollDelay = TimeSpan.FromSeconds(30);
+
     private readonly IServiceScopeFactory scopeFactory;
+    private readonly IConfiguration configuration;
     private readonly ILogger<FileOcrBackgroundService> logger;
 
-    public FileOcrBackgroundService(IServiceScopeFactory scopeFactory, ILogger<FileOcrBackgroundService> logger)
+    public FileOcrBackgroundService(IServiceScopeFactory scopeFactory, IConfiguration configuration, ILogger<FileOcrBackgroundService> logger)
     {
         this.scopeFactory = scopeFactory;
+        this.configuration = configuration;
         this.logger = logger;
     }
 
@@ -41,55 +46,62 @@ public class FileOcrBackgroundService : BackgroundService
                 return;
             }
 
+            var maxParallelism = configuration.GetValue("Ocr:MaxDegreeOfParallelism", DefaultMaxDegreeOfParallelism);
             var totalStopwatch = Stopwatch.StartNew();
             var succeeded = 0;
             var failed = 0;
+            var processed = 0;
 
-            logger.LogInformation("OCR catch-up: starting processing of {Count} pending profile(s).", pendingIds.Count);
+            logger.LogInformation(
+                "OCR catch-up: starting processing of {Count} pending profile(s) with max parallelism {MaxParallelism}.",
+                pendingIds.Count,
+                maxParallelism);
 
-            for (var i = 0; i < pendingIds.Count; i++)
-            {
-                if (stoppingToken.IsCancellationRequested) break;
-
-                var id = pendingIds[i];
-                var itemStopwatch = Stopwatch.StartNew();
-
-                try
+            await Parallel.ForEachAsync(
+                pendingIds,
+                new ParallelOptions { MaxDegreeOfParallelism = maxParallelism, CancellationToken = stoppingToken },
+                async (id, ct) =>
                 {
-                    using var perItemScope = scopeFactory.CreateScope();
-                    var perItemService = perItemScope.ServiceProvider.GetRequiredService<FileOcrService>();
-                    await perItemService.ProcessAsync(id, cancellationToken: stoppingToken).ConfigureAwait(false);
+                    var itemStopwatch = Stopwatch.StartNew();
 
-                    itemStopwatch.Stop();
-                    succeeded++;
-                    logger.LogInformation(
-                        "OCR catch-up: profile {ProfileId} completed in {Elapsed}. Progress: {Processed}/{Total} ({SuccessCount} succeeded, {FailCount} failed).",
-                        id,
-                        itemStopwatch.Elapsed,
-                        i + 1,
-                        pendingIds.Count,
-                        succeeded,
-                        failed);
-                }
-                catch (OperationCanceledException)
-                {
-                    throw;
-                }
-                catch (Exception ex)
-                {
-                    itemStopwatch.Stop();
-                    failed++;
-                    logger.LogError(
-                        ex,
-                        "OCR catch-up: profile {ProfileId} failed after {Elapsed}. Progress: {Processed}/{Total} ({SuccessCount} succeeded, {FailCount} failed).",
-                        id,
-                        itemStopwatch.Elapsed,
-                        i + 1,
-                        pendingIds.Count,
-                        succeeded,
-                        failed);
-                }
-            }
+                    try
+                    {
+                        using var perItemScope = scopeFactory.CreateScope();
+                        var perItemService = perItemScope.ServiceProvider.GetRequiredService<FileOcrService>();
+                        await perItemService.ProcessAsync(id, pollDelay: PollDelay, cancellationToken: ct).ConfigureAwait(false);
+
+                        itemStopwatch.Stop();
+                        var currentSucceeded = Interlocked.Increment(ref succeeded);
+                        var currentProcessed = Interlocked.Increment(ref processed);
+                        logger.LogInformation(
+                            "OCR catch-up: profile {ProfileId} completed in {Elapsed}. Progress: {Processed}/{Total} ({SuccessCount} succeeded, {FailCount} failed).",
+                            id,
+                            itemStopwatch.Elapsed,
+                            currentProcessed,
+                            pendingIds.Count,
+                            currentSucceeded,
+                            Volatile.Read(ref failed));
+                    }
+                    catch (OperationCanceledException)
+                    {
+                        throw;
+                    }
+                    catch (Exception ex)
+                    {
+                        itemStopwatch.Stop();
+                        var currentFailed = Interlocked.Increment(ref failed);
+                        var currentProcessed = Interlocked.Increment(ref processed);
+                        logger.LogError(
+                            ex,
+                            "OCR catch-up: profile {ProfileId} failed after {Elapsed}. Progress: {Processed}/{Total} ({SuccessCount} succeeded, {FailCount} failed).",
+                            id,
+                            itemStopwatch.Elapsed,
+                            currentProcessed,
+                            pendingIds.Count,
+                            Volatile.Read(ref succeeded),
+                            currentFailed);
+                    }
+                }).ConfigureAwait(false);
 
             totalStopwatch.Stop();
             logger.LogInformation(
