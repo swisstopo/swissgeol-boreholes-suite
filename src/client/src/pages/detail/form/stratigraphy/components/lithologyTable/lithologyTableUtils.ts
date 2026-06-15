@@ -273,7 +273,7 @@ export const flagErrors = (depthLayers: DepthLayer[], lithologies: Lithology[]):
 // description/facies, so synthesise an empty lithology for each row no lithology owns yet. The
 // result follows depth-row order and each new lithology inherits the consolidation state of the
 // row above it.
-const backfillLithologies = (
+const deriveEmptyLithologies = (
   lithologies: Lithology[],
   depthLayers: DepthLayer[],
   stratigraphyId: number,
@@ -332,15 +332,15 @@ export const getInitialDepthLayers = (
   assignDepthIds(cleanLithologicalDescriptions, depthLayers);
   assignDepthIds(cleanFaciesDescriptions, depthLayers);
 
-  // 4b. Add placeholder rows for items whose depth extraction failed (null from/to) so they
+  // Add placeholder rows for items whose depth extraction failed (null from/to) so they
   // remain visible and editable instead of being silently dropped from the rendered table.
   insertNullDepthRows(cleanLithologies, depthLayers);
   insertNullDepthRows(cleanLithologicalDescriptions, depthLayers);
   insertNullDepthRows(cleanFaciesDescriptions, depthLayers);
 
-  // 4c. Back-fill empty lithologies for the failed-depth placeholder rows so the lithology column
+  // Derive empty lithologies for the failed-depth placeholder rows so the lithology column
   // stays aligned with every depth row (including those that came only from a description/facies).
-  cleanLithologies = backfillLithologies(cleanLithologies, depthLayers, stratigraphyId);
+  cleanLithologies = deriveEmptyLithologies(cleanLithologies, depthLayers, stratigraphyId);
 
   // 5. Flag errors: zero-thickness depth layers and depth layers belonging to a lithology that spans more than one.
   const flaggedDepthLayers = flagErrors(depthLayers, cleanLithologies);
