@@ -9,17 +9,17 @@ namespace BDMS.Models;
 public enum OcrStatus
 {
     /// <summary>The file is queued for OCR but has not started yet.</summary>
-    Created,
+    Created = 0,
 
     /// <summary>OCR has been started and is being polled for completion.</summary>
-    Processing,
+    Processing = 1,
 
     /// <summary>OCR completed successfully.</summary>
-    Success,
+    Success = 2,
 
     /// <summary>OCR failed terminally. A manual reset of <see cref="OcrStatus"/> is required to retry.</summary>
-    Error,
+    Error = 3,
 
     /// <summary>The file is not eligible for OCR (e.g. non-PDF content type).</summary>
-    WillNotBeProcessed,
+    WillNotBeProcessed = 4,
 }

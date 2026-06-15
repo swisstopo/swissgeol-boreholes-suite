@@ -189,7 +189,7 @@ public class ProfileController : ControllerBase
     /// <param name="boreholeId">The id of the <see cref="Borehole"/>.</param>
     [HttpGet("getOcrStatusForBorehole")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult<IEnumerable<ProfileOcrStatus>>> GetOcrStatusForBorehole(
+    public async Task<ActionResult<IReadOnlyList<ProfileOcrStatus>>> GetOcrStatusForBorehole(
         [Required, Range(1, int.MaxValue)] int boreholeId)
     {
         if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();

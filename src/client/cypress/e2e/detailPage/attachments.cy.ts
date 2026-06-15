@@ -1,3 +1,4 @@
+import { ProfileOcrStatus } from "../../../src/api/generated";
 import { deleteItem, exportItem, saveWithSaveBar, verifyNoUnsavedChanges } from "../helpers/buttonHelpers";
 import {
   checkAllVisibleRows,
@@ -73,7 +74,7 @@ describe("Tests for 'Attachments' edit page.", () => {
     cy.intercept("GET", "/api/v2/profile/getOcrStatusForBorehole*", req => {
       req.continue(res => {
         if (Array.isArray(res.body)) {
-          res.body = res.body.map((s: { id: number; ocrStatus: string }) =>
+          res.body = res.body.map((s: ProfileOcrStatus) =>
             s.ocrStatus === "WillNotBeProcessed" ? s : { ...s, ocrStatus: "Processing" },
           );
         }

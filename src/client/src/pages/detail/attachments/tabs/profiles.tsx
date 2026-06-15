@@ -32,6 +32,11 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const reloadProfiles = useReloadProfiles(Number(boreholeId));
   const { data: ocrStatuses } = useProfileOcrStatus(editingEnabled ? boreholeId : undefined);
 
+  const ocrStatusMap = useMemo(() => {
+    if (!ocrStatuses) return undefined;
+    return new Map(ocrStatuses.map(s => [s.id, s.ocrStatus]));
+  }, [ocrStatuses]);
+
   const loadAttachments = useCallback(async () => {
     return await getProfiles(boreholeId);
   }, [boreholeId]);
@@ -168,7 +173,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         sortable: false,
         resizable: false,
         width: 160,
-        valueGetter: (_value, row) => ocrStatuses?.find(s => s.id === row.id)?.ocrStatus ?? row.ocrStatus,
+        valueGetter: (_value, row) => ocrStatusMap?.get(row.id) ?? row.ocrStatus,
         renderCell: ({ value }) => {
           const status = (value ?? "Created") as OcrStatus;
           return <Typography data-cy={`ocr-status-${status}`}>{t(`ocrStatuses.${status}`)}</Typography>;
@@ -177,7 +182,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
     }
 
     return baseColumns;
-  }, [t, editingEnabled, getPublicColumnHeader, getPublicColumnCell, getDescriptionField, ocrStatuses]);
+  }, [t, editingEnabled, getPublicColumnHeader, getPublicColumnCell, getDescriptionField, ocrStatusMap]);
 
   return (
     <AttachmentContent<Profile>

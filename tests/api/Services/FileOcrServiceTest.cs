@@ -98,6 +98,20 @@ public class FileOcrServiceTest
     }
 
     [TestMethod]
+    public async Task ProcessAsyncUnknownProfileIdReturnsWithoutCallingOcrApi()
+    {
+        var (service, handler) = CreateTestService();
+
+        await service.ProcessAsync(int.MaxValue, pollDelay: TimeSpan.Zero);
+
+        handler.Protected().Verify(
+            "SendAsync",
+            Times.Never(),
+            ItExpr.IsAny<HttpRequestMessage>(),
+            ItExpr.IsAny<CancellationToken>());
+    }
+
+    [TestMethod]
     public async Task ProcessAsyncAlreadyTerminalSkipsOcrApi()
     {
         profile.OcrStatus = OcrStatus.Success;

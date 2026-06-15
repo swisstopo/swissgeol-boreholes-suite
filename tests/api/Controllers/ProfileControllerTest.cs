@@ -206,6 +206,19 @@ public class ProfileControllerTest
     }
 
     [TestMethod]
+    public async Task UploadNonPdfSetsWillNotBeProcessed()
+    {
+        var boreholeId = context.Boreholes.First().Id;
+        var textFile = GetFormFileByContent("hello", "notes.txt");
+
+        var uploadResult = await controller.Upload(textFile, boreholeId);
+        ActionResultAssert.IsOk(uploadResult);
+
+        var profile = (Profile)((OkObjectResult)uploadResult).Value!;
+        Assert.AreEqual(OcrStatus.WillNotBeProcessed, profile.OcrStatus);
+    }
+
+    [TestMethod]
     public async Task GetOcrStatusForBoreholeReturnsUnauthorizedWithInsufficientPermissions()
     {
         boreholePermissionServiceMock

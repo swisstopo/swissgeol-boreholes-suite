@@ -88,6 +88,9 @@ const profileOcrStatusQueryKey = "profileOcrStatus";
 export const ocrStatusIsTerminal = (status?: OcrStatus): boolean =>
   status === "Success" || status === "Error" || status === "WillNotBeProcessed";
 
+export const decidePollInterval = (data: ProfileOcrStatus[] | undefined): number | false =>
+  data?.some(p => !ocrStatusIsTerminal(p.ocrStatus)) ? 2000 : false;
+
 export function useProfileOcrStatus(boreholeId?: number) {
   return useQuery({
     enabled: !!boreholeId,
@@ -98,6 +101,6 @@ export function useProfileOcrStatus(boreholeId?: number) {
         "GET",
       )) as ProfileOcrStatus[];
     },
-    refetchInterval: query => (query.state.data?.some(p => !ocrStatusIsTerminal(p.ocrStatus)) ? 2000 : false),
+    refetchInterval: ({ state: { data } }) => decidePollInterval(data),
   });
 }

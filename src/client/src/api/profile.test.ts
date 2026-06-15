@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
 import { OcrStatus, ProfileOcrStatus } from "./generated";
-import { ocrStatusIsTerminal } from "./profile";
+import { decidePollInterval, ocrStatusIsTerminal } from "./profile";
 
 const allTerminal: ProfileOcrStatus[] = [
   { id: 1, ocrStatus: "Success" },
@@ -23,11 +23,6 @@ describe("ocrStatusIsTerminal", () => {
     expect(ocrStatusIsTerminal(status)).toBe(false);
   });
 });
-
-// Mirrors the refetchInterval contract in useProfileOcrStatus: poll while any entry is non-terminal,
-// stop otherwise. Tested as a pure function so we don't need to spin up a TanStack QueryClient.
-const decidePollInterval = (data: ProfileOcrStatus[] | undefined): number | false =>
-  data?.some(p => !ocrStatusIsTerminal(p.ocrStatus)) ? 2000 : false;
 
 describe("OCR polling decision", () => {
   it("returns false when data is undefined", () => {
