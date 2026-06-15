@@ -1,9 +1,9 @@
 ﻿import { goToRouteAndAcceptTerms } from "../helpers/testHelpers";
 
 const goBackToOverviewAndVerifyNavigation = () => {
-  cy.get('[data-cy="backtooverview-button"]').click();
+  cy.dataCy("backtooverview-button").click();
   cy.url().should("eq", Cypress.config().baseUrl + "/");
-  cy.get('[data-cy="boreholes-number-preview"]').should("be.visible");
+  cy.dataCy("boreholes-number-preview").should("be.visible");
 };
 
 const verifyNotFoundPageWithNavigation = (route: string, expectedMessage: string) => {
@@ -33,6 +33,6 @@ describe("Error boundaries", () => {
     cy.contains("Something went wrong while accessing the detail page for the requested borehole.").should(
       "be.visible",
     );
-    cy.get('[data-cy="retry-button"]').should("be.visible");
+    cy.dataCy("retry-button").should("be.visible");
   });
 });
