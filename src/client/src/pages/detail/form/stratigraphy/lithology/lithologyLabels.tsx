@@ -2,8 +2,9 @@ import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
 import type { TFunction } from "i18next";
+import { LithologyDescription } from "../../../../../api/generated";
 import { useCodelistDisplayValues } from "../../../../../components/codelist.ts";
-import { Lithology, LithologyDescription } from "../stratigraphy.ts";
+import { Lithology } from "../stratigraphy.ts";
 
 const uselessStrings = new Set(["keine Angabe", "sans indication", "senza indicazioni", "not specified"]);
 
@@ -31,7 +32,7 @@ const buildUnconsolidatedPrimaryString = (
     primaryValues.push(text);
   };
 
-  const pushCodelistValues = (list?: number[]) => {
+  const pushCodelistValues = (list?: number[] | null) => {
     if (list && list.length > 0) {
       primaryValues.push(...list.map(id => getCodelistDisplayValues(id).text));
     }
@@ -301,7 +302,11 @@ export const LithologyLabels: FC<LithologyLabelsProps> = ({ lithology }) => {
         ))}
         {details1.length > 0 && <Typography variant="body2">{details1}</Typography>}
         {details2.length > 0 && <Typography variant="body2">{details2}</Typography>}
-        {lithology.notes && <Typography variant="body2">{lithology.notes}</Typography>}
+        {lithology.notes && (
+          <Typography variant="body2" sx={{ whiteSpace: "pre-line" }}>
+            {lithology.notes}
+          </Typography>
+        )}
       </>
     );
   } else {
@@ -319,7 +324,11 @@ export const LithologyLabels: FC<LithologyLabelsProps> = ({ lithology }) => {
           </div>
         ))}
         {details.length > 0 && <Typography variant="body2">{details}</Typography>}
-        {lithology.notes && <Typography variant="body2">{lithology.notes}</Typography>}
+        {lithology.notes && (
+          <Typography variant="body2" sx={{ whiteSpace: "pre-line" }}>
+            {lithology.notes}
+          </Typography>
+        )}
       </>
     );
   }

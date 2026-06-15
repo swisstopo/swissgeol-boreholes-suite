@@ -35,7 +35,7 @@ export const interceptApiCalls = () => {
     req.alias = `stratigraphy_${req.method}`;
   });
   cy.intercept("/api/v2/stratigraphy/copy*").as("stratigraphy_COPY");
-  cy.intercept("/api/v2/lithology?stratigraphyId=**").as("lithology_by_stratigraphyId_GET");
+  cy.intercept("/api/v2/stratigraphy/*/lithology").as("lithology_by_stratigraphyId_GET");
   cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
   cy.intercept("/api/v2/boreholeexport/csv**").as("borehole_export_csv");
   cy.intercept("/api/v2/boreholeexport/json**").as("borehole_export_json");
@@ -49,10 +49,6 @@ export const interceptApiCalls = () => {
   cy.intercept("POST", "/api/v2/workgroup/setRoles").as("set_workgroup_roles");
   cy.intercept("POST", "/api/v2/workflow/tabstatuschange").as("tabstatuschange");
   cy.intercept("GET", "/api/v2/workflow/**").as("workflow_by_id");
-  cy.intercept("/api/v2/lithologicaldescription*").as("lithological_description");
-  cy.intercept("/api/v2/lithologicaldescription?stratigraphyId=**").as("lithologicaldescription_by_stratigraphyId_GET");
-
-  cy.intercept("/api/v2/faciesdescription*").as("facies_description");
 
   cy.intercept("/api/v2/chronostratigraphy*", req => {
     req.alias = `chronostratigraphy_${req.method}`;
@@ -468,6 +464,30 @@ export const createBoreholeWithCompleteDataset = () => {
   });
 };
 
+export const createStratigraphyWith3Lithologies = () => {
+  createBorehole({
+    stratigraphies: [
+      {
+        id: 0,
+        boreholeId: 0,
+        isPrimary: true,
+        name: "New Stratigraphy",
+        lithologies: [
+          { id: 0, stratigraphyId: 0, fromDepth: 0, toDepth: 355, isUnconsolidated: true },
+          { id: 0, stratigraphyId: 0, fromDepth: 355, toDepth: 798, isUnconsolidated: true },
+          { id: 0, stratigraphyId: 0, fromDepth: 798, toDepth: 1123, isUnconsolidated: true },
+        ],
+      },
+    ],
+  }).as("borehole_id");
+  cy.get("@borehole_id").then(boreholeId => {
+    goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy`);
+    cy.wait("@stratigraphy_by_borehole_GET");
+    startBoreholeEditing();
+    cy.wait("@lithology_by_stratigraphyId_GET");
+  });
+};
+
 export const startBoreholeEditing = () => {
   startEditing("detail-header");
   cy.wait(["@update-borehole", "@borehole_by_id"]);
@@ -618,13 +638,17 @@ export const createStratigraphy = ({ boreholeId, name, isPrimary = true, date = 
       .request({
         method: "POST",
         url: "/api/v2/stratigraphy",
-        body: {
-          id: 0,
-          boreholeId: boreholeId,
-          name: name,
-          isPrimary: isPrimary,
-          date: date,
-        },
+        body: [
+          {
+            stratigraphy: {
+              id: 0,
+              boreholeId: boreholeId,
+              name: name,
+              isPrimary: isPrimary,
+              date: date,
+            },
+          },
+        ],
         cache: "no-cache",
         credentials: "same-origin",
         headers: {
@@ -633,7 +657,7 @@ export const createStratigraphy = ({ boreholeId, name, isPrimary = true, date = 
         auth: bearerAuth(token),
       })
       .then(res => {
-        return cy.wrap(res.body.id);
+        return cy.wrap(res.body[0].stratigraphy.id);
       });
   });
 };

@@ -18,7 +18,9 @@ export const FaciesDescriptionLabels: FC<FaciesDescriptionLabelsProps> = ({ desc
           {getCodelistDisplayValues(faciesId).text}
         </Typography>
       )}
-      <Typography variant="body2">{description.description}</Typography>
+      <Typography variant="body2" sx={{ whiteSpace: "pre-line" }}>
+        {description.description}
+      </Typography>
     </>
   );
 };

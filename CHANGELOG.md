@@ -4,6 +4,7 @@
 
 ### Added
 - Added new codelist entry `VSP` to `log_tool_type` schema.
+- Functionality to edit lithological descriptions from the lithology modal.
   
 ### Changed
 - Deleted unused Swiss coordinate reference systems.
@@ -14,6 +15,7 @@
 - Lithology rock type can now be left unspecified (in addition to unconsolidated and consolidated). Stratigraphy extraction creates lithologies as unspecified by default.
 - Redesigned lithology table to edit depths in the table overview and stratigraphy extraction.
 - Typescript types for backend models are now generated from swagger doc.
+- The lithology tab and stratigraphy header are now saved together in a single request, and stratigraphy extraction creates stratigraphies with their lithology contents in one operation.
 
 ### Fixed
 - Fixed bug where casing name was not correctly displayed in the select on the backfill card.

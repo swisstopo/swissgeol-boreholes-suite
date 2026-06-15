@@ -50,7 +50,8 @@ describe("Tests for stratigraphy", () => {
       cy.wait("@stratigraphy_POST").then(interception => {
         cy.wait("@stratigraphy_by_borehole_GET");
 
-        const firstStratigraphy = interception.response!.body;
+        // The combined create returns an array of { stratigraphy, lithology } results.
+        const firstStratigraphy = interception.response!.body[0].stratigraphy;
         // Should redirect to the newly created stratigraphy after saving
         cy.location().should(location => {
           expect(location.pathname).to.eq(`/${boreholeId}/stratigraphy/${firstStratigraphy.id}`);

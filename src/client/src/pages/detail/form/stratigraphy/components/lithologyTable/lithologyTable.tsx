@@ -6,6 +6,7 @@ import { AddRowButton } from "../../../../../../components/buttons/buttons.tsx";
 import { FaciesDescriptionLabels } from "../../lithology/faciesDescriptionLabels.tsx";
 import { FaciesDescriptionModal } from "../../lithology/form/faciesDescriptionModal.tsx";
 import { LithologicalDescriptionModal } from "../../lithology/form/lithologicalDescriptionModal.tsx";
+import { findMatchingLithologicalDescription } from "../../lithology/form/lithologyDescriptionMatching.ts";
 import { LithologyModal } from "../../lithology/form/lithologyModal.tsx";
 import { LithologyLabels } from "../../lithology/lithologyLabels.tsx";
 import {
@@ -99,6 +100,14 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     updateTmpLithology(updated, hasChanges);
     setSelectedLithology(undefined);
   };
+
+  const matchingLithologicalDescription = useMemo(
+    () =>
+      selectedLithology
+        ? findMatchingLithologicalDescription(selectedLithology, tmpLithologicalDescriptions)
+        : undefined,
+    [selectedLithology, tmpLithologicalDescriptions],
+  );
 
   const handleLithologicalDescriptionUpdate = (updated: LithologicalDescription, hasChanges: boolean) => {
     updateTmpLithologicalDescription(updated, hasChanges);
@@ -387,7 +396,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                   `lithologicalDescription`,
                   tmpLithologicalDescriptions,
                   layer => (
-                    <Typography variant="body1" fontWeight={700}>
+                    <Typography variant="body1" fontWeight={700} sx={{ whiteSpace: "pre-line" }}>
                       {(layer as LithologicalDescription).description}
                     </Typography>
                   ),
@@ -415,7 +424,12 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
         )}
       </Stack>
       <AddRowButton onClick={handleAddDepthLayer} dataCy="add-row-button" buttonContent={<LayerAddButton />} />
-      <LithologyModal lithology={selectedLithology} updateLithology={handleLithologyUpdate} />
+      <LithologyModal
+        lithology={selectedLithology}
+        lithologicalDescription={matchingLithologicalDescription}
+        updateLithology={handleLithologyUpdate}
+        updateLithologicalDescription={updateTmpLithologicalDescription}
+      />
       <LithologicalDescriptionModal
         description={selectedLithologicalDescription}
         updateLithologicalDescription={handleLithologicalDescriptionUpdate}

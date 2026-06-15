@@ -27,9 +27,9 @@ import {
 import { useBoreholesNavigate } from "../../../../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredId } from "../../../../../hooks/useRequiredId.ts";
 import { prepareDataForSubmit } from "../components/lithologyTable/lithologyTableUtils.ts";
+import { useAddExtractedStratigraphies } from "../stratigraphy.ts";
 import { StratigraphyExtractionItemState } from "./stratigraphyExtractionItem.tsx";
 import { StratigraphyExtractionView } from "./stratigraphyExtractionView.tsx";
-import { useBulkAddMutation } from "./useBulkAddMutations.ts";
 
 interface StratigraphyExtractionDialogProps {
   file: BoreholeAttachment;
@@ -54,7 +54,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   const [abortController, setAbortController] = useState<AbortController>();
   const { data: allExtractedStratigraphies = [], isLoading: isLoadingExtraction } = useExtractStratigraphies(file, 1);
   const { isLoading: isLoadingFileInfo } = useFileInfo(file?.id, 1);
-  const { mutateAsync: bulkAdd, isPending: isLoadingBulkAdd } = useBulkAddMutation();
+  const { mutateAsync: bulkAdd, isPending: isLoadingBulkAdd } = useAddExtractedStratigraphies();
   const id = useRequiredId();
   const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
