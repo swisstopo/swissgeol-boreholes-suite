@@ -8,6 +8,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
 using NetTopologySuite.IO.Converters;
@@ -71,7 +72,7 @@ public class BoreholeExportControllerTest
 
         var profileCloudServiceLoggerMock = new Mock<ILogger<ProfileCloudService>>(MockBehavior.Strict);
         profileCloudServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
-        profileCloudService = new ProfileCloudService(context, configuration, profileCloudServiceLoggerMock.Object, contextAccessorMock.Object, s3ClientMock, Mock.Of<IServiceScopeFactory>());
+        profileCloudService = new ProfileCloudService(context, configuration, profileCloudServiceLoggerMock.Object, contextAccessorMock.Object, s3ClientMock, Mock.Of<IServiceScopeFactory>(), Mock.Of<IHostApplicationLifetime>());
 
         var boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock

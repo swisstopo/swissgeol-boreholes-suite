@@ -12,6 +12,7 @@ namespace BDMS.Services;
 public class FileOcrService
 {
     private static readonly TimeSpan DefaultPollDelay = TimeSpan.FromSeconds(1);
+    private static readonly TimeSpan MaxPollingDuration = TimeSpan.FromMinutes(30);
     private static readonly HashSet<OcrStatus> TerminalStatuses =
         new() { OcrStatus.Success, OcrStatus.Error, OcrStatus.WillNotBeProcessed };
 
@@ -74,26 +75,36 @@ public class FileOcrService
 
     private async Task CollectAsync(Profile profile, TimeSpan pollDelay, CancellationToken cancellationToken)
     {
+        using var timeoutCts = CancellationTokenSource.CreateLinkedTokenSource(cancellationToken);
+        timeoutCts.CancelAfter(MaxPollingDuration);
+
         var client = httpClientFactory.CreateClient("OcrApi");
-        while (true)
+        try
         {
-            if (pollDelay > TimeSpan.Zero)
+            while (true)
             {
-                await Task.Delay(pollDelay, cancellationToken).ConfigureAwait(false);
+                if (pollDelay > TimeSpan.Zero)
+                {
+                    await Task.Delay(pollDelay, timeoutCts.Token).ConfigureAwait(false);
+                }
+
+                var response = await client.PostAsJsonAsync("/collect", new { file = profile.NameUuid }, timeoutCts.Token).ConfigureAwait(false);
+                response.EnsureSuccessStatusCode();
+
+                var result = await response.Content.ReadFromJsonAsync<CollectResult>(cancellationToken: timeoutCts.Token).ConfigureAwait(false);
+                if (result?.HasFinished != true) continue;
+
+                if (!string.IsNullOrEmpty(result.Error))
+                {
+                    throw new InvalidOperationException($"OCR service reported error: {result.Error}");
+                }
+
+                return;
             }
-
-            var response = await client.PostAsJsonAsync("/collect", new { file = profile.NameUuid }, cancellationToken).ConfigureAwait(false);
-            response.EnsureSuccessStatusCode();
-
-            var result = await response.Content.ReadFromJsonAsync<CollectResult>(cancellationToken: cancellationToken).ConfigureAwait(false);
-            if (result?.HasFinished != true) continue;
-
-            if (!string.IsNullOrEmpty(result.Error))
-            {
-                throw new InvalidOperationException($"OCR service reported error: {result.Error}");
-            }
-
-            return;
+        }
+        catch (OperationCanceledException) when (!cancellationToken.IsCancellationRequested)
+        {
+            throw new TimeoutException($"OCR polling for profile {profile.Id} ({profile.NameUuid}) timed out after {MaxPollingDuration}.");
         }
     }
 

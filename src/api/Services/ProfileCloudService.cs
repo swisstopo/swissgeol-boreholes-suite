@@ -13,13 +13,15 @@ public class ProfileCloudService : CloudServiceBase
     private readonly BdmsContext context;
     private readonly IHttpContextAccessor httpContextAccessor;
     private readonly IServiceScopeFactory scopeFactory;
+    private readonly IHostApplicationLifetime applicationLifetime;
 
-    public ProfileCloudService(BdmsContext context, IConfiguration configuration, ILogger<ProfileCloudService> logger, IHttpContextAccessor httpContextAccessor, IAmazonS3 s3Client, IServiceScopeFactory scopeFactory)
+    public ProfileCloudService(BdmsContext context, IConfiguration configuration, ILogger<ProfileCloudService> logger, IHttpContextAccessor httpContextAccessor, IAmazonS3 s3Client, IServiceScopeFactory scopeFactory, IHostApplicationLifetime applicationLifetime)
         : base(logger, s3Client, configuration["S3:BUCKET_NAME"]!)
     {
         this.httpContextAccessor = httpContextAccessor;
         this.context = context;
         this.scopeFactory = scopeFactory;
+        this.applicationLifetime = applicationLifetime;
     }
 
     private static bool IsOcrEligible(string contentType)
@@ -71,19 +73,26 @@ public class ProfileCloudService : CloudServiceBase
             if (isOcrEligible)
             {
                 var capturedId = profile.Id;
-                _ = Task.Run(async () =>
-                {
-                    try
+                var stoppingToken = applicationLifetime.ApplicationStopping;
+                _ = Task.Run(
+                    async () =>
                     {
-                        using var scope = scopeFactory.CreateScope();
-                        var fileOcrService = scope.ServiceProvider.GetRequiredService<FileOcrService>();
-                        await fileOcrService.ProcessAsync(capturedId).ConfigureAwait(false);
-                    }
-                    catch (Exception ex)
-                    {
-                        Logger.LogError(ex, "Background OCR for profile {ProfileId} failed to start.", capturedId);
-                    }
-                });
+                        try
+                        {
+                            using var scope = scopeFactory.CreateScope();
+                            var fileOcrService = scope.ServiceProvider.GetRequiredService<FileOcrService>();
+                            await fileOcrService.ProcessAsync(capturedId, cancellationToken: stoppingToken).ConfigureAwait(false);
+                        }
+                        catch (OperationCanceledException)
+                        {
+                            // Application is shutting down; the background service will retry on next startup.
+                        }
+                        catch (Exception ex)
+                        {
+                            Logger.LogError(ex, "Background OCR for profile {ProfileId} failed to start.", capturedId);
+                        }
+                    },
+                    stoppingToken);
             }
 
             return profile;
