@@ -99,6 +99,7 @@ export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName,
 
     const imageLayer = new ImageLayer();
     imageLayer.set("name", fileName);
+    imageLayer.set("type", "image");
 
     const initMap = new Map({
       layers: [imageLayer],
