@@ -20,6 +20,7 @@ vi.mock("react-i18next", () => ({
 
 vi.mock("react-router", () => ({
   useLocation: () => ({ hash: "" }),
+  useParams: () => ({ id: "42" }),
 }));
 
 // Drives what the dialog sees as extracted stratigraphies; mutated per test before render.
@@ -32,10 +33,6 @@ vi.mock("../../../../../api/dataextraction.ts", () => ({
 const bulkAdd = vi.fn();
 vi.mock("../stratigraphy.ts", () => ({
   useAddExtractedStratigraphies: () => ({ mutateAsync: bulkAdd, isPending: false }),
-}));
-
-vi.mock("../../../../../hooks/useRequiredParams.ts", () => ({
-  useRequiredParams: () => ({ id: "42" }),
 }));
 
 const navigateTo = vi.fn();
