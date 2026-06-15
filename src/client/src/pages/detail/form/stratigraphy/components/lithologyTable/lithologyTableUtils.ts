@@ -312,22 +312,22 @@ export const getInitialDepthLayers = (
   faciesDescriptions: FaciesDescription[],
   stratigraphyId: number,
 ) => {
-  // 1. Per-column overlap cleanup (sort by fromDepth then toDepth, clamp overlaps).
+  // Per-column overlap cleanup (sort by fromDepth then toDepth, clamp overlaps).
   const cleanLithologicalDescriptions = cleanupOverlaps(lithologicalDescriptions);
   const cleanFaciesDescriptions = cleanupOverlaps(faciesDescriptions);
   let cleanLithologies = cleanupOverlaps(lithologies);
 
-  // 2. Fill gaps in the lithology column with empty, autocorrected lithologies; extend coverage to description range.
+  // Fill gaps in the lithology column with empty, autocorrected lithologies; extend coverage to description range.
   const descriptionBoundaries: number[] = [
     ...cleanLithologicalDescriptions.flatMap(d => [d.fromDepth, d.toDepth]),
     ...cleanFaciesDescriptions.flatMap(d => [d.fromDepth, d.toDepth]),
   ].filter((b): b is number => b !== null);
   cleanLithologies = fillLithologyGaps(cleanLithologies, descriptionBoundaries, stratigraphyId);
 
-  // 3. Build depth layers from the union of all distinct boundaries.
+  // Build depth layers from the union of all distinct boundaries.
   const depthLayers = buildDepthLayers(cleanLithologies, cleanLithologicalDescriptions, cleanFaciesDescriptions);
 
-  // 4. Assign depthIds to every item.
+  // Assign depthIds to every item.
   assignDepthIds(cleanLithologies, depthLayers);
   assignDepthIds(cleanLithologicalDescriptions, depthLayers);
   assignDepthIds(cleanFaciesDescriptions, depthLayers);
@@ -342,7 +342,7 @@ export const getInitialDepthLayers = (
   // stays aligned with every depth row (including those that came only from a description/facies).
   cleanLithologies = deriveEmptyLithologies(cleanLithologies, depthLayers, stratigraphyId);
 
-  // 5. Flag errors: zero-thickness depth layers and depth layers belonging to a lithology that spans more than one.
+  // Flag errors: zero-thickness depth layers and depth layers belonging to a lithology that spans more than one.
   const flaggedDepthLayers = flagErrors(depthLayers, cleanLithologies);
 
   return {
