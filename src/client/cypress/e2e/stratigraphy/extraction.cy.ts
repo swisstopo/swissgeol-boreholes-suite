@@ -112,7 +112,7 @@ describe("Tests for stratigraphy extraction", () => {
     }).as("extract-stratigraphy-multi");
 
     createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "2-Bohrungen.pdf");
-    cy.wait("@extract-stratigraphy-multi", { timeout: 240000 });
+    cy.wait("@extract-stratigraphy-multi");
 
     // With >3 stratigraphies the dropdown is shown instead of the ToggleButtonGroup.
     cy.dataCy("stratigraphy-select").should("exist");
@@ -198,7 +198,7 @@ describe("Tests for stratigraphy extraction", () => {
     }).as("extract-stratigraphy-names");
 
     createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "2-Bohrungen.pdf");
-    cy.wait("@extract-stratigraphy-names", { timeout: 240000 });
+    cy.wait("@extract-stratigraphy-names");
 
     // Names are prefilled from the file base name with a numbered suffix.
     evaluateInput("stratigraphy-name-0", "2-Bohrungen_1");
