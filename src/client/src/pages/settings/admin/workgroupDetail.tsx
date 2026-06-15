@@ -187,11 +187,7 @@ export const WorkgroupDetail: FC = () => {
           )}
         </CardContent>
       </Card>
-      <AddUserDialog
-        open={userDialogOpen}
-        setOpen={setUserDialogOpen}
-        workgroupId={id}
-      />
+      <AddUserDialog open={userDialogOpen} setOpen={setUserDialogOpen} workgroupId={id} />
     </Stack>
   );
 };
