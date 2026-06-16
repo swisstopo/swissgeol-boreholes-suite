@@ -20,6 +20,27 @@ const cleanupOverlaps = <T extends BaseLayer>(items: T[]): T[] => {
   return copies.map(item => (hasDepths(item) ? depthed[next++] : item));
 };
 
+// Spans between two fully-depthed items (in extraction order) that have one or more failed-depth
+// items sequenced between them. Such a span is occupied by those failed layers, so it must not be
+// treated as a fillable gap or bridged into a contiguous depth row.
+const collectOccupiedGaps = <T extends BaseLayer>(items: T[]): Array<[number, number]> => {
+  const gaps: Array<[number, number]> = [];
+  let above: T | undefined;
+  let failedBetween = false;
+  for (const item of items) {
+    if (hasDepths(item)) {
+      if (above && failedBetween && above.toDepth! < item.fromDepth!) {
+        gaps.push([above.toDepth!, item.fromDepth!]);
+      }
+      above = item;
+      failedBetween = false;
+    } else {
+      failedBetween = true;
+    }
+  }
+  return gaps;
+};
+
 export const createEmptyLithology = (
   fromDepth: number | null,
   toDepth: number | null,
@@ -44,15 +65,18 @@ const fillLithologyGaps = (
   lithologies: Lithology[],
   otherBoundaries: number[],
   stratigraphyId: number,
+  occupiedGapKeys: Set<string>,
 ): Lithology[] => {
   const result: Lithology[] = [...lithologies];
   const sortedBoundaries = [...new Set(otherBoundaries)].sort((a, b) => a - b);
 
-  // Produce one empty lithology per inter-boundary segment that falls inside `[from, to]`.
+  // Produce one empty lithology per inter-boundary segment that falls inside `[from, to]`, skipping
+  // any segment that is occupied by failed-depth layers (those become their own null rows instead).
   const fillRange = (from: number, to: number, isUnconsolidated?: boolean | null): Lithology[] => {
     const cuts = [from, ...sortedBoundaries.filter(b => b > from && b < to), to];
     const fillers: Lithology[] = [];
     for (let i = 0; i < cuts.length - 1; i++) {
+      if (occupiedGapKeys.has(`${cuts[i]}-${cuts[i + 1]}`)) continue;
       fillers.push(createEmptyLithology(cuts[i], cuts[i + 1], stratigraphyId, isUnconsolidated));
     }
     return fillers;
@@ -91,11 +115,14 @@ const fillLithologyGaps = (
   return result;
 };
 
-// Build depth layers from the union of all distinct boundary values, inserting a zero-thickness layer at each point where an item has fromDepth === toDepth.
+// Build depth layers from the union of all distinct boundary values, inserting a zero-thickness layer
+// at each point where an item has fromDepth === toDepth. Spans occupied by failed-depth layers are
+// not bridged into a contiguous row; those layers get their own null rows in insertNullDepthRows.
 const buildDepthLayers = (
   lithologies: Lithology[],
   lithologicalDescriptions: LithologicalDescription[],
   faciesDescriptions: FaciesDescription[],
+  occupiedGapKeys: Set<string>,
 ): DepthLayer[] => {
   const boundarySet = new Set<number>();
   const zeroThicknessPoints = new Set<number>();
@@ -116,7 +143,7 @@ const buildDepthLayers = (
     if (zeroThicknessPoints.has(boundaries[i])) {
       layers.push({ id: uuidv4(), fromDepth: boundaries[i], toDepth: boundaries[i] });
     }
-    if (i < boundaries.length - 1) {
+    if (i < boundaries.length - 1 && !occupiedGapKeys.has(`${boundaries[i]}-${boundaries[i + 1]}`)) {
       layers.push({ id: uuidv4(), fromDepth: boundaries[i], toDepth: boundaries[i + 1] });
     }
   }
@@ -160,37 +187,27 @@ const lastDepthIdBefore = <T extends BaseLayer>(items: T[], index: number): stri
   return null;
 };
 
-// The top-most depth row of the nearest sibling below `index` that already owns one, used to infer
-// the boundary a fully-failed layer sits on when it has no preceding sibling.
-const firstDepthIdAfter = <T extends BaseLayer>(items: T[], index: number): string | null => {
-  for (let i = index + 1; i < items.length; i++) {
-    const ids = items[i].depthIds;
-    if (ids && ids.length > 0) return ids[0];
-  }
-  return null;
-};
-
 // Failed depth extraction: an item with a null from/to gets no boundary-based depth layer (those
 // are built only from fully-depthed items). Give each such item its own placeholder depth row,
 // spliced in directly after its preceding sibling so the original extraction order is preserved
 // instead of all failed rows piling up at the bottom (incoming depths are assumed already sorted).
-// A layer whose depths failed entirely still has a known position between its siblings, so it
-// collapses to a zero-thickness row at the boundary it sits on, surfacing as a zero-depth error
-// rather than an empty row; a partially-failed layer keeps its known side and leaves the missing
-// side null. The item's own depths are kept in sync with the row so edits propagate. flagErrors
-// marks both cases.
+// The depth rows render as a contiguous chain (each row's toDepth is the next row's fromDepth), so a
+// failed layer inherits the boundary it shares with its immediate neighbours: the previous row's
+// toDepth above and the next row's fromDepth below. Against a depthed neighbour that boundary is the
+// known edge; between two failed layers it is null. This keeps a run of failed layers connected to
+// the surrounding depthed layers (the trailing layer's start depth still renders) instead of
+// detaching into stray null rows. A partially-failed layer keeps its known side. The item's own
+// depths stay in sync with the row so edits propagate, and flagErrors marks the null boundaries.
 const insertNullDepthRows = <T extends BaseLayer>(items: T[], depthLayers: DepthLayer[]) => {
-  const depthRow = (id: string | null) => (id ? depthLayers.find(d => d.id === id) : undefined);
-
   items.forEach((item, index) => {
     if (hasDepths(item)) return;
     const precedingDepthId = lastDepthIdBefore(items, index);
 
     if (item.fromDepth === null && item.toDepth === null) {
-      const boundary =
-        depthRow(precedingDepthId)?.toDepth ?? depthRow(firstDepthIdAfter(items, index))?.fromDepth ?? null;
-      item.fromDepth = boundary;
-      item.toDepth = boundary;
+      const prev = items[index - 1];
+      const next = items[index + 1];
+      item.fromDepth = prev ? prev.toDepth : null;
+      item.toDepth = next ? next.fromDepth : null;
     }
 
     const placeholder: DepthLayer = { id: uuidv4(), fromDepth: item.fromDepth, toDepth: item.toDepth };
@@ -317,15 +334,30 @@ export const getInitialDepthLayers = (
   const cleanFaciesDescriptions = cleanupOverlaps(faciesDescriptions);
   let cleanLithologies = cleanupOverlaps(lithologies);
 
+  // Spans that failed-depth layers occupy between two fully-depthed siblings; these must not be
+  // filled or bridged, so the failed layers can surface as their own null rows in that position.
+  const occupiedGapKeys = new Set<string>(
+    [
+      ...collectOccupiedGaps(cleanLithologies),
+      ...collectOccupiedGaps(cleanLithologicalDescriptions),
+      ...collectOccupiedGaps(cleanFaciesDescriptions),
+    ].map(([from, to]) => `${from}-${to}`),
+  );
+
   // Fill gaps in the lithology column with empty, autocorrected lithologies; extend coverage to description range.
   const descriptionBoundaries: number[] = [
     ...cleanLithologicalDescriptions.flatMap(d => [d.fromDepth, d.toDepth]),
     ...cleanFaciesDescriptions.flatMap(d => [d.fromDepth, d.toDepth]),
   ].filter((b): b is number => b !== null);
-  cleanLithologies = fillLithologyGaps(cleanLithologies, descriptionBoundaries, stratigraphyId);
+  cleanLithologies = fillLithologyGaps(cleanLithologies, descriptionBoundaries, stratigraphyId, occupiedGapKeys);
 
   // Build depth layers from the union of all distinct boundaries.
-  const depthLayers = buildDepthLayers(cleanLithologies, cleanLithologicalDescriptions, cleanFaciesDescriptions);
+  const depthLayers = buildDepthLayers(
+    cleanLithologies,
+    cleanLithologicalDescriptions,
+    cleanFaciesDescriptions,
+    occupiedGapKeys,
+  );
 
   // Assign depthIds to every item.
   assignDepthIds(cleanLithologies, depthLayers);

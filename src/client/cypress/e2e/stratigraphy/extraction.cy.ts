@@ -60,6 +60,33 @@ function makeExtractionBorehole(index: number, materialText: string, endDepth: n
   };
 }
 
+// Build one extraction layer; a null start/end depth models a failed depth extraction, which
+// mapExtractionResponse turns into a null fromDepth/toDepth.
+function makeExtractionLayer(startDepth: number | null, endDepth: number | null, materialText: string) {
+  return {
+    start: { depth: startDepth, bounding_boxes: [] },
+    end: { depth: endDepth, bounding_boxes: [] },
+    material_description: { text: materialText, bounding_boxes: [] },
+  };
+}
+
+// Assert a single depth input shows the expected value and error state. Only the first row renders a
+// "from" input; every row renders a "to" input. MUI flags an invalid field with the `Mui-error` class.
+function checkDepthInput(
+  side: "from" | "to",
+  fromDepth: number | null,
+  toDepth: number | null,
+  expectedValue: string,
+  hasError: boolean,
+) {
+  const selector = `[data-cy="depth-${side}-${fromDepth}-${toDepth}-input"]`;
+  cy.get(selector).should("have.value", expectedValue);
+  cy.get(selector)
+    .closest(".MuiFormControl-root")
+    .find(".Mui-error")
+    .should(hasError ? "exist" : "not.exist");
+}
+
 describe("Tests for stratigraphy extraction", () => {
   it("Extracts stratigraphy and shows bounding boxes", () => {
     createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "test_profile.pdf");
@@ -228,6 +255,46 @@ describe("Tests for stratigraphy extraction", () => {
     setInput("stratigraphy-name-1", "Beta");
     hasError("stratigraphy-name-1", false);
     cy.dataCy("add-stratigraphy-button").should("not.be.disabled");
+  });
+
+  it("renders extracted depth inputs with correct values and error state for failed depths", () => {
+    cy.intercept("POST", "dataextraction/api/V1/extract_stratigraphy", {
+      statusCode: 200,
+      body: {
+        boreholes: [
+          {
+            id: "borehole-1",
+            page_numbers: [1],
+            layers: [
+              makeExtractionLayer(null, 1.5, "Limons"),
+              makeExtractionLayer(1.8, 2.3, "Gravel"),
+              makeExtractionLayer(null, null, "Silt"),
+              makeExtractionLayer(null, null, "Argile"),
+              makeExtractionLayer(null, null, "Sable"),
+              makeExtractionLayer(3.7, 4.2, "Sand"),
+              makeExtractionLayer(4.2, null, "Clay"),
+            ],
+          },
+        ],
+      },
+    }).as("extract-stratigraphy-depths");
+
+    createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "2-Bohrungen.pdf");
+    cy.wait("@extract-stratigraphy-depths");
+
+    // The table has rendered once the first description is shown.
+    cy.dataCy("lithologicalDescription-null-1.5").should("contain", "Limons");
+
+    // Rendered depth sequence: null(err), 1.5, 1.8, 2.3, null(err), null(err), 3.7, 4.2, null(err).
+    checkDepthInput("from", null, 1.5, "", true);
+    checkDepthInput("to", null, 1.5, "1.5", false);
+    checkDepthInput("to", 1.5, 1.8, "1.8", false);
+    checkDepthInput("to", 1.8, 2.3, "2.3", false);
+    checkDepthInput("to", 2.3, null, "", true);
+    checkDepthInput("to", null, null, "", true);
+    checkDepthInput("to", null, 3.7, "3.7", false);
+    checkDepthInput("to", 3.7, 4.2, "4.2", false);
+    checkDepthInput("to", 4.2, null, "", true);
   });
 
   it("displays message if nothing could be extracted from file", () => {
