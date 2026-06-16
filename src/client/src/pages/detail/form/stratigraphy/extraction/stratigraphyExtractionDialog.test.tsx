@@ -73,7 +73,6 @@ const alertValue: AlertContextInterface = {
   alertIsOpen: false,
   text: undefined,
   severity: undefined,
-  variant: undefined,
   autoHideDuration: null,
   showAlert,
   closeAlert: () => {},
