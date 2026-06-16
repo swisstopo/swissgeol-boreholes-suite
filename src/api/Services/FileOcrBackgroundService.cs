@@ -1,6 +1,6 @@
-﻿using System.Diagnostics;
-using BDMS.Models;
+﻿using BDMS.Models;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics;
 
 namespace BDMS.Services;
 
