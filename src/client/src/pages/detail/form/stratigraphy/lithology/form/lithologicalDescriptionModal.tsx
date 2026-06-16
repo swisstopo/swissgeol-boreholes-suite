@@ -1,12 +1,12 @@
-import { FC, useEffect } from "react";
-import { FormProvider, useForm } from "react-hook-form";
-import { useTranslation } from "react-i18next";
-import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
-import { FormContainer, FormInput, FormValueType } from "../../../../../../components/form/form.ts";
-import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
-import { useFormDirty } from "../../../../../../components/form/useFormDirty.tsx";
-import { LithologicalDescription } from "../../stratigraphy.ts";
-import { RemarksFormSection } from "./remarksFormSection.tsx";
+import {FC, useEffect} from "react";
+import {FormProvider, useForm} from "react-hook-form";
+import {useTranslation} from "react-i18next";
+import {BoreholesCard} from "../../../../../../components/boreholesCard.tsx";
+import {FormContainer, FormInput, FormValueType} from "../../../../../../components/form/form.ts";
+import {FormDialog} from "../../../../../../components/form/formDialog.tsx";
+import {useFormDirty} from "../../../../../../components/form/useFormDirty.tsx";
+import {LithologicalDescription} from "../../stratigraphy.ts";
+import {RemarksFormSection} from "./remarksFormSection.tsx";
 
 interface LithologicalDescriptionModalProps {
   description: LithologicalDescription | undefined;
@@ -55,7 +55,7 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
       onApply={applyDialog}
       isApplyDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
       <FormProvider {...formMethods}>
-        <BoreholesCard data-cy="lithological-description-basic-data" title={t("basicData")}>
+        <BoreholesCard data-cy="lithological-description-basic-data" title={t("description")}>
           <FormContainer>
             <FormContainer direction={"row"}>
               <FormInput
@@ -73,7 +73,7 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
                 type={FormValueType.Number}
               />
             </FormContainer>
-            <RemarksFormSection fieldName="description" label="remarks" />
+            <RemarksFormSection fieldName="description" label="description" />
           </FormContainer>
         </BoreholesCard>
       </FormProvider>
