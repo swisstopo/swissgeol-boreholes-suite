@@ -6,10 +6,10 @@ export interface AlertContextInterface {
   alertIsOpen: boolean;
   text: string | undefined;
   severity: AlertColor | undefined;
-  variant: AlertVariant | undefined;
   autoHideDuration: number | null;
   showAlert: (text: string, severity?: AlertColor, allowAutoHide?: boolean, variant?: AlertVariant) => void;
   closeAlert: () => void;
+  variant?: AlertVariant;
 }
 
 export interface AlertOptions {
