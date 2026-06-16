@@ -18,13 +18,14 @@ public partial class AddOcrStatusToProfile : Migration
             nullable: false,
             defaultValue: 0);
 
-        // Data backfill: PDFs go through OCR processing, everything else is marked WillNotBeProcessed (= 4).
-        // We cannot retroactively distinguish already-OCRed PDFs from never-OCRed ones, so we
-        // re-process all PDFs.
+        // Data backfill: mark existing PDFs as Success (= 2) and everything else as WillNotBeProcessed (= 4).
+        // New rows default to Created (= 0) so they go through OCR normally.
         migrationBuilder.Sql(@"
                 UPDATE bdms.profile
-                SET ocr_status = 4
-                WHERE LOWER(type) <> 'application/pdf';
+                SET ocr_status = CASE
+                    WHEN LOWER(type) = 'application/pdf' THEN 2
+                    ELSE 4
+                END;
             ");
     }
 
