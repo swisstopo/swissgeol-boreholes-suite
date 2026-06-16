@@ -19,9 +19,6 @@ const wrapper: FC<PropsWithChildren> = ({ children }) => {
   const context: AlertContextInterface = {
     alertIsOpen: false,
     text: undefined,
-    severity: undefined,
-    variant: undefined,
-    autoHideDuration: null,
     showAlert,
     closeAlert: vi.fn(),
   };

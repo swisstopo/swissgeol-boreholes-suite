@@ -72,8 +72,6 @@ const setOpen = vi.fn();
 const alertValue: AlertContextInterface = {
   alertIsOpen: false,
   text: undefined,
-  severity: undefined,
-  autoHideDuration: null,
   showAlert,
   closeAlert: () => {},
 };

@@ -75,7 +75,7 @@ const LabelingPanel: FC = () => {
   const reloadPhotos = useReloadPhotos(boreholeId);
   useEffect(() => {
     let timer: NodeJS.Timeout;
-    if (alertIsOpen && autoHideDuration !== null) {
+    if (alertIsOpen && autoHideDuration !== undefined) {
       timer = setTimeout(() => {
         closeAlert();
       }, autoHideDuration);
