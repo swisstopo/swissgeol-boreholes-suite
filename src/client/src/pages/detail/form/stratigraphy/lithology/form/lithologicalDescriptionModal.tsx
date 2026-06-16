@@ -1,12 +1,12 @@
-import {FC, useEffect} from "react";
-import {FormProvider, useForm} from "react-hook-form";
-import {useTranslation} from "react-i18next";
-import {BoreholesCard} from "../../../../../../components/boreholesCard.tsx";
-import {FormContainer, FormInput, FormValueType} from "../../../../../../components/form/form.ts";
-import {FormDialog} from "../../../../../../components/form/formDialog.tsx";
-import {useFormDirty} from "../../../../../../components/form/useFormDirty.tsx";
-import {LithologicalDescription} from "../../stratigraphy.ts";
-import {RemarksFormSection} from "./remarksFormSection.tsx";
+import { FC, useEffect } from "react";
+import { FormProvider, useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
+import { FormContainer, FormInput, FormValueType } from "../../../../../../components/form/form.ts";
+import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
+import { useFormDirty } from "../../../../../../components/form/useFormDirty.tsx";
+import { LithologicalDescription } from "../../stratigraphy.ts";
+import { RemarksFormSection } from "./remarksFormSection.tsx";
 
 interface LithologicalDescriptionModalProps {
   description: LithologicalDescription | undefined;
