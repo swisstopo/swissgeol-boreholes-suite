@@ -9,7 +9,7 @@ import { useAuth } from "../../auth/useBoreholesAuth.tsx";
 import { useBoreholeDataAvailability } from "../../hooks/useBoreholeDataAvailability.ts";
 import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
 import { useCapitalizedTranslation } from "../../hooks/useCapitalizedTranslation.ts";
-import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../hooks/useRequiredId.ts";
 import { TabStatus } from "./form/workflow/workflow.ts";
 
 interface DetailSideNavProps {
@@ -18,8 +18,8 @@ interface DetailSideNavProps {
 
 export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const [hydrogeologyIsVisible, setHydrogeologyIsVisible] = useState(false);
-  const { id } = useRequiredParams<{ id: string }>();
-  const { data: canChangeStatus } = useBoreholeStatusEditable(parseInt(id));
+  const id = useRequiredId();
+  const { data: canChangeStatus } = useBoreholeStatusEditable(id);
   const location = useLocation();
   const { t } = useTranslation();
   const ct = useCapitalizedTranslation();

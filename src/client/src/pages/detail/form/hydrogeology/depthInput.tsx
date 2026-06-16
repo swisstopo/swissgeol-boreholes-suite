@@ -7,14 +7,14 @@ import { FormInput, FormSelect, FormValueType } from "../../../../components/for
 import { FormContainer } from "../../../../components/form/formContainer";
 import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
-import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { DepthInputProps, ObservationDepthUnitType } from "./Observation.ts";
 
 const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
   const formMethods = useFormContext();
-  const { id: boreholeId } = useRequiredParams<{ id: string }>();
+  const boreholeId = useRequiredId();
 
   const depthUnitFieldName = "originalVerticalReferenceSystem";
   const watchDepthUnit = formMethods.watch(depthUnitFieldName, ObservationDepthUnitType.measuredDepth);
@@ -34,11 +34,11 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
       let result = null;
       switch (outputUnit) {
         case ObservationDepthUnitType.measuredDepth: {
-          result = await getBoreholeGeometryDepthMDFromMasl(Number(boreholeId), inputParsed);
+          result = await getBoreholeGeometryDepthMDFromMasl(boreholeId, inputParsed);
           break;
         }
         case ObservationDepthUnitType.masl: {
-          result = await getBoreholeGeometryDepthMasl(Number(boreholeId), inputParsed);
+          result = await getBoreholeGeometryDepthMasl(boreholeId, inputParsed);
           break;
         }
         default:

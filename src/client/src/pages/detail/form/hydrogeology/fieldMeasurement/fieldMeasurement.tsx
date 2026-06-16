@@ -1,14 +1,14 @@
 import { useCallback } from "react";
 import { FieldMeasurement as FieldMeasurementType } from "../../../../../api/generated";
 import { DataCards } from "../../../../../components/dataCard/dataCards";
-import { useRequiredParams } from "../../../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../../../hooks/useRequiredId.ts";
 import { sortByDepth } from "../../sorter.jsx";
 import { getFieldMeasurements } from "./FieldMeasurement.ts";
 import { FieldMeasurementDisplay } from "./fieldMeasurementDisplay.js";
 import { FieldMeasurementInput } from "./fieldMeasurementInput.js";
 
 export const FieldMeasurement = () => {
-  const { id: boreholeId } = useRequiredParams<{ id: string }>();
+  const boreholeId = useRequiredId();
   const renderInput = useCallback(
     (props: { item: FieldMeasurementType; parentId: number }) => <FieldMeasurementInput {...props} />,
     [],
@@ -24,7 +24,7 @@ export const FieldMeasurement = () => {
 
   return (
     <DataCards<FieldMeasurementType>
-      parentId={parseInt(boreholeId)}
+      parentId={boreholeId}
       getData={getFieldMeasurements}
       cyLabel="fieldMeasurement"
       addLabel="addFieldMeasurement"

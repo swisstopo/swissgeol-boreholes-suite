@@ -6,6 +6,7 @@ export const AlertContext = createContext<AlertContextInterface>({
   alertIsOpen: false,
   text: undefined,
   severity: undefined,
+  variant: undefined,
   autoHideDuration: null,
   showAlert: () => {},
   closeAlert: () => {},

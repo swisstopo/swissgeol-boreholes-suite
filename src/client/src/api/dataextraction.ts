@@ -2,7 +2,6 @@ import { useQuery } from "@tanstack/react-query";
 import { User } from "../api-lib/ReduxStateInterfaces.ts";
 import { ExtractedLithologicalDescription } from "../pages/detail/form/stratigraphy/stratigraphy.ts";
 import store from "../reducers";
-import { ApiError, BoreholeAttachment } from "./apiInterfaces.ts";
 import { getAuthorizationHeader } from "./authentication.ts";
 import {
   BoundingBoxResponse,
@@ -11,7 +10,9 @@ import {
   ExtractionResponse,
   StratigraphyExtractionResponse,
 } from "./dataextractionInterfaces.ts";
+import { ApiError } from "./errorClasses.ts";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
+import { BoreholeAttachment } from "./unionTypes.ts";
 
 async function fetchCreatePngs(fileName: string): Promise<Response> {
   const reduxUser: User = store.getState().core_user as User;

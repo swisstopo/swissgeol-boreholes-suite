@@ -1,8 +1,8 @@
 import { FC, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress, Stack, Typography } from "@mui/material";
-import { BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
 import { ExtractedStratigraphy } from "../../../../../api/dataextraction.ts";
+import { BoreholeAttachment } from "../../../../../api/unionTypes.ts";
 import { theme } from "../../../../../AppTheme.ts";
 import { ExtractionImageContainer } from "../../../labeling/extractionImageContainer.tsx";
 import { PageSelection } from "../../../labeling/pageSelection.tsx";

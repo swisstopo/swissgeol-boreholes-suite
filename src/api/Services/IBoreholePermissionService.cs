@@ -33,7 +33,6 @@ public interface IBoreholePermissionService
     /// <param name="subjectId">The <see cref="User.SubjectId" /> of the current user.</param>
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> to check locks for.</param>
     /// <returns><see langword="true"/> if the user has permission for the borehole; otherwise, <see langword="false"/>.</returns>
-    /// <exception cref="InvalidOperationException">Provided user or <see cref="Borehole"/> does not exist.</exception>
     Task<bool> CanEditBoreholeAsync(string? subjectId, int? boreholeId);
 
     /// <summary>
@@ -43,6 +42,5 @@ public interface IBoreholePermissionService
     /// <param name="subjectId">The <see cref="User.SubjectId" /> of the current user.</param>
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> to check locks for.</param>
     /// <returns><see langword="true"/> if the user has permission to change the status of the borehole; otherwise, <see langword="false"/>.</returns>
-    /// <exception cref="InvalidOperationException">Provided user or <see cref="Borehole"/> does not exist.</exception>
     Task<bool> CanChangeBoreholeStatusAsync(string? subjectId, int? boreholeId);
 }

@@ -5,8 +5,7 @@ import { Card, CardContent, CardHeader, Chip, Stack } from "@mui/material";
 import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { Trash2, X } from "lucide-react";
 import _ from "lodash";
-import { WorkgroupRole } from "../../../api/apiInterfaces.ts";
-import { User } from "../../../api/generated";
+import { User, UserWorkgroupRole } from "../../../api/generated";
 import { useUsers } from "../../../api/user.ts";
 import { useSelectedWorkgroup, useWorkgroupMutations } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
@@ -14,13 +13,13 @@ import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { FormInput } from "../../../components/form/form.ts";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { Table } from "../../../components/table/table.tsx";
-import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../hooks/useRequiredId.ts";
 import { AddUserDialog } from "./dialogs/addUserDialog.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 import { WorkgroupAdministrationContext } from "./workgroupAdministrationContext.tsx";
 
 export const WorkgroupDetail: FC = () => {
-  const { id } = useRequiredParams<{ id: string }>();
+  const id = useRequiredId();
   const { t } = useTranslation();
   const [workgroupUsers, setWorkgroupUsers] = useState<User[]>();
   const { firstNameColumn, lastNameColumn, emailColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
@@ -29,7 +28,7 @@ export const WorkgroupDetail: FC = () => {
 
   const { workgroupDetailTableSortModel, setWorkgroupDetailTableSortModel } =
     useContext(WorkgroupAdministrationContext);
-  const { data: selectedWorkgroup } = useSelectedWorkgroup(parseInt(id));
+  const { data: selectedWorkgroup } = useSelectedWorkgroup(id);
   const {
     removeAllRoles: { mutate: removeAllWorkgroupRolesForUser },
     update: { mutate: updateWorkgroup },
@@ -63,7 +62,7 @@ export const WorkgroupDetail: FC = () => {
   useEffect(() => {
     if (users) {
       const usersInWorkgroup = users.filter((user: User) =>
-        user.workgroupRoles?.some((wgr: WorkgroupRole) => wgr.workgroupId === parseInt(id)),
+        user.workgroupRoles?.some((wgr: UserWorkgroupRole) => wgr.workgroupId === id),
       );
       setWorkgroupUsers(usersInWorkgroup);
     }
@@ -102,10 +101,10 @@ export const WorkgroupDetail: FC = () => {
   };
 
   const renderRoleChips = (params: GridRenderCellParams<object[]>) => {
-    const workgroupRoles = params.value.filter((role: WorkgroupRole) => role.workgroupId === parseInt(id));
+    const workgroupRoles = params.value.filter((role: UserWorkgroupRole) => role.workgroupId === id);
     return (
       <Stack direction="row" gap={1} p={1.2} sx={{ flexWrap: "wrap" }}>
-        {workgroupRoles.map((workgroupRole: WorkgroupRole) => (
+        {workgroupRoles.map((workgroupRole: UserWorkgroupRole) => (
           <Chip
             key={workgroupRole.role}
             label={workgroupRole.role!.toUpperCase()}
@@ -188,11 +187,7 @@ export const WorkgroupDetail: FC = () => {
           )}
         </CardContent>
       </Card>
-      <AddUserDialog
-        open={userDialogOpen}
-        setOpen={setUserDialogOpen}
-        workgroupId={parseInt(id)} //
-      />
+      <AddUserDialog open={userDialogOpen} setOpen={setUserDialogOpen} workgroupId={id} />
     </Stack>
   );
 };

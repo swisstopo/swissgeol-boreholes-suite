@@ -29,6 +29,7 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     {
         var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
         var borehole = await GetBoreholeAsync(boreholeId).ConfigureAwait(false);
+        if (borehole is null) return false;
         return CanViewBorehole(user, borehole);
     }
 
@@ -42,6 +43,7 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     {
         var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
         var borehole = await GetBoreholeAsync(boreholeId).ConfigureAwait(false);
+        if (borehole is null) return false;
         return CanEditBorehole(user, borehole);
     }
 
@@ -50,6 +52,7 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     {
         var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
         var borehole = await GetBoreholeAsync(boreholeId).ConfigureAwait(false);
+        if (borehole is null) return false;
         return CanChangeBoreholeStatus(user, borehole);
     }
 
@@ -174,13 +177,13 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
         return false;
     }
 
-    private async Task<Borehole> GetBoreholeAsync(int? boreholeId)
+    private async Task<Borehole?> GetBoreholeAsync(int? boreholeId)
     {
         return await context.Boreholes
             .Include(b => b.Workflow)
             .AsNoTracking()
             .SingleOrDefaultAsync(b => b.Id == boreholeId)
-            .ConfigureAwait(false) ?? throw new InvalidOperationException($"Associated borehole with id <{boreholeId}> does not exist.");
+            .ConfigureAwait(false);
     }
 
     private async Task<User> GetUserWithWorkgroupRolesAsync(string? subjectId)

@@ -6,9 +6,9 @@ import {
   WorkflowStatus,
 } from "@swissgeol/ui-core";
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
-import { NullableDateString } from "../../../../api/apiInterfaces.ts";
 import { boreholeQueryKey, canEditQueryKey, canUpdateStatusQueryKey } from "../../../../api/borehole.ts";
 import { fetchApiV2Legacy } from "../../../../api/fetchApiV2.ts";
+import { NullableDateString } from "../../../../api/unionTypes.ts";
 
 export interface Workflow extends GenericWorkflow {
   id: number;

@@ -26,6 +26,7 @@ declare module "@mui/material/styles" {
       main: string;
       contrastText: string;
       muted: string;
+      background: string;
     };
     secondary: {
       main: string;
