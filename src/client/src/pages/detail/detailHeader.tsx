@@ -24,7 +24,7 @@ import { ExportDialog } from "../../components/export/exportDialog.tsx";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 import { DetailHeaderStack } from "../../components/styledComponents.ts";
 import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
-import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../hooks/useRequiredId.ts";
 import { formatDate } from "../../utils.ts";
 import { EditStateContext } from "./editStateContext.tsx";
 import { SaveContext, SaveContextProps } from "./saveContext.tsx";
@@ -36,10 +36,10 @@ interface DetailHeaderProps {
 
 const DetailHeader = ({ borehole }: DetailHeaderProps) => {
   const [isExporting, setIsExporting] = useState(false);
-  const { id } = useRequiredParams<{ id: string }>();
+  const id = useRequiredId();
   const { navigateTo } = useBoreholesNavigate();
   const { data: currentUser } = useCurrentUser();
-  const { data: editableByCurrentUser } = useBoreholeEditable(parseInt(id));
+  const { data: editableByCurrentUser } = useBoreholeEditable(id);
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
   const { editingEnabled, setEditingEnabled } = useContext(EditStateContext);
@@ -147,7 +147,7 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
           label="export"
           onClick={hasChanges ? startExportWithUnsavedChanges : () => setIsExporting(true)}
         />
-        {id && editableByCurrentUser && (
+        {editableByCurrentUser && (
           <>
             {editingEnabled ? (
               <>

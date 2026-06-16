@@ -1,6 +1,6 @@
 import { createContext, FC, PropsWithChildren, useMemo, useState } from "react";
 import { useBoreholeEditable } from "../../api/borehole.ts";
-import { useRequiredParams } from "../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../hooks/useRequiredId.ts";
 
 interface EditStateContextProps {
   editingEnabled: boolean;
@@ -13,8 +13,8 @@ export const EditStateContext = createContext<EditStateContextProps>({
 });
 
 export const EditStateProvider: FC<PropsWithChildren> = ({ children }) => {
-  const { id } = useRequiredParams<{ id: string }>();
-  const { data: editableByCurrentUser } = useBoreholeEditable(Number.parseInt(id));
+  const id = useRequiredId();
+  const { data: editableByCurrentUser } = useBoreholeEditable(id);
   const [editingEnabled, setEditingEnabled] = useState<boolean>(false);
 
   const contextValue = useMemo(

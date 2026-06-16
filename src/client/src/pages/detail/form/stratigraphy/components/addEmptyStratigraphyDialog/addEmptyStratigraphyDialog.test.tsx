@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ApiError } from "../../../../../../api/apiInterfaces.ts";
+import { ApiError } from "../../../../../../api/errorClasses.ts";
 import { AddEmptyStratigraphyDialog } from "./addEmptyStratigraphyDialog.tsx";
 
 vi.mock("react-i18next", () => ({
@@ -83,42 +83,41 @@ describe("AddEmptyStratigraphyDialog", () => {
   });
 
   it("submits the trimmed name with the expected payload and navigates on success", async () => {
-    fetchApiV2WithApiError.mockResolvedValueOnce({ id: 99 });
+    fetchApiV2WithApiError.mockResolvedValueOnce([{ stratigraphy: { id: 99 } }]);
     renderDialog({ boreholeId: 7, isFirstStratigraphy: true });
 
     fireEvent.change(getNameInput(), { target: { value: "  My Stratigraphy  " } });
     fireEvent.click(getSubmitButton());
 
     await waitFor(() => expect(fetchApiV2WithApiError).toHaveBeenCalledTimes(1));
-    expect(fetchApiV2WithApiError).toHaveBeenCalledWith(
-      "stratigraphy",
-      "POST",
+    // The combined create posts an array of { stratigraphy, lithology } edits.
+    expect(fetchApiV2WithApiError).toHaveBeenCalledWith("stratigraphy", "POST", [
       expect.objectContaining({
-        id: 0,
-        boreholeId: 7,
-        name: "My Stratigraphy",
-        isPrimary: true,
-        date: null,
+        stratigraphy: expect.objectContaining({
+          id: 0,
+          boreholeId: 7,
+          name: "My Stratigraphy",
+          isPrimary: true,
+          date: null,
+        }),
       }),
-    );
+    ]);
 
     await waitFor(() => expect(onCreated).toHaveBeenCalledWith(99));
     expect(onClose).toHaveBeenCalledTimes(1);
   });
 
   it("sets isPrimary to false when not the first stratigraphy", async () => {
-    fetchApiV2WithApiError.mockResolvedValueOnce({ id: 12 });
+    fetchApiV2WithApiError.mockResolvedValueOnce([{ stratigraphy: { id: 12 } }]);
     renderDialog({ isFirstStratigraphy: false });
 
     fireEvent.change(getNameInput(), { target: { value: "Second" } });
     fireEvent.click(getSubmitButton());
 
     await waitFor(() => expect(fetchApiV2WithApiError).toHaveBeenCalledTimes(1));
-    expect(fetchApiV2WithApiError).toHaveBeenCalledWith(
-      "stratigraphy",
-      "POST",
-      expect.objectContaining({ isPrimary: false }),
-    );
+    expect(fetchApiV2WithApiError).toHaveBeenCalledWith("stratigraphy", "POST", [
+      expect.objectContaining({ stratigraphy: expect.objectContaining({ isPrimary: false }) }),
+    ]);
   });
 
   it("shows an inline error and stays open when the name is not unique", async () => {

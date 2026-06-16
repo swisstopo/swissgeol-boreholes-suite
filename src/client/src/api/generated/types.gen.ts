@@ -1887,6 +1887,26 @@ export type LithologyRockConditionCodes = {
 };
 
 /**
+ * The full editable contents of the Lithology tab of a BDMS.Models.Stratigraphy:
+ * the three sibling collections that BDMS.Services.LithologyTabContentService manages
+ * together as a single unit.
+ */
+export type LithologyTabContents = {
+  /**
+   * Gets or sets the BDMS.Models.Lithology rows of the stratigraphy.
+   */
+  lithologies?: Array<Lithology>;
+  /**
+   * Gets or sets the BDMS.Models.LithologicalDescription rows of the stratigraphy.
+   */
+  lithologicalDescriptions?: Array<LithologicalDescription>;
+  /**
+   * Gets or sets the BDMS.Models.FaciesDescription rows of the stratigraphy.
+   */
+  faciesDescriptions?: Array<FaciesDescription>;
+};
+
+/**
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'texture_meta' attached to a BDMS.Models.Lithology.
  */
 export type LithologyTextureMetaCodes = {
@@ -2653,6 +2673,19 @@ export type Stratigraphy = {
    * Gets the BDMS.Models.LithostratigraphyLayers associated with the BDMS.Models.Stratigraphy.
    */
   lithostratigraphyLayers?: Array<LithostratigraphyLayer> | null;
+};
+
+/**
+ * A single combined edit of a BDMS.Models.StratigraphyTabEdit.Stratigraphy together with the contents of one of its tabs.
+ * Used by the combined stratigraphy create/update endpoints both as the request payload and as the
+ * response, so that the stratigraphy header and the active tab's content are persisted (and returned)
+ * in one transactional command. A header-only edit (e.g. creating an empty stratigraphy) leaves
+ * BDMS.Models.StratigraphyTabEdit.LithologyTab`null`. Only the lithology tab is implemented for now; further tabs
+ * (chronostratigraphy, lithostratigraphy) can add their own slots later.
+ */
+export type StratigraphyTabEdit = {
+  stratigraphy?: Stratigraphy;
+  lithologyTab?: LithologyTabContents;
 };
 
 /**
@@ -4706,6 +4739,26 @@ export type LithologyRockConditionCodesWritable = {
 };
 
 /**
+ * The full editable contents of the Lithology tab of a BDMS.Models.Stratigraphy:
+ * the three sibling collections that BDMS.Services.LithologyTabContentService manages
+ * together as a single unit.
+ */
+export type LithologyTabContentsWritable = {
+  /**
+   * Gets or sets the BDMS.Models.Lithology rows of the stratigraphy.
+   */
+  lithologies?: Array<LithologyWritable>;
+  /**
+   * Gets or sets the BDMS.Models.LithologicalDescription rows of the stratigraphy.
+   */
+  lithologicalDescriptions?: Array<LithologicalDescriptionWritable>;
+  /**
+   * Gets or sets the BDMS.Models.FaciesDescription rows of the stratigraphy.
+   */
+  faciesDescriptions?: Array<FaciesDescriptionWritable>;
+};
+
+/**
  * Join table entity for a BDMS.Models.Codelist with the schemaName 'texture_meta' attached to a BDMS.Models.Lithology.
  */
 export type LithologyTextureMetaCodesWritable = {
@@ -5184,6 +5237,19 @@ export type StratigraphyWritable = {
    * Gets the BDMS.Models.LithostratigraphyLayers associated with the BDMS.Models.Stratigraphy.
    */
   lithostratigraphyLayers?: Array<LithostratigraphyLayerWritable> | null;
+};
+
+/**
+ * A single combined edit of a BDMS.Models.StratigraphyTabEdit.Stratigraphy together with the contents of one of its tabs.
+ * Used by the combined stratigraphy create/update endpoints both as the request payload and as the
+ * response, so that the stratigraphy header and the active tab's content are persisted (and returned)
+ * in one transactional command. A header-only edit (e.g. creating an empty stratigraphy) leaves
+ * BDMS.Models.StratigraphyTabEdit.LithologyTab`null`. Only the lithology tab is implemented for now; further tabs
+ * (chronostratigraphy, lithostratigraphy) can add their own slots later.
+ */
+export type StratigraphyTabEditWritable = {
+  stratigraphy?: StratigraphyWritable;
+  lithologyTab?: LithologyTabContentsWritable;
 };
 
 /**
@@ -6450,109 +6516,6 @@ export type GetApiVbyVersionDocumentGetallforboreholeResponses = {
 export type GetApiVbyVersionDocumentGetallforboreholeResponse =
   GetApiVbyVersionDocumentGetallforboreholeResponses[keyof GetApiVbyVersionDocumentGetallforboreholeResponses];
 
-export type DeleteApiVbyVersionFaciesdescriptionData = {
-  body?: never;
-  path: {
-    version: string;
-  };
-  query?: {
-    id?: number;
-  };
-  url: "/api/v{version}/faciesdescription";
-};
-
-export type DeleteApiVbyVersionFaciesdescriptionResponses = {
-  /**
-   * OK
-   */
-  200: unknown;
-};
-
-export type GetApiVbyVersionFaciesdescriptionData = {
-  body?: never;
-  path: {
-    version: string;
-  };
-  query?: {
-    /**
-     * The id of the stratigraphy referenced in the facies descriptions to get.
-     */
-    stratigraphyId?: number;
-  };
-  url: "/api/v{version}/faciesdescription";
-};
-
-export type GetApiVbyVersionFaciesdescriptionResponses = {
-  /**
-   * OK
-   */
-  200: Array<FaciesDescription>;
-};
-
-export type GetApiVbyVersionFaciesdescriptionResponse =
-  GetApiVbyVersionFaciesdescriptionResponses[keyof GetApiVbyVersionFaciesdescriptionResponses];
-
-export type PostApiVbyVersionFaciesdescriptionData = {
-  body?: FaciesDescriptionWritable;
-  path: {
-    version: string;
-  };
-  query?: never;
-  url: "/api/v{version}/faciesdescription";
-};
-
-export type PostApiVbyVersionFaciesdescriptionResponses = {
-  /**
-   * OK
-   */
-  200: FaciesDescription;
-};
-
-export type PostApiVbyVersionFaciesdescriptionResponse =
-  PostApiVbyVersionFaciesdescriptionResponses[keyof PostApiVbyVersionFaciesdescriptionResponses];
-
-export type PutApiVbyVersionFaciesdescriptionData = {
-  body?: FaciesDescriptionWritable;
-  path: {
-    version: string;
-  };
-  query?: never;
-  url: "/api/v{version}/faciesdescription";
-};
-
-export type PutApiVbyVersionFaciesdescriptionResponses = {
-  /**
-   * OK
-   */
-  200: FaciesDescription;
-};
-
-export type PutApiVbyVersionFaciesdescriptionResponse =
-  PutApiVbyVersionFaciesdescriptionResponses[keyof PutApiVbyVersionFaciesdescriptionResponses];
-
-export type GetApiVbyVersionFaciesdescriptionByIdData = {
-  body?: never;
-  path: {
-    /**
-     * The id of the facies description to get.
-     */
-    id: number;
-    version: string;
-  };
-  query?: never;
-  url: "/api/v{version}/faciesdescription/{id}";
-};
-
-export type GetApiVbyVersionFaciesdescriptionByIdResponses = {
-  /**
-   * OK
-   */
-  200: FaciesDescription;
-};
-
-export type GetApiVbyVersionFaciesdescriptionByIdResponse =
-  GetApiVbyVersionFaciesdescriptionByIdResponses[keyof GetApiVbyVersionFaciesdescriptionByIdResponses];
-
 export type DeleteApiVbyVersionFieldmeasurementData = {
   body?: never;
   path: {
@@ -6997,256 +6960,6 @@ export type GetApiVbyVersionInstrumentationByIdResponses = {
 
 export type GetApiVbyVersionInstrumentationByIdResponse =
   GetApiVbyVersionInstrumentationByIdResponses[keyof GetApiVbyVersionInstrumentationByIdResponses];
-
-export type DeleteApiVbyVersionLithologicaldescriptionData = {
-  body?: never;
-  path: {
-    version: string;
-  };
-  query?: {
-    id?: number;
-  };
-  url: "/api/v{version}/lithologicaldescription";
-};
-
-export type DeleteApiVbyVersionLithologicaldescriptionResponses = {
-  /**
-   * OK
-   */
-  200: unknown;
-};
-
-export type GetApiVbyVersionLithologicaldescriptionData = {
-  body?: never;
-  path: {
-    version: string;
-  };
-  query?: {
-    /**
-     * The id of the stratigraphy referenced in the lithological descriptions to get.
-     */
-    stratigraphyId?: number;
-  };
-  url: "/api/v{version}/lithologicaldescription";
-};
-
-export type GetApiVbyVersionLithologicaldescriptionResponses = {
-  /**
-   * OK
-   */
-  200: Array<LithologicalDescription>;
-};
-
-export type GetApiVbyVersionLithologicaldescriptionResponse =
-  GetApiVbyVersionLithologicaldescriptionResponses[keyof GetApiVbyVersionLithologicaldescriptionResponses];
-
-export type PostApiVbyVersionLithologicaldescriptionData = {
-  body?: LithologicalDescriptionWritable;
-  path: {
-    version: string;
-  };
-  query?: never;
-  url: "/api/v{version}/lithologicaldescription";
-};
-
-export type PostApiVbyVersionLithologicaldescriptionResponses = {
-  /**
-   * OK
-   */
-  200: LithologicalDescription;
-};
-
-export type PostApiVbyVersionLithologicaldescriptionResponse =
-  PostApiVbyVersionLithologicaldescriptionResponses[keyof PostApiVbyVersionLithologicaldescriptionResponses];
-
-export type PutApiVbyVersionLithologicaldescriptionData = {
-  body?: LithologicalDescriptionWritable;
-  path: {
-    version: string;
-  };
-  query?: never;
-  url: "/api/v{version}/lithologicaldescription";
-};
-
-export type PutApiVbyVersionLithologicaldescriptionResponses = {
-  /**
-   * OK
-   */
-  200: LithologicalDescription;
-};
-
-export type PutApiVbyVersionLithologicaldescriptionResponse =
-  PutApiVbyVersionLithologicaldescriptionResponses[keyof PutApiVbyVersionLithologicaldescriptionResponses];
-
-export type GetApiVbyVersionLithologicaldescriptionByIdData = {
-  body?: never;
-  path: {
-    /**
-     * The id of the lithological description to get.
-     */
-    id: number;
-    version: string;
-  };
-  query?: never;
-  url: "/api/v{version}/lithologicaldescription/{id}";
-};
-
-export type GetApiVbyVersionLithologicaldescriptionByIdResponses = {
-  /**
-   * OK
-   */
-  200: LithologicalDescription;
-};
-
-export type GetApiVbyVersionLithologicaldescriptionByIdResponse =
-  GetApiVbyVersionLithologicaldescriptionByIdResponses[keyof GetApiVbyVersionLithologicaldescriptionByIdResponses];
-
-export type PostApiVbyVersionLithologicaldescriptionBulkData = {
-  /**
-   * The collection of lithological descriptions to create.
-   */
-  body?: Array<LithologicalDescriptionWritable>;
-  path: {
-    version: string;
-  };
-  query?: never;
-  url: "/api/v{version}/lithologicaldescription/bulk";
-};
-
-export type PostApiVbyVersionLithologicaldescriptionBulkResponses = {
-  /**
-   * OK
-   */
-  200: Array<LithologicalDescription>;
-};
-
-export type PostApiVbyVersionLithologicaldescriptionBulkResponse =
-  PostApiVbyVersionLithologicaldescriptionBulkResponses[keyof PostApiVbyVersionLithologicaldescriptionBulkResponses];
-
-export type DeleteApiVbyVersionLithologyData = {
-  body?: never;
-  path: {
-    version: string;
-  };
-  query?: {
-    id?: number;
-  };
-  url: "/api/v{version}/lithology";
-};
-
-export type DeleteApiVbyVersionLithologyResponses = {
-  /**
-   * OK
-   */
-  200: unknown;
-};
-
-export type GetApiVbyVersionLithologyData = {
-  body?: never;
-  path: {
-    version: string;
-  };
-  query?: {
-    /**
-     * The id of the stratigraphy containing the lithologies to get.
-     */
-    stratigraphyId?: number;
-  };
-  url: "/api/v{version}/lithology";
-};
-
-export type GetApiVbyVersionLithologyResponses = {
-  /**
-   * OK
-   */
-  200: Array<Lithology>;
-};
-
-export type GetApiVbyVersionLithologyResponse =
-  GetApiVbyVersionLithologyResponses[keyof GetApiVbyVersionLithologyResponses];
-
-export type PostApiVbyVersionLithologyData = {
-  body?: LithologyWritable;
-  path: {
-    version: string;
-  };
-  query?: never;
-  url: "/api/v{version}/lithology";
-};
-
-export type PostApiVbyVersionLithologyResponses = {
-  /**
-   * OK
-   */
-  200: Lithology;
-};
-
-export type PostApiVbyVersionLithologyResponse =
-  PostApiVbyVersionLithologyResponses[keyof PostApiVbyVersionLithologyResponses];
-
-export type PutApiVbyVersionLithologyData = {
-  body?: LithologyWritable;
-  path: {
-    version: string;
-  };
-  query?: never;
-  url: "/api/v{version}/lithology";
-};
-
-export type PutApiVbyVersionLithologyResponses = {
-  /**
-   * OK
-   */
-  200: Lithology;
-};
-
-export type PutApiVbyVersionLithologyResponse =
-  PutApiVbyVersionLithologyResponses[keyof PutApiVbyVersionLithologyResponses];
-
-export type GetApiVbyVersionLithologyByIdData = {
-  body?: never;
-  path: {
-    /**
-     * The id of lithology to get.
-     */
-    id: number;
-    version: string;
-  };
-  query?: never;
-  url: "/api/v{version}/lithology/{id}";
-};
-
-export type GetApiVbyVersionLithologyByIdResponses = {
-  /**
-   * OK
-   */
-  200: Lithology;
-};
-
-export type GetApiVbyVersionLithologyByIdResponse =
-  GetApiVbyVersionLithologyByIdResponses[keyof GetApiVbyVersionLithologyByIdResponses];
-
-export type PostApiVbyVersionLithologyBulkData = {
-  /**
-   * The collection of lithologies to create.
-   */
-  body?: Array<LithologyWritable>;
-  path: {
-    version: string;
-  };
-  query?: never;
-  url: "/api/v{version}/lithology/bulk";
-};
-
-export type PostApiVbyVersionLithologyBulkResponses = {
-  /**
-   * OK
-   */
-  200: Array<Lithology>;
-};
-
-export type PostApiVbyVersionLithologyBulkResponse =
-  PostApiVbyVersionLithologyBulkResponses[keyof PostApiVbyVersionLithologyBulkResponses];
 
 export type DeleteApiVbyVersionLithostratigraphyData = {
   body?: never;
@@ -8132,6 +7845,9 @@ export type DeleteApiVbyVersionStratigraphyData = {
     version: string;
   };
   query?: {
+    /**
+     * The id of the stratigraphy to delete.
+     */
     id?: number;
   };
   url: "/api/v{version}/stratigraphy";
@@ -8169,7 +7885,10 @@ export type GetApiVbyVersionStratigraphyResponse =
   GetApiVbyVersionStratigraphyResponses[keyof GetApiVbyVersionStratigraphyResponses];
 
 export type PostApiVbyVersionStratigraphyData = {
-  body?: StratigraphyWritable;
+  /**
+   * The stratigraphies (with optional tab content) to create.
+   */
+  body: Array<StratigraphyTabEditWritable>;
   path: {
     version: string;
   };
@@ -8181,14 +7900,14 @@ export type PostApiVbyVersionStratigraphyResponses = {
   /**
    * OK
    */
-  200: Stratigraphy;
+  200: Array<StratigraphyTabEdit>;
 };
 
 export type PostApiVbyVersionStratigraphyResponse =
   PostApiVbyVersionStratigraphyResponses[keyof PostApiVbyVersionStratigraphyResponses];
 
 export type PutApiVbyVersionStratigraphyData = {
-  body?: StratigraphyWritable;
+  body: StratigraphyTabEditWritable;
   path: {
     version: string;
   };
@@ -8200,11 +7919,34 @@ export type PutApiVbyVersionStratigraphyResponses = {
   /**
    * OK
    */
-  200: Stratigraphy;
+  200: StratigraphyTabEdit;
 };
 
 export type PutApiVbyVersionStratigraphyResponse =
   PutApiVbyVersionStratigraphyResponses[keyof PutApiVbyVersionStratigraphyResponses];
+
+export type GetApiVbyVersionStratigraphyByStratigraphyIdLithologyData = {
+  body?: never;
+  path: {
+    /**
+     * The id of the stratigraphy whose lithology tab contents to get.
+     */
+    stratigraphyId: number;
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/stratigraphy/{stratigraphyId}/lithology";
+};
+
+export type GetApiVbyVersionStratigraphyByStratigraphyIdLithologyResponses = {
+  /**
+   * OK
+   */
+  200: LithologyTabContents;
+};
+
+export type GetApiVbyVersionStratigraphyByStratigraphyIdLithologyResponse =
+  GetApiVbyVersionStratigraphyByStratigraphyIdLithologyResponses[keyof GetApiVbyVersionStratigraphyByStratigraphyIdLithologyResponses];
 
 export type PostApiVbyVersionStratigraphyCopyData = {
   body?: never;

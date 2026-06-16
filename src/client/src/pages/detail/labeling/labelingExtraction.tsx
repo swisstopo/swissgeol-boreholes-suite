@@ -1,7 +1,6 @@
 import { FC, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertColor, Box } from "@mui/material";
-import { BoreholeAttachment } from "../../../api/apiInterfaces.ts";
 import {
   extractCoordinates,
   extractText,
@@ -9,6 +8,7 @@ import {
   useFileInfo,
 } from "../../../api/dataextraction.ts";
 import { ExtractionRequest, ExtractionState } from "../../../api/dataextractionInterfaces.ts";
+import { BoreholeAttachment } from "../../../api/unionTypes.ts";
 import { theme } from "../../../AppTheme.ts";
 import { TextExtractionButton } from "../../../components/buttons/labelingButtons.tsx";
 import { useShowAlertOnError } from "../../../hooks/useShowAlertOnError.tsx";

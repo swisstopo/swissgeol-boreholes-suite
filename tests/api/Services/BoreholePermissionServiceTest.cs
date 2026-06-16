@@ -248,7 +248,7 @@ public class BoreholePermissionServiceTest
     [TestMethod]
     public async Task CanEditBoreholeAsyncWithUnknownBorehole()
     {
-        await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () => await boreholePermissionService.CanEditBoreholeAsync(EditorSubjectId, null));
+        Assert.IsFalse(await boreholePermissionService.CanEditBoreholeAsync(EditorSubjectId, null));
     }
 
     [TestMethod]
@@ -268,7 +268,7 @@ public class BoreholePermissionServiceTest
 
     [TestMethod]
     public async Task CanViewBoreholeAsyncWithUnknownBorehole()
-        => await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () => await boreholePermissionService.CanViewBoreholeAsync(EditorSubjectId, null));
+        => Assert.IsFalse(await boreholePermissionService.CanViewBoreholeAsync(EditorSubjectId, null));
 
     [TestMethod]
     public async Task CanViewBoreholeAsync()

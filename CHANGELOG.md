@@ -16,10 +16,14 @@
 - Lithology rock type can now be left unspecified (in addition to unconsolidated and consolidated). Stratigraphy extraction creates lithologies as unspecified by default.
 - Redesigned lithology table to edit depths in the table overview and stratigraphy extraction.
 - Typescript types for backend models are now generated from swagger doc.
+- The lithology tab and stratigraphy header are now saved together in a single request, and stratigraphy extraction creates stratigraphies with their lithology contents in one operation.
+- The read-only lithology view now uses the same table layout as the edit view, with a per-cell copy button that copies the cell's text to the clipboard.
 
 ### Fixed
 - Fixed bug where casing name was not correctly displayed in the select on the backfill card.
 - Long descriptions in the stratigraphy lithology table now wrap to a new line instead of widening the cell.
+- Navigating to inexistent borehole detail view by URL now shows a not found message instead of throwing an error.
+- Prevent navigate to previously deleted stratigraphy.
 
 ## v2.1.1631 - 2026-05-13
 

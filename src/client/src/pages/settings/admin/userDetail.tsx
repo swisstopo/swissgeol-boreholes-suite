@@ -3,15 +3,14 @@ import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, Checkbox, Chip, Stack, Typography } from "@mui/material";
 import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { Trash2, X } from "lucide-react";
-import { WorkgroupRole } from "../../../api/apiInterfaces.ts";
-import { Role, User, Workgroup } from "../../../api/generated";
+import { Role, User, UserWorkgroupRole, Workgroup } from "../../../api/generated";
 import { useSelectedUser, useUserMutations } from "../../../api/user.ts";
 import { useWorkgroupMutations } from "../../../api/workgroup.ts";
 import { theme } from "../../../AppTheme.ts";
 import { AddButton } from "../../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../../components/prompt/promptContext.tsx";
 import { Table } from "../../../components/table/table.tsx";
-import { useRequiredParams } from "../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../hooks/useRequiredId.ts";
 import { AddWorkgroupRoleDialog } from "./dialogs/addWorkgroupRoleDialog.tsx";
 import { UserAdministrationContext } from "./userAdministrationContext.tsx";
 import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
@@ -19,7 +18,7 @@ import { useSharedTableColumns } from "./useSharedTableColumns.tsx";
 type WorkgroupWithRoles = Workgroup & { roles: Role[] };
 
 export const UserDetail: FC = () => {
-  const { id } = useRequiredParams<{ id: string }>();
+  const id = useRequiredId();
   const { t } = useTranslation();
   const [userWorkgroups, setUserWorkgroups] = useState<WorkgroupWithRoles[]>();
   const [workgroupDialogOpen, setWorkgroupDialogOpen] = useState(false);
@@ -27,7 +26,7 @@ export const UserDetail: FC = () => {
   const { workgroupNameColumn, statusColumn, getDeleteColumn } = useSharedTableColumns();
   const { userDetailTableSortModel, setUserDetailTableSortModel } = useContext(UserAdministrationContext);
   const { showPrompt } = useContext(PromptContext);
-  const { data: selectedUser } = useSelectedUser(parseInt(id));
+  const { data: selectedUser } = useSelectedUser(id);
   const {
     update: { mutate: updateUser },
   } = useUserMutations();
@@ -39,7 +38,7 @@ export const UserDetail: FC = () => {
     const { workgroupRoles } = user;
     if (!workgroupRoles || workgroupRoles.length < 1) return [];
     const workgroupsMap = new Map();
-    workgroupRoles.forEach((r: WorkgroupRole) => {
+    workgroupRoles.forEach((r: UserWorkgroupRole) => {
       if (workgroupsMap.has(r.workgroupId)) {
         workgroupsMap.get(r.workgroupId).roles.push(r.role);
       } else {
@@ -177,7 +176,7 @@ export const UserDetail: FC = () => {
           )}
         </CardContent>
       </Card>
-      <AddWorkgroupRoleDialog open={workgroupDialogOpen} setOpen={setWorkgroupDialogOpen} userId={Number(id)} />
+      <AddWorkgroupRoleDialog open={workgroupDialogOpen} setOpen={setWorkgroupDialogOpen} userId={id} />
     </Stack>
   );
 };

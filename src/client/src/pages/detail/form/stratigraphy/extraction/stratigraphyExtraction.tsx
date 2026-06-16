@@ -1,10 +1,10 @@
 import { FC, useEffect, useState } from "react";
-import { BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
+import { BoreholeAttachment } from "../../../../../api/unionTypes.ts";
 import { ProfileFilePicker } from "./profileFilePicker.tsx";
 import { StratigraphyExtractionDialog } from "./stratigraphyExtractionDialog.tsx";
 
 interface StratigraphyExtractionProps {
-  boreholeId: string;
+  boreholeId: number;
   filePickerOpen: boolean;
   setFilePickerOpen: (open: boolean) => void;
 }

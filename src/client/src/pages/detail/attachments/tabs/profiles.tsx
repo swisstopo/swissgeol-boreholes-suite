@@ -28,8 +28,8 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const { editingEnabled } = useContext(EditStateContext);
   const apiRef = useGridApiRef();
   const showApiErrorAlert = useApiErrorAlert();
-  const { data: profiles, isLoading: isLoadingProfiles } = useProfiles(Number(boreholeId));
-  const reloadProfiles = useReloadProfiles(Number(boreholeId));
+  const { data: profiles, isLoading: isLoadingProfiles } = useProfiles(boreholeId);
+  const reloadProfiles = useReloadProfiles(boreholeId);
   const { data: ocrStatuses } = useProfileOcrStatus(editingEnabled ? boreholeId : undefined);
 
   const ocrStatusMap = useMemo(() => {

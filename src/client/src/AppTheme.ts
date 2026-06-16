@@ -12,6 +12,7 @@ const themePalette: AppThemePalette = {
     main: "#337083",
     contrastText: "#ffffff",
     muted: "rgba(51, 112, 131, 0.3)",
+    background: "#EBF1F3", // solid equivalent of primary.main at 10% over a white background
   },
   secondary: {
     main: "#1c2834",
@@ -619,6 +620,14 @@ export const theme = createTheme({
           border: `1px solid ${themePalette.error.main}`,
           "& .MuiAlert-icon": {
             color: themePalette.error.main,
+          },
+        },
+        outlinedInfo: {
+          color: themePalette.primary.main,
+          backgroundColor: themePalette.primary.background,
+          border: `1px solid ${themePalette.primary.main}`,
+          "& .MuiAlert-icon": {
+            color: themePalette.primary.main,
           },
         },
       },

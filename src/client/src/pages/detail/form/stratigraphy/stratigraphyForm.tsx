@@ -1,7 +1,7 @@
 import { FC, useCallback, useContext, useEffect } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { ApiError } from "../../../../api/apiInterfaces.ts";
+import { ApiError } from "../../../../api/errorClasses.ts";
 import { Stratigraphy } from "../../../../api/generated";
 import { FormValueType } from "../../../../components/form/form.ts";
 import { FormCheckbox } from "../../../../components/form/formCheckbox.tsx";
@@ -10,7 +10,6 @@ import { FormInput } from "../../../../components/form/formInput.tsx";
 import { ensureDatetime } from "../../../../components/form/formUtils.ts";
 import { useFormDirtyMarkAsChanged } from "../../../../components/form/useFormDirty.tsx";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
-import { useStratigraphyMutations } from "./stratigraphy.ts";
 import { StratigraphyContext, StratigraphyContextProps } from "./stratigraphyContext.tsx";
 
 interface StratigraphyFormProps {
@@ -20,13 +19,10 @@ interface StratigraphyFormProps {
 
 export const StratigraphyForm: FC<StratigraphyFormProps> = ({ selectedStratigraphy, stratigraphyCount }) => {
   const { t } = useTranslation();
-  const {
-    update: { mutateAsync: updateStratigraphy },
-  } = useStratigraphyMutations();
   const formMethods = useForm<Stratigraphy>({ mode: "all" });
   const { formState, getValues } = formMethods;
   useFormDirtyMarkAsChanged({ formState });
-  const { registerSaveHandler, registerResetHandler } = useContext<StratigraphyContextProps>(StratigraphyContext);
+  const { registerHeader } = useContext<StratigraphyContextProps>(StratigraphyContext);
   const showApiErrorAlert = useApiErrorAlert();
 
   const resetForm = useCallback(() => {
@@ -38,30 +34,26 @@ export const StratigraphyForm: FC<StratigraphyFormProps> = ({ selectedStratigrap
     }
   }, [formMethods, selectedStratigraphy]);
 
-  const onSave = useCallback(async () => {
-    if (!selectedStratigraphy) return false;
-
+  const getPayload = useCallback((): Stratigraphy => {
     const values = getValues();
-    values.date = values.date ? ensureDatetime(values.date.toString()) : null;
-    await updateStratigraphy(
-      { ...selectedStratigraphy, ...values },
-      {
-        onError: (error: ApiError) => {
-          if (error.messageKey === "mustBeUnique") {
-            formMethods.setError("name", { type: "manual", message: t(error.messageKey) });
-          } else {
-            showApiErrorAlert(error);
-          }
-        },
-      },
-    );
-    return true;
-  }, [formMethods, getValues, selectedStratigraphy, showApiErrorAlert, t, updateStratigraphy]);
+    const date = values.date ? ensureDatetime(values.date.toString()) : null;
+    return { ...selectedStratigraphy, ...values, date };
+  }, [getValues, selectedStratigraphy]);
+
+  const onSaveError = useCallback(
+    (error: ApiError) => {
+      if (error.messageKey === "mustBeUnique") {
+        formMethods.setError("name", { type: "manual", message: t(error.messageKey) });
+      } else {
+        showApiErrorAlert(error);
+      }
+    },
+    [formMethods, showApiErrorAlert, t],
+  );
 
   useEffect(() => {
-    registerSaveHandler(onSave, "stratigraphy");
-    registerResetHandler(resetForm, "stratigraphy");
-  }, [onSave, registerResetHandler, registerSaveHandler, resetForm]);
+    registerHeader({ getPayload, onSaveError, reset: resetForm });
+  }, [getPayload, onSaveError, resetForm, registerHeader]);
 
   useEffect(() => {
     resetForm();
@@ -72,7 +64,7 @@ export const StratigraphyForm: FC<StratigraphyFormProps> = ({ selectedStratigrap
       <FormContainer direction={"row"}>
         <FormInput
           fieldName={"name"}
-          label={"stratigraphy_name"}
+          label={"nameOrVersion"}
           value={selectedStratigraphy.name}
           type={FormValueType.Text}
           onUpdate={() => formMethods.clearErrors("name")}

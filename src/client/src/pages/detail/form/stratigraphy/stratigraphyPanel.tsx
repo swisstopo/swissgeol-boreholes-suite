@@ -1,6 +1,6 @@
 import { FC, ReactNode, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useLocation } from "react-router";
+import { useLocation, useParams } from "react-router";
 import { Box, Card, Chip, CircularProgress, Stack, Tooltip, Typography } from "@mui/material";
 import { Trash2, X } from "lucide-react";
 import CopyIcon from "../../../../assets/icons/copy.svg?react";
@@ -15,7 +15,7 @@ import { BoreholeTab, BoreholeTabContent, BoreholeTabs } from "../../../../compo
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
 import { useBoreholeDataAvailability } from "../../../../hooks/useBoreholeDataAvailability.ts";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate";
-import { useRequiredParams } from "../../../../hooks/useRequiredParams";
+import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { formatDate } from "../../../../utils";
 import { EditStateContext } from "../../editStateContext";
 import { SaveContext } from "../../saveContext.tsx";
@@ -33,11 +33,13 @@ export const StratigraphyPanel: FC = () => {
   const [filePickerOpen, setFilePickerOpen] = useState(false);
   const [addDialogOpen, setAddDialogOpen] = useState(false);
   const justCopiedRef = useRef(false);
-  const { id: boreholeId, stratigraphyId } = useRequiredParams();
+  const boreholeId = useRequiredId();
+  const { stratigraphyId: stratigraphyIdParam } = useParams();
+  const stratigraphyId = stratigraphyIdParam ? Number.parseInt(stratigraphyIdParam, 10) : undefined;
   const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
-  const { data: stratigraphies } = useStratigraphiesByBoreholeId(Number(boreholeId));
-  const { data: borehole } = useBorehole(Number(boreholeId));
+  const { data: stratigraphies } = useStratigraphiesByBoreholeId(boreholeId);
+  const { data: borehole } = useBorehole(boreholeId);
   const { hasLithology, hasLithostratigraphy, hasChronostratigraphy } = useBoreholeDataAvailability(borehole);
   const {
     copy: { mutateAsync: copyStratigraphy },
@@ -58,7 +60,7 @@ export const StratigraphyPanel: FC = () => {
   }, [stratigraphies]);
 
   const selectedTabIndex: number = useMemo(
-    () => sortedStratigraphies?.findIndex(x => x.id === Number(stratigraphyId)) ?? -1,
+    () => sortedStratigraphies?.findIndex(x => x.id === stratigraphyId) ?? -1,
     [sortedStratigraphies, stratigraphyId],
   );
 
@@ -134,8 +136,7 @@ export const StratigraphyPanel: FC = () => {
   const deleteSelectedStratigraphy = useCallback(async () => {
     if (!selectedStratigraphy) return;
     await deleteStratigraphy(selectedStratigraphy);
-    navigateToStratigraphy(undefined, true);
-  }, [deleteStratigraphy, navigateToStratigraphy, selectedStratigraphy]);
+  }, [deleteStratigraphy, selectedStratigraphy]);
 
   const onCopy = useCallback(async () => {
     if (selectedStratigraphy) {
@@ -170,7 +171,7 @@ export const StratigraphyPanel: FC = () => {
     }
     if (
       sortedStratigraphies?.length &&
-      (stratigraphyId === undefined || !sortedStratigraphies.some(x => x.id === Number(stratigraphyId)))
+      (stratigraphyId === undefined || !sortedStratigraphies.some(x => x.id === stratigraphyId))
     ) {
       const primaryId = sortedStratigraphies.find(x => x.isPrimary)?.id ?? sortedStratigraphies[0].id ?? -1;
       navigateToStratigraphy(primaryId === -1 ? undefined : primaryId, true);
@@ -359,7 +360,7 @@ export const StratigraphyPanel: FC = () => {
       <AddEmptyStratigraphyDialog
         open={addDialogOpen}
         onClose={() => setAddDialogOpen(false)}
-        boreholeId={Number(boreholeId)}
+        boreholeId={boreholeId}
         isFirstStratigraphy={!stratigraphies?.length}
         onCreated={id => navigateToStratigraphy(id, true)}
       />
