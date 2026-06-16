@@ -162,55 +162,72 @@ describe("useLithologyTableState", () => {
       expect(result.current.tmpLithologies[0].toDepth).toEqual(100);
     });
 
-    it("materialises a fully-failed layer as a zero-depth row in its extraction position", () => {
-      // Mirrors a stratigraphy extraction where two layers have failed depths: a fully-failed
-      // layer between two good ones, and a trailing layer with only a start depth. The fully-failed
-      // layer sits between Gravel (ends 1.5) and Sand (starts 1.5), so it collapses to a
-      // zero-thickness row at 1.5. The trailing Clay layer keeps its 4.2 start and a null end. Both
-      // stay in extraction order rather than piling up at the bottom.
+    it("chains a run of fully-failed layers between their depthed neighbours", () => {
       const { result } = renderState({
         lithologicalDescriptions: [
-          lithologicalDescription({ id: 0, fromDepth: 0, toDepth: 1.5, description: "Gravel" }),
-          lithologicalDescription({ id: 1, fromDepth: null, toDepth: null, description: "Silt" }),
-          lithologicalDescription({ id: 2, fromDepth: 1.5, toDepth: 4.2, description: "Sand" }),
-          lithologicalDescription({ id: 3, fromDepth: 4.2, toDepth: null, description: "Clay" }),
+          lithologicalDescription({ id: 1, fromDepth: null, toDepth: 1.5, description: "Limons" }),
+          lithologicalDescription({ id: 2, fromDepth: 1.8, toDepth: 2.3, description: "Gravel" }),
+          lithologicalDescription({ id: 3, fromDepth: null, toDepth: null, description: "Silt" }),
+          lithologicalDescription({ id: 4, fromDepth: null, toDepth: null, description: "Argile" }),
+          lithologicalDescription({ id: 5, fromDepth: null, toDepth: null, description: "Sable" }),
+          lithologicalDescription({ id: 6, fromDepth: 3.7, toDepth: 4.2, description: "Sand" }),
+          lithologicalDescription({ id: 7, fromDepth: 4.2, toDepth: null, description: "Clay" }),
         ],
       });
 
       expect(result.current.depths.map(d => [d.fromDepth, d.toDepth])).toEqual([
-        [0, 1.5],
-        [1.5, 1.5],
-        [1.5, 4.2],
+        [null, 1.5],
+        [1.5, 1.8],
+        [1.8, 2.3],
+        [2.3, null],
+        [null, null],
+        [null, 3.7],
+        [3.7, 4.2],
         [4.2, null],
       ]);
+      // All input descriptions survive in extraction order; the gap row carries no description.
       expect(result.current.tmpLithologicalDescriptions.map(d => d.description)).toEqual([
+        "Limons",
         "Gravel",
         "Silt",
+        "Argile",
+        "Sable",
         "Sand",
         "Clay",
       ]);
-      // The fully-failed Silt layer is materialised as a zero-thickness layer at 1.5, kept in sync
-      // with its depth row so later edits propagate.
-      const silt = result.current.tmpLithologicalDescriptions[1];
-      expect([silt.fromDepth, silt.toDepth]).toEqual([1.5, 1.5]);
+      // The failed layers are kept in sync with their chained rows: the first and last inherit a
+      // known boundary, the middle one is null on both sides.
+      const silt = result.current.tmpLithologicalDescriptions[2];
+      const argile = result.current.tmpLithologicalDescriptions[3];
+      const sable = result.current.tmpLithologicalDescriptions[4];
+      expect([silt.fromDepth, silt.toDepth]).toEqual([2.3, null]);
+      expect([argile.fromDepth, argile.toDepth]).toEqual([null, null]);
+      expect([sable.fromDepth, sable.toDepth]).toEqual([null, 3.7]);
 
-      // Every depth row gets a lithology, including the two failed-depth rows.
+      // Every depth row gets a lithology, including the gap row and the three failed-depth rows.
       expect(result.current.tmpLithologies.map(l => [l.fromDepth, l.toDepth])).toEqual([
-        [0, 1.5],
-        [1.5, 1.5],
-        [1.5, 4.2],
+        [null, 1.5],
+        [1.5, 1.8],
+        [1.8, 2.3],
+        [2.3, null],
+        [null, null],
+        [null, 3.7],
+        [3.7, 4.2],
         [4.2, null],
       ]);
       result.current.tmpLithologies.forEach((lithology, i) => {
         expect(lithology.depthIds).toEqual([result.current.depths[i].id]);
       });
 
-      // The zero-depth Silt row flags both sides — not because of a null, but because from === to.
-      const siltRow = result.current.depths[1];
-      expect(siltRow.hasFromDepthError).toBe(true);
-      expect(siltRow.hasToDepthError).toBe(true);
+      // The Limons row has no start depth, so only its missing fromDepth is flagged.
+      expect(result.current.depths[0]).toMatchObject({ hasFromDepthError: true, hasToDepthError: false });
+      // The first failed row keeps its known 2.3 start; the last keeps its known 3.7 end; the middle
+      // row is null on both sides.
+      expect(result.current.depths[3]).toMatchObject({ hasFromDepthError: false, hasToDepthError: true });
+      expect(result.current.depths[4]).toMatchObject({ hasFromDepthError: true, hasToDepthError: true });
+      expect(result.current.depths[5]).toMatchObject({ hasFromDepthError: true, hasToDepthError: false });
       // The 4.2 start of the Clay row is valid; only its missing end depth is flagged.
-      const clayRow = result.current.depths[3];
+      const clayRow = result.current.depths[7];
       expect(clayRow.hasFromDepthError).toBe(false);
       expect(clayRow.hasToDepthError).toBe(true);
     });

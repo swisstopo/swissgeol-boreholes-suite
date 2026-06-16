@@ -35,7 +35,7 @@ export const useAlertManager = () => {
     text: currentAlert?.text,
     severity: currentAlert?.severity,
     variant: currentAlert?.variant,
-    autoHideDuration: currentAlert?.allowAutoHide === true ? 6000 : null,
+    autoHideDuration: currentAlert?.allowAutoHide === true ? 6000 : undefined,
     showAlert,
     closeAlert,
   };
