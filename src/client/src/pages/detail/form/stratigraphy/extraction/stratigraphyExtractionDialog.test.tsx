@@ -3,8 +3,9 @@ import { FC, ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, configure, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ApiError, BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
 import { ExtractedStratigraphy } from "../../../../../api/dataextraction.ts";
+import { ApiError } from "../../../../../api/errorClasses.ts";
+import { BoreholeAttachment } from "../../../../../api/unionTypes.ts";
 import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
 import { AlertContextInterface } from "../../../../../components/alert/alertInterfaces.ts";
 import { StratigraphyExtractionDialog } from "./stratigraphyExtractionDialog.tsx";
@@ -19,6 +20,7 @@ vi.mock("react-i18next", () => ({
 
 vi.mock("react-router", () => ({
   useLocation: () => ({ hash: "" }),
+  useParams: () => ({ id: "42" }),
 }));
 
 // Drives what the dialog sees as extracted stratigraphies; mutated per test before render.
@@ -31,10 +33,6 @@ vi.mock("../../../../../api/dataextraction.ts", () => ({
 const bulkAdd = vi.fn();
 vi.mock("../stratigraphy.ts", () => ({
   useAddExtractedStratigraphies: () => ({ mutateAsync: bulkAdd, isPending: false }),
-}));
-
-vi.mock("../../../../../hooks/useRequiredParams.ts", () => ({
-  useRequiredParams: () => ({ id: "42" }),
 }));
 
 const navigateTo = vi.fn();

@@ -1,4 +1,4 @@
-﻿import { NullableNumberString } from "../../../../api/apiInterfaces.ts";
+﻿import { NullableNumberString } from "../../../../api/unionTypes.ts";
 import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 
 interface EntityWithDepth {

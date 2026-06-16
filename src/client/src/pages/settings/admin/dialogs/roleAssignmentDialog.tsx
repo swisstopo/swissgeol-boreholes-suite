@@ -11,9 +11,9 @@ import {
   Typography,
 } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
-import { EntityType } from "../../../../api/apiInterfaces.ts";
 import { Role, User, Workgroup } from "../../../../api/generated";
 import { AddButton, CancelButton } from "../../../../components/buttons/buttons.tsx";
+import { EntityType } from "./entityType.ts";
 
 const allRoles: Role[] = ["View", "Editor", "Controller", "Validator", "Publisher"];
 

@@ -4,7 +4,7 @@ import { Card, CardActions, CardContent, CircularProgress, Grid, Typography } fr
 import { useBoreholeGeometry, useBoreholeGeometryMutations } from "../../../../api/fetchApiV2.ts";
 import { DeleteButton } from "../../../../components/buttons/buttons.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
-import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import GeometryChartNE from "./geometryChartNE.jsx";
@@ -23,8 +23,8 @@ import GeometryTable from "./geometryTable.jsx";
 const Geometry = ({ measuredDepth }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
-  const { id: boreholeId } = useRequiredParams();
-  const { data } = useBoreholeGeometry(Number(boreholeId));
+  const boreholeId = useRequiredId();
+  const { data } = useBoreholeGeometry(boreholeId);
   const resetTabStatus = useResetTabStatus(["geometry"]);
 
   const {

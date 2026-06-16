@@ -4,7 +4,7 @@ import { Casing } from "../../../../api/generated";
 import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormContainer } from "../../../../components/form/formContainer";
 import { FormDomainSelect } from "../../../../components/form/formDomainSelect";
-import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { useGetCasingOptions } from "../completion/casingUtils.tsx";
 import DepthInput from "./depthInput.tsx";
 import { hydrogeologySchemaConstants } from "./hydrogeologySchemaConstants.ts";
@@ -12,12 +12,12 @@ import { ObservationInputProps } from "./Observation.ts";
 
 const ObservationInput = ({ observation, showDepthInputs = true }: ObservationInputProps) => {
   const [casings, setCasings] = useState<Casing[]>([]);
-  const { id: boreholeId } = useRequiredParams<{ id: string }>();
+  const boreholeId = useRequiredId();
   const getCasingOptions = useGetCasingOptions();
 
   useEffect(() => {
     if (boreholeId) {
-      getCasingsByBoreholeId(Number(boreholeId)).then(casings => {
+      getCasingsByBoreholeId(boreholeId).then(casings => {
         setCasings(casings);
       });
     }

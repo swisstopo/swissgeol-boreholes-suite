@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { useAuth } from "../auth/useBoreholesAuth.tsx";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
-import { Role, Workgroup, UserWorkgroupRole as WorkgroupRole } from "./generated/types.gen";
+import { Role, UserWorkgroupRole, Workgroup } from "./generated/types.gen";
 import { usersQueryKey } from "./user.ts";
 
 const fetchWorkgroups = async (): Promise<Workgroup[]> => await fetchApiV2WithApiError("workgroup", "GET");
@@ -23,7 +23,7 @@ const updateWorkgroup = async (workgroup: Workgroup) => {
 const deleteWorkgroup = async (id: number) => await fetchApiV2WithApiError(`workgroup/${id}`, "DELETE");
 
 const setWorkgroupRole = async (userId: number, workgroupId: number, role: Role, isActive: boolean) => {
-  const workgroupRole: WorkgroupRole[] = [
+  const workgroupRole: UserWorkgroupRole[] = [
     {
       workgroupId: workgroupId,
       userId: userId,
@@ -35,7 +35,7 @@ const setWorkgroupRole = async (userId: number, workgroupId: number, role: Role,
 };
 
 const removeAllWorkgroupRolesForUser = async (userId: number, workgroupId: number, roles: Role[]): Promise<void> => {
-  const workgroupRoles: WorkgroupRole[] = [];
+  const workgroupRoles: UserWorkgroupRole[] = [];
   for (const role of roles) {
     workgroupRoles.push({
       workgroupId: workgroupId,

@@ -3,7 +3,7 @@ import { ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { ApiError } from "../../../../../../api/apiInterfaces.ts";
+import { ApiError } from "../../../../../../api/errorClasses.ts";
 import { AddEmptyStratigraphyDialog } from "./addEmptyStratigraphyDialog.tsx";
 
 vi.mock("react-i18next", () => ({

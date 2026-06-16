@@ -2,7 +2,6 @@
 import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import { Stack } from "@mui/material";
-import "../../../../api/apiInterfaces.ts";
 import { getBackfills, getCasings, getInstrumentation } from "../../../../api/fetchApiV2.ts";
 import { Backfill, Casing, Instrumentation } from "../../../../api/generated";
 import { DataCardExternalContext } from "../../../../components/dataCard/dataCardContext.tsx";

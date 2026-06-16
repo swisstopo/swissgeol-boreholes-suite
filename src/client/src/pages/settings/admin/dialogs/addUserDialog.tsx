@@ -1,8 +1,8 @@
 import { FC } from "react";
-import { EntityType } from "../../../../api/apiInterfaces.ts";
 import { Role, User } from "../../../../api/generated";
 import { usersQueryKey, useUsers } from "../../../../api/user.ts";
 import { useWorkgroupMutations } from "../../../../api/workgroup.ts";
+import { EntityType } from "./entityType.ts";
 import { RoleAssignmentDialog } from "./roleAssignmentDialog.tsx";
 
 interface AddUserDialogProps {

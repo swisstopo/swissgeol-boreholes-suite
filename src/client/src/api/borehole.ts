@@ -4,10 +4,10 @@ import { FeatureCollection, Geometry } from "geojson";
 import { useCodelistDisplayValues } from "../components/codelist.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { SessionKeys } from "../pages/overview/SessionKey.ts";
-import { NullableDateString } from "./apiInterfaces.ts";
 import { download, downloadData } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
 import { Borehole, BoreholeCodelist, Codelist } from "./generated";
+import { NullableDateString } from "./unionTypes.ts";
 import { useCurrentUser } from "./user.ts";
 
 export interface BasicIdentifier extends BoreholeCodelist {

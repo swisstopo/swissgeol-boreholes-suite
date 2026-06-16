@@ -14,8 +14,9 @@ import {
   Typography,
 } from "@mui/material";
 import { Stack } from "@mui/system";
-import { ApiError, BoreholeAttachment } from "../../../../../api/apiInterfaces.ts";
 import { useExtractStratigraphies, useFileInfo } from "../../../../../api/dataextraction.ts";
+import { ApiError } from "../../../../../api/errorClasses.ts";
+import { BoreholeAttachment } from "../../../../../api/unionTypes.ts";
 import { theme } from "../../../../../AppTheme.ts";
 import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
 import { BoreholesButton, CancelButton } from "../../../../../components/buttons/buttons.tsx";
@@ -25,7 +26,7 @@ import {
   DialogMainContent,
 } from "../../../../../components/styledComponents.ts";
 import { useBoreholesNavigate } from "../../../../../hooks/useBoreholesNavigate.tsx";
-import { useRequiredParams } from "../../../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../../../hooks/useRequiredId.ts";
 import { prepareDataForSubmit } from "../components/lithologyTable/lithologyTableUtils.ts";
 import { useAddExtractedStratigraphies } from "../stratigraphy.ts";
 import { StratigraphyExtractionItemState } from "./stratigraphyExtractionItem.tsx";
@@ -54,7 +55,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   const { data: allExtractedStratigraphies = [], isLoading: isLoadingExtraction } = useExtractStratigraphies(file, 1);
   const { isLoading: isLoadingFileInfo } = useFileInfo(file?.id, 1);
   const { mutateAsync: bulkAdd, isPending: isLoadingBulkAdd } = useAddExtractedStratigraphies();
-  const { id } = useRequiredParams<{ id: string }>();
+  const id = useRequiredId();
   const { navigateTo } = useBoreholesNavigate();
   const location = useLocation();
   const [activePage, setActivePage] = useState<number>(1);
@@ -172,7 +173,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
     });
 
     try {
-      const results = await bulkAdd({ boreholeId: Number(id), stratigraphies: stratigraphiesToSave });
+      const results = await bulkAdd({ boreholeId: id, stratigraphies: stratigraphiesToSave });
 
       if (!results || results.length === 0) {
         showAlert(t("errorStratigraphySaving"), "error");

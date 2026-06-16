@@ -5,7 +5,7 @@ import { FullPageCentered } from "../../../../../components/styledComponents.ts"
 import { EditStateContext } from "../../../editStateContext.tsx";
 import { useLithologyTabContents } from "../stratigraphy.ts";
 import { LithologyPanelEdit } from "./lithologyPanelEdit.tsx";
-import { TempLithologyView } from "./tempLithologyView.tsx";
+import { LithologyPanelReadOnly } from "./lithologyPanelReadOnly.tsx";
 
 export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) => {
   const { t } = useTranslation();
@@ -39,7 +39,8 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
     return <Box>{t("msgLithologyEmpty")}</Box>;
   }
   return (
-    <TempLithologyView
+    <LithologyPanelReadOnly
+      stratigraphyId={stratigraphyId}
       lithologies={lithologies}
       lithologicalDescriptions={lithologicalDescriptions}
       faciesDescriptions={faciesDescriptions}

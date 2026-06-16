@@ -20,7 +20,7 @@ import { restrictionFreeCode } from "../../../../components/codelist.ts";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { useBoreholeDataAvailability } from "../../../../hooks/useBoreholeDataAvailability.ts";
 import { useBoreholesNavigate } from "../../../../hooks/useBoreholesNavigate.tsx";
-import { useRequiredParams } from "../../../../hooks/useRequiredParams.ts";
+import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import {
   TabStatusChangeRequest,
@@ -32,12 +32,12 @@ import {
 } from "./workflow.ts";
 
 export const WorkflowView = () => {
-  const { id: boreholeId } = useRequiredParams<{ id: string }>();
-  const { data: borehole } = useBorehole(parseInt(boreholeId));
-  const { data: workflow, isLoading } = useWorkflow(parseInt(boreholeId));
+  const boreholeId = useRequiredId();
+  const { data: borehole } = useBorehole(boreholeId);
+  const { data: workflow, isLoading } = useWorkflow(boreholeId);
   const { data: currentUser, isLoading: isCurrentUserLoading } = useCurrentUser();
   const { t } = useTranslation();
-  const { data: canChangeStatus } = useBoreholeStatusEditable(parseInt(boreholeId));
+  const { data: canChangeStatus } = useBoreholeStatusEditable(boreholeId);
   const { setEditingEnabled } = useContext(EditStateContext);
   const { data: editorUsersForWorkgroup } = useEditorUsersOnWorkgroup(borehole?.workgroup?.id ?? 0);
   const { navigateTo } = useBoreholesNavigate();
@@ -163,7 +163,7 @@ export const WorkflowView = () => {
     const changes: WorkflowChange = changeEvent.detail.changes;
     const assigneeId = changes.toAssignee?.id;
     const workflowChangeRequest: WorkflowChangeRequest = {
-      boreholeId: parseInt(boreholeId, 10),
+      boreholeId: boreholeId,
       comment: changes.comment,
       newAssigneeId: assigneeId != undefined ? Number(assigneeId) : undefined,
       hasRequestedChanges: changes.hasRequestedChanges,
@@ -191,7 +191,7 @@ export const WorkflowView = () => {
     // If any reviews were revoked, also remove those entries from published tabs
     if (Object.keys(revokedReviews).length > 0) {
       const resetTabStatusChangeRequest: TabStatusChangeRequest = {
-        boreholeId: parseInt(boreholeId, 10),
+        boreholeId: boreholeId,
         tab: TabType.Published,
         changes: revokedReviews,
       };
@@ -204,7 +204,7 @@ export const WorkflowView = () => {
     tab: TabType,
   ) => {
     const tabStatusChangeRequest: TabStatusChangeRequest = {
-      boreholeId: parseInt(boreholeId, 10),
+      boreholeId: boreholeId,
       tab: tab,
       changes: changeEvent.detail.changes,
     };
