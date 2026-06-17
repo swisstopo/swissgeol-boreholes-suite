@@ -535,7 +535,7 @@ export const loginAndResetState = () => {
       auth: bearerAuth(token),
     }).then(response => {
       response.body.filteredBoreholeIds
-        .filter((id: number) => id > 1002999) // max id in seed data.
+        .filter((id: number) => id > 1000099) // max id in seed data.
         .forEach((id: number) => {
           deleteBorehole(id);
         });
@@ -550,7 +550,7 @@ export const loginAndResetState = () => {
     //   auth: bearerAuth(token),
     // }).then(response => {
     //   response.body
-    //     .filter(st => st.id > 6002999) // max id in seed data.
+    //     .filter(st => st.id > 6000099) // max id in seed data.
     //     .forEach(st => {
     //       deleteStratigraphy(st.id);
     //     });
