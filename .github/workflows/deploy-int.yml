@@ -73,5 +73,4 @@ jobs:
             ${CHART_VERSION:+--version "$CHART_VERSION"} \
             ${{ matrix.values }} \
             -n ${{ matrix.namespace }} \
-            --install --wait --timeout 5m \
-            --dry-run
+            --install --wait --timeout 5m
