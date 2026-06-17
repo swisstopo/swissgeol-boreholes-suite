@@ -8,10 +8,14 @@ export function removeFirstMultiSelectChip(filterKey: string) {
     });
 }
 
-export function clickYesNoButton(fieldName: string, option: string) {
+export function getYesNoButton(fieldName: string, option: string) {
   const lowered = option.toLowerCase();
   const suffix = lowered === "yes" || lowered === "no" ? lowered : "np";
-  cy.dataCy(`${fieldName}-button-${suffix}`).click();
+  return cy.dataCy(`${fieldName}-button-${suffix}`);
+}
+
+export function clickYesNoButton(fieldName: string, option: string) {
+  getYesNoButton(fieldName, option).click();
 }
 
 // Codelist dropdowns with < 10 options render as toggle buttons. Pick the
@@ -43,4 +47,5 @@ export function checkFilterChipExistsAndRemove(filterName: string) {
     cy.get("svg").click();
   });
   cy.dataCy(`filter-chip-${filterName}`).should("not.exist");
+  cy.wait("@borehole_filter");
 }

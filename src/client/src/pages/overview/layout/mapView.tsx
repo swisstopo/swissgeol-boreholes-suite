@@ -42,7 +42,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const {
     filterParams,
     tableParams,
-    setTableParams,
+    setParams,
     mapResolution,
     mapCenter,
     saveFilterParamsInSession,
@@ -80,7 +80,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     pageSize: tableParams.pageSize,
   };
   const setPaginationModel = (model: GridPaginationModel) => {
-    setTableParams({ page: model.page, pageSize: model.pageSize });
+    setParams({ page: model.page, pageSize: model.pageSize });
   };
 
   const sortModel: GridSortModel = [
@@ -90,7 +90,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     },
   ];
   const setSortModel = (model: GridSortModel) => {
-    setTableParams({
+    setParams({
       orderBy: model[0]?.field ?? "name",
       direction: model[0]?.sort === "desc" ? "DESC" : "ASC",
       page: 0, // reset to first page on sort change

@@ -62,10 +62,17 @@ export const filterParsers = {
 
 export type FilterKey = keyof typeof filterParsers;
 
+const filterAndTableParsers = { ...filterParsers, ...tableParsers };
+
 export const useBoreholeUrlParams = () => {
-  const [allFilterParams, setFilterParams] = useQueryStates(filterParsers);
+  const [allParams, setParams] = useQueryStates(filterAndTableParsers);
+  const allFilterParams = Object.fromEntries(
+    (Object.keys(filterParsers) as FilterKey[]).map(k => [k, allParams[k]]),
+  ) as { [K in FilterKey]: (typeof allParams)[K] };
   const filterParams = Object.fromEntries(Object.entries(allFilterParams).filter(([, value]) => value !== null));
-  const [tableParams, setTableParams] = useQueryStates(tableParsers);
+  const tableParams = Object.fromEntries(
+    (Object.keys(tableParsers) as (keyof typeof tableParsers)[]).map(k => [k, allParams[k]]),
+  ) as { [K in keyof typeof tableParsers]: (typeof allParams)[K] };
   const [mapParams, setMapParams] = useQueryStates(mapParsers);
 
   // Keep refs always pointing to the latest values so cleanup functions
@@ -78,20 +85,20 @@ export const useBoreholeUrlParams = () => {
   const setFilterField = useCallback(
     (key: FilterKey, value: string | string[] | number[] | boolean | null | undefined) => {
       if (value === true) {
-        setFilterParams({ [key]: "true" });
+        setParams({ [key]: "true" } as Parameters<typeof setParams>[0]);
       } else if (value === false) {
-        setFilterParams({ [key]: "false" });
+        setParams({ [key]: "false" } as Parameters<typeof setParams>[0]);
       } else if (value === null && nullableBooleanFilterKeys.has(key)) {
         // Preserve the "null" literal ("Keine Angabe") for nullable boolean filter keys.
-        setFilterParams({ [key]: "null" });
+        setParams({ [key]: "null" } as Parameters<typeof setParams>[0]);
       } else if (value === null || value === undefined) {
         // Any other null/undefined clears the URL param.
-        setFilterParams({ [key]: null });
+        setParams({ [key]: null } as Parameters<typeof setParams>[0]);
       } else {
-        setFilterParams({ [key]: value as never });
+        setParams({ [key]: value } as Parameters<typeof setParams>[0]);
       }
     },
-    [setFilterParams],
+    [setParams],
   );
 
   // Removes the param from the URL entirely. Unlike `setFilterField(key, null)`, which preserves
@@ -99,12 +106,10 @@ export const useBoreholeUrlParams = () => {
   // always drops the key so downstream consumers see an unset filter.
   const clearFilterField = useCallback(
     (key: FilterKey) => {
-      setFilterParams({ [key]: null } as Parameters<typeof setFilterParams>[0]);
-      (Object.keys(filterParsers) as Array<FilterKey>).forEach(key => {
-        sessionStorage.removeItem(SessionKeys[key as keyof typeof SessionKeys]);
-      });
+      setParams({ [key]: null } as Parameters<typeof setParams>[0]);
+      sessionStorage.removeItem(SessionKeys[key as keyof typeof SessionKeys]);
     },
-    [setFilterParams],
+    [setParams],
   );
 
   const mapCenter: [number, number] | null =
@@ -118,7 +123,7 @@ export const useBoreholeUrlParams = () => {
   const resetFilter = () => {
     // Set all filter keys to null to remove them from the URL
     const nulled = Object.fromEntries(Object.keys(filterParsers).map(k => [k, null]));
-    setFilterParams(nulled as Parameters<typeof setFilterParams>[0]);
+    setParams(nulled as Parameters<typeof setParams>[0]);
     (Object.keys(filterParsers) as Array<FilterKey>).forEach(key => {
       sessionStorage.removeItem(SessionKeys[key as keyof typeof SessionKeys]);
     });
@@ -160,9 +165,9 @@ export const useBoreholeUrlParams = () => {
       }
     });
     if (Object.keys(updates).length > 0) {
-      setTableParams(updates as Parameters<typeof setTableParams>[0]);
+      setParams(updates as Parameters<typeof setParams>[0]);
     }
-  }, [setTableParams]);
+  }, [setParams]);
 
   const restoreFilterParamsFromSession = useCallback(() => {
     // URL takes precedence over session: if ANY filter is already set via the URL,
@@ -180,9 +185,9 @@ export const useBoreholeUrlParams = () => {
       }
     });
     if (Object.keys(updates).length > 0) {
-      setFilterParams(updates as Parameters<typeof setFilterParams>[0]);
+      setParams(updates as Parameters<typeof setParams>[0]);
     }
-  }, [setFilterParams]);
+  }, [setParams]);
 
   const restoreMapParamsFromSession = useCallback(() => {
     const updates: Record<string, unknown> = {};
@@ -208,7 +213,7 @@ export const useBoreholeUrlParams = () => {
     saveFilterParamsInSession,
     tableParams,
     saveTableParamsInSession,
-    setTableParams,
+    setParams,
     restoreTableParamsFromSession,
     restoreFilterParamsFromSession,
     restoreMapParamsFromSession,
@@ -218,6 +223,6 @@ export const useBoreholeUrlParams = () => {
     mapCenter,
     setMapCenter,
     bottomDrawerOpen: tableParams.bottomDrawerOpen,
-    setBottomDrawerOpen: (v: boolean) => setTableParams({ bottomDrawerOpen: v }),
+    setBottomDrawerOpen: (v: boolean) => setParams({ bottomDrawerOpen: v }),
   };
 };

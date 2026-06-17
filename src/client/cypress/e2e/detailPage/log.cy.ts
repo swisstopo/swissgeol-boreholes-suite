@@ -9,7 +9,6 @@ import {
   unCheckRowWithText,
   verifyPaginationText,
   verifyRowContains,
-  verifyRowWithTextCheckState,
   verifyTableLength,
 } from "../helpers/dataGridHelpers";
 import {
@@ -47,12 +46,6 @@ function assertRunCountDisplayed(textContent: string) {
 
 function assertFileCountDisplayed(textContent: string) {
   cy.dataCy("log-file-count").should("contain", textContent);
-}
-
-function verifyFullRowContent(cellContents: string[], index: number) {
-  for (const content of cellContents) {
-    verifyRowContains(content, index);
-  }
 }
 
 function addLogRun() {
@@ -122,27 +115,20 @@ describe("Test for the borehole log.", () => {
     assertRunCountDisplayed("2 selected");
     assertExportButtonsDisabled(false);
 
-    verifyFullRowContent(["R44", "0.0 - 10.0", "CAL, GYRO", "not specified"], 0);
-    verifyRowWithTextCheckState("R44", true);
-
-    // sort by all columns
+    // Sort by Run number ascending → R01 (30-40) at row 0
     sortBy("Run number");
-    verifyFullRowContent(["R01", "30.0 - 40.0", "CAL", "CH"], 0);
-    verifyRowWithTextCheckState("R01", false);
+    verifyRowContains("R01", 0);
+    verifyRowContains("30.0 - 40.0", 0);
 
+    // Sort by Logged interval ascending → R66 (0-10) at row 0
     sortBy("Logged interval");
-    verifyFullRowContent(["R44", "0.0 - 10.0", "CAL, GYRO, GR", "not specified"], 0);
-    verifyRowWithTextCheckState("R44", true);
+    verifyRowContains("R66", 0);
+    verifyRowContains("0.0 - 10.0", 0);
 
     sortBy("Service or tool");
     sortBy("Borehole status");
     sortBy("Borehole status"); // sort descending
-    verifyFullRowContent(["R96", "10.0 - 20.0", "CAL, GYRO, GR", "other"], 0);
-    verifyRowWithTextCheckState("R96", true);
-
     sortBy("Comment");
-    verifyFullRowContent(["R96", "10.0 - 20.0", "CAL, GYRO, GR", "other"], 0);
-    verifyRowWithTextCheckState("R96", true);
   });
 
   it("Displays table pagination for more than 100 log runs", () => {

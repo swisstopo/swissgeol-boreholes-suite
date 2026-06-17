@@ -45,7 +45,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
   const { filterPolygon, polygonSelectionEnabled, setPolygonSelectionEnabled, setFeatureIds, setFilterPolygon } =
     useContext(PolygonFilterContext);
 
-  const { filterParams, setFilterField, resetFilter, setTableParams } = useBoreholeUrlParams();
+  const { filterParams, setFilterField, resetFilter, setParams } = useBoreholeUrlParams();
 
   const { data: user } = useCurrentUser();
   const { data: stats } = useFilterStats(filterParams);
@@ -115,7 +115,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
     setFeatureIds([]);
     formMethods.reset();
     resetFilter();
-    setTableParams({ page: 0 });
+    setParams({ page: 0 });
   };
 
   return (
@@ -206,7 +206,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
                   <WorkgroupFilter
                     onChange={workgroup => {
                       setFilterField("workgroupId", workgroup);
-                      setTableParams({ page: 0 });
+                      setParams({ page: 0 });
                     }}
                     workgroups={getUserWorkgroups(user)}
                     selectedWorkgroupIds={filterParams["workgroupId"] as number[] | undefined}
