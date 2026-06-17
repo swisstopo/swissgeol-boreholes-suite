@@ -11,6 +11,7 @@ import {
 import {
   createEmptyLithology,
   flagErrors,
+  getDepthIdsInRange,
   getInitialDepthLayers,
   mergeAdjacentDepths,
   removeDepthIdReferences,
@@ -39,7 +40,13 @@ export interface LithologyTableState {
   updateTmpLithologicalDescription: (updated: LithologicalDescription, hasChanges: boolean) => void;
   updateTmpFaciesDescription: (updated: FaciesDescription, hasChanges: boolean) => void;
 
-  resizeDescription: (kind: DescriptionKind, index: number, newFromDepth: number, newToDepth: number) => void;
+  resizeDescription: (
+    kind: DescriptionKind,
+    index: number,
+    newFromDepth: number | null,
+    newToDepth: number | null,
+    targetDepthIds?: string[],
+  ) => void;
 
   hasErrors: boolean;
   hasUnsavedChanges: boolean;
@@ -417,19 +424,30 @@ export const useLithologyTableState = (
     commitChanges(depths, tmpLithologies, tmpLithologicalDescriptions, newDescs);
   };
 
-  const resizeDescription = (kind: DescriptionKind, index: number, newFromDepth: number, newToDepth: number) => {
+  const resizeDescription = (
+    kind: DescriptionKind,
+    index: number,
+    newFromDepth: number | null,
+    newToDepth: number | null,
+    targetDepthIds?: string[],
+  ) => {
     const list = kind === "lithological" ? tmpLithologicalDescriptions : tmpFaciesDescriptions;
     if (index < 0 || index >= list.length) return;
-    if (newFromDepth >= newToDepth) return;
+    // A null bound is an open-ended resize into a layer whose depth isn't set yet; only a fully
+    // numeric range can be a degenerate (inverted) one.
+    if (newFromDepth !== null && newToDepth !== null && newFromDepth >= newToDepth) return;
     const current = list[index];
-    if (current.fromDepth === newFromDepth && current.toDepth === newToDepth) return;
 
-    // Determine which depth rows fall fully inside the new range (mirrors assignDepthIds).
-    const candidateDepths = depths.filter(d => {
-      if (d.fromDepth === null || d.toDepth === null) return false;
-      if (d.fromDepth === d.toDepth) return d.fromDepth > newFromDepth && d.fromDepth < newToDepth;
-      return d.fromDepth >= newFromDepth && d.toDepth <= newToDepth;
-    });
+    // The drag passes the exact rows its cursor covered (targetDepthIds): index-based, so consecutive
+    // open (null) rows are told apart by which one was reached. Value-only callers (numeric ranges)
+    // fall back to deriving the rows from the range bounds.
+    const candidateIds = new Set(targetDepthIds ?? getDepthIdsInRange(depths, newFromDepth, newToDepth));
+    const candidateDepths = depths.filter(d => candidateIds.has(d.id));
+
+    // No-op when neither the range nor the owned rows changed (range bounds alone can't tell open rows apart).
+    const currentIds = current.depthIds ?? [];
+    const sameRows = currentIds.length === candidateDepths.length && currentIds.every(id => candidateIds.has(id));
+    if (current.fromDepth === newFromDepth && current.toDepth === newToDepth && sameRows) return;
 
     // Reject if any candidate depth row is owned by ANOTHER item in the same description column. (Same-column conflict only — descriptions are allowed to overlap lithologies.)
     const otherItems = list.filter((_, i) => i !== index);

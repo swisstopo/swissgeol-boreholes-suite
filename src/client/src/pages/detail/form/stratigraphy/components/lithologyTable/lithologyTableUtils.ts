@@ -177,6 +177,47 @@ const assignDepthIds = <T extends BaseLayer>(items: T[], depthLayers: DepthLayer
   }
 };
 
+// The depth rows covered by the range `[fromDepth, toDepth]`, mirroring assignDepthIds' geometry.
+// A null bound means that side is open-ended (the depth isn't defined yet): a null `fromDepth`
+// reaches up to the open top, a null `toDepth` down to the open bottom. Used both to commit a resize
+// and to render its in-flight preview, so the two never diverge.
+//
+// Numeric rows are matched by value. Open-edge rows (any null boundary, including a fully-null
+// `{null, null}` row) have no numeric position, so they're matched by region instead: the leading
+// run of null-start rows is the top-open region (claimed only by a top-open range) and the trailing
+// run of null-end rows is the bottom-open region (claimed only by a bottom-open range). This keeps a
+// `{null, null}` row — open on both sides — reachable from the matching drag without being grabbed
+// by a drag on the opposite edge.
+export const getDepthIdsInRange = (
+  depths: DepthLayer[],
+  fromDepth: number | null,
+  toDepth: number | null,
+): string[] => {
+  const openStart = fromDepth === null;
+  const openEnd = toDepth === null;
+
+  let topOpenEnd = 0;
+  while (topOpenEnd < depths.length && depths[topOpenEnd].fromDepth === null) topOpenEnd++;
+  let bottomOpenStart = depths.length;
+  while (bottomOpenStart > 0 && depths[bottomOpenStart - 1].toDepth === null) bottomOpenStart--;
+
+  const withinStart = (v: number) => fromDepth === null || v >= fromDepth;
+  const withinEnd = (v: number) => toDepth === null || v <= toDepth;
+  const strictlyInside = (v: number) => (fromDepth === null || v > fromDepth) && (toDepth === null || v < toDepth);
+
+  return depths
+    .filter((d, i) => {
+      const { fromDepth: f, toDepth: t } = d;
+      if (f !== null && t !== null) {
+        if (f === t) return strictlyInside(f); // zero-thickness row: must sit strictly inside the range
+        return withinStart(f) && withinEnd(t);
+      }
+      // Open-edge row: claim it only from the matching open region of an open-ended range.
+      return (openStart && i < topOpenEnd) || (openEnd && i >= bottomOpenStart);
+    })
+    .map(d => d.id);
+};
+
 // The bottom-most depth row of the nearest sibling above `index` that already owns one, used as
 // the splice anchor so a failed-depth row lands directly below its predecessor.
 const lastDepthIdBefore = <T extends BaseLayer>(items: T[], index: number): string | null => {
