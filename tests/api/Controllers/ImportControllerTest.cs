@@ -21,7 +21,7 @@ namespace BDMS.Controllers;
 [TestClass]
 public class ImportControllerTest
 {
-    private const int MaxBoreholeSeedId = 1002999;
+    private const int MaxBoreholeSeedId = 1000099;
     private const int TestCodelistId = 955253;
 
     private BdmsContext context;

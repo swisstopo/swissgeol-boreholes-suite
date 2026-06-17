@@ -86,7 +86,7 @@ public class FieldMeasurementControllerTest
             ToDepthMasl = 78.0043,
             IsOpenBorehole = true,
             Comment = "Test comment",
-            BoreholeId = 1001104,
+            BoreholeId = 1000055,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 4).Id,
             FieldMeasurementResults = new List<FieldMeasurementResult>
             {
@@ -120,7 +120,7 @@ public class FieldMeasurementControllerTest
             ToDepthMasl = 27603.2,
             IsOpenBorehole = true,
             Comment = "Updated test comment",
-            BoreholeId = 1001105,
+            BoreholeId = 1000056,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
             FieldMeasurementResults = new List<FieldMeasurementResult>
             {
@@ -188,7 +188,7 @@ public class FieldMeasurementControllerTest
             ToDepthMasl = 2633.2,
             IsOpenBorehole = false,
             Comment = "New test comment",
-            BoreholeId = 1001493,
+            BoreholeId = 1000066,
             ReliabilityId = context.Codelists.Where(c => c.Schema == "observation_reliability").Single(c => c.Geolcode == 3).Id,
             FieldMeasurementResults = new List<FieldMeasurementResult>
             {
@@ -222,7 +222,7 @@ public class FieldMeasurementControllerTest
         Assert.AreEqual(newFieldMeasurement.ToDepthMasl, 2633.2);
         Assert.AreEqual(newFieldMeasurement.IsOpenBorehole, false);
         Assert.AreEqual(newFieldMeasurement.Comment, "New test comment");
-        Assert.AreEqual(newFieldMeasurement.BoreholeId, 1001493);
+        Assert.AreEqual(newFieldMeasurement.BoreholeId, 1000066);
         Assert.AreEqual(newFieldMeasurement.ReliabilityId, 15203158);
         Assert.AreEqual(newFieldMeasurement.FieldMeasurementResults.Count, 2);
         Assert.AreEqual(newFieldMeasurement.FieldMeasurementResults.First().SampleTypeId, 15203211);

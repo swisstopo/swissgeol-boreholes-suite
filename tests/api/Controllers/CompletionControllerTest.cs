@@ -258,11 +258,17 @@ public class CompletionControllerTest
     public async Task EditSetMainCompletion()
     {
         // Precondition: Create two completions for the same borehole,
-        // one of which is the main completion.
-        var boreholeWithoutCompletion = await context
-            .Boreholes
-            .Include(b => b.Completions)
-            .FirstAsync(b => b.Completions.Count == 0);
+        // one of which is the main completion. With the reduced seed every
+        // borehole already has completions, so we add a fresh one.
+        var boreholeWithoutCompletion = new Borehole
+        {
+            OriginalName = "Borehole without completion",
+            Name = "Borehole without completion",
+            WorkgroupId = 1,
+            Workflow = new Workflow { ReviewedTabs = new(), PublishedTabs = new() },
+        };
+        context.Boreholes.Add(boreholeWithoutCompletion);
+        await context.SaveChangesAsync();
 
         var firstCompletion = new Completion
         {
