@@ -557,13 +557,19 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task Copy()
     {
-        // Pick any borehole that has at least one stratigraphy with descriptions
-        // so the test does not depend on the random borehole-to-stratigraphy mapping.
-        var boreholeId = await context.Stratigraphies
+        // Pick a borehole that has the full graph the assertions below depend on
+        // (stratigraphy with descriptions + completion + water ingress + field measurement + section).
+        var boreholeId = await context.Boreholes
             .AsNoTracking()
-            .Where(s => s.LithologicalDescriptions.Any() && s.FaciesDescriptions.Any())
-            .OrderBy(s => s.BoreholeId)
-            .Select(s => s.BoreholeId)
+            .Where(b =>
+                b.Stratigraphies.Any(s => s.LithologicalDescriptions.Any() && s.FaciesDescriptions.Any()) &&
+                b.Completions.Any(c => c.Casings.Any() && c.Backfills.Any() && c.Instrumentations.Any()) &&
+                b.Observations.OfType<WaterIngress>().Any() &&
+                b.Observations.OfType<FieldMeasurement>().Any(fm => fm.FieldMeasurementResults.Any()) &&
+                b.Sections.Any(s => s.SectionElements.Any()) &&
+                b.Profiles.Any())
+            .OrderBy(b => b.Id)
+            .Select(b => b.Id)
             .FirstAsync();
         var originalBorehole = GetBorehole(boreholeId);
 
