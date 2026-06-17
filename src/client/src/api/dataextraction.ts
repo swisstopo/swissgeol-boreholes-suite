@@ -170,25 +170,33 @@ async function extractStratigraphies(
   }
 }
 
-const cleanUpExtractionData = (
-  lithologicalDescriptions: ExtractedLithologicalDescription[],
-): ExtractedLithologicalDescription[] => {
-  return lithologicalDescriptions
-    .filter(l => l.fromDepth != null && l.toDepth != null && l.description && l.fromDepth < l.toDepth)
-    .sort((a, b) => (a.fromDepth ?? 0) - (b.fromDepth ?? 0))
-    .reduce<ExtractedLithologicalDescription[]>((acc, layer) => {
-      const layerFrom = layer.fromDepth ?? 0;
-      const prevTo = acc.at(-1)?.toDepth ?? 0;
-      if (acc.length === 0 || layerFrom >= prevTo) {
-        acc.push(layer);
-      }
-      return acc;
-    }, []);
-};
-
 export interface ExtractedStratigraphy {
   descriptions: ExtractedLithologicalDescription[];
   pageNumbers: number[];
+}
+
+// Map a raw extraction response to stratigraphies, keeping layers as-is and only dropping those
+// without a description. Overlaps, invalid ranges and failed (null) depths are intentionally left
+// for the lithology table seeding (cleanupOverlaps / flagErrors) to clamp or surface as errors, so
+// nothing extracted is silently discarded and the "depth extraction failed" alert can fire.
+export function mapExtractionResponse(response: StratigraphyExtractionResponse): ExtractedStratigraphy[] {
+  if (!Array.isArray(response.boreholes) || response.boreholes.length === 0) return [];
+  return response.boreholes.map(borehole => {
+    const descriptions: ExtractedLithologicalDescription[] = (borehole.layers ?? [])
+      .map(({ start, end, material_description }, idx) => ({
+        id: idx,
+        fromDepth: start?.depth ?? null,
+        toDepth: end?.depth ?? null,
+        startDepthBoundingBoxes: start?.bounding_boxes ?? [],
+        endDepthBoundingBoxes: end?.bounding_boxes ?? [],
+        description: material_description.text,
+        descriptionBoundingBoxes: material_description.bounding_boxes,
+        stratigraphyId: 0,
+      }))
+      .filter(l => l.description);
+
+    return { descriptions, pageNumbers: borehole.page_numbers } as ExtractedStratigraphy;
+  });
 }
 
 export function useExtractionBoundingBoxes(
@@ -215,23 +223,7 @@ export function useExtractStratigraphies(file: BoreholeAttachment, activePage: n
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes => Extraction for the same file doesn't need to be refetched.
     queryFn: async ({ signal }) => {
       const response = await extractStratigraphies(file.nameUuid!, signal);
-      if (!Array.isArray(response.boreholes) || response.boreholes.length === 0) return [];
-      return response.boreholes.map(borehole => {
-        const descriptions = cleanUpExtractionData(
-          borehole.layers?.map(({ start, end, material_description }, idx) => ({
-            id: idx,
-            fromDepth: start?.depth,
-            toDepth: end?.depth,
-            startDepthBoundingBoxes: start?.bounding_boxes,
-            endDepthBoundingBoxes: end?.bounding_boxes,
-            description: material_description.text,
-            descriptionBoundingBoxes: material_description.bounding_boxes,
-            stratigraphyId: 0,
-          })) || [],
-        );
-
-        return { descriptions, pageNumbers: borehole.page_numbers } as ExtractedStratigraphy;
-      });
+      return mapExtractionResponse(response);
     },
   });
 }

@@ -55,7 +55,7 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
       onApply={applyDialog}
       isApplyDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
       <FormProvider {...formMethods}>
-        <BoreholesCard data-cy="lithological-description-basic-data" title={t("basicData")}>
+        <BoreholesCard data-cy="lithological-description-basic-data" title={t("description")}>
           <FormContainer>
             <FormContainer direction={"row"}>
               <FormInput
@@ -73,7 +73,7 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
                 type={FormValueType.Number}
               />
             </FormContainer>
-            <RemarksFormSection fieldName="description" label="remarks" />
+            <RemarksFormSection fieldName="description" label="description" />
           </FormContainer>
         </BoreholesCard>
       </FormProvider>
