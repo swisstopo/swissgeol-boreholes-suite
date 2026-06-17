@@ -20,7 +20,7 @@ public class BoreholeGeometryControllerTest
     private int boreholeIdWithGeometry;
 
     [TestInitialize]
-    public void TestInitialize()
+    public async Task TestInitialize()
     {
         context = ContextFactory.GetTestContext();
         boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
@@ -42,7 +42,7 @@ public class BoreholeGeometryControllerTest
             Workflow = new Workflow { ReviewedTabs = new(), PublishedTabs = new() },
         };
         context.Boreholes.Add(boreholeWithoutGeometry);
-        context.SaveChanges();
+        await context.SaveChangesAsync();
         boreholeIdWithoutGeometry = boreholeWithoutGeometry.Id;
 
         boreholeIdWithGeometry = context.Boreholes

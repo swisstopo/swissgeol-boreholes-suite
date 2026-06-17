@@ -13,18 +13,18 @@ const FilterChips = () => {
   const { t } = useTranslation();
   const { filterPolygon, setFilterPolygon, setFeatureIds, setPolygonSelectionEnabled } =
     useContext(PolygonFilterContext);
-  const { setFilterField, clearFilterField, filterParams, setTableParams } = useBoreholeUrlParams();
+  const { setFilterField, clearFilterField, filterParams, setParams } = useBoreholeUrlParams();
   const { data: codelists } = useCodelists();
   const getCodelistLabel = useCodelistLabel(CodelistLabelStyle.TextOnly);
   const { data: workgroups } = useWorkgroups();
 
   const setFieldAndResetPage = (key: FilterKey, value: Parameters<typeof setFilterField>[1]) => {
     setFilterField(key, value);
-    setTableParams({ page: 0 });
+    setParams({ page: 0 });
   };
   const clearFieldAndResetPage = (key: FilterKey) => {
     clearFilterField(key);
-    setTableParams({ page: 0 });
+    setParams({ page: 0 });
   };
 
   const descriptors = buildFilterChipDescriptors({

@@ -579,7 +579,7 @@ public class BoreholeControllerTest
         for (int i = 0; i < originalStratigraphy.LithologicalDescriptions.Count; i++)
         {
             var originalDescription = originalStratigraphy.LithologicalDescriptions.ElementAt(i);
-            var copiedDescription = copiedstratigraphy.LithologicalDescriptions.Single(d => d.Description == originalDescription.Description);
+            var copiedDescription = copiedstratigraphy.LithologicalDescriptions.Single(d => d.FromDepth == originalDescription.FromDepth);
 
             Assert.AreNotEqual(originalDescription.Id, copiedDescription.Id);
             Assert.AreEqual(originalDescription.Description, copiedDescription.Description);
@@ -593,7 +593,7 @@ public class BoreholeControllerTest
         for (int i = 0; i < originalStratigraphy.FaciesDescriptions.Count; i++)
         {
             var originalDescription = originalStratigraphy.FaciesDescriptions.ElementAt(i);
-            var copiedDescription = copiedstratigraphy.FaciesDescriptions.Single(d => d.Description == originalDescription.Description);
+            var copiedDescription = copiedstratigraphy.FaciesDescriptions.Single(d => d.FromDepth == originalDescription.FromDepth);
 
             Assert.AreNotEqual(originalDescription.Id, copiedDescription.Id);
             Assert.AreEqual(originalDescription.Description, copiedDescription.Description);

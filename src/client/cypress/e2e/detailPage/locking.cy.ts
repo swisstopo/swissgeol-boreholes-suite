@@ -26,12 +26,12 @@ describe("Borehole locking tests", () => {
       cy.dataCy("editingstop-button").should("not.exist");
 
       // start editing existing borehole as editor
-      goToDetailRouteAndAcceptTerms(`/1000488`);
+      goToDetailRouteAndAcceptTerms(`/1000088`);
       startBoreholeEditing();
 
       // check that admin can edit, even if borehole is locked
       loginAsAdmin();
-      goToDetailRouteAndAcceptTerms(`/1000488`);
+      goToDetailRouteAndAcceptTerms(`/1000088`);
       startBoreholeEditing();
       stopBoreholeEditing();
     });

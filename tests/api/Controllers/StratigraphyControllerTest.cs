@@ -59,9 +59,19 @@ public class StratigraphyControllerTest
         var first = stratigraphies[0];
         Assert.AreEqual(boreholeId, first.BoreholeId);
         Assert.IsFalse(string.IsNullOrWhiteSpace(first.Name));
-        Assert.IsTrue(first.CreatedById is null or >= 1 and <= 5);
+
+        // The seed leaves CreatedById null on ~5% of stratigraphies, so we can't require it
+        // here. When it is set, it must be a valid seeded user id (1-5). Treating null as a
+        // pass without this guard would mean a regression that nulls every CreatedById would
+        // still be silently accepted.
+        if (first.CreatedById is not null)
+        {
+            Assert.IsTrue(first.CreatedById is >= 1 and <= 5, $"CreatedById {first.CreatedById} is outside the seeded user range 1-5.");
+        }
+
         Assert.IsTrue(first.UpdatedById is >= 1 and <= 5);
         Assert.IsTrue(stratigraphies.Any(s => s.IsPrimary));
+        Assert.IsTrue(stratigraphies.Any(s => s.CreatedById is not null), "Expected at least one stratigraphy with a non-null CreatedById in the seed.");
     }
 
     [TestMethod]

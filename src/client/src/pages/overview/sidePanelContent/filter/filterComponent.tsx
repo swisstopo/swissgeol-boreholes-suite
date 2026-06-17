@@ -46,7 +46,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
   const { filterPolygon, polygonSelectionEnabled, setPolygonSelectionEnabled, setFeatureIds, setFilterPolygon } =
     useContext(PolygonFilterContext);
 
-  const { filterParams, setFilterField, resetFilter, setTableParams } = useBoreholeUrlParams();
+  const { filterParams, setFilterField, resetFilter, setParams } = useBoreholeUrlParams();
 
   const user = useSelector((state: ReduxRootState) => state.core_user);
   const { data: stats } = useFilterStats(filterParams);
@@ -116,7 +116,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
     setFeatureIds([]);
     formMethods.reset();
     resetFilter();
-    setTableParams({ page: 0 });
+    setParams({ page: 0 });
   };
 
   return (
@@ -207,7 +207,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
                   <WorkgroupFilter
                     onChange={workgroup => {
                       setFilterField("workgroupId", workgroup);
-                      setTableParams({ page: 0 });
+                      setParams({ page: 0 });
                     }}
                     workgroups={user.data.workgroups}
                     selectedWorkgroupIds={filterParams["workgroupId"] as number[] | undefined}
