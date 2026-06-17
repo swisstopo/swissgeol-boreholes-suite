@@ -18,7 +18,7 @@ import { useCodelistSchema } from "../../../../components/codelist.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import LayerCard from "./layerCard.jsx";
 import LayerGap from "./layerGap.jsx";
-import NavigationChild from "./navigationChild.jsx";
+import { NavigationChild } from "./navigation/NavigationChild.tsx";
 
 /**
  * Component for editing hierarchical layer data.

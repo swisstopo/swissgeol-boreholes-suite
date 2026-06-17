@@ -1,19 +1,26 @@
-import { useMemo, useRef, useState } from "react";
+import { FC, ReactNode, RefObject, useMemo, useRef, useState } from "react";
 import { NumericFormat } from "react-number-format";
 import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import useResizeObserver from "@react-hook/resize-observer";
+import { NavState } from "./navState.ts";
 
-const isMajorNumber = (number, metersPerPattern) => {
+const isMajorNumber = (number: number, metersPerPattern: number): boolean => {
   const majorNumberInterval = metersPerPattern * 10;
   const remainder = number % majorNumberInterval;
   const epsilon = metersPerPattern / 2;
   return remainder < epsilon || remainder > majorNumberInterval - epsilon;
 };
 
+interface DepthLabelStyleProps {
+  bottomPosition: number;
+  isMajorNumber: boolean;
+}
+
 const DepthLabel = styled(NumericFormat, {
-  shouldForwardProp: prop => !["bottomPosition", "isMajorNumber"].includes(prop),
-})(({ bottomPosition, isMajorNumber }) => ({
+  shouldForwardProp: (prop: PropertyKey) =>
+    typeof prop === "string" && !["bottomPosition", "isMajorNumber"].includes(prop),
+})<DepthLabelStyleProps>(({ bottomPosition, isMajorNumber }) => ({
   position: "absolute",
   bottom: bottomPosition,
   left: 0,
@@ -24,13 +31,18 @@ const DepthLabel = styled(NumericFormat, {
   lineHeight: "1em",
 }));
 
-const Scale = ({ navState }) => {
+interface ScaleProps {
+  navState: NavState;
+}
+
+export const Scale: FC<ScaleProps> = ({ navState }) => {
   const [width, setWidth] = useState(0);
-  const ref = useRef(null);
-  useResizeObserver(ref, entry => setWidth(entry.contentRect.width));
+  const ref = useRef<HTMLDivElement>(null);
+  // Cast: @react-hook/resize-observer expects RefObject<HTMLElement>, but React 19's useRef returns RefObject<HTMLDivElement | null>.
+  useResizeObserver(ref as RefObject<HTMLDivElement>, entry => setWidth(entry.contentRect.width));
 
   const state = useMemo(() => {
-    const labels = [];
+    const labels: ReactNode[] = [];
     let patternHeight = 0;
     let patternOffset = 0;
 
@@ -53,7 +65,7 @@ const Scale = ({ navState }) => {
             key={depth}
             value={depth}
             decimalScale={Math.max(0, -Math.log10(metersPerPattern))}
-            fixedDecimalScale={true}
+            fixedDecimalScale
             thousandSeparator="'"
             displayType="text"
           />,
@@ -61,11 +73,7 @@ const Scale = ({ navState }) => {
       }
     }
 
-    return {
-      numberLabels: labels,
-      patternHeight: patternHeight,
-      patternOffset: patternOffset,
-    };
+    return { numberLabels: labels, patternHeight, patternOffset };
   }, [navState, width]);
 
   return (
@@ -87,5 +95,3 @@ const Scale = ({ navState }) => {
     </Box>
   );
 };
-
-export default Scale;
