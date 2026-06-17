@@ -15,22 +15,29 @@ interface ResizeDrag {
   kind: DescriptionKind;
   itemIdx: number;
   side: ResizeSide;
-  initialFromDepth: number;
-  initialToDepth: number;
+  initialFromDepth: number | null;
+  initialToDepth: number | null;
   firstDepthIdx: number;
   lastDepthIdx: number;
 }
 
 interface PreviewRange {
-  fromDepth: number;
-  toDepth: number;
+  fromDepth: number | null;
+  toDepth: number | null;
+  depthIds: string[];
 }
 
 interface UseDescriptionResizeArgs {
   depths: DepthLayer[];
   tmpLithologicalDescriptions: LithologicalDescription[];
   tmpFaciesDescriptions: FaciesDescription[];
-  resizeDescription: (kind: DescriptionKind, itemIdx: number, fromDepth: number, toDepth: number) => void;
+  resizeDescription: (
+    kind: DescriptionKind,
+    itemIdx: number,
+    fromDepth: number | null,
+    toDepth: number | null,
+    targetDepthIds: string[],
+  ) => void;
   containerRef: RefObject<HTMLElement | null>;
 }
 
@@ -83,7 +90,6 @@ export const useDescriptionResize = ({
     event.preventDefault(); //  Without the browser's native drag/text-selection kicks in and the resize/selection doesn't track reliably
     const ids = layer.depthIds ?? [];
     if (ids.length === 0) return;
-    if (layer.fromDepth === null || layer.toDepth === null) return;
     const firstDepthIdx = depths.findIndex(d => d.id === ids[0]);
     const lastDepthIdx = depths.findIndex(d => d.id === ids.at(-1));
     if (firstDepthIdx < 0 || lastDepthIdx < 0) return;
@@ -100,7 +106,7 @@ export const useDescriptionResize = ({
       lastDepthIdx,
     };
     setActiveDrag(drag);
-    setPreviewRange({ fromDepth: layer.fromDepth, toDepth: layer.toDepth });
+    setPreviewRange({ fromDepth: layer.fromDepth, toDepth: layer.toDepth, depthIds: ids });
 
     const root: ParentNode = containerRef.current ?? document;
     const depthEls = queryDepthRowElements(root, depths);
@@ -121,13 +127,19 @@ export const useDescriptionResize = ({
     // mousemoves so the within-cell snap tracks from it.
     let pointerIdx = side === "bottom" ? lastDepthIdx : firstDepthIdx;
 
+    const spanIds = (first: number, last: number) => depths.slice(first, last + 1).map(d => d.id);
+
     const computePreview = (clientY: number): PreviewRange => {
       const range = resolveRowRange(depthEls, clientY, anchorIdx, pointerIdx, ownedBySibling, minIdx, maxIdx);
       pointerIdx = range.pointerIdx;
+      const depthIds = spanIds(range.firstIdx, range.lastIdx);
+      // Snap the moving edge to its target row's depth. A null there is the not-yet-defined open
+      // layer, so the description stays open-ended on that side; depthIds carries the exact span,
+      // which tells consecutive open rows apart (their shared null bound can't).
       if (side === "bottom") {
-        return { fromDepth: drag.initialFromDepth, toDepth: depths[range.lastIdx].toDepth ?? drag.initialToDepth };
+        return { fromDepth: drag.initialFromDepth, toDepth: depths[range.lastIdx].toDepth, depthIds };
       }
-      return { fromDepth: depths[range.firstIdx].fromDepth ?? drag.initialFromDepth, toDepth: drag.initialToDepth };
+      return { fromDepth: depths[range.firstIdx].fromDepth, toDepth: drag.initialToDepth, depthIds };
     };
 
     teardownRef.current = beginVerticalRowDrag({
@@ -135,7 +147,9 @@ export const useDescriptionResize = ({
       cursor: "ns-resize",
       onMove: clientY => {
         const next = computePreview(clientY);
-        setPreviewRange(prev => (prev?.fromDepth === next.fromDepth && prev?.toDepth === next.toDepth ? prev : next));
+        // Span length is the reliable change signal: the moving edge grows/shrinks a fixed-anchor run,
+        // so a different target always changes the count even when the (open) bound value stays null.
+        setPreviewRange(prev => (prev?.depthIds.length === next.depthIds.length ? prev : next));
       },
       onEnd: ({ committed, lastClientY }) => {
         teardownRef.current = null;
@@ -143,8 +157,8 @@ export const useDescriptionResize = ({
         setPreviewRange(null);
         if (committed) {
           const c = computePreview(lastClientY);
-          if (c.fromDepth !== drag.initialFromDepth || c.toDepth !== drag.initialToDepth) {
-            resizeDescriptionRef.current(drag.kind, drag.itemIdx, c.fromDepth, c.toDepth);
+          if (c.depthIds.length !== ids.length) {
+            resizeDescriptionRef.current(drag.kind, drag.itemIdx, c.fromDepth, c.toDepth, c.depthIds);
           }
           swallowNextClick();
         }

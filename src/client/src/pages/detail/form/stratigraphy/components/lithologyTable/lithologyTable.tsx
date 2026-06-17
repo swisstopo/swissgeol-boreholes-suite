@@ -273,20 +273,11 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
       activeDrag && previewRange && effectiveResizableKind === activeDrag.kind
         ? layers.map((layer, i) => {
             if (i !== activeDrag.itemIdx) return layer;
-            const newDepthIds = depths
-              .filter(d => {
-                if (d.fromDepth === null || d.toDepth === null) return false;
-                if (d.fromDepth === d.toDepth) {
-                  return d.fromDepth > previewRange.fromDepth && d.fromDepth < previewRange.toDepth;
-                }
-                return d.fromDepth >= previewRange.fromDepth && d.toDepth <= previewRange.toDepth;
-              })
-              .map(d => d.id);
             return {
               ...layer,
               fromDepth: previewRange.fromDepth,
               toDepth: previewRange.toDepth,
-              depthIds: newDepthIds,
+              depthIds: previewRange.depthIds,
             };
           })
         : layers;
