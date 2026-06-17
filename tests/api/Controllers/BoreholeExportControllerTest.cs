@@ -116,7 +116,7 @@ public class BoreholeExportControllerTest
     [TestMethod]
     public async Task ExportGeopackage()
     {
-        var id = 1_000_257;
+        var id = 1_000_057;
 
         var response = await controller.ExportGeoPackageAsync(new List<int>() { id }).ConfigureAwait(false);
         FileContentResult fileContentResult = (FileContentResult)response!;
@@ -126,7 +126,7 @@ public class BoreholeExportControllerTest
         Assert.IsTrue(fileContentResult.FileContents.Length > 0);
     }
 
-    // Export several seeded boreholes from richBoreholesRange (IDs 1_000_000 - 1_000_100), to increase likelihood, that each attribute is exported at least once.
+    // Export several seeded boreholes from borehole range (IDs 1_000_000 - 1_000_099), to increase likelihood, that each attribute is exported at least once.
     [TestMethod]
     [DataRow(1_000_000)]
     [DataRow(1_000_057)]
@@ -232,7 +232,7 @@ public class BoreholeExportControllerTest
         AssertEntitiesEqualByIncludeInExportAttribute(newBorehole, exportedBorehole, new HashSet<object?>());
     }
 
-    // Export several seeded boreholes from richBoreholesRange (IDs 1_000_000 - 1_000_100), to increase likelihood, that each attribute is exported at least once.
+    // Export several seeded boreholes from borehole range (IDs 1_000_000 - 1_000_099), to increase likelihood, that each attribute is exported at least once.
     [TestMethod]
     [DataRow(1_000_000)]
     [DataRow(1_000_049)]
@@ -399,7 +399,7 @@ public class BoreholeExportControllerTest
     }
 
     [TestMethod]
-    [DataRow(new int[] { 1_000_257, 1_000_258 }, typeof(FileContentResult), DisplayName = "Valid multiple ids.")]
+    [DataRow(new int[] { 1_000_057, 1_000_058 }, typeof(FileContentResult), DisplayName = "Valid multiple ids.")]
     [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
     public async Task ExportGeoPackageIdsValidation(IEnumerable<int> ids, Type responseResultType)
     {
@@ -409,7 +409,7 @@ public class BoreholeExportControllerTest
     }
 
     [TestMethod]
-    [DataRow(new int[] { 1_000_257, 1_000_258 }, typeof(JsonResult), DisplayName = "Valid multiple ids.")]
+    [DataRow(new int[] { 1_000_057, 1_000_058 }, typeof(JsonResult), DisplayName = "Valid multiple ids.")]
     [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
     public async Task ExportJsonIdsValidation(IEnumerable<int> ids, Type responseResultType)
     {
@@ -419,13 +419,37 @@ public class BoreholeExportControllerTest
     }
 
     [TestMethod]
-    [DataRow(new int[] { 1_000_257, 1_000_258 }, typeof(FileContentResult), DisplayName = "Valid multiple ids.")]
-    [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
-    public async Task ExportJsonWithAttachmentsIdsValidation(IEnumerable<int> ids, Type responseResultType)
+    public async Task ExportJsonWithAttachmentsIdsValidationValid()
     {
-        var result = await controller.ExportJsonWithAttachmentsAsync(ids).ConfigureAwait(false);
+        // Use freshly created boreholes that have no seeded profiles attached.
+        // Seeded boreholes all have profiles whose binary content is not present
+        // in MinIO during tests, which would cause the S3 fetch to fail.
+        var b1 = new Borehole
+        {
+            OriginalName = "ExportZipTest 1",
+            Name = "ExportZipTest 1",
+            WorkgroupId = 1,
+            Workflow = new Workflow { ReviewedTabs = new(), PublishedTabs = new() },
+        };
+        var b2 = new Borehole
+        {
+            OriginalName = "ExportZipTest 2",
+            Name = "ExportZipTest 2",
+            WorkgroupId = 1,
+            Workflow = new Workflow { ReviewedTabs = new(), PublishedTabs = new() },
+        };
+        context.Boreholes.AddRange(b1, b2);
+        await context.SaveChangesAsync();
 
-        Assert.IsInstanceOfType(result, responseResultType);
+        var result = await controller.ExportJsonWithAttachmentsAsync(new[] { b1.Id, b2.Id }).ConfigureAwait(false);
+        Assert.IsInstanceOfType(result, typeof(FileContentResult));
+    }
+
+    [TestMethod]
+    public async Task ExportJsonWithAttachmentsIdsValidationNotFound()
+    {
+        var result = await controller.ExportJsonWithAttachmentsAsync(new[] { 1, 2 }).ConfigureAwait(false);
+        Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
     }
 
     [TestMethod]
@@ -461,7 +485,7 @@ public class BoreholeExportControllerTest
     }
 
     [TestMethod]
-    [DataRow(new int[] { 1_000_257, 1_000_258 }, typeof(FileContentResult), DisplayName = "Valid multiple ids.")]
+    [DataRow(new int[] { 1_000_057, 1_000_058 }, typeof(FileContentResult), DisplayName = "Valid multiple ids.")]
     [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]
     public async Task ExportCsvIdsValidation(IEnumerable<int> ids, Type responseResultType)
     {
@@ -659,7 +683,7 @@ public class BoreholeExportControllerTest
         // Invoke each export method and check if the user permissions are validated
         foreach (var method in exportMethods)
         {
-            var resultTask = method.Invoke(controller, [new List<int>() { 1_000_257 }]) as Task;
+            var resultTask = method.Invoke(controller, [new List<int>() { 1_000_057 }]) as Task;
             await resultTask.ConfigureAwait(false);
 
             var result = (resultTask as dynamic).Result;

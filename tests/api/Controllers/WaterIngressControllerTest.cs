@@ -84,7 +84,7 @@ public class WaterIngressControllerTest
             ToDepthMasl = 78.0043,
             IsOpenBorehole = true,
             Comment = "Test comment",
-            BoreholeId = 1002296,
+            BoreholeId = 1000077,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 4).Id,
             QuantityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).Single(c => c.Geolcode == 1).Id,
             ConditionsId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressConditionsSchema).Single(c => c.Geolcode == 1).Id,
@@ -103,7 +103,7 @@ public class WaterIngressControllerTest
             ToDepthMasl = 27603.2,
             IsOpenBorehole = true,
             Comment = "Updated test comment",
-            BoreholeId = 1002296,
+            BoreholeId = 1000077,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
             QuantityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).Single(c => c.Geolcode == 3).Id,
             ConditionsId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressConditionsSchema).Single(c => c.Geolcode == 2).Id,
@@ -159,7 +159,7 @@ public class WaterIngressControllerTest
             ToDepthMasl = 2633.2,
             IsOpenBorehole = false,
             Comment = "New test comment",
-            BoreholeId = 1002296,
+            BoreholeId = 1000077,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 3).Id,
             QuantityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).Single(c => c.Geolcode == 2).Id,
             ConditionsId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressConditionsSchema).Single(c => c.Geolcode == 3).Id,
@@ -180,7 +180,7 @@ public class WaterIngressControllerTest
         Assert.AreEqual(newWaterIngress.ToDepthMasl, 2633.2);
         Assert.AreEqual(newWaterIngress.IsOpenBorehole, false);
         Assert.AreEqual(newWaterIngress.Comment, "New test comment");
-        Assert.AreEqual(newWaterIngress.BoreholeId, 1002296);
+        Assert.AreEqual(newWaterIngress.BoreholeId, 1000077);
         Assert.AreEqual(newWaterIngress.ReliabilityId, 15203158);
         Assert.AreEqual(newWaterIngress.QuantityId, 15203161);
         Assert.AreEqual(newWaterIngress.ConditionsId, 15203167);

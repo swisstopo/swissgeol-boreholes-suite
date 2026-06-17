@@ -135,6 +135,8 @@ public static class BdmsContextExtensions
         List<int> waterIngressQuantityIds = codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressQualitySchema).Select(s => s.Id).ToList();
         List<int> waterIngressConditionsIds = codelists.Where(c => c.Schema == HydrogeologySchemas.WateringressConditionsSchema).Select(s => s.Id).ToList();
         List<int> hydrotestKindIds = codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Select(s => s.Id).ToList();
+        List<int> hydrotestFlowDirectionIds = codelists.Where(c => c.Schema == HydrogeologySchemas.FlowdirectionSchema).Select(s => s.Id).ToList();
+        List<int> hydrotestEvaluationMethodIds = codelists.Where(c => c.Schema == HydrogeologySchemas.EvaluationMethodSchema).Select(s => s.Id).ToList();
         List<int> hydrotestResultParameterIds = codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestResultParameterSchema).Select(s => s.Id).ToList();
         List<int> groundwaterLevelMeasurementKindIds = codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).Select(s => s.Id).ToList();
         List<int> fieldMeasurementSampleTypeIds = codelists.Where(c => c.Schema == HydrogeologySchemas.FieldMeasurementSampleTypeSchema).Select(s => s.Id).ToList();
@@ -142,8 +144,7 @@ public static class BdmsContextExtensions
 
         // Seed Boreholes
         var borehole_ids = 1_000_000;
-        var boreholeRange = Enumerable.Range(borehole_ids, 3000).ToList();
-        var richBoreholeRange = Enumerable.Range(borehole_ids, 100).ToList(); // generate boreholes with more data for testing
+        var boreholeRange = Enumerable.Range(borehole_ids, 100).ToList();
         var fakeBoreholes = new Faker<Borehole>()
            .StrictMode(true)
            .RuleFor(o => o.Id, f => borehole_ids++)
@@ -249,12 +250,12 @@ public static class BdmsContextExtensions
         {
             var identifierCodes = new List<BoreholeCodelist>();
 
-            var random = new Random(richBoreholeRange.Count);
-            var bogusRandom = new Bogus.Randomizer(richBoreholeRange.Count);
+            var random = new Random(boreholeRange.Count);
+            var bogusRandom = new Bogus.Randomizer(boreholeRange.Count);
 
             var codeListSampleSize = Math.Min(5, identifierIds.Count);
 
-            foreach (var boreholeId in richBoreholeRange)
+            foreach (var boreholeId in boreholeRange)
             {
                 var numberOfCodes = random.Next(1, codeListSampleSize + 1);
                 var shuffled = identifierIds
@@ -308,9 +309,9 @@ public static class BdmsContextExtensions
         Workflow SeededWorkflows(int seed) => fakeWorkflows.UseSeed(seed).Generate();
         context.BulkInsert(workflowRange.Select(SeededWorkflows).ToList(), bulkConfig);
 
-        // Seed some workflow changes for richBoreholeRange
+        // Seed some workflow changes for boreholeRange
         var workflowChange_ids = 15_000_000;
-        var workflowChangeRange = Enumerable.Range(workflowChange_ids, richBoreholeRange.Count * 3);
+        var workflowChangeRange = Enumerable.Range(workflowChange_ids, boreholeRange.Count * 3);
 
         var fakeWorkflowChanges = new Faker<WorkflowChange>()
             .RuleFor(o => o.Id, f => workflowChange_ids++)
@@ -327,7 +328,7 @@ public static class BdmsContextExtensions
 
                 return toStatus;
             })
-            .RuleFor(o => o.WorkflowId, f => f.PickRandom(richBoreholeRange) + 1_000_000)
+            .RuleFor(o => o.WorkflowId, f => f.PickRandom(boreholeRange) + 1_000_000)
             .RuleFor(o => o.Workflow, f => default!)
             .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
             .RuleFor(o => o.CreatedBy, f => default!)
@@ -341,11 +342,11 @@ public static class BdmsContextExtensions
         // Seed profiles (replaces the previous BoreholeFiles + Files seeders).
         var profilesUserRange = Enumerable.Range(1, 6); // Include dedicated user that only has profiles
         var profile_ids = 5_000_000;
-        var profileRange = Enumerable.Range(profile_ids, richBoreholeRange.Count);
+        var profileRange = Enumerable.Range(profile_ids, boreholeRange.Count);
         var fakeProfiles = new Faker<Profile>()
             .StrictMode(true)
             .RuleFor(o => o.Id, f => profile_ids++)
-            .RuleFor(o => o.BoreholeId, (f, p) => richBoreholeRange[(p.Id - profileRange.First()) % richBoreholeRange.Count])
+            .RuleFor(o => o.BoreholeId, (f, p) => boreholeRange[(p.Id - profileRange.First()) % boreholeRange.Count])
             .RuleFor(o => o.Borehole, f => default!)
             .RuleFor(o => o.Name, f => $"{f.Random.Word()}.pdf")
             .RuleFor(o => o.NameUuid, f => $"{Guid.NewGuid()}.pdf")
@@ -368,7 +369,7 @@ public static class BdmsContextExtensions
         var fakePhotos = new Faker<Photo>()
             .StrictMode(true)
             .RuleFor(o => o.Id, _ => photo_ids++)
-            .RuleFor(o => o.BoreholeId, f => f.PickRandom(richBoreholeRange))
+            .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
             .RuleFor(o => o.Borehole, f => default!)
             .RuleFor(o => o.Name, f => f.Random.Word())
             .RuleFor(o => o.NameUuid, f => f.Random.Uuid().ToString())
@@ -392,7 +393,7 @@ public static class BdmsContextExtensions
         var fakeDocuments = new Faker<Document>()
             .StrictMode(true)
             .RuleFor(o => o.Id, _ => document_ids++)
-            .RuleFor(o => o.BoreholeId, f => f.PickRandom(richBoreholeRange))
+            .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
             .RuleFor(o => o.Borehole, f => default!)
             .RuleFor(o => o.Url, f => new Uri(f.Internet.UrlWithPath()))
             .RuleFor(o => o.Description, f => f.Random.Words().OrNull(f, .5f))
@@ -415,7 +416,7 @@ public static class BdmsContextExtensions
             .RuleFor(c => c.Instrumentations, _ => new Collection<Instrumentation>())
             .RuleFor(c => c.Casings, _ => new Collection<Casing>())
             .RuleFor(c => c.Backfills, _ => new Collection<Backfill>())
-            .RuleFor(c => c.BoreholeId, f => f.PickRandom(richBoreholeRange))
+            .RuleFor(c => c.BoreholeId, f => f.PickRandom(boreholeRange))
             .RuleFor(c => c.Borehole, _ => default!)
             .RuleFor(c => c.Created, f => f.Date.Past().ToUniversalTime())
             .RuleFor(c => c.CreatedById, f => f.PickRandom(userRange))
@@ -579,7 +580,7 @@ public static class BdmsContextExtensions
         var observationRange = Enumerable.Range(observation_ids, 500);
         var fakeObservations = new Faker<Observation>()
             .StrictMode(true)
-            .RuleFor(o => o.BoreholeId, f => f.PickRandom(richBoreholeRange))
+            .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange))
             .RuleFor(o => o.Borehole, _ => default!)
             .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
             .RuleFor(o => o.CreatedById, f => f.PickRandom(userRange))
@@ -645,6 +646,37 @@ public static class BdmsContextExtensions
         context.BulkInsert(observations, bulkConfig);
         context.BulkInsert(waterIngresses, bulkConfig);
         context.BulkInsert(hydrotests, bulkConfig);
+
+        // Seed hydrotest codelist join tables (kind, flow direction, evaluation method).
+        // Each hydrotest gets a small random subset of the available codes so that exports
+        // and detail views can exercise these many-to-many relationships.
+        void SeedHydrotestCodeRelationships<T>(IList<int> codelistIds)
+            where T : class, IHydrotestCode, new()
+        {
+            if (hydrotests.Count == 0 || codelistIds.Count == 0) return;
+
+            var hydrotestCodes = new List<T>();
+            var rng = new Random(hydrotests.Count + typeof(T).Name.GetHashCode(StringComparison.Ordinal));
+            var sampleSize = Math.Min(5, codelistIds.Count);
+
+            foreach (var hydrotest in hydrotests)
+            {
+                var picked = codelistIds
+                    .OrderBy(_ => rng.Next())
+                    .Take(rng.Next(1, sampleSize + 1));
+
+                foreach (var codeId in picked)
+                {
+                    hydrotestCodes.Add(new T { HydrotestId = hydrotest.Id, CodelistId = codeId });
+                }
+            }
+
+            context.BulkInsert(hydrotestCodes, bulkConfig);
+        }
+
+        SeedHydrotestCodeRelationships<HydrotestKindCode>(hydrotestKindIds);
+        SeedHydrotestCodeRelationships<HydrotestFlowDirectionCode>(hydrotestFlowDirectionIds);
+        SeedHydrotestCodeRelationships<HydrotestEvaluationMethodCode>(hydrotestEvaluationMethodIds);
 
         // Seed hydrotest results
         var hydrotestResult_ids = 13_000_000;
@@ -734,7 +766,7 @@ public static class BdmsContextExtensions
         var fakeSections = new Faker<Section>()
             .StrictMode(true)
             .RuleFor(o => o.Id, f => section_ids++)
-            .RuleFor(o => o.BoreholeId, f => f.PickRandom(richBoreholeRange.Take(sectionRange.Count)))
+            .RuleFor(o => o.BoreholeId, f => f.PickRandom(boreholeRange.Take(sectionRange.Count)))
             .RuleFor(o => o.Borehole, _ => default!)
             .RuleFor(o => o.Name, f => f.Random.Word())
             .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())
@@ -801,9 +833,9 @@ public static class BdmsContextExtensions
 
         // Seed borehole geometries
         var boreholeGeometry_ids = 21_000_000;
-        var geometryElementsToInsert = new List<BoreholeGeometryElement>(richBoreholeRange.Count * 100);
+        var geometryElementsToInsert = new List<BoreholeGeometryElement>(boreholeRange.Count * 100);
         var pointCountPerBorehole = 50;
-        foreach (var boreholeId in richBoreholeRange)
+        foreach (var boreholeId in boreholeRange)
         {
             // Generate a random arced geometry
             Random r = new Random(boreholeId);
@@ -1350,7 +1382,7 @@ public static class BdmsContextExtensions
         // Each ten log runs should be associated with the one borehole.
         int GetBoreholeId(int currentLogRunId, int startId)
         {
-            return 1_000_000 + (int)Math.Floor((double)((currentLogRunId - startId) / 10));
+            return 999_999 + (int)Math.Floor((double)((currentLogRunId - startId) / 10));
         }
 
         var boreholeStatusIds = codelists.Where(c => c.Schema == "log_borehole_status").Select(s => s.Id).ToList();
