@@ -15,7 +15,7 @@ describe("User administration settings tests", () => {
     goToRouteAndAcceptTerms("/setting#workgroups");
     waitForTableData();
     verifyRowContains("Default", 2);
-    verifyRowContains("3000", 2);
+    verifyRowContains("100", 2);
     verifyRowContains("Active", 2);
     verifyRowContains("View (2)", 2);
     verifyRowContains("Editor (2)", 2);

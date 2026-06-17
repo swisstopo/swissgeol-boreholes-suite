@@ -78,100 +78,139 @@ describe("Borehole editor table tests", () => {
   });
 
   it("Preserves column sorting and active page when navigating", () => {
-    goToRouteAndAcceptTerms("/");
+    // Override the default page size (100) so the 100 seeded boreholes span multiple pages
+    // and the pagination behavior can be exercised meaningfully.
+    goToRouteAndAcceptTerms("/?pageSize=10");
     showTableAndWaitForData();
 
     // sort by name descending
     sortByColumnHeader("Name");
-    verifyRowContains("Zena Rath", 2);
+    verifyPaginationText("1–10 of 100");
 
-    // navigate to page 4
-    nextPage();
+    // navigate to page 4 (rows 31–40)
     nextPage();
     nextPage();
     nextPage();
 
     // verify current page is 4
-    verifyPaginationText("401–500 of 3000");
-    verifyRowContains("Samson Hayes", 0);
+    verifyPaginationText("31–40 of 100");
 
-    // navigate to detail
-    clickOnRowWithText("Samson Hayes");
+    // capture the borehole name displayed in the first row so the test does not
+    // depend on a specific seeded name.
+    cy.get('[data-cy="boreholes-table"] [role="row"]')
+      .eq(1)
+      .invoke("text")
+      .then(firstRowText => {
+        const targetName = firstRowText.trim().split(/\s{2,}/)[0];
 
-    // return to list
-    returnToOverview();
+        // navigate to detail
+        clickOnRowWithText(targetName);
 
-    // verify current page is still 4
-    waitForTableData();
-    verifyPaginationText("401–500 of 3000");
-    verifyRowContains("Samson Hayes", 0);
+        // return to list
+        returnToOverview();
 
-    //navigate to last page
+        // verify current page is still 4 and the sort/selected borehole are preserved
+        waitForTableData();
+        verifyPaginationText("31–40 of 100");
+        verifyRowContains(targetName, 0);
+      });
+
+    // navigate to last page
     lastPage();
-    verifyPaginationText("2901–3000 of 3000");
+    verifyPaginationText("91–100 of 100");
   });
 
   it("Verifies all rows are selected on header checkbox click", () => {
-    goToRouteAndAcceptTerms("/");
+    // Override the default page size (100) so multi-page selection behavior can be exercised.
+    goToRouteAndAcceptTerms("/?pageSize=10");
     cy.wait("@borehole_filter");
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "3'000");
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "100");
     showTableAndWaitForData();
     cy.wait("@borehole_filter");
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "3'000");
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "100");
+
+    // capture the names of the first two rows on page 1 so the test does not depend
+    // on specific seeded values.
+    cy.get('[data-cy="boreholes-table"] [role="row"]')
+      .eq(1)
+      .invoke("text")
+      .then(text => {
+        const firstRowName = text.trim().split(/\s{2,}/)[0];
+        cy.wrap(firstRowName).as("firstRowName");
+      });
 
     // check all rows
     cy.get('[data-cy="table-header-checkbox"]').click();
-    cy.contains("3'000").should("not.exist");
-    cy.contains("3000 selected").should("be.visible");
+    cy.contains("100 selected").should("be.visible");
 
-    // uncheck one row
-    unCheckRowWithText("Aaliyah Casper");
-    cy.contains("2999 selected").should("be.visible");
+    // uncheck one row on page 1
+    cy.get<string>("@firstRowName").then(firstRowName => {
+      unCheckRowWithText(firstRowName);
+    });
+    cy.contains("99 selected").should("be.visible");
 
-    // navigate to next page
+    // navigate to next page — selection state persists across pages
     nextPage();
-    cy.contains("2999 selected").should("be.visible");
+    cy.contains("99 selected").should("be.visible");
 
-    // uncheck another row
-    unCheckRowWithText("Alfonzo Borer");
-    cy.contains("2998 selected").should("be.visible");
+    // uncheck a row on page 2
+    cy.get('[data-cy="boreholes-table"] [role="row"]')
+      .eq(1)
+      .invoke("text")
+      .then(text => {
+        const page2RowName = text.trim().split(/\s{2,}/)[0];
+        unCheckRowWithText(page2RowName);
+        cy.contains("98 selected").should("be.visible");
+      });
 
     // uncheck all rows
     cy.get('[data-cy="table-header-checkbox"]').click();
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "3'000");
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "100");
 
-    // check one row
-    checkRowWithText("Alfonzo Borer");
-    cy.contains("1 selected").should("be.visible");
+    // check one row on page 2
+    cy.get('[data-cy="boreholes-table"] [role="row"]')
+      .eq(1)
+      .invoke("text")
+      .then(text => {
+        const page2RowName = text.trim().split(/\s{2,}/)[0];
+        checkRowWithText(page2RowName);
+        cy.contains("1 selected").should("be.visible");
+      });
 
-    // navigate to previous page
+    // navigate to previous page — single selection from the other page is still counted
     cy.get('[aria-label="previous page"]').scrollIntoView();
     cy.get('[aria-label="previous page"]').click();
     waitForTableData();
     cy.wait("@borehole_filter");
     cy.contains("1 selected").should("be.visible");
 
-    // check all, then uncheck all from page where single selection is not visible
+    // toggle all on, then off, from a page where the single selection is not visible
     cy.get('[data-cy="table-header-checkbox"]').click();
     cy.get('[data-cy="table-header-checkbox"]').click();
-    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "3'000");
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "100");
 
     // filter data
     cy.dataCy("show-filter-button").click();
     cy.contains("Borehole").click();
     setInput("totalDepthMin", "301");
     cy.wait("@borehole_filter");
-    verifyPaginationText("1–100 of 2549");
 
-    // check all rows
-    cy.get('[data-cy="table-header-checkbox"]').click();
-    cy.contains("3'000").should("not.exist");
-    cy.contains("2549 selected").should("be.visible");
+    // The exact filtered count depends on the random total-depth distribution in the seed
+    // (~85% of boreholes have a depth greater than 301 m).
+    cy.get('[data-cy="boreholes-number-preview"]')
+      .invoke("text")
+      .then(filteredText => {
+        const filteredCount = parseInt(filteredText.replace(/[^0-9]/g, ""), 10);
+        expect(filteredCount).to.be.greaterThan(0);
+        expect(filteredCount).to.be.lessThan(100);
 
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(500);
-    // navigate to next page
-    nextPage();
-    cy.contains("2549 selected").should("be.visible");
+        // check all rows
+        cy.get('[data-cy="table-header-checkbox"]').click();
+        cy.contains(`${filteredCount} selected`).should("be.visible");
+
+        // navigate to next page — selection persists
+        nextPage();
+        cy.contains(`${filteredCount} selected`).should("be.visible");
+      });
   });
 });

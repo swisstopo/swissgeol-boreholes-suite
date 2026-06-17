@@ -86,26 +86,26 @@ describe("Search filter tests", () => {
     goToRouteAndAcceptTerms("/");
     cy.dataCy("show-filter-button").click();
     cy.contains("Filters");
-    cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
+    cy.dataCy("boreholes-number-preview").should("have.text", "100");
   });
 
   // ─── STATUS FILTER ─────────────────────────────────────────────────────────
 
   it("filters boreholes by workflow status", () => {
     openFilter("Workflow status");
-    cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
-    cy.dataCy("workflow-status-button-Draft").should("contain", "3000");
+    cy.dataCy("boreholes-number-preview").should("have.text", "100");
+    cy.dataCy("workflow-status-button-Draft").should("contain", "100");
     cy.dataCy("workflow-status-button-Reviewed").should("contain", "0");
     cy.dataCy("workflow-status-button-Reviewed").should("be.disabled");
 
     cy.dataCy("workflow-status-button-Draft").click();
-    cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
+    cy.dataCy("boreholes-number-preview").should("have.text", "100");
     cy.dataCy("filter-chip-workflowStatus-Draft").should("exist");
 
     // Toggling Draft off clears the workflowStatus filter entirely.
     cy.dataCy("workflow-status-button-Draft").click();
     cy.dataCy("filter-chip-workflowStatus-Draft").should("not.exist");
-    cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
+    cy.dataCy("boreholes-number-preview").should("have.text", "100");
   });
 
   // ─── WORKGROUP FILTER ──────────────────────────────────────────────────────
@@ -115,7 +115,7 @@ describe("Search filter tests", () => {
     cy.dataCy("show-filter-button").click();
     showTableAndWaitForData();
     cy.contains("Workgroup").click();
-    cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
+    cy.dataCy("boreholes-number-preview").should("have.text", "100");
     cy.get('[data-cy^="filter-chip-workgroupId-"]').should("not.exist");
     cy.dataCy("workgroupId-button-1").click();
     cy.dataCy("filter-chip-workgroupId-1").should("exist");
@@ -124,7 +124,7 @@ describe("Search filter tests", () => {
     // Clicking the same button again toggles the selection off
     cy.dataCy("workgroupId-button-1").click();
     cy.get('[data-cy^="filter-chip-workgroupId-"]').should("not.exist");
-    cy.dataCy("boreholes-number-preview").should("have.text", "3'000");
+    cy.dataCy("boreholes-number-preview").should("have.text", "100");
   });
 
   // ─── BOREHOLE FILTERS ──────────────────────────────────────────────────────
@@ -138,8 +138,9 @@ describe("Search filter tests", () => {
 
     clickYesNoButton("nationalInterest", "yes");
     showTableAndWaitForData();
-    verifyPaginationText("1–100 of 300");
-    cy.dataCy("boreholes-number-preview").should("have.text", "300");
+    // Exactly every tenth seeded borehole has nationalInterest = true (10 out of 100).
+    hasPagination(false);
+    cy.dataCy("boreholes-number-preview").should("have.text", "10");
     cy.dataCy("filter-chip-nationalInterest").should("exist");
 
     clickYesNoButton("nationalInterest", "not specified");
@@ -148,11 +149,13 @@ describe("Search filter tests", () => {
     cy.dataCy("filter-chip-nationalInterest").should("exist");
 
     clickYesNoButton("nationalInterest", "no");
-    verifyPaginationText("1–100 of 2703");
-    cy.dataCy("boreholes-number-preview").should("have.text", "2'703");
+    // 90 seeded boreholes (false) + 3 newly created with nationalInterest = false.
+    hasPagination(false);
+    cy.dataCy("boreholes-number-preview").should("have.text", "93");
     checkFilterChipExistsAndRemove("nationalInterest");
-    verifyPaginationText("1–100 of 3004");
-    cy.dataCy("boreholes-number-preview").should("have.text", "3'004");
+    // 100 seeded + 4 created in the test.
+    verifyPaginationText("1–100 of 104");
+    cy.dataCy("boreholes-number-preview").should("have.text", "104");
   });
 
   testInputFilter("original name", "Borehole", "originalName", "Abigail", "1");
@@ -247,7 +250,7 @@ describe("Search filter tests", () => {
     cy.dataCy("originalName-formInput").type("Ra");
     cy.get('[data-cy^="originalName-suggestion-"]').should("have.length.at.least", 1);
     cy.get('[data-cy^="originalName-suggestion-"]').first().click();
-    cy.dataCy("boreholes-number-preview").invoke("text").should("not.equal", "3'000");
+    cy.dataCy("boreholes-number-preview").invoke("text").should("not.equal", "100");
     checkFilterChipExistsAndRemove("originalName");
   });
 
