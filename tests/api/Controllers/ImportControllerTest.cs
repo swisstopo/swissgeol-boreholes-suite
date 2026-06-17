@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Globalization;
@@ -55,7 +57,7 @@ public class ImportControllerTest
         var testUser = context.Users.FirstOrDefault();
         Assert.IsNotNull(testUser, "Test database must contain at least one user.");
         contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, testUser!.SubjectId) }));
-        var profileCloudService = new ProfileCloudService(context, configuration, loggerProfileCloudService.Object, contextAccessorMock.Object, s3ClientMock);
+        var profileCloudService = new ProfileCloudService(context, configuration, loggerProfileCloudService.Object, contextAccessorMock.Object, s3ClientMock, Mock.Of<IServiceScopeFactory>(), Mock.Of<IHostApplicationLifetime>());
 
         boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock

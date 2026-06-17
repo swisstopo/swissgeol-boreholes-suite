@@ -183,6 +183,26 @@ public class ProfileController : ControllerBase
     }
 
     /// <summary>
+    /// Lists only the OCR status of every <see cref="Profile"/> attached to a borehole.
+    /// Designed for polling: returns a minimal payload <c>[{id, ocrStatus}]</c>.
+    /// </summary>
+    /// <param name="boreholeId">The id of the <see cref="Borehole"/>.</param>
+    [HttpGet("getOcrStatusForBorehole")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<ActionResult<IReadOnlyList<ProfileOcrStatus>>> GetOcrStatusForBorehole(
+        [Required, Range(1, int.MaxValue)] int boreholeId)
+    {
+        if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
+
+        return await context.Profiles
+            .Where(p => p.BoreholeId == boreholeId)
+            .Select(p => new ProfileOcrStatus(p.Id, p.OcrStatus))
+            .AsNoTracking()
+            .ToListAsync()
+            .ConfigureAwait(false);
+    }
+
+    /// <summary>
     /// Deletes a <see cref="Profile"/> and removes its file from cloud storage.
     /// </summary>
     /// <param name="id">The id of the <see cref="Profile"/> to delete.</param>

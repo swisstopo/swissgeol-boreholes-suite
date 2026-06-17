@@ -429,6 +429,14 @@
   "noTextFound": "Aucun texte trouvé",
   "notes": "Remarques",
   "np": "sans indication",
+  "ocrStatus": "Statut OCR",
+  "ocrStatuses": {
+    "Created": "En file d'attente",
+    "Processing": "En cours",
+    "Success": "Terminé",
+    "Error": "Échec",
+    "WillNotBeProcessed": "Non applicable"
+  },
   "onlyEPSG2056Supported": "Seulement le système de coordonnées EPSG:2056 est pris en charge.",
   "onlyMissing": "Uniquement manquants",
   "onlyMissingExplanation": "Lorsque cette option est activée, seuls les forages avec des valeurs manquantes seront traités. Lorsqu'elle est désactivée, tous les forages seront retraités. Attention : le traitement de tous les forages peut prendre beaucoup de temps et les APIs en amont peuvent renvoyer des erreurs en raison du nombre élevé de requêtes.",

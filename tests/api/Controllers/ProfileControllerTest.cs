@@ -5,6 +5,8 @@ using BDMS.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Security.Claims;
@@ -50,7 +52,7 @@ public class ProfileControllerTest
 
         var profileCloudServiceLoggerMock = new Mock<ILogger<ProfileCloudService>>(MockBehavior.Strict);
         profileCloudServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
-        profileCloudService = new ProfileCloudService(context, configuration, profileCloudServiceLoggerMock.Object, contextAccessorMock.Object, s3ClientMock);
+        profileCloudService = new ProfileCloudService(context, configuration, profileCloudServiceLoggerMock.Object, contextAccessorMock.Object, s3ClientMock, Mock.Of<IServiceScopeFactory>(), Mock.Of<IHostApplicationLifetime>());
 
         boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
@@ -178,6 +180,54 @@ public class ProfileControllerTest
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
 
         var response = await controller.GetAllOfBorehole(minBoreholeId);
+        ActionResultAssert.IsUnauthorized(response.Result);
+    }
+
+    [TestMethod]
+    public async Task GetOcrStatusForBoreholeReturnsIdAndStatusOnly()
+    {
+        var boreholeId = context.Boreholes.First().Id;
+        var profile = new Profile
+        {
+            BoreholeId = boreholeId,
+            Name = "x.pdf",
+            NameUuid = $"{Guid.NewGuid()}.pdf",
+            Type = "application/pdf",
+            OcrStatus = OcrStatus.Processing,
+        };
+        context.Profiles.Add(profile);
+        await context.SaveChangesAsync();
+
+        var result = await controller.GetOcrStatusForBorehole(boreholeId);
+
+        Assert.IsNotNull(result.Value);
+        var entry = result.Value.Single(p => p.Id == profile.Id);
+        Assert.AreEqual(OcrStatus.Processing, entry.OcrStatus);
+    }
+
+    [TestMethod]
+    public async Task UploadNonPdfSetsWillNotBeProcessed()
+    {
+        var boreholeId = context.Boreholes.First().Id;
+        var textFile = GetFormFileByContent("hello", "notes.txt");
+
+        var uploadResult = await controller.Upload(textFile, boreholeId);
+        ActionResultAssert.IsOk(uploadResult);
+
+        var profile = (Profile)((OkObjectResult)uploadResult).Value!;
+        Assert.AreEqual(OcrStatus.WillNotBeProcessed, profile.OcrStatus);
+    }
+
+    [TestMethod]
+    public async Task GetOcrStatusForBoreholeReturnsUnauthorizedWithInsufficientPermissions()
+    {
+        boreholePermissionServiceMock
+            .Setup(x => x.CanViewBoreholeAsync(SubAdmin, It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var boreholeId = context.Boreholes.First().Id;
+
+        var response = await controller.GetOcrStatusForBorehole(boreholeId);
         ActionResultAssert.IsUnauthorized(response.Result);
     }
 
