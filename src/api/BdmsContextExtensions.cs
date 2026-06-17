@@ -1382,7 +1382,7 @@ public static class BdmsContextExtensions
         // Each ten log runs should be associated with the one borehole.
         int GetBoreholeId(int currentLogRunId, int startId)
         {
-            return 999_999 + (int)Math.Floor((double)((currentLogRunId - startId) / 10));
+            return 1_000_000 + (int)Math.Floor((double)((currentLogRunId - startId - 1) / 10));
         }
 
         var boreholeStatusIds = codelists.Where(c => c.Schema == "log_borehole_status").Select(s => s.Id).ToList();
