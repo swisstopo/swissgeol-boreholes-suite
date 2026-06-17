@@ -77,7 +77,7 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({ descri
             <FormContainer direction={"row"}>
               <FormDomainSelect fieldName={"faciesId"} label={"facies"} schemaName={"facies_con"} />
             </FormContainer>
-            <RemarksFormSection fieldName="description" label="remarks" />
+            <RemarksFormSection fieldName="description" label="description" />
           </FormContainer>
         </BoreholesCard>
       </FormProvider>
