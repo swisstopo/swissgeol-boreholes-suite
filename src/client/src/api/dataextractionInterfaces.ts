@@ -55,8 +55,8 @@ export interface StratigraphyExtractionResponse {
     id: string;
     page_numbers: number[];
     layers: {
-      start: { depth: number; bounding_boxes: ExtractionBoundingBox[] };
-      end: { depth: number; bounding_boxes: ExtractionBoundingBox[] };
+      start: { depth: number | null; bounding_boxes: ExtractionBoundingBox[] } | null;
+      end: { depth: number | null; bounding_boxes: ExtractionBoundingBox[] } | null;
       material_description: { text: string; bounding_boxes: ExtractionBoundingBox[] };
     }[];
   }[];
