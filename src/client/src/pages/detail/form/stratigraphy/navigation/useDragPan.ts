@@ -36,6 +36,9 @@ interface DragOrigin {
   startLensStart: number;
 }
 
+const isOriginForPointer = (origin: DragOrigin | null, pointerId: number): origin is DragOrigin =>
+  origin?.pointerId === pointerId;
+
 // Lifts the lens-overview drag-pan behavior up to any scrollable container. Pointer-move
 // updates lensStart inversely to deltaY (drag down -> lens moves up, matching the "grab the
 // page" gesture), clamped into [0, maxContent - lensSize].
@@ -72,7 +75,7 @@ export const useDragPan = ({ navState, setNavState, containerRef }: UseDragPanOp
 
     const handleMove = (event: PointerEvent) => {
       const origin = originRef.current;
-      if (!origin || event.pointerId !== origin.pointerId) return;
+      if (!isOriginForPointer(origin, event.pointerId)) return;
       const ns = navStateRef.current;
       if (!Number.isFinite(ns.pixelPerMeter) || ns.pixelPerMeter <= 0) return;
       const deltaPx = event.pageY - origin.startPageY;
@@ -86,7 +89,7 @@ export const useDragPan = ({ navState, setNavState, containerRef }: UseDragPanOp
 
     const handleEnd = (event: PointerEvent) => {
       const origin = originRef.current;
-      if (!origin || event.pointerId !== origin.pointerId) return;
+      if (!isOriginForPointer(origin, event.pointerId)) return;
       originRef.current = null;
       setIsDragging(false);
     };
