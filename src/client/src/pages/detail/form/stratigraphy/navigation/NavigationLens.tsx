@@ -69,7 +69,7 @@ export const NavigationLens: FC<NavigationLensProps> = ({ navState, setNavState,
       : Math.max(12, navState.lensSize * backgroundNavState.pixelPerMeter);
 
   return (
-    <Stack gap={1} flex={1} sx={{ width: "45px", ...sx }}>
+    <Stack gap={1} flex={1} sx={sx}>
       <Button onClick={() => handleMove(-0.3)} variant="outlined" onPointerDown={e => e.stopPropagation()}>
         <ChevronUp />
       </Button>
@@ -119,7 +119,7 @@ export const NavigationLens: FC<NavigationLensProps> = ({ navState, setNavState,
               bottom: 0,
               borderStyle: "solid",
               borderWidth: "2px",
-              borderColor: "red",
+              borderColor: theme.palette.error.main,
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
