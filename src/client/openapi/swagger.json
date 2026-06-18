@@ -11750,7 +11750,8 @@
         "required": [
           "boreholeId",
           "id",
-          "isPrimary"
+          "isPrimary",
+          "name"
         ],
         "type": "object",
         "properties": {
@@ -11767,9 +11768,9 @@
             "$ref": "#/components/schemas/Borehole"
           },
           "name": {
+            "minLength": 1,
             "type": "string",
-            "description": "Gets or sets the BDMS.Models.Stratigraphy's name.",
-            "nullable": true
+            "description": "Gets or sets the BDMS.Models.Stratigraphy's name."
           },
           "date": {
             "type": "string",

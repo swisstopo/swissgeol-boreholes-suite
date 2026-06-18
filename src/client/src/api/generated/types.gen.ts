@@ -2638,7 +2638,7 @@ export type Stratigraphy = {
   /**
    * Gets or sets the BDMS.Models.Stratigraphy's name.
    */
-  name?: string | null;
+  name: string;
   /**
    * Gets or sets the BDMS.Models.Stratigraphy's date.
    */
@@ -5202,7 +5202,7 @@ export type StratigraphyWritable = {
   /**
    * Gets or sets the BDMS.Models.Stratigraphy's name.
    */
-  name?: string | null;
+  name: string;
   /**
    * Gets or sets the BDMS.Models.Stratigraphy's date.
    */

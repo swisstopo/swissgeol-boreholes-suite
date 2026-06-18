@@ -103,7 +103,7 @@ public class StratigraphyController : ControllerBase
 
             // Set ids of copied entities to zero. Entities with an id of zero are added as new entities to the DB.
             stratigraphy.Id = 0;
-            stratigraphy.Name = string.IsNullOrEmpty(stratigraphy.Name) ? "(Clone)" : $"{stratigraphy.Name} (Clone)";
+            stratigraphy.Name = $"{stratigraphy.Name} (Clone)";
             stratigraphy.IsPrimary = false;
 
             foreach (var lithology in stratigraphy.Lithologies)
@@ -329,7 +329,7 @@ public class StratigraphyController : ControllerBase
             .ToListAsync()
             .ConfigureAwait(false);
 
-        return existingStratigraphyNames.OfType<string>().ToHashSet(StringComparer.Ordinal);
+        return existingStratigraphyNames.ToHashSet(StringComparer.Ordinal);
     }
 
     private static List<string> GetConflictingNames(Collection<StratigraphyTabEdit> edits, HashSet<string> takenNames)
@@ -339,8 +339,6 @@ public class StratigraphyController : ControllerBase
         foreach (var edit in edits)
         {
             var name = edit.Stratigraphy.Name;
-            if (string.IsNullOrEmpty(name)) continue;
-
             var existsOnBorehole = takenNames.Contains(name);
             var duplicateInBatch = !seen.Add(name);
             if ((existsOnBorehole || duplicateInBatch) && !conflicting.Contains(name))
