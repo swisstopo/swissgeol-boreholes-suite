@@ -41,14 +41,13 @@ export const LithologyTableScaled: FC<LithologyTableScaledProps> = ({
   const validFacies = useMemo(() => faciesDescriptions.filter(hasDepths), [faciesDescriptions]);
 
   useEffect(() => {
-    setNavState(prev => prev.setContentHeightFromLayers("lithology", validLithologies));
-  }, [validLithologies, setNavState]);
-  useEffect(() => {
-    setNavState(prev => prev.setContentHeightFromLayers("lithologicalDescription", validDescriptions));
-  }, [validDescriptions, setNavState]);
-  useEffect(() => {
-    setNavState(prev => prev.setContentHeightFromLayers("faciesDescription", validFacies));
-  }, [validFacies, setNavState]);
+    setNavState(prev =>
+      prev
+        .setContentHeightFromLayers("lithology", validLithologies)
+        .setContentHeightFromLayers("lithologicalDescription", validDescriptions)
+        .setContentHeightFromLayers("faciesDescription", validFacies),
+    );
+  }, [validLithologies, validDescriptions, validFacies, setNavState]);
 
   return (
     <>
