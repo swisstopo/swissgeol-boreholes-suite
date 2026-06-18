@@ -5,7 +5,7 @@ import { NavigationContainer } from "../navigation/NavigationContainer.tsx";
 import { NavigationLens } from "../navigation/NavigationLens.tsx";
 import { Scale } from "../navigation/Scale.tsx";
 import LithostratigraphyEditProfile from "./lithostratigraphyEditProfile.jsx";
-import LithostratigraphyViewProfile from "./lithostratigraphyViewProfile.jsx";
+import { LithostratigraphyViewProfile } from "./LithostratigraphyViewProfile.tsx";
 
 const LithostratigraphyPanel = ({ stratigraphyId }) => {
   const { t } = useTranslation();

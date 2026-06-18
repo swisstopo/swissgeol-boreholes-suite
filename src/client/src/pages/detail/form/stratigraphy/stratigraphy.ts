@@ -301,7 +301,10 @@ export const useLithostratigraphies = (stratigraphyID?: number) =>
   useQuery({
     queryKey: [lithostratigraphiesQueryKey, stratigraphyID],
     queryFn: async () => {
-      return await fetchApiV2WithApiError(`lithostratigraphy?stratigraphyId=${stratigraphyID}`, "GET");
+      return await fetchApiV2WithApiError<LithostratigraphyLayer[]>(
+        `lithostratigraphy?stratigraphyId=${stratigraphyID}`,
+        "GET",
+      );
     },
     enabled: !!stratigraphyID,
   });
