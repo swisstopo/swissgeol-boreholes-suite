@@ -28,6 +28,8 @@ interface UseDragPanResult {
 // Without it, dragging in pixels-per-meter space feels sluggish at typical zoom levels.
 const DRAG_SPEED_MULTIPLIER = 2;
 
+const isPannableNavState = (ns: NavState): boolean => ns.maxContent > ns.lensSize;
+
 interface DragOrigin {
   pointerId: number;
   startPageY: number;
@@ -45,12 +47,12 @@ export const useDragPan = ({ navState, setNavState, containerRef }: UseDragPanOp
   const navStateRef = useRef(navState);
   navStateRef.current = navState;
 
-  const isPannable = navState.maxContent > navState.lensSize;
+  const isPannable = isPannableNavState(navState);
 
   const onPointerDown = useCallback<PointerEventHandler<HTMLElement>>(event => {
     const ns = navStateRef.current;
     // Skip the gesture entirely when the full content already fits; nothing to pan to.
-    if (ns.maxContent <= ns.lensSize) return;
+    if (!isPannableNavState(ns)) return;
     // Suppress the browser's default text-selection-on-drag behavior, otherwise selection-drag
     // races our pan-drag and the gesture stutters mid-move.
     event.preventDefault();
