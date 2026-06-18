@@ -30,7 +30,7 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, sx }) => {
 
   // Recompute the clamp count whenever the cell's pixel height changes (zoom in/out, pan,
   // initial calibration). Clamping at a whole-line boundary prevents the half-cut bottom line
-  // that plain overflow:hidden produces, and the ellipsis ("...") is rendered by the browser.
+  // that plain overflow:hidden produces, and the ellipsis is rendered by the browser.
   useTypedResizeObserver(cellRef, entry => {
     const lines = Math.max(
       1,
@@ -97,21 +97,11 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, sx }) => {
           icon={<Copy />}
           dataCy="copyLayer-button"
           aria-label={t("copyToClipboard")}
+          onPointerDown={e => e.stopPropagation()}
           onClick={e => {
             e.stopPropagation();
-            // `innerText` is layout-aware and would only return the visible (clamped) text,
-            // so the copy payload uses `textContent` which always reads the full DOM. Top-level
-            // block children are joined with newlines to preserve the visual line breaks
-            // between Typography blocks that `textContent` alone would collapse.
             const el = contentRef.current;
-            const blocks =
-              el !== null
-                ? Array.from(el.children)
-                    .map(child => child.textContent?.trim() ?? "")
-                    .filter(Boolean)
-                : [];
-            const text = blocks.length > 0 ? blocks.join("\n") : (el?.textContent?.trim() ?? "");
-            void copyToClipboard(text);
+            void copyToClipboard(el?.textContent?.trim() ?? "");
           }}
           color="primaryInverse"
           sx={{ backgroundColor: theme.palette.background.grey }}
