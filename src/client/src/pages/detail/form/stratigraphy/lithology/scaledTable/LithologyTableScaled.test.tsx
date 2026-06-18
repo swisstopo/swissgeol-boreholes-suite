@@ -20,9 +20,6 @@ i18n.use(initReactI18next).init({
   resources: {
     en: {
       translation: {
-        lithology: "Lithology",
-        lithological_description: "Lithological description",
-        facies_description: "Facies description",
         copyToClipboard: "Copy to clipboard",
       },
     },
@@ -111,12 +108,5 @@ describe("LithologyTableScaled", () => {
     });
     expect(screen.getByText("litho-1")).toBeInTheDocument();
     expect(screen.queryByText("litho-2")).toBeNull();
-  });
-
-  it("renders all three column headers", () => {
-    renderTable({ lithologies: [], lithologicalDescriptions: [], faciesDescriptions: [] });
-    expect(screen.getByText("Lithology")).toBeInTheDocument();
-    expect(screen.getByText("Lithological description")).toBeInTheDocument();
-    expect(screen.getByText("Facies description")).toBeInTheDocument();
   });
 });

@@ -5,28 +5,19 @@ import { styled } from "@mui/material/styles";
 import { NavState } from "./navState.ts";
 import { useTypedResizeObserver } from "./useTypedResizeObserver.ts";
 
-const isMajorNumber = (number: number, metersPerPattern: number): boolean => {
-  const majorNumberInterval = metersPerPattern * 10;
-  const remainder = number % majorNumberInterval;
-  const epsilon = metersPerPattern / 2;
-  return remainder < epsilon || remainder > majorNumberInterval - epsilon;
-};
-
 interface DepthLabelStyleProps {
   bottomPosition: number;
-  isMajorNumber: boolean;
 }
 
 const DepthLabel = styled(NumericFormat, {
-  shouldForwardProp: (prop: PropertyKey) =>
-    typeof prop === "string" && !["bottomPosition", "isMajorNumber"].includes(prop),
-})<DepthLabelStyleProps>(({ bottomPosition, isMajorNumber }) => ({
+  shouldForwardProp: (prop: PropertyKey) => typeof prop === "string" && prop !== "bottomPosition",
+})<DepthLabelStyleProps>(({ bottomPosition }) => ({
   position: "absolute",
   bottom: bottomPosition,
   left: 0,
   right: 0,
-  fontSize: isMajorNumber ? "0.9em" : "0.8em",
-  fontWeight: "bold",
+  fontSize: "16px",
+  fontWeight: 400,
   textAlign: "center",
   lineHeight: "1em",
 }));
@@ -60,7 +51,6 @@ export const Scale: FC<ScaleProps> = ({ navState }) => {
         labels.push(
           <DepthLabel
             bottomPosition={(navState.lensSize - depth + navState.lensStart) * navState.pixelPerMeter}
-            isMajorNumber={isMajorNumber(depth, metersPerPattern)}
             key={depth}
             value={depth}
             decimalScale={Math.max(0, -Math.log10(metersPerPattern))}
@@ -83,7 +73,7 @@ export const Scale: FC<ScaleProps> = ({ navState }) => {
         backgroundRepeatX: "no-repeat",
         backgroundRepeatY: "repeat",
         backgroundSize: `100% ${state.patternHeight}px`,
-        backgroundPositionY: -state.patternOffset + "px",
+        backgroundPositionY: -state.patternOffset - 0.5 + "px",
         position: "absolute",
         top: navState.lensStart * navState.pixelPerMeter,
         left: 0,

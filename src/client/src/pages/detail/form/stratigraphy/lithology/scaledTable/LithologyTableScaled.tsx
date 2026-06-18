@@ -1,6 +1,4 @@
 import { Dispatch, FC, SetStateAction, useEffect, useMemo } from "react";
-import { useTranslation } from "react-i18next";
-import { Typography } from "@mui/material";
 import { ScaledLayerColumn } from "../../components/scaledLayerColumn/ScaledLayerColumn.tsx";
 import { NavigationChild } from "../../navigation/NavigationChild.tsx";
 import { NavState } from "../../navigation/navState.ts";
@@ -24,9 +22,7 @@ const hasDepths = <T extends { fromDepth: number | null; toDepth: number | null 
   layer.fromDepth !== null && layer.toDepth !== null;
 
 // View-mode counterpart to the edit-mode LithologyTable. Renders the three lithology data columns
-// (lithology, lithological description, facies description) in depth-proportional scale, wrapped
-// in NavigationChild blocks that share the parent NavState. Layers with null depths are filtered
-// out here; the orchestrator surfaces them via NullDepthBanner.
+// (lithology, lithological description, facies description) in depth-proportional scale.
 export const LithologyTableScaled: FC<LithologyTableScaledProps> = ({
   lithologies,
   lithologicalDescriptions,
@@ -34,8 +30,6 @@ export const LithologyTableScaled: FC<LithologyTableScaledProps> = ({
   navState,
   setNavState,
 }) => {
-  const { t } = useTranslation();
-
   const validLithologies = useMemo(() => lithologies.filter(hasDepths), [lithologies]);
   const validDescriptions = useMemo(() => lithologicalDescriptions.filter(hasDepths), [lithologicalDescriptions]);
   const validFacies = useMemo(() => faciesDescriptions.filter(hasDepths), [faciesDescriptions]);
@@ -51,7 +45,7 @@ export const LithologyTableScaled: FC<LithologyTableScaledProps> = ({
 
   return (
     <>
-      <NavigationChild navState={navState} setNavState={setNavState} header={<Typography>{t("lithology")}</Typography>}>
+      <NavigationChild navState={navState} setNavState={setNavState}>
         <ScaledLayerColumn
           layers={validLithologies}
           navState={navState}
@@ -64,10 +58,7 @@ export const LithologyTableScaled: FC<LithologyTableScaledProps> = ({
           )}
         />
       </NavigationChild>
-      <NavigationChild
-        navState={navState}
-        setNavState={setNavState}
-        header={<Typography>{t("lithological_description")}</Typography>}>
+      <NavigationChild navState={navState} setNavState={setNavState}>
         <ScaledLayerColumn
           layers={validDescriptions}
           navState={navState}
@@ -80,10 +71,7 @@ export const LithologyTableScaled: FC<LithologyTableScaledProps> = ({
           )}
         />
       </NavigationChild>
-      <NavigationChild
-        navState={navState}
-        setNavState={setNavState}
-        header={<Typography>{t("facies_description")}</Typography>}>
+      <NavigationChild navState={navState} setNavState={setNavState}>
         <ScaledLayerColumn
           layers={validFacies}
           navState={navState}

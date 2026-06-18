@@ -1,4 +1,4 @@
-import { FC, ReactNode, useRef } from "react";
+import { FC, ReactNode, useLayoutEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Stack } from "@mui/material";
 import { SxProps, Theme } from "@mui/material/styles";
@@ -6,20 +6,29 @@ import { Copy } from "lucide-react";
 import { theme } from "../../../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../../../components/buttons/buttons.tsx";
 import { useCopyToClipboard } from "../../../../../../hooks/useCopyToClipboard.ts";
+import { useTypedResizeObserver } from "../../navigation/useTypedResizeObserver.ts";
 
 interface ScaledCellShellProps {
   children: ReactNode;
   sx?: SxProps<Theme>;
 }
 
-// Visual shell that wraps each scaled lithology cell. Mirrors the edit-mode StratigraphyTableActionCell:
-// same hover-revealed copy button anchored to the top-right corner, same `.hover-content` CSS toggle,
-// same StandaloneIconButton styling, and the same innerText-of-content copy payload so a user pastes
-// exactly what they see on screen.
+// Visual shell that wraps each scaled lithology cell.
 export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, sx }) => {
   const { t } = useTranslation();
   const copyToClipboard = useCopyToClipboard();
   const contentRef = useRef<HTMLDivElement>(null);
+  const [isOverflowing, setIsOverflowing] = useState(false);
+
+  // Cell heights change as the user zooms, so re-measure overflow whenever the content box resizes.
+  // Centering looks right when content fits; falls back to flex-start so the start of long
+  // descriptions stays visible at high zoom-out levels.
+  const measure = () => {
+    const el = contentRef.current;
+    if (el) setIsOverflowing(el.scrollHeight > el.clientHeight);
+  };
+  useLayoutEffect(measure, [children]);
+  useTypedResizeObserver(contentRef, measure);
 
   return (
     <Box
@@ -45,6 +54,7 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, sx }) => {
           minWidth: 0,
           minHeight: 0,
           overflow: "hidden",
+          justifyContent: isOverflowing ? "flex-start" : "center",
           overflowWrap: "anywhere",
           wordBreak: "break-word",
         }}>
