@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { Dispatch, SetStateAction, useCallback, useRef, useState } from "react";
 import { cleanup, fireEvent, render, screen } from "@testing-library/react";
-import { afterEach, describe, expect, it, vi } from "vitest";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NavState } from "./navState.ts";
 import { useDragPan } from "./useDragPan.ts";
 
@@ -40,11 +40,8 @@ const TestHarness = ({ initial, onChange }: TestHarnessProps) => {
   );
 };
 
-// jsdom doesn't implement Element.setPointerCapture; stub it so the hook can call it without throwing.
-const stubPointerCapture = () => {
-  Element.prototype.setPointerCapture = vi.fn();
-  Element.prototype.releasePointerCapture = vi.fn();
-};
+// jsdom doesn't implement Element.setPointerCapture/releasePointerCapture; assign no-op fns so the
+// hook can call them without throwing. Each test gets a fresh vi.fn via beforeEach.
 
 // jsdom's PointerEvent ignores `pointerId` and `pageY` in the init dict, so we set them
 // after construction via defineProperty before dispatching.
@@ -55,17 +52,21 @@ const dispatchPointer = (target: Element, type: string, pointerId: number, pageY
   fireEvent(target, event);
 };
 
+// baseNavState: height=500, maxHeader=0, lensSize=50, maxContent=100 -> pixelPerMeter = 10.
+
 describe("useDragPan", () => {
+  beforeEach(() => {
+    Element.prototype.setPointerCapture = vi.fn();
+    Element.prototype.releasePointerCapture = vi.fn();
+  });
   afterEach(() => cleanup());
 
   it("starts not dragging", () => {
-    stubPointerCapture();
     render(<TestHarness initial={baseNavState()} />);
     expect(screen.getByTestId("container").getAttribute("data-dragging")).toBe("false");
   });
 
   it("sets isDragging on pointerDown and clears it on pointerUp", () => {
-    stubPointerCapture();
     render(<TestHarness initial={baseNavState()} />);
     const container = screen.getByTestId("container");
     dispatchPointer(container, "pointerdown", 1, 100);
@@ -75,43 +76,38 @@ describe("useDragPan", () => {
   });
 
   it("updates lensStart proportional to pointer-move deltaY and pixelPerMeter", () => {
-    stubPointerCapture();
     const changes: NavState[] = [];
     render(<TestHarness initial={baseNavState()} onChange={s => changes.push(s)} />);
     const container = screen.getByTestId("container");
-    // pixelPerMeter = (500 - 0) / 50 = 10
     dispatchPointer(container, "pointerdown", 1, 200);
     dispatchPointer(container, "pointermove", 1, 150);
-    // Dragged 50 px upward; lensStart should move down by 50/10 = 5 meters
-    const latest = changes.at(-1);
-    expect(latest?.lensStart).toBeCloseTo(5);
+    // Dragged 50 px upward; lensStart should move down by 50/10 = 5 meters.
+    expect(changes.length).toBeGreaterThan(0);
+    expect(changes.at(-1)?.lensStart).toBeCloseTo(5);
   });
 
   it("clamps lensStart at 0 when dragging beyond the top", () => {
-    stubPointerCapture();
     const changes: NavState[] = [];
     render(<TestHarness initial={baseNavState()} onChange={s => changes.push(s)} />);
     const container = screen.getByTestId("container");
     dispatchPointer(container, "pointerdown", 1, 0);
     dispatchPointer(container, "pointermove", 1, 10000);
-    const latest = changes.at(-1);
-    expect(latest?.lensStart).toBe(0);
+    expect(changes.length).toBeGreaterThan(0);
+    expect(changes.at(-1)?.lensStart).toBe(0);
   });
 
   it("clamps lensStart at maxContent minus lensSize when dragging beyond the bottom", () => {
-    stubPointerCapture();
     const changes: NavState[] = [];
     render(<TestHarness initial={baseNavState()} onChange={s => changes.push(s)} />);
     const container = screen.getByTestId("container");
     dispatchPointer(container, "pointerdown", 1, 10000);
     dispatchPointer(container, "pointermove", 1, 0);
-    const latest = changes.at(-1);
     // maxContent (100) - lensSize (50) = 50
-    expect(latest?.lensStart).toBe(50);
+    expect(changes.length).toBeGreaterThan(0);
+    expect(changes.at(-1)?.lensStart).toBe(50);
   });
 
   it("clears isDragging on pointerCancel", () => {
-    stubPointerCapture();
     render(<TestHarness initial={baseNavState()} />);
     const container = screen.getByTestId("container");
     dispatchPointer(container, "pointerdown", 1, 100);

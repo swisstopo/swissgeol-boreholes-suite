@@ -63,6 +63,8 @@ export const useDragPan = ({ navState, setNavState, containerRef }: UseDragPanOp
       const deltaMeters = deltaPx / ns.pixelPerMeter;
       // Drag down (positive deltaY) feels like scrolling up, so subtract.
       const next = clamp(origin.startLensStart - deltaMeters, 0, Math.max(0, ns.maxContent - ns.lensSize));
+      // `next` is origin-relative (computed from the captured startLensStart), not state-relative,
+      // so the functional updater ignores `prev.lensStart` by design and just preserves the rest of prev.
       setNavState(prev => prev.setLensStart(next));
     };
 
