@@ -404,6 +404,7 @@ export const createBoreholeWithCompleteDataset = () => {
         id: 0,
         boreholeId: 0,
         isPrimary: true,
+        name: "Complete Test Stratigraphy",
         lithologies: [
           {
             id: 0,
