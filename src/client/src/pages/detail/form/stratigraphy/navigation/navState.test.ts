@@ -48,6 +48,17 @@ describe("NavState", () => {
     expect(s.contentHeights.litho).toBe(0);
   });
 
+  it("documents pixelPerMeter at each combination of unmeasured height and content", () => {
+    // Default state: 0 / 0 -> NaN. Consumers must guard with Number.isFinite.
+    expect(Number.isNaN(new NavState().pixelPerMeter)).toBe(true);
+    // Height measured but content empty: positive / 0 -> Infinity.
+    expect(Number.isFinite(new NavState({ height: 100 }).pixelPerMeter)).toBe(false);
+    // Content set but height not yet measured: 0 / positive -> 0.
+    expect(new NavState({ contentHeights: { litho: 50 } }).pixelPerMeter).toBe(0);
+    // Both measured: normal positive value.
+    expect(new NavState({ height: 500, contentHeights: { litho: 100 } }).pixelPerMeter).toBe(5);
+  });
+
   it("auto-clamps lens when content shrinks below current viewport", () => {
     const s = new NavState({ lensStart: 50, rawLensSize: 30, contentHeights: { litho: 100 } });
     expect(s.lensEnd).toBe(80);
