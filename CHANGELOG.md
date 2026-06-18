@@ -8,6 +8,7 @@
 - Functionality to edit lithological descriptions from the lithology modal.
   
 ### Changed
+- Migrated the terms and conditions endpoints from the legacy API to the v2 API.
 - Deleted unused Swiss coordinate reference systems.
 - Gaps in the lithological and facies description columns are now displayed as neutral cells per depth row instead of a merged warning block.
 - Unified database column names for users, stratigraphy and codelist.
