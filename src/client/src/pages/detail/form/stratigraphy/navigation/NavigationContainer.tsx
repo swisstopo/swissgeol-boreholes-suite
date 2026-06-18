@@ -3,6 +3,7 @@ import { Stack } from "@mui/material";
 import { SxProps, Theme } from "@mui/material/styles";
 import { clamp } from "./clamp.ts";
 import { NavState } from "./navState.ts";
+import { useDragPan } from "./useDragPan.ts";
 import { useTypedResizeObserver } from "./useTypedResizeObserver.ts";
 
 interface NavigationContainerProps {
@@ -29,6 +30,10 @@ export const NavigationContainer: FC<NavigationContainerProps> = ({
 
   const containerRef = useRef<HTMLDivElement>(null);
   useTypedResizeObserver(containerRef, entry => setNavState(prev => prev.setHeight(entry.contentRect.height)));
+
+  const { onPointerDown, isDragging, isPannable } = useDragPan({ navState, setNavState, containerRef });
+  const panCursor = isDragging ? "grabbing" : "grab";
+  const cursor = isPannable ? panCursor : "default";
 
   const handleOnWheel = (event: WheelEvent<HTMLDivElement>) => {
     event.stopPropagation();
@@ -57,7 +62,19 @@ export const NavigationContainer: FC<NavigationContainerProps> = ({
   }, []);
 
   return (
-    <Stack ref={containerRef} direction="row" sx={{ flex: "1", overflowX: "auto", ...sx }} onWheel={handleOnWheel}>
+    <Stack
+      ref={containerRef}
+      direction="row"
+      sx={{
+        flex: "1",
+        overflowX: "auto",
+        cursor,
+        userSelect: "none",
+        touchAction: "none",
+        ...sx,
+      }}
+      onWheel={handleOnWheel}
+      onPointerDown={onPointerDown}>
       {renderItems(navState, setNavState)}
     </Stack>
   );
