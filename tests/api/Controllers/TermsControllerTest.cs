@@ -102,11 +102,28 @@ public class TermsControllerTest
     }
 
     [TestMethod]
-    public async Task SaveDraftWithoutEnglishTextReturnsBadRequest()
+    public async Task SaveDraftOverwritesAllLanguagesUsingEmptyStrings()
     {
-        var response = await controller.SaveDraftAsync(new Term { TextEn = "  " });
-        ActionResultAssert.IsBadRequest(response);
-        Assert.AreEqual(0, await context.Terms.CountAsync());
+        await controller.SaveDraftAsync(
+            new Term { TextEn = "English", TextDe = "Deutsch", TextFr = "Francais", TextIt = "Italiano", TextRo = "Rumantsch" });
+        var response = await controller.SaveDraftAsync(new Term { TextEn = "Only English" });
+        var term = ActionResultAssert.IsOkObjectResult<Term>(response);
+        Assert.AreEqual("Only English", term.TextEn);
+        Assert.AreEqual(string.Empty, term.TextDe, "Languages not provided are stored as an empty string.");
+        Assert.AreEqual(string.Empty, term.TextFr);
+        Assert.AreEqual(string.Empty, term.TextIt);
+        Assert.AreEqual(string.Empty, term.TextRo);
+        Assert.AreEqual(1, await context.Terms.CountAsync(t => t.IsDraft));
+    }
+
+    [TestMethod]
+    public async Task SaveDraftWithoutEnglishCreatesDraftWithEmptyEnglish()
+    {
+        var response = await controller.SaveDraftAsync(new Term { TextIt = "Italiano" });
+        var term = ActionResultAssert.IsOkObjectResult<Term>(response);
+        Assert.IsTrue(term.IsDraft);
+        Assert.AreEqual("Italiano", term.TextIt);
+        Assert.AreEqual(string.Empty, term.TextEn, "English defaults to an empty string to satisfy the NOT NULL column.");
     }
 
     [TestMethod]

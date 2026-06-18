@@ -61,17 +61,11 @@ public class TermsController : ControllerBase
     [HttpPut("draft")]
     [Authorize(Policy = PolicyNames.Admin)]
     [SwaggerResponse(StatusCodes.Status200OK, "The draft was saved successfully.")]
-    [SwaggerResponse(StatusCodes.Status400BadRequest, "The draft could not be saved due to invalid input.")]
     [SwaggerResponse(StatusCodes.Status500InternalServerError, "The server encountered an unexpected condition that prevented it from fulfilling the request.")]
     public async Task<IActionResult> SaveDraftAsync(Term term)
     {
         try
         {
-            if (term == null || string.IsNullOrWhiteSpace(term.TextEn))
-            {
-                return BadRequest();
-            }
-
             var draftTerm = await context.Terms
                 .SingleOrDefaultAsync(t => t.IsDraft)
                 .ConfigureAwait(false);
@@ -82,11 +76,11 @@ public class TermsController : ControllerBase
                 await context.Terms.AddAsync(draftTerm).ConfigureAwait(false);
             }
 
-            draftTerm.TextEn = term.TextEn;
-            draftTerm.TextDe = term.TextDe;
-            draftTerm.TextFr = term.TextFr;
-            draftTerm.TextIt = term.TextIt;
-            draftTerm.TextRo = term.TextRo;
+            draftTerm.TextEn = term.TextEn ?? "";
+            draftTerm.TextDe = term.TextDe ?? "";
+            draftTerm.TextFr = term.TextFr ?? "";
+            draftTerm.TextIt = term.TextIt ?? "";
+            draftTerm.TextRo = term.TextRo ?? "";
 
             await context.SaveChangesAsync().ConfigureAwait(false);
             return Ok(draftTerm);
