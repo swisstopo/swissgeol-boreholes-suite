@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AddCircle, Visibility, VisibilityOff } from "@mui/icons-material";
 import {
@@ -24,22 +24,22 @@ import { NavigationChild } from "./navigation/NavigationChild.tsx";
  * Component for editing hierarchical layer data.
  */
 const HierarchicalDataEditProfile = ({
-  layerData: layers, // array of layers
-  addLayer, // function that adds a layer
-  deleteLayer, // function that deletes a layer
-  updateLayer, // function that updates a layer
-  headerLabels, // array of translation keys
-  codelistSchemaName, // string that specifies the codelist schema to use
-  dataProperty, // string that specifies the property of the layer object that contains the data
-  titel, // The titel, displayed in the header
-  selectedStratigraphyID,
-  sx,
-  navState,
-  setNavState,
-}) => {
+                                       layerData: layers, // array of layers
+                                       addLayer, // function that adds a layer
+                                       deleteLayer, // function that deletes a layer
+                                       updateLayer, // function that updates a layer
+                                       headerLabels, // array of translation keys
+                                       codelistSchemaName, // string that specifies the codelist schema to use
+                                       dataProperty, // string that specifies the property of the layer object that contains the data
+                                       titel, // The titel, displayed in the header
+                                       selectedStratigraphyID,
+                                       sx,
+                                       navState,
+                                       setNavState,
+                                     }) => {
   const { t, i18n } = useTranslation();
 
-  const [id] = useState(Math.random().toString(36).substring(2, 10));
+  const id = useId();
   const [options, setOptions] = useState(null);
   const [header, setHeader] = useState(headerLabels.map(h => ({ title: h, isVisible: true })));
   const { editingEnabled } = useContext(EditStateContext);

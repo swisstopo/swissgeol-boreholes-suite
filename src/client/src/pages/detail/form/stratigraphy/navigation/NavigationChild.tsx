@@ -1,4 +1,4 @@
-import { Dispatch, FC, ReactNode, SetStateAction, useRef, useState } from "react";
+import { Dispatch, FC, ReactNode, SetStateAction, useId, useRef } from "react";
 import { Box } from "@mui/material";
 import { SxProps, Theme } from "@mui/material/styles";
 import { NavState } from "./navState.ts";
@@ -22,7 +22,7 @@ export const NavigationChild: FC<NavigationChildProps> = ({
   sx,
   moveChildren = true,
 }) => {
-  const [id] = useState(() => Math.random().toString(36).substring(2, 10));
+  const id = useId();
 
   const headerRef = useRef<HTMLDivElement>(null);
   useTypedResizeObserver(headerRef, entry => setNavState(prev => prev.setHeaderHeight(id, entry.contentRect.height)));
