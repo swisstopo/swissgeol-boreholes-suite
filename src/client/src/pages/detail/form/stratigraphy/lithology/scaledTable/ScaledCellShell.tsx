@@ -10,6 +10,7 @@ import { useTypedResizeObserver } from "../../navigation/useTypedResizeObserver.
 
 interface ScaledCellShellProps {
   children: ReactNode;
+  dataCy?: string;
   sx?: SxProps<Theme>;
 }
 
@@ -19,7 +20,7 @@ const CELL_VERTICAL_PADDING_PX = 16;
 // whole lines fit so -webkit-line-clamp cuts on a line boundary instead of mid-glyph.
 const APPROX_LINE_HEIGHT_PX = 24;
 
-export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, sx }) => {
+export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx }) => {
   const { t } = useTranslation();
   const copyToClipboard = useCopyToClipboard();
   const cellRef = useRef<HTMLDivElement>(null);
@@ -41,11 +42,12 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, sx }) => {
 
   return (
     <Box
-      data-cy="scaled-cell-shell"
+      data-cy={dataCy ?? "scaled-cell-shell"}
       sx={{
         position: "absolute",
         inset: 0,
         overflow: "hidden",
+        backgroundColor: theme.palette.background.default,
         borderBottom: `1px solid ${theme.palette.border.darker}`,
         "& .hover-content": { visibility: "hidden" },
         "&:hover": {
@@ -101,7 +103,7 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, sx }) => {
           onClick={e => {
             e.stopPropagation();
             const el = contentRef.current;
-            void copyToClipboard(el?.textContent?.trim() ?? "");
+            void copyToClipboard((el?.innerText ?? el?.textContent ?? "").trim());
           }}
           color="primaryInverse"
           sx={{ backgroundColor: theme.palette.background.grey }}

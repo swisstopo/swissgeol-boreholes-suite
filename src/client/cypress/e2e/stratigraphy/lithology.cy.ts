@@ -57,7 +57,7 @@ const copyCellAndAssertClipboard = (cellDataCy: string, expectedText: string) =>
     .then(win => win.navigator.clipboard.readText())
     // Assert the complete copied content, preserving the internal line breaks between a cell's
     // label and description; only outer whitespace is trimmed.
-    .then(text => expect(text.trim()).to.equal(expectedText));
+    .then(text => expect(text.trim().replace(/\r\n/g, "\n")).to.equal(expectedText));
 };
 
 const openStratigraphyWith3Lithologies = () => {
@@ -511,11 +511,8 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     saveWithSaveBar();
 
     stopBoreholeEditing();
-    checkDepthColumn([
-      [0, 355],
-      [355, 798],
-      [798, 1123],
-    ]);
+    // The read-only scaled view renders layers proportionally; depth column and gaps are
+    // edit-mode concepts that do not exist here. Verify the layer content is still visible.
     checkLayerCardContent({
       layerType: LayerType.lithology,
       fromDepth: 0,
@@ -529,8 +526,6 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       toDepth: 1123,
       content: ["breccia, well sorted"],
     });
-    hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
-    hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
   });
 
   it("resets form when switching between unconsolidated and consolidated rock", () => {
@@ -956,6 +951,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     // Save, reload and verify everything persisted.
     saveWithSaveBar();
     stopBoreholeEditing();
+    // The read-only scaled view shows layers proportionally; verify content is visible.
     hasLayersAt(LayerType.lithology, [
       [0, 355],
       [355, 798],
@@ -973,7 +969,6 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       toDepth: 1123,
       content: ["lithological description 355 - 1123"],
     });
-    hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
   });
 
   it("resizes a description into open-ended depth rows, stopping at the dragged row", () => {
@@ -1081,12 +1076,12 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     // Save, reload and verify everything persisted.
     saveWithSaveBar();
     stopBoreholeEditing();
+    // The read-only scaled view shows layers proportionally; verify content is visible.
     hasLayersAt(LayerType.lithology, [
       [0, 355],
       [355, 798],
       [798, 1123],
     ]);
-    hasGapsAt(LayerType.lithologicalDescription, [0, 355, 798]);
     checkLayerCardContent({
       layerType: LayerType.faciesDescription,
       fromDepth: 0,
@@ -1256,6 +1251,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     // Save, reload and verify the combined description persisted.
     saveWithSaveBar();
     stopBoreholeEditing();
+    // The read-only scaled view shows layers proportionally; verify content is visible.
     hasLayersAt(LayerType.lithology, [
       [0, 355],
       [355, 798],
@@ -1267,7 +1263,6 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
       toDepth: 798,
       content: ["lithological description 0 - 798"],
     });
-    hasGapsAt(LayerType.faciesDescription, [0, 355, 798]);
   });
 
   it("clamps a description gap drag-selection at an already-filled cell", () => {
@@ -1376,7 +1371,7 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     });
   });
 
-  it("shows lithologies read-only with depth labels and copyable cells when not editing", () => {
+  it("shows lithologies in a scaled read-only view with copyable cells when not editing", () => {
     openNewStratigraphy();
     addLithologyAtDepth(0, 355);
     fillUnconsolidatedLithologyForm({
@@ -1392,23 +1387,85 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     saveWithSaveBar();
     stopBoreholeEditing();
 
-    // Read-only view hides all editing affordances.
+    // Read-only scaled view hides all editing affordances.
     cy.dataCy("add-row-button").should("not.exist");
     cy.get('[data-cy="depth-from-0-355-input"]').should("not.exist");
 
-    // Depth boundaries render as standalone labels instead of editable inputs.
-    cy.dataCy("depth-from-0-355-label").should("contain", "0");
-    cy.dataCy("depth-to-0-355-label").should("contain", "355");
-
-    // Clicking a cell no longer opens the edit modal.
+    // Clicking a cell does not open the edit modal.
     cy.get('[data-cy="lithology-0-355"]').click();
     cy.dataCy("apply-button").should("not.exist");
+
+    // Layer content is rendered in scaled cells.
+    checkLayerCardContent({
+      layerType: LayerType.lithology,
+      fromDepth: 0,
+      toDepth: 355,
+      content: ["[FGr-co]: fine gravel, stony / with stones"],
+    });
+    checkLayerCardContent({
+      layerType: LayerType.lithologicalDescription,
+      fromDepth: 0,
+      toDepth: 355,
+      content: ["lithological description 0 - 355"],
+    });
+    checkLayerCardContent({
+      layerType: LayerType.faciesDescription,
+      fromDepth: 0,
+      toDepth: 355,
+      content: ["terrestrial", "facies description 0 - 355"],
+    });
 
     // Hovering any cell reveals a copy button that copies its full text to the clipboard.
     copyCellAndAssertClipboard("lithology-0-355", "[FGr-co]: fine gravel, stony / with stones");
     copyCellAndAssertClipboard("lithologicalDescription-0-355", "lithological description 0 - 355");
-    // The facies cell stacks the facies label above the description (separated by a blank line),
-    // so both are copied.
     copyCellAndAssertClipboard("faciesDescription-0-355", "terrestrial\n\nfacies description 0 - 355");
+  });
+
+  it("renders all three data columns in the scaled read-only view with partial descriptions", () => {
+    openStratigraphyWith3Lithologies();
+
+    // Fill only the first lithological description and the first two facies descriptions.
+    openLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, isGap: true });
+    fillLithologicalDescriptionForm({ description: "top description" });
+    closeLayerModal();
+    openLayer({ layerType: LayerType.faciesDescription, fromDepth: 0, isGap: true });
+    fillFaciesDescriptionForm({ faciesId: 1, description: "top facies" });
+    closeLayerModal();
+    openLayer({ layerType: LayerType.faciesDescription, fromDepth: 355, isGap: true });
+    fillFaciesDescriptionForm({ faciesId: 2, description: "middle facies" });
+    closeLayerModal();
+
+    saveWithSaveBar();
+    stopBoreholeEditing();
+
+    // All three lithologies are visible in the scaled view.
+    hasLayersAt(LayerType.lithology, [
+      [0, 355],
+      [355, 798],
+      [798, 1123],
+    ]);
+
+    // Only the first lithological description is visible; the others were not created.
+    hasLayer({ layerType: LayerType.lithologicalDescription, fromDepth: 0, toDepth: 355 });
+    checkLayerCardContent({
+      layerType: LayerType.lithologicalDescription,
+      fromDepth: 0,
+      toDepth: 355,
+      content: ["top description"],
+    });
+
+    // Two of three facies descriptions are visible.
+    checkLayerCardContent({
+      layerType: LayerType.faciesDescription,
+      fromDepth: 0,
+      toDepth: 355,
+      content: ["terrestrial", "top facies"],
+    });
+    checkLayerCardContent({
+      layerType: LayerType.faciesDescription,
+      fromDepth: 355,
+      toDepth: 798,
+      content: ["alluvial", "middle facies"],
+    });
   });
 });
