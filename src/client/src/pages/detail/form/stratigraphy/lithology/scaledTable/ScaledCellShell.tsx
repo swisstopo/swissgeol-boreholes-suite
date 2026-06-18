@@ -24,7 +24,9 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, sx }) => {
   const copyToClipboard = useCopyToClipboard();
   const cellRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const [maxLines, setMaxLines] = useState(1);
+  // Generous initial value so the first paint doesn't aggressively clip content before the
+  // ResizeObserver corrects to the real cell-derived line count.
+  const [maxLines, setMaxLines] = useState(99);
 
   // Recompute the clamp count whenever the cell's pixel height changes (zoom in/out, pan,
   // initial calibration). Clamping at a whole-line boundary prevents the half-cut bottom line
@@ -71,6 +73,11 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, sx }) => {
             overflow: "hidden",
             overflowWrap: "anywhere",
             wordBreak: "break-word",
+            // -webkit-box layout drops the normal gap a flex Stack would give Typography
+            // siblings; restore the spacing so multi-block content reads like in edit-mode.
+            "& > *:not(:first-child)": {
+              marginTop: theme.spacing(1),
+            },
           }}>
           {children}
         </Box>
@@ -92,9 +99,18 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, sx }) => {
           aria-label={t("copyToClipboard")}
           onClick={e => {
             e.stopPropagation();
-            // The contentRef wraps the full children DOM, not the clamped projection — so the
-            // copy payload always includes the truncated text, not just what's visible.
-            const text = contentRef.current?.innerText ?? contentRef.current?.textContent ?? "";
+            // `innerText` is layout-aware and would only return the visible (clamped) text,
+            // so the copy payload uses `textContent` which always reads the full DOM. Top-level
+            // block children are joined with newlines to preserve the visual line breaks
+            // between Typography blocks that `textContent` alone would collapse.
+            const el = contentRef.current;
+            const blocks =
+              el !== null
+                ? Array.from(el.children)
+                    .map(child => child.textContent?.trim() ?? "")
+                    .filter(Boolean)
+                : [];
+            const text = blocks.length > 0 ? blocks.join("\n") : (el?.textContent?.trim() ?? "");
             void copyToClipboard(text);
           }}
           color="primaryInverse"

@@ -65,7 +65,11 @@ export const LithologyTableScaled: FC<LithologyTableScaledProps> = ({
     if (thickness <= 0 || availableHeight <= 0 || naturalHeight <= 0 || navState.maxContent <= 0) {
       return;
     }
-    const desiredLensSize = Math.max(1, Math.min(navState.maxContent, (thickness * availableHeight) / naturalHeight));
+    // No artificial floor: for a very thin first layer with dense content the formula naturally
+    // produces a lensSize < thickness, which means the layer fills the viewport top-down and the
+    // user pans for the rest. Clamping to maxContent prevents zooming further out than the data
+    // supports. firstValidLithology assumes API-sorted layers (smallest fromDepth first).
+    const desiredLensSize = Math.min(navState.maxContent, (thickness * availableHeight) / naturalHeight);
     setNavState(prev => prev.setLensSize(desiredLensSize).setLensStart(0));
     hasCalibratedRef.current = true;
   }, [navState.height, navState.maxHeader, navState.maxContent, firstValidLithology, setNavState]);
