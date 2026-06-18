@@ -48,7 +48,7 @@ public class TermsController : ControllerBase
     {
         var draftTerm = await context.Terms
             .AsNoTracking()
-            .FirstOrDefaultAsync(t => t.IsDraft)
+            .SingleOrDefaultAsync(t => t.IsDraft)
             .ConfigureAwait(false);
 
         return Ok(draftTerm ?? await GetPublishedTermAsync().ConfigureAwait(false));
@@ -73,7 +73,7 @@ public class TermsController : ControllerBase
             }
 
             var draftTerm = await context.Terms
-                .FirstOrDefaultAsync(t => t.IsDraft)
+                .SingleOrDefaultAsync(t => t.IsDraft)
                 .ConfigureAwait(false);
 
             if (draftTerm == null)
@@ -112,7 +112,7 @@ public class TermsController : ControllerBase
         try
         {
             var draftTerm = await context.Terms
-                .FirstOrDefaultAsync(t => t.IsDraft)
+                .SingleOrDefaultAsync(t => t.IsDraft)
                 .ConfigureAwait(false);
 
             if (draftTerm == null)
@@ -121,7 +121,7 @@ public class TermsController : ControllerBase
             }
 
             var publishedTerm = await context.Terms
-                .FirstOrDefaultAsync(t => !t.IsDraft && t.Expiration == null)
+                .SingleOrDefaultAsync(t => !t.IsDraft && t.Expiration == null)
                 .ConfigureAwait(false);
 
             if (publishedTerm != null)
@@ -145,5 +145,5 @@ public class TermsController : ControllerBase
     private Task<Term?> GetPublishedTermAsync()
         => context.Terms
             .AsNoTracking()
-            .FirstOrDefaultAsync(t => !t.IsDraft && t.Expiration == null);
+            .SingleOrDefaultAsync(t => !t.IsDraft && t.Expiration == null);
 }
