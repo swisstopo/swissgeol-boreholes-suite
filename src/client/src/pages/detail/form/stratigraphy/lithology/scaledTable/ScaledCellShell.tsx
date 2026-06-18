@@ -1,4 +1,4 @@
-import { FC, ReactNode, useLayoutEffect, useRef, useState } from "react";
+import { FC, ReactNode, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Stack } from "@mui/material";
 import { SxProps, Theme } from "@mui/material/styles";
@@ -13,22 +13,29 @@ interface ScaledCellShellProps {
   sx?: SxProps<Theme>;
 }
 
-// Visual shell that wraps each scaled lithology cell.
+// Vertical padding consumed by the outer Stack (theme.spacing(1) top + bottom = 16px).
+const CELL_VERTICAL_PADDING_PX = 16;
+// Approximate body1/body2 line height (~16-14px font × ~1.5 leading). Used to compute how many
+// whole lines fit so -webkit-line-clamp cuts on a line boundary instead of mid-glyph.
+const APPROX_LINE_HEIGHT_PX = 24;
+
 export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, sx }) => {
   const { t } = useTranslation();
   const copyToClipboard = useCopyToClipboard();
+  const cellRef = useRef<HTMLDivElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
-  const [isOverflowing, setIsOverflowing] = useState(false);
+  const [maxLines, setMaxLines] = useState(1);
 
-  // Cell heights change as the user zooms, so re-measure overflow whenever the content box resizes.
-  // Centering looks right when content fits; falls back to flex-start so the start of long
-  // descriptions stays visible at high zoom-out levels.
-  const measure = () => {
-    const el = contentRef.current;
-    if (el) setIsOverflowing(el.scrollHeight > el.clientHeight);
-  };
-  useLayoutEffect(measure, [children]);
-  useTypedResizeObserver(contentRef, measure);
+  // Recompute the clamp count whenever the cell's pixel height changes (zoom in/out, pan,
+  // initial calibration). Clamping at a whole-line boundary prevents the half-cut bottom line
+  // that plain overflow:hidden produces, and the ellipsis ("...") is rendered by the browser.
+  useTypedResizeObserver(cellRef, entry => {
+    const lines = Math.max(
+      1,
+      Math.floor((entry.contentRect.height - CELL_VERTICAL_PADDING_PX) / APPROX_LINE_HEIGHT_PX),
+    );
+    setMaxLines(lines);
+  });
 
   return (
     <Box
@@ -46,19 +53,27 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, sx }) => {
         ...sx,
       }}>
       <Stack
-        ref={contentRef}
-        gap={1}
+        ref={cellRef}
         sx={{
           height: "100%",
           padding: theme.spacing(1),
           minWidth: 0,
           minHeight: 0,
           overflow: "hidden",
-          justifyContent: isOverflowing ? "flex-start" : "center",
-          overflowWrap: "anywhere",
-          wordBreak: "break-word",
+          justifyContent: "center",
         }}>
-        {children}
+        <Box
+          ref={contentRef}
+          sx={{
+            display: "-webkit-box",
+            WebkitLineClamp: maxLines,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            overflowWrap: "anywhere",
+            wordBreak: "break-word",
+          }}>
+          {children}
+        </Box>
       </Stack>
       <Stack
         className="hover-content"
@@ -77,6 +92,8 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, sx }) => {
           aria-label={t("copyToClipboard")}
           onClick={e => {
             e.stopPropagation();
+            // The contentRef wraps the full children DOM, not the clamped projection — so the
+            // copy payload always includes the truncated text, not just what's visible.
             const text = contentRef.current?.innerText ?? contentRef.current?.textContent ?? "";
             void copyToClipboard(text);
           }}

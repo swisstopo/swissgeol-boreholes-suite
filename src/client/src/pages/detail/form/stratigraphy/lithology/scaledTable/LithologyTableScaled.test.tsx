@@ -85,16 +85,20 @@ const renderTable = (props: {
 };
 
 describe("LithologyTableScaled", () => {
-  it("renders one cell per layer in each of the three data columns", () => {
+  // Note: the first lithology layer renders twice — once in the hidden offscreen calibration
+  // measurement, once in the visible ScaledLayerColumn. Tests target the scaled wrappers via
+  // their data-testid to disambiguate from the hidden measurement node.
+
+  it("renders one scaled cell per layer in each of the three data columns", () => {
     renderTable({
       lithologies: [lithology({ id: 1, fromDepth: 0, toDepth: 5 }), lithology({ id: 2, fromDepth: 5, toDepth: 10 })],
       lithologicalDescriptions: [desc({ id: 11, fromDepth: 0, toDepth: 10 })],
       faciesDescriptions: [facies({ id: 21, fromDepth: 0, toDepth: 10 })],
     });
-    expect(screen.getByText("litho-1")).toBeInTheDocument();
-    expect(screen.getByText("litho-2")).toBeInTheDocument();
-    expect(screen.getByText("desc")).toBeInTheDocument();
-    expect(screen.getByText("facies-21")).toBeInTheDocument();
+    expect(screen.getByTestId("scaled-layer-wrapper-1")).toBeInTheDocument();
+    expect(screen.getByTestId("scaled-layer-wrapper-2")).toBeInTheDocument();
+    expect(screen.getByTestId("scaled-layer-wrapper-11")).toBeInTheDocument();
+    expect(screen.getByTestId("scaled-layer-wrapper-21")).toBeInTheDocument();
   });
 
   it("filters out layers with null depths", () => {
@@ -106,7 +110,7 @@ describe("LithologyTableScaled", () => {
       lithologicalDescriptions: [],
       faciesDescriptions: [],
     });
-    expect(screen.getByText("litho-1")).toBeInTheDocument();
-    expect(screen.queryByText("litho-2")).toBeNull();
+    expect(screen.getByTestId("scaled-layer-wrapper-1")).toBeInTheDocument();
+    expect(screen.queryByTestId("scaled-layer-wrapper-2")).toBeNull();
   });
 });
