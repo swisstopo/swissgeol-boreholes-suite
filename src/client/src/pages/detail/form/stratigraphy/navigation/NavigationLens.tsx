@@ -1,13 +1,13 @@
-import { useEffect, useRef, useState } from "react";
-import Draggable from "react-draggable";
+import { Dispatch, FC, ReactNode, RefObject, SetStateAction, useEffect, useRef, useState } from "react";
+import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { NumericFormat } from "react-number-format";
 import { Box, Button, Stack } from "@mui/material";
-import { styled } from "@mui/material/styles";
+import { styled, SxProps, Theme } from "@mui/material/styles";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import useResizeObserver from "@react-hook/resize-observer";
-import { theme } from "../../../../AppTheme.ts";
-import { clamp } from "./clamp.js";
-import { NavState } from "./navigationContainer.jsx";
+import { theme } from "../../../../../AppTheme.ts";
+import { clamp } from "./clamp.ts";
+import { NavState } from "./navState.ts";
+import { useTypedResizeObserver } from "./useTypedResizeObserver.ts";
 
 const BackgroundShade = styled(Box)(() => ({
   position: "absolute",
@@ -25,32 +25,39 @@ const LensDepthLabel = styled(NumericFormat)(() => ({
   color: "black",
 }));
 
-const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
-  const [backgroundNavState, setBackgroundNavState] = useState(navState);
-  const [cursor, setCursor] = useState("grab");
+interface NavigationLensProps {
+  navState: NavState;
+  setNavState: Dispatch<SetStateAction<NavState>>;
+  sx?: SxProps<Theme>;
+  renderBackground: (navState: NavState, setNavState: Dispatch<SetStateAction<NavState>>) => ReactNode;
+}
 
-  const contentRef = useRef(null);
-  const lensRef = useRef(null);
-  useResizeObserver(contentRef, entry => setBackgroundNavState(prev => prev.setHeight(entry.contentRect.height)));
+export const NavigationLens: FC<NavigationLensProps> = ({ navState, setNavState, sx, renderBackground }) => {
+  const [backgroundNavState, setBackgroundNavState] = useState<NavState>(navState);
+  const [cursor, setCursor] = useState<"grab" | "grabbing">("grab");
+
+  const contentRef = useRef<HTMLDivElement>(null);
+  const lensRef = useRef<HTMLDivElement>(null);
+  useTypedResizeObserver(contentRef, entry => setBackgroundNavState(prev => prev.setHeight(entry.contentRect.height)));
 
   useEffect(() => {
     setBackgroundNavState(
-      prevState =>
+      prev =>
         new NavState({
-          ...prevState,
+          ...prev,
           contentHeights: { ...navState.contentHeights },
         }),
     );
   }, [navState.contentHeights]);
 
-  const handleDrag = (e, data) => {
+  const handleDrag = (_e: DraggableEvent, data: DraggableData) => {
     const newValue = data.y / backgroundNavState.pixelPerMeter;
-    if (!isNaN(newValue) && newValue !== navState?.lensStart) {
-      setNavState(prevState => prevState.setLensStart(newValue));
+    if (!Number.isNaN(newValue) && newValue !== navState.lensStart) {
+      setNavState(prev => prev.setLensStart(newValue));
     }
   };
 
-  const handleMove = pageFraction =>
+  const handleMove = (pageFraction: number) =>
     setNavState(prev =>
       prev.setLensStart(clamp(prev.lensStart + prev.lensSize * pageFraction, 0, prev.maxContent - prev.lensSize)),
     );
@@ -62,8 +69,8 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
       : Math.max(12, navState.lensSize * backgroundNavState.pixelPerMeter);
 
   return (
-    <Stack gap={1} flex={1} sx={{ width: "45px", ...sx }}>
-      <Button onClick={() => handleMove(-0.3)} variant="outlined">
+    <Stack gap={1} flex={1} sx={sx}>
+      <Button onClick={() => handleMove(-0.3)} variant="outlined" onPointerDown={e => e.stopPropagation()}>
         <ChevronUp />
       </Button>
       <Box
@@ -91,7 +98,7 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
         <Draggable
           axis="y"
           bounds="parent"
-          nodeRef={lensRef}
+          nodeRef={lensRef as RefObject<HTMLDivElement>}
           position={{
             y: navState.lensStart * backgroundNavState.pixelPerMeter,
             x: 0,
@@ -101,8 +108,9 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
           onStop={() => setCursor("grab")}>
           <Box
             ref={lensRef}
+            onPointerDown={e => e.stopPropagation()}
             sx={{
-              cursor: cursor,
+              cursor,
               height: lensHeight + "px",
               position: "absolute",
               left: 0,
@@ -111,7 +119,7 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
               bottom: 0,
               borderStyle: "solid",
               borderWidth: "2px",
-              borderColor: "red",
+              borderColor: theme.palette.error.main,
               display: "flex",
               flexDirection: "column",
               justifyContent: "space-between",
@@ -129,11 +137,9 @@ const NavigationLens = ({ navState, setNavState, sx, renderBackground }) => {
           </Box>
         </Draggable>
       </Box>
-      <Button onClick={() => handleMove(0.3)} variant="outlined">
+      <Button onClick={() => handleMove(0.3)} variant="outlined" onPointerDown={e => e.stopPropagation()}>
         <ChevronDown />
       </Button>
     </Stack>
   );
 };
-
-export default NavigationLens;

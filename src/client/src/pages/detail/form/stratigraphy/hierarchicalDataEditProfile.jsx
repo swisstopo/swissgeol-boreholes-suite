@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useId, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AddCircle, Visibility, VisibilityOff } from "@mui/icons-material";
 import {
@@ -18,7 +18,7 @@ import { useCodelistSchema } from "../../../../components/codelist.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import LayerCard from "./layerCard.jsx";
 import LayerGap from "./layerGap.jsx";
-import NavigationChild from "./navigationChild.jsx";
+import { NavigationChild } from "./navigation/NavigationChild.tsx";
 
 /**
  * Component for editing hierarchical layer data.
@@ -39,7 +39,7 @@ const HierarchicalDataEditProfile = ({
 }) => {
   const { t, i18n } = useTranslation();
 
-  const [id] = useState(Math.random().toString(36).substring(2, 10));
+  const id = useId();
   const [options, setOptions] = useState(null);
   const [header, setHeader] = useState(headerLabels.map(h => ({ title: h, isVisible: true })));
   const { editingEnabled } = useContext(EditStateContext);

@@ -58,6 +58,7 @@ export function useProfileImage(fileName: string | undefined) {
 }
 
 const profileQueryKey = "profiles";
+const profileOcrStatusQueryKey = "profileOcrStatus";
 
 export function useProfiles(boreholeId?: number, forLabeling: boolean = false) {
   return useQuery({
@@ -80,10 +81,9 @@ export const useReloadProfiles = (boreholeId: number) => {
   const queryClient = useQueryClient();
   return useCallback(() => {
     queryClient.invalidateQueries({ queryKey: [profileQueryKey, boreholeId] });
+    queryClient.invalidateQueries({ queryKey: [profileOcrStatusQueryKey, boreholeId] });
   }, [boreholeId, queryClient]);
 };
-
-const profileOcrStatusQueryKey = "profileOcrStatus";
 
 export const ocrStatusIsTerminal = (status?: OcrStatus): boolean =>
   status === "Success" || status === "Error" || status === "WillNotBeProcessed";

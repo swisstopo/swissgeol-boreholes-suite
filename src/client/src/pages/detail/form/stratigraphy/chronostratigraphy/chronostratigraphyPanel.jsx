@@ -1,10 +1,10 @@
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
 import LithostratigraphyViewProfile from "../lithostratigraphy/lithostratigraphyViewProfile.jsx";
-import NavigationChild from "../navigationChild.jsx";
-import NavigationContainer from "../navigationContainer.jsx";
-import NavigationLens from "../navigationLens.jsx";
-import Scale from "../scale.jsx";
+import { NavigationChild } from "../navigation/NavigationChild.tsx";
+import { NavigationContainer } from "../navigation/NavigationContainer.tsx";
+import { NavigationLens } from "../navigation/NavigationLens.tsx";
+import { Scale } from "../navigation/Scale.tsx";
 import { useLithostratigraphies } from "../stratigraphy.ts";
 import ChronostratigraphyEditProfile from "./chronostratigraphyEditProfile.jsx";
 

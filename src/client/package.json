@@ -122,7 +122,7 @@
     "test": "cypress run",
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
-    "ts": "tsc --noEmit",
+    "ts": "tsc --noEmit --incremental --tsBuildInfoFile .tsbuildinfo",
     "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.json --report-unused-disable-directives --max-warnings 0",
     "knip": "knip",
     "cy": "cypress open",
