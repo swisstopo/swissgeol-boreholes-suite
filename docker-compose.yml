@@ -17,7 +17,7 @@ services:
     restart: unless-stopped
     volumes:
       - ./db:/docker-entrypoint-initdb.d
-      - postgis-data:/var/lib/postgresql/data
+      - postgis-data:/var/lib/postgresql
     ports:
       - 5432:5432
     environment:
