@@ -9,7 +9,7 @@ import { LithologicalDescriptionModal } from "../../lithology/form/lithologicalD
 import { findMatchingLithologicalDescription } from "../../lithology/form/lithologyDescriptionMatching.ts";
 import { LithologyModal } from "../../lithology/form/lithologyModal.tsx";
 import { LithologyLabels } from "../../lithology/lithologyLabels.tsx";
-import { LithologyDescriptionContent } from "../../lithology/scaledTable/lithologyDescriptionContent.tsx";
+import { LithologicalDescriptionLabels } from "../../lithology/scaledTable/lithologicalDescriptionLabels.tsx";
 import {
   BaseLayer,
   DescriptionKind,
@@ -392,7 +392,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                   `lithologicalDescription`,
                   tmpLithologicalDescriptions,
                   layer => (
-                    <LithologyDescriptionContent description={layer as LithologicalDescription} />
+                    <LithologicalDescriptionLabels description={layer as LithologicalDescription} />
                   ),
                   index => setSelectedLithologicalDescription(tmpLithologicalDescriptions[index]),
                   index => handleDeleteDescription("lithological", index),

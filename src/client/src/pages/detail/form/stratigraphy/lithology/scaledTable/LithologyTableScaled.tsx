@@ -5,7 +5,7 @@ import { NavState } from "../../navigation/navState.ts";
 import { FaciesDescription, LithologicalDescription, Lithology } from "../../stratigraphy.ts";
 import { FaciesDescriptionLabels } from "../faciesDescriptionLabels.tsx";
 import { LithologyLabels } from "../lithologyLabels.tsx";
-import { LithologyDescriptionContent } from "./lithologyDescriptionContent.tsx";
+import { LithologicalDescriptionLabels } from "./lithologicalDescriptionLabels.tsx";
 import { ScaledCellShell } from "./ScaledCellShell.tsx";
 
 interface LithologyTableScaledProps {
@@ -66,7 +66,7 @@ export const LithologyTableScaled: FC<LithologyTableScaledProps> = ({
           minPixelHeight={1}
           renderLayer={d => (
             <ScaledCellShell>
-              <LithologyDescriptionContent description={d} />
+              <LithologicalDescriptionLabels description={d} />
             </ScaledCellShell>
           )}
         />
