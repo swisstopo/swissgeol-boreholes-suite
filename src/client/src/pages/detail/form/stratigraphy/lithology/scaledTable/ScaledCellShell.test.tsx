@@ -22,25 +22,26 @@ afterEach(() => {
   copyMock.mockClear();
 });
 
-const renderShell = (props: { copyText: string; children: React.ReactNode }) =>
+const renderShell = (children: React.ReactNode) =>
   render(
     <I18nextProvider i18n={i18n}>
-      <ScaledCellShell {...props} />
+      <ScaledCellShell>{children}</ScaledCellShell>
     </I18nextProvider>,
   );
 
+const findCopyButton = () => screen.getByLabelText("Copy to clipboard", { selector: "button" });
+
 describe("ScaledCellShell", () => {
   it("renders its children", () => {
-    renderShell({ copyText: "hi", children: "child text" });
+    renderShell("child text");
     expect(screen.getByText("child text")).toBeInTheDocument();
   });
 
-  it("renders a copy button that invokes useCopyToClipboard with copyText on click", () => {
-    renderShell({ copyText: "payload to copy", children: "child" });
-    // The copy button is CSS-hidden until hover; query by aria-label, which sidesteps the
-    // role/name lookup that doesn't compute reliably for icon-only buttons in jsdom.
-    const copyBtn = screen.getByLabelText("Copy to clipboard", { selector: "button" });
-    fireEvent.click(copyBtn);
-    expect(copyMock).toHaveBeenCalledWith("payload to copy");
+  it("copies the cell's rendered text on copy-button click", () => {
+    renderShell(<span>visible content</span>);
+    fireEvent.click(findCopyButton());
+    // jsdom doesn't compute innerText, so the fallback to textContent is what runs here. Either
+    // path returns the same rendered text for the user-visible WYSIWYG guarantee.
+    expect(copyMock).toHaveBeenCalledWith("visible content");
   });
 });
