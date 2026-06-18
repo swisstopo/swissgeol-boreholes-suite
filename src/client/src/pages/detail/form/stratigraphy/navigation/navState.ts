@@ -64,7 +64,7 @@ export class NavState {
   }
 
   setContentHeightFromLayers(name: string, layers: ReadonlyArray<{ toDepth: number | null }> | undefined): NavState {
-    const height = !layers ? 0 : layers.reduce((acc, l) => ((l.toDepth ?? 0) > acc ? (l.toDepth ?? 0) : acc), 0);
+    const height = layers?.reduce((acc, l) => Math.max(acc, l.toDepth ?? 0), 0) ?? 0;
     return this.setContentHeight(name, height);
   }
 
