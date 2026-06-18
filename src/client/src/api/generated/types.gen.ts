@@ -7972,6 +7972,100 @@ export type PostApiVbyVersionStratigraphyCopyResponses = {
 export type PostApiVbyVersionStratigraphyCopyResponse =
   PostApiVbyVersionStratigraphyCopyResponses[keyof PostApiVbyVersionStratigraphyCopyResponses];
 
+export type GetApiVbyVersionTermsData = {
+  body?: never;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/terms";
+};
+
+export type GetApiVbyVersionTermsResponses = {
+  /**
+   * Returns the currently published terms, or null if none exist.
+   */
+  200: Term;
+};
+
+export type GetApiVbyVersionTermsResponse = GetApiVbyVersionTermsResponses[keyof GetApiVbyVersionTermsResponses];
+
+export type GetApiVbyVersionTermsDraftData = {
+  body?: never;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/terms/draft";
+};
+
+export type GetApiVbyVersionTermsDraftResponses = {
+  /**
+   * Returns the draft terms, the published terms as fallback, or null.
+   */
+  200: Term;
+};
+
+export type GetApiVbyVersionTermsDraftResponse =
+  GetApiVbyVersionTermsDraftResponses[keyof GetApiVbyVersionTermsDraftResponses];
+
+export type PutApiVbyVersionTermsDraftData = {
+  /**
+   * The term carrying the localized texts to store as draft.
+   */
+  body?: Term;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/terms/draft";
+};
+
+export type PutApiVbyVersionTermsDraftErrors = {
+  /**
+   * The draft could not be saved due to invalid input.
+   */
+  400: unknown;
+  /**
+   * The server encountered an unexpected condition that prevented it from fulfilling the request.
+   */
+  500: unknown;
+};
+
+export type PutApiVbyVersionTermsDraftResponses = {
+  /**
+   * The draft was saved successfully.
+   */
+  200: unknown;
+};
+
+export type PostApiVbyVersionTermsPublishData = {
+  body?: never;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/terms/publish";
+};
+
+export type PostApiVbyVersionTermsPublishErrors = {
+  /**
+   * There is no draft to publish.
+   */
+  400: unknown;
+  /**
+   * The server encountered an unexpected condition that prevented it from fulfilling the request.
+   */
+  500: unknown;
+};
+
+export type PostApiVbyVersionTermsPublishResponses = {
+  /**
+   * The draft was published successfully.
+   */
+  200: unknown;
+};
+
 export type GetApiVbyVersionUserSelfData = {
   body?: never;
   path: {
