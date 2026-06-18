@@ -1,15 +1,25 @@
-import { useCallback } from "react";
+import { useCallback, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
+import { LensColumn } from "../components/lensColumn/LensColumn.tsx";
+import { getLithostratigraphyColor } from "../components/scaledLayerColumn/getLithostratigraphyColor.ts";
 import { LithostratigraphyViewProfile } from "../lithostratigraphy/LithostratigraphyViewProfile.tsx";
 import { NavigationChild } from "../navigation/NavigationChild.tsx";
 import { NavigationContainer } from "../navigation/NavigationContainer.tsx";
-import { NavigationLens } from "../navigation/NavigationLens.tsx";
 import { Scale } from "../navigation/Scale.tsx";
+import { useLithostratigraphies } from "../stratigraphy.ts";
 import ChronostratigraphyEditProfile from "./chronostratigraphyEditProfile.jsx";
 
 const ChronostratigraphyPanel = ({ stratigraphyId }) => {
   const { t } = useTranslation();
+  const { data: lithostratigraphies = [] } = useLithostratigraphies(stratigraphyId);
+
+  const validLayers = useMemo(
+    () => lithostratigraphies.filter(l => l.fromDepth !== null && l.toDepth !== null),
+    [lithostratigraphies],
+  );
+
+  const getColor = useCallback(layer => getLithostratigraphyColor(layer), []);
 
   const renderLensBackground = useCallback(
     (lensNavState, setLensNavState) => (
@@ -28,13 +38,13 @@ const ChronostratigraphyPanel = ({ stratigraphyId }) => {
       renderItems={(navState, setNavState) => {
         return (
           <>
-            <NavigationChild
-              moveChildren={false}
-              sx={{ flex: "0 0 4em" }}
+            <LensColumn
+              layers={validLayers}
               navState={navState}
-              setNavState={setNavState}>
-              <NavigationLens navState={navState} setNavState={setNavState} renderBackground={renderLensBackground} />
-            </NavigationChild>
+              setNavState={setNavState}
+              getColor={getColor}
+              sx={{ flex: "0 0 45px", paddingTop: `${navState.maxHeader}px` }}
+            />
             <NavigationChild
               sx={{ flex: "0 0 8em" }}
               navState={navState}
