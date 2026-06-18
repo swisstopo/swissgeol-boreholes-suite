@@ -80,10 +80,10 @@ describe("useDragPan", () => {
     render(<TestHarness initial={baseNavState()} onChange={s => changes.push(s)} />);
     const container = screen.getByTestId("container");
     dispatchPointer(container, "pointerdown", 1, 200);
-    dispatchPointer(container, "pointermove", 1, 150);
-    // Dragged 50 px upward; lensStart should move down by 50/10 = 5 meters.
+    dispatchPointer(container, "pointermove", 1, 195);
+    // Dragged 5 px upward; with 2x speed multiplier, lensStart moves down by (5/10)*2 = 1 meter.
     expect(changes.length).toBeGreaterThan(0);
-    expect(changes.at(-1)?.lensStart).toBeCloseTo(5);
+    expect(changes.at(-1)?.lensStart).toBeCloseTo(1);
   });
 
   it("clamps lensStart at 0 when dragging beyond the top", () => {
@@ -105,6 +105,18 @@ describe("useDragPan", () => {
     // maxContent (100) - lensSize (50) = 50
     expect(changes.length).toBeGreaterThan(0);
     expect(changes.at(-1)?.lensStart).toBe(50);
+  });
+
+  it("is a no-op when the full content already fits in the lens (nothing to pan to)", () => {
+    const changes: NavState[] = [];
+    // maxContent = lensSize (raw=50, contentHeights also 50): nothing to pan to.
+    const fitting = new NavState({ height: 500, rawLensSize: 50, contentHeights: { c: 50 }, headerHeights: { h: 0 } });
+    render(<TestHarness initial={fitting} onChange={s => changes.push(s)} />);
+    const container = screen.getByTestId("container");
+    dispatchPointer(container, "pointerdown", 1, 100);
+    expect(container.getAttribute("data-dragging")).toBe("false");
+    dispatchPointer(container, "pointermove", 1, 50);
+    expect(changes.length).toBe(0);
   });
 
   it("clears isDragging on pointerCancel", () => {

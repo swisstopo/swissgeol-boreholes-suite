@@ -20,7 +20,13 @@ interface UseDragPanOptions {
 interface UseDragPanResult {
   onPointerDown: PointerEventHandler<HTMLElement>;
   isDragging: boolean;
+  // True when the visible window is smaller than the full content (i.e., there is something to pan to).
+  isPannable: boolean;
 }
+
+// Multiplies the 1-to-1 mouse-to-meter mapping so that a small drag moves the viewport noticeably.
+// Without it, dragging in pixels-per-meter space feels sluggish at typical zoom levels.
+const DRAG_SPEED_MULTIPLIER = 2;
 
 interface DragOrigin {
   pointerId: number;
@@ -39,13 +45,21 @@ export const useDragPan = ({ navState, setNavState, containerRef }: UseDragPanOp
   const navStateRef = useRef(navState);
   navStateRef.current = navState;
 
+  const isPannable = navState.maxContent > navState.lensSize;
+
   const onPointerDown = useCallback<PointerEventHandler<HTMLElement>>(event => {
+    const ns = navStateRef.current;
+    // Skip the gesture entirely when the full content already fits; nothing to pan to.
+    if (ns.maxContent <= ns.lensSize) return;
+    // Suppress the browser's default text-selection-on-drag behavior, otherwise selection-drag
+    // races our pan-drag and the gesture stutters mid-move.
+    event.preventDefault();
     const target = event.currentTarget;
     target.setPointerCapture(event.pointerId);
     originRef.current = {
       pointerId: event.pointerId,
       startPageY: event.pageY,
-      startLensStart: navStateRef.current.lensStart,
+      startLensStart: ns.lensStart,
     };
     setIsDragging(true);
   }, []);
@@ -60,7 +74,7 @@ export const useDragPan = ({ navState, setNavState, containerRef }: UseDragPanOp
       const ns = navStateRef.current;
       if (!Number.isFinite(ns.pixelPerMeter) || ns.pixelPerMeter <= 0) return;
       const deltaPx = event.pageY - origin.startPageY;
-      const deltaMeters = deltaPx / ns.pixelPerMeter;
+      const deltaMeters = (deltaPx / ns.pixelPerMeter) * DRAG_SPEED_MULTIPLIER;
       // Drag down (positive deltaY) feels like scrolling up, so subtract.
       const next = clamp(origin.startLensStart - deltaMeters, 0, Math.max(0, ns.maxContent - ns.lensSize));
       // `next` is origin-relative (computed from the captured startLensStart), not state-relative,
@@ -85,5 +99,5 @@ export const useDragPan = ({ navState, setNavState, containerRef }: UseDragPanOp
     };
   }, [containerRef, setNavState]);
 
-  return { onPointerDown, isDragging };
+  return { onPointerDown, isDragging, isPannable };
 };

@@ -31,7 +31,7 @@ export const NavigationContainer: FC<NavigationContainerProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   useTypedResizeObserver(containerRef, entry => setNavState(prev => prev.setHeight(entry.contentRect.height)));
 
-  const { onPointerDown, isDragging } = useDragPan({ navState, setNavState, containerRef });
+  const { onPointerDown, isDragging, isPannable } = useDragPan({ navState, setNavState, containerRef });
 
   const handleOnWheel = (event: WheelEvent<HTMLDivElement>) => {
     event.stopPropagation();
@@ -63,7 +63,14 @@ export const NavigationContainer: FC<NavigationContainerProps> = ({
     <Stack
       ref={containerRef}
       direction="row"
-      sx={{ flex: "1", overflowX: "auto", cursor: isDragging ? "grabbing" : "grab", ...sx }}
+      sx={{
+        flex: "1",
+        overflowX: "auto",
+        cursor: isPannable ? (isDragging ? "grabbing" : "grab") : "default",
+        userSelect: "none",
+        touchAction: "none",
+        ...sx,
+      }}
       onWheel={handleOnWheel}
       onPointerDown={onPointerDown}>
       {renderItems(navState, setNavState)}
