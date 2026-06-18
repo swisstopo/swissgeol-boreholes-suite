@@ -24,19 +24,19 @@ import { NavigationChild } from "./navigation/NavigationChild.tsx";
  * Component for editing hierarchical layer data.
  */
 const HierarchicalDataEditProfile = ({
-                                       layerData: layers, // array of layers
-                                       addLayer, // function that adds a layer
-                                       deleteLayer, // function that deletes a layer
-                                       updateLayer, // function that updates a layer
-                                       headerLabels, // array of translation keys
-                                       codelistSchemaName, // string that specifies the codelist schema to use
-                                       dataProperty, // string that specifies the property of the layer object that contains the data
-                                       titel, // The titel, displayed in the header
-                                       selectedStratigraphyID,
-                                       sx,
-                                       navState,
-                                       setNavState,
-                                     }) => {
+  layerData: layers, // array of layers
+  addLayer, // function that adds a layer
+  deleteLayer, // function that deletes a layer
+  updateLayer, // function that updates a layer
+  headerLabels, // array of translation keys
+  codelistSchemaName, // string that specifies the codelist schema to use
+  dataProperty, // string that specifies the property of the layer object that contains the data
+  titel, // The titel, displayed in the header
+  selectedStratigraphyID,
+  sx,
+  navState,
+  setNavState,
+}) => {
   const { t, i18n } = useTranslation();
 
   const id = useId();
