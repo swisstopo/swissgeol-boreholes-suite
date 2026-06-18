@@ -3,7 +3,7 @@ import { Box } from "@mui/material";
 import { SxProps, Theme } from "@mui/material/styles";
 import { NavState } from "../../navigation/navState.ts";
 
-export interface ScaledLayer {
+interface ScaledLayer {
   fromDepth: number;
   toDepth: number;
 }
