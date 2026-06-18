@@ -4,10 +4,10 @@ import { NumericFormat } from "react-number-format";
 import { Box, Button, Stack } from "@mui/material";
 import { styled, SxProps, Theme } from "@mui/material/styles";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import useResizeObserver from "@react-hook/resize-observer";
 import { theme } from "../../../../../AppTheme.ts";
 import { clamp } from "./clamp.ts";
 import { NavState } from "./navState.ts";
+import { useTypedResizeObserver } from "./useTypedResizeObserver.ts";
 
 const BackgroundShade = styled(Box)(() => ({
   position: "absolute",
@@ -38,10 +38,7 @@ export const NavigationLens: FC<NavigationLensProps> = ({ navState, setNavState,
 
   const contentRef = useRef<HTMLDivElement>(null);
   const lensRef = useRef<HTMLDivElement>(null);
-  // Cast: @react-hook/resize-observer expects RefObject<HTMLElement>, but React 19's useRef returns RefObject<HTMLDivElement | null>.
-  useResizeObserver(contentRef as RefObject<HTMLDivElement>, entry =>
-    setBackgroundNavState(prev => prev.setHeight(entry.contentRect.height)),
-  );
+  useTypedResizeObserver(contentRef, entry => setBackgroundNavState(prev => prev.setHeight(entry.contentRect.height)));
 
   useEffect(() => {
     setBackgroundNavState(

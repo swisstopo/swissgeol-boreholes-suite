@@ -1,9 +1,9 @@
-import { FC, ReactNode, RefObject, useMemo, useRef, useState } from "react";
+import { FC, ReactNode, useMemo, useRef, useState } from "react";
 import { NumericFormat } from "react-number-format";
 import { Box } from "@mui/material";
 import { styled } from "@mui/material/styles";
-import useResizeObserver from "@react-hook/resize-observer";
 import { NavState } from "./navState.ts";
+import { useTypedResizeObserver } from "./useTypedResizeObserver.ts";
 
 const isMajorNumber = (number: number, metersPerPattern: number): boolean => {
   const majorNumberInterval = metersPerPattern * 10;
@@ -38,8 +38,7 @@ interface ScaleProps {
 export const Scale: FC<ScaleProps> = ({ navState }) => {
   const [width, setWidth] = useState(0);
   const ref = useRef<HTMLDivElement>(null);
-  // Cast: @react-hook/resize-observer expects RefObject<HTMLElement>, but React 19's useRef returns RefObject<HTMLDivElement | null>.
-  useResizeObserver(ref as RefObject<HTMLDivElement>, entry => setWidth(entry.contentRect.width));
+  useTypedResizeObserver(ref, entry => setWidth(entry.contentRect.width));
 
   const state = useMemo(() => {
     const labels: ReactNode[] = [];

@@ -1,9 +1,9 @@
-import { Dispatch, FC, ReactNode, RefObject, SetStateAction, useEffect, useRef, useState, WheelEvent } from "react";
+import { Dispatch, FC, ReactNode, SetStateAction, useEffect, useRef, useState, WheelEvent } from "react";
 import { Stack } from "@mui/material";
 import { SxProps, Theme } from "@mui/material/styles";
-import useResizeObserver from "@react-hook/resize-observer";
 import { clamp } from "./clamp.ts";
 import { NavState } from "./navState.ts";
+import { useTypedResizeObserver } from "./useTypedResizeObserver.ts";
 
 interface NavigationContainerProps {
   renderItems: (navState: NavState, setNavState: Dispatch<SetStateAction<NavState>>) => ReactNode;
@@ -28,10 +28,7 @@ export const NavigationContainer: FC<NavigationContainerProps> = ({
   const setNavState = externalSetter ?? setInternalNavState;
 
   const containerRef = useRef<HTMLDivElement>(null);
-  // Cast: @react-hook/resize-observer expects RefObject<HTMLElement>, but React 19's useRef returns RefObject<HTMLDivElement | null>.
-  useResizeObserver(containerRef as RefObject<HTMLDivElement>, entry =>
-    setNavState(prev => prev.setHeight(entry.contentRect.height)),
-  );
+  useTypedResizeObserver(containerRef, entry => setNavState(prev => prev.setHeight(entry.contentRect.height)));
 
   const handleOnWheel = (event: WheelEvent<HTMLDivElement>) => {
     event.stopPropagation();

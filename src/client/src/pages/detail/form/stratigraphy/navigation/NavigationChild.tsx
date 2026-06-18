@@ -1,8 +1,8 @@
-import { Dispatch, FC, ReactNode, RefObject, SetStateAction, useRef, useState } from "react";
+import { Dispatch, FC, ReactNode, SetStateAction, useRef, useState } from "react";
 import { Box } from "@mui/material";
 import { SxProps, Theme } from "@mui/material/styles";
-import useResizeObserver from "@react-hook/resize-observer";
 import { NavState } from "./navState.ts";
+import { useTypedResizeObserver } from "./useTypedResizeObserver.ts";
 
 interface NavigationChildProps {
   navState: NavState;
@@ -25,10 +25,7 @@ export const NavigationChild: FC<NavigationChildProps> = ({
   const [id] = useState(() => Math.random().toString(36).substring(2, 10));
 
   const headerRef = useRef<HTMLDivElement>(null);
-  // Cast: @react-hook/resize-observer expects RefObject<HTMLElement>, but React 19's useRef returns RefObject<HTMLDivElement | null>.
-  useResizeObserver(headerRef as RefObject<HTMLDivElement>, entry =>
-    setNavState(prev => prev.setHeaderHeight(id, entry.contentRect.height)),
-  );
+  useTypedResizeObserver(headerRef, entry => setNavState(prev => prev.setHeaderHeight(id, entry.contentRect.height)));
 
   return (
     <Box sx={{ flex: 1, ...sx, display: "flex", flexDirection: "column" }}>
