@@ -348,6 +348,8 @@
   "lithologyUnconPreviousRequired": "Voce necessaria, poiché sono registrati elementi accessori successivi",
   "lithologyUnconSecondary": "Componente secondaria",
   "lithologyUnconType": "Codice litologico composito",
+  "lithologyView_nLayersHiddenDueToMissingDepths_one": "{{count}} strato nascosto a causa di profondità mancanti.",
+  "lithologyView_nLayersHiddenDueToMissingDepths_other": "{{count}} strati nascosti a causa di profondità mancanti.",
   "lithology_top_bedrock": "Top substrato Litologia",
   "lithostratigraphy": "Litostratigrafia",
   "lithostratigraphy_id": "Litostratigrafia",

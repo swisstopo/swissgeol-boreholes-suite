@@ -348,6 +348,8 @@
   "lithologyUnconPreviousRequired": "Entry required, as subsequent ancillary components are recorded",
   "lithologyUnconSecondary": "Minor component",
   "lithologyUnconType": "Composite lithology code",
+  "lithologyView_nLayersHiddenDueToMissingDepths_one": "{{count}} layer hidden due to missing depth values.",
+  "lithologyView_nLayersHiddenDueToMissingDepths_other": "{{count}} layers hidden due to missing depth values.",
   "lithology_top_bedrock": "Lithology top bedrock",
   "lithostratigraphy": "Lithostratigraphy",
   "lithostratigraphy_id": "Lithostratigraphy",
