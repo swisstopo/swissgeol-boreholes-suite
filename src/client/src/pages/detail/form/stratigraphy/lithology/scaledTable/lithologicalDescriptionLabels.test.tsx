@@ -18,7 +18,7 @@ const description = (overrides: Partial<LithologicalDescription> = {}): Litholog
   ...overrides,
 });
 
-describe("LithologyDescriptionContent", () => {
+describe("LithologicalDescriptionLabels", () => {
   it("renders the description text", () => {
     render(<LithologicalDescriptionLabels description={description({ description: "Brown silty clay" })} />);
     expect(screen.getByText("Brown silty clay")).toBeInTheDocument();
