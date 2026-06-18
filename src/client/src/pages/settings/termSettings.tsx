@@ -1,15 +1,23 @@
 import { useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, Button, TextField } from "@mui/material";
+import { Box, Stack, TextField, Typography } from "@mui/material";
 import { Trash2, X } from "lucide-react";
 import Markdown from "markdown-to-jsx";
 import { TermUpdate, useDraftTerms, useTermsMutations } from "../../api/terms.ts";
 import TranslationKeys from "../../auth/translationKeys";
+import { BoreholesButton, SaveButton } from "../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 
 type TermLanguage = "en" | "de" | "fr" | "it" | "ro";
 
 const emptyTexts: Record<TermLanguage, string> = { en: "", de: "", fr: "", it: "", ro: "" };
+
+const headingSx = {
+  color: "rgb(237, 29, 36)",
+  fontStyle: "italic",
+  textTransform: "capitalize",
+  whiteSpace: "nowrap",
+} as const;
 
 const TermSettings = () => {
   const { t, i18n } = useTranslation();
@@ -68,54 +76,36 @@ const TermSettings = () => {
   };
 
   return (
-    <div style={{ padding: "2em", flex: 1, display: "flex", flexDirection: "row" }}>
-      <div style={{ flex: "1 1 100%", padding: "1em", margin: "1em" }}>
-        <div style={{ display: "flex", flexDirection: "row", paddingBottom: "1em" }}>
-          <div
-            style={{
-              color: "rgb(237, 29, 36)",
-              fontStyle: "italic",
-              textTransform: "capitalize",
-              whiteSpace: "nowrap",
-            }}>
-            {isDraft ? t("draft") : t("terms")}
-          </div>
-          <div style={{ flex: "1 1 100%", textAlign: "right" }}>
-            <Button sx={{ display: isDraft && !dirty ? null : "none" }} variant="contained" onClick={confirmPublish}>
-              {t("publish")}
-            </Button>
-            <Button sx={{ display: dirty ? null : "none" }} variant="contained" disabled={!dirty} onClick={handleSave}>
-              {t("save")}
-            </Button>
-          </div>
-        </div>
+    <Stack direction="row" sx={{ flex: 1, p: 4 }}>
+      <Box sx={{ flex: "1 1 100%", p: 2, m: 2 }}>
+        <Stack direction="row" sx={{ alignItems: "center", justifyContent: "space-between", pb: 2 }}>
+          <Typography sx={headingSx}>{isDraft ? t("draft") : t("terms")}</Typography>
+          <Stack direction="row" spacing={1}>
+            {isDraft && !dirty && <BoreholesButton variant="contained" label="publish" onClick={confirmPublish} />}
+            {dirty && <SaveButton variant="contained" onClick={handleSave} />}
+          </Stack>
+        </Stack>
 
-        <div style={{ display: "flex", justifyContent: "flex-end", paddingBottom: "10px" }}>
+        <Stack direction="row" sx={{ justifyContent: "flex-end", pb: 1 }}>
           <TranslationKeys ignori18n handleSelectedLanguage={(language: TermLanguage) => setLang(language)} />
-        </div>
-        <Box>
-          <TextField
-            multiline
-            rows={20}
-            variant="outlined"
-            fullWidth
-            onChange={e => {
-              setTexts(previous => ({ ...previous, [lang]: e.target.value }));
-              setDirty(true);
-            }}
-            value={texts[lang]}
-          />
-        </Box>
-      </div>
-      <div style={{ flex: "1 1 100%", padding: "1em", margin: "1em" }}>
-        <div style={{ alignItems: "center", display: "flex", flexDirection: "row", paddingBottom: "1em" }}>
-          <div style={{ color: "rgb(237, 29, 36)", fontStyle: "italic", textTransform: "capitalize" }}>
-            {t("preview")}
-          </div>
-        </div>
+        </Stack>
+        <TextField
+          multiline
+          rows={20}
+          variant="outlined"
+          fullWidth
+          onChange={e => {
+            setTexts(previous => ({ ...previous, [lang]: e.target.value }));
+            setDirty(true);
+          }}
+          value={texts[lang]}
+        />
+      </Box>
+      <Box sx={{ flex: "1 1 100%", p: 2, m: 2 }}>
+        <Typography sx={[headingSx, { pb: 2 }]}>{t("preview")}</Typography>
         <Markdown options={{ disableParsingRawHTML: true }}>{texts[lang]}</Markdown>
-      </div>
-    </div>
+      </Box>
+    </Stack>
   );
 };
 
