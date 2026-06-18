@@ -19,7 +19,8 @@ interface ScaledLayerColumnProps<T extends ScaledLayer> {
 
 // Renders each layer as an absolutely-positioned box at depth `fromDepth * pixelPerMeter` with
 // height proportional to its thickness. Culls layers outside the current lens window and any
-// thinner than `minPixelHeight` at the current zoom.
+// thinner than `minPixelHeight` at the current zoom. Surviving layers are rendered at a hard
+// minimum of 1px so a zero-thickness layer (e.g. a point observation) still appears as a hairline.
 export const ScaledLayerColumn = <T extends ScaledLayer>({
   layers,
   navState,
@@ -43,8 +44,9 @@ export const ScaledLayerColumn = <T extends ScaledLayer>({
       {visibleLayers.map((layer, index) => {
         const top = layer.fromDepth * pixelPerMeter;
         const height = Math.max(1, (layer.toDepth - layer.fromDepth) * pixelPerMeter);
-        const keyValue = getKey ? getKey(layer, index) : `${index}-${layer.fromDepth}-${layer.toDepth}`;
-        const testId = getKey ? `scaled-layer-wrapper-${getKey(layer, index)}` : `scaled-layer-wrapper-${index}`;
+        const customKey = getKey?.(layer, index);
+        const keyValue = customKey ?? `${index}-${layer.fromDepth}-${layer.toDepth}`;
+        const testId = `scaled-layer-wrapper-${customKey ?? index}`;
         return (
           <Box
             key={keyValue}
