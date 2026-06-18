@@ -1,15 +1,15 @@
 import { FC, ReactNode, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Stack, Typography } from "@mui/material";
+import { Stack } from "@mui/material";
 import { theme } from "../../../../../../AppTheme.ts";
 import { AddRowButton } from "../../../../../../components/buttons/buttons.tsx";
-import { useCopyToClipboard } from "../../../../../../hooks/useCopyToClipboard.ts";
 import { FaciesDescriptionLabels } from "../../lithology/faciesDescriptionLabels.tsx";
 import { FaciesDescriptionModal } from "../../lithology/form/faciesDescriptionModal.tsx";
 import { LithologicalDescriptionModal } from "../../lithology/form/lithologicalDescriptionModal.tsx";
 import { findMatchingLithologicalDescription } from "../../lithology/form/lithologyDescriptionMatching.ts";
 import { LithologyModal } from "../../lithology/form/lithologyModal.tsx";
 import { LithologyLabels } from "../../lithology/lithologyLabels.tsx";
+import { LithologyDescriptionContent } from "../../lithology/scaledTable/lithologyDescriptionContent.tsx";
 import {
   BaseLayer,
   DescriptionKind,
@@ -21,7 +21,6 @@ import { DepthColumnCell } from "../depthColumnCell.tsx";
 import { DepthDeleteButton } from "../depthDeleteButton.tsx";
 import { DepthInput } from "../depthInput.tsx";
 import { DepthInsertButton } from "../depthInsertButton.tsx";
-import { DepthLabel } from "../depthLabel.tsx";
 import { DescriptionResizeHandle } from "../descriptionResize/descriptionResizeHandle.tsx";
 import { ResizeSide, useDescriptionResize } from "../descriptionResize/useDescriptionResize.ts";
 import { useGapRangeSelect } from "../descriptionResize/useGapRangeSelect.ts";
@@ -31,7 +30,6 @@ import { StratigraphyTableDescriptionGap } from "../stratigraphyTableDescription
 import { StratigraphyTableHeaderCell } from "../stratigraphyTableHeaderCell.tsx";
 import {
   defaultRowHeight,
-  StratigraphyTableCell,
   StratigraphyTableColumn,
   StratigraphyTableContent,
   StratigraphyTableHeader,
@@ -44,12 +42,10 @@ const allColumns: LithologyTableColumn[] = ["lithology", "lithologicalDescriptio
 interface LithologyTableProps {
   state: LithologyTableState;
   shownColumns?: LithologyTableColumn[];
-  readOnly?: boolean;
 }
 
-export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = allColumns, readOnly = false }) => {
+export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = allColumns }) => {
   const { t } = useTranslation();
-  const copyToClipboard = useCopyToClipboard();
   const {
     depths,
     tmpLithologies,
@@ -247,9 +243,8 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
       }}
       isAutoCorrected={layer.isAutoCorrected}
       index={index}
-      onClick={readOnly ? undefined : onEdit}
-      onHoverClick={!readOnly && onDelete ? index => onDelete(index) : undefined}
-      onCopy={readOnly ? copyToClipboard : undefined}
+      onClick={onEdit}
+      onHoverClick={onDelete ? index => onDelete(index) : undefined}
       onMouseEnter={() => handleItemMouseEnter(layer.depthIds)}
       onMouseLeave={handleItemMouseLeave}
       resizeHandles={resizeHandles}>
@@ -265,12 +260,10 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     onDelete?: (index: number) => void,
     resizableKind?: DescriptionKind,
   ): ReactNode[] => {
-    const effectiveResizableKind = readOnly ? undefined : resizableKind;
-
     // Apply the in-flight resize preview to the matching description (only the description's
     // own column — preview is purely visual; commit happens on mouseup via resizeDescription).
     const effectiveLayers =
-      activeDrag && previewRange && effectiveResizableKind === activeDrag.kind
+      activeDrag && previewRange && resizableKind === activeDrag.kind
         ? layers.map((layer, i) => {
             if (i !== activeDrag.itemIdx) return layer;
             return {
@@ -294,11 +287,11 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
     depths.forEach((depth, depthIdx) => {
       const itemIdx = itemIndexByDepthId.get(depth.id);
       if (itemIdx === undefined) {
-        cells.push(renderGapCell(depthIdx, keyPrefix, depth.id, depth.fromDepth, effectiveResizableKind));
+        cells.push(renderGapCell(depthIdx, keyPrefix, depth.id, depth.fromDepth, resizableKind));
       } else if (!renderedItems.has(itemIdx)) {
         const layer = effectiveLayers[itemIdx];
-        const resizeHandles = effectiveResizableKind
-          ? buildResizeHandles(effectiveResizableKind, itemIdx, layer, itemIndexByDepthId)
+        const resizeHandles = resizableKind
+          ? buildResizeHandles(resizableKind, itemIdx, layer, itemIndexByDepthId)
           : undefined;
         cells.push(
           renderActionCell({
@@ -335,27 +328,6 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
               {depths.map((depth, index) => {
                 const isFirst = index === 0;
                 const isLast = index === depths.length - 1;
-                if (readOnly) {
-                  return (
-                    <StratigraphyTableCell
-                      key={depth.id}
-                      data-cy={`depth-${depth.fromDepth}-${depth.toDepth}`}
-                      sx={{ height: `${defaultRowHeight}px`, position: "relative", overflow: "visible" }}>
-                      {isFirst && (
-                        <DepthLabel
-                          value={depth.fromDepth}
-                          position="first"
-                          dataCy={`depth-from-${depth.fromDepth}-${depth.toDepth}-label`}
-                        />
-                      )}
-                      <DepthLabel
-                        value={depth.toDepth}
-                        position={isLast ? "last" : "default"}
-                        dataCy={`depth-to-${depth.fromDepth}-${depth.toDepth}-label`}
-                      />
-                    </StratigraphyTableCell>
-                  );
-                }
                 const isOnly = depths.length === 1;
                 const bottomBoundaryError = depth.hasToDepthError || (!isLast && depths[index + 1].hasFromDepthError);
                 const isHoveredViaItem = hoveredItemDepthIds.has(depth.id);
@@ -420,9 +392,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
                   `lithologicalDescription`,
                   tmpLithologicalDescriptions,
                   layer => (
-                    <Typography variant="body1" fontWeight={700} sx={{ whiteSpace: "pre-line" }}>
-                      {(layer as LithologicalDescription).description}
-                    </Typography>
+                    <LithologyDescriptionContent description={layer as LithologicalDescription} />
                   ),
                   index => setSelectedLithologicalDescription(tmpLithologicalDescriptions[index]),
                   index => handleDeleteDescription("lithological", index),
@@ -447,25 +417,21 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
           </StratigraphyTableContent>
         )}
       </Stack>
-      {!readOnly && (
-        <>
-          <AddRowButton onClick={handleAddDepthLayer} dataCy="add-row-button" buttonContent={<LayerAddButton />} />
-          <LithologyModal
-            lithology={selectedLithology}
-            lithologicalDescription={matchingLithologicalDescription}
-            updateLithology={handleLithologyUpdate}
-            updateLithologicalDescription={updateTmpLithologicalDescription}
-          />
-          <LithologicalDescriptionModal
-            description={selectedLithologicalDescription}
-            updateLithologicalDescription={handleLithologicalDescriptionUpdate}
-          />
-          <FaciesDescriptionModal
-            description={selectedFaciesDescription}
-            updateFaciesDescription={handleFaciesDescriptionUpdate}
-          />
-        </>
-      )}
+      <AddRowButton onClick={handleAddDepthLayer} dataCy="add-row-button" buttonContent={<LayerAddButton />} />
+      <LithologyModal
+        lithology={selectedLithology}
+        lithologicalDescription={matchingLithologicalDescription}
+        updateLithology={handleLithologyUpdate}
+        updateLithologicalDescription={updateTmpLithologicalDescription}
+      />
+      <LithologicalDescriptionModal
+        description={selectedLithologicalDescription}
+        updateLithologicalDescription={handleLithologicalDescriptionUpdate}
+      />
+      <FaciesDescriptionModal
+        description={selectedFaciesDescription}
+        updateFaciesDescription={handleFaciesDescriptionUpdate}
+      />
     </Stack>
   );
 };
