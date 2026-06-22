@@ -1,9 +1,8 @@
 import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 import { Route, Routes } from "react-router";
 import { Stack } from "@mui/material";
-import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
+import { useCurrentUser } from "../../api/user.ts";
 import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBoreholesAuth.tsx";
 import { TabPanel } from "../../components/tabs/tabPanel.tsx";
@@ -22,8 +21,8 @@ import TermSettings from "./termSettings";
 export const SettingsPage = () => {
   const auth = useAuth();
   const { t } = useTranslation();
-  const currentUser: User = useSelector((state: ReduxRootState) => state.core_user);
-  const isAdminUser = currentUser.data.admin;
+  const { data: currentUser } = useCurrentUser();
+  const isAdminUser = currentUser?.isAdmin ?? false;
   const isAnonymousUser = auth.anonymousModeEnabled;
 
   const tabs = useMemo(() => {

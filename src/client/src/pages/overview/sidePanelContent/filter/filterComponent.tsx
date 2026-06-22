@@ -1,12 +1,11 @@
 import { FC, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 import { Accordion, AccordionDetails, AccordionSummary, Badge, Box, Button, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { ChevronDown } from "lucide-react";
 import Polygon from "../../../../assets/icons/polygon.svg?react";
-import { ReduxRootState } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { useFilterStats } from "../../../../api/borehole.ts";
+import { getUserWorkgroups, useCurrentUser } from "../../../../api/user.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { useAuth } from "../../../../auth/useBoreholesAuth.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
@@ -48,7 +47,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
 
   const { filterParams, setFilterField, resetFilter, setTableParams } = useBoreholeUrlParams();
 
-  const user = useSelector((state: ReduxRootState) => state.core_user);
+  const { data: user } = useCurrentUser();
   const { data: stats } = useFilterStats(filterParams);
   const auth = useAuth();
 
@@ -209,7 +208,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
                       setFilterField("workgroupId", workgroup);
                       setTableParams({ page: 0 });
                     }}
-                    workgroups={user.data.workgroups}
+                    workgroups={getUserWorkgroups(user)}
                     selectedWorkgroupIds={filterParams["workgroupId"] as number[] | undefined}
                     counts={getDomainCountsForField(stats, "workgroupId")}
                   />

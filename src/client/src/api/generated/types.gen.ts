@@ -3121,7 +3121,7 @@ export type Workgroup = {
   /**
    * Gets or sets the name of the workgroup.
    */
-  name?: string;
+  name: string;
   /**
    * Gets or sets the BDMS.Models.Workgroup created date.
    */
@@ -5490,7 +5490,7 @@ export type WorkgroupWritable = {
   /**
    * Gets or sets the name of the workgroup.
    */
-  name?: string;
+  name: string;
   /**
    * Gets or sets the BDMS.Models.Workgroup created date.
    */

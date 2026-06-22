@@ -87,7 +87,6 @@ if __name__ == "__main__":
 
         # user handlers
         SettingHandler,
-        UserHandler,
 
         # Borehole handlers
         BoreholeProducerHandler,
@@ -103,9 +102,6 @@ if __name__ == "__main__":
     application = web.Application([
 
         (r'/api/v1/setting', SettingHandler),
-
-        # User handlers
-        (r'/api/v1/user', UserHandler),
 
         # Borehole handlers
         (r'/api/v1/borehole/edit', BoreholeProducerHandler),

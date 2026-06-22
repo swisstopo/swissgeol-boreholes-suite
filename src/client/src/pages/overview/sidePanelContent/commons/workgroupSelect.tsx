@@ -19,7 +19,7 @@ const WorkgroupSelect = ({ sx }: WorkgroupSelectProps) => {
       workgroup: null,
     },
   });
-  const { enabledWorkgroups, currentWorkgroupId, setCurrentWorkgroupId } = useUserWorkgroups();
+  const { editableWorkgroups, currentWorkgroupId, setCurrentWorkgroupId } = useUserWorkgroups();
 
   useEffect(() => {
     return () => {
@@ -27,18 +27,18 @@ const WorkgroupSelect = ({ sx }: WorkgroupSelectProps) => {
     };
   }, [formMethods, setCurrentWorkgroupId]);
 
-  if (!enabledWorkgroups || enabledWorkgroups.length === 0) {
+  if (!editableWorkgroups || editableWorkgroups.length === 0) {
     return <WorkgroupBox>{t("disabled")}</WorkgroupBox>;
   }
 
-  if (enabledWorkgroups.length === 1) {
-    setCurrentWorkgroupId(enabledWorkgroups[0].id);
-    return <WorkgroupBox>{enabledWorkgroups[0].workgroup}</WorkgroupBox>;
+  if (editableWorkgroups.length === 1) {
+    setCurrentWorkgroupId(editableWorkgroups[0].id);
+    return <WorkgroupBox>{editableWorkgroups[0].name}</WorkgroupBox>;
   }
 
-  const options = enabledWorkgroups.map(wg => ({
+  const options = editableWorkgroups.map(wg => ({
     key: wg.id,
-    name: wg.workgroup,
+    name: wg.name,
   }));
 
   return (

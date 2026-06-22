@@ -1,20 +1,20 @@
 {
-  "success": true,
-  "data": {
-    "admin": true,
-    "name": "Admin User",
-    "roles": ["VIEW", "EDIT", "CONTROL", "VALID", "PUBLIC"],
-    "terms": true,
-    "id": 1,
-    "username": "A. User",
-    "viewer": true,
-    "workgroups": [
-      {
+  "id": 1,
+  "name": "Admin User",
+  "firstName": "Admin",
+  "lastName": "User",
+  "isAdmin": true,
+  "workgroupRoles": [
+    {
+      "userId": 1,
+      "workgroupId": 1,
+      "role": "Publisher",
+      "isActive": true,
+      "workgroup": {
         "id": 1,
-        "workgroup": "Default",
-        "roles": ["VIEW", "EDIT", "CONTROL", "VALID", "PUBLIC"],
-        "disabled": null
+        "name": "Default",
+        "isDisabled": false
       }
-    ]
-  }
+    }
+  ]
 }
