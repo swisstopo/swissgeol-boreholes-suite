@@ -11205,21 +11205,25 @@
           },
           "visibility": {
             "type": "boolean",
-            "description": "Gets a value indicating whether the layer is visible."
+            "description": "Gets a value indicating whether the layer is visible.",
+            "nullable": true
           },
           "transparency": {
             "type": "number",
             "description": "Gets the layer transparency, as a percentage from `0` to `100`.",
-            "format": "double"
+            "format": "double",
+            "nullable": true
           },
           "position": {
             "type": "integer",
             "description": "Gets the layer position used for ordering and z-index.",
-            "format": "int32"
+            "format": "int32",
+            "nullable": true
           },
           "queryable": {
             "type": "boolean",
-            "description": "Gets a value indicating whether the layer is queryable."
+            "description": "Gets a value indicating whether the layer is queryable.",
+            "nullable": true
           },
           "conf": {
             "description": "Gets the opaque WMTS source configuration produced by the client. Stored and\r\nreturned verbatim; `null` for WMS layers.",

@@ -2214,19 +2214,19 @@ export type MapLayer = {
   /**
    * Gets a value indicating whether the layer is visible.
    */
-  visibility?: boolean;
+  visibility?: boolean | null;
   /**
    * Gets the layer transparency, as a percentage from `0` to `100`.
    */
-  transparency?: number;
+  transparency?: number | null;
   /**
    * Gets the layer position used for ordering and z-index.
    */
-  position?: number;
+  position?: number | null;
   /**
    * Gets a value indicating whether the layer is queryable.
    */
-  queryable?: boolean;
+  queryable?: boolean | null;
   /**
    * Gets the opaque WMTS source configuration produced by the client. Stored and
    * returned verbatim; `null` for WMS layers.
