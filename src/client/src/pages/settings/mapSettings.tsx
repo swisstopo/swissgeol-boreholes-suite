@@ -133,11 +133,9 @@ export const MapSettings = ({
       const identifier = (layerType === "WMS" ? layer.Name : layer.Identifier) ?? "";
 
       return search === "" ||
-        (Object.prototype.hasOwnProperty.call(layer, "Title") &&
-          (layer.Title?.toLowerCase().search(search) ?? -1) >= 0) ||
-        (Object.prototype.hasOwnProperty.call(layer, "Abstract") &&
-          (layer.Abstract?.toLowerCase().search(search) ?? -1) >= 0) ||
-        (Object.prototype.hasOwnProperty.call(layer, "Name") && identifier.toLowerCase().search(search) >= 0) ? (
+        (Object.hasOwn(layer, "Title") && (layer.Title?.toLowerCase().search(search) ?? -1) >= 0) ||
+        (Object.hasOwn(layer, "Abstract") && (layer.Abstract?.toLowerCase().search(search) ?? -1) >= 0) ||
+        (Object.hasOwn(layer, "Name") && identifier.toLowerCase().search(search) >= 0) ? (
         <Box className="selectable unselectable" key={`${layerType.toLowerCase()}-list-${idx}`} sx={{ p: "0.5em" }}>
           <Stack
             data-cy={`${layerType.toLowerCase()}-list-box`}
@@ -210,9 +208,10 @@ export const MapSettings = ({
     if (!search) return true;
     const searchLower = search.toLowerCase();
     return (
-      (layer.Title && layer.Title.toLowerCase().includes(searchLower)) ||
-      (layer.Abstract && layer.Abstract.toLowerCase().includes(searchLower)) ||
-      (layer.Identifier && layer.Identifier.toLowerCase().includes(searchLower))
+      (layer.Title?.toLowerCase().includes(searchLower) ||
+        layer.Abstract?.toLowerCase().includes(searchLower) ||
+        layer.Identifier?.toLowerCase().includes(searchLower)) ??
+      false
     );
   };
   return (
@@ -264,13 +263,15 @@ export const MapSettings = ({
                 }}>
                 {state.wms &&
                   getLayerList(
-                    state.wms.Capability.Layer.Layer.sort((a, b) => (a.Name ?? "").localeCompare(b.Name ?? "")),
+                    [...state.wms.Capability.Layer.Layer].sort((a, b) => (a.Name ?? "").localeCompare(b.Name ?? "")),
                     state.searchWms,
                     "WMS",
                   )}
                 {state.wmts &&
                   getLayerList(
-                    state.wmts.Contents.Layer.sort((a, b) => (a.Identifier ?? "").localeCompare(b.Identifier ?? "")),
+                    [...state.wmts.Contents.Layer].sort((a, b) =>
+                      (a.Identifier ?? "").localeCompare(b.Identifier ?? ""),
+                    ),
                     state.searchWmts,
                     "WMTS",
                   )}
