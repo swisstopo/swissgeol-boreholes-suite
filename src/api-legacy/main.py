@@ -91,10 +91,6 @@ if __name__ == "__main__":
 
         # Borehole handlers
         BoreholeProducerHandler,
-
-        # Terms handlers
-        TermsHandler,
-        TermsAdminHandler,
     )
 
     AsyncIOMainLoop().install()
@@ -113,10 +109,6 @@ if __name__ == "__main__":
 
         # Borehole handlers
         (r'/api/v1/borehole/edit', BoreholeProducerHandler),
-
-        # Terms handlers
-        (r'/api/v1/terms', TermsHandler),
-        (r'/api/v1/terms/admin', TermsAdminHandler),
 
     ], **settings)
 

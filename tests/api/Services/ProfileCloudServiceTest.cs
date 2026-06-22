@@ -2,6 +2,8 @@
 using Amazon.S3.Model;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Security.Claims;
@@ -44,7 +46,7 @@ public class ProfileCloudServiceTest
                 UseHttp = configuration["S3:SECURE"] == "0",
             });
 
-        profileCloudService = new ProfileCloudService(context, configuration, loggerMock.Object, contextAccessorMock.Object, s3ClientMock);
+        profileCloudService = new ProfileCloudService(context, configuration, loggerMock.Object, contextAccessorMock.Object, s3ClientMock, Mock.Of<IServiceScopeFactory>(), Mock.Of<IHostApplicationLifetime>());
 
         bucketName = configuration["S3:BUCKET_NAME"].ToLowerInvariant();
         s3Client = s3ClientMock;
@@ -207,7 +209,7 @@ public class ProfileCloudServiceTest
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
         contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, adminUser.SubjectId) }));
 
-        var failingService = new ProfileCloudService(context, configuration, loggerMock.Object, contextAccessorMock.Object, failingS3Mock.Object);
+        var failingService = new ProfileCloudService(context, configuration, loggerMock.Object, contextAccessorMock.Object, failingS3Mock.Object, Mock.Of<IServiceScopeFactory>(), Mock.Of<IHostApplicationLifetime>());
 
         var fileName = $"{Guid.NewGuid()}.pdf";
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
