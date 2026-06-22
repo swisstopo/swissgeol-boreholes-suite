@@ -1,4 +1,4 @@
-import { useContext, useEffect, useId, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useId, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AddCircle, Visibility, VisibilityOff } from "@mui/icons-material";
 import {
@@ -14,6 +14,7 @@ import {
   TableRow,
   Typography,
 } from "@mui/material";
+import PropTypes from "prop-types";
 import { useCodelistSchema } from "../../../../components/codelist.ts";
 import { EditStateContext } from "../../editStateContext.tsx";
 import LayerCard from "./layerCard.jsx";
@@ -123,6 +124,9 @@ const HierarchicalDataEditProfile = ({
   }, [layers, pixelPerMeter, addLayer, updateLayer, deleteLayer, dataProperty, options, header]);
 
   const lensSize = navState.lensSize;
+  const toggleHeaderVisibility = useCallback((targetIndex) => {
+    setHeader(prev => prev.map((h, i) => (targetIndex === i ? { ...h, isVisible: !h.isVisible } : h)));
+  }, []);
   const headerElement = useMemo(
     () => (
       <Box>
@@ -156,11 +160,7 @@ const HierarchicalDataEditProfile = ({
                 variant="text"
                 startIcon={h.isVisible ? <Visibility /> : <VisibilityOff />}
                 sx={visibilityButtonSx}
-                onClick={() => {
-                  setHeader(
-                    header.map((h, headerIndex) => (index === headerIndex ? { ...h, isVisible: !h.isVisible } : h)),
-                  );
-                }}
+                onClick={() => toggleHeaderVisibility(index)}
                 data-cy={`column-visibility-${index}`}>
                 <Typography noWrap>{t(h.title)}</Typography>
               </Button>
@@ -173,7 +173,7 @@ const HierarchicalDataEditProfile = ({
               {header.map(
                 (h, index) =>
                   h.isVisible && (
-                    <TableCell key={index} sx={headerCellSx}>
+                    <TableCell key={h.title} sx={headerCellSx}>
                       <Typography noWrap variant="subtitle1">
                         {t(h.title)}
                       </Typography>
@@ -185,7 +185,7 @@ const HierarchicalDataEditProfile = ({
         </Table>
       </Box>
     ),
-    [titel, editingEnabled, t, header, addLayer, selectedStratigraphyID, layers, lensSize, setNavState],
+    [titel, editingEnabled, t, header, toggleHeaderVisibility, addLayer, selectedStratigraphyID, layers, lensSize, setNavState],
   );
 
   return (
@@ -193,6 +193,30 @@ const HierarchicalDataEditProfile = ({
       {layers ? layerDisplayStack : <LinearProgress />}
     </NavigationChild>
   );
+};
+
+HierarchicalDataEditProfile.propTypes = {
+  layerData: PropTypes.arrayOf(
+    PropTypes.shape({
+      id: PropTypes.number,
+      fromDepth: PropTypes.number,
+      toDepth: PropTypes.number,
+    }),
+  ),
+  addLayer: PropTypes.func,
+  deleteLayer: PropTypes.func,
+  updateLayer: PropTypes.func,
+  headerLabels: PropTypes.arrayOf(PropTypes.string),
+  codelistSchemaName: PropTypes.string,
+  dataProperty: PropTypes.string,
+  titel: PropTypes.string,
+  selectedStratigraphyID: PropTypes.number,
+  sx: PropTypes.object,
+  navState: PropTypes.shape({
+    pixelPerMeter: PropTypes.number,
+    lensSize: PropTypes.number,
+  }),
+  setNavState: PropTypes.func,
 };
 
 export default HierarchicalDataEditProfile;
