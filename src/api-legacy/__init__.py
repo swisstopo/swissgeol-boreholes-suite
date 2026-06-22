@@ -25,7 +25,3 @@ from bms.v1.setting.handler import SettingHandler
 # Terms handlers
 from bms.v1.terms.handler import TermsHandler
 from bms.v1.terms.admin import TermsAdminHandler
-
-
-# User actions
-from bms.v1.user.handler import UserHandler
