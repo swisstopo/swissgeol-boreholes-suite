@@ -2687,7 +2687,7 @@ export type Stratigraphy = {
   /**
    * Gets or sets the BDMS.Models.Stratigraphy's name.
    */
-  name?: string | null;
+  name: string;
   /**
    * Gets or sets the BDMS.Models.Stratigraphy's date.
    */
@@ -3170,7 +3170,7 @@ export type Workgroup = {
   /**
    * Gets or sets the name of the workgroup.
    */
-  name?: string;
+  name: string;
   /**
    * Gets or sets the BDMS.Models.Workgroup created date.
    */
@@ -5251,7 +5251,7 @@ export type StratigraphyWritable = {
   /**
    * Gets or sets the BDMS.Models.Stratigraphy's name.
    */
-  name?: string | null;
+  name: string;
   /**
    * Gets or sets the BDMS.Models.Stratigraphy's date.
    */
@@ -5539,7 +5539,7 @@ export type WorkgroupWritable = {
   /**
    * Gets or sets the name of the workgroup.
    */
-  name?: string;
+  name: string;
   /**
    * Gets or sets the BDMS.Models.Workgroup created date.
    */

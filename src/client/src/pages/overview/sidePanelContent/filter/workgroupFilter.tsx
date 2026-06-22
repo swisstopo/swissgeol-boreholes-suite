@@ -21,7 +21,7 @@ export const WorkgroupFilter: FC<WorkgroupFilterProps> = ({ selectedWorkgroupIds
       workgroups
         .map(w => ({
           key: w.id,
-          label: (w.name ?? "") + (w.isDisabled ? " ( " + t("disabled") + ")" : ""),
+          label: w.name + (w.isDisabled ? " ( " + t("disabled") + ")" : ""),
         }))
         .sort((a, b) => a.label.localeCompare(b.label)),
     [workgroups, t],
