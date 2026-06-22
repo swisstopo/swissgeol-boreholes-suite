@@ -44,6 +44,19 @@ export const LithologyPanelReadOnly: FC<LithologyPanelReadOnlyProps> = ({
         </StratigraphyTableHeader>
         <NavigationContainer
           sx={{
+            // Bottom edge of the table: drawn as a pseudo-element so it paints *over* any cell
+            // that reaches the bottom (sharing the same pixel as the cell's borderBottom → 1px,
+            position: "relative",
+            "&::after": {
+              content: '""',
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: "1px",
+              backgroundColor: theme.palette.border.darker,
+              pointerEvents: "none",
+            },
             "& > *": { borderLeft: `1px solid ${theme.palette.border.darker}` },
             "& > *:last-child": { borderRight: `1px solid ${theme.palette.border.darker}` },
           }}

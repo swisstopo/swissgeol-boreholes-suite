@@ -110,7 +110,6 @@ export const LithologyTableScaled: FC<LithologyTableScaledProps> = ({
           navState={navState}
           getKey={d => d.id}
           minPixelHeight={1}
-          sx={{ backgroundColor: theme.palette.background.lightgrey }}
           renderLayer={d => (
             <ScaledCellShell dataCy={`lithologicalDescription-${d.fromDepth}-${d.toDepth}`}>
               <LithologicalDescriptionLabels description={d} />
@@ -124,7 +123,6 @@ export const LithologyTableScaled: FC<LithologyTableScaledProps> = ({
           navState={navState}
           getKey={f => f.id}
           minPixelHeight={1}
-          sx={{ backgroundColor: theme.palette.background.lightgrey }}
           renderLayer={f => (
             <ScaledCellShell dataCy={`faciesDescription-${f.fromDepth}-${f.toDepth}`}>
               <FaciesDescriptionLabels description={f} />

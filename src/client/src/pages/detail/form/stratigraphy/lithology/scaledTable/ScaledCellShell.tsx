@@ -44,8 +44,13 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx
       sx={{
         position: "absolute",
         inset: 0,
+        // Pull the cell 1px above its wrapper so its borderTop lands on the same pixel as the
+        // cell-above's borderBottom — adjacent cells then render as a single 1px line instead of
+        // a stacked 2px line. Adding borders to both top and bottom helps with correct gap display.
+        top: "-1px",
         overflow: "hidden",
         backgroundColor: theme.palette.background.default,
+        borderTop: `1px solid ${theme.palette.border.darker}`,
         borderBottom: `1px solid ${theme.palette.border.darker}`,
         "& .hover-content": { visibility: "hidden" },
         "&:hover": {
