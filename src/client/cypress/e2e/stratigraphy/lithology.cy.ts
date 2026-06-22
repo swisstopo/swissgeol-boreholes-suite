@@ -57,7 +57,7 @@ const copyCellAndAssertClipboard = (cellDataCy: string, expectedText: string) =>
     .then(win => win.navigator.clipboard.readText())
     // Assert the complete copied content, preserving the internal line breaks between a cell's
     // label and description; only outer whitespace is trimmed.
-    .then(text => expect(text.trim().replace(/\r\n/g, "\n")).to.equal(expectedText));
+    .then(text => expect(text.trim().replaceAll(/\r\n/g, "\n")).to.equal(expectedText));
 };
 
 const openStratigraphyWith3Lithologies = () => {
