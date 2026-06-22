@@ -4,7 +4,7 @@ import { Role, User, Workgroup } from "./generated";
 
 const hasEditorRole = (role?: Role): boolean => role !== undefined && role !== "View";
 
-const dedupeWorkgroups = (workgroups: (Workgroup | undefined)[]): Workgroup[] => {
+const removeDuplicateWorkgroups = (workgroups: (Workgroup | undefined)[]): Workgroup[] => {
   const byId = new Map<number, Workgroup>();
   for (const workgroup of workgroups) {
     if (workgroup && !byId.has(workgroup.id)) {
@@ -15,10 +15,10 @@ const dedupeWorkgroups = (workgroups: (Workgroup | undefined)[]): Workgroup[] =>
 };
 
 export const getUserWorkgroups = (user?: User): Workgroup[] =>
-  dedupeWorkgroups(user?.workgroupRoles?.map(r => r.workgroup) ?? []);
+  removeDuplicateWorkgroups(user?.workgroupRoles?.map(r => r.workgroup) ?? []);
 
 export const getEditableWorkgroups = (user?: User): Workgroup[] =>
-  dedupeWorkgroups(
+  removeDuplicateWorkgroups(
     user?.workgroupRoles
       ?.filter(r => hasEditorRole(r.role) && r.workgroup?.isDisabled === false)
       .map(r => r.workgroup) ?? [],
