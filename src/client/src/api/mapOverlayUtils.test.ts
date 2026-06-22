@@ -54,6 +54,13 @@ describe("setOverlayVisibility / setOverlayTransparency", () => {
     expect(faded.b.transparency).toBe(75);
     expect(faded.a.transparency).toBe(0);
   });
+
+  it("returns the overlays unchanged when the identifier is unknown", () => {
+    const overlays: MapOverlays = { a: layer("a", 0) };
+
+    expect(setOverlayVisibility(overlays, "missing", false)).toBe(overlays);
+    expect(setOverlayTransparency(overlays, "missing", 50)).toBe(overlays);
+  });
 });
 
 describe("setOverlayPosition", () => {

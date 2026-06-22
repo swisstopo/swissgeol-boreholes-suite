@@ -28,19 +28,19 @@ export const removeOverlay = (overlays: MapOverlays, identifier: string): MapOve
   return next;
 };
 
-export const setOverlayVisibility = (overlays: MapOverlays, identifier: string, visibility: boolean): MapOverlays => ({
-  ...overlays,
-  [identifier]: { ...overlays[identifier], visibility },
-});
+export const setOverlayVisibility = (overlays: MapOverlays, identifier: string, visibility: boolean): MapOverlays => {
+  if (!overlays[identifier]) return overlays;
+  return { ...overlays, [identifier]: { ...overlays[identifier], visibility } };
+};
 
 export const setOverlayTransparency = (
   overlays: MapOverlays,
   identifier: string,
   transparency: number,
-): MapOverlays => ({
-  ...overlays,
-  [identifier]: { ...overlays[identifier], transparency },
-});
+): MapOverlays => {
+  if (!overlays[identifier]) return overlays;
+  return { ...overlays, [identifier]: { ...overlays[identifier], transparency } };
+};
 
 /**
  * Moves an overlay to a new position. The overlay currently occupying the target

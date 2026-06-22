@@ -46,7 +46,6 @@ const GeneralSettings = () => {
 
     wmsFetch: false,
     searchWms: "",
-    searchWmsUser: "",
     wms: null,
   });
 

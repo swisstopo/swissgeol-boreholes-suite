@@ -37,7 +37,6 @@ export interface MapSettingsState {
   wmts: WmtsCapabilities | null;
   wmsFetch: boolean;
   searchWms: string;
-  searchWmsUser: string;
   wms: WmsCapabilities | null;
 }
 
