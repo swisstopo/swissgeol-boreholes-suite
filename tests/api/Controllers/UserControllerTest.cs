@@ -179,8 +179,7 @@ public class UserControllerTest
 
         var result = await userController.GetMapLayers();
 
-        var layers = (result.Result as OkObjectResult)?.Value as Dictionary<string, MapLayer>;
-        Assert.IsNotNull(layers);
+        var layers = ActionResultAssert.IsOkObjectResult<Dictionary<string, MapLayer>>(result.Result);
         Assert.AreEqual(0, layers.Count);
     }
 
@@ -196,8 +195,7 @@ public class UserControllerTest
         ActionResultAssert.IsOk(setResult.Result);
 
         var getResult = await userController.GetMapLayers();
-        var returned = (getResult.Result as OkObjectResult)?.Value as Dictionary<string, MapLayer>;
-        Assert.IsNotNull(returned);
+        var returned = ActionResultAssert.IsOkObjectResult<Dictionary<string, MapLayer>>(getResult.Result);
         Assert.AreEqual(1, returned.Count);
         Assert.IsTrue(returned.ContainsKey("layerA"));
         Assert.AreEqual("Layer A", returned["layerA"].Title);
