@@ -123,67 +123,70 @@ const HierarchicalDataEditProfile = ({
   }, [layers, pixelPerMeter, addLayer, updateLayer, deleteLayer, dataProperty, options, header]);
 
   const lensSize = navState.lensSize;
-  const headerElement = useMemo(() => (
-    <Box>
-      <Stack direction="row" sx={headerStackSx}>
-        <Typography>{titel}</Typography>
-        {editingEnabled && (
-          <IconButton
-            aria-label={t("add")}
-            onClick={() => {
-              const newFromDepth = layers?.at(-1)?.toDepth ?? 0;
-              const newToDepth = newFromDepth + 10; // new layer is created with a depth of 10m
-              addLayer({
-                stratigraphyId: selectedStratigraphyID,
-                fromDepth: newFromDepth,
-                toDepth: newToDepth,
-              });
-
-              // adjust navigation state to make new layer visible
-              setNavState(prevState => prevState.setLensStart(Math.max(0, newToDepth - lensSize)));
-            }}
-            data-cy="add-layer-button">
-            <AddCircle />
-          </IconButton>
-        )}
-        <Box sx={flexSpacerSx} />
-        <ButtonGroup size="small">
-          {header.map((h, index) => (
-            <Button
-              key={index}
-              color="inherit"
-              variant="text"
-              startIcon={h.isVisible ? <Visibility /> : <VisibilityOff />}
-              sx={visibilityButtonSx}
+  const headerElement = useMemo(
+    () => (
+      <Box>
+        <Stack direction="row" sx={headerStackSx}>
+          <Typography>{titel}</Typography>
+          {editingEnabled && (
+            <IconButton
+              aria-label={t("add")}
               onClick={() => {
-                setHeader(
-                  header.map((h, headerIndex) => (index === headerIndex ? { ...h, isVisible: !h.isVisible } : h)),
-                );
+                const newFromDepth = layers?.at(-1)?.toDepth ?? 0;
+                const newToDepth = newFromDepth + 10; // new layer is created with a depth of 10m
+                addLayer({
+                  stratigraphyId: selectedStratigraphyID,
+                  fromDepth: newFromDepth,
+                  toDepth: newToDepth,
+                });
+
+                // adjust navigation state to make new layer visible
+                setNavState(prevState => prevState.setLensStart(Math.max(0, newToDepth - lensSize)));
               }}
-              data-cy={`column-visibility-${index}`}>
-              <Typography noWrap>{t(h.title)}</Typography>
-            </Button>
-          ))}
-        </ButtonGroup>
-      </Stack>
-      <Table sx={headerTableSx}>
-        <TableBody>
-          <TableRow>
-            {header.map(
-              (h, index) =>
-                h.isVisible && (
-                  <TableCell key={index} sx={headerCellSx}>
-                    <Typography noWrap variant="subtitle1">
-                      {t(h.title)}
-                    </Typography>
-                  </TableCell>
-                ),
-            )}
-          </TableRow>
-        </TableBody>
-      </Table>
-    </Box>
-  ), [titel, editingEnabled, t, header, addLayer, selectedStratigraphyID, layers, lensSize, setNavState]);
+              data-cy="add-layer-button">
+              <AddCircle />
+            </IconButton>
+          )}
+          <Box sx={flexSpacerSx} />
+          <ButtonGroup size="small">
+            {header.map((h, index) => (
+              <Button
+                key={index}
+                color="inherit"
+                variant="text"
+                startIcon={h.isVisible ? <Visibility /> : <VisibilityOff />}
+                sx={visibilityButtonSx}
+                onClick={() => {
+                  setHeader(
+                    header.map((h, headerIndex) => (index === headerIndex ? { ...h, isVisible: !h.isVisible } : h)),
+                  );
+                }}
+                data-cy={`column-visibility-${index}`}>
+                <Typography noWrap>{t(h.title)}</Typography>
+              </Button>
+            ))}
+          </ButtonGroup>
+        </Stack>
+        <Table sx={headerTableSx}>
+          <TableBody>
+            <TableRow>
+              {header.map(
+                (h, index) =>
+                  h.isVisible && (
+                    <TableCell key={index} sx={headerCellSx}>
+                      <Typography noWrap variant="subtitle1">
+                        {t(h.title)}
+                      </Typography>
+                    </TableCell>
+                  ),
+              )}
+            </TableRow>
+          </TableBody>
+        </Table>
+      </Box>
+    ),
+    [titel, editingEnabled, t, header, addLayer, selectedStratigraphyID, layers, lensSize, setNavState],
+  );
 
   return (
     <NavigationChild sx={sx} navState={navState} setNavState={setNavState} header={headerElement}>
