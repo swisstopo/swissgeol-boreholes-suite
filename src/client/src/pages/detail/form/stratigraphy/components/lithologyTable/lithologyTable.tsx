@@ -26,10 +26,10 @@ import { ResizeSide, useDescriptionResize } from "../descriptionResize/useDescri
 import { useGapRangeSelect } from "../descriptionResize/useGapRangeSelect.ts";
 import { LayerAddButton } from "../layerAddButton.tsx";
 import { StratigraphyTableActionCell } from "../stratigraphyTableActionCell.tsx";
+import { defaultRowHeight } from "../stratigraphyTableConstants.ts";
 import { StratigraphyTableDescriptionGap } from "../stratigraphyTableDescriptionGap.tsx";
 import { StratigraphyTableHeaderCell } from "../stratigraphyTableHeaderCell.tsx";
 import {
-  defaultRowHeight,
   StratigraphyTableColumn,
   StratigraphyTableContent,
   StratigraphyTableHeader,

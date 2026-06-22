@@ -3,7 +3,8 @@ import { Box, Stack, SxProps } from "@mui/material";
 import { Copy, Trash2 } from "lucide-react";
 import { theme } from "../../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../../components/buttons/buttons.tsx";
-import { APPROX_LINE_HEIGHT_PX, lineClampSx, StratigraphyTableCell } from "./stratigraphyTablePrimitives.tsx";
+import { APPROX_LINE_HEIGHT_PX, lineClampSx } from "./stratigraphyTableConstants.ts";
+import { StratigraphyTableCell } from "./stratigraphyTablePrimitives.tsx";
 
 interface StratigraphyTableLayerCellProps {
   children: ReactNode;

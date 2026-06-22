@@ -6,7 +6,7 @@ import { Copy } from "lucide-react";
 import { theme } from "../../../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../../../components/buttons/buttons.tsx";
 import { useCopyToClipboard } from "../../../../../../hooks/useCopyToClipboard.ts";
-import { APPROX_LINE_HEIGHT_PX, lineClampSx } from "../../components/stratigraphyTablePrimitives.tsx";
+import { APPROX_LINE_HEIGHT_PX, lineClampSx } from "../../components/stratigraphyTableConstants.ts";
 import { useTypedResizeObserver } from "../../navigation/useTypedResizeObserver.ts";
 
 interface ScaledCellShellProps {
