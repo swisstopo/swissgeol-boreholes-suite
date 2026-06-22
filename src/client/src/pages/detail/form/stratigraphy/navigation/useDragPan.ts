@@ -24,9 +24,17 @@ interface UseDragPanResult {
   isPannable: boolean;
 }
 
-// Multiplies the 1-to-1 mouse-to-meter mapping so that a small drag moves the viewport noticeably.
-// Without it, dragging in pixels-per-meter space feels sluggish at typical zoom levels.
-const DRAG_SPEED_MULTIPLIER = 2;
+// Scales the drag-speed  with the current zoom. At the un-zoomed baseline the multiplier
+// stays at 1; the more the user zooms in (smaller lensSize relative to maxContent), the more
+// data each pixel of drag covers — otherwise deep zoom-ins crawl because each cursor pixel only
+// represents a sliver of depth. sqrt keeps the response soft enough that the content still tracks
+// the cursor at extreme zoom; a linear scaling would make it shoot away from the pointer.
+const getDragSpeedMultiplier = (lensSize: number, maxContent: number): number => {
+  if (!Number.isFinite(lensSize) || lensSize <= 0 || !Number.isFinite(maxContent) || maxContent <= 0) {
+    return 1;
+  }
+  return Math.sqrt(Math.max(1, maxContent / lensSize));
+};
 
 const isPannableNavState = (ns: NavState): boolean => ns.maxContent > ns.lensSize;
 
@@ -79,7 +87,7 @@ export const useDragPan = ({ navState, setNavState, containerRef }: UseDragPanOp
       const ns = navStateRef.current;
       if (!Number.isFinite(ns.pixelPerMeter) || ns.pixelPerMeter <= 0) return;
       const deltaPx = event.pageY - origin.startPageY;
-      const deltaMeters = (deltaPx / ns.pixelPerMeter) * DRAG_SPEED_MULTIPLIER;
+      const deltaMeters = (deltaPx / ns.pixelPerMeter) * getDragSpeedMultiplier(ns.lensSize, ns.maxContent);
       // Drag down (positive deltaY) feels like scrolling up, so subtract.
       const next = clamp(origin.startLensStart - deltaMeters, 0, Math.max(0, ns.maxContent - ns.lensSize));
       // `next` is origin-relative (computed from the captured startLensStart), not state-relative,
