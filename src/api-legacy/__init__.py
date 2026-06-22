@@ -21,7 +21,3 @@ from bms.v1.exceptions import DuplicateException
 from bms.v1.borehole.producer import BoreholeProducerHandler
 
 from bms.v1.setting.handler import SettingHandler
-
-# Terms handlers
-from bms.v1.terms.handler import TermsHandler
-from bms.v1.terms.admin import TermsAdminHandler
