@@ -34,7 +34,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
   const [fieldsToUpdate, setFieldsToUpdate] = useState<Array<[string, BulkEditFormValue]>>([]);
   const { showAlert } = useContext(AlertContext);
   const { t } = useTranslation();
-  const { enabledWorkgroups } = useUserWorkgroups();
+  const { editableWorkgroups } = useUserWorkgroups();
 
   // This data structure is needed because of discrepancies between translation keys (fieldName), field names in legacy Api (api) and codelist names (domain).
   const bulkEditFormFields: BulkEditFormField[] = useMemo(
@@ -192,7 +192,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
             readonly={false}
             fieldName={"workgroup"}
             label=""
-            values={enabledWorkgroups.map((wg: Workgroup) => ({
+            values={editableWorkgroups.map((wg: Workgroup) => ({
               key: wg.id,
               name: wg.name,
             }))}
@@ -214,7 +214,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
         />
       );
     },
-    [onFieldValueChange, enabledWorkgroups],
+    [onFieldValueChange, editableWorkgroups],
   );
 
   return (
@@ -241,7 +241,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
             <FormProvider {...formMethods}>
               <DevTool control={formMethods.control} placement="top-left" />
               {bulkEditFormFields.map(field => {
-                if (field.type != FormValueType.Workgroup || enabledWorkgroups.length > 1) {
+                if (field.type != FormValueType.Workgroup || editableWorkgroups.length > 1) {
                   return (
                     <Accordion
                       key={field.fieldName}
