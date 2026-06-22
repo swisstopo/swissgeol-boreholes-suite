@@ -18,7 +18,7 @@ import {
 import { ChevronDownIcon, RotateCcw } from "lucide-react";
 import { DevTool } from "../../../hookformDevtools.ts";
 import { patchBoreholes } from "../../api-lib";
-import { Workgroup } from "../../api-lib/ReduxStateInterfaces.ts";
+import { Workgroup } from "../../api/generated";
 import { theme } from "../../AppTheme.ts";
 import { useUserWorkgroups } from "../../pages/overview/UserWorkgroupsContext.tsx";
 import { AlertContext } from "../alert/alertContext.tsx";
@@ -194,7 +194,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
             label=""
             values={enabledWorkgroups.map((wg: Workgroup) => ({
               key: wg.id,
-              name: wg.workgroup,
+              name: wg.name ?? "",
             }))}
             onUpdate={e => {
               onFieldValueChange(field, e);

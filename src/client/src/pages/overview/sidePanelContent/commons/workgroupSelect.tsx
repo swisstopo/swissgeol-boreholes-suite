@@ -33,12 +33,12 @@ const WorkgroupSelect = ({ sx }: WorkgroupSelectProps) => {
 
   if (enabledWorkgroups.length === 1) {
     setCurrentWorkgroupId(enabledWorkgroups[0].id);
-    return <WorkgroupBox>{enabledWorkgroups[0].workgroup}</WorkgroupBox>;
+    return <WorkgroupBox>{enabledWorkgroups[0].name}</WorkgroupBox>;
   }
 
   const options = enabledWorkgroups.map(wg => ({
     key: wg.id,
-    name: wg.workgroup,
+    name: wg.name ?? "",
   }));
 
   return (

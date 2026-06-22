@@ -18,6 +18,7 @@
 - Typescript types for backend models are now generated from swagger doc.
 - The lithology tab and stratigraphy header are now saved together in a single request, and stratigraphy extraction creates stratigraphies with their lithology contents in one operation.
 - The read-only lithology view now uses the same table layout as the edit view, with a per-cell copy button that copies the cell's text to the clipboard.
+- The current user is now loaded from the v2 API (`/api/v2/user/self`) instead of the legacy v1 API.
 
 ### Fixed
 - Fixed bug where casing name was not correctly displayed in the select on the backfill card.

@@ -1,8 +1,6 @@
 import { restrictionFreeCode } from "../../../src/components/codelist.ts";
 import { ObservationType } from "../../../src/pages/detail/form/hydrogeology/Observation.ts";
 import adminUser from "../../fixtures/adminUser.json";
-import editorUser from "../../fixtures/editorUser.json";
-import viewerUser from "../../fixtures/viewerUser.json";
 import { startEditing, stopEditing } from "./buttonHelpers";
 
 export const bearerAuth = (token: string) => ({ bearer: token });
@@ -237,11 +235,8 @@ export const login = (user: string) => {
           .as("access_token");
         cy.get("@access_token").then(token =>
           cy.request({
-            method: "POST",
-            url: "/api/v1/user",
-            body: {
-              action: "GET",
-            },
+            method: "GET",
+            url: "/api/v2/user/self",
             auth: bearerAuth(token),
           }),
         );
@@ -285,10 +280,6 @@ export const goToRouteAndAcceptTerms = (route: string) => {
  */
 export const loginAsAdmin = () => {
   login("admin");
-  cy.intercept("/api/v1/user", {
-    statusCode: 200,
-    body: JSON.stringify(adminUser),
-  }).as("stubAdminUser");
 };
 
 /**
@@ -296,10 +287,6 @@ export const loginAsAdmin = () => {
  */
 export const loginAsEditor = (route = "/") => {
   login("editor");
-  cy.intercept("/api/v1/user", {
-    statusCode: 200,
-    body: JSON.stringify(editorUser),
-  }).as("stubEditorUser");
   goToRouteAndAcceptTerms(route);
 };
 
@@ -308,31 +295,33 @@ export const loginAsEditor = (route = "/") => {
  */
 export const loginAsViewer = (route = "/") => {
   login("viewer");
-  cy.intercept("/api/v1/user", {
-    statusCode: 200,
-    body: JSON.stringify(viewerUser),
-  }).as("stubViewerUser");
   goToRouteAndAcceptTerms(route);
 };
 
 export function giveAdminUser1workgroup() {
-  cy.intercept("/api/v1/user", {
+  cy.intercept("GET", "/api/v2/user/self", {
     statusCode: 200,
-    body: JSON.stringify(adminUser),
+    body: adminUser,
   }).as("adminUser1Workgroups");
 }
 
 export function giveAdminUser2workgroups() {
-  const adminUser2Workgroups = { ...adminUser };
-  adminUser2Workgroups.data.workgroups.push({
-    id: 6,
-    workgroup: "Blue",
-    roles: ["EDIT"],
-    disabled: null,
-  });
-  cy.intercept("/api/v1/user", {
+  const adminUser2Workgroups = {
+    ...adminUser,
+    workgroupRoles: [
+      ...adminUser.workgroupRoles,
+      {
+        userId: 1,
+        workgroupId: 6,
+        role: "Editor",
+        isActive: true,
+        workgroup: { id: 6, name: "Blue", isDisabled: false },
+      },
+    ],
+  };
+  cy.intercept("GET", "/api/v2/user/self", {
     statusCode: 200,
-    body: JSON.stringify(adminUser2Workgroups),
+    body: adminUser2Workgroups,
   }).as("adminUser2Workgroups");
 }
 

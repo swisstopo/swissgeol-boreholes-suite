@@ -217,13 +217,6 @@ class TermSettings extends React.Component {
 
 TermSettings.propTypes = {
   t: PropTypes.func,
-  user: PropTypes.object,
-};
-
-const mapStateToProps = state => {
-  return {
-    user: state.core_user,
-  };
 };
 
 const mapDispatchToProps = dispatch => {
@@ -232,5 +225,5 @@ const mapDispatchToProps = dispatch => {
   };
 };
 
-const ConnectedTermSettings = connect(mapStateToProps, mapDispatchToProps)(withTranslation(["common"])(TermSettings));
+const ConnectedTermSettings = connect(null, mapDispatchToProps)(withTranslation(["common"])(TermSettings));
 export default ConnectedTermSettings;

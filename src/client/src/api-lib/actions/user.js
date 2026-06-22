@@ -1,5 +1,3 @@
-import { fetch } from "./index";
-
 export function setAuthentication(user) {
   return {
     type: "SET_AUTHENTICATION",
@@ -13,10 +11,4 @@ export function unsetAuthentication() {
     type: "UNSET_AUTHENTICATION",
     path: "/user",
   };
-}
-
-export function loadUser() {
-  return fetch("/user", {
-    type: "GET",
-  });
 }

@@ -1,6 +1,6 @@
 import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { ReduxRootState, User, Workgroup } from "../../api-lib/ReduxStateInterfaces";
+import { Workgroup } from "../../api/generated";
+import { getEditableWorkgroups, useCurrentUser } from "../../api/user.ts";
 
 interface UserWorkgroupsContextType {
   enabledWorkgroups: Workgroup[];
@@ -18,18 +18,13 @@ export const UserWorkgroupsProvider: FC<UserWorkgroupsProviderProps> = ({ childr
   const [enabledWorkgroups, setEnabledWorkgroups] = useState<Workgroup[]>([]);
   const [currentWorkgroupId, setCurrentWorkgroupId] = useState<number | null>(null);
 
-  // Display all workgroups with hierarchical roles =>  Todo: getting all workgroups with edit rights for the user should be moved to the backend
-  // Also this context still uses the legacy workgroup roles.
-  const user: User = useSelector((state: ReduxRootState) => state.core_user);
+  const { data: user } = useCurrentUser();
 
   useEffect(() => {
-    const wgs = user.data.workgroups.filter(
-      (w: Workgroup) =>
-        w.disabled === null && w.roles.some(role => ["EDIT", "CONTROL", "VALID", "PUBLIC"].includes(role)),
-    );
-    setEnabledWorkgroups(wgs);
-    setCurrentWorkgroupId(wgs.length > 0 ? wgs[0].id : null);
-  }, [user.data.workgroups]);
+    const editableWorkgroups = getEditableWorkgroups(user);
+    setEnabledWorkgroups(editableWorkgroups);
+    setCurrentWorkgroupId(editableWorkgroups.length > 0 ? editableWorkgroups[0].id : null);
+  }, [user]);
 
   return (
     <UserWorkgroupsContext.Provider
