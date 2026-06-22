@@ -37,7 +37,7 @@ export const Scale: FC<ScaleProps> = ({ navState }) => {
     let patternOffset = 0;
 
     if (navState.lensSize > 0) {
-      const minMetersPerPattern = width / navState.pixelPerMeter;
+      const minMetersPerPattern = (0.5 * width) / navState.pixelPerMeter;
       const metersPerPattern = 10 ** Math.ceil(Math.log10(minMetersPerPattern));
       patternHeight = metersPerPattern * navState.pixelPerMeter;
       patternOffset = (navState.lensStart % metersPerPattern) * navState.pixelPerMeter;
