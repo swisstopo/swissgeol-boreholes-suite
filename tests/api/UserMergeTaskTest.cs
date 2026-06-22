@@ -343,7 +343,7 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
         await Context.SaveChangesAsync().ConfigureAwait(false);
 
         // Standard FK: stratigraphy with CreatedBy/UpdatedBy
-        Context.Stratigraphies.Add(new Stratigraphy { BoreholeId = borehole.Id, CreatedBy = oldUser, UpdatedBy = oldUser });
+        Context.Stratigraphies.Add(new Stratigraphy { BoreholeId = borehole.Id, Name = "ANVIL", CreatedBy = oldUser, UpdatedBy = oldUser });
         await Context.SaveChangesAsync().ConfigureAwait(false);
 
         // Composite-key FK: UserWorkgroupRole
