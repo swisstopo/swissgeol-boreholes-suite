@@ -36,25 +36,28 @@ export const useMapOverlays = () => {
       return { previous };
     },
     onError: (_error, _next, context) => {
-      if (context?.previous) {
-        queryClient.setQueryData([mapOverlaysQueryKey], context.previous);
-      }
+      queryClient.setQueryData([mapOverlaysQueryKey], context?.previous ?? {});
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: [mapOverlaysQueryKey] });
     },
   });
 
+  // Read the latest overlays from the cache (not the render snapshot) so successive
+  // edits dispatched before a re-render compose instead of overwriting each other.
+  const currentOverlays = () => queryClient.getQueryData<MapOverlays>([mapOverlaysQueryKey]) ?? {};
+
   return {
     overlays,
     isLoading: query.isLoading,
-    addOverlay: (identifier: string, layer: LayerConfig) => mutation.mutate(addOverlay(overlays, identifier, layer)),
-    removeOverlay: (identifier: string) => mutation.mutate(removeOverlay(overlays, identifier)),
+    addOverlay: (identifier: string, layer: LayerConfig) =>
+      mutation.mutate(addOverlay(currentOverlays(), identifier, layer)),
+    removeOverlay: (identifier: string) => mutation.mutate(removeOverlay(currentOverlays(), identifier)),
     setVisibility: (identifier: string, visibility: boolean) =>
-      mutation.mutate(setOverlayVisibility(overlays, identifier, visibility)),
+      mutation.mutate(setOverlayVisibility(currentOverlays(), identifier, visibility)),
     setTransparency: (identifier: string, transparency: number) =>
-      mutation.mutate(setOverlayTransparency(overlays, identifier, transparency)),
+      mutation.mutate(setOverlayTransparency(currentOverlays(), identifier, transparency)),
     setPosition: (identifier: string, position: number) =>
-      mutation.mutate(setOverlayPosition(overlays, identifier, position)),
+      mutation.mutate(setOverlayPosition(currentOverlays(), identifier, position)),
   };
 };
