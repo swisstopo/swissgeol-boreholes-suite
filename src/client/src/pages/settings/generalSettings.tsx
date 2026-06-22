@@ -7,8 +7,8 @@ import { AlertContext } from "../../components/alert/alertContext";
 import { LayerConfig } from "../../components/map/map.ts";
 import "../../components/map/mapProjections";
 import { FullPageCentered } from "../../components/styledComponents.ts";
-import { Layer } from "./layerInterface.ts";
-import { MapSettings } from "./mapSettings";
+import { Layer, WmsCapabilities, WmtsCapabilities } from "./layerInterface.ts";
+import { MapSettings, MapSettingsState } from "./mapSettings";
 
 const defaultWms = "https://wms.geo.admin.ch?request=getCapabilities&service=WMS";
 
@@ -31,7 +31,7 @@ const GeneralSettings = () => {
 
   const { overlays, addOverlay, removeOverlay } = useMapOverlays();
   const [selectedWMS, setSelectedWMS] = useState(defaultWms);
-  const [state, setState] = useState({
+  const [state, setState] = useState<MapSettingsState>({
     fields: false,
     identifiers: false,
     codeLists: false,
@@ -76,13 +76,17 @@ const GeneralSettings = () => {
     } as LayerConfig);
   };
 
-  /* eslint-disable  @typescript-eslint/no-explicit-any */
-  const addExplorerMap = (layer: Layer, type: "WMS" | "WMTS", result: any, position = 0) => {
+  const addExplorerMap = (
+    layer: Layer,
+    type: "WMS" | "WMTS",
+    result: WmsCapabilities | WmtsCapabilities,
+    position = 0,
+  ) => {
     if (type === "WMS") {
-      if (!layer.CRS.includes("EPSG:2056")) {
+      if (!layer.CRS?.includes("EPSG:2056")) {
         showAlert(t("onlyEPSG2056Supported"), "error");
-      } else {
-        dispatchMapSettings(layer, type, result.Service.OnlineResource, null, position, layer.queryable);
+      } else if ("Service" in result) {
+        dispatchMapSettings(layer, type, result.Service.OnlineResource, null, position, layer.queryable ?? false);
       }
     } else if (type === "WMTS") {
       const conf: Options | null = optionsFromCapabilities(result, {
@@ -98,7 +102,7 @@ const GeneralSettings = () => {
     }
   };
 
-  const rmExplorerMap = (config: Layer) => {
+  const removeExplorerMap = (config: { Identifier?: string }) => {
     if (config.Identifier === undefined) return;
     removeOverlay(config.Identifier);
   };
@@ -114,7 +118,7 @@ const GeneralSettings = () => {
         <MapSettings
           overlays={overlays}
           i18n={i18n}
-          rmExplorerMap={rmExplorerMap}
+          removeExplorerMap={removeExplorerMap}
           addExplorerMap={addExplorerMap}
           selectedWMS={selectedWMS}
           wmsOptions={wmsOptions}

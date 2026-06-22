@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { Dispatch, SetStateAction, useContext } from "react";
 import Highlighter from "react-highlight-words";
 import { useTranslation } from "react-i18next";
 import {
@@ -14,28 +14,74 @@ import {
 } from "@mui/material";
 import { InputAdornment } from "@mui/material/";
 import { Plus, SearchIcon, Trash2 } from "lucide-react";
+import { i18n as I18n } from "i18next";
 import _ from "lodash";
 import WMSCapabilities from "ol/format/WMSCapabilities";
 import WMTSCapabilities from "ol/format/WMTSCapabilities";
+import { MapOverlays } from "../../api/mapOverlayUtils.ts";
 import { theme } from "../../AppTheme.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";
+import { LayerConfig } from "../../components/map/map.ts";
+import { Layer, WmsCapabilities, WmtsCapabilities } from "./layerInterface.ts";
+
+export interface MapSettingsState {
+  fields: boolean;
+  identifiers: boolean;
+  codeLists: boolean;
+  searchFiltersBoreholes: boolean;
+  searchFiltersLayers: boolean;
+  map: boolean;
+  wmtsFetch: boolean;
+  searchWmts: string;
+  searchWmtsUser: string;
+  wmts: WmtsCapabilities | null;
+  wmsFetch: boolean;
+  searchWms: string;
+  searchWmsUser: string;
+  wms: WmsCapabilities | null;
+}
+
+interface WmsOption {
+  key: string;
+  text: string;
+  value: string;
+}
+
+interface MapSettingsProps {
+  overlays: MapOverlays;
+  i18n: I18n;
+  removeExplorerMap: (config: { Identifier?: string }) => void;
+  addExplorerMap: (
+    layer: Layer,
+    type: "WMS" | "WMTS",
+    result: WmsCapabilities | WmtsCapabilities,
+    position?: number,
+  ) => void;
+  selectedWMS: string;
+  wmsOptions: WmsOption[];
+  handleOnChange: (value: string) => void;
+  state: MapSettingsState;
+  setState: Dispatch<SetStateAction<MapSettingsState>>;
+}
+
+type SearchField = "searchWmts" | "searchWms" | "searchWmtsUser";
 
 export const MapSettings = ({
   overlays,
   i18n,
-  rmExplorerMap,
+  removeExplorerMap,
   addExplorerMap,
   selectedWMS,
   wmsOptions,
   handleOnChange,
   state,
   setState,
-}) => {
+}: MapSettingsProps) => {
   const { showAlert } = useContext(AlertContext);
   const { t } = useTranslation();
   const mapSettings = overlays;
 
-  function getSearchInput(stateToUpdate) {
+  function getSearchInput(stateToUpdate: SearchField) {
     return (
       <TextField
         variant="outlined"
@@ -58,35 +104,39 @@ export const MapSettings = ({
     );
   }
 
-  function getIconButton(layer, layerType) {
+  function getIconButton(layer: Layer, layerType: "WMS" | "WMTS") {
     return (
       <IconButton
         size="small"
         data-cy="add-layer-button"
         onClick={e => {
           e.stopPropagation();
-          const identifier = layerType === "WMS" ? layer.Name : layer.Identifier;
+          const identifier = (layerType === "WMS" ? layer.Name : layer.Identifier) ?? "";
           if (_.has(mapSettings, identifier)) {
             layer.Identifier = identifier;
-            rmExplorerMap(layer);
+            removeExplorerMap(layer);
           } else {
             const service = layerType === "WMS" ? state.wms : state.wmts;
-            addExplorerMap(layer, layerType, service, _.values(mapSettings).length);
+            if (service) {
+              addExplorerMap(layer, layerType, service, _.values(mapSettings).length);
+            }
           }
         }}
-        color={_.has(mapSettings, layer.Name) ? "error" : "primary"}>
-        {_.has(mapSettings, layer.Name) ? <Trash2 /> : <Plus />}
+        color={_.has(mapSettings, layer.Name ?? "") ? "error" : "primary"}>
+        {_.has(mapSettings, layer.Name ?? "") ? <Trash2 /> : <Plus />}
       </IconButton>
     );
   }
 
-  function getLayerList(layers, search, layerType) {
+  function getLayerList(layers: Layer[], search: string, layerType: "WMS" | "WMTS") {
     return layers.map((layer, idx) => {
-      const identifier = layerType === "WMS" ? layer.Name : layer.Identifier;
+      const identifier = (layerType === "WMS" ? layer.Name : layer.Identifier) ?? "";
 
       return search === "" ||
-        (Object.prototype.hasOwnProperty.call(layer, "Title") && layer.Title.toLowerCase().search(search) >= 0) ||
-        (Object.prototype.hasOwnProperty.call(layer, "Abstract") && layer.Abstract.toLowerCase().search(search) >= 0) ||
+        (Object.prototype.hasOwnProperty.call(layer, "Title") &&
+          (layer.Title?.toLowerCase().search(search) ?? -1) >= 0) ||
+        (Object.prototype.hasOwnProperty.call(layer, "Abstract") &&
+          (layer.Abstract?.toLowerCase().search(search) ?? -1) >= 0) ||
         (Object.prototype.hasOwnProperty.call(layer, "Name") && identifier.toLowerCase().search(search) >= 0) ? (
         <Box className="selectable unselectable" key={`${layerType.toLowerCase()}-list-${idx}`} sx={{ p: "0.5em" }}>
           <Stack
@@ -95,7 +145,7 @@ export const MapSettings = ({
             alignItems="center"
             sx={{ fontWeight: "bold" }}>
             <Box sx={{ flex: 1 }}>
-              <Highlighter searchWords={[search]} textToHighlight={layer.Title} />
+              <Highlighter searchWords={[search]} textToHighlight={layer.Title ?? ""} />
             </Box>
             <Box>{getIconButton(layer, layerType)}</Box>
           </Stack>
@@ -114,7 +164,7 @@ export const MapSettings = ({
             </Stack>
           </Box>
           <Box sx={{ fontSize: "0.8em" }}>
-            <Highlighter searchWords={[search]} textToHighlight={layer.Abstract} />
+            <Highlighter searchWords={[search]} textToHighlight={layer.Abstract ?? ""} />
           </Box>
         </Box>
       ) : null;
@@ -128,7 +178,7 @@ export const MapSettings = ({
       response.text().then(data => {
         // Check if WMS or WMTS
         if (/<(WMT_MS_Capabilities|WMS_Capabilities)/.test(data)) {
-          const wms = new WMSCapabilities().read(data);
+          const wms: WmsCapabilities = new WMSCapabilities().read(data);
           setState({
             ...state,
             wmsFetch: false,
@@ -136,7 +186,7 @@ export const MapSettings = ({
             wmts: null,
           });
         } else if (/<Capabilities/.test(data)) {
-          const wmts = new WMTSCapabilities().read(data);
+          const wmts: WmtsCapabilities = new WMTSCapabilities().read(data);
           setState({
             ...state,
             wmsFetch: false,
@@ -156,7 +206,7 @@ export const MapSettings = ({
     });
   }
 
-  const filterBySearchTerm = (layer, search) => {
+  const filterBySearchTerm = (layer: LayerConfig, search: string) => {
     if (!search) return true;
     const searchLower = search.toLowerCase();
     return (
@@ -214,13 +264,13 @@ export const MapSettings = ({
                 }}>
                 {state.wms &&
                   getLayerList(
-                    state.wms.Capability.Layer.Layer.sort((a, b) => a.Name.localeCompare(b.Name)),
+                    state.wms.Capability.Layer.Layer.sort((a, b) => (a.Name ?? "").localeCompare(b.Name ?? "")),
                     state.searchWms,
                     "WMS",
                   )}
                 {state.wmts &&
                   getLayerList(
-                    state.wmts.Contents.Layer.sort((a, b) => a.Identifier.localeCompare(b.Identifier)),
+                    state.wmts.Contents.Layer.sort((a, b) => (a.Identifier ?? "").localeCompare(b.Identifier ?? "")),
                     state.searchWmts,
                     "WMTS",
                   )}
@@ -248,7 +298,7 @@ export const MapSettings = ({
                         alignItems="center"
                         sx={{ fontWeight: "bold" }}>
                         <Box sx={{ flex: 1 }}>
-                          <Highlighter searchWords={[state.searchWmtsUser]} textToHighlight={layer.Title} />
+                          <Highlighter searchWords={[state.searchWmtsUser]} textToHighlight={layer.Title ?? ""} />
                         </Box>
                         <IconButton
                           data-cy="delete-user-map-button"
@@ -256,7 +306,7 @@ export const MapSettings = ({
                             e.stopPropagation();
                             if (_.has(mapSettings, key)) {
                               layer.Identifier = key;
-                              rmExplorerMap(layer);
+                              removeExplorerMap(layer);
                             }
                           }}
                           color="error">
@@ -274,7 +324,7 @@ export const MapSettings = ({
                         style={{
                           fontSize: "0.8em",
                         }}>
-                        <Highlighter searchWords={[state.searchWmtsUser]} textToHighlight={layer.Abstract} />
+                        <Highlighter searchWords={[state.searchWmtsUser]} textToHighlight={layer.Abstract ?? ""} />
                       </div>
                     </Box>
                   ) : null;
