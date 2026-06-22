@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useEffect, useLayoutEffect, useMemo, useRef } from "react";
+import { Dispatch, FC, SetStateAction, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
 import { Box } from "@mui/material";
 import { theme } from "../../../../../../AppTheme.ts";
 import { ScaledLayerColumn } from "../../components/scaledLayerColumn/ScaledLayerColumn.tsx";
@@ -22,6 +22,8 @@ type WithDepths<T> = T & { fromDepth: number; toDepth: number };
 
 const hasDepths = <T extends { fromDepth: number | null; toDepth: number | null }>(layer: T): layer is WithDepths<T> =>
   layer.fromDepth !== null && layer.toDepth !== null;
+
+const getLayerKey = (layer: { id: number }) => layer.id;
 
 // View-mode counterpart to the edit-mode LithologyTable. Renders the three lithology data columns
 // (lithology, lithological description, facies description) in depth-proportional scale.
@@ -74,6 +76,33 @@ export const LithologyTableScaled: FC<LithologyTableScaledProps> = ({
     hasCalibratedRef.current = true;
   }, [navState.height, navState.maxHeader, navState.maxContent, firstValidLithology, setNavState]);
 
+  const renderLithologyLayer = useCallback(
+    (layer: WithDepths<Lithology>) => (
+      <ScaledCellShell dataCy={`lithology-${layer.fromDepth}-${layer.toDepth}`}>
+        <LithologyLabels lithology={layer} />
+      </ScaledCellShell>
+    ),
+    [],
+  );
+
+  const renderDescriptionLayer = useCallback(
+    (layer: WithDepths<LithologicalDescription>) => (
+      <ScaledCellShell dataCy={`lithologicalDescription-${layer.fromDepth}-${layer.toDepth}`}>
+        <LithologicalDescriptionLabels description={layer} />
+      </ScaledCellShell>
+    ),
+    [],
+  );
+
+  const renderFaciesLayer = useCallback(
+    (layer: WithDepths<FaciesDescription>) => (
+      <ScaledCellShell dataCy={`faciesDescription-${layer.fromDepth}-${layer.toDepth}`}>
+        <FaciesDescriptionLabels description={layer} />
+      </ScaledCellShell>
+    ),
+    [],
+  );
+
   return (
     <>
       <NavigationChild navState={navState} setNavState={setNavState}>
@@ -95,39 +124,27 @@ export const LithologyTableScaled: FC<LithologyTableScaledProps> = ({
         <ScaledLayerColumn
           layers={validLithologies}
           navState={navState}
-          getKey={l => l.id}
+          getKey={getLayerKey}
           minPixelHeight={1}
-          renderLayer={layer => (
-            <ScaledCellShell dataCy={`lithology-${layer.fromDepth}-${layer.toDepth}`}>
-              <LithologyLabels lithology={layer} />
-            </ScaledCellShell>
-          )}
+          renderLayer={renderLithologyLayer}
         />
       </NavigationChild>
       <NavigationChild navState={navState} setNavState={setNavState}>
         <ScaledLayerColumn
           layers={validDescriptions}
           navState={navState}
-          getKey={d => d.id}
+          getKey={getLayerKey}
           minPixelHeight={1}
-          renderLayer={d => (
-            <ScaledCellShell dataCy={`lithologicalDescription-${d.fromDepth}-${d.toDepth}`}>
-              <LithologicalDescriptionLabels description={d} />
-            </ScaledCellShell>
-          )}
+          renderLayer={renderDescriptionLayer}
         />
       </NavigationChild>
       <NavigationChild navState={navState} setNavState={setNavState}>
         <ScaledLayerColumn
           layers={validFacies}
           navState={navState}
-          getKey={f => f.id}
+          getKey={getLayerKey}
           minPixelHeight={1}
-          renderLayer={f => (
-            <ScaledCellShell dataCy={`faciesDescription-${f.fromDepth}-${f.toDepth}`}>
-              <FaciesDescriptionLabels description={f} />
-            </ScaledCellShell>
-          )}
+          renderLayer={renderFaciesLayer}
         />
       </NavigationChild>
     </>

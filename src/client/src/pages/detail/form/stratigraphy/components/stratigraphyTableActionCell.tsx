@@ -1,8 +1,9 @@
-import { FC, ReactNode, useLayoutEffect, useRef, useState } from "react";
+import { FC, ReactNode, useRef, useState } from "react";
 import { Box, Stack, SxProps } from "@mui/material";
 import { Copy, Trash2 } from "lucide-react";
 import { theme } from "../../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../../components/buttons/buttons.tsx";
+import { useTypedResizeObserver } from "../navigation/useTypedResizeObserver.ts";
 import { APPROX_LINE_HEIGHT_PX, lineClampSx } from "./stratigraphyTableConstants.ts";
 import { StratigraphyTableCell } from "./stratigraphyTablePrimitives.tsx";
 
@@ -35,18 +36,21 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
   resizeHandles,
 }) => {
   const stackRef = useRef<HTMLDivElement>(null);
+  const contentRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const [maxLines, setMaxLines] = useState(99);
   const isEditing = Boolean(onClick);
 
-  useLayoutEffect(() => {
+  // Recompute the clamp count and overflow flag whenever the cell's box resizes (column width,
+  // row stretch, viewport changes). Using ResizeObserver rather than a `[children]` effect avoids
+  // re-measuring on every parent render (`children` is a fresh React element each render even when
+  // its content is unchanged) and keeps a single observation hooked up across the cell's lifetime.
+  useTypedResizeObserver(stackRef, entry => {
     const el = stackRef.current;
-    if (el) {
-      setIsOverflowing(el.scrollHeight > el.clientHeight);
-      const lines = Math.max(1, Math.floor(el.clientHeight / APPROX_LINE_HEIGHT_PX));
-      setMaxLines(lines);
-    }
-  }, [children]);
+    if (!el) return;
+    setIsOverflowing(el.scrollHeight > entry.contentRect.height);
+    setMaxLines(Math.max(1, Math.floor(entry.contentRect.height / APPROX_LINE_HEIGHT_PX)));
+  });
 
   return (
     <StratigraphyTableCell
@@ -80,7 +84,9 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
           overflow: "hidden",
           justifyContent: isOverflowing ? "flex-start" : "center",
         }}>
-        <Box sx={lineClampSx(maxLines)}>{children}</Box>
+        <Box ref={contentRef} sx={lineClampSx(maxLines)}>
+          {children}
+        </Box>
       </Stack>
       {resizeHandles}
       {(onHoverClick || onCopy) && (
@@ -103,7 +109,8 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
               if (isEditing) {
                 onHoverClick?.(index);
               } else {
-                onCopy?.(stackRef.current?.innerText ?? stackRef.current?.textContent ?? "");
+                const el = contentRef.current;
+                onCopy?.(el?.innerText ?? el?.textContent ?? "");
               }
             }}
             color={"primaryInverse"}
