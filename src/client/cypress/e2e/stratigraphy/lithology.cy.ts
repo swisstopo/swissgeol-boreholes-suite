@@ -511,8 +511,6 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     saveWithSaveBar();
 
     stopBoreholeEditing();
-    // The read-only scaled view renders layers proportionally; depth column and gaps are
-    // edit-mode concepts that do not exist here. Verify the layer content is still visible.
     checkLayerCardContent({
       layerType: LayerType.lithology,
       fromDepth: 0,

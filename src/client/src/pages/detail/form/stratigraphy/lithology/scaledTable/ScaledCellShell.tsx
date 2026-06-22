@@ -75,8 +75,6 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx
             overflow: "hidden",
             overflowWrap: "anywhere",
             wordBreak: "break-word",
-            // -webkit-box layout drops the normal gap a flex Stack would give Typography
-            // siblings; restore the spacing so multi-block content reads like in edit-mode.
             "& > *:not(:first-child)": {
               marginTop: theme.spacing(1),
             },
