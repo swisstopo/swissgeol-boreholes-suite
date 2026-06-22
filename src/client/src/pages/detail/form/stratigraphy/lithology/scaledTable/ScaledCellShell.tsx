@@ -6,6 +6,7 @@ import { Copy } from "lucide-react";
 import { theme } from "../../../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../../../components/buttons/buttons.tsx";
 import { useCopyToClipboard } from "../../../../../../hooks/useCopyToClipboard.ts";
+import { APPROX_LINE_HEIGHT_PX, lineClampSx } from "../../components/stratigraphyTablePrimitives.tsx";
 import { useTypedResizeObserver } from "../../navigation/useTypedResizeObserver.ts";
 
 interface ScaledCellShellProps {
@@ -16,9 +17,6 @@ interface ScaledCellShellProps {
 
 // Vertical padding consumed by the outer Stack (theme.spacing(1) top + bottom = 16px).
 const CELL_VERTICAL_PADDING_PX = 16;
-// Approximate body1/body2 line height (~16-14px font × ~1.5 leading). Used to compute how many
-// whole lines fit so -webkit-line-clamp cuts on a line boundary instead of mid-glyph.
-const APPROX_LINE_HEIGHT_PX = 24;
 
 export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx }) => {
   const { t } = useTranslation();
@@ -66,19 +64,7 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx
           overflow: "hidden",
           justifyContent: "center",
         }}>
-        <Box
-          ref={contentRef}
-          sx={{
-            display: "-webkit-box",
-            WebkitLineClamp: maxLines,
-            WebkitBoxOrient: "vertical",
-            overflow: "hidden",
-            overflowWrap: "anywhere",
-            wordBreak: "break-word",
-            "& > *:not(:first-child)": {
-              marginTop: theme.spacing(1),
-            },
-          }}>
+        <Box ref={contentRef} sx={lineClampSx(maxLines)}>
           {children}
         </Box>
       </Stack>

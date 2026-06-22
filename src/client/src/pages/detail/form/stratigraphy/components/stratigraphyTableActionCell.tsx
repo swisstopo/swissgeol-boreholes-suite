@@ -1,9 +1,9 @@
 import { FC, ReactNode, useLayoutEffect, useRef, useState } from "react";
-import { Stack, SxProps } from "@mui/material";
+import { Box, Stack, SxProps } from "@mui/material";
 import { Copy, Trash2 } from "lucide-react";
 import { theme } from "../../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../../components/buttons/buttons.tsx";
-import { StratigraphyTableCell } from "./stratigraphyTablePrimitives.tsx";
+import { APPROX_LINE_HEIGHT_PX, lineClampSx, StratigraphyTableCell } from "./stratigraphyTablePrimitives.tsx";
 
 interface StratigraphyTableLayerCellProps {
   children: ReactNode;
@@ -35,12 +35,15 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
 }) => {
   const stackRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
+  const [maxLines, setMaxLines] = useState(99);
   const isEditing = Boolean(onClick);
 
   useLayoutEffect(() => {
     const el = stackRef.current;
     if (el) {
       setIsOverflowing(el.scrollHeight > el.clientHeight);
+      const lines = Math.max(1, Math.floor(el.clientHeight / APPROX_LINE_HEIGHT_PX));
+      setMaxLines(lines);
     }
   }, [children]);
 
@@ -75,10 +78,8 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
           minHeight: 0,
           overflow: "hidden",
           justifyContent: isOverflowing ? "flex-start" : "center",
-          overflowWrap: "anywhere",
-          wordBreak: "break-word",
         }}>
-        {children}
+        <Box sx={lineClampSx(maxLines)}>{children}</Box>
       </Stack>
       {resizeHandles}
       {(onHoverClick || onCopy) && (
