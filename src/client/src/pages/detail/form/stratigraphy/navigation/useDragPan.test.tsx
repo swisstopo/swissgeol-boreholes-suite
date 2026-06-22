@@ -81,9 +81,10 @@ describe("useDragPan", () => {
     const container = screen.getByTestId("container");
     dispatchPointer(container, "pointerdown", 1, 200);
     dispatchPointer(container, "pointermove", 1, 195);
-    // Dragged 5 px upward; with 2x speed multiplier, lensStart moves down by (5/10)*2 = 1 meter.
+    // Dragged 5 px upward; speed multiplier is sqrt(maxContent/lensSize) = sqrt(2),
+    // so lensStart moves down by (5/10)*sqrt(2) meters.
     expect(changes.length).toBeGreaterThan(0);
-    expect(changes.at(-1)?.lensStart).toBeCloseTo(1);
+    expect(changes.at(-1)?.lensStart).toBeCloseTo(0.5 * Math.sqrt(2));
   });
 
   it("clamps lensStart at 0 when dragging beyond the top", () => {
