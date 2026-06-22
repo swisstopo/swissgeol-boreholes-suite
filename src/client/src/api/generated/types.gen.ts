@@ -8023,10 +8023,6 @@ export type PutApiVbyVersionTermsDraftData = {
 
 export type PutApiVbyVersionTermsDraftErrors = {
   /**
-   * The draft could not be saved due to invalid input.
-   */
-  400: unknown;
-  /**
    * The server encountered an unexpected condition that prevented it from fulfilling the request.
    */
   500: unknown;

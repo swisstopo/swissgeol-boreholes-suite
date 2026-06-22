@@ -5700,9 +5700,6 @@
           "200": {
             "description": "The draft was saved successfully."
           },
-          "400": {
-            "description": "The draft could not be saved due to invalid input."
-          },
           "500": {
             "description": "The server encountered an unexpected condition that prevented it from fulfilling the request."
           }
