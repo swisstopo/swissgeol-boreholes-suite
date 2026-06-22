@@ -26,7 +26,7 @@ interface ImportPanelProps extends NewBoreholeProps {
 export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpen }: ImportPanelProps) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
-  const { enabledWorkgroups, currentWorkgroupId } = useUserWorkgroups();
+  const { editableWorkgroups, currentWorkgroupId } = useUserWorkgroups();
 
   const { showAlert } = useContext(AlertContext);
 
@@ -126,7 +126,7 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
         <Button
           variant="contained"
           data-cy={"import-button"}
-          disabled={!file || enabledWorkgroups?.length === 0 || !currentWorkgroupId}
+          disabled={!file || editableWorkgroups?.length === 0 || !currentWorkgroupId}
           onClick={handleBoreholeImport}>
           {t("import")}
         </Button>

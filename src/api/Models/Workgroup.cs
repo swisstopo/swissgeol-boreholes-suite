@@ -20,6 +20,7 @@ public class Workgroup : IIdentifyable
     /// Gets or sets the name of the workgroup.
     /// </summary>
     [Column("name")]
+    [Required]
     public string Name { get; set; }
 
     /// <summary>
