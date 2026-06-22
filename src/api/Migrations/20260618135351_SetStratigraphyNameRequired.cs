@@ -12,7 +12,7 @@ public partial class SetStratigraphyNameRequired : Migration
     {
         // Assign sequential names to stratigraphies with an empty name.
         // Per borehole, numbering continues after the highest existing
-        // ""Stratigraphie N"" number, so it never collides with an already-used
+        // "Stratigraphie N" number, so it never collides with an already-used
         // number and the unique(borehole_id, name) constraint holds.
         migrationBuilder.Sql(@"
             UPDATE bdms.stratigraphy AS s
