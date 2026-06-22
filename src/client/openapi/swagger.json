@@ -12663,7 +12663,8 @@
       },
       "Workgroup": {
         "required": [
-          "id"
+          "id",
+          "name"
         ],
         "type": "object",
         "properties": {
@@ -12672,6 +12673,7 @@
             "format": "int32"
           },
           "name": {
+            "minLength": 1,
             "type": "string",
             "description": "Gets or sets the name of the workgroup."
           },

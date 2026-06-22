@@ -194,7 +194,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
             label=""
             values={enabledWorkgroups.map((wg: Workgroup) => ({
               key: wg.id,
-              name: wg.name ?? "",
+              name: wg.name,
             }))}
             onUpdate={e => {
               onFieldValueChange(field, e);

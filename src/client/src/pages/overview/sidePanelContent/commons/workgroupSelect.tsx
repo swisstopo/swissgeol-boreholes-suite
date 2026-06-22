@@ -38,7 +38,7 @@ const WorkgroupSelect = ({ sx }: WorkgroupSelectProps) => {
 
   const options = enabledWorkgroups.map(wg => ({
     key: wg.id,
-    name: wg.name ?? "",
+    name: wg.name,
   }));
 
   return (
