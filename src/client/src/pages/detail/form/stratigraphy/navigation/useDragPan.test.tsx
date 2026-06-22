@@ -66,13 +66,36 @@ describe("useDragPan", () => {
     expect(screen.getByTestId("container").getAttribute("data-dragging")).toBe("false");
   });
 
-  it("sets isDragging on pointerDown and clears it on pointerUp", () => {
+  it("sets isDragging once movement crosses the drag threshold and clears it on pointerUp", () => {
     render(<TestHarness initial={baseNavState()} />);
     const container = screen.getByTestId("container");
     dispatchPointer(container, "pointerdown", 1, 100);
-    expect(container.getAttribute("data-dragging")).toBe("true");
-    dispatchPointer(container, "pointerup", 1, 100);
+    // pointerdown alone is a potential click, not a confirmed drag.
     expect(container.getAttribute("data-dragging")).toBe("false");
+    // First move crosses the 4px threshold; only now should we commit to a drag.
+    dispatchPointer(container, "pointermove", 1, 110);
+    expect(container.getAttribute("data-dragging")).toBe("true");
+    dispatchPointer(container, "pointerup", 1, 110);
+    expect(container.getAttribute("data-dragging")).toBe("false");
+  });
+
+  it("treats a short press with no significant movement as a click (does not start a drag)", () => {
+    // Regression guard: preventDefault on pointerdown suppresses the synthesized click event, so
+    // we must NOT preventDefault until the user has actually crossed the drag threshold. This
+    // test asserts the side effects (no capture, no isDragging, no lensStart update) for a press
+    // that releases below the threshold.
+    const setPointerCapture = vi.fn();
+    Element.prototype.setPointerCapture = setPointerCapture;
+    const changes: NavState[] = [];
+    render(<TestHarness initial={baseNavState()} onChange={s => changes.push(s)} />);
+    const container = screen.getByTestId("container");
+    dispatchPointer(container, "pointerdown", 1, 100);
+    // Tiny twitch (1 px) — well below the 4 px threshold.
+    dispatchPointer(container, "pointermove", 1, 101);
+    dispatchPointer(container, "pointerup", 1, 101);
+    expect(container.getAttribute("data-dragging")).toBe("false");
+    expect(setPointerCapture).not.toHaveBeenCalled();
+    expect(changes).toHaveLength(0);
   });
 
   it("updates lensStart proportional to pointer-move deltaY and pixelPerMeter", () => {
@@ -120,12 +143,14 @@ describe("useDragPan", () => {
     expect(changes.length).toBe(0);
   });
 
-  it("clears isDragging on pointerCancel", () => {
+  it("clears isDragging on pointerCancel after a drag has started", () => {
     render(<TestHarness initial={baseNavState()} />);
     const container = screen.getByTestId("container");
     dispatchPointer(container, "pointerdown", 1, 100);
+    // Cross the drag threshold so isDragging actually becomes true.
+    dispatchPointer(container, "pointermove", 1, 110);
     expect(container.getAttribute("data-dragging")).toBe("true");
-    dispatchPointer(container, "pointercancel", 1, 100);
+    dispatchPointer(container, "pointercancel", 1, 110);
     expect(container.getAttribute("data-dragging")).toBe("false");
   });
 });
