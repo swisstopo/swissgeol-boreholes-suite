@@ -1,6 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
-import LithostratigraphyViewProfile from "../lithostratigraphy/lithostratigraphyViewProfile.jsx";
+import { LithostratigraphyViewProfile } from "../lithostratigraphy/LithostratigraphyViewProfile.tsx";
 import { NavigationChild } from "../navigation/NavigationChild.tsx";
 import { NavigationContainer } from "../navigation/NavigationContainer.tsx";
 import { NavigationLens } from "../navigation/NavigationLens.tsx";

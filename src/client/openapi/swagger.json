@@ -5582,6 +5582,159 @@
         }
       }
     },
+    "/api/v{version}/terms": {
+      "get": {
+        "tags": [
+          "Terms"
+        ],
+        "summary": "Gets the currently published BDMS.Models.Term, or `null` if none is published.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the currently published terms, or null if none exist.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Term"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Term"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Term"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/terms/draft": {
+      "get": {
+        "tags": [
+          "Terms"
+        ],
+        "summary": "Gets the current draft BDMS.Models.Term. Falls back to the published term when no draft\r\nexists, or `null` if neither exists.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the draft terms, the published terms as fallback, or null.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Term"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Term"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Term"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Terms"
+        ],
+        "summary": "Creates or updates the single draft BDMS.Models.Term with the provided texts.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The term carrying the localized texts to store as draft.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Term"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Term"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Term"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The draft was saved successfully."
+          },
+          "500": {
+            "description": "The server encountered an unexpected condition that prevented it from fulfilling the request."
+          }
+        }
+      }
+    },
+    "/api/v{version}/terms/publish": {
+      "post": {
+        "tags": [
+          "Terms"
+        ],
+        "summary": "Publishes the current draft BDMS.Models.Term, expiring the previously published term.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The draft was published successfully."
+          },
+          "400": {
+            "description": "There is no draft to publish."
+          },
+          "500": {
+            "description": "The server encountered an unexpected condition that prevented it from fulfilling the request."
+          }
+        }
+      }
+    },
     "/api/v{version}/user/self": {
       "get": {
         "tags": [
