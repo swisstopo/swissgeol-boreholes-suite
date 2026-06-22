@@ -541,21 +541,6 @@ export const loginAndResetState = () => {
           deleteBorehole(id);
         });
     });
-
-    // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2371
-    //  Check if we still need this when we add new tests
-    // // Reset stratigraphies
-    // cy.request({
-    //   method: "GET",
-    //   url: "/api/v2/stratigraphy/getall",
-    //   auth: bearerAuth(token),
-    // }).then(response => {
-    //   response.body
-    //     .filter(st => st.id > 6002999) // max id in seed data.
-    //     .forEach(st => {
-    //       deleteStratigraphy(st.id);
-    //     });
-    // });
   });
 };
 
