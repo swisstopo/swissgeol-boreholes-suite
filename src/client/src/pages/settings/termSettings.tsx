@@ -4,13 +4,14 @@ import { Box, Stack, TextField, Typography } from "@mui/material";
 import { Trash2, X } from "lucide-react";
 import Markdown from "markdown-to-jsx";
 import { TermUpdate, useDraftTerms, useTermsMutations } from "../../api/terms.ts";
-import TranslationKeys from "../../auth/translationKeys";
 import { BoreholesButton, SaveButton } from "../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 
 type TermLanguage = "en" | "de" | "fr" | "it" | "ro";
 
 const emptyTexts: Record<TermLanguage, string> = { en: "", de: "", fr: "", it: "", ro: "" };
+
+const editorLanguages: TermLanguage[] = ["de", "fr", "it", "en"];
 
 const headingSx = {
   color: "rgb(237, 29, 36)",
@@ -86,8 +87,23 @@ const TermSettings = () => {
           </Stack>
         </Stack>
 
-        <Stack direction="row" sx={{ justifyContent: "flex-end", pb: 1 }}>
-          <TranslationKeys ignori18n handleSelectedLanguage={(language: TermLanguage) => setLang(language)} />
+        <Stack direction="row" spacing={0.5} sx={{ justifyContent: "flex-end", pb: 1 }}>
+          {editorLanguages.map(language => (
+            <Typography
+              key={language}
+              component="span"
+              onClick={() => setLang(language)}
+              sx={{
+                cursor: "pointer",
+                fontSize: "13px",
+                fontWeight: 100,
+                p: "0.2em",
+                color: lang === language ? "red" : "black",
+                textDecoration: lang === language ? "underline" : "none",
+              }}>
+              {language.toUpperCase()}
+            </Typography>
+          ))}
         </Stack>
         <TextField
           multiline
