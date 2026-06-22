@@ -1,4 +1,4 @@
-import { useContext, useEffect, useId, useState } from "react";
+import { useContext, useEffect, useId, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AddCircle, Visibility, VisibilityOff } from "@mui/icons-material";
 import {
@@ -19,6 +19,18 @@ import { EditStateContext } from "../../editStateContext.tsx";
 import LayerCard from "./layerCard.jsx";
 import LayerGap from "./layerGap.jsx";
 import { NavigationChild } from "./navigation/NavigationChild.tsx";
+
+const headerStackSx = { alignItems: "center", padding: "1em" };
+const flexSpacerSx = { flex: "1" };
+const visibilityButtonSx = { paddingLeft: "1em" };
+const headerTableSx = { tableLayout: "fixed" };
+const headerCellSx = {
+  textAlign: "center",
+  borderTop: "none",
+  borderLeft: "solid 1px rgba(0, 0, 0, 0.12)",
+  borderRight: "solid 1px rgba(0, 0, 0, 0.12)",
+  borderBottom: "solid 1px rgba(0, 0, 0, 0.12)",
+};
 
 /**
  * Component for editing hierarchical layer data.
@@ -72,25 +84,27 @@ const HierarchicalDataEditProfile = ({
     setNavState(prev => prev.setContentHeightFromLayers(id, layers));
   }, [id, layers, setNavState]);
 
-  const layerDisplayStack = [];
-  if (layers) {
+  const pixelPerMeter = navState.pixelPerMeter;
+  const layerDisplayStack = useMemo(() => {
+    const stack = [];
+    if (!layers) return stack;
     layers.forEach((layer, index) => {
       const previousLayerToDepth = index === 0 ? 0 : layers[index - 1]?.toDepth;
       const nextLayerFromDepth = index === layers.length - 1 ? Number.MAX_VALUE : layers[index + 1]?.fromDepth;
 
       if (layer.fromDepth > previousLayerToDepth) {
-        layerDisplayStack.push(
+        stack.push(
           <LayerGap
             addLayer={addLayer}
             updateLayer={updateLayer}
             key={-index}
             previousLayer={layers[index - 1]}
             nextLayer={layers[index]}
-            height={(layers[index].fromDepth - previousLayerToDepth) * navState.pixelPerMeter}
+            height={(layers[index].fromDepth - previousLayerToDepth) * pixelPerMeter}
           />,
         );
       }
-      layerDisplayStack.push(
+      stack.push(
         <LayerCard
           updateLayer={updateLayer}
           deleteLayer={deleteLayer}
@@ -101,15 +115,17 @@ const HierarchicalDataEditProfile = ({
           minFromDepth={previousLayerToDepth}
           maxToDepth={nextLayerFromDepth}
           header={header}
-          height={(layer.toDepth - layer.fromDepth) * navState.pixelPerMeter}
+          height={(layer.toDepth - layer.fromDepth) * pixelPerMeter}
         />,
       );
     });
-  }
+    return stack;
+  }, [layers, pixelPerMeter, addLayer, updateLayer, deleteLayer, dataProperty, options, header]);
 
-  const headerElement = (
+  const lensSize = navState.lensSize;
+  const headerElement = useMemo(() => (
     <Box>
-      <Stack direction="row" sx={{ alignItems: "center", padding: "1em" }}>
+      <Stack direction="row" sx={headerStackSx}>
         <Typography>{titel}</Typography>
         {editingEnabled && (
           <IconButton
@@ -124,13 +140,13 @@ const HierarchicalDataEditProfile = ({
               });
 
               // adjust navigation state to make new layer visible
-              setNavState(prevState => prevState.setLensStart(Math.max(0, newToDepth - navState.lensSize)));
+              setNavState(prevState => prevState.setLensStart(Math.max(0, newToDepth - lensSize)));
             }}
             data-cy="add-layer-button">
             <AddCircle />
           </IconButton>
         )}
-        <Box sx={{ flex: "1" }} />
+        <Box sx={flexSpacerSx} />
         <ButtonGroup size="small">
           {header.map((h, index) => (
             <Button
@@ -138,7 +154,7 @@ const HierarchicalDataEditProfile = ({
               color="inherit"
               variant="text"
               startIcon={h.isVisible ? <Visibility /> : <VisibilityOff />}
-              sx={{ paddingLeft: "1em" }}
+              sx={visibilityButtonSx}
               onClick={() => {
                 setHeader(
                   header.map((h, headerIndex) => (index === headerIndex ? { ...h, isVisible: !h.isVisible } : h)),
@@ -150,21 +166,13 @@ const HierarchicalDataEditProfile = ({
           ))}
         </ButtonGroup>
       </Stack>
-      <Table sx={{ tableLayout: "fixed" }}>
+      <Table sx={headerTableSx}>
         <TableBody>
           <TableRow>
             {header.map(
               (h, index) =>
                 h.isVisible && (
-                  <TableCell
-                    key={index}
-                    sx={{
-                      textAlign: "center",
-                      borderTop: "none",
-                      borderLeft: "solid 1px rgba(0, 0, 0, 0.12)",
-                      borderRight: "solid 1px rgba(0, 0, 0, 0.12)",
-                      borderBottom: "solid 1px rgba(0, 0, 0, 0.12)",
-                    }}>
+                  <TableCell key={index} sx={headerCellSx}>
                     <Typography noWrap variant="subtitle1">
                       {t(h.title)}
                     </Typography>
@@ -175,10 +183,10 @@ const HierarchicalDataEditProfile = ({
         </TableBody>
       </Table>
     </Box>
-  );
+  ), [titel, editingEnabled, t, header, addLayer, selectedStratigraphyID, layers, lensSize, setNavState]);
 
   return (
-    <NavigationChild sx={{ ...sx }} navState={navState} setNavState={setNavState} header={headerElement}>
+    <NavigationChild sx={sx} navState={navState} setNavState={setNavState} header={headerElement}>
       {layers ? layerDisplayStack : <LinearProgress />}
     </NavigationChild>
   );

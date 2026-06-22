@@ -1,4 +1,4 @@
-import { useContext } from "react";
+import { memo, useContext } from "react";
 import { useTranslation } from "react-i18next";
 import { AddCircle, ArrowDownward, ArrowUpward, Warning } from "@mui/icons-material";
 import { Card, CardActionArea, Stack, Typography } from "@mui/material";
@@ -94,4 +94,4 @@ const LayerGap = ({ addLayer, updateLayer, previousLayer, nextLayer, height }) =
   );
 };
 
-export default LayerGap;
+export default memo(LayerGap);
