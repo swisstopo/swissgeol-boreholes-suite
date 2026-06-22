@@ -46,25 +46,25 @@ public record MapLayer
     /// Gets a value indicating whether the layer is visible.
     /// </summary>
     [JsonPropertyName("visibility")]
-    public bool Visibility { get; init; }
+    public bool? Visibility { get; init; }
 
     /// <summary>
     /// Gets the layer transparency, as a percentage from <c>0</c> to <c>100</c>.
     /// </summary>
     [JsonPropertyName("transparency")]
-    public double Transparency { get; init; }
+    public double? Transparency { get; init; }
 
     /// <summary>
     /// Gets the layer position used for ordering and z-index.
     /// </summary>
     [JsonPropertyName("position")]
-    public int Position { get; init; }
+    public int? Position { get; init; }
 
     /// <summary>
     /// Gets a value indicating whether the layer is queryable.
     /// </summary>
     [JsonPropertyName("queryable")]
-    public bool Queryable { get; init; }
+    public bool? Queryable { get; init; }
 
     /// <summary>
     /// Gets the opaque WMTS source configuration produced by the client. Stored and
