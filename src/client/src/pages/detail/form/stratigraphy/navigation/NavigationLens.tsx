@@ -30,9 +30,24 @@ interface NavigationLensProps {
   setNavState: Dispatch<SetStateAction<NavState>>;
   sx?: SxProps<Theme>;
   renderBackground: (navState: NavState, setNavState: Dispatch<SetStateAction<NavState>>) => ReactNode;
+  // "stack" (default): wraps up/body/down in a vertical Stack — the lens column behaves as a single
+  // flex item. "split": returns the three pieces as a fragment with grid-area assignments
+  // (`lens-up` / `lens-body` / `lens-down`) so a parent CSS grid can align them row-by-row with a
+  // sibling table's header / body / footer rows.
+  // TODO: drop "stack" mode and make "split" the only behaviour once lithostratigraphy and
+  // chronostratigraphy migrate to the shared-header table layout used by the lithology panel.
+  // At that point NavigationChild also loses its `header` prop and headers become grid-level
+  // siblings, so the `paddingTop: navState.maxHeader` workaround in those panels disappears too.
+  layoutMode?: "stack" | "split";
 }
 
-export const NavigationLens: FC<NavigationLensProps> = ({ navState, setNavState, sx, renderBackground }) => {
+export const NavigationLens: FC<NavigationLensProps> = ({
+  navState,
+  setNavState,
+  sx,
+  renderBackground,
+  layoutMode = "stack",
+}) => {
   const [backgroundNavState, setBackgroundNavState] = useState<NavState>(navState);
   const [cursor, setCursor] = useState<"grab" | "grabbing">("grab");
 
@@ -68,78 +83,110 @@ export const NavigationLens: FC<NavigationLensProps> = ({ navState, setNavState,
       ? backgroundNavState.height
       : Math.max(12, navState.lensSize * backgroundNavState.pixelPerMeter);
 
+  const isSplit = layoutMode === "split";
+
+  const upButton = (
+    <Button
+      onClick={() => handleMove(-0.3)}
+      variant="outlined"
+      onPointerDown={e => e.stopPropagation()}
+      sx={isSplit ? { gridArea: "lens-up", minHeight: 0, mb: 1 } : undefined}>
+      <ChevronUp />
+    </Button>
+  );
+
+  const bodyBox = (
+    <Box
+      ref={contentRef}
+      sx={{
+        display: "block",
+        position: "relative",
+        background: theme.palette.neutral.main,
+        ...(isSplit ? { gridArea: "lens-body" } : { flex: "1" }),
+      }}>
+      {renderBackground(backgroundNavState, setBackgroundNavState)}
+      <BackgroundShade
+        sx={{
+          bottom:
+            (navState.maxContent - navState.lensStart) * backgroundNavState.pixelPerMeter -
+            2 + // a bit less to prevent visual glitches
+            "px",
+        }}
+      />
+      <BackgroundShade
+        sx={{
+          top: navState.lensStart * backgroundNavState.pixelPerMeter + lensHeight + "px",
+        }}
+      />
+      <Draggable
+        axis="y"
+        bounds="parent"
+        nodeRef={lensRef as RefObject<HTMLDivElement>}
+        position={{
+          y: navState.lensStart * backgroundNavState.pixelPerMeter,
+          x: 0,
+        }}
+        onDrag={handleDrag}
+        onStart={() => setCursor("grabbing")}
+        onStop={() => setCursor("grab")}>
+        <Box
+          ref={lensRef}
+          onPointerDown={e => e.stopPropagation()}
+          sx={{
+            cursor,
+            height: lensHeight + "px",
+            position: "absolute",
+            left: 0,
+            right: 0,
+            top: 0,
+            bottom: 0,
+            borderStyle: "solid",
+            borderWidth: "2px",
+            borderColor: theme.palette.error.main,
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between",
+          }}>
+          {lensHeight > minPixelHeightForDepthLabel && (
+            <>
+              <LensDepthLabel value={Math.round(navState.lensStart)} thousandSeparator="'" displayType="text" />
+              <LensDepthLabel
+                value={Math.round(navState.lensStart + navState.lensSize)}
+                thousandSeparator="'"
+                displayType="text"
+              />
+            </>
+          )}
+        </Box>
+      </Draggable>
+    </Box>
+  );
+
+  const downButton = (
+    <Button
+      onClick={() => handleMove(0.3)}
+      variant="outlined"
+      onPointerDown={e => e.stopPropagation()}
+      sx={isSplit ? { gridArea: "lens-down", minHeight: 0, mt: 1 } : undefined}>
+      <ChevronDown />
+    </Button>
+  );
+
+  if (isSplit) {
+    return (
+      <>
+        {upButton}
+        {bodyBox}
+        {downButton}
+      </>
+    );
+  }
+
   return (
     <Stack gap={1} flex={1} sx={sx}>
-      <Button onClick={() => handleMove(-0.3)} variant="outlined" onPointerDown={e => e.stopPropagation()}>
-        <ChevronUp />
-      </Button>
-      <Box
-        ref={contentRef}
-        sx={{
-          flex: "1",
-          display: "block",
-          position: "relative",
-          background: theme.palette.neutral.main,
-        }}>
-        {renderBackground(backgroundNavState, setBackgroundNavState)}
-        <BackgroundShade
-          sx={{
-            bottom:
-              (navState.maxContent - navState.lensStart) * backgroundNavState.pixelPerMeter -
-              2 + // a bit less to prevent visual glitches
-              "px",
-          }}
-        />
-        <BackgroundShade
-          sx={{
-            top: navState.lensStart * backgroundNavState.pixelPerMeter + lensHeight + "px",
-          }}
-        />
-        <Draggable
-          axis="y"
-          bounds="parent"
-          nodeRef={lensRef as RefObject<HTMLDivElement>}
-          position={{
-            y: navState.lensStart * backgroundNavState.pixelPerMeter,
-            x: 0,
-          }}
-          onDrag={handleDrag}
-          onStart={() => setCursor("grabbing")}
-          onStop={() => setCursor("grab")}>
-          <Box
-            ref={lensRef}
-            onPointerDown={e => e.stopPropagation()}
-            sx={{
-              cursor,
-              height: lensHeight + "px",
-              position: "absolute",
-              left: 0,
-              right: 0,
-              top: 0,
-              bottom: 0,
-              borderStyle: "solid",
-              borderWidth: "2px",
-              borderColor: theme.palette.error.main,
-              display: "flex",
-              flexDirection: "column",
-              justifyContent: "space-between",
-            }}>
-            {lensHeight > minPixelHeightForDepthLabel && (
-              <>
-                <LensDepthLabel value={Math.round(navState.lensStart)} thousandSeparator="'" displayType="text" />
-                <LensDepthLabel
-                  value={Math.round(navState.lensStart + navState.lensSize)}
-                  thousandSeparator="'"
-                  displayType="text"
-                />
-              </>
-            )}
-          </Box>
-        </Draggable>
-      </Box>
-      <Button onClick={() => handleMove(0.3)} variant="outlined" onPointerDown={e => e.stopPropagation()}>
-        <ChevronDown />
-      </Button>
+      {upButton}
+      {bodyBox}
+      {downButton}
     </Stack>
   );
 };

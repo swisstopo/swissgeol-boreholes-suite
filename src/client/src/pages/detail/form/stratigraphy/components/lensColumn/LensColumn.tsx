@@ -11,6 +11,7 @@ interface LensColumnProps<T extends ScaledLayer & { id: number }> {
   setNavState: Dispatch<SetStateAction<NavState>>;
   getColor: (layer: T) => string | undefined;
   sx?: SxProps<Theme>;
+  layoutMode?: "stack" | "split";
 }
 
 // Mini-overview column that wraps NavigationLens: the lens rectangle drives the parent NavState's
@@ -22,11 +23,13 @@ export const LensColumn = <T extends ScaledLayer & { id: number }>({
   setNavState,
   getColor,
   sx,
+  layoutMode,
 }: LensColumnProps<T>) => (
   <NavigationLens
     navState={navState}
     setNavState={setNavState}
     sx={sx}
+    layoutMode={layoutMode}
     renderBackground={bgNavState => (
       <ScaledLayerColumn
         layers={layers}

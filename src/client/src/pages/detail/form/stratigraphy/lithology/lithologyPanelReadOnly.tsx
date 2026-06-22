@@ -67,7 +67,18 @@ export const LithologyPanelReadOnly: FC<LithologyPanelReadOnlyProps> = ({
     <Stack gap={1.5} sx={{ minHeight: "65vh", height: "100%" }}>
       <NullDepthBanner hiddenCount={hiddenCount} />
       <NavigationContainer
-        sx={{ gap: theme.spacing(1) }}
+        sx={{
+          // CSS grid pins the lens column's three pieces to the same rows as the table:
+          display: "grid",
+          gridTemplateColumns: "45px 1fr",
+          gridTemplateRows: "auto 1fr auto",
+          gridTemplateAreas: `
+            "lens-up    header"
+            "lens-body  body"
+            "lens-down  ."
+          `,
+          columnGap: theme.spacing(1),
+        }}
         renderItems={(navState, setNavState) => (
           <>
             <LensColumn<LithostratiWithDepths>
@@ -75,46 +86,44 @@ export const LithologyPanelReadOnly: FC<LithologyPanelReadOnlyProps> = ({
               navState={navState}
               setNavState={setNavState}
               getColor={getColor}
-              sx={{ flex: "0 0 45px" }}
+              layoutMode="split"
             />
-            <Stack sx={{ flex: 1 }}>
-              <StratigraphyTableHeader>
-                <StratigraphyTableHeaderCell sx={{ flex: "0 0 128px" }} label={t("depthMD")} />
-                <StratigraphyTableHeaderCell label={t("lithology")} />
-                <StratigraphyTableHeaderCell label={t("lithological_description")} />
-                <StratigraphyTableHeaderCell label={t("facies_description")} />
-              </StratigraphyTableHeader>
-              <Stack
-                direction="row"
-                sx={{
-                  flex: 1,
-                  // Bottom edge of the table: drawn as a pseudo-element so it paints *over* any cell
-                  // that reaches the bottom (sharing the same pixel as the cell's borderBottom → 1px,
-                  position: "relative",
-                  "&::after": {
-                    content: '""',
-                    position: "absolute",
-                    bottom: 0,
-                    left: 0,
-                    right: 0,
-                    height: "1px",
-                    backgroundColor: theme.palette.border.darker,
-                    pointerEvents: "none",
-                  },
-                  "& > *": { borderLeft: `1px solid ${theme.palette.border.darker}` },
-                  "& > *:last-child": { borderRight: `1px solid ${theme.palette.border.darker}` },
-                }}>
-                <NavigationChild navState={navState} setNavState={setNavState} sx={{ flex: "0 0 128px" }}>
-                  <Scale navState={navState} />
-                </NavigationChild>
-                <LithologyTableScaled
-                  lithologies={lithologies}
-                  lithologicalDescriptions={lithologicalDescriptions}
-                  faciesDescriptions={faciesDescriptions}
-                  navState={navState}
-                  setNavState={setNavState}
-                />
-              </Stack>
+            <StratigraphyTableHeader sx={{ gridArea: "header" }}>
+              <StratigraphyTableHeaderCell sx={{ flex: "0 0 128px" }} label={t("depthMD")} />
+              <StratigraphyTableHeaderCell label={t("lithology")} />
+              <StratigraphyTableHeaderCell label={t("lithological_description")} />
+              <StratigraphyTableHeaderCell label={t("facies_description")} />
+            </StratigraphyTableHeader>
+            <Stack
+              direction="row"
+              sx={{
+                gridArea: "body",
+                // Bottom edge of the table: drawn as a pseudo-element so it paints *over* any cell
+                // that reaches the bottom (sharing the same pixel as the cell's borderBottom → 1px,
+                position: "relative",
+                "&::after": {
+                  content: '""',
+                  position: "absolute",
+                  bottom: 0,
+                  left: 0,
+                  right: 0,
+                  height: "1px",
+                  backgroundColor: theme.palette.border.darker,
+                  pointerEvents: "none",
+                },
+                "& > *": { borderLeft: `1px solid ${theme.palette.border.darker}` },
+                "& > *:last-child": { borderRight: `1px solid ${theme.palette.border.darker}` },
+              }}>
+              <NavigationChild navState={navState} setNavState={setNavState} sx={{ flex: "0 0 128px" }}>
+                <Scale navState={navState} />
+              </NavigationChild>
+              <LithologyTableScaled
+                lithologies={lithologies}
+                lithologicalDescriptions={lithologicalDescriptions}
+                faciesDescriptions={faciesDescriptions}
+                navState={navState}
+                setNavState={setNavState}
+              />
             </Stack>
           </>
         )}
