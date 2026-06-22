@@ -20,21 +20,26 @@ type PersistedWMTSOptions = Omit<WMTSOptions, "tileGrid"> & {
   tileGrid: SerializedTileGrid;
 };
 
-interface WMTSLayerConfig {
-  type: "WMTS";
+interface BaseLayerConfig {
   visibility: boolean;
   transparency: number;
   position: number;
+  Identifier: string;
+  Title?: string;
+  Abstract?: string;
+  queryable?: boolean;
+  url?: string;
+  conf?: PersistedWMTSOptions | null;
+}
+
+interface WMTSLayerConfig extends BaseLayerConfig {
+  type: "WMTS";
   conf: PersistedWMTSOptions;
 }
 
-interface WMSLayerConfig {
+interface WMSLayerConfig extends BaseLayerConfig {
   type: "WMS";
-  visibility: boolean;
-  transparency: number;
-  position: number;
   url: string;
-  Identifier: string;
 }
 
 export type LayerConfig = WMTSLayerConfig | WMSLayerConfig;

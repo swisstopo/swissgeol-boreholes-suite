@@ -1,9 +1,11 @@
-﻿using BDMS.Services;
+﻿using BDMS.Models;
+using BDMS.Services;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
+using System.Text.Json.Nodes;
 using static BDMS.Helpers;
 
 namespace BDMS.Controllers;
@@ -166,5 +168,59 @@ public class UserControllerTest
         {
             Assert.IsTrue(editor.WorkgroupRoles.Any(r => (int)r.Role > 0));
         }
+    }
+
+    [TestMethod]
+    public async Task GetMapLayersReturnsEmptyWhenNoSettings()
+    {
+        var admin = await context.Users.SingleAsync(u => u.SubjectId == "sub_admin");
+        admin.Settings = null;
+        await context.SaveChangesAsync();
+
+        var result = await userController.GetMapLayers();
+
+        var layers = (result.Result as OkObjectResult)?.Value as Dictionary<string, MapLayer>;
+        Assert.IsNotNull(layers);
+        Assert.AreEqual(0, layers.Count);
+    }
+
+    [TestMethod]
+    public async Task SetAndGetMapLayersRoundtrips()
+    {
+        var layers = new Dictionary<string, MapLayer>
+        {
+            ["layerA"] = new MapLayer { Type = "WMS", Identifier = "layerA", Title = "Layer A", Abstract = "Layer A abstract", Url = "https://example.com/wms", Visibility = true, Transparency = 0, Position = 0, Queryable = true },
+        };
+
+        var setResult = await userController.SetMapLayers(layers);
+        ActionResultAssert.IsOk(setResult.Result);
+
+        var getResult = await userController.GetMapLayers();
+        var returned = (getResult.Result as OkObjectResult)?.Value as Dictionary<string, MapLayer>;
+        Assert.IsNotNull(returned);
+        Assert.AreEqual(1, returned.Count);
+        Assert.IsTrue(returned.ContainsKey("layerA"));
+        Assert.AreEqual("Layer A", returned["layerA"].Title);
+        Assert.AreEqual("WMS", returned["layerA"].Type);
+        Assert.IsTrue(returned["layerA"].Visibility);
+        Assert.IsTrue(returned["layerA"].Queryable);
+    }
+
+    [TestMethod]
+    public async Task SetMapLayersPreservesOtherSettings()
+    {
+        var admin = await context.Users.SingleAsync(u => u.SubjectId == "sub_admin");
+        admin.Settings = """{"filter":{"foo":true},"map":{"editor":{"bar":1},"explorer":{}}}""";
+        await context.SaveChangesAsync();
+
+        var layers = new Dictionary<string, MapLayer> { ["x"] = new MapLayer { Type = "WMS", Identifier = "x", Position = 0 } };
+        await userController.SetMapLayers(layers);
+
+        var saved = await context.Users.SingleAsync(u => u.SubjectId == "sub_admin");
+        var root = JsonNode.Parse(saved.Settings);
+        Assert.IsNotNull(root);
+        Assert.IsTrue((bool)root["filter"]["foo"]);
+        Assert.AreEqual(1, (int)root["map"]["editor"]["bar"]);
+        Assert.IsNotNull(root["map"]["explorer"]["x"]);
     }
 }

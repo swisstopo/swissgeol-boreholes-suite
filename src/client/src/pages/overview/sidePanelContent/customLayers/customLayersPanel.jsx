@@ -1,75 +1,28 @@
-import { connect } from "react-redux";
 import PropTypes from "prop-types";
-import { patchSettings } from "../../../../api-lib";
+import { useMapOverlays } from "../../../../api/useMapOverlays";
 import { CustomLayersComponent } from "./customLayersComponent.jsx";
 
-const CustomLayersPanel = props => {
+const CustomLayersPanel = ({ toggleDrawer }) => {
+  const { overlays, setVisibility, setTransparency, setPosition } = useMapOverlays();
+
   return (
     <CustomLayersComponent
-      toggleDrawer={props.toggleDrawer}
-      layers={props.setting.data.map.explorer}
-      moveDown={props.moveDown}
-      moveUp={props.moveUp}
-      saveTransparency={props.saveTransparency}
-      setSelectedLayer={props.setSelectedLayer}
-      toggleVisibility={props.toggleVisibility}
+      toggleDrawer={toggleDrawer}
+      layers={overlays}
+      moveDown={layer => setPosition(layer.Identifier, layer.position !== undefined ? layer.position - 1 : 0)}
+      moveUp={layer => setPosition(layer.Identifier, layer.position !== undefined ? layer.position + 1 : 0)}
+      saveTransparency={layer =>
+        setTransparency(layer.Identifier, layer.transparency !== undefined ? layer.transparency : 0)
+      }
+      toggleVisibility={layer =>
+        setVisibility(layer.Identifier, layer.visibility !== undefined ? !layer.visibility : true)
+      }
     />
   );
 };
 
 CustomLayersPanel.propTypes = {
-  moveDown: PropTypes.func,
-  moveUp: PropTypes.func,
-  saveTransparency: PropTypes.func,
-  setSelectedLayer: PropTypes.func,
-  setting: PropTypes.object,
-  toggleVisibility: PropTypes.func,
   toggleDrawer: PropTypes.func,
 };
 
-const mapStateToProps = state => {
-  return {
-    setting: state.setting,
-  };
-};
-
-const mapDispatchToProps = dispatch => {
-  return {
-    dispatch: dispatch,
-    toggleVisibility: layer => {
-      dispatch(
-        patchSettings("map.explorer", layer.visibility !== undefined ? !layer.visibility : true, [
-          layer.Identifier,
-          "visibility",
-        ]),
-      );
-    },
-    saveTransparency: layer => {
-      dispatch(
-        patchSettings("map.explorer", layer.transparency !== undefined ? layer.transparency : 0, [
-          layer.Identifier,
-          "transparency",
-        ]),
-      );
-    },
-    moveDown: layer => {
-      dispatch(
-        patchSettings("map.explorer", layer.position !== undefined ? layer.position - 1 : 0, [
-          layer.Identifier,
-          "position",
-        ]),
-      );
-    },
-    moveUp: layer => {
-      dispatch(
-        patchSettings("map.explorer", layer.position !== undefined ? layer.position + 1 : 0, [
-          layer.Identifier,
-          "position",
-        ]),
-      );
-    },
-  };
-};
-
-const ConnectedCustomLayersPanel = connect(mapStateToProps, mapDispatchToProps)(CustomLayersPanel);
-export default ConnectedCustomLayersPanel;
+export default CustomLayersPanel;

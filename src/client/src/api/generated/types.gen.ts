@@ -2185,6 +2185,55 @@ export type MaintenanceTaskStatus = "Idle" | "Running" | "Completed" | "Failed";
  */
 export type MaintenanceTaskType = "LocationMigration" | "CoordinateMigration" | "UserMerge";
 
+/**
+ * Represents a single custom map overlay stored in a BDMS.Models.User's settings
+ * (under `map.explorer`). The property names mirror the shape persisted by the
+ * client, so existing settings continue to round-trip unchanged.
+ */
+export type MapLayer = {
+  /**
+   * Gets the layer type, either `WMS` or `WMTS`.
+   */
+  type?: string | null;
+  /**
+   * Gets the layer identifier.
+   */
+  Identifier?: string | null;
+  /**
+   * Gets the layer title.
+   */
+  Title?: string | null;
+  /**
+   * Gets the layer abstract.
+   */
+  Abstract?: string | null;
+  /**
+   * Gets the service URL of the layer.
+   */
+  url?: string | null;
+  /**
+   * Gets a value indicating whether the layer is visible.
+   */
+  visibility?: boolean;
+  /**
+   * Gets the layer transparency, as a percentage from `0` to `100`.
+   */
+  transparency?: number;
+  /**
+   * Gets the layer position used for ordering and z-index.
+   */
+  position?: number;
+  /**
+   * Gets a value indicating whether the layer is queryable.
+   */
+  queryable?: boolean;
+  /**
+   * Gets the opaque WMTS source configuration produced by the client. Stored and
+   * returned verbatim; `null` for WMS layers.
+   */
+  conf?: unknown;
+};
+
 export type NtsGeometryServices = {
   geometryOverlay?: GeometryOverlay;
   coordinateEqualityComparer?: CoordinateEqualityComparer;
@@ -8080,6 +8129,64 @@ export type GetApiVbyVersionUserSelfResponses = {
 
 export type GetApiVbyVersionUserSelfResponse =
   GetApiVbyVersionUserSelfResponses[keyof GetApiVbyVersionUserSelfResponses];
+
+export type GetApiVbyVersionUserSelfMaplayersData = {
+  body?: never;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/user/self/maplayers";
+};
+
+export type GetApiVbyVersionUserSelfMaplayersErrors = {
+  /**
+   * The current user could not be identified.
+   */
+  401: unknown;
+};
+
+export type GetApiVbyVersionUserSelfMaplayersResponses = {
+  /**
+   * Returns the current user's custom map overlays, keyed by layer identifier.
+   */
+  200: {
+    [key: string]: MapLayer;
+  };
+};
+
+export type GetApiVbyVersionUserSelfMaplayersResponse =
+  GetApiVbyVersionUserSelfMaplayersResponses[keyof GetApiVbyVersionUserSelfMaplayersResponses];
+
+export type PutApiVbyVersionUserSelfMaplayersData = {
+  body?: {
+    [key: string]: MapLayer;
+  };
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/user/self/maplayers";
+};
+
+export type PutApiVbyVersionUserSelfMaplayersErrors = {
+  /**
+   * The current user could not be identified.
+   */
+  401: unknown;
+};
+
+export type PutApiVbyVersionUserSelfMaplayersResponses = {
+  /**
+   * The map overlays were saved successfully and are returned.
+   */
+  200: {
+    [key: string]: MapLayer;
+  };
+};
+
+export type PutApiVbyVersionUserSelfMaplayersResponse =
+  PutApiVbyVersionUserSelfMaplayersResponses[keyof PutApiVbyVersionUserSelfMaplayersResponses];
 
 export type DeleteApiVbyVersionUserByIdData = {
   body?: never;

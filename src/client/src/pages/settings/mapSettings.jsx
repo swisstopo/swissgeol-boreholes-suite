@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useContext } from "react";
 import Highlighter from "react-highlight-words";
 import { useTranslation } from "react-i18next";
 import {
@@ -20,14 +20,20 @@ import WMTSCapabilities from "ol/format/WMTSCapabilities";
 import { theme } from "../../AppTheme.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";
 
-export const MapSettings = ({ setting, i18n, rmExplorerMap, addExplorerMap, handleOnChange, state, setState }) => {
+export const MapSettings = ({
+  overlays,
+  i18n,
+  rmExplorerMap,
+  addExplorerMap,
+  selectedWMS,
+  wmsOptions,
+  handleOnChange,
+  state,
+  setState,
+}) => {
   const { showAlert } = useContext(AlertContext);
   const { t } = useTranslation();
-  const [mapSettings, setMapSettings] = useState(setting.data.map.explorer);
-
-  useEffect(() => {
-    setMapSettings(setting.data.map.explorer);
-  }, [setting.data.map.explorer]);
+  const mapSettings = overlays;
 
   function getSearchInput(stateToUpdate) {
     return (
@@ -116,9 +122,9 @@ export const MapSettings = ({ setting, i18n, rmExplorerMap, addExplorerMap, hand
   }
 
   function fetchCapabilitiesForService() {
-    const isWms = setting.selectedWMS.startsWith("https://wms");
+    const isWms = selectedWMS.startsWith("https://wms");
     const languageParam = `${isWms ? "&lang=" : "?lang="}${i18n.language}`;
-    fetch(setting.selectedWMS + languageParam).then(response => {
+    fetch(selectedWMS + languageParam).then(response => {
       response.text().then(data => {
         // Check if WMS or WMTS
         if (/<(WMT_MS_Capabilities|WMS_Capabilities)/.test(data)) {
@@ -172,9 +178,9 @@ export const MapSettings = ({ setting, i18n, rmExplorerMap, addExplorerMap, hand
                   size="small"
                   sx={{ mt: 0 }}
                   data-cy={"capabilities-formSelect"}
-                  value={setting.selectedWMS}
+                  value={selectedWMS}
                   onChange={e => handleOnChange(e.target.value)}>
-                  {setting.WMS.map(option => (
+                  {wmsOptions.map(option => (
                     <MenuItem key={option.value} value={option.value}>
                       {option.text}
                     </MenuItem>

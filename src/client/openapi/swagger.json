@@ -5775,6 +5775,136 @@
         }
       }
     },
+    "/api/v{version}/user/self/maplayers": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Gets the custom map overlays of the currently authenticated user.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the current user's custom map overlays, keyed by layer identifier.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/MapLayer"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/MapLayer"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/MapLayer"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The current user could not be identified."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Replaces the custom map overlays of the currently authenticated user with mapLayers.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/MapLayer"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/MapLayer"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/MapLayer"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The map overlays were saved successfully and are returned.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/MapLayer"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/MapLayer"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/MapLayer"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The current user could not be identified."
+          }
+        }
+      }
+    },
     "/api/v{version}/user/{id}": {
       "get": {
         "tags": [
@@ -11044,6 +11174,60 @@
         ],
         "type": "string",
         "description": "Represents the type of a maintenance task."
+      },
+      "MapLayer": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Gets the layer type, either `WMS` or `WMTS`.",
+            "nullable": true
+          },
+          "Identifier": {
+            "type": "string",
+            "description": "Gets the layer identifier.",
+            "nullable": true
+          },
+          "Title": {
+            "type": "string",
+            "description": "Gets the layer title.",
+            "nullable": true
+          },
+          "Abstract": {
+            "type": "string",
+            "description": "Gets the layer abstract.",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "description": "Gets the service URL of the layer.",
+            "nullable": true
+          },
+          "visibility": {
+            "type": "boolean",
+            "description": "Gets a value indicating whether the layer is visible."
+          },
+          "transparency": {
+            "type": "number",
+            "description": "Gets the layer transparency, as a percentage from `0` to `100`.",
+            "format": "double"
+          },
+          "position": {
+            "type": "integer",
+            "description": "Gets the layer position used for ordering and z-index.",
+            "format": "int32"
+          },
+          "queryable": {
+            "type": "boolean",
+            "description": "Gets a value indicating whether the layer is queryable."
+          },
+          "conf": {
+            "description": "Gets the opaque WMTS source configuration produced by the client. Stored and\r\nreturned verbatim; `null` for WMS layers.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a single custom map overlay stored in a BDMS.Models.User's settings\r\n(under `map.explorer`). The property names mirror the shape persisted by the\r\nclient, so existing settings continue to round-trip unchanged."
       },
       "NtsGeometryServices": {
         "type": "object",
