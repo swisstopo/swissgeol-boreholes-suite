@@ -124,7 +124,7 @@ const HierarchicalDataEditProfile = ({
   }, [layers, pixelPerMeter, addLayer, updateLayer, deleteLayer, dataProperty, options, header]);
 
   const lensSize = navState.lensSize;
-  const toggleHeaderVisibility = useCallback((targetIndex) => {
+  const toggleHeaderVisibility = useCallback(targetIndex => {
     setHeader(prev => prev.map((h, i) => (targetIndex === i ? { ...h, isVisible: !h.isVisible } : h)));
   }, []);
   const headerElement = useMemo(
@@ -185,7 +185,18 @@ const HierarchicalDataEditProfile = ({
         </Table>
       </Box>
     ),
-    [titel, editingEnabled, t, header, toggleHeaderVisibility, addLayer, selectedStratigraphyID, layers, lensSize, setNavState],
+    [
+      titel,
+      editingEnabled,
+      t,
+      header,
+      toggleHeaderVisibility,
+      addLayer,
+      selectedStratigraphyID,
+      layers,
+      lensSize,
+      setNavState,
+    ],
   );
 
   return (
