@@ -41,10 +41,9 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
   const [maxLines, setMaxLines] = useState(99);
   const isEditing = Boolean(onClick);
 
-  // Recompute the clamp count and overflow flag whenever the cell's box resizes (column width,
-  // row stretch, viewport changes). Using ResizeObserver rather than a `[children]` effect avoids
-  // re-measuring on every parent render (`children` is a fresh React element each render even when
-  // its content is unchanged) and keeps a single observation hooked up across the cell's lifetime.
+  // Re-check how many lines fit and whether the text overflows whenever the cell changes size.
+  // ResizeObserver is used instead of a React effect on `children` because `children` looks
+  // "new" on every render even if nothing actually changed, which would cause unnecessary rerenders.
   useTypedResizeObserver(stackRef, entry => {
     const el = stackRef.current;
     if (!el) return;
