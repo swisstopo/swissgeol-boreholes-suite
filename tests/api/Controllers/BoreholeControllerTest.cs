@@ -1278,6 +1278,7 @@ public class BoreholeControllerTest
         var id1 = await CreateDisposableBoreholeAsync();
         var id2 = await CreateDisposableBoreholeAsync();
 
+        // id1 stays authorized via the default CanChangeBoreholeStatusAsync(any, any) => true setup; only id2 is denied.
         boreholePermissionServiceMock
             .Setup(x => x.CanChangeBoreholeStatusAsync(It.IsAny<string?>(), id2))
             .ReturnsAsync(false);

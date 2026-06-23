@@ -380,12 +380,13 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             return BadRequest(ModelState);
         }
 
+        var distinctIds = boreholeIds.Distinct().ToList();
         var subjectId = HttpContext.GetUserSubjectId();
 
         // Atomic permission gate: collect every borehole the user may not delete (uses the same check as the
         // single-borehole delete), then report them all. Nothing is deleted if any fails.
         var unauthorizedBoreholeIds = new List<int>();
-        foreach (var id in boreholeIds)
+        foreach (var id in distinctIds)
         {
             if (!await BoreholePermissionService.CanChangeBoreholeStatusAsync(subjectId, id).ConfigureAwait(false))
             {
@@ -399,11 +400,11 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         }
 
         var boreholes = await Context.Boreholes
-            .Where(b => boreholeIds.Contains(b.Id))
+            .Where(b => distinctIds.Contains(b.Id))
             .ToListAsync()
             .ConfigureAwait(false);
 
-        if (boreholes.Count != boreholeIds.Distinct().Count())
+        if (boreholes.Count != distinctIds.Count)
         {
             return NotFound();
         }
