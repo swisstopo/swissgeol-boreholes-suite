@@ -148,7 +148,7 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
                   />
                   <FormDomainSelect
                     fieldName={"statusId"}
-                    label={"boreholestatus"}
+                    label={"boreholeStatus"}
                     schemaName={"borehole_status"}
                     selected={borehole.statusId}
                   />

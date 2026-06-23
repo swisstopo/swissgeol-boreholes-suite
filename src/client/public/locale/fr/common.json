@@ -66,7 +66,6 @@
   "boreholesImportError": "Aucun forage n'a pu être importé! Assurez-vous que le format et le contenu du fichier téléchargé sont corrects.",
   "boreholesImportLongRunning": "L'importation s'exécute en arrière-plan. Ce processus peut prendre quelques minutes. Une fois terminée, les forages seront visibles dans la liste.",
   "boreholesImported": "forages ont été importés",
-  "boreholestatus": "Statut du forage",
   "bottomLoggedInterval": "Fin de l'intervalle enregistré [m MD]",
   "bulkDeleteUnauthorizedBoreholes": "Vous n'êtes pas autorisé à supprimer les forages suivants:",
   "bulkEditUnauthorizedBoreholes": "Vous n'êtes pas autorisé à modifier les forages suivants:",

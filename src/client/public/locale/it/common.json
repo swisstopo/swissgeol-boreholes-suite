@@ -67,7 +67,6 @@
   "boreholesImportError": "Nessuna perforazione poteva essere importato! Assicurati che il file caricato abbia il formato e il contenuto corretti.",
   "boreholesImportLongRunning": "L'import sta eseguendo in background. Questo processo potrebbe richiedere alcuni minuti. Una volta completato, le perforazioni saranno visibili nell'elenco.",
   "boreholesImported": "perforazioni Tre pozzi sono stati importati",
-  "boreholestatus": "Stato della perforazione",
   "bottomLoggedInterval": "Fine dell'intervallo registrato [m MD]",
   "bulkDeleteUnauthorizedBoreholes": "Non sei autorizzato a eliminare le seguenti perforazioni:",
   "bulkEditUnauthorizedBoreholes": "Non sei autorizzato a modificare le seguenti perforazioni:",
