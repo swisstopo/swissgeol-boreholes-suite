@@ -45,7 +45,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
   const { filterPolygon, polygonSelectionEnabled, setPolygonSelectionEnabled, setFeatureIds, setFilterPolygon } =
     useContext(PolygonFilterContext);
 
-  const { filterParams, setFilterField, resetFilter, setParams } = useBoreholeUrlParams();
+  const { filterParams, setFilterField, resetFilter } = useBoreholeUrlParams();
 
   const { data: user } = useCurrentUser();
   const { data: stats } = useFilterStats(filterParams);
@@ -115,7 +115,6 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
     setFeatureIds([]);
     formMethods.reset();
     resetFilter();
-    setParams({ page: 0 });
   };
 
   return (
@@ -184,7 +183,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
         </Box>
         {searchList?.map(filter => {
           const currentFilterInputConfig = searchList.find(l => l.name === filter.name);
-          const activeFilterLength = Object.entries(filterParams).filter(([key, value]) =>
+          const activeFilterCount = Object.entries(filterParams).filter(([key, value]) =>
             currentFilterInputConfig?.searchData.some(d => d.key === key && value != null),
           )?.length;
           return filter.isHidden ? null : (
@@ -199,15 +198,12 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
                   );
                 }}>
                 <Typography variant="h6">{t(filter?.translationId)} </Typography>
-                <Badge badgeContent={activeFilterLength} sx={{ marginLeft: "18px", marginTop: "10px" }} />
+                <Badge badgeContent={activeFilterCount} sx={{ marginLeft: "18px", marginTop: "10px" }} />
               </AccordionSummary>
               {filter?.name === "workgroup" && filter?.isSelected && (
                 <StyledAccordionDetails>
                   <WorkgroupFilter
-                    onChange={workgroup => {
-                      setFilterField("workgroupId", workgroup);
-                      setParams({ page: 0 });
-                    }}
+                    onChange={workgroup => setFilterField("workgroupId", workgroup)}
                     workgroups={getUserWorkgroups(user)}
                     selectedWorkgroupIds={filterParams["workgroupId"] as number[] | undefined}
                     counts={getDomainCountsForField(stats, "workgroupId")}

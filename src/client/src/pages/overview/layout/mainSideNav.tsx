@@ -39,7 +39,7 @@ const MainSideNav = ({
   const auth = useAuth();
   const { filterPolygon } = useContext(PolygonFilterContext);
   const { editableWorkgroups } = useUserWorkgroups();
-  const { activeFilterLength } = useBoreholeUrlParams();
+  const { activeFilterCount } = useBoreholeUrlParams();
 
   const handleToggleFilter = () => {
     handleDrawer(DrawerContentTypes.Filters);
@@ -74,7 +74,7 @@ const MainSideNav = ({
   const isLayersPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.CustomLayers;
   const isUploadPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.Import;
   const editingDisabled = editableWorkgroups.length === 0;
-  const activeFilterCount = activeFilterLength + (filterPolygon === null ? 0 : 1);
+  const totalActiveFilterCount = activeFilterCount + (filterPolygon === null ? 0 : 1);
 
   return (
     <Stack
@@ -92,7 +92,9 @@ const MainSideNav = ({
           padding: "1em",
           flex: "1 1 100%",
         }}>
-        {activeFilterCount > 0 && <Badge sx={{ margin: "1px" }} badgeContent={activeFilterCount}></Badge>}
+        {totalActiveFilterCount > 0 && (
+          <Badge sx={{ margin: "1px" }} badgeContent={totalActiveFilterCount}></Badge>
+        )}
         <NavButton
           data-cy="show-filter-button"
           icon={<Filter />}

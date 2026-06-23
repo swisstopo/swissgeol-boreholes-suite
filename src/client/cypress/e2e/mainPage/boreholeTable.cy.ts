@@ -64,21 +64,23 @@ describe("Borehole editor table tests", () => {
     verifyRowContains("10.76", 1); // Emory Jast
     verifyRowContains("100.55", 2); // Emelia Aufderhar
 
-    // Sort by borehole type descending — "virtual borehole" is the
-    // alphabetically last type label and there are 4 boreholes with it.
+    // Sort by borehole type descending. The API orders by borehole_type_id (not the
+    // label), so row 0 is the codelist with the highest id — "virtual borehole"
+    // (borehole_type_id 30000307). 4 boreholes share that type.
     sortByColumnHeader("Borehole type");
     sortByColumnHeader("Borehole type");
     verifyRowContains("virtual borehole", 0);
     verifyRowContains("virtual borehole", 1);
     verifyRowContains("virtual borehole", 2);
 
-    // Sort by drilling purpose descending — "tunnel exploration" is the
-    // alphabetically last purpose label and there are 5 boreholes with it.
+    // Sort by drilling purpose descending. The API orders by purpose_id (not the
+    // label), so row 0 is the codelist with the highest id — "scientific exploration"
+    // (purpose_id 30000012). 5 boreholes share that purpose.
     sortByColumnHeader("Drilling purpose");
     sortByColumnHeader("Drilling purpose");
-    verifyRowContains("tunnel exploration", 0);
-    verifyRowContains("tunnel exploration", 1);
-    verifyRowContains("tunnel exploration", 2);
+    verifyRowContains("scientific exploration", 0);
+    verifyRowContains("scientific exploration", 1);
+    verifyRowContains("scientific exploration", 2);
   });
 
   it("Preserves column sorting and active page when navigating", () => {
