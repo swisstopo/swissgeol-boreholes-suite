@@ -171,7 +171,7 @@ const HierarchicalDataEditProfile = ({
           <TableBody>
             <TableRow>
               {header.map(
-                (h, index) =>
+                h =>
                   h.isVisible && (
                     <TableCell key={h.title} sx={headerCellSx}>
                       <Typography noWrap variant="subtitle1">
