@@ -1142,7 +1142,15 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task BulkEditClearsFieldWhenMaskedValueIsNull()
     {
+        var restrictionId = await context.Codelists
+            .Where(c => c.Schema == "restriction")
+            .Select(c => c.Id)
+            .FirstAsync();
         var id = await context.Boreholes.OrderBy(b => b.Id).Select(b => b.Id).FirstAsync();
+        var borehole = await context.Boreholes.SingleAsync(b => b.Id == id);
+        borehole.RestrictionId = restrictionId;
+        await context.SaveChangesAsync();
+        Assert.IsNotNull((await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id)).RestrictionId);
 
         var request = new BoreholeBulkUpdateRequest
         {
@@ -1154,8 +1162,8 @@ public class BoreholeControllerTest
         var response = await controller.BulkEditAsync(request);
         ActionResultAssert.IsOk(response);
 
-        var borehole = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
-        Assert.IsNull(borehole.RestrictionId);
+        var updated = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
+        Assert.IsNull(updated.RestrictionId);
     }
 
     [TestMethod]
@@ -1194,6 +1202,7 @@ public class BoreholeControllerTest
     public async Task BulkEditRejectsWholeBatchAndReturnsAllUnauthorizedIds()
     {
         var ids = await context.Boreholes.OrderBy(b => b.Id).Take(3).Select(b => b.Id).ToListAsync();
+        Assert.IsTrue(ids.Count >= 3, "This test needs at least 3 seeded boreholes.");
         var blocked = new List<int> { ids[1], ids[2] };
 
         foreach (var blockedId in blocked)

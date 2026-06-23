@@ -300,7 +300,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     /// <param name="request">The boreholes to edit, the values to apply, and the field mask.</param>
     [HttpPost("bulkedit")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> BulkEditAsync(BoreholeBulkUpdateRequest request)
+    public async Task<IActionResult> BulkEditAsync([FromBody] BoreholeBulkUpdateRequest request)
     {
         if (request == null || request.BoreholeIds.Count == 0 || request.FieldsToUpdate.Count == 0)
         {
@@ -393,15 +393,11 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         "lithologyTopBedrockId", "lithostratigraphyTopBedrockId", "chronostratigraphyTopBedrockId",
     };
 
-    // workgroupId is intentionally absent from both tab sets: it is not displayed on any reviewable tab.
-    private static readonly HashSet<string> BulkEditableFields = new(StringComparer.OrdinalIgnoreCase)
-    {
-        "workgroupId", "restrictionId", "restrictionUntil", "nationalInterest", "projectName",
-        "typeId", "purposeId", "statusId", "locationPrecisionId", "elevationPrecisionId",
-        "referenceElevationPrecisionId", "referenceElevationTypeId", "depthPrecisionId",
-        "totalDepth", "topBedrockFreshMd", "topBedrockWeatheredMd", "hasGroundwater",
-        "lithologyTopBedrockId", "lithostratigraphyTopBedrockId", "chronostratigraphyTopBedrockId",
-    };
+    // All fields that may be bulk-edited: the union of the tab field sets plus workgroupId
+    // (workgroupId is editable but is not shown on any reviewable tab, so it is not in either tab set).
+    private static readonly HashSet<string> BulkEditableFields = new(
+        LocationTabFields.Concat(GeneralTabFields).Append("workgroupId"),
+        StringComparer.OrdinalIgnoreCase);
 
     private static void ResetAffectedTabs(Borehole borehole, bool resetLocation, bool resetGeneral)
     {
@@ -425,6 +421,8 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
     private static void ApplyBulkEditField(Borehole borehole, BoreholeBulkUpdate update, string field)
     {
+        // Case labels are the ToUpperInvariant() of the camelCase field names (CA1308 requires
+        // ToUpperInvariant over ToLowerInvariant). Keep them in sync with BulkEditableFields.
         switch (field.ToUpperInvariant())
         {
             case "WORKGROUPID": borehole.WorkgroupId = update.WorkgroupId; break;
