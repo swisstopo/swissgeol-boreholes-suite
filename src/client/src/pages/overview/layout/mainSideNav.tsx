@@ -92,9 +92,7 @@ const MainSideNav = ({
           padding: "1em",
           flex: "1 1 100%",
         }}>
-        {totalActiveFilterCount > 0 && (
-          <Badge sx={{ margin: "1px" }} badgeContent={totalActiveFilterCount}></Badge>
-        )}
+        {totalActiveFilterCount > 0 && <Badge sx={{ margin: "1px" }} badgeContent={totalActiveFilterCount}></Badge>}
         <NavButton
           data-cy="show-filter-button"
           icon={<Filter />}
