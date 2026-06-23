@@ -6,7 +6,7 @@ import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/co
 import { SessionKeys } from "../pages/overview/SessionKey.ts";
 import { download, downloadData } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
-import { Borehole, BoreholeCodelist, Codelist } from "./generated";
+import { Borehole, BoreholeBulkUpdate, BoreholeBulkUpdateRequest, BoreholeCodelist, Codelist } from "./generated";
 import { NullableDateString } from "./unionTypes.ts";
 import { useCurrentUser } from "./user.ts";
 
@@ -68,6 +68,28 @@ const updateBorehole = async (borehole: Borehole): Promise<Borehole> => {
   return await fetchApiV2WithApiError<Borehole>("borehole", "PUT", borehole);
 };
 const deleteBorehole = async (id: number) => await fetchApiV2WithApiError(`borehole?id=${id}`, "DELETE");
+
+export type BulkEditValue = string | number | boolean | null | undefined;
+
+export const buildBulkEditRequest = (
+  boreholeIds: number[],
+  changedFields: Array<[keyof BoreholeBulkUpdate, BulkEditValue]>,
+): BoreholeBulkUpdateRequest => {
+  const update: BoreholeBulkUpdate = {};
+  const fieldsToUpdate: string[] = [];
+  for (const [key, value] of changedFields) {
+    // @ts-expect-error indexed assignment across the union of nullable property types
+    update[key] = value;
+    fieldsToUpdate.push(key as string);
+  }
+  return { boreholeIds, update, fieldsToUpdate };
+};
+
+export const bulkEditBoreholes = async (request: BoreholeBulkUpdateRequest): Promise<number[]> =>
+  await fetchApiV2WithApiError<number[]>("borehole/bulkedit", "POST", request);
+
+export const bulkDeleteBoreholes = async (boreholeIds: number[]): Promise<void> =>
+  await fetchApiV2WithApiError<void>("borehole/bulkdelete", "POST", boreholeIds);
 
 const canUserEditBorehole = async (id: number) =>
   await fetchApiV2WithApiError<boolean>(`permissions/canedit?boreholeId=${id}`, "GET");
