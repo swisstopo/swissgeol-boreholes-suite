@@ -20,6 +20,7 @@ const DepthLabel = styled(NumericFormat, {
   fontWeight: 400,
   textAlign: "center",
   lineHeight: "1em",
+  transform: "translateY(50%)",
 }));
 
 interface ScaleProps {
