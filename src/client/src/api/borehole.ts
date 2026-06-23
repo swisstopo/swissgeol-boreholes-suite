@@ -69,7 +69,7 @@ const updateBorehole = async (borehole: Borehole): Promise<Borehole> => {
 };
 const deleteBorehole = async (id: number) => await fetchApiV2WithApiError(`borehole?id=${id}`, "DELETE");
 
-export type BulkEditValue = string | number | boolean | null | undefined;
+type BulkEditValue = string | number | boolean | null | undefined;
 
 export const buildBulkEditRequest = (
   boreholeIds: number[],
