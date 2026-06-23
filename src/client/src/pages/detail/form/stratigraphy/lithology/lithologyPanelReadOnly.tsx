@@ -1,4 +1,4 @@
-import { FC, useCallback, useMemo } from "react";
+import { FC, useCallback, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack } from "@mui/material";
 import { LithostratigraphyLayer } from "../../../../../api/generated";
@@ -35,6 +35,10 @@ export const LithologyPanelReadOnly: FC<LithologyPanelReadOnlyProps> = ({
 }) => {
   const { t } = useTranslation();
   const { data: lithostratigraphies = [] } = useLithostratigraphies(stratigraphyId);
+  // navState.height must reflect ONLY the body row (1fr) of the grid below, not the whole grid:
+  // the table-header and lens-down rows are outside the body, and including them would inflate
+  // pixelPerMeter so the bottom of the data clips inside `overflow: hidden`.
+  const bodyRef = useRef<HTMLDivElement>(null);
 
   const validLithostrati = useMemo<ReadonlyArray<LithostratiWithDepths>>(
     () => lithostratigraphies.filter((l): l is LithostratiWithDepths => l.fromDepth !== null && l.toDepth !== null),
@@ -67,6 +71,7 @@ export const LithologyPanelReadOnly: FC<LithologyPanelReadOnlyProps> = ({
     <Stack gap={1.5} sx={{ minHeight: "65vh", height: "100%" }}>
       <NullDepthBanner hiddenCount={hiddenCount} />
       <NavigationContainer
+        bodyRef={bodyRef}
         sx={{
           // CSS grid pins the lens column's three pieces to the same rows as the table:
           display: "grid",
@@ -95,6 +100,7 @@ export const LithologyPanelReadOnly: FC<LithologyPanelReadOnlyProps> = ({
               <StratigraphyTableHeaderCell label={t("facies_description")} />
             </StratigraphyTableHeader>
             <Stack
+              ref={bodyRef}
               direction="row"
               sx={{
                 gridArea: "body",

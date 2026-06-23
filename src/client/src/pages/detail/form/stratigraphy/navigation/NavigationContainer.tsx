@@ -1,4 +1,4 @@
-import { Dispatch, FC, ReactNode, SetStateAction, useEffect, useRef, useState, WheelEvent } from "react";
+import { Dispatch, FC, ReactNode, RefObject, SetStateAction, useEffect, useRef, useState, WheelEvent } from "react";
 import { Stack } from "@mui/material";
 import { SxProps, Theme } from "@mui/material/styles";
 import { clamp } from "./clamp.ts";
@@ -11,6 +11,16 @@ interface NavigationContainerProps {
   sx?: SxProps<Theme>;
   navState?: NavState;
   onNavStateChange?: Dispatch<SetStateAction<NavState>>;
+  // Element to observe for navState.height. Defaults to the container itself, which is correct
+  // when the container's box IS the data area (the stack-mode chrono/litho-strati panels).
+  // Provide an explicit body ref when the container wraps more than just the body — e.g. the
+  // lithology grid has a header row above and a lens-down row below the body, so measuring the
+  // container would over-count the pixels available for depth-proportional scaling and the table
+  // cells would render taller than the visible body row.
+  // Todo: Reevaluate architechture after chronostratigraphy and lithostratigraphy styles were updated to newer design.
+  // https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2301
+  // https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2300
+  bodyRef?: RefObject<HTMLElement | null>;
 }
 
 const preventVerticalScroll = (event: globalThis.WheelEvent) => {
@@ -23,13 +33,15 @@ export const NavigationContainer: FC<NavigationContainerProps> = ({
   sx,
   navState: externalNavState,
   onNavStateChange: externalSetter,
+  bodyRef,
 }) => {
   const [internalNavState, setInternalNavState] = useState<NavState>(new NavState());
   const navState = externalNavState ?? internalNavState;
   const setNavState = externalSetter ?? setInternalNavState;
 
   const containerRef = useRef<HTMLDivElement>(null);
-  useTypedResizeObserver(containerRef, entry => setNavState(prev => prev.setHeight(entry.contentRect.height)));
+  const heightRef: RefObject<HTMLElement | null> = bodyRef ?? containerRef;
+  useTypedResizeObserver(heightRef, entry => setNavState(prev => prev.setHeight(entry.contentRect.height)));
 
   const { onPointerDown, isDragging, isPannable } = useDragPan({ navState, setNavState, containerRef });
   const panCursor = isDragging ? "grabbing" : "grab";
@@ -42,12 +54,19 @@ export const NavigationContainer: FC<NavigationContainerProps> = ({
     const newLensSize = navState.lensSize * 1.001 ** event.deltaY;
     const clampedLensSize = clamp(newLensSize, 0.5, navState.maxContent);
 
+    // The wheel anchors the zoom at the pointer, so we need the pointer's fraction within the
+    // *body* area (not the container). When bodyRef is provided, navState.height is already the
+    // body height, so we read the body's bounding rect directly. Otherwise fall back to the legacy
+    // "container minus maxHeader" geometry used by stack-mode panels.
+    const bodyEl = bodyRef?.current;
+    const bodyTop = bodyEl
+      ? bodyEl.getBoundingClientRect().top
+      : event.currentTarget.getBoundingClientRect().top + navState.maxHeader;
+    const bodyHeight = bodyEl ? navState.height : navState.height - navState.maxHeader;
+
     // calculate new lensStart
     const clampedLensStart = clamp(
-      navState.lensStart +
-        (navState.lensSize - clampedLensSize) *
-          ((event.pageY - event.currentTarget.getBoundingClientRect().top - navState.maxHeader) /
-            (navState.height - navState.maxHeader)),
+      navState.lensStart + (navState.lensSize - clampedLensSize) * ((event.pageY - bodyTop) / bodyHeight),
       0,
       navState.maxContent - clampedLensSize,
     );
