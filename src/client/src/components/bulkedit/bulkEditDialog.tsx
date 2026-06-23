@@ -70,7 +70,12 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
       },
       { fieldName: "boreholeType", type: FormValueType.Domain, payloadKey: "typeId", schemaName: "borehole_type" },
       { fieldName: "purpose", type: FormValueType.Domain, payloadKey: "purposeId", schemaName: "drilling_purpose" },
-      { fieldName: "status", type: FormValueType.Domain, payloadKey: "statusId", schemaName: "borehole_status" },
+      {
+        fieldName: "boreholeStatus",
+        type: FormValueType.Domain,
+        payloadKey: "statusId",
+        schemaName: "borehole_status",
+      },
       { fieldName: "totalDepth", type: FormValueType.Number, payloadKey: "totalDepth" },
       {
         fieldName: "depthPrecision",
