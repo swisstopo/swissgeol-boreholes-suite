@@ -292,6 +292,166 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     }
 
     /// <summary>
+    /// Asynchronously applies the same set of field changes to multiple boreholes.
+    /// Only the properties named in <see cref="BoreholeBulkUpdateRequest.FieldsToUpdate"/> are written.
+    /// The whole batch is rejected (nothing is saved) if the current user cannot edit any selected borehole.
+    /// Resets the workflow tab status of any tab whose fields were changed.
+    /// </summary>
+    /// <param name="request">The boreholes to edit, the values to apply, and the field mask.</param>
+    [HttpPost("bulkedit")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> BulkEditAsync(BoreholeBulkUpdateRequest request)
+    {
+        if (request == null || request.BoreholeIds.Count == 0 || request.FieldsToUpdate.Count == 0)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var unknownFields = request.FieldsToUpdate.Where(f => !BulkEditableFields.Contains(f)).ToList();
+        if (unknownFields.Count > 0)
+        {
+            return BadRequest($"Unknown bulk edit field(s): {string.Join(", ", unknownFields)}.");
+        }
+
+        var subjectId = HttpContext.GetUserSubjectId();
+
+        // Atomic permission gate: check every selected borehole and collect all that are not editable,
+        // so the full list can be returned to the user. Nothing is written if any fails.
+        var unauthorizedBoreholeIds = new List<int>();
+        foreach (var id in request.BoreholeIds)
+        {
+            if (!await BoreholePermissionService.CanEditBoreholeAsync(subjectId, id).ConfigureAwait(false))
+            {
+                unauthorizedBoreholeIds.Add(id);
+            }
+        }
+
+        if (unauthorizedBoreholeIds.Count > 0)
+        {
+            return UnauthorizedBoreholesProblem(unauthorizedBoreholeIds, "bulkEditUnauthorizedBoreholes");
+        }
+
+        var boreholes = await Context.Boreholes
+            .Include(b => b.Workflow).ThenInclude(w => w.ReviewedTabs)
+            .Include(b => b.Workflow).ThenInclude(w => w.PublishedTabs)
+            .Where(b => request.BoreholeIds.Contains(b.Id))
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var resetLocationTab = request.FieldsToUpdate.Any(f => LocationTabFields.Contains(f));
+        var resetGeneralTab = request.FieldsToUpdate.Any(f => GeneralTabFields.Contains(f));
+
+        foreach (var borehole in boreholes)
+        {
+            foreach (var field in request.FieldsToUpdate)
+            {
+                ApplyBulkEditField(borehole, request.Update, field);
+            }
+
+            ResetAffectedTabs(borehole, resetLocationTab, resetGeneralTab);
+        }
+
+        try
+        {
+            await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+            return Ok(request.BoreholeIds);
+        }
+        catch (Exception ex)
+        {
+            var errorMessage = "An error occurred while saving the bulk edit changes.";
+            Logger?.LogError(ex, errorMessage);
+            return Problem(errorMessage);
+        }
+    }
+
+    /// <summary>
+    /// Builds a <see cref="ProblemType.UserError"/> response (HTTP 403) listing the boreholes the current user
+    /// is not allowed to operate on, so the client can show them. Shared by bulk edit and bulk delete; the
+    /// caller supplies the i18n <paramref name="messageKey"/>. Mirrors the <c>conflictingNames</c> pattern.
+    /// </summary>
+    private ObjectResult UnauthorizedBoreholesProblem(List<int> unauthorizedBoreholeIds, string messageKey)
+    {
+        var result = Problem(
+            detail: "You are not authorized to perform this action on some of the selected boreholes.",
+            statusCode: StatusCodes.Status403Forbidden,
+            type: ProblemType.UserError);
+        var problemDetails = (ProblemDetails)result.Value!;
+        problemDetails.Extensions["messageKey"] = messageKey;
+        problemDetails.Extensions["unauthorizedBoreholeIds"] = unauthorizedBoreholeIds;
+        return result;
+    }
+
+    private static readonly HashSet<string> LocationTabFields = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "locationPrecisionId", "elevationPrecisionId", "referenceElevationPrecisionId", "referenceElevationTypeId",
+    };
+
+    private static readonly HashSet<string> GeneralTabFields = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "restrictionId", "restrictionUntil", "nationalInterest", "projectName", "typeId", "purposeId", "statusId",
+        "depthPrecisionId", "totalDepth", "topBedrockFreshMd", "topBedrockWeatheredMd", "hasGroundwater",
+        "lithologyTopBedrockId", "lithostratigraphyTopBedrockId", "chronostratigraphyTopBedrockId",
+    };
+
+    // workgroupId is intentionally absent from both tab sets: it is not displayed on any reviewable tab.
+    private static readonly HashSet<string> BulkEditableFields = new(StringComparer.OrdinalIgnoreCase)
+    {
+        "workgroupId", "restrictionId", "restrictionUntil", "nationalInterest", "projectName",
+        "typeId", "purposeId", "statusId", "locationPrecisionId", "elevationPrecisionId",
+        "referenceElevationPrecisionId", "referenceElevationTypeId", "depthPrecisionId",
+        "totalDepth", "topBedrockFreshMd", "topBedrockWeatheredMd", "hasGroundwater",
+        "lithologyTopBedrockId", "lithostratigraphyTopBedrockId", "chronostratigraphyTopBedrockId",
+    };
+
+    private static void ResetAffectedTabs(Borehole borehole, bool resetLocation, bool resetGeneral)
+    {
+        if (borehole.Workflow == null)
+        {
+            return;
+        }
+
+        if (resetLocation)
+        {
+            borehole.Workflow.ReviewedTabs.Location = false;
+            borehole.Workflow.PublishedTabs.Location = false;
+        }
+
+        if (resetGeneral)
+        {
+            borehole.Workflow.ReviewedTabs.General = false;
+            borehole.Workflow.PublishedTabs.General = false;
+        }
+    }
+
+    private static void ApplyBulkEditField(Borehole borehole, BoreholeBulkUpdate update, string field)
+    {
+        switch (field.ToUpperInvariant())
+        {
+            case "WORKGROUPID": borehole.WorkgroupId = update.WorkgroupId; break;
+            case "RESTRICTIONID": borehole.RestrictionId = update.RestrictionId; break;
+            case "RESTRICTIONUNTIL": borehole.RestrictionUntil = update.RestrictionUntil; break;
+            case "NATIONALINTEREST": borehole.NationalInterest = update.NationalInterest; break;
+            case "PROJECTNAME": borehole.ProjectName = update.ProjectName; break;
+            case "TYPEID": borehole.TypeId = update.TypeId; break;
+            case "PURPOSEID": borehole.PurposeId = update.PurposeId; break;
+            case "STATUSID": borehole.StatusId = update.StatusId; break;
+            case "LOCATIONPRECISIONID": borehole.LocationPrecisionId = update.LocationPrecisionId; break;
+            case "ELEVATIONPRECISIONID": borehole.ElevationPrecisionId = update.ElevationPrecisionId; break;
+            case "REFERENCEELEVATIONPRECISIONID": borehole.ReferenceElevationPrecisionId = update.ReferenceElevationPrecisionId; break;
+            case "REFERENCEELEVATIONTYPEID": borehole.ReferenceElevationTypeId = update.ReferenceElevationTypeId; break;
+            case "DEPTHPRECISIONID": borehole.DepthPrecisionId = update.DepthPrecisionId; break;
+            case "TOTALDEPTH": borehole.TotalDepth = update.TotalDepth; break;
+            case "TOPBEDROCKFRESHMD": borehole.TopBedrockFreshMd = update.TopBedrockFreshMd; break;
+            case "TOPBEDROCKWEATHEREDMD": borehole.TopBedrockWeatheredMd = update.TopBedrockWeatheredMd; break;
+            case "HASGROUNDWATER": borehole.HasGroundwater = update.HasGroundwater; break;
+            case "LITHOLOGYTOPBEDROCKID": borehole.LithologyTopBedrockId = update.LithologyTopBedrockId; break;
+            case "LITHOSTRATIGRAPHYTOPBEDROCKID": borehole.LithostratigraphyTopBedrockId = update.LithostratigraphyTopBedrockId; break;
+            case "CHRONOSTRATIGRAPHYTOPBEDROCKID": borehole.ChronostratigraphyTopBedrockId = update.ChronostratigraphyTopBedrockId; break;
+            default: throw new InvalidOperationException($"Unhandled bulk edit field '{field}'.");
+        }
+    }
+
+    /// <summary>
     /// Asynchronously deletes the <see cref="Borehole"/> with the specified <paramref name="id"/>.
     /// Permission is checked via <see cref="IBoreholePermissionService.CanChangeBoreholeStatusAsync"/>,
     /// so admins can delete a borehole regardless of whether it is locked by another user or already in
