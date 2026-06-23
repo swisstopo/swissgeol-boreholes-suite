@@ -303,11 +303,6 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> BulkEditAsync([FromBody] BoreholeBulkUpdateRequest request)
     {
-        if (request == null || request.BoreholeIds.Count == 0 || request.FieldsToUpdate.Count == 0)
-        {
-            return BadRequest(ModelState);
-        }
-
         var unknownFields = request.FieldsToUpdate.Where(f => !BulkEditableFields.Contains(f)).ToList();
         if (unknownFields.Count > 0)
         {
@@ -375,11 +370,6 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> BulkDeleteAsync([FromBody][Required][MinLength(1)] Collection<int> boreholeIds)
     {
-        if (boreholeIds == null || boreholeIds.Count == 0)
-        {
-            return BadRequest(ModelState);
-        }
-
         var distinctIds = boreholeIds.Distinct().ToList();
         var subjectId = HttpContext.GetUserSubjectId();
 
