@@ -119,24 +119,20 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
     });
   };
 
-  const onFieldValueChange = useCallback(
-    (field: BulkEditFormField, newValue: BulkEditFormValue) => {
-      const key = field.payloadKey;
-      let updatedValue: BulkEditFormValue = newValue;
-      if (field.type === FormValueType.Number) {
-        updatedValue = parseFloat(newValue as string);
-      }
-      const entryIndex = fieldsToUpdate.findIndex(([k]) => k === key);
+  const onFieldValueChange = useCallback((field: BulkEditFormField, newValue: BulkEditFormValue) => {
+    const key = field.payloadKey;
+    const updatedValue: BulkEditFormValue =
+      field.type === FormValueType.Number ? parseFloat(newValue as string) : newValue;
+    setFieldsToUpdate(prev => {
+      const entryIndex = prev.findIndex(([k]) => k === key);
       if (entryIndex === -1) {
-        setFieldsToUpdate([...fieldsToUpdate, [key, updatedValue]]);
-      } else {
-        const newData = [...fieldsToUpdate];
-        newData[entryIndex] = [key, updatedValue];
-        setFieldsToUpdate(newData);
+        return [...prev, [key, updatedValue]];
       }
-    },
-    [fieldsToUpdate],
-  );
+      const newData = [...prev];
+      newData[entryIndex] = [key, updatedValue];
+      return newData;
+    });
+  }, []);
 
   const undoChange = (field: BulkEditFormField) => {
     const entryIndex = fieldsToUpdate.findIndex(([k]) => k === field.payloadKey);
@@ -158,7 +154,8 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
 
   const save = async () => {
     try {
-      await bulkEditBoreholes(buildBulkEditRequest(selected as number[], fieldsToUpdate));
+      const boreholeIds = selected.filter((id): id is number => typeof id === "number");
+      await bulkEditBoreholes(buildBulkEditRequest(boreholeIds, fieldsToUpdate));
       unselectBoreholes();
       loadBoreholes();
     } catch (error) {
@@ -167,8 +164,8 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
         const ids = Array.isArray(rawIds) ? rawIds.filter((id): id is number => typeof id === "number") : [];
         showAlert(`${t("bulkEditUnauthorizedBoreholes")} ${ids.join(", ")}`, "error");
       } else {
-        //@ts-expect-error unknown error type
-        showAlert(`${t("errorBulkEditing")} ${error?.message ?? error}`, "error");
+        const message = error instanceof Error ? error.message : String(error);
+        showAlert(`${t("errorBulkEditing")} ${message}`, "error");
       }
     } finally {
       resetFormState();
