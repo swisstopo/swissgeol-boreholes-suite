@@ -11,14 +11,10 @@ interface NavigationContainerProps {
   sx?: SxProps<Theme>;
   navState?: NavState;
   onNavStateChange?: Dispatch<SetStateAction<NavState>>;
-  // Element to observe for navState.height. Defaults to the container itself, which is correct
-  // when the container's box IS the data area (the stack-mode chrono/litho-strati panels).
-  // Provide an explicit body ref when the container wraps more than just the body — e.g. the
-  // lithology grid has a header row above and a lens-down row below the body.
-  // Todo: Reevaluate architechture after chronostratigraphy and lithostratigraphy styles were updated to newer design.
-  // https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2301
-  // https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2300
-  bodyRef?: RefObject<HTMLElement | null>;
+  // Element observed for navState.height. The body row of the surrounding grid (1fr), NOT the
+  // container itself: the container also wraps header / lens-down / footer rows that must be
+  // excluded so depth-proportional cells size to the pixels actually available to them.
+  bodyRef: RefObject<HTMLElement | null>;
 }
 
 const preventVerticalScroll = (event: globalThis.WheelEvent) => {
@@ -38,8 +34,7 @@ export const NavigationContainer: FC<NavigationContainerProps> = ({
   const setNavState = externalSetter ?? setInternalNavState;
 
   const containerRef = useRef<HTMLDivElement>(null);
-  const heightRef: RefObject<HTMLElement | null> = bodyRef ?? containerRef;
-  useTypedResizeObserver(heightRef, entry => setNavState(prev => prev.setHeight(entry.contentRect.height)));
+  useTypedResizeObserver(bodyRef, entry => setNavState(prev => prev.setHeight(entry.contentRect.height)));
 
   const { onPointerDown, isDragging, isPannable } = useDragPan({ navState, setNavState, containerRef });
   const panCursor = isDragging ? "grabbing" : "grab";
@@ -51,15 +46,16 @@ export const NavigationContainer: FC<NavigationContainerProps> = ({
     // calculate new lensSize
     const newLensSize = navState.lensSize * 1.001 ** event.deltaY;
     const clampedLensSize = clamp(newLensSize, 0.5, navState.maxContent);
-    const bodyEl = bodyRef?.current;
-    const bodyTop = bodyEl
-      ? bodyEl.getBoundingClientRect().top
-      : event.currentTarget.getBoundingClientRect().top + navState.maxHeader;
-    const bodyHeight = bodyEl ? navState.height : navState.height - navState.maxHeader;
+
+    // Anchor the zoom at the pointer: compute the pointer's fraction within the body area.
+    // navState.height is the body's pixel height; bodyRef provides its absolute top.
+    const bodyEl = bodyRef.current;
+    if (!bodyEl) return;
+    const fraction = (event.pageY - bodyEl.getBoundingClientRect().top) / navState.height;
 
     // calculate new lensStart
     const clampedLensStart = clamp(
-      navState.lensStart + (navState.lensSize - clampedLensSize) * ((event.pageY - bodyTop) / bodyHeight),
+      navState.lensStart + (navState.lensSize - clampedLensSize) * fraction,
       0,
       navState.maxContent - clampedLensSize,
     );

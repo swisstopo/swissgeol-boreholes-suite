@@ -1,8 +1,8 @@
 import { Dispatch, FC, ReactNode, RefObject, SetStateAction, useEffect, useRef, useState } from "react";
 import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { NumericFormat } from "react-number-format";
-import { Box, Button, Stack } from "@mui/material";
-import { styled, SxProps, Theme } from "@mui/material/styles";
+import { Box, Button } from "@mui/material";
+import { styled } from "@mui/material/styles";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { theme } from "../../../../../AppTheme.ts";
 import { clamp } from "./clamp.ts";
@@ -28,26 +28,14 @@ const LensDepthLabel = styled(NumericFormat)(() => ({
 interface NavigationLensProps {
   navState: NavState;
   setNavState: Dispatch<SetStateAction<NavState>>;
-  sx?: SxProps<Theme>;
   renderBackground: (navState: NavState, setNavState: Dispatch<SetStateAction<NavState>>) => ReactNode;
-  // "stack" (default): wraps up/body/down in a vertical Stack — the lens column behaves as a single
-  // flex item. "split": returns the three pieces as a fragment with grid-area assignments
-  // (`lens-up` / `lens-body` / `lens-down`) so a parent CSS grid can align them row-by-row with a
-  // sibling table's header / body / footer rows.
-  // TODO: drop "stack" mode and make "split" the only behaviour once lithostratigraphy and
-  // chronostratigraphy migrate to the shared-header table layout used by the lithology panel.
-  // At that point NavigationChild also loses its `header` prop and headers become grid-level
-  // siblings, so the `paddingTop: navState.maxHeader` workaround in those panels disappears too.
-  layoutMode?: "stack" | "split";
 }
 
-export const NavigationLens: FC<NavigationLensProps> = ({
-  navState,
-  setNavState,
-  sx,
-  renderBackground,
-  layoutMode = "stack",
-}) => {
+// Renders the three pieces (lens-up button, lens body, lens-down button) as a fragment with
+// grid-area assignments (lens-up / lens-body / lens-down). The parent CSS grid is responsible
+// for placing them — typically lens-up in the header row, lens-body in the body row, and
+// lens-down in a tail row — so the lens column lines up with the table next to it.
+export const NavigationLens: FC<NavigationLensProps> = ({ navState, setNavState, renderBackground }) => {
   const [backgroundNavState, setBackgroundNavState] = useState<NavState>(navState);
   const [cursor, setCursor] = useState<"grab" | "grabbing">("grab");
 
@@ -83,14 +71,15 @@ export const NavigationLens: FC<NavigationLensProps> = ({
       ? backgroundNavState.height
       : Math.max(12, navState.lensSize * backgroundNavState.pixelPerMeter);
 
-  const isSplit = layoutMode === "split";
-
   const upButton = (
     <Button
       onClick={() => handleMove(-0.3)}
       variant="outlined"
       onPointerDown={e => e.stopPropagation()}
-      sx={isSplit ? { gridArea: "lens-up", minHeight: 0, mb: 1 } : undefined}>
+      // alignSelf: "end" prevents the button from stretching to the auto-sized header row's full
+      // height, so it stays at its intrinsic content height and visually matches the lens-down
+      // button. The button sits flush against the top of the lens body.
+      sx={{ gridArea: "lens-up", minHeight: 0, mb: 1, alignSelf: "end" }}>
       <ChevronUp />
     </Button>
   );
@@ -102,7 +91,7 @@ export const NavigationLens: FC<NavigationLensProps> = ({
         display: "block",
         position: "relative",
         background: theme.palette.neutral.main,
-        ...(isSplit ? { gridArea: "lens-body" } : { flex: "1" }),
+        gridArea: "lens-body",
       }}>
       {renderBackground(backgroundNavState, setBackgroundNavState)}
       <BackgroundShade
@@ -167,26 +156,19 @@ export const NavigationLens: FC<NavigationLensProps> = ({
       onClick={() => handleMove(0.3)}
       variant="outlined"
       onPointerDown={e => e.stopPropagation()}
-      sx={isSplit ? { gridArea: "lens-down", minHeight: 0, mt: 1 } : undefined}>
+      // alignSelf: "start" so the button stays at intrinsic content height at the top of its
+      // tail row even if the row would otherwise stretch (e.g. if the grid places content like
+      // an AddRowButton next to it).
+      sx={{ gridArea: "lens-down", minHeight: 0, mt: 1, alignSelf: "start" }}>
       <ChevronDown />
     </Button>
   );
 
-  if (isSplit) {
-    return (
-      <>
-        {upButton}
-        {bodyBox}
-        {downButton}
-      </>
-    );
-  }
-
   return (
-    <Stack gap={1} flex={1} sx={sx}>
+    <>
       {upButton}
       {bodyBox}
       {downButton}
-    </Stack>
+    </>
   );
 };

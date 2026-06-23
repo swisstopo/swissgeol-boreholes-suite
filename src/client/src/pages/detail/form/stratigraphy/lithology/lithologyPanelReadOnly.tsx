@@ -18,6 +18,7 @@ interface LithologyPanelReadOnlyProps {
   lithologicalDescriptions: LithologicalDescription[];
   faciesDescriptions: FaciesDescription[];
 }
+
 // View-mode orchestrator for the lithology tab. Mounts the lens mini-overview alongside the four data
 // columns. All columns share the same NavState via NavigationContainer so dragging the
 // lens, wheel-zooming, and drag-panning the data area stay in sync.
@@ -60,12 +61,7 @@ export const LithologyPanelReadOnly: FC<LithologyPanelReadOnlyProps> = ({
         }}
         renderItems={(navState, setNavState) => (
           <>
-            <LensColumn
-              stratigraphyId={stratigraphyId}
-              navState={navState}
-              setNavState={setNavState}
-              layoutMode="split"
-            />
+            <LensColumn stratigraphyId={stratigraphyId} navState={navState} setNavState={setNavState} />
             <StratigraphyTableHeader sx={{ gridArea: "header" }}>
               <StratigraphyTableHeaderCell sx={{ flex: "0 0 128px" }} label={t("depthMD")} />
               <StratigraphyTableHeaderCell label={t("lithology")} />
@@ -93,7 +89,7 @@ export const LithologyPanelReadOnly: FC<LithologyPanelReadOnlyProps> = ({
                 "& > *": { borderLeft: `1px solid ${theme.palette.border.darker}` },
                 "& > *:last-child": { borderRight: `1px solid ${theme.palette.border.darker}` },
               }}>
-              <NavigationChild navState={navState} setNavState={setNavState} sx={{ flex: "0 0 128px" }}>
+              <NavigationChild navState={navState} sx={{ flex: "0 0 128px" }}>
                 <Scale navState={navState} />
               </NavigationChild>
               <LithologyTableScaled

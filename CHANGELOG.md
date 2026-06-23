@@ -22,6 +22,8 @@
 - Migrated the terms and conditions endpoints from the legacy API to the v2 API.
 - Set stratigraphy name as required and fill in default name for currently empty fields.
 - The current user is now loaded from the v2 API (`/api/v2/user/self`) instead of the legacy v1 API.
+- Unified the column header styling of the chronostratigraphy and lithostratigraphy tabs with the lithology tab and collapsed the hierarchy title bar into the same row as the column labels so the header is thinner; the visibility toggle for each hierarchy level (eon, era, …) now sits inside its column and a hidden column collapses to a small eye icon in place.
+- Removed the lithology thumbnail column from the chronostratigraphy and lithostratigraphy tabs; depth scale is now the leftmost data column. The add-layer button moved from the header to a dashed "+" button at the bottom of the table, matching the lithology tab's add affordance.
 
 ### Fixed
 - Fixed bug where casing name was not correctly displayed in the select on the backfill card.

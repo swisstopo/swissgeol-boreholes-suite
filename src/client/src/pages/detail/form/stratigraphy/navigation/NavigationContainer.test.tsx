@@ -43,11 +43,10 @@ const resizeTo = (target: Element, height: number) => {
 };
 
 interface HarnessProps {
-  withBodyRef: boolean;
   expose: (state: NavState, setState: Dispatch<SetStateAction<NavState>>) => void;
 }
 
-const Harness = ({ withBodyRef, expose }: HarnessProps) => {
+const Harness = ({ expose }: HarnessProps) => {
   const [state, setState] = useState<NavState>(new NavState());
   const bodyRef = useRef<HTMLDivElement>(null);
   expose(state, setState);
@@ -55,19 +54,20 @@ const Harness = ({ withBodyRef, expose }: HarnessProps) => {
     <NavigationContainer
       navState={state}
       onNavStateChange={setState}
-      bodyRef={withBodyRef ? bodyRef : undefined}
+      bodyRef={bodyRef}
       renderItems={() => <div ref={bodyRef} data-testid="body" />}
     />
   );
 };
 
 describe("NavigationContainer", () => {
-  it("uses bodyRef to drive navState.height when provided", () => {
-    // Regression for the lithology grid layout: the container wraps a header row + body row +
-    // lens-down row, so the container's height includes pixels that are NOT available for the
-    // depth-proportional cells. Observing the body row directly keeps pixelPerMeter honest.
+  it("drives navState.height from the body ref, not the surrounding container", () => {
+    // Regression for the lithology-style grid layout: the container wraps a header row + body
+    // row + lens-down row, so the container's height includes pixels that are NOT available
+    // for the depth-proportional cells. Observing the body row directly keeps pixelPerMeter
+    // honest.
     let latest: NavState = new NavState();
-    const { getByTestId, container } = render(<Harness withBodyRef expose={state => (latest = state)} />);
+    const { getByTestId, container } = render(<Harness expose={state => (latest = state)} />);
     const body = getByTestId("body");
     const containerEl = container.firstChild as HTMLElement;
     act(() => {
@@ -76,13 +76,5 @@ describe("NavigationContainer", () => {
       resizeTo(body, 700);
     });
     expect(latest.height).toBe(700);
-  });
-
-  it("falls back to the container's height when bodyRef is omitted (stack-mode panels)", () => {
-    let latest: NavState = new NavState();
-    const { container } = render(<Harness withBodyRef={false} expose={state => (latest = state)} />);
-    const containerEl = container.firstChild as HTMLElement;
-    act(() => resizeTo(containerEl, 500));
-    expect(latest.height).toBe(500);
   });
 });
