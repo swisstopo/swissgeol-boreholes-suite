@@ -21,16 +21,15 @@ interface ListFilterProps {
 }
 
 export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
-  const { filterParams, setFilterField, setParams } = useBoreholeUrlParams();
+  const { filterParams, setFilterField } = useBoreholeUrlParams();
   const searchData = inputConfig?.searchData;
   const { data: stats } = useFilterStats(filterParams as FilterRequest);
 
   const updateChange = useCallback(
     (attribute: string, value: string | boolean | number | null | number[] | undefined) => {
       setFilterField(attribute as FilterKey, value as never);
-      setParams({ page: 0 });
     },
-    [setFilterField, setParams],
+    [setFilterField],
   );
 
   return (

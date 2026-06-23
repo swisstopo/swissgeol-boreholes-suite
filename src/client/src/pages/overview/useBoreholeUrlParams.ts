@@ -82,31 +82,38 @@ export const useBoreholeUrlParams = () => {
   const tableParamsRef = useRef(tableParams);
   tableParamsRef.current = tableParams;
 
+  // Encodes a filter value into the form `setParams` expects, with the special-cases for
+  // booleans and nullable-boolean keys.
+  const encodeFilterValue = (
+    key: FilterKey,
+    value: string | string[] | number[] | boolean | null | undefined,
+  ): unknown => {
+    if (value === true) return "true";
+    if (value === false) return "false";
+    // Preserve the "null" literal ("Keine Angabe") for nullable boolean filter keys.
+    if (value === null && nullableBooleanFilterKeys.has(key)) return "null";
+    // Any other null/undefined clears the URL param.
+    if (value === null || value === undefined) return null;
+    return value;
+  };
+
+  // Every filter mutation also resets the page in the SAME setParams call. Splitting the
+  // page reset into a separate setParams invocation on the merged useQueryStates instance
+  // races and one update overwrites the other.
   const setFilterField = useCallback(
     (key: FilterKey, value: string | string[] | number[] | boolean | null | undefined) => {
-      if (value === true) {
-        setParams({ [key]: "true" } as Parameters<typeof setParams>[0]);
-      } else if (value === false) {
-        setParams({ [key]: "false" } as Parameters<typeof setParams>[0]);
-      } else if (value === null && nullableBooleanFilterKeys.has(key)) {
-        // Preserve the "null" literal ("Keine Angabe") for nullable boolean filter keys.
-        setParams({ [key]: "null" } as Parameters<typeof setParams>[0]);
-      } else if (value === null || value === undefined) {
-        // Any other null/undefined clears the URL param.
-        setParams({ [key]: null } as Parameters<typeof setParams>[0]);
-      } else {
-        setParams({ [key]: value } as Parameters<typeof setParams>[0]);
-      }
+      setParams({ [key]: encodeFilterValue(key, value), page: 0 } as Parameters<typeof setParams>[0]);
     },
     [setParams],
   );
 
   // Removes the param from the URL entirely. Unlike `setFilterField(key, null)`, which preserves
   // the literal "null" in the URL for nullable boolean keys (meaning "Keine Angabe"), this helper
-  // always drops the key so downstream consumers see an unset filter.
+  // always drops the key so downstream consumers see an unset filter. Page resets atomically
+  // for the same reason as `setFilterField`.
   const clearFilterField = useCallback(
     (key: FilterKey) => {
-      setParams({ [key]: null } as Parameters<typeof setParams>[0]);
+      setParams({ [key]: null, page: 0 } as Parameters<typeof setParams>[0]);
       sessionStorage.removeItem(SessionKeys[key as keyof typeof SessionKeys]);
     },
     [setParams],
@@ -121,9 +128,10 @@ export const useBoreholeUrlParams = () => {
     setMapParams(center ? { mapCenterX: center[0], mapCenterY: center[1] } : { mapCenterX: null, mapCenterY: null });
 
   const resetFilter = () => {
-    // Set all filter keys to null to remove them from the URL
+    // Set all filter keys to null to remove them from the URL, and reset to page 0 in the
+    // same setParams call — see setFilterField for why this must be atomic.
     const nulled = Object.fromEntries(Object.keys(filterParsers).map(k => [k, null]));
-    setParams(nulled as Parameters<typeof setParams>[0]);
+    setParams({ ...nulled, page: 0 } as Parameters<typeof setParams>[0]);
     (Object.keys(filterParsers) as Array<FilterKey>).forEach(key => {
       sessionStorage.removeItem(SessionKeys[key as keyof typeof SessionKeys]);
     });
@@ -203,7 +211,7 @@ export const useBoreholeUrlParams = () => {
     }
   }, [setMapParams]);
 
-  const activeFilterLength = Object.values(filterParams).filter(v => v !== null).length;
+  const activeFilterCount = Object.values(filterParams).filter(v => v !== null).length;
 
   return {
     filterParams,
@@ -217,7 +225,7 @@ export const useBoreholeUrlParams = () => {
     restoreTableParamsFromSession,
     restoreFilterParamsFromSession,
     restoreMapParamsFromSession,
-    activeFilterLength,
+    activeFilterCount,
     mapResolution: mapParams.mapResolution,
     setMapResolution: (v: number) => setMapParams({ mapResolution: v }),
     mapCenter,
