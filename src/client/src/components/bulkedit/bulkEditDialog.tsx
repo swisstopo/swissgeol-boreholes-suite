@@ -127,7 +127,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
   const onFieldValueChange = useCallback((field: BulkEditFormField, newValue: BulkEditFormValue) => {
     const key = field.payloadKey;
     const updatedValue: BulkEditFormValue =
-      field.type === FormValueType.Number ? parseFloat(newValue as string) : newValue;
+      field.type === FormValueType.Number ? Number.parseFloat(newValue as string) : newValue;
     setFieldsToUpdate(prev => {
       const entryIndex = prev.findIndex(([k]) => k === key);
       if (entryIndex === -1) {
