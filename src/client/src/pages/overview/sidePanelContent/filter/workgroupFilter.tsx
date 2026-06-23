@@ -1,6 +1,6 @@
 import { FC, useMemo } from "react";
 import { useTranslation } from "react-i18next";
-import { Workgroup } from "../../../../api-lib/ReduxStateInterfaces.ts";
+import { Workgroup } from "../../../../api/generated";
 import { FilterAdaptiveSelect } from "./FilterAdaptiveSelect.tsx";
 import { SearchData } from "./filterData/filterInterfaces.ts";
 
@@ -21,7 +21,7 @@ export const WorkgroupFilter: FC<WorkgroupFilterProps> = ({ selectedWorkgroupIds
       workgroups
         .map(w => ({
           key: w.id,
-          label: w.workgroup + (w.disabled === null ? "" : " ( " + t("disabled") + ")"),
+          label: w.name + (w.isDisabled ? " ( " + t("disabled") + ")" : ""),
         }))
         .sort((a, b) => a.label.localeCompare(b.label)),
     [workgroups, t],

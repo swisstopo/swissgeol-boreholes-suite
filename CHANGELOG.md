@@ -20,6 +20,7 @@
 - The read-only lithology view now uses the same table layout as the edit view, with a per-cell copy button that copies the cell's text to the clipboard.
 - Migrated the terms and conditions endpoints from the legacy API to the v2 API.
 - Set stratigraphy name as required and fill in default name for currently empty fields.
+- The current user is now loaded from the v2 API (`/api/v2/user/self`) instead of the legacy v1 API.
 
 ### Fixed
 - Fixed bug where casing name was not correctly displayed in the select on the backfill card.

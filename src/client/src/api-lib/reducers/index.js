@@ -3,11 +3,6 @@ import { thunk } from "redux-thunk";
 
 function user() {
   const initialState = {
-    isFetching: false,
-    error: false,
-    fetchCount: 0,
-    fetchTime: 0,
-    data: null,
     authentication: null,
   };
   return function _user(state = initialState, action) {
@@ -25,57 +20,7 @@ function user() {
       case "UNSET_AUTHENTICATION": {
         return {
           ...initialState,
-          data: null,
         };
-      }
-      case "GET": {
-        return {
-          ...initialState,
-          authentication: {
-            ...state.authentication,
-          },
-          error: false,
-          fetchTime: new Date().getTime(),
-          isFetching: true,
-        };
-      }
-      case "GET_OK": {
-        let copy = {
-          ...state,
-          fetchCount: state.fetchCount + 1,
-          isFetching: false,
-          error: false,
-          fetchTime: new Date().getTime() - state.fetchTime,
-          data: action.json.data,
-        };
-        return copy;
-      }
-      case "GET_ERROR": {
-        let copy = {
-          ...state,
-          fetchCount: state.fetchCount + 1,
-          isFetching: false,
-          error: true,
-          fetchTime: new Date().getTime() - state.fetchTime,
-        };
-        return copy;
-      }
-      case "GET_CONNECTION_ERROR": {
-        let copy = {
-          ...state,
-          error: action.error.response.status === 401 ? true : state.error,
-          fetchCount: state.fetchCount + 1,
-          isFetching: false,
-          fetchTime: new Date().getTime() - state.fetchTime,
-        };
-        return copy;
-      }
-      case "RELOAD_OK": {
-        let copy = {
-          ...state,
-          data: action.json.data,
-        };
-        return copy;
       }
       default: {
         return state;

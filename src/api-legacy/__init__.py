@@ -21,7 +21,3 @@ from bms.v1.exceptions import DuplicateException
 from bms.v1.borehole.producer import BoreholeProducerHandler
 
 from bms.v1.setting.handler import SettingHandler
-
-
-# User actions
-from bms.v1.user.handler import UserHandler

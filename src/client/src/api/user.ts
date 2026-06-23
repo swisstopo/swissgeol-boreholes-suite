@@ -1,6 +1,30 @@
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
-import { User } from "./generated";
+import { Role, User, Workgroup } from "./generated";
+
+const hasEditorRole = (role?: Role): boolean => role !== undefined && role !== "View";
+
+const removeDuplicateWorkgroups = (workgroups: (Workgroup | undefined)[]): Workgroup[] => {
+  const byId = new Map<number, Workgroup>();
+  for (const workgroup of workgroups) {
+    if (workgroup && !byId.has(workgroup.id)) {
+      byId.set(workgroup.id, workgroup);
+    }
+  }
+  return [...byId.values()];
+};
+
+export const getUserWorkgroups = (user?: User): Workgroup[] =>
+  removeDuplicateWorkgroups(user?.workgroupRoles?.map(r => r.workgroup) ?? []);
+
+export const getEditableWorkgroups = (user?: User): Workgroup[] =>
+  removeDuplicateWorkgroups(
+    user?.workgroupRoles
+      ?.filter(r => hasEditorRole(r.role) && r.workgroup?.isDisabled === false)
+      .map(r => r.workgroup) ?? [],
+  );
+
+export const isEditorUser = (user?: User): boolean => !!user?.workgroupRoles?.some(r => hasEditorRole(r.role));
 
 const fetchCurrentUser = async (): Promise<User> => await fetchApiV2WithApiError<User>("user/self", "GET");
 
@@ -38,10 +62,11 @@ export const useEditorUsersOnWorkgroup = (workgroupId?: number) => {
   });
 };
 
-export const useCurrentUser = () => {
+export const useCurrentUser = (enabled = true) => {
   return useQuery({
     queryKey: [currentUserQueryKey],
     queryFn: fetchCurrentUser,
+    enabled,
   });
 };
 

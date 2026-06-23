@@ -1,6 +1,5 @@
-import { useSelector } from "react-redux";
 import { Box, Stack } from "@mui/material";
-import { ReduxRootState, User } from "../../api-lib/ReduxStateInterfaces.ts";
+import { useCurrentUser } from "../../api/user.ts";
 import { theme } from "../../AppTheme.ts";
 import { useAuth } from "../../auth/useBoreholesAuth.tsx";
 import { LanguagePopup } from "./languagePopup.tsx";
@@ -8,7 +7,7 @@ import { ProfilePopup } from "./profilePopup.tsx";
 import { VersionTag } from "./versionTag.tsx";
 
 const HeaderComponent = () => {
-  const user: User = useSelector((state: ReduxRootState) => state.core_user);
+  const { data: user } = useCurrentUser();
   const auth = useAuth();
 
   return (
@@ -32,7 +31,7 @@ const HeaderComponent = () => {
       <Stack direction="row" alignItems="center" spacing={4}>
         <VersionTag />
         <LanguagePopup />
-        {!auth.anonymousModeEnabled && <ProfilePopup user={user.data} />}
+        {!auth.anonymousModeEnabled && <ProfilePopup user={user} />}
       </Stack>
     </Stack>
   );
