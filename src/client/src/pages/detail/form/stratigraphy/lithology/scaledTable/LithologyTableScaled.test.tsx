@@ -51,7 +51,7 @@ const lithology = (overrides: Partial<Lithology> = {}): Lithology =>
     ...overrides,
   }) as Lithology;
 
-const desc = (overrides: Partial<LithologicalDescription> = {}): LithologicalDescription =>
+const lithologicalDescription = (overrides: Partial<LithologicalDescription> = {}): LithologicalDescription =>
   ({
     id: 1,
     stratigraphyId: 1,
@@ -61,7 +61,7 @@ const desc = (overrides: Partial<LithologicalDescription> = {}): LithologicalDes
     ...overrides,
   }) as LithologicalDescription;
 
-const facies = (overrides: Partial<FaciesDescription> = {}): FaciesDescription =>
+const faciesDescription = (overrides: Partial<FaciesDescription> = {}): FaciesDescription =>
   ({
     id: 1,
     stratigraphyId: 1,
@@ -92,8 +92,8 @@ describe("LithologyTableScaled", () => {
   it("renders one scaled cell per layer in each of the three data columns", () => {
     renderTable({
       lithologies: [lithology({ id: 1, fromDepth: 0, toDepth: 5 }), lithology({ id: 2, fromDepth: 5, toDepth: 10 })],
-      lithologicalDescriptions: [desc({ id: 11, fromDepth: 0, toDepth: 10 })],
-      faciesDescriptions: [facies({ id: 21, fromDepth: 0, toDepth: 10 })],
+      lithologicalDescriptions: [lithologicalDescription({ id: 11, fromDepth: 0, toDepth: 10 })],
+      faciesDescriptions: [faciesDescription({ id: 21, fromDepth: 0, toDepth: 10 })],
     });
     expect(screen.getByTestId("scaled-layer-wrapper-1")).toBeInTheDocument();
     expect(screen.getByTestId("scaled-layer-wrapper-2")).toBeInTheDocument();
