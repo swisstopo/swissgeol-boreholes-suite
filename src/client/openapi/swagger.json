@@ -252,10 +252,20 @@
         }
       }
     },
-    "/api/v2/borehole": {
+    "/api/v{version}/borehole": {
       "post": {
         "tags": [
           "Borehole"
+        ],
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
           "content": {
@@ -302,6 +312,16 @@
       "put": {
         "tags": [
           "Borehole"
+        ],
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
           "content": {
@@ -359,6 +379,14 @@
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -368,12 +396,22 @@
         }
       }
     },
-    "/api/v2/borehole/filter": {
+    "/api/v{version}/borehole/filter": {
       "post": {
         "tags": [
           "Borehole"
         ],
         "summary": "Filters boreholes based on the provided criteria.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "The filter request with filtering criteria.",
           "content": {
@@ -418,12 +456,22 @@
         }
       }
     },
-    "/api/v2/borehole/filter/stats": {
+    "/api/v{version}/borehole/filter/stats": {
       "post": {
         "tags": [
           "Borehole"
         ],
         "summary": "Computes per-option filter counts under the active filter request,\r\nusing filter-exclusion semantics so each dimension's counts predict what\r\nadding that option would yield.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "The active filter request; may be null to compute unconstrained counts.",
           "content": {
@@ -468,7 +516,7 @@
         }
       }
     },
-    "/api/v2/borehole/suggest": {
+    "/api/v{version}/borehole/suggest": {
       "post": {
         "tags": [
           "Borehole"
@@ -499,6 +547,14 @@
               "type": "integer",
               "format": "int32",
               "default": 10
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -555,7 +611,7 @@
         }
       }
     },
-    "/api/v2/borehole/{id}": {
+    "/api/v{version}/borehole/{id}": {
       "get": {
         "tags": [
           "Borehole"
@@ -570,6 +626,14 @@
             "schema": {
               "type": "integer",
               "format": "int32"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -597,7 +661,7 @@
         }
       }
     },
-    "/api/v2/borehole/copy": {
+    "/api/v{version}/borehole/copy": {
       "post": {
         "tags": [
           "Borehole"
@@ -623,6 +687,14 @@
               "type": "integer",
               "format": "int32"
             }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
           }
         ],
         "responses": {
@@ -652,12 +724,22 @@
         }
       }
     },
-    "/api/v2/borehole/bulkedit": {
+    "/api/v{version}/borehole/bulkedit": {
       "post": {
         "tags": [
           "Borehole"
         ],
         "summary": "Asynchronously applies the same set of field changes to multiple boreholes.\r\nOnly the properties named in BDMS.Models.BoreholeBulkUpdateRequest.FieldsToUpdate are written.\r\nThe whole batch is rejected (nothing is saved) if the current user cannot edit any selected borehole.\r\nResets the workflow tab status of any tab whose fields were changed.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "The boreholes to edit, the values to apply, and the field mask.",
           "content": {
@@ -685,12 +767,22 @@
         }
       }
     },
-    "/api/v2/borehole/bulkdelete": {
+    "/api/v{version}/borehole/bulkdelete": {
       "post": {
         "tags": [
           "Borehole"
         ],
         "summary": "Asynchronously deletes multiple boreholes. The whole batch is rejected (nothing is deleted) if the\r\ncurrent user is not allowed to delete any of the selected boreholes. Uses the same permission check\r\nas the single-borehole delete (M:BDMS.Services.IBoreholePermissionService.CanChangeBoreholeStatusAsync(System.String,System.Nullable{System.Int32})).",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "The ids of the boreholes to delete.",
           "content": {
