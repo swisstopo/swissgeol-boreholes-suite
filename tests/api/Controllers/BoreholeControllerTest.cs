@@ -1253,4 +1253,50 @@ public class BoreholeControllerTest
         var response = await controller.BulkEditAsync(request);
         ActionResultAssert.IsBadRequest(response);
     }
+
+    private async Task<int> CreateDisposableBoreholeAsync()
+    {
+        var result = await controller.CreateAsync(GetBoreholeToAdd());
+        return ActionResultAssert.IsOkObjectResult<Borehole>(result.Result).Id;
+    }
+
+    [TestMethod]
+    public async Task BulkDeleteRemovesAllListedBoreholes()
+    {
+        var id1 = await CreateDisposableBoreholeAsync();
+        var id2 = await CreateDisposableBoreholeAsync();
+
+        var response = await controller.BulkDeleteAsync(new() { id1, id2 });
+        ActionResultAssert.IsOk(response);
+
+        Assert.AreEqual(0, await context.Boreholes.CountAsync(b => b.Id == id1 || b.Id == id2));
+    }
+
+    [TestMethod]
+    public async Task BulkDeleteRejectsWholeBatchAndReturnsUnauthorizedIds()
+    {
+        var id1 = await CreateDisposableBoreholeAsync();
+        var id2 = await CreateDisposableBoreholeAsync();
+
+        boreholePermissionServiceMock
+            .Setup(x => x.CanChangeBoreholeStatusAsync(It.IsAny<string?>(), id2))
+            .ReturnsAsync(false);
+
+        var response = await controller.BulkDeleteAsync(new() { id1, id2 });
+
+        var objectResult = (ObjectResult)response;
+        Assert.AreEqual(StatusCodes.Status403Forbidden, objectResult.StatusCode);
+        var problem = (ProblemDetails)objectResult.Value!;
+        Assert.AreEqual("bulkDeleteUnauthorizedBoreholes", problem.Extensions["messageKey"]);
+        CollectionAssert.AreEquivalent(new List<int> { id2 }, (List<int>)problem.Extensions["unauthorizedBoreholeIds"]!);
+
+        Assert.AreEqual(
+            2,
+            await context.Boreholes.CountAsync(b => b.Id == id1 || b.Id == id2),
+            "No borehole may be deleted when the batch is rejected.");
+
+        // cleanup
+        context.Boreholes.RemoveRange(context.Boreholes.Where(b => b.Id == id1 || b.Id == id2));
+        await context.SaveChangesAsync();
+    }
 }

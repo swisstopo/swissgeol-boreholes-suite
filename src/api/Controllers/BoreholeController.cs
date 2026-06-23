@@ -5,6 +5,7 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace BDMS.Controllers;
@@ -359,6 +360,64 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         catch (Exception ex)
         {
             var errorMessage = "An error occurred while saving the bulk edit changes.";
+            Logger?.LogError(ex, errorMessage);
+            return Problem(errorMessage);
+        }
+    }
+
+    /// <summary>
+    /// Asynchronously deletes multiple boreholes. The whole batch is rejected (nothing is deleted) if the
+    /// current user is not allowed to delete any of the selected boreholes. Uses the same permission check
+    /// as the single-borehole delete (<see cref="IBoreholePermissionService.CanChangeBoreholeStatusAsync"/>).
+    /// </summary>
+    /// <param name="boreholeIds">The ids of the boreholes to delete.</param>
+    [HttpPost("bulkdelete")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> BulkDeleteAsync([FromBody][Required][MinLength(1)] Collection<int> boreholeIds)
+    {
+        if (boreholeIds == null || boreholeIds.Count == 0)
+        {
+            return BadRequest(ModelState);
+        }
+
+        var subjectId = HttpContext.GetUserSubjectId();
+
+        // Atomic permission gate: collect every borehole the user may not delete (uses the same check as the
+        // single-borehole delete), then report them all. Nothing is deleted if any fails.
+        var unauthorizedBoreholeIds = new List<int>();
+        foreach (var id in boreholeIds)
+        {
+            if (!await BoreholePermissionService.CanChangeBoreholeStatusAsync(subjectId, id).ConfigureAwait(false))
+            {
+                unauthorizedBoreholeIds.Add(id);
+            }
+        }
+
+        if (unauthorizedBoreholeIds.Count > 0)
+        {
+            return UnauthorizedBoreholesProblem(unauthorizedBoreholeIds, "bulkDeleteUnauthorizedBoreholes");
+        }
+
+        var boreholes = await Context.Boreholes
+            .Where(b => boreholeIds.Contains(b.Id))
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        if (boreholes.Count != boreholeIds.Distinct().Count())
+        {
+            return NotFound();
+        }
+
+        Context.Boreholes.RemoveRange(boreholes);
+
+        try
+        {
+            await Context.SaveChangesAsync().ConfigureAwait(false);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            var errorMessage = "An error occurred while deleting the boreholes.";
             Logger?.LogError(ex, errorMessage);
             return Problem(errorMessage);
         }
