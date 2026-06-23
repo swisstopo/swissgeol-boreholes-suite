@@ -546,7 +546,7 @@ export const deleteDownloadedFile = (fileName: string) => {
 
       cy.exec(`${command} ${filePath}`).then(result => {
         // Check if the command executed successfully
-        expect(result.code).to.equal(0);
+        expect(result.exitCode).to.equal(0);
 
         // Check that the file has been deleted
         cy.readFile(filePath, { log: false, timeout: 10000 }).should("not.exist");
@@ -710,7 +710,7 @@ export const createTestCasing = (boreholeId: number | string, completionId: numb
     casingElements: [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
   });
 
-export const openStratigraphyEditorTab = (stratigraphyName: string, hash: string, waitAlias: string) => {
+export const openStratigraphyEditorTab = (stratigraphyName: string, hash: string, waitAlias: `@${string}`) => {
   createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
   cy.get("@borehole_id").then(boreholeId => {
     createStratigraphy({ boreholeId: boreholeId as number, name: stratigraphyName }).as("stratigraphy_id");
