@@ -652,6 +652,88 @@
         }
       }
     },
+    "/api/v2/borehole/bulkedit": {
+      "post": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Asynchronously applies the same set of field changes to multiple boreholes.\r\nOnly the properties named in BDMS.Models.BoreholeBulkUpdateRequest.FieldsToUpdate are written.\r\nThe whole batch is rejected (nothing is saved) if the current user cannot edit any selected borehole.\r\nResets the workflow tab status of any tab whose fields were changed.",
+        "requestBody": {
+          "description": "The boreholes to edit, the values to apply, and the field mask.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoreholeBulkUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoreholeBulkUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoreholeBulkUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v2/borehole/bulkdelete": {
+      "post": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Asynchronously deletes multiple boreholes. The whole batch is rejected (nothing is deleted) if the\r\ncurrent user is not allowed to delete any of the selected boreholes. Uses the same permission check\r\nas the single-borehole delete (M:BDMS.Services.IBoreholePermissionService.CanChangeBoreholeStatusAsync(System.String,System.Nullable{System.Int32})).",
+        "requestBody": {
+          "description": "The ids of the boreholes to delete.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/v{version}/boreholeexport/json": {
       "get": {
         "tags": [
@@ -7424,6 +7506,140 @@
         },
         "additionalProperties": false,
         "description": "Represents a borehole entity in the database."
+      },
+      "BoreholeBulkUpdate": {
+        "type": "object",
+        "properties": {
+          "workgroupId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "restrictionId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "restrictionUntil": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "nationalInterest": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "projectName": {
+            "type": "string",
+            "nullable": true
+          },
+          "typeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "purposeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "statusId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "locationPrecisionId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "elevationPrecisionId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "referenceElevationPrecisionId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "referenceElevationTypeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "depthPrecisionId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "totalDepth": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "topBedrockFreshMd": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "topBedrockWeatheredMd": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "hasGroundwater": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "lithologyTopBedrockId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "lithostratigraphyTopBedrockId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "chronostratigraphyTopBedrockId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "The typed set of borehole fields that can be changed through bulk edit.\r\nEvery property is nullable; which of them are actually written is controlled\r\nby BDMS.Models.BoreholeBulkUpdateRequest.FieldsToUpdate. A field named in the\r\nmask whose value is null clears the corresponding column."
+      },
+      "BoreholeBulkUpdateRequest": {
+        "required": [
+          "boreholeIds",
+          "fieldsToUpdate",
+          "update"
+        ],
+        "type": "object",
+        "properties": {
+          "boreholeIds": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "update": {
+            "$ref": "#/components/schemas/BoreholeBulkUpdate"
+          },
+          "fieldsToUpdate": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request payload for bulk editing boreholes. Applies BDMS.Models.BoreholeBulkUpdateRequest.Update to every\r\nborehole in BDMS.Models.BoreholeBulkUpdateRequest.BoreholeIds, writing only the properties named in\r\nBDMS.Models.BoreholeBulkUpdateRequest.FieldsToUpdate (matched case-insensitively against\r\nBDMS.Models.BoreholeBulkUpdate property names)."
       },
       "BoreholeCodelist": {
         "required": [

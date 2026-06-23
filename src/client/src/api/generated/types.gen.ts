@@ -350,6 +350,47 @@ export type Borehole = {
 };
 
 /**
+ * The typed set of borehole fields that can be changed through bulk edit.
+ * Every property is nullable; which of them are actually written is controlled
+ * by BDMS.Models.BoreholeBulkUpdateRequest.FieldsToUpdate. A field named in the
+ * mask whose value is null clears the corresponding column.
+ */
+export type BoreholeBulkUpdate = {
+  workgroupId?: number | null;
+  restrictionId?: number | null;
+  restrictionUntil?: string | null;
+  nationalInterest?: boolean | null;
+  projectName?: string | null;
+  typeId?: number | null;
+  purposeId?: number | null;
+  statusId?: number | null;
+  locationPrecisionId?: number | null;
+  elevationPrecisionId?: number | null;
+  referenceElevationPrecisionId?: number | null;
+  referenceElevationTypeId?: number | null;
+  depthPrecisionId?: number | null;
+  totalDepth?: number | null;
+  topBedrockFreshMd?: number | null;
+  topBedrockWeatheredMd?: number | null;
+  hasGroundwater?: boolean | null;
+  lithologyTopBedrockId?: number | null;
+  lithostratigraphyTopBedrockId?: number | null;
+  chronostratigraphyTopBedrockId?: number | null;
+};
+
+/**
+ * Request payload for bulk editing boreholes. Applies BDMS.Models.BoreholeBulkUpdateRequest.Update to every
+ * borehole in BDMS.Models.BoreholeBulkUpdateRequest.BoreholeIds, writing only the properties named in
+ * BDMS.Models.BoreholeBulkUpdateRequest.FieldsToUpdate (matched case-insensitively against
+ * BDMS.Models.BoreholeBulkUpdate property names).
+ */
+export type BoreholeBulkUpdateRequest = {
+  boreholeIds: Array<number>;
+  update: BoreholeBulkUpdate;
+  fieldsToUpdate: Array<string>;
+};
+
+/**
  * Join table entity for a BDMS.Models.Codelist attached to a BDMS.Models.Borehole to store multiple borehole ids.
  */
 export type BoreholeCodelist = {
@@ -5841,6 +5882,40 @@ export type PostApiV2BoreholeCopyResponses = {
 };
 
 export type PostApiV2BoreholeCopyResponse = PostApiV2BoreholeCopyResponses[keyof PostApiV2BoreholeCopyResponses];
+
+export type PostApiV2BoreholeBulkeditData = {
+  /**
+   * The boreholes to edit, the values to apply, and the field mask.
+   */
+  body?: BoreholeBulkUpdateRequest;
+  path?: never;
+  query?: never;
+  url: "/api/v2/borehole/bulkedit";
+};
+
+export type PostApiV2BoreholeBulkeditResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type PostApiV2BoreholeBulkdeleteData = {
+  /**
+   * The ids of the boreholes to delete.
+   */
+  body: Array<number>;
+  path?: never;
+  query?: never;
+  url: "/api/v2/borehole/bulkdelete";
+};
+
+export type PostApiV2BoreholeBulkdeleteResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
 
 export type GetApiVbyVersionBoreholeexportJsonData = {
   body?: never;
