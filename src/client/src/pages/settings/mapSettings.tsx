@@ -15,47 +15,19 @@ import {
 import { InputAdornment } from "@mui/material/";
 import { Plus, SearchIcon, Trash2 } from "lucide-react";
 import { i18n as I18n } from "i18next";
-import _ from "lodash";
 import WMSCapabilities from "ol/format/WMSCapabilities";
 import WMTSCapabilities from "ol/format/WMTSCapabilities";
 import { MapOverlays } from "../../api/mapOverlayUtils.ts";
 import { theme } from "../../AppTheme.ts";
 import { AlertContext } from "../../components/alert/alertContext.tsx";
 import { LayerConfig } from "../../components/map/map.ts";
-import { Layer, WmsCapabilities, WmtsCapabilities } from "./layerInterface.ts";
-
-export interface MapSettingsState {
-  fields: boolean;
-  identifiers: boolean;
-  codeLists: boolean;
-  searchFiltersBoreholes: boolean;
-  searchFiltersLayers: boolean;
-  map: boolean;
-  wmtsFetch: boolean;
-  searchWmts: string;
-  searchWmtsUser: string;
-  wmts: WmtsCapabilities | null;
-  wmsFetch: boolean;
-  searchWms: string;
-  wms: WmsCapabilities | null;
-}
-
-interface WmsOption {
-  key: string;
-  text: string;
-  value: string;
-}
+import { Layer, MapSettingsState, WmsCapabilities, WmsOption, WmtsCapabilities } from "./mapInterfaces.ts";
 
 interface MapSettingsProps {
   overlays: MapOverlays;
   i18n: I18n;
-  removeExplorerMap: (config: { Identifier?: string }) => void;
-  addExplorerMap: (
-    layer: Layer,
-    type: "WMS" | "WMTS",
-    result: WmsCapabilities | WmtsCapabilities,
-    position?: number,
-  ) => void;
+  removeMap: (config: { Identifier?: string }) => void;
+  addMap: (layer: Layer, type: "WMS" | "WMTS", result: WmsCapabilities | WmtsCapabilities, position?: number) => void;
   selectedWMS: string;
   wmsOptions: WmsOption[];
   handleOnChange: (value: string) => void;
@@ -68,8 +40,8 @@ type SearchField = "searchWmts" | "searchWms" | "searchWmtsUser";
 export const MapSettings = ({
   overlays,
   i18n,
-  removeExplorerMap,
-  addExplorerMap,
+  removeMap,
+  addMap,
   selectedWMS,
   wmsOptions,
   handleOnChange,
@@ -111,18 +83,18 @@ export const MapSettings = ({
         onClick={e => {
           e.stopPropagation();
           const identifier = (layerType === "WMS" ? layer.Name : layer.Identifier) ?? "";
-          if (_.has(mapSettings, identifier)) {
+          if (Object.hasOwn(mapSettings, identifier)) {
             layer.Identifier = identifier;
-            removeExplorerMap(layer);
+            removeMap(layer);
           } else {
             const service = layerType === "WMS" ? state.wms : state.wmts;
             if (service) {
-              addExplorerMap(layer, layerType, service, _.values(mapSettings).length);
+              addMap(layer, layerType, service, Object.values(mapSettings).length);
             }
           }
         }}
-        color={_.has(mapSettings, layer.Name ?? "") ? "error" : "primary"}>
-        {_.has(mapSettings, layer.Name ?? "") ? <Trash2 /> : <Plus />}
+        color={Object.hasOwn(mapSettings, layer.Name ?? "") ? "error" : "primary"}>
+        {Object.hasOwn(mapSettings, layer.Name ?? "") ? <Trash2 /> : <Plus />}
       </IconButton>
     );
   }
@@ -168,39 +140,30 @@ export const MapSettings = ({
     });
   }
 
-  function fetchCapabilitiesForService() {
+  async function fetchCapabilitiesForService() {
     const isWms = selectedWMS.startsWith("https://wms");
     const languageParam = `${isWms ? "&lang=" : "?lang="}${i18n.language}`;
-    fetch(selectedWMS + languageParam).then(response => {
-      response.text().then(data => {
-        // Check if WMS or WMTS
-        if (/<(WMT_MS_Capabilities|WMS_Capabilities)/.test(data)) {
-          const wms: WmsCapabilities = new WMSCapabilities().read(data);
-          setState({
-            ...state,
-            wmsFetch: false,
-            wms: wms,
-            wmts: null,
-          });
-        } else if (/<Capabilities/.test(data)) {
-          const wmts: WmtsCapabilities = new WMTSCapabilities().read(data);
-          setState({
-            ...state,
-            wmsFetch: false,
-            wms: null,
-            wmts: wmts,
-          });
-        } else {
-          setState({
-            ...state,
-            wmsFetch: false,
-            wms: null,
-            wmts: null,
-          });
-          showAlert(t("onlyWmsAndWmtsSupported"), "error");
-        }
-      });
-    });
+    try {
+      const response = await fetch(selectedWMS + languageParam);
+      if (!response.ok) {
+        throw new Error(`Capabilities request failed with status ${response.status}`);
+      }
+      const data = await response.text();
+      // Check if WMS or WMTS
+      if (/<(WMT_MS_Capabilities|WMS_Capabilities)/.test(data)) {
+        const wms: WmsCapabilities = new WMSCapabilities().read(data);
+        setState({ ...state, wmsFetch: false, wms: wms, wmts: null });
+      } else if (/<Capabilities/.test(data)) {
+        const wmts: WmtsCapabilities = new WMTSCapabilities().read(data);
+        setState({ ...state, wmsFetch: false, wms: null, wmts: wmts });
+      } else {
+        setState({ ...state, wmsFetch: false, wms: null, wmts: null });
+        showAlert(t("onlyWmsAndWmtsSupported"), "error");
+      }
+    } catch {
+      setState({ ...state, wmsFetch: false, wms: null, wmts: null });
+      showAlert(t("errorWhileFetchingData"), "error");
+    }
   }
 
   const filterBySearchTerm = (layer: LayerConfig, search: string) => {
@@ -245,7 +208,7 @@ export const MapSettings = ({
                       wms: null,
                       wmts: null,
                     });
-                    fetchCapabilitiesForService();
+                    void fetchCapabilitiesForService();
                   }}>
                   {state.wmsFetch ? <CircularProgress size={22} color="inherit" /> : t("load")}
                 </Button>
@@ -304,9 +267,9 @@ export const MapSettings = ({
                           data-cy="delete-user-map-button"
                           onClick={e => {
                             e.stopPropagation();
-                            if (_.has(mapSettings, key)) {
+                            if (Object.hasOwn(mapSettings, key)) {
                               layer.Identifier = key;
-                              removeExplorerMap(layer);
+                              removeMap(layer);
                             }
                           }}
                           color="error">

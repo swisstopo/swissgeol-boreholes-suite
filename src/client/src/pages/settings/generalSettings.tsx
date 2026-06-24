@@ -7,8 +7,8 @@ import { AlertContext } from "../../components/alert/alertContext";
 import { LayerConfig } from "../../components/map/map.ts";
 import "../../components/map/mapProjections";
 import { FullPageCentered } from "../../components/styledComponents.ts";
-import { Layer, WmsCapabilities, WmtsCapabilities } from "./layerInterface.ts";
-import { MapSettings, MapSettingsState } from "./mapSettings";
+import { Layer, MapSettingsState, WmsCapabilities, WmtsCapabilities } from "./mapInterfaces.ts";
+import { MapSettings } from "./mapSettings";
 
 const defaultWms = "https://wms.geo.admin.ch?request=getCapabilities&service=WMS";
 const defaultWmts = "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml";
@@ -32,7 +32,7 @@ const GeneralSettings = () => {
 
   const { overlays, addOverlay, removeOverlay } = useMapOverlays();
   const [selectedWMS, setSelectedWMS] = useState(defaultWms);
-  const [state, setState] = useState<MapSettingsState>({
+  const [mapSettingsState, setMapSettingsState] = useState<MapSettingsState>({
     fields: false,
     identifiers: false,
     codeLists: false,
@@ -76,12 +76,7 @@ const GeneralSettings = () => {
     } as LayerConfig);
   };
 
-  const addExplorerMap = (
-    layer: Layer,
-    type: "WMS" | "WMTS",
-    result: WmsCapabilities | WmtsCapabilities,
-    position = 0,
-  ) => {
+  const addMap = (layer: Layer, type: "WMS" | "WMTS", result: WmsCapabilities | WmtsCapabilities, position = 0) => {
     if (type === "WMS") {
       if (!layer.CRS?.includes("EPSG:2056")) {
         showAlert(t("onlyEPSG2056Supported"), "error");
@@ -102,7 +97,7 @@ const GeneralSettings = () => {
     }
   };
 
-  const removeExplorerMap = (config: { Identifier?: string }) => {
+  const removeMap = (config: { Identifier?: string }) => {
     if (config.Identifier === undefined) return;
     removeOverlay(config.Identifier);
   };
@@ -118,16 +113,16 @@ const GeneralSettings = () => {
         <MapSettings
           overlays={overlays}
           i18n={i18n}
-          removeExplorerMap={removeExplorerMap}
-          addExplorerMap={addExplorerMap}
+          removeMap={removeMap}
+          addMap={addMap}
           selectedWMS={selectedWMS}
           wmsOptions={wmsOptions}
           handleOnChange={(value: string) => {
-            setState({ ...state, wmsFetch: false, wms: null, wmts: null });
+            setMapSettingsState({ ...mapSettingsState, wmsFetch: false, wms: null, wmts: null });
             setSelectedWMS(value);
           }}
-          state={state}
-          setState={setState}
+          state={mapSettingsState}
+          setState={setMapSettingsState}
         />
       </Suspense>
     </Box>
