@@ -4,7 +4,6 @@ import { FormValueType } from "../form/form.ts";
 
 export interface BulkEditFormProps {
   selected: GridRowSelectionModel;
-  loadBoreholes: () => void;
   isOpen: boolean;
 }
 

@@ -47,7 +47,7 @@ const createBorehole = async (workgroupId: number): Promise<Borehole> => {
   });
 };
 
-export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: number | null) => {
+const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: number | null) => {
   return await fetchApiV2Legacy(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
 };
 
@@ -85,10 +85,10 @@ export const buildBulkEditRequest = (
   return { boreholeIds, update, fieldsToUpdate };
 };
 
-export const bulkEditBoreholes = async (request: BoreholeBulkUpdateRequest): Promise<number[]> =>
+const bulkEditBoreholes = async (request: BoreholeBulkUpdateRequest): Promise<number[]> =>
   await fetchApiV2WithApiError<number[]>("borehole/bulkedit", "POST", request);
 
-export const bulkDeleteBoreholes = async (boreholeIds: number[]): Promise<void> =>
+const bulkDeleteBoreholes = async (boreholeIds: number[]): Promise<void> =>
   await fetchApiV2WithApiError<void>("borehole/bulkdelete", "POST", boreholeIds);
 
 const canUserEditBorehole = async (id: number) =>
@@ -155,6 +155,18 @@ export const useBoreholeMutations = () => {
     },
   });
 
+  const useCopyBorehole = useMutation({
+    mutationFn: async ({
+      boreholeId,
+      workgroupId,
+    }: {
+      boreholeId: GridRowSelectionModel;
+      workgroupId: number | null;
+    }) => {
+      return await copyBorehole(boreholeId, workgroupId);
+    },
+  });
+
   const useUpdateBorehole = useMutation({
     mutationFn: async (borehole: Borehole) => {
       return await updateBorehole(borehole);
@@ -181,10 +193,36 @@ export const useBoreholeMutations = () => {
       });
     },
   });
+
+  const useBulkEditBoreholes = useMutation({
+    mutationFn: async (request: BoreholeBulkUpdateRequest) => {
+      return await bulkEditBoreholes(request);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [boreholeQueryKey],
+      });
+    },
+  });
+
+  const useBulkDeleteBoreholes = useMutation({
+    mutationFn: async (boreholeIds: number[]) => {
+      return await bulkDeleteBoreholes(boreholeIds);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [boreholeQueryKey],
+      });
+    },
+  });
+
   return {
     add: useAddBorehole,
+    copy: useCopyBorehole,
     update: useUpdateBorehole,
     delete: useDeleteBorehole,
+    bulkEdit: useBulkEditBoreholes,
+    bulkDelete: useBulkDeleteBoreholes,
   };
 };
 
