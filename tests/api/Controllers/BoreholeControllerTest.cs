@@ -324,6 +324,25 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
+    public async Task EditRejectsWorkgroupChangeToUnauthorizedTargetWorkgroup()
+    {
+        var existing = await context.Boreholes.AsNoTracking().FirstAsync(b => b.WorkgroupId != noPermissionWorkgroupId);
+        var originalWorkgroupId = existing.WorkgroupId;
+
+        var borehole = new Borehole
+        {
+            Id = existing.Id,
+            WorkgroupId = noPermissionWorkgroupId,
+        };
+
+        var response = await controller.EditAsync(borehole);
+        ActionResultAssert.IsUnauthorized(response.Result);
+
+        var reloaded = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == existing.Id);
+        Assert.AreEqual(originalWorkgroupId, reloaded.WorkgroupId, "The borehole must not be moved to an unauthorized workgroup.");
+    }
+
+    [TestMethod]
     public async Task CopyBoreholeWithHydrotests()
     {
         var newBorehole = GetBoreholeToAdd();
