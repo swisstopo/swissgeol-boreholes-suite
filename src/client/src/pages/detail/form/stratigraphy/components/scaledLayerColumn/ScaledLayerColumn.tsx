@@ -1,4 +1,4 @@
-import { ReactNode, useMemo } from "react";
+import { memo, ReactNode, useMemo } from "react";
 import { Box } from "@mui/material";
 import { SxProps, Theme } from "@mui/material/styles";
 import { NavState } from "../../navigation/navState.ts";
@@ -21,7 +21,7 @@ interface ScaledLayerColumnProps<T extends ScaledLayer> {
 // height proportional to its thickness. Culls layers outside the current lens window and any
 // thinner than `minPixelHeight` at the current zoom. Surviving layers are rendered at a hard
 // minimum of 1px so a zero-thickness layer (e.g. a point observation) still appears as a hairline.
-export const ScaledLayerColumn = <T extends ScaledLayer>({
+const ScaledLayerColumnBase = <T extends ScaledLayer>({
   layers,
   navState,
   renderLayer,
@@ -60,3 +60,7 @@ export const ScaledLayerColumn = <T extends ScaledLayer>({
     </Box>
   );
 };
+
+// `memo` collapses the generic when wrapped naively, so cast back to the original signature to
+// preserve `<T extends ScaledLayer>` inference at call sites.
+export const ScaledLayerColumn = memo(ScaledLayerColumnBase) as typeof ScaledLayerColumnBase;
