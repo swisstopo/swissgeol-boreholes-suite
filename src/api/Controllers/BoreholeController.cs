@@ -396,7 +396,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     /// <param name="boreholeIds">The ids of the boreholes to delete.</param>
     [HttpPost("bulkdelete")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> BulkDeleteAsync([FromBody][Required][MinLength(1)][MaxLength(100)] Collection<int> boreholeIds)
+    public async Task<IActionResult> BulkDeleteAsync([FromBody][Required][MinLength(1)] Collection<int> boreholeIds)
     {
         var distinctIds = boreholeIds.Distinct().ToList();
         var subjectId = HttpContext.GetUserSubjectId();
