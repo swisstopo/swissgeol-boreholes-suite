@@ -7,8 +7,8 @@ import { theme } from "../../../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../../../components/buttons/buttons.tsx";
 import { useCopyToClipboard } from "../../../../../../hooks/useCopyToClipboard.ts";
 import {
-  APPROX_LINE_HEIGHT_PX,
-  CELL_VERTICAL_PADDING_PX,
+  approximateLineHeightPx,
+  cellVerticalPaddingPx,
   lineClampSx,
 } from "../../components/stratigraphyTableConstants.ts";
 import { useTypedResizeObserver } from "../../navigation/useTypedResizeObserver.ts";
@@ -32,10 +32,7 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx
   // initial calibration). Clamping at a whole-line boundary prevents the half-cut bottom line
   // that plain overflow:hidden produces, and the ellipsis is rendered by the browser.
   useTypedResizeObserver(cellRef, entry => {
-    const lines = Math.max(
-      1,
-      Math.floor((entry.contentRect.height - CELL_VERTICAL_PADDING_PX) / APPROX_LINE_HEIGHT_PX),
-    );
+    const lines = Math.max(1, Math.floor((entry.contentRect.height - cellVerticalPaddingPx) / approximateLineHeightPx));
     setMaxLines(lines);
   });
 
