@@ -12,7 +12,7 @@ describe("ScaledLayerColumn", () => {
 
   it("renders no layers when the array is empty", () => {
     const { container } = render(<ScaledLayerColumn layers={[]} navState={navState()} renderLayer={() => <div />} />);
-    expect(container.querySelectorAll("[data-testid^='scaled-layer-wrapper-']").length).toBe(0);
+    expect(container.querySelectorAll("[data-testid^='scaled-layer-wrapper-']")).toHaveLength(0);
   });
 
   it("positions a layer at fromDepth times pixelPerMeter and sizes by thickness", () => {
@@ -69,6 +69,6 @@ describe("ScaledLayerColumn", () => {
         renderLayer={() => <div>layer</div>}
       />,
     );
-    expect(container.querySelectorAll("[data-testid^='scaled-layer-wrapper-']").length).toBe(0);
+    expect(container.querySelectorAll("[data-testid^='scaled-layer-wrapper-']")).toHaveLength(0);
   });
 });

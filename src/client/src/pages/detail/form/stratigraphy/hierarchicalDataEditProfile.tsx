@@ -117,7 +117,8 @@ export function useHierarchicalDataEditProfile({
       const path = pathString.split(".").map(p => +p);
       const level = path.length - 1;
       const conf = JSON.parse(d.conf ?? "null") as { color?: string } | null;
-      (accu[level] = accu[level] || []).push({
+      accu[level] ??= [];
+      accu[level].push({
         label: codelistLocale(d, i18n.language),
         id: d.id,
         color: conf?.color,

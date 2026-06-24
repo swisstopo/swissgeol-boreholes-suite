@@ -33,7 +33,7 @@ describe("LensColumn", () => {
       getColor: () => "rgb(100,100,100)",
     });
     const { container } = render(<LensColumn stratigraphyId={1} navState={navState} setNavState={vi.fn()} />);
-    expect(container.querySelectorAll("[data-testid^='scaled-layer-wrapper-']").length).toBe(2);
+    expect(container.querySelectorAll("[data-testid^='scaled-layer-wrapper-']")).toHaveLength(2);
   });
 
   it("renders no layer entries when layers array is empty", () => {
@@ -43,6 +43,6 @@ describe("LensColumn", () => {
       getColor: () => undefined,
     });
     const { container } = render(<LensColumn stratigraphyId={1} navState={navState} setNavState={vi.fn()} />);
-    expect(container.querySelectorAll("[data-testid^='scaled-layer-wrapper-']").length).toBe(0);
+    expect(container.querySelectorAll("[data-testid^='scaled-layer-wrapper-']")).toHaveLength(0);
   });
 });
