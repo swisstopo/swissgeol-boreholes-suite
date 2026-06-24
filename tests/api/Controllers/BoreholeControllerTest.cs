@@ -1239,6 +1239,63 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
+    public async Task BulkEditRejectsWorkgroupChangeToUnauthorizedTargetWorkgroup()
+    {
+        var ids = await context.Boreholes.OrderBy(b => b.Id).Take(2).Select(b => b.Id).ToListAsync();
+        var originalWorkgroupIds = await context.Boreholes
+            .Where(b => ids.Contains(b.Id))
+            .ToDictionaryAsync(b => b.Id, b => b.WorkgroupId);
+
+        var request = new BoreholeBulkUpdateRequest
+        {
+            BoreholeIds = new(ids),
+            Update = new BoreholeBulkUpdate { WorkgroupId = noPermissionWorkgroupId },
+            FieldsToUpdate = new() { "workgroupId" },
+        };
+
+        var response = await controller.BulkEditAsync(request);
+        ActionResultAssert.IsUnauthorized(response);
+
+        foreach (var id in ids)
+        {
+            var borehole = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
+            Assert.AreEqual(originalWorkgroupIds[id], borehole.WorkgroupId, "No borehole may be moved when the target workgroup is unauthorized.");
+        }
+    }
+
+    [TestMethod]
+    public async Task BulkEditAllowsWorkgroupChangeToAuthorizedTargetWorkgroup()
+    {
+        var targetWorkgroupId = await context.Workgroups
+            .Where(w => w.Id != noPermissionWorkgroupId)
+            .Select(w => w.Id)
+            .OrderBy(id => id)
+            .FirstAsync();
+        var ids = await context.Boreholes
+            .Where(b => b.WorkgroupId != targetWorkgroupId)
+            .OrderBy(b => b.Id)
+            .Take(2)
+            .Select(b => b.Id)
+            .ToListAsync();
+
+        var request = new BoreholeBulkUpdateRequest
+        {
+            BoreholeIds = new(ids),
+            Update = new BoreholeBulkUpdate { WorkgroupId = targetWorkgroupId },
+            FieldsToUpdate = new() { "workgroupId" },
+        };
+
+        var response = await controller.BulkEditAsync(request);
+        ActionResultAssert.IsOk(response);
+
+        foreach (var id in ids)
+        {
+            var borehole = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
+            Assert.AreEqual(targetWorkgroupId, borehole.WorkgroupId);
+        }
+    }
+
+    [TestMethod]
     public async Task BulkEditWithUnknownFieldReturnsBadRequest()
     {
         var id = await context.Boreholes.OrderBy(b => b.Id).Select(b => b.Id).FirstAsync();

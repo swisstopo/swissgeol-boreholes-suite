@@ -309,6 +309,21 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
         var subjectId = HttpContext.GetUserSubjectId();
 
+        // Reassigning the workgroup requires edit rights on the TARGET workgroup, matching CreateAsync and
+        // CopyAsync. Without this check a user could move boreholes into a workgroup they have no role on.
+        if (request.FieldsToUpdate.Any(f => string.Equals(f, "workgroupId", StringComparison.OrdinalIgnoreCase)))
+        {
+            if (request.Update.WorkgroupId == null)
+            {
+                return BadRequest("A target workgroup is required when 'workgroupId' is updated.");
+            }
+
+            if (!await BoreholePermissionService.HasUserRoleOnWorkgroupAsync(subjectId, request.Update.WorkgroupId.Value, Role.Editor).ConfigureAwait(false))
+            {
+                return Unauthorized();
+            }
+        }
+
         // Atomic permission gate: check every selected borehole and collect all that are not editable,
         // so the full list can be returned to the user. Nothing is written if any fails.
         var unauthorizedBoreholeIds = new List<int>();
