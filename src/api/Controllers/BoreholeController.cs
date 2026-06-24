@@ -118,25 +118,71 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         }
     }
 
-    private async Task<ActionResult<T>> ExecuteAsAuthenticatedUserAsync<T>(string operationDescription, Func<User, Task<T>> operation)
+    /// <summary>
+    /// Asynchronously applies the same set of field changes to multiple boreholes.
+    /// Only the properties named in <see cref="BoreholeBulkUpdateRequest.FieldsToUpdate"/> are written.
+    /// The whole batch is rejected (nothing is saved) if the current user cannot edit any selected borehole.
+    /// Resets the workflow tab status of any tab whose fields were changed.
+    /// </summary>
+    /// <param name="request">The boreholes to edit, the values to apply, and the field mask.</param>
+    [HttpPost("bulkedit")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> BulkEditAsync([FromBody] BoreholeBulkUpdateRequest request)
     {
+        var unknownFields = request.FieldsToUpdate.Where(f => !BulkEditableFields.Contains(f)).ToList();
+        if (unknownFields.Count > 0)
+        {
+            return BadRequest($"Unknown bulk edit field(s): {string.Join(", ", unknownFields)}.");
+        }
+
+        var subjectId = HttpContext.GetUserSubjectId();
+
+        // Atomic permission gate: check every selected borehole and collect all that are not editable,
+        // so the full list can be returned to the user. Nothing is written if any fails.
+        var unauthorizedBoreholeIds = new List<int>();
+        foreach (var id in request.BoreholeIds)
+        {
+            if (!await BoreholePermissionService.CanEditBoreholeAsync(subjectId, id).ConfigureAwait(false))
+            {
+                unauthorizedBoreholeIds.Add(id);
+            }
+        }
+
+        if (unauthorizedBoreholeIds.Count > 0)
+        {
+            return UnauthorizedBoreholesProblem(unauthorizedBoreholeIds, "bulkEditUnauthorizedBoreholes");
+        }
+
+        var boreholes = await Context.Boreholes
+            .Include(b => b.Workflow).ThenInclude(w => w.ReviewedTabs)
+            .Include(b => b.Workflow).ThenInclude(w => w.PublishedTabs)
+            .Where(b => request.BoreholeIds.Contains(b.Id))
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var resetLocationTab = request.FieldsToUpdate.Any(f => LocationTabFields.Contains(f));
+        var resetGeneralTab = request.FieldsToUpdate.Any(f => GeneralTabFields.Contains(f));
+
+        foreach (var borehole in boreholes)
+        {
+            foreach (var field in request.FieldsToUpdate)
+            {
+                ApplyBulkEditField(borehole, request.Update, field);
+            }
+
+            ResetAffectedTabs(borehole, resetLocationTab, resetGeneralTab);
+        }
+
         try
         {
-            var subjectId = HttpContext.GetUserSubjectId();
-            var user = await Context.UsersWithIncludes
-                .AsNoTracking()
-                .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
-                .ConfigureAwait(false);
-
-            if (user == null) return Unauthorized($"No user with subject_id <{subjectId}> found.");
-
-            var result = await operation(user).ConfigureAwait(false);
-            return Ok(result);
+            await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+            return Ok(request.BoreholeIds);
         }
         catch (Exception ex)
         {
-            Logger.LogWarning(ex, "Unexpected error {Operation}", operationDescription);
-            return Problem($"An unexpected error occurred while {operationDescription}.");
+            var errorMessage = "An error occurred while saving the bulk edit changes.";
+            Logger?.LogError(ex, errorMessage);
+            return Problem(errorMessage);
         }
     }
 
@@ -283,76 +329,41 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         return Ok(entityEntry.Entity.Id);
     }
 
-    /// <inheritdoc />
-    protected override async Task<int?> GetBoreholeId(Borehole entity)
-    {
-        if (entity == null) return default;
-        return await Task.FromResult<int?>(entity.Id).ConfigureAwait(false);
-    }
-
     /// <summary>
-    /// Asynchronously applies the same set of field changes to multiple boreholes.
-    /// Only the properties named in <see cref="BoreholeBulkUpdateRequest.FieldsToUpdate"/> are written.
-    /// The whole batch is rejected (nothing is saved) if the current user cannot edit any selected borehole.
-    /// Resets the workflow tab status of any tab whose fields were changed.
+    /// Asynchronously deletes the <see cref="Borehole"/> with the specified <paramref name="id"/>.
+    /// Permission is checked via <see cref="IBoreholePermissionService.CanChangeBoreholeStatusAsync"/>,
+    /// so admins can delete a borehole regardless of whether it is locked by another user or already in
+    /// Reviewed/Published status.
     /// </summary>
-    /// <param name="request">The boreholes to edit, the values to apply, and the field mask.</param>
-    [HttpPost("bulkedit")]
+    /// <param name="id">The id of the borehole to delete.</param>
+    [HttpDelete]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> BulkEditAsync([FromBody] BoreholeBulkUpdateRequest request)
+    public async override Task<IActionResult> DeleteAsync(int id)
     {
-        var unknownFields = request.FieldsToUpdate.Where(f => !BulkEditableFields.Contains(f)).ToList();
-        if (unknownFields.Count > 0)
-        {
-            return BadRequest($"Unknown bulk edit field(s): {string.Join(", ", unknownFields)}.");
-        }
-
-        var subjectId = HttpContext.GetUserSubjectId();
-
-        // Atomic permission gate: check every selected borehole and collect all that are not editable,
-        // so the full list can be returned to the user. Nothing is written if any fails.
-        var unauthorizedBoreholeIds = new List<int>();
-        foreach (var id in request.BoreholeIds)
-        {
-            if (!await BoreholePermissionService.CanEditBoreholeAsync(subjectId, id).ConfigureAwait(false))
-            {
-                unauthorizedBoreholeIds.Add(id);
-            }
-        }
-
-        if (unauthorizedBoreholeIds.Count > 0)
-        {
-            return UnauthorizedBoreholesProblem(unauthorizedBoreholeIds, "bulkEditUnauthorizedBoreholes");
-        }
-
-        var boreholes = await Context.Boreholes
-            .Include(b => b.Workflow).ThenInclude(w => w.ReviewedTabs)
-            .Include(b => b.Workflow).ThenInclude(w => w.PublishedTabs)
-            .Where(b => request.BoreholeIds.Contains(b.Id))
-            .ToListAsync()
+        var borehole = await Context.Boreholes
+            .SingleOrDefaultAsync(b => b.Id == id)
             .ConfigureAwait(false);
 
-        var resetLocationTab = request.FieldsToUpdate.Any(f => LocationTabFields.Contains(f));
-        var resetGeneralTab = request.FieldsToUpdate.Any(f => GeneralTabFields.Contains(f));
-
-        foreach (var borehole in boreholes)
+        if (borehole == null)
         {
-            foreach (var field in request.FieldsToUpdate)
-            {
-                ApplyBulkEditField(borehole, request.Update, field);
-            }
-
-            ResetAffectedTabs(borehole, resetLocationTab, resetGeneralTab);
+            return NotFound();
         }
+
+        if (!await BoreholePermissionService.CanChangeBoreholeStatusAsync(HttpContext.GetUserSubjectId(), borehole.Id).ConfigureAwait(false))
+        {
+            return Unauthorized();
+        }
+
+        Context.Remove(borehole);
 
         try
         {
-            await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
-            return Ok(request.BoreholeIds);
+            await Context.SaveChangesAsync().ConfigureAwait(false);
+            return Ok();
         }
         catch (Exception ex)
         {
-            var errorMessage = "An error occurred while saving the bulk edit changes.";
+            var errorMessage = "An error occurred while saving the entity changes.";
             Logger?.LogError(ex, errorMessage);
             return Problem(errorMessage);
         }
@@ -409,6 +420,35 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             var errorMessage = "An error occurred while deleting the boreholes.";
             Logger?.LogError(ex, errorMessage);
             return Problem(errorMessage);
+        }
+    }
+
+    /// <inheritdoc />
+    protected override async Task<int?> GetBoreholeId(Borehole entity)
+    {
+        if (entity == null) return default;
+        return await Task.FromResult<int?>(entity.Id).ConfigureAwait(false);
+    }
+
+    private async Task<ActionResult<T>> ExecuteAsAuthenticatedUserAsync<T>(string operationDescription, Func<User, Task<T>> operation)
+    {
+        try
+        {
+            var subjectId = HttpContext.GetUserSubjectId();
+            var user = await Context.UsersWithIncludes
+                .AsNoTracking()
+                .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
+                .ConfigureAwait(false);
+
+            if (user == null) return Unauthorized($"No user with subject_id <{subjectId}> found.");
+
+            var result = await operation(user).ConfigureAwait(false);
+            return Ok(result);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogWarning(ex, "Unexpected error {Operation}", operationDescription);
+            return Problem($"An unexpected error occurred while {operationDescription}.");
         }
     }
 
@@ -494,46 +534,6 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             case "LITHOSTRATIGRAPHYTOPBEDROCKID": borehole.LithostratigraphyTopBedrockId = update.LithostratigraphyTopBedrockId; break;
             case "CHRONOSTRATIGRAPHYTOPBEDROCKID": borehole.ChronostratigraphyTopBedrockId = update.ChronostratigraphyTopBedrockId; break;
             default: throw new InvalidOperationException($"Unhandled bulk edit field '{field}'.");
-        }
-    }
-
-    /// <summary>
-    /// Asynchronously deletes the <see cref="Borehole"/> with the specified <paramref name="id"/>.
-    /// Permission is checked via <see cref="IBoreholePermissionService.CanChangeBoreholeStatusAsync"/>,
-    /// so admins can delete a borehole regardless of whether it is locked by another user or already in
-    /// Reviewed/Published status.
-    /// </summary>
-    /// <param name="id">The id of the borehole to delete.</param>
-    [HttpDelete]
-    [Authorize(Policy = PolicyNames.Viewer)]
-    public async override Task<IActionResult> DeleteAsync(int id)
-    {
-        var borehole = await Context.Boreholes
-            .SingleOrDefaultAsync(b => b.Id == id)
-            .ConfigureAwait(false);
-
-        if (borehole == null)
-        {
-            return NotFound();
-        }
-
-        if (!await BoreholePermissionService.CanChangeBoreholeStatusAsync(HttpContext.GetUserSubjectId(), borehole.Id).ConfigureAwait(false))
-        {
-            return Unauthorized();
-        }
-
-        Context.Remove(borehole);
-
-        try
-        {
-            await Context.SaveChangesAsync().ConfigureAwait(false);
-            return Ok();
-        }
-        catch (Exception ex)
-        {
-            var errorMessage = "An error occurred while saving the entity changes.";
-            Logger?.LogError(ex, errorMessage);
-            return Problem(errorMessage);
         }
     }
 }
