@@ -98,10 +98,10 @@ These values are stored in a Kubernetes Secret. Pass via `--set` on first deploy
 
 | Parameter                  | Description                       | Secret Key                 |
 | -------------------------- | --------------------------------- | -------------------------- |
-| `database.host`            | Database hostname                 | `databaseHost`             |
-| `database.name`            | Database name                     | `databaseName`             |
-| `database.username`        | Database username                 | `databaseUsername`         |
-| `database.password`        | Database password                 | `databasePassword`         |
+| `database.host`            | Database hostname                 | `databaseConnectionString` |
+| `database.name`            | Database name                     | `databaseConnectionString` |
+| `database.username`        | Database username                 | `databaseConnectionString` |
+| `database.password`        | Database password                 | `databaseConnectionString` |
 | `s3.bucket`                | S3 bucket name                    | `s3Bucket`                 |
 | `s3.photosBucket`          | S3 photos bucket name             | `s3PhotosBucket`           |
 | `s3.logFilesBucket`        | S3 log files bucket name          | `s3LogFilesBucket`         |

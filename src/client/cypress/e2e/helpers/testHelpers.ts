@@ -6,16 +6,6 @@ import { startEditing, stopEditing } from "./buttonHelpers";
 export const bearerAuth = (token: string) => ({ bearer: token });
 
 export const interceptApiCalls = () => {
-  // Api V1
-  cy.intercept("/api/v1/borehole").as("borehole");
-  cy.intercept("/api/v1/borehole", req => {
-    req.alias = `borehole_${req.body.action.toLowerCase()}`;
-  });
-  cy.intercept("/api/v1/workflow/edit", req => {
-    req.alias = `workflow_edit_${req.body.action.toLowerCase()}`;
-  });
-  cy.intercept("api/v1/borehole/codes").as("codes");
-
   // Api V2
   cy.intercept("/api/v2/borehole/filter").as("borehole_filter");
   cy.intercept("/api/v2/stratigraphy?boreholeId=**").as("stratigraphy_by_borehole_GET");
