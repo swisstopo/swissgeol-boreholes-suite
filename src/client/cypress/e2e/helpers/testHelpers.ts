@@ -18,26 +18,26 @@ export const interceptApiCalls = () => {
 
   // Api V2
   cy.intercept("/api/v2/borehole/filter").as("borehole_filter");
+  cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
+  cy.intercept("/api/v2/borehole/**").as("borehole_by_id");
+  cy.intercept("PUT", "/api/v2/borehole").as("update-borehole");
+  cy.intercept("POST", "/api/v2/borehole").as("post-borehole");
+  cy.intercept("POST", "/api/v2/borehole/bulkedit").as("bulk-edit");
+  cy.intercept("POST", "/api/v2/borehole/bulkdelete").as("bulk-delete");
   cy.intercept("/api/v2/stratigraphy?boreholeId=**").as("stratigraphy_by_borehole_GET");
   cy.intercept("/api/v2/stratigraphy*", req => {
     req.alias = `stratigraphy_${req.method}`;
   });
   cy.intercept("/api/v2/stratigraphy/copy*").as("stratigraphy_COPY");
   cy.intercept("/api/v2/stratigraphy/*/lithology").as("lithology_by_stratigraphyId_GET");
-  cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
   cy.intercept("/api/v2/boreholeexport/csv**").as("borehole_export_csv");
   cy.intercept("/api/v2/boreholeexport/json**").as("borehole_export_json");
-  cy.intercept("/api/v2/borehole/**").as("borehole_by_id");
-  cy.intercept("PUT", "/api/v2/borehole").as("update-borehole");
-  cy.intercept("POST", "/api/v2/borehole").as("post-borehole");
   cy.intercept("PUT", "/api/v2/user").as("update-user");
   cy.intercept("GET", "/api/v2/user").as("get-user");
   cy.intercept("GET", "/api/v2/user/self").as("get-current-user");
   cy.intercept("PUT", "/api/v2/user/self/maplayers").as("setting");
   cy.intercept("PUT", "/api/v2/workgroup").as("update-workgroup");
   cy.intercept("POST", "/api/v2/workgroup/setRoles").as("set_workgroup_roles");
-  cy.intercept("POST", "/api/v2/borehole/bulkedit").as("bulk-edit");
-  cy.intercept("POST", "/api/v2/borehole/bulkdelete").as("bulk-delete");
   cy.intercept("POST", "/api/v2/workflow/tabstatuschange").as("tabstatuschange");
   cy.intercept("GET", "/api/v2/workflow/**").as("workflow_by_id");
 
