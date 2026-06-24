@@ -85,9 +85,6 @@ if __name__ == "__main__":
         # Exceptions
         BmsDatabaseException,
 
-        # user handlers
-        SettingHandler,
-
         # Borehole handlers
         BoreholeProducerHandler,
     )
@@ -100,8 +97,6 @@ if __name__ == "__main__":
     )
 
     application = web.Application([
-
-        (r'/api/v1/setting', SettingHandler),
 
         # Borehole handlers
         (r'/api/v1/borehole/edit', BoreholeProducerHandler),

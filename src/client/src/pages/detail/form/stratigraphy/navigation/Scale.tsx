@@ -65,7 +65,9 @@ export const Scale: FC<ScaleProps> = ({ navState }) => {
       const lastIndex = depths.length - 1;
       for (let i = 0; i < depths.length; i++) {
         const depth = depths[i];
-        const alignment: LabelAlignment = i === 0 ? "top" : i === lastIndex ? "bottom" : "center";
+        let alignment: LabelAlignment = "center";
+        if (i === 0) alignment = "top";
+        else if (i === lastIndex) alignment = "bottom";
         labels.push(
           <DepthLabel
             alignment={alignment}

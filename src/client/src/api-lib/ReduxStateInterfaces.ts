@@ -1,17 +1,6 @@
-import type { LayerConfig } from "../components/map/map";
-
 export interface ReduxRootState {
   editor: EditorStore;
-  setting: Setting;
   core_user: User;
-}
-
-export interface Setting {
-  data: {
-    map: {
-      explorer: Record<string, LayerConfig>;
-    };
-  };
 }
 
 export interface EditorStore {
