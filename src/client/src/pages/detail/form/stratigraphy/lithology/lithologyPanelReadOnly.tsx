@@ -23,9 +23,8 @@ interface LithologyPanelReadOnlyProps {
 
 type LithostratiWithDepths = LithostratigraphyLayer & { fromDepth: number; toDepth: number };
 
-// View-mode orchestrator for the lithology tab. Mounts the Lupe mini-overview and a collapsible
-// Lithostratigraphie-Balken (when the borehole has lithostrati data) alongside the four data
-// columns. All columns share the same NavState via NavigationContainer so dragging the Lupe's
+// View-mode orchestrator for the lithology tab. Mounts the lens mini-overview alongside the four data
+// columns. All columns share the same NavState via NavigationContainer so dragging the
 // lens, wheel-zooming, and drag-panning the data area stay in sync.
 export const LithologyPanelReadOnly: FC<LithologyPanelReadOnlyProps> = ({
   stratigraphyId,
@@ -46,8 +45,7 @@ export const LithologyPanelReadOnly: FC<LithologyPanelReadOnlyProps> = ({
   );
 
   // Memoised id → color map: parsing the Codelist `conf` JSON once per render of the panel
-  // (not once per layer × cell) is critical because getLithostratigraphyColor runs JSON.parse
-  // and the same lithostrati is shared with both the Lupe and the Bar.
+  // (not once per layer × cell).
   const colorByLithostratigraphyId = useMemo(() => {
     const map = new Map<number, string | undefined>();
     for (const lithostratigraphy of lithostratigraphies)

@@ -15,11 +15,6 @@ type Subscription = {
 const { subscriptions } = vi.hoisted(() => ({
   subscriptions: [] as Subscription[],
 }));
-
-// Replace the underlying resize-observer hook with a synchronous registry. The real lib batches via
-// requestAnimationFrame and reads `window.ResizeObserver` at module-eval time, which makes raw
-// jsdom mocking flaky. This shim keeps the public surface (a hook taking a ref + callback) intact
-// while letting tests fire resize events directly against a known element.
 vi.mock("@react-hook/resize-observer", () => ({
   default: function useResizeObserverMock(
     target: { current: Element | null } | Element | null,

@@ -14,9 +14,7 @@ interface NavigationContainerProps {
   // Element to observe for navState.height. Defaults to the container itself, which is correct
   // when the container's box IS the data area (the stack-mode chrono/litho-strati panels).
   // Provide an explicit body ref when the container wraps more than just the body — e.g. the
-  // lithology grid has a header row above and a lens-down row below the body, so measuring the
-  // container would over-count the pixels available for depth-proportional scaling and the table
-  // cells would render taller than the visible body row.
+  // lithology grid has a header row above and a lens-down row below the body.
   // Todo: Reevaluate architechture after chronostratigraphy and lithostratigraphy styles were updated to newer design.
   // https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2301
   // https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2300
@@ -53,11 +51,6 @@ export const NavigationContainer: FC<NavigationContainerProps> = ({
     // calculate new lensSize
     const newLensSize = navState.lensSize * 1.001 ** event.deltaY;
     const clampedLensSize = clamp(newLensSize, 0.5, navState.maxContent);
-
-    // The wheel anchors the zoom at the pointer, so we need the pointer's fraction within the
-    // *body* area (not the container). When bodyRef is provided, navState.height is already the
-    // body height, so we read the body's bounding rect directly. Otherwise fall back to the legacy
-    // "container minus maxHeader" geometry used by stack-mode panels.
     const bodyEl = bodyRef?.current;
     const bodyTop = bodyEl
       ? bodyEl.getBoundingClientRect().top
