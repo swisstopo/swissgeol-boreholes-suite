@@ -3,6 +3,7 @@ import Draggable, { DraggableData, DraggableEvent } from "react-draggable";
 import { NumericFormat } from "react-number-format";
 import { Box, Button } from "@mui/material";
 import { styled } from "@mui/material/styles";
+import { Stack } from "@mui/system";
 import { ChevronDown, ChevronUp } from "lucide-react";
 import { theme } from "../../../../../AppTheme.ts";
 import { clamp } from "./clamp.ts";
@@ -118,9 +119,10 @@ export const NavigationLens: FC<NavigationLensProps> = ({ navState, setNavState,
         onDrag={handleDrag}
         onStart={() => setCursor("grabbing")}
         onStop={() => setCursor("grab")}>
-        <Box
+        <Stack
           ref={lensRef}
           onPointerDown={e => e.stopPropagation()}
+          justifyContent="space-between"
           sx={{
             cursor,
             height: lensHeight + "px",
@@ -132,9 +134,6 @@ export const NavigationLens: FC<NavigationLensProps> = ({ navState, setNavState,
             borderStyle: "solid",
             borderWidth: "2px",
             borderColor: theme.palette.error.main,
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "space-between",
           }}>
           {lensHeight > minPixelHeightForDepthLabel && (
             <>
@@ -146,7 +145,7 @@ export const NavigationLens: FC<NavigationLensProps> = ({ navState, setNavState,
               />
             </>
           )}
-        </Box>
+        </Stack>
       </Draggable>
     </Box>
   );
