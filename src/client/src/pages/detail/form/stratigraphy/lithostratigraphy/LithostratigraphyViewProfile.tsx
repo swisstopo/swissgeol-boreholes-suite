@@ -1,4 +1,4 @@
-import { Dispatch, FC, SetStateAction, useEffect, useMemo } from "react";
+import { Dispatch, FC, memo, SetStateAction, useEffect, useMemo } from "react";
 import { Box, LinearProgress } from "@mui/material";
 import { LithostratigraphyLayer } from "../../../../../api/generated";
 import { getLithostratigraphyColor } from "../components/scaledLayerColumn/getLithostratigraphyColor.ts";
@@ -14,8 +14,15 @@ interface LithostratigraphyViewProfileProps {
 
 type ScaledLithostratigraphyLayer = LithostratigraphyLayer & { fromDepth: number; toDepth: number };
 
+const getLayerKey = (l: ScaledLithostratigraphyLayer) => l.id;
+const layerSx = { position: "absolute", inset: 0 } as const;
+
+const renderLithostratigraphyLayer = (layer: ScaledLithostratigraphyLayer) => (
+  <Box sx={layerSx} style={{ backgroundColor: getLithostratigraphyColor(layer) ?? "rgb(255,255,255)" }} />
+);
+
 // Displays the lithostratigraphy layers as a depth-proportional colored profile.
-export const LithostratigraphyViewProfile: FC<LithostratigraphyViewProfileProps> = ({
+const LithostratigraphyViewProfileBase: FC<LithostratigraphyViewProfileProps> = ({
   stratigraphyId,
   navState,
   setNavState,
@@ -37,14 +44,11 @@ export const LithostratigraphyViewProfile: FC<LithostratigraphyViewProfileProps>
     <ScaledLayerColumn
       layers={validLayers}
       navState={navState}
-      getKey={l => l.id}
+      getKey={getLayerKey}
       minPixelHeight={1}
-      renderLayer={layer => (
-        <Box
-          sx={{ position: "absolute", inset: 0 }}
-          style={{ backgroundColor: getLithostratigraphyColor(layer) ?? "rgb(255,255,255)" }}
-        />
-      )}
+      renderLayer={renderLithostratigraphyLayer}
     />
   );
 };
+
+export const LithostratigraphyViewProfile = memo(LithostratigraphyViewProfileBase);

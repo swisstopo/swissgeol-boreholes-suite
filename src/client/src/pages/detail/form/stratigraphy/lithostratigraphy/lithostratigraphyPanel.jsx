@@ -1,3 +1,4 @@
+import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
 import { NavigationChild } from "../navigation/NavigationChild.tsx";
@@ -10,6 +11,17 @@ import { LithostratigraphyViewProfile } from "./LithostratigraphyViewProfile.tsx
 const LithostratigraphyPanel = ({ stratigraphyId }) => {
   const { t } = useTranslation();
 
+  const renderLensBackground = useCallback(
+    (lensNavState, setLensNavState) => (
+      <LithostratigraphyViewProfile
+        navState={lensNavState}
+        setNavState={setLensNavState}
+        stratigraphyId={stratigraphyId}
+      />
+    ),
+    [stratigraphyId],
+  );
+
   return (
     <NavigationContainer
       sx={{ gap: "0.5em", minHeight: "65vh", height: "100%" }}
@@ -21,17 +33,7 @@ const LithostratigraphyPanel = ({ stratigraphyId }) => {
               sx={{ flex: "0 0 4em" }}
               navState={navState}
               setNavState={setNavState}>
-              <NavigationLens
-                navState={navState}
-                setNavState={setNavState}
-                renderBackground={(lensNavState, setLensNavState) => (
-                  <LithostratigraphyViewProfile
-                    navState={lensNavState}
-                    setNavState={setLensNavState}
-                    stratigraphyId={stratigraphyId}
-                  />
-                )}
-              />
+              <NavigationLens navState={navState} setNavState={setNavState} renderBackground={renderLensBackground} />
             </NavigationChild>
             <NavigationChild
               sx={{ flex: "0 0 8em" }}

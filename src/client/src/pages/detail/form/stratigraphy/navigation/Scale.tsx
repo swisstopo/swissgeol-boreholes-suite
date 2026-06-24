@@ -5,30 +5,31 @@ import { styled } from "@mui/material/styles";
 import { NavState } from "./navState.ts";
 import { useTypedResizeObserver } from "./useTypedResizeObserver.ts";
 
-const isMajorNumber = (number: number, metersPerPattern: number): boolean => {
-  const majorNumberInterval = metersPerPattern * 10;
-  const remainder = number % majorNumberInterval;
-  const epsilon = metersPerPattern / 2;
-  return remainder < epsilon || remainder > majorNumberInterval - epsilon;
-};
+type LabelAlignment = "top" | "center" | "bottom";
 
 interface DepthLabelStyleProps {
   bottomPosition: number;
-  isMajorNumber: boolean;
+  alignment: LabelAlignment;
 }
 
+const translateByAlignment: Record<LabelAlignment, string> = {
+  top: "translateY(125%)",
+  center: "translateY(50%)",
+  bottom: "translateY(-25%)",
+};
+
 const DepthLabel = styled(NumericFormat, {
-  shouldForwardProp: (prop: PropertyKey) =>
-    typeof prop === "string" && !["bottomPosition", "isMajorNumber"].includes(prop),
-})<DepthLabelStyleProps>(({ bottomPosition, isMajorNumber }) => ({
+  shouldForwardProp: (prop: PropertyKey) => typeof prop === "string" && !["bottomPosition", "alignment"].includes(prop),
+})<DepthLabelStyleProps>(({ bottomPosition, alignment }) => ({
   position: "absolute",
   bottom: bottomPosition,
   left: 0,
   right: 0,
-  fontSize: isMajorNumber ? "0.9em" : "0.8em",
-  fontWeight: "bold",
+  fontSize: "16px",
+  fontWeight: 400,
   textAlign: "center",
   lineHeight: "1em",
+  transform: translateByAlignment[alignment],
 }));
 
 interface ScaleProps {
@@ -46,21 +47,31 @@ export const Scale: FC<ScaleProps> = ({ navState }) => {
     let patternOffset = 0;
 
     if (navState.lensSize > 0) {
-      const minMetersPerPattern = width / navState.pixelPerMeter;
+      const minMetersPerPattern = (0.5 * width) / navState.pixelPerMeter;
       const metersPerPattern = 10 ** Math.ceil(Math.log10(minMetersPerPattern));
       patternHeight = metersPerPattern * navState.pixelPerMeter;
       patternOffset = (navState.lensStart % metersPerPattern) * navState.pixelPerMeter;
 
       const lensEnd = navState.lensStart + navState.lensSize;
+      const depths: number[] = [];
       for (
         let depth = Math.ceil(navState.lensStart / metersPerPattern) * metersPerPattern;
         depth <= lensEnd;
         depth += metersPerPattern
       ) {
+        depths.push(depth);
+      }
+
+      const lastIndex = depths.length - 1;
+      for (let i = 0; i < depths.length; i++) {
+        const depth = depths[i];
+        let alignment: LabelAlignment = "center";
+        if (i === 0) alignment = "top";
+        else if (i === lastIndex) alignment = "bottom";
         labels.push(
           <DepthLabel
+            alignment={alignment}
             bottomPosition={(navState.lensSize - depth + navState.lensStart) * navState.pixelPerMeter}
-            isMajorNumber={isMajorNumber(depth, metersPerPattern)}
             key={depth}
             value={depth}
             decimalScale={Math.max(0, -Math.log10(metersPerPattern))}
@@ -83,7 +94,7 @@ export const Scale: FC<ScaleProps> = ({ navState }) => {
         backgroundRepeatX: "no-repeat",
         backgroundRepeatY: "repeat",
         backgroundSize: `100% ${state.patternHeight}px`,
-        backgroundPositionY: -state.patternOffset + "px",
+        backgroundPositionY: -state.patternOffset - 0.5 + "px",
         position: "absolute",
         top: navState.lensStart * navState.pixelPerMeter,
         left: 0,
