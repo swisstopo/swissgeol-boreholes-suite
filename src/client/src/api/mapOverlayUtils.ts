@@ -6,8 +6,8 @@ import type { LayerConfig } from "../components/map/map";
 export type MapOverlays = Record<string, LayerConfig>;
 
 /**
- * Adds (or replaces) an overlay. The caller provides the position, mirroring the
- * legacy behavior where a newly added overlay is placed at the current layer count.
+ * Adds an overlay, or replaces the existing one with the same identifier. The caller
+ * provides the position; a newly added overlay is placed at the current layer count.
  */
 export const addOverlay = (overlays: MapOverlays, identifier: string, layer: LayerConfig): MapOverlays => ({
   ...overlays,
@@ -44,7 +44,7 @@ export const setOverlayTransparency = (
 
 /**
  * Moves an overlay to a new position. The overlay currently occupying the target
- * position is swapped into the vacated slot, mirroring the legacy reorder behavior.
+ * position is swapped into the vacated slot.
  */
 export const setOverlayPosition = (overlays: MapOverlays, identifier: string, position: number): MapOverlays => {
   const current = overlays[identifier];
