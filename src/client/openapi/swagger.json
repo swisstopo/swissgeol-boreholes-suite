@@ -396,6 +396,49 @@
         }
       }
     },
+    "/api/v{version}/borehole/bulkedit": {
+      "post": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Asynchronously applies the same set of field changes to multiple boreholes.\r\nOnly the properties named in BDMS.Models.BoreholeBulkUpdateRequest.FieldsToUpdate are written.\r\nThe whole batch is rejected (nothing is saved) if the current user cannot edit any selected borehole.\r\nResets the workflow tab status of any tab whose fields were changed.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The boreholes to edit, the values to apply, and the field mask.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoreholeBulkUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoreholeBulkUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoreholeBulkUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/v{version}/borehole/filter": {
       "post": {
         "tags": [
@@ -720,49 +763,6 @@
                 }
               }
             }
-          }
-        }
-      }
-    },
-    "/api/v{version}/borehole/bulkedit": {
-      "post": {
-        "tags": [
-          "Borehole"
-        ],
-        "summary": "Asynchronously applies the same set of field changes to multiple boreholes.\r\nOnly the properties named in BDMS.Models.BoreholeBulkUpdateRequest.FieldsToUpdate are written.\r\nThe whole batch is rejected (nothing is saved) if the current user cannot edit any selected borehole.\r\nResets the workflow tab status of any tab whose fields were changed.",
-        "parameters": [
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "description": "The boreholes to edit, the values to apply, and the field mask.",
-          "content": {
-            "application/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BoreholeBulkUpdateRequest"
-              }
-            },
-            "text/json": {
-              "schema": {
-                "$ref": "#/components/schemas/BoreholeBulkUpdateRequest"
-              }
-            },
-            "application/*+json": {
-              "schema": {
-                "$ref": "#/components/schemas/BoreholeBulkUpdateRequest"
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
           }
         }
       }

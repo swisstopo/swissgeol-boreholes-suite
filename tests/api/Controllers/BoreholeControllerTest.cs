@@ -324,6 +324,25 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
+    public async Task EditRejectsWorkgroupChangeToUnauthorizedTargetWorkgroup()
+    {
+        var existing = await context.Boreholes.AsNoTracking().FirstAsync(b => b.WorkgroupId != noPermissionWorkgroupId);
+        var originalWorkgroupId = existing.WorkgroupId;
+
+        var borehole = new Borehole
+        {
+            Id = existing.Id,
+            WorkgroupId = noPermissionWorkgroupId,
+        };
+
+        var response = await controller.EditAsync(borehole);
+        ActionResultAssert.IsUnauthorized(response.Result);
+
+        var reloaded = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == existing.Id);
+        Assert.AreEqual(originalWorkgroupId, reloaded.WorkgroupId, "The borehole must not be moved to an unauthorized workgroup.");
+    }
+
+    [TestMethod]
     public async Task CopyBoreholeWithHydrotests()
     {
         var newBorehole = GetBoreholeToAdd();
@@ -1235,6 +1254,63 @@ public class BoreholeControllerTest
         {
             var borehole = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
             Assert.AreEqual(originalNames[id], borehole.ProjectName, "No borehole may be modified when the batch is rejected.");
+        }
+    }
+
+    [TestMethod]
+    public async Task BulkEditRejectsWorkgroupChangeToUnauthorizedTargetWorkgroup()
+    {
+        var ids = await context.Boreholes.OrderBy(b => b.Id).Take(2).Select(b => b.Id).ToListAsync();
+        var originalWorkgroupIds = await context.Boreholes
+            .Where(b => ids.Contains(b.Id))
+            .ToDictionaryAsync(b => b.Id, b => b.WorkgroupId);
+
+        var request = new BoreholeBulkUpdateRequest
+        {
+            BoreholeIds = new(ids),
+            Update = new BoreholeBulkUpdate { WorkgroupId = noPermissionWorkgroupId },
+            FieldsToUpdate = new() { "workgroupId" },
+        };
+
+        var response = await controller.BulkEditAsync(request);
+        ActionResultAssert.IsUnauthorized(response);
+
+        foreach (var id in ids)
+        {
+            var borehole = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
+            Assert.AreEqual(originalWorkgroupIds[id], borehole.WorkgroupId, "No borehole may be moved when the target workgroup is unauthorized.");
+        }
+    }
+
+    [TestMethod]
+    public async Task BulkEditAllowsWorkgroupChangeToAuthorizedTargetWorkgroup()
+    {
+        var targetWorkgroupId = await context.Workgroups
+            .Where(w => w.Id != noPermissionWorkgroupId)
+            .Select(w => w.Id)
+            .OrderBy(id => id)
+            .FirstAsync();
+        var ids = await context.Boreholes
+            .Where(b => b.WorkgroupId != targetWorkgroupId)
+            .OrderBy(b => b.Id)
+            .Take(2)
+            .Select(b => b.Id)
+            .ToListAsync();
+
+        var request = new BoreholeBulkUpdateRequest
+        {
+            BoreholeIds = new(ids),
+            Update = new BoreholeBulkUpdate { WorkgroupId = targetWorkgroupId },
+            FieldsToUpdate = new() { "workgroupId" },
+        };
+
+        var response = await controller.BulkEditAsync(request);
+        ActionResultAssert.IsOk(response);
+
+        foreach (var id in ids)
+        {
+            var borehole = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
+            Assert.AreEqual(targetWorkgroupId, borehole.WorkgroupId);
         }
     }
 

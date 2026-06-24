@@ -34,7 +34,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
         var subjectId = HttpContext.GetUserSubjectId();
 
-        if (!await BoreholePermissionService.HasUserRoleOnWorkgroupAsync(subjectId, entity.WorkgroupId, Role.Editor).ConfigureAwait(false))
+        if (!await CanEditInWorkgroupAsync(subjectId, entity.WorkgroupId).ConfigureAwait(false))
         {
             return Unauthorized();
         }
@@ -80,8 +80,17 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             return NotFound();
         }
 
+        var subjectId = HttpContext.GetUserSubjectId();
+
         // Check if associated borehole is locked or user has permissions
-        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), existingBorehole.Id).ConfigureAwait(false)) return Unauthorized();
+        if (!await BoreholePermissionService.CanEditBoreholeAsync(subjectId, existingBorehole.Id).ConfigureAwait(false)) return Unauthorized();
+
+        // Moving the borehole to another workgroup additionally requires edit rights on the TARGET workgroup.
+        if (entity.WorkgroupId != existingBorehole.WorkgroupId
+            && !await CanEditInWorkgroupAsync(subjectId, entity.WorkgroupId).ConfigureAwait(false))
+        {
+            return Unauthorized();
+        }
 
         var workflow = existingBorehole.Workflow;
         Context.Entry(existingBorehole).CurrentValues.SetValues(entity);
@@ -136,6 +145,21 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         }
 
         var subjectId = HttpContext.GetUserSubjectId();
+
+        // Reassigning the workgroup requires edit rights on the TARGET workgroup, matching CreateAsync and
+        // CopyAsync. Without this check a user could move boreholes into a workgroup they have no role on.
+        if (request.FieldsToUpdate.Any(f => string.Equals(f, "workgroupId", StringComparison.OrdinalIgnoreCase)))
+        {
+            if (request.Update.WorkgroupId == null)
+            {
+                return BadRequest("A target workgroup is required when 'workgroupId' is updated.");
+            }
+
+            if (!await CanEditInWorkgroupAsync(subjectId, request.Update.WorkgroupId.Value).ConfigureAwait(false))
+            {
+                return Unauthorized();
+            }
+        }
 
         // Atomic permission gate: check every selected borehole and collect all that are not editable,
         // so the full list can be returned to the user. Nothing is written if any fails.
@@ -287,7 +311,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
             .ConfigureAwait(false);
 
-        if (user == null || !await BoreholePermissionService.HasUserRoleOnWorkgroupAsync(subjectId, workgroupId, Role.Editor).ConfigureAwait(false))
+        if (user == null || !await CanEditInWorkgroupAsync(subjectId, workgroupId).ConfigureAwait(false))
         {
             return Unauthorized();
         }
@@ -451,6 +475,13 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             return Problem($"An unexpected error occurred while {operationDescription}.");
         }
     }
+
+    /// <summary>
+    /// Returns whether the current user holds the <see cref="Role.Editor"/> role on the given workgroup.
+    /// This is the gate for placing or moving a borehole into a workgroup, shared by create, copy, edit and bulk edit.
+    /// </summary>
+    private Task<bool> CanEditInWorkgroupAsync(string? subjectId, int? workgroupId)
+        => BoreholePermissionService.HasUserRoleOnWorkgroupAsync(subjectId, workgroupId, Role.Editor);
 
     /// <summary>
     /// Builds a <see cref="ProblemType.UserError"/> response (HTTP 403) listing the boreholes the current user
