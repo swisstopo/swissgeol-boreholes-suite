@@ -30,7 +30,7 @@ export const boreholeSearchData: SearchData[] = [
   {
     id: 4,
     type: "Date",
-    label: "restriction_until",
+    label: "restrictionUntil",
     key: "restrictionUntilFrom",
     placeholder: "afterdate",
   },
@@ -50,7 +50,7 @@ export const boreholeSearchData: SearchData[] = [
   {
     id: 7,
     type: "Dropdown",
-    label: "borehole_type",
+    label: "boreholeType",
     key: "typeId",
     schema: "borehole_type",
   },
@@ -71,7 +71,7 @@ export const boreholeSearchData: SearchData[] = [
   {
     id: 10,
     type: "Input",
-    label: "totaldepth",
+    label: "totalDepth",
     key: "totalDepthMin",
     isNumber: true,
     placeholder: "from",
@@ -87,7 +87,7 @@ export const boreholeSearchData: SearchData[] = [
   {
     id: 12,
     type: "Input",
-    label: "top_bedrock_fresh_md",
+    label: "topBedrockFreshMd",
     key: "topBedrockFreshMdMin",
     isNumber: true,
     placeholder: "from",
@@ -103,7 +103,7 @@ export const boreholeSearchData: SearchData[] = [
   {
     id: 14,
     type: "Input",
-    label: "top_bedrock_weathered_md",
+    label: "topBedrockWeatheredMd",
     key: "topBedrockWeatheredMdMin",
     isNumber: true,
     placeholder: "from",

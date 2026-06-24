@@ -11,7 +11,7 @@ const mockTranslationFunction = ((key: string) => {
     name: "Name",
     workflowStatus: "Workflow status",
     "statuses.published": "published",
-    totaldepth: "Total depth",
+    totalDepth: "Total depth",
     restriction_until: "Restriction until",
     top_bedrock_fresh_md: "Top bedrock fresh",
     top_bedrock_weathered_md: "Top bedrock weathered",

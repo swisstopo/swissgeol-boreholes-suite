@@ -336,7 +336,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                 </FormContainer>
                 <FormDomainSelect
                   fieldName={"locationPrecisionId"}
-                  label="location_precision"
+                  label="locationPrecision"
                   schemaName={"location_precision"}
                   selected={borehole.locationPrecisionId}
                 />
