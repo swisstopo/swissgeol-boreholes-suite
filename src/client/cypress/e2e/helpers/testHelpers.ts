@@ -17,7 +17,6 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v1/workflow/edit", req => {
     req.alias = `workflow_edit_${req.body.action.toLowerCase()}`;
   });
-  cy.intercept("/api/v1/setting").as("setting");
   cy.intercept("api/v1/borehole/codes").as("codes");
 
   // Api V2
@@ -37,6 +36,7 @@ export const interceptApiCalls = () => {
   cy.intercept("PUT", "/api/v2/user").as("update-user");
   cy.intercept("GET", "/api/v2/user").as("get-user");
   cy.intercept("GET", "/api/v2/user/self").as("get-current-user");
+  cy.intercept("PUT", "/api/v2/user/self/maplayers").as("setting");
   cy.intercept("PUT", "/api/v2/workgroup").as("update-workgroup");
   cy.intercept("POST", "/api/v2/workgroup/setRoles").as("set_workgroup_roles");
   cy.intercept("POST", "/api/v2/workflow/tabstatuschange").as("tabstatuschange");

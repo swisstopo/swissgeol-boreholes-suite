@@ -34,7 +34,6 @@ import { SaveProvider } from "./pages/detail/saveContext.tsx";
 import { OverviewPage } from "./pages/overview/overviewPage";
 import { PolygonFilterProvider } from "./pages/overview/sidePanelContent/filter/polygonFilterContext.tsx";
 import { UserWorkgroupsProvider } from "./pages/overview/UserWorkgroupsContext.tsx";
-import { DataLoader } from "./pages/settings/dataLoader";
 import { SettingsPage } from "./pages/settings/settingsPage";
 import { AcceptTerms } from "./term/accept";
 import { AnalyticsProvider } from "./term/analyticsContext";
@@ -172,28 +171,26 @@ const App = () => {
         <ErrorBoundary FallbackComponent={GlobalError}>
           <QueryClientInitializer>
             <BoreholesAuthProvider router={router}>
-              <DataLoader>
-                <AnalyticsProvider>
-                  <AcceptTerms>
-                    <UserWorkgroupsProvider>
-                      <PromptProvider>
-                        <Prompt />
-                        <DataCardProvider>
-                          <BasemapProvider>
-                            <PolygonFilterProvider>
-                              <ReactQueryDevtools buttonPosition={"top-left"} initialIsOpen={false} />
-                              <AppBox>
-                                <HeaderComponent />
-                                <RouterProvider router={router} />
-                              </AppBox>
-                            </PolygonFilterProvider>
-                          </BasemapProvider>
-                        </DataCardProvider>
-                      </PromptProvider>
-                    </UserWorkgroupsProvider>
-                  </AcceptTerms>
-                </AnalyticsProvider>
-              </DataLoader>
+              <AnalyticsProvider>
+                <AcceptTerms>
+                  <UserWorkgroupsProvider>
+                    <PromptProvider>
+                      <Prompt />
+                      <DataCardProvider>
+                        <BasemapProvider>
+                          <PolygonFilterProvider>
+                            <ReactQueryDevtools buttonPosition={"top-left"} initialIsOpen={false} />
+                            <AppBox>
+                              <HeaderComponent />
+                              <RouterProvider router={router} />
+                            </AppBox>
+                          </PolygonFilterProvider>
+                        </BasemapProvider>
+                      </DataCardProvider>
+                    </PromptProvider>
+                  </UserWorkgroupsProvider>
+                </AcceptTerms>
+              </AnalyticsProvider>
             </BoreholesAuthProvider>
           </QueryClientInitializer>
         </ErrorBoundary>

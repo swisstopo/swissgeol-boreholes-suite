@@ -19,5 +19,3 @@ from bms.v1.exceptions import DuplicateException
 
 # Borehole's ACTION Handlers
 from bms.v1.borehole.producer import BoreholeProducerHandler
-
-from bms.v1.setting.handler import SettingHandler

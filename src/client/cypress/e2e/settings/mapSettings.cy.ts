@@ -6,10 +6,10 @@ describe("map settings", () => {
   afterEach(() => {
     cy.get("@access_token").then(token => {
       cy.request({
-        method: "POST",
-        url: "/api/v1/setting",
+        method: "PUT",
+        url: "/api/v2/user/self/maplayers",
         auth: bearerAuth(token),
-        body: { action: "PATCH", tree: "map.explorer", value: {} },
+        body: {},
       });
     });
   });

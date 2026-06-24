@@ -22,6 +22,7 @@
 - Migrated the terms and conditions endpoints from the legacy API to the v2 API.
 - Set stratigraphy name as required and fill in default name for currently empty fields.
 - The current user is now loaded from the v2 API (`/api/v2/user/self`) instead of the legacy v1 API.
+- Migrated the user map overlay settings from the legacy v1 API to the v2 API.
 
 ### Fixed
 - Fixed bug where casing name was not correctly displayed in the select on the backfill card.
