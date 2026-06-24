@@ -170,6 +170,8 @@ export const BulkEditDialog = ({ isOpen, selected }: BulkEditFormProps) => {
         const rawIds = error.details?.unauthorizedBoreholeIds;
         const ids = Array.isArray(rawIds) ? rawIds.filter((id): id is number => typeof id === "number") : [];
         showAlert(`${t("bulkEditUnauthorizedBoreholes")} ${ids.join(", ")}`, "error");
+      } else if (error instanceof ApiError && error.messageKey === "bulkEditUnauthorizedWorkgroup") {
+        showAlert(t("bulkEditUnauthorizedWorkgroup"), "error");
       } else {
         const message = error instanceof Error ? error.message : String(error);
         showAlert(`${t("errorBulkEditing")} ${message}`, "error");

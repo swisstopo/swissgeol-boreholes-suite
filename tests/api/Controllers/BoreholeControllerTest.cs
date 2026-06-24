@@ -47,6 +47,12 @@ public class BoreholeControllerTest
             .Setup(x => x.CanChangeBoreholeStatusAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
         boreholePermissionServiceMock
+            .Setup(x => x.GetBoreholeIdsUserCannotEditAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
+            .ReturnsAsync(Array.Empty<int>());
+        boreholePermissionServiceMock
+            .Setup(x => x.GetBoreholeIdsUserCannotChangeStatusAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
+            .ReturnsAsync(Array.Empty<int>());
+        boreholePermissionServiceMock
             .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string?>(), noPermissionWorkgroupId, It.IsAny<Role>()))
             .ReturnsAsync(false);
         boreholePermissionServiceMock
@@ -1224,12 +1230,9 @@ public class BoreholeControllerTest
         Assert.IsTrue(ids.Count >= 3, "This test needs at least 3 seeded boreholes.");
         var blocked = new List<int> { ids[1], ids[2] };
 
-        foreach (var blockedId in blocked)
-        {
-            boreholePermissionServiceMock
-                .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), blockedId))
-                .ReturnsAsync(false);
-        }
+        boreholePermissionServiceMock
+            .Setup(x => x.GetBoreholeIdsUserCannotEditAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
+            .ReturnsAsync(blocked);
 
         var originalNames = await context.Boreholes
             .Where(b => ids.Contains(b.Id))
@@ -1273,7 +1276,11 @@ public class BoreholeControllerTest
         };
 
         var response = await controller.BulkEditAsync(request);
-        ActionResultAssert.IsUnauthorized(response);
+
+        var objectResult = (ObjectResult)response;
+        Assert.AreEqual(StatusCodes.Status403Forbidden, objectResult.StatusCode);
+        var problem = (ProblemDetails)objectResult.Value!;
+        Assert.AreEqual("bulkEditUnauthorizedWorkgroup", problem.Extensions["messageKey"]);
 
         foreach (var id in ids)
         {
@@ -1354,10 +1361,10 @@ public class BoreholeControllerTest
         var id1 = await CreateDisposableBoreholeAsync();
         var id2 = await CreateDisposableBoreholeAsync();
 
-        // id1 stays authorized via the default CanChangeBoreholeStatusAsync(any, any) => true setup; only id2 is denied.
+        // Only id2 is denied; id1 stays authorized (not in the returned unauthorized set).
         boreholePermissionServiceMock
-            .Setup(x => x.CanChangeBoreholeStatusAsync(It.IsAny<string?>(), id2))
-            .ReturnsAsync(false);
+            .Setup(x => x.GetBoreholeIdsUserCannotChangeStatusAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
+            .ReturnsAsync(new List<int> { id2 });
 
         var response = await controller.BulkDeleteAsync(new() { id1, id2 });
 

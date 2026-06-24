@@ -69,6 +69,7 @@
   "bottomLoggedInterval": "Ende des geloggten Intervalls [m MD]",
   "bulkDeleteUnauthorizedBoreholes": "Sie sind nicht berechtigt, folgende Bohrungen zu löschen:",
   "bulkEditUnauthorizedBoreholes": "Sie sind nicht berechtigt, folgende Bohrungen zu bearbeiten:",
+  "bulkEditUnauthorizedWorkgroup": "Sie sind nicht berechtigt, Bohrungen in die ausgewählte Arbeitsgruppe zu verschieben.",
   "bulkEditing": "Mehrfachbearbeitung",
   "by": "durch",
   "cancel": "Abbrechen",
