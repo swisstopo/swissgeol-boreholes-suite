@@ -21,7 +21,6 @@ const LithostratigraphyPanel = ({ stratigraphyId }) => {
 
   const getColor = useCallback(layer => getLithostratigraphyColor(layer), []);
 
-
   return (
     <NavigationContainer
       sx={{ gap: "0.5em", minHeight: "65vh", height: "100%" }}

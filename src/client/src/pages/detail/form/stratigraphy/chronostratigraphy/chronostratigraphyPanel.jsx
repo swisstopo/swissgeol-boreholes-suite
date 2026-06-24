@@ -21,17 +21,6 @@ const ChronostratigraphyPanel = ({ stratigraphyId }) => {
 
   const getColor = useCallback(layer => getLithostratigraphyColor(layer), []);
 
-  const renderLensBackground = useCallback(
-    (lensNavState, setLensNavState) => (
-      <LithostratigraphyViewProfile
-        navState={lensNavState}
-        setNavState={setLensNavState}
-        stratigraphyId={stratigraphyId}
-      />
-    ),
-    [stratigraphyId],
-  );
-
   return (
     <NavigationContainer
       sx={{ gap: "0.5em", minHeight: "65vh", height: "100%" }}

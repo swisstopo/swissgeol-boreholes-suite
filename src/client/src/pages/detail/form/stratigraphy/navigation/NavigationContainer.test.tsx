@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { Dispatch, SetStateAction, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useLayoutEffect, useRef, useState } from "react";
 import { act, cleanup, render } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { NavigationContainer } from "./NavigationContainer.tsx";
@@ -20,27 +20,23 @@ const { subscriptions } = vi.hoisted(() => ({
 // requestAnimationFrame and reads `window.ResizeObserver` at module-eval time, which makes raw
 // jsdom mocking flaky. This shim keeps the public surface (a hook taking a ref + callback) intact
 // while letting tests fire resize events directly against a known element.
-vi.mock("@react-hook/resize-observer", async () => {
-  const React = await vi.importActual<typeof import("react")>("react");
-  return {
-    default: (
-      target: { current: Element | null } | Element | null,
-      cb: (entry: { contentRect: { height: number } }) => void,
-    ) => {
-      React.useLayoutEffect(() => {
-        const el =
-          target && typeof target === "object" && "current" in target ? target.current : target;
-        if (!el) return;
-        const sub: Subscription = { target: el as Element, cb };
-        subscriptions.push(sub);
-        return () => {
-          const i = subscriptions.indexOf(sub);
-          if (i >= 0) subscriptions.splice(i, 1);
-        };
-      }, [target]);
-    },
-  };
-});
+vi.mock("@react-hook/resize-observer", () => ({
+  default: function useResizeObserverMock(
+    target: { current: Element | null } | Element | null,
+    cb: (entry: { contentRect: { height: number } }) => void,
+  ) {
+    useLayoutEffect(() => {
+      const el = target && typeof target === "object" && "current" in target ? target.current : target;
+      if (!el) return;
+      const sub: Subscription = { target: el as Element, cb };
+      subscriptions.push(sub);
+      return () => {
+        const i = subscriptions.indexOf(sub);
+        if (i >= 0) subscriptions.splice(i, 1);
+      };
+    }, [target, cb]);
+  },
+}));
 
 afterEach(() => {
   cleanup();
@@ -76,9 +72,7 @@ describe("NavigationContainer", () => {
     // lens-down row, so the container's height includes pixels that are NOT available for the
     // depth-proportional cells. Observing the body row directly keeps pixelPerMeter honest.
     let latest: NavState = new NavState();
-    const { getByTestId, container } = render(
-      <Harness withBodyRef expose={state => (latest = state)} />,
-    );
+    const { getByTestId, container } = render(<Harness withBodyRef expose={state => (latest = state)} />);
     const body = getByTestId("body");
     const containerEl = container.firstChild as HTMLElement;
     act(() => {
@@ -91,9 +85,7 @@ describe("NavigationContainer", () => {
 
   it("falls back to the container's height when bodyRef is omitted (stack-mode panels)", () => {
     let latest: NavState = new NavState();
-    const { container } = render(
-      <Harness withBodyRef={false} expose={state => (latest = state)} />,
-    );
+    const { container } = render(<Harness withBodyRef={false} expose={state => (latest = state)} />);
     const containerEl = container.firstChild as HTMLElement;
     act(() => resizeTo(containerEl, 500));
     expect(latest.height).toBe(500);
