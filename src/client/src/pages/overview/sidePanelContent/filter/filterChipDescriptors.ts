@@ -65,7 +65,7 @@ export type ChipDescriptorInputs = {
 // Meta for every key in filterParsers.
 // each entry so `FilterTypeOf<K>` can look up the per-key type.
 export const FilterFieldMetaData = {
-  originalName: { type: "text", labelKey: "original_name" },
+  originalName: { type: "text", labelKey: "originalName" },
   projectName: { type: "text", labelKey: "projectName" },
   name: { type: "text", labelKey: "name" },
   statusId: { type: "multiSelectCodelist", labelKey: "boreholeStatus", schema: "borehole_status" },
