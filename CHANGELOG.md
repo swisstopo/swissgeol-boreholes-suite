@@ -7,6 +7,7 @@
 - The OCR status for attached files is now displayed in the attachments table.
 - Functionality to edit lithological descriptions from the lithology modal.
 - Scalable and panable lithology view including lens column.
+- Updated `chronostratigraphy` and `lithostratigraphy` table headers and moved add-layer button to the bottom of the table.
   
 ### Changed
 - Deleted unused Swiss coordinate reference systems.

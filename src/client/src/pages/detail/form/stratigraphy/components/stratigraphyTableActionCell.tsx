@@ -4,7 +4,7 @@ import { Copy, Trash2 } from "lucide-react";
 import { theme } from "../../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../../components/buttons/buttons.tsx";
 import { useTypedResizeObserver } from "../navigation/useTypedResizeObserver.ts";
-import { APPROX_LINE_HEIGHT_PX, lineClampSx } from "./stratigraphyTableConstants.ts";
+import { APPROX_LINE_HEIGHT_PX, CELL_VERTICAL_PADDING_PX, lineClampSx } from "./stratigraphyTableConstants.ts";
 import { StratigraphyTableCell } from "./stratigraphyTablePrimitives.tsx";
 
 interface StratigraphyTableLayerCellProps {
@@ -48,7 +48,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
     const el = stackRef.current;
     if (!el) return;
     setIsOverflowing(el.scrollHeight > entry.contentRect.height);
-    setMaxLines(Math.max(1, Math.floor(entry.contentRect.height / APPROX_LINE_HEIGHT_PX)));
+    setMaxLines(Math.max(1, Math.floor((entry.contentRect.height - CELL_VERTICAL_PADDING_PX) / APPROX_LINE_HEIGHT_PX)));
   });
 
   return (

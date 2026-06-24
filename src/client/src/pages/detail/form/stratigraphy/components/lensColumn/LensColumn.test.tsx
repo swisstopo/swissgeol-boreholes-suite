@@ -3,12 +3,11 @@ import { cleanup, render } from "@testing-library/react";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { NavState } from "../../navigation/navState.ts";
 import { LensColumn } from "./LensColumn.tsx";
+import { useLithostratigraphyLensLayers } from "./useLithostratigraphyLensLayers.ts";
 
 vi.mock("./useLithostratigraphyLensLayers.ts", () => ({
   useLithostratigraphyLensLayers: vi.fn(),
 }));
-
-import { useLithostratigraphyLensLayers } from "./useLithostratigraphyLensLayers.ts";
 
 const mockUseLensLayers = vi.mocked(useLithostratigraphyLensLayers);
 
@@ -33,9 +32,7 @@ describe("LensColumn", () => {
       ],
       getColor: () => "rgb(100,100,100)",
     });
-    const { container } = render(
-      <LensColumn stratigraphyId={1} navState={navState} setNavState={vi.fn()} />,
-    );
+    const { container } = render(<LensColumn stratigraphyId={1} navState={navState} setNavState={vi.fn()} />);
     expect(container.querySelectorAll("[data-testid^='scaled-layer-wrapper-']").length).toBe(2);
   });
 
@@ -45,9 +42,7 @@ describe("LensColumn", () => {
       validLayers: [],
       getColor: () => undefined,
     });
-    const { container } = render(
-      <LensColumn stratigraphyId={1} navState={navState} setNavState={vi.fn()} />,
-    );
+    const { container } = render(<LensColumn stratigraphyId={1} navState={navState} setNavState={vi.fn()} />);
     expect(container.querySelectorAll("[data-testid^='scaled-layer-wrapper-']").length).toBe(0);
   });
 });

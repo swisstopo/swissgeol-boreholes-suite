@@ -7,6 +7,10 @@ export const defaultRowHeight = 240;
 // whole lines fit so -webkit-line-clamp cuts on a line boundary instead of mid-glyph.
 export const APPROX_LINE_HEIGHT_PX = 24;
 
+// Vertical padding subtracted from observed cell height before deriving the line-clamp count.
+// Keeps scaled and edit-mode cells clamping at the same line count for the same effective height.
+export const CELL_VERTICAL_PADDING_PX = 16;
+
 // Returns sx props that clamp content to a given number of lines with a trailing ellipsis.
 export const lineClampSx = (maxLines: number): SxProps<Theme> => ({
   display: "-webkit-box",

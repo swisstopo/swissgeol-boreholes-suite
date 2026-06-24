@@ -6,7 +6,11 @@ import { Copy } from "lucide-react";
 import { theme } from "../../../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../../../components/buttons/buttons.tsx";
 import { useCopyToClipboard } from "../../../../../../hooks/useCopyToClipboard.ts";
-import { APPROX_LINE_HEIGHT_PX, lineClampSx } from "../../components/stratigraphyTableConstants.ts";
+import {
+  APPROX_LINE_HEIGHT_PX,
+  CELL_VERTICAL_PADDING_PX,
+  lineClampSx,
+} from "../../components/stratigraphyTableConstants.ts";
 import { useTypedResizeObserver } from "../../navigation/useTypedResizeObserver.ts";
 
 interface ScaledCellShellProps {
@@ -14,9 +18,6 @@ interface ScaledCellShellProps {
   dataCy?: string;
   sx?: SxProps<Theme>;
 }
-
-// Vertical padding consumed by the outer Stack (theme.spacing(1) top + bottom = 16px).
-const CELL_VERTICAL_PADDING_PX = 16;
 
 export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx }) => {
   const { t } = useTranslation();

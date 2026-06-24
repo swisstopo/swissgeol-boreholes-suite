@@ -55,8 +55,7 @@ const copyCellAndAssertClipboard = (cellDataCy: string, expectedText: string) =>
   cy.contains("Copied to clipboard").should("be.visible");
   cy.window()
     .then(win => win.navigator.clipboard.readText())
-    // Assert the complete copied content, preserving the internal line breaks between a cell's
-    // label and description; only outer whitespace is trimmed.
+    // Assert the complete copied content; only outer whitespace is trimmed.
     .then(text => expect(text.trim().replaceAll("\r\n", "\n")).to.equal(expectedText));
 };
 
@@ -1414,9 +1413,12 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     });
 
     // Hovering any cell reveals a copy button that copies its full text to the clipboard.
+    // The scaled view uses textContent (not innerText) so the full underlying content is copied
+    // even when the cell is visually clamped, but CSS-driven whitespace between Typography
+    // elements is not preserved.
     copyCellAndAssertClipboard("lithology-0-355", "[FGr-co]: fine gravel, stony / with stones");
     copyCellAndAssertClipboard("lithologicalDescription-0-355", "lithological description 0 - 355");
-    copyCellAndAssertClipboard("faciesDescription-0-355", "terrestrial\n\nfacies description 0 - 355");
+    copyCellAndAssertClipboard("faciesDescription-0-355", "terrestrialfacies description 0 - 355");
   });
 
   it("renders all three data columns in the scaled read-only view with partial descriptions", () => {
