@@ -428,7 +428,7 @@ describe("Test for the borehole form.", () => {
         "rgb(223, 228, 233)",
       ); //#DFE4E9
 
-      cy.get('[data-cy="top_bedrock_weathered_tvd-formInput"] fieldset').should(
+      cy.get('[data-cy="topBedrockWeatheredTvd-formInput"] fieldset').should(
         "have.css",
         "border-color",
         "rgb(223, 228, 233)",
@@ -442,7 +442,7 @@ describe("Test for the borehole form.", () => {
         "rgb(89, 105, 120)",
       ); // #596978
 
-      cy.get('[data-cy="top_bedrock_weathered_tvd-formInput"] fieldset').should(
+      cy.get('[data-cy="topBedrockWeatheredTvd-formInput"] fieldset').should(
         "have.css",
         "border-color",
         "rgb(223, 228, 233)",
