@@ -11,6 +11,7 @@ import { Layer, WmsCapabilities, WmtsCapabilities } from "./layerInterface.ts";
 import { MapSettings, MapSettingsState } from "./mapSettings";
 
 const defaultWms = "https://wms.geo.admin.ch?request=getCapabilities&service=WMS";
+const defaultWmts = "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml";
 
 const wmsOptions = [
   {
@@ -19,9 +20,9 @@ const wmsOptions = [
     value: defaultWms,
   },
   {
-    key: "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
-    text: "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
-    value: "https://wmts.geo.admin.ch/EPSG/2056/1.0.0/WMTSCapabilities.xml",
+    key: defaultWmts,
+    text: defaultWmts,
+    value: defaultWmts,
   },
 ];
 
