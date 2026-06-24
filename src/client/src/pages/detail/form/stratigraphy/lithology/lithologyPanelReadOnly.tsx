@@ -1,27 +1,81 @@
-import { FC } from "react";
-import { LithologyTable } from "../components/lithologyTable/lithologyTable.tsx";
-import { useLithologyTableState } from "../components/lithologyTable/useLithologyTableState.ts";
+import { FC, useMemo } from "react";
+import { useTranslation } from "react-i18next";
+import { Stack } from "@mui/material";
+import { theme } from "../../../../../AppTheme.ts";
+import { StratigraphyTableHeaderCell } from "../components/stratigraphyTableHeaderCell.tsx";
+import { StratigraphyTableHeader } from "../components/stratigraphyTablePrimitives.tsx";
+import { NavigationChild } from "../navigation/NavigationChild.tsx";
+import { NavigationContainer } from "../navigation/NavigationContainer.tsx";
+import { Scale } from "../navigation/Scale.tsx";
 import { FaciesDescription, LithologicalDescription, Lithology } from "../stratigraphy.ts";
+import { LithologyTableScaled } from "./scaledTable/LithologyTableScaled.tsx";
+import { NullDepthBanner } from "./scaledTable/nullDepthBanner.tsx";
 
 interface LithologyPanelReadOnlyProps {
-  stratigraphyId: number;
   lithologies: Lithology[];
   lithologicalDescriptions: LithologicalDescription[];
   faciesDescriptions: FaciesDescription[];
 }
 
 export const LithologyPanelReadOnly: FC<LithologyPanelReadOnlyProps> = ({
-  stratigraphyId,
   lithologies,
   lithologicalDescriptions,
   faciesDescriptions,
 }) => {
-  const lithologyTableState = useLithologyTableState(
-    lithologies,
-    lithologicalDescriptions,
-    faciesDescriptions,
-    stratigraphyId,
+  const { t } = useTranslation();
+
+  const hiddenCount = useMemo(
+    () =>
+      [...lithologies, ...lithologicalDescriptions, ...faciesDescriptions].filter(
+        l => l.fromDepth === null || l.toDepth === null,
+      ).length,
+    [lithologies, lithologicalDescriptions, faciesDescriptions],
   );
 
-  return <LithologyTable state={lithologyTableState} readOnly />;
+  return (
+    <Stack gap={1.5} sx={{ minHeight: "65vh", height: "100%" }}>
+      <NullDepthBanner hiddenCount={hiddenCount} />
+      <Stack sx={{ flex: 1 }}>
+        <StratigraphyTableHeader>
+          <StratigraphyTableHeaderCell sx={{ flex: "0 0 128px" }} label={t("depthMD")} />
+          <StratigraphyTableHeaderCell label={t("lithology")} />
+          <StratigraphyTableHeaderCell label={t("lithological_description")} />
+          <StratigraphyTableHeaderCell label={t("facies_description")} />
+        </StratigraphyTableHeader>
+        <NavigationContainer
+          sx={{
+            // Bottom edge of the table: drawn as a pseudo-element so it paints *over* any cell
+            // that reaches the bottom (sharing the same pixel as the cell's borderBottom → 1px,
+            position: "relative",
+            "&::after": {
+              content: '""',
+              position: "absolute",
+              bottom: 0,
+              left: 0,
+              right: 0,
+              height: "1px",
+              backgroundColor: theme.palette.border.darker,
+              pointerEvents: "none",
+            },
+            "& > *": { borderLeft: `1px solid ${theme.palette.border.darker}` },
+            "& > *:last-child": { borderRight: `1px solid ${theme.palette.border.darker}` },
+          }}
+          renderItems={(navState, setNavState) => (
+            <>
+              <NavigationChild navState={navState} setNavState={setNavState} sx={{ flex: "0 0 128px" }}>
+                <Scale navState={navState} />
+              </NavigationChild>
+              <LithologyTableScaled
+                lithologies={lithologies}
+                lithologicalDescriptions={lithologicalDescriptions}
+                faciesDescriptions={faciesDescriptions}
+                navState={navState}
+                setNavState={setNavState}
+              />
+            </>
+          )}
+        />
+      </Stack>
+    </Stack>
+  );
 };

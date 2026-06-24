@@ -2,6 +2,8 @@ import { useTranslation } from "react-i18next";
 import HierarchicalDataEditProfile from "../hierarchicalDataEditProfile.jsx";
 import { useChronostratigraphies, useChronostratigraphyMutations } from "../stratigraphy.ts";
 
+const chronostratigraphyHeaderLabels = ["eon", "era", "period", "epoch", "subepoch", "age", "subage"];
+
 /**
  * Manages the chronostratigraphy data and mutations.
  */
@@ -21,12 +23,12 @@ const ChronostratigraphyEditProfile = ({ selectedStratigraphyID, sx, navState, s
       addLayer={addLayer}
       deleteLayer={deleteLayer}
       updateLayer={updateLayer}
-      headerLabels={["eon", "era", "period", "epoch", "subepoch", "age", "subage"]}
+      headerLabels={chronostratigraphyHeaderLabels}
       codelistSchemaName="chronostratigraphy"
       dataProperty="chronostratigraphyId"
       titel={t("chronostratigraphy")}
       selectedStratigraphyID={selectedStratigraphyID}
-      sx={{ ...sx }}
+      sx={sx}
       navState={navState}
       setNavState={setNavState}
     />
