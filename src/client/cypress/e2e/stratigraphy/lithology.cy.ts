@@ -1413,12 +1413,11 @@ describe("Lithology, Lithology descriptions, Facies descriptions tests", () => {
     });
 
     // Hovering any cell reveals a copy button that copies its full text to the clipboard.
-    // The scaled view uses textContent (not innerText) so the full underlying content is copied
-    // even when the cell is visually clamped, but CSS-driven whitespace between Typography
-    // elements is not preserved.
+    // The copy extracts textContent from each child element and joins them with line breaks,
+    // so the full underlying content is copied even when the cell is visually clamped.
     copyCellAndAssertClipboard("lithology-0-355", "[FGr-co]: fine gravel, stony / with stones");
     copyCellAndAssertClipboard("lithologicalDescription-0-355", "lithological description 0 - 355");
-    copyCellAndAssertClipboard("faciesDescription-0-355", "terrestrialfacies description 0 - 355");
+    copyCellAndAssertClipboard("faciesDescription-0-355", "terrestrial\nfacies description 0 - 355");
   });
 
   it("renders all three data columns in the scaled read-only view with partial descriptions", () => {

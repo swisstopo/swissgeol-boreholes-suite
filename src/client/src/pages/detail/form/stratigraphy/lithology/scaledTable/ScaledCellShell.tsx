@@ -28,6 +28,16 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx
   // ResizeObserver corrects to the real cell-derived line count.
   const [maxLines, setMaxLines] = useState(99);
 
+  // Extracts readable text from an element, joining each direct child's text with a line break.
+  // Falls back to the element's flat textContent when there are no child elements.
+  const extractCellText = (el: Element): string =>
+    Array.from(el.children)
+      .map(child => child.textContent?.trim())
+      .filter(Boolean)
+      .join("\n") ||
+    el.textContent?.trim() ||
+    "";
+
   // Recompute the clamp count whenever the cell's pixel height changes (zoom in/out, pan,
   // initial calibration). Clamping at a whole-line boundary prevents the half-cut bottom line
   // that plain overflow:hidden produces, and the ellipsis is rendered by the browser.
@@ -89,7 +99,8 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx
           onPointerDown={e => e.stopPropagation()}
           onClick={e => {
             e.stopPropagation();
-            copyToClipboard(contentRef.current?.textContent?.trim() ?? "");
+            const el = contentRef.current;
+            copyToClipboard(el ? extractCellText(el) : "");
           }}
           color="primaryInverse"
           sx={{ backgroundColor: theme.palette.background.grey }}
