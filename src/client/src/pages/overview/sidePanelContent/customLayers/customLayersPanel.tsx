@@ -7,7 +7,7 @@ interface CustomLayersPanelProps {
   toggleDrawer: (open: boolean) => void;
 }
 
-const CustomLayersPanel: FC<CustomLayersPanelProps> = ({ toggleDrawer }) => {
+export const CustomLayersPanel: FC<CustomLayersPanelProps> = ({ toggleDrawer }) => {
   const { overlays, setVisibility, setTransparency, setPosition } = useMapOverlays();
 
   return (
@@ -22,5 +22,3 @@ const CustomLayersPanel: FC<CustomLayersPanelProps> = ({ toggleDrawer }) => {
     />
   );
 };
-
-export default CustomLayersPanel;
