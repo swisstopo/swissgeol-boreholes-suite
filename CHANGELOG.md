@@ -23,6 +23,7 @@
 - The current user is now loaded from the v2 API (`/api/v2/user/self`) instead of the legacy v1 API.
 - Migrated the user map overlay settings from the legacy v1 API to the v2 API.
 - Migrated borehole bulk editing and bulk deletion from the legacy v1 API to the v2 API, and re-enabled bulk editing of purpose, status and lithology, lithostratigraphy and chronostratigraphy of the top bedrock.
+- Removed the legacy Python (v1) API entirely; all endpoints now run on the .NET v2 API.
 
 ### Fixed
 - Fixed bug where casing name was not correctly displayed in the select on the backfill card.
