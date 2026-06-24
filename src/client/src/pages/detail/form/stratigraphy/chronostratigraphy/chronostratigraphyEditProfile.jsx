@@ -7,7 +7,7 @@ const chronostratigraphyHeaderLabels = ["eon", "era", "period", "epoch", "subepo
 /**
  * Manages the chronostratigraphy data and mutations.
  */
-const ChronostratigraphyEditProfile = ({ selectedStratigraphyID, sx, navState, setNavState }) => {
+const ChronostratigraphyEditProfile = ({ selectedStratigraphyID, navState, setNavState }) => {
   const { t } = useTranslation();
 
   const { data: layers } = useChronostratigraphies(selectedStratigraphyID);
@@ -28,7 +28,6 @@ const ChronostratigraphyEditProfile = ({ selectedStratigraphyID, sx, navState, s
       dataProperty="chronostratigraphyId"
       titel={t("chronostratigraphy")}
       selectedStratigraphyID={selectedStratigraphyID}
-      sx={sx}
       navState={navState}
       setNavState={setNavState}
     />

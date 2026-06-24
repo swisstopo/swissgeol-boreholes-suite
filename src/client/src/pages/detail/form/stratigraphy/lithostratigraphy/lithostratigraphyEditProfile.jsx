@@ -7,7 +7,7 @@ const lithostratigraphyHeaderLabels = ["formation", "member", "bed"];
 /**
  * Manages the lithostratigraphy data and mutations.
  */
-const LithostratigraphyEditProfile = ({ selectedStratigraphyID, sx, navState, setNavState }) => {
+const LithostratigraphyEditProfile = ({ selectedStratigraphyID, navState, setNavState }) => {
   const { t } = useTranslation();
 
   const { data: layers } = useLithostratigraphies(selectedStratigraphyID);
@@ -28,7 +28,6 @@ const LithostratigraphyEditProfile = ({ selectedStratigraphyID, sx, navState, se
       dataProperty="lithostratigraphyId"
       titel={t("lithostratigraphy")}
       selectedStratigraphyID={selectedStratigraphyID}
-      sx={sx}
       navState={navState}
       setNavState={setNavState}
     />

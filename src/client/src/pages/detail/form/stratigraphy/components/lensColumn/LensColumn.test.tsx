@@ -4,11 +4,13 @@ import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { NavState } from "../../navigation/navState.ts";
 import { LensColumn } from "./LensColumn.tsx";
 
-interface SampleLayer {
-  id: number;
-  fromDepth: number;
-  toDepth: number;
-}
+vi.mock("./useLithostratigraphyLensLayers.ts", () => ({
+  useLithostratigraphyLensLayers: vi.fn(),
+}));
+
+import { useLithostratigraphyLensLayers } from "./useLithostratigraphyLensLayers.ts";
+
+const mockUseLensLayers = vi.mocked(useLithostratigraphyLensLayers);
 
 beforeAll(() => {
   // NavigationLens uses useResizeObserver internally; stub ResizeObserver so jsdom doesn't throw.
@@ -24,25 +26,27 @@ afterEach(() => cleanup());
 describe("LensColumn", () => {
   it("renders one background entry per layer inside the navigation lens", () => {
     const navState = new NavState({ height: 500, rawLensSize: 100, contentHeights: { c: 100 } });
-    const layers: SampleLayer[] = [
-      { id: 1, fromDepth: 0, toDepth: 30 },
-      { id: 2, fromDepth: 30, toDepth: 100 },
-    ];
+    mockUseLensLayers.mockReturnValue({
+      validLayers: [
+        { id: 1, fromDepth: 0, toDepth: 30, stratigraphyId: 1 },
+        { id: 2, fromDepth: 30, toDepth: 100, stratigraphyId: 1 },
+      ],
+      getColor: () => "rgb(100,100,100)",
+    });
     const { container } = render(
-      <LensColumn<SampleLayer>
-        layers={layers}
-        navState={navState}
-        setNavState={vi.fn()}
-        getColor={l => `rgb(${l.id * 50},0,0)`}
-      />,
+      <LensColumn stratigraphyId={1} navState={navState} setNavState={vi.fn()} />,
     );
     expect(container.querySelectorAll("[data-testid^='scaled-layer-wrapper-']").length).toBe(2);
   });
 
   it("renders no layer entries when layers array is empty", () => {
     const navState = new NavState({ height: 500, rawLensSize: 100, contentHeights: { c: 100 } });
+    mockUseLensLayers.mockReturnValue({
+      validLayers: [],
+      getColor: () => undefined,
+    });
     const { container } = render(
-      <LensColumn<SampleLayer> layers={[]} navState={navState} setNavState={vi.fn()} getColor={() => "rgb(0,0,0)"} />,
+      <LensColumn stratigraphyId={1} navState={navState} setNavState={vi.fn()} />,
     );
     expect(container.querySelectorAll("[data-testid^='scaled-layer-wrapper-']").length).toBe(0);
   });

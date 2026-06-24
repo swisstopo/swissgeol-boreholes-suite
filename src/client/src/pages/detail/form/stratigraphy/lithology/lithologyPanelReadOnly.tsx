@@ -1,16 +1,14 @@
-import { FC, useCallback, useMemo, useRef } from "react";
+import { FC, useMemo, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack } from "@mui/material";
-import { LithostratigraphyLayer } from "../../../../../api/generated";
 import { theme } from "../../../../../AppTheme.ts";
 import { LensColumn } from "../components/lensColumn/LensColumn.tsx";
-import { getLithostratigraphyColor } from "../components/scaledLayerColumn/getLithostratigraphyColor.ts";
 import { StratigraphyTableHeaderCell } from "../components/stratigraphyTableHeaderCell.tsx";
 import { StratigraphyTableHeader } from "../components/stratigraphyTablePrimitives.tsx";
 import { NavigationChild } from "../navigation/NavigationChild.tsx";
 import { NavigationContainer } from "../navigation/NavigationContainer.tsx";
 import { Scale } from "../navigation/Scale.tsx";
-import { FaciesDescription, LithologicalDescription, Lithology, useLithostratigraphies } from "../stratigraphy.ts";
+import { FaciesDescription, LithologicalDescription, Lithology } from "../stratigraphy.ts";
 import { LithologyTableScaled } from "./scaledTable/LithologyTableScaled.tsx";
 import { NullDepthBanner } from "./scaledTable/nullDepthBanner.tsx";
 
@@ -20,9 +18,6 @@ interface LithologyPanelReadOnlyProps {
   lithologicalDescriptions: LithologicalDescription[];
   faciesDescriptions: FaciesDescription[];
 }
-
-type LithostratiWithDepths = LithostratigraphyLayer & { fromDepth: number; toDepth: number };
-
 // View-mode orchestrator for the lithology tab. Mounts the lens mini-overview alongside the four data
 // columns. All columns share the same NavState via NavigationContainer so dragging the
 // lens, wheel-zooming, and drag-panning the data area stay in sync.
@@ -33,29 +28,10 @@ export const LithologyPanelReadOnly: FC<LithologyPanelReadOnlyProps> = ({
   faciesDescriptions,
 }) => {
   const { t } = useTranslation();
-  const { data: lithostratigraphies = [] } = useLithostratigraphies(stratigraphyId);
   // navState.height must reflect ONLY the body row (1fr) of the grid below, not the whole grid:
   // the table-header and lens-down rows are outside the body, and including them would inflate
   // pixelPerMeter so the bottom of the data clips inside `overflow: hidden`.
   const bodyRef = useRef<HTMLDivElement>(null);
-
-  const validLithostrati = useMemo<ReadonlyArray<LithostratiWithDepths>>(
-    () => lithostratigraphies.filter((l): l is LithostratiWithDepths => l.fromDepth !== null && l.toDepth !== null),
-    [lithostratigraphies],
-  );
-
-  // Memoised id → color map: parsing the Codelist `conf` JSON once per render of the panel
-  // (not once per layer × cell).
-  const colorByLithostratigraphyId = useMemo(() => {
-    const map = new Map<number, string | undefined>();
-    for (const lithostratigraphy of lithostratigraphies)
-      map.set(lithostratigraphy.id, getLithostratigraphyColor(lithostratigraphy));
-    return map;
-  }, [lithostratigraphies]);
-  const getColor = useCallback(
-    (layer: { id: number }) => colorByLithostratigraphyId.get(layer.id),
-    [colorByLithostratigraphyId],
-  );
 
   const hiddenCount = useMemo(
     () =>
@@ -84,11 +60,10 @@ export const LithologyPanelReadOnly: FC<LithologyPanelReadOnlyProps> = ({
         }}
         renderItems={(navState, setNavState) => (
           <>
-            <LensColumn<LithostratiWithDepths>
-              layers={validLithostrati}
+            <LensColumn
+              stratigraphyId={stratigraphyId}
               navState={navState}
               setNavState={setNavState}
-              getColor={getColor}
               layoutMode="split"
             />
             <StratigraphyTableHeader sx={{ gridArea: "header" }}>

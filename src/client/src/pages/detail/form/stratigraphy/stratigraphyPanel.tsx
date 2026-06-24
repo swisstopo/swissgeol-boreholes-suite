@@ -19,15 +19,16 @@ import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { formatDate } from "../../../../utils";
 import { EditStateContext } from "../../editStateContext";
 import { SaveContext } from "../../saveContext.tsx";
-import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel";
+import ChronostratigraphyEditProfile from "./chronostratigraphy/chronostratigraphyEditProfile";
 import { AddEmptyStratigraphyDialog } from "./components/addEmptyStratigraphyDialog/addEmptyStratigraphyDialog.tsx";
 import { AddStratigraphyButton } from "./components/addStratigraphyButton.tsx";
 import { StratigraphyExtraction } from "./extraction/stratigraphyExtraction.tsx";
 import { LithologyPanel } from "./lithology/lithologyPanel.tsx";
-import LithostratigraphyPanel from "./lithostratigraphy/lithostratigraphyPanel";
+import LithostratigraphyEditProfile from "./lithostratigraphy/lithostratigraphyEditProfile";
 import { useStratigraphiesByBoreholeId, useStratigraphyMutations } from "./stratigraphy.ts";
 import { StratigraphyProvider } from "./stratigraphyContext.tsx";
 import { StratigraphyForm } from "./stratigraphyForm.tsx";
+import { StratigraphyPanelLayout } from "./StratigraphyPanelLayout.tsx";
 
 export const StratigraphyPanel: FC = () => {
   const [filePickerOpen, setFilePickerOpen] = useState(false);
@@ -49,7 +50,6 @@ export const StratigraphyPanel: FC = () => {
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
   const { hasChanges, triggerReset } = useContext(SaveContext);
-
   const sortedStratigraphies: Stratigraphy[] | undefined = useMemo(() => {
     if (!stratigraphies) return stratigraphies;
     return [...stratigraphies].sort((a, b) => {
@@ -320,13 +320,23 @@ export const StratigraphyPanel: FC = () => {
                     {
                       label: t("chronostratigraphy"),
                       hash: "#chronostratigraphy",
-                      component: <ChronostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
+                      component: (
+                        <StratigraphyPanelLayout
+                          stratigraphyId={selectedStratigraphy.id}
+                          editProfileComponent={ChronostratigraphyEditProfile}
+                        />
+                      ),
                       hasContent: hasChronostratigraphy,
                     },
                     {
                       label: t("lithostratigraphy"),
                       hash: "#lithostratigraphy",
-                      component: <LithostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
+                      component: (
+                        <StratigraphyPanelLayout
+                          stratigraphyId={selectedStratigraphy.id}
+                          editProfileComponent={LithostratigraphyEditProfile}
+                        />
+                      ),
                       hasContent: hasLithostratigraphy,
                     },
                   ]}
