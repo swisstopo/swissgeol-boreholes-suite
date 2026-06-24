@@ -5,13 +5,22 @@ import { styled } from "@mui/material/styles";
 import { NavState } from "./navState.ts";
 import { useTypedResizeObserver } from "./useTypedResizeObserver.ts";
 
+type LabelAlignment = "top" | "center" | "bottom";
+
 interface DepthLabelStyleProps {
   bottomPosition: number;
+  alignment: LabelAlignment;
 }
 
+const translateByAlignment: Record<LabelAlignment, string> = {
+  top: "translateY(125%)",
+  center: "translateY(50%)",
+  bottom: "translateY(-25%)",
+};
+
 const DepthLabel = styled(NumericFormat, {
-  shouldForwardProp: (prop: PropertyKey) => typeof prop === "string" && prop !== "bottomPosition",
-})<DepthLabelStyleProps>(({ bottomPosition }) => ({
+  shouldForwardProp: (prop: PropertyKey) => typeof prop === "string" && !["bottomPosition", "alignment"].includes(prop),
+})<DepthLabelStyleProps>(({ bottomPosition, alignment }) => ({
   position: "absolute",
   bottom: bottomPosition,
   left: 0,
@@ -20,7 +29,7 @@ const DepthLabel = styled(NumericFormat, {
   fontWeight: 400,
   textAlign: "center",
   lineHeight: "1em",
-  transform: "translateY(50%)",
+  transform: translateByAlignment[alignment],
 }));
 
 interface ScaleProps {
@@ -44,13 +53,22 @@ export const Scale: FC<ScaleProps> = ({ navState }) => {
       patternOffset = (navState.lensStart % metersPerPattern) * navState.pixelPerMeter;
 
       const lensEnd = navState.lensStart + navState.lensSize;
+      const depths: number[] = [];
       for (
         let depth = Math.ceil(navState.lensStart / metersPerPattern) * metersPerPattern;
         depth <= lensEnd;
         depth += metersPerPattern
       ) {
+        depths.push(depth);
+      }
+
+      const lastIndex = depths.length - 1;
+      for (let i = 0; i < depths.length; i++) {
+        const depth = depths[i];
+        const alignment: LabelAlignment = i === 0 ? "top" : i === lastIndex ? "bottom" : "center";
         labels.push(
           <DepthLabel
+            alignment={alignment}
             bottomPosition={(navState.lensSize - depth + navState.lensStart) * navState.pixelPerMeter}
             key={depth}
             value={depth}
