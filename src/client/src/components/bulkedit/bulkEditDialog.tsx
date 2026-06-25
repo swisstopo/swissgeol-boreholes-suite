@@ -219,7 +219,7 @@ export const BulkEditDialog = ({ isOpen, selected }: BulkEditFormProps) => {
             label=""
             values={editableWorkgroups.map((wg: Workgroup) => ({
               key: wg.id,
-              name: wg.name ?? "",
+              name: wg.name,
             }))}
             onUpdate={e => {
               onFieldValueChange(field, e);
