@@ -16,7 +16,7 @@ interface BottomBarContainerProps {
   totalCount: number;
   selectableBoreholeIds: number[];
   setHover: Dispatch<SetStateAction<number | null>>;
-  multipleSelected: (selection: GridRowSelectionModel, filter: Record<string, unknown>) => void;
+  onBulkEdit: () => void;
   rowsToHighlight: number[];
   selectionModel: GridRowSelectionModel;
   setSelectionModel: Dispatch<SetStateAction<GridRowSelectionModel>>;
@@ -31,7 +31,7 @@ const BottomBarContainer = ({
   boreholes,
   totalCount,
   selectableBoreholeIds,
-  multipleSelected,
+  onBulkEdit,
   setHover,
   rowsToHighlight,
   selectionModel,
@@ -77,7 +77,7 @@ const BottomBarContainer = ({
     <>
       <BottomBar
         selectionModel={selectionModel}
-        multipleSelected={multipleSelected}
+        onBulkEdit={onBulkEdit}
         onCopyBorehole={onCopyBorehole}
         onDeleteMultiple={onDeleteMultiple}
         totalCount={totalCount}
