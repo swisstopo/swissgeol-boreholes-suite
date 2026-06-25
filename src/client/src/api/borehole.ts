@@ -78,9 +78,8 @@ export const buildBulkEditRequest = (
   const update: BoreholeBulkUpdate = {};
   const fieldsToUpdate: string[] = [];
   for (const [key, value] of changedFields) {
-    // @ts-expect-error indexed assignment across the union of nullable property types
-    update[key] = value;
-    fieldsToUpdate.push(key as string);
+    Object.assign(update, { [key]: value });
+    fieldsToUpdate.push(key);
   }
   return { boreholeIds, update, fieldsToUpdate };
 };
