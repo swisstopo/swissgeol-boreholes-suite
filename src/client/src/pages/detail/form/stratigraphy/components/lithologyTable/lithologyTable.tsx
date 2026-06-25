@@ -42,9 +42,14 @@ const allColumns: LithologyTableColumn[] = ["lithology", "lithologicalDescriptio
 interface LithologyTableProps {
   state: LithologyTableState;
   shownColumns?: LithologyTableColumn[];
+  showAddRowButton?: boolean;
 }
 
-export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = allColumns }) => {
+export const LithologyTable: FC<LithologyTableProps> = ({
+  state,
+  shownColumns = allColumns,
+  showAddRowButton = true,
+}) => {
   const { t } = useTranslation();
   const {
     depths,
@@ -417,7 +422,9 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
           </StratigraphyTableContent>
         )}
       </Stack>
-      <AddRowButton onClick={handleAddDepthLayer} dataCy="add-row-button" buttonContent={<LayerAddButton />} />
+      {showAddRowButton && (
+        <AddRowButton onClick={handleAddDepthLayer} dataCy="add-row-button" buttonContent={<LayerAddButton />} />
+      )}
       <LithologyModal
         lithology={selectedLithology}
         lithologicalDescription={matchingLithologicalDescription}

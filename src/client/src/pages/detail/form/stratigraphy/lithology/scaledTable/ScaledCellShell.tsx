@@ -6,7 +6,11 @@ import { Copy } from "lucide-react";
 import { theme } from "../../../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../../../components/buttons/buttons.tsx";
 import { useCopyToClipboard } from "../../../../../../hooks/useCopyToClipboard.ts";
-import { APPROX_LINE_HEIGHT_PX, lineClampSx } from "../../components/stratigraphyTableConstants.ts";
+import {
+  approximateLineHeightPx,
+  cellVerticalPaddingPx,
+  lineClampSx,
+} from "../../components/stratigraphyTableConstants.ts";
 import { useTypedResizeObserver } from "../../navigation/useTypedResizeObserver.ts";
 
 interface ScaledCellShellProps {
@@ -14,9 +18,6 @@ interface ScaledCellShellProps {
   dataCy?: string;
   sx?: SxProps<Theme>;
 }
-
-// Vertical padding consumed by the outer Stack (theme.spacing(1) top + bottom = 16px).
-const CELL_VERTICAL_PADDING_PX = 16;
 
 export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx }) => {
   const { t } = useTranslation();
@@ -27,14 +28,21 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx
   // ResizeObserver corrects to the real cell-derived line count.
   const [maxLines, setMaxLines] = useState(99);
 
+  // Extracts readable text from an element, joining each direct child's text with a line break.
+  // Falls back to the element's flat textContent when there are no child elements.
+  const extractCellText = (el: Element): string =>
+    Array.from(el.children)
+      .map(child => child.textContent?.trim())
+      .filter(Boolean)
+      .join("\n") ||
+    el.textContent?.trim() ||
+    "";
+
   // Recompute the clamp count whenever the cell's pixel height changes (zoom in/out, pan,
   // initial calibration). Clamping at a whole-line boundary prevents the half-cut bottom line
   // that plain overflow:hidden produces, and the ellipsis is rendered by the browser.
   useTypedResizeObserver(cellRef, entry => {
-    const lines = Math.max(
-      1,
-      Math.floor((entry.contentRect.height - CELL_VERTICAL_PADDING_PX) / APPROX_LINE_HEIGHT_PX),
-    );
+    const lines = Math.max(1, Math.floor((entry.contentRect.height - cellVerticalPaddingPx) / approximateLineHeightPx));
     setMaxLines(lines);
   });
 
@@ -92,7 +100,7 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx
           onClick={e => {
             e.stopPropagation();
             const el = contentRef.current;
-            copyToClipboard((el?.innerText ?? el?.textContent ?? "").trim());
+            copyToClipboard(el ? extractCellText(el) : "");
           }}
           color="primaryInverse"
           sx={{ backgroundColor: theme.palette.background.grey }}

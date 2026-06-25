@@ -68,6 +68,7 @@
   "bottomLoggedInterval": "Fin de l'intervalle enregistré [m MD]",
   "bulkDeleteUnauthorizedBoreholes": "Vous n'êtes pas autorisé à supprimer les forages suivants:",
   "bulkEditUnauthorizedBoreholes": "Vous n'êtes pas autorisé à modifier les forages suivants:",
+  "bulkEditUnauthorizedWorkgroup": "Vous n'êtes pas autorisé à déplacer des forages vers le groupe de travail sélectionné.",
   "bulkEditing": "Édition en bloc",
   "by": "par",
   "cancel": "Annuler",

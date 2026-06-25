@@ -68,6 +68,7 @@
   "bottomLoggedInterval": "Bottom of logged interval [m MD]",
   "bulkDeleteUnauthorizedBoreholes": "You are not authorized to delete the following boreholes:",
   "bulkEditUnauthorizedBoreholes": "You are not authorized to edit the following boreholes:",
+  "bulkEditUnauthorizedWorkgroup": "You are not authorized to move boreholes into the selected workgroup.",
   "bulkEditing": "Bulk editing",
   "by": "by",
   "cancel": "Cancel",

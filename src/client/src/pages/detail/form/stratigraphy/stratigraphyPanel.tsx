@@ -19,14 +19,15 @@ import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { formatDate } from "../../../../utils";
 import { EditStateContext } from "../../editStateContext";
 import { SaveContext } from "../../saveContext.tsx";
-import ChronostratigraphyPanel from "./chronostratigraphy/chronostratigraphyPanel";
+import { useChronostratigraphyEditProfile } from "./chronostratigraphy/useChronostratigraphyEditProfile.tsx";
 import { AddEmptyStratigraphyDialog } from "./components/addEmptyStratigraphyDialog/addEmptyStratigraphyDialog.tsx";
 import { AddStratigraphyButton } from "./components/addStratigraphyButton.tsx";
 import { StratigraphyExtraction } from "./extraction/stratigraphyExtraction.tsx";
 import { LithologyPanel } from "./lithology/lithologyPanel.tsx";
-import LithostratigraphyPanel from "./lithostratigraphy/lithostratigraphyPanel";
+import { useLithostratigraphyEditProfile } from "./lithostratigraphy/useLithostratigraphyEditProfile.tsx";
 import { useStratigraphiesByBoreholeId, useStratigraphyMutations } from "./stratigraphy.ts";
 import { StratigraphyProvider } from "./stratigraphyContext.tsx";
+import { StratigraphyEditPanel } from "./StratigraphyEditPanel.tsx";
 import { StratigraphyForm } from "./stratigraphyForm.tsx";
 
 export const StratigraphyPanel: FC = () => {
@@ -320,13 +321,23 @@ export const StratigraphyPanel: FC = () => {
                     {
                       label: t("chronostratigraphy"),
                       hash: "#chronostratigraphy",
-                      component: <ChronostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
+                      component: (
+                        <StratigraphyEditPanel
+                          stratigraphyId={selectedStratigraphy.id}
+                          useEditProfile={useChronostratigraphyEditProfile}
+                        />
+                      ),
                       hasContent: hasChronostratigraphy,
                     },
                     {
                       label: t("lithostratigraphy"),
                       hash: "#lithostratigraphy",
-                      component: <LithostratigraphyPanel stratigraphyId={selectedStratigraphy.id} />,
+                      component: (
+                        <StratigraphyEditPanel
+                          stratigraphyId={selectedStratigraphy.id}
+                          useEditProfile={useLithostratigraphyEditProfile}
+                        />
+                      ),
                       hasContent: hasLithostratigraphy,
                     },
                   ]}
