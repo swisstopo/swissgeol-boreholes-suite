@@ -188,7 +188,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     {
       field: "elevationZ",
       valueGetter: (value: number) => formatNumberForDisplay(Math.round(value * 100) / 100, 2),
-      headerName: t("reference_elevation"),
+      headerName: t("referenceElevation"),
       flex: 1,
     },
     {

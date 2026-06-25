@@ -34,7 +34,7 @@ const ElevationSegment: FC<LocationBaseProps> = ({ borehole }) => {
         <FormContainer direction="row">
           <FormInput
             fieldName={"referenceElevation"}
-            label={"reference_elevation"}
+            label={"referenceElevation"}
             value={borehole?.referenceElevation}
             type={FormValueType.Number}
           />
