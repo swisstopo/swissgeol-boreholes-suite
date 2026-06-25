@@ -53,7 +53,7 @@ const ElevationSegment: FC<LocationBaseProps> = ({ borehole }) => {
             selected={borehole.referenceElevationTypeId}
           />
           <FormInputDisplayOnly
-            label={"height_reference_system"}
+            label={"heightReferenceSystem"}
             value={codelists.find((d: Codelist) => d.id === borehole.hrsId)?.en}
           />
         </FormContainer>
