@@ -45,7 +45,7 @@ const BottomBarContainer = ({
   const { navigateTo } = useBoreholesNavigate();
   const {
     copy: { mutateAsync: copyBorehole, isPending: isCopying },
-    bulkDelete: { mutateAsync: bulkDeleteBoreholes, isPending: isBulkDeleting },
+    bulkDelete: { mutate: bulkDeleteBoreholes, isPending: isBulkDeleting },
   } = useBoreholeMutations();
   const { bottomDrawerOpen } = useBoreholeUrlParams();
   const { currentWorkgroupId } = useUserWorkgroups();
@@ -57,20 +57,20 @@ const BottomBarContainer = ({
     navigateTo({ path: `/${newBoreholeId}` });
   }, [copyBorehole, navigateTo, selectionModel, currentWorkgroupId]);
 
-  const onDeleteMultiple = useCallback(async () => {
-    try {
-      const boreholeIds = selectionModel.filter((id): id is number => typeof id === "number");
-      await bulkDeleteBoreholes(boreholeIds);
-    } catch (error) {
-      if (error instanceof ApiError && error.messageKey === "bulkDeleteUnauthorizedBoreholes") {
-        const rawIds = error.details?.unauthorizedBoreholeIds;
-        const ids = Array.isArray(rawIds) ? rawIds.filter((id): id is number => typeof id === "number") : [];
-        showAlert(`${t("bulkDeleteUnauthorizedBoreholes")} ${ids.join(", ")}`, "error");
-      } else {
-        const message = error instanceof Error ? error.message : String(error);
-        showAlert(`${t("errorBulkDeleting")} ${message}`, "error");
-      }
-    }
+  const onDeleteMultiple = useCallback(() => {
+    const boreholeIds = selectionModel.filter((id): id is number => typeof id === "number");
+    bulkDeleteBoreholes(boreholeIds, {
+      onError: error => {
+        if (error instanceof ApiError && error.messageKey === "bulkDeleteUnauthorizedBoreholes") {
+          const rawIds = error.details?.unauthorizedBoreholeIds;
+          const ids = Array.isArray(rawIds) ? rawIds.filter((id): id is number => typeof id === "number") : [];
+          showAlert(`${t("bulkDeleteUnauthorizedBoreholes")} ${ids.join(", ")}`, "error");
+        } else {
+          const message = error instanceof Error ? error.message : String(error);
+          showAlert(`${t("errorBulkDeleting")} ${message}`, "error");
+        }
+      },
+    });
   }, [bulkDeleteBoreholes, selectionModel, showAlert, t]);
 
   return (

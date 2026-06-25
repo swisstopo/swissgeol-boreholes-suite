@@ -37,7 +37,7 @@ export const BulkEditDialog = ({ isOpen, selected }: BulkEditFormProps) => {
   const { t } = useTranslation();
   const { editableWorkgroups } = useUserWorkgroups();
   const {
-    bulkEdit: { mutateAsync: bulkEditBoreholes, isPending: isBulkEditing },
+    bulkEdit: { mutate: bulkEditBoreholes, isPending: isBulkEditing },
   } = useBoreholeMutations();
 
   const bulkEditFormFields: BulkEditFormField[] = useMemo(
@@ -160,25 +160,24 @@ export const BulkEditDialog = ({ isOpen, selected }: BulkEditFormProps) => {
     unselectBoreholes();
   };
 
-  const save = async () => {
-    try {
-      const boreholeIds = selected.filter((id): id is number => typeof id === "number");
-      await bulkEditBoreholes(buildBulkEditRequest(boreholeIds, fieldsToUpdate));
-      unselectBoreholes();
-    } catch (error) {
-      if (error instanceof ApiError && error.messageKey === "bulkEditUnauthorizedBoreholes") {
-        const rawIds = error.details?.unauthorizedBoreholeIds;
-        const ids = Array.isArray(rawIds) ? rawIds.filter((id): id is number => typeof id === "number") : [];
-        showAlert(`${t("bulkEditUnauthorizedBoreholes")} ${ids.join(", ")}`, "error");
-      } else if (error instanceof ApiError && error.messageKey === "bulkEditUnauthorizedWorkgroup") {
-        showAlert(t("bulkEditUnauthorizedWorkgroup"), "error");
-      } else {
-        const message = error instanceof Error ? error.message : String(error);
-        showAlert(`${t("errorBulkEditing")} ${message}`, "error");
-      }
-    } finally {
-      resetFormState();
-    }
+  const save = () => {
+    const boreholeIds = selected.filter((id): id is number => typeof id === "number");
+    bulkEditBoreholes(buildBulkEditRequest(boreholeIds, fieldsToUpdate), {
+      onSuccess: unselectBoreholes,
+      onError: error => {
+        if (error instanceof ApiError && error.messageKey === "bulkEditUnauthorizedBoreholes") {
+          const rawIds = error.details?.unauthorizedBoreholeIds;
+          const ids = Array.isArray(rawIds) ? rawIds.filter((id): id is number => typeof id === "number") : [];
+          showAlert(`${t("bulkEditUnauthorizedBoreholes")} ${ids.join(", ")}`, "error");
+        } else if (error instanceof ApiError && error.messageKey === "bulkEditUnauthorizedWorkgroup") {
+          showAlert(t("bulkEditUnauthorizedWorkgroup"), "error");
+        } else {
+          const message = error instanceof Error ? error.message : String(error);
+          showAlert(`${t("errorBulkEditing")} ${message}`, "error");
+        }
+      },
+      onSettled: resetFormState,
+    });
   };
 
   const renderInput = useCallback(
