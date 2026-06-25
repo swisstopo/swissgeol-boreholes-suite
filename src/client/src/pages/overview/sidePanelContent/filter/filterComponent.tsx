@@ -120,7 +120,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
 
   return (
     <Stack direction="column" sx={{ height: "100%" }}>
-      <SideDrawerHeader title={t("searchfilters")} toggleDrawer={toggleDrawer} />
+      <SideDrawerHeader title={t("searchFilters")} toggleDrawer={toggleDrawer} />
       <FilterChips />
       <Box
         sx={{

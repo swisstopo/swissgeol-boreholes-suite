@@ -96,7 +96,7 @@ const MainSideNav = ({
         <NavButton
           data-cy="show-filter-button"
           icon={<Filter />}
-          label={t("searchfilters")}
+          label={t("searchFilters")}
           selected={isFilterPanelVisible}
           onClick={handleToggleFilter}
         />

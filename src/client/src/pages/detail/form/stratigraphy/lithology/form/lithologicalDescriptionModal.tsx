@@ -60,14 +60,14 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
             <FormContainer direction={"row"}>
               <FormInput
                 fieldName={"fromDepth"}
-                label={"fromdepth"}
+                label={"fromDepth"}
                 readonly={true}
                 value={description?.fromDepth}
                 type={FormValueType.Number}
               />
               <FormInput
                 fieldName={"toDepth"}
-                label={"todepth"}
+                label={"toDepth"}
                 readonly={true}
                 value={description?.toDepth}
                 type={FormValueType.Number}

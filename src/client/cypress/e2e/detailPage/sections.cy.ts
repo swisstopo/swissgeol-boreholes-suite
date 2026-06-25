@@ -131,7 +131,7 @@ describe("Section crud tests", () => {
     const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
     handlePrompt(messageUnsavedChanges, "cancel");
     evaluateInput("totalDepth", "5");
-    navigateInBorehole(BoreholeTab.sections, "discardchanges");
+    navigateInBorehole(BoreholeTab.sections, "discardChanges");
 
     // sections tab should be unchanged when retuning from borehole tab
     evaluateDisplayValue("0.drilling_mud_type", "water-based dispersed");
@@ -165,7 +165,7 @@ describe("Section crud tests", () => {
     cy.location().should(location => {
       expect(location.hash).to.eq("#sections");
     });
-    navigateInBorehole(BoreholeTab.geometry, "discardchanges");
+    navigateInBorehole(BoreholeTab.geometry, "discardChanges");
     navigateInBorehole(BoreholeTab.sections);
 
     // section was not saved

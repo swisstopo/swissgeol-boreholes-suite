@@ -18,11 +18,11 @@ const SectionDisplay = ({ item }) => {
             <FormContainer direction="row">
               <FormDisplay
                 prefix={`${index}.`}
-                label="fromdepth"
+                label="fromDepth"
                 value={element.fromDepth}
                 type={FormValueType.Number}
               />
-              <FormDisplay prefix={`${index}.`} label="todepth" value={element.toDepth} type={FormValueType.Number} />
+              <FormDisplay prefix={`${index}.`} label="toDepth" value={element.toDepth} type={FormValueType.Number} />
             </FormContainer>
             <FormContainer direction="row">
               <FormDisplay

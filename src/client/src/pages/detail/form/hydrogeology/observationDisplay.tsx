@@ -38,11 +38,11 @@ const ObservationDisplay = ({
           {showDepthInputs && (
             <>
               <FormContainer direction="row">
-                <FormDisplay label="fromdepth" value={observation?.fromDepthM} type={FormValueType.Number} />
+                <FormDisplay label="fromDepth" value={observation?.fromDepthM} type={FormValueType.Number} />
                 <FormDisplay label="fromDepthMasl" value={observation?.fromDepthMasl} type={FormValueType.Number} />
               </FormContainer>
               <FormContainer direction="row">
-                <FormDisplay label="todepth" value={observation?.toDepthM} type={FormValueType.Number} />
+                <FormDisplay label="toDepth" value={observation?.toDepthM} type={FormValueType.Number} />
                 <FormDisplay label="toDepthMasl" value={observation?.toDepthMasl} type={FormValueType.Number} />
               </FormContainer>
             </>

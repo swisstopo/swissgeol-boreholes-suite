@@ -125,14 +125,14 @@ const SectionInput = ({ item, parentId }) => {
                     <FormContainer direction="row">
                       <FormInput
                         fieldName={`sectionElements.${index}.fromDepth`}
-                        label="fromdepth"
+                        label="fromDepth"
                         value={field.fromDepth}
                         type={FormValueType.Number}
                         required={true}
                       />
                       <FormInput
                         fieldName={`sectionElements.${index}.toDepth`}
-                        label="todepth"
+                        label="toDepth"
                         value={field.toDepth}
                         type={FormValueType.Number}
                         required={true}

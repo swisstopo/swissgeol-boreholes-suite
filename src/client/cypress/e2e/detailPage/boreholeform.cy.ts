@@ -597,7 +597,7 @@ describe("Test for the borehole form.", () => {
     handlePrompt(messageUnsavedChanges, "cancel");
     cy.get('[data-cy="editingstop-button"]').should("exist");
     stopEditing();
-    handlePrompt(messageUnsavedChanges, "discardchanges");
+    handlePrompt(messageUnsavedChanges, "discardChanges");
     cy.get('[data-cy="editingstop-button"]').should("not.exist");
 
     startBoreholeEditing();
@@ -609,7 +609,7 @@ describe("Test for the borehole form.", () => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
     });
 
-    navigateInSidebar(SidebarMenuItem.location, "discardchanges");
+    navigateInSidebar(SidebarMenuItem.location, "discardChanges");
   });
 
   it("creates and deletes a borehole.", () => {

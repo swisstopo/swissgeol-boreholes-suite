@@ -32,14 +32,14 @@ export const boreholeSearchData: SearchData[] = [
     type: "Date",
     label: "restrictionUntilFilterTitle",
     key: "restrictionUntilFrom",
-    placeholder: "afterdate",
+    placeholder: "afterDate",
   },
   {
     id: 5,
     type: "Date",
     label: "",
     key: "restrictionUntilTo",
-    placeholder: "beforedate",
+    placeholder: "beforeDate",
   },
   {
     id: 6,
