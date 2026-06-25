@@ -1,0 +1,80 @@
+// @vitest-environment jsdom
+import { Dispatch, SetStateAction, useLayoutEffect, useRef, useState } from "react";
+import { act, cleanup, render } from "@testing-library/react";
+import { afterEach, describe, expect, it, vi } from "vitest";
+import { NavigationContainer } from "./NavigationContainer.tsx";
+import { NavState } from "./navState.ts";
+
+type Subscription = {
+  target: Element;
+  cb: (entry: { contentRect: { height: number } }) => void;
+};
+
+// `vi.hoisted` is the only way to share state with a `vi.mock` factory (mocks are hoisted above
+// imports, so module-level `const` declarations aren't visible to them).
+const { subscriptions } = vi.hoisted(() => ({
+  subscriptions: [] as Subscription[],
+}));
+vi.mock("@react-hook/resize-observer", () => ({
+  default: function useResizeObserverMock(
+    target: { current: Element | null } | Element | null,
+    cb: (entry: { contentRect: { height: number } }) => void,
+  ) {
+    useLayoutEffect(() => {
+      const el = target && typeof target === "object" && "current" in target ? target.current : target;
+      if (!el) return;
+      const sub: Subscription = { target: el as Element, cb };
+      subscriptions.push(sub);
+      return () => {
+        const i = subscriptions.indexOf(sub);
+        if (i >= 0) subscriptions.splice(i, 1);
+      };
+    }, [target, cb]);
+  },
+}));
+
+afterEach(() => {
+  cleanup();
+  subscriptions.length = 0;
+});
+
+const resizeTo = (target: Element, height: number) => {
+  subscriptions.filter(s => s.target === target).forEach(s => s.cb({ contentRect: { height } }));
+};
+
+interface HarnessProps {
+  expose: (state: NavState, setState: Dispatch<SetStateAction<NavState>>) => void;
+}
+
+const Harness = ({ expose }: HarnessProps) => {
+  const [state, setState] = useState<NavState>(new NavState());
+  const bodyRef = useRef<HTMLDivElement>(null);
+  expose(state, setState);
+  return (
+    <NavigationContainer
+      navState={state}
+      onNavStateChange={setState}
+      bodyRef={bodyRef}
+      renderItems={() => <div ref={bodyRef} data-testid="body" />}
+    />
+  );
+};
+
+describe("NavigationContainer", () => {
+  it("drives navState.height from the body ref, not the surrounding container", () => {
+    // Regression for the lithology-style grid layout: the container wraps a header row + body
+    // row + lens-down row, so the container's height includes pixels that are NOT available
+    // for the depth-proportional cells. Observing the body row directly keeps pixelPerMeter
+    // honest.
+    let latest: NavState = new NavState();
+    const { getByTestId, container } = render(<Harness expose={state => (latest = state)} />);
+    const body = getByTestId("body");
+    const containerEl = container.firstChild as HTMLElement;
+    act(() => {
+      // Simulate the grid: container is taller than its body by the header + footer rows.
+      resizeTo(containerEl, 780);
+      resizeTo(body, 700);
+    });
+    expect(latest.height).toBe(700);
+  });
+});

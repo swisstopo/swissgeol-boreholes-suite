@@ -9,19 +9,16 @@ describe("NavState", () => {
     expect(s.rawLensSize).toBe(0);
     expect(s.height).toBe(0);
     expect(s.contentHeights).toEqual({});
-    expect(s.headerHeights).toEqual({});
     expect(s.maxContent).toBe(0);
-    expect(s.maxHeader).toBe(0);
   });
 
   it("derives pixelPerMeter from height and lensSize", () => {
     const s = new NavState({
-      height: 600,
+      height: 500,
       rawLensSize: 100,
       contentHeights: { litho: 100 },
-      headerHeights: { h: 100 },
     });
-    // (600 - 100) / 100 = 5
+    // 500 / 100 = 5
     expect(s.pixelPerMeter).toBe(5);
   });
 

@@ -1,0 +1,48 @@
+// @vitest-environment jsdom
+import { cleanup, render } from "@testing-library/react";
+import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
+import { NavState } from "../../navigation/navState.ts";
+import { LensColumn } from "./LensColumn.tsx";
+import { useLithostratigraphyLensLayers } from "./useLithostratigraphyLensLayers.ts";
+
+vi.mock("./useLithostratigraphyLensLayers.ts", () => ({
+  useLithostratigraphyLensLayers: vi.fn(),
+}));
+
+const mockUseLensLayers = vi.mocked(useLithostratigraphyLensLayers);
+
+beforeAll(() => {
+  // NavigationLens uses useResizeObserver internally; stub ResizeObserver so jsdom doesn't throw.
+  global.ResizeObserver = class {
+    observe = vi.fn();
+    unobserve = vi.fn();
+    disconnect = vi.fn();
+  };
+});
+
+afterEach(() => cleanup());
+
+describe("LensColumn", () => {
+  it("renders one background entry per layer inside the navigation lens", () => {
+    const navState = new NavState({ height: 500, rawLensSize: 100, contentHeights: { c: 100 } });
+    mockUseLensLayers.mockReturnValue({
+      validLayers: [
+        { id: 1, fromDepth: 0, toDepth: 30, stratigraphyId: 1 },
+        { id: 2, fromDepth: 30, toDepth: 100, stratigraphyId: 1 },
+      ],
+      getColor: () => "rgb(100,100,100)",
+    });
+    const { container } = render(<LensColumn stratigraphyId={1} navState={navState} setNavState={vi.fn()} />);
+    expect(container.querySelectorAll("[data-testid^='scaled-layer-wrapper-']")).toHaveLength(2);
+  });
+
+  it("renders no layer entries when layers array is empty", () => {
+    const navState = new NavState({ height: 500, rawLensSize: 100, contentHeights: { c: 100 } });
+    mockUseLensLayers.mockReturnValue({
+      validLayers: [],
+      getColor: () => undefined,
+    });
+    const { container } = render(<LensColumn stratigraphyId={1} navState={navState} setNavState={vi.fn()} />);
+    expect(container.querySelectorAll("[data-testid^='scaled-layer-wrapper-']")).toHaveLength(0);
+  });
+});
