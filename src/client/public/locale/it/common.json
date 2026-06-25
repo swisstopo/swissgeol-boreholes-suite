@@ -154,7 +154,6 @@
   "depthTVD": "Profondità [m TVD]",
   "depthType": "Tipo di profondità",
   "description": "Descrizione",
-  "description_quality": "Qualità della descrizione",
   "detailErrorMessage": "Si è verificato un errore durante l'accesso alla pagina di dettaglio della perforazione richiesta.",
   "diameter": "Diametro [mm]",
   "disabled": "Disattivato",

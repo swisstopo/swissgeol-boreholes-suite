@@ -153,7 +153,6 @@
   "depthTVD": "Tiefe [m TVD]",
   "depthType": "Tiefenreferenzsystem",
   "description": "Beschreibung",
-  "description_quality": "Qualität der Beschreibung",
   "detailErrorMessage": "Beim Zugriff auf die Detailseite der angeforderten Bohrung ist ein Fehler aufgetreten.",
   "diameter": "Durchmesser [mm]",
   "disabled": "Deaktiviert",

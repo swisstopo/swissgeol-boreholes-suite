@@ -153,7 +153,6 @@
   "depthTVD": "Depth [m TVD]",
   "depthType": "Depth type",
   "description": "Description",
-  "description_quality": "Quality of the description",
   "detailErrorMessage": "Something went wrong while accessing the detail page for the requested borehole.",
   "diameter": "Diameter [mm]",
   "disabled": "Disabled",
