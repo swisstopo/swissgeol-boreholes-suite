@@ -175,7 +175,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
                     ? theme.palette.primary.contrastText
                     : theme.palette.primary.main,
               }}>
-              {t("polygon_selection")}
+              {t("polygonSelection")}
             </Typography>
             {filterPolygon !== null && (
               <Badge data-cy="polygon-filter-badge" badgeContent={1} sx={{ marginLeft: "18px" }} />
