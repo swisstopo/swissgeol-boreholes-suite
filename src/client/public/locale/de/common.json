@@ -523,7 +523,6 @@
   "startTime": "Beginn",
   "startedBy": "Gestartet von",
   "status": "Status",
-  "statusId": "Bohrungsstatus",
   "statusInstrument": "Status des Geräts",
   "statuses": {
     "Draft": "Draft",

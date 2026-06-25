@@ -523,7 +523,6 @@
   "startTime": "Inizio",
   "startedBy": "Avviato da",
   "status": "Stato",
-  "statusId": "Stato della perforazione",
   "statusInstrument": "Stato della strumentazione",
   "statuses": {
     "Draft": "Draft",

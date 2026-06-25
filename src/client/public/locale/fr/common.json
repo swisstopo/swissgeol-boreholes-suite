@@ -524,7 +524,6 @@
   "startTime": "Début",
   "startedBy": "Démarré par",
   "status": "Statut",
-  "statusId": "Borehole status",
   "statusInstrument": "Statut de l'instrument",
   "statuses": {
     "Draft": "Draft",

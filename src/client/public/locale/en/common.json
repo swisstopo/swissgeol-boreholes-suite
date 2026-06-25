@@ -522,7 +522,6 @@
   "startTime": "Start",
   "startedBy": "Started by",
   "status": "Status",
-  "statusId": "Borehole status",
   "statusInstrument": "Instrument status",
   "statuses": {
     "Draft": "Draft",
