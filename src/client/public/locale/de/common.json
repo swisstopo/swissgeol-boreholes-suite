@@ -123,7 +123,6 @@
   "created_date_from": "Erstellungsdatum (von)",
   "created_date_to": "Erstellungsdatum (bis)",
   "creationdate": "Erstellungsdatum",
-  "creationdate_filter_title": "Erstellungsdatum (von bis)",
   "csvCodeListReferenceExplanation": "Referenzcodes herunterladen",
   "csvFile": "CSV-Datei",
   "csvFormatExplanation": "Das CSV-UTF8 File sollte die folgenden Spaltenüberschriften enthalten",

@@ -123,7 +123,6 @@
   "created_date_from": "Date de création (de)",
   "created_date_to": "Date de création (à)",
   "creationdate": "Date de création",
-  "creationdate_filter_title": "Date de création (de à)",
   "csvCodeListReferenceExplanation": "Télécharger la référence des codes",
   "csvFile": "Fichier CSV",
   "csvFormatExplanation": "Le fichier CSV-UTF8 doit contenir les en-têtes de colonne suivants",

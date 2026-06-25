@@ -123,7 +123,6 @@
   "created_date_from": "Creation Date (from)",
   "created_date_to": "Creation Date (to)",
   "creationdate": "Creation date",
-  "creationdate_filter_title": "Creation date (from to)",
   "csvCodeListReferenceExplanation": "Download code references",
   "csvFile": "CSV file",
   "csvFormatExplanation": "The CSV-UTF8 file should contain the following column headings",
