@@ -20,7 +20,7 @@ const ElevationSegment: FC<LocationBaseProps> = ({ borehole }) => {
         <FormContainer direction="row">
           <FormInput
             fieldName={"elevationZ"}
-            label={"elevation_z"}
+            label={"elevationZ"}
             value={borehole.elevationZ}
             type={FormValueType.Number}
           />
