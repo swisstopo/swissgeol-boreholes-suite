@@ -474,6 +474,7 @@
   "restriction": "Restriction",
   "restrictionUntil": "Fin de restriction",
   "restrictionUntilDate": "Date fin de restriction",
+  "restrictionUntilFilterTitle": "Date fin de restriction (de à)",
   "result": "Résultat",
   "review": "Review",
   "reworkingProcessesCon": "Texture et état de la roche",

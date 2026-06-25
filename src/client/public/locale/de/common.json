@@ -473,6 +473,7 @@
   "restriction": "Beschränkung",
   "restrictionUntil": "Ende der Beschränkung",
   "restrictionUntilDate": "Datum Ende der Beschränkung",
+  "restrictionUntilFilterTitle": "Datum Ende der Beschränkung (von bis)",
   "result": "Ergebnis",
   "review": "Review",
   "reworkingProcessesCon": "Gesteinstextur und Zustand",
