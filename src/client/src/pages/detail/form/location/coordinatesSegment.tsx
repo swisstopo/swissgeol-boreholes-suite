@@ -22,7 +22,7 @@ import {
   ReferenceSystemCode,
   ReferenceSystemKey,
 } from "./coordinateSegmentInterfaces";
-import { LocationFormInputs } from "./locationPanelInterfaces.tsx";
+import { LocationFormInputs } from "./locationPanelInterfaces.tsx"; // --- Function component ---
 
 // --- Function component ---
 const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
@@ -283,7 +283,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
                 <FormSelect
                   canReset={false}
                   fieldName={"originalReferenceSystemId"}
-                  label="spatial_reference_system"
+                  label="spatialReferenceSystem"
                   selected={borehole.originalReferenceSystemId}
                   className={isCoordinateExtraction ? "ai" : ""}
                   onUpdate={resetCoordinatesOnReferenceSystemChange}

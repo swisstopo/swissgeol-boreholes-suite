@@ -511,7 +511,7 @@
   "showTable": "Tabelle anzeigen",
   "showallfields": "Alle Felder anzeigen",
   "sourceCode": "Quellcode",
-  "spatial_reference_system": "Räumliches Bezugssystem",
+  "spatialReferenceSystem": "Räumliches Bezugssystem",
   "startTask": "Ausführen",
   "startTime": "Beginn",
   "startedBy": "Gestartet von",

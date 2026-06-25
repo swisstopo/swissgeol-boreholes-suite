@@ -512,7 +512,7 @@
   "showTable": "Afficher le tableau",
   "showallfields": "Afficher tous les champs",
   "sourceCode": "Code source",
-  "spatial_reference_system": "Système de cordonnées",
+  "spatialReferenceSystem": "Système de cordonnées",
   "startTask": "Exécuter",
   "startTime": "Début",
   "startedBy": "Démarré par",

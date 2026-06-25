@@ -511,7 +511,7 @@
   "showTable": "Mostra la tabella",
   "showallfields": "Mostra tutti i campi",
   "sourceCode": "Codice sorgente",
-  "spatial_reference_system": "Sistema di coordinate",
+  "spatialReferenceSystem": "Sistema di coordinate",
   "startTask": "Esegui",
   "startTime": "Inizio",
   "startedBy": "Avviato da",

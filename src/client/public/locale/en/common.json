@@ -510,7 +510,7 @@
   "showTable": "Show table",
   "showallfields": "Show all fields",
   "sourceCode": "Source code",
-  "spatial_reference_system": "Spatial reference system",
+  "spatialReferenceSystem": "Spatial reference system",
   "startTask": "Run",
   "startTime": "Start",
   "startedBy": "Started by",
