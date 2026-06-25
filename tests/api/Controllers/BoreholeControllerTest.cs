@@ -1383,4 +1383,41 @@ public class BoreholeControllerTest
         context.Boreholes.RemoveRange(context.Boreholes.Where(b => b.Id == id1 || b.Id == id2));
         await context.SaveChangesAsync();
     }
+
+    [TestMethod]
+    public void BulkEditableFieldsMatchBoreholeBulkUpdateProperties()
+    {
+        var modelProperties = typeof(BoreholeBulkUpdate)
+            .GetProperties()
+            .Select(property => property.Name)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var missing = modelProperties.Except(BoreholeController.BulkEditableFields, StringComparer.OrdinalIgnoreCase);
+        var unexpected = BoreholeController.BulkEditableFields.Except(modelProperties, StringComparer.OrdinalIgnoreCase);
+
+        Assert.IsTrue(
+            BoreholeController.BulkEditableFields.SetEquals(modelProperties),
+            $"BulkEditableFields must list exactly the properties of BoreholeBulkUpdate. Missing: [{string.Join(", ", missing)}], unexpected: [{string.Join(", ", unexpected)}].");
+    }
+
+    [TestMethod]
+    public void ApplyBulkEditFieldHandlesEveryBulkEditableField()
+    {
+        var borehole = new Borehole();
+        var update = new BoreholeBulkUpdate();
+
+        foreach (var field in BoreholeController.BulkEditableFields)
+        {
+            // Throws InvalidOperationException via the switch's default branch if a case is missing,
+            // turning "forgot to add a case for a new field" into a failing test.
+            BoreholeController.ApplyBulkEditField(borehole, update, field);
+        }
+    }
+
+    [TestMethod]
+    public void ApplyBulkEditFieldThrowsForUnknownField()
+    {
+        Assert.ThrowsExactly<InvalidOperationException>(
+            () => BoreholeController.ApplyBulkEditField(new Borehole(), new BoreholeBulkUpdate(), "notABulkEditableField"));
+    }
 }

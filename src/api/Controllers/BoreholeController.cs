@@ -506,7 +506,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
     // All fields that may be bulk-edited: the union of the tab field sets plus workgroupId
     // (workgroupId is editable but is not shown on any reviewable tab, so it is not in either tab set).
-    private static readonly HashSet<string> BulkEditableFields = new(
+    internal static readonly HashSet<string> BulkEditableFields = new(
         LocationTabFields.Concat(GeneralTabFields).Append("workgroupId"),
         StringComparer.OrdinalIgnoreCase);
 
@@ -530,7 +530,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         }
     }
 
-    private static void ApplyBulkEditField(Borehole borehole, BoreholeBulkUpdate update, string field)
+    internal static void ApplyBulkEditField(Borehole borehole, BoreholeBulkUpdate update, string field)
     {
         // Case labels are the ToUpperInvariant() of the camelCase field names (CA1308 requires
         // ToUpperInvariant over ToLowerInvariant). Keep them in sync with BulkEditableFields.
