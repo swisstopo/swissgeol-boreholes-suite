@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1703 - 2026-06-25
+
 ### Added
 - Added new codelist entry `VSP` to `log_tool_type` schema.
 - The OCR status for attached files is now displayed in the attachments table.
