@@ -229,7 +229,7 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
                   <FormBooleanSelect
                     canReset={false}
                     fieldName={"hasGroundwater"}
-                    label="groundwater"
+                    label="hasGroundwater"
                     selected={borehole.hasGroundwater}
                   />
                 </FormContainer>
