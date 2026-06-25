@@ -467,7 +467,6 @@
   "public": "Public",
   "publish": "Publish",
   "purpose": "Drilling purpose",
-  "purposeId": "Drilling purpose",
   "quantity": "Quantity",
   "reduceEndDepth": "Reduce end depth",
   "referenceElevationPrecision": "+/- Reference elevation [m]",
