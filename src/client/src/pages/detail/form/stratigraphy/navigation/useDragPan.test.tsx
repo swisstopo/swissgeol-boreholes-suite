@@ -5,8 +5,7 @@ import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { NavState } from "./navState.ts";
 import { useDragPan } from "./useDragPan.ts";
 
-const baseNavState = () =>
-  new NavState({ height: 500, rawLensSize: 50, contentHeights: { c: 100 }, headerHeights: { h: 0 } });
+const baseNavState = () => new NavState({ height: 500, rawLensSize: 50, contentHeights: { c: 100 } });
 
 interface TestHarnessProps {
   initial: NavState;
@@ -52,7 +51,7 @@ const dispatchPointer = (target: Element, type: string, pointerId: number, pageY
   fireEvent(target, event);
 };
 
-// baseNavState: height=500, maxHeader=0, lensSize=50, maxContent=100 -> pixelPerMeter = 10.
+// baseNavState: height=500, lensSize=50, maxContent=100 -> pixelPerMeter = 10.
 
 describe("useDragPan", () => {
   beforeEach(() => {
@@ -134,7 +133,7 @@ describe("useDragPan", () => {
   it("is a no-op when the full content already fits in the lens (nothing to pan to)", () => {
     const changes: NavState[] = [];
     // maxContent = lensSize (raw=50, contentHeights also 50): nothing to pan to.
-    const fitting = new NavState({ height: 500, rawLensSize: 50, contentHeights: { c: 50 }, headerHeights: { h: 0 } });
+    const fitting = new NavState({ height: 500, rawLensSize: 50, contentHeights: { c: 50 } });
     render(<TestHarness initial={fitting} onChange={s => changes.push(s)} />);
     const container = screen.getByTestId("container");
     dispatchPointer(container, "pointerdown", 1, 100);

@@ -70,7 +70,7 @@ export const StratigraphyExtractionItem: FC<StratigraphyExtractionItemProps> = (
         data-cy={`stratigraphy-name-${index}-formInput`}
       />
       {hasUnsetDepths && <Alert severity="error">{t("msgDepthsExtractionFailed")}</Alert>}
-      <LithologyTable state={state} shownColumns={["lithologicalDescription"]} />
+      <LithologyTable state={state} shownColumns={["lithologicalDescription"]} showAddRowButton={false} />
     </Stack>
   );
 };

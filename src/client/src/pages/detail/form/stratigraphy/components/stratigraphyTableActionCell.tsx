@@ -1,10 +1,10 @@
 import { FC, ReactNode, useRef, useState } from "react";
 import { Box, Stack, SxProps } from "@mui/material";
-import { Copy, Trash2 } from "lucide-react";
+import { Trash2 } from "lucide-react";
 import { theme } from "../../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../../components/buttons/buttons.tsx";
 import { useTypedResizeObserver } from "../navigation/useTypedResizeObserver.ts";
-import { APPROX_LINE_HEIGHT_PX, lineClampSx } from "./stratigraphyTableConstants.ts";
+import { approximateLineHeightPx, cellVerticalPaddingPx, lineClampSx } from "./stratigraphyTableConstants.ts";
 import { StratigraphyTableCell } from "./stratigraphyTablePrimitives.tsx";
 
 interface StratigraphyTableLayerCellProps {
@@ -12,7 +12,6 @@ interface StratigraphyTableLayerCellProps {
   index: number;
   onHoverClick?: (index: number) => void;
   onClick?: (index: number) => void;
-  onCopy?: (text: string) => void;
   onMouseEnter?: () => void;
   onMouseLeave?: () => void;
   sx?: SxProps;
@@ -27,7 +26,6 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
   index,
   onHoverClick,
   onClick,
-  onCopy,
   onMouseEnter,
   onMouseLeave,
   sx,
@@ -36,7 +34,6 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
   resizeHandles,
 }) => {
   const stackRef = useRef<HTMLDivElement>(null);
-  const contentRef = useRef<HTMLDivElement>(null);
   const [isOverflowing, setIsOverflowing] = useState(false);
   const [maxLines, setMaxLines] = useState(99);
   const isEditing = Boolean(onClick);
@@ -48,7 +45,7 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
     const el = stackRef.current;
     if (!el) return;
     setIsOverflowing(el.scrollHeight > entry.contentRect.height);
-    setMaxLines(Math.max(1, Math.floor(entry.contentRect.height / APPROX_LINE_HEIGHT_PX)));
+    setMaxLines(Math.max(1, Math.floor((entry.contentRect.height - cellVerticalPaddingPx) / approximateLineHeightPx)));
   });
 
   return (
@@ -83,12 +80,10 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
           overflow: "hidden",
           justifyContent: isOverflowing ? "flex-start" : "center",
         }}>
-        <Box ref={contentRef} sx={lineClampSx(maxLines)}>
-          {children}
-        </Box>
+        <Box sx={lineClampSx(maxLines)}>{children}</Box>
       </Stack>
       {resizeHandles}
-      {(onHoverClick || onCopy) && (
+      {onHoverClick && (
         <Stack
           className="hover-content"
           sx={{
@@ -101,16 +96,11 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
             zIndex: 1,
           }}>
           <StandaloneIconButton
-            icon={isEditing ? <Trash2 /> : <Copy />}
-            dataCy={isEditing ? "deleteLayer-button" : "copyLayer-button"}
+            icon={<Trash2 />}
+            dataCy="deleteLayer-button"
             onClick={e => {
               e.stopPropagation();
-              if (isEditing) {
-                onHoverClick?.(index);
-              } else {
-                const el = contentRef.current;
-                onCopy?.(el?.innerText ?? el?.textContent ?? "");
-              }
+              onHoverClick(index);
             }}
             color={"primaryInverse"}
             sx={{
