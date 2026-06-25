@@ -1,7 +1,6 @@
 import { useCallback, useContext, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
 import {
   Accordion,
   AccordionDetails,
@@ -31,7 +30,7 @@ import { FormInput } from "../form/formInput.tsx";
 import { StackFullWidth } from "../styledComponents.ts";
 import { BulkEditFormField, BulkEditFormProps, BulkEditFormValue } from "./BulkEditFormProps.ts";
 
-export const BulkEditDialog = ({ isOpen, selected }: BulkEditFormProps) => {
+export const BulkEditDialog = ({ isOpen, selected, onClose }: BulkEditFormProps) => {
   const [fieldsToUpdate, setFieldsToUpdate] = useState<Array<[keyof BoreholeBulkUpdate, BulkEditFormValue]>>([]);
   const { showAlert } = useContext(AlertContext);
   const { t } = useTranslation();
@@ -119,14 +118,6 @@ export const BulkEditDialog = ({ isOpen, selected }: BulkEditFormProps) => {
     }, {}),
   });
 
-  const dispatch = useDispatch();
-  const unselectBoreholes = () => {
-    dispatch({
-      type: "EDITOR_MULTIPLE_SELECTED",
-      selection: null,
-    });
-  };
-
   const onFieldValueChange = useCallback((field: BulkEditFormField, newValue: BulkEditFormValue) => {
     const key = field.payloadKey;
     const updatedValue: BulkEditFormValue =
@@ -157,13 +148,13 @@ export const BulkEditDialog = ({ isOpen, selected }: BulkEditFormProps) => {
 
   const cancelBulkEdit = () => {
     resetFormState();
-    unselectBoreholes();
+    onClose();
   };
 
   const save = () => {
     const boreholeIds = selected.filter((id): id is number => typeof id === "number");
     bulkEditBoreholes(buildBulkEditRequest(boreholeIds, fieldsToUpdate), {
-      onSuccess: unselectBoreholes,
+      onSuccess: onClose,
       onError: error => {
         if (error instanceof ApiError && error.messageKey === "bulkEditUnauthorizedBoreholes") {
           const rawIds = error.details?.unauthorizedBoreholeIds;

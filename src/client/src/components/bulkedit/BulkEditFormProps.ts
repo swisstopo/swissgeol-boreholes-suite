@@ -5,6 +5,7 @@ import { FormValueType } from "../form/form.ts";
 export interface BulkEditFormProps {
   selected: GridRowSelectionModel;
   isOpen: boolean;
+  onClose: () => void;
 }
 
 export type BulkEditFormValue = string | number | boolean | undefined | null;
