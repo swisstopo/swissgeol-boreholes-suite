@@ -157,7 +157,7 @@
   "diameter": "Diametro [mm]",
   "disabled": "Disattivato",
   "discardchanges": "Annullare le modifiche",
-  "disclaimer_publish_message": "Il disclaimer che hai creato verrà ora visualizzato ogni volta che accedi.",
+  "disclaimerPublishMessage": "Il disclaimer che hai creato verrà ora visualizzato ogni volta che accedi.",
   "documents": "Documenti",
   "draft": "Bozza",
   "drawCoordinateBox": "Disegna un riquadro intorno alle coordinate nord ed est",

@@ -156,7 +156,7 @@
   "diameter": "Durchmesser [mm]",
   "disabled": "Deaktiviert",
   "discardchanges": "Änderungen verwerfen",
-  "disclaimer_publish_message": "Der von Ihnen erstellte Disclaimer wird ab sofort bei jedem Login angezeigt.",
+  "disclaimerPublishMessage": "Der von Ihnen erstellte Disclaimer wird ab sofort bei jedem Login angezeigt.",
   "documents": "Dokumente",
   "draft": "Entwurf",
   "drawCoordinateBox": "Rahmen um Nord- und Ostkoordinaten zeichnen",

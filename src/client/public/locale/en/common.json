@@ -156,7 +156,7 @@
   "diameter": "Diameter [mm]",
   "disabled": "Disabled",
   "discardchanges": "Discard changes",
-  "disclaimer_publish_message": "The disclaimer you created will now be displayed on every login.",
+  "disclaimerPublishMessage": "The disclaimer you created will now be displayed on every login.",
   "documents": "Documents",
   "draft": "Draft",
   "drawCoordinateBox": "Draw box around north & east coordinates",
