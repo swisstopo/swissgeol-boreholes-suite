@@ -5,14 +5,14 @@ import { NavState } from "../../navigation/navState.ts";
 import { ScaledLayerColumn } from "./ScaledLayerColumn.tsx";
 
 const navState = (overrides: Partial<ConstructorParameters<typeof NavState>[0]> = {}) =>
-  new NavState({ height: 500, rawLensSize: 100, contentHeights: { c: 100 }, headerHeights: {}, ...overrides });
+  new NavState({ height: 500, rawLensSize: 100, contentHeights: { c: 100 }, ...overrides });
 
 describe("ScaledLayerColumn", () => {
   afterEach(() => cleanup());
 
   it("renders no layers when the array is empty", () => {
     const { container } = render(<ScaledLayerColumn layers={[]} navState={navState()} renderLayer={() => <div />} />);
-    expect(container.querySelectorAll("[data-testid^='scaled-layer-wrapper-']").length).toBe(0);
+    expect(container.querySelectorAll("[data-testid^='scaled-layer-wrapper-']")).toHaveLength(0);
   });
 
   it("positions a layer at fromDepth times pixelPerMeter and sizes by thickness", () => {
@@ -69,6 +69,6 @@ describe("ScaledLayerColumn", () => {
         renderLayer={() => <div>layer</div>}
       />,
     );
-    expect(container.querySelectorAll("[data-testid^='scaled-layer-wrapper-']").length).toBe(0);
+    expect(container.querySelectorAll("[data-testid^='scaled-layer-wrapper-']")).toHaveLength(0);
   });
 });
