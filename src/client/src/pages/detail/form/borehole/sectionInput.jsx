@@ -199,13 +199,13 @@ const SectionInput = ({ item, parentId }) => {
                     <FormContainer direction="row">
                       <FormInput
                         fieldName={`sectionElements.${index}.drillingDiameter`}
-                        label="drill_diameter"
+                        label="drillDiameter"
                         value={field.drillingDiameter}
                         type={FormValueType.Number}
                       />
                       <FormInput
                         fieldName={`sectionElements.${index}.drillingCoreDiameter`}
-                        label="drill_core_diameter"
+                        label="drillCoreDiameter"
                         value={field.drillingCoreDiameter}
                         type={FormValueType.Number}
                       />

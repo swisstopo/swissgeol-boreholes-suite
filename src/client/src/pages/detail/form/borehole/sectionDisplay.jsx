@@ -69,13 +69,13 @@ const SectionDisplay = ({ item }) => {
             <FormContainer direction="row">
               <FormDisplay
                 prefix={`${index}.`}
-                label="drill_diameter"
+                label="drillDiameter"
                 value={element.drillingDiameter}
                 type={FormValueType.Number}
               />
               <FormDisplay
                 prefix={`${index}.`}
-                label="drill_core_diameter"
+                label="drillCoreDiameter"
                 value={element.drillingCoreDiameter}
                 type={FormValueType.Number}
               />
