@@ -27,7 +27,7 @@ const SectionDisplay = ({ item }) => {
             <FormContainer direction="row">
               <FormDisplay
                 prefix={`${index}.`}
-                label="drilling_method"
+                label="drillingMethod"
                 value={codelists.data?.find(d => d.id === element.drillingMethodId)}
                 type={FormValueType.Domain}
               />
@@ -41,13 +41,13 @@ const SectionDisplay = ({ item }) => {
             <FormContainer direction="row">
               <FormDisplay
                 prefix={`${index}.`}
-                label="drilling_mud_type"
+                label="drillingMudType"
                 value={codelists.data?.find(d => d.id === element.drillingMudTypeId)}
                 type={FormValueType.Domain}
               />
               <FormDisplay
                 prefix={`${index}.`}
-                label="drilling_mud_subtype"
+                label="drillingMudSubtype"
                 value={codelists.data?.find(d => d.id === element.drillingMudSubtypeId)}
                 type={FormValueType.Domain}
               />
@@ -55,13 +55,13 @@ const SectionDisplay = ({ item }) => {
             <FormContainer direction="row">
               <FormDisplay
                 prefix={`${index}.`}
-                label="drilling_start_date"
+                label="drillingStartDate"
                 value={element.drillingStartDate}
                 type={FormValueType.Date}
               />
               <FormDisplay
                 prefix={`${index}.`}
-                label="drilling_end_date"
+                label="drillingEndDate"
                 value={element.drillingEndDate}
                 type={FormValueType.Date}
               />
