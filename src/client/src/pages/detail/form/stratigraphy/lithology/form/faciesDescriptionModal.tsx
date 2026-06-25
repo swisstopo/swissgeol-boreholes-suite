@@ -51,7 +51,7 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({ descri
   return (
     <FormDialog
       open={description !== undefined}
-      title={t("facies_description")}
+      title={t("faciesDescription")}
       onClose={cancelDialog}
       onApply={applyDialog}
       isApplyDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>

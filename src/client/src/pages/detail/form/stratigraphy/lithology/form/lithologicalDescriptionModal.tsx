@@ -50,7 +50,7 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
   return (
     <FormDialog
       open={description !== undefined}
-      title={t("lithological_description")}
+      title={t("lithologicalDescription")}
       onClose={cancelDialog}
       onApply={applyDialog}
       isApplyDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>

@@ -319,8 +319,8 @@ export const LithologyTable: FC<LithologyTableProps> = ({ state, shownColumns = 
         <StratigraphyTableHeader>
           <StratigraphyTableHeaderCell sx={{ flex: "0 0 128px" }} label={t("depthMD")} />
           {showLithology && <StratigraphyTableHeaderCell label={t("lithology")} />}
-          {showLithologicalDescription && <StratigraphyTableHeaderCell label={t("lithological_description")} />}
-          {showFaciesDescription && <StratigraphyTableHeaderCell label={t("facies_description")} />}
+          {showLithologicalDescription && <StratigraphyTableHeaderCell label={t("lithologicalDescription")} />}
+          {showFaciesDescription && <StratigraphyTableHeaderCell label={t("faciesDescription")} />}
         </StratigraphyTableHeader>
         {depths?.length > 0 && (
           <StratigraphyTableContent>
