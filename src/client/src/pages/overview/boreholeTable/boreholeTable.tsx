@@ -194,13 +194,13 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     {
       field: "locationX",
       valueGetter: (value: number) => formatNumberForDisplay(Math.round(value * 100) / 100, 2),
-      headerName: t("location_x"),
+      headerName: t("locationX"),
       flex: 1,
     },
     {
       field: "locationY",
       valueGetter: (value: number) => formatNumberForDisplay(Math.round(value * 100) / 100, 2),
-      headerName: t("location_y"),
+      headerName: t("locationY"),
       flex: 1,
     },
     {

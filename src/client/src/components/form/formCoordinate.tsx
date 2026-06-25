@@ -63,7 +63,7 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
   const { t } = useTranslation();
   const { formState, register } = useFormContext();
   const { editingEnabled } = useContext(EditStateContext);
-  const { labelWithTooltip } = useLabelOverflow(`location_${direction.toLowerCase()}_${referenceSystem}`);
+  const { labelWithTooltip } = useLabelOverflow(`location${direction}`, ` ${referenceSystem}`);
   const isReadOnly = readonly ?? !editingEnabled;
 
   const formFieldError = getFormFieldError(fieldName, formState.errors);
