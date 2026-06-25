@@ -17,7 +17,7 @@ export const boreholeSearchData: SearchData[] = [
   {
     id: 2,
     type: "Input",
-    label: "alternate_name",
+    label: "alternateName",
     key: "name",
   },
   {

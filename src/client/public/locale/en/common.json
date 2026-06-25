@@ -36,7 +36,7 @@
   "all": "All",
   "allowedFormats": "Allowed formats",
   "alterationDegree": "Alteration degree",
-  "alternate_name": "Name",
+  "alternateName": "Name",
   "analyze": "Analyzing",
   "apply": "Apply",
   "applyStratigraphy": "Apply stratigraphy {{number}}",
