@@ -1,7 +1,6 @@
 import { useCallback, useContext, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
 import {
   Accordion,
   AccordionDetails,
@@ -17,7 +16,7 @@ import {
 } from "@mui/material";
 import { ChevronDownIcon, RotateCcw } from "lucide-react";
 import { DevTool } from "../../../hookformDevtools.ts";
-import { buildBulkEditRequest, bulkEditBoreholes } from "../../api/borehole.ts";
+import { buildBulkEditRequest, useBoreholeMutations } from "../../api/borehole.ts";
 import { ApiError } from "../../api/errorClasses.ts";
 import { BoreholeBulkUpdate, Workgroup } from "../../api/generated";
 import { theme } from "../../AppTheme.ts";
@@ -31,11 +30,14 @@ import { FormInput } from "../form/formInput.tsx";
 import { StackFullWidth } from "../styledComponents.ts";
 import { BulkEditFormField, BulkEditFormProps, BulkEditFormValue } from "./BulkEditFormProps.ts";
 
-export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditFormProps) => {
+export const BulkEditDialog = ({ isOpen, selected, onClose }: BulkEditFormProps) => {
   const [fieldsToUpdate, setFieldsToUpdate] = useState<Array<[keyof BoreholeBulkUpdate, BulkEditFormValue]>>([]);
   const { showAlert } = useContext(AlertContext);
   const { t } = useTranslation();
   const { editableWorkgroups } = useUserWorkgroups();
+  const {
+    bulkEdit: { mutate: bulkEditBoreholes, isPending: isBulkEditing },
+  } = useBoreholeMutations();
 
   const bulkEditFormFields: BulkEditFormField[] = useMemo(
     () => [
@@ -116,14 +118,6 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
     }, {}),
   });
 
-  const dispatch = useDispatch();
-  const unselectBoreholes = () => {
-    dispatch({
-      type: "EDITOR_MULTIPLE_SELECTED",
-      selection: null,
-    });
-  };
-
   const onFieldValueChange = useCallback((field: BulkEditFormField, newValue: BulkEditFormValue) => {
     const key = field.payloadKey;
     const updatedValue: BulkEditFormValue =
@@ -154,27 +148,27 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
 
   const cancelBulkEdit = () => {
     resetFormState();
-    unselectBoreholes();
+    onClose();
   };
 
-  const save = async () => {
-    try {
-      const boreholeIds = selected.filter((id): id is number => typeof id === "number");
-      await bulkEditBoreholes(buildBulkEditRequest(boreholeIds, fieldsToUpdate));
-      unselectBoreholes();
-      loadBoreholes();
-    } catch (error) {
-      if (error instanceof ApiError && error.messageKey === "bulkEditUnauthorizedBoreholes") {
-        const rawIds = error.details?.unauthorizedBoreholeIds;
-        const ids = Array.isArray(rawIds) ? rawIds.filter((id): id is number => typeof id === "number") : [];
-        showAlert(`${t("bulkEditUnauthorizedBoreholes")} ${ids.join(", ")}`, "error");
-      } else {
-        const message = error instanceof Error ? error.message : String(error);
-        showAlert(`${t("errorBulkEditing")} ${message}`, "error");
-      }
-    } finally {
-      resetFormState();
-    }
+  const save = () => {
+    const boreholeIds = selected.filter((id): id is number => typeof id === "number");
+    bulkEditBoreholes(buildBulkEditRequest(boreholeIds, fieldsToUpdate), {
+      onSuccess: onClose,
+      onError: error => {
+        if (error instanceof ApiError && error.messageKey === "bulkEditUnauthorizedBoreholes") {
+          const rawIds = error.details?.unauthorizedBoreholeIds;
+          const ids = Array.isArray(rawIds) ? rawIds.filter((id): id is number => typeof id === "number") : [];
+          showAlert(`${t("bulkEditUnauthorizedBoreholes")} ${ids.join(", ")}`, "error");
+        } else if (error instanceof ApiError && error.messageKey === "bulkEditUnauthorizedWorkgroup") {
+          showAlert(t("bulkEditUnauthorizedWorkgroup"), "error");
+        } else {
+          const message = error instanceof Error ? error.message : String(error);
+          showAlert(`${t("errorBulkEditing")} ${message}`, "error");
+        }
+      },
+      onSettled: resetFormState,
+    });
   };
 
   const renderInput = useCallback(
@@ -215,7 +209,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
             label=""
             values={editableWorkgroups.map((wg: Workgroup) => ({
               key: wg.id,
-              name: wg.name ?? "",
+              name: wg.name,
             }))}
             onUpdate={e => {
               onFieldValueChange(field, e);
@@ -312,7 +306,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
         <DialogActions>
           <Stack direction="row" justifyContent="flex-end" spacing={2}>
             <CancelButton onClick={cancelBulkEdit} />
-            <SaveButton variant="contained" disabled={fieldsToUpdate.length === 0} onClick={save} />
+            <SaveButton variant="contained" disabled={fieldsToUpdate.length === 0 || isBulkEditing} onClick={save} />
           </Stack>
         </DialogActions>
       </Stack>

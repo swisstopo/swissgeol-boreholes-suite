@@ -5,7 +5,6 @@ interface NavStateInit {
   rawLensSize?: number;
   height?: number;
   contentHeights?: Heights;
-  headerHeights?: Heights;
 }
 
 const getMax = (heights: Heights): number => {
@@ -20,19 +19,15 @@ export class NavState {
   // How many meters are visible. Zero is a special value and means 'use maxContent'.
   readonly rawLensSize: number;
 
-  // height of this component in pixels
+  // Height of the body area in pixels (the row each NavigationContainer's bodyRef points at).
   readonly height: number;
 
   // What is the maximum depth in meters of the content
   // This is a dictionary. Every child should enter its value on a separate key
   readonly contentHeights: Heights;
 
-  // height of the header for each children
-  readonly headerHeights: Heights;
-
   // calculated values
   readonly maxContent: number;
-  readonly maxHeader: number;
   readonly pixelPerMeter: number;
   readonly lensSize: number;
   readonly lensEnd: number;
@@ -42,11 +37,9 @@ export class NavState {
     this.rawLensSize = init.rawLensSize ?? 0;
     this.height = init.height ?? 0;
     this.contentHeights = Object.freeze({ ...init.contentHeights });
-    this.headerHeights = Object.freeze({ ...init.headerHeights });
     this.maxContent = getMax(this.contentHeights);
-    this.maxHeader = getMax(this.headerHeights);
     this.lensSize = this.rawLensSize === 0 ? this.maxContent : this.rawLensSize;
-    this.pixelPerMeter = (this.height - this.maxHeader) / this.lensSize;
+    this.pixelPerMeter = this.height / this.lensSize;
     this.lensEnd = this.lensStart + this.lensSize;
     Object.freeze(this);
   }
@@ -79,12 +72,5 @@ export class NavState {
       return new NavState({ ...temp, lensStart: newLensStart, rawLensSize: newLensSize });
     }
     return temp;
-  }
-
-  setHeaderHeight(name: string, height: number): NavState {
-    return new NavState({
-      ...this,
-      headerHeights: { ...this.headerHeights, [name]: height },
-    });
   }
 }

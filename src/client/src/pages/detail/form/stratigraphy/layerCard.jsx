@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { memo, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Close, Delete, Edit } from "@mui/icons-material";
 import {
@@ -351,4 +351,4 @@ const LayerCard = ({
   );
 };
 
-export default LayerCard;
+export default memo(LayerCard);

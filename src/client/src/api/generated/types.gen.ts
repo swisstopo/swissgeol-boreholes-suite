@@ -5773,6 +5773,25 @@ export type PutApiVbyVersionBoreholeResponses = {
 export type PutApiVbyVersionBoreholeResponse =
   PutApiVbyVersionBoreholeResponses[keyof PutApiVbyVersionBoreholeResponses];
 
+export type PostApiVbyVersionBoreholeBulkeditData = {
+  /**
+   * The boreholes to edit, the values to apply, and the field mask.
+   */
+  body?: BoreholeBulkUpdateRequest;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/borehole/bulkedit";
+};
+
+export type PostApiVbyVersionBoreholeBulkeditResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
 export type PostApiVbyVersionBoreholeFilterData = {
   /**
    * The filter request with filtering criteria.
@@ -5902,25 +5921,6 @@ export type PostApiVbyVersionBoreholeCopyResponses = {
 
 export type PostApiVbyVersionBoreholeCopyResponse =
   PostApiVbyVersionBoreholeCopyResponses[keyof PostApiVbyVersionBoreholeCopyResponses];
-
-export type PostApiVbyVersionBoreholeBulkeditData = {
-  /**
-   * The boreholes to edit, the values to apply, and the field mask.
-   */
-  body?: BoreholeBulkUpdateRequest;
-  path: {
-    version: string;
-  };
-  query?: never;
-  url: "/api/v{version}/borehole/bulkedit";
-};
-
-export type PostApiVbyVersionBoreholeBulkeditResponses = {
-  /**
-   * OK
-   */
-  200: unknown;
-};
 
 export type PostApiVbyVersionBoreholeBulkdeleteData = {
   /**

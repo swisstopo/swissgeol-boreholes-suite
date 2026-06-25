@@ -17,3 +17,25 @@ export interface WmsCapabilities {
 export interface WmtsCapabilities {
   Contents: { Layer: Layer[] };
 }
+
+export interface MapSettingsState {
+  fields: boolean;
+  identifiers: boolean;
+  codeLists: boolean;
+  searchFiltersBoreholes: boolean;
+  searchFiltersLayers: boolean;
+  map: boolean;
+  wmtsFetch: boolean;
+  searchWmts: string;
+  searchWmtsUser: string;
+  wmts: WmtsCapabilities | null;
+  wmsFetch: boolean;
+  searchWms: string;
+  wms: WmsCapabilities | null;
+}
+
+export interface WmsOption {
+  key: string;
+  text: string;
+  value: string;
+}
