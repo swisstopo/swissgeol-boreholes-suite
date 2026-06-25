@@ -115,12 +115,12 @@ export const IdentifiersPanel: FC = () => {
         tabStatusToReset="identifiers"
         triggerValidationBeforeSave={true}>
         <Stack gap={3} mr={2}>
-          <BoreholesCard title={editingEnabled ? t("borehole_technical_id") : undefined}>
+          <BoreholesCard title={editingEnabled ? t("boreholeTechnicalId") : undefined}>
             <FormSegmentBox>
               <Stack direction={"row"} gap={2} justifyContent={"space-between"}>
                 <FormContainer direction={"column"} gap={2}>
                   <FormContainer direction={"row"} gap={2}>
-                    <FormInputDisplayOnly label={"boreholeIdentifier"} value={t("borehole_technical_id")} />
+                    <FormInputDisplayOnly label={"boreholeIdentifier"} value={t("boreholeTechnicalId")} />
                     <FormInputDisplayOnly label={"boreholeIdentifierValue"} value={borehole.id} />
                   </FormContainer>
                 </FormContainer>
