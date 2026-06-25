@@ -10,7 +10,6 @@ import {
   FilterRequest,
   FilterResponse,
   useFilterBoreholes,
-  useReloadBoreholes,
 } from "../../../api/borehole.ts";
 import { useMapOverlays } from "../../../api/useMapOverlays.ts";
 import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
@@ -31,7 +30,6 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const [isExporting, setIsExporting] = useState(false);
   const [sessionRestored, setSessionRestored] = useState(false);
-  const reloadBoreholes = useReloadBoreholes();
   const { navigateTo } = useBoreholesNavigate();
   const {
     filterPolygon,
@@ -133,11 +131,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
 
   return (
     <Stack direction="column" sx={{ flex: "1 1.5 100%" }}>
-      <BulkEditDialog
-        isOpen={Array.isArray(editorStore.mselected)}
-        loadBoreholes={reloadBoreholes}
-        selected={selectionModel}
-      />
+      <BulkEditDialog isOpen={Array.isArray(editorStore.mselected)} selected={selectionModel} />
       <ExportDialog
         isExporting={isExporting}
         setIsExporting={setIsExporting}

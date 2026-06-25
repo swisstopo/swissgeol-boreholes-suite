@@ -40,6 +40,7 @@ export const LithologyPanel = ({ stratigraphyId }: { stratigraphyId: number }) =
   }
   return (
     <LithologyPanelReadOnly
+      stratigraphyId={stratigraphyId}
       lithologies={lithologies}
       lithologicalDescriptions={lithologicalDescriptions}
       faciesDescriptions={faciesDescriptions}

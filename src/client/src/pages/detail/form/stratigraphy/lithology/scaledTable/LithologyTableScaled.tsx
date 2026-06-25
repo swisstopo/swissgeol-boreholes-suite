@@ -63,18 +63,17 @@ export const LithologyTableScaled: FC<LithologyTableScaledProps> = ({
     if (!measureEl) return;
     const naturalHeight = measureEl.scrollHeight;
     const thickness = firstValidLithology.toDepth - firstValidLithology.fromDepth;
-    const availableHeight = navState.height - navState.maxHeader;
-    if (thickness <= 0 || availableHeight <= 0 || naturalHeight <= 0 || navState.maxContent <= 0) {
+    if (thickness <= 0 || navState.height <= 0 || naturalHeight <= 0 || navState.maxContent <= 0) {
       return;
     }
     // No artificial floor: for a very thin first layer with dense content the formula naturally
     // produces a lensSize < thickness, which means the layer fills the viewport top-down and the
     // user pans for the rest. Clamping to maxContent prevents zooming further out than the data
     // supports. firstValidLithology assumes API-sorted layers (smallest fromDepth first).
-    const desiredLensSize = Math.min(navState.maxContent, (thickness * availableHeight) / naturalHeight);
+    const desiredLensSize = Math.min(navState.maxContent, (thickness * navState.height) / naturalHeight);
     setNavState(prev => prev.setLensSize(desiredLensSize).setLensStart(0));
     hasCalibratedRef.current = true;
-  }, [navState.height, navState.maxHeader, navState.maxContent, firstValidLithology, setNavState]);
+  }, [navState.height, navState.maxContent, firstValidLithology, setNavState]);
 
   const renderLithologyLayer = useCallback(
     (layer: WithDepths<Lithology>) => (
@@ -105,7 +104,7 @@ export const LithologyTableScaled: FC<LithologyTableScaledProps> = ({
 
   return (
     <>
-      <NavigationChild navState={navState} setNavState={setNavState}>
+      <NavigationChild navState={navState}>
         {!hasCalibratedRef.current && firstValidLithology && (
           <Box
             ref={firstLayerMeasureRef}
@@ -129,7 +128,7 @@ export const LithologyTableScaled: FC<LithologyTableScaledProps> = ({
           renderLayer={renderLithologyLayer}
         />
       </NavigationChild>
-      <NavigationChild navState={navState} setNavState={setNavState}>
+      <NavigationChild navState={navState}>
         <ScaledLayerColumn
           layers={validDescriptions}
           navState={navState}
@@ -138,7 +137,7 @@ export const LithologyTableScaled: FC<LithologyTableScaledProps> = ({
           renderLayer={renderDescriptionLayer}
         />
       </NavigationChild>
-      <NavigationChild navState={navState} setNavState={setNavState}>
+      <NavigationChild navState={navState}>
         <ScaledLayerColumn
           layers={validFacies}
           navState={navState}

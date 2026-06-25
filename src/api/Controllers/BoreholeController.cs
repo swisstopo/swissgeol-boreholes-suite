@@ -157,20 +157,15 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
             if (!await CanEditInWorkgroupAsync(subjectId, request.Update.WorkgroupId.Value).ConfigureAwait(false))
             {
-                return Unauthorized();
+                return ForbiddenUserError(
+                    "You are not authorized to move boreholes into the selected workgroup.",
+                    "bulkEditUnauthorizedWorkgroup");
             }
         }
 
-        // Atomic permission gate: check every selected borehole and collect all that are not editable,
-        // so the full list can be returned to the user. Nothing is written if any fails.
-        var unauthorizedBoreholeIds = new List<int>();
-        foreach (var id in request.BoreholeIds)
-        {
-            if (!await BoreholePermissionService.CanEditBoreholeAsync(subjectId, id).ConfigureAwait(false))
-            {
-                unauthorizedBoreholeIds.Add(id);
-            }
-        }
+        var unauthorizedBoreholeIds = await BoreholePermissionService
+            .GetBoreholeIdsUserCannotEditAsync(subjectId, request.BoreholeIds)
+            .ConfigureAwait(false);
 
         if (unauthorizedBoreholeIds.Count > 0)
         {
@@ -406,16 +401,9 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         var distinctIds = boreholeIds.Distinct().ToList();
         var subjectId = HttpContext.GetUserSubjectId();
 
-        // Atomic permission gate: collect every borehole the user may not delete (uses the same check as the
-        // single-borehole delete), then report them all. Nothing is deleted if any fails.
-        var unauthorizedBoreholeIds = new List<int>();
-        foreach (var id in distinctIds)
-        {
-            if (!await BoreholePermissionService.CanChangeBoreholeStatusAsync(subjectId, id).ConfigureAwait(false))
-            {
-                unauthorizedBoreholeIds.Add(id);
-            }
-        }
+        var unauthorizedBoreholeIds = await BoreholePermissionService
+            .GetBoreholeIdsUserCannotChangeStatusAsync(subjectId, distinctIds)
+            .ConfigureAwait(false);
 
         if (unauthorizedBoreholeIds.Count > 0)
         {
@@ -426,11 +414,6 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             .Where(b => distinctIds.Contains(b.Id))
             .ToListAsync()
             .ConfigureAwait(false);
-
-        if (boreholes.Count != distinctIds.Count)
-        {
-            return NotFound();
-        }
 
         Context.Boreholes.RemoveRange(boreholes);
 
@@ -488,15 +471,24 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     /// is not allowed to operate on, so the client can show them. Shared by bulk edit and bulk delete; the
     /// caller supplies the i18n <paramref name="messageKey"/>. Mirrors the <c>conflictingNames</c> pattern.
     /// </summary>
-    private ObjectResult UnauthorizedBoreholesProblem(List<int> unauthorizedBoreholeIds, string messageKey)
+    private ObjectResult UnauthorizedBoreholesProblem(IReadOnlyList<int> unauthorizedBoreholeIds, string messageKey)
+    {
+        var result = ForbiddenUserError("You are not authorized to perform this action on some of the selected boreholes.", messageKey);
+        ((ProblemDetails)result.Value!).Extensions["unauthorizedBoreholeIds"] = unauthorizedBoreholeIds;
+        return result;
+    }
+
+    /// <summary>
+    /// Builds a <see cref="ProblemType.UserError"/> response (HTTP 403) carrying an i18n <paramref name="messageKey"/>,
+    /// so the client can show a tailored message instead of the generic error handler.
+    /// </summary>
+    private ObjectResult ForbiddenUserError(string detail, string messageKey)
     {
         var result = Problem(
-            detail: "You are not authorized to perform this action on some of the selected boreholes.",
+            detail: detail,
             statusCode: StatusCodes.Status403Forbidden,
             type: ProblemType.UserError);
-        var problemDetails = (ProblemDetails)result.Value!;
-        problemDetails.Extensions["messageKey"] = messageKey;
-        problemDetails.Extensions["unauthorizedBoreholeIds"] = unauthorizedBoreholeIds;
+        ((ProblemDetails)result.Value!).Extensions["messageKey"] = messageKey;
         return result;
     }
 
@@ -514,7 +506,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
     // All fields that may be bulk-edited: the union of the tab field sets plus workgroupId
     // (workgroupId is editable but is not shown on any reviewable tab, so it is not in either tab set).
-    private static readonly HashSet<string> BulkEditableFields = new(
+    internal static readonly HashSet<string> BulkEditableFields = new(
         LocationTabFields.Concat(GeneralTabFields).Append("workgroupId"),
         StringComparer.OrdinalIgnoreCase);
 
@@ -538,7 +530,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         }
     }
 
-    private static void ApplyBulkEditField(Borehole borehole, BoreholeBulkUpdate update, string field)
+    internal static void ApplyBulkEditField(Borehole borehole, BoreholeBulkUpdate update, string field)
     {
         // Case labels are the ToUpperInvariant() of the camelCase field names (CA1308 requires
         // ToUpperInvariant over ToLowerInvariant). Keep them in sync with BulkEditableFields.

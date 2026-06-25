@@ -1,4 +1,4 @@
-import { Dispatch, FC, ReactNode, SetStateAction, useEffect, useRef, useState, WheelEvent } from "react";
+import { Dispatch, FC, ReactNode, RefObject, SetStateAction, useEffect, useRef, useState, WheelEvent } from "react";
 import { Stack } from "@mui/material";
 import { SxProps, Theme } from "@mui/material/styles";
 import { clamp } from "./clamp.ts";
@@ -11,6 +11,10 @@ interface NavigationContainerProps {
   sx?: SxProps<Theme>;
   navState?: NavState;
   onNavStateChange?: Dispatch<SetStateAction<NavState>>;
+  // Element observed for navState.height. The body row of the surrounding grid (1fr), NOT the
+  // container itself: the container also wraps header / lens-down / footer rows that must be
+  // excluded so depth-proportional cells size to the pixels actually available to them.
+  bodyRef: RefObject<HTMLElement | null>;
 }
 
 const preventVerticalScroll = (event: globalThis.WheelEvent) => {
@@ -23,13 +27,14 @@ export const NavigationContainer: FC<NavigationContainerProps> = ({
   sx,
   navState: externalNavState,
   onNavStateChange: externalSetter,
+  bodyRef,
 }) => {
   const [internalNavState, setInternalNavState] = useState<NavState>(new NavState());
   const navState = externalNavState ?? internalNavState;
   const setNavState = externalSetter ?? setInternalNavState;
 
   const containerRef = useRef<HTMLDivElement>(null);
-  useTypedResizeObserver(containerRef, entry => setNavState(prev => prev.setHeight(entry.contentRect.height)));
+  useTypedResizeObserver(bodyRef, entry => setNavState(prev => prev.setHeight(entry.contentRect.height)));
 
   const { onPointerDown, isDragging, isPannable } = useDragPan({ navState, setNavState, containerRef });
   const panCursor = isDragging ? "grabbing" : "grab";
@@ -42,12 +47,15 @@ export const NavigationContainer: FC<NavigationContainerProps> = ({
     const newLensSize = navState.lensSize * 1.001 ** event.deltaY;
     const clampedLensSize = clamp(newLensSize, 0.5, navState.maxContent);
 
+    // Anchor the zoom at the pointer: compute the pointer's fraction within the body area.
+    // navState.height is the body's pixel height; bodyRef provides its absolute top.
+    const bodyEl = bodyRef.current;
+    if (!bodyEl) return;
+    const fraction = (event.pageY - bodyEl.getBoundingClientRect().top) / navState.height;
+
     // calculate new lensStart
     const clampedLensStart = clamp(
-      navState.lensStart +
-        (navState.lensSize - clampedLensSize) *
-          ((event.pageY - event.currentTarget.getBoundingClientRect().top - navState.maxHeader) /
-            (navState.height - navState.maxHeader)),
+      navState.lensStart + (navState.lensSize - clampedLensSize) * fraction,
       0,
       navState.maxContent - clampedLensSize,
     );

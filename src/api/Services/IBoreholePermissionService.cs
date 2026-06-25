@@ -43,4 +43,24 @@ public interface IBoreholePermissionService
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> to check locks for.</param>
     /// <returns><see langword="true"/> if the user has permission to change the status of the borehole; otherwise, <see langword="false"/>.</returns>
     Task<bool> CanChangeBoreholeStatusAsync(string? subjectId, int? boreholeId);
+
+    /// <summary>
+    /// Batch equivalent of <see cref="CanEditBoreholeAsync"/>: returns the subset of <paramref name="boreholeIds"/>
+    /// that the <see cref="User"/> with <paramref name="subjectId"/> cannot edit, fetching the user and all boreholes
+    /// in a single round-trip each. A borehole id that does not exist is treated as not editable.
+    /// </summary>
+    /// <param name="subjectId">The <see cref="User.SubjectId"/> of the current user.</param>
+    /// <param name="boreholeIds">The <see cref="Borehole.Id"/>s to check.</param>
+    /// <returns>The distinct ids the user is not allowed to edit; empty if the user may edit all of them.</returns>
+    Task<IReadOnlyList<int>> GetBoreholeIdsUserCannotEditAsync(string? subjectId, IReadOnlyCollection<int> boreholeIds);
+
+    /// <summary>
+    /// Batch equivalent of <see cref="CanChangeBoreholeStatusAsync"/>: returns the subset of <paramref name="boreholeIds"/>
+    /// whose status the <see cref="User"/> with <paramref name="subjectId"/> cannot change, fetching the user and all
+    /// boreholes in a single round-trip each. A borehole id that does not exist is treated as not allowed.
+    /// </summary>
+    /// <param name="subjectId">The <see cref="User.SubjectId"/> of the current user.</param>
+    /// <param name="boreholeIds">The <see cref="Borehole.Id"/>s to check.</param>
+    /// <returns>The distinct ids the user is not allowed to change the status of; empty if the user may change all of them.</returns>
+    Task<IReadOnlyList<int>> GetBoreholeIdsUserCannotChangeStatusAsync(string? subjectId, IReadOnlyCollection<int> boreholeIds);
 }
