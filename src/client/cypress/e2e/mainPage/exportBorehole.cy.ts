@@ -20,7 +20,6 @@ import { navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers
 import {
   createBorehole,
   createWateringress,
-  deleteBorehole,
   deleteDownloadedFile,
   dropGeometryCSVFile,
   goToDetailRouteAndAcceptTerms,
@@ -210,13 +209,8 @@ describe("Test for exporting boreholes.", () => {
   it("downloads a maximum of 100 boreholes", () => {
     // The seed contains exactly 100 boreholes, so we need to add a couple of extras
     // to exceed the 100-entry cap and trigger the truncation prompt under test.
-    // Capture the created ids so we can delete them at the end and avoid polluting
-    // subsequent tests that assume a 100-borehole total.
-    const createdIds: number[] = [];
     for (let i = 0; i < 5; i++) {
-      createBorehole({ originalName: `EXPORT_CAP_TEST_${i}` }).then(id => {
-        createdIds.push(id as number);
-      });
+      createBorehole({ originalName: `EXPORT_CAP_TEST_${i}` });
     }
 
     goToRouteAndAcceptTerms("/");
@@ -244,12 +238,6 @@ describe("Test for exporting boreholes.", () => {
     });
 
     deleteDownloadedFile(jsonFileName);
-
-    // Restore the borehole count to 100 so later tests in this session are not
-    // polluted by our test fixtures.
-    cy.then(() => {
-      createdIds.forEach(id => deleteBorehole(id));
-    });
   });
 
   it("exports a single borehole as csv and json", () => {

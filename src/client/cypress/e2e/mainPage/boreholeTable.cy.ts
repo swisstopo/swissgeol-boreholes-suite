@@ -39,7 +39,6 @@ describe("Borehole editor table tests", () => {
     verifyRowContains("Alivia Bergstrom", 3);
 
     // Verify thousand separator formatting on row 3 (Alivia Bergstrom).
-    // TotalDepth=764.7162 → "764.72", LocationX=2'531'511.00, LocationY=1'202'038.00
     verifyRowContains("764.72", 3);
     verifyRowContains("2'531'511.00", 3);
     verifyRowContains("1'202'038.00", 3);
@@ -67,6 +66,7 @@ describe("Borehole editor table tests", () => {
     // Sort by borehole type descending. The API orders by borehole_type_id (not the
     // label), so row 0 is the codelist with the highest id — "virtual borehole"
     // (borehole_type_id 30000307). 4 boreholes share that type.
+    // Todo: Sorting should be by label, not id. See https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1958
     sortByColumnHeader("Borehole type");
     sortByColumnHeader("Borehole type");
     verifyRowContains("virtual borehole", 0);
@@ -76,6 +76,7 @@ describe("Borehole editor table tests", () => {
     // Sort by drilling purpose descending. The API orders by purpose_id (not the
     // label), so row 0 is the codelist with the highest id — "scientific exploration"
     // (purpose_id 30000012). 5 boreholes share that purpose.
+    // Todo: Sorting should be by label, not id. See https://github.com/swisstopo/swissgeol-boreholes-suite/issues/1958
     sortByColumnHeader("Drilling purpose");
     sortByColumnHeader("Drilling purpose");
     verifyRowContains("scientific exploration", 0);
