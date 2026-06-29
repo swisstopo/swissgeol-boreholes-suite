@@ -35,7 +35,6 @@ interface PointComponentProps {
     municipality: string | null,
   ) => void;
   changefeature?: (point: number[]) => void;
-  id?: number;
   isEditable?: boolean;
   highlighted?: number[];
   x?: number | null;
@@ -235,9 +234,9 @@ export const PointComponent: FC<PointComponentProps> = ({
       layers: mapLayers,
       target: "point",
       view: new View({
-        resolution: pointRef.current !== null ? 1 : 500,
+        resolution: pointRef.current === null ? 500 : 1,
         minResolution: 0.1,
-        center: pointRef.current !== null ? pointRef.current : center,
+        center: pointRef.current ?? center,
         projection: projection ?? undefined,
         extent: swissExtent,
         showFullExtent: true,
@@ -260,7 +259,7 @@ export const PointComponent: FC<PointComponentProps> = ({
     });
 
     // @ts-expect-error expose OL map to tests/console
-    window.pointOlMap = map;
+    globalThis.pointOlMap = map;
     // Build-once: deps intentionally empty so the map isn't rebuilt on every prop change.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -355,12 +354,12 @@ export const PointComponent: FC<PointComponentProps> = ({
           {_.compact([municipality, canton]).length > 0 ? (
             <Box>{_.compact([municipality, canton]).join(", ")}</Box>
           ) : null}
-          {height !== null ? (
+          {height === null ? null : (
             <Stack direction={"row"}>
               <MoveVertical />
               {height} m
             </Stack>
-          ) : null}
+          )}
         </Box>
         <DataCardButtonContainer>
           <Button
@@ -372,7 +371,7 @@ export const PointComponent: FC<PointComponentProps> = ({
                 applyChange(
                   point[0].toFixed(2),
                   point[1].toFixed(2),
-                  height !== null ? parseFloat(height) : null,
+                  height === null ? null : Number.parseFloat(height),
                   country,
                   canton,
                   municipality,

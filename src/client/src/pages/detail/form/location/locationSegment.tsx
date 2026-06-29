@@ -144,7 +144,6 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
                 ) => {
                   setValuesForNewMapPoint(x, y, height, country, canton, municipality);
                 }}
-                id={borehole.id}
                 isEditable={editingEnabled}
                 x={currentLV95X}
                 y={currentLV95Y}
