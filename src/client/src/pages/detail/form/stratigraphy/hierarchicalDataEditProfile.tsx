@@ -5,6 +5,7 @@ import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { ChronostratigraphyLayer, Codelist, LithostratigraphyLayer } from "../../../../api/generated";
 import { useCodelistSchema } from "../../../../components/codelist.ts";
 import LayerCard from "./layerCard.jsx";
+import { collectLayerDepths } from "./layerDepths.ts";
 import LayerGap from "./layerGap.jsx";
 import { NavState } from "./navigation/navState.ts";
 
@@ -179,15 +180,7 @@ export function useHierarchicalDataEditProfile({
     return stack;
   }, [layers, pixelPerMeter, addLayer, updateLayer, deleteLayer, dataProperty, options, header]);
 
-  const depths = useMemo<ReadonlyArray<number>>(() => {
-    if (!layers) return [];
-    const set = new Set<number>();
-    for (const l of layers) {
-      if (l.fromDepth != null) set.add(l.fromDepth);
-      if (l.toDepth != null) set.add(l.toDepth);
-    }
-    return [...set].sort((a, b) => a - b);
-  }, [layers]);
+  const depths = useMemo<ReadonlyArray<number>>(() => collectLayerDepths(layers), [layers]);
 
   const lensSize = navState.lensSize;
   const toggleHeaderVisibility = useCallback((targetIndex: number) => {
