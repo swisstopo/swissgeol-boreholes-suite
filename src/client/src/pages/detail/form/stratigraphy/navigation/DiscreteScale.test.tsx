@@ -18,27 +18,27 @@ const navStateFor = (overrides: Partial<{ lensStart: number; rawLensSize: number
 describe("DiscreteScale", () => {
   it("renders nothing for empty depths", () => {
     const { container } = render(<DiscreteScale navState={navStateFor({})} depths={[]} />);
-    expect(container.querySelectorAll("[data-cy='discrete-scale-tick']").length).toBe(0);
-    expect(container.querySelectorAll("[data-cy='discrete-scale-label']").length).toBe(0);
+    expect(container.querySelectorAll("[data-cy='discrete-scale-tick']")).toHaveLength(0);
+    expect(container.querySelectorAll("[data-cy='discrete-scale-label']")).toHaveLength(0);
   });
 
   it("renders one tick per visible depth", () => {
     const { container } = render(<DiscreteScale navState={navStateFor({})} depths={[0, 10, 25, 50, 100]} />);
-    expect(container.querySelectorAll("[data-cy='discrete-scale-tick']").length).toBe(5);
+    expect(container.querySelectorAll("[data-cy='discrete-scale-tick']")).toHaveLength(5);
   });
 
   it("does not render ticks for depths outside the visible window", () => {
     const navState = navStateFor({ lensStart: 20, rawLensSize: 30 }); // visible [20, 50]
     const { container } = render(<DiscreteScale navState={navState} depths={[0, 10, 25, 50, 75]} />);
     // visible boundaries: 25 and 50 (inclusive)
-    expect(container.querySelectorAll("[data-cy='discrete-scale-tick']").length).toBe(2);
+    expect(container.querySelectorAll("[data-cy='discrete-scale-tick']")).toHaveLength(2);
   });
 
   it("renders one label per visible depth when zoom gives ample spacing", () => {
     // height 500px / lensSize 100m → 5 px per metre.
     // Depths spaced 25m apart → 125 px between labels. MIN_LABEL_GAP_PX is 28.
     const { container } = render(<DiscreteScale navState={navStateFor({})} depths={[0, 25, 50, 75, 100]} />);
-    expect(container.querySelectorAll("[data-cy='discrete-scale-label']").length).toBe(5);
+    expect(container.querySelectorAll("[data-cy='discrete-scale-label']")).toHaveLength(5);
   });
 
   it("formats integer labels with apostrophe thousand separator", () => {
@@ -60,19 +60,19 @@ describe("DiscreteScale", () => {
     const navState = navStateFor({});
     const depths = [0, 2, 4, 6, 8, 10];
     const { container } = render(<DiscreteScale navState={navState} depths={depths} />);
-    expect(container.querySelectorAll("[data-cy='discrete-scale-tick']").length).toBe(6);
+    expect(container.querySelectorAll("[data-cy='discrete-scale-tick']")).toHaveLength(6);
     const labels = container.querySelectorAll("[data-cy='discrete-scale-label']");
     // Greedy: 0 included; 2/4 skipped (gaps 10/20 < 28); 6 included (gap 30); 8 skipped;
     // 10 skipped. Bottom-anchor: deepest 10 not in, yDeepest-yPrev = 50-30 = 20 < 28,
     // so 10 replaces 6. Final labels: 0, 10.
-    expect(labels.length).toBe(2);
+    expect(labels).toHaveLength(2);
   });
 
   it("renders a single visible depth as a center label", () => {
     const navState = navStateFor({ lensStart: 30, rawLensSize: 5 }); // visible [30, 35]
     const { container } = render(<DiscreteScale navState={navState} depths={[10, 30.5, 80]} />);
     const labels = container.querySelectorAll("[data-cy='discrete-scale-label']");
-    expect(labels.length).toBe(1);
+    expect(labels).toHaveLength(1);
     expect(labels[0].textContent).toBe("30.5");
   });
 
@@ -81,9 +81,8 @@ describe("DiscreteScale", () => {
     const navState = navStateFor({});
     const { container } = render(<DiscreteScale navState={navState} depths={[40, 41]} />);
     const labels = container.querySelectorAll("[data-cy='discrete-scale-label']");
-    const tickCount = container.querySelectorAll("[data-cy='discrete-scale-tick']").length;
-    expect(tickCount).toBe(2);
-    expect(labels.length).toBe(1);
+    expect(container.querySelectorAll("[data-cy='discrete-scale-tick']")).toHaveLength(2);
+    expect(labels).toHaveLength(1);
     expect(labels[0].textContent).toBe("41");
   });
 });

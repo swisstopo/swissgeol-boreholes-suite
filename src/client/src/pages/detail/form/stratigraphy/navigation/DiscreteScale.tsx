@@ -55,16 +55,15 @@ const selectLabelDepths = (visible: ReadonlyArray<number>, lensStart: number, pi
 
   // Bottom-anchor pass: ensure the deepest visible depth is always labelled. If it would
   // collide with the last included depth, replace that one rather than dropping the anchor.
-  if (visible.length > 0) {
-    const deepest = visible[visible.length - 1];
-    if (included.length > 0 && included[included.length - 1] !== deepest) {
-      const yDeepest = (deepest - lensStart) * pixelPerMeter;
-      const yPrevious = (included[included.length - 1] - lensStart) * pixelPerMeter;
-      if (yDeepest - yPrevious >= MIN_LABEL_GAP_PX) {
-        included.push(deepest);
-      } else {
-        included[included.length - 1] = deepest;
-      }
+  const deepest = visible.at(-1);
+  const previous = included.at(-1);
+  if (deepest !== undefined && previous !== undefined && previous !== deepest) {
+    const yDeepest = (deepest - lensStart) * pixelPerMeter;
+    const yPrevious = (previous - lensStart) * pixelPerMeter;
+    if (yDeepest - yPrevious >= MIN_LABEL_GAP_PX) {
+      included.push(deepest);
+    } else {
+      included[included.length - 1] = deepest;
     }
   }
 
