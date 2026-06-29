@@ -1165,17 +1165,9 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
-    public async Task BulkEditClearsFieldWhenMaskedValueIsNull()
+    public async Task BulkEditWithNullMaskedValueReturnsBadRequest()
     {
-        var restrictionId = await context.Codelists
-            .Where(c => c.Schema == "restriction")
-            .Select(c => c.Id)
-            .FirstAsync();
         var id = await context.Boreholes.OrderBy(b => b.Id).Select(b => b.Id).FirstAsync();
-        var borehole = await context.Boreholes.SingleAsync(b => b.Id == id);
-        borehole.RestrictionId = restrictionId;
-        await context.SaveChangesAsync();
-        Assert.IsNotNull((await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id)).RestrictionId);
 
         var request = new BoreholeBulkUpdateRequest
         {
@@ -1185,10 +1177,30 @@ public class BoreholeControllerTest
         };
 
         var response = await controller.BulkEditAsync(request);
+        ActionResultAssert.IsBadRequest(response);
+    }
+
+    [TestMethod]
+    public async Task BulkEditAllowsNullForNullableBooleanField()
+    {
+        var id = await context.Boreholes.OrderBy(b => b.Id).Select(b => b.Id).FirstAsync();
+        var borehole = await context.Boreholes.SingleAsync(b => b.Id == id);
+        borehole.NationalInterest = true;
+        await context.SaveChangesAsync();
+
+        var request = new BoreholeBulkUpdateRequest
+        {
+            BoreholeIds = new() { id },
+            Update = new BoreholeBulkUpdate { NationalInterest = null },
+            FieldsToUpdate = new() { "nationalInterest" },
+        };
+
+        // null is the deliberate "not specified" state for nullable booleans, so it is accepted and written.
+        var response = await controller.BulkEditAsync(request);
         ActionResultAssert.IsOk(response);
 
         var updated = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
-        Assert.IsNull(updated.RestrictionId);
+        Assert.IsNull(updated.NationalInterest);
     }
 
     [TestMethod]

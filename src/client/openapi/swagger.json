@@ -7701,7 +7701,7 @@
           }
         },
         "additionalProperties": false,
-        "description": "The typed set of borehole fields that can be changed through bulk edit.\r\nEvery property is nullable; which of them are actually written is controlled\r\nby BDMS.Models.BoreholeBulkUpdateRequest.FieldsToUpdate. A field named in the\r\nmask whose value is null clears the corresponding column."
+        "description": "The typed set of borehole fields that can be changed through bulk edit.\r\nEach property is nullable to mirror the corresponding borehole column; which of\r\nthem are actually written is controlled by BDMS.Models.BoreholeBulkUpdateRequest.FieldsToUpdate.\r\nA masked field must carry a value; a null value is rejected (clearing is not supported),\r\nexcept nullable booleans where null is the deliberate \"not specified\" state."
       },
       "BoreholeBulkUpdateRequest": {
         "required": [
