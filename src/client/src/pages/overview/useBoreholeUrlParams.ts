@@ -84,18 +84,18 @@ export const useBoreholeUrlParams = () => {
 
   // Encodes a filter value into the form `setParams` expects, with the special-cases for
   // booleans and nullable-boolean keys.
-  const encodeFilterValue = (
-    key: FilterKey,
-    value: string | string[] | number[] | boolean | null | undefined,
-  ): unknown => {
-    if (value === true) return "true";
-    if (value === false) return "false";
-    // Preserve the "null" literal ("Keine Angabe") for nullable boolean filter keys.
-    if (value === null && nullableBooleanFilterKeys.has(key)) return "null";
-    // Any other null/undefined clears the URL param.
-    if (value === null || value === undefined) return null;
-    return value;
-  };
+  const encodeFilterValue = useCallback(
+    (key: FilterKey, value: string | string[] | number[] | boolean | null | undefined): unknown => {
+      if (value === true) return "true";
+      if (value === false) return "false";
+      // Preserve the "null" literal ("Keine Angabe") for nullable boolean filter keys.
+      if (value === null && nullableBooleanFilterKeys.has(key)) return "null";
+      // Any other null/undefined clears the URL param.
+      if (value === null || value === undefined) return null;
+      return value;
+    },
+    [],
+  );
 
   // Every filter mutation also resets the page in the SAME setParams call. Splitting the
   // page reset into a separate setParams invocation on the merged useQueryStates instance
@@ -104,7 +104,7 @@ export const useBoreholeUrlParams = () => {
     (key: FilterKey, value: string | string[] | number[] | boolean | null | undefined) => {
       setParams({ [key]: encodeFilterValue(key, value), page: 0 } as Parameters<typeof setParams>[0]);
     },
-    [setParams],
+    [encodeFilterValue, setParams],
   );
 
   // Removes the param from the URL entirely. Unlike `setFilterField(key, null)`, which preserves

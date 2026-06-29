@@ -252,8 +252,7 @@ describe("Test for the borehole form.", () => {
   it("Checks if form values are updated when borehole changes", () => {
     goToRouteAndAcceptTerms(`/`);
     showTableAndWaitForData();
-    // sort by Name descending. First two boreholes are Zelma Gorczany and Yasmeen Torphy in the
-    // 100-borehole seed.
+    // sort by Name descending
     sortBy("Name");
     cy.wait("@borehole_filter");
     clickOnRowWithText("Zelma Gorczany");

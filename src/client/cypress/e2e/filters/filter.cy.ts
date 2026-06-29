@@ -189,8 +189,6 @@ describe("Search filter tests", () => {
     // requests, not on stale unclaimed requests from earlier date typing.
     cy.intercept("POST", "/api/v2/borehole/filter").as("borehole_filter_chip_remove");
     cy.intercept("POST", "/api/v2/borehole/filter/stats").as("borehole_filter_stats_chip_remove");
-    // eslint-disable-next-line cypress/no-unnecessary-waiting
-    cy.wait(1000);
     checkFilterChipExistsAndRemove("restrictionUntilFrom");
     cy.wait("@borehole_filter_stats_chip_remove");
     cy.dataCy("filter-chip-restrictionUntilTo").should("exist");

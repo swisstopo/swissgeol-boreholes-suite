@@ -9,6 +9,7 @@ import {
   unCheckRowWithText,
   verifyPaginationText,
   verifyRowContains,
+  verifyRowWithTextCheckState,
   verifyTableLength,
 } from "../helpers/dataGridHelpers";
 import {
@@ -46,6 +47,12 @@ function assertRunCountDisplayed(textContent: string) {
 
 function assertFileCountDisplayed(textContent: string) {
   cy.dataCy("log-file-count").should("contain", textContent);
+}
+
+function verifyFullRowContent(cellContents: string[], index: number) {
+  for (const content of cellContents) {
+    verifyRowContains(content, index);
+  }
 }
 
 function addLogRun() {
@@ -115,15 +122,15 @@ describe("Test for the borehole log.", () => {
     assertRunCountDisplayed("2 selected");
     assertExportButtonsDisabled(false);
 
-    // Sort by Run number ascending → R01 (30-40) at row 0
+    // Sort by Run number ascending
     sortBy("Run number");
-    verifyRowContains("R01", 0);
-    verifyRowContains("30.0 - 40.0", 0);
+    verifyFullRowContent(["R01", "30.0 - 40.0"], 0);
+    verifyRowWithTextCheckState("R01", false);
 
-    // Sort by Logged interval ascending → R66 (0-10) at row 0
+    // Sort by Logged interval ascending
     sortBy("Logged interval");
-    verifyRowContains("R66", 0);
-    verifyRowContains("0.0 - 10.0", 0);
+    verifyFullRowContent(["R66", "0.0 - 10.0"], 0);
+    verifyRowWithTextCheckState("R66", false);
 
     sortBy("Service or tool");
     sortBy("Borehole status");
