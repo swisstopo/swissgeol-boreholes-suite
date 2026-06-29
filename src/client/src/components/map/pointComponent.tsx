@@ -398,5 +398,3 @@ export const PointComponent: FC<PointComponentProps> = ({
     </Card>
   );
 };
-
-export default PointComponent;
