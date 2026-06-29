@@ -51,7 +51,7 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({ descri
   return (
     <FormDialog
       open={description !== undefined}
-      title={t("facies_description")}
+      title={t("faciesDescription")}
       onClose={cancelDialog}
       onApply={applyDialog}
       isApplyDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
@@ -61,14 +61,14 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({ descri
             <FormContainer direction={"row"}>
               <FormInput
                 fieldName={"fromDepth"}
-                label={"fromdepth"}
+                label={"fromDepth"}
                 readonly={true}
                 value={description?.fromDepth}
                 type={FormValueType.Number}
               />
               <FormInput
                 fieldName={"toDepth"}
-                label={"todepth"}
+                label={"toDepth"}
                 readonly={true}
                 value={description?.toDepth}
                 type={FormValueType.Number}

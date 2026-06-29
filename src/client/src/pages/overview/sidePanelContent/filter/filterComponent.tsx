@@ -120,7 +120,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
 
   return (
     <Stack direction="column" sx={{ height: "100%" }}>
-      <SideDrawerHeader title={t("searchfilters")} toggleDrawer={toggleDrawer} />
+      <SideDrawerHeader title={t("searchFilters")} toggleDrawer={toggleDrawer} />
       <FilterChips />
       <Box
         sx={{
@@ -175,7 +175,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
                     ? theme.palette.primary.contrastText
                     : theme.palette.primary.main,
               }}>
-              {t("polygon_selection")}
+              {t("polygonSelection")}
             </Typography>
             {filterPolygon !== null && (
               <Badge data-cy="polygon-filter-badge" badgeContent={1} sx={{ marginLeft: "18px" }} />

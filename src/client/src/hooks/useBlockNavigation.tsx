@@ -43,7 +43,7 @@ export const useBlockNavigation = () => {
           },
         },
         {
-          label: "discardchanges",
+          label: "discardChanges",
           icon: <Trash2 />,
           variant: "contained",
           action: () => {

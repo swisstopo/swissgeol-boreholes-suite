@@ -1,7 +1,9 @@
-import { Dispatch, SetStateAction, useCallback, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useContext } from "react";
+import { useTranslation } from "react-i18next";
 import { GridPaginationModel, GridRowSelectionModel, GridSortModel } from "@mui/x-data-grid";
-import { deleteBoreholes } from "../../../api-lib";
-import { BoreholeListItem, copyBorehole, useReloadBoreholes } from "../../../api/borehole.ts";
+import { BoreholeListItem, useBoreholeMutations } from "../../../api/borehole.ts";
+import { ApiError } from "../../../api/errorClasses.ts";
+import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
 import { useBoreholeUrlParams } from "../useBoreholeUrlParams.ts";
 import { useUserWorkgroups } from "../UserWorkgroupsContext.tsx";
@@ -14,7 +16,7 @@ interface BottomBarContainerProps {
   totalCount: number;
   selectableBoreholeIds: number[];
   setHover: Dispatch<SetStateAction<number | null>>;
-  multipleSelected: (selection: GridRowSelectionModel, filter: Record<string, unknown>) => void;
+  onBulkEdit: () => void;
   rowsToHighlight: number[];
   selectionModel: GridRowSelectionModel;
   setSelectionModel: Dispatch<SetStateAction<GridRowSelectionModel>>;
@@ -29,7 +31,7 @@ const BottomBarContainer = ({
   boreholes,
   totalCount,
   selectableBoreholeIds,
-  multipleSelected,
+  onBulkEdit,
   setHover,
   rowsToHighlight,
   selectionModel,
@@ -41,31 +43,41 @@ const BottomBarContainer = ({
   setSortModel,
 }: BottomBarContainerProps) => {
   const { navigateTo } = useBoreholesNavigate();
-  const reloadBoreholes = useReloadBoreholes();
+  const {
+    copy: { mutateAsync: copyBorehole, isPending: isCopying },
+    bulkDelete: { mutate: bulkDeleteBoreholes, isPending: isBulkDeleting },
+  } = useBoreholeMutations();
   const { bottomDrawerOpen } = useBoreholeUrlParams();
   const { currentWorkgroupId } = useUserWorkgroups();
-
-  const [isBusy, setIsBusy] = useState(false);
+  const { showAlert } = useContext(AlertContext);
+  const { t } = useTranslation();
 
   const onCopyBorehole = useCallback(async () => {
-    setIsBusy(true);
-    const newBoreholeId = await copyBorehole(selectionModel, currentWorkgroupId);
-    setIsBusy(false);
+    const newBoreholeId = await copyBorehole({ boreholeId: selectionModel, workgroupId: currentWorkgroupId });
     navigateTo({ path: `/${newBoreholeId}` });
-  }, [navigateTo, selectionModel, currentWorkgroupId]);
+  }, [copyBorehole, navigateTo, selectionModel, currentWorkgroupId]);
 
-  const onDeleteMultiple = useCallback(async () => {
-    setIsBusy(true);
-    await deleteBoreholes(selectionModel);
-    reloadBoreholes();
-    setIsBusy(false);
-  }, [reloadBoreholes, selectionModel]);
+  const onDeleteMultiple = useCallback(() => {
+    const boreholeIds = selectionModel.filter((id): id is number => typeof id === "number");
+    bulkDeleteBoreholes(boreholeIds, {
+      onError: error => {
+        if (error instanceof ApiError && error.messageKey === "bulkDeleteUnauthorizedBoreholes") {
+          const rawIds = error.details?.unauthorizedBoreholeIds;
+          const ids = Array.isArray(rawIds) ? rawIds.filter((id): id is number => typeof id === "number") : [];
+          showAlert(`${t("bulkDeleteUnauthorizedBoreholes")} ${ids.join(", ")}`, "error");
+        } else {
+          const message = error instanceof Error ? error.message : String(error);
+          showAlert(`${t("errorBulkDeleting")} ${message}`, "error");
+        }
+      },
+    });
+  }, [bulkDeleteBoreholes, selectionModel, showAlert, t]);
 
   return (
     <>
       <BottomBar
         selectionModel={selectionModel}
-        multipleSelected={multipleSelected}
+        onBulkEdit={onBulkEdit}
         onCopyBorehole={onCopyBorehole}
         onDeleteMultiple={onDeleteMultiple}
         totalCount={totalCount}
@@ -76,7 +88,7 @@ const BottomBarContainer = ({
           boreholes={boreholes}
           totalCount={totalCount}
           selectableBoreholeIds={selectableBoreholeIds}
-          isLoading={isBusy}
+          isLoading={isCopying || isBulkDeleting}
           paginationModel={paginationModel}
           setPaginationModel={setPaginationModel}
           selectionModel={selectionModel}

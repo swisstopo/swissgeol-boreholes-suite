@@ -40,8 +40,8 @@ describe("Test the borehole bulk edit feature.", () => {
     showTableAndWaitForData();
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
-    // With a single workgroup the workgroup accordion is hidden, leaving 14 of the 15 fields.
-    cy.get("[data-cy='bulk-edit-accordion']").should("have.length", 14);
+    // With a single workgroup the workgroup accordion is hidden, leaving 19 of the 20 fields.
+    cy.get("[data-cy='bulk-edit-accordion']").should("have.length", 19);
 
     giveAdminUser2workgroups();
     goToRouteAndAcceptTerms(`/`);
@@ -49,7 +49,7 @@ describe("Test the borehole bulk edit feature.", () => {
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
 
-    cy.get('[data-cy="bulk-edit-accordion"]').should("have.length", 15);
+    cy.get('[data-cy="bulk-edit-accordion"]').should("have.length", 20);
     cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
 
     cy.get('[data-cy="workgroup-formSelect"]').should("have.length", 1);
@@ -105,7 +105,7 @@ describe("Test the borehole bulk edit feature.", () => {
     });
 
     saveForm();
-    cy.wait("@edit_multipatch").its("response.body.success").should("eq", true);
+    cy.wait("@bulk-edit").its("response.statusCode").should("eq", 200);
 
     // check if form was reset after saving
     startBulkEditing();
@@ -132,7 +132,7 @@ describe("Test the borehole bulk edit feature.", () => {
       cy.wrap($input).should("have.value", "");
     });
 
-    cy.get('[data-cy$="-formSelect"] input[type=text]').should("have.length", 9);
+    cy.get('[data-cy$="-formSelect"] input[type=text]').should("have.length", 14);
     cy.get('[data-cy$="-formSelect"] input[type=text]').each($input => {
       cy.wrap($input).scrollIntoView();
       cy.wrap($input).should("have.value", "");
@@ -147,10 +147,10 @@ describe("Test the borehole bulk edit feature.", () => {
     startBulkEditing();
 
     cy.get(".MuiAccordionSummary-expandIconWrapper").click({ multiple: true, force: true });
-    setInput("custom.project_name", "new name");
+    setInput("projectName", "new name");
     setSelect("workgroup", 1);
     setSelect("restriction", 2);
-    setSelect("national_interest", 0);
+    setSelect("nationalInterest", 0);
 
     let visibleCount = 0;
 
@@ -168,17 +168,17 @@ describe("Test the borehole bulk edit feature.", () => {
     });
 
     cy.get("h6").contains("Project name").scrollIntoView();
-    evaluateInput("custom.project_name", "new name");
+    evaluateInput("projectName", "new name");
     evaluateSelect("restriction", "restricted until");
     evaluateSelect("workgroup", "Blue");
-    evaluateSelect("national_interest", "yes");
+    evaluateSelect("nationalInterest", "yes");
 
     cy.get('[data-cy="bulk-edit-reset-button"]').click({ multiple: true, force: true });
     cy.get("h6").contains("Project name").scrollIntoView();
-    evaluateInput("custom.project_name", "");
+    evaluateInput("projectName", "");
     evaluateSelect("restriction", "");
     evaluateSelect("workgroup", "");
-    evaluateSelect("national_interest", "");
+    evaluateSelect("nationalInterest", "");
   });
 
   it("cannot select locked boreholes for bulk edit", () => {

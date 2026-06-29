@@ -1,4 +1,4 @@
-﻿import { useContext, useEffect } from "react";
+import { useContext, useEffect } from "react";
 import { FormProvider, useFieldArray, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
@@ -148,8 +148,8 @@ const CasingInput = ({ item, parentId }: DataCardItemInputProps<Casing>) => {
         <FormContainer>
           <FormInput fieldName="name" label="name" value={item.name} required={true} />
           <FormContainer direction="row">
-            <FormInput fieldName="fromDepth" label="fromdepth" disabled={true} />
-            <FormInput fieldName="toDepth" label="todepth" disabled={true} />
+            <FormInput fieldName="fromDepth" label="fromDepth" disabled={true} />
+            <FormInput fieldName="toDepth" label="toDepth" disabled={true} />
           </FormContainer>
           <FormContainer direction="row">
             <FormInput fieldName="dateStart" label="dateStartCasing" value={item.dateStart} type={FormValueType.Date} />
@@ -187,7 +187,7 @@ const CasingInput = ({ item, parentId }: DataCardItemInputProps<Casing>) => {
                       <FormContainer direction="row">
                         <FormInput
                           fieldName={`casingElements.${index}.fromDepth`}
-                          label="fromdepth"
+                          label="fromDepth"
                           value={field.fromDepth}
                           type={FormValueType.Number}
                           required={true}
@@ -195,7 +195,7 @@ const CasingInput = ({ item, parentId }: DataCardItemInputProps<Casing>) => {
                         />
                         <FormInput
                           fieldName={`casingElements.${index}.toDepth`}
-                          label="todepth"
+                          label="toDepth"
                           value={field.toDepth}
                           type={FormValueType.Number}
                           required={true}

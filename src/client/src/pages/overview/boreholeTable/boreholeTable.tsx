@@ -168,13 +168,13 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       valueGetter: (value: number) => {
         return getCodelistLabel(codelists.data?.find((d: { id: number }) => d.id === value));
       },
-      headerName: t("borehole_type"),
+      headerName: t("boreholeType"),
       flex: 1,
     },
     {
       field: "totalDepth",
       valueGetter: (value: number) => formatNumberForDisplay(Math.round(value * 100) / 100, 2),
-      headerName: t("totaldepth"),
+      headerName: t("totalDepth"),
       flex: 1,
     },
     {
@@ -188,19 +188,19 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     {
       field: "elevationZ",
       valueGetter: (value: number) => formatNumberForDisplay(Math.round(value * 100) / 100, 2),
-      headerName: t("reference_elevation"),
+      headerName: t("referenceElevation"),
       flex: 1,
     },
     {
       field: "locationX",
       valueGetter: (value: number) => formatNumberForDisplay(Math.round(value * 100) / 100, 2),
-      headerName: t("location_x"),
+      headerName: t("locationX"),
       flex: 1,
     },
     {
       field: "locationY",
       valueGetter: (value: number) => formatNumberForDisplay(Math.round(value * 100) / 100, 2),
-      headerName: t("location_y"),
+      headerName: t("locationY"),
       flex: 1,
     },
     {

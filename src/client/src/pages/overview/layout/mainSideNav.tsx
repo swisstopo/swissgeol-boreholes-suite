@@ -96,7 +96,7 @@ const MainSideNav = ({
         <NavButton
           data-cy="show-filter-button"
           icon={<Filter />}
-          label={t("searchfilters")}
+          label={t("searchFilters")}
           selected={isFilterPanelVisible}
           onClick={handleToggleFilter}
         />
@@ -136,14 +136,14 @@ const MainSideNav = ({
         <NavButton
           data-cy="settings-button"
           icon={<Settings />}
-          label={t("header_settings")}
+          label={t("headerSettings")}
           onClick={() => navigateTo({ path: `/setting` })}
         />
         {!auth.anonymousModeEnabled && (
           <NavButton
             data-cy="help-button"
             icon={<HelpIcon />}
-            label={t("header_help")}
+            label={t("headerHelp")}
             onClick={() => window.open(`/help`)}
           />
         )}

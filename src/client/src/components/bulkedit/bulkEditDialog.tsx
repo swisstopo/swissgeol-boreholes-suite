@@ -1,7 +1,6 @@
 import { useCallback, useContext, useMemo, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useDispatch } from "react-redux";
 import {
   Accordion,
   AccordionDetails,
@@ -17,8 +16,9 @@ import {
 } from "@mui/material";
 import { ChevronDownIcon, RotateCcw } from "lucide-react";
 import { DevTool } from "../../../hookformDevtools.ts";
-import { patchBoreholes } from "../../api-lib";
-import { Workgroup } from "../../api/generated";
+import { buildBulkEditRequest, useBoreholeMutations } from "../../api/borehole.ts";
+import { ApiError } from "../../api/errorClasses.ts";
+import { BoreholeBulkUpdate, Workgroup } from "../../api/generated";
 import { theme } from "../../AppTheme.ts";
 import { useUserWorkgroups } from "../../pages/overview/UserWorkgroupsContext.tsx";
 import { AlertContext } from "../alert/alertContext.tsx";
@@ -30,57 +30,82 @@ import { FormInput } from "../form/formInput.tsx";
 import { StackFullWidth } from "../styledComponents.ts";
 import { BulkEditFormField, BulkEditFormProps, BulkEditFormValue } from "./BulkEditFormProps.ts";
 
-export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditFormProps) => {
-  const [fieldsToUpdate, setFieldsToUpdate] = useState<Array<[string, BulkEditFormValue]>>([]);
+export const BulkEditDialog = ({ isOpen, selected, onClose }: BulkEditFormProps) => {
+  const [fieldsToUpdate, setFieldsToUpdate] = useState<Array<[keyof BoreholeBulkUpdate, BulkEditFormValue]>>([]);
   const { showAlert } = useContext(AlertContext);
   const { t } = useTranslation();
   const { editableWorkgroups } = useUserWorkgroups();
+  const {
+    bulkEdit: { mutate: bulkEditBoreholes, isPending: isBulkEditing },
+  } = useBoreholeMutations();
 
-  // This data structure is needed because of discrepancies between translation keys (fieldName), field names in legacy Api (api) and codelist names (domain).
   const bulkEditFormFields: BulkEditFormField[] = useMemo(
     () => [
-      { fieldName: "project_name", type: FormValueType.Text, api: "custom.project_name" },
-      { fieldName: "restriction", type: FormValueType.Domain },
-      { fieldName: "workgroup", type: FormValueType.Workgroup },
+      { fieldName: "projectName", type: FormValueType.Text, payloadKey: "projectName" },
+      { fieldName: "restriction", type: FormValueType.Domain, payloadKey: "restrictionId", schemaName: "restriction" },
+      { fieldName: "workgroup", type: FormValueType.Workgroup, payloadKey: "workgroupId" },
+      { fieldName: "restrictionUntil", type: FormValueType.Date, payloadKey: "restrictionUntil" },
+      { fieldName: "nationalInterest", type: FormValueType.Boolean, payloadKey: "nationalInterest" },
       {
-        fieldName: "restriction_until",
-        type: FormValueType.Date,
-      },
-      { fieldName: "national_interest", type: FormValueType.Boolean },
-      { fieldName: "location_precision", type: FormValueType.Domain },
-      { fieldName: "elevation_precision", type: FormValueType.Domain },
-      {
-        fieldName: "reference_elevation_qt",
+        fieldName: "locationPrecision",
         type: FormValueType.Domain,
-        api: "qt_reference_elevation",
-        domain: "elevation_precision",
+        payloadKey: "locationPrecisionId",
+        schemaName: "location_precision",
       },
-      { fieldName: "reference_elevation_type", type: FormValueType.Domain },
-      { fieldName: "borehole_type", type: FormValueType.Domain },
-      // Todo: Reactivate when bulk edit is migrated to new API https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2297
-      // { fieldName: "purpose", type: FormValueType.Domain, api: "drilling_purpose" },
-      // { fieldName: "boreholestatus", type: FormValueType.Domain, api: "borehole_status" },
-      { fieldName: "totaldepth", type: FormValueType.Number, api: "total_depth" },
-      { fieldName: "qt_depth", type: FormValueType.Domain, api: "depth_precision" },
-      { fieldName: "top_bedrock_fresh_md", type: FormValueType.Number, api: "extended.top_bedrock_fresh_md" },
       {
-        fieldName: "top_bedrock_weathered_md",
-        type: FormValueType.Number,
-        api: "custom.top_bedrock_weathered_md",
+        fieldName: "elevationPrecision",
+        type: FormValueType.Domain,
+        payloadKey: "elevationPrecisionId",
+        schemaName: "elevation_precision",
       },
-      { fieldName: "groundwater", type: FormValueType.Boolean, api: "extended.groundwater" },
-      // Todo: Reactivate when bulk edit is migrated to new API https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2297
-      // { fieldName: "lithology_top_bedrock", type: FormValueType.Domain, api: "lithology_con" },
-      // {
-      //   fieldName: "lithostratigraphy_top_bedrock",
-      //   type: FormValueType.Domain,
-      //   api: "lithostratigraphy",
-      // },
-      // {
-      //   fieldName: "chronostratigraphy_top_bedrock",
-      //   type: FormValueType.Domain,
-      //   api: "chronostratigraphy",
-      // },
+      {
+        fieldName: "referenceElevationPrecision",
+        type: FormValueType.Domain,
+        payloadKey: "referenceElevationPrecisionId",
+        schemaName: "elevation_precision",
+      },
+      {
+        fieldName: "referenceElevationType",
+        type: FormValueType.Domain,
+        payloadKey: "referenceElevationTypeId",
+        schemaName: "reference_elevation_type",
+      },
+      { fieldName: "boreholeType", type: FormValueType.Domain, payloadKey: "typeId", schemaName: "borehole_type" },
+      { fieldName: "purpose", type: FormValueType.Domain, payloadKey: "purposeId", schemaName: "drilling_purpose" },
+      {
+        fieldName: "boreholeStatus",
+        type: FormValueType.Domain,
+        payloadKey: "statusId",
+        schemaName: "borehole_status",
+      },
+      { fieldName: "totalDepth", type: FormValueType.Number, payloadKey: "totalDepth" },
+      {
+        fieldName: "depthPrecision",
+        type: FormValueType.Domain,
+        payloadKey: "depthPrecisionId",
+        schemaName: "depth_precision",
+      },
+      { fieldName: "topBedrockFreshMd", type: FormValueType.Number, payloadKey: "topBedrockFreshMd" },
+      { fieldName: "topBedrockWeatheredMd", type: FormValueType.Number, payloadKey: "topBedrockWeatheredMd" },
+      { fieldName: "hasGroundwater", type: FormValueType.Boolean, payloadKey: "hasGroundwater" },
+      {
+        fieldName: "lithologyTopBedrock",
+        type: FormValueType.Domain,
+        payloadKey: "lithologyTopBedrockId",
+        schemaName: "lithology_con",
+      },
+      {
+        fieldName: "lithostratigraphyTopBedrock",
+        type: FormValueType.Domain,
+        payloadKey: "lithostratigraphyTopBedrockId",
+        schemaName: "lithostratigraphy",
+      },
+      {
+        fieldName: "chronostratigraphyTopBedrock",
+        type: FormValueType.Domain,
+        payloadKey: "chronostratigraphyTopBedrockId",
+        schemaName: "chronostratigraphy",
+      },
     ],
     [],
   );
@@ -88,47 +113,31 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
   const formMethods = useForm({
     mode: "all",
     defaultValues: bulkEditFormFields.reduce<Record<string, string>>((acc, field) => {
-      const key = field.api ?? field.fieldName;
-      acc[key] = "";
+      acc[field.fieldName] = "";
       return acc;
     }, {}),
   });
 
-  const dispatch = useDispatch();
-  const unselectBoreholes = () => {
-    dispatch({
-      type: "EDITOR_MULTIPLE_SELECTED",
-      selection: null,
-    });
-  };
-
-  const onFieldValueChange = useCallback(
-    (field: BulkEditFormField, newValue: BulkEditFormValue) => {
-      const fieldName = field.api ?? field.fieldName;
-      let updatedValue: BulkEditFormValue = newValue;
-      if (field.type === FormValueType.Number) {
-        updatedValue = parseFloat(newValue as string);
-      }
-      const entryIndex = fieldsToUpdate.findIndex(([key]) => key === fieldName);
+  const onFieldValueChange = useCallback((field: BulkEditFormField, newValue: BulkEditFormValue) => {
+    const key = field.payloadKey;
+    const updatedValue: BulkEditFormValue =
+      field.type === FormValueType.Number ? Number.parseFloat(newValue as string) : newValue;
+    setFieldsToUpdate(prev => {
+      const entryIndex = prev.findIndex(([k]) => k === key);
       if (entryIndex === -1) {
-        // Add field if it's not yet contained in array
-        setFieldsToUpdate([...fieldsToUpdate, [fieldName, updatedValue]]);
-      } else {
-        // Update field if it's already contained in array
-        const newData = [...fieldsToUpdate];
-        newData[entryIndex] = [fieldName, updatedValue];
-        setFieldsToUpdate(newData);
+        return [...prev, [key, updatedValue]];
       }
-    },
-    [fieldsToUpdate],
-  );
+      const newData = [...prev];
+      newData[entryIndex] = [key, updatedValue];
+      return newData;
+    });
+  }, []);
 
   const undoChange = (field: BulkEditFormField) => {
-    const fieldName = field.api ?? field.fieldName;
-    const entryIndex = fieldsToUpdate.findIndex(([key]) => key === fieldName);
+    const entryIndex = fieldsToUpdate.findIndex(([k]) => k === field.payloadKey);
     if (entryIndex !== -1) {
-      setFieldsToUpdate([...fieldsToUpdate.filter(f => f[0] !== fieldName)]);
-      formMethods.resetField(fieldName);
+      setFieldsToUpdate([...fieldsToUpdate.filter(([k]) => k !== field.payloadKey)]);
+      formMethods.resetField(field.fieldName);
     }
   };
 
@@ -139,20 +148,27 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
 
   const cancelBulkEdit = () => {
     resetFormState();
-    unselectBoreholes();
+    onClose();
   };
 
-  const save = async () => {
-    try {
-      await patchBoreholes(selected, fieldsToUpdate);
-      unselectBoreholes();
-      loadBoreholes();
-    } catch (error) {
-      //@ts-expect-error unknown error type
-      showAlert(`${t("errorBulkEditing")} ${error?.message ?? error}`, "error");
-    } finally {
-      resetFormState();
-    }
+  const save = () => {
+    const boreholeIds = selected.filter((id): id is number => typeof id === "number");
+    bulkEditBoreholes(buildBulkEditRequest(boreholeIds, fieldsToUpdate), {
+      onSuccess: onClose,
+      onError: error => {
+        if (error instanceof ApiError && error.messageKey === "bulkEditUnauthorizedBoreholes") {
+          const rawIds = error.details?.unauthorizedBoreholeIds;
+          const ids = Array.isArray(rawIds) ? rawIds.filter((id): id is number => typeof id === "number") : [];
+          showAlert(`${t("bulkEditUnauthorizedBoreholes")} ${ids.join(", ")}`, "error");
+        } else if (error instanceof ApiError && error.messageKey === "bulkEditUnauthorizedWorkgroup") {
+          showAlert(t("bulkEditUnauthorizedWorkgroup"), "error");
+        } else {
+          const message = error instanceof Error ? error.message : String(error);
+          showAlert(`${t("errorBulkEditing")} ${message}`, "error");
+        }
+      },
+      onSettled: resetFormState,
+    });
   };
 
   const renderInput = useCallback(
@@ -162,22 +178,21 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
           <FormDomainSelect
             canReset={false}
             readonly={false}
-            fieldName={field.api ?? field.fieldName}
+            fieldName={field.fieldName}
             label=""
-            schemaName={field?.domain ?? field.api ?? field.fieldName}
+            schemaName={field.schemaName ?? field.fieldName}
             onUpdate={e => {
               onFieldValueChange(field, e);
             }}
           />
         );
       }
-
       if (field.type === FormValueType.Boolean) {
         return (
           <FormBooleanSelect
             canReset={false}
             readonly={false}
-            fieldName={field.api ?? field.fieldName}
+            fieldName={field.fieldName}
             label=""
             onUpdate={e => {
               onFieldValueChange(field, e);
@@ -185,7 +200,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
           />
         );
       }
-      if (field.fieldName === FormValueType.Workgroup) {
+      if (field.type === FormValueType.Workgroup) {
         return (
           <FormSelect
             canReset={false}
@@ -204,7 +219,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
       }
       return (
         <FormInput
-          fieldName={field.api ?? field.fieldName}
+          fieldName={field.fieldName}
           label=""
           type={field.type}
           readonly={false}
@@ -260,7 +275,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
                             size="small"
                             data-cy="bulk-edit-reset-button"
                             sx={{
-                              visibility: fieldsToUpdate.map(f => f[0]).includes(field.api ?? field.fieldName)
+                              visibility: fieldsToUpdate.map(([k]) => k).includes(field.payloadKey)
                                 ? "visible"
                                 : "hidden",
                               mr: 1,
@@ -291,7 +306,7 @@ export const BulkEditDialog = ({ isOpen, selected, loadBoreholes }: BulkEditForm
         <DialogActions>
           <Stack direction="row" justifyContent="flex-end" spacing={2}>
             <CancelButton onClick={cancelBulkEdit} />
-            <SaveButton variant="contained" disabled={fieldsToUpdate.length === 0} onClick={save} />
+            <SaveButton variant="contained" disabled={fieldsToUpdate.length === 0 || isBulkEditing} onClick={save} />
           </Stack>
         </DialogActions>
       </Stack>

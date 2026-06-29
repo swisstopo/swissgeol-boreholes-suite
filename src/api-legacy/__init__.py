@@ -17,5 +17,3 @@ from bms.v1.exceptions import NotFound
 from bms.v1.exceptions import MissingParameter
 from bms.v1.exceptions import DuplicateException
 
-# Borehole's ACTION Handlers
-from bms.v1.borehole.producer import BoreholeProducerHandler

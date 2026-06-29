@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { addInstrumentation, getCasings, updateInstrumentation } from "../../../../api/fetchApiV2.ts";
 import { Casing, Instrumentation } from "../../../../api/generated";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard.tsx";
@@ -37,14 +37,14 @@ const InstrumentationInput = ({ item, parentId }: DataCardItemInputProps<Instrum
       <FormContainer direction="row">
         <FormInput
           fieldName="fromDepth"
-          label="fromdepth"
+          label="fromDepth"
           value={item.fromDepth}
           type={FormValueType.Number}
           required={true}
         />
         <FormInput
           fieldName="toDepth"
-          label="todepth"
+          label="toDepth"
           value={item.toDepth}
           type={FormValueType.Number}
           required={true}
