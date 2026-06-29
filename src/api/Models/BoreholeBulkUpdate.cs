@@ -5,9 +5,10 @@ namespace BDMS.Models;
 
 /// <summary>
 /// The typed set of borehole fields that can be changed through bulk edit.
-/// Every property is nullable; which of them are actually written is controlled
-/// by <see cref="BoreholeBulkUpdateRequest.FieldsToUpdate"/>. A field named in the
-/// mask whose value is <see langword="null"/> clears the corresponding column.
+/// Each property is nullable to mirror the corresponding borehole column; which of
+/// them are actually written is controlled by <see cref="BoreholeBulkUpdateRequest.FieldsToUpdate"/>.
+/// A masked field must carry a value; a <see langword="null"/> value is rejected (clearing is not supported),
+/// except nullable booleans where <see langword="null"/> is the deliberate "not specified" state.
 /// </summary>
 public class BoreholeBulkUpdate
 {

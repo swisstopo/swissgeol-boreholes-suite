@@ -185,7 +185,7 @@ export const navigateInSidebar = (menuItem: string, promptSelector?: string) => 
       cy.location().should(location => {
         expect(location.pathname).to.match(/^\/\d+\/identifiers$/);
       });
-      cy.dataCy("borehole_identifier-formInput").should("exist");
+      cy.dataCy("boreholeIdentifier-formInput").should("exist");
       isActiveMenuItem(menuItem);
       break;
     case SidebarMenuItem.borehole:

@@ -95,8 +95,8 @@ describe("Tests for the wateringress editor.", () => {
     });
     startBoreholeEditing();
 
-    cy.get('[data-cy="waterIngress-card.0"] [data-cy="todepth-formDisplay"]').contains("10");
-    cy.get('[data-cy="waterIngress-card.1"] [data-cy="todepth-formDisplay"]').contains("12");
+    cy.get('[data-cy="waterIngress-card.0"] [data-cy="toDepth-formDisplay"]').contains("10");
+    cy.get('[data-cy="waterIngress-card.1"] [data-cy="toDepth-formDisplay"]').contains("12");
 
     cy.get('[data-cy="waterIngress-card.1"] [data-cy="edit-button"]').click({
       force: true,
@@ -104,8 +104,8 @@ describe("Tests for the wateringress editor.", () => {
     setInput("toDepthM", "8");
     saveForm();
     cy.wait("@wateringress_GET");
-    cy.get('[data-cy="waterIngress-card.0"] [data-cy="todepth-formDisplay"]').contains("8");
-    cy.get('[data-cy="waterIngress-card.1"] [data-cy="todepth-formDisplay"]').contains("10");
+    cy.get('[data-cy="waterIngress-card.0"] [data-cy="toDepth-formDisplay"]').contains("8");
+    cy.get('[data-cy="waterIngress-card.1"] [data-cy="toDepth-formDisplay"]').contains("10");
 
     cy.get('[data-cy="waterIngress-card.0"] [data-cy="edit-button"]').click({
       force: true,
@@ -113,8 +113,8 @@ describe("Tests for the wateringress editor.", () => {
     setInput("fromDepthM", "5");
     saveForm();
     cy.wait("@wateringress_GET");
-    cy.get('[data-cy="waterIngress-card.0"] [data-cy="fromdepth-formDisplay"]').contains("0");
-    cy.get('[data-cy="waterIngress-card.1"] [data-cy="fromdepth-formDisplay"]').contains("5");
+    cy.get('[data-cy="waterIngress-card.0"] [data-cy="fromDepth-formDisplay"]').contains("0");
+    cy.get('[data-cy="waterIngress-card.1"] [data-cy="fromDepth-formDisplay"]').contains("5");
   });
 
   it("calculates and sets depth automatically", () => {
@@ -143,8 +143,8 @@ describe("Tests for the wateringress editor.", () => {
       cy.wait("@wateringress_GET");
 
       // Ensure depths have no values
-      cy.get('[data-cy="waterIngress-card.0"] [data-cy="fromdepth-formDisplay"]').as("fromDepthDisplay").contains("-");
-      cy.get('[data-cy="waterIngress-card.0"] [data-cy="todepth-formDisplay"]').as("toDepthDisplay").contains("-");
+      cy.get('[data-cy="waterIngress-card.0"] [data-cy="fromDepth-formDisplay"]').as("fromDepthDisplay").contains("-");
+      cy.get('[data-cy="waterIngress-card.0"] [data-cy="toDepth-formDisplay"]').as("toDepthDisplay").contains("-");
       cy.get('[data-cy="waterIngress-card.0"] [data-cy="fromDepthMasl-formDisplay"]')
         .as("fromDepthMaslDisplay")
         .contains("-");

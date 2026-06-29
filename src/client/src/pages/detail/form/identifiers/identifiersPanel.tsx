@@ -115,13 +115,13 @@ export const IdentifiersPanel: FC = () => {
         tabStatusToReset="identifiers"
         triggerValidationBeforeSave={true}>
         <Stack gap={3} mr={2}>
-          <BoreholesCard title={editingEnabled ? t("borehole_technical_id") : undefined}>
+          <BoreholesCard title={editingEnabled ? t("boreholeTechnicalId") : undefined}>
             <FormSegmentBox>
               <Stack direction={"row"} gap={2} justifyContent={"space-between"}>
                 <FormContainer direction={"column"} gap={2}>
                   <FormContainer direction={"row"} gap={2}>
-                    <FormInputDisplayOnly label={"borehole_identifier"} value={t("borehole_technical_id")} />
-                    <FormInputDisplayOnly label={"borehole_identifier_value"} value={borehole.id} />
+                    <FormInputDisplayOnly label={"boreholeIdentifier"} value={t("boreholeTechnicalId")} />
+                    <FormInputDisplayOnly label={"boreholeIdentifierValue"} value={borehole.id} />
                   </FormContainer>
                 </FormContainer>
               </Stack>
@@ -156,7 +156,7 @@ export const IdentifiersPanel: FC = () => {
                   <FormContainer direction={"column"} gap={2}>
                     <FormDomainSelect
                       fieldName={`boreholeCodelists.${firstIndex}.codelistId`}
-                      label="borehole_identifier"
+                      label="boreholeIdentifier"
                       required={true}
                       selected={firstField.codelistId}
                       schemaName="borehole_identifier"
@@ -179,7 +179,7 @@ export const IdentifiersPanel: FC = () => {
                       <FormContainer direction={"row"} gap={2} key={fields[index].id} alignItems={"flex-start"}>
                         <FormInput
                           fieldName={`boreholeCodelists.${index}.value`}
-                          label="borehole_identifier_value"
+                          label="boreholeIdentifierValue"
                           required={true}
                           value={fields[index].value}
                           type={FormValueType.Text}

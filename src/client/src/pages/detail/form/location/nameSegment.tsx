@@ -48,7 +48,7 @@ const NameSegment = ({ borehole, formMethods }: NameSegmentProps) => {
             </FormContainer>
           )}
           <FormContainer direction="row">
-            <FormInput fieldName={"name"} label={"alternate_name"} value={borehole?.name} />
+            <FormInput fieldName={"name"} label={"alternateName"} value={borehole?.name} />
             <FormInput fieldName={"projectName"} label={"projectName"} value={borehole?.projectName} />
           </FormContainer>
         </FormContainer>

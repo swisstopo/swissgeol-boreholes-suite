@@ -70,7 +70,7 @@ export const SettingsHeader: FC = () => {
   const getTitle = () => {
     if (selectedUser) return ct(selectedUser?.name);
     else if (selectedWorkgroup) return ct(selectedWorkgroup.name);
-    else return t("header_settings");
+    else return t("headerSettings");
   };
 
   const getChip = () => {

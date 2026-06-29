@@ -40,7 +40,7 @@ const GroundwaterLevelMeasurementInput: FC<{ item: GroundwaterLevelMeasurement; 
       <FormContainer direction="row" sx={{ paddingTop: "10px" }}>
         <FormDomainSelect
           fieldName="kindId"
-          label="gwlm_kind"
+          label="gwlmKind"
           selected={item.kindId}
           required={true}
           schemaName={hydrogeologySchemaConstants.groundwaterLevelMeasurementKind}
@@ -51,10 +51,10 @@ const GroundwaterLevelMeasurementInput: FC<{ item: GroundwaterLevelMeasurement; 
         depthFields={[
           {
             fieldNameMD: "levelM",
-            labelMD: "gwlm_levelm",
+            labelMD: "gwlmLevelM",
             getValueMD: () => item.levelM,
             fieldNameMasl: "levelMasl",
-            labelMasl: "gwlm_levelmasl",
+            labelMasl: "gwlmLevelMasl",
             getValueMasl: () => item.levelMasl,
           },
         ]}
