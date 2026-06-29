@@ -3,6 +3,7 @@ import { viteStaticCopy } from "vite-plugin-static-copy";
 import svgr from "vite-plugin-svgr";
 import viteTsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
+import { devBranchPlugin } from "./vite-plugin-dev-branch.js";
 
 const proxy = {
   "/api": {
@@ -37,6 +38,7 @@ export default defineConfig({
         },
       ],
     }),
+    devBranchPlugin(),
   ],
   server: {
     proxy,
