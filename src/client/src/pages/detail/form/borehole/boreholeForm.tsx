@@ -148,7 +148,7 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
                   />
                   <FormDomainSelect
                     fieldName={"statusId"}
-                    label={"boreholestatus"}
+                    label={"boreholeStatus"}
                     schemaName={"borehole_status"}
                     selected={borehole.statusId}
                   />
@@ -163,7 +163,7 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
                     />
                     <FormDomainSelect
                       fieldName={"depthPrecisionId"}
-                      label={"qt_depth"}
+                      label={"depthPrecision"}
                       schemaName={"depth_precision"}
                       selected={borehole.depthPrecisionId}
                     />
@@ -208,13 +208,13 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
                 <FormContainer direction="row">
                   <FormDomainSelect
                     fieldName={"lithologyTopBedrockId"}
-                    label={"lithology_top_bedrock"}
+                    label={"lithologyTopBedrock"}
                     schemaName={"lithology_con"}
                     selected={borehole.lithologyTopBedrockId}
                   />
                   <FormDomainSelect
                     fieldName={"lithostratigraphyTopBedrockId"}
-                    label={"lithostratigraphy_top_bedrock"}
+                    label={"lithostratigraphyTopBedrock"}
                     schemaName={"lithostratigraphy"}
                     selected={borehole.lithostratigraphyTopBedrockId}
                   />
@@ -222,7 +222,7 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
                 <FormContainer direction="row">
                   <FormDomainSelect
                     fieldName={"chronostratigraphyTopBedrockId"}
-                    label={"chronostratigraphy_top_bedrock"}
+                    label={"chronostratigraphyTopBedrock"}
                     schemaName={"chronostratigraphy"}
                     selected={borehole.chronostratigraphyTopBedrockId}
                   />

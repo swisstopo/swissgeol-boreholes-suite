@@ -635,7 +635,7 @@ describe("Test for the borehole form.", () => {
 
     cy.get('[data-cy="delete-button"]').click();
     cy.get('.MuiButton-containedPrimary[data-cy="delete-button"]').click();
-    cy.wait(["@edit_deletelist"]);
+    cy.wait(["@bulk-delete"]);
     cy.get('[data-cy="borehole-table"]').contains("AAA_SCATORPS").should("not.exist");
   });
 });
