@@ -198,7 +198,7 @@ const LayerCard = ({
       {State.EDITING === cardState && (
         <TextField
           sx={{ margin: "0.8rem 0" }}
-          label={t("fromdepth")}
+          label={t("fromDepth")}
           defaultValue={fromDepth ?? layer.fromDepth}
           InputProps={{
             inputComponent: NumericFormatWithThousandSeparator,
@@ -262,7 +262,7 @@ const LayerCard = ({
       {State.EDITING === cardState && (
         <TextField
           sx={{ margin: "0.8rem 0" }}
-          label={t("todepth")}
+          label={t("toDepth")}
           defaultValue={toDepth ?? layer.toDepth}
           InputProps={{
             inputComponent: NumericFormatWithThousandSeparator,

@@ -8,8 +8,8 @@ import { theme } from "../../../AppTheme.ts";
 export function useSharedTableColumns() {
   const { t } = useTranslation();
 
-  const firstNameColumn: GridColDef = { field: "firstName", headerName: t("firstname"), flex: 1 };
-  const lastNameColumn: GridColDef = { field: "lastName", headerName: t("lastname"), flex: 1 };
+  const firstNameColumn: GridColDef = { field: "firstName", headerName: t("firstName"), flex: 1 };
+  const lastNameColumn: GridColDef = { field: "lastName", headerName: t("lastName"), flex: 1 };
   const emailColumn: GridColDef = { field: "email", headerName: "Email", flex: 1 };
 
   const workgroupNameColumn: GridColDef = {

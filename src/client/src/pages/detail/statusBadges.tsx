@@ -64,7 +64,7 @@ export const StatusBadges = ({ borehole }: StatusBadgesProps) => {
         restrictionLabel = t("restricted");
         break;
       case restrictionUntilCode:
-        restrictionLabel = `${t("restriction_until")} ${getDateString(borehole?.restrictionUntil)}`;
+        restrictionLabel = `${t("restrictionUntil")} ${getDateString(borehole?.restrictionUntil)}`;
         break;
       default:
         return;

@@ -294,7 +294,7 @@ export const LithologyUnconsolidatedForm: FC<LithologyEditForm> = ({ lithologyId
             <FormDomainMultiSelect fieldName={"uscsTypeCodelistIds"} label={"uscsType"} schemaName={"uscs_type"} />
             <FormDomainSelect
               fieldName={"uscsDeterminationId"}
-              label={"uscs_determination"}
+              label={"uscsDetermination"}
               schemaName={"uscs_determination"}
             />
           </FormContainer>

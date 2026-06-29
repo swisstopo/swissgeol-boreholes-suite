@@ -18,16 +18,16 @@ const SectionDisplay = ({ item }) => {
             <FormContainer direction="row">
               <FormDisplay
                 prefix={`${index}.`}
-                label="fromdepth"
+                label="fromDepth"
                 value={element.fromDepth}
                 type={FormValueType.Number}
               />
-              <FormDisplay prefix={`${index}.`} label="todepth" value={element.toDepth} type={FormValueType.Number} />
+              <FormDisplay prefix={`${index}.`} label="toDepth" value={element.toDepth} type={FormValueType.Number} />
             </FormContainer>
             <FormContainer direction="row">
               <FormDisplay
                 prefix={`${index}.`}
-                label="drilling_method"
+                label="drillingMethod"
                 value={codelists.data?.find(d => d.id === element.drillingMethodId)}
                 type={FormValueType.Domain}
               />
@@ -41,13 +41,13 @@ const SectionDisplay = ({ item }) => {
             <FormContainer direction="row">
               <FormDisplay
                 prefix={`${index}.`}
-                label="drilling_mud_type"
+                label="drillingMudType"
                 value={codelists.data?.find(d => d.id === element.drillingMudTypeId)}
                 type={FormValueType.Domain}
               />
               <FormDisplay
                 prefix={`${index}.`}
-                label="drilling_mud_subtype"
+                label="drillingMudSubtype"
                 value={codelists.data?.find(d => d.id === element.drillingMudSubtypeId)}
                 type={FormValueType.Domain}
               />
@@ -55,13 +55,13 @@ const SectionDisplay = ({ item }) => {
             <FormContainer direction="row">
               <FormDisplay
                 prefix={`${index}.`}
-                label="drilling_start_date"
+                label="drillingStartDate"
                 value={element.drillingStartDate}
                 type={FormValueType.Date}
               />
               <FormDisplay
                 prefix={`${index}.`}
-                label="drilling_end_date"
+                label="drillingEndDate"
                 value={element.drillingEndDate}
                 type={FormValueType.Date}
               />
@@ -69,13 +69,13 @@ const SectionDisplay = ({ item }) => {
             <FormContainer direction="row">
               <FormDisplay
                 prefix={`${index}.`}
-                label="drill_diameter"
+                label="drillDiameter"
                 value={element.drillingDiameter}
                 type={FormValueType.Number}
               />
               <FormDisplay
                 prefix={`${index}.`}
-                label="drill_core_diameter"
+                label="drillCoreDiameter"
                 value={element.drillingCoreDiameter}
                 type={FormValueType.Number}
               />

@@ -20,13 +20,13 @@ const ElevationSegment: FC<LocationBaseProps> = ({ borehole }) => {
         <FormContainer direction="row">
           <FormInput
             fieldName={"elevationZ"}
-            label={"elevation_z"}
+            label={"elevationZ"}
             value={borehole.elevationZ}
             type={FormValueType.Number}
           />
           <FormDomainSelect
             fieldName={"elevationPrecisionId"}
-            label={"elevation_precision"}
+            label={"elevationPrecision"}
             schemaName={"elevation_precision"}
             selected={borehole.elevationPrecisionId}
           />
@@ -34,13 +34,13 @@ const ElevationSegment: FC<LocationBaseProps> = ({ borehole }) => {
         <FormContainer direction="row">
           <FormInput
             fieldName={"referenceElevation"}
-            label={"reference_elevation"}
+            label={"referenceElevation"}
             value={borehole?.referenceElevation}
             type={FormValueType.Number}
           />
           <FormDomainSelect
             fieldName={"referenceElevationPrecisionId"}
-            label={"reference_elevation_qt"}
+            label={"referenceElevationPrecision"}
             schemaName={"elevation_precision"}
             selected={borehole.referenceElevationPrecisionId}
           />
@@ -48,12 +48,12 @@ const ElevationSegment: FC<LocationBaseProps> = ({ borehole }) => {
         <FormContainer direction="row">
           <FormDomainSelect
             fieldName={"referenceElevationTypeId"}
-            label={"reference_elevation_type"}
+            label={"referenceElevationType"}
             schemaName={"reference_elevation_type"}
             selected={borehole.referenceElevationTypeId}
           />
           <FormInputDisplayOnly
-            label={"height_reference_system"}
+            label={"heightReferenceSystem"}
             value={codelists.find((d: Codelist) => d.id === borehole.hrsId)?.en}
           />
         </FormContainer>

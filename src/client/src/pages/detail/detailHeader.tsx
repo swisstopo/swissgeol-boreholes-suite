@@ -85,7 +85,7 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
         variant: "outlined",
       },
       {
-        label: "discardchanges",
+        label: "discardChanges",
         icon: <Trash2 />,
         variant: "contained",
         action: resetFormAndStopEditing,
