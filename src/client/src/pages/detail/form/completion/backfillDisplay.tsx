@@ -1,4 +1,4 @@
-﻿import { deleteBackfill } from "../../../../api/fetchApiV2.ts";
+import { deleteBackfill } from "../../../../api/fetchApiV2.ts";
 import { Backfill } from "../../../../api/generated";
 import { DataDisplayCard } from "../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
@@ -11,8 +11,8 @@ const BackfillDisplay = ({ item }: DataCardItemDisplayProps<Backfill>) => {
   return (
     <DataDisplayCard item={item} deleteData={deleteBackfill} entityName={"backfill"}>
       <FormContainer direction="row">
-        <FormDisplay label="fromdepth" value={item?.fromDepth} type={FormValueType.Number} />
-        <FormDisplay label="todepth" value={item?.toDepth} type={FormValueType.Number} />
+        <FormDisplay label="fromDepth" value={item?.fromDepth} type={FormValueType.Number} />
+        <FormDisplay label="toDepth" value={item?.toDepth} type={FormValueType.Number} />
       </FormContainer>
       <FormContainer direction="row">
         <FormDisplay label="kindBackfill" value={item?.kind} type={FormValueType.Domain} />

@@ -1,4 +1,4 @@
-﻿import { deleteInstrumentation } from "../../../../api/fetchApiV2.ts";
+import { deleteInstrumentation } from "../../../../api/fetchApiV2.ts";
 import { Instrumentation } from "../../../../api/generated";
 import { DataDisplayCard } from "../../../../components/dataCard/dataDisplayCard.tsx";
 import { FormContainer, FormDisplay, FormValueType } from "../../../../components/form/form";
@@ -11,8 +11,8 @@ const InstrumentationDisplay = ({ item }: DataCardItemDisplayProps<Instrumentati
   return (
     <DataDisplayCard item={item} deleteData={deleteInstrumentation} entityName={"instrumentation"}>
       <FormContainer direction="row">
-        <FormDisplay label="fromdepth" value={item?.fromDepth} type={FormValueType.Number} />
-        <FormDisplay label="todepth" value={item?.toDepth} type={FormValueType.Number} />
+        <FormDisplay label="fromDepth" value={item?.fromDepth} type={FormValueType.Number} />
+        <FormDisplay label="toDepth" value={item?.toDepth} type={FormValueType.Number} />
       </FormContainer>
       <FormContainer direction="row">
         <FormDisplay label="name" value={item?.name} />

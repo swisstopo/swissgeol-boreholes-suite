@@ -6,7 +6,7 @@ import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/co
 import { SessionKeys } from "../pages/overview/SessionKey.ts";
 import { download, downloadData } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
-import { Borehole, BoreholeCodelist, Codelist } from "./generated";
+import { Borehole, BoreholeBulkUpdate, BoreholeBulkUpdateRequest, BoreholeCodelist, Codelist } from "./generated";
 import { NullableDateString } from "./unionTypes.ts";
 import { useCurrentUser } from "./user.ts";
 
@@ -47,7 +47,7 @@ const createBorehole = async (workgroupId: number): Promise<Borehole> => {
   });
 };
 
-export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: number | null) => {
+const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: number | null) => {
   return await fetchApiV2Legacy(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
 };
 
@@ -68,6 +68,27 @@ const updateBorehole = async (borehole: Borehole): Promise<Borehole> => {
   return await fetchApiV2WithApiError<Borehole>("borehole", "PUT", borehole);
 };
 const deleteBorehole = async (id: number) => await fetchApiV2WithApiError(`borehole?id=${id}`, "DELETE");
+
+type BulkEditValue = string | number | boolean | null | undefined;
+
+export const buildBulkEditRequest = (
+  boreholeIds: number[],
+  changedFields: Array<[keyof BoreholeBulkUpdate, BulkEditValue]>,
+): BoreholeBulkUpdateRequest => {
+  const update: BoreholeBulkUpdate = {};
+  const fieldsToUpdate: string[] = [];
+  for (const [key, value] of changedFields) {
+    Object.assign(update, { [key]: value });
+    fieldsToUpdate.push(key);
+  }
+  return { boreholeIds, update, fieldsToUpdate };
+};
+
+const bulkEditBoreholes = async (request: BoreholeBulkUpdateRequest): Promise<number[]> =>
+  await fetchApiV2WithApiError<number[]>("borehole/bulkedit", "POST", request);
+
+const bulkDeleteBoreholes = async (boreholeIds: number[]): Promise<void> =>
+  await fetchApiV2WithApiError<void>("borehole/bulkdelete", "POST", boreholeIds);
 
 const canUserEditBorehole = async (id: number) =>
   await fetchApiV2WithApiError<boolean>(`permissions/canedit?boreholeId=${id}`, "GET");
@@ -133,6 +154,18 @@ export const useBoreholeMutations = () => {
     },
   });
 
+  const useCopyBorehole = useMutation({
+    mutationFn: async ({
+      boreholeId,
+      workgroupId,
+    }: {
+      boreholeId: GridRowSelectionModel;
+      workgroupId: number | null;
+    }) => {
+      return await copyBorehole(boreholeId, workgroupId);
+    },
+  });
+
   const useUpdateBorehole = useMutation({
     mutationFn: async (borehole: Borehole) => {
       return await updateBorehole(borehole);
@@ -159,10 +192,36 @@ export const useBoreholeMutations = () => {
       });
     },
   });
+
+  const useBulkEditBoreholes = useMutation({
+    mutationFn: async (request: BoreholeBulkUpdateRequest) => {
+      return await bulkEditBoreholes(request);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [boreholeQueryKey],
+      });
+    },
+  });
+
+  const useBulkDeleteBoreholes = useMutation({
+    mutationFn: async (boreholeIds: number[]) => {
+      return await bulkDeleteBoreholes(boreholeIds);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [boreholeQueryKey],
+      });
+    },
+  });
+
   return {
     add: useAddBorehole,
+    copy: useCopyBorehole,
     update: useUpdateBorehole,
     delete: useDeleteBorehole,
+    bulkEdit: useBulkEditBoreholes,
+    bulkDelete: useBulkDeleteBoreholes,
   };
 };
 

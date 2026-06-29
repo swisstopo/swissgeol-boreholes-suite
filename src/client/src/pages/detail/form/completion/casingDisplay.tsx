@@ -1,4 +1,4 @@
-﻿import { useTranslation } from "react-i18next";
+import { useTranslation } from "react-i18next";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Typography } from "@mui/material";
 import { deleteCasing } from "../../../../api/fetchApiV2.ts";
 import { Casing } from "../../../../api/generated";
@@ -20,8 +20,8 @@ const CasingDisplay = ({ item }: DataCardItemDisplayProps<Casing>) => {
     <DataDisplayCard item={item} deleteData={deleteCasing} entityName={"casing"}>
       <FormDisplay label="name" value={item?.name} />
       <FormContainer direction="row">
-        <FormDisplay label="fromdepth" value={depth.min} type={FormValueType.Number} />
-        <FormDisplay label="todepth" value={depth.max} type={FormValueType.Number} />
+        <FormDisplay label="fromDepth" value={depth.min} type={FormValueType.Number} />
+        <FormDisplay label="toDepth" value={depth.max} type={FormValueType.Number} />
       </FormContainer>
       <FormContainer direction="row">
         <FormDisplay label="dateStartCasing" value={item?.dateStart} type={FormValueType.Date} />

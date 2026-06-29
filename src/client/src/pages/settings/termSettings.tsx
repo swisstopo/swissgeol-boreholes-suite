@@ -70,7 +70,7 @@ const TermSettings = () => {
   };
 
   const confirmPublish = () => {
-    showPrompt("disclaimer_publish_message", [
+    showPrompt("disclaimerPublishMessage", [
       { label: "cancel", icon: <X />, variant: "outlined" },
       { label: "publish", icon: <Trash2 />, variant: "contained", action: handlePublish },
     ]);

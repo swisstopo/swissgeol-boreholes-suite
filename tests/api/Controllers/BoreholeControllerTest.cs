@@ -1,6 +1,7 @@
 ﻿using BDMS.Authentication;
 using BDMS.Models;
 using BDMS.Services;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
@@ -46,10 +47,16 @@ public class BoreholeControllerTest
             .Setup(x => x.CanChangeBoreholeStatusAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
         boreholePermissionServiceMock
+            .Setup(x => x.GetBoreholeIdsUserCannotEditAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
+            .ReturnsAsync(Array.Empty<int>());
+        boreholePermissionServiceMock
+            .Setup(x => x.GetBoreholeIdsUserCannotChangeStatusAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
+            .ReturnsAsync(Array.Empty<int>());
+        boreholePermissionServiceMock
             .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string?>(), noPermissionWorkgroupId, It.IsAny<Role>()))
             .ReturnsAsync(false);
         boreholePermissionServiceMock
-            .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string?>(), It.IsNotIn(noPermissionWorkgroupId), It.IsAny<Role>()))
+            .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string?>(), It.Is<int?>(id => id != noPermissionWorkgroupId), It.IsAny<Role>()))
             .ReturnsAsync(true);
         return new BoreholeController(testContext, new Mock<ILogger<BoreholeController>>().Object, boreholePermissionServiceMock.Object, filterServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
@@ -325,6 +332,25 @@ public class BoreholeControllerTest
 
         var response = await controller.EditAsync(borehole);
         ActionResultAssert.IsInternalServerError(response.Result);
+    }
+
+    [TestMethod]
+    public async Task EditRejectsWorkgroupChangeToUnauthorizedTargetWorkgroup()
+    {
+        var existing = await context.Boreholes.AsNoTracking().FirstAsync(b => b.WorkgroupId != noPermissionWorkgroupId);
+        var originalWorkgroupId = existing.WorkgroupId;
+
+        var borehole = new Borehole
+        {
+            Id = existing.Id,
+            WorkgroupId = noPermissionWorkgroupId,
+        };
+
+        var response = await controller.EditAsync(borehole);
+        ActionResultAssert.IsUnauthorized(response.Result);
+
+        var reloaded = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == existing.Id);
+        Assert.AreEqual(originalWorkgroupId, reloaded.WorkgroupId, "The borehole must not be moved to an unauthorized workgroup.");
     }
 
     [TestMethod]
@@ -1126,5 +1152,302 @@ public class BoreholeControllerTest
         Assert.IsNotNull(capturedRequest, "Filter request must be forwarded to the service.");
         Assert.AreEqual("abc", capturedRequest!.OriginalName);
         CollectionAssert.AreEqual(new List<int> { 1 }, capturedRequest.StatusId!.ToList());
+    }
+
+    [TestMethod]
+    public async Task BulkEditUpdatesOnlyListedFields()
+    {
+        var ids = await context.Boreholes.OrderBy(b => b.Id).Take(2).Select(b => b.Id).ToListAsync();
+
+        var originalDepths = await context.Boreholes
+            .Where(b => ids.Contains(b.Id))
+            .ToDictionaryAsync(b => b.Id, b => b.TotalDepth);
+
+        var request = new BoreholeBulkUpdateRequest
+        {
+            BoreholeIds = new(ids),
+            Update = new BoreholeBulkUpdate { ProjectName = "Bulk project", TotalDepth = 123.4 },
+            FieldsToUpdate = new() { "projectName" },
+        };
+
+        var response = await controller.BulkEditAsync(request);
+        ActionResultAssert.IsOk(response);
+
+        foreach (var id in ids)
+        {
+            var borehole = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
+            Assert.AreEqual("Bulk project", borehole.ProjectName);
+            Assert.AreEqual(originalDepths[id], borehole.TotalDepth, "TotalDepth must stay unchanged: it was not in FieldsToUpdate.");
+            Assert.AreEqual(1, borehole.UpdatedById, "UpdatedById should be set to the test user.");
+        }
+    }
+
+    [TestMethod]
+    public async Task BulkEditWithNullMaskedValueReturnsBadRequest()
+    {
+        var id = await context.Boreholes.OrderBy(b => b.Id).Select(b => b.Id).FirstAsync();
+
+        var request = new BoreholeBulkUpdateRequest
+        {
+            BoreholeIds = new() { id },
+            Update = new BoreholeBulkUpdate { RestrictionId = null },
+            FieldsToUpdate = new() { "restrictionId" },
+        };
+
+        var response = await controller.BulkEditAsync(request);
+        ActionResultAssert.IsBadRequest(response);
+    }
+
+    [TestMethod]
+    public async Task BulkEditAllowsNullForNullableBooleanField()
+    {
+        var id = await context.Boreholes.OrderBy(b => b.Id).Select(b => b.Id).FirstAsync();
+        var borehole = await context.Boreholes.SingleAsync(b => b.Id == id);
+        borehole.NationalInterest = true;
+        await context.SaveChangesAsync();
+
+        var request = new BoreholeBulkUpdateRequest
+        {
+            BoreholeIds = new() { id },
+            Update = new BoreholeBulkUpdate { NationalInterest = null },
+            FieldsToUpdate = new() { "nationalInterest" },
+        };
+
+        // null is the deliberate "not specified" state for nullable booleans, so it is accepted and written.
+        var response = await controller.BulkEditAsync(request);
+        ActionResultAssert.IsOk(response);
+
+        var updated = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
+        Assert.IsNull(updated.NationalInterest);
+    }
+
+    [TestMethod]
+    public async Task BulkEditResetsOnlyTheAffectedTabStatus()
+    {
+        var borehole = await context.Boreholes
+            .Include(b => b.Workflow).ThenInclude(w => w.ReviewedTabs)
+            .Include(b => b.Workflow).ThenInclude(w => w.PublishedTabs)
+            .OrderBy(b => b.Id)
+            .FirstAsync(b => b.Workflow != null);
+
+        borehole.Workflow!.ReviewedTabs.General = true;
+        borehole.Workflow.ReviewedTabs.Location = true;
+        await context.SaveChangesAsync();
+
+        var request = new BoreholeBulkUpdateRequest
+        {
+            BoreholeIds = new() { borehole.Id },
+            Update = new BoreholeBulkUpdate { ProjectName = "x" },
+            FieldsToUpdate = new() { "projectName" }, // a General-tab field
+        };
+
+        var response = await controller.BulkEditAsync(request);
+        ActionResultAssert.IsOk(response);
+
+        var updated = await context.Boreholes
+            .Include(b => b.Workflow).ThenInclude(w => w.ReviewedTabs)
+            .AsNoTracking()
+            .SingleAsync(b => b.Id == borehole.Id);
+
+        Assert.IsFalse(updated.Workflow!.ReviewedTabs.General, "General tab must be reset when a General-tab field is edited.");
+        Assert.IsTrue(updated.Workflow.ReviewedTabs.Location, "Location tab must stay set when no Location-tab field is edited.");
+    }
+
+    [TestMethod]
+    public async Task BulkEditRejectsWholeBatchAndReturnsAllUnauthorizedIds()
+    {
+        var ids = await context.Boreholes.OrderBy(b => b.Id).Take(3).Select(b => b.Id).ToListAsync();
+        Assert.IsTrue(ids.Count >= 3, "This test needs at least 3 seeded boreholes.");
+        var blocked = new List<int> { ids[1], ids[2] };
+
+        boreholePermissionServiceMock
+            .Setup(x => x.GetBoreholeIdsUserCannotEditAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
+            .ReturnsAsync(blocked);
+
+        var originalNames = await context.Boreholes
+            .Where(b => ids.Contains(b.Id))
+            .ToDictionaryAsync(b => b.Id, b => b.ProjectName);
+
+        var request = new BoreholeBulkUpdateRequest
+        {
+            BoreholeIds = new(ids),
+            Update = new BoreholeBulkUpdate { ProjectName = "Should not be saved" },
+            FieldsToUpdate = new() { "projectName" },
+        };
+
+        var response = await controller.BulkEditAsync(request);
+
+        var objectResult = (ObjectResult)response;
+        Assert.AreEqual(StatusCodes.Status403Forbidden, objectResult.StatusCode);
+        var problem = (ProblemDetails)objectResult.Value!;
+        Assert.AreEqual("bulkEditUnauthorizedBoreholes", problem.Extensions["messageKey"]);
+        CollectionAssert.AreEquivalent(blocked, (List<int>)problem.Extensions["unauthorizedBoreholeIds"]!);
+
+        foreach (var id in ids)
+        {
+            var borehole = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
+            Assert.AreEqual(originalNames[id], borehole.ProjectName, "No borehole may be modified when the batch is rejected.");
+        }
+    }
+
+    [TestMethod]
+    public async Task BulkEditRejectsWorkgroupChangeToUnauthorizedTargetWorkgroup()
+    {
+        var ids = await context.Boreholes.OrderBy(b => b.Id).Take(2).Select(b => b.Id).ToListAsync();
+        var originalWorkgroupIds = await context.Boreholes
+            .Where(b => ids.Contains(b.Id))
+            .ToDictionaryAsync(b => b.Id, b => b.WorkgroupId);
+
+        var request = new BoreholeBulkUpdateRequest
+        {
+            BoreholeIds = new(ids),
+            Update = new BoreholeBulkUpdate { WorkgroupId = noPermissionWorkgroupId },
+            FieldsToUpdate = new() { "workgroupId" },
+        };
+
+        var response = await controller.BulkEditAsync(request);
+
+        var objectResult = (ObjectResult)response;
+        Assert.AreEqual(StatusCodes.Status403Forbidden, objectResult.StatusCode);
+        var problem = (ProblemDetails)objectResult.Value!;
+        Assert.AreEqual("bulkEditUnauthorizedWorkgroup", problem.Extensions["messageKey"]);
+
+        foreach (var id in ids)
+        {
+            var borehole = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
+            Assert.AreEqual(originalWorkgroupIds[id], borehole.WorkgroupId, "No borehole may be moved when the target workgroup is unauthorized.");
+        }
+    }
+
+    [TestMethod]
+    public async Task BulkEditAllowsWorkgroupChangeToAuthorizedTargetWorkgroup()
+    {
+        var targetWorkgroupId = await context.Workgroups
+            .Where(w => w.Id != noPermissionWorkgroupId)
+            .Select(w => w.Id)
+            .OrderBy(id => id)
+            .FirstAsync();
+        var ids = await context.Boreholes
+            .Where(b => b.WorkgroupId != targetWorkgroupId)
+            .OrderBy(b => b.Id)
+            .Take(2)
+            .Select(b => b.Id)
+            .ToListAsync();
+
+        var request = new BoreholeBulkUpdateRequest
+        {
+            BoreholeIds = new(ids),
+            Update = new BoreholeBulkUpdate { WorkgroupId = targetWorkgroupId },
+            FieldsToUpdate = new() { "workgroupId" },
+        };
+
+        var response = await controller.BulkEditAsync(request);
+        ActionResultAssert.IsOk(response);
+
+        foreach (var id in ids)
+        {
+            var borehole = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
+            Assert.AreEqual(targetWorkgroupId, borehole.WorkgroupId);
+        }
+    }
+
+    [TestMethod]
+    public async Task BulkEditWithUnknownFieldReturnsBadRequest()
+    {
+        var id = await context.Boreholes.OrderBy(b => b.Id).Select(b => b.Id).FirstAsync();
+
+        var request = new BoreholeBulkUpdateRequest
+        {
+            BoreholeIds = new() { id },
+            Update = new BoreholeBulkUpdate { ProjectName = "x" },
+            FieldsToUpdate = new() { "notARealField" },
+        };
+
+        var response = await controller.BulkEditAsync(request);
+        ActionResultAssert.IsBadRequest(response);
+    }
+
+    private async Task<int> CreateDisposableBoreholeAsync()
+    {
+        var result = await controller.CreateAsync(GetBoreholeToAdd());
+        return ActionResultAssert.IsOkObjectResult<Borehole>(result.Result).Id;
+    }
+
+    [TestMethod]
+    public async Task BulkDeleteRemovesAllListedBoreholes()
+    {
+        var id1 = await CreateDisposableBoreholeAsync();
+        var id2 = await CreateDisposableBoreholeAsync();
+
+        var response = await controller.BulkDeleteAsync(new() { id1, id2 });
+        ActionResultAssert.IsOk(response);
+
+        Assert.AreEqual(0, await context.Boreholes.CountAsync(b => b.Id == id1 || b.Id == id2));
+    }
+
+    [TestMethod]
+    public async Task BulkDeleteRejectsWholeBatchAndReturnsUnauthorizedIds()
+    {
+        var id1 = await CreateDisposableBoreholeAsync();
+        var id2 = await CreateDisposableBoreholeAsync();
+
+        // Only id2 is denied; id1 stays authorized (not in the returned unauthorized set).
+        boreholePermissionServiceMock
+            .Setup(x => x.GetBoreholeIdsUserCannotChangeStatusAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
+            .ReturnsAsync(new List<int> { id2 });
+
+        var response = await controller.BulkDeleteAsync(new() { id1, id2 });
+
+        var objectResult = (ObjectResult)response;
+        Assert.AreEqual(StatusCodes.Status403Forbidden, objectResult.StatusCode);
+        var problem = (ProblemDetails)objectResult.Value!;
+        Assert.AreEqual("bulkDeleteUnauthorizedBoreholes", problem.Extensions["messageKey"]);
+        CollectionAssert.AreEquivalent(new List<int> { id2 }, (List<int>)problem.Extensions["unauthorizedBoreholeIds"]!);
+
+        Assert.AreEqual(
+            2,
+            await context.Boreholes.CountAsync(b => b.Id == id1 || b.Id == id2),
+            "No borehole may be deleted when the batch is rejected.");
+
+        // cleanup
+        context.Boreholes.RemoveRange(context.Boreholes.Where(b => b.Id == id1 || b.Id == id2));
+        await context.SaveChangesAsync();
+    }
+
+    [TestMethod]
+    public void BulkEditableFieldsMatchBoreholeBulkUpdateProperties()
+    {
+        var modelProperties = typeof(BoreholeBulkUpdate)
+            .GetProperties()
+            .Select(property => property.Name)
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        var missing = modelProperties.Except(BoreholeController.BulkEditableFields, StringComparer.OrdinalIgnoreCase);
+        var unexpected = BoreholeController.BulkEditableFields.Except(modelProperties, StringComparer.OrdinalIgnoreCase);
+
+        Assert.IsTrue(
+            BoreholeController.BulkEditableFields.SetEquals(modelProperties),
+            $"BulkEditableFields must list exactly the properties of BoreholeBulkUpdate. Missing: [{string.Join(", ", missing)}], unexpected: [{string.Join(", ", unexpected)}].");
+    }
+
+    [TestMethod]
+    public void ApplyBulkEditFieldHandlesEveryBulkEditableField()
+    {
+        var borehole = new Borehole();
+        var update = new BoreholeBulkUpdate();
+
+        foreach (var field in BoreholeController.BulkEditableFields)
+        {
+            // Throws InvalidOperationException via the switch's default branch if a case is missing,
+            // turning "forgot to add a case for a new field" into a failing test.
+            BoreholeController.ApplyBulkEditField(borehole, update, field);
+        }
+    }
+
+    [TestMethod]
+    public void ApplyBulkEditFieldThrowsForUnknownField()
+    {
+        Assert.ThrowsExactly<InvalidOperationException>(
+            () => BoreholeController.ApplyBulkEditField(new Borehole(), new BoreholeBulkUpdate(), "notABulkEditableField"));
     }
 }

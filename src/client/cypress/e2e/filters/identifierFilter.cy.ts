@@ -44,7 +44,7 @@ describe("Tests for filtering data by identifier.", () => {
     cy.dataCy("show-all-fields-switch").click();
     verifyPaginationText("1–100 of 101");
 
-    setSelect("borehole_identifier", 1);
+    setSelect("boreholeIdentifier", 1);
 
     hasPagination(false);
     // click reset label
@@ -80,7 +80,7 @@ describe("Tests for filtering data by identifier.", () => {
     // show all options
     cy.dataCy("show-all-fields-switch").click();
 
-    setSelect("borehole_identifier", 1);
+    setSelect("boreholeIdentifier", 1);
     showTableAndWaitForData();
     hasPagination(false);
     checkAllVisibleRows();

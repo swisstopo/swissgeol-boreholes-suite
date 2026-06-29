@@ -1,8 +1,7 @@
 import { useContext, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
+import { useDispatch } from "react-redux";
 import { Stack } from "@mui/material";
 import { GridPaginationModel, GridRowSelectionModel, GridSortModel } from "@mui/x-data-grid";
-import { EditorStore, ReduxRootState } from "../../../api-lib/ReduxStateInterfaces.ts";
 import {
   exportCSVBorehole,
   exportJsonBoreholes,
@@ -10,7 +9,6 @@ import {
   FilterRequest,
   FilterResponse,
   useFilterBoreholes,
-  useReloadBoreholes,
 } from "../../../api/borehole.ts";
 import { useMapOverlays } from "../../../api/useMapOverlays.ts";
 import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
@@ -29,9 +27,9 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const [hover, setHover] = useState<number | null>(null);
   const [rowsToHighlight, setRowsToHighlight] = useState<number[]>([]);
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
+  const [bulkEditDialogOpen, setBulkEditDialogOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [sessionRestored, setSessionRestored] = useState(false);
-  const reloadBoreholes = useReloadBoreholes();
   const { navigateTo } = useBoreholesNavigate();
   const {
     filterPolygon,
@@ -74,7 +72,6 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   ]);
 
   const { overlays } = useMapOverlays();
-  const editorStore: EditorStore = useSelector((state: ReduxRootState) => state.editor);
   const dispatch = useDispatch();
 
   // MUI DataGrid uses 0-based page, FilterRequest uses 1-based pageNumber
@@ -127,16 +124,12 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     navigateTo({ path: "/" + id });
   };
 
-  const multipleSelected = (selection: GridRowSelectionModel, filter: Record<string, unknown> | null = null) => {
-    dispatch({ type: "EDITOR_MULTIPLE_SELECTED", selection, filter });
-  };
-
   return (
     <Stack direction="column" sx={{ flex: "1 1.5 100%" }}>
       <BulkEditDialog
-        isOpen={Array.isArray(editorStore.mselected)}
-        loadBoreholes={reloadBoreholes}
+        isOpen={bulkEditDialogOpen}
         selected={selectionModel}
+        onClose={() => setBulkEditDialogOpen(false)}
       />
       <ExportDialog
         isExporting={isExporting}
@@ -182,7 +175,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
         boreholes={filterResponse.boreholes}
         totalCount={filterResponse.totalCount}
         selectableBoreholeIds={filterResponse.selectableBoreholeIds}
-        multipleSelected={multipleSelected}
+        onBulkEdit={() => setBulkEditDialogOpen(true)}
         selectionModel={selectionModel}
         setSelectionModel={setSelectionModel}
         rowsToHighlight={rowsToHighlight}
