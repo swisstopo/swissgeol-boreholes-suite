@@ -31,7 +31,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
           depthFields={[
             {
               fieldNameMD: "fromDepthM",
-              labelMD: "fromdepth",
+              labelMD: "fromDepth",
               getValueMD: () => observation.fromDepthM,
               fieldNameMasl: "fromDepthMasl",
               labelMasl: "fromDepthMasl",
@@ -39,7 +39,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
             },
             {
               fieldNameMD: "toDepthM",
-              labelMD: "todepth",
+              labelMD: "toDepth",
               getValueMD: () => observation.toDepthM,
               fieldNameMasl: "toDepthMasl",
               labelMasl: "toDepthMasl",

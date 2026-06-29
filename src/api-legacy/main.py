@@ -84,9 +84,6 @@ if __name__ == "__main__":
 
         # Exceptions
         BmsDatabaseException,
-
-        # Borehole handlers
-        BoreholeProducerHandler,
     )
 
     AsyncIOMainLoop().install()
@@ -97,9 +94,6 @@ if __name__ == "__main__":
     )
 
     application = web.Application([
-
-        # Borehole handlers
-        (r'/api/v1/borehole/edit', BoreholeProducerHandler),
 
     ], **settings)
 

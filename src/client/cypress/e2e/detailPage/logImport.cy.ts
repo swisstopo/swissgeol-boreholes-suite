@@ -279,7 +279,7 @@ describe("Test for the borehole log import.", () => {
     cy.get(importDialogSelector).should("not.exist");
     verifyTableLength(1);
     cy.dataCy("import-button").click();
-    handlePrompt(unsavedChangesPrompt, "discardchanges");
+    handlePrompt(unsavedChangesPrompt, "discardChanges");
     cy.get(importDialogSelector).should("be.visible");
     verifyTableLength(0);
 

@@ -63,7 +63,6 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
                   filterValue={(value as string) ?? null}
                   onUpdate={value => updateChange(filterItem.key, value)}
                   type="date"
-                  labelKeySuffix="_filter_title"
                   debounceMs={0}
                 />
               )}

@@ -113,7 +113,7 @@ export const StratigraphyPanel: FC = () => {
           variant: "outlined",
         },
         {
-          label: "discardchanges",
+          label: "discardChanges",
           icon: <Trash2 />,
           variant: "contained",
           action: () => {

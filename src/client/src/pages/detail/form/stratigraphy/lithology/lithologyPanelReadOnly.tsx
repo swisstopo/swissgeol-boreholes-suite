@@ -67,8 +67,8 @@ export const LithologyPanelReadOnly: FC<LithologyPanelReadOnlyProps> = ({
             <StratigraphyTableHeader sx={{ gridArea: "header" }}>
               <StratigraphyTableHeaderCell sx={{ flex: "0 0 128px" }} label={t("depthMD")} />
               <StratigraphyTableHeaderCell label={t("lithology")} />
-              <StratigraphyTableHeaderCell label={t("lithological_description")} />
-              <StratigraphyTableHeaderCell label={t("facies_description")} />
+              <StratigraphyTableHeaderCell label={t("lithologicalDescription")} />
+              <StratigraphyTableHeaderCell label={t("faciesDescription")} />
             </StratigraphyTableHeader>
             <Stack
               ref={bodyRef}

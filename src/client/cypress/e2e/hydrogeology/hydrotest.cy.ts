@@ -137,8 +137,8 @@ describe("Tests for the hydrotest editor.", () => {
     });
     startBoreholeEditing();
 
-    cy.get('[data-cy="hydrotest-card.0"] [data-cy="todepth-formDisplay"]').contains("10");
-    cy.get('[data-cy="hydrotest-card.1"] [data-cy="todepth-formDisplay"]').contains("12");
+    cy.get('[data-cy="hydrotest-card.0"] [data-cy="toDepth-formDisplay"]').contains("10");
+    cy.get('[data-cy="hydrotest-card.1"] [data-cy="toDepth-formDisplay"]').contains("12");
 
     cy.get('[data-cy="hydrotest-card.1"] [data-cy="edit-button"]').click({
       force: true,
@@ -147,8 +147,8 @@ describe("Tests for the hydrotest editor.", () => {
     saveForm();
     cy.wait("@hydrotest_PUT");
     cy.wait("@hydrotest_GET");
-    cy.get('[data-cy="hydrotest-card.0"] [data-cy="todepth-formDisplay"]').contains("8");
-    cy.get('[data-cy="hydrotest-card.1"] [data-cy="todepth-formDisplay"]').contains("10");
+    cy.get('[data-cy="hydrotest-card.0"] [data-cy="toDepth-formDisplay"]').contains("8");
+    cy.get('[data-cy="hydrotest-card.1"] [data-cy="toDepth-formDisplay"]').contains("10");
 
     cy.get('[data-cy="hydrotest-card.0"] [data-cy="edit-button"]').click({
       force: true,
@@ -157,8 +157,8 @@ describe("Tests for the hydrotest editor.", () => {
     saveForm();
     cy.wait("@hydrotest_PUT");
     cy.wait("@hydrotest_GET");
-    cy.get('[data-cy="hydrotest-card.0"] [data-cy="fromdepth-formDisplay"]').contains("0");
-    cy.get('[data-cy="hydrotest-card.1"] [data-cy="fromdepth-formDisplay"]').contains("5");
+    cy.get('[data-cy="hydrotest-card.0"] [data-cy="fromDepth-formDisplay"]').contains("0");
+    cy.get('[data-cy="hydrotest-card.1"] [data-cy="fromDepth-formDisplay"]').contains("5");
   });
 
   it("checks for unsaved changes when switching between cards", () => {

@@ -56,6 +56,35 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
         return CanChangeBoreholeStatus(user, borehole);
     }
 
+    /// <inheritdoc />
+    public Task<IReadOnlyList<int>> GetBoreholeIdsUserCannotEditAsync(string? subjectId, IReadOnlyCollection<int> boreholeIds)
+        => GetUnauthorizedBoreholeIdsAsync(subjectId, boreholeIds, CanEditBorehole);
+
+    /// <inheritdoc />
+    public Task<IReadOnlyList<int>> GetBoreholeIdsUserCannotChangeStatusAsync(string? subjectId, IReadOnlyCollection<int> boreholeIds)
+        => GetUnauthorizedBoreholeIdsAsync(subjectId, boreholeIds, CanChangeBoreholeStatus);
+
+    /// <summary>
+    /// Shared batch permission gate: loads the user and all referenced boreholes once, then evaluates
+    /// <paramref name="isAuthorized"/> in memory. Mirrors the single-id checks, so a borehole id that does not
+    /// exist is treated as unauthorized (the per-id checks return <see langword="false"/> for a missing borehole).
+    /// </summary>
+    private async Task<IReadOnlyList<int>> GetUnauthorizedBoreholeIdsAsync(string? subjectId, IReadOnlyCollection<int> boreholeIds, Func<User, Borehole, bool> isAuthorized)
+    {
+        var distinctIds = boreholeIds.Distinct().ToList();
+        var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
+        var boreholesById = await context.Boreholes
+            .Include(b => b.Workflow)
+            .AsNoTracking()
+            .Where(b => distinctIds.Contains(b.Id))
+            .ToDictionaryAsync(b => b.Id)
+            .ConfigureAwait(false);
+
+        return distinctIds
+            .Where(id => !boreholesById.TryGetValue(id, out var borehole) || !isAuthorized(user, borehole))
+            .ToList();
+    }
+
     /// <summary>
     /// Determines if a user can change the workflow status of a borehole.
     /// This allows status transitions regardless of the current status (including Reviewed/Published),

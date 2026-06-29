@@ -226,7 +226,7 @@ describe("Test for importing boreholes.", () => {
     handlePrompt("Do you really want to delete these 2 boreholes? This cannot be undone.", "delete");
 
     // verify that boreholes were deleted
-    cy.wait("@edit_deletelist");
+    cy.wait("@bulk-delete");
     cy.dataCy("boreholes-number-preview").should("have.text", "0");
 
     // reimport the exported zip file
