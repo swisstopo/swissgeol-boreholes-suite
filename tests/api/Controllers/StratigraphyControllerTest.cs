@@ -52,8 +52,8 @@ public class StratigraphyControllerTest
         var result = await controller.GetAsync(boreholeId).ConfigureAwait(false);
         ActionResultAssert.IsOk(result.Result);
 
-        var stratigraphies = ((OkObjectResult?)result.Result)?.Value as List<Stratigraphy>;
-        Assert.IsNotNull(stratigraphies);
+        var stratigraphies = ((OkObjectResult?)result.Result)?.Value as List<Stratigraphy>
+            ?? throw new AssertFailedException("Expected a list of stratigraphies in the OkObjectResult.");
         Assert.IsTrue(stratigraphies.Count >= 1);
 
         var first = stratigraphies[0];

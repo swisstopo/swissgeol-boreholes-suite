@@ -45,11 +45,11 @@ public class BoreholeGeometryControllerTest
         await context.SaveChangesAsync();
         boreholeIdWithoutGeometry = boreholeWithoutGeometry.Id;
 
-        boreholeIdWithGeometry = context.Boreholes
+        boreholeIdWithGeometry = await context.Boreholes
             .Include(b => b.BoreholeGeometry)
             .Where(b => b.BoreholeGeometry.Count > 1)
             .Select(b => b.Id)
-            .First();
+            .FirstAsync();
     }
 
     [TestCleanup]

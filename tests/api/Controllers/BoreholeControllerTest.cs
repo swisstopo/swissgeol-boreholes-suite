@@ -559,7 +559,7 @@ public class BoreholeControllerTest
     {
         // Pick a borehole that has the full graph the assertions below depend on
         // (stratigraphy with descriptions + completion + water ingress + field measurement + section).
-        var boreholeId = await context.Boreholes
+        var boreholeIdToCopy = await context.Boreholes
             .AsNoTracking()
             .Where(b =>
                 b.Stratigraphies.Any(s => s.LithologicalDescriptions.Any() && s.FaciesDescriptions.Any()) &&
@@ -571,11 +571,11 @@ public class BoreholeControllerTest
             .OrderBy(b => b.Id)
             .Select(b => b.Id)
             .FirstAsync();
-        var originalBorehole = GetBorehole(boreholeId);
+        var originalBorehole = GetBorehole(boreholeIdToCopy);
 
         Assert.IsTrue(originalBorehole.ValidateCasingReferences(), "Precondition: Borehole has invalid casing reference");
 
-        var result = await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
+        var result = await controller.CopyAsync(boreholeIdToCopy, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         ActionResultAssert.IsOk(result.Result);
 
         var copiedBoreholeId = ((OkObjectResult?)result.Result)?.Value;
@@ -605,7 +605,7 @@ public class BoreholeControllerTest
         for (int i = 0; i < originalStratigraphy.LithologicalDescriptions.Count; i++)
         {
             var originalDescription = originalStratigraphy.LithologicalDescriptions.ElementAt(i);
-            var copiedDescription = copiedstratigraphy.LithologicalDescriptions.Single(d => d.FromDepth == originalDescription.FromDepth);
+            var copiedDescription = copiedstratigraphy.LithologicalDescriptions.Single(d => Math.Abs(d.FromDepth - originalDescription.FromDepth) < 1e-9);
 
             Assert.AreNotEqual(originalDescription.Id, copiedDescription.Id);
             Assert.AreEqual(originalDescription.Description, copiedDescription.Description);
@@ -619,7 +619,7 @@ public class BoreholeControllerTest
         for (int i = 0; i < originalStratigraphy.FaciesDescriptions.Count; i++)
         {
             var originalDescription = originalStratigraphy.FaciesDescriptions.ElementAt(i);
-            var copiedDescription = copiedstratigraphy.FaciesDescriptions.Single(d => d.FromDepth == originalDescription.FromDepth);
+            var copiedDescription = copiedstratigraphy.FaciesDescriptions.Single(d => Math.Abs(d.FromDepth - originalDescription.FromDepth) < 1e-9);
 
             Assert.AreNotEqual(originalDescription.Id, copiedDescription.Id);
             Assert.AreEqual(originalDescription.Description, copiedDescription.Description);
