@@ -62,28 +62,28 @@ describe("Section crud tests", () => {
 
     evaluateDisplayValue("sectionName", "section-1");
 
-    evaluateDisplayValue("0.fromdepth", "0");
-    evaluateDisplayValue("0.todepth", "10");
-    evaluateDisplayValue("0.drilling_method", "rotary coring");
+    evaluateDisplayValue("0.fromDepth", "0");
+    evaluateDisplayValue("0.toDepth", "10");
+    evaluateDisplayValue("0.drillingMethod", "rotary coring");
     evaluateDisplayValue("0.cuttings", "cuttings");
-    evaluateDisplayValue("0.drilling_mud_type", "pneumatic");
-    evaluateDisplayValue("0.drilling_mud_subtype", "gas");
-    evaluateDisplayValue("0.drilling_start_date", "01. Jan. 2023");
-    evaluateDisplayValue("0.drilling_end_date", "02. Jan. 2023");
-    evaluateDisplayValue("0.drill_diameter", "3.4");
-    evaluateDisplayValue("0.drill_core_diameter", "5.6");
+    evaluateDisplayValue("0.drillingMudType", "pneumatic");
+    evaluateDisplayValue("0.drillingMudSubtype", "gas");
+    evaluateDisplayValue("0.drillingStartDate", "01. Jan. 2023");
+    evaluateDisplayValue("0.drillingEndDate", "02. Jan. 2023");
+    evaluateDisplayValue("0.drillDiameter", "3.4");
+    evaluateDisplayValue("0.drillCoreDiameter", "5.6");
     evaluateDisplayValue("0.overcoring", "yes");
 
-    evaluateDisplayValue("1.fromdepth", "0");
-    evaluateDisplayValue("1.todepth", "10");
-    evaluateDisplayValue("1.drilling_method", "-");
+    evaluateDisplayValue("1.fromDepth", "0");
+    evaluateDisplayValue("1.toDepth", "10");
+    evaluateDisplayValue("1.drillingMethod", "-");
     evaluateDisplayValue("1.cuttings", "-");
-    evaluateDisplayValue("1.drilling_mud_type", "-");
-    evaluateDisplayValue("1.drilling_mud_subtype", "-");
-    evaluateDisplayValue("1.drilling_start_date", "-");
-    evaluateDisplayValue("1.drilling_end_date", "-");
-    evaluateDisplayValue("1.drill_diameter", "-");
-    evaluateDisplayValue("1.drill_core_diameter", "-");
+    evaluateDisplayValue("1.drillingMudType", "-");
+    evaluateDisplayValue("1.drillingMudSubtype", "-");
+    evaluateDisplayValue("1.drillingStartDate", "-");
+    evaluateDisplayValue("1.drillingEndDate", "-");
+    evaluateDisplayValue("1.drillDiameter", "-");
+    evaluateDisplayValue("1.drillCoreDiameter", "-");
     evaluateDisplayValue("1.overcoring", "no");
 
     // update section
@@ -94,7 +94,7 @@ describe("Section crud tests", () => {
 
     saveSection("PUT");
     evaluateDisplayValue("sectionName", "section-1");
-    evaluateDisplayValue("0.drilling_method", "auger drilling");
+    evaluateDisplayValue("0.drillingMethod", "auger drilling");
     evaluateDisplayValue("0.overcoring", "no");
 
     // delete section
@@ -119,7 +119,7 @@ describe("Section crud tests", () => {
     setSelect("sectionElements.0.drillingMudTypeId", 5);
     cy.get("body").type("{ctrl}s");
     cy.wait("@section_POST");
-    evaluateDisplayValue("0.drilling_mud_type", "water-based dispersed");
+    evaluateDisplayValue("0.drillingMudType", "water-based dispersed");
 
     // switch tab to borehole general tab and edit depth
     navigateInBorehole(BoreholeTab.general);
@@ -131,10 +131,10 @@ describe("Section crud tests", () => {
     const messageUnsavedChanges = "There are unsaved changes. Do you want to discard all changes?";
     handlePrompt(messageUnsavedChanges, "cancel");
     evaluateInput("totalDepth", "5");
-    navigateInBorehole(BoreholeTab.sections, "discardchanges");
+    navigateInBorehole(BoreholeTab.sections, "discardChanges");
 
     // sections tab should be unchanged when retuning from borehole tab
-    evaluateDisplayValue("0.drilling_mud_type", "water-based dispersed");
+    evaluateDisplayValue("0.drillingMudType", "water-based dispersed");
 
     // switch tab to borehole general tab and edit depth with saving
     navigateInBorehole(BoreholeTab.general);
@@ -149,7 +149,7 @@ describe("Section crud tests", () => {
     setSelect("sectionElements.0.drillingMudTypeId", 4);
     cy.get("body").type("{ctrl}s");
     cy.wait("@section_PUT");
-    evaluateDisplayValue("0.drilling_mud_type", "water-based non-dispersed");
+    evaluateDisplayValue("0.drillingMudType", "water-based non-dispersed");
 
     // borehole tab should still display saved depth value
     navigateInBorehole(BoreholeTab.general);
@@ -165,7 +165,7 @@ describe("Section crud tests", () => {
     cy.location().should(location => {
       expect(location.hash).to.eq("#sections");
     });
-    navigateInBorehole(BoreholeTab.geometry, "discardchanges");
+    navigateInBorehole(BoreholeTab.geometry, "discardChanges");
     navigateInBorehole(BoreholeTab.sections);
 
     // section was not saved
@@ -195,9 +195,9 @@ describe("Section crud tests", () => {
     setSelect("sectionElements.0.drillingMudSubtypeId", 2, 5);
     saveSection("POST");
 
-    evaluateDisplayValue("0.drilling_mud_type", "water-based dispersed");
+    evaluateDisplayValue("0.drillingMudType", "water-based dispersed");
     evaluateDisplayValue(
-      "0.drilling_mud_subtype",
+      "0.drillingMudSubtype",
       "lime, gypsum, NaCl, CaCl2, lignite, lignosulfonate, bentonite, polymers",
     );
 
@@ -205,30 +205,30 @@ describe("Section crud tests", () => {
     setSelect("sectionElements.0.drillingMudTypeId", 3);
     saveSection("PUT");
 
-    evaluateDisplayValue("0.drilling_mud_type", "pneumatic");
-    evaluateDisplayValue("0.drilling_mud_subtype", "-"); // subtype was reset because it is not a subtype of pneumatic
+    evaluateDisplayValue("0.drillingMudType", "pneumatic");
+    evaluateDisplayValue("0.drillingMudSubtype", "-"); // subtype was reset because it is not a subtype of pneumatic
 
     startEditing();
     setSelect("sectionElements.0.drillingMudSubtypeId", 2, 7);
     saveSection("PUT");
 
-    evaluateDisplayValue("0.drilling_mud_type", "pneumatic");
-    evaluateDisplayValue("0.drilling_mud_subtype", "gas");
+    evaluateDisplayValue("0.drillingMudType", "pneumatic");
+    evaluateDisplayValue("0.drillingMudSubtype", "gas");
 
     startEditing();
     setSelect("sectionElements.0.drillingMudSubtypeId", 5, 7);
     setSelect("sectionElements.0.drillingMudTypeId", 1);
     saveSection("PUT");
 
-    evaluateDisplayValue("0.drilling_mud_type", "water");
-    evaluateDisplayValue("0.drilling_mud_subtype", "other"); // subtype other is not reset when switching type
+    evaluateDisplayValue("0.drillingMudType", "water");
+    evaluateDisplayValue("0.drillingMudSubtype", "other"); // subtype other is not reset when switching type
 
     startEditing();
     setSelect("sectionElements.0.drillingMudTypeId", 0); // reset
     setSelect("sectionElements.0.drillingMudSubtypeId", 0, 3); // still 3 options (Reset, other, not specified)
     saveSection("PUT");
 
-    evaluateDisplayValue("0.drilling_mud_type", "-");
-    evaluateDisplayValue("0.drilling_mud_subtype", "-");
+    evaluateDisplayValue("0.drillingMudType", "-");
+    evaluateDisplayValue("0.drillingMudSubtype", "-");
   });
 });

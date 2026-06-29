@@ -229,9 +229,9 @@ describe("Test for the borehole form.", () => {
       evaluateInput("topBedrockWeatheredMd", "78'945'100");
 
       // in display only inputs the label is used for the data-cy instead of the field name
-      evaluateInput("total_depth_tvd", "700");
-      evaluateInput("top_bedrock_fresh_tvd", "0.6");
-      evaluateInput("top_bedrock_weathered_tvd", "78'945'100");
+      evaluateInput("totalDepthTvd", "700");
+      evaluateInput("topBedrockFreshTvd", "0.6");
+      evaluateInput("topBedrockWeatheredTvd", "78'945'100");
 
       saveWithSaveBar();
 
@@ -243,9 +243,9 @@ describe("Test for the borehole form.", () => {
       evaluateInput("topBedrockFreshMd", "0.60224");
       evaluateInput("topBedrockWeatheredMd", "78'945'100");
 
-      evaluateInput("total_depth_tvd", "700");
-      evaluateInput("top_bedrock_fresh_tvd", "0.6");
-      evaluateInput("top_bedrock_weathered_tvd", "78'945'100");
+      evaluateInput("totalDepthTvd", "700");
+      evaluateInput("topBedrockFreshTvd", "0.6");
+      evaluateInput("topBedrockWeatheredTvd", "78'945'100");
     });
   });
 
@@ -340,9 +340,9 @@ describe("Test for the borehole form.", () => {
       evaluateInput("topBedrockWeatheredMd", "0");
       evaluateInput("topBedrockFreshMd", "0");
 
-      evaluateInput("total_depth_tvd", "0");
-      evaluateInput("top_bedrock_fresh_tvd", "0");
-      evaluateInput("top_bedrock_weathered_tvd", "0");
+      evaluateInput("totalDepthTvd", "0");
+      evaluateInput("topBedrockFreshTvd", "0");
+      evaluateInput("topBedrockWeatheredTvd", "0");
     });
   });
 
@@ -428,7 +428,7 @@ describe("Test for the borehole form.", () => {
         "rgb(223, 228, 233)",
       ); //#DFE4E9
 
-      cy.get('[data-cy="top_bedrock_weathered_tvd-formInput"] fieldset').should(
+      cy.get('[data-cy="topBedrockWeatheredTvd-formInput"] fieldset').should(
         "have.css",
         "border-color",
         "rgb(223, 228, 233)",
@@ -442,7 +442,7 @@ describe("Test for the borehole form.", () => {
         "rgb(89, 105, 120)",
       ); // #596978
 
-      cy.get('[data-cy="top_bedrock_weathered_tvd-formInput"] fieldset').should(
+      cy.get('[data-cy="topBedrockWeatheredTvd-formInput"] fieldset').should(
         "have.css",
         "border-color",
         "rgb(223, 228, 233)",
@@ -597,7 +597,7 @@ describe("Test for the borehole form.", () => {
     handlePrompt(messageUnsavedChanges, "cancel");
     cy.get('[data-cy="editingstop-button"]').should("exist");
     stopEditing();
-    handlePrompt(messageUnsavedChanges, "discardchanges");
+    handlePrompt(messageUnsavedChanges, "discardChanges");
     cy.get('[data-cy="editingstop-button"]').should("not.exist");
 
     startBoreholeEditing();
@@ -609,7 +609,7 @@ describe("Test for the borehole form.", () => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
     });
 
-    navigateInSidebar(SidebarMenuItem.location, "discardchanges");
+    navigateInSidebar(SidebarMenuItem.location, "discardChanges");
   });
 
   it("creates and deletes a borehole.", () => {

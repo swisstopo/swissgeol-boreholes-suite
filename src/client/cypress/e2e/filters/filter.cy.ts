@@ -214,7 +214,7 @@ describe("Search filter tests", () => {
   testLargeSelectFilter("purpose", "Borehole", "purposeId", ["hydrocarbon exploration", "mineral resources"], "233");
   testLargeSelectFilter("borehole status", "Borehole", "statusId", ["decayed"], "314");
 
-  testYesNoFilter("groundwater", "Borehole", "hasGroundwater", "not specified", "601");
+  testYesNoFilter("hasGroundwater", "Borehole", "hasGroundwater", "not specified", "601");
   testYesNoFilter("top bedrock intersected", "Borehole", "topBedrockIntersected", "no", "1'209");
   testYesNoFilter("geometry available", "Borehole", "hasGeometry", "yes", "100");
 

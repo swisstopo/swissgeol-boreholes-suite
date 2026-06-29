@@ -65,7 +65,7 @@ describe("Viewer tests", () => {
     clickOnRowWithText("Aaron Konopelski");
     navigateInSidebar(SidebarMenuItem.borehole);
     evaluateInput("originalName", "Aaron Konopelski");
-    evaluateInput("total_depth_tvd", "683.83");
+    evaluateInput("totalDepthTvd", "683.83");
     navigateInBorehole(BoreholeTab.sections);
     cy.contains("No section available").should("exist");
     navigateInBorehole(BoreholeTab.geometry);

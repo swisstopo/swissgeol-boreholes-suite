@@ -134,8 +134,8 @@ describe("Backfill crud tests", () => {
     cy.get("[data-cy=completion-content-tab-backfill]").click();
     cy.wait("@backfill_by_completion_GET");
 
-    cy.get('[data-cy="backfill-card.0"] [data-cy="todepth-formDisplay"]').contains("12");
-    cy.get('[data-cy="backfill-card.1"] [data-cy="todepth-formDisplay"]').contains("10");
+    cy.get('[data-cy="backfill-card.0"] [data-cy="toDepth-formDisplay"]').contains("12");
+    cy.get('[data-cy="backfill-card.1"] [data-cy="toDepth-formDisplay"]').contains("10");
 
     cy.get('[data-cy="backfill-card.0"] [data-cy="edit-button"]').click({
       force: true,
@@ -143,23 +143,23 @@ describe("Backfill crud tests", () => {
     setSelect("casingId", 3);
     saveForm();
 
-    cy.get('[data-cy="backfill-card.0"] [data-cy="todepth-formDisplay"]').contains("10");
-    cy.get('[data-cy="backfill-card.1"] [data-cy="todepth-formDisplay"]').contains("12");
+    cy.get('[data-cy="backfill-card.0"] [data-cy="toDepth-formDisplay"]').contains("10");
+    cy.get('[data-cy="backfill-card.1"] [data-cy="toDepth-formDisplay"]').contains("12");
 
     cy.get('[data-cy="backfill-card.1"] [data-cy="edit-button"]').click({
       force: true,
     });
     setInput("toDepth", "8");
     saveForm();
-    cy.get('[data-cy="backfill-card.0"] [data-cy="todepth-formDisplay"]').contains("8");
-    cy.get('[data-cy="backfill-card.1"] [data-cy="todepth-formDisplay"]').contains("10");
+    cy.get('[data-cy="backfill-card.0"] [data-cy="toDepth-formDisplay"]').contains("8");
+    cy.get('[data-cy="backfill-card.1"] [data-cy="toDepth-formDisplay"]').contains("10");
 
     cy.get('[data-cy="backfill-card.0"] [data-cy="edit-button"]').click({
       force: true,
     });
     setInput("fromDepth", "5");
     saveForm();
-    cy.get('[data-cy="backfill-card.0"] [data-cy="fromdepth-formDisplay"]').contains("0");
-    cy.get('[data-cy="backfill-card.1"] [data-cy="fromdepth-formDisplay"]').contains("5");
+    cy.get('[data-cy="backfill-card.0"] [data-cy="fromDepth-formDisplay"]').contains("0");
+    cy.get('[data-cy="backfill-card.1"] [data-cy="fromDepth-formDisplay"]').contains("5");
   });
 });

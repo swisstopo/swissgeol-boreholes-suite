@@ -1,4 +1,4 @@
-﻿import { addBackfill, updateBackfill } from "../../../../api/fetchApiV2.ts";
+import { addBackfill, updateBackfill } from "../../../../api/fetchApiV2.ts";
 import { Backfill } from "../../../../api/generated";
 import { DataInputCard } from "../../../../components/dataCard/dataInputCard.tsx";
 import { FormContainer, FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
@@ -32,14 +32,14 @@ const BackfillInput = ({ item, parentId }: DataCardItemInputProps<Backfill>) => 
       <FormContainer direction="row">
         <FormInput
           fieldName="fromDepth"
-          label="fromdepth"
+          label="fromDepth"
           value={item.fromDepth}
           type={FormValueType.Number}
           required={true}
         />
         <FormInput
           fieldName="toDepth"
-          label="todepth"
+          label="toDepth"
           value={item.toDepth}
           type={FormValueType.Number}
           required={true}

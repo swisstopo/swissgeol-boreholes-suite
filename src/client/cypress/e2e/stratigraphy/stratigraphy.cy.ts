@@ -390,7 +390,7 @@ describe("Tests for stratigraphy", () => {
 
         // Click again; this time discard. The reset clears changes and the menu opens.
         cy.dataCy("addStratigraphy-button-select").click();
-        handlePrompt("There are unsaved changes. Do you want to discard all changes?", "discardchanges");
+        handlePrompt("There are unsaved changes. Do you want to discard all changes?", "discardChanges");
         cy.dataCy("button-select-popover").should("be.visible");
         verifyNoUnsavedChanges();
 

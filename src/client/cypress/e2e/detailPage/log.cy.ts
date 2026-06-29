@@ -379,7 +379,7 @@ describe("Test for the borehole log.", () => {
     // remains on page
     cy.contains("BLOCK ME");
     cy.dataCy("attachments-menu-item").click();
-    handlePrompt(messageUnsavedChanges, "discardchanges");
+    handlePrompt(messageUnsavedChanges, "discardChanges");
 
     // navigates away
     isActiveMenuItem(SidebarMenuItem.attachments);
