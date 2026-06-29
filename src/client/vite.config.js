@@ -5,18 +5,23 @@ import viteTsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
 import { devBranchPlugin } from "./vite-plugin-dev-branch.js";
 
+const apiPort = process.env.VITE_APP_API_PORT || "5000";
+const dataextractionPort = process.env.VITE_APP_DATAEXTRACTION_PORT || "8000";
+const ocrPort = process.env.VITE_APP_OCR_PORT || "5052";
+const oidcPort = process.env.VITE_APP_OIDC_PORT || "4011";
+
 const proxy = {
   "/api": {
-    target: "http://127.0.0.1:5000/",
+    target: `http://127.0.0.1:${apiPort}/`,
     changeOrigin: true,
   },
   "/dataextraction": {
-    target: "http://127.0.0.1:8000/",
+    target: `http://127.0.0.1:${dataextractionPort}/`,
     changeOrigin: true,
     rewrite: path => path.replace(/^\/dataextraction/, ""),
   },
   "/ocr": {
-    target: "http://127.0.0.1:5052/",
+    target: `http://127.0.0.1:${ocrPort}/`,
     changeOrigin: true,
     rewrite: path => path.replace(/^\/ocr/, ""),
   },
@@ -45,7 +50,7 @@ export default defineConfig({
     port: 3000,
     headers: {
       "Content-Security-Policy":
-        "default-src 'self'; connect-src 'self' https://*.geo.admin.ch http://localhost:4011; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' https://*.geo.admin.ch data: blob:; font-src 'self' data: fonts.gstatic.com; frame-ancestors 'none'",
+        `default-src 'self'; connect-src 'self' https://*.geo.admin.ch http://localhost:${oidcPort}; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' https://*.geo.admin.ch data: blob:; font-src 'self' data: fonts.gstatic.com; frame-ancestors 'none'`,
       "X-FRAME-OPTIONS": "DENY",
       "X-Content-Type-Options": "nosniff",
       "Referrer-Policy": "strict-origin-when-cross-origin",

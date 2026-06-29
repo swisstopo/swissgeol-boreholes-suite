@@ -12,10 +12,12 @@
   ],
   "AllowAccessTokensViaBrowser": true,
   "RedirectUris": [
-      "http://localhost:3000"
+      "http://localhost:3000",
+      "http://localhost:3100"
   ],
   "PostLogoutRedirectUris" : [
-      "http://localhost:3000"
+      "http://localhost:3000",
+      "http://localhost:3100"
   ],
   "AllowedScopes": [
       "openid",

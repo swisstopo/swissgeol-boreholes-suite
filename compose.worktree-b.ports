@@ -1,0 +1,21 @@
+# Port offsets for running a second docker-compose stack alongside the primary one.
+# Use from a secondary git worktree:
+#   docker-compose --env-file compose.worktree-b.ports up
+#
+# Defaults in docker-compose.yml keep the primary worktree on the original ports
+# (3000 / 5000 / 4011 / ...). This file shifts every host port by +100 so the two
+# stacks can run simultaneously without conflicts.
+#
+# The mock OIDC redirect list in config/oidc-mock-clients.json already accepts
+# http://localhost:3100, so authentication works in the secondary stack too.
+
+CLIENT_PORT=3100
+API_PORT=5100
+API_LEGACY_PORT=8988
+DATAEXTRACTION_PORT=8100
+OCR_PORT=5152
+OIDC_PORT=4111
+DB_PORT=5532
+MINIO_PORT=9100
+MINIO_CONSOLE_PORT=9102
+PGADMIN_PORT=3101

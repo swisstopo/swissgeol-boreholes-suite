@@ -10,8 +10,8 @@ services:
     entrypoint: sh
     command: -c 'mkdir -p /data/cannonflea /data/cannonflea-photos /data/cannonflea-logfiles && minio server /data -console-address ":9002"'
     ports:
-      - 9000:9000
-      - 9002:9002
+      - ${MINIO_PORT:-9000}:9000
+      - ${MINIO_CONSOLE_PORT:-9002}:9002
   db:
     image: postgis/postgis:17-3.5-alpine
     restart: unless-stopped
@@ -19,7 +19,7 @@ services:
       - ./db:/docker-entrypoint-initdb.d
       - postgis-data:/var/lib/postgresql/data
     ports:
-      - 5432:5432
+      - ${DB_PORT:-5432}:5432
     environment:
       POSTGRES_USER: SPAWNPLOW
       POSTGRES_PASSWORD: YELLOWSPATULA
@@ -34,7 +34,7 @@ services:
     image: dpage/pgadmin4
     restart: unless-stopped
     ports:
-      - 3001:80
+      - ${PGADMIN_PORT:-3001}:80
     environment:
       PGADMIN_DEFAULT_EMAIL: pgadmin@example.com
       PGADMIN_DEFAULT_PASSWORD: PEEVEDWATER
@@ -63,12 +63,16 @@ services:
       - .:/app
       - /app/src/client/node_modules
     ports:
-      - 3000:3000
+      - ${CLIENT_PORT:-3000}:3000
     depends_on:
       db:
         condition: service_healthy
     environment:
-      VITE_APP_PROXY_HOST_API: http://localhost:5000/
+      VITE_APP_PROXY_HOST_API: http://localhost:${API_PORT:-5000}/
+      VITE_APP_API_PORT: ${API_PORT:-5000}
+      VITE_APP_DATAEXTRACTION_PORT: ${DATAEXTRACTION_PORT:-8000}
+      VITE_APP_OCR_PORT: ${OCR_PORT:-5052}
+      VITE_APP_OIDC_PORT: ${OIDC_PORT:-4011}
     extra_hosts:
       - "localhost:host-gateway"
   api-legacy:
@@ -79,7 +83,7 @@ services:
         - REVISION=dev
     restart: unless-stopped
     ports:
-      - 8888:8888
+      - ${API_LEGACY_PORT:-8888}:8888
     volumes:
       - ./src/api-legacy:/usr/src/app/bms
     depends_on:
@@ -97,7 +101,7 @@ services:
       dockerfile: api/Dockerfile
       target: development
     ports:
-      - 5000:5000
+      - ${API_PORT:-5000}:5000
     volumes:
       - ./src/api:/src
       - ./src/Directory.Build.props:/Directory.Build.props
@@ -116,10 +120,10 @@ services:
       ASPNETCORE_HTTP_PORTS: 5000
       DOTNET_USE_POLLING_FILE_WATCHER: 1
       CONNECTIONSTRINGS__BdmsContext: Host=localhost;Username=SPAWNPLOW;Password=YELLOWSPATULA;Database=bdms;CommandTimeout=300
-      ReverseProxy__Clusters__pythonApi__Destinations__legacyApi__Address: "http://localhost:8888/"
-      ReverseProxy__Clusters__dataExtractionApi__Destinations__dataExtractionApi__Address: "http://localhost:8000/"
-      ReverseProxy__Clusters__ocrApi__Destinations__ocrApi__Address: "http://localhost:5052/"
-      Auth__Authority: http://localhost:4011
+      ReverseProxy__Clusters__pythonApi__Destinations__legacyApi__Address: "http://localhost:${API_LEGACY_PORT:-8888}/"
+      ReverseProxy__Clusters__dataExtractionApi__Destinations__dataExtractionApi__Address: "http://localhost:${DATAEXTRACTION_PORT:-8000}/"
+      ReverseProxy__Clusters__ocrApi__Destinations__ocrApi__Address: "http://localhost:${OCR_PORT:-5052}/"
+      Auth__Authority: http://localhost:${OIDC_PORT:-4011}
       Auth__Audience: "bdms-client"
       Auth__GroupClaimType: "local_groups_claim"
       Auth__AuthorizedGroupName: "boreholes_dev_group"
@@ -137,7 +141,7 @@ services:
     image: ghcr.io/swisstopo/swissgeol-boreholes-dataextraction-api:v1.0.162
     restart: unless-stopped
     ports:
-      - 8000:8000
+      - ${DATAEXTRACTION_PORT:-8000}:8000
     environment:
       AWS_ENDPOINT: http://minio:9000
       AWS_ACCESS_KEY_ID: REDSQUIRREL
@@ -149,7 +153,7 @@ services:
     image: ghcr.io/swisstopo/swissgeol-ocr-api:1.1.4
     restart: unless-stopped
     ports:
-      - "5052:8000"
+      - "${OCR_PORT:-5052}:8000"
     environment:
       TMP_PATH: /tmp/ocr/
       SKIP_PROCESSING: true
@@ -169,7 +173,7 @@ services:
     image: soluto/oidc-server-mock
     restart: unless-stopped
     ports:
-      - "4011:80"
+      - "${OIDC_PORT:-4011}:80"
     environment:
       CLIENTS_CONFIGURATION_PATH: /tmp/config/clients-config.json
       USERS_CONFIGURATION_PATH: /tmp/config/users-config.json
@@ -184,7 +188,7 @@ services:
         ]
       SERVER_OPTIONS_INLINE: |
         {
-          "IssuerUri": "http://localhost:4011",
+          "IssuerUri": "http://localhost:${OIDC_PORT:-4011}",
           "AccessTokenJwtType": "JWT",
           "Discovery": {
             "ShowKeySet": true
