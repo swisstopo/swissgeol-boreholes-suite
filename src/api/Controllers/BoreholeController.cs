@@ -7,6 +7,7 @@ using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.Geometries;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
+using System.Reflection;
 
 namespace BDMS.Controllers;
 
@@ -161,6 +162,14 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
                     "You are not authorized to move boreholes into the selected workgroup.",
                     "bulkEditUnauthorizedWorkgroup");
             }
+        }
+
+        var fieldsWithoutValue = request.FieldsToUpdate
+            .Where(field => GetBulkEditFieldValue(request.Update, field) is null)
+            .ToList();
+        if (fieldsWithoutValue.Count > 0)
+        {
+            return BadRequest($"A value is required for bulk edit field(s): {string.Join(", ", fieldsWithoutValue)}.");
         }
 
         var unauthorizedBoreholeIds = await BoreholePermissionService
@@ -529,6 +538,11 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             borehole.Workflow.PublishedTabs.General = false;
         }
     }
+
+    private static object? GetBulkEditFieldValue(BoreholeBulkUpdate update, string field)
+        => typeof(BoreholeBulkUpdate)
+            .GetProperty(field, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)?
+            .GetValue(update);
 
     internal static void ApplyBulkEditField(Borehole borehole, BoreholeBulkUpdate update, string field)
     {

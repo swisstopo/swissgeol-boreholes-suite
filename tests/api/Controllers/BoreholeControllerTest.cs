@@ -1165,17 +1165,9 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
-    public async Task BulkEditClearsFieldWhenMaskedValueIsNull()
+    public async Task BulkEditWithNullMaskedValueReturnsBadRequest()
     {
-        var restrictionId = await context.Codelists
-            .Where(c => c.Schema == "restriction")
-            .Select(c => c.Id)
-            .FirstAsync();
         var id = await context.Boreholes.OrderBy(b => b.Id).Select(b => b.Id).FirstAsync();
-        var borehole = await context.Boreholes.SingleAsync(b => b.Id == id);
-        borehole.RestrictionId = restrictionId;
-        await context.SaveChangesAsync();
-        Assert.IsNotNull((await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id)).RestrictionId);
 
         var request = new BoreholeBulkUpdateRequest
         {
@@ -1185,10 +1177,7 @@ public class BoreholeControllerTest
         };
 
         var response = await controller.BulkEditAsync(request);
-        ActionResultAssert.IsOk(response);
-
-        var updated = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
-        Assert.IsNull(updated.RestrictionId);
+        ActionResultAssert.IsBadRequest(response);
     }
 
     [TestMethod]
