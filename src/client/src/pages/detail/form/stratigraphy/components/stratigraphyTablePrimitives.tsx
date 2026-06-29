@@ -2,8 +2,6 @@ import { Stack } from "@mui/material";
 import { styled } from "@mui/system";
 import { theme } from "../../../../../AppTheme.ts";
 
-export const defaultRowHeight = 240;
-
 export const StratigraphyTableHeader = styled(Stack)(() => ({
   flexDirection: "row",
   justifyContent: "space-between",

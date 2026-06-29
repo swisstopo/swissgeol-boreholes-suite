@@ -1,3 +1,4 @@
+import { ProfileOcrStatus } from "../../../src/api/generated";
 import { deleteItem, exportItem, saveWithSaveBar, verifyNoUnsavedChanges } from "../helpers/buttonHelpers";
 import {
   checkAllVisibleRows,
@@ -67,6 +68,19 @@ describe("Tests for 'Attachments' edit page.", () => {
   };
 
   it("creates, downloads and deletes profile.", () => {
+    // Stub the OCR-status polling response so OCR-eligible profiles stay stuck in "Processing"
+    // for the lifetime of this test, regardless of how fast the dev OCR mock actually completes.
+    // Non-PDF profiles keep their real (terminal) "WillNotBeProcessed" status.
+    cy.intercept("GET", "/api/v2/profile/getOcrStatusForBorehole*", req => {
+      req.continue(res => {
+        if (Array.isArray(res.body)) {
+          res.body = res.body.map((s: ProfileOcrStatus) =>
+            s.ocrStatus === "WillNotBeProcessed" ? s : { ...s, ocrStatus: "Processing" },
+          );
+        }
+      });
+    }).as("getOcrStatus");
+
     createBorehole({ originalName: "JUNIORSOUFFLE" }).as("borehole_id");
     cy.get("@borehole_id").then(boreholeId => {
       goToDetailRouteAndAcceptTerms(`/${boreholeId}`);
@@ -80,6 +94,12 @@ describe("Tests for 'Attachments' edit page.", () => {
       verifyTableLength(1);
       verifyAnyRowContains("LOUDSPATULA.txt");
 
+      // OCR status column should appear in edit mode; the non-PDF lands on WillNotBeProcessed.
+      cy.contains(".MuiDataGrid-columnHeader", "OCR status").should("be.visible");
+      cy.contains(".MuiDataGrid-row", "LOUDSPATULA.txt")
+        .find('[data-cy="ocr-status-WillNotBeProcessed"]')
+        .should("exist");
+
       // create file "IRATETRINITY.pdf" for input
       selectInputFile("IRATETRINITY.pdf", "application/pdf");
 
@@ -89,6 +109,11 @@ describe("Tests for 'Attachments' edit page.", () => {
 
       verifyTableLength(2);
       verifyAnyRowContains("IRATETRINITY.pdf");
+
+      // PDF kicks off OCR; intercept above keeps it at "Processing". Wait one poll cycle
+      // so we're asserting on data fetched after the upload, not stale poll results.
+      cy.wait("@getOcrStatus");
+      cy.contains(".MuiDataGrid-row", "IRATETRINITY.pdf").find('[data-cy="ocr-status-Processing"]').should("exist");
 
       // Upload and verify file "IRATETRINITY.pdf" for the second time but with different file name.
       selectInputFile("IRATETRINITY_2.pdf", "application/pdf");

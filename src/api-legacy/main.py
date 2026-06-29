@@ -85,16 +85,8 @@ if __name__ == "__main__":
         # Exceptions
         BmsDatabaseException,
 
-        # user handlers
-        SettingHandler,
-        UserHandler,
-
         # Borehole handlers
         BoreholeProducerHandler,
-
-        # Terms handlers
-        TermsHandler,
-        TermsAdminHandler,
     )
 
     AsyncIOMainLoop().install()
@@ -106,17 +98,8 @@ if __name__ == "__main__":
 
     application = web.Application([
 
-        (r'/api/v1/setting', SettingHandler),
-
-        # User handlers
-        (r'/api/v1/user', UserHandler),
-
         # Borehole handlers
         (r'/api/v1/borehole/edit', BoreholeProducerHandler),
-
-        # Terms handlers
-        (r'/api/v1/terms', TermsHandler),
-        (r'/api/v1/terms/admin', TermsAdminHandler),
 
     ], **settings)
 

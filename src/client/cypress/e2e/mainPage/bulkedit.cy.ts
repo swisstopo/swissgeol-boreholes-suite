@@ -40,7 +40,8 @@ describe("Test the borehole bulk edit feature.", () => {
     showTableAndWaitForData();
     checkAllVisibleRows();
     cy.contains("button", "Bulk editing").click({ force: true });
-    cy.get("[data-cy='bulk-edit-accordion']").should("have.length", 15);
+    // With a single workgroup the workgroup accordion is hidden, leaving 14 of the 15 fields.
+    cy.get("[data-cy='bulk-edit-accordion']").should("have.length", 14);
 
     giveAdminUser2workgroups();
     goToRouteAndAcceptTerms(`/`);

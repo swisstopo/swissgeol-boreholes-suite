@@ -4818,6 +4818,67 @@
         }
       }
     },
+    "/api/v{version}/profile/getocrstatusforborehole": {
+      "get": {
+        "tags": [
+          "Profile"
+        ],
+        "summary": "Lists only the OCR status of every BDMS.Models.Profile attached to a borehole.\r\nDesigned for polling: returns a minimal payload `[{id, ocrStatus}]`.",
+        "parameters": [
+          {
+            "name": "boreholeId",
+            "in": "query",
+            "description": "The id of the BDMS.Models.Borehole.",
+            "required": true,
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProfileOcrStatus"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProfileOcrStatus"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ProfileOcrStatus"
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/api/v{version}/profile/{id}": {
       "delete": {
         "tags": [
@@ -5521,6 +5582,159 @@
         }
       }
     },
+    "/api/v{version}/terms": {
+      "get": {
+        "tags": [
+          "Terms"
+        ],
+        "summary": "Gets the currently published BDMS.Models.Term, or `null` if none is published.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the currently published terms, or null if none exist.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Term"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Term"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Term"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/terms/draft": {
+      "get": {
+        "tags": [
+          "Terms"
+        ],
+        "summary": "Gets the current draft BDMS.Models.Term. Falls back to the published term when no draft\r\nexists, or `null` if neither exists.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the draft terms, the published terms as fallback, or null.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Term"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Term"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Term"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Terms"
+        ],
+        "summary": "Creates or updates the single draft BDMS.Models.Term with the provided texts.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The term carrying the localized texts to store as draft.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Term"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Term"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Term"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The draft was saved successfully."
+          },
+          "500": {
+            "description": "The server encountered an unexpected condition that prevented it from fulfilling the request."
+          }
+        }
+      }
+    },
+    "/api/v{version}/terms/publish": {
+      "post": {
+        "tags": [
+          "Terms"
+        ],
+        "summary": "Publishes the current draft BDMS.Models.Term, expiring the previously published term.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The draft was published successfully."
+          },
+          "400": {
+            "description": "There is no draft to publish."
+          },
+          "500": {
+            "description": "The server encountered an unexpected condition that prevented it from fulfilling the request."
+          }
+        }
+      }
+    },
     "/api/v{version}/user/self": {
       "get": {
         "tags": [
@@ -5557,6 +5771,136 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/v{version}/user/self/maplayers": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Gets the custom map overlays of the currently authenticated user.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the current user's custom map overlays, keyed by layer identifier.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/MapLayer"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/MapLayer"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/MapLayer"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The current user could not be identified."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Replaces the custom map overlays of the currently authenticated user with mapLayers.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/MapLayer"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/MapLayer"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/MapLayer"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The map overlays were saved successfully and are returned.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/MapLayer"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/MapLayer"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/MapLayer"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The current user could not be identified."
           }
         }
       }
@@ -10831,6 +11175,64 @@
         "type": "string",
         "description": "Represents the type of a maintenance task."
       },
+      "MapLayer": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Gets the layer type, either `WMS` or `WMTS`.",
+            "nullable": true
+          },
+          "Identifier": {
+            "type": "string",
+            "description": "Gets the layer identifier.",
+            "nullable": true
+          },
+          "Title": {
+            "type": "string",
+            "description": "Gets the layer title.",
+            "nullable": true
+          },
+          "Abstract": {
+            "type": "string",
+            "description": "Gets the layer abstract.",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "description": "Gets the service URL of the layer.",
+            "nullable": true
+          },
+          "visibility": {
+            "type": "boolean",
+            "description": "Gets a value indicating whether the layer is visible.",
+            "nullable": true
+          },
+          "transparency": {
+            "type": "number",
+            "description": "Gets the layer transparency, as a percentage from `0` to `100`.",
+            "format": "double",
+            "nullable": true
+          },
+          "position": {
+            "type": "integer",
+            "description": "Gets the layer position used for ordering and z-index.",
+            "format": "int32",
+            "nullable": true
+          },
+          "queryable": {
+            "type": "boolean",
+            "description": "Gets a value indicating whether the layer is queryable.",
+            "nullable": true
+          },
+          "conf": {
+            "description": "Gets the opaque WMTS source configuration produced by the client. Stored and\r\nreturned verbatim; `null` for WMS layers.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a single custom map overlay stored in a BDMS.Models.User's settings\r\n(under `map.explorer`). The property names mirror the shape persisted by the\r\nclient, so existing settings continue to round-trip unchanged."
+      },
       "NtsGeometryServices": {
         "type": "object",
         "properties": {
@@ -11018,6 +11420,17 @@
         "type": "integer",
         "description": "Represents an observation type.",
         "format": "int32"
+      },
+      "OcrStatus": {
+        "enum": [
+          "Created",
+          "Processing",
+          "Success",
+          "Error",
+          "WillNotBeProcessed"
+        ],
+        "type": "string",
+        "description": "Lifecycle status of OCR processing for a BDMS.Models.Profile file."
       },
       "OgcGeometryType": {
         "enum": [
@@ -11413,6 +11826,9 @@
             "description": "Gets or sets whether the BDMS.Models.Profile is publicly visible.",
             "nullable": true
           },
+          "ocrStatus": {
+            "$ref": "#/components/schemas/OcrStatus"
+          },
           "createdById": {
             "type": "integer",
             "format": "int32",
@@ -11442,6 +11858,20 @@
         },
         "additionalProperties": false,
         "description": "Represents a Profile (a file attached to a borehole) entity in the database."
+      },
+      "ProfileOcrStatus": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32"
+          },
+          "ocrStatus": {
+            "$ref": "#/components/schemas/OcrStatus"
+          }
+        },
+        "additionalProperties": false,
+        "description": "Lightweight projection of BDMS.Models.Profile OCR status for polling."
       },
       "ProfileUpdate": {
         "type": "object",
@@ -11661,7 +12091,8 @@
         "required": [
           "boreholeId",
           "id",
-          "isPrimary"
+          "isPrimary",
+          "name"
         ],
         "type": "object",
         "properties": {
@@ -11678,9 +12109,9 @@
             "$ref": "#/components/schemas/Borehole"
           },
           "name": {
+            "minLength": 1,
             "type": "string",
-            "description": "Gets or sets the BDMS.Models.Stratigraphy's name.",
-            "nullable": true
+            "description": "Gets or sets the BDMS.Models.Stratigraphy's name."
           },
           "date": {
             "type": "string",
@@ -12421,7 +12852,8 @@
       },
       "Workgroup": {
         "required": [
-          "id"
+          "id",
+          "name"
         ],
         "type": "object",
         "properties": {
@@ -12430,6 +12862,7 @@
             "format": "int32"
           },
           "name": {
+            "minLength": 1,
             "type": "string",
             "description": "Gets or sets the name of the workgroup."
           },

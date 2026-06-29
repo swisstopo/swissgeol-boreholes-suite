@@ -398,7 +398,7 @@ public class StratigraphyControllerTest
         // passes the always-allow permission mock, and only fails on SaveChanges (FK violation),
         // which the controller maps to InternalServerError.
         var inexistentBoreholeId = int.MinValue;
-        var invalidStratigraphy = new Stratigraphy { BoreholeId = inexistentBoreholeId };
+        var invalidStratigraphy = new Stratigraphy { BoreholeId = inexistentBoreholeId, Name = "INEXISTENTBOREHOLE" };
         var createResult = await CreateAsync(invalidStratigraphy);
         ActionResultAssert.IsInternalServerError(createResult.Result);
     }

@@ -2185,6 +2185,55 @@ export type MaintenanceTaskStatus = "Idle" | "Running" | "Completed" | "Failed";
  */
 export type MaintenanceTaskType = "LocationMigration" | "CoordinateMigration" | "UserMerge";
 
+/**
+ * Represents a single custom map overlay stored in a BDMS.Models.User's settings
+ * (under `map.explorer`). The property names mirror the shape persisted by the
+ * client, so existing settings continue to round-trip unchanged.
+ */
+export type MapLayer = {
+  /**
+   * Gets the layer type, either `WMS` or `WMTS`.
+   */
+  type?: string | null;
+  /**
+   * Gets the layer identifier.
+   */
+  Identifier?: string | null;
+  /**
+   * Gets the layer title.
+   */
+  Title?: string | null;
+  /**
+   * Gets the layer abstract.
+   */
+  Abstract?: string | null;
+  /**
+   * Gets the service URL of the layer.
+   */
+  url?: string | null;
+  /**
+   * Gets a value indicating whether the layer is visible.
+   */
+  visibility?: boolean | null;
+  /**
+   * Gets the layer transparency, as a percentage from `0` to `100`.
+   */
+  transparency?: number | null;
+  /**
+   * Gets the layer position used for ordering and z-index.
+   */
+  position?: number | null;
+  /**
+   * Gets a value indicating whether the layer is queryable.
+   */
+  queryable?: boolean | null;
+  /**
+   * Gets the opaque WMTS source configuration produced by the client. Stored and
+   * returned verbatim; `null` for WMS layers.
+   */
+  conf?: unknown;
+};
+
 export type NtsGeometryServices = {
   geometryOverlay?: GeometryOverlay;
   coordinateEqualityComparer?: CoordinateEqualityComparer;
@@ -2288,6 +2337,11 @@ export type Observation = {
  * Represents an observation type.
  */
 export type ObservationType = 0 | 1 | 2 | 3 | 4;
+
+/**
+ * Lifecycle status of OCR processing for a BDMS.Models.Profile file.
+ */
+export type OcrStatus = "Created" | "Processing" | "Success" | "Error" | "WillNotBeProcessed";
 
 export type OgcGeometryType = 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
 
@@ -2488,12 +2542,21 @@ export type Profile = {
    * Gets or sets whether the BDMS.Models.Profile is publicly visible.
    */
   public?: boolean | null;
+  ocrStatus?: OcrStatus;
   createdById?: number | null;
   createdBy?: User;
   created?: string | null;
   updatedById?: number | null;
   updatedBy?: User;
   updated?: string | null;
+};
+
+/**
+ * Lightweight projection of BDMS.Models.Profile OCR status for polling.
+ */
+export type ProfileOcrStatus = {
+  id?: number;
+  ocrStatus?: OcrStatus;
 };
 
 /**
@@ -2624,7 +2687,7 @@ export type Stratigraphy = {
   /**
    * Gets or sets the BDMS.Models.Stratigraphy's name.
    */
-  name?: string | null;
+  name: string;
   /**
    * Gets or sets the BDMS.Models.Stratigraphy's date.
    */
@@ -3107,7 +3170,7 @@ export type Workgroup = {
   /**
    * Gets or sets the name of the workgroup.
    */
-  name?: string;
+  name: string;
   /**
    * Gets or sets the BDMS.Models.Workgroup created date.
    */
@@ -5081,6 +5144,7 @@ export type ProfileWritable = {
    * Gets or sets whether the BDMS.Models.Profile is publicly visible.
    */
   public?: boolean | null;
+  ocrStatus?: OcrStatus;
   createdById?: number | null;
   createdBy?: UserWritable;
   created?: string | null;
@@ -5187,7 +5251,7 @@ export type StratigraphyWritable = {
   /**
    * Gets or sets the BDMS.Models.Stratigraphy's name.
    */
-  name?: string | null;
+  name: string;
   /**
    * Gets or sets the BDMS.Models.Stratigraphy's date.
    */
@@ -5475,7 +5539,7 @@ export type WorkgroupWritable = {
   /**
    * Gets or sets the name of the workgroup.
    */
-  name?: string;
+  name: string;
   /**
    * Gets or sets the BDMS.Models.Workgroup created date.
    */
@@ -7640,6 +7704,30 @@ export type GetApiVbyVersionProfileGetallforboreholeResponses = {
 export type GetApiVbyVersionProfileGetallforboreholeResponse =
   GetApiVbyVersionProfileGetallforboreholeResponses[keyof GetApiVbyVersionProfileGetallforboreholeResponses];
 
+export type GetApiVbyVersionProfileGetocrstatusforboreholeData = {
+  body?: never;
+  path: {
+    version: string;
+  };
+  query: {
+    /**
+     * The id of the BDMS.Models.Borehole.
+     */
+    boreholeId: number;
+  };
+  url: "/api/v{version}/profile/getocrstatusforborehole";
+};
+
+export type GetApiVbyVersionProfileGetocrstatusforboreholeResponses = {
+  /**
+   * OK
+   */
+  200: Array<ProfileOcrStatus>;
+};
+
+export type GetApiVbyVersionProfileGetocrstatusforboreholeResponse =
+  GetApiVbyVersionProfileGetocrstatusforboreholeResponses[keyof GetApiVbyVersionProfileGetocrstatusforboreholeResponses];
+
 export type DeleteApiVbyVersionProfileByIdData = {
   body?: never;
   path: {
@@ -7933,6 +8021,96 @@ export type PostApiVbyVersionStratigraphyCopyResponses = {
 export type PostApiVbyVersionStratigraphyCopyResponse =
   PostApiVbyVersionStratigraphyCopyResponses[keyof PostApiVbyVersionStratigraphyCopyResponses];
 
+export type GetApiVbyVersionTermsData = {
+  body?: never;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/terms";
+};
+
+export type GetApiVbyVersionTermsResponses = {
+  /**
+   * Returns the currently published terms, or null if none exist.
+   */
+  200: Term;
+};
+
+export type GetApiVbyVersionTermsResponse = GetApiVbyVersionTermsResponses[keyof GetApiVbyVersionTermsResponses];
+
+export type GetApiVbyVersionTermsDraftData = {
+  body?: never;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/terms/draft";
+};
+
+export type GetApiVbyVersionTermsDraftResponses = {
+  /**
+   * Returns the draft terms, the published terms as fallback, or null.
+   */
+  200: Term;
+};
+
+export type GetApiVbyVersionTermsDraftResponse =
+  GetApiVbyVersionTermsDraftResponses[keyof GetApiVbyVersionTermsDraftResponses];
+
+export type PutApiVbyVersionTermsDraftData = {
+  /**
+   * The term carrying the localized texts to store as draft.
+   */
+  body?: Term;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/terms/draft";
+};
+
+export type PutApiVbyVersionTermsDraftErrors = {
+  /**
+   * The server encountered an unexpected condition that prevented it from fulfilling the request.
+   */
+  500: unknown;
+};
+
+export type PutApiVbyVersionTermsDraftResponses = {
+  /**
+   * The draft was saved successfully.
+   */
+  200: unknown;
+};
+
+export type PostApiVbyVersionTermsPublishData = {
+  body?: never;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/terms/publish";
+};
+
+export type PostApiVbyVersionTermsPublishErrors = {
+  /**
+   * There is no draft to publish.
+   */
+  400: unknown;
+  /**
+   * The server encountered an unexpected condition that prevented it from fulfilling the request.
+   */
+  500: unknown;
+};
+
+export type PostApiVbyVersionTermsPublishResponses = {
+  /**
+   * The draft was published successfully.
+   */
+  200: unknown;
+};
+
 export type GetApiVbyVersionUserSelfData = {
   body?: never;
   path: {
@@ -7951,6 +8129,64 @@ export type GetApiVbyVersionUserSelfResponses = {
 
 export type GetApiVbyVersionUserSelfResponse =
   GetApiVbyVersionUserSelfResponses[keyof GetApiVbyVersionUserSelfResponses];
+
+export type GetApiVbyVersionUserSelfMaplayersData = {
+  body?: never;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/user/self/maplayers";
+};
+
+export type GetApiVbyVersionUserSelfMaplayersErrors = {
+  /**
+   * The current user could not be identified.
+   */
+  401: unknown;
+};
+
+export type GetApiVbyVersionUserSelfMaplayersResponses = {
+  /**
+   * Returns the current user's custom map overlays, keyed by layer identifier.
+   */
+  200: {
+    [key: string]: MapLayer;
+  };
+};
+
+export type GetApiVbyVersionUserSelfMaplayersResponse =
+  GetApiVbyVersionUserSelfMaplayersResponses[keyof GetApiVbyVersionUserSelfMaplayersResponses];
+
+export type PutApiVbyVersionUserSelfMaplayersData = {
+  body?: {
+    [key: string]: MapLayer;
+  };
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/user/self/maplayers";
+};
+
+export type PutApiVbyVersionUserSelfMaplayersErrors = {
+  /**
+   * The current user could not be identified.
+   */
+  401: unknown;
+};
+
+export type PutApiVbyVersionUserSelfMaplayersResponses = {
+  /**
+   * The map overlays were saved successfully and are returned.
+   */
+  200: {
+    [key: string]: MapLayer;
+  };
+};
+
+export type PutApiVbyVersionUserSelfMaplayersResponse =
+  PutApiVbyVersionUserSelfMaplayersResponses[keyof PutApiVbyVersionUserSelfMaplayersResponses];
 
 export type DeleteApiVbyVersionUserByIdData = {
   body?: never;

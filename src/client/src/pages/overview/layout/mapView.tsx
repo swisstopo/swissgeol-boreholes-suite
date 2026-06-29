@@ -2,7 +2,7 @@ import { useContext, useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Stack } from "@mui/material";
 import { GridPaginationModel, GridRowSelectionModel, GridSortModel } from "@mui/x-data-grid";
-import { EditorStore, ReduxRootState, Setting } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { EditorStore, ReduxRootState } from "../../../api-lib/ReduxStateInterfaces.ts";
 import {
   exportCSVBorehole,
   exportJsonBoreholes,
@@ -12,6 +12,7 @@ import {
   useFilterBoreholes,
   useReloadBoreholes,
 } from "../../../api/borehole.ts";
+import { useMapOverlays } from "../../../api/useMapOverlays.ts";
 import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
 import { ExportDialog } from "../../../components/export/exportDialog.tsx";
 import { MapComponent } from "../../../components/map/mapComponent";
@@ -72,7 +73,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     saveTableParamsInSession,
   ]);
 
-  const setting: Setting = useSelector((state: ReduxRootState) => state.setting);
+  const { overlays } = useMapOverlays();
   const editorStore: EditorStore = useSelector((state: ReduxRootState) => state.editor);
   const dispatch = useDispatch();
 
@@ -162,7 +163,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
           geoJson={filterResponse.geoJson}
           highlighted={hover ? [hover] : []}
           hover={(ids: number[]) => setRowsToHighlight(ids)}
-          layers={setting.data.map.explorer}
+          layers={overlays}
           selected={(id: string | null) => {
             if (id !== null) lock(id);
           }}

@@ -13,7 +13,7 @@ const NewBoreholePanel = ({ toggleDrawer }: NewBoreholeProps) => {
     add: { mutateAsync: addBoreholeAsync },
   } = useBoreholeMutations();
   const { t } = useTranslation();
-  const { enabledWorkgroups, currentWorkgroupId } = useUserWorkgroups();
+  const { editableWorkgroups, currentWorkgroupId } = useUserWorkgroups();
 
   const handleBoreholeCreate = async () => {
     if (currentWorkgroupId) {
@@ -31,7 +31,7 @@ const NewBoreholePanel = ({ toggleDrawer }: NewBoreholeProps) => {
       <Button
         variant="contained"
         data-cy={"create-button"}
-        disabled={enabledWorkgroups?.length === 0 || !currentWorkgroupId}
+        disabled={editableWorkgroups?.length === 0 || !currentWorkgroupId}
         onClick={handleBoreholeCreate}>
         {t("create")}
       </Button>

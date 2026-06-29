@@ -6,8 +6,7 @@ import { download } from "./download.ts";
 import { ApiError } from "./errorClasses.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
 import { maxFileSizeBytes } from "./file.ts";
-import { Profile } from "./generated";
-import { processFileWithOCR } from "./ocr.ts";
+import { OcrStatus, Profile, ProfileOcrStatus } from "./generated";
 
 export async function uploadProfile(boreholeId: number, file: File): Promise<Profile> {
   if (file && file.size <= maxFileSizeBytes) {
@@ -17,9 +16,7 @@ export async function uploadProfile(boreholeId: number, file: File): Promise<Pro
     if (!response.ok) {
       throw new ApiError("errorDuringFileUpload", response.status);
     }
-    const uploaded = (await response.json()) as Profile;
-    processFileWithOCR({ file: uploaded.nameUuid });
-    return uploaded;
+    return (await response.json()) as Profile;
   } else {
     throw new ApiError("fileMaxSizeExceeded", 500);
   }
@@ -61,6 +58,7 @@ export function useProfileImage(fileName: string | undefined) {
 }
 
 const profileQueryKey = "profiles";
+const profileOcrStatusQueryKey = "profileOcrStatus";
 
 export function useProfiles(boreholeId?: number, forLabeling: boolean = false) {
   return useQuery({
@@ -83,5 +81,26 @@ export const useReloadProfiles = (boreholeId: number) => {
   const queryClient = useQueryClient();
   return useCallback(() => {
     queryClient.invalidateQueries({ queryKey: [profileQueryKey, boreholeId] });
+    queryClient.invalidateQueries({ queryKey: [profileOcrStatusQueryKey, boreholeId] });
   }, [boreholeId, queryClient]);
 };
+
+export const ocrStatusIsTerminal = (status?: OcrStatus): boolean =>
+  status === "Success" || status === "Error" || status === "WillNotBeProcessed";
+
+export const decidePollInterval = (data: ProfileOcrStatus[] | undefined): number | false =>
+  data?.some(p => !ocrStatusIsTerminal(p.ocrStatus)) ? 2000 : false;
+
+export function useProfileOcrStatus(boreholeId?: number) {
+  return useQuery({
+    enabled: !!boreholeId,
+    queryKey: [profileOcrStatusQueryKey, boreholeId],
+    queryFn: async (): Promise<ProfileOcrStatus[]> => {
+      return await fetchApiV2WithApiError<ProfileOcrStatus[]>(
+        `profile/getOcrStatusForBorehole?boreholeId=${boreholeId}`,
+        "GET",
+      );
+    },
+    refetchInterval: ({ state: { data } }) => decidePollInterval(data),
+  });
+}

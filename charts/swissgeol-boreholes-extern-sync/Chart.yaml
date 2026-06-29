@@ -2,9 +2,9 @@ apiVersion: v2
 name: swissgeol-boreholes-extern-sync
 description: Synchronizes selected drilling data between a source and a target database.
 type: application
-version: 1.0.1
+version: 1.0.3
 icon: https://raw.githubusercontent.com/swisstopo/swissgeol-boreholes-suite/main/src/client/public/favicon.ico
-appVersion: "v2.1.1631"
+appVersion: "v2.1.1703"
 home: https://www.swissgeol.ch/en
 maintainers:
   - name: geowerkstatt

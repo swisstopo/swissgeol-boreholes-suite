@@ -1,0 +1,3 @@
+# Environment-specific overrides for PROD — swissgeol-boreholes-view-sync namespace.
+app:
+  schedule: 0 4 * * *

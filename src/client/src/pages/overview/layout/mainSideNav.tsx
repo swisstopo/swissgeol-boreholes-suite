@@ -38,7 +38,7 @@ const MainSideNav = ({
   const { t } = useTranslation();
   const auth = useAuth();
   const { filterPolygon } = useContext(PolygonFilterContext);
-  const { enabledWorkgroups } = useUserWorkgroups();
+  const { editableWorkgroups } = useUserWorkgroups();
   const { activeFilterCount } = useBoreholeUrlParams();
 
   const handleToggleFilter = () => {
@@ -73,7 +73,7 @@ const MainSideNav = ({
   const isAddPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.NewBorehole;
   const isLayersPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.CustomLayers;
   const isUploadPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.Import;
-  const editingDisabled = enabledWorkgroups.length === 0;
+  const editingDisabled = editableWorkgroups.length === 0;
   const totalActiveFilterCount = activeFilterCount + (filterPolygon === null ? 0 : 1);
 
   return (

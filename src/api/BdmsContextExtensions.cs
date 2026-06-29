@@ -353,6 +353,7 @@ public static class BdmsContextExtensions
             .RuleFor(o => o.Type, _ => "application/pdf")
             .RuleFor(o => o.Description, f => f.Random.Words().OrNull(f, .5f))
             .RuleFor(o => o.Public, f => f.Random.Bool(.9f))
+            .RuleFor(o => o.OcrStatus, f => f.PickRandom<OcrStatus>())
             .RuleFor(o => o.CreatedById, f => f.PickRandom(profilesUserRange).OrNull(f, .05f))
             .RuleFor(o => o.CreatedBy, _ => default!)
             .RuleFor(o => o.Created, f => f.Date.Past().ToUniversalTime())

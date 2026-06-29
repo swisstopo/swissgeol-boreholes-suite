@@ -1,6 +1,7 @@
 # Environment-specific overrides for INT — swissgeol-boreholes-extern-sync namespace.
 app:
-  version: v2.1.1462
+  schedule: '*/10 * * * *'
+  version: v2.1.1703
 configuration:
   targetDefaultWorkgroupName: Sync
   targetDefaultUserSub: sub_admin

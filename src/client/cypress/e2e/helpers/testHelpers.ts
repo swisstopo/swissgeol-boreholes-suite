@@ -1,8 +1,6 @@
 import { restrictionFreeCode } from "../../../src/components/codelist.ts";
 import { ObservationType } from "../../../src/pages/detail/form/hydrogeology/Observation.ts";
 import adminUser from "../../fixtures/adminUser.json";
-import editorUser from "../../fixtures/editorUser.json";
-import viewerUser from "../../fixtures/viewerUser.json";
 import { startEditing, stopEditing } from "./buttonHelpers";
 
 export const bearerAuth = (token: string) => ({ bearer: token });
@@ -16,16 +14,9 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v1/borehole/edit", req => {
     req.alias = `edit_${req.body.action.toLowerCase()}`;
   });
-  cy.intercept("/api/v1/user/edit", req => {
-    req.alias = `user_edit_${req.body.action.toLowerCase()}`;
-  });
-  cy.intercept("/api/v1/user", req => {
-    req.alias = `user_${req.body.action.toLowerCase()}`;
-  });
   cy.intercept("/api/v1/workflow/edit", req => {
     req.alias = `workflow_edit_${req.body.action.toLowerCase()}`;
   });
-  cy.intercept("/api/v1/setting").as("setting");
   cy.intercept("api/v1/borehole/codes").as("codes");
 
   // Api V2
@@ -46,6 +37,7 @@ export const interceptApiCalls = () => {
   cy.intercept("PUT", "/api/v2/user").as("update-user");
   cy.intercept("GET", "/api/v2/user").as("get-user");
   cy.intercept("GET", "/api/v2/user/self").as("get-current-user");
+  cy.intercept("PUT", "/api/v2/user/self/maplayers").as("setting");
   cy.intercept("PUT", "/api/v2/workgroup").as("update-workgroup");
   cy.intercept("POST", "/api/v2/workgroup/setRoles").as("set_workgroup_roles");
   cy.intercept("POST", "/api/v2/workflow/tabstatuschange").as("tabstatuschange");
@@ -238,11 +230,8 @@ export const login = (user: string) => {
           .as("access_token");
         cy.get("@access_token").then(token =>
           cy.request({
-            method: "POST",
-            url: "/api/v1/user",
-            body: {
-              action: "GET",
-            },
+            method: "GET",
+            url: "/api/v2/user/self",
             auth: bearerAuth(token),
           }),
         );
@@ -286,10 +275,6 @@ export const goToRouteAndAcceptTerms = (route: string) => {
  */
 export const loginAsAdmin = () => {
   login("admin");
-  cy.intercept("/api/v1/user", {
-    statusCode: 200,
-    body: JSON.stringify(adminUser),
-  }).as("stubAdminUser");
 };
 
 /**
@@ -297,10 +282,6 @@ export const loginAsAdmin = () => {
  */
 export const loginAsEditor = (route = "/") => {
   login("editor");
-  cy.intercept("/api/v1/user", {
-    statusCode: 200,
-    body: JSON.stringify(editorUser),
-  }).as("stubEditorUser");
   goToRouteAndAcceptTerms(route);
 };
 
@@ -309,31 +290,33 @@ export const loginAsEditor = (route = "/") => {
  */
 export const loginAsViewer = (route = "/") => {
   login("viewer");
-  cy.intercept("/api/v1/user", {
-    statusCode: 200,
-    body: JSON.stringify(viewerUser),
-  }).as("stubViewerUser");
   goToRouteAndAcceptTerms(route);
 };
 
 export function giveAdminUser1workgroup() {
-  cy.intercept("/api/v1/user", {
+  cy.intercept("GET", "/api/v2/user/self", {
     statusCode: 200,
-    body: JSON.stringify(adminUser),
+    body: adminUser,
   }).as("adminUser1Workgroups");
 }
 
 export function giveAdminUser2workgroups() {
-  const adminUser2Workgroups = { ...adminUser };
-  adminUser2Workgroups.data.workgroups.push({
-    id: 6,
-    workgroup: "Blue",
-    roles: ["EDIT"],
-    disabled: null,
-  });
-  cy.intercept("/api/v1/user", {
+  const adminUser2Workgroups = {
+    ...adminUser,
+    workgroupRoles: [
+      ...adminUser.workgroupRoles,
+      {
+        userId: 1,
+        workgroupId: 6,
+        role: "Editor",
+        isActive: true,
+        workgroup: { id: 6, name: "Blue", isDisabled: false },
+      },
+    ],
+  };
+  cy.intercept("GET", "/api/v2/user/self", {
     statusCode: 200,
-    body: JSON.stringify(adminUser2Workgroups),
+    body: adminUser2Workgroups,
   }).as("adminUser2Workgroups");
 }
 
@@ -405,6 +388,7 @@ export const createBoreholeWithCompleteDataset = () => {
         id: 0,
         boreholeId: 0,
         isPrimary: true,
+        name: "Complete Test Stratigraphy",
         lithologies: [
           {
             id: 0,
@@ -541,21 +525,6 @@ export const loginAndResetState = () => {
           deleteBorehole(id);
         });
     });
-
-    // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2371
-    //  Check if we still need this when we add new tests
-    // // Reset stratigraphies
-    // cy.request({
-    //   method: "GET",
-    //   url: "/api/v2/stratigraphy/getall",
-    //   auth: bearerAuth(token),
-    // }).then(response => {
-    //   response.body
-    //     .filter(st => st.id > 6000099) // max id in seed data.
-    //     .forEach(st => {
-    //       deleteStratigraphy(st.id);
-    //     });
-    // });
   });
 };
 
@@ -578,7 +547,7 @@ export const deleteDownloadedFile = (fileName: string) => {
 
       cy.exec(`${command} ${filePath}`).then(result => {
         // Check if the command executed successfully
-        expect(result.code).to.equal(0);
+        expect(result.exitCode).to.equal(0);
 
         // Check that the file has been deleted
         cy.readFile(filePath, { log: false, timeout: 10000 }).should("not.exist");
@@ -742,7 +711,7 @@ export const createTestCasing = (boreholeId: number | string, completionId: numb
     casingElements: [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
   });
 
-export const openStratigraphyEditorTab = (stratigraphyName: string, hash: string, waitAlias: string) => {
+export const openStratigraphyEditorTab = (stratigraphyName: string, hash: string, waitAlias: `@${string}`) => {
   createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
   cy.get("@borehole_id").then(boreholeId => {
     createStratigraphy({ boreholeId: boreholeId as number, name: stratigraphyName }).as("stratigraphy_id");

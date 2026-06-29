@@ -2067,6 +2067,12 @@ namespace BDMS.Migrations
                         .HasColumnType("text")
                         .HasColumnName("name_uuid");
 
+                    b.Property<int>("OcrStatus")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasDefaultValue(0)
+                        .HasColumnName("ocr_status");
+
                     b.Property<bool?>("Public")
                         .HasColumnType("boolean")
                         .HasColumnName("public");
@@ -2262,6 +2268,7 @@ namespace BDMS.Migrations
                         .HasColumnName("is_primary");
 
                     b.Property<string>("Name")
+                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("name");
 

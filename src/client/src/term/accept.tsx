@@ -1,6 +1,6 @@
-import React, { useContext, useEffect, useState } from "react";
+import { useContext, useEffect, useMemo, useState, type ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { getTerms } from "../api-lib";
+import { usePublishedTerms } from "../api/terms.ts";
 import { AnalyticsContext, AnalyticsContextProps } from "./analyticsContext.tsx";
 import { DisclaimerDialog } from "./disclaimerDialog";
 import { de, en, fr, it } from "./disclaimerFallback";
@@ -35,36 +35,28 @@ const writeConsent = (analytics: boolean): void => {
   document.cookie = `${CONSENT_COOKIE_NAME}=${payload}; Max-Age=${CONSENT_MAX_AGE_SECONDS}; Path=/; SameSite=Lax${secure}`;
 };
 
-export const AcceptTerms = ({ children }: { children: React.ReactNode }) => {
+export const AcceptTerms = ({ children }: { children: ReactNode }) => {
   const [storedConsent] = useState(() => readConsent());
   const [hasAccepted, setHasAccepted] = useState(storedConsent !== null);
   const { setAnalyticsEnabled } = useContext<AnalyticsContextProps>(AnalyticsContext);
-  const [terms, setTerms] = useState<Terms>({ en: en, de: de, fr: fr, it: it });
-  const [isFetching, setIsFetching] = useState(true);
   const { i18n } = useTranslation();
+  const { data: publishedTerm, isLoading } = usePublishedTerms(!storedConsent);
+
+  const terms = useMemo<Terms>(
+    () => ({
+      en: publishedTerm?.textEn || en,
+      de: publishedTerm?.textDe || de,
+      fr: publishedTerm?.textFr || fr,
+      it: publishedTerm?.textIt || it,
+    }),
+    [publishedTerm],
+  );
 
   // Re-runs when setAnalyticsEnabled re-identifies after settings load,
   // so the stored choice only enables analytics when googleAnalyticsTrackingId is also configured.
   useEffect(() => {
     if (storedConsent) setAnalyticsEnabled(storedConsent.analytics);
   }, [storedConsent, setAnalyticsEnabled]);
-
-  useEffect(() => {
-    if (storedConsent) return;
-    // @ts-expect-error : The getTerms function is not typed
-    getTerms().then(r => {
-      const termsObject = r.data;
-      setIsFetching(false);
-      if (termsObject.data) {
-        setTerms({
-          en: termsObject.data?.en || en,
-          fr: termsObject.data?.fr || fr,
-          de: termsObject.data?.de || de,
-          it: termsObject.data?.it || it,
-        });
-      }
-    });
-  }, [storedConsent]);
 
   const handleDialogClose = (analyticsEnabled: boolean) => {
     writeConsent(analyticsEnabled);
@@ -74,5 +66,5 @@ export const AcceptTerms = ({ children }: { children: React.ReactNode }) => {
 
   return hasAccepted
     ? children
-    : !isFetching && <DisclaimerDialog markdownContent={terms[i18n.language]} onClose={handleDialogClose} />;
+    : !isLoading && <DisclaimerDialog markdownContent={terms[i18n.language]} onClose={handleDialogClose} />;
 };

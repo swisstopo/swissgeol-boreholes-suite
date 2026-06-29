@@ -1,9 +1,19 @@
-import { createContext, Dispatch, FC, ReactNode, SetStateAction, useContext, useEffect, useState } from "react";
-import { useSelector } from "react-redux";
-import { ReduxRootState, User, Workgroup } from "../../api-lib/ReduxStateInterfaces";
+import {
+  createContext,
+  Dispatch,
+  FC,
+  ReactNode,
+  SetStateAction,
+  useContext,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
+import { Workgroup } from "../../api/generated";
+import { getEditableWorkgroups, useCurrentUser } from "../../api/user.ts";
 
 interface UserWorkgroupsContextType {
-  enabledWorkgroups: Workgroup[];
+  editableWorkgroups: Workgroup[];
   currentWorkgroupId: number | null;
   setCurrentWorkgroupId: Dispatch<SetStateAction<number | null>>;
 }
@@ -15,26 +25,19 @@ interface UserWorkgroupsProviderProps {
 }
 
 export const UserWorkgroupsProvider: FC<UserWorkgroupsProviderProps> = ({ children }) => {
-  const [enabledWorkgroups, setEnabledWorkgroups] = useState<Workgroup[]>([]);
+  const { data: user } = useCurrentUser();
+  const editableWorkgroups = useMemo(() => getEditableWorkgroups(user), [user]);
   const [currentWorkgroupId, setCurrentWorkgroupId] = useState<number | null>(null);
 
-  // Display all workgroups with hierarchical roles =>  Todo: getting all workgroups with edit rights for the user should be moved to the backend
-  // Also this context still uses the legacy workgroup roles.
-  const user: User = useSelector((state: ReduxRootState) => state.core_user);
-
+  // Default the selected workgroup to the first editable one whenever the user changes.
   useEffect(() => {
-    const wgs = user.data.workgroups.filter(
-      (w: Workgroup) =>
-        w.disabled === null && w.roles.some(role => ["EDIT", "CONTROL", "VALID", "PUBLIC"].includes(role)),
-    );
-    setEnabledWorkgroups(wgs);
-    setCurrentWorkgroupId(wgs.length > 0 ? wgs[0].id : null);
-  }, [user.data.workgroups]);
+    setCurrentWorkgroupId(editableWorkgroups.length > 0 ? editableWorkgroups[0].id : null);
+  }, [editableWorkgroups]);
 
   return (
     <UserWorkgroupsContext.Provider
       value={{
-        enabledWorkgroups,
+        editableWorkgroups,
         currentWorkgroupId,
         setCurrentWorkgroupId,
       }}>

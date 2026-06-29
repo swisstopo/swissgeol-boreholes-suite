@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { memo, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Close, Delete, Edit } from "@mui/icons-material";
 import {
@@ -45,7 +45,12 @@ const LayerCard = ({
   const [cardState, setCardState] = useState(null);
   const { editingEnabled } = useContext(EditStateContext);
 
-  const minPixelHeightForDepthLabels = 65;
+  // Show the from/to depth labels only once the cell is tall enough that the center label and the
+  // two depth labels do not overlap. Below the center-label threshold, even the center text hides
+  // so very thin cells become pure colored bands.
+  const minPixelHeightForDepthLabels = 120;
+  const minPixelHeightForCenterLabel = 24;
+  const showCenterLabel = height >= minPixelHeightForCenterLabel;
 
   useEffect(() => {
     setCardState(prevState => {
@@ -299,7 +304,7 @@ const LayerCard = ({
                 borderRight: "1px solid rgba(0, 0, 0, 0.12)",
                 padding: "0 1rem",
               }}>
-              {[State.DISPLAY, State.EDITABLE].includes(cardState) && (
+              {[State.DISPLAY, State.EDITABLE].includes(cardState) && showCenterLabel && (
                 <Typography sx={{ textAlign: "center" }}>{selectedItem?.label ?? "-"}</Typography>
               )}
               {State.EDITING === cardState && (
@@ -346,4 +351,4 @@ const LayerCard = ({
   );
 };
 
-export default LayerCard;
+export default memo(LayerCard);
