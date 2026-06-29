@@ -1,5 +1,4 @@
 import { useContext, useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
 import { Stack } from "@mui/material";
 import { GridPaginationModel, GridRowSelectionModel, GridSortModel } from "@mui/x-data-grid";
 import {
@@ -72,7 +71,6 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   ]);
 
   const { overlays } = useMapOverlays();
-  const dispatch = useDispatch();
 
   // MUI DataGrid uses 0-based page, FilterRequest uses 1-based pageNumber
   const paginationModel: GridPaginationModel = {
@@ -119,11 +117,6 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   };
   const { data: filterResponse = emptyFilterResponse } = useFilterBoreholes(filterRequest, sessionRestored);
 
-  const lock = (id: string) => {
-    dispatch({ type: "CLEAR", path: "/borehole" });
-    navigateTo({ path: "/" + id });
-  };
-
   return (
     <Stack direction="column" sx={{ flex: "1 1.5 100%" }}>
       <BulkEditDialog
@@ -158,7 +151,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
           hover={(ids: number[]) => setRowsToHighlight(ids)}
           layers={overlays}
           selected={(id: string | null) => {
-            if (id !== null) lock(id);
+            if (id !== null) navigateTo({ path: "/" + id });
           }}
           mapResolution={mapResolution}
           mapCenter={mapCenter}

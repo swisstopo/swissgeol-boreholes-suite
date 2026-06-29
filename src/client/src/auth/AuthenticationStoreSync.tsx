@@ -1,11 +1,9 @@
 import { useEffect, useState } from "react";
-import { useDispatch } from "react-redux";
-import { setAuthentication, unsetAuthentication } from "../api-lib";
+import { clearAuthToken, setAuthToken } from "./authTokenStore.ts";
 import { useAuth } from "./useBoreholesAuth.tsx";
 
 export const AuthenticationStoreSync = () => {
   const auth = useAuth();
-  const dispatch = useDispatch();
 
   const [userValueExpired, setUserValueExpired] = useState(false);
 
@@ -14,12 +12,12 @@ export const AuthenticationStoreSync = () => {
 
     if (auth.user && !auth.user.expired) {
       // Trigger delayed rerender to reevaluate user.expired value.
-      setTimeout(() => setUserValueExpired(current => !current), auth.user.expires_in * 1000);
-      dispatch(setAuthentication(auth.user));
+      setTimeout(() => setUserValueExpired(current => !current), (auth.user.expires_in ?? 0) * 1000);
+      setAuthToken({ token_type: auth.user.token_type, access_token: auth.user.access_token });
     } else {
-      dispatch(unsetAuthentication());
+      clearAuthToken();
     }
-  }, [auth.user, userValueExpired, dispatch, auth.isLoading]);
+  }, [auth.user, userValueExpired, auth.isLoading]);
 
   return null;
 };

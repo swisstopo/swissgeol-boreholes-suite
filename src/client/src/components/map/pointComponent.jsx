@@ -14,7 +14,7 @@ import { get as getProjection } from "ol/proj";
 import VectorSource from "ol/source/Vector";
 import XYZ from "ol/source/XYZ";
 import PropTypes from "prop-types";
-import { getHeight } from "../../api-lib";
+import { getHeight } from "../../api/height.ts";
 import { fetchApiV2Legacy } from "../../api/fetchApiV2.ts";
 import { BasemapContext } from "../basemapSelector/basemapContext.tsx";
 import { attributions, crossOrigin, swissExtent, updateBasemap } from "../basemapSelector/basemaps.ts";
@@ -372,10 +372,8 @@ class PointComponent extends React.Component {
               data-cy="height-button"
               onClick={() => {
                 if (_.isFunction(this.props.applyChange)) {
-                  getHeight(this.state.point[0], this.state.point[1]).then(response => {
-                    this.setState({
-                      height: response.status === 200 ? response.data.height : null,
-                    });
+                  getHeight(this.state.point[0], this.state.point[1]).then(height => {
+                    this.setState({ height });
                   });
                 }
               }}>
