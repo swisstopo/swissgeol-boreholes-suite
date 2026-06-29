@@ -7,7 +7,8 @@ namespace BDMS.Models;
 /// The typed set of borehole fields that can be changed through bulk edit.
 /// Each property is nullable to mirror the corresponding borehole column; which of
 /// them are actually written is controlled by <see cref="BoreholeBulkUpdateRequest.FieldsToUpdate"/>.
-/// A masked field must carry a value; a <see langword="null"/> value is rejected (clearing is not supported).
+/// A masked field must carry a value; a <see langword="null"/> value is rejected (clearing is not supported),
+/// except nullable booleans where <see langword="null"/> is the deliberate "not specified" state.
 /// </summary>
 public class BoreholeBulkUpdate
 {

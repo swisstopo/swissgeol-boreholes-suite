@@ -1181,6 +1181,29 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
+    public async Task BulkEditAllowsNullForNullableBooleanField()
+    {
+        var id = await context.Boreholes.OrderBy(b => b.Id).Select(b => b.Id).FirstAsync();
+        var borehole = await context.Boreholes.SingleAsync(b => b.Id == id);
+        borehole.NationalInterest = true;
+        await context.SaveChangesAsync();
+
+        var request = new BoreholeBulkUpdateRequest
+        {
+            BoreholeIds = new() { id },
+            Update = new BoreholeBulkUpdate { NationalInterest = null },
+            FieldsToUpdate = new() { "nationalInterest" },
+        };
+
+        // null is the deliberate "not specified" state for nullable booleans, so it is accepted and written.
+        var response = await controller.BulkEditAsync(request);
+        ActionResultAssert.IsOk(response);
+
+        var updated = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == id);
+        Assert.IsNull(updated.NationalInterest);
+    }
+
+    [TestMethod]
     public async Task BulkEditResetsOnlyTheAffectedTabStatus()
     {
         var borehole = await context.Boreholes

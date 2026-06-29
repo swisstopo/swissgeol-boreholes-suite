@@ -165,7 +165,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         }
 
         var fieldsWithoutValue = request.FieldsToUpdate
-            .Where(field => GetBulkEditFieldValue(request.Update, field) is null)
+            .Where(field => IsBulkEditFieldMissingValue(request.Update, field))
             .ToList();
         if (fieldsWithoutValue.Count > 0)
         {
@@ -539,10 +539,20 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         }
     }
 
-    private static object? GetBulkEditFieldValue(BoreholeBulkUpdate update, string field)
-        => typeof(BoreholeBulkUpdate)
-            .GetProperty(field, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance)?
-            .GetValue(update);
+    // A masked field must carry a value, except nullable booleans where null is the deliberate
+    // "not specified" tri-state offered by the UI. Matched case-insensitively against BoreholeBulkUpdate properties.
+    private static bool IsBulkEditFieldMissingValue(BoreholeBulkUpdate update, string field)
+    {
+        var property = typeof(BoreholeBulkUpdate)
+            .GetProperty(field, BindingFlags.IgnoreCase | BindingFlags.Public | BindingFlags.Instance);
+
+        if (property is null || property.PropertyType == typeof(bool?))
+        {
+            return false;
+        }
+
+        return property.GetValue(update) is null;
+    }
 
     internal static void ApplyBulkEditField(Borehole borehole, BoreholeBulkUpdate update, string field)
     {
