@@ -52,7 +52,7 @@ const mockWorkgroups = [
 ] as unknown as ChipDescriptorInputs["workgroups"];
 
 const baseInputs: ChipDescriptorInputs = {
-  filterParams: {},
+  activeFilters: {},
   codelists: [],
   getCodelistLabel: () => "",
   workgroups: [],
@@ -75,7 +75,7 @@ describe("multiselect (codelist) chips", () => {
   it("renders one chip per selected value with category tooltip", () => {
     const descriptors = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { statusId: [10, 11] },
+      activeFilters: { statusId: [10, 11] },
       codelists: mockCodelists,
       getCodelistLabel,
     });
@@ -92,7 +92,7 @@ describe("multiselect (codelist) chips", () => {
   it("deleting one chip removes only that value", () => {
     const [first] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { statusId: [10, 11] },
+      activeFilters: { statusId: [10, 11] },
       codelists: mockCodelists,
       getCodelistLabel,
     });
@@ -103,7 +103,7 @@ describe("multiselect (codelist) chips", () => {
   it("deleting the last value clears the field", () => {
     const [only] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { statusId: [10] },
+      activeFilters: { statusId: [10] },
       codelists: mockCodelists,
       getCodelistLabel,
     });
@@ -115,7 +115,7 @@ describe("multiselect (codelist) chips", () => {
   it("falls back to #<id> when codelist entry missing (stale URL)", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { statusId: [999] },
+      activeFilters: { statusId: [999] },
       codelists: mockCodelists,
       getCodelistLabel,
     });
@@ -125,7 +125,7 @@ describe("multiselect (codelist) chips", () => {
   it("skips codelist-backed chips while codelists are still loading (empty array)", () => {
     const descriptors = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { statusId: [10, 11] },
+      activeFilters: { statusId: [10, 11] },
       codelists: [], // loading state — nothing resolved yet
       getCodelistLabel,
     });
@@ -137,7 +137,7 @@ describe("multiselect (workgroup) chips", () => {
   it("renders one chip per workgroup with the workgroup name", () => {
     const descriptors = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { workgroupId: [1, 2] },
+      activeFilters: { workgroupId: [1, 2] },
       workgroups: mockWorkgroups,
     });
     expect(descriptors).toHaveLength(2);
@@ -153,7 +153,7 @@ describe("multiselect (workgroup) chips", () => {
   it("delete removes only that workgroup id", () => {
     const [first] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { workgroupId: [1, 2] },
+      activeFilters: { workgroupId: [1, 2] },
       workgroups: mockWorkgroups,
     });
     first.onDelete();
@@ -163,7 +163,7 @@ describe("multiselect (workgroup) chips", () => {
   it("deleting the last workgroup value clears the field", () => {
     const [only] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { workgroupId: [1] },
+      activeFilters: { workgroupId: [1] },
       workgroups: mockWorkgroups,
     });
     only.onDelete();
@@ -174,7 +174,7 @@ describe("multiselect (workgroup) chips", () => {
   it("unknown workgroup id falls back to #<id>", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { workgroupId: [99] },
+      activeFilters: { workgroupId: [99] },
       workgroups: mockWorkgroups,
     });
     expect(desc.label).toBe("#99");
@@ -184,7 +184,7 @@ describe("multiselect (workgroup) chips", () => {
   it("skips workgroup chips while workgroups are still loading (empty array)", () => {
     const descriptors = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { workgroupId: [1, 2] },
+      activeFilters: { workgroupId: [1, 2] },
       workgroups: [], // loading state — nothing resolved yet
     });
     expect(descriptors).toEqual([]);
@@ -195,7 +195,7 @@ describe("text chips", () => {
   it("renders a free-text chip with value label and category tooltip", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { originalName: "ABC-123" },
+      activeFilters: { originalName: "ABC-123" },
     });
     expect(desc).toMatchObject({
       id: "originalName",
@@ -208,7 +208,7 @@ describe("text chips", () => {
   it("projectName renders with its own category label", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { projectName: "Foo" },
+      activeFilters: { projectName: "Foo" },
     });
     expect(desc.label).toBe("Foo");
     expect(desc.tooltip).toBe("Project name: Foo");
@@ -217,7 +217,7 @@ describe("text chips", () => {
   it("name renders with its own category label", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { name: "Bar" },
+      activeFilters: { name: "Bar" },
     });
     expect(desc.label).toBe("Bar");
     expect(desc.tooltip).toBe("Name: Bar");
@@ -226,7 +226,7 @@ describe("text chips", () => {
   it("workflowStatus renders one chip per selected status, translated through translateValue", () => {
     const descs = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { workflowStatus: ["published"] },
+      activeFilters: { workflowStatus: ["published"] },
     });
     expect(descs).toHaveLength(1);
     const [desc] = descs;
@@ -239,7 +239,7 @@ describe("text chips", () => {
   it("workflowStatus delete with remaining values calls setField with the rest", () => {
     const [first] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { workflowStatus: ["published", "draft"] },
+      activeFilters: { workflowStatus: ["published", "draft"] },
     });
     first.onDelete();
     expect(baseInputs.setField).toHaveBeenCalledWith("workflowStatus", ["draft"]);
@@ -248,7 +248,7 @@ describe("text chips", () => {
   it("workflowStatus delete of last value clears the field", () => {
     const [only] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { workflowStatus: ["published"] },
+      activeFilters: { workflowStatus: ["published"] },
     });
     only.onDelete();
     expect(baseInputs.clearField).toHaveBeenCalledWith("workflowStatus");
@@ -258,7 +258,7 @@ describe("text chips", () => {
   it("delete clears the field", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { originalName: "ABC" },
+      activeFilters: { originalName: "ABC" },
     });
     desc.onDelete();
     expect(baseInputs.clearField).toHaveBeenCalledWith("originalName");
@@ -268,7 +268,7 @@ describe("text chips", () => {
   it("empty string renders no chip", () => {
     const descriptors = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { originalName: "" },
+      activeFilters: { originalName: "" },
     });
     expect(descriptors).toEqual([]);
   });
@@ -276,7 +276,7 @@ describe("text chips", () => {
   it("whitespace-only string renders no chip", () => {
     const descriptors = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { projectName: "   " },
+      activeFilters: { projectName: "   " },
     });
     expect(descriptors).toEqual([]);
   });
@@ -286,7 +286,7 @@ describe("range chips", () => {
   it("renders a > chip for rangeMin (numeric)", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { totalDepthMin: 100 },
+      activeFilters: { totalDepthMin: 100 },
     });
     expect(desc).toMatchObject({
       id: "totalDepthMin",
@@ -299,7 +299,7 @@ describe("range chips", () => {
   it("renders a < chip for rangeMax (numeric)", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { totalDepthMax: 200 },
+      activeFilters: { totalDepthMax: 200 },
     });
     expect(desc).toMatchObject({
       id: "totalDepthMax",
@@ -312,7 +312,7 @@ describe("range chips", () => {
   it("renders both min and max chips when both bounds are set", () => {
     const descs = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { totalDepthMin: 100, totalDepthMax: 200 },
+      activeFilters: { totalDepthMin: 100, totalDepthMax: 200 },
     });
     expect(descs).toHaveLength(2);
     expect(descs.map(d => d.label)).toEqual(["> 100", "< 200"]);
@@ -322,7 +322,7 @@ describe("range chips", () => {
   it("renders rangeMin for other numeric range keys", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { topBedrockFreshMdMin: 42 },
+      activeFilters: { topBedrockFreshMdMin: 42 },
     });
     expect(desc.label).toBe("> 42");
     expect(desc.tooltip).toBe("Top bedrock fresh min: > 42");
@@ -331,7 +331,7 @@ describe("range chips", () => {
   it("renders rangeMax for topBedrockWeatheredMdMax", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { topBedrockWeatheredMdMax: 75 },
+      activeFilters: { topBedrockWeatheredMdMax: 75 },
     });
     expect(desc.label).toBe("< 75");
     expect(desc.tooltip).toBe("Top bedrock weathered max: < 75");
@@ -340,7 +340,7 @@ describe("range chips", () => {
   it("date range min uses the same > prefix", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { restrictionUntilFrom: "2024-01-01" },
+      activeFilters: { restrictionUntilFrom: "2024-01-01" },
     });
     expect(desc).toMatchObject({
       id: "restrictionUntilFrom",
@@ -353,7 +353,7 @@ describe("range chips", () => {
   it("date range max uses the < prefix", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { restrictionUntilTo: "2024-12-31" },
+      activeFilters: { restrictionUntilTo: "2024-12-31" },
     });
     expect(desc.label).toBe("< 2024-12-31");
     expect(desc.tooltip).toBe("Restriction until to: < 2024-12-31");
@@ -362,7 +362,7 @@ describe("range chips", () => {
   it("delete clears only that bound", () => {
     const descs = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { totalDepthMin: 100, totalDepthMax: 200 },
+      activeFilters: { totalDepthMin: 100, totalDepthMax: 200 },
     });
     descs[0].onDelete();
     expect(baseInputs.clearField).toHaveBeenCalledWith("totalDepthMin");
@@ -372,7 +372,7 @@ describe("range chips", () => {
   it("delete on max bound clears only the max", () => {
     const descs = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { totalDepthMin: 100, totalDepthMax: 200 },
+      activeFilters: { totalDepthMin: 100, totalDepthMax: 200 },
     });
     descs[1].onDelete();
     expect(baseInputs.clearField).toHaveBeenCalledWith("totalDepthMax");
@@ -381,7 +381,7 @@ describe("range chips", () => {
   it("null range value renders no chip", () => {
     const descriptors = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { totalDepthMin: null as unknown as number },
+      activeFilters: { totalDepthMin: null as unknown as number },
     });
     expect(descriptors).toEqual([]);
   });
@@ -389,7 +389,7 @@ describe("range chips", () => {
   it("undefined range value renders no chip", () => {
     const descriptors = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: {},
+      activeFilters: {},
     });
     expect(descriptors).toEqual([]);
   });
@@ -397,7 +397,7 @@ describe("range chips", () => {
   it("empty-string date range value renders no chip", () => {
     const descriptors = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { restrictionUntilFrom: "" },
+      activeFilters: { restrictionUntilFrom: "" },
     });
     expect(descriptors).toEqual([]);
   });
@@ -407,7 +407,7 @@ describe("nullable boolean chips (allowNull: true)", () => {
   it("renders Yes chip with prefixed label and no tooltip", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { hasGroundwater: "true" },
+      activeFilters: { hasGroundwater: "true" },
     });
     expect(desc).toMatchObject({
       id: "hasGroundwater",
@@ -420,7 +420,7 @@ describe("nullable boolean chips (allowNull: true)", () => {
   it("renders No chip", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { hasGroundwater: "false" },
+      activeFilters: { hasGroundwater: "false" },
     });
     expect(desc.label).toBe("Has groundwater: No");
     expect(desc.tooltip).toBeUndefined();
@@ -429,7 +429,7 @@ describe("nullable boolean chips (allowNull: true)", () => {
   it("renders Keine Angabe chip when allowNull and value is 'null'", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { hasGroundwater: "null" },
+      activeFilters: { hasGroundwater: "null" },
     });
     expect(desc.label).toBe("Has groundwater: Keine Angabe");
   });
@@ -437,7 +437,7 @@ describe("nullable boolean chips (allowNull: true)", () => {
   it("renders nationalInterest Yes chip", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { nationalInterest: "true" },
+      activeFilters: { nationalInterest: "true" },
     });
     expect(desc.label).toBe("National interest: Yes");
     expect(desc.id).toBe("nationalInterest");
@@ -446,7 +446,7 @@ describe("nullable boolean chips (allowNull: true)", () => {
   it("renders topBedrockIntersected Keine Angabe chip", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { topBedrockIntersected: "null" },
+      activeFilters: { topBedrockIntersected: "null" },
     });
     expect(desc.label).toBe("Top bedrock intersected: Keine Angabe");
   });
@@ -454,7 +454,7 @@ describe("nullable boolean chips (allowNull: true)", () => {
   it("delete calls clearField (not setField)", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { hasGroundwater: "null" },
+      activeFilters: { hasGroundwater: "null" },
     });
     desc.onDelete();
     expect(baseInputs.clearField).toHaveBeenCalledWith("hasGroundwater");
@@ -464,7 +464,7 @@ describe("nullable boolean chips (allowNull: true)", () => {
   it("undefined value produces no chip", () => {
     const descriptors = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: {},
+      activeFilters: {},
     });
     expect(descriptors).toEqual([]);
   });
@@ -474,7 +474,7 @@ describe("nullable boolean chips (allowNull: false)", () => {
   it("renders Yes chip for hasGeometry", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { hasGeometry: "true" },
+      activeFilters: { hasGeometry: "true" },
     });
     expect(desc).toMatchObject({
       id: "hasGeometry",
@@ -487,7 +487,7 @@ describe("nullable boolean chips (allowNull: false)", () => {
   it("renders No chip for hasLogs", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { hasLogs: "false" },
+      activeFilters: { hasLogs: "false" },
     });
     expect(desc.label).toBe("Has logs: No");
   });
@@ -495,7 +495,7 @@ describe("nullable boolean chips (allowNull: false)", () => {
   it("does NOT render Keine Angabe for allowNull:false fields even if URL has 'null'", () => {
     const descriptors = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { hasLogs: "null" },
+      activeFilters: { hasLogs: "null" },
     });
     expect(descriptors).toHaveLength(0);
   });
@@ -503,7 +503,7 @@ describe("nullable boolean chips (allowNull: false)", () => {
   it("renders Yes chip for hasProfiles / hasPhotos / hasDocuments", () => {
     const descs = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { hasProfiles: "true", hasPhotos: "true", hasDocuments: "true" },
+      activeFilters: { hasProfiles: "true", hasPhotos: "true", hasDocuments: "true" },
     });
     expect(descs.map(d => d.label)).toEqual(["Has profiles: Yes", "Has photos: Yes", "Has documents: Yes"]);
   });
@@ -511,7 +511,7 @@ describe("nullable boolean chips (allowNull: false)", () => {
   it("delete calls clearField for allowNull:false field", () => {
     const [desc] = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { hasGeometry: "true" },
+      activeFilters: { hasGeometry: "true" },
     });
     desc.onDelete();
     expect(baseInputs.clearField).toHaveBeenCalledWith("hasGeometry");
@@ -523,7 +523,7 @@ describe("string-multiselect chips for canton and municipality", () => {
   it("renders one chip per selected canton with category tooltip", () => {
     const descriptors = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { canton: ["Bern", "Vaud"] },
+      activeFilters: { canton: ["Bern", "Vaud"] },
       t: ((key: string) => (key === "canton" ? "Canton" : key)) as unknown as ChipDescriptorInputs["t"],
     });
     expect(descriptors).toHaveLength(2);
@@ -535,7 +535,7 @@ describe("string-multiselect chips for canton and municipality", () => {
   it("renders one chip per selected municipality", () => {
     const descriptors = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { municipality: ["Lausanne"] },
+      activeFilters: { municipality: ["Lausanne"] },
       t: ((key: string) => (key === "municipality" ? "Municipality" : key)) as unknown as ChipDescriptorInputs["t"],
     });
     expect(descriptors).toHaveLength(1);
@@ -546,7 +546,7 @@ describe("string-multiselect chips for canton and municipality", () => {
     const clearField = vi.fn();
     const descriptors = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { canton: ["Bern"] },
+      activeFilters: { canton: ["Bern"] },
       clearField,
     });
     descriptors[0].onDelete();
@@ -561,7 +561,7 @@ describe("codelist-multiselect chips for log tool type", () => {
     ] as unknown as ChipDescriptorInputs["codelists"];
     const descriptors = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: { logToolTypeId: [100000201] },
+      activeFilters: { logToolTypeId: [100000201] },
       codelists: toolTypeCodelists,
       getCodelistLabel,
       t: ((key: string) => (key === "toolType" ? "Tool type" : key)) as unknown as ChipDescriptorInputs["t"],
@@ -583,14 +583,14 @@ describe("FILTER_FIELD_META ordering contract", () => {
     expect(Object.keys(FilterFieldMetaData)).toEqual(Object.keys(filterParsers));
   });
 
-  it("returns descriptors in FILTER_FIELD_META declaration order regardless of filterParams key insertion order", () => {
-    // Behavioral complement to the structural test above: even if filterParams
+  it("returns descriptors in FILTER_FIELD_META declaration order regardless of activeFilters key insertion order", () => {
+    // Behavioral complement to the structural test above: even if activeFilters
     // is built up with keys in an order opposite to the declaration order,
     // buildFilterChipDescriptors must emit chips in FILTER_KEY_ORDER — because
-    // the dispatch loop iterates FILTER_KEY_ORDER, not Object.keys(filterParams).
+    // the dispatch loop iterates FILTER_KEY_ORDER, not Object.keys(activeFilters).
     const descs = buildFilterChipDescriptors({
       ...baseInputs,
-      filterParams: {
+      activeFilters: {
         // Insertion order here is totalDepthMin → statusId → originalName,
         // which is the REVERSE of the FILTER_FIELD_META declaration order
         // (originalName comes first, statusId next, totalDepthMin last).

@@ -147,6 +147,7 @@ export const Table = <T extends GridValidRowModel>({
   });
 
   const actualRowCount = paginationMode === "server" ? (rowCount ?? rows?.length) : rows.length;
+  const effectivePageSize = paginationModel?.pageSize ?? maxRowsPerPage;
 
   const loadingStyles = isLoading
     ? {
@@ -203,7 +204,7 @@ export const Table = <T extends GridValidRowModel>({
         localeText={muiLocales[i18n.language]}
         disableColumnSelector
         disableRowSelectionOnClick
-        hideFooter={actualRowCount < maxRowsPerPage}
+        hideFooter={actualRowCount <= effectivePageSize}
         hideFooterSelectedRowCount
         disableColumnFilter
         disableColumnMenu={true}

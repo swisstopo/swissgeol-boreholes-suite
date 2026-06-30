@@ -207,6 +207,12 @@ describe("Test for exporting boreholes.", () => {
   });
 
   it("downloads a maximum of 100 boreholes", () => {
+    // The seed contains exactly 100 boreholes, so we need to add a couple of extras
+    // to exceed the 100-entry cap and trigger the truncation prompt under test.
+    for (let i = 0; i < 5; i++) {
+      createBorehole({ originalName: `EXPORT_CAP_TEST_${i}` });
+    }
+
     goToRouteAndAcceptTerms("/");
     deleteDownloadedFile(csvFileName);
     deleteDownloadedFile(jsonFileName);

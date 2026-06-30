@@ -18,6 +18,7 @@ export const interceptApiCalls = () => {
 
   // Api V2
   cy.intercept("/api/v2/borehole/filter").as("borehole_filter");
+  cy.intercept("POST", "/api/v2/borehole/filter/stats").as("borehole_filter_stats");
   cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
   cy.intercept("/api/v2/borehole/**").as("borehole_by_id");
   cy.intercept("PUT", "/api/v2/borehole").as("update-borehole");
@@ -518,7 +519,7 @@ export const loginAndResetState = () => {
       auth: bearerAuth(token),
     }).then(response => {
       response.body.filteredBoreholeIds
-        .filter((id: number) => id > 1002999) // max id in seed data.
+        .filter((id: number) => id > 1000099) // max id in seed data.
         .forEach((id: number) => {
           deleteBorehole(id);
         });

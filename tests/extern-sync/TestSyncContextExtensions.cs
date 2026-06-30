@@ -140,6 +140,22 @@ internal static class TestSyncContextExtensions
 
         borehole.BoreholeGeometry = borehole.BoreholeGeometry?.OrderBy(g => g.MD).ToList();
         borehole.Observations = borehole.Observations?.OrderBy(o => o.FromDepthM).ToList();
+        borehole.BoreholeCodelists = borehole.BoreholeCodelists?.OrderBy(bc => bc.CodelistId).ToList();
+
+        foreach (var observation in borehole.Observations?.OfType<Hydrotest>() ?? Enumerable.Empty<Hydrotest>())
+        {
+            observation.HydrotestEvaluationMethodCodes = observation.HydrotestEvaluationMethodCodes.OrderBy(h => h.CodelistId).ToList();
+            observation.HydrotestFlowDirectionCodes = observation.HydrotestFlowDirectionCodes.OrderBy(h => h.CodelistId).ToList();
+            observation.HydrotestKindCodes = observation.HydrotestKindCodes.OrderBy(h => h.CodelistId).ToList();
+        }
+
+        foreach (var logRun in borehole.LogRuns)
+        {
+            foreach (var logFile in logRun.LogFiles ?? Enumerable.Empty<LogFile>())
+            {
+                logFile.LogFileToolTypeCodes = logFile.LogFileToolTypeCodes.OrderBy(l => l.CodelistId).ToList();
+            }
+        }
 
         return borehole;
     }
@@ -167,7 +183,12 @@ internal static class TestSyncContextExtensions
             .Remove(removeSettingsRegex)
             .Remove(removeListsRegex)
             .Remove(removeObjectsRegex)
-            .Remove(removeAttributesRegex);
+            .Remove(removeAttributesRegex)
+
+            // Removing an attribute that was the last entry in an object leaves a
+            // dangling comma before the closing brace or bracket (e.g. {"x":1,}).
+            // Strip those so the comparison is robust to which attribute was last.
+            .Remove(@",(?=\s*[}\]])");
     }
 
     /// <summary>
