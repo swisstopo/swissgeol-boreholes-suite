@@ -62,27 +62,26 @@ export const filterParsers = {
 
 export type FilterKey = keyof typeof filterParsers;
 
-const filterAndTableParsers = { ...filterParsers, ...tableParsers };
+const allParsers = { ...filterParsers, ...tableParsers, ...mapParsers };
 
 export const useBoreholeUrlParams = () => {
-  const [allParams, setParams] = useQueryStates(filterAndTableParsers);
-  const allFilterParams = Object.fromEntries(
-    (Object.keys(filterParsers) as FilterKey[]).map(k => [k, allParams[k]]),
-  ) as { [K in FilterKey]: (typeof allParams)[K] };
-  const filterParams = Object.fromEntries(Object.entries(allFilterParams).filter(([, value]) => value !== null));
-  const tableParams = Object.fromEntries(
-    (Object.keys(tableParsers) as (keyof typeof tableParsers)[]).map(k => [k, allParams[k]]),
-  ) as { [K in keyof typeof tableParsers]: (typeof allParams)[K] };
-  const [mapParams, setMapParams] = useQueryStates(mapParsers);
+  const [queryState, setQueryState] = useQueryStates(allParsers);
+  const filterState = Object.fromEntries((Object.keys(filterParsers) as FilterKey[]).map(k => [k, queryState[k]])) as {
+    [K in FilterKey]: (typeof queryState)[K];
+  };
+  const activeFilters = Object.fromEntries(Object.entries(filterState).filter(([, value]) => value !== null));
+  const tableState = Object.fromEntries(
+    (Object.keys(tableParsers) as (keyof typeof tableParsers)[]).map(k => [k, queryState[k]]),
+  ) as { [K in keyof typeof tableParsers]: (typeof queryState)[K] };
 
   // Keep refs always pointing to the latest values so cleanup functions
   // (called on unmount) never close over stale state.
-  const allFilterParamsRef = useRef(allFilterParams);
-  allFilterParamsRef.current = allFilterParams;
-  const tableParamsRef = useRef(tableParams);
-  tableParamsRef.current = tableParams;
+  const filterStateRef = useRef(filterState);
+  filterStateRef.current = filterState;
+  const tableStateRef = useRef(tableState);
+  tableStateRef.current = tableState;
 
-  // Encodes a filter value into the form `setParams` expects, with the special-cases for
+  // Encodes a filter value into the form `setQueryState` expects, with the special-cases for
   // booleans and nullable-boolean keys.
   const encodeFilterValue = useCallback(
     (key: FilterKey, value: string | string[] | number[] | boolean | null | undefined): unknown => {
@@ -97,14 +96,14 @@ export const useBoreholeUrlParams = () => {
     [],
   );
 
-  // Every filter mutation also resets the page in the SAME setParams call. Splitting the
-  // page reset into a separate setParams invocation on the merged useQueryStates instance
+  // Every filter mutation also resets the page in the SAME setQueryState call. Splitting the
+  // page reset into a separate setQueryState invocation on the merged useQueryStates instance
   // races and one update overwrites the other.
   const setFilterField = useCallback(
     (key: FilterKey, value: string | string[] | number[] | boolean | null | undefined) => {
-      setParams({ [key]: encodeFilterValue(key, value), page: 0 } as Parameters<typeof setParams>[0]);
+      setQueryState({ [key]: encodeFilterValue(key, value), page: 0 } as Parameters<typeof setQueryState>[0]);
     },
-    [encodeFilterValue, setParams],
+    [encodeFilterValue, setQueryState],
   );
 
   // Removes the param from the URL entirely. Unlike `setFilterField(key, null)`, which preserves
@@ -113,32 +112,32 @@ export const useBoreholeUrlParams = () => {
   // for the same reason as `setFilterField`.
   const clearFilterField = useCallback(
     (key: FilterKey) => {
-      setParams({ [key]: null, page: 0 } as Parameters<typeof setParams>[0]);
+      setQueryState({ [key]: null, page: 0 } as Parameters<typeof setQueryState>[0]);
       sessionStorage.removeItem(SessionKeys[key as keyof typeof SessionKeys]);
     },
-    [setParams],
+    [setQueryState],
   );
 
   const mapCenter: [number, number] | null =
-    mapParams.mapCenterX !== null && mapParams.mapCenterY !== null
-      ? [mapParams.mapCenterX, mapParams.mapCenterY]
+    queryState.mapCenterX !== null && queryState.mapCenterY !== null
+      ? [queryState.mapCenterX, queryState.mapCenterY]
       : null;
 
   const setMapCenter = (center: [number, number] | null) =>
-    setMapParams(center ? { mapCenterX: center[0], mapCenterY: center[1] } : { mapCenterX: null, mapCenterY: null });
+    setQueryState(center ? { mapCenterX: center[0], mapCenterY: center[1] } : { mapCenterX: null, mapCenterY: null });
 
   const resetFilter = () => {
     // Set all filter keys to null to remove them from the URL, and reset to page 0 in the
-    // same setParams call — see setFilterField for why this must be atomic.
+    // same setQueryState call, see setFilterField for why this must be atomic.
     const nulled = Object.fromEntries(Object.keys(filterParsers).map(k => [k, null]));
-    setParams({ ...nulled, page: 0 } as Parameters<typeof setParams>[0]);
+    setQueryState({ ...nulled, page: 0 } as Parameters<typeof setQueryState>[0]);
     (Object.keys(filterParsers) as Array<FilterKey>).forEach(key => {
       sessionStorage.removeItem(SessionKeys[key as keyof typeof SessionKeys]);
     });
   };
 
   const saveFilterParamsInSession = useCallback(() => {
-    Object.entries(allFilterParamsRef.current).forEach(([key, value]) => {
+    Object.entries(filterStateRef.current).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
         sessionStorage.setItem(
           SessionKeys[key as keyof typeof SessionKeys],
@@ -151,7 +150,7 @@ export const useBoreholeUrlParams = () => {
   }, []);
 
   const saveTableParamsInSession = useCallback(() => {
-    Object.entries(tableParamsRef.current).forEach(([key, value]) => {
+    Object.entries(tableStateRef.current).forEach(([key, value]) => {
       if (value !== null && value !== undefined) {
         sessionStorage.setItem(
           SessionKeys[key as keyof typeof SessionKeys],
@@ -173,14 +172,14 @@ export const useBoreholeUrlParams = () => {
       }
     });
     if (Object.keys(updates).length > 0) {
-      setParams(updates as Parameters<typeof setParams>[0]);
+      setQueryState(updates as Parameters<typeof setQueryState>[0]);
     }
-  }, [setParams]);
+  }, [setQueryState]);
 
   const restoreFilterParamsFromSession = useCallback(() => {
     // URL takes precedence over session: if ANY filter is already set via the URL,
     // skip restoring filter values from sessionStorage entirely.
-    const hasUrlFilter = Object.values(allFilterParamsRef.current).some(v => v !== null);
+    const hasUrlFilter = Object.values(filterStateRef.current).some(v => v !== null);
     if (hasUrlFilter) {
       return;
     }
@@ -193,9 +192,9 @@ export const useBoreholeUrlParams = () => {
       }
     });
     if (Object.keys(updates).length > 0) {
-      setParams(updates as Parameters<typeof setParams>[0]);
+      setQueryState(updates as Parameters<typeof setQueryState>[0]);
     }
-  }, [setParams]);
+  }, [setQueryState]);
 
   const restoreMapParamsFromSession = useCallback(() => {
     const updates: Record<string, unknown> = {};
@@ -207,30 +206,30 @@ export const useBoreholeUrlParams = () => {
       }
     });
     if (Object.keys(updates).length > 0) {
-      setMapParams(updates as Parameters<typeof setMapParams>[0]);
+      setQueryState(updates as Parameters<typeof setQueryState>[0]);
     }
-  }, [setMapParams]);
+  }, [setQueryState]);
 
-  const activeFilterCount = Object.values(filterParams).filter(v => v !== null).length;
+  const activeFilterCount = Object.values(activeFilters).filter(v => v !== null).length;
 
   return {
-    filterParams,
+    activeFilters,
     setFilterField,
     clearFilterField,
     resetFilter,
     saveFilterParamsInSession,
-    tableParams,
+    tableState,
     saveTableParamsInSession,
-    setParams,
+    setQueryState,
     restoreTableParamsFromSession,
     restoreFilterParamsFromSession,
     restoreMapParamsFromSession,
     activeFilterCount,
-    mapResolution: mapParams.mapResolution,
-    setMapResolution: (v: number) => setMapParams({ mapResolution: v }),
+    mapResolution: queryState.mapResolution,
+    setMapResolution: (v: number) => setQueryState({ mapResolution: v }),
     mapCenter,
     setMapCenter,
-    bottomDrawerOpen: tableParams.bottomDrawerOpen,
-    setBottomDrawerOpen: (v: boolean) => setParams({ bottomDrawerOpen: v }),
+    bottomDrawerOpen: tableState.bottomDrawerOpen,
+    setBottomDrawerOpen: (v: boolean) => setQueryState({ bottomDrawerOpen: v }),
   };
 };

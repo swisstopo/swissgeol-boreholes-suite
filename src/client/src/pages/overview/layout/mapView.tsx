@@ -40,9 +40,9 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     setFeatureIds,
   } = useContext(PolygonFilterContext);
   const {
-    filterParams,
-    tableParams,
-    setParams,
+    activeFilters,
+    tableState,
+    setQueryState,
     mapResolution,
     mapCenter,
     saveFilterParamsInSession,
@@ -76,21 +76,21 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
 
   // MUI DataGrid uses 0-based page, FilterRequest uses 1-based pageNumber
   const paginationModel: GridPaginationModel = {
-    page: tableParams.page,
-    pageSize: tableParams.pageSize,
+    page: tableState.page,
+    pageSize: tableState.pageSize,
   };
   const setPaginationModel = (model: GridPaginationModel) => {
-    setParams({ page: model.page, pageSize: model.pageSize });
+    setQueryState({ page: model.page, pageSize: model.pageSize });
   };
 
   const sortModel: GridSortModel = [
     {
-      field: tableParams.orderBy,
-      sort: tableParams.direction.toLowerCase() as "asc" | "desc",
+      field: tableState.orderBy,
+      sort: tableState.direction.toLowerCase() as "asc" | "desc",
     },
   ];
   const setSortModel = (model: GridSortModel) => {
-    setParams({
+    setQueryState({
       orderBy: model[0]?.field ?? "name",
       direction: model[0]?.sort === "desc" ? "DESC" : "ASC",
       page: 0, // reset to first page on sort change
@@ -99,18 +99,18 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
 
   // Assemble the full FilterRequest from URL params
   const filterRequest: FilterRequest = {
-    ...filterParams,
+    ...activeFilters,
     ids: featureIds?.length > 0 ? featureIds : undefined,
-    pageNumber: tableParams.page + 1,
-    pageSize: tableParams.pageSize,
-    orderBy: tableParams.orderBy,
-    direction: tableParams.direction,
+    pageNumber: tableState.page + 1,
+    pageSize: tableState.pageSize,
+    orderBy: tableState.orderBy,
+    direction: tableState.direction,
   };
 
   const emptyFilterResponse: FilterResponse = {
     totalCount: 0,
     pageNumber: 1,
-    pageSize: tableParams.pageSize,
+    pageSize: tableState.pageSize,
     totalPages: 0,
     boreholes: [],
     geoJson: null,

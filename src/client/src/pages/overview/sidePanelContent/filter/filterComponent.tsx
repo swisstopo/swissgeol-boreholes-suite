@@ -45,10 +45,10 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
   const { filterPolygon, polygonSelectionEnabled, setPolygonSelectionEnabled, setFeatureIds, setFilterPolygon } =
     useContext(PolygonFilterContext);
 
-  const { filterParams, setFilterField, resetFilter } = useBoreholeUrlParams();
+  const { activeFilters, setFilterField, resetFilter } = useBoreholeUrlParams();
 
   const { data: user } = useCurrentUser();
-  const { data: stats } = useFilterStats(filterParams);
+  const { data: stats } = useFilterStats(activeFilters);
   const auth = useAuth();
 
   const [searchList, setSearchList] = useState<FilterInputConfig[]>([
@@ -183,7 +183,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
         </Box>
         {searchList?.map(filter => {
           const currentFilterInputConfig = searchList.find(l => l.name === filter.name);
-          const activeFilterCount = Object.entries(filterParams).filter(([key, value]) =>
+          const activeFilterCount = Object.entries(activeFilters).filter(([key, value]) =>
             currentFilterInputConfig?.searchData.some(d => d.key === key && value != null),
           )?.length;
           return filter.isHidden ? null : (
@@ -205,7 +205,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
                   <WorkgroupFilter
                     onChange={workgroup => setFilterField("workgroupId", workgroup)}
                     workgroups={getUserWorkgroups(user)}
-                    selectedWorkgroupIds={filterParams["workgroupId"] as number[] | undefined}
+                    selectedWorkgroupIds={activeFilters["workgroupId"] as number[] | undefined}
                     counts={getDomainCountsForField(stats, "workgroupId")}
                   />
                 </StyledAccordionDetails>
@@ -213,7 +213,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
               {filter?.name === "workflowStatus" && filter?.isSelected && (
                 <StyledAccordionDetails>
                   <StatusFilter
-                    selectedWorkflowStatus={filterParams["workflowStatus"] as string[] | undefined}
+                    selectedWorkflowStatus={activeFilters["workflowStatus"] as string[] | undefined}
                     counts={stats?.workflowStatusCount}
                     setFilterField={setFilterField}
                   />
