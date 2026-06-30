@@ -91,7 +91,7 @@ public class HydrotestControllerTest
             ToDepthMasl = 78.0043,
             IsOpenBorehole = true,
             Comment = "Test comment",
-            BoreholeId = 1002431,
+            BoreholeId = 1000088,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 4).Id,
             KindCodelistIds = new List<int> { context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 1).Id },
         };
@@ -109,7 +109,7 @@ public class HydrotestControllerTest
             ToDepthMasl = 27603.2,
             IsOpenBorehole = true,
             Comment = "Updated test comment",
-            BoreholeId = 1002431,
+            BoreholeId = 1000088,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
             KindCodelistIds = new List<int> { context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 3).Id },
             FlowDirectionCodelistIds = new List<int> { 15203187 },
@@ -168,7 +168,7 @@ public class HydrotestControllerTest
             ToDepthMasl = 2633.2,
             IsOpenBorehole = false,
             Comment = "New test comment",
-            BoreholeId = 1002431,
+            BoreholeId = 1000088,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 3).Id,
             KindCodelistIds = new List<int>() { context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id },
             HydrotestResults = new List<HydrotestResult>() { new HydrotestResult { ParameterId = 15203194 } },
@@ -189,7 +189,7 @@ public class HydrotestControllerTest
         Assert.AreEqual(newHydrotest.ToDepthMasl, 2633.2);
         Assert.AreEqual(newHydrotest.IsOpenBorehole, false);
         Assert.AreEqual(newHydrotest.Comment, "New test comment");
-        Assert.AreEqual(newHydrotest.BoreholeId, 1002431);
+        Assert.AreEqual(newHydrotest.BoreholeId, 1000088);
         Assert.AreEqual(newHydrotest.ReliabilityId, 15203158);
         CollectionAssert.Contains((System.Collections.ICollection)newHydrotest.KindCodelistIds!, 15203171);
 
@@ -206,7 +206,7 @@ public class HydrotestControllerTest
         var newHydrotest = new Hydrotest
         {
             Type = ObservationType.Hydrotest,
-            BoreholeId = 1002431,
+            BoreholeId = 1000088,
             KindCodelistIds = new List<int>()
             {
                 context.Codelists.Where(c => c.Schema == HydrogeologySchemas.HydrotestKindSchema).Single(c => c.Geolcode == 2).Id,

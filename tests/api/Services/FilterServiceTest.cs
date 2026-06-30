@@ -39,7 +39,7 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(3002, result.TotalCount);
+        Assert.AreEqual(102, result.TotalCount);
         Assert.IsNotNull(result.Boreholes);
         Assert.AreEqual(100, result.Boreholes.Count());
     }
@@ -57,12 +57,9 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, editorUser);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(3000, result.TotalCount);
+        Assert.AreEqual(100, result.TotalCount);
         Assert.IsNotNull(result.Boreholes);
         Assert.AreEqual(100, result.Boreholes.Count());
-
-        // GeoJSON contains all filtered boreholes with geometry (2426 out of 3000 editor's boreholes have geometry)
-        Assert.AreEqual(2426, result.GeoJson.Count);
 
         // Editor should only see boreholes from their workgroups
         var editor = await context.UsersWithIncludes
@@ -71,6 +68,13 @@ public class FilterServiceTest
 
         Assert.IsNotNull(editor);
         var allowedWorkgroupIds = editor.WorkgroupRoles.Select(w => w.WorkgroupId).ToList();
+
+        // GeoJSON contains all editor-visible boreholes that have geometry (LocationX and LocationY set).
+        var expectedGeoJsonCount = await context.Boreholes
+            .AsNoTracking()
+            .Where(b => b.WorkgroupId.HasValue && allowedWorkgroupIds.Contains(b.WorkgroupId.Value))
+            .CountAsync(b => b.LocationX != null && b.LocationY != null);
+        Assert.AreEqual(expectedGeoJsonCount, result.GeoJson.Count);
 
         foreach (var borehole in result.Boreholes)
         {
@@ -82,7 +86,7 @@ public class FilterServiceTest
     [TestMethod]
     public async Task FilterBoreholesWithIdsFilterReturnsMultipleBoreholes()
     {
-        var testIds = new List<int> { 1_000_100, 1_000_200, 1_000_300 };
+        var testIds = new List<int> { 1_000_010, 1_000_040, 1_000_070 };
         var filterRequest = new FilterRequest
         {
             Ids = testIds,
@@ -120,7 +124,7 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(6, result.TotalCount);
+        Assert.AreEqual(1, result.TotalCount);
 
         foreach (var borehole in result.Boreholes)
         {
@@ -164,7 +168,7 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(600, result.TotalCount);
+        Assert.AreEqual(20, result.TotalCount);
         foreach (var borehole in result.Boreholes)
         {
             if (borehole.TotalDepth.HasValue)
@@ -210,7 +214,7 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(10, result.TotalCount);
+        Assert.AreEqual(1, result.TotalCount);
 
         // Verify that the borehole we used to create the polygon is in the results
         CollectionAssert.Contains(result.Boreholes.Select(b => b.Id).ToList(), existingBorehole.Id, $"Expected borehole with ID {existingBorehole.Id} to be in the filtered results");
@@ -231,7 +235,7 @@ public class FilterServiceTest
         Assert.AreEqual(5, result.Boreholes.Count());
         Assert.AreEqual(1, result.PageNumber);
         Assert.AreEqual(5, result.PageSize);
-        Assert.AreEqual(600, result.TotalPages);
+        Assert.AreEqual(20, result.TotalPages);
     }
 
     [TestMethod]
@@ -358,8 +362,11 @@ public class FilterServiceTest
         Assert.IsNotNull(result);
         Assert.IsNotNull(result.GeoJson);
 
-        // GeoJSON contains all filtered boreholes with geometry, not just the paginated ones
-        Assert.AreEqual(2426, result.GeoJson.Count);
+        // GeoJSON contains all filtered boreholes with geometry, not just the paginated ones.
+        var expectedGeoJsonCount = await context.Boreholes
+            .AsNoTracking()
+            .CountAsync(b => b.LocationX != null && b.LocationY != null);
+        Assert.AreEqual(expectedGeoJsonCount, result.GeoJson.Count);
         var firstFeature = result.GeoJson.OrderBy(g => g.Attributes["id"]).First();
         Assert.AreEqual(4, firstFeature.Attributes.Count);
         Assert.AreEqual(1000000, firstFeature.Attributes["id"]);
@@ -395,8 +402,8 @@ public class FilterServiceTest
         Assert.AreEqual(5, result.Boreholes.Count());
 
         // should contain all results, not just paginated ones
-        Assert.AreEqual(3001, result.FilteredBoreholeIds.Count()); // all boreholes
-        Assert.AreEqual(3000, result.SelectableBoreholeIds.Count()); // unlocked boreholes
+        Assert.AreEqual(101, result.FilteredBoreholeIds.Count()); // all boreholes
+        Assert.AreEqual(100, result.SelectableBoreholeIds.Count()); // unlocked boreholes
     }
 
     [TestMethod]
@@ -412,7 +419,7 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(101, result.TotalCount);
+        Assert.AreEqual(100, result.TotalCount);
 
         // Verify that boreholes have logs
         foreach (var borehole in result.Boreholes)
@@ -900,7 +907,7 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(273, result.TotalCount);
+        Assert.AreEqual(11, result.TotalCount);
 
         // Get original Boreholes since TopBedrockFreshMd is not present in result BoreholeListItem.
         var originalBoreholes = context.Boreholes.Where(ob => result.Boreholes.Select(b => b.Id).Contains(ob.Id));
@@ -1176,7 +1183,7 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(5, result.TotalCount);
+        Assert.AreEqual(1, result.TotalCount);
 
         // Verify all filters are applied
         foreach (var borehole in result.Boreholes)
@@ -1304,13 +1311,18 @@ public class FilterServiceTest
     [TestMethod]
     public async Task FilterBoreholesWithMultipleStatusIdsReturnsMatchingBoreholes()
     {
-        // Find boreholes with different status IDs
+        // Find boreholes with different status IDs. Order deterministically so the
+        // set of picked StatusIds is stable across runs.
         var statusIds = await context.Boreholes
             .Where(b => b.StatusId.HasValue)
             .Select(b => b.StatusId.Value)
             .Distinct()
+            .OrderBy(id => id)
             .Take(2)
             .ToListAsync();
+
+        var expectedCount = await context.Boreholes
+            .CountAsync(b => b.StatusId.HasValue && statusIds.Contains(b.StatusId.Value));
 
         var filterRequest = new FilterRequest
         {
@@ -1322,7 +1334,7 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(626, result.TotalCount);
+        Assert.AreEqual(expectedCount, result.TotalCount);
         foreach (var borehole in result.Boreholes)
         {
             Assert.IsTrue(borehole.StatusId.HasValue);
@@ -1333,13 +1345,18 @@ public class FilterServiceTest
     [TestMethod]
     public async Task FilterBoreholesWithMultipleTypeIdsReturnsMatchingBoreholes()
     {
-        // Find boreholes with different type IDs
+        // Find boreholes with different type IDs. Order deterministically so the
+        // set of picked TypeIds is stable across runs.
         var typeIds = await context.Boreholes
             .Where(b => b.TypeId.HasValue)
             .Select(b => b.TypeId.Value)
             .Distinct()
+            .OrderBy(id => id)
             .Take(3)
             .ToListAsync();
+
+        var expectedCount = await context.Boreholes
+            .CountAsync(b => b.TypeId.HasValue && typeIds.Contains(b.TypeId.Value));
 
         var filterRequest = new FilterRequest
         {
@@ -1351,7 +1368,7 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(521, result.TotalCount);
+        Assert.AreEqual(expectedCount, result.TotalCount);
         Assert.IsTrue(result.TotalCount > 0);
 
         foreach (var borehole in result.Boreholes)
@@ -1364,13 +1381,18 @@ public class FilterServiceTest
     [TestMethod]
     public async Task FilterBoreholesWithMultiplePurposeIdsReturnsMatchingBoreholes()
     {
-        // Find boreholes with different purpose IDs
+        // Find boreholes with different purpose IDs. Order deterministically so the
+        // set of picked PurposeIds is stable across runs.
         var purposeIds = await context.Boreholes
             .Where(b => b.PurposeId.HasValue)
             .Select(b => b.PurposeId.Value)
             .Distinct()
+            .OrderBy(id => id)
             .Take(2)
             .ToListAsync();
+
+        var expectedCount = await context.Boreholes
+            .CountAsync(b => b.PurposeId.HasValue && purposeIds.Contains(b.PurposeId.Value));
 
         var filterRequest = new FilterRequest
         {
@@ -1382,7 +1404,7 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(233, result.TotalCount);
+        Assert.AreEqual(expectedCount, result.TotalCount);
 
         foreach (var borehole in result.Boreholes)
         {
@@ -1463,7 +1485,7 @@ public class FilterServiceTest
         var result = await filterService.FilterBoreholesAsync(filterRequest, adminUser);
 
         Assert.IsNotNull(result);
-        Assert.AreEqual(750, result.TotalCount);
+        Assert.AreEqual(25, result.TotalCount);
 
         foreach (var borehole in result.Boreholes)
         {
@@ -1518,9 +1540,13 @@ public class FilterServiceTest
         Assert.AreEqual(100, result.Boreholes.Count());
         Assert.AreEqual(100, result.PageSize);
         Assert.AreEqual(1, result.PageNumber);
-        Assert.AreEqual(3000, result.TotalCount);
-        Assert.AreEqual(3000, result.FilteredBoreholeIds.Count());
-        Assert.AreEqual(2426, result.GeoJson.Count()); // not all test boreholes have a geometry, so GeoJson count is less than total count
+        Assert.AreEqual(100, result.TotalCount);
+        Assert.AreEqual(100, result.FilteredBoreholeIds.Count());
+
+        var expectedGeoJsonCount = await context.Boreholes
+            .AsNoTracking()
+            .CountAsync(b => b.LocationX != null && b.LocationY != null);
+        Assert.AreEqual(expectedGeoJsonCount, result.GeoJson.Count());
     }
 
     [TestMethod]
@@ -1529,7 +1555,7 @@ public class FilterServiceTest
         var testBoreholes = new List<Borehole>();
         var statusCounts = new Dictionary<WorkflowStatus, int>
         {
-            { WorkflowStatus.Draft, 3000 }, // from seeddata
+            { WorkflowStatus.Draft, 100 }, // from seeddata
             { WorkflowStatus.InReview, 3 },
             { WorkflowStatus.Reviewed, 4 },
             { WorkflowStatus.Published, 2 },

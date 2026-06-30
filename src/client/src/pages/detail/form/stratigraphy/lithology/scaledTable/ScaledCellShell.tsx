@@ -40,9 +40,11 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx
 
   // Recompute the clamp count whenever the cell's pixel height changes (zoom in/out, pan,
   // initial calibration). Clamping at a whole-line boundary prevents the half-cut bottom line
-  // that plain overflow:hidden produces, and the ellipsis is rendered by the browser.
+  // that plain overflow:hidden produces, and the ellipsis is rendered by the browser. When the
+  // cell is too short to hold a single line cleanly the value drops to 0 and the content is
+  // hidden entirely — better than showing a vertically-clipped half-line.
   useTypedResizeObserver(cellRef, entry => {
-    const lines = Math.max(1, Math.floor((entry.contentRect.height - cellVerticalPaddingPx) / approximateLineHeightPx));
+    const lines = Math.max(0, Math.floor((entry.contentRect.height - cellVerticalPaddingPx) / approximateLineHeightPx));
     setMaxLines(lines);
   });
 
@@ -77,35 +79,39 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx
           overflow: "hidden",
           justifyContent: "center",
         }}>
-        <Box ref={contentRef} sx={lineClampSx(maxLines)}>
-          {children}
-        </Box>
+        {maxLines > 0 && (
+          <Box ref={contentRef} sx={lineClampSx(maxLines)}>
+            {children}
+          </Box>
+        )}
       </Stack>
-      <Stack
-        className="hover-content"
-        sx={{
-          position: "absolute",
-          top: 0,
-          right: 0,
-          padding: theme.spacing(1),
-          backgroundColor: theme.palette.background.grey,
-          borderBottomLeftRadius: theme.spacing(0.5),
-          zIndex: 1,
-        }}>
-        <StandaloneIconButton
-          icon={<Copy />}
-          dataCy="copyLayer-button"
-          aria-label={t("copyToClipboard")}
-          onPointerDown={e => e.stopPropagation()}
-          onClick={e => {
-            e.stopPropagation();
-            const el = contentRef.current;
-            copyToClipboard(el ? extractCellText(el) : "");
-          }}
-          color="primaryInverse"
-          sx={{ backgroundColor: theme.palette.background.grey }}
-        />
-      </Stack>
+      {maxLines > 0 && (
+        <Stack
+          className="hover-content"
+          sx={{
+            position: "absolute",
+            top: 0,
+            right: 0,
+            padding: theme.spacing(1),
+            backgroundColor: theme.palette.background.grey,
+            borderBottomLeftRadius: theme.spacing(0.5),
+            zIndex: 1,
+          }}>
+          <StandaloneIconButton
+            icon={<Copy />}
+            dataCy="copyLayer-button"
+            aria-label={t("copyToClipboard")}
+            onPointerDown={e => e.stopPropagation()}
+            onClick={e => {
+              e.stopPropagation();
+              const el = contentRef.current;
+              copyToClipboard(el ? extractCellText(el) : "");
+            }}
+            color="primaryInverse"
+            sx={{ backgroundColor: theme.palette.background.grey }}
+          />
+        </Stack>
+      )}
     </Box>
   );
 };

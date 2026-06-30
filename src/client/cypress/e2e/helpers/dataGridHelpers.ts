@@ -19,11 +19,7 @@ export const sortBy = (headerTextContent: string) => {
 
 export const verifyRowContains = (rowContent: string, rowIndex: number) => {
   cy.get(".MuiDataGrid-row").eq(rowIndex).scrollIntoView();
-  cy.get(".MuiDataGrid-row")
-    .eq(rowIndex)
-    .within(() => {
-      cy.contains(rowContent).should("exist");
-    });
+  cy.get(".MuiDataGrid-row").eq(rowIndex).should("contain", rowContent);
 };
 
 export const verifyAnyRowContains = (rowContent: string) => {

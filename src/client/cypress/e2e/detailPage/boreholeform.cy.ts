@@ -255,40 +255,40 @@ describe("Test for the borehole form.", () => {
     // sort by Name descending
     sortBy("Name");
     cy.wait("@borehole_filter");
-    clickOnRowWithText("Zena Rath");
+    clickOnRowWithText("Zelma Gorczany");
 
     navigateInSidebar(SidebarMenuItem.borehole);
-    evaluateInput("originalName", "Zena Rath");
-    evaluateInput("name", "Zena Rath");
-    evaluateInput("projectName", "Reactive asymmetric alliance");
-    evaluateSelect("restrictionId", "");
-    evaluateYesNoSelect("nationalInterest", "no");
-    navigateInSidebar(SidebarMenuItem.location);
-    evaluateSelect("originalReferenceSystemId", "LV03");
-    evaluateSelect("locationPrecisionId", "0.1 (± DGPS / Theodolit)");
-
-    evaluateInput("elevationZ", "3'519.948980314633");
-    evaluateInput("referenceElevation", "3'554.9389396584306");
-    evaluateSelect("elevationPrecisionId", "");
-    evaluateSelect("referenceElevationPrecisionId", "not specified");
-    evaluateSelect("referenceElevationTypeId", "kelly bushing");
-
-    returnToOverview();
-    clickOnRowWithText("Zena Mraz");
-    navigateInSidebar(SidebarMenuItem.borehole);
-    evaluateInput("originalName", "Zena Mraz");
-    evaluateInput("name", "Zena Mraz");
-    evaluateInput("projectName", "Ergonomic heuristic installation");
+    evaluateInput("originalName", "Zelma Gorczany");
+    evaluateInput("name", "Zelma Gorczany");
+    evaluateInput("projectName", "Fully-configurable 5th generation workforce");
     evaluateSelect("restrictionId", "");
     evaluateYesNoSelect("nationalInterest", "yes");
     navigateInSidebar(SidebarMenuItem.location);
     evaluateSelect("originalReferenceSystemId", "LV03");
-    evaluateSelect("locationPrecisionId", "not specified");
-    evaluateInput("elevationZ", "3'062.9991330499756");
-    evaluateInput("referenceElevation", "3'478.1368118609007");
-    evaluateSelect("elevationPrecisionId", "1");
+    evaluateSelect("locationPrecisionId", "50");
+
+    evaluateInput("elevationZ", "3'070.721185566262");
+    evaluateInput("referenceElevation", "3'588.612451957824");
+    evaluateSelect("elevationPrecisionId", "0.1");
     evaluateSelect("referenceElevationPrecisionId", "0.1");
-    evaluateSelect("referenceElevationTypeId", "kelly bushing");
+    evaluateSelect("referenceElevationTypeId", "manhole cover");
+
+    returnToOverview();
+    clickOnRowWithText("Yasmeen Torphy");
+    navigateInSidebar(SidebarMenuItem.borehole);
+    evaluateInput("originalName", "Yasmeen Torphy");
+    evaluateInput("name", "Yasmeen Torphy");
+    evaluateInput("projectName", "Compatible stable approach");
+    evaluateSelect("restrictionId", "");
+    evaluateYesNoSelect("nationalInterest", "no");
+    navigateInSidebar(SidebarMenuItem.location);
+    evaluateSelect("originalReferenceSystemId", "LV03");
+    evaluateSelect("locationPrecisionId", "10");
+    evaluateInput("elevationZ", "3'160.5061793981613");
+    evaluateInput("referenceElevation", "582.0225445004285");
+    evaluateSelect("elevationPrecisionId", "");
+    evaluateSelect("referenceElevationPrecisionId", "1");
+    evaluateSelect("referenceElevationTypeId", "rotary table");
   });
 
   it("switches tabs", () => {

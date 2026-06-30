@@ -85,21 +85,26 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task EditBoreholeWithCompleteBorehole()
     {
-        var id = 1_000_257;
+        var id = 1_000_057;
 
         var newBorehole = GetBoreholeToAdd();
         newBorehole.Id = id;
 
         var boreholeToEdit = GetBorehole(id);
-        Assert.AreEqual(2, boreholeToEdit.Stratigraphies.Count);
-        Assert.AreEqual(0, boreholeToEdit.Profiles.Count);
-        Assert.AreEqual(0, boreholeToEdit.BoreholeGeometry.Count);
-        Assert.AreEqual(0, boreholeToEdit.Completions.Count);
-        Assert.AreEqual(0, boreholeToEdit.Observations.Count); // Hydrogeology observations
-        Assert.AreEqual(0, boreholeToEdit.Sections.Count);
 
-        Assert.AreEqual(2, boreholeToEdit.CreatedById);
-        Assert.AreEqual(5, boreholeToEdit.UpdatedById);
+        // Capture initial collection counts so the test does not depend on
+        // the exact random distribution produced by the seed.
+        var initialStratigraphyCount = boreholeToEdit.Stratigraphies.Count;
+        var initialProfileCount = boreholeToEdit.Profiles.Count;
+        var initialBoreholeGeometryCount = boreholeToEdit.BoreholeGeometry.Count;
+        var initialCompletionCount = boreholeToEdit.Completions.Count;
+        var initialObservationCount = boreholeToEdit.Observations.Count;
+        var initialSectionCount = boreholeToEdit.Sections.Count;
+
+        var initialCreatedById = boreholeToEdit.CreatedById;
+        var initialUpdatedById = boreholeToEdit.UpdatedById;
+        Assert.IsNotNull(initialCreatedById);
+        Assert.IsNotNull(initialUpdatedById);
 
         // Update Borehole
         var response = await controller.EditAsync(newBorehole);
@@ -108,7 +113,7 @@ public class BoreholeControllerTest
         // Assert Updates and unchanged values
         var updatedBorehole = ActionResultAssert.IsOkObjectResult<Borehole>(response.Result);
 
-        Assert.AreEqual(4, updatedBorehole.CreatedById);
+        Assert.AreEqual(newBorehole.CreatedById, updatedBorehole.CreatedById);
         Assert.AreEqual(1, updatedBorehole.UpdatedById); // updatedById should be overwritten by the test user id.
         Assert.AreEqual(newBorehole.WorkgroupId, updatedBorehole.WorkgroupId);
         Assert.AreEqual(newBorehole.IsPublic, updatedBorehole.IsPublic);
@@ -151,13 +156,13 @@ public class BoreholeControllerTest
         Assert.AreEqual(newBorehole.ReferenceElevationPrecisionId, updatedBorehole.ReferenceElevationPrecisionId);
         Assert.AreEqual(newBorehole.ReferenceElevationTypeId, updatedBorehole.ReferenceElevationTypeId);
 
-        // Stratigraphies remain unchanged
-        Assert.AreEqual(2, updatedBorehole.Stratigraphies.Count);
-        Assert.AreEqual(0, updatedBorehole.Profiles.Count);
-        Assert.AreEqual(0, updatedBorehole.BoreholeGeometry.Count);
-        Assert.AreEqual(0, updatedBorehole.Completions.Count);
-        Assert.AreEqual(0, updatedBorehole.Observations.Count);
-        Assert.AreEqual(0, updatedBorehole.Sections.Count);
+        // Collection counts remain unchanged
+        Assert.AreEqual(initialStratigraphyCount, updatedBorehole.Stratigraphies.Count);
+        Assert.AreEqual(initialProfileCount, updatedBorehole.Profiles.Count);
+        Assert.AreEqual(initialBoreholeGeometryCount, updatedBorehole.BoreholeGeometry.Count);
+        Assert.AreEqual(initialCompletionCount, updatedBorehole.Completions.Count);
+        Assert.AreEqual(initialObservationCount, updatedBorehole.Observations.Count);
+        Assert.AreEqual(initialSectionCount, updatedBorehole.Sections.Count);
     }
 
     [TestMethod]
@@ -321,7 +326,7 @@ public class BoreholeControllerTest
     {
         var borehole = new Borehole
         {
-            Id = 1_000_256,
+            Id = 1_000_056,
             PurposeId = 99999, // Id violating constraint
         };
 
@@ -552,12 +557,25 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task Copy()
     {
-        var boreholeId = 1000030;
-        var originalBorehole = GetBorehole(boreholeId);
+        // Pick a borehole that has the full graph the assertions below depend on
+        // (stratigraphy with descriptions + completion + water ingress + field measurement + section).
+        var boreholeIdToCopy = await context.Boreholes
+            .AsNoTracking()
+            .Where(b =>
+                b.Stratigraphies.Any(s => s.LithologicalDescriptions.Any() && s.FaciesDescriptions.Any()) &&
+                b.Completions.Any(c => c.Casings.Any() && c.Backfills.Any() && c.Instrumentations.Any()) &&
+                b.Observations.OfType<WaterIngress>().Any() &&
+                b.Observations.OfType<FieldMeasurement>().Any(fm => fm.FieldMeasurementResults.Any()) &&
+                b.Sections.Any(s => s.SectionElements.Any()) &&
+                b.Profiles.Any())
+            .OrderBy(b => b.Id)
+            .Select(b => b.Id)
+            .FirstAsync();
+        var originalBorehole = GetBorehole(boreholeIdToCopy);
 
         Assert.IsTrue(originalBorehole.ValidateCasingReferences(), "Precondition: Borehole has invalid casing reference");
 
-        var result = await controller.CopyAsync(boreholeId, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
+        var result = await controller.CopyAsync(boreholeIdToCopy, workgroupId: DefaultWorkgroupId).ConfigureAwait(false);
         ActionResultAssert.IsOk(result.Result);
 
         var copiedBoreholeId = ((OkObjectResult?)result.Result)?.Value;
@@ -587,7 +605,7 @@ public class BoreholeControllerTest
         for (int i = 0; i < originalStratigraphy.LithologicalDescriptions.Count; i++)
         {
             var originalDescription = originalStratigraphy.LithologicalDescriptions.ElementAt(i);
-            var copiedDescription = copiedstratigraphy.LithologicalDescriptions.Single(d => d.Description == originalDescription.Description);
+            var copiedDescription = copiedstratigraphy.LithologicalDescriptions.Single(d => Math.Abs(d.FromDepth - originalDescription.FromDepth) < 1e-9);
 
             Assert.AreNotEqual(originalDescription.Id, copiedDescription.Id);
             Assert.AreEqual(originalDescription.Description, copiedDescription.Description);
@@ -601,7 +619,7 @@ public class BoreholeControllerTest
         for (int i = 0; i < originalStratigraphy.FaciesDescriptions.Count; i++)
         {
             var originalDescription = originalStratigraphy.FaciesDescriptions.ElementAt(i);
-            var copiedDescription = copiedstratigraphy.FaciesDescriptions.Single(d => d.Description == originalDescription.Description);
+            var copiedDescription = copiedstratigraphy.FaciesDescriptions.Single(d => Math.Abs(d.FromDepth - originalDescription.FromDepth) < 1e-9);
 
             Assert.AreNotEqual(originalDescription.Id, copiedDescription.Id);
             Assert.AreEqual(originalDescription.Description, copiedDescription.Description);

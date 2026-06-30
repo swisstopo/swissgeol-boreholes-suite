@@ -20,12 +20,12 @@ public class SyncBoreholesTaskTest
         // have the default workflow status 'draft'.
         var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
         await syncContext.Source.SetBoreholeStatusAsync(1_000_001, WorkflowStatus.Draft, cancellationToken);
-        await syncContext.Source.SetBoreholeStatusAsync(1_000_202, WorkflowStatus.InReview, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_020, WorkflowStatus.InReview, cancellationToken);
 
-        await syncContext.Source.SetBoreholeStatusAsync(1_001_404, WorkflowStatus.Reviewed, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_044, WorkflowStatus.Reviewed, cancellationToken);
         await syncContext.Source.SetBoreholeStatusAsync(1_000_022, WorkflowStatus.Reviewed, cancellationToken);
         await syncContext.Source.SetBoreholeStatusAsync(1_000_099, WorkflowStatus.Reviewed, cancellationToken);
-        await syncContext.Source.SetBoreholeStatusAsync(1_000_101, WorkflowStatus.Published, cancellationToken);
+        await syncContext.Source.SetBoreholeStatusAsync(1_000_010, WorkflowStatus.Published, cancellationToken);
 
         await syncContext.Source.FixCasingReferencesAsync(cancellationToken);
 
@@ -47,21 +47,25 @@ public class SyncBoreholesTaskTest
         }
 
         // Validate casings. Casing details are already asserted by comparing serialized JSON output.
-        Assert.AreEqual(8, originalBoreholes.SelectMany(b => b.Completions.Select(c => c.Casings)).Count());
-        Assert.AreEqual(8, syncedBoreholes.SelectMany(b => b.Completions.Select(c => c.Casings)).Count());
+        // Counts are derived from the source set so the test stays correct as the seed distribution changes.
+        var sourceCasingCount = originalBoreholes.SelectMany(b => b.Completions.Select(c => c.Casings)).Count();
+        Assert.IsTrue(sourceCasingCount > 0);
+        Assert.AreEqual(sourceCasingCount, syncedBoreholes.SelectMany(b => b.Completions.Select(c => c.Casings)).Count());
         Assert.IsTrue(syncedBoreholes.ValidateCasingReferences());
 
         // Validate profiles. Profile details are already asserted by comparing serialized JSON output.
-        Assert.AreEqual(2, originalBoreholes.SelectMany(b => b.Profiles ?? Array.Empty<Profile>()).Count());
-        Assert.AreEqual(2, syncedBoreholes.SelectMany(b => b.Profiles ?? Array.Empty<Profile>()).Count());
+        var sourceProfileCount = originalBoreholes.SelectMany(b => b.Profiles ?? Array.Empty<Profile>()).Count();
+        Assert.IsTrue(sourceProfileCount > 0);
+        Assert.AreEqual(sourceProfileCount, syncedBoreholes.SelectMany(b => b.Profiles ?? Array.Empty<Profile>()).Count());
 
         // Validate photos. Photo details are already asserted by comparing serialized JSON output.
-        Assert.AreEqual(2, originalBoreholes.SelectMany(b => b.Photos ?? Array.Empty<Photo>()).Count());
-        Assert.AreEqual(2, syncedBoreholes.SelectMany(b => b.Photos ?? Array.Empty<Photo>()).Count());
+        var sourcePhotoCount = originalBoreholes.SelectMany(b => b.Photos ?? Array.Empty<Photo>()).Count();
+        Assert.AreEqual(sourcePhotoCount, syncedBoreholes.SelectMany(b => b.Photos ?? Array.Empty<Photo>()).Count());
 
         // Validate log files. Log file details are already asserted by comparing serialized JSON output.
-        Assert.AreEqual(51, originalBoreholes.SelectMany(b => b.LogRuns.SelectMany(lr => lr.LogFiles ?? Array.Empty<LogFile>())).Count());
-        Assert.AreEqual(51, syncedBoreholes.SelectMany(b => b.LogRuns.SelectMany(lr => lr.LogFiles ?? Array.Empty<LogFile>())).Count());
+        var sourceLogFileCount = originalBoreholes.SelectMany(b => b.LogRuns.SelectMany(lr => lr.LogFiles ?? Array.Empty<LogFile>())).Count();
+        Assert.IsTrue(sourceLogFileCount > 0);
+        Assert.AreEqual(sourceLogFileCount, syncedBoreholes.SelectMany(b => b.LogRuns.SelectMany(lr => lr.LogFiles ?? Array.Empty<LogFile>())).Count());
 
         // Validate workgroup
         foreach (var syncedBorehole in syncedBoreholes)

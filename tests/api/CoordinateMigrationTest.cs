@@ -37,7 +37,7 @@ public class CoordinateMigrationTest : MaintenanceTaskTestBase
             (b.OriginalReferenceSystemId == SpatialReferenceCodelistId.LV95 && b.LocationX != null && b.LocationY != null) ||
             (b.OriginalReferenceSystemId == SpatialReferenceCodelistId.LV03 && b.LocationXLV03 != null && b.LocationYLV03 != null)).Count();
 
-        Assert.AreEqual(3004, Context.Boreholes.Count());
+        Assert.AreEqual(104, Context.Boreholes.Count());
 
         var httpMessageHandler = SetupCoordinateHttpMock();
 
@@ -75,7 +75,7 @@ public class CoordinateMigrationTest : MaintenanceTaskTestBase
                 (b.LocationX == null || b.LocationY == null)))
             .Count();
 
-        Assert.AreEqual(3004, Context.Boreholes.Count());
+        Assert.AreEqual(104, Context.Boreholes.Count());
 
         var httpMessageHandler = SetupCoordinateHttpMock();
 

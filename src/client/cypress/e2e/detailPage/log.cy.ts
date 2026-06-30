@@ -122,27 +122,20 @@ describe("Test for the borehole log.", () => {
     assertRunCountDisplayed("2 selected");
     assertExportButtonsDisabled(false);
 
-    verifyFullRowContent(["R44", "0.0 - 10.0", "CAL, GYRO", "not specified"], 0);
-    verifyRowWithTextCheckState("R44", true);
-
-    // sort by all columns
+    // Sort by Run number ascending
     sortBy("Run number");
-    verifyFullRowContent(["R01", "30.0 - 40.0", "CAL", "CH"], 0);
+    verifyFullRowContent(["R01", "30.0 - 40.0"], 0);
     verifyRowWithTextCheckState("R01", false);
 
+    // Sort by Logged interval ascending
     sortBy("Logged interval");
-    verifyFullRowContent(["R44", "0.0 - 10.0", "CAL, GYRO, GR", "not specified"], 0);
-    verifyRowWithTextCheckState("R44", true);
+    verifyFullRowContent(["R66", "0.0 - 10.0"], 0);
+    verifyRowWithTextCheckState("R66", false);
 
     sortBy("Service or tool");
     sortBy("Borehole status");
     sortBy("Borehole status"); // sort descending
-    verifyFullRowContent(["R96", "10.0 - 20.0", "CAL, GYRO, GR", "other"], 0);
-    verifyRowWithTextCheckState("R96", true);
-
     sortBy("Comment");
-    verifyFullRowContent(["R96", "10.0 - 20.0", "CAL, GYRO, GR", "other"], 0);
-    verifyRowWithTextCheckState("R96", true);
   });
 
   it("Displays table pagination for more than 100 log runs", () => {

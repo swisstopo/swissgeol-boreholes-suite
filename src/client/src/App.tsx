@@ -15,6 +15,7 @@ import { AlertBanner } from "./components/alert/alertBanner";
 import { AlertContext, AlertProvider } from "./components/alert/alertContext";
 import { BasemapProvider } from "./components/basemapSelector/basemapContext";
 import { DataCardProvider } from "./components/dataCard/dataCardContext";
+import { DevBranchBadge } from "./components/devBranchBadge/DevBranchBadge";
 import HeaderComponent from "./components/header/headerComponent";
 import { Prompt } from "./components/prompt/prompt";
 import { PromptProvider } from "./components/prompt/promptContext";
@@ -168,6 +169,7 @@ const App = () => {
       />
       <AlertProvider>
         <AlertBanner />
+        {import.meta.env.DEV && <DevBranchBadge />}
         <ErrorBoundary FallbackComponent={GlobalError}>
           <QueryClientInitializer>
             <BoreholesAuthProvider router={router}>

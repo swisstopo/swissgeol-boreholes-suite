@@ -88,7 +88,7 @@ public class GroundwaterLevelMeasurementControllerTest
             ToDepthMasl = 78.0043,
             IsOpenBorehole = true,
             Comment = "Test comment",
-            BoreholeId = 1000595,
+            BoreholeId = 1000099,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 4).Id,
             KindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).Single(c => c.Geolcode == 3).Id,
             LevelM = 0.0,
@@ -108,7 +108,7 @@ public class GroundwaterLevelMeasurementControllerTest
             ToDepthMasl = 27603.2,
             IsOpenBorehole = true,
             Comment = "Updated test comment",
-            BoreholeId = 1000595,
+            BoreholeId = 1000099,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 2).Id,
             KindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).Single(c => c.Geolcode == 1).Id,
             LevelM = 1.1,
@@ -166,7 +166,7 @@ public class GroundwaterLevelMeasurementControllerTest
             ToDepthMasl = 2633.2,
             IsOpenBorehole = false,
             Comment = "New test comment",
-            BoreholeId = 1000595,
+            BoreholeId = 1000099,
             ReliabilityId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.ObservationReliabilitySchema).Single(c => c.Geolcode == 3).Id,
             KindId = context.Codelists.Where(c => c.Schema == HydrogeologySchemas.GroundwaterLevelMeasurementKindSchema).Single(c => c.Geolcode == 2).Id,
             LevelM = 348.4563,
@@ -188,7 +188,7 @@ public class GroundwaterLevelMeasurementControllerTest
         Assert.AreEqual(newGroundwaterLevelMeasurement.ToDepthMasl, 2633.2);
         Assert.AreEqual(newGroundwaterLevelMeasurement.IsOpenBorehole, false);
         Assert.AreEqual(newGroundwaterLevelMeasurement.Comment, "New test comment");
-        Assert.AreEqual(newGroundwaterLevelMeasurement.BoreholeId, 1000595);
+        Assert.AreEqual(newGroundwaterLevelMeasurement.BoreholeId, 1000099);
         Assert.AreEqual(newGroundwaterLevelMeasurement.ReliabilityId, 15203158);
         Assert.AreEqual(newGroundwaterLevelMeasurement.KindId, 15203204);
         Assert.AreEqual(newGroundwaterLevelMeasurement.LevelM, 348.4563);

@@ -33,7 +33,7 @@ public class LocationMigrationTest : MaintenanceTaskTestBase
             (b.OriginalReferenceSystemId == SpatialReferenceCodelistId.LV95 && b.LocationX != null && b.LocationY != null) ||
             (b.OriginalReferenceSystemId == SpatialReferenceCodelistId.LV03 && b.LocationXLV03 != null && b.LocationYLV03 != null)).Count();
 
-        Assert.AreEqual(3003, Context.Boreholes.Count());
+        Assert.AreEqual(103, Context.Boreholes.Count());
 
         SetupLocationHttpMock();
 
@@ -63,7 +63,7 @@ public class LocationMigrationTest : MaintenanceTaskTestBase
             (string.IsNullOrWhiteSpace(b.Country) || string.IsNullOrWhiteSpace(b.Canton) || string.IsNullOrWhiteSpace(b.Municipality)))
             .Count();
 
-        Assert.AreEqual(3003, Context.Boreholes.Count());
+        Assert.AreEqual(103, Context.Boreholes.Count());
 
         SetupLocationHttpMock();
 
