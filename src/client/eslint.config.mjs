@@ -19,7 +19,7 @@ const compat = new FlatCompat({
     allConfig: js.configs.all
 });
 
-export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.config.mjs", "**/cypress/downloads",  "**/dev","**/.vscode", "server.cjs"]),
+export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.config.mjs", "vite.config.js", "**/cypress/downloads",  "**/dev","**/.vscode", "server.cjs"]),
   {
     extends: fixupConfigRules(compat.extends(
         "eslint:recommended",
