@@ -5,6 +5,7 @@ import { IconButton, Stack, Tooltip, Typography } from "@mui/material";
 import { ChronostratigraphyLayer, Codelist, LithostratigraphyLayer } from "../../../../api/generated";
 import { useCodelistSchema } from "../../../../components/codelist.ts";
 import LayerCard from "./layerCard.jsx";
+import { collectLayerDepths } from "./layerDepths.ts";
 import LayerGap from "./layerGap.jsx";
 import { NavState } from "./navigation/navState.ts";
 
@@ -50,6 +51,8 @@ export interface HierarchicalDataEditProfileParts {
   layerStack: ReactNode;
   // Append a new layer below the deepest existing one and pan the lens to it.
   handleAddLayer: () => void;
+  // Sorted, deduplicated list of layer-boundary depths (fromDepth + toDepth across all layers).
+  depths: ReadonlyArray<number>;
 }
 
 const iconSlotSx = {
@@ -177,6 +180,8 @@ export function useHierarchicalDataEditProfile({
     return stack;
   }, [layers, pixelPerMeter, addLayer, updateLayer, deleteLayer, dataProperty, options, header]);
 
+  const depths = useMemo<ReadonlyArray<number>>(() => collectLayerDepths(layers), [layers]);
+
   const lensSize = navState.lensSize;
   const toggleHeaderVisibility = useCallback((targetIndex: number) => {
     setHeader(prev => prev.map((h, i) => (targetIndex === i ? { ...h, isVisible: !h.isVisible } : h)));
@@ -230,5 +235,5 @@ export function useHierarchicalDataEditProfile({
     setNavState(prev => prev.setLensStart(Math.max(0, newToDepth - lensSize)));
   }, [addLayer, layers, lensSize, selectedStratigraphyID, setNavState]);
 
-  return { headerCells, layerStack, handleAddLayer };
+  return { headerCells, layerStack, handleAddLayer, depths };
 }
