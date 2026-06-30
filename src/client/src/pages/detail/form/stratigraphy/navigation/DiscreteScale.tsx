@@ -8,9 +8,9 @@ import { NavState } from "./navState.ts";
 type LabelAlignment = "below" | "center" | "above";
 
 const translateByAlignment: Record<LabelAlignment, string> = {
-  below: "translateY(100%)",
+  below: "translateY(140%)",
   center: "translateY(50%)",
-  above: "translateY(0%)",
+  above: "translateY(-40%)",
 };
 
 interface DepthLabelStyleProps {
