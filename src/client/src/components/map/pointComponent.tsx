@@ -1,7 +1,6 @@
 import { FC, useContext, useEffect, useRef, useState } from "react";
 import { Box, Button, Card, Stack, Typography } from "@mui/material";
 import { MapPin, MoveVertical } from "lucide-react";
-import _ from "lodash";
 import { Map, View } from "ol";
 import { defaults as defaultControls } from "ol/control";
 import Feature, { FeatureLike } from "ol/Feature";
@@ -19,8 +18,8 @@ import { BasemapContext } from "../basemapSelector/basemapContext.tsx";
 import { attributions, crossOrigin, swissExtent, updateBasemap } from "../basemapSelector/basemaps.ts";
 import { BasemapSelector } from "../basemapSelector/basemapSelector.tsx";
 import MapControls from "../buttons/mapControls.jsx";
-import { DataCardButtonContainer } from "../dataCard/dataCard.tsx";
 import "./mapProjections.ts";
+import { theme } from "../../AppTheme.ts";
 import { detailMapStyleFunction } from "./mapStyleFunctions.ts";
 
 const SRS = "EPSG:2056";
@@ -276,9 +275,9 @@ export const PointComponent: FC<PointComponentProps> = ({
   // update map if props have changed or no feature is present.
   useEffect(() => {
     if (!mapRef.current || !positionRef.current) return;
-    if (_.isNumber(x) && _.isNumber(y) && x + y !== 0) {
+    if (typeof x === "number" && typeof y === "number" && x + y !== 0) {
       const newPoint: number[] = [x, y];
-      if (!_.isEqual(newPoint, pointRef.current)) {
+      if (pointRef.current === null || newPoint[0] !== pointRef.current[0] || newPoint[1] !== pointRef.current[1]) {
         setPoint(newPoint);
         setAddress(true);
         getAddress(newPoint);
@@ -333,26 +332,25 @@ export const PointComponent: FC<PointComponentProps> = ({
       <Box sx={{ position: "absolute", right: 0, top: 355 }}>
         <BasemapSelector marginBottom="0px" />
       </Box>
-      <Box
-        style={{
-          bottom: "0px",
-          display: "flex",
-          flexDirection: "row",
-          alignItems: "center",
-          padding: "0.5em",
+      <Stack
+        direction="row"
+        alignItems="center"
+        spacing={2}
+        sx={{
+          p: 1,
           color: "white",
-          backgroundColor: "#3e3e3e",
+          backgroundColor: theme.palette.secondary.main,
         }}>
         <Box sx={{ flex: "1 1 100%", width: "300px" }}>
           <Stack direction={"row"}>
             <MapPin />
-            {_.isArray(point)
-              ? "E" + _.round(point[0], 2).toLocaleString() + " N" + _.round(point[1], 2).toLocaleString()
+            {Array.isArray(point)
+              ? "E" + Math.round(point[0] * 100) / 100 + " N" + Math.round(point[1] * 100) / 100
               : "n/p"}
             <Typography>{SRS}</Typography>
           </Stack>
-          {_.compact([municipality, canton]).length > 0 ? (
-            <Box>{_.compact([municipality, canton]).join(", ")}</Box>
+          {[municipality, canton].filter(Boolean).length > 0 ? (
+            <Box>{[municipality, canton].filter(Boolean).join(", ")}</Box>
           ) : null}
           {height === null ? null : (
             <Stack direction={"row"}>
@@ -361,10 +359,10 @@ export const PointComponent: FC<PointComponentProps> = ({
             </Stack>
           )}
         </Box>
-        <DataCardButtonContainer>
+        <Stack direction="row" alignItems="stretch" spacing={1}>
           <Button
             data-cy="apply-button"
-            disabled={!_.isArray(point) || address || !isEditable}
+            disabled={!Array.isArray(point) || address || !isEditable}
             loading={address}
             onClick={() => {
               if (point && applyChange) {
@@ -381,7 +379,7 @@ export const PointComponent: FC<PointComponentProps> = ({
             Apply
           </Button>
           <Button
-            disabled={!_.isArray(point)}
+            disabled={!Array.isArray(point)}
             data-cy="height-button"
             onClick={() => {
               if (point && applyChange) {
@@ -392,8 +390,8 @@ export const PointComponent: FC<PointComponentProps> = ({
             }}>
             <MoveVertical />
           </Button>
-        </DataCardButtonContainer>
-      </Box>
+        </Stack>
+      </Stack>
     </Card>
   );
 };
