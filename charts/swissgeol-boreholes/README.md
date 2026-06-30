@@ -54,10 +54,7 @@ helm install swissgeol-boreholes swissgeol-boreholes/swissgeol-boreholes \
   --create-namespace \
   --set app.domain="boreholes.example.com" \
   --set app.version="v2.1.1462" \
-  --set database.host="db.example.com" \
-  --set database.name="bdms" \
-  --set database.username="dbuser" \
-  --set database.password="dbpass" \
+  --set database.connectionString="Host=db.example.com;Port=5432;Database=bdms;Username=dbuser;Password=dbpass" \
   --set s3.endpoint="https://s3.eu-central-1.amazonaws.com" \
   --set s3.bucket="my-profiles" \
   --set s3.photosBucket="my-photos" \
@@ -87,7 +84,6 @@ helm install swissgeol-boreholes swissgeol-boreholes/swissgeol-boreholes \
 | `auth.scopes`                 | Required OIDC scopes           | `openid profile email`   |
 | `auth.anonymousModeEnabled`   | Enable anonymous mode          | `false`                  |
 | `auth.basicAuthEnabled`       | Enable basic auth on ingress   | `false`                  |
-| `database.port`               | Database port                  | `5432`                   |
 | `s3.endpoint`                 | S3 endpoint URL                | `""`                     |
 | `s3.secure`                   | Use HTTPS for S3               | `"1"`                    |
 | `googleAnalytics.trackingId`  | Google Analytics tracking ID   | `""`                     |
@@ -98,10 +94,7 @@ These values are stored in a Kubernetes Secret. Pass via `--set` on first deploy
 
 | Parameter                  | Description                       | Secret Key                 |
 | -------------------------- | --------------------------------- | -------------------------- |
-| `database.host`            | Database hostname                 | `databaseConnectionString` |
-| `database.name`            | Database name                     | `databaseConnectionString` |
-| `database.username`        | Database username                 | `databaseConnectionString` |
-| `database.password`        | Database password                 | `databaseConnectionString` |
+| `database.connectionString`| Database connection string (Npgsql) | `databaseConnectionString` |
 | `s3.bucket`                | S3 bucket name                    | `s3Bucket`                 |
 | `s3.photosBucket`          | S3 photos bucket name             | `s3PhotosBucket`           |
 | `s3.logFilesBucket`        | S3 log files bucket name          | `s3LogFilesBucket`         |
@@ -113,7 +106,9 @@ These values are stored in a Kubernetes Secret. Pass via `--set` on first deploy
 
 ### Upgrade / Migration
 
-If upgrading from a version where these values were in the ConfigMap, no action is needed. The three-tier pattern will pick up existing secret values on `helm upgrade`. For values that were previously only in the ConfigMap (database host/name, S3 buckets, auth, ARN), set them once via `--set` or `kubectl edit secret` after the first upgrade.
+If upgrading from a version where these values were in the ConfigMap, no action is needed. The three-tier pattern will pick up existing secret values on `helm upgrade`. For values that were previously only in the ConfigMap (S3 buckets, auth, ARN), set them once via `--set` or `kubectl edit secret` after the first upgrade.
+
+> **Breaking change in chart 1.1.0:** the discrete `database.host` / `database.port` / `database.name` / `database.username` / `database.password` values were replaced by a single `database.connectionString`. The Secret schema enforces `additionalProperties: false`, so any deploy still passing the old `--set database.host=...` keys fails validation. Update your deploy tooling before upgrading. Clusters upgraded from an earlier chart already store the `databaseConnectionString` secret key, so a no-`--set` upgrade reuses it (no data loss); older clusters need a one-time `--set database.connectionString=...`.
 
 Specify each parameter using the `--set key=value` argument to `helm install`. For a full list of values, you can check the `values.yaml` file or use the `helm show values swissgeol-boreholes/swissgeol-boreholes` command. Refer to the corresponding Helm [documentation](https://helm.sh/docs/intro/using_helm/#customizing-the-chart-before-installing) for more information on how to override settings in a YAML formatted file.
 
