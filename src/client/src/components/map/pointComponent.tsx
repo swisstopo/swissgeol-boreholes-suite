@@ -349,7 +349,7 @@ export const PointComponent: FC<PointComponentProps> = ({
               : "n/p"}
             <Typography>{SRS}</Typography>
           </Stack>
-          {[municipality, canton].filter(Boolean).length > 0 ? (
+          {[municipality, canton].some(Boolean) ? (
             <Box>{[municipality, canton].filter(Boolean).join(", ")}</Box>
           ) : null}
           {height === null ? null : (
