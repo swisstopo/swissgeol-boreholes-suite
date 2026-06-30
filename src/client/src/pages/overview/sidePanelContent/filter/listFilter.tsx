@@ -21,9 +21,9 @@ interface ListFilterProps {
 }
 
 export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
-  const { filterParams, setFilterField } = useBoreholeUrlParams();
+  const { activeFilters, setFilterField } = useBoreholeUrlParams();
   const searchData = inputConfig?.searchData;
-  const { data: stats } = useFilterStats(filterParams as FilterRequest);
+  const { data: stats } = useFilterStats(activeFilters as FilterRequest);
 
   const updateChange = useCallback(
     (attribute: string, value: string | boolean | number | null | number[] | undefined) => {
@@ -36,7 +36,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
     <FormContainer>
       {searchData?.map(filterItem => {
         const key = filterItem.key as FilterKey;
-        const value = filterParams?.[key];
+        const value = activeFilters?.[key];
 
         return (
           <Box key={filterItem.key}>
@@ -53,7 +53,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
                   item={filterItem}
                   filterValue={(value as string) ?? null}
                   onUpdate={value => updateChange(filterItem.key, value)}
-                  filterRequest={filterParams as FilterRequest}
+                  filterRequest={activeFilters as FilterRequest}
                 />
               )}
               {filterItem.type === "Date" && (

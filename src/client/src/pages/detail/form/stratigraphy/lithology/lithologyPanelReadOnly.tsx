@@ -5,9 +5,10 @@ import { theme } from "../../../../../AppTheme.ts";
 import { LensColumn } from "../components/lensColumn/LensColumn.tsx";
 import { StratigraphyTableHeaderCell } from "../components/stratigraphyTableHeaderCell.tsx";
 import { StratigraphyTableHeader } from "../components/stratigraphyTablePrimitives.tsx";
+import { collectLayerDepths } from "../layerDepths.ts";
+import { DiscreteScale } from "../navigation/DiscreteScale.tsx";
 import { NavigationChild } from "../navigation/NavigationChild.tsx";
 import { NavigationContainer } from "../navigation/NavigationContainer.tsx";
-import { Scale } from "../navigation/Scale.tsx";
 import { FaciesDescription, LithologicalDescription, Lithology } from "../stratigraphy.ts";
 import { LithologyTableScaled } from "./scaledTable/LithologyTableScaled.tsx";
 import { NullDepthBanner } from "./scaledTable/nullDepthBanner.tsx";
@@ -33,6 +34,7 @@ export const LithologyPanelReadOnly: FC<LithologyPanelReadOnlyProps> = ({
   // the table-header and lens-down rows are outside the body, and including them would inflate
   // pixelPerMeter so the bottom of the data clips inside `overflow: hidden`.
   const bodyRef = useRef<HTMLDivElement>(null);
+  const lithologyDepths = useMemo(() => collectLayerDepths(lithologies), [lithologies]);
 
   const hiddenCount = useMemo(
     () =>
@@ -90,7 +92,7 @@ export const LithologyPanelReadOnly: FC<LithologyPanelReadOnlyProps> = ({
                 "& > *:last-child": { borderRight: `1px solid ${theme.palette.border.darker}` },
               }}>
               <NavigationChild navState={navState} sx={{ flex: "0 0 128px" }}>
-                <Scale navState={navState} />
+                <DiscreteScale navState={navState} depths={lithologyDepths} />
               </NavigationChild>
               <LithologyTableScaled
                 lithologies={lithologies}

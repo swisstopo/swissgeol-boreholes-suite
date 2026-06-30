@@ -53,7 +53,7 @@ type MultiSelectStringKey = {
 }[FilterKey];
 
 export type ChipDescriptorInputs = {
-  filterParams: Partial<{ [K in FilterKey]: FilterValueByType[FilterTypeOf<K>] }>;
+  activeFilters: Partial<{ [K in FilterKey]: FilterValueByType[FilterTypeOf<K>] }>;
   codelists: Codelist[];
   getCodelistLabel: (c: Codelist) => string;
   workgroups: Workgroup[];
@@ -159,7 +159,7 @@ function buildCodelistMultiSelectDescriptors(
   meta: Extract<FilterFieldMeta, { type: "multiSelectCodelist" }>,
   inputs: ChipDescriptorInputs,
 ): ChipDescriptor[] {
-  const value = inputs.filterParams[key];
+  const value = inputs.activeFilters[key];
   if (value === undefined) return [];
   return buildMultiSelectDescriptors(key, value, meta, inputs, {
     isLoading: inputs.codelists.length === 0,
@@ -175,7 +175,7 @@ function buildWorkgroupMultiSelectDescriptors(
   meta: Extract<FilterFieldMeta, { type: "multiSelectWorkgroup" }>,
   inputs: ChipDescriptorInputs,
 ): ChipDescriptor[] {
-  const value = inputs.filterParams[key];
+  const value = inputs.activeFilters[key];
   if (value === undefined) return [];
   return buildMultiSelectDescriptors(key, value, meta, inputs, {
     isLoading: inputs.workgroups.length === 0,
@@ -188,7 +188,7 @@ function buildStringMultiSelectDescriptors(
   meta: Extract<FilterFieldMeta, { type: "multiSelectString" }>,
   inputs: ChipDescriptorInputs,
 ): ChipDescriptor[] {
-  const value = inputs.filterParams[key];
+  const value = inputs.activeFilters[key];
   if (value === undefined) return [];
   return buildMultiSelectDescriptors(key, value, meta, inputs, {
     isLoading: false,
@@ -271,7 +271,7 @@ function buildTextDescriptor(
 export function buildFilterChipDescriptors(inputs: ChipDescriptorInputs): ChipDescriptor[] {
   const result: ChipDescriptor[] = [];
   for (const key of FilterKeyOrder) {
-    const raw = inputs.filterParams[key];
+    const raw = inputs.activeFilters[key];
     if (raw === undefined || raw === null) continue;
     const meta = FilterFieldMetaData[key];
     switch (meta.type) {

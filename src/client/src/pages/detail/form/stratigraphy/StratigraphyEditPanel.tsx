@@ -9,10 +9,10 @@ import { LensColumn } from "./components/lensColumn/LensColumn.tsx";
 import { StratigraphyTableHeaderCell } from "./components/stratigraphyTableHeaderCell.tsx";
 import { StratigraphyTableHeader } from "./components/stratigraphyTablePrimitives.tsx";
 import { HierarchicalDataEditProfileParts } from "./hierarchicalDataEditProfile.tsx";
+import { DiscreteScale } from "./navigation/DiscreteScale.tsx";
 import { NavigationChild } from "./navigation/NavigationChild.tsx";
 import { NavigationContainer } from "./navigation/NavigationContainer.tsx";
 import { NavState } from "./navigation/navState.ts";
-import { Scale } from "./navigation/Scale.tsx";
 
 type UseEditProfile = (args: {
   stratigraphyId: number;
@@ -104,12 +104,11 @@ const StratigraphyEditPanelContent: FC<StratigraphyEditPanelContentProps> = ({
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
 
-  const { headerCells, layerStack, handleAddLayer } = useEditProfile({
+  const { headerCells, layerStack, handleAddLayer, depths } = useEditProfile({
     stratigraphyId,
     navState,
     setNavState,
   });
-
   return (
     <>
       <LensColumn stratigraphyId={stratigraphyId} navState={navState} setNavState={setNavState} />
@@ -119,7 +118,7 @@ const StratigraphyEditPanelContent: FC<StratigraphyEditPanelContentProps> = ({
       </StratigraphyTableHeader>
       <Stack ref={bodyRef} direction="row" sx={bodyStackSx}>
         <NavigationChild navState={navState} sx={{ flex: "0 0 128px" }}>
-          <Scale navState={navState} />
+          <DiscreteScale navState={navState} depths={depths} />
         </NavigationChild>
         <NavigationChild navState={navState}>{layerStack}</NavigationChild>
       </Stack>
