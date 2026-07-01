@@ -30,13 +30,10 @@ Mit `docker-compose up` kann eine funktionierende Infrastruktur hochgefahren wer
 | :-------------------------- | :--------------------------------------------------------------------------------------------- | :------------- | :------------- |
 | Boreholes of Switzerland    | [localhost:3000](http://localhost:3000/)                                                       | `admin`        | `swissforages` |
 | pgAdmin                     | [localhost:3001](http://localhost:3001/)                                                       | n/a            | n/a            |
-| Tornado REST API (`v1`)[^1] | [localhost:8888](http://localhost:8888/) [localhost:3000/api/v1](http://localhost:3000/api/v1) | n/a            | n/a            |
 | .NET REST API (`v2`)[^1]    | [localhost:5000](http://localhost:5000/) [localhost:3000/api/v2](http://localhost:3000/api/v2) | n/a            | n/a            |
 | OIDC Server                 | [localhost:4011](http://localhost:4011/)                                                       | `admin`        | `swissforages` |
 
 [^1]: Authentifizierung via `Authorization` Header mit Bearer-Token (`identity_token`) von OIDC Server. Login-Konfigurationen können in [config/oidc-mock-users.json](./config/oidc-mock-users.json) getätigt werden.
-
-❌Der Debug Output der Tornado REST API ist aktuell in Visual Studio nicht sichtbar. Bitte den Container-Log benutzen `docker compose logs api --follow` oder direkt in Visual Studio im _Containers_-Tab.
 
 ## Vitest Unit Tests
 
@@ -71,10 +68,6 @@ Die Applikation benötigt für die Authentifizierung und Autorisierung eine gül
 | Auth:GroupClaimType       | Der Name des Claims, welcher die Gruppenzugehörigkeit des Benutzers enthält. Default: `cognito:groups`                                                                                                                                               |
 | Auth:AuthorizedGroupName  | Der Name der Gruppe, welche autorisiert ist, um auf die API zuzugreifen.                                                                                                                                                                             |
 | Auth:AnonymousModeEnabled | Gibt an, ob die OIDC-Konfiguration ignoriert und die Authentifizierung abgestellt werden soll. Ist für den Betrieb im anonymen Modus (read-only) erforderlich.                                                                                       |
-
-### Legacy API Authentifizierung
-
-Requests and das Legacy API werden mit dem [YARP Reverse Proxy](https://microsoft.github.io/reverse-proxy/articles/config-files.html) durch das neue API weitergeleitet. Die Authentifizierung wird über das neue API übernommen. Die Authentifizierung erfolgt mit der [LegacyApiAuthenticationMiddleware](src\api\Authentication\LegacyApiAuthenticationMiddleware.cs) welche den `Authorization` Header mit dem `sub` Claim des Benutzers befüllt. **⚠️Da die Validierung des `identity_tokens` dabei verloren geht, darf das Legacy API nicht öffentlich verfügbar sein**. Die Konfiguration des Legacy API Endpunkts erfolgt über die [Konfiguration](https://learn.microsoft.com/en-us/aspnet/core/fundamentals/configuration) von `ReverseProxy:Clusters:pythonApi:Destinations:legacyApi:Address`.
 
 ### Anonymer Modus (read-only)
 

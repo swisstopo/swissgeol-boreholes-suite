@@ -29,6 +29,7 @@
 - Removed the lithology thumbnail column from the chronostratigraphy and lithostratigraphy tabs; depth scale is now the leftmost data column. The add-layer button moved from the header to a dashed "+" button at the bottom of the table, matching the lithology tab's add affordance.
 - Migrated the user map overlay settings from the legacy v1 API to the v2 API.
 - Migrated borehole bulk editing and bulk deletion from the legacy v1 API to the v2 API, and re-enabled bulk editing of purpose, status and lithology, lithostratigraphy and chronostratigraphy of the top bedrock.
+- Removed the legacy Python (v1) API entirely; all endpoints now run on the .NET v2 API.
 
 ### Fixed
 - Fixed bug where casing name was not correctly displayed in the select on the backfill card.
