@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState } from "react";
+import { useCallback, useContext, useEffect, useState } from "react";
 import { Stack } from "@mui/material";
 import { GridPaginationModel, GridRowSelectionModel, GridSortModel } from "@mui/x-data-grid";
 import {
@@ -8,6 +8,7 @@ import {
   FilterRequest,
   FilterResponse,
   useFilterBoreholes,
+  useReloadBoreholes,
 } from "../../../api/borehole.ts";
 import { useMapOverlays } from "../../../api/useMapOverlays.ts";
 import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
@@ -27,6 +28,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const [rowsToHighlight, setRowsToHighlight] = useState<number[]>([]);
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
   const [bulkEditDialogOpen, setBulkEditDialogOpen] = useState(false);
+  const reloadBoreholes = useReloadBoreholes();
   const [isExporting, setIsExporting] = useState(false);
   const [sessionRestored, setSessionRestored] = useState(false);
   const { navigateTo } = useBoreholesNavigate();
@@ -117,13 +119,14 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   };
   const { data: filterResponse = emptyFilterResponse } = useFilterBoreholes(filterRequest, sessionRestored);
 
+  const handleBulkEditClose = useCallback(() => {
+    setBulkEditDialogOpen(false);
+    reloadBoreholes();
+  }, [reloadBoreholes]);
+
   return (
     <Stack direction="column" sx={{ flex: "1 1.5 100%" }}>
-      <BulkEditDialog
-        isOpen={bulkEditDialogOpen}
-        selected={selectionModel}
-        onClose={() => setBulkEditDialogOpen(false)}
-      />
+      <BulkEditDialog isOpen={bulkEditDialogOpen} selected={selectionModel} onClose={handleBulkEditClose} />
       <ExportDialog
         isExporting={isExporting}
         setIsExporting={setIsExporting}
