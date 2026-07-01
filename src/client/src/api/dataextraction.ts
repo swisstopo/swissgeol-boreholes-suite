@@ -1,7 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
-import { User } from "../api-lib/ReduxStateInterfaces.ts";
+import { getAuthToken } from "../auth/authTokenStore.ts";
 import { ExtractedLithologicalDescription } from "../pages/detail/form/stratigraphy/stratigraphy.ts";
-import store from "../reducers";
 import { getAuthorizationHeader } from "./authentication.ts";
 import {
   BoundingBoxResponse,
@@ -15,37 +14,34 @@ import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 import { BoreholeAttachment } from "./unionTypes.ts";
 
 async function fetchCreatePngs(fileName: string): Promise<Response> {
-  const reduxUser: User = store.getState().core_user as User;
   return await fetch("/dataextraction/api/V1/create_pngs", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: getAuthorizationHeader(reduxUser.authentication),
+      Authorization: getAuthorizationHeader(getAuthToken()),
     },
     body: JSON.stringify({ filename: fileName }),
   });
 }
 
 async function fetchPageBoundingBoxes(fileName: string, pageNumber: number): Promise<Response> {
-  const reduxUser: User = store.getState().core_user as User;
   return await fetch("/dataextraction/api/V1/bounding_boxes", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: getAuthorizationHeader(reduxUser.authentication),
+      Authorization: getAuthorizationHeader(getAuthToken()),
     },
     body: JSON.stringify({ filename: fileName, page_number: pageNumber }),
   });
 }
 
 async function fetchExtractData(request: unknown, abortSignal: AbortSignal): Promise<Response> {
-  const reduxUser: User = store.getState().core_user as User;
   return await fetch("/dataextraction/api/V1/extract_data", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      Authorization: getAuthorizationHeader(reduxUser.authentication),
+      Authorization: getAuthorizationHeader(getAuthToken()),
     },
     body: JSON.stringify(request),
     signal: abortSignal,
@@ -53,13 +49,12 @@ async function fetchExtractData(request: unknown, abortSignal: AbortSignal): Pro
 }
 
 async function fetchExtractStratigraphy(fileName: string, abortSignal: AbortSignal): Promise<Response> {
-  const reduxUser: User = store.getState().core_user as User;
   return await fetch("/dataextraction/api/V1/extract_stratigraphy", {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
-      Authorization: getAuthorizationHeader(reduxUser.authentication),
+      Authorization: getAuthorizationHeader(getAuthToken()),
     },
     body: JSON.stringify({ filename: fileName }),
     signal: abortSignal,

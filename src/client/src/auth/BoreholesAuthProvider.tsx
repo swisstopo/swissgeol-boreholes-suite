@@ -12,7 +12,7 @@ import {
   toFilterRequestSubmission,
 } from "../api/borehole.ts";
 import { useSettings } from "../api/useSettings";
-import { AuthenticationStoreSync } from "./AuthenticationStoreSync.js";
+import { AuthenticationStoreSync } from "./AuthenticationStoreSync.tsx";
 import { AuthOverlay } from "./AuthOverlay";
 import { BoreholesAuthContext, BoreholesAuthContextProps } from "./BoreholesAuthContext.tsx";
 import { CognitoUserManager } from "./CognitoUserManager";

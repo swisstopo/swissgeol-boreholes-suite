@@ -55,16 +55,9 @@ auth:
 
 # Database configuration
 database:
-  # -- The hostname of the database server (stored as secret)
-  host:
-  # -- The port of the database server
-  port: 5432
-  # -- The name of the database (stored as secret)
-  name:
-  # -- The database username (stored as secret)
-  username:
-  # -- The database password (stored as secret)
-  password:
+  # -- The full connection string of the database (stored as secret)
+  # -- e.g. Host=db;Port=5432;Database=bdms;Username=user;Password=pass
+  connectionString:
 
 #
 # Desired number of replicas for the application

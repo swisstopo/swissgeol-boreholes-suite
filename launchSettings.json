@@ -8,7 +8,6 @@
         "minio": "StartWithoutDebugging",
         "oidc-server": "StartWithoutDebugging",
         "pgadmin": "StartWithoutDebugging",
-        "api-legacy": "StartWithoutDebugging",
         "api": "DoNotStart",
         "client": "DoNotStart",
         "dataextraction": "StartWithoutDebugging",
