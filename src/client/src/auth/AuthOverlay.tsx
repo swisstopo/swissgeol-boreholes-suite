@@ -1,8 +1,6 @@
 import { FC, PropsWithChildren } from "react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 import { Alert, Button, CircularProgress } from "@mui/material";
-import { ReduxRootState } from "../api-lib/ReduxStateInterfaces.ts";
 import { useCurrentUser } from "../api/user.ts";
 import { SplashScreen } from "./SplashScreen.tsx";
 import { useAuth } from "./useBoreholesAuth.tsx";
@@ -16,8 +14,7 @@ export const AuthOverlay: FC<PropsWithChildren> = ({ children }) => {
   }
 
   const { t } = useTranslation();
-  const authentication = useSelector((state: ReduxRootState) => state.core_user.authentication);
-  const canLoadUser = auth.isAuthenticated && (auth.anonymousModeEnabled || authentication !== null);
+  const canLoadUser = auth.isAuthenticated && (auth.anonymousModeEnabled || (auth.user != null && !auth.user.expired));
   const { data: user, isError } = useCurrentUser(canLoadUser);
 
   const signIn = () => {
