@@ -2,7 +2,7 @@ import { useCallback, useContext, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { Card, Grid, Stack } from "@mui/material";
 import { fetchApiV2Legacy } from "../../../../api/fetchApiV2.ts";
-import PointComponent from "../../../../components/map/pointComponent";
+import { PointComponent } from "../../../../components/map/pointComponent.tsx";
 import { FormSegmentBox } from "../../../../components/styledComponents";
 import { EditStateContext } from "../../editStateContext.tsx";
 import CantonMunicipalitySegment from "./cantonMunicipalitySegment.tsx";
@@ -91,13 +91,20 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
   );
 
   const setValuesForNewMapPoint = useCallback(
-    (x: string, y: string, height: number, country: string, canton: string, municipality: string) => {
+    (
+      x: string,
+      y: string,
+      height: number | null,
+      country: string | null,
+      canton: string | null,
+      municipality: string | null,
+    ) => {
       formMethods.setValue("locationX", x);
       formMethods.setValue("locationY", y);
       if (height) formMethods.setValue("elevationZ", height);
-      formMethods.setValue("country", country);
-      formMethods.setValue("canton", canton);
-      formMethods.setValue("municipality", municipality);
+      if (country) formMethods.setValue("country", country);
+      if (canton) formMethods.setValue("canton", canton);
+      if (municipality) formMethods.setValue("municipality", municipality);
       formMethods.setValue("originalReferenceSystemId", ReferenceSystemCode.LV95);
       handleCoordinateTransformation(
         ReferenceSystemKey.LV95,
@@ -130,14 +137,13 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
                 applyChange={(
                   x: string,
                   y: string,
-                  height: number,
-                  country: string,
-                  canton: string,
-                  municipality: string,
+                  height: number | null,
+                  country: string | null,
+                  canton: string | null,
+                  municipality: string | null,
                 ) => {
                   setValuesForNewMapPoint(x, y, height, country, canton, municipality);
                 }}
-                id={borehole.id}
                 isEditable={editingEnabled}
                 x={currentLV95X}
                 y={currentLV95Y}

@@ -1,8 +1,6 @@
 ﻿import { FC, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box } from "@mui/material";
-import isEqual from "lodash/isEqual";
-import sortBy from "lodash/sortBy";
 import { Map, View } from "ol";
 import { defaults as defaultControls } from "ol/control";
 import { click, pointerMove } from "ol/events/condition";
@@ -37,6 +35,13 @@ import {
 } from "./map.ts";
 import "./mapProjections";
 import { clusterStyleFunction, drawStyle, styleFunction } from "./mapStyleFunctions";
+
+const arraysEqualSorted = (a: number[], b: number[]): boolean => {
+  if (a.length !== b.length) return false;
+  const sa = [...a].sort((x, y) => x - y);
+  const sb = [...b].sort((x, y) => x - y);
+  return sa.every((v, i) => v === sb[i]);
+};
 
 export const MapComponent: FC<MapComponentProps> = ({
   geoJson,
@@ -457,7 +462,7 @@ export const MapComponent: FC<MapComponentProps> = ({
 
     const allFeatures = new GeoJSON().readFeatures(geoJson);
     const { filtered, ids } = filterFeaturesByPolygon(allFeatures, filterPolygonRef.current);
-    if (!isEqual(sortBy(ids), sortBy(featureIdsRef.current))) {
+    if (!arraysEqualSorted(ids, featureIdsRef.current)) {
       callbacksRef.current.setFeatureIds(ids);
     }
     points.clear();
@@ -501,7 +506,12 @@ export const MapComponent: FC<MapComponentProps> = ({
   useEffect(() => {
     const points = pointsRef.current;
     const popup = popupRef.current;
-    if (!points || isEqual(highlighted, prevHighlightedRef.current)) return;
+    if (
+      !points ||
+      (highlighted.length === prevHighlightedRef.current.length &&
+        highlighted.every((v, i) => v === prevHighlightedRef.current[i]))
+    )
+      return;
     prevHighlightedRef.current = highlighted;
 
     // Clear any existing popup

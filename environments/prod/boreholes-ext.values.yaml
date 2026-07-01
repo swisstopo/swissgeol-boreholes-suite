@@ -2,3 +2,5 @@
 # Applied on top of boreholes.values.yaml.
 app:
   domain: ext-boreholes.swissgeol.ch
+googleAnalytics:
+  trackingId: G-QLE11GPNJ3

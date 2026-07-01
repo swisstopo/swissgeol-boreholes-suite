@@ -4,7 +4,6 @@ import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, Chip, Stack } from "@mui/material";
 import { GridColDef, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
 import { Trash2, X } from "lucide-react";
-import _ from "lodash";
 import { User, UserWorkgroupRole } from "../../../api/generated";
 import { useUsers } from "../../../api/user.ts";
 import { useSelectedWorkgroup, useWorkgroupMutations } from "../../../api/workgroup.ts";
@@ -51,13 +50,13 @@ export const WorkgroupDetail: FC = () => {
     [selectedWorkgroup, updateWorkgroup],
   );
 
-  const debouncedChangeName = useMemo(
-    () =>
-      _.debounce((name: string) => {
-        changeName(name);
-      }, 2000),
-    [changeName],
-  );
+  const debouncedChangeName = useMemo(() => {
+    let timer: ReturnType<typeof setTimeout>;
+    return (name: string) => {
+      clearTimeout(timer);
+      timer = setTimeout(() => changeName(name), 2000);
+    };
+  }, [changeName]);
 
   useEffect(() => {
     if (users) {
