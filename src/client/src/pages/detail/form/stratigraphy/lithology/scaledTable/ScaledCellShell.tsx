@@ -6,12 +6,13 @@ import { Copy } from "lucide-react";
 import { theme } from "../../../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../../../components/buttons/buttons.tsx";
 import { useCopyToClipboard } from "../../../../../../hooks/useCopyToClipboard.ts";
-import {
-  approximateLineHeightPx,
-  cellVerticalPaddingPx,
-  lineClampSx,
-} from "../../components/stratigraphyTableConstants.ts";
+import { approximateLineHeightPx, lineClampSx } from "../../components/stratigraphyTableConstants.ts";
 import { useTypedResizeObserver } from "../../navigation/useTypedResizeObserver.ts";
+
+// Preferred (spacious) and minimum (compressed) vertical padding, in px. The cell shrinks its
+// padding toward the minimum before dropping the last line of text.
+const maxVerticalPaddingPx = 8;
+const minVerticalPaddingPx = 0;
 
 interface ScaledCellShellProps {
   children: ReactNode;
@@ -27,6 +28,7 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx
   // Generous initial value so the first paint doesn't aggressively clip content before the
   // ResizeObserver corrects to the real cell-derived line count.
   const [maxLines, setMaxLines] = useState(99);
+  const [verticalPaddingPx, setVerticalPaddingPx] = useState(maxVerticalPaddingPx);
 
   // Extracts readable text from an element, joining each direct child's text with a line break.
   // Falls back to the element's flat textContent when there are no child elements.
@@ -38,14 +40,25 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx
     el.textContent?.trim() ||
     "";
 
-  // Recompute the clamp count whenever the cell's pixel height changes (zoom in/out, pan,
-  // initial calibration). Clamping at a whole-line boundary prevents the half-cut bottom line
-  // that plain overflow:hidden produces, and the ellipsis is rendered by the browser. When the
-  // cell is too short to hold a single line cleanly the value drops to 0 and the content is
-  // hidden entirely — better than showing a vertically-clipped half-line.
-  useTypedResizeObserver(cellRef, entry => {
-    const lines = Math.max(0, Math.floor((entry.contentRect.height - cellVerticalPaddingPx) / approximateLineHeightPx));
+  // Recompute the clamp count and vertical padding whenever the cell's pixel height changes.
+  // Padding scales down first (toward `minVerticalPaddingPx`) so a shrinking cell keeps showing
+  // its text as long as at least one full line fits at minimum padding. Only when even the
+  // compressed cell cannot fit a line does `maxLines` drop to 0 and the content get hidden,
+  // which is better than showing a vertically-clipped half-line.
+  useTypedResizeObserver(cellRef, () => {
+    const el = cellRef.current;
+    if (!el) return;
+    const borderBoxHeightPx = el.offsetHeight;
+    const lines = Math.floor((borderBoxHeightPx - 2 * minVerticalPaddingPx) / approximateLineHeightPx);
+    if (lines <= 0) {
+      setMaxLines(0);
+      setVerticalPaddingPx(maxVerticalPaddingPx);
+      return;
+    }
+    const slackPx = borderBoxHeightPx - lines * approximateLineHeightPx;
+    const padding = Math.max(minVerticalPaddingPx, Math.min(maxVerticalPaddingPx, slackPx / 2));
     setMaxLines(lines);
+    setVerticalPaddingPx(padding);
   });
 
   return (
@@ -73,7 +86,8 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx
         ref={cellRef}
         sx={{
           height: "100%",
-          padding: theme.spacing(1),
+          paddingX: theme.spacing(1),
+          paddingY: `${verticalPaddingPx}px`,
           minWidth: 0,
           minHeight: 0,
           overflow: "hidden",
@@ -85,7 +99,7 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx
           </Box>
         )}
       </Stack>
-      {maxLines > 0 && (
+      {maxLines > 1 && (
         <Stack
           className="hover-content"
           sx={{
