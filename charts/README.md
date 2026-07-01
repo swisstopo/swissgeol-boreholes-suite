@@ -24,7 +24,7 @@ This repository contains three distinct Helm charts that make up the suite's eco
 ### 1. Main Application
 **Chart Name:** `swissgeol-boreholes`
 
-This is the core web application. It deploys the frontend, backend APIs (.NET and Python Legacy), and configures connections to necessary services (PostgreSQL, S3, OIDC).
+This is the core web application. It deploys the frontend, the .NET backend API, and configures connections to necessary services (PostgreSQL, S3, OIDC).
 
 *   **Primary Function:** Provides the User Interface and APIs for managing borehole data.
 *   **Key Features:** OIDC Authentication, Data Extraction, OCR capabilities, and structured data entry.

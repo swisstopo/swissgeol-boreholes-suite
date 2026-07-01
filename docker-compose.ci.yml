@@ -10,9 +10,6 @@ services:
     healthcheck:
       interval: 2s
 
-  api-legacy:
-    image: bdms-api-legacy
-
   oidc-server:
     healthcheck:
       test: ["CMD-SHELL", "curl --fail http://localhost/.well-known/openid-configuration || exit 1"]
