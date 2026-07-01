@@ -33,6 +33,7 @@ const DepthLabel = styled(NumericFormat, {
 }));
 
 const TICK_LENGTH_PX = 12;
+const LABELED_TICK_LENGTH_PX = 32;
 const MIN_LABEL_GAP_PX = 28;
 
 interface DiscreteScaleProps {
@@ -79,14 +80,21 @@ const tickBarSx = {
 };
 
 export const DiscreteScale: FC<DiscreteScaleProps> = ({ navState, depths }) => {
-  const { ticks, labels } = useMemo(() => {
+  const { ticks, labels, labeledDepths } = useMemo(() => {
     const normalized = Array.from(new Set(depths))
       .filter(Number.isFinite)
       .sort((a, b) => a - b);
     const visible = normalized.filter(d => d >= navState.lensStart && d <= navState.lensEnd);
+    const selectedLabels = selectLabelDepths(visible, navState.lensStart, navState.pixelPerMeter);
     return {
       ticks: visible,
-      labels: selectLabelDepths(visible, navState.lensStart, navState.pixelPerMeter),
+      labels: selectedLabels.map(d => {
+        let alignment: LabelAlignment = "center";
+        if (selectedLabels.length > 1 && d === 0) alignment = "below";
+        else if (selectedLabels.length > 1 && d === normalized.at(-1)) alignment = "above";
+        return { depth: d, alignment };
+      }),
+      labeledDepths: new Set(selectedLabels),
     };
   }, [depths, navState.lensStart, navState.lensEnd, navState.pixelPerMeter]);
 
@@ -99,40 +107,38 @@ export const DiscreteScale: FC<DiscreteScaleProps> = ({ navState, depths }) => {
         right: 0,
         height: navState.lensSize * navState.pixelPerMeter,
       }}>
-      {ticks.map(d => (
-        <Box
-          key={`tick-${d}`}
-          data-cy="discrete-scale-tick"
-          sx={{
-            position: "absolute",
-            bottom: (navState.lensEnd - d) * navState.pixelPerMeter,
-            left: 0,
-            right: 0,
-            height: 0,
-            pointerEvents: "none",
-          }}>
-          <Box sx={{ ...tickBarSx, left: 0 }} />
-          <Box sx={{ ...tickBarSx, right: 0 }} />
-        </Box>
-      ))}
-      {labels.map((d, i) => {
-        let alignment: LabelAlignment = "center";
-        if (labels.length > 1 && i === 0) alignment = "below";
-        else if (labels.length > 1 && i === labels.length - 1) alignment = "above";
+      {ticks.map(d => {
+        const tickLength = labeledDepths.has(d) ? LABELED_TICK_LENGTH_PX : TICK_LENGTH_PX;
         return (
-          <DepthLabel
-            key={`label-${d}`}
-            data-cy="discrete-scale-label"
-            alignment={alignment}
-            bottomPosition={(navState.lensEnd - d) * navState.pixelPerMeter}
-            value={d}
-            decimalScale={2}
-            fixedDecimalScale={false}
-            thousandSeparator="'"
-            displayType="text"
-          />
+          <Box
+            key={`tick-${d}`}
+            data-cy="discrete-scale-tick"
+            sx={{
+              position: "absolute",
+              bottom: (navState.lensEnd - d) * navState.pixelPerMeter,
+              left: 0,
+              right: 0,
+              height: 0,
+              pointerEvents: "none",
+            }}>
+            <Box sx={{ ...tickBarSx, width: tickLength, left: 0 }} />
+            <Box sx={{ ...tickBarSx, width: tickLength, right: 0 }} />
+          </Box>
         );
       })}
+      {labels.map(({ depth, alignment }) => (
+        <DepthLabel
+          key={`label-${depth}`}
+          data-cy="discrete-scale-label"
+          alignment={alignment}
+          bottomPosition={(navState.lensEnd - depth) * navState.pixelPerMeter}
+          value={depth}
+          decimalScale={2}
+          fixedDecimalScale={false}
+          thousandSeparator="'"
+          displayType="text"
+        />
+      ))}
     </Box>
   );
 };
