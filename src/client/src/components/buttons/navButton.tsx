@@ -32,7 +32,7 @@ export const NavButton: FC<NavButtonProps> = props => {
         color: props.selected ? theme.palette.primary.contrastText : theme.palette.neutral.contrastText,
         backgroundColor: props.selected
           ? theme.palette.background.menuItemActive + " !important"
-          : "rgba(0, 0, 0, 0.0)",
+          : theme.palette.transparent,
         borderRadius: "10px",
         width: "fit-content",
         transition: "background-color 0.3s ease, color 0.3s ease, width 0.3s ease",

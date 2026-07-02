@@ -13,6 +13,7 @@ const layerWithConf = (conf: string | null | undefined): LithostratigraphyLayer 
 
 describe("getLithostratigraphyColor", () => {
   it("returns an rgb string when conf carries a color array", () => {
+    // eslint-disable-next-line local/no-hardcoded-colors -- asserting data-derived color output, not a UI style
     expect(getLithostratigraphyColor(layerWithConf('{"color":[100,150,200]}'))).toBe("rgb(100,150,200)");
   });
 

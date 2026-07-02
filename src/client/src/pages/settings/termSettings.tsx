@@ -4,6 +4,7 @@ import { Box, Stack, TextField, Typography } from "@mui/material";
 import { Trash2, X } from "lucide-react";
 import Markdown from "markdown-to-jsx";
 import { TermUpdate, useDraftTerms, useTermsMutations } from "../../api/terms.ts";
+import { theme } from "../../AppTheme.ts";
 import { BoreholesButton, SaveButton } from "../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../components/prompt/promptContext.tsx";
 
@@ -14,7 +15,7 @@ const emptyTexts: Record<TermLanguage, string> = { en: "", de: "", fr: "", it: "
 const editorLanguages: TermLanguage[] = ["de", "fr", "it", "en"];
 
 const headingSx = {
-  color: "rgb(237, 29, 36)",
+  color: theme.palette.error.light,
   fontStyle: "italic",
   textTransform: "capitalize",
   whiteSpace: "nowrap",

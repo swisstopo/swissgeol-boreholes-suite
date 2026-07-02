@@ -81,7 +81,7 @@ export const BasemapSelector = memo(({ marginBottom }: { marginBottom: string })
                 <BasemapButton key={layer.name} onClick={() => onSelectBackground(layer.name)}>
                   <ImageBox
                     sx={{
-                      border: `${layer.name === currentBasemapName ? "2px solid #cb5d53" : "none"}`,
+                      border: `${layer.name === currentBasemapName ? `2px solid ${theme.palette.mapIcon.selected}` : "none"}`,
                     }}>
                     {layer && <img alt={layer.name} src={imageUrlMap[layer.name]} />}
                   </ImageBox>
@@ -91,7 +91,7 @@ export const BasemapSelector = memo(({ marginBottom }: { marginBottom: string })
                 <ImageBox
                   sx={{
                     backgroundColor: theme.palette.background.default,
-                    border: `${"nomap" === currentBasemapName ? "2px solid #cb5d53" : "none"}`,
+                    border: `${"nomap" === currentBasemapName ? `2px solid ${theme.palette.mapIcon.selected}` : "none"}`,
                   }}></ImageBox>
               </BasemapButton>
               <BasemapButton onClick={toggleShowSelector}>

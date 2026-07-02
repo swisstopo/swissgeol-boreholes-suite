@@ -1,6 +1,7 @@
 import { useTranslation } from "react-i18next";
 import { Box, Checkbox, FormControlLabel, IconButton, Stack } from "@mui/material";
 import { CircleArrowDown, CircleArrowUp } from "lucide-react";
+import { theme } from "../../../../AppTheme.ts";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 
 export const CustomLayersComponent = ({
@@ -32,7 +33,7 @@ export const CustomLayersComponent = ({
             <Box
               key={"ovls-" + idx}
               sx={{
-                borderBottom: idx < len ? "thin solid #dcdcdc" : null,
+                borderBottom: idx < len ? `thin solid ${theme.palette.border.light}` : null,
                 padding: "0.5em 0px",
               }}>
               <Box>

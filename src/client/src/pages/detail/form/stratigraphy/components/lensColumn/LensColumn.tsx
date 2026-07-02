@@ -1,5 +1,6 @@
 import { Dispatch, SetStateAction } from "react";
 import { Box } from "@mui/material";
+import { theme } from "../../../../../../AppTheme.ts";
 import { NavigationLens } from "../../navigation/NavigationLens.tsx";
 import { NavState } from "../../navigation/navState.ts";
 import { ScaledLayerColumn } from "../scaledLayerColumn/ScaledLayerColumn.tsx";
@@ -31,7 +32,7 @@ export const LensColumn = ({ stratigraphyId, navState, setNavState }: LensColumn
           renderLayer={layer => (
             <Box
               sx={{ position: "absolute", left: 0, right: 0, top: 0, bottom: 0 }}
-              style={{ backgroundColor: getColor(layer) ?? "rgb(220,220,220)" }}
+              style={{ backgroundColor: getColor(layer) ?? theme.palette.neutral.main }}
             />
           )}
         />
