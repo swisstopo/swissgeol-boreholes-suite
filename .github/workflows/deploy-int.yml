@@ -1,9 +1,6 @@
 name: Deploy Int
 
 on:
-  workflow_run:
-    workflows: ["Release Helm Charts"]
-    types: [completed]
   workflow_dispatch:
     inputs:
       chart-version:
