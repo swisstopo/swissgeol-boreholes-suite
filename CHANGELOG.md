@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Fixed
+- Extern-sync no longer creates duplicate boreholes in the target database when a borehole's coordinates were recalculated; the duplicate check now compares the LV03 coordinates correctly.
+
 ## v2.1.1703 - 2026-06-25
 
 ### Added

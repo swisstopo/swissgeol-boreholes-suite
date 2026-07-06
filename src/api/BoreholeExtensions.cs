@@ -30,8 +30,8 @@ public static class BoreholeExtensions
     {
         return boreholes.Any(b =>
             CompareToWithTolerance(b.TotalDepth, borehole.TotalDepth, 0) &&
-            (CompareToWithTolerance(b.LocationX, borehole.LocationX, 2) || CompareToWithTolerance(b.LocationXLV03, borehole.LocationX, 2)) &&
-            (CompareToWithTolerance(b.LocationY, borehole.LocationY, 2) || CompareToWithTolerance(b.LocationYLV03, borehole.LocationY, 2)));
+            (CompareToWithTolerance(b.LocationX, borehole.LocationX, 2) || CompareToWithTolerance(b.LocationXLV03, borehole.LocationXLV03, 2)) &&
+            (CompareToWithTolerance(b.LocationY, borehole.LocationY, 2) || CompareToWithTolerance(b.LocationYLV03, borehole.LocationYLV03, 2)));
     }
 
     /// <summary>
