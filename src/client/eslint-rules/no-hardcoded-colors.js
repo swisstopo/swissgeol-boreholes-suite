@@ -29,13 +29,13 @@ const rule = {
     function check(node, value) {
       if (typeof value !== "string") return;
 
-      const hexMatch = value.match(HEX_COLOR_REGEX);
+      const hexMatch = HEX_COLOR_REGEX.exec(value);
       if (hexMatch && !allow.has(hexMatch[0].toLowerCase())) {
         context.report({ node, messageId: "noHardcodedColor", data: { color: hexMatch[0] } });
         return;
       }
 
-      const rgbMatch = value.match(RGB_COLOR_REGEX);
+      const rgbMatch = RGB_COLOR_REGEX.exec(value);
       if (rgbMatch && !allow.has(rgbMatch[0].toLowerCase())) {
         context.report({ node, messageId: "noHardcodedColor", data: { color: rgbMatch[0] } });
       }

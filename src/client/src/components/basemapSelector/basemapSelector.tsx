@@ -77,21 +77,24 @@ export const BasemapSelector = memo(({ marginBottom }: { marginBottom: string })
         <Stack direction="row">
           <Box>
             <Stack sx={{ marginLeft: "6px" }} direction="row">
-              {basemaps.map((layer: Basemap) => (
-                <BasemapButton key={layer.name} onClick={() => onSelectBackground(layer.name)}>
-                  <ImageBox
-                    sx={{
-                      border: `${layer.name === currentBasemapName ? `2px solid ${theme.palette.mapIcon.selected}` : "none"}`,
-                    }}>
-                    {layer && <img alt={layer.name} src={imageUrlMap[layer.name]} />}
-                  </ImageBox>
-                </BasemapButton>
-              ))}
+              {basemaps.map((layer: Basemap) => {
+                const selectedBorder = `2px solid ${theme.palette.mapIcon.selected}`;
+                return (
+                  <BasemapButton key={layer.name} onClick={() => onSelectBackground(layer.name)}>
+                    <ImageBox
+                      sx={{
+                        border: layer.name === currentBasemapName ? selectedBorder : "none",
+                      }}>
+                      {layer && <img alt={layer.name} src={imageUrlMap[layer.name]} />}
+                    </ImageBox>
+                  </BasemapButton>
+                );
+              })}
               <BasemapButton onClick={() => onSelectBackground("nomap")}>
                 <ImageBox
                   sx={{
                     backgroundColor: theme.palette.background.default,
-                    border: `${"nomap" === currentBasemapName ? `2px solid ${theme.palette.mapIcon.selected}` : "none"}`,
+                    border: currentBasemapName === "nomap" ? `2px solid ${theme.palette.mapIcon.selected}` : "none",
                   }}></ImageBox>
               </BasemapButton>
               <BasemapButton onClick={toggleShowSelector}>
