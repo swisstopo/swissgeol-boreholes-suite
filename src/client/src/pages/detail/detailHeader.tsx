@@ -46,16 +46,17 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
   const { hasChanges, triggerReset } = useContext<SaveContextProps>(SaveContext);
   const auth = useAuth();
   const {
-    update: { mutate: updateBorehole },
+    lock: { mutate: lockBorehole },
+    unlock: { mutate: unlockBorehole },
     delete: { mutate: deleteBorehole },
   } = useBoreholeMutations();
 
   const changeBoreholeLockStatus = (editing: boolean) => {
     if (!currentUser) return;
-    if (!editing) {
-      updateBorehole({ ...borehole, locked: null, lockedById: null });
+    if (editing) {
+      lockBorehole(id);
     } else {
-      updateBorehole({ ...borehole, locked: new Date().toISOString(), lockedById: currentUser.id });
+      unlockBorehole(id);
     }
   };
 

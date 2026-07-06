@@ -129,6 +129,61 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     }
 
     /// <summary>
+    /// Acquires the edit lock on the borehole with the given <paramref name="id"/> for the current user.
+    /// Touches only <see cref="Borehole.Locked"/> and <see cref="Borehole.LockedById"/>, so it cannot race
+    /// with a concurrent full-entity edit on any other field.
+    /// </summary>
+    /// <param name="id">The id of the borehole to lock.</param>
+    [HttpPost("{id:int}/lock")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> LockAsync(int id)
+    {
+        var subjectId = HttpContext.GetUserSubjectId();
+        if (!await BoreholePermissionService.CanEditBoreholeAsync(subjectId, id).ConfigureAwait(false))
+        {
+            return Unauthorized();
+        }
+
+        var borehole = await Context.Boreholes.SingleOrDefaultAsync(b => b.Id == id).ConfigureAwait(false);
+        if (borehole is null) return NotFound();
+
+        var user = await Context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.SubjectId == subjectId).ConfigureAwait(false);
+        if (user is null) return Unauthorized();
+
+        borehole.Locked = DateTime.UtcNow;
+        borehole.LockedById = user.Id;
+
+        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+        return Ok();
+    }
+
+    /// <summary>
+    /// Releases the edit lock on the borehole with the given <paramref name="id"/>.
+    /// Touches only <see cref="Borehole.Locked"/> and <see cref="Borehole.LockedById"/>, so it cannot race
+    /// with a concurrent full-entity edit on any other field.
+    /// </summary>
+    /// <param name="id">The id of the borehole to unlock.</param>
+    [HttpPost("{id:int}/unlock")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> UnlockAsync(int id)
+    {
+        var subjectId = HttpContext.GetUserSubjectId();
+        if (!await BoreholePermissionService.CanEditBoreholeAsync(subjectId, id).ConfigureAwait(false))
+        {
+            return Unauthorized();
+        }
+
+        var borehole = await Context.Boreholes.SingleOrDefaultAsync(b => b.Id == id).ConfigureAwait(false);
+        if (borehole is null) return NotFound();
+
+        borehole.Locked = null;
+        borehole.LockedById = null;
+
+        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+        return Ok();
+    }
+
+    /// <summary>
     /// Asynchronously applies the same set of field changes to multiple boreholes.
     /// Only the properties named in <see cref="BoreholeBulkUpdateRequest.FieldsToUpdate"/> are written.
     /// The whole batch is rejected (nothing is saved) if the current user cannot edit any selected borehole.

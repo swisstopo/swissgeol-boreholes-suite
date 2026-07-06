@@ -67,6 +67,13 @@ const fetchBoreholeById = async (id: number): Promise<Borehole> => {
 const updateBorehole = async (borehole: Borehole): Promise<Borehole> => {
   return await fetchApiV2WithApiError<Borehole>("borehole", "PUT", borehole);
 };
+
+const lockBorehole = async (id: number): Promise<void> =>
+  await fetchApiV2WithApiError<void>(`borehole/${id}/lock`, "POST");
+
+const unlockBorehole = async (id: number): Promise<void> =>
+  await fetchApiV2WithApiError<void>(`borehole/${id}/unlock`, "POST");
+
 const deleteBorehole = async (id: number) => await fetchApiV2WithApiError(`borehole?id=${id}`, "DELETE");
 
 type BulkEditValue = string | number | boolean | null | undefined;
@@ -182,6 +189,21 @@ export const useBoreholeMutations = () => {
     },
   });
 
+  const invalidateBorehole = (id: number) => {
+    queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
+    queryClient.refetchQueries({ queryKey: [boreholeQueryKey, id], exact: true });
+  };
+
+  const useLockBorehole = useMutation({
+    mutationFn: (id: number) => lockBorehole(id),
+    onSuccess: (_, id) => invalidateBorehole(id),
+  });
+
+  const useUnlockBorehole = useMutation({
+    mutationFn: (id: number) => unlockBorehole(id),
+    onSuccess: (_, id) => invalidateBorehole(id),
+  });
+
   const useDeleteBorehole = useMutation({
     mutationFn: async (boreholeId: number) => {
       return await deleteBorehole(boreholeId);
@@ -219,6 +241,8 @@ export const useBoreholeMutations = () => {
     add: useAddBorehole,
     copy: useCopyBorehole,
     update: useUpdateBorehole,
+    lock: useLockBorehole,
+    unlock: useUnlockBorehole,
     delete: useDeleteBorehole,
     bulkEdit: useBulkEditBoreholes,
     bulkDelete: useBulkDeleteBoreholes,
