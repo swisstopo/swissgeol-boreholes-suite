@@ -138,14 +138,14 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> LockAsync(int id)
     {
+        var borehole = await Context.Boreholes.SingleOrDefaultAsync(b => b.Id == id).ConfigureAwait(false);
+        if (borehole is null) return NotFound();
+
         var subjectId = HttpContext.GetUserSubjectId();
         if (!await BoreholePermissionService.CanEditBoreholeAsync(subjectId, id).ConfigureAwait(false))
         {
             return Unauthorized();
         }
-
-        var borehole = await Context.Boreholes.SingleOrDefaultAsync(b => b.Id == id).ConfigureAwait(false);
-        if (borehole is null) return NotFound();
 
         var user = await Context.Users.AsNoTracking().SingleOrDefaultAsync(u => u.SubjectId == subjectId).ConfigureAwait(false);
         if (user is null) return Unauthorized();
@@ -176,14 +176,14 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     [Authorize(Policy = PolicyNames.Viewer)]
     public async Task<IActionResult> UnlockAsync(int id)
     {
+        var borehole = await Context.Boreholes.SingleOrDefaultAsync(b => b.Id == id).ConfigureAwait(false);
+        if (borehole is null) return NotFound();
+
         var subjectId = HttpContext.GetUserSubjectId();
         if (!await BoreholePermissionService.CanEditBoreholeAsync(subjectId, id).ConfigureAwait(false))
         {
             return Unauthorized();
         }
-
-        var borehole = await Context.Boreholes.SingleOrDefaultAsync(b => b.Id == id).ConfigureAwait(false);
-        if (borehole is null) return NotFound();
 
         borehole.Locked = null;
         borehole.LockedById = null;

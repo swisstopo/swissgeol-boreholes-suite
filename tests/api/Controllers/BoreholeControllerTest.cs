@@ -1128,7 +1128,12 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task LockInexistentBoreholeReturnsNotFound()
     {
-        var result = await controller.LockAsync(9111794).ConfigureAwait(false);
+        const int nonExistentId = 9111794;
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), nonExistentId))
+            .ReturnsAsync(false);
+
+        var result = await controller.LockAsync(nonExistentId).ConfigureAwait(false);
         ActionResultAssert.IsNotFound(result);
     }
 
@@ -1191,7 +1196,12 @@ public class BoreholeControllerTest
     [TestMethod]
     public async Task UnlockInexistentBoreholeReturnsNotFound()
     {
-        var result = await controller.UnlockAsync(9111794).ConfigureAwait(false);
+        const int nonExistentId = 9111794;
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), nonExistentId))
+            .ReturnsAsync(false);
+
+        var result = await controller.UnlockAsync(nonExistentId).ConfigureAwait(false);
         ActionResultAssert.IsNotFound(result);
     }
 
