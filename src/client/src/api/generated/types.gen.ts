@@ -5942,6 +5942,40 @@ export type PostApiVbyVersionBoreholeBulkdeleteResponses = {
   200: unknown;
 };
 
+export type PostApiVbyVersionBoreholeByIdLockData = {
+  body?: never;
+  path: {
+    id: number;
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/borehole/{id}/lock";
+};
+
+export type PostApiVbyVersionBoreholeByIdLockResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type PostApiVbyVersionBoreholeByIdUnlockData = {
+  body?: never;
+  path: {
+    id: number;
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/borehole/{id}/unlock";
+};
+
+export type PostApiVbyVersionBoreholeByIdUnlockResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
 export type GetApiVbyVersionBoreholeexportJsonData = {
   body?: never;
   path: {
