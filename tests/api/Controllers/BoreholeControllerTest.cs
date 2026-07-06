@@ -1133,6 +1133,22 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
+    public async Task LockWithUnknownUserReturnsUnauthorized()
+    {
+        var borehole = GetBoreholeToAdd();
+        context.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        controller.HttpContext.SetClaimsPrincipal("NON-EXISTENT-NAME", PolicyNames.Admin);
+        var result = await controller.LockAsync(borehole.Id).ConfigureAwait(false);
+
+        ActionResultAssert.IsUnauthorized(result);
+        var stored = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == borehole.Id).ConfigureAwait(false);
+        Assert.IsNull(stored.Locked);
+        Assert.IsNull(stored.LockedById);
+    }
+
+    [TestMethod]
     public async Task LockBoreholeWithoutPermissionReturnsUnauthorized()
     {
         var borehole = GetBoreholeToAdd();

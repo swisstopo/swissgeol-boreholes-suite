@@ -153,8 +153,17 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         borehole.Locked = DateTime.UtcNow;
         borehole.LockedById = user.Id;
 
-        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
-        return Ok();
+        try
+        {
+            await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            var errorMessage = "An error occurred while acquiring the borehole lock.";
+            Logger?.LogError(ex, errorMessage);
+            return Problem(errorMessage);
+        }
     }
 
     /// <summary>
@@ -179,8 +188,17 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         borehole.Locked = null;
         borehole.LockedById = null;
 
-        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
-        return Ok();
+        try
+        {
+            await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+            return Ok();
+        }
+        catch (Exception ex)
+        {
+            var errorMessage = "An error occurred while releasing the borehole lock.";
+            Logger?.LogError(ex, errorMessage);
+            return Problem(errorMessage);
+        }
     }
 
     /// <summary>
