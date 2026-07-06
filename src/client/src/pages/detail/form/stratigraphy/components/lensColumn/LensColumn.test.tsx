@@ -30,7 +30,6 @@ describe("LensColumn", () => {
         { id: 1, fromDepth: 0, toDepth: 30, stratigraphyId: 1 },
         { id: 2, fromDepth: 30, toDepth: 100, stratigraphyId: 1 },
       ],
-      // eslint-disable-next-line local/no-hardcoded-colors -- mock data color, not a UI style
       getColor: () => "rgb(100,100,100)",
     });
     const { container } = render(<LensColumn stratigraphyId={1} navState={navState} setNavState={vi.fn()} />);

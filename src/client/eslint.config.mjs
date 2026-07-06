@@ -66,7 +66,7 @@ export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.
   },
   {
     files: ["**/*.{js,jsx,ts,tsx}"],
-    ignores: ["src/AppTheme.ts", "src/mui.theme.d.ts", "cypress/**"],
+    ignores: ["src/AppTheme.ts", "src/mui.theme.d.ts", "cypress/**", "**/*.test.ts", "**/*.test.tsx"],
     plugins: {
       local: { rules: { "no-hardcoded-colors": noHardcodedColors } },
     },
