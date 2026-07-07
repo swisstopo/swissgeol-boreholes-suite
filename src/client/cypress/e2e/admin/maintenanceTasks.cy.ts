@@ -273,22 +273,24 @@ describe("Maintenance Tasks page tests", () => {
 
         cy.dataCy("execution-log-include-dry-run").find("input").should("be.checked");
         cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 2);
-        cy.dataCy("execution-log-table").should("contain", "5");
-        cy.dataCy("execution-log-table").should("contain", "42");
+        cy.dataCy("execution-log-table").find('.MuiDataGrid-cell[data-field="affectedCount"]').should("contain", "5");
+        cy.dataCy("execution-log-table").find('.MuiDataGrid-cell[data-field="affectedCount"]').should("contain", "42");
 
         cy.dataCy("execution-log-include-dry-run").find("input").uncheck();
         cy.wait("@get-logs");
 
         cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 1);
-        cy.dataCy("execution-log-table").should("contain", "42");
-        cy.dataCy("execution-log-table").should("not.contain", "5");
+        cy.dataCy("execution-log-table").find('.MuiDataGrid-cell[data-field="affectedCount"]').should("contain", "42");
+        cy.dataCy("execution-log-table")
+          .find('.MuiDataGrid-cell[data-field="affectedCount"]')
+          .should("not.contain", "5");
 
         cy.dataCy("execution-log-include-dry-run").find("input").check();
         cy.wait("@get-logs");
 
         cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 2);
-        cy.dataCy("execution-log-table").should("contain", "5");
-        cy.dataCy("execution-log-table").should("contain", "42");
+        cy.dataCy("execution-log-table").find('.MuiDataGrid-cell[data-field="affectedCount"]').should("contain", "5");
+        cy.dataCy("execution-log-table").find('.MuiDataGrid-cell[data-field="affectedCount"]').should("contain", "42");
       });
 
       it("shows failed status with error message in log table", () => {
