@@ -5774,6 +5774,46 @@ export type PutApiVbyVersionBoreholeResponses = {
 export type PutApiVbyVersionBoreholeResponse =
   PutApiVbyVersionBoreholeResponses[keyof PutApiVbyVersionBoreholeResponses];
 
+export type PostApiVbyVersionBoreholeByIdLockData = {
+  body?: never;
+  path: {
+    /**
+     * The id of the borehole to lock.
+     */
+    id: number;
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/borehole/{id}/lock";
+};
+
+export type PostApiVbyVersionBoreholeByIdLockResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type PostApiVbyVersionBoreholeByIdUnlockData = {
+  body?: never;
+  path: {
+    /**
+     * The id of the borehole to unlock.
+     */
+    id: number;
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/borehole/{id}/unlock";
+};
+
+export type PostApiVbyVersionBoreholeByIdUnlockResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
 export type PostApiVbyVersionBoreholeBulkeditData = {
   /**
    * The boreholes to edit, the values to apply, and the field mask.
