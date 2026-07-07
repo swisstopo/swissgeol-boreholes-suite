@@ -102,7 +102,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
         }}>
         <Stack
           sx={{
-            backgroundColor: "#ffffff",
+            backgroundColor: theme.palette.background.default,
             padding: 2,
             width: "292px",
             maxHeight: `calc(100% - ${theme.spacing(2)})`,
