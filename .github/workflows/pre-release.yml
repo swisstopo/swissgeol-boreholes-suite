@@ -32,7 +32,7 @@ jobs:
 
       - name: Collect Docker image metadata (api)
         id: meta-api
-        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ${{ env.BASE_IMAGE_NAME }}-api
           labels: |
@@ -47,7 +47,7 @@ jobs:
 
       - name: Collect Docker image metadata (client)
         id: meta-client
-        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ${{ env.BASE_IMAGE_NAME }}-client
           labels: |
@@ -62,7 +62,7 @@ jobs:
 
       - name: Collect Docker image metadata (view-sync)
         id: meta-view-sync
-        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ${{ env.BASE_IMAGE_NAME }}-view-sync
           labels: |
@@ -77,7 +77,7 @@ jobs:
 
       - name: Collect Docker image metadata (extern-sync)
         id: meta-extern-sync
-        uses: docker/metadata-action@80c7e94dd9b9319bd5eb7a0e0fe9291e23a2a2e9 # v6.1.0
+        uses: docker/metadata-action@dc802804100637a589fabce1cb79ff13a1411302 # v6.2.0
         with:
           images: ${{ env.BASE_IMAGE_NAME }}-extern-sync
           labels: |
