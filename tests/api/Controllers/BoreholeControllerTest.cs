@@ -1102,6 +1102,131 @@ public class BoreholeControllerTest
     }
 
     [TestMethod]
+    public async Task LockBoreholeSetsLockAndPreservesOtherFields()
+    {
+        // The dedicated endpoint must set the lock owner AND leave every other column untouched —
+        // that is what makes a concurrent full-entity edit safe from lock/unlock overwriting its fields.
+        var borehole = GetBoreholeToAdd();
+        borehole.Name = "unique-name-for-lock-test";
+        borehole.TotalDepth = 123.45;
+        context.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var before = DateTime.UtcNow;
+        var result = await controller.LockAsync(borehole.Id).ConfigureAwait(false);
+        var after = DateTime.UtcNow;
+
+        ActionResultAssert.IsOk(result);
+        var stored = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == borehole.Id).ConfigureAwait(false);
+        Assert.IsNotNull(stored.Locked);
+        Assert.IsTrue(stored.Locked!.Value >= before && stored.Locked.Value <= after);
+        Assert.AreEqual(1, stored.LockedById);
+        Assert.AreEqual("unique-name-for-lock-test", stored.Name);
+        Assert.AreEqual(123.45, stored.TotalDepth);
+    }
+
+    [TestMethod]
+    public async Task LockInexistentBoreholeReturnsNotFound()
+    {
+        const int nonExistentId = 9111794;
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), nonExistentId))
+            .ReturnsAsync(false);
+
+        var result = await controller.LockAsync(nonExistentId).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(result);
+    }
+
+    [TestMethod]
+    public async Task LockWithUnknownUserReturnsUnauthorized()
+    {
+        var borehole = GetBoreholeToAdd();
+        context.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        controller.HttpContext.SetClaimsPrincipal("NON-EXISTENT-NAME", PolicyNames.Admin);
+        var result = await controller.LockAsync(borehole.Id).ConfigureAwait(false);
+
+        ActionResultAssert.IsUnauthorized(result);
+        var stored = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == borehole.Id).ConfigureAwait(false);
+        Assert.IsNull(stored.Locked);
+        Assert.IsNull(stored.LockedById);
+    }
+
+    [TestMethod]
+    public async Task LockBoreholeWithoutPermissionReturnsUnauthorized()
+    {
+        var borehole = GetBoreholeToAdd();
+        context.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var result = await controller.LockAsync(borehole.Id).ConfigureAwait(false);
+
+        ActionResultAssert.IsUnauthorized(result);
+        var stored = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == borehole.Id).ConfigureAwait(false);
+        Assert.IsNull(stored.Locked);
+        Assert.IsNull(stored.LockedById);
+    }
+
+    [TestMethod]
+    public async Task UnlockBoreholeClearsLockAndPreservesOtherFields()
+    {
+        var borehole = GetBoreholeToAdd();
+        borehole.Name = "unique-name-for-unlock-test";
+        borehole.TotalDepth = 543.21;
+        borehole.Locked = DateTime.UtcNow;
+        borehole.LockedById = 1;
+        context.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var result = await controller.UnlockAsync(borehole.Id).ConfigureAwait(false);
+
+        ActionResultAssert.IsOk(result);
+        var stored = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == borehole.Id).ConfigureAwait(false);
+        Assert.IsNull(stored.Locked);
+        Assert.IsNull(stored.LockedById);
+        Assert.AreEqual("unique-name-for-unlock-test", stored.Name);
+        Assert.AreEqual(543.21, stored.TotalDepth);
+    }
+
+    [TestMethod]
+    public async Task UnlockInexistentBoreholeReturnsNotFound()
+    {
+        const int nonExistentId = 9111794;
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), nonExistentId))
+            .ReturnsAsync(false);
+
+        var result = await controller.UnlockAsync(nonExistentId).ConfigureAwait(false);
+        ActionResultAssert.IsNotFound(result);
+    }
+
+    [TestMethod]
+    public async Task UnlockBoreholeWithoutPermissionReturnsUnauthorized()
+    {
+        var borehole = GetBoreholeToAdd();
+        borehole.Locked = DateTime.UtcNow;
+        borehole.LockedById = 1;
+        context.Add(borehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .ReturnsAsync(false);
+
+        var result = await controller.UnlockAsync(borehole.Id).ConfigureAwait(false);
+
+        ActionResultAssert.IsUnauthorized(result);
+        var stored = await context.Boreholes.AsNoTracking().SingleAsync(b => b.Id == borehole.Id).ConfigureAwait(false);
+        Assert.IsNotNull(stored.Locked);
+        Assert.AreEqual(1, stored.LockedById);
+    }
+
+    [TestMethod]
     public async Task SuggestRejectsMissingQuery()
     {
         var result = await controller.SuggestAsync(BoreholeSuggestionField.OriginalName, query: null, limit: 10);
