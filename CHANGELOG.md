@@ -39,6 +39,7 @@
 - Long descriptions in the stratigraphy lithology table now wrap to a new line instead of widening the cell.
 - Navigating to inexistent borehole detail view by URL now shows a not found message instead of throwing an error.
 - Prevent navigate to previously deleted stratigraphy.
+- Fixed borehole name changes being lost when returning to the overview directly after saving. 
 
 ## v2.1.1631 - 2026-05-13
 
