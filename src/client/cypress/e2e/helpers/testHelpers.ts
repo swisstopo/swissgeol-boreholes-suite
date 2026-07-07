@@ -10,9 +10,11 @@ export const interceptApiCalls = () => {
   cy.intercept("/api/v2/borehole/filter").as("borehole_filter");
   cy.intercept("POST", "/api/v2/borehole/filter/stats").as("borehole_filter_stats");
   cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
-  cy.intercept("/api/v2/borehole/**").as("borehole_by_id");
+  cy.intercept("GET", "/api/v2/borehole/**").as("borehole_by_id");
   cy.intercept("PUT", "/api/v2/borehole").as("update-borehole");
   cy.intercept("POST", "/api/v2/borehole").as("post-borehole");
+  cy.intercept("POST", "/api/v2/borehole/*/lock").as("borehole-lock");
+  cy.intercept("POST", "/api/v2/borehole/*/unlock").as("borehole-unlock");
   cy.intercept("POST", "/api/v2/borehole/bulkedit").as("bulk-edit");
   cy.intercept("POST", "/api/v2/borehole/bulkdelete").as("bulk-delete");
   cy.intercept("/api/v2/stratigraphy?boreholeId=**").as("stratigraphy_by_borehole_GET");
@@ -464,7 +466,7 @@ export const createStratigraphyWith3Lithologies = () => {
 
 export const startBoreholeEditing = () => {
   startEditing("detail-header");
-  cy.wait(["@update-borehole", "@borehole_by_id"]);
+  cy.wait(["@borehole-lock", "@borehole_by_id"]);
 };
 
 export const stopBoreholeEditing = (discardChanges?: boolean) => {
@@ -473,7 +475,7 @@ export const stopBoreholeEditing = (discardChanges?: boolean) => {
   if (discardChanges) {
     cy.dataCy("prompt").find(`[data-cy="discardchanges-button"]`).click();
   }
-  cy.wait(["@update-borehole", "@borehole_by_id"]);
+  cy.wait(["@borehole-unlock", "@borehole_by_id"]);
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(100); // Small buffer for scroll operations
 };
@@ -703,7 +705,7 @@ export const createTestCasing = (boreholeId: number | string, completionId: numb
 export const openStratigraphyEditorTab = (stratigraphyName: string, hash: string, waitAlias: `@${string}`) => {
   createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
   cy.get("@borehole_id").then(boreholeId => {
-    createStratigraphy({ boreholeId: boreholeId as number, name: stratigraphyName }).as("stratigraphy_id");
+    createStratigraphy({ boreholeId: boreholeId, name: stratigraphyName }).as("stratigraphy_id");
     cy.get("@stratigraphy_id").then(stratigraphyId => {
       goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy/${stratigraphyId}#${hash}`);
     });
