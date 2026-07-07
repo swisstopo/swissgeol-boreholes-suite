@@ -67,6 +67,15 @@ const fetchBoreholeById = async (id: number): Promise<Borehole> => {
 const updateBorehole = async (borehole: Borehole): Promise<Borehole> => {
   return await fetchApiV2WithApiError<Borehole>("borehole", "PUT", borehole);
 };
+
+const lockBorehole = async (id: number): Promise<void> => {
+  return await fetchApiV2WithApiError<void>(`borehole/${id}/lock`, "POST");
+};
+
+const unlockBorehole = async (id: number): Promise<void> => {
+  return await fetchApiV2WithApiError<void>(`borehole/${id}/unlock`, "POST");
+};
+
 const deleteBorehole = async (id: number) => await fetchApiV2WithApiError(`borehole?id=${id}`, "DELETE");
 
 type BulkEditValue = string | number | boolean | null | undefined;
@@ -166,20 +175,31 @@ export const useBoreholeMutations = () => {
     },
   });
 
+  // Force immediate background refetch of the borehole after any lock-status-changing
+  // mutation so the UI has fresh data on next render and doesn't flicker edit-affordances.
+  const invalidateBorehole = (id: number) => {
+    queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
+    queryClient.refetchQueries({ queryKey: [boreholeQueryKey, id], exact: true });
+  };
+
   const useUpdateBorehole = useMutation({
     mutationFn: async (borehole: Borehole) => {
       return await updateBorehole(borehole);
     },
-    onSuccess: (_, borehole) => {
-      queryClient.invalidateQueries({
-        queryKey: [boreholeQueryKey],
-      });
-      // force immediate background refetch to have the borehole's lock status up to date on next render and prevent button flickering
-      queryClient.refetchQueries({
-        queryKey: [boreholeQueryKey, borehole.id],
-        exact: true,
-      });
-    },
+    onSuccess: (_, borehole) => invalidateBorehole(borehole.id),
+  });
+
+  // Invalidate on both success and error paths: on success we refresh the lock owner;
+  // on a 404 error the refetch itself will 404, and the DetailPage's route error boundary
+  // renders the "borehole not found" fallback (see App.tsx throwOnError + Errorboundaries).
+  const useLockBorehole = useMutation({
+    mutationFn: (id: number) => lockBorehole(id),
+    onSettled: (_data, _error, id) => invalidateBorehole(id),
+  });
+
+  const useUnlockBorehole = useMutation({
+    mutationFn: (id: number) => unlockBorehole(id),
+    onSettled: (_data, _error, id) => invalidateBorehole(id),
   });
 
   const useDeleteBorehole = useMutation({
@@ -219,6 +239,8 @@ export const useBoreholeMutations = () => {
     add: useAddBorehole,
     copy: useCopyBorehole,
     update: useUpdateBorehole,
+    lock: useLockBorehole,
+    unlock: useUnlockBorehole,
     delete: useDeleteBorehole,
     bulkEdit: useBulkEditBoreholes,
     bulkDelete: useBulkDeleteBoreholes,
