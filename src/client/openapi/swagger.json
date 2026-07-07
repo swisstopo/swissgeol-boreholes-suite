@@ -396,6 +396,72 @@
         }
       }
     },
+    "/api/v{version}/borehole/{id}/lock": {
+      "post": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Acquires the edit lock on the borehole with the given id for the current user.\r\nTouches only BDMS.Models.Borehole.Locked and BDMS.Models.Borehole.LockedById, so it cannot race\r\nwith a concurrent full-entity edit on any other field.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the borehole to lock.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v{version}/borehole/{id}/unlock": {
+      "post": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Releases the edit lock on the borehole with the given id.\r\nTouches only BDMS.Models.Borehole.Locked and BDMS.Models.Borehole.LockedById, so it cannot race\r\nwith a concurrent full-entity edit on any other field.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the borehole to unlock.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/v{version}/borehole/bulkedit": {
       "post": {
         "tags": [
@@ -819,68 +885,6 @@
           },
           "required": true
         },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/v{version}/borehole/{id}/lock": {
-      "post": {
-        "tags": [
-          "Borehole"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/v{version}/borehole/{id}/unlock": {
-      "post": {
-        "tags": [
-          "Borehole"
-        ],
-        "parameters": [
-          {
-            "name": "id",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
         "responses": {
           "200": {
             "description": "OK"
