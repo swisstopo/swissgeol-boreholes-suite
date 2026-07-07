@@ -281,7 +281,9 @@ describe("Maintenance Tasks page tests", () => {
 
         cy.dataCy("execution-log-table").find(".MuiDataGrid-row").should("have.length", 1);
         cy.dataCy("execution-log-table").find('.MuiDataGrid-cell[data-field="affectedCount"]').should("contain", "42");
-        cy.dataCy("execution-log-table").find('.MuiDataGrid-cell[data-field="affectedCount"]').should("not.contain", "5");
+        cy.dataCy("execution-log-table")
+          .find('.MuiDataGrid-cell[data-field="affectedCount"]')
+          .should("not.contain", "5");
 
         cy.dataCy("execution-log-include-dry-run").find("input").check();
         cy.wait("@get-logs");
