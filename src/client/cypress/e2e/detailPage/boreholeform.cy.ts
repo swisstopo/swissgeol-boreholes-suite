@@ -458,7 +458,7 @@ describe("Test for the borehole form.", () => {
       startBoreholeEditing();
       ensureEditingEnabled();
       returnToOverview(); // navigating with swissgeol back button stops editing
-      cy.wait("@update-borehole");
+      cy.wait("@borehole-unlock");
       showTableAndWaitForData();
       clickOnRowWithText("AAA_HIPPOPOTHAMUS");
       ensureEditingDisabled();

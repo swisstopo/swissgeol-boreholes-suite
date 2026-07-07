@@ -45,7 +45,7 @@ afterEach(function () {
           cy.get(`.MuiButton-contained[data-cy="discardchanges-button"]`).click();
         }
       });
-      cy.wait("@update-borehole");
+      cy.wait("@borehole-unlock");
     }
   });
   if (this.currentTest?.state === "failed") {
