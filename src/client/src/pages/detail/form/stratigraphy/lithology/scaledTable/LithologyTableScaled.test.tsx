@@ -85,10 +85,6 @@ const renderTable = (props: {
 };
 
 describe("LithologyTableScaled", () => {
-  // Note: the first lithology layer renders twice — once in the hidden offscreen calibration
-  // measurement, once in the visible ScaledLayerColumn. Tests target the scaled wrappers via
-  // their data-testid to disambiguate from the hidden measurement node.
-
   it("renders one scaled cell per layer in each of the three data columns", () => {
     renderTable({
       lithologies: [lithology({ id: 1, fromDepth: 0, toDepth: 5 }), lithology({ id: 2, fromDepth: 5, toDepth: 10 })],
