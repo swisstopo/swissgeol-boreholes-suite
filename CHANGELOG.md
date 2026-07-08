@@ -2,10 +2,12 @@
 
 ## [Unreleased]
 
+### Fixed
+- Extern-sync no longer fails with a duplicate profile `name_uuid` error when re-syncing a borehole that already exists in the target under a different workgroup; the duplicate check now works across all workgroups and also skips boreholes whose attachments were already synced.
+
 ## v2.1.1736 - 2026-07-08
 
 ### Fixed
-- Extern-sync no longer fails with a duplicate profile `name_uuid` error when re-syncing a borehole that already exists in the target under a different workgroup; the duplicate check now works across all workgroups and also skips boreholes whose attachments were already synced.
 - Extern-sync no longer creates duplicate boreholes in the target database when a borehole's coordinates were recalculated; the duplicate check now compares the LV03 coordinates correctly.
 - The lithology tab now opens showing the full borehole depth, matching the chronostratigraphy and lithostratigraphy tabs, instead of zooming in on the first layer.
 - Borehole name was not saved when immediately navigating back to the overview.
