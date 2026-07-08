@@ -48,12 +48,12 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     }
 
     /// <inheritdoc />
-    public async Task<bool> CanChangeBoreholeStatusAsync(string? subjectId, int? boreholeId)
+    public async Task<bool> CanManageBoreholeAsync(string? subjectId, int? boreholeId)
     {
         var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
         var borehole = await GetBoreholeAsync(boreholeId).ConfigureAwait(false);
         if (borehole is null) return false;
-        return CanChangeBoreholeStatus(user, borehole);
+        return CanManageBorehole(user, borehole);
     }
 
     /// <inheritdoc />
@@ -61,8 +61,8 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
         => GetUnauthorizedBoreholeIdsAsync(subjectId, boreholeIds, CanEditBorehole);
 
     /// <inheritdoc />
-    public Task<IReadOnlyList<int>> GetBoreholeIdsUserCannotChangeStatusAsync(string? subjectId, IReadOnlyCollection<int> boreholeIds)
-        => GetUnauthorizedBoreholeIdsAsync(subjectId, boreholeIds, CanChangeBoreholeStatus);
+    public Task<IReadOnlyList<int>> GetBoreholeIdsUserCannotManageAsync(string? subjectId, IReadOnlyCollection<int> boreholeIds)
+        => GetUnauthorizedBoreholeIdsAsync(subjectId, boreholeIds, CanManageBorehole);
 
     /// <summary>
     /// Shared batch permission gate: loads the user and all referenced boreholes once, then evaluates
@@ -86,14 +86,15 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     }
 
     /// <summary>
-    /// Determines if a user can change the workflow status of a borehole.
-    /// This allows status transitions regardless of the current status (including Reviewed/Published),
-    /// but still checks for admin privileges, lock status, and proper permissions.
+    /// Determines if a user can manage a borehole. "Manage" is the broader permission check
+    /// that ignores the current workflow status, unlike <see cref="CanEditBorehole"/> which
+    /// blocks edits on Reviewed/Published boreholes. This is used for operations such as
+    /// changing workflow status, deleting, or updating tab statuses.
     /// </summary>
-    /// <param name="user">The user attempting to change the borehole status.</param>
-    /// <param name="borehole">The borehole whose status is to be changed.</param>
-    /// <returns>True if the user can change the borehole status; otherwise, false.</returns>
-    internal bool CanChangeBoreholeStatus(User user, Borehole borehole)
+    /// <param name="user">The user attempting to manage the borehole.</param>
+    /// <param name="borehole">The borehole to be managed.</param>
+    /// <returns>True if the user can manage the borehole; otherwise, false.</returns>
+    internal bool CanManageBorehole(User user, Borehole borehole)
     {
         return IsBoreholeEditableByUser(user, borehole);
     }
