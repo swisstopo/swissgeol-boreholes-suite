@@ -165,7 +165,7 @@ export const WorkflowView = () => {
     const workflowChangeRequest: WorkflowChangeRequest = {
       boreholeId: boreholeId,
       comment: changes.comment,
-      newAssigneeId: assigneeId != undefined ? Number(assigneeId) : undefined,
+      newAssigneeId: assigneeId == undefined ? undefined : Number(assigneeId),
       hasRequestedChanges: changes.hasRequestedChanges,
       newStatus: changes.toStatus,
     };
@@ -234,7 +234,7 @@ export const WorkflowView = () => {
         isReadOnly={false}
         availableAssignees={availableAssignees}
         selection={makeSelectionEntries()}
-        canManage={canManage}
+        canChangeStatus={canManage}
         isRestricted={borehole?.restrictionId !== restrictionFreeCode || !isAnythingApproved}
         onSgcWorkflowReviewChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
           handleTabStatusUpdate(e, TabType.Reviewed)
