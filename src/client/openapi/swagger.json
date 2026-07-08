@@ -369,7 +369,7 @@
         "tags": [
           "Borehole"
         ],
-        "summary": "Asynchronously deletes the BDMS.Models.Borehole with the specified id.\r\nPermission is checked via M:BDMS.Services.IBoreholePermissionService.CanChangeBoreholeStatusAsync(System.String,System.Nullable{System.Int32}),\r\nso admins can delete a borehole regardless of whether it is locked by another user or already in\r\nReviewed/Published status.",
+        "summary": "Asynchronously deletes the BDMS.Models.Borehole with the specified id.\r\nPermission is checked via M:BDMS.Services.IBoreholePermissionService.CanManageBoreholeAsync(System.String,System.Nullable{System.Int32}),\r\nso admins can delete a borehole regardless of whether it is locked by another user or already in\r\nReviewed/Published status.",
         "parameters": [
           {
             "name": "id",
@@ -838,7 +838,7 @@
         "tags": [
           "Borehole"
         ],
-        "summary": "Asynchronously deletes multiple boreholes. The whole batch is rejected (nothing is deleted) if the\r\ncurrent user is not allowed to delete any of the selected boreholes. Uses the same permission check\r\nas the single-borehole delete (M:BDMS.Services.IBoreholePermissionService.CanChangeBoreholeStatusAsync(System.String,System.Nullable{System.Int32})).",
+        "summary": "Asynchronously deletes multiple boreholes. The whole batch is rejected (nothing is deleted) if the\r\ncurrent user is not allowed to delete any of the selected boreholes. Uses the same permission check\r\nas the single-borehole delete (M:BDMS.Services.IBoreholePermissionService.CanManageBoreholeAsync(System.String,System.Nullable{System.Int32})).",
         "parameters": [
           {
             "name": "version",
@@ -4509,17 +4509,17 @@
         }
       }
     },
-    "/api/v{version}/permissions/canchangestatus": {
+    "/api/v{version}/permissions/canmanage": {
       "get": {
         "tags": [
           "Permissions"
         ],
-        "summary": "Gets whether the currently authenticated user has permission to change the status of the BDMS.Models.Borehole.",
+        "summary": "Gets whether the currently authenticated user has permission to manage the BDMS.Models.Borehole\r\n(e.g. change its workflow status, delete it, or update tab statuses).",
         "parameters": [
           {
             "name": "boreholeId",
             "in": "query",
-            "description": "The id of the borehole to get the edit permissions for.",
+            "description": "The id of the borehole to check management permissions for.",
             "schema": {
               "type": "integer",
               "format": "int32"

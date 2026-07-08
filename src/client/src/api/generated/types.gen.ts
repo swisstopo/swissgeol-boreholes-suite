@@ -7575,29 +7575,29 @@ export type GetApiVbyVersionPermissionsCaneditResponses = {
 export type GetApiVbyVersionPermissionsCaneditResponse =
   GetApiVbyVersionPermissionsCaneditResponses[keyof GetApiVbyVersionPermissionsCaneditResponses];
 
-export type GetApiVbyVersionPermissionsCanchangestatusData = {
+export type GetApiVbyVersionPermissionsCanmanageData = {
   body?: never;
   path: {
     version: string;
   };
   query?: {
     /**
-     * The id of the borehole to get the edit permissions for.
+     * The id of the borehole to check management permissions for.
      */
     boreholeId?: number;
   };
-  url: "/api/v{version}/permissions/canchangestatus";
+  url: "/api/v{version}/permissions/canmanage";
 };
 
-export type GetApiVbyVersionPermissionsCanchangestatusResponses = {
+export type GetApiVbyVersionPermissionsCanmanageResponses = {
   /**
    * OK
    */
   200: boolean;
 };
 
-export type GetApiVbyVersionPermissionsCanchangestatusResponse =
-  GetApiVbyVersionPermissionsCanchangestatusResponses[keyof GetApiVbyVersionPermissionsCanchangestatusResponses];
+export type GetApiVbyVersionPermissionsCanmanageResponse =
+  GetApiVbyVersionPermissionsCanmanageResponses[keyof GetApiVbyVersionPermissionsCanmanageResponses];
 
 export type PostApiVbyVersionPhotoUploadData = {
   body?: {
