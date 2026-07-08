@@ -12,7 +12,7 @@ import {
   WorkflowStatus,
 } from "@swissgeol/ui-core";
 import { SgcWorkflow } from "@swissgeol/ui-core-react";
-import { useBorehole, useBoreholeStatusEditable } from "../../../../api/borehole.ts";
+import { useBorehole, useBoreholeManageable } from "../../../../api/borehole.ts";
 import { Role as LegacyRole } from "../../../../api/generated/types.gen";
 import { useCurrentUser, useEditorUsersOnWorkgroup } from "../../../../api/user.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
@@ -37,7 +37,7 @@ export const WorkflowView = () => {
   const { data: workflow, isLoading } = useWorkflow(boreholeId);
   const { data: currentUser, isLoading: isCurrentUserLoading } = useCurrentUser();
   const { t } = useTranslation();
-  const { data: canChangeStatus } = useBoreholeStatusEditable(boreholeId);
+  const { data: canManage } = useBoreholeManageable(boreholeId);
   const { setEditingEnabled } = useContext(EditStateContext);
   const { data: editorUsersForWorkgroup } = useEditorUsersOnWorkgroup(borehole?.workgroup?.id ?? 0);
   const { navigateTo } = useBoreholesNavigate();
@@ -72,11 +72,11 @@ export const WorkflowView = () => {
   } = useWorkflowMutation();
 
   useEffect(() => {
-    if (canChangeStatus === false) {
+    if (canManage === false) {
       showAlert(t("boreholeStatusChangedNoMorePermissions"), "success");
       navigateTo({ path: "/" + boreholeId + "/location" });
     }
-  }, [canChangeStatus, showAlert, navigateTo, t, boreholeId]);
+  }, [canManage, showAlert, navigateTo, t, boreholeId]);
 
   const makeSelectionEntries = (): SgcWorkflowSelectionEntry<string>[] => {
     const field = (name: string, isDisabled: boolean = false, label: string = name) => ({
@@ -234,7 +234,7 @@ export const WorkflowView = () => {
         isReadOnly={false}
         availableAssignees={availableAssignees}
         selection={makeSelectionEntries()}
-        canChangeStatus={canChangeStatus}
+        canManage={canManage}
         isRestricted={borehole?.restrictionId !== restrictionFreeCode || !isAnythingApproved}
         onSgcWorkflowReviewChange={(e: SgcWorkflowCustomEvent<SgcWorkflowSelectionChangeEventDetails>) =>
           handleTabStatusUpdate(e, TabType.Reviewed)

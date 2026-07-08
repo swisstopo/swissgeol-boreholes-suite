@@ -432,7 +432,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
 
     /// <summary>
     /// Asynchronously deletes the <see cref="Borehole"/> with the specified <paramref name="id"/>.
-    /// Permission is checked via <see cref="IBoreholePermissionService.CanChangeBoreholeStatusAsync"/>,
+    /// Permission is checked via <see cref="IBoreholePermissionService.CanManageBoreholeAsync"/>,
     /// so admins can delete a borehole regardless of whether it is locked by another user or already in
     /// Reviewed/Published status.
     /// </summary>
@@ -450,7 +450,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
             return NotFound();
         }
 
-        if (!await BoreholePermissionService.CanChangeBoreholeStatusAsync(HttpContext.GetUserSubjectId(), borehole.Id).ConfigureAwait(false))
+        if (!await BoreholePermissionService.CanManageBoreholeAsync(HttpContext.GetUserSubjectId(), borehole.Id).ConfigureAwait(false))
         {
             return Unauthorized();
         }
@@ -473,7 +473,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
     /// <summary>
     /// Asynchronously deletes multiple boreholes. The whole batch is rejected (nothing is deleted) if the
     /// current user is not allowed to delete any of the selected boreholes. Uses the same permission check
-    /// as the single-borehole delete (<see cref="IBoreholePermissionService.CanChangeBoreholeStatusAsync"/>).
+    /// as the single-borehole delete (<see cref="IBoreholePermissionService.CanManageBoreholeAsync"/>).
     /// </summary>
     /// <param name="boreholeIds">The ids of the boreholes to delete.</param>
     [HttpPost("bulkdelete")]
@@ -484,7 +484,7 @@ public class BoreholeController : BoreholeControllerBase<Borehole>
         var subjectId = HttpContext.GetUserSubjectId();
 
         var unauthorizedBoreholeIds = await BoreholePermissionService
-            .GetBoreholeIdsUserCannotChangeStatusAsync(subjectId, distinctIds)
+            .GetBoreholeIdsUserCannotManageAsync(subjectId, distinctIds)
             .ConfigureAwait(false);
 
         if (unauthorizedBoreholeIds.Count > 0)
