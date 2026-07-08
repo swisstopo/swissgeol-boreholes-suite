@@ -4,6 +4,8 @@
 
 ### Fixed
 - Extern-sync no longer creates duplicate boreholes in the target database when a borehole's coordinates were recalculated; the duplicate check now compares the LV03 coordinates correctly.
+- The lithology tab now opens showing the full borehole depth, matching the chronostratigraphy and lithostratigraphy tabs, instead of zooming in on the first layer.
+- Borehole name was not saved when immediately navigating back to the overview.
 
 ## v2.1.1703 - 2026-06-25
 

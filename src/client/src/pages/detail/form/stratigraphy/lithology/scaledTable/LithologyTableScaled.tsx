@@ -1,6 +1,4 @@
-import { Dispatch, FC, SetStateAction, useCallback, useEffect, useLayoutEffect, useMemo, useRef } from "react";
-import { Box } from "@mui/material";
-import { theme } from "../../../../../../AppTheme.ts";
+import { Dispatch, FC, SetStateAction, useCallback, useEffect, useMemo } from "react";
 import { ScaledLayerColumn } from "../../components/scaledLayerColumn/ScaledLayerColumn.tsx";
 import { NavigationChild } from "../../navigation/NavigationChild.tsx";
 import { NavState } from "../../navigation/navState.ts";
@@ -47,34 +45,6 @@ export const LithologyTableScaled: FC<LithologyTableScaledProps> = ({
     );
   }, [validLithologies, validDescriptions, validFacies, setNavState]);
 
-  // Initial zoom calibration: measure the first lithology layer's natural content height via a
-  // hidden offscreen render in the same column (so it inherits the column's actual width and
-  // padding), then pick a lensSize that makes the first layer's pixel height equal that natural
-  // height. Result: the first layer renders with all of its content visible — no clamping or
-  // ellipsis at default zoom. Runs once; subsequent user-driven zoom/pan is left untouched.
-  const firstLayerMeasureRef = useRef<HTMLDivElement | null>(null);
-  const hasCalibratedRef = useRef(false);
-  const firstValidLithology = validLithologies[0];
-
-  useLayoutEffect(() => {
-    if (hasCalibratedRef.current) return;
-    if (!firstValidLithology) return;
-    const measureEl = firstLayerMeasureRef.current;
-    if (!measureEl) return;
-    const naturalHeight = measureEl.scrollHeight;
-    const thickness = firstValidLithology.toDepth - firstValidLithology.fromDepth;
-    if (thickness <= 0 || navState.height <= 0 || naturalHeight <= 0 || navState.maxContent <= 0) {
-      return;
-    }
-    // No artificial floor: for a very thin first layer with dense content the formula naturally
-    // produces a lensSize < thickness, which means the layer fills the viewport top-down and the
-    // user pans for the rest. Clamping to maxContent prevents zooming further out than the data
-    // supports. firstValidLithology assumes API-sorted layers (smallest fromDepth first).
-    const desiredLensSize = Math.min(navState.maxContent, (thickness * navState.height) / naturalHeight);
-    setNavState(prev => prev.setLensSize(desiredLensSize).setLensStart(0));
-    hasCalibratedRef.current = true;
-  }, [navState.height, navState.maxContent, firstValidLithology, setNavState]);
-
   const renderLithologyLayer = useCallback(
     (layer: WithDepths<Lithology>) => (
       <ScaledCellShell dataCy={`lithology-${layer.fromDepth}-${layer.toDepth}`}>
@@ -105,21 +75,6 @@ export const LithologyTableScaled: FC<LithologyTableScaledProps> = ({
   return (
     <>
       <NavigationChild navState={navState}>
-        {!hasCalibratedRef.current && firstValidLithology && (
-          <Box
-            ref={firstLayerMeasureRef}
-            sx={{
-              position: "absolute",
-              visibility: "hidden",
-              pointerEvents: "none",
-              top: 0,
-              left: 0,
-              right: 0,
-              padding: theme.spacing(1),
-            }}>
-            <LithologyLabels lithology={firstValidLithology} />
-          </Box>
-        )}
         <ScaledLayerColumn
           layers={validLithologies}
           navState={navState}
