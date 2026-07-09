@@ -155,8 +155,7 @@ public class SyncBoreholesTaskTest
 
         var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
 
-        // Pick a source borehole that has profiles and publish it. Because source and target are seeded
-        // identically, its profiles' name_uuids already exist at the target.
+        // Pick a source borehole that has profiles and publish it.
         var sourceBorehole = await syncContext.Source.Boreholes
             .Include(b => b.Profiles).Include(b => b.Workflow)
             .FirstAsync(b => b.Profiles.Any(), cancellationToken);
@@ -168,6 +167,12 @@ public class SyncBoreholesTaskTest
         sourceBorehole.LocationY = 1;
         sourceBorehole.LocationXLV03 = 1;
         sourceBorehole.LocationYLV03 = 1;
+
+        // Simulate a prior sync: profile name_uuids are seeded randomly per database, so give one of the
+        // source profiles a name_uuid that already exists at the target (as it would after a real sync copied
+        // the borehole over). This is what the global unique constraint would reject on a re-insert.
+        var syncedNameUuid = (await syncContext.Target.Profiles.Select(p => p.NameUuid).FirstAsync(cancellationToken));
+        sourceBorehole.Profiles.First().NameUuid = syncedNameUuid;
         await syncContext.Source.SaveChangesAsync(cancellationToken);
 
         var targetBoreholeCountBefore = await syncContext.Target.Boreholes.CountAsync(cancellationToken);
@@ -176,6 +181,43 @@ public class SyncBoreholesTaskTest
 
         // The borehole must be skipped: re-inserting it would violate the global profile name_uuid constraint.
         Assert.AreEqual(targetBoreholeCountBefore, await syncContext.Target.Boreholes.CountAsync(cancellationToken));
+    }
+
+    [TestMethod]
+    public async Task SyncBoreholesShouldSyncWhenNeitherLocationNorProfileNameUuidMatches()
+    {
+        // Negative counterpart: a borehole that is genuinely new (its location matches nothing at the target
+        // and none of its profile name_uuids exist there yet) must still be synced. Guards against the global
+        // deduplication becoming too broad and silently dropping legitimate boreholes.
+        using var syncContext = await TestSyncContext.BuildAsync(seedTestDataInSourceContext: true, seedTestDataInTargetContext: true);
+        using var syncTask = new SyncBoreholesTask(syncContext, new Mock<ILogger<SyncBoreholesTask>>().Object, GetDefaultConfiguration());
+
+        var cancellationToken = Mock.Of<CancellationTokenSource>().Token;
+
+        // Publish a source borehole that has profiles, then make it look brand new to the target: move it to a
+        // location that matches no target borehole and give every profile a name_uuid that does not exist yet.
+        var sourceBorehole = await syncContext.Source.Boreholes
+            .Include(b => b.Profiles).Include(b => b.Workflow)
+            .FirstAsync(b => b.Profiles.Any(), cancellationToken);
+        sourceBorehole.SetBoreholeWorkflowStatus(WorkflowStatus.Published);
+        sourceBorehole.LocationX = 1;
+        sourceBorehole.LocationY = 1;
+        sourceBorehole.LocationXLV03 = 1;
+        sourceBorehole.LocationYLV03 = 1;
+        foreach (var profile in sourceBorehole.Profiles)
+        {
+            profile.NameUuid = $"sync-negative-{profile.Id}";
+        }
+
+        await syncContext.Source.SaveChangesAsync(cancellationToken);
+
+        var targetBoreholeCountBefore = await syncContext.Target.Boreholes.CountAsync(cancellationToken);
+
+        await syncTask.ExecuteAndValidateAsync(cancellationToken);
+
+        // The borehole is not a duplicate, so exactly one borehole must be added at the target.
+        Assert.AreEqual(targetBoreholeCountBefore + 1, await syncContext.Target.Boreholes.CountAsync(cancellationToken));
+        Assert.IsTrue(await syncContext.Target.Boreholes.AnyAsync(b => b.Name == sourceBorehole.Name, cancellationToken));
     }
 
     [TestMethod]
