@@ -55,12 +55,8 @@ public class SyncBoreholesTask(ISyncContext syncContext, ILogger<SyncBoreholesTa
             targetDefaultUser.Name,
             targetDefaultUser.SubjectId);
 
-        // Load all existing target boreholes and profile file identifiers once. Deduplication must be
-        // global, not per-workgroup: a borehole's location and a profile's name_uuid are unique across the
-        // whole target database (name_uuid has a global unique constraint). Scoping the check to a single
-        // workgroup re-inserts an already synced borehole whenever the workgroup it is routed to now differs
-        // from the one holding its existing copy (e.g. after the default workgroup changed), which then
-        // violates the global name_uuid constraint.
+        // Deduplicate globally, not per-workgroup: name_uuid is unique across the whole target database, so a
+        // per-workgroup check re-inserts a borehole whenever it routes to a different workgroup than its copy.
         var boreholesAtDestination = await Target.Boreholes.AsNoTracking()
             .ToListAsync(cancellationToken).ConfigureAwait(false);
         var existingProfileNameUuids = (await Target.Profiles.AsNoTracking()
@@ -72,10 +68,8 @@ public class SyncBoreholesTask(ISyncContext syncContext, ILogger<SyncBoreholesTa
         // Operate on a copy of the list, so that we can remove items from it if needed.
         foreach (var publishedBorehole in publishedBoreholes.ToList())
         {
-            // Skip boreholes that were already synced, detected either by matching location (depth and
-            // coordinates within a pre-defined tolerance) or by a profile whose name_uuid already exists at
-            // the target. The name_uuid check is a definitive backstop that guards the global unique
-            // constraint even when the location heuristic misses (e.g. a depth edited after the first sync).
+            // Skip already synced boreholes: matched by location, or by a profile name_uuid that already
+            // exists at the target (backstop for the unique constraint when the location heuristic misses).
             var alreadySynced = publishedBorehole.IsWithinPredefinedTolerance(boreholesAtDestination)
                 || (publishedBorehole.Profiles?.Any(p => existingProfileNameUuids.Contains(p.NameUuid)) ?? false);
             if (alreadySynced)
