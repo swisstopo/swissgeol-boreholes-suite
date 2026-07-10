@@ -10,7 +10,7 @@ app:
   # -- The timezone which will be used in the application
   timezone: Europe/Zurich
   # -- The tag name of the Docker image tag to be deployed (updated by release workflow)
-  version: "v2.1.1736"
+  version: "v2.1.1739"
 
 dataextraction:
   # -- The tag name of the Docker image tag to be deployed (updated by the bump-dataextraction workflow)
