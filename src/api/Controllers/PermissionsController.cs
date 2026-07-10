@@ -38,18 +38,19 @@ public class PermissionsController : ControllerBase
     }
 
     /// <summary>
-    /// Gets whether the currently authenticated user has permission to change the status of the <see cref="Borehole"/>.
+    /// Gets whether the currently authenticated user has permission to manage the <see cref="Borehole"/>
+    /// (e.g. change its workflow status, delete it, or update tab statuses).
     /// </summary>
-    /// <param name="boreholeId">The id of the borehole to get the edit permissions for.</param>
-    [HttpGet("canChangeStatus")]
+    /// <param name="boreholeId">The id of the borehole to check management permissions for.</param>
+    [HttpGet("canManage")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<bool> CanChangeStatus([FromQuery] int? boreholeId)
+    public async Task<bool> CanManage([FromQuery] int? boreholeId)
     {
         if (!boreholeId.HasValue || boreholeId <= 0)
         {
             return false;
         }
 
-        return await permissionService.CanChangeBoreholeStatusAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false);
+        return await permissionService.CanManageBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false);
     }
 }
