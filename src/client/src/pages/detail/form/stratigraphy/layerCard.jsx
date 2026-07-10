@@ -102,7 +102,7 @@ const LayerCard = ({
     newFromDepth => {
       setFromDepth(newFromDepth);
       const errors = [];
-      if (newFromDepth === "" || isNaN(newFromDepth)) {
+      if (newFromDepth === "" || Number.isNaN(newFromDepth)) {
         errors.push(t("errorInvalidEntry"));
       } else {
         if (newFromDepth < minFromDepth) {
@@ -128,7 +128,7 @@ const LayerCard = ({
     newToDepth => {
       setToDepth(newToDepth);
       const errors = [];
-      if (newToDepth === "" || isNaN(newToDepth)) {
+      if (newToDepth === "" || Number.isNaN(newToDepth)) {
         errors.push(t("errorInvalidEntry"));
       } else {
         if (newToDepth > maxToDepth) {
@@ -294,7 +294,7 @@ const LayerCard = ({
       }}>
       {selection.map(
         (selectedItem, index) =>
-          header[index].isVisible && (
+          header[index]?.isVisible && (
             <Box
               key={index}
               sx={{
