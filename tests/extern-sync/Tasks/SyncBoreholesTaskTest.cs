@@ -171,7 +171,7 @@ public class SyncBoreholesTaskTest
         // Simulate a prior sync: profile name_uuids are seeded randomly per database, so give one of the
         // source profiles a name_uuid that already exists at the target (as it would after a real sync copied
         // the borehole over). This is what the global unique constraint would reject on a re-insert.
-        var syncedNameUuid = (await syncContext.Target.Profiles.Select(p => p.NameUuid).FirstAsync(cancellationToken));
+        var syncedNameUuid = await syncContext.Target.Profiles.Select(p => p.NameUuid).FirstAsync(cancellationToken);
         sourceBorehole.Profiles.First().NameUuid = syncedNameUuid;
         await syncContext.Source.SaveChangesAsync(cancellationToken);
 
