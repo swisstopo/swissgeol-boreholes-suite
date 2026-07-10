@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1739 - 2026-07-10
+
 ### Fixed
 - Headers on the Lithostratigraphy and Chronostratigraphy panels now update correctly.
 
