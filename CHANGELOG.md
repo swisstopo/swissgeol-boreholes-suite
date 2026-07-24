@@ -24,6 +24,7 @@
 - Updated `chronostratigraphy` and `lithostratigraphy` table headers and moved add-layer button to the bottom of the table.
   
 ### Changed
+- Upgraded to PostgreSQL 18 and PostGIS 3.6.
 - Deleted unused Swiss coordinate reference systems.
 - Gaps in the lithological and facies description columns are now displayed as neutral cells per depth row instead of a merged warning block.
 - Unified database column names for users, stratigraphy and codelist.

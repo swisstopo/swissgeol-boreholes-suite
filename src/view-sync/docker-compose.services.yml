@@ -5,9 +5,9 @@ services:
       service: db
     # override the default configuration
     volumes:
-      - /var/lib/postgresql/data
+      - /var/lib/postgresql
   target-db:
-    image: postgis/postgis:17-3.5-alpine
+    image: postgis/postgis:18-3.6-alpine
     restart: unless-stopped
     ports:
       - 5433:5432
