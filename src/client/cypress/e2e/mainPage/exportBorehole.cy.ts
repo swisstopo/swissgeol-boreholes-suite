@@ -110,11 +110,11 @@ describe("Test for exporting boreholes.", () => {
     setInput("topBedrockWeatheredMd", 900);
     cy.wait(["@get-depth-tvd", "@get-depth-tvd", "@get-depth-tvd"]);
     evaluateInput("totalDepth", "700");
-    evaluateInput("total_depth_tvd", "700");
+    evaluateInput("totalDepthTvd", "700");
     evaluateInput("topBedrockFreshMd", "800");
-    evaluateInput("top_bedrock_fresh_tvd", "800");
+    evaluateInput("topBedrockFreshTvd", "800");
     evaluateInput("topBedrockWeatheredMd", "900");
-    evaluateInput("top_bedrock_weathered_tvd", "900");
+    evaluateInput("topBedrockWeatheredTvd", "900");
 
     saveWithSaveBar();
 
@@ -141,7 +141,7 @@ describe("Test for exporting boreholes.", () => {
     cy.dataCy("general-tab").click();
     cy.wait(["@borehole_by_id", "@get-depth-tvd", "@get-depth-tvd", "@get-depth-tvd"]);
     evaluateInput("totalDepth", "700");
-    evaluateInput("total_depth_tvd", "674.87");
+    evaluateInput("totalDepthTvd", "674.87");
     setOriginalName(secondBoreholeName); // change name to avoid potential CSV filename conflict
     saveWithSaveBar();
     stopBoreholeEditing();
@@ -207,6 +207,12 @@ describe("Test for exporting boreholes.", () => {
   });
 
   it("downloads a maximum of 100 boreholes", () => {
+    // The seed contains exactly 100 boreholes, so we need to add a couple of extras
+    // to exceed the 100-entry cap and trigger the truncation prompt under test.
+    for (let i = 0; i < 5; i++) {
+      createBorehole({ originalName: `EXPORT_CAP_TEST_${i}` });
+    }
+
     goToRouteAndAcceptTerms("/");
     deleteDownloadedFile(csvFileName);
     deleteDownloadedFile(jsonFileName);

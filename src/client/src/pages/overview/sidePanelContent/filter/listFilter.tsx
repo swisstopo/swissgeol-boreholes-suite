@@ -21,23 +21,22 @@ interface ListFilterProps {
 }
 
 export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
-  const { filterParams, setFilterField, setTableParams } = useBoreholeUrlParams();
+  const { activeFilters, setFilterField } = useBoreholeUrlParams();
   const searchData = inputConfig?.searchData;
-  const { data: stats } = useFilterStats(filterParams as FilterRequest);
+  const { data: stats } = useFilterStats(activeFilters as FilterRequest);
 
   const updateChange = useCallback(
     (attribute: string, value: string | boolean | number | null | number[] | undefined) => {
       setFilterField(attribute as FilterKey, value as never);
-      setTableParams({ page: 0 });
     },
-    [setFilterField, setTableParams],
+    [setFilterField],
   );
 
   return (
     <FormContainer>
       {searchData?.map(filterItem => {
         const key = filterItem.key as FilterKey;
-        const value = filterParams?.[key];
+        const value = activeFilters?.[key];
 
         return (
           <Box key={filterItem.key}>
@@ -54,7 +53,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
                   item={filterItem}
                   filterValue={(value as string) ?? null}
                   onUpdate={value => updateChange(filterItem.key, value)}
-                  filterRequest={filterParams as FilterRequest}
+                  filterRequest={activeFilters as FilterRequest}
                 />
               )}
               {filterItem.type === "Date" && (
@@ -63,7 +62,6 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
                   filterValue={(value as string) ?? null}
                   onUpdate={value => updateChange(filterItem.key, value)}
                   type="date"
-                  labelKeySuffix="_filter_title"
                   debounceMs={0}
                 />
               )}

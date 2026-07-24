@@ -350,6 +350,48 @@ export type Borehole = {
 };
 
 /**
+ * The typed set of borehole fields that can be changed through bulk edit.
+ * Each property is nullable to mirror the corresponding borehole column; which of
+ * them are actually written is controlled by BDMS.Models.BoreholeBulkUpdateRequest.FieldsToUpdate.
+ * A masked field must carry a value; a null value is rejected (clearing is not supported),
+ * except nullable booleans where null is the deliberate "not specified" state.
+ */
+export type BoreholeBulkUpdate = {
+  workgroupId?: number | null;
+  restrictionId?: number | null;
+  restrictionUntil?: string | null;
+  nationalInterest?: boolean | null;
+  projectName?: string | null;
+  typeId?: number | null;
+  purposeId?: number | null;
+  statusId?: number | null;
+  locationPrecisionId?: number | null;
+  elevationPrecisionId?: number | null;
+  referenceElevationPrecisionId?: number | null;
+  referenceElevationTypeId?: number | null;
+  depthPrecisionId?: number | null;
+  totalDepth?: number | null;
+  topBedrockFreshMd?: number | null;
+  topBedrockWeatheredMd?: number | null;
+  hasGroundwater?: boolean | null;
+  lithologyTopBedrockId?: number | null;
+  lithostratigraphyTopBedrockId?: number | null;
+  chronostratigraphyTopBedrockId?: number | null;
+};
+
+/**
+ * Request payload for bulk editing boreholes. Applies BDMS.Models.BoreholeBulkUpdateRequest.Update to every
+ * borehole in BDMS.Models.BoreholeBulkUpdateRequest.BoreholeIds, writing only the properties named in
+ * BDMS.Models.BoreholeBulkUpdateRequest.FieldsToUpdate (matched case-insensitively against
+ * BDMS.Models.BoreholeBulkUpdate property names).
+ */
+export type BoreholeBulkUpdateRequest = {
+  boreholeIds: Array<number>;
+  update: BoreholeBulkUpdate;
+  fieldsToUpdate: Array<string>;
+};
+
+/**
  * Join table entity for a BDMS.Models.Codelist attached to a BDMS.Models.Borehole to store multiple borehole ids.
  */
 export type BoreholeCodelist = {
@@ -2185,6 +2227,55 @@ export type MaintenanceTaskStatus = "Idle" | "Running" | "Completed" | "Failed";
  */
 export type MaintenanceTaskType = "LocationMigration" | "CoordinateMigration" | "UserMerge";
 
+/**
+ * Represents a single custom map overlay stored in a BDMS.Models.User's settings
+ * (under `map.explorer`). The property names mirror the shape persisted by the
+ * client, so existing settings continue to round-trip unchanged.
+ */
+export type MapLayer = {
+  /**
+   * Gets the layer type, either `WMS` or `WMTS`.
+   */
+  type?: string | null;
+  /**
+   * Gets the layer identifier.
+   */
+  Identifier?: string | null;
+  /**
+   * Gets the layer title.
+   */
+  Title?: string | null;
+  /**
+   * Gets the layer abstract.
+   */
+  Abstract?: string | null;
+  /**
+   * Gets the service URL of the layer.
+   */
+  url?: string | null;
+  /**
+   * Gets a value indicating whether the layer is visible.
+   */
+  visibility?: boolean | null;
+  /**
+   * Gets the layer transparency, as a percentage from `0` to `100`.
+   */
+  transparency?: number | null;
+  /**
+   * Gets the layer position used for ordering and z-index.
+   */
+  position?: number | null;
+  /**
+   * Gets a value indicating whether the layer is queryable.
+   */
+  queryable?: boolean | null;
+  /**
+   * Gets the opaque WMTS source configuration produced by the client. Stored and
+   * returned verbatim; `null` for WMS layers.
+   */
+  conf?: unknown;
+};
+
 export type NtsGeometryServices = {
   geometryOverlay?: GeometryOverlay;
   coordinateEqualityComparer?: CoordinateEqualityComparer;
@@ -2638,7 +2729,7 @@ export type Stratigraphy = {
   /**
    * Gets or sets the BDMS.Models.Stratigraphy's name.
    */
-  name?: string | null;
+  name: string;
   /**
    * Gets or sets the BDMS.Models.Stratigraphy's date.
    */
@@ -3121,7 +3212,7 @@ export type Workgroup = {
   /**
    * Gets or sets the name of the workgroup.
    */
-  name?: string;
+  name: string;
   /**
    * Gets or sets the BDMS.Models.Workgroup created date.
    */
@@ -5202,7 +5293,7 @@ export type StratigraphyWritable = {
   /**
    * Gets or sets the BDMS.Models.Stratigraphy's name.
    */
-  name?: string | null;
+  name: string;
   /**
    * Gets or sets the BDMS.Models.Stratigraphy's date.
    */
@@ -5490,7 +5581,7 @@ export type WorkgroupWritable = {
   /**
    * Gets or sets the name of the workgroup.
    */
-  name?: string;
+  name: string;
   /**
    * Gets or sets the BDMS.Models.Workgroup created date.
    */
@@ -5624,102 +5715,176 @@ export type GetApiVbyVersionBackfillByIdResponses = {
 export type GetApiVbyVersionBackfillByIdResponse =
   GetApiVbyVersionBackfillByIdResponses[keyof GetApiVbyVersionBackfillByIdResponses];
 
-export type DeleteApiV2BoreholeData = {
+export type DeleteApiVbyVersionBoreholeData = {
   body?: never;
-  path?: never;
+  path: {
+    version: string;
+  };
   query?: {
     /**
      * The id of the borehole to delete.
      */
     id?: number;
   };
-  url: "/api/v2/borehole";
+  url: "/api/v{version}/borehole";
 };
 
-export type DeleteApiV2BoreholeResponses = {
+export type DeleteApiVbyVersionBoreholeResponses = {
   /**
    * OK
    */
   200: unknown;
 };
 
-export type PostApiV2BoreholeData = {
+export type PostApiVbyVersionBoreholeData = {
   body?: BoreholeWritable;
-  path?: never;
+  path: {
+    version: string;
+  };
   query?: never;
-  url: "/api/v2/borehole";
+  url: "/api/v{version}/borehole";
 };
 
-export type PostApiV2BoreholeResponses = {
+export type PostApiVbyVersionBoreholeResponses = {
   /**
    * OK
    */
   200: Borehole;
 };
 
-export type PostApiV2BoreholeResponse = PostApiV2BoreholeResponses[keyof PostApiV2BoreholeResponses];
+export type PostApiVbyVersionBoreholeResponse =
+  PostApiVbyVersionBoreholeResponses[keyof PostApiVbyVersionBoreholeResponses];
 
-export type PutApiV2BoreholeData = {
+export type PutApiVbyVersionBoreholeData = {
   body?: BoreholeWritable;
-  path?: never;
+  path: {
+    version: string;
+  };
   query?: never;
-  url: "/api/v2/borehole";
+  url: "/api/v{version}/borehole";
 };
 
-export type PutApiV2BoreholeResponses = {
+export type PutApiVbyVersionBoreholeResponses = {
   /**
    * OK
    */
   200: Borehole;
 };
 
-export type PutApiV2BoreholeResponse = PutApiV2BoreholeResponses[keyof PutApiV2BoreholeResponses];
+export type PutApiVbyVersionBoreholeResponse =
+  PutApiVbyVersionBoreholeResponses[keyof PutApiVbyVersionBoreholeResponses];
 
-export type PostApiV2BoreholeFilterData = {
+export type PostApiVbyVersionBoreholeByIdLockData = {
+  body?: never;
+  path: {
+    /**
+     * The id of the borehole to lock.
+     */
+    id: number;
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/borehole/{id}/lock";
+};
+
+export type PostApiVbyVersionBoreholeByIdLockResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type PostApiVbyVersionBoreholeByIdUnlockData = {
+  body?: never;
+  path: {
+    /**
+     * The id of the borehole to unlock.
+     */
+    id: number;
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/borehole/{id}/unlock";
+};
+
+export type PostApiVbyVersionBoreholeByIdUnlockResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type PostApiVbyVersionBoreholeBulkeditData = {
+  /**
+   * The boreholes to edit, the values to apply, and the field mask.
+   */
+  body?: BoreholeBulkUpdateRequest;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/borehole/bulkedit";
+};
+
+export type PostApiVbyVersionBoreholeBulkeditResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type PostApiVbyVersionBoreholeFilterData = {
   /**
    * The filter request with filtering criteria.
    */
   body?: FilterRequestWritable;
-  path?: never;
+  path: {
+    version: string;
+  };
   query?: never;
-  url: "/api/v2/borehole/filter";
+  url: "/api/v{version}/borehole/filter";
 };
 
-export type PostApiV2BoreholeFilterResponses = {
+export type PostApiVbyVersionBoreholeFilterResponses = {
   /**
    * OK
    */
   200: FilterResponse;
 };
 
-export type PostApiV2BoreholeFilterResponse = PostApiV2BoreholeFilterResponses[keyof PostApiV2BoreholeFilterResponses];
+export type PostApiVbyVersionBoreholeFilterResponse =
+  PostApiVbyVersionBoreholeFilterResponses[keyof PostApiVbyVersionBoreholeFilterResponses];
 
-export type PostApiV2BoreholeFilterStatsData = {
+export type PostApiVbyVersionBoreholeFilterStatsData = {
   /**
    * The active filter request; may be null to compute unconstrained counts.
    */
   body?: FilterRequestWritable;
-  path?: never;
+  path: {
+    version: string;
+  };
   query?: never;
-  url: "/api/v2/borehole/filter/stats";
+  url: "/api/v{version}/borehole/filter/stats";
 };
 
-export type PostApiV2BoreholeFilterStatsResponses = {
+export type PostApiVbyVersionBoreholeFilterStatsResponses = {
   /**
    * OK
    */
   200: FilterStatsResponse;
 };
 
-export type PostApiV2BoreholeFilterStatsResponse =
-  PostApiV2BoreholeFilterStatsResponses[keyof PostApiV2BoreholeFilterStatsResponses];
+export type PostApiVbyVersionBoreholeFilterStatsResponse =
+  PostApiVbyVersionBoreholeFilterStatsResponses[keyof PostApiVbyVersionBoreholeFilterStatsResponses];
 
-export type PostApiV2BoreholeSuggestData = {
+export type PostApiVbyVersionBoreholeSuggestData = {
   /**
    * The active filter request body; may be null/empty to compute suggestions over all boreholes the caller can see.
    */
   body?: FilterRequestWritable;
-  path?: never;
+  path: {
+    version: string;
+  };
   query?: {
     /**
      * The borehole column to search (originalName, projectName, or name).
@@ -5734,43 +5899,47 @@ export type PostApiV2BoreholeSuggestData = {
      */
     limit?: number;
   };
-  url: "/api/v2/borehole/suggest";
+  url: "/api/v{version}/borehole/suggest";
 };
 
-export type PostApiV2BoreholeSuggestResponses = {
+export type PostApiVbyVersionBoreholeSuggestResponses = {
   /**
    * OK
    */
   200: Array<BoreholeSuggestion>;
 };
 
-export type PostApiV2BoreholeSuggestResponse =
-  PostApiV2BoreholeSuggestResponses[keyof PostApiV2BoreholeSuggestResponses];
+export type PostApiVbyVersionBoreholeSuggestResponse =
+  PostApiVbyVersionBoreholeSuggestResponses[keyof PostApiVbyVersionBoreholeSuggestResponses];
 
-export type GetApiV2BoreholeByIdData = {
+export type GetApiVbyVersionBoreholeByIdData = {
   body?: never;
   path: {
     /**
      * The id of borehole to get.
      */
     id: number;
+    version: string;
   };
   query?: never;
-  url: "/api/v2/borehole/{id}";
+  url: "/api/v{version}/borehole/{id}";
 };
 
-export type GetApiV2BoreholeByIdResponses = {
+export type GetApiVbyVersionBoreholeByIdResponses = {
   /**
    * OK
    */
   200: Borehole;
 };
 
-export type GetApiV2BoreholeByIdResponse = GetApiV2BoreholeByIdResponses[keyof GetApiV2BoreholeByIdResponses];
+export type GetApiVbyVersionBoreholeByIdResponse =
+  GetApiVbyVersionBoreholeByIdResponses[keyof GetApiVbyVersionBoreholeByIdResponses];
 
-export type PostApiV2BoreholeCopyData = {
+export type PostApiVbyVersionBoreholeCopyData = {
   body?: never;
-  path?: never;
+  path: {
+    version: string;
+  };
   query: {
     /**
      * The BDMS.Models.Borehole.Id of the borehole to copy.
@@ -5781,17 +5950,37 @@ export type PostApiV2BoreholeCopyData = {
      */
     workgroupId: number;
   };
-  url: "/api/v2/borehole/copy";
+  url: "/api/v{version}/borehole/copy";
 };
 
-export type PostApiV2BoreholeCopyResponses = {
+export type PostApiVbyVersionBoreholeCopyResponses = {
   /**
    * OK
    */
   200: number;
 };
 
-export type PostApiV2BoreholeCopyResponse = PostApiV2BoreholeCopyResponses[keyof PostApiV2BoreholeCopyResponses];
+export type PostApiVbyVersionBoreholeCopyResponse =
+  PostApiVbyVersionBoreholeCopyResponses[keyof PostApiVbyVersionBoreholeCopyResponses];
+
+export type PostApiVbyVersionBoreholeBulkdeleteData = {
+  /**
+   * The ids of the boreholes to delete.
+   */
+  body: Array<number>;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/borehole/bulkdelete";
+};
+
+export type PostApiVbyVersionBoreholeBulkdeleteResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
 
 export type GetApiVbyVersionBoreholeexportJsonData = {
   body?: never;
@@ -7386,29 +7575,29 @@ export type GetApiVbyVersionPermissionsCaneditResponses = {
 export type GetApiVbyVersionPermissionsCaneditResponse =
   GetApiVbyVersionPermissionsCaneditResponses[keyof GetApiVbyVersionPermissionsCaneditResponses];
 
-export type GetApiVbyVersionPermissionsCanchangestatusData = {
+export type GetApiVbyVersionPermissionsCanmanageData = {
   body?: never;
   path: {
     version: string;
   };
   query?: {
     /**
-     * The id of the borehole to get the edit permissions for.
+     * The id of the borehole to check management permissions for.
      */
     boreholeId?: number;
   };
-  url: "/api/v{version}/permissions/canchangestatus";
+  url: "/api/v{version}/permissions/canmanage";
 };
 
-export type GetApiVbyVersionPermissionsCanchangestatusResponses = {
+export type GetApiVbyVersionPermissionsCanmanageResponses = {
   /**
    * OK
    */
   200: boolean;
 };
 
-export type GetApiVbyVersionPermissionsCanchangestatusResponse =
-  GetApiVbyVersionPermissionsCanchangestatusResponses[keyof GetApiVbyVersionPermissionsCanchangestatusResponses];
+export type GetApiVbyVersionPermissionsCanmanageResponse =
+  GetApiVbyVersionPermissionsCanmanageResponses[keyof GetApiVbyVersionPermissionsCanmanageResponses];
 
 export type PostApiVbyVersionPhotoUploadData = {
   body?: {
@@ -7972,6 +8161,96 @@ export type PostApiVbyVersionStratigraphyCopyResponses = {
 export type PostApiVbyVersionStratigraphyCopyResponse =
   PostApiVbyVersionStratigraphyCopyResponses[keyof PostApiVbyVersionStratigraphyCopyResponses];
 
+export type GetApiVbyVersionTermsData = {
+  body?: never;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/terms";
+};
+
+export type GetApiVbyVersionTermsResponses = {
+  /**
+   * Returns the currently published terms, or null if none exist.
+   */
+  200: Term;
+};
+
+export type GetApiVbyVersionTermsResponse = GetApiVbyVersionTermsResponses[keyof GetApiVbyVersionTermsResponses];
+
+export type GetApiVbyVersionTermsDraftData = {
+  body?: never;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/terms/draft";
+};
+
+export type GetApiVbyVersionTermsDraftResponses = {
+  /**
+   * Returns the draft terms, the published terms as fallback, or null.
+   */
+  200: Term;
+};
+
+export type GetApiVbyVersionTermsDraftResponse =
+  GetApiVbyVersionTermsDraftResponses[keyof GetApiVbyVersionTermsDraftResponses];
+
+export type PutApiVbyVersionTermsDraftData = {
+  /**
+   * The term carrying the localized texts to store as draft.
+   */
+  body?: Term;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/terms/draft";
+};
+
+export type PutApiVbyVersionTermsDraftErrors = {
+  /**
+   * The server encountered an unexpected condition that prevented it from fulfilling the request.
+   */
+  500: unknown;
+};
+
+export type PutApiVbyVersionTermsDraftResponses = {
+  /**
+   * The draft was saved successfully.
+   */
+  200: unknown;
+};
+
+export type PostApiVbyVersionTermsPublishData = {
+  body?: never;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/terms/publish";
+};
+
+export type PostApiVbyVersionTermsPublishErrors = {
+  /**
+   * There is no draft to publish.
+   */
+  400: unknown;
+  /**
+   * The server encountered an unexpected condition that prevented it from fulfilling the request.
+   */
+  500: unknown;
+};
+
+export type PostApiVbyVersionTermsPublishResponses = {
+  /**
+   * The draft was published successfully.
+   */
+  200: unknown;
+};
+
 export type GetApiVbyVersionUserSelfData = {
   body?: never;
   path: {
@@ -7990,6 +8269,64 @@ export type GetApiVbyVersionUserSelfResponses = {
 
 export type GetApiVbyVersionUserSelfResponse =
   GetApiVbyVersionUserSelfResponses[keyof GetApiVbyVersionUserSelfResponses];
+
+export type GetApiVbyVersionUserSelfMaplayersData = {
+  body?: never;
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/user/self/maplayers";
+};
+
+export type GetApiVbyVersionUserSelfMaplayersErrors = {
+  /**
+   * The current user could not be identified.
+   */
+  401: unknown;
+};
+
+export type GetApiVbyVersionUserSelfMaplayersResponses = {
+  /**
+   * Returns the current user's custom map overlays, keyed by layer identifier.
+   */
+  200: {
+    [key: string]: MapLayer;
+  };
+};
+
+export type GetApiVbyVersionUserSelfMaplayersResponse =
+  GetApiVbyVersionUserSelfMaplayersResponses[keyof GetApiVbyVersionUserSelfMaplayersResponses];
+
+export type PutApiVbyVersionUserSelfMaplayersData = {
+  body?: {
+    [key: string]: MapLayer;
+  };
+  path: {
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/user/self/maplayers";
+};
+
+export type PutApiVbyVersionUserSelfMaplayersErrors = {
+  /**
+   * The current user could not be identified.
+   */
+  401: unknown;
+};
+
+export type PutApiVbyVersionUserSelfMaplayersResponses = {
+  /**
+   * The map overlays were saved successfully and are returned.
+   */
+  200: {
+    [key: string]: MapLayer;
+  };
+};
+
+export type PutApiVbyVersionUserSelfMaplayersResponse =
+  PutApiVbyVersionUserSelfMaplayersResponses[keyof PutApiVbyVersionUserSelfMaplayersResponses];
 
 export type DeleteApiVbyVersionUserByIdData = {
   body?: never;

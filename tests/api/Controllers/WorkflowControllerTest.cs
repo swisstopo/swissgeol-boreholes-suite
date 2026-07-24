@@ -25,7 +25,7 @@ public class WorkflowControllerTest
         boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
         controller = new WorkflowController(context, boreholePermissionServiceMock.Object, loggerMock.Object) { ControllerContext = GetControllerContextAdmin() };
         boreholePermissionServiceMock
-            .Setup(x => x.CanChangeBoreholeStatusAsync("sub_admin", It.IsAny<int?>()))
+            .Setup(x => x.CanManageBoreholeAsync("sub_admin", It.IsAny<int?>()))
             .ReturnsAsync(true);
     }
 
@@ -160,7 +160,7 @@ public class WorkflowControllerTest
     public async Task WorkflowChangeRequestByUserWithoutEditPermissions()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanChangeBoreholeStatusAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .Setup(x => x.CanManageBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var request = new WorkflowChangeRequest
@@ -180,7 +180,7 @@ public class WorkflowControllerTest
     public async Task WorkflowChangeRequestToPublishWithoutPublisherRights()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanChangeBoreholeStatusAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .Setup(x => x.CanManageBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
 
         // User does not have publisher rights
@@ -347,7 +347,7 @@ public class WorkflowControllerTest
     public async Task TabStatusChangeUserWithoutEditPermissionReturnsUnauthorized()
     {
         boreholePermissionServiceMock
-            .Setup(x => x.CanChangeBoreholeStatusAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .Setup(x => x.CanManageBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var request = new WorkflowTabStatusChangeRequest

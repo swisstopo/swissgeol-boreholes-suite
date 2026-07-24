@@ -42,14 +42,14 @@ describe("Tests for filtering data by identifier.", () => {
     cy.contains("h6", "Location").click();
     // show all options
     cy.dataCy("show-all-fields-switch").click();
-    verifyPaginationText("1–100 of 3001");
+    verifyPaginationText("1–100 of 101");
 
-    setSelect("borehole_identifier", 1);
+    setSelect("boreholeIdentifier", 1);
 
     hasPagination(false);
     // click reset label
     cy.dataCy("reset-filter-button").click();
-    verifyPaginationText("1–100 of 3001");
+    verifyPaginationText("1–100 of 101");
   });
 
   // TODO: Rewrite once the identifier filter is re-implemented (https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2547).
@@ -80,7 +80,7 @@ describe("Tests for filtering data by identifier.", () => {
     // show all options
     cy.dataCy("show-all-fields-switch").click();
 
-    setSelect("borehole_identifier", 1);
+    setSelect("boreholeIdentifier", 1);
     showTableAndWaitForData();
     hasPagination(false);
     checkAllVisibleRows();

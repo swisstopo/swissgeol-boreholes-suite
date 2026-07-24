@@ -35,7 +35,7 @@ export const SaveBar = () => {
       p={1}
       sx={{
         boxShadow: theme.shadows[2],
-        borderTop: "1px solid rgba(223, 228, 233, 1)",
+        borderTop: `1px solid ${theme.palette.border.light}`,
         minHeight: "56px",
         width: "100%",
       }}>
@@ -47,7 +47,7 @@ export const SaveBar = () => {
         {showSaveFeedback && !hasChanges && savedMessage}
       </Stack>
       <Stack spacing={1} direction="row">
-        <DeleteButton disabled={!hasChanges || isSaving} label="discardchanges" onClick={triggerReset} />
+        <DeleteButton disabled={!hasChanges || isSaving} label="discardChanges" onClick={triggerReset} />
         <SaveButton disabled={!hasChanges || isSaving || hasErrors} variant="contained" onClick={triggerSave} />
       </Stack>
       {isSaving && <LoadingBackdrop open={isSaving} sx={{ zIndex: theme.zIndex.modal }} />}

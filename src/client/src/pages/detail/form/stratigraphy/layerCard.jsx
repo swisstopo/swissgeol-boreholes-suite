@@ -1,4 +1,4 @@
-import { useCallback, useContext, useEffect, useState } from "react";
+import { memo, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Close, Delete, Edit } from "@mui/icons-material";
 import {
@@ -13,6 +13,7 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
+import { theme } from "../../../../AppTheme.ts";
 import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.js";
 import { NumericFormatWithThousandSeparator } from "../../../../components/form/numericFormatWithThousandSeparator.js";
 import { EditStateContext } from "../../editStateContext.tsx";
@@ -45,7 +46,12 @@ const LayerCard = ({
   const [cardState, setCardState] = useState(null);
   const { editingEnabled } = useContext(EditStateContext);
 
-  const minPixelHeightForDepthLabels = 65;
+  // Show the from/to depth labels only once the cell is tall enough that the center label and the
+  // two depth labels do not overlap. Below the center-label threshold, even the center text hides
+  // so very thin cells become pure colored bands.
+  const minPixelHeightForDepthLabels = 120;
+  const minPixelHeightForCenterLabel = 24;
+  const showCenterLabel = height >= minPixelHeightForCenterLabel;
 
   useEffect(() => {
     setCardState(prevState => {
@@ -96,7 +102,7 @@ const LayerCard = ({
     newFromDepth => {
       setFromDepth(newFromDepth);
       const errors = [];
-      if (newFromDepth === "" || isNaN(newFromDepth)) {
+      if (newFromDepth === "" || Number.isNaN(newFromDepth)) {
         errors.push(t("errorInvalidEntry"));
       } else {
         if (newFromDepth < minFromDepth) {
@@ -122,7 +128,7 @@ const LayerCard = ({
     newToDepth => {
       setToDepth(newToDepth);
       const errors = [];
-      if (newToDepth === "" || isNaN(newToDepth)) {
+      if (newToDepth === "" || Number.isNaN(newToDepth)) {
         errors.push(t("errorInvalidEntry"));
       } else {
         if (newToDepth > maxToDepth) {
@@ -193,7 +199,7 @@ const LayerCard = ({
       {State.EDITING === cardState && (
         <TextField
           sx={{ margin: "0.8rem 0" }}
-          label={t("fromdepth")}
+          label={t("fromDepth")}
           defaultValue={fromDepth ?? layer.fromDepth}
           InputProps={{
             inputComponent: NumericFormatWithThousandSeparator,
@@ -257,7 +263,7 @@ const LayerCard = ({
       {State.EDITING === cardState && (
         <TextField
           sx={{ margin: "0.8rem 0" }}
-          label={t("todepth")}
+          label={t("toDepth")}
           defaultValue={toDepth ?? layer.toDepth}
           InputProps={{
             inputComponent: NumericFormatWithThousandSeparator,
@@ -279,8 +285,8 @@ const LayerCard = ({
         gridTemplateColumns: `repeat(${header.reduce((acc, h) => acc + h.isVisible, 0)},minmax(0,1fr))`,
         justifyItems: "stretch",
         alignItems: "stretch",
-        borderLeft: "1px solid rgba(0, 0, 0, 0.12)",
-        borderTop: "1px solid rgba(0, 0, 0, 0.12)",
+        borderLeft: `1px solid ${theme.palette.border.light}`,
+        borderTop: `1px solid ${theme.palette.border.light}`,
         minHeight: State.EDITING === cardState ? "14rem" : "0",
         height: height + "px",
         position: "relative",
@@ -288,7 +294,7 @@ const LayerCard = ({
       }}>
       {selection.map(
         (selectedItem, index) =>
-          header[index].isVisible && (
+          header[index]?.isVisible && (
             <Box
               key={index}
               sx={{
@@ -296,10 +302,10 @@ const LayerCard = ({
                 alignItems: "center",
                 justifyContent: "center",
                 backgroundColor: selectedItem?.color ? `rgb(${selectedItem?.color?.join()})` : "transparent",
-                borderRight: "1px solid rgba(0, 0, 0, 0.12)",
+                borderRight: `1px solid ${theme.palette.border.light}`,
                 padding: "0 1rem",
               }}>
-              {[State.DISPLAY, State.EDITABLE].includes(cardState) && (
+              {[State.DISPLAY, State.EDITABLE].includes(cardState) && showCenterLabel && (
                 <Typography sx={{ textAlign: "center" }}>{selectedItem?.label ?? "-"}</Typography>
               )}
               {State.EDITING === cardState && (
@@ -346,4 +352,4 @@ const LayerCard = ({
   );
 };
 
-export default LayerCard;
+export default memo(LayerCard);

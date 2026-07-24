@@ -36,8 +36,10 @@ public class Stratigraphy : IChangeTracking, IIdentifyable
     /// Gets or sets the <see cref="Stratigraphy"/>'s name.
     /// </summary>
     [IncludeInExport]
+    [JsonRequired]
     [Column("name")]
-    public string? Name { get; set; }
+    [Required]
+    public string Name { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Stratigraphy"/>'s date.

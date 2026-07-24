@@ -11,7 +11,6 @@ import {
   useBoreholeMutations,
 } from "../../api/borehole.ts";
 import { Borehole } from "../../api/generated";
-import { useCurrentUser } from "../../api/user.ts";
 import { useAuth } from "../../auth/useBoreholesAuth.tsx";
 import {
   DeleteButton,
@@ -38,7 +37,6 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
   const [isExporting, setIsExporting] = useState(false);
   const id = useRequiredId();
   const { navigateTo } = useBoreholesNavigate();
-  const { data: currentUser } = useCurrentUser();
   const { data: editableByCurrentUser } = useBoreholeEditable(id);
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
@@ -46,22 +44,31 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
   const { hasChanges, triggerReset } = useContext<SaveContextProps>(SaveContext);
   const auth = useAuth();
   const {
-    update: { mutate: updateBorehole },
+    lock: { mutateAsync: lockBorehole },
+    unlock: { mutateAsync: unlockBorehole },
     delete: { mutate: deleteBorehole },
   } = useBoreholeMutations();
 
-  const changeBoreholeLockStatus = (editing: boolean) => {
-    if (!currentUser) return;
-    if (!editing) {
-      updateBorehole({ ...borehole, locked: null, lockedById: null });
-    } else {
-      updateBorehole({ ...borehole, locked: new Date().toISOString(), lockedById: currentUser.id });
+  const changeBoreholeLockStatus = async (editing: boolean): Promise<boolean> => {
+    try {
+      if (editing) {
+        await lockBorehole(id);
+      } else {
+        await unlockBorehole(id);
+      }
+      return true;
+    } catch {
+      // Returning false here gates setEditingEnabled so a
+      // failed lock does not put the UI into edit mode while the server state is unchanged.
+      return false;
     }
   };
 
-  const toggleEditing = (editing: boolean) => {
-    changeBoreholeLockStatus(editing);
-    setEditingEnabled(editing);
+  const toggleEditing = async (editing: boolean) => {
+    const success = await changeBoreholeLockStatus(editing);
+    if (success) {
+      setEditingEnabled(editing);
+    }
   };
 
   const startEditing = () => {
@@ -85,7 +92,7 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
         variant: "outlined",
       },
       {
-        label: "discardchanges",
+        label: "discardChanges",
         icon: <Trash2 />,
         variant: "contained",
         action: resetFormAndStopEditing,
@@ -114,15 +121,18 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
     navigateTo({ path: "/" });
   };
 
-  const handleReturnClick = () => {
+  const handleReturnClick = async () => {
     if (editingEnabled) {
       if (hasChanges) {
         stopEditingWithUnsavedChanges();
       } else if (
         borehole.workflow?.status !== WorkflowStatus.Published &&
         borehole.workflow?.status !== WorkflowStatus.Reviewed
-      )
-        changeBoreholeLockStatus(false);
+      ) {
+        // Await the unlock so the request is in flight (and error is surfaced) before the
+        // component unmounts; otherwise a rejected unlock leaves the borehole locked with no feedback.
+        await changeBoreholeLockStatus(false);
+      }
     }
     navigateTo({ path: "/" });
   };

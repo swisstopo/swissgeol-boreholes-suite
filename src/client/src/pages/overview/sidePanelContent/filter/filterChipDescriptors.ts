@@ -53,7 +53,7 @@ type MultiSelectStringKey = {
 }[FilterKey];
 
 export type ChipDescriptorInputs = {
-  filterParams: Partial<{ [K in FilterKey]: FilterValueByType[FilterTypeOf<K>] }>;
+  activeFilters: Partial<{ [K in FilterKey]: FilterValueByType[FilterTypeOf<K>] }>;
   codelists: Codelist[];
   getCodelistLabel: (c: Codelist) => string;
   workgroups: Workgroup[];
@@ -65,27 +65,27 @@ export type ChipDescriptorInputs = {
 // Meta for every key in filterParsers.
 // each entry so `FilterTypeOf<K>` can look up the per-key type.
 export const FilterFieldMetaData = {
-  originalName: { type: "text", labelKey: "original_name" },
-  projectName: { type: "text", labelKey: "project_name" },
+  originalName: { type: "text", labelKey: "originalName" },
+  projectName: { type: "text", labelKey: "projectName" },
   name: { type: "text", labelKey: "name" },
   statusId: { type: "multiSelectCodelist", labelKey: "boreholeStatus", schema: "borehole_status" },
-  typeId: { type: "multiSelectCodelist", labelKey: "borehole_type", schema: "borehole_type" },
+  typeId: { type: "multiSelectCodelist", labelKey: "boreholeType", schema: "borehole_type" },
   purposeId: { type: "multiSelectCodelist", labelKey: "purpose", schema: "drilling_purpose" },
   workgroupId: { type: "multiSelectWorkgroup", labelKey: "workgroup" },
   restrictionId: { type: "multiSelectCodelist", labelKey: "restriction", schema: "restriction" },
   canton: { type: "multiSelectString", labelKey: "canton" },
   municipality: { type: "multiSelectString", labelKey: "city" },
   logToolTypeId: { type: "multiSelectCodelist", labelKey: "toolType", schema: "log_tool_type" },
-  identifierTypeId: { type: "multiSelectCodelist", labelKey: "borehole_identifier", schema: "borehole_identifier" },
-  identifierValue: { type: "text", labelKey: "identifier_value" },
-  restrictionUntilFrom: { type: "rangeMin", labelKey: "restriction_until", boundLabel: "from" },
-  restrictionUntilTo: { type: "rangeMax", labelKey: "restriction_until", boundLabel: "to" },
-  totalDepthMin: { type: "rangeMin", labelKey: "totaldepth", boundLabel: "min" },
-  totalDepthMax: { type: "rangeMax", labelKey: "totaldepth", boundLabel: "max" },
-  topBedrockFreshMdMin: { type: "rangeMin", labelKey: "top_bedrock_fresh_md", boundLabel: "min" },
-  topBedrockFreshMdMax: { type: "rangeMax", labelKey: "top_bedrock_fresh_md", boundLabel: "max" },
-  topBedrockWeatheredMdMin: { type: "rangeMin", labelKey: "top_bedrock_weathered_md", boundLabel: "min" },
-  topBedrockWeatheredMdMax: { type: "rangeMax", labelKey: "top_bedrock_weathered_md", boundLabel: "max" },
+  identifierTypeId: { type: "multiSelectCodelist", labelKey: "boreholeIdentifier", schema: "borehole_identifier" },
+  identifierValue: { type: "text", labelKey: "boreholeIdentifierValue" },
+  restrictionUntilFrom: { type: "rangeMin", labelKey: "restrictionUntil", boundLabel: "from" },
+  restrictionUntilTo: { type: "rangeMax", labelKey: "restrictionUntil", boundLabel: "to" },
+  totalDepthMin: { type: "rangeMin", labelKey: "totalDepth", boundLabel: "min" },
+  totalDepthMax: { type: "rangeMax", labelKey: "totalDepth", boundLabel: "max" },
+  topBedrockFreshMdMin: { type: "rangeMin", labelKey: "topBedrockFreshMd", boundLabel: "min" },
+  topBedrockFreshMdMax: { type: "rangeMax", labelKey: "topBedrockFreshMd", boundLabel: "max" },
+  topBedrockWeatheredMdMin: { type: "rangeMin", labelKey: "topBedrockWeatheredMd", boundLabel: "min" },
+  topBedrockWeatheredMdMax: { type: "rangeMax", labelKey: "topBedrockWeatheredMd", boundLabel: "max" },
   nationalInterest: { type: "nullableBoolean", labelKey: "nationalInterest", allowNull: true },
   topBedrockIntersected: { type: "nullableBoolean", labelKey: "topBedrockIntersected", allowNull: true },
   hasGroundwater: { type: "nullableBoolean", labelKey: "hasGroundwater", allowNull: true },
@@ -159,7 +159,7 @@ function buildCodelistMultiSelectDescriptors(
   meta: Extract<FilterFieldMeta, { type: "multiSelectCodelist" }>,
   inputs: ChipDescriptorInputs,
 ): ChipDescriptor[] {
-  const value = inputs.filterParams[key];
+  const value = inputs.activeFilters[key];
   if (value === undefined) return [];
   return buildMultiSelectDescriptors(key, value, meta, inputs, {
     isLoading: inputs.codelists.length === 0,
@@ -175,7 +175,7 @@ function buildWorkgroupMultiSelectDescriptors(
   meta: Extract<FilterFieldMeta, { type: "multiSelectWorkgroup" }>,
   inputs: ChipDescriptorInputs,
 ): ChipDescriptor[] {
-  const value = inputs.filterParams[key];
+  const value = inputs.activeFilters[key];
   if (value === undefined) return [];
   return buildMultiSelectDescriptors(key, value, meta, inputs, {
     isLoading: inputs.workgroups.length === 0,
@@ -188,7 +188,7 @@ function buildStringMultiSelectDescriptors(
   meta: Extract<FilterFieldMeta, { type: "multiSelectString" }>,
   inputs: ChipDescriptorInputs,
 ): ChipDescriptor[] {
-  const value = inputs.filterParams[key];
+  const value = inputs.activeFilters[key];
   if (value === undefined) return [];
   return buildMultiSelectDescriptors(key, value, meta, inputs, {
     isLoading: false,
@@ -271,7 +271,7 @@ function buildTextDescriptor(
 export function buildFilterChipDescriptors(inputs: ChipDescriptorInputs): ChipDescriptor[] {
   const result: ChipDescriptor[] = [];
   for (const key of FilterKeyOrder) {
-    const raw = inputs.filterParams[key];
+    const raw = inputs.activeFilters[key];
     if (raw === undefined || raw === null) continue;
     const meta = FilterFieldMetaData[key];
     switch (meta.type) {

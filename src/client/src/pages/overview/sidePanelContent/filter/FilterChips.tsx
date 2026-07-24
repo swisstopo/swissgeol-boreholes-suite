@@ -5,7 +5,7 @@ import { CircleX } from "lucide-react";
 import PolygonIcon from "../../../../assets/icons/polygon.svg?react";
 import { useWorkgroups } from "../../../../api/workgroup.ts";
 import { CodelistLabelStyle, useCodelistLabel, useCodelists } from "../../../../components/codelist.ts";
-import { FilterKey, useBoreholeUrlParams } from "../../useBoreholeUrlParams.ts";
+import { useBoreholeUrlParams } from "../../useBoreholeUrlParams.ts";
 import { buildFilterChipDescriptors } from "./filterChipDescriptors.ts";
 import { PolygonFilterContext } from "./polygonFilterContext.tsx";
 
@@ -13,28 +13,19 @@ const FilterChips = () => {
   const { t } = useTranslation();
   const { filterPolygon, setFilterPolygon, setFeatureIds, setPolygonSelectionEnabled } =
     useContext(PolygonFilterContext);
-  const { setFilterField, clearFilterField, filterParams, setTableParams } = useBoreholeUrlParams();
+  const { setFilterField, clearFilterField, activeFilters } = useBoreholeUrlParams();
   const { data: codelists } = useCodelists();
   const getCodelistLabel = useCodelistLabel(CodelistLabelStyle.TextOnly);
   const { data: workgroups } = useWorkgroups();
 
-  const setFieldAndResetPage = (key: FilterKey, value: Parameters<typeof setFilterField>[1]) => {
-    setFilterField(key, value);
-    setTableParams({ page: 0 });
-  };
-  const clearFieldAndResetPage = (key: FilterKey) => {
-    clearFilterField(key);
-    setTableParams({ page: 0 });
-  };
-
   const descriptors = buildFilterChipDescriptors({
-    filterParams,
+    activeFilters,
     codelists: codelists ?? [],
     getCodelistLabel,
     workgroups: workgroups ?? [],
     t,
-    setField: setFieldAndResetPage,
-    clearField: clearFieldAndResetPage,
+    setField: setFilterField,
+    clearField: clearFilterField,
   });
 
   const hasAnyChip = descriptors.length > 0 || filterPolygon !== null;

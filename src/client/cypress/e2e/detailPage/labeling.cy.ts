@@ -270,7 +270,7 @@ describe("Test labeling tool", () => {
     cy.dataCy("labeling-file-dropzone").attachFile("import/borehole_attachment_1.pdf", {
       subjectType: "drag-n-drop",
     });
-    cy.wait(["@getAllAttachments", "@upload-files", "@borehole_by_id"]);
+    cy.wait(["@getAllAttachments", "@upload-files"]);
     cy.dataCy("labeling-file-button-select").contains("borehole_attachment_1.pdf");
 
     reloadPanel();
@@ -586,7 +586,7 @@ describe("Test labeling tool", () => {
       expect(view?.getRotation()).to.equal(Math.PI / 2);
     });
     cy.dataCy("labeling-panel").find('input[type="file"]').attachFile("import/image_123.0-456.0_all.tif");
-    cy.wait(["@upload-photo", "@getAllPhotos", "@borehole_by_id"]);
+    cy.wait(["@upload-photo", "@getAllPhotos"]);
 
     stopBoreholeEditing();
 

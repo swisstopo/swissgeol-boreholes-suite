@@ -6,7 +6,7 @@ import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/co
 import { SessionKeys } from "../pages/overview/SessionKey.ts";
 import { download, downloadData } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
-import { Borehole, BoreholeCodelist, Codelist } from "./generated";
+import { Borehole, BoreholeBulkUpdate, BoreholeBulkUpdateRequest, BoreholeCodelist, Codelist } from "./generated";
 import { NullableDateString } from "./unionTypes.ts";
 import { useCurrentUser } from "./user.ts";
 
@@ -47,7 +47,7 @@ const createBorehole = async (workgroupId: number): Promise<Borehole> => {
   });
 };
 
-export const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: number | null) => {
+const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: number | null) => {
   return await fetchApiV2Legacy(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
 };
 
@@ -67,13 +67,43 @@ const fetchBoreholeById = async (id: number): Promise<Borehole> => {
 const updateBorehole = async (borehole: Borehole): Promise<Borehole> => {
   return await fetchApiV2WithApiError<Borehole>("borehole", "PUT", borehole);
 };
+
+const lockBorehole = async (id: number): Promise<void> => {
+  return await fetchApiV2WithApiError<void>(`borehole/${id}/lock`, "POST");
+};
+
+const unlockBorehole = async (id: number): Promise<void> => {
+  return await fetchApiV2WithApiError<void>(`borehole/${id}/unlock`, "POST");
+};
+
 const deleteBorehole = async (id: number) => await fetchApiV2WithApiError(`borehole?id=${id}`, "DELETE");
+
+type BulkEditValue = string | number | boolean | null | undefined;
+
+export const buildBulkEditRequest = (
+  boreholeIds: number[],
+  changedFields: Array<[keyof BoreholeBulkUpdate, BulkEditValue]>,
+): BoreholeBulkUpdateRequest => {
+  const update: BoreholeBulkUpdate = {};
+  const fieldsToUpdate: string[] = [];
+  for (const [key, value] of changedFields) {
+    Object.assign(update, { [key]: value });
+    fieldsToUpdate.push(key);
+  }
+  return { boreholeIds, update, fieldsToUpdate };
+};
+
+const bulkEditBoreholes = async (request: BoreholeBulkUpdateRequest): Promise<number[]> =>
+  await fetchApiV2WithApiError<number[]>("borehole/bulkedit", "POST", request);
+
+const bulkDeleteBoreholes = async (boreholeIds: number[]): Promise<void> =>
+  await fetchApiV2WithApiError<void>("borehole/bulkdelete", "POST", boreholeIds);
 
 const canUserEditBorehole = async (id: number) =>
   await fetchApiV2WithApiError<boolean>(`permissions/canedit?boreholeId=${id}`, "GET");
 
-const canUserUpdateBoreholeStatus = async (id: number) =>
-  await fetchApiV2WithApiError<boolean>(`permissions/canchangestatus?boreholeId=${id}`, "GET");
+const canUserManageBorehole = async (id: number) =>
+  await fetchApiV2WithApiError<boolean>(`permissions/canmanage?boreholeId=${id}`, "GET");
 
 export const boreholeQueryKey = "boreholes";
 
@@ -112,13 +142,13 @@ export const useBoreholeEditable = (id: number) => {
   });
 };
 
-export const canUpdateStatusQueryKey = "canUpdateBoreholeStatus";
-export const useBoreholeStatusEditable = (id: number) => {
+export const canManageQueryKey = "canManageBorehole";
+export const useBoreholeManageable = (id: number) => {
   const { data: currentUser } = useCurrentUser();
   return useQuery({
-    queryKey: [canUpdateStatusQueryKey, currentUser?.id, id],
+    queryKey: [canManageQueryKey, currentUser?.id, id],
     queryFn: async () => {
-      return await canUserUpdateBoreholeStatus(id);
+      return await canUserManageBorehole(id);
     },
     enabled: !!id,
   });
@@ -133,20 +163,43 @@ export const useBoreholeMutations = () => {
     },
   });
 
+  const useCopyBorehole = useMutation({
+    mutationFn: async ({
+      boreholeId,
+      workgroupId,
+    }: {
+      boreholeId: GridRowSelectionModel;
+      workgroupId: number | null;
+    }) => {
+      return await copyBorehole(boreholeId, workgroupId);
+    },
+  });
+
+  // Force immediate background refetch of the borehole after any lock-status-changing
+  // mutation so the UI has fresh data on next render and doesn't flicker edit-affordances.
+  const invalidateBorehole = (id: number) => {
+    queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
+    queryClient.refetchQueries({ queryKey: [boreholeQueryKey, id], exact: true });
+  };
+
   const useUpdateBorehole = useMutation({
     mutationFn: async (borehole: Borehole) => {
       return await updateBorehole(borehole);
     },
-    onSuccess: (_, borehole) => {
-      queryClient.invalidateQueries({
-        queryKey: [boreholeQueryKey],
-      });
-      // force immediate background refetch to have the borehole's lock status up to date on next render and prevent button flickering
-      queryClient.refetchQueries({
-        queryKey: [boreholeQueryKey, borehole.id],
-        exact: true,
-      });
-    },
+    onSuccess: (_, borehole) => invalidateBorehole(borehole.id),
+  });
+
+  // Invalidate on both success and error paths: on success we refresh the lock owner;
+  // on a 404 error the refetch itself will 404, and the DetailPage's route error boundary
+  // renders the "borehole not found" fallback (see App.tsx throwOnError + Errorboundaries).
+  const useLockBorehole = useMutation({
+    mutationFn: (id: number) => lockBorehole(id),
+    onSettled: (_data, _error, id) => invalidateBorehole(id),
+  });
+
+  const useUnlockBorehole = useMutation({
+    mutationFn: (id: number) => unlockBorehole(id),
+    onSettled: (_data, _error, id) => invalidateBorehole(id),
   });
 
   const useDeleteBorehole = useMutation({
@@ -159,10 +212,38 @@ export const useBoreholeMutations = () => {
       });
     },
   });
+
+  const useBulkEditBoreholes = useMutation({
+    mutationFn: async (request: BoreholeBulkUpdateRequest) => {
+      return await bulkEditBoreholes(request);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [boreholeQueryKey],
+      });
+    },
+  });
+
+  const useBulkDeleteBoreholes = useMutation({
+    mutationFn: async (boreholeIds: number[]) => {
+      return await bulkDeleteBoreholes(boreholeIds);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({
+        queryKey: [boreholeQueryKey],
+      });
+    },
+  });
+
   return {
     add: useAddBorehole,
+    copy: useCopyBorehole,
     update: useUpdateBorehole,
+    lock: useLockBorehole,
+    unlock: useUnlockBorehole,
     delete: useDeleteBorehole,
+    bulkEdit: useBulkEditBoreholes,
+    bulkDelete: useBulkDeleteBoreholes,
   };
 };
 

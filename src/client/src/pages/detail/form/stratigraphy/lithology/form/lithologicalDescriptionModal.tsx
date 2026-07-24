@@ -50,7 +50,7 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
   return (
     <FormDialog
       open={description !== undefined}
-      title={t("lithological_description")}
+      title={t("lithologicalDescription")}
       onClose={cancelDialog}
       onApply={applyDialog}
       isApplyDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}>
@@ -60,14 +60,14 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
             <FormContainer direction={"row"}>
               <FormInput
                 fieldName={"fromDepth"}
-                label={"fromdepth"}
+                label={"fromDepth"}
                 readonly={true}
                 value={description?.fromDepth}
                 type={FormValueType.Number}
               />
               <FormInput
                 fieldName={"toDepth"}
-                label={"todepth"}
+                label={"toDepth"}
                 readonly={true}
                 value={description?.toDepth}
                 type={FormValueType.Number}

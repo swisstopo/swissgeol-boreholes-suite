@@ -125,14 +125,14 @@ const SectionInput = ({ item, parentId }) => {
                     <FormContainer direction="row">
                       <FormInput
                         fieldName={`sectionElements.${index}.fromDepth`}
-                        label="fromdepth"
+                        label="fromDepth"
                         value={field.fromDepth}
                         type={FormValueType.Number}
                         required={true}
                       />
                       <FormInput
                         fieldName={`sectionElements.${index}.toDepth`}
-                        label="todepth"
+                        label="toDepth"
                         value={field.toDepth}
                         type={FormValueType.Number}
                         required={true}
@@ -141,7 +141,7 @@ const SectionInput = ({ item, parentId }) => {
                     <FormContainer direction="row">
                       <FormDomainSelect
                         fieldName={`sectionElements.${index}.drillingMethodId`}
-                        label="drilling_method"
+                        label="drillingMethod"
                         selected={field.drillingMethodId}
                         schemaName="drilling_method"
                       />
@@ -155,7 +155,7 @@ const SectionInput = ({ item, parentId }) => {
                     <FormContainer direction="row">
                       <FormSelect
                         fieldName={`sectionElements.${index}.drillingMudTypeId`}
-                        label="drilling_mud_type"
+                        label="drillingMudType"
                         selected={field.drillingMudTypeId}
                         values={[...drillingMudTypeOptions.values()].filter(
                           d => d.path.length === 0 || d.path.length === 1,
@@ -172,7 +172,7 @@ const SectionInput = ({ item, parentId }) => {
                       />
                       <FormSelect
                         fieldName={`sectionElements.${index}.drillingMudSubtypeId`}
-                        label="drilling_mud_subtype"
+                        label="drillingMudSubtype"
                         selected={field.drillingMudSubtypeId}
                         values={[...drillingMudTypeOptions.values()].filter(
                           d =>
@@ -185,13 +185,13 @@ const SectionInput = ({ item, parentId }) => {
                     <FormContainer direction="row">
                       <FormInput
                         fieldName={`sectionElements.${index}.drillingStartDate`}
-                        label="drilling_start_date"
+                        label="drillingStartDate"
                         value={field.drillingStartDate}
                         type={FormValueType.Date}
                       />
                       <FormInput
                         fieldName={`sectionElements.${index}.drillingEndDate`}
-                        label="drilling_end_date"
+                        label="drillingEndDate"
                         value={field.drillingEndDate}
                         type={FormValueType.Date}
                       />
@@ -199,13 +199,13 @@ const SectionInput = ({ item, parentId }) => {
                     <FormContainer direction="row">
                       <FormInput
                         fieldName={`sectionElements.${index}.drillingDiameter`}
-                        label="drill_diameter"
+                        label="drillDiameter"
                         value={field.drillingDiameter}
                         type={FormValueType.Number}
                       />
                       <FormInput
                         fieldName={`sectionElements.${index}.drillingCoreDiameter`}
-                        label="drill_core_diameter"
+                        label="drillCoreDiameter"
                         value={field.drillingCoreDiameter}
                         type={FormValueType.Number}
                       />

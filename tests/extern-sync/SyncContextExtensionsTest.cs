@@ -36,17 +36,17 @@ public class SyncContextExtensionsTest
         await context.SetBoreholeStatusAsync(1_000_001, WorkflowStatus.Draft, cancellationToken);
         await context.SetBoreholeStatusAsync(1_000_020, WorkflowStatus.InReview, cancellationToken);
 
-        await context.SetBoreholeStatusAsync(1_000_444, WorkflowStatus.Reviewed, cancellationToken);
-        await context.SetBoreholeStatusAsync(1_000_300, WorkflowStatus.Reviewed, cancellationToken);
-        await context.SetBoreholeStatusAsync(1_001_555, WorkflowStatus.Reviewed, cancellationToken);
-        await context.SetBoreholeStatusAsync(1_000_666, WorkflowStatus.Published, cancellationToken);
+        await context.SetBoreholeStatusAsync(1_000_044, WorkflowStatus.Reviewed, cancellationToken);
+        await context.SetBoreholeStatusAsync(1_000_030, WorkflowStatus.Reviewed, cancellationToken);
+        await context.SetBoreholeStatusAsync(1_000_055, WorkflowStatus.Reviewed, cancellationToken);
+        await context.SetBoreholeStatusAsync(1_000_066, WorkflowStatus.Published, cancellationToken);
 
         var boreholes = context.Boreholes.WithStatusReviewedOrPublished().ToList();
 
         Assert.AreEqual(4, boreholes.Count);
-        Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_000_444));
-        Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_000_300));
-        Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_001_555));
-        Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_000_666));
+        Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_000_044));
+        Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_000_030));
+        Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_000_055));
+        Assert.IsNotNull(boreholes.SingleOrDefault(b => b.Id == 1_000_066));
     }
 }

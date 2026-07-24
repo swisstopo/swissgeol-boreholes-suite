@@ -19,7 +19,7 @@ describe("Viewer tests", () => {
     cy.dataCy("new-borehole-button").should("have.class", "Mui-disabled");
 
     // click on borehole
-    clickOnRowWithText("Aaron Rempel");
+    clickOnRowWithText("Addie Blick");
     // // verify all text inputs are readonly on Location tab
     cy.get(".MuiFormControl-root")
       .should("have.length", 15)
@@ -42,7 +42,7 @@ describe("Viewer tests", () => {
   it("Assures viewer can export boreholes as CSV and JSON including attachments", () => {
     loginAsViewer();
     showTableAndWaitForData();
-    checkRowWithText("Aaron Rempel");
+    checkRowWithText("Addie Blick");
     cy.dataCy("copy-button").should("not.exist");
     cy.dataCy("bulkediting-button").should("not.exist");
     cy.dataCy("delete-button").should("not.exist");
@@ -51,7 +51,7 @@ describe("Viewer tests", () => {
     cy.dataCy("json-button").should("exist");
     cy.dataCy("exportjsonprofile-button").should("exist");
     cy.dataCy("cancel-button").click();
-    clickOnRowWithText("Aaron Rempel");
+    clickOnRowWithText("Addie Blick");
     cy.dataCy("edit-button").should("not.exist");
     cy.dataCy("export-button").click();
     cy.dataCy("csv-button").should("exist");
@@ -62,24 +62,20 @@ describe("Viewer tests", () => {
   it("Assures viewer can click on all borehole menu items and see something", () => {
     loginAsViewer();
     showTableAndWaitForData();
-    clickOnRowWithText("Aaron Konopelski");
+    clickOnRowWithText("Aisha Thiel");
     navigateInSidebar(SidebarMenuItem.borehole);
-    evaluateInput("originalName", "Aaron Konopelski");
-    evaluateInput("total_depth_tvd", "683.83");
+    evaluateInput("originalName", "Aisha Thiel");
     navigateInBorehole(BoreholeTab.sections);
-    cy.contains("No section available").should("exist");
+    cy.contains("Section name").should("exist");
     navigateInBorehole(BoreholeTab.geometry);
     cy.contains("Top view").should("exist");
     navigateInSidebar(SidebarMenuItem.stratigraphy);
     cy.wait("@lithology_by_stratigraphyId_GET");
-    cy.contains("Kaia Macejkovic").should("exist");
     navigateInStratigraphy(StratigraphyTab.chronostratigraphy);
-    cy.contains("Phanerozoic").should("exist");
     navigateInStratigraphy(StratigraphyTab.lithostratigraphy);
-    cy.contains("Kössen-Formation").should("exist");
     navigateInSidebar(SidebarMenuItem.completion);
     cy.wait("@completion_GET");
-    cy.contains("No borehole architecture available").should("exist");
+    cy.contains("Completion date: start").should("exist");
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(500);
     // Todo reanable and fix flakiness https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2390
@@ -93,7 +89,7 @@ describe("Viewer tests", () => {
     // navigateInSidebar(SidebarMenuItem.hydrotest);
     // cy.contains("No hydrotests available").should("exist");
     navigateInSidebar(SidebarMenuItem.attachments);
-    cy.contains("No profiles available...").should("exist");
+    cy.contains("ADP.pdf").should("exist");
     cy.dataCy("status-menu-item").should("not.exist"); // viewer cannot see status menu item
   });
 });

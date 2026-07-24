@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import { Box, Stack } from "@mui/material";
 import { SgcMenuItem } from "@swissgeol/ui-core-react";
-import { useBoreholeStatusEditable } from "../../api/borehole.ts";
+import { useBoreholeManageable } from "../../api/borehole.ts";
 import { Borehole } from "../../api/generated";
 import { useAuth } from "../../auth/useBoreholesAuth.tsx";
 import { useBoreholeDataAvailability } from "../../hooks/useBoreholeDataAvailability.ts";
@@ -19,7 +19,7 @@ interface DetailSideNavProps {
 export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
   const [hydrogeologyIsVisible, setHydrogeologyIsVisible] = useState(false);
   const id = useRequiredId();
-  const { data: canChangeStatus } = useBoreholeStatusEditable(id);
+  const { data: canManage } = useBoreholeManageable(id);
   const location = useLocation();
   const { t } = useTranslation();
   const ct = useCapitalizedTranslation();
@@ -194,7 +194,7 @@ export const DetailSideNav = ({ borehole }: DetailSideNavProps) => {
             }}>
             {ct("attachments")}
           </SgcMenuItem>
-          {!auth.anonymousModeEnabled && canChangeStatus && (
+          {!auth.anonymousModeEnabled && canManage && (
             <SgcMenuItem
               active={location.pathname === `/${id}/status`}
               data-cy="status-menu-item"

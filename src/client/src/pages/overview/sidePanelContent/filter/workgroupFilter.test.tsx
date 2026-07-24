@@ -4,7 +4,7 @@ import { afterEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import { I18nextProvider, initReactI18next } from "react-i18next";
 import i18n from "i18next";
-import type { Workgroup } from "../../../../api-lib/ReduxStateInterfaces";
+import type { Workgroup } from "../../../../api/generated";
 import { WorkgroupFilter } from "./workgroupFilter";
 
 i18n.use(initReactI18next).init({
@@ -21,8 +21,8 @@ const makeWorkgroups = (n: number): Workgroup[] =>
     (_, i) =>
       ({
         id: i + 1,
-        workgroup: `Workgroup ${i + 1}`,
-        disabled: null,
+        name: `Workgroup ${i + 1}`,
+        isDisabled: false,
       }) as unknown as Workgroup,
   );
 

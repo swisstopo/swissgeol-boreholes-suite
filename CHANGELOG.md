@@ -2,10 +2,26 @@
 
 ## [Unreleased]
 
+## v2.1.1739 - 2026-07-10
+
+### Fixed
+- Headers on the Lithostratigraphy and Chronostratigraphy panels now update correctly.
+
+## v2.1.1736 - 2026-07-08
+
+### Fixed
+- Extern-sync no longer creates duplicate boreholes in the target database when a borehole's coordinates were recalculated; the duplicate check now compares the LV03 coordinates correctly.
+- The lithology tab now opens showing the full borehole depth, matching the chronostratigraphy and lithostratigraphy tabs, instead of zooming in on the first layer.
+- Borehole name was not saved when immediately navigating back to the overview.
+
+## v2.1.1703 - 2026-06-25
+
 ### Added
 - Added new codelist entry `VSP` to `log_tool_type` schema.
 - The OCR status for attached files is now displayed in the attachments table.
 - Functionality to edit lithological descriptions from the lithology modal.
+- Scalable and panable lithology view including lens column.
+- Updated `chronostratigraphy` and `lithostratigraphy` table headers and moved add-layer button to the bottom of the table.
   
 ### Changed
 - Upgraded to PostgreSQL 18 and PostGIS 3.6.
@@ -19,12 +35,21 @@
 - Typescript types for backend models are now generated from swagger doc.
 - The lithology tab and stratigraphy header are now saved together in a single request, and stratigraphy extraction creates stratigraphies with their lithology contents in one operation.
 - The read-only lithology view now uses the same table layout as the edit view, with a per-cell copy button that copies the cell's text to the clipboard.
+- Migrated the terms and conditions endpoints from the legacy API to the v2 API.
+- Set stratigraphy name as required and fill in default name for currently empty fields.
+- The current user is now loaded from the v2 API (`/api/v2/user/self`) instead of the legacy v1 API.
+- Unified the column header styling of the chronostratigraphy and lithostratigraphy tabs with the lithology tab and collapsed the hierarchy title bar into the same row as the column labels so the header is thinner; the visibility toggle for each hierarchy level (eon, era, …) now sits inside its column and a hidden column collapses to a small eye icon in place.
+- Removed the lithology thumbnail column from the chronostratigraphy and lithostratigraphy tabs; depth scale is now the leftmost data column. The add-layer button moved from the header to a dashed "+" button at the bottom of the table, matching the lithology tab's add affordance.
+- Migrated the user map overlay settings from the legacy v1 API to the v2 API.
+- Migrated borehole bulk editing and bulk deletion from the legacy v1 API to the v2 API, and re-enabled bulk editing of purpose, status and lithology, lithostratigraphy and chronostratigraphy of the top bedrock.
+- Removed the legacy Python (v1) API entirely; all endpoints now run on the .NET v2 API.
 
 ### Fixed
 - Fixed bug where casing name was not correctly displayed in the select on the backfill card.
 - Long descriptions in the stratigraphy lithology table now wrap to a new line instead of widening the cell.
 - Navigating to inexistent borehole detail view by URL now shows a not found message instead of throwing an error.
 - Prevent navigate to previously deleted stratigraphy.
+- Fixed borehole name changes being lost when returning to the overview directly after saving. 
 
 ## v2.1.1631 - 2026-05-13
 

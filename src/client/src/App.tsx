@@ -15,6 +15,7 @@ import { AlertBanner } from "./components/alert/alertBanner";
 import { AlertContext, AlertProvider } from "./components/alert/alertContext";
 import { BasemapProvider } from "./components/basemapSelector/basemapContext";
 import { DataCardProvider } from "./components/dataCard/dataCardContext";
+import { DevBranchBadge } from "./components/devBranchBadge/DevBranchBadge";
 import HeaderComponent from "./components/header/headerComponent";
 import { Prompt } from "./components/prompt/prompt";
 import { PromptProvider } from "./components/prompt/promptContext";
@@ -34,7 +35,6 @@ import { SaveProvider } from "./pages/detail/saveContext.tsx";
 import { OverviewPage } from "./pages/overview/overviewPage";
 import { PolygonFilterProvider } from "./pages/overview/sidePanelContent/filter/polygonFilterContext.tsx";
 import { UserWorkgroupsProvider } from "./pages/overview/UserWorkgroupsContext.tsx";
-import { DataLoader } from "./pages/settings/dataLoader";
 import { SettingsPage } from "./pages/settings/settingsPage";
 import { AcceptTerms } from "./term/accept";
 import { AnalyticsProvider } from "./term/analyticsContext";
@@ -163,37 +163,36 @@ const App = () => {
         styles={{
           body: {
             fontFamily: theme.typography.fontFamily,
-            color: "rgb(28, 40, 52)",
+            color: theme.palette.secondary.main,
           },
         }}
       />
       <AlertProvider>
         <AlertBanner />
+        {import.meta.env.DEV && <DevBranchBadge />}
         <ErrorBoundary FallbackComponent={GlobalError}>
           <QueryClientInitializer>
             <BoreholesAuthProvider router={router}>
-              <DataLoader>
-                <AnalyticsProvider>
-                  <AcceptTerms>
-                    <UserWorkgroupsProvider>
-                      <PromptProvider>
-                        <Prompt />
-                        <DataCardProvider>
-                          <BasemapProvider>
-                            <PolygonFilterProvider>
-                              <ReactQueryDevtools buttonPosition={"top-left"} initialIsOpen={false} />
-                              <AppBox>
-                                <HeaderComponent />
-                                <RouterProvider router={router} />
-                              </AppBox>
-                            </PolygonFilterProvider>
-                          </BasemapProvider>
-                        </DataCardProvider>
-                      </PromptProvider>
-                    </UserWorkgroupsProvider>
-                  </AcceptTerms>
-                </AnalyticsProvider>
-              </DataLoader>
+              <AnalyticsProvider>
+                <AcceptTerms>
+                  <UserWorkgroupsProvider>
+                    <PromptProvider>
+                      <Prompt />
+                      <DataCardProvider>
+                        <BasemapProvider>
+                          <PolygonFilterProvider>
+                            <ReactQueryDevtools buttonPosition={"top-left"} initialIsOpen={false} />
+                            <AppBox>
+                              <HeaderComponent />
+                              <RouterProvider router={router} />
+                            </AppBox>
+                          </PolygonFilterProvider>
+                        </BasemapProvider>
+                      </DataCardProvider>
+                    </PromptProvider>
+                  </UserWorkgroupsProvider>
+                </AcceptTerms>
+              </AnalyticsProvider>
             </BoreholesAuthProvider>
           </QueryClientInitializer>
         </ErrorBoundary>

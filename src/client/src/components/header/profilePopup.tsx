@@ -1,10 +1,10 @@
 import { MouseEvent, useState } from "react";
 import { Button, IconButton, Popover, Stack, Typography } from "@mui/material";
 import ProfileIcon from "../../assets/icons/profile.svg?react";
-import { UserData } from "../../api-lib/ReduxStateInterfaces.ts";
+import { User } from "../../api/generated";
 import { useAuth } from "../../auth/useBoreholesAuth.tsx";
 
-export function ProfilePopup({ user }: { user: UserData }) {
+export function ProfilePopup({ user }: { user?: User }) {
   const auth = useAuth();
   const [anchorEl, setAnchorEl] = useState<HTMLButtonElement>();
 
@@ -38,7 +38,7 @@ export function ProfilePopup({ user }: { user: UserData }) {
           vertical: "top",
           horizontal: "right",
         }}>
-        {user !== null && (
+        {user && (
           <>
             <Stack sx={{ minWidth: "160px", padding: "12px" }}>
               <Typography sx={{ marginTop: "2px", marginBottom: "16px" }}>{user.name}</Typography>

@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Swashbuckle.AspNetCore.Annotations;
+using System.Text.Json;
+using System.Text.Json.Nodes;
 
 namespace BDMS.Controllers;
 
@@ -40,6 +42,44 @@ public class UserController : ControllerBase
         var user = await context.UsersWithIncludes.SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId()).ConfigureAwait(false);
         user.Deletable = IsDeletable(user);
         return user;
+    }
+
+    /// <summary>
+    /// Gets the custom map overlays of the currently authenticated user.
+    /// </summary>
+    [HttpGet("self/maplayers")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    [SwaggerResponse(StatusCodes.Status200OK, "Returns the current user's custom map overlays, keyed by layer identifier.")]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "The current user could not be identified.")]
+    public async Task<ActionResult<Dictionary<string, MapLayer>>> GetMapLayers()
+    {
+        var user = await context.Users.SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId()).ConfigureAwait(false);
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+
+        return Ok(ReadMapLayers(user.Settings));
+    }
+
+    /// <summary>
+    /// Replaces the custom map overlays of the currently authenticated user with <paramref name="mapLayers"/>.
+    /// </summary>
+    [HttpPut("self/maplayers")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    [SwaggerResponse(StatusCodes.Status200OK, "The map overlays were saved successfully and are returned.")]
+    [SwaggerResponse(StatusCodes.Status401Unauthorized, "The current user could not be identified.")]
+    public async Task<ActionResult<Dictionary<string, MapLayer>>> SetMapLayers([FromBody] Dictionary<string, MapLayer> mapLayers)
+    {
+        var user = await context.Users.SingleOrDefaultAsync(u => u.SubjectId == HttpContext.GetUserSubjectId()).ConfigureAwait(false);
+        if (user is null)
+        {
+            return Unauthorized();
+        }
+
+        user.Settings = WriteMapLayers(user.Settings, mapLayers);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+        return Ok(mapLayers);
     }
 
     /// <summary>
@@ -208,5 +248,29 @@ public class UserController : ControllerBase
                 || context.Stratigraphies.Any(x => x.UpdatedById == user.Id)
                 || context.Profiles.Any(x => x.CreatedById == user.Id)
                 || context.Profiles.Any(x => x.UpdatedById == user.Id));
+    }
+
+    private static Dictionary<string, MapLayer> ReadMapLayers(string? settings)
+    {
+        if (string.IsNullOrEmpty(settings))
+        {
+            return new Dictionary<string, MapLayer>();
+        }
+
+        var explorer = JsonNode.Parse(settings)?["map"]?["explorer"];
+        return explorer?.Deserialize<Dictionary<string, MapLayer>>() ?? new Dictionary<string, MapLayer>();
+    }
+
+    private static string WriteMapLayers(string? settings, Dictionary<string, MapLayer> mapLayers)
+    {
+        var root = (string.IsNullOrEmpty(settings) ? null : JsonNode.Parse(settings)) as JsonObject ?? new JsonObject();
+        if (root["map"] is not JsonObject map)
+        {
+            map = new JsonObject();
+            root["map"] = map;
+        }
+
+        map["explorer"] = JsonSerializer.SerializeToNode(mapLayers);
+        return root.ToJsonString();
     }
 }

@@ -1,8 +1,6 @@
 import { useContext, useEffect, useState } from "react";
-import { useDispatch, useSelector } from "react-redux";
 import { Stack } from "@mui/material";
 import { GridPaginationModel, GridRowSelectionModel, GridSortModel } from "@mui/x-data-grid";
-import { EditorStore, ReduxRootState, Setting } from "../../../api-lib/ReduxStateInterfaces.ts";
 import {
   exportCSVBorehole,
   exportJsonBoreholes,
@@ -10,8 +8,8 @@ import {
   FilterRequest,
   FilterResponse,
   useFilterBoreholes,
-  useReloadBoreholes,
 } from "../../../api/borehole.ts";
+import { useMapOverlays } from "../../../api/useMapOverlays.ts";
 import { BulkEditDialog } from "../../../components/bulkedit/bulkEditDialog.js";
 import { ExportDialog } from "../../../components/export/exportDialog.tsx";
 import { MapComponent } from "../../../components/map/mapComponent";
@@ -28,9 +26,9 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   const [hover, setHover] = useState<number | null>(null);
   const [rowsToHighlight, setRowsToHighlight] = useState<number[]>([]);
   const [selectionModel, setSelectionModel] = useState<GridRowSelectionModel>([]);
+  const [bulkEditDialogOpen, setBulkEditDialogOpen] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
   const [sessionRestored, setSessionRestored] = useState(false);
-  const reloadBoreholes = useReloadBoreholes();
   const { navigateTo } = useBoreholesNavigate();
   const {
     filterPolygon,
@@ -41,9 +39,9 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     setFeatureIds,
   } = useContext(PolygonFilterContext);
   const {
-    filterParams,
-    tableParams,
-    setTableParams,
+    activeFilters,
+    tableState,
+    setQueryState,
     mapResolution,
     mapCenter,
     saveFilterParamsInSession,
@@ -72,27 +70,25 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     saveTableParamsInSession,
   ]);
 
-  const setting: Setting = useSelector((state: ReduxRootState) => state.setting);
-  const editorStore: EditorStore = useSelector((state: ReduxRootState) => state.editor);
-  const dispatch = useDispatch();
+  const { overlays } = useMapOverlays();
 
   // MUI DataGrid uses 0-based page, FilterRequest uses 1-based pageNumber
   const paginationModel: GridPaginationModel = {
-    page: tableParams.page,
-    pageSize: tableParams.pageSize,
+    page: tableState.page,
+    pageSize: tableState.pageSize,
   };
   const setPaginationModel = (model: GridPaginationModel) => {
-    setTableParams({ page: model.page, pageSize: model.pageSize });
+    setQueryState({ page: model.page, pageSize: model.pageSize });
   };
 
   const sortModel: GridSortModel = [
     {
-      field: tableParams.orderBy,
-      sort: tableParams.direction.toLowerCase() as "asc" | "desc",
+      field: tableState.orderBy,
+      sort: tableState.direction.toLowerCase() as "asc" | "desc",
     },
   ];
   const setSortModel = (model: GridSortModel) => {
-    setTableParams({
+    setQueryState({
       orderBy: model[0]?.field ?? "name",
       direction: model[0]?.sort === "desc" ? "DESC" : "ASC",
       page: 0, // reset to first page on sort change
@@ -101,18 +97,18 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
 
   // Assemble the full FilterRequest from URL params
   const filterRequest: FilterRequest = {
-    ...filterParams,
+    ...activeFilters,
     ids: featureIds?.length > 0 ? featureIds : undefined,
-    pageNumber: tableParams.page + 1,
-    pageSize: tableParams.pageSize,
-    orderBy: tableParams.orderBy,
-    direction: tableParams.direction,
+    pageNumber: tableState.page + 1,
+    pageSize: tableState.pageSize,
+    orderBy: tableState.orderBy,
+    direction: tableState.direction,
   };
 
   const emptyFilterResponse: FilterResponse = {
     totalCount: 0,
     pageNumber: 1,
-    pageSize: tableParams.pageSize,
+    pageSize: tableState.pageSize,
     totalPages: 0,
     boreholes: [],
     geoJson: null,
@@ -121,21 +117,12 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
   };
   const { data: filterResponse = emptyFilterResponse } = useFilterBoreholes(filterRequest, sessionRestored);
 
-  const lock = (id: string) => {
-    dispatch({ type: "CLEAR", path: "/borehole" });
-    navigateTo({ path: "/" + id });
-  };
-
-  const multipleSelected = (selection: GridRowSelectionModel, filter: Record<string, unknown> | null = null) => {
-    dispatch({ type: "EDITOR_MULTIPLE_SELECTED", selection, filter });
-  };
-
   return (
     <Stack direction="column" sx={{ flex: "1 1.5 100%" }}>
       <BulkEditDialog
-        isOpen={Array.isArray(editorStore.mselected)}
-        loadBoreholes={reloadBoreholes}
+        isOpen={bulkEditDialogOpen}
         selected={selectionModel}
+        onClose={() => setBulkEditDialogOpen(false)}
       />
       <ExportDialog
         isExporting={isExporting}
@@ -162,9 +149,9 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
           geoJson={filterResponse.geoJson}
           highlighted={hover ? [hover] : []}
           hover={(ids: number[]) => setRowsToHighlight(ids)}
-          layers={setting.data.map.explorer}
+          layers={overlays}
           selected={(id: string | null) => {
-            if (id !== null) lock(id);
+            if (id !== null) navigateTo({ path: "/" + id });
           }}
           mapResolution={mapResolution}
           mapCenter={mapCenter}
@@ -181,7 +168,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
         boreholes={filterResponse.boreholes}
         totalCount={filterResponse.totalCount}
         selectableBoreholeIds={filterResponse.selectableBoreholeIds}
-        multipleSelected={multipleSelected}
+        onBulkEdit={() => setBulkEditDialogOpen(true)}
         selectionModel={selectionModel}
         setSelectionModel={setSelectionModel}
         rowsToHighlight={rowsToHighlight}

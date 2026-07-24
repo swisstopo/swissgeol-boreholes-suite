@@ -9,20 +9,12 @@ interface FilterTextFieldProps {
   filterValue: string | null;
   onUpdate: (value: string | null) => void;
   type?: string;
-  labelKeySuffix?: string;
   debounceMs?: number;
 }
 
-export const FilterTextField: FC<FilterTextFieldProps> = ({
-  item,
-  filterValue,
-  onUpdate,
-  type,
-  labelKeySuffix,
-  debounceMs = 1000,
-}) => {
+export const FilterTextField: FC<FilterTextFieldProps> = ({ item, filterValue, onUpdate, type, debounceMs = 1000 }) => {
   const { t } = useTranslation();
-  const labelKey = item?.label ? `${item.label}${labelKeySuffix ?? ""}` : undefined;
+  const labelKey = item?.label || undefined;
   const [localValue, setLocalValue] = useState(filterValue ?? "");
   const debouncedValue = useDebounce(localValue, debounceMs);
   const lastCommittedRef = useRef<string | null>(filterValue || null);

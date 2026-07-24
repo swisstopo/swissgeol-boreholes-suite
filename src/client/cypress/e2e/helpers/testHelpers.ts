@@ -1,50 +1,34 @@
 import { restrictionFreeCode } from "../../../src/components/codelist.ts";
 import { ObservationType } from "../../../src/pages/detail/form/hydrogeology/Observation.ts";
 import adminUser from "../../fixtures/adminUser.json";
-import editorUser from "../../fixtures/editorUser.json";
-import viewerUser from "../../fixtures/viewerUser.json";
 import { startEditing, stopEditing } from "./buttonHelpers";
 
 export const bearerAuth = (token: string) => ({ bearer: token });
 
 export const interceptApiCalls = () => {
-  // Api V1
-  cy.intercept("/api/v1/borehole").as("borehole");
-  cy.intercept("/api/v1/borehole", req => {
-    req.alias = `borehole_${req.body.action.toLowerCase()}`;
-  });
-  cy.intercept("/api/v1/borehole/edit", req => {
-    req.alias = `edit_${req.body.action.toLowerCase()}`;
-  });
-  cy.intercept("/api/v1/user/edit", req => {
-    req.alias = `user_edit_${req.body.action.toLowerCase()}`;
-  });
-  cy.intercept("/api/v1/user", req => {
-    req.alias = `user_${req.body.action.toLowerCase()}`;
-  });
-  cy.intercept("/api/v1/workflow/edit", req => {
-    req.alias = `workflow_edit_${req.body.action.toLowerCase()}`;
-  });
-  cy.intercept("/api/v1/setting").as("setting");
-  cy.intercept("api/v1/borehole/codes").as("codes");
-
   // Api V2
   cy.intercept("/api/v2/borehole/filter").as("borehole_filter");
+  cy.intercept("POST", "/api/v2/borehole/filter/stats").as("borehole_filter_stats");
+  cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
+  cy.intercept("GET", "/api/v2/borehole/**").as("borehole_by_id");
+  cy.intercept("PUT", "/api/v2/borehole").as("update-borehole");
+  cy.intercept("POST", "/api/v2/borehole").as("post-borehole");
+  cy.intercept("POST", "/api/v2/borehole/*/lock").as("borehole-lock");
+  cy.intercept("POST", "/api/v2/borehole/*/unlock").as("borehole-unlock");
+  cy.intercept("POST", "/api/v2/borehole/bulkedit").as("bulk-edit");
+  cy.intercept("POST", "/api/v2/borehole/bulkdelete").as("bulk-delete");
   cy.intercept("/api/v2/stratigraphy?boreholeId=**").as("stratigraphy_by_borehole_GET");
   cy.intercept("/api/v2/stratigraphy*", req => {
     req.alias = `stratigraphy_${req.method}`;
   });
   cy.intercept("/api/v2/stratigraphy/copy*").as("stratigraphy_COPY");
   cy.intercept("/api/v2/stratigraphy/*/lithology").as("lithology_by_stratigraphyId_GET");
-  cy.intercept("/api/v2/borehole/copy*").as("borehole_copy");
   cy.intercept("/api/v2/boreholeexport/csv**").as("borehole_export_csv");
   cy.intercept("/api/v2/boreholeexport/json**").as("borehole_export_json");
-  cy.intercept("/api/v2/borehole/**").as("borehole_by_id");
-  cy.intercept("PUT", "/api/v2/borehole").as("update-borehole");
-  cy.intercept("POST", "/api/v2/borehole").as("post-borehole");
   cy.intercept("PUT", "/api/v2/user").as("update-user");
   cy.intercept("GET", "/api/v2/user").as("get-user");
   cy.intercept("GET", "/api/v2/user/self").as("get-current-user");
+  cy.intercept("PUT", "/api/v2/user/self/maplayers").as("setting");
   cy.intercept("PUT", "/api/v2/workgroup").as("update-workgroup");
   cy.intercept("POST", "/api/v2/workgroup/setRoles").as("set_workgroup_roles");
   cy.intercept("POST", "/api/v2/workflow/tabstatuschange").as("tabstatuschange");
@@ -237,11 +221,8 @@ export const login = (user: string) => {
           .as("access_token");
         cy.get("@access_token").then(token =>
           cy.request({
-            method: "POST",
-            url: "/api/v1/user",
-            body: {
-              action: "GET",
-            },
+            method: "GET",
+            url: "/api/v2/user/self",
             auth: bearerAuth(token),
           }),
         );
@@ -285,10 +266,6 @@ export const goToRouteAndAcceptTerms = (route: string) => {
  */
 export const loginAsAdmin = () => {
   login("admin");
-  cy.intercept("/api/v1/user", {
-    statusCode: 200,
-    body: JSON.stringify(adminUser),
-  }).as("stubAdminUser");
 };
 
 /**
@@ -296,10 +273,6 @@ export const loginAsAdmin = () => {
  */
 export const loginAsEditor = (route = "/") => {
   login("editor");
-  cy.intercept("/api/v1/user", {
-    statusCode: 200,
-    body: JSON.stringify(editorUser),
-  }).as("stubEditorUser");
   goToRouteAndAcceptTerms(route);
 };
 
@@ -308,31 +281,33 @@ export const loginAsEditor = (route = "/") => {
  */
 export const loginAsViewer = (route = "/") => {
   login("viewer");
-  cy.intercept("/api/v1/user", {
-    statusCode: 200,
-    body: JSON.stringify(viewerUser),
-  }).as("stubViewerUser");
   goToRouteAndAcceptTerms(route);
 };
 
 export function giveAdminUser1workgroup() {
-  cy.intercept("/api/v1/user", {
+  cy.intercept("GET", "/api/v2/user/self", {
     statusCode: 200,
-    body: JSON.stringify(adminUser),
+    body: adminUser,
   }).as("adminUser1Workgroups");
 }
 
 export function giveAdminUser2workgroups() {
-  const adminUser2Workgroups = { ...adminUser };
-  adminUser2Workgroups.data.workgroups.push({
-    id: 6,
-    workgroup: "Blue",
-    roles: ["EDIT"],
-    disabled: null,
-  });
-  cy.intercept("/api/v1/user", {
+  const adminUser2Workgroups = {
+    ...adminUser,
+    workgroupRoles: [
+      ...adminUser.workgroupRoles,
+      {
+        userId: 1,
+        workgroupId: 6,
+        role: "Editor",
+        isActive: true,
+        workgroup: { id: 6, name: "Blue", isDisabled: false },
+      },
+    ],
+  };
+  cy.intercept("GET", "/api/v2/user/self", {
     statusCode: 200,
-    body: JSON.stringify(adminUser2Workgroups),
+    body: adminUser2Workgroups,
   }).as("adminUser2Workgroups");
 }
 
@@ -404,6 +379,7 @@ export const createBoreholeWithCompleteDataset = () => {
         id: 0,
         boreholeId: 0,
         isPrimary: true,
+        name: "Complete Test Stratigraphy",
         lithologies: [
           {
             id: 0,
@@ -490,7 +466,7 @@ export const createStratigraphyWith3Lithologies = () => {
 
 export const startBoreholeEditing = () => {
   startEditing("detail-header");
-  cy.wait(["@update-borehole", "@borehole_by_id"]);
+  cy.wait(["@borehole-lock", "@borehole_by_id"]);
 };
 
 export const stopBoreholeEditing = (discardChanges?: boolean) => {
@@ -499,7 +475,7 @@ export const stopBoreholeEditing = (discardChanges?: boolean) => {
   if (discardChanges) {
     cy.dataCy("prompt").find(`[data-cy="discardchanges-button"]`).click();
   }
-  cy.wait(["@update-borehole", "@borehole_by_id"]);
+  cy.wait(["@borehole-unlock", "@borehole_by_id"]);
   // eslint-disable-next-line cypress/no-unnecessary-waiting
   cy.wait(100); // Small buffer for scroll operations
 };
@@ -535,26 +511,11 @@ export const loginAndResetState = () => {
       auth: bearerAuth(token),
     }).then(response => {
       response.body.filteredBoreholeIds
-        .filter((id: number) => id > 1002999) // max id in seed data.
+        .filter((id: number) => id > 1000099) // max id in seed data.
         .forEach((id: number) => {
           deleteBorehole(id);
         });
     });
-
-    // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2371
-    //  Check if we still need this when we add new tests
-    // // Reset stratigraphies
-    // cy.request({
-    //   method: "GET",
-    //   url: "/api/v2/stratigraphy/getall",
-    //   auth: bearerAuth(token),
-    // }).then(response => {
-    //   response.body
-    //     .filter(st => st.id > 6002999) // max id in seed data.
-    //     .forEach(st => {
-    //       deleteStratigraphy(st.id);
-    //     });
-    // });
   });
 };
 
@@ -577,7 +538,7 @@ export const deleteDownloadedFile = (fileName: string) => {
 
       cy.exec(`${command} ${filePath}`).then(result => {
         // Check if the command executed successfully
-        expect(result.code).to.equal(0);
+        expect(result.exitCode).to.equal(0);
 
         // Check that the file has been deleted
         cy.readFile(filePath, { log: false, timeout: 10000 }).should("not.exist");
@@ -741,10 +702,10 @@ export const createTestCasing = (boreholeId: number | string, completionId: numb
     casingElements: [{ fromDepth: 0, toDepth: 10, kindId: 25000103 }],
   });
 
-export const openStratigraphyEditorTab = (stratigraphyName: string, hash: string, waitAlias: string) => {
+export const openStratigraphyEditorTab = (stratigraphyName: string, hash: string, waitAlias: `@${string}`) => {
   createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
   cy.get("@borehole_id").then(boreholeId => {
-    createStratigraphy({ boreholeId: boreholeId as number, name: stratigraphyName }).as("stratigraphy_id");
+    createStratigraphy({ boreholeId: boreholeId, name: stratigraphyName }).as("stratigraphy_id");
     cy.get("@stratigraphy_id").then(stratigraphyId => {
       goToDetailRouteAndAcceptTerms(`/${boreholeId}/stratigraphy/${stratigraphyId}#${hash}`);
     });

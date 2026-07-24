@@ -1,12 +1,11 @@
 import { FC, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 import { Accordion, AccordionDetails, AccordionSummary, Badge, Box, Button, Stack, Typography } from "@mui/material";
 import { styled } from "@mui/material/styles";
 import { ChevronDown } from "lucide-react";
 import Polygon from "../../../../assets/icons/polygon.svg?react";
-import { ReduxRootState } from "../../../../api-lib/ReduxStateInterfaces.ts";
 import { useFilterStats } from "../../../../api/borehole.ts";
+import { getUserWorkgroups, useCurrentUser } from "../../../../api/user.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { useAuth } from "../../../../auth/useBoreholesAuth.tsx";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
@@ -46,10 +45,10 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
   const { filterPolygon, polygonSelectionEnabled, setPolygonSelectionEnabled, setFeatureIds, setFilterPolygon } =
     useContext(PolygonFilterContext);
 
-  const { filterParams, setFilterField, resetFilter, setTableParams } = useBoreholeUrlParams();
+  const { activeFilters, setFilterField, resetFilter } = useBoreholeUrlParams();
 
-  const user = useSelector((state: ReduxRootState) => state.core_user);
-  const { data: stats } = useFilterStats(filterParams);
+  const { data: user } = useCurrentUser();
+  const { data: stats } = useFilterStats(activeFilters);
   const auth = useAuth();
 
   const [searchList, setSearchList] = useState<FilterInputConfig[]>([
@@ -116,12 +115,11 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
     setFeatureIds([]);
     formMethods.reset();
     resetFilter();
-    setTableParams({ page: 0 });
   };
 
   return (
     <Stack direction="column" sx={{ height: "100%" }}>
-      <SideDrawerHeader title={t("searchfilters")} toggleDrawer={toggleDrawer} />
+      <SideDrawerHeader title={t("searchFilters")} toggleDrawer={toggleDrawer} />
       <FilterChips />
       <Box
         sx={{
@@ -176,7 +174,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
                     ? theme.palette.primary.contrastText
                     : theme.palette.primary.main,
               }}>
-              {t("polygon_selection")}
+              {t("polygonSelection")}
             </Typography>
             {filterPolygon !== null && (
               <Badge data-cy="polygon-filter-badge" badgeContent={1} sx={{ marginLeft: "18px" }} />
@@ -185,7 +183,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
         </Box>
         {searchList?.map(filter => {
           const currentFilterInputConfig = searchList.find(l => l.name === filter.name);
-          const activeFilterLength = Object.entries(filterParams).filter(([key, value]) =>
+          const activeFilterCount = Object.entries(activeFilters).filter(([key, value]) =>
             currentFilterInputConfig?.searchData.some(d => d.key === key && value != null),
           )?.length;
           return filter.isHidden ? null : (
@@ -200,17 +198,14 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
                   );
                 }}>
                 <Typography variant="h6">{t(filter?.translationId)} </Typography>
-                <Badge badgeContent={activeFilterLength} sx={{ marginLeft: "18px", marginTop: "10px" }} />
+                <Badge badgeContent={activeFilterCount} sx={{ marginLeft: "18px", marginTop: "10px" }} />
               </AccordionSummary>
               {filter?.name === "workgroup" && filter?.isSelected && (
                 <StyledAccordionDetails>
                   <WorkgroupFilter
-                    onChange={workgroup => {
-                      setFilterField("workgroupId", workgroup);
-                      setTableParams({ page: 0 });
-                    }}
-                    workgroups={user.data.workgroups}
-                    selectedWorkgroupIds={filterParams["workgroupId"] as number[] | undefined}
+                    onChange={workgroup => setFilterField("workgroupId", workgroup)}
+                    workgroups={getUserWorkgroups(user)}
+                    selectedWorkgroupIds={activeFilters["workgroupId"] as number[] | undefined}
                     counts={getDomainCountsForField(stats, "workgroupId")}
                   />
                 </StyledAccordionDetails>
@@ -218,7 +213,7 @@ export const FilterComponent: FC<FilterComponentProps> = ({ toggleDrawer, formMe
               {filter?.name === "workflowStatus" && filter?.isSelected && (
                 <StyledAccordionDetails>
                   <StatusFilter
-                    selectedWorkflowStatus={filterParams["workflowStatus"] as string[] | undefined}
+                    selectedWorkflowStatus={activeFilters["workflowStatus"] as string[] | undefined}
                     counts={stats?.workflowStatusCount}
                     setFilterField={setFilterField}
                   />

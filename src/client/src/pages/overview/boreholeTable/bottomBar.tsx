@@ -1,11 +1,10 @@
 import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { useSelector } from "react-redux";
 import { Box, Button, Stack, Typography } from "@mui/material";
 import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { ArrowDownToLine, ChevronDown, ChevronUp, Trash2 } from "lucide-react";
 import CopyIcon from "../../../assets/icons/copy.svg?react";
-import { ReduxRootState, User } from "../../../api-lib/ReduxStateInterfaces.ts";
+import { isEditorUser, useCurrentUser } from "../../../api/user.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAuth } from "../../../auth/useBoreholesAuth.tsx";
 import { BulkEditButton, CopyButton, DeleteButton, ExportButton } from "../../../components/buttons/buttons.tsx";
@@ -18,7 +17,7 @@ import { BoreholeNumbersPreview } from "./boreholeNumbersPreview.tsx";
 interface BottomBarProps {
   totalCount: number;
   selectionModel: GridRowSelectionModel;
-  multipleSelected: (selection: GridRowSelectionModel, filter: Record<string, unknown>) => void;
+  onBulkEdit: () => void;
   onDeleteMultiple: () => void;
   onCopyBorehole: () => void;
   setIsExporting: Dispatch<SetStateAction<boolean>>;
@@ -26,7 +25,7 @@ interface BottomBarProps {
 
 const BottomBar = ({
   selectionModel,
-  multipleSelected,
+  onBulkEdit,
   onDeleteMultiple,
   onCopyBorehole,
   totalCount,
@@ -36,8 +35,8 @@ const BottomBar = ({
   const { showPrompt, promptIsOpen } = useContext(PromptContext);
   const { bottomDrawerOpen, setBottomDrawerOpen } = useBoreholeUrlParams();
   const { currentWorkgroupId } = useUserWorkgroups();
-  const user: User = useSelector((state: ReduxRootState) => state.core_user);
-  const userIsEditor = user.data.roles.some(role => ["EDIT", "CONTROL", "VALID", "PUBLIC"].includes(role));
+  const { data: user } = useCurrentUser();
+  const userIsEditor = isEditorUser(user);
   const auth = useAuth();
   const [copyPromptOpen, setCopyPromptOpen] = useState(false);
 
@@ -65,10 +64,6 @@ const BottomBar = ({
     if (promptIsOpen && copyPromptOpen) showCopyPromptForSelectedWorkgroup();
     if (!promptIsOpen) setCopyPromptOpen(false);
   }, [copyPromptOpen, promptIsOpen, showCopyPromptForSelectedWorkgroup, currentWorkgroupId]);
-
-  function bulkEditSelected() {
-    multipleSelected(selectionModel, {});
-  }
 
   const showPromptExportMoreThan100 = (callback: () => void) => {
     showPrompt("exportMoreThan100", [
@@ -130,7 +125,7 @@ const BottomBar = ({
           {selectionModel.length === 1 && showAllTableActions && (
             <CopyButton color="secondary" onClick={() => showCopyPromptForSelectedWorkgroup()} />
           )}
-          {showAllTableActions && <BulkEditButton label={"bulkEditing"} onClick={bulkEditSelected} />}
+          {showAllTableActions && <BulkEditButton label={"bulkEditing"} onClick={onBulkEdit} />}
           <ExportButton label={"export"} onClick={() => onExportMultiple()} />
           <Typography variant="subtitle1"> {t("selectedCount", { count: selectionModel.length })}</Typography>
         </Stack>

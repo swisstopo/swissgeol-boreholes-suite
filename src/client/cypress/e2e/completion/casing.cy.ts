@@ -67,8 +67,8 @@ describe("Casing crud tests", () => {
     cy.wait("@casing_by_completion_GET");
 
     evaluateDisplayValue("name", "casing-1");
-    evaluateDisplayValue("fromdepth", "0");
-    evaluateDisplayValue("todepth", "10");
+    evaluateDisplayValue("fromDepth", "0");
+    evaluateDisplayValue("toDepth", "10");
     evaluateDisplayValue("dateStartCasing", "01. Jan. 2021");
     evaluateDisplayValue("dateFinishCasing", "02. Jan. 2021");
     evaluateDisplayValue("notes", "Lorem.");

@@ -252,10 +252,20 @@
         }
       }
     },
-    "/api/v2/borehole": {
+    "/api/v{version}/borehole": {
       "post": {
         "tags": [
           "Borehole"
+        ],
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
         ],
         "requestBody": {
           "content": {
@@ -303,6 +313,16 @@
         "tags": [
           "Borehole"
         ],
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "content": {
             "application/json": {
@@ -349,7 +369,7 @@
         "tags": [
           "Borehole"
         ],
-        "summary": "Asynchronously deletes the BDMS.Models.Borehole with the specified id.\r\nPermission is checked via M:BDMS.Services.IBoreholePermissionService.CanChangeBoreholeStatusAsync(System.String,System.Nullable{System.Int32}),\r\nso admins can delete a borehole regardless of whether it is locked by another user or already in\r\nReviewed/Published status.",
+        "summary": "Asynchronously deletes the BDMS.Models.Borehole with the specified id.\r\nPermission is checked via M:BDMS.Services.IBoreholePermissionService.CanManageBoreholeAsync(System.String,System.Nullable{System.Int32}),\r\nso admins can delete a borehole regardless of whether it is locked by another user or already in\r\nReviewed/Published status.",
         "parameters": [
           {
             "name": "id",
@@ -358,6 +378,14 @@
             "schema": {
               "type": "integer",
               "format": "int32"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -368,12 +396,131 @@
         }
       }
     },
-    "/api/v2/borehole/filter": {
+    "/api/v{version}/borehole/{id}/lock": {
+      "post": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Acquires the edit lock on the borehole with the given id for the current user.\r\nTouches only BDMS.Models.Borehole.Locked and BDMS.Models.Borehole.LockedById, so it cannot race\r\nwith a concurrent full-entity edit on any other field.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the borehole to lock.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v{version}/borehole/{id}/unlock": {
+      "post": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Releases the edit lock on the borehole with the given id.\r\nTouches only BDMS.Models.Borehole.Locked and BDMS.Models.Borehole.LockedById, so it cannot race\r\nwith a concurrent full-entity edit on any other field.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The id of the borehole to unlock.",
+            "required": true,
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v{version}/borehole/bulkedit": {
+      "post": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Asynchronously applies the same set of field changes to multiple boreholes.\r\nOnly the properties named in BDMS.Models.BoreholeBulkUpdateRequest.FieldsToUpdate are written.\r\nThe whole batch is rejected (nothing is saved) if the current user cannot edit any selected borehole.\r\nResets the workflow tab status of any tab whose fields were changed.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The boreholes to edit, the values to apply, and the field mask.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoreholeBulkUpdateRequest"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoreholeBulkUpdateRequest"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/BoreholeBulkUpdateRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v{version}/borehole/filter": {
       "post": {
         "tags": [
           "Borehole"
         ],
         "summary": "Filters boreholes based on the provided criteria.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "The filter request with filtering criteria.",
           "content": {
@@ -418,12 +565,22 @@
         }
       }
     },
-    "/api/v2/borehole/filter/stats": {
+    "/api/v{version}/borehole/filter/stats": {
       "post": {
         "tags": [
           "Borehole"
         ],
         "summary": "Computes per-option filter counts under the active filter request,\r\nusing filter-exclusion semantics so each dimension's counts predict what\r\nadding that option would yield.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
         "requestBody": {
           "description": "The active filter request; may be null to compute unconstrained counts.",
           "content": {
@@ -468,7 +625,7 @@
         }
       }
     },
-    "/api/v2/borehole/suggest": {
+    "/api/v{version}/borehole/suggest": {
       "post": {
         "tags": [
           "Borehole"
@@ -499,6 +656,14 @@
               "type": "integer",
               "format": "int32",
               "default": 10
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -555,7 +720,7 @@
         }
       }
     },
-    "/api/v2/borehole/{id}": {
+    "/api/v{version}/borehole/{id}": {
       "get": {
         "tags": [
           "Borehole"
@@ -570,6 +735,14 @@
             "schema": {
               "type": "integer",
               "format": "int32"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -597,7 +770,7 @@
         }
       }
     },
-    "/api/v2/borehole/copy": {
+    "/api/v{version}/borehole/copy": {
       "post": {
         "tags": [
           "Borehole"
@@ -622,6 +795,14 @@
             "schema": {
               "type": "integer",
               "format": "int32"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
             }
           }
         ],
@@ -648,6 +829,65 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/v{version}/borehole/bulkdelete": {
+      "post": {
+        "tags": [
+          "Borehole"
+        ],
+        "summary": "Asynchronously deletes multiple boreholes. The whole batch is rejected (nothing is deleted) if the\r\ncurrent user is not allowed to delete any of the selected boreholes. Uses the same permission check\r\nas the single-borehole delete (M:BDMS.Services.IBoreholePermissionService.CanManageBoreholeAsync(System.String,System.Nullable{System.Int32})).",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The ids of the boreholes to delete.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "minItems": 1,
+                "type": "array",
+                "items": {
+                  "type": "integer",
+                  "format": "int32"
+                }
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
           }
         }
       }
@@ -4269,17 +4509,17 @@
         }
       }
     },
-    "/api/v{version}/permissions/canchangestatus": {
+    "/api/v{version}/permissions/canmanage": {
       "get": {
         "tags": [
           "Permissions"
         ],
-        "summary": "Gets whether the currently authenticated user has permission to change the status of the BDMS.Models.Borehole.",
+        "summary": "Gets whether the currently authenticated user has permission to manage the BDMS.Models.Borehole\r\n(e.g. change its workflow status, delete it, or update tab statuses).",
         "parameters": [
           {
             "name": "boreholeId",
             "in": "query",
-            "description": "The id of the borehole to get the edit permissions for.",
+            "description": "The id of the borehole to check management permissions for.",
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -5582,6 +5822,159 @@
         }
       }
     },
+    "/api/v{version}/terms": {
+      "get": {
+        "tags": [
+          "Terms"
+        ],
+        "summary": "Gets the currently published BDMS.Models.Term, or `null` if none is published.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the currently published terms, or null if none exist.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Term"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Term"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Term"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/api/v{version}/terms/draft": {
+      "get": {
+        "tags": [
+          "Terms"
+        ],
+        "summary": "Gets the current draft BDMS.Models.Term. Falls back to the published term when no draft\r\nexists, or `null` if neither exists.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the draft terms, the published terms as fallback, or null.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "$ref": "#/components/schemas/Term"
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Term"
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Term"
+                }
+              }
+            }
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "Terms"
+        ],
+        "summary": "Creates or updates the single draft BDMS.Models.Term with the provided texts.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "description": "The term carrying the localized texts to store as draft.",
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Term"
+              }
+            },
+            "text/json": {
+              "schema": {
+                "$ref": "#/components/schemas/Term"
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "$ref": "#/components/schemas/Term"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The draft was saved successfully."
+          },
+          "500": {
+            "description": "The server encountered an unexpected condition that prevented it from fulfilling the request."
+          }
+        }
+      }
+    },
+    "/api/v{version}/terms/publish": {
+      "post": {
+        "tags": [
+          "Terms"
+        ],
+        "summary": "Publishes the current draft BDMS.Models.Term, expiring the previously published term.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "The draft was published successfully."
+          },
+          "400": {
+            "description": "There is no draft to publish."
+          },
+          "500": {
+            "description": "The server encountered an unexpected condition that prevented it from fulfilling the request."
+          }
+        }
+      }
+    },
     "/api/v{version}/user/self": {
       "get": {
         "tags": [
@@ -5618,6 +6011,136 @@
                 }
               }
             }
+          }
+        }
+      }
+    },
+    "/api/v{version}/user/self/maplayers": {
+      "get": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Gets the custom map overlays of the currently authenticated user.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Returns the current user's custom map overlays, keyed by layer identifier.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/MapLayer"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/MapLayer"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/MapLayer"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The current user could not be identified."
+          }
+        }
+      },
+      "put": {
+        "tags": [
+          "User"
+        ],
+        "summary": "Replaces the custom map overlays of the currently authenticated user with mapLayers.",
+        "parameters": [
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/MapLayer"
+                }
+              }
+            },
+            "text/json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/MapLayer"
+                }
+              }
+            },
+            "application/*+json": {
+              "schema": {
+                "type": "object",
+                "additionalProperties": {
+                  "$ref": "#/components/schemas/MapLayer"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "The map overlays were saved successfully and are returned.",
+            "content": {
+              "text/plain": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/MapLayer"
+                  }
+                }
+              },
+              "application/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/MapLayer"
+                  }
+                }
+              },
+              "text/json": {
+                "schema": {
+                  "type": "object",
+                  "additionalProperties": {
+                    "$ref": "#/components/schemas/MapLayer"
+                  }
+                }
+              }
+            }
+          },
+          "401": {
+            "description": "The current user could not be identified."
           }
         }
       }
@@ -7141,6 +7664,140 @@
         },
         "additionalProperties": false,
         "description": "Represents a borehole entity in the database."
+      },
+      "BoreholeBulkUpdate": {
+        "type": "object",
+        "properties": {
+          "workgroupId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "restrictionId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "restrictionUntil": {
+            "type": "string",
+            "format": "date",
+            "nullable": true
+          },
+          "nationalInterest": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "projectName": {
+            "type": "string",
+            "nullable": true
+          },
+          "typeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "purposeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "statusId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "locationPrecisionId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "elevationPrecisionId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "referenceElevationPrecisionId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "referenceElevationTypeId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "depthPrecisionId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "totalDepth": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "topBedrockFreshMd": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "topBedrockWeatheredMd": {
+            "type": "number",
+            "format": "double",
+            "nullable": true
+          },
+          "hasGroundwater": {
+            "type": "boolean",
+            "nullable": true
+          },
+          "lithologyTopBedrockId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "lithostratigraphyTopBedrockId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
+          "chronostratigraphyTopBedrockId": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "The typed set of borehole fields that can be changed through bulk edit.\r\nEach property is nullable to mirror the corresponding borehole column; which of\r\nthem are actually written is controlled by BDMS.Models.BoreholeBulkUpdateRequest.FieldsToUpdate.\r\nA masked field must carry a value; a null value is rejected (clearing is not supported),\r\nexcept nullable booleans where null is the deliberate \"not specified\" state."
+      },
+      "BoreholeBulkUpdateRequest": {
+        "required": [
+          "boreholeIds",
+          "fieldsToUpdate",
+          "update"
+        ],
+        "type": "object",
+        "properties": {
+          "boreholeIds": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          "update": {
+            "$ref": "#/components/schemas/BoreholeBulkUpdate"
+          },
+          "fieldsToUpdate": {
+            "minItems": 1,
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        },
+        "additionalProperties": false,
+        "description": "Request payload for bulk editing boreholes. Applies BDMS.Models.BoreholeBulkUpdateRequest.Update to every\r\nborehole in BDMS.Models.BoreholeBulkUpdateRequest.BoreholeIds, writing only the properties named in\r\nBDMS.Models.BoreholeBulkUpdateRequest.FieldsToUpdate (matched case-insensitively against\r\nBDMS.Models.BoreholeBulkUpdate property names)."
       },
       "BoreholeCodelist": {
         "required": [
@@ -10892,6 +11549,64 @@
         "type": "string",
         "description": "Represents the type of a maintenance task."
       },
+      "MapLayer": {
+        "type": "object",
+        "properties": {
+          "type": {
+            "type": "string",
+            "description": "Gets the layer type, either `WMS` or `WMTS`.",
+            "nullable": true
+          },
+          "Identifier": {
+            "type": "string",
+            "description": "Gets the layer identifier.",
+            "nullable": true
+          },
+          "Title": {
+            "type": "string",
+            "description": "Gets the layer title.",
+            "nullable": true
+          },
+          "Abstract": {
+            "type": "string",
+            "description": "Gets the layer abstract.",
+            "nullable": true
+          },
+          "url": {
+            "type": "string",
+            "description": "Gets the service URL of the layer.",
+            "nullable": true
+          },
+          "visibility": {
+            "type": "boolean",
+            "description": "Gets a value indicating whether the layer is visible.",
+            "nullable": true
+          },
+          "transparency": {
+            "type": "number",
+            "description": "Gets the layer transparency, as a percentage from `0` to `100`.",
+            "format": "double",
+            "nullable": true
+          },
+          "position": {
+            "type": "integer",
+            "description": "Gets the layer position used for ordering and z-index.",
+            "format": "int32",
+            "nullable": true
+          },
+          "queryable": {
+            "type": "boolean",
+            "description": "Gets a value indicating whether the layer is queryable.",
+            "nullable": true
+          },
+          "conf": {
+            "description": "Gets the opaque WMTS source configuration produced by the client. Stored and\r\nreturned verbatim; `null` for WMS layers.",
+            "nullable": true
+          }
+        },
+        "additionalProperties": false,
+        "description": "Represents a single custom map overlay stored in a BDMS.Models.User's settings\r\n(under `map.explorer`). The property names mirror the shape persisted by the\r\nclient, so existing settings continue to round-trip unchanged."
+      },
       "NtsGeometryServices": {
         "type": "object",
         "properties": {
@@ -11750,7 +12465,8 @@
         "required": [
           "boreholeId",
           "id",
-          "isPrimary"
+          "isPrimary",
+          "name"
         ],
         "type": "object",
         "properties": {
@@ -11767,9 +12483,9 @@
             "$ref": "#/components/schemas/Borehole"
           },
           "name": {
+            "minLength": 1,
             "type": "string",
-            "description": "Gets or sets the BDMS.Models.Stratigraphy's name.",
-            "nullable": true
+            "description": "Gets or sets the BDMS.Models.Stratigraphy's name."
           },
           "date": {
             "type": "string",
@@ -12510,7 +13226,8 @@
       },
       "Workgroup": {
         "required": [
-          "id"
+          "id",
+          "name"
         ],
         "type": "object",
         "properties": {
@@ -12519,6 +13236,7 @@
             "format": "int32"
           },
           "name": {
+            "minLength": 1,
             "type": "string",
             "description": "Gets or sets the name of the workgroup."
           },

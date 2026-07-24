@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Tooltip } from "@mui/material";
 
-export const useLabelOverflow = (label: string | undefined) => {
+export const useLabelOverflow = (label: string | undefined, suffix = "") => {
   const [isLabelOverflowing, setIsLabelOverflowing] = useState(false);
   const labelRef = useRef<HTMLElement>(null);
   const { t } = useTranslation();
@@ -21,9 +21,9 @@ export const useLabelOverflow = (label: string | undefined) => {
     window.addEventListener("resize", checkOverflow);
 
     return () => window.removeEventListener("resize", checkOverflow);
-  }, [label]);
+  }, [label, suffix]);
 
-  const translatedLabel = label ? t(label) : "";
+  const translatedLabel = label ? `${t(label)}${suffix}` : "";
 
   const labelWithTooltip = (
     <Tooltip title={isLabelOverflowing ? translatedLabel : ""} placement="top">

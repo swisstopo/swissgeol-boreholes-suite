@@ -229,9 +229,9 @@ describe("Test for the borehole form.", () => {
       evaluateInput("topBedrockWeatheredMd", "78'945'100");
 
       // in display only inputs the label is used for the data-cy instead of the field name
-      evaluateInput("total_depth_tvd", "700");
-      evaluateInput("top_bedrock_fresh_tvd", "0.6");
-      evaluateInput("top_bedrock_weathered_tvd", "78'945'100");
+      evaluateInput("totalDepthTvd", "700");
+      evaluateInput("topBedrockFreshTvd", "0.6");
+      evaluateInput("topBedrockWeatheredTvd", "78'945'100");
 
       saveWithSaveBar();
 
@@ -243,9 +243,9 @@ describe("Test for the borehole form.", () => {
       evaluateInput("topBedrockFreshMd", "0.60224");
       evaluateInput("topBedrockWeatheredMd", "78'945'100");
 
-      evaluateInput("total_depth_tvd", "700");
-      evaluateInput("top_bedrock_fresh_tvd", "0.6");
-      evaluateInput("top_bedrock_weathered_tvd", "78'945'100");
+      evaluateInput("totalDepthTvd", "700");
+      evaluateInput("topBedrockFreshTvd", "0.6");
+      evaluateInput("topBedrockWeatheredTvd", "78'945'100");
     });
   });
 
@@ -255,40 +255,40 @@ describe("Test for the borehole form.", () => {
     // sort by Name descending
     sortBy("Name");
     cy.wait("@borehole_filter");
-    clickOnRowWithText("Zena Rath");
+    clickOnRowWithText("Zelma Gorczany");
 
     navigateInSidebar(SidebarMenuItem.borehole);
-    evaluateInput("originalName", "Zena Rath");
-    evaluateInput("name", "Zena Rath");
-    evaluateInput("projectName", "Reactive asymmetric alliance");
-    evaluateSelect("restrictionId", "");
-    evaluateYesNoSelect("nationalInterest", "no");
-    navigateInSidebar(SidebarMenuItem.location);
-    evaluateSelect("originalReferenceSystemId", "LV03");
-    evaluateSelect("locationPrecisionId", "0.1 (± DGPS / Theodolit)");
-
-    evaluateInput("elevationZ", "3'519.948980314633");
-    evaluateInput("referenceElevation", "3'554.9389396584306");
-    evaluateSelect("elevationPrecisionId", "");
-    evaluateSelect("referenceElevationPrecisionId", "not specified");
-    evaluateSelect("referenceElevationTypeId", "kelly bushing");
-
-    returnToOverview();
-    clickOnRowWithText("Zena Mraz");
-    navigateInSidebar(SidebarMenuItem.borehole);
-    evaluateInput("originalName", "Zena Mraz");
-    evaluateInput("name", "Zena Mraz");
-    evaluateInput("projectName", "Ergonomic heuristic installation");
+    evaluateInput("originalName", "Zelma Gorczany");
+    evaluateInput("name", "Zelma Gorczany");
+    evaluateInput("projectName", "Fully-configurable 5th generation workforce");
     evaluateSelect("restrictionId", "");
     evaluateYesNoSelect("nationalInterest", "yes");
     navigateInSidebar(SidebarMenuItem.location);
     evaluateSelect("originalReferenceSystemId", "LV03");
-    evaluateSelect("locationPrecisionId", "not specified");
-    evaluateInput("elevationZ", "3'062.9991330499756");
-    evaluateInput("referenceElevation", "3'478.1368118609007");
-    evaluateSelect("elevationPrecisionId", "1");
+    evaluateSelect("locationPrecisionId", "50");
+
+    evaluateInput("elevationZ", "3'070.721185566262");
+    evaluateInput("referenceElevation", "3'588.612451957824");
+    evaluateSelect("elevationPrecisionId", "0.1");
     evaluateSelect("referenceElevationPrecisionId", "0.1");
-    evaluateSelect("referenceElevationTypeId", "kelly bushing");
+    evaluateSelect("referenceElevationTypeId", "manhole cover");
+
+    returnToOverview();
+    clickOnRowWithText("Yasmeen Torphy");
+    navigateInSidebar(SidebarMenuItem.borehole);
+    evaluateInput("originalName", "Yasmeen Torphy");
+    evaluateInput("name", "Yasmeen Torphy");
+    evaluateInput("projectName", "Compatible stable approach");
+    evaluateSelect("restrictionId", "");
+    evaluateYesNoSelect("nationalInterest", "no");
+    navigateInSidebar(SidebarMenuItem.location);
+    evaluateSelect("originalReferenceSystemId", "LV03");
+    evaluateSelect("locationPrecisionId", "10");
+    evaluateInput("elevationZ", "3'160.5061793981613");
+    evaluateInput("referenceElevation", "582.0225445004285");
+    evaluateSelect("elevationPrecisionId", "");
+    evaluateSelect("referenceElevationPrecisionId", "1");
+    evaluateSelect("referenceElevationTypeId", "rotary table");
   });
 
   it("switches tabs", () => {
@@ -340,9 +340,9 @@ describe("Test for the borehole form.", () => {
       evaluateInput("topBedrockWeatheredMd", "0");
       evaluateInput("topBedrockFreshMd", "0");
 
-      evaluateInput("total_depth_tvd", "0");
-      evaluateInput("top_bedrock_fresh_tvd", "0");
-      evaluateInput("top_bedrock_weathered_tvd", "0");
+      evaluateInput("totalDepthTvd", "0");
+      evaluateInput("topBedrockFreshTvd", "0");
+      evaluateInput("topBedrockWeatheredTvd", "0");
     });
   });
 
@@ -428,7 +428,7 @@ describe("Test for the borehole form.", () => {
         "rgb(223, 228, 233)",
       ); //#DFE4E9
 
-      cy.get('[data-cy="top_bedrock_weathered_tvd-formInput"] fieldset').should(
+      cy.get('[data-cy="topBedrockWeatheredTvd-formInput"] fieldset').should(
         "have.css",
         "border-color",
         "rgb(223, 228, 233)",
@@ -442,7 +442,7 @@ describe("Test for the borehole form.", () => {
         "rgb(89, 105, 120)",
       ); // #596978
 
-      cy.get('[data-cy="top_bedrock_weathered_tvd-formInput"] fieldset').should(
+      cy.get('[data-cy="topBedrockWeatheredTvd-formInput"] fieldset').should(
         "have.css",
         "border-color",
         "rgb(223, 228, 233)",
@@ -458,7 +458,7 @@ describe("Test for the borehole form.", () => {
       startBoreholeEditing();
       ensureEditingEnabled();
       returnToOverview(); // navigating with swissgeol back button stops editing
-      cy.wait("@update-borehole");
+      cy.wait("@borehole-unlock");
       showTableAndWaitForData();
       clickOnRowWithText("AAA_HIPPOPOTHAMUS");
       ensureEditingDisabled();
@@ -597,7 +597,7 @@ describe("Test for the borehole form.", () => {
     handlePrompt(messageUnsavedChanges, "cancel");
     cy.get('[data-cy="editingstop-button"]').should("exist");
     stopEditing();
-    handlePrompt(messageUnsavedChanges, "discardchanges");
+    handlePrompt(messageUnsavedChanges, "discardChanges");
     cy.get('[data-cy="editingstop-button"]').should("not.exist");
 
     startBoreholeEditing();
@@ -609,7 +609,7 @@ describe("Test for the borehole form.", () => {
       expect(location.pathname).to.eq(`/${boreholeId}/borehole`);
     });
 
-    navigateInSidebar(SidebarMenuItem.location, "discardchanges");
+    navigateInSidebar(SidebarMenuItem.location, "discardChanges");
   });
 
   it("creates and deletes a borehole.", () => {
@@ -635,7 +635,7 @@ describe("Test for the borehole form.", () => {
 
     cy.get('[data-cy="delete-button"]').click();
     cy.get('.MuiButton-containedPrimary[data-cy="delete-button"]').click();
-    cy.wait(["@edit_deletelist"]);
+    cy.wait(["@bulk-delete"]);
     cy.get('[data-cy="borehole-table"]').contains("AAA_SCATORPS").should("not.exist");
   });
 });

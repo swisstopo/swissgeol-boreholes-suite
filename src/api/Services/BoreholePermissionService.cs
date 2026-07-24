@@ -48,23 +48,53 @@ public class BoreholePermissionService(BdmsContext context, ILogger<BoreholePerm
     }
 
     /// <inheritdoc />
-    public async Task<bool> CanChangeBoreholeStatusAsync(string? subjectId, int? boreholeId)
+    public async Task<bool> CanManageBoreholeAsync(string? subjectId, int? boreholeId)
     {
         var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
         var borehole = await GetBoreholeAsync(boreholeId).ConfigureAwait(false);
         if (borehole is null) return false;
-        return CanChangeBoreholeStatus(user, borehole);
+        return CanManageBorehole(user, borehole);
+    }
+
+    /// <inheritdoc />
+    public Task<IReadOnlyList<int>> GetBoreholeIdsUserCannotEditAsync(string? subjectId, IReadOnlyCollection<int> boreholeIds)
+        => GetUnauthorizedBoreholeIdsAsync(subjectId, boreholeIds, CanEditBorehole);
+
+    /// <inheritdoc />
+    public Task<IReadOnlyList<int>> GetBoreholeIdsUserCannotManageAsync(string? subjectId, IReadOnlyCollection<int> boreholeIds)
+        => GetUnauthorizedBoreholeIdsAsync(subjectId, boreholeIds, CanManageBorehole);
+
+    /// <summary>
+    /// Shared batch permission gate: loads the user and all referenced boreholes once, then evaluates
+    /// <paramref name="isAuthorized"/> in memory. Mirrors the single-id checks, so a borehole id that does not
+    /// exist is treated as unauthorized (the per-id checks return <see langword="false"/> for a missing borehole).
+    /// </summary>
+    private async Task<IReadOnlyList<int>> GetUnauthorizedBoreholeIdsAsync(string? subjectId, IReadOnlyCollection<int> boreholeIds, Func<User, Borehole, bool> isAuthorized)
+    {
+        var distinctIds = boreholeIds.Distinct().ToList();
+        var user = await GetUserWithWorkgroupRolesAsync(subjectId).ConfigureAwait(false);
+        var boreholesById = await context.Boreholes
+            .Include(b => b.Workflow)
+            .AsNoTracking()
+            .Where(b => distinctIds.Contains(b.Id))
+            .ToDictionaryAsync(b => b.Id)
+            .ConfigureAwait(false);
+
+        return distinctIds
+            .Where(id => !boreholesById.TryGetValue(id, out var borehole) || !isAuthorized(user, borehole))
+            .ToList();
     }
 
     /// <summary>
-    /// Determines if a user can change the workflow status of a borehole.
-    /// This allows status transitions regardless of the current status (including Reviewed/Published),
-    /// but still checks for admin privileges, lock status, and proper permissions.
+    /// Determines if a user can manage a borehole. "Manage" is the broader permission check
+    /// that ignores the current workflow status, unlike <see cref="CanEditBorehole"/> which
+    /// blocks edits on Reviewed/Published boreholes. This is used for operations such as
+    /// changing workflow status, deleting, or updating tab statuses.
     /// </summary>
-    /// <param name="user">The user attempting to change the borehole status.</param>
-    /// <param name="borehole">The borehole whose status is to be changed.</param>
-    /// <returns>True if the user can change the borehole status; otherwise, false.</returns>
-    internal bool CanChangeBoreholeStatus(User user, Borehole borehole)
+    /// <param name="user">The user attempting to manage the borehole.</param>
+    /// <param name="borehole">The borehole to be managed.</param>
+    /// <returns>True if the user can manage the borehole; otherwise, false.</returns>
+    internal bool CanManageBorehole(User user, Borehole borehole)
     {
         return IsBoreholeEditableByUser(user, borehole);
     }

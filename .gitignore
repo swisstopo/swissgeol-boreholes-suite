@@ -427,6 +427,9 @@ src/client/coverage
 # Production
 src/client/dist
 
+# Incremental TypeScript build info
+*.tsbuildinfo
+
 # Misc
 src/client/.DS_Store
 src/client/.env.local
@@ -438,3 +441,4 @@ src/client/npm-debug.log*
 src/client/tmp/*
 
 !src/client/src/pages/detail/form/log/
+/src/client/.tsbuildinfo

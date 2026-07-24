@@ -20,7 +20,7 @@ public class BoreholeGeometryControllerTest
     private int boreholeIdWithGeometry;
 
     [TestInitialize]
-    public void TestInitialize()
+    public async Task TestInitialize()
     {
         context = ContextFactory.GetTestContext();
         boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
@@ -32,23 +32,31 @@ public class BoreholeGeometryControllerTest
             .ReturnsAsync(true);
         controller = new BoreholeGeometryController(context, new Mock<ILogger<BoreholeGeometryElement>>().Object, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
 
-        boreholeIdWithoutGeometry = context.Boreholes
-            .Include(b => b.BoreholeGeometry)
-            .Where(b => !b.BoreholeGeometry.Any())
-            .Select(b => b.Id)
-            .First();
+        // All seeded boreholes carry geometry; create a fresh borehole so a "without geometry"
+        // case exists for the tests.
+        var boreholeWithoutGeometry = new Borehole
+        {
+            OriginalName = "Borehole without geometry",
+            Name = "Borehole without geometry",
+            WorkgroupId = 1,
+            Workflow = new Workflow { ReviewedTabs = new(), PublishedTabs = new() },
+        };
+        context.Boreholes.Add(boreholeWithoutGeometry);
+        await context.SaveChangesAsync();
+        boreholeIdWithoutGeometry = boreholeWithoutGeometry.Id;
 
-        boreholeIdWithGeometry = context.Boreholes
+        boreholeIdWithGeometry = await context.Boreholes
             .Include(b => b.BoreholeGeometry)
             .Where(b => b.BoreholeGeometry.Count > 1)
             .Select(b => b.Id)
-            .First();
+            .FirstAsync();
     }
 
     [TestCleanup]
     public async Task TestCleanup()
     {
         context.BoreholeGeometry.RemoveRange(context.BoreholeGeometry.Where(g => g.BoreholeId == boreholeIdWithoutGeometry));
+        context.Boreholes.RemoveRange(context.Boreholes.Where(b => b.Id == boreholeIdWithoutGeometry));
         await context.SaveChangesAsync();
 
         await context.DisposeAsync();

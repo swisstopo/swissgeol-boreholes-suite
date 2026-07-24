@@ -17,6 +17,7 @@ import {
   useGridApiRef,
 } from "@mui/x-data-grid";
 import { GridApiCommunity } from "@mui/x-data-grid/internals";
+import { theme } from "../../AppTheme.ts";
 import { muiLocales } from "../../mui.locales.ts";
 import { TablePaginationActions } from "../../pages/overview/boreholeTable/TablePaginationActions.tsx";
 import { quickFilterStyles } from "../../pages/settings/admin/quickfilterStyles.ts";
@@ -126,7 +127,7 @@ export const Table = <T extends GridValidRowModel>({
 
   const disabledStyles = {
     cursor: isDisabled ? "default" : "pointer",
-    "& .MuiDataGrid-row:hover": { backgroundColor: isDisabled && "rgba(0,0,0,0)" },
+    "& .MuiDataGrid-row:hover": { backgroundColor: isDisabled && theme.palette.transparent },
     "& .MuiDataGrid-columnHeader": { cursor: isDisabled ? "default" : "pointer" },
   };
 
@@ -147,6 +148,7 @@ export const Table = <T extends GridValidRowModel>({
   });
 
   const actualRowCount = paginationMode === "server" ? (rowCount ?? rows?.length) : rows.length;
+  const effectivePageSize = paginationModel?.pageSize ?? maxRowsPerPage;
 
   const loadingStyles = isLoading
     ? {
@@ -203,7 +205,7 @@ export const Table = <T extends GridValidRowModel>({
         localeText={muiLocales[i18n.language]}
         disableColumnSelector
         disableRowSelectionOnClick
-        hideFooter={actualRowCount < maxRowsPerPage}
+        hideFooter={actualRowCount <= effectivePageSize}
         hideFooterSelectedRowCount
         disableColumnFilter
         disableColumnMenu={true}

@@ -38,8 +38,8 @@ const MainSideNav = ({
   const { t } = useTranslation();
   const auth = useAuth();
   const { filterPolygon } = useContext(PolygonFilterContext);
-  const { enabledWorkgroups } = useUserWorkgroups();
-  const { activeFilterLength } = useBoreholeUrlParams();
+  const { editableWorkgroups } = useUserWorkgroups();
+  const { activeFilterCount } = useBoreholeUrlParams();
 
   const handleToggleFilter = () => {
     handleDrawer(DrawerContentTypes.Filters);
@@ -73,8 +73,8 @@ const MainSideNav = ({
   const isAddPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.NewBorehole;
   const isLayersPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.CustomLayers;
   const isUploadPanelVisible = drawerOpen && sideDrawerContent === DrawerContentTypes.Import;
-  const editingDisabled = enabledWorkgroups.length === 0;
-  const activeFilterCount = activeFilterLength + (filterPolygon === null ? 0 : 1);
+  const editingDisabled = editableWorkgroups.length === 0;
+  const totalActiveFilterCount = activeFilterCount + (filterPolygon === null ? 0 : 1);
 
   return (
     <Stack
@@ -92,11 +92,11 @@ const MainSideNav = ({
           padding: "1em",
           flex: "1 1 100%",
         }}>
-        {activeFilterCount > 0 && <Badge sx={{ margin: "1px" }} badgeContent={activeFilterCount}></Badge>}
+        {totalActiveFilterCount > 0 && <Badge sx={{ margin: "1px" }} badgeContent={totalActiveFilterCount}></Badge>}
         <NavButton
           data-cy="show-filter-button"
           icon={<Filter />}
-          label={t("searchfilters")}
+          label={t("searchFilters")}
           selected={isFilterPanelVisible}
           onClick={handleToggleFilter}
         />
@@ -136,14 +136,14 @@ const MainSideNav = ({
         <NavButton
           data-cy="settings-button"
           icon={<Settings />}
-          label={t("header_settings")}
+          label={t("headerSettings")}
           onClick={() => navigateTo({ path: `/setting` })}
         />
         {!auth.anonymousModeEnabled && (
           <NavButton
             data-cy="help-button"
             icon={<HelpIcon />}
-            label={t("header_help")}
+            label={t("headerHelp")}
             onClick={() => window.open(`/help`)}
           />
         )}
