@@ -44,13 +44,13 @@ public class BoreholeControllerTest
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
         boreholePermissionServiceMock
-            .Setup(x => x.CanChangeBoreholeStatusAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .Setup(x => x.CanManageBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(true);
         boreholePermissionServiceMock
             .Setup(x => x.GetBoreholeIdsUserCannotEditAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
             .ReturnsAsync(Array.Empty<int>());
         boreholePermissionServiceMock
-            .Setup(x => x.GetBoreholeIdsUserCannotChangeStatusAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
+            .Setup(x => x.GetBoreholeIdsUserCannotManageAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
             .ReturnsAsync(Array.Empty<int>());
         boreholePermissionServiceMock
             .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string?>(), noPermissionWorkgroupId, It.IsAny<Role>()))
@@ -1070,7 +1070,7 @@ public class BoreholeControllerTest
         var idToDelete = borehole.Id;
 
         boreholePermissionServiceMock
-            .Setup(x => x.CanChangeBoreholeStatusAsync(It.IsAny<string?>(), It.IsAny<int?>()))
+            .Setup(x => x.CanManageBoreholeAsync(It.IsAny<string?>(), It.IsAny<int?>()))
             .ReturnsAsync(false);
 
         var result = await controller.DeleteAsync(idToDelete).ConfigureAwait(false);
@@ -1094,7 +1094,7 @@ public class BoreholeControllerTest
 
         ActionResultAssert.IsOk(result);
         boreholePermissionServiceMock.Verify(
-            x => x.CanChangeBoreholeStatusAsync(It.IsAny<string?>(), idToDelete),
+            x => x.CanManageBoreholeAsync(It.IsAny<string?>(), idToDelete),
             Times.Once);
         boreholePermissionServiceMock.Verify(
             x => x.CanEditBoreholeAsync(It.IsAny<string?>(), idToDelete),
@@ -1518,7 +1518,7 @@ public class BoreholeControllerTest
 
         // Only id2 is denied; id1 stays authorized (not in the returned unauthorized set).
         boreholePermissionServiceMock
-            .Setup(x => x.GetBoreholeIdsUserCannotChangeStatusAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
+            .Setup(x => x.GetBoreholeIdsUserCannotManageAsync(It.IsAny<string?>(), It.IsAny<IReadOnlyCollection<int>>()))
             .ReturnsAsync(new List<int> { id2 });
 
         var response = await controller.BulkDeleteAsync(new() { id1, id2 });

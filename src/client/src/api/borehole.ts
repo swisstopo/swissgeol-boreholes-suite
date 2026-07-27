@@ -102,8 +102,8 @@ const bulkDeleteBoreholes = async (boreholeIds: number[]): Promise<void> =>
 const canUserEditBorehole = async (id: number) =>
   await fetchApiV2WithApiError<boolean>(`permissions/canedit?boreholeId=${id}`, "GET");
 
-const canUserUpdateBoreholeStatus = async (id: number) =>
-  await fetchApiV2WithApiError<boolean>(`permissions/canchangestatus?boreholeId=${id}`, "GET");
+const canUserManageBorehole = async (id: number) =>
+  await fetchApiV2WithApiError<boolean>(`permissions/canmanage?boreholeId=${id}`, "GET");
 
 export const boreholeQueryKey = "boreholes";
 
@@ -142,13 +142,13 @@ export const useBoreholeEditable = (id: number) => {
   });
 };
 
-export const canUpdateStatusQueryKey = "canUpdateBoreholeStatus";
-export const useBoreholeStatusEditable = (id: number) => {
+export const canManageQueryKey = "canManageBorehole";
+export const useBoreholeManageable = (id: number) => {
   const { data: currentUser } = useCurrentUser();
   return useQuery({
-    queryKey: [canUpdateStatusQueryKey, currentUser?.id, id],
+    queryKey: [canManageQueryKey, currentUser?.id, id],
     queryFn: async () => {
-      return await canUserUpdateBoreholeStatus(id);
+      return await canUserManageBorehole(id);
     },
     enabled: !!id,
   });

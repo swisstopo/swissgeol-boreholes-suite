@@ -281,7 +281,7 @@ export const LabelingDrawContainer: FC<LabelingDrawContainerProps> = ({
         sx={{
           position: "absolute",
           borderRadius: "4px",
-          backgroundColor: "#1C2834",
+          backgroundColor: theme.palette.secondary.main,
           color: "white",
           padding: "4px 8px",
           margin: "14px 2px",

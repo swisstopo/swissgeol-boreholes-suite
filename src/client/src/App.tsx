@@ -163,7 +163,7 @@ const App = () => {
         styles={{
           body: {
             fontFamily: theme.typography.fontFamily,
-            color: "rgb(28, 40, 52)",
+            color: theme.palette.secondary.main,
           },
         }}
       />

@@ -83,19 +83,12 @@ const codelistLocale = (codelist: Codelist, language: string): string => {
 // depth-positioned layer stack, and an add-layer handler so callers can compose them into the
 // CSS-grid layout shared with the lithology panel.
 export function useHierarchicalDataEditProfile({
-  // array of layers
   layerData: layers,
-  // function that adds a layer
   addLayer,
-  // function that deletes a layer
   deleteLayer,
-  // function that updates a layer
   updateLayer,
-  // array of translation keys
   headerLabels,
-  // string that specifies the codelist schema to use
   codelistSchemaName,
-  // string that specifies the property of the layer object that contains the data
   dataProperty,
   selectedStratigraphyID,
   navState,
@@ -104,7 +97,13 @@ export function useHierarchicalDataEditProfile({
   const { t, i18n } = useTranslation();
   const id = useId();
   const [options, setOptions] = useState<CodelistOption[][] | null>(null);
-  const [header, setHeader] = useState<HeaderColumn[]>(headerLabels.map(h => ({ title: h, isVisible: true })));
+  const [header, setHeader] = useState<HeaderColumn[]>(() => headerLabels.map(h => ({ title: h, isVisible: true })));
+
+  // Sync header state with headerLabelProps. Purely deriving state is not possible, since the
+  // header state provides an additional isVisible property.
+  useEffect(() => {
+    setHeader(headerLabels.map(h => ({ title: h, isVisible: true })));
+  }, [headerLabels]);
 
   const { data: schemaData } = useCodelistSchema(codelistSchemaName);
 
