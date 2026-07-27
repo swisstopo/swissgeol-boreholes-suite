@@ -1,4 +1,4 @@
-FROM postgis/postgis:17-3.5-alpine
+FROM postgis/postgis:18-3.6-alpine
 
 # Setup local database
 ENV POSTGRES_USER=ISLANDHAIR \
