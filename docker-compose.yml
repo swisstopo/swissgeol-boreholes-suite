@@ -13,11 +13,11 @@ services:
       - 9000:9000
       - 9002:9002
   db:
-    image: postgis/postgis:17-3.5-alpine
+    image: postgis/postgis:18-3.6-alpine
     restart: unless-stopped
     volumes:
       - ./db:/docker-entrypoint-initdb.d
-      - postgis-data:/var/lib/postgresql/data
+      - postgis-data:/var/lib/postgresql
     ports:
       - 5432:5432
     environment:
