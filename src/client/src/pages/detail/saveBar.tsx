@@ -35,7 +35,7 @@ export const SaveBar = () => {
       p={1}
       sx={{
         boxShadow: theme.shadows[2],
-        borderTop: "1px solid rgba(223, 228, 233, 1)",
+        borderTop: `1px solid ${theme.palette.border.light}`,
         minHeight: "56px",
         width: "100%",
       }}>

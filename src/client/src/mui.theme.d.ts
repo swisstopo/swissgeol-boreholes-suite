@@ -44,6 +44,8 @@ declare module "@mui/material/styles" {
     };
     warning: {
       main: string;
+      background: string;
+      backgroundHover: string;
     };
     error: {
       main: string;
@@ -63,6 +65,22 @@ declare module "@mui/material/styles" {
     mapIcon: {
       main: string;
       secondary: string;
+      selected: string;
+    };
+    map: {
+      restrictionOpen: string;
+      restrictionClosed: string;
+      restrictionUnknown: string;
+      selectedFill: string;
+      selectedStroke: string;
+      selectedOuterStroke: string;
+      drawFill: string;
+      drawStroke: string;
+      clusterStroke: string;
+      clusterFill: string;
+      clusterText: string;
+      detailSelectedFill: string;
+      detailUnselectedFill: string;
     };
     ai: {
       background: string;
@@ -89,7 +107,6 @@ declare module "@mui/material/styles" {
       lightgrey: string;
       darkgrey: string;
       grey: string;
-      dark: string;
       header: string;
       menuItemActive: string;
       filterItemActive: string;

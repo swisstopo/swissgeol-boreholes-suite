@@ -54,9 +54,13 @@ export const StratigraphyTableActionCell: FC<StratigraphyTableLayerCellProps> = 
       sx={{
         position: "relative",
         justifyContent: "center",
+        // Intermediate color choice will be redesigned in https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2843
+        // eslint-disable-next-line local/no-hardcoded-colors
         backgroundColor: isAutoCorrected ? "#FFD6C0" : undefined,
         "& .hover-content": { visibility: "hidden" },
         "&:hover": {
+          // Intermediate color choice will be redesigned in https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2843
+          // eslint-disable-next-line local/no-hardcoded-colors
           backgroundColor: isAutoCorrected ? "#FFBD99" : theme.palette.background.grey,
           cursor: isEditing ? "pointer" : "default",
           "& .hover-content": { visibility: "visible" },

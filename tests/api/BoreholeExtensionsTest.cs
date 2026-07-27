@@ -12,11 +12,20 @@ public class BoreholeExtensionsTest
         var boreholeMaster = new Borehole { TotalDepth = 100, LocationX = 2617360.73, LocationY = 1221773.39, LocationXLV03 = 617360.35, LocationYLV03 = 221773.17 };
         var boreholeWithinSameDepth = new Borehole { TotalDepth = 100, LocationX = 2617360.95, LocationY = 1221773.89, LocationXLV03 = 617360.57, LocationYLV03 = 221773.67 };
 
+        // Only the LV95 coordinates match; the LV03 coordinates are off by more than the tolerance.
+        var boreholeWithinLV95Only = new Borehole { TotalDepth = 100, LocationX = 2617360.95, LocationY = 1221773.89, LocationXLV03 = 618000.00, LocationYLV03 = 222000.00 };
+
+        // Only the LV03 coordinates match; the LV95 coordinates are off by more than the tolerance,
+        // as happens after the coordinate maintenance task recalculates LV95 from LV03.
+        var boreholeWithinLV03Only = new Borehole { TotalDepth = 100, LocationX = 2618000.00, LocationY = 1222000.00, LocationXLV03 = 617360.57, LocationYLV03 = 221773.67 };
+
         var boreholeWithinNotSameDepth = new Borehole { TotalDepth = 99.9, LocationX = 2617360.95, LocationY = 1221773.89, LocationXLV03 = 617360.57, LocationYLV03 = 221773.67 };
         var boreholeNotWithingSameDepth = new Borehole { TotalDepth = 100, LocationX = 2617333.35, LocationY = 1221764.47, LocationXLV03 = 617332.97, LocationYLV03 = 221764.25 };
         var boreholeNotWithingNotSameDepth = new Borehole { TotalDepth = 100.1, LocationX = 2617333.35, LocationY = 1221764.47, LocationXLV03 = 617332.97, LocationYLV03 = 221764.25 };
 
         Assert.IsTrue(boreholeMaster.IsWithinPredefinedTolerance([boreholeWithinSameDepth]));
+        Assert.IsTrue(boreholeMaster.IsWithinPredefinedTolerance([boreholeWithinLV95Only]));
+        Assert.IsTrue(boreholeMaster.IsWithinPredefinedTolerance([boreholeWithinLV03Only]));
 
         Assert.IsFalse(boreholeMaster.IsWithinPredefinedTolerance([boreholeWithinNotSameDepth]));
         Assert.IsFalse(boreholeMaster.IsWithinPredefinedTolerance([boreholeNotWithingSameDepth]));

@@ -1,5 +1,6 @@
 import Feature from "ol/Feature";
 import { Circle, Fill, RegularShape, Stroke, Style, Text } from "ol/style";
+import { theme } from "../../AppTheme.ts";
 
 const boreholeStyleCache: Record<number, Circle> = {};
 const virtualBoreholeStyleCache: Record<number, RegularShape> = {};
@@ -10,16 +11,16 @@ const otherStyleCache: Record<number, RegularShape> = {};
 const clusterStyleCache: Record<number, Style> = {};
 
 const blackStroke = new Stroke({ color: "black", width: 1 });
-const greenFill = new Fill({ color: "rgb(33, 186, 69)" });
-const redFill = new Fill({ color: "rgb(220, 0, 24)" });
-const blackFill = new Fill({ color: "rgb(0, 0, 0)" });
+const greenFill = new Fill({ color: theme.palette.map.restrictionOpen });
+const redFill = new Fill({ color: theme.palette.map.restrictionClosed });
+const blackFill = new Fill({ color: theme.palette.map.restrictionUnknown });
 
 const innerSelectedStyle = new Style({
   image: new Circle({
     radius: 10,
-    fill: new Fill({ color: "#ffff00" }),
+    fill: new Fill({ color: theme.palette.map.selectedFill }),
     stroke: new Stroke({
-      color: "rgba(0, 0, 0, 0.75)",
+      color: theme.palette.map.selectedStroke,
       width: 1,
     }),
   }),
@@ -29,7 +30,7 @@ const outerSelectedStyle = new Style({
   image: new Circle({
     radius: 11,
     stroke: new Stroke({
-      color: "rgba(120, 120, 120, 0.5)",
+      color: theme.palette.map.selectedOuterStroke,
       width: 1,
     }),
   }),
@@ -37,10 +38,10 @@ const outerSelectedStyle = new Style({
 
 export const drawStyle = new Style({
   fill: new Fill({
-    color: "rgba(255, 255, 255, 0.5)",
+    color: theme.palette.map.drawFill,
   }),
   stroke: new Stroke({
-    color: "#0099ff",
+    color: theme.palette.map.drawStroke,
     width: 3,
   }),
 });
@@ -161,18 +162,18 @@ export function clusterStyleFunction(length: number): Style {
       image: new Circle({
         radius: circleSize,
         stroke: new Stroke({
-          color: "rgba(43, 132, 204, 0.5)",
+          color: theme.palette.map.clusterStroke,
           width: 8,
         }),
         fill: new Fill({
-          color: "rgba(43, 132, 204, 1)",
+          color: theme.palette.map.clusterFill,
         }),
       }),
       text: new Text({
         text: length.toString(),
         scale: 1.5,
         fill: new Fill({
-          color: "#fff",
+          color: theme.palette.map.clusterText,
         }),
       }),
     });
@@ -190,7 +191,9 @@ export function detailMapStyleFunction(feature: Feature, highlighted: number[]):
   const conf = {
     image: new Circle({
       radius: selected ? 10 : 6,
-      fill: selected ? new Fill({ color: "rgba(255, 0, 0, 0.8)" }) : new Fill({ color: "rgba(0, 255, 0, 1)" }),
+      fill: selected
+        ? new Fill({ color: theme.palette.map.detailSelectedFill })
+        : new Fill({ color: theme.palette.map.detailUnselectedFill }),
       stroke: new Stroke({ color: "black", width: 1 }),
     }),
   };

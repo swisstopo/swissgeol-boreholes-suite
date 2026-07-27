@@ -6,7 +6,7 @@ import {
   WorkflowStatus,
 } from "@swissgeol/ui-core";
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
-import { boreholeQueryKey, canEditQueryKey, canUpdateStatusQueryKey } from "../../../../api/borehole.ts";
+import { boreholeQueryKey, canEditQueryKey, canManageQueryKey } from "../../../../api/borehole.ts";
 import { fetchApiV2Legacy } from "../../../../api/fetchApiV2.ts";
 import { NullableDateString } from "../../../../api/unionTypes.ts";
 
@@ -97,7 +97,7 @@ export const useWorkflowMutation = () => {
     queryClient.invalidateQueries({ queryKey: [workflowQueryKey, Number(boreholeId)] });
     queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, Number(boreholeId)] });
     queryClient.invalidateQueries({ queryKey: [canEditQueryKey] });
-    queryClient.invalidateQueries({ queryKey: [canUpdateStatusQueryKey] });
+    queryClient.invalidateQueries({ queryKey: [canManageQueryKey] });
   }
 
   const updateWorkflow = useMutation({

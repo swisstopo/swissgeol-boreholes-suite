@@ -35,7 +35,7 @@ export const FileDropzone = props => {
   const [files, setFiles] = useState([]);
   const [dropZoneText, setDropZoneText] = useState(t(defaultText));
   const [dropZoneTextColor, setDropZoneTextColor] = useState(null);
-  const defaultDropzoneTextColor = isDisabled ? "#9f9f9f" : "#2185d0";
+  const defaultDropzoneTextColor = isDisabled ? theme.palette.action.disabled : theme.palette.primary.main;
 
   useEffect(() => {
     setDropZoneTextColor(defaultDropzoneTextColor);

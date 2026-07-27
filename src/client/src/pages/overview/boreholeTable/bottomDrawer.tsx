@@ -16,7 +16,7 @@ export const BottomDrawer = ({ drawerOpen, children }: { drawerOpen: boolean; ch
             boxShadow: "none !important",
             padding: 2,
             height: "50vh",
-            borderRight: "1px solid rgba(0, 0, 0, 0.12)",
+            borderRight: `1px solid ${theme.palette.border.light}`,
             backgroundColor: theme.palette.background.lightgrey,
           }}>
           {children}

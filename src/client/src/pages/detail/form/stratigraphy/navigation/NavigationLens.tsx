@@ -12,7 +12,7 @@ import { useTypedResizeObserver } from "./useTypedResizeObserver.ts";
 
 const BackgroundShade = styled(Box)(() => ({
   position: "absolute",
-  background: "rgba(0, 0, 0, 0.3)",
+  background: theme.palette.background.darkgrey,
   top: 0,
   left: 0,
   right: 0,

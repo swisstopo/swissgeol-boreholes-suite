@@ -24,7 +24,7 @@ export const SideDrawer = ({ drawerOpen, drawerContent }: SideDrawerProps) => {
             padding: "16px",
             backgroundColor: theme.palette.background.header,
             boxShadow: theme.shadows[3],
-            borderRight: "1px solid rgba(0, 0, 0, 0.12)",
+            borderRight: `1px solid ${theme.palette.border.light}`,
           }}>
           {drawerContent}
         </Paper>
