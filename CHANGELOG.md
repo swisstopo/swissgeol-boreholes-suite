@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- OCR service was updated to 9.9.9.
+
 ## v2.1.1739 - 2026-07-10
 
 ### Fixed
