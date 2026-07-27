@@ -45,7 +45,7 @@ internal static class TestSyncContextExtensions
     private static async Task<PostgreSqlContainer> CreatePostgreSqlContainerAsync()
     {
         var initDbDirectoryPath = Path.GetFullPath(Path.Combine(Directory.GetCurrentDirectory(), "initdb.d"));
-        var postgreSqlContainer = new PostgreSqlBuilder("postgis/postgis:17-3.5-alpine")
+        var postgreSqlContainer = new PostgreSqlBuilder("postgis/postgis:18-3.6-alpine")
             .WithDatabase(BoreholesDatabaseName)
             .WithResourceMapping(initDbDirectoryPath, "/docker-entrypoint-initdb.d")
             .Build();
