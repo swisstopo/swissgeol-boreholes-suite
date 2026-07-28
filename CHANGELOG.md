@@ -2,6 +2,8 @@
 
 ## [Unreleased]
 
+## v2.1.1748 - 2026-07-28
+
 ### Changed
 - Upgraded to PostgreSQL 18 and PostGIS 3.6.
 
