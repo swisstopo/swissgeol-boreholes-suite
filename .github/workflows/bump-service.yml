@@ -1,23 +1,30 @@
-name: Bump OCR version
+name: Bump service version
 
 on:
   workflow_dispatch:
     inputs:
+      component:
+        description: "Service to bump"
+        required: true
+        type: choice
+        options:
+          - ocr
+          - dataextraction
       version:
-        description: "OCR image tag (e.g. 1.1.3)"
+        description: "Image tag (e.g. 1.1.3 for ocr, v1.0.162 for dataextraction)"
         required: true
         type: string
 
 permissions: {}
 
 concurrency:
-  group: bump-ocr
+  group: bump-${{ inputs.component }}
   cancel-in-progress: false
 
 jobs:
   bump:
     runs-on: ubuntu-latest
-    name: Update OCR version and open PR
+    name: Update service version and open PR
     timeout-minutes: 10
 
     permissions:
@@ -37,8 +44,9 @@ jobs:
         with:
           token: ${{ steps.app-token.outputs.token }}
 
-      - name: Validate input
+      - name: Validate input and resolve component
         env:
+          COMPONENT: ${{ inputs.component }}
           VERSION: ${{ inputs.version }}
         run: |
           if ! [[ "$VERSION" =~ ^[A-Za-z0-9._-]+$ ]]; then
@@ -46,13 +54,32 @@ jobs:
             exit 1
           fi
 
+          # Everything that differs between services lives here; the rest of the job is shared
+          case "$COMPONENT" in
+            ocr)
+              echo "LABEL=OCR" >> "$GITHUB_ENV"
+              echo "IMAGE=swissgeol-ocr-api" >> "$GITHUB_ENV"
+              echo "UPSTREAM=swisstopo/swissgeol-ocr" >> "$GITHUB_ENV"
+              ;;
+            dataextraction)
+              echo "LABEL=Dataextraction" >> "$GITHUB_ENV"
+              echo "IMAGE=swissgeol-boreholes-dataextraction-api" >> "$GITHUB_ENV"
+              echo "UPSTREAM=swisstopo/swissgeol-boreholes-dataextraction" >> "$GITHUB_ENV"
+              ;;
+            *)
+              echo "Unknown component: $COMPONENT"
+              exit 1
+              ;;
+          esac
+
       - name: Check current version
         id: check
         env:
+          COMPONENT: ${{ inputs.component }}
           VERSION: ${{ inputs.version }}
         run: |
-          CURRENT=$(awk '
-            /^ocr:/ { in_block=1; next }
+          CURRENT=$(awk -v block="^${COMPONENT}:" '
+            $0 ~ block { in_block=1; next }
             /^[^ ]/ { in_block=0 }
             in_block && /^  version:/ { gsub(/"/, "", $2); print $2; exit }
           ' charts/swissgeol-boreholes/values.yaml)
@@ -73,16 +100,23 @@ jobs:
       - name: Update files
         if: steps.check.outputs.skip != 'true'
         env:
+          COMPONENT: ${{ inputs.component }}
           VERSION: ${{ inputs.version }}
         run: |
-          # charts/swissgeol-boreholes/values.yaml: ocr.version
-          sed -i "/^ocr:/,/^[^ ]/ s|^  version: .*|  version: ${VERSION}|" charts/swissgeol-boreholes/values.yaml
+          # charts/swissgeol-boreholes/values.yaml: <component>.version
+          sed -i "/^${COMPONENT}:/,/^[^ ]/ s|^  version: .*|  version: ${VERSION}|" charts/swissgeol-boreholes/values.yaml
 
-          # docker-compose.yml: ocr image tag
-          sed -i "s|swissgeol-ocr-api:.*|swissgeol-ocr-api:${VERSION}|" docker-compose.yml
+          # charts/swissgeol-boreholes/Chart.yaml: patch bump, otherwise ct lint fails and chart-releaser skips the release
+          CHART_FILE=charts/swissgeol-boreholes/Chart.yaml
+          CURRENT_CHART=$(grep '^version:' "$CHART_FILE" | awk '{print $2}')
+          IFS='.' read -r major minor patch <<< "$CURRENT_CHART"
+          sed -i "s|^version: .*|version: ${major}.${minor}.$((patch + 1))|" "$CHART_FILE"
+
+          # docker-compose.yml: image tag
+          sed -i "s|${IMAGE}:.*|${IMAGE}:${VERSION}|" docker-compose.yml
 
           # CHANGELOG.md: insert under ### Changed inside [Unreleased], synthesizing the heading if absent
-          awk -v entry="- OCR service was updated to ${VERSION}." '
+          awk -v entry="- ${LABEL} service was updated to ${VERSION}." '
             /^## \[Unreleased\]$/ { print; state="unreleased"; next }
             /^## / && state=="unreleased" {
               if (!inserted) { print "### Changed"; print entry; print "" }
@@ -101,13 +135,14 @@ jobs:
         if: steps.check.outputs.skip != 'true'
         env:
           GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          COMPONENT: ${{ inputs.component }}
           VERSION: ${{ inputs.version }}
         run: |
-          BRANCH="bump-ocr-${VERSION}"
+          BRANCH="bump-${COMPONENT}-${VERSION}"
           git checkout -b "$BRANCH"
-          git commit -am "Bump OCR to ${VERSION}"
+          git commit -am "Bump ${LABEL} to ${VERSION}"
           git push --set-upstream origin "$BRANCH"
           gh pr create \
-            --title "Bump OCR to ${VERSION}" \
-            --body "- Bump OCR image to ${VERSION} so the chart, docker-compose, and CI track the same version.
-          - Upstream release: https://github.com/swisstopo/swissgeol-ocr/releases/tag/${VERSION}"
+            --title "Bump ${LABEL} to ${VERSION}" \
+            --body "- Bump ${LABEL} image to ${VERSION} so the chart, docker-compose, and CI track the same version.
+          - Upstream release: https://github.com/${UPSTREAM}/releases/tag/${VERSION}"
