@@ -23,6 +23,12 @@ jobs:
     runs-on: ubuntu-latest
     name: Deploy to dev cluster
     environment: dev
+    timeout-minutes: 15
+
+    # One deploy at a time. Don't cancel, a half-finished deploy blocks the next one
+    concurrency:
+      group: deploy-dev
+      cancel-in-progress: false
 
     env:
       KUBECONFIG: ${{ github.workspace }}/.kube/config
