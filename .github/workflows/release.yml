@@ -18,6 +18,8 @@ jobs:
   retag-docker-images:
     runs-on: ubuntu-latest
     name: Tag Docker images as latest
+    # Helm chart releases share this event; only app tags have images.
+    if: ${{ github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'v') }}
 
     steps:
       - name: Set environment variables
