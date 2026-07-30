@@ -12,7 +12,6 @@ jobs:
     runs-on: ubuntu-latest
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
     name: Deploy to int cluster (${{ matrix.release }})
-    environment: int
 
     permissions:
       id-token: write
@@ -71,3 +70,17 @@ jobs:
             ${{ matrix.values }} \
             -n ${{ matrix.namespace }} \
             --install --wait --timeout 5m
+
+  # Records one deployment for all releases, so the environment shows a single status
+  status:
+    runs-on: ubuntu-latest
+    needs: deploy
+    if: ${{ !cancelled() }}
+    name: Report int deployment status
+    environment: int
+    permissions: {}
+
+    steps:
+      - name: Fail if any release failed to deploy
+        if: ${{ needs.deploy.result != 'success' }}
+        run: exit 1
