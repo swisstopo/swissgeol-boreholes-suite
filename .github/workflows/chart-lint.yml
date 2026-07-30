@@ -40,11 +40,11 @@ jobs:
 
       - name: Validate int environment values
         run: |
-          helm lint charts/swissgeol-boreholes -f environments/int/boreholes.values.yaml
-          helm lint charts/swissgeol-boreholes -f environments/int/boreholes.values.yaml -f environments/int/boreholes-ext.values.yaml
-          helm lint charts/swissgeol-boreholes -f environments/int/boreholes.values.yaml -f environments/int/boreholes-view.values.yaml
-          helm lint charts/swissgeol-boreholes-extern-sync -f environments/int/extern-sync.values.yaml
-          helm lint charts/swissgeol-boreholes-view-sync -f environments/int/view-sync.values.yaml
+          helm lint charts/swissgeol-boreholes -f environments/int/version.values.yaml -f environments/int/boreholes.values.yaml
+          helm lint charts/swissgeol-boreholes -f environments/int/version.values.yaml -f environments/int/boreholes.values.yaml -f environments/int/boreholes-ext.values.yaml
+          helm lint charts/swissgeol-boreholes -f environments/int/version.values.yaml -f environments/int/boreholes.values.yaml -f environments/int/boreholes-view.values.yaml
+          helm lint charts/swissgeol-boreholes-extern-sync -f environments/int/version.values.yaml -f environments/int/extern-sync.values.yaml
+          helm lint charts/swissgeol-boreholes-view-sync -f environments/int/version.values.yaml -f environments/int/view-sync.values.yaml
 
       - name: Validate prod environment values
         run: |
@@ -52,4 +52,4 @@ jobs:
           helm lint charts/swissgeol-boreholes -f environments/prod/boreholes.values.yaml -f environments/prod/boreholes-ext.values.yaml
           helm lint charts/swissgeol-boreholes -f environments/prod/boreholes.values.yaml -f environments/prod/boreholes-view.values.yaml
           helm lint charts/swissgeol-boreholes-extern-sync -f environments/prod/extern-sync.values.yaml
-          helm lint charts/swissgeol-boreholes-view-sync
+          helm lint charts/swissgeol-boreholes-view-sync -f environments/prod/view-sync.values.yaml
