@@ -18,28 +18,29 @@ jobs:
       contents: read
 
     strategy:
+      # version.values.yaml comes first everywhere, so all releases deploy the same app version
       matrix:
         include:
           - release: swissgeol-boreholes
             chart: swissgeol-boreholes
             namespace: swissgeol-boreholes
-            values: -f environments/int/boreholes.values.yaml
+            values: -f environments/int/version.values.yaml -f environments/int/boreholes.values.yaml
           - release: swissgeol-boreholes-ext
             chart: swissgeol-boreholes
             namespace: swissgeol-boreholes-ext
-            values: -f environments/int/boreholes.values.yaml -f environments/int/boreholes-ext.values.yaml
+            values: -f environments/int/version.values.yaml -f environments/int/boreholes.values.yaml -f environments/int/boreholes-ext.values.yaml
           - release: swissgeol-boreholes-view
             chart: swissgeol-boreholes
             namespace: swissgeol-boreholes-view
-            values: -f environments/int/boreholes.values.yaml -f environments/int/boreholes-view.values.yaml
+            values: -f environments/int/version.values.yaml -f environments/int/boreholes.values.yaml -f environments/int/boreholes-view.values.yaml
           - release: swissgeol-boreholes-extern-sync
             chart: swissgeol-boreholes-extern-sync
             namespace: swissgeol-boreholes-extern-sync
-            values: -f environments/int/extern-sync.values.yaml
+            values: -f environments/int/version.values.yaml -f environments/int/extern-sync.values.yaml
           - release: swissgeol-boreholes-view-sync
             chart: swissgeol-boreholes-view-sync
             namespace: swissgeol-boreholes-view-sync
-            values: -f environments/int/view-sync.values.yaml
+            values: -f environments/int/version.values.yaml -f environments/int/view-sync.values.yaml
 
     steps:
       - name: Checkout repository
