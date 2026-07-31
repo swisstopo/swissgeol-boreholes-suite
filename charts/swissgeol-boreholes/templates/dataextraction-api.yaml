@@ -71,6 +71,9 @@ spec:
           - name: tmp
             mountPath: /tmp
           env:
+            # Set explicitly, or AWS telemetry overwrites it and the app won't start
+            - name: PYTHONPATH
+              value: /app/src
             - name: AWS_DEFAULT_REGION
               value: eu-central-1
             - name: AWS_ACCESS_KEY_ID
