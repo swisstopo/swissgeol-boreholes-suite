@@ -1,4 +1,4 @@
-name: Pre-release
+name: Publish
 
 on:
   push:
@@ -11,9 +11,9 @@ env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  create-pre-release:
+  publish:
     runs-on: ubuntu-latest
-    name: Build and push Docker image and create a new GitHub pre-release
+    name: Build and push Docker images and create a new GitHub release
     outputs:
       version: ${{ steps.set-version.outputs.version }}
 
@@ -167,10 +167,10 @@ jobs:
             -f make_latest=false
 
   deploy-dev:
-    needs: create-pre-release
+    needs: publish
     uses: ./.github/workflows/deploy-dev.yml
     with:
-      version: ${{ needs.create-pre-release.outputs.version }}
+      version: ${{ needs.publish.outputs.version }}
     secrets:
       AWS_ROLE_DEV: ${{ secrets.AWS_ROLE_DEV }}
       AWS_REGION: ${{ secrets.AWS_REGION }}
