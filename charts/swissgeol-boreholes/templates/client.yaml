@@ -53,11 +53,12 @@ spec:
             failureThreshold: 30
           resources:
             requests:
-              cpu: 50m
+              cpu: 100m
               memory: 128Mi
               ephemeral-storage: 1Gi
             limits:
-              cpu: 250m
+              # Kept high, throttling was failing the healthz probe
+              cpu: 1000m
               memory: 256Mi
               ephemeral-storage: 2Gi
           securityContext:
