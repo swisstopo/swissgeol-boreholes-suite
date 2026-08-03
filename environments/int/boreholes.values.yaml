@@ -2,6 +2,5 @@
 # Also serves as the base for boreholes-ext and boreholes-view namespaces.
 app:
   domain: int-boreholes.swissgeol.ch
-  version: v2.1.1748
 s3:
   endpoint: https://s3.eu-central-1.amazonaws.com
