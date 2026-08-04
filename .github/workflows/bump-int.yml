@@ -1,0 +1,107 @@
+name: Bump INT version
+
+# Promoting a GitHub release to "pre-release" is the signal that a version goes to int,
+# mirroring how promoting it to "latest" releases to prod. Dispatch is the manual fallback.
+on:
+  release:
+    types: [prereleased]
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "App version to deploy to int (e.g. 2.1.1748)"
+        required: true
+        type: string
+
+permissions: {}
+
+concurrency:
+  group: bump-int
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    runs-on: ubuntu-latest
+    name: Update INT version and open PR
+    timeout-minutes: 10
+    # Helm chart releases share this event; only app tags are versions.
+    if: ${{ github.event_name == 'workflow_dispatch' || startsWith(github.event.release.tag_name, 'v') }}
+
+    permissions:
+      contents: write
+      pull-requests: write
+
+    steps:
+      - name: Generate App token
+        id: app-token
+        uses: actions/create-github-app-token@bcd2ba49218906704ab6c1aa796996da409d3eb1 # v3.2.0
+        with:
+          app-id: ${{ secrets.RELEASE_BOT_APP_ID }}
+          private-key: ${{ secrets.RELEASE_BOT_PRIVATE_KEY }}
+
+      - name: Checkout repository
+        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        with:
+          token: ${{ steps.app-token.outputs.token }}
+
+      - name: Resolve and validate version
+        id: version
+        env:
+          INPUT_VERSION: ${{ inputs.version }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          VERSION="${INPUT_VERSION:-$RELEASE_TAG}"
+          VERSION="${VERSION#v}"
+          if ! [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+            echo "Invalid version format: $VERSION"
+            exit 1
+          fi
+          echo "tag=v${VERSION}" >> "$GITHUB_OUTPUT"
+
+      - name: Check current version
+        id: check
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          CURRENT=$(awk '
+            /^app:/ { in_block=1; next }
+            /^[^ ]/ { in_block=0 }
+            in_block && /^  version:/ { gsub(/"/, "", $2); print $2; exit }
+          ' environments/int/boreholes.values.yaml)
+          echo "Current: $CURRENT, requested: $TAG"
+          if [[ "$CURRENT" == "$TAG" ]]; then
+            echo "Already at $TAG, nothing to do."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "skip=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Configure Git
+        if: steps.check.outputs.skip != 'true'
+        run: |
+          git config user.email "office@geowerkstatt.ch"
+          git config user.name "GeoWerkstatt-Build"
+
+      - name: Update files
+        if: steps.check.outputs.skip != 'true'
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          for file in boreholes extern-sync view-sync; do
+            sed -i "/^app:/,/^[^ ]/ s|^  version: .*|  version: ${TAG}|" "environments/int/${file}.values.yaml"
+          done
+
+      - name: Commit, push and open PR
+        if: steps.check.outputs.skip != 'true'
+        env:
+          GH_TOKEN: ${{ steps.app-token.outputs.token }}
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          BRANCH="bump-int-${TAG#v}"
+          git checkout -b "$BRANCH"
+          git commit -am "Bump INT to version ${TAG#v}"
+          git push --set-upstream origin "$BRANCH"
+          gh pr create \
+            --title "Bump INT to version ${TAG#v}" \
+            --body "- Bump the app version in \`environments/int/\` to ${TAG}.
+          - Release: https://github.com/${GITHUB_REPOSITORY}/releases/tag/${TAG}
+          - After merging, run the \`Deploy Int\` workflow."
