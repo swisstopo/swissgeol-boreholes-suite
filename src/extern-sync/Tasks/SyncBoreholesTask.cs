@@ -55,23 +55,33 @@ public class SyncBoreholesTask(ISyncContext syncContext, ILogger<SyncBoreholesTa
             targetDefaultUser.Name,
             targetDefaultUser.SubjectId);
 
+        // Deduplicate globally, not per-workgroup: name_uuid is unique across the whole target database, so a
+        // per-workgroup check re-inserts a borehole whenever it routes to a different workgroup than its copy.
+        var boreholesAtDestination = await Target.Boreholes.AsNoTracking()
+            .ToListAsync(cancellationToken).ConfigureAwait(false);
+        var existingProfileNameUuids = (await Target.Profiles.AsNoTracking()
+            .Select(p => p.NameUuid)
+            .ToListAsync(cancellationToken).ConfigureAwait(false))
+            .ToHashSet(StringComparer.Ordinal);
+
         // Process published boreholes.
         // Operate on a copy of the list, so that we can remove items from it if needed.
         foreach (var publishedBorehole in publishedBoreholes.ToList())
         {
-            // Search for a matching workgroup name
-            var matchingWorkgroup = await Target.Workgroups.AsNoTracking().SingleOrDefaultAsync(w => w.Name == publishedBorehole.Workgroup.Name, cancellationToken).ConfigureAwait(false);
-            var targetWorkgroup = matchingWorkgroup ?? targetDefaultWorkgroup;
-
-            // Skip duplicated boreholes by comparing the depth and coordinates of each borehole
-            // in the target workgroup if they are within a pre-defined radius.
-            var boreholesAtDestination = await Target.Boreholes.AsNoTracking().Where(x => x.WorkgroupId == targetWorkgroup.Id).ToListAsync(cancellationToken).ConfigureAwait(false);
-            if (publishedBorehole.IsWithinPredefinedTolerance(boreholesAtDestination))
+            // Skip already synced boreholes: matched by location, or by a profile name_uuid that already
+            // exists at the target (backstop for the unique constraint when the location heuristic misses).
+            var alreadySynced = publishedBorehole.IsWithinPredefinedTolerance(boreholesAtDestination)
+                || (publishedBorehole.Profiles?.Any(p => existingProfileNameUuids.Contains(p.NameUuid)) ?? false);
+            if (alreadySynced)
             {
                 publishedBoreholes.Remove(publishedBorehole);
                 Logger.LogInformation("Borehole <{BoreholeName}> already exists at target database. Skipping...", publishedBorehole.Name);
                 continue;
             }
+
+            // Assign the borehole to the workgroup matching its source workgroup name, or the default workgroup.
+            var matchingWorkgroup = await Target.Workgroups.AsNoTracking().SingleOrDefaultAsync(w => w.Name == publishedBorehole.Workgroup.Name, cancellationToken).ConfigureAwait(false);
+            var targetWorkgroup = matchingWorkgroup ?? targetDefaultWorkgroup;
 
             // Set workgroup
             publishedBorehole.Workgroup = null;
