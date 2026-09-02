@@ -14,6 +14,7 @@ namespace BDMS.Services;
 [TestClass]
 public class LogFileCloudServiceTest
 {
+    private const string TestLasFileName = "file_1.las";
     private BdmsContext context;
     private AmazonS3Client s3Client;
     private string bucketName;
@@ -85,7 +86,7 @@ public class LogFileCloudServiceTest
     public async Task UploadObjectSameFileTwiceShouldReplaceFileInCloudStorage()
     {
         var content = Guid.NewGuid().ToString();
-        var formFile = GetFormFileByContent(content, "file_1.las");
+        var formFile = GetFormFileByContent(content, TestLasFileName);
 
         // Upload file
         await logFileCloudService.UploadObject(formFile.OpenReadStream(), formFile.FileName, formFile.ContentType);
@@ -121,7 +122,7 @@ public class LogFileCloudServiceTest
     public async Task GetObjectShouldReturnFileBytes()
     {
         var content = Guid.NewGuid().ToString();
-        var formFile = GetFormFileByContent(content, "file_1.las");
+        var formFile = GetFormFileByContent(content, TestLasFileName);
 
         await logFileCloudService.UploadObject(formFile.OpenReadStream(), formFile.FileName, formFile.ContentType);
         var result = await logFileCloudService.GetObject(formFile.FileName);
@@ -132,7 +133,7 @@ public class LogFileCloudServiceTest
     public async Task GetObjectStreamShouldReturnFileContent()
     {
         var content = Guid.NewGuid().ToString();
-        var formFile = GetFormFileByContent(content, "file_1.las");
+        var formFile = GetFormFileByContent(content, TestLasFileName);
 
         await logFileCloudService.UploadObject(formFile.OpenReadStream(), formFile.FileName, formFile.ContentType);
 
@@ -150,7 +151,7 @@ public class LogFileCloudServiceTest
     [TestMethod]
     public async Task ObjectExistsShouldDistinguishPresentFromMissingObject()
     {
-        var formFile = GetFormFileByContent(Guid.NewGuid().ToString(), "file_1.las");
+        var formFile = GetFormFileByContent(Guid.NewGuid().ToString(), TestLasFileName);
 
         await logFileCloudService.UploadObject(formFile.OpenReadStream(), formFile.FileName, formFile.ContentType);
 
@@ -162,7 +163,7 @@ public class LogFileCloudServiceTest
     public async Task DeleteObjectShouldDeleteObjectFromStorage()
     {
         var content = Guid.NewGuid().ToString();
-        var formFile = GetFormFileByContent(content, "file_1.las");
+        var formFile = GetFormFileByContent(content, TestLasFileName);
 
         await logFileCloudService.UploadObject(formFile.OpenReadStream(), formFile.FileName, formFile.ContentType);
         await logFileCloudService.GetObject(formFile.FileName);

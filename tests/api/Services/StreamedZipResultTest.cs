@@ -10,27 +10,33 @@ namespace BDMS.Services;
 [TestClass]
 public class StreamedZipResultTest
 {
+    private const string ZipFileName = "test.zip";
+    private const string FirstEntryName = "first.txt";
+    private const string FirstEntryContent = "content one";
+    private const string SecondEntryName = "folder/second.txt";
+    private const string SecondEntryContent = "content two";
+
     [TestMethod]
     public async Task ExecuteResultAsyncWritesEveryEntryWithItsContent()
     {
         var entries = new[]
         {
-            CreateEntrySource("first.txt", "content one"),
-            CreateEntrySource("folder/second.txt", "content two"),
+            CreateEntrySource(FirstEntryName, FirstEntryContent),
+            CreateEntrySource(SecondEntryName, SecondEntryContent),
         };
 
         var httpContext = new DefaultHttpContext();
         using var body = new MemoryStream();
         httpContext.Response.Body = body;
 
-        await new StreamedZipResult("test.zip", entries, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext));
+        await new StreamedZipResult(ZipFileName, entries, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext));
 
         body.Position = 0;
         using var archive = new ZipArchive(body, ZipArchiveMode.Read);
 
         Assert.AreEqual(2, archive.Entries.Count);
-        Assert.AreEqual("content one", ReadEntry(archive, "first.txt"));
-        Assert.AreEqual("content two", ReadEntry(archive, "folder/second.txt"));
+        Assert.AreEqual(FirstEntryContent, ReadEntry(archive, FirstEntryName));
+        Assert.AreEqual(SecondEntryContent, ReadEntry(archive, SecondEntryName));
     }
 
     [TestMethod]
@@ -42,22 +48,22 @@ public class StreamedZipResultTest
         // server does.
         var entries = new[]
         {
-            CreateEntrySource("first.txt", "content one"),
-            CreateEntrySource("folder/second.txt", "content two"),
+            CreateEntrySource(FirstEntryName, FirstEntryContent),
+            CreateEntrySource(SecondEntryName, SecondEntryContent),
         };
 
         var httpContext = new DefaultHttpContext();
         using var body = new NonSeekableWriteStream();
         httpContext.Response.Body = body;
 
-        await new StreamedZipResult("test.zip", entries, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext));
+        await new StreamedZipResult(ZipFileName, entries, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext));
 
         using var writtenBytes = new MemoryStream(body.ToArray());
         using var archive = new ZipArchive(writtenBytes, ZipArchiveMode.Read);
 
         Assert.AreEqual(2, archive.Entries.Count);
-        Assert.AreEqual("content one", ReadEntry(archive, "first.txt"));
-        Assert.AreEqual("content two", ReadEntry(archive, "folder/second.txt"));
+        Assert.AreEqual(FirstEntryContent, ReadEntry(archive, FirstEntryName));
+        Assert.AreEqual(SecondEntryContent, ReadEntry(archive, SecondEntryName));
     }
 
     [TestMethod]
@@ -102,7 +108,7 @@ public class StreamedZipResultTest
         using var body = new MemoryStream();
         httpContext.Response.Body = body;
 
-        await new StreamedZipResult("test.zip", entries, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext));
+        await new StreamedZipResult(ZipFileName, entries, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext));
 
         body.Position = 0;
         using var archive = new ZipArchive(body, ZipArchiveMode.Read);
@@ -127,14 +133,14 @@ public class StreamedZipResultTest
         using var body = new SynchronousIoGuardStream(bodyControl);
         httpContext.Response.Body = body;
 
-        await new StreamedZipResult("test.zip", new[] { CreateEntrySource("first.txt", "content one") }, NullLogger.Instance)
+        await new StreamedZipResult(ZipFileName, new[] { CreateEntrySource(FirstEntryName, FirstEntryContent) }, NullLogger.Instance)
             .ExecuteResultAsync(CreateActionContext(httpContext));
 
         Assert.IsTrue(bodyControl.AllowSynchronousIO, "StreamedZipResult must enable synchronous IO before writing the archive.");
 
         using var writtenBytes = new MemoryStream(body.ToArray());
         using var archive = new ZipArchive(writtenBytes, ZipArchiveMode.Read);
-        Assert.AreEqual("content one", ReadEntry(archive, "first.txt"));
+        Assert.AreEqual(FirstEntryContent, ReadEntry(archive, FirstEntryName));
     }
 
     [TestMethod]
@@ -150,7 +156,7 @@ public class StreamedZipResultTest
 
         var entries = new[]
         {
-            CreateEntrySource("first.txt", "content one"),
+            CreateEntrySource(FirstEntryName, FirstEntryContent),
             new ZipEntrySource("broken.txt", () =>
             {
                 body.Break();
@@ -159,7 +165,7 @@ public class StreamedZipResultTest
         };
 
         var exception = await Assert.ThrowsExactlyAsync<InvalidOperationException>(
-            () => new StreamedZipResult("test.zip", entries, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext)));
+            () => new StreamedZipResult(ZipFileName, entries, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext)));
 
         Assert.AreEqual("attachment gone from cloud storage", exception.Message);
     }
