@@ -533,14 +533,13 @@ public class LogControllerTest : TestControllerBase
 
         var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = false, Locale = "en" }).ConfigureAwait(false);
 
-        var fileResult = response as FileContentResult;
+        var fileResult = response as StreamedZipResult;
         Assert.IsNotNull(fileResult);
-        Assert.AreEqual("application/zip", fileResult.ContentType);
-        StringAssert.StartsWith(fileResult.FileDownloadName, "log_export_");
-        StringAssert.EndsWith(fileResult.FileDownloadName, ".zip");
+        StringAssert.StartsWith(fileResult.FileName, "log_export_");
+        StringAssert.EndsWith(fileResult.FileName, ".zip");
 
-        using var zipStream = new MemoryStream(fileResult.FileContents);
-        using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+        // The zip content type is asserted inside ExecuteZipResultAsync for every export test.
+        using var archive = await ExecuteZipResultAsync(response);
 
         // Expect exactly 2 entries (log_runs CSV + log_files CSV), no attachment
         Assert.AreEqual(2, archive.Entries.Count);
@@ -557,11 +556,7 @@ public class LogControllerTest : TestControllerBase
 
         var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = true, Locale = "en" }).ConfigureAwait(false);
 
-        var fileResult = response as FileContentResult;
-        Assert.IsNotNull(fileResult);
-
-        using var zipStream = new MemoryStream(fileResult.FileContents);
-        using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+        using var archive = await ExecuteZipResultAsync(response);
 
         // 2 CSVs + 1 attachment
         Assert.AreEqual(3, archive.Entries.Count);
@@ -581,10 +576,7 @@ public class LogControllerTest : TestControllerBase
         await SetLogFileToolTypeCodesAsync(uploadedFile.Id, [100003033, 100003032]);
 
         var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = false, Locale = "en" }).ConfigureAwait(false);
-        var fileResult = (FileContentResult)response;
-
-        using var zipStream = new MemoryStream(fileResult.FileContents);
-        using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+        using var archive = await ExecuteZipResultAsync(response);
 
         var logRunCsvEntry = archive.Entries.Single(e => e.FullName.StartsWith(LogRunCsvPrefix));
         var logRunCsv = ReadEntryAsText(logRunCsvEntry);
@@ -615,9 +607,7 @@ public class LogControllerTest : TestControllerBase
 
         var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun1.Id, logRun2.Id], WithAttachments = false, Locale = "en" }).ConfigureAwait(false);
 
-        var fileResult = (FileContentResult)response;
-        using var zipStream = new MemoryStream(fileResult.FileContents);
-        using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+        using var archive = await ExecuteZipResultAsync(response);
         var logRunCsvEntry = archive.Entries.Single(e => e.FullName.StartsWith(LogRunCsvPrefix));
         var logRunCsv = ReadEntryAsText(logRunCsvEntry);
 
@@ -633,9 +623,7 @@ public class LogControllerTest : TestControllerBase
 
         var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = false, Locale = "en" }).ConfigureAwait(false);
 
-        var fileResult = (FileContentResult)response;
-        using var zipStream = new MemoryStream(fileResult.FileContents);
-        using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+        using var archive = await ExecuteZipResultAsync(response);
 
         Assert.AreEqual(1, archive.Entries.Count);
         Assert.IsTrue(archive.Entries.Single().FullName.StartsWith(LogRunCsvPrefix));
@@ -701,10 +689,7 @@ public class LogControllerTest : TestControllerBase
         await Context.SaveChangesAsync();
 
         var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = false, Locale = locale }).ConfigureAwait(false);
-        var fileResult = (FileContentResult)response;
-
-        using var zipStream = new MemoryStream(fileResult.FileContents);
-        using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+        using var archive = await ExecuteZipResultAsync(response);
         var logRunCsvEntry = archive.Entries.Single(e => e.FullName.StartsWith(LogRunCsvPrefix));
         var csv = ReadEntryAsText(logRunCsvEntry);
 
@@ -747,12 +732,7 @@ public class LogControllerTest : TestControllerBase
 
         var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [logFile.Id], WithAttachments = false, Locale = "en" }).ConfigureAwait(false);
 
-        var fileResult = response as FileContentResult;
-        Assert.IsNotNull(fileResult);
-        Assert.AreEqual("application/zip", fileResult.ContentType);
-
-        using var zipStream = new MemoryStream(fileResult.FileContents);
-        using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+        using var archive = await ExecuteZipResultAsync(response);
 
         Assert.AreEqual(2, archive.Entries.Count);
         Assert.IsTrue(archive.Entries.Any(e => e.FullName.StartsWith(LogRunCsvPrefix) && e.FullName.EndsWith(".csv")));
@@ -768,9 +748,7 @@ public class LogControllerTest : TestControllerBase
 
         var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [logFile.Id], WithAttachments = true, Locale = "en" }).ConfigureAwait(false);
 
-        var fileResult = (FileContentResult)response;
-        using var zipStream = new MemoryStream(fileResult.FileContents);
-        using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+        using var archive = await ExecuteZipResultAsync(response);
         Assert.AreEqual(3, archive.Entries.Count);
         Assert.IsNotNull(archive.Entries.SingleOrDefault(e => e.FullName == $"LF-ATT/{logFile.Name}"));
     }
@@ -796,9 +774,7 @@ public class LogControllerTest : TestControllerBase
 
         var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [logFile.Id], WithAttachments = false, Locale = "en" }).ConfigureAwait(false);
 
-        var fileResult = (FileContentResult)response;
-        using var zipStream = new MemoryStream(fileResult.FileContents);
-        using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+        using var archive = await ExecuteZipResultAsync(response);
         var logFileCsv = ReadEntryAsText(archive.Entries.Single(e => e.FullName.StartsWith(LogFileCsvPrefix)));
 
         var lines = logFileCsv.Split("\r\n", StringSplitOptions.RemoveEmptyEntries);
@@ -839,9 +815,7 @@ public class LogControllerTest : TestControllerBase
 
         var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [logFile.Id], WithAttachments = false, Locale = locale }).ConfigureAwait(false);
 
-        var fileResult = (FileContentResult)response;
-        using var zipStream = new MemoryStream(fileResult.FileContents);
-        using var archive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+        using var archive = await ExecuteZipResultAsync(response);
         var csv = ReadEntryAsText(archive.Entries.Single(e => e.FullName.StartsWith(LogFileCsvPrefix)));
         var fields = csv.Split("\r\n", StringSplitOptions.RemoveEmptyEntries)[1].Split(';');
         Assert.AreEqual(expected, fields[9]);
@@ -1310,5 +1284,28 @@ public class LogControllerTest : TestControllerBase
         using var stream = entry.Open();
         using var reader = new StreamReader(stream, Encoding.UTF8);
         return reader.ReadToEnd();
+    }
+
+    /// <summary>
+    /// Executes a streamed ZIP result against an in-memory response body and returns the archive,
+    /// so assertions keep working now that the export no longer returns a buffered byte array.
+    /// </summary>
+    private static async Task<ZipArchive> ExecuteZipResultAsync(IActionResult response)
+    {
+        var streamedZipResult = response as StreamedZipResult;
+        Assert.IsNotNull(streamedZipResult, $"Expected a StreamedZipResult but got {response?.GetType().Name ?? "null"}.");
+
+        var httpContext = new DefaultHttpContext();
+        var body = new MemoryStream();
+        httpContext.Response.Body = body;
+
+        // ExecuteResultAsync only reads HttpContext.Response, so the other ActionContext
+        // members are deliberately left unset.
+        await streamedZipResult.ExecuteResultAsync(new ActionContext { HttpContext = httpContext });
+
+        Assert.AreEqual("application/zip", httpContext.Response.ContentType);
+
+        body.Position = 0;
+        return new ZipArchive(body, ZipArchiveMode.Read);
     }
 }

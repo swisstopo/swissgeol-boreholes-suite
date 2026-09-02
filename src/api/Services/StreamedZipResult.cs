@@ -16,7 +16,6 @@ namespace BDMS.Services;
 /// </remarks>
 internal sealed class StreamedZipResult : IActionResult
 {
-    private readonly string fileName;
     private readonly IReadOnlyList<ZipEntrySource> entries;
 
     /// <summary>
@@ -26,9 +25,15 @@ internal sealed class StreamedZipResult : IActionResult
     /// <param name="entries">The entries to write, in order.</param>
     internal StreamedZipResult(string fileName, IReadOnlyList<ZipEntrySource> entries)
     {
-        this.fileName = fileName;
+        FileName = fileName;
         this.entries = entries;
     }
+
+    /// <summary>
+    /// Gets the file name offered to the client, including the .zip extension. Exposed so a
+    /// caller's tests can assert on the name without executing the result.
+    /// </summary>
+    internal string FileName { get; }
 
     /// <inheritdoc/>
     public async Task ExecuteResultAsync(ActionContext context)
@@ -39,7 +44,7 @@ internal sealed class StreamedZipResult : IActionResult
         response.ContentType = "application/zip";
 
         var contentDisposition = new ContentDispositionHeaderValue("attachment");
-        contentDisposition.SetHttpFileName(fileName);
+        contentDisposition.SetHttpFileName(FileName);
         response.Headers.ContentDisposition = contentDisposition.ToString();
 
         // leaveOpen keeps the response body usable by the server after the archive's central

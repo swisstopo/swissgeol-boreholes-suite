@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using System.IO.Compression;
 using System.Text;
 
 namespace BDMS.Controllers;
@@ -676,43 +675,55 @@ public class LogController : BoreholeControllerBase<LogRun>
         try
         {
             var timestamp = DateTime.UtcNow.ToString("yyyyMMddHHmmss", CultureInfo.InvariantCulture);
-            using var memoryStream = new MemoryStream();
-            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            var entries = new List<ZipEntrySource>();
+
+            // The CSVs are generated in memory anyway and are small, so they stay buffered.
+            // Only the attachments, which can be several gigabytes each, are streamed.
+            var logRunCsvBytes = await WriteLogRunCsvBytesAsync(logRuns, request.Locale).ConfigureAwait(false);
+            entries.Add(new ZipEntrySource(
+                $"{LogRunExportFileName}_{timestamp}.csv",
+                () => Task.FromResult<Stream>(new MemoryStream(logRunCsvBytes))));
+
+            if (logFiles.Count > 0)
             {
-                var logRunCsvBytes = await WriteLogRunCsvBytesAsync(logRuns, request.Locale).ConfigureAwait(false);
-                var logRunCsvEntry = archive.CreateEntry($"{LogRunExportFileName}_{timestamp}.csv", CompressionLevel.Fastest);
-                using (var logRunCsvStream = await logRunCsvEntry.OpenAsync().ConfigureAwait(false))
+                var logFileCsvBytes = await WriteLogFileCsvBytesAsync(logFiles, request.Locale).ConfigureAwait(false);
+                entries.Add(new ZipEntrySource(
+                    $"{LogFileExportFileName}_{timestamp}.csv",
+                    () => Task.FromResult<Stream>(new MemoryStream(logFileCsvBytes))));
+            }
+
+            if (request.WithAttachments == true)
+            {
+                var attachments = logFiles.Where(lf => lf.NameUuid != null && lf.Name != null).ToList();
+
+                // The archive is streamed, so the status code is committed as soon as the first
+                // byte reaches the response body. Probe every object up front, while returning a
+                // problem response is still possible.
+                var probes = await Task.WhenAll(attachments.Select(async logFile => new
                 {
-                    await logRunCsvStream.WriteAsync(logRunCsvBytes.AsMemory(0, logRunCsvBytes.Length)).ConfigureAwait(false);
+                    LogFile = logFile,
+                    Exists = await logFileCloudService.ObjectExists(logFile.NameUuid!).ConfigureAwait(false),
+                })).ConfigureAwait(false);
+
+                var missingFileNames = probes.Where(probe => !probe.Exists).Select(probe => probe.LogFile.Name).ToList();
+                if (missingFileNames.Count > 0)
+                {
+                    Logger.LogError("Log file attachments are missing in cloud storage: {MissingFiles}", string.Join(", ", missingFileNames));
+                    return Problem("An error occurred while fetching a file from the cloud storage.");
                 }
 
-                if (logFiles.Count > 0)
+                foreach (var logFile in attachments)
                 {
-                    var logFileCsvBytes = await WriteLogFileCsvBytesAsync(logFiles, request.Locale).ConfigureAwait(false);
-                    var logFileCsvEntry = archive.CreateEntry($"{LogFileExportFileName}_{timestamp}.csv", CompressionLevel.Fastest);
-                    using (var logFileCsvStream = await logFileCsvEntry.OpenAsync().ConfigureAwait(false))
-                    {
-                        await logFileCsvStream.WriteAsync(logFileCsvBytes.AsMemory(0, logFileCsvBytes.Length)).ConfigureAwait(false);
-                    }
-                }
-
-                if (request.WithAttachments == true)
-                {
-                    foreach (var logFile in logFiles.Where(lf => lf.NameUuid != null && lf.Name != null))
-                    {
-                        var fileBytes = await logFileCloudService.GetObject(logFile.NameUuid!).ConfigureAwait(false);
-
-                        var folderName = FileHelper.SanitizeZipEntryFileName(logFile.LogRun!.RunNumber, "run");
-                        var fileName = FileHelper.SanitizeZipEntryFileName(logFile.Name!, "export");
-                        var entryName = $"{folderName}/{fileName}";
-                        var zipEntry = archive.CreateEntry(entryName, CompressionLevel.Fastest);
-                        using var zipEntryStream = await zipEntry.OpenAsync().ConfigureAwait(false);
-                        await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
-                    }
+                    var folderName = FileHelper.SanitizeZipEntryFileName(logFile.LogRun!.RunNumber, "run");
+                    var fileName = FileHelper.SanitizeZipEntryFileName(logFile.Name!, "export");
+                    var nameUuid = logFile.NameUuid!;
+                    entries.Add(new ZipEntrySource(
+                        $"{folderName}/{fileName}",
+                        () => logFileCloudService.GetObjectStream(nameUuid)));
                 }
             }
 
-            return File(memoryStream.ToArray(), "application/zip", $"{LogExportFileName}_{timestamp}.zip");
+            return new StreamedZipResult($"{LogExportFileName}_{timestamp}.zip", entries);
         }
         catch (AmazonS3Exception ex)
         {
