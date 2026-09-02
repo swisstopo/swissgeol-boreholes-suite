@@ -154,6 +154,8 @@ export const WorkflowView = () => {
 
   const availableAssignees = editorUsersForWorkgroup?.map(user => ({
     ...user,
+    firstName: user.firstName ?? "",
+    lastName: user.lastName ?? "",
     role: mapMaxRole(user.workgroupRoles?.map(wgr => wgr.role).filter((r): r is LegacyRole => r !== undefined)),
   }));
 
@@ -215,7 +217,7 @@ export const WorkflowView = () => {
     }
   };
 
-  const isAnythingApproved = Object.entries(workflow.publishedTabs).some(([, value]) => value === true);
+  const isAnythingApproved = Object.values(workflow.publishedTabs).some(value => value === true);
 
   return (
     <Box sx={{ minHeight: "100dvh" }}>
