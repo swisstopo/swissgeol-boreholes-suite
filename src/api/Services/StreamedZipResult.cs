@@ -47,9 +47,13 @@ internal sealed class StreamedZipResult : IActionResult
         var response = context.HttpContext.Response;
 
         // ZipArchive has no internal async write path. Kestrel rejects synchronous writes on the response body by default,
-        // so it has to be enabled for this response or every export fails.
+        // so it has to be enabled for this response or every export fails. A large export therefore
+        // blocks a thread pool thread while it drains to the socket. Memory stays bounded either way.
+        // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2995
+        // Remove this opt-in once the project targets .NET 10, which added ZipArchive.CreateAsync
+        // and ZipArchiveEntry.OpenAsync.
         var bodyControl = context.HttpContext.Features.Get<IHttpBodyControlFeature>();
-        if (bodyControl != null)
+        if (bodyControl is not null)
         {
             bodyControl.AllowSynchronousIO = true;
         }
