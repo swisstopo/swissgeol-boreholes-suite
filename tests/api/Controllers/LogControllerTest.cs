@@ -128,8 +128,9 @@ public class LogControllerTest : TestControllerBase
 
         response = await controller.DownloadAsync(uploadedFile.Id);
 
-        var fileContentResult = (FileContentResult)response;
-        string contentResult = Encoding.ASCII.GetString(fileContentResult.FileContents);
+        var fileStreamResult = (FileStreamResult)response;
+        using var downloadReader = new StreamReader(fileStreamResult.FileStream);
+        string contentResult = await downloadReader.ReadToEndAsync();
         Assert.AreEqual(content, contentResult);
 
         Assert.AreEqual(DateTime.UtcNow.Date, uploadedFile.Created?.Date);
@@ -1218,9 +1219,10 @@ public class LogControllerTest : TestControllerBase
 
         // Verify the upload actually linked the bytes to the existing LogFile by downloading them back.
         var downloadResponse = await controller.DownloadAsync(updatedLogFile.Id);
-        var downloadedFile = (FileContentResult)downloadResponse;
+        var downloadedFile = (FileStreamResult)downloadResponse;
         Assert.AreEqual(importedFileName, downloadedFile.FileDownloadName);
-        Assert.AreEqual(content, Encoding.ASCII.GetString(downloadedFile.FileContents));
+        using var downloadedReader = new StreamReader(downloadedFile.FileStream);
+        Assert.AreEqual(content, await downloadedReader.ReadToEndAsync());
     }
 
     [TestMethod]

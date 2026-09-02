@@ -160,9 +160,9 @@ public class LogController : BoreholeControllerBase<LogRun>
 
             if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), logFile.LogRun.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-            var fileBytes = await logFileCloudService.GetObject(logFile.NameUuid).ConfigureAwait(false);
+            var fileStream = await logFileCloudService.GetObjectStream(logFile.NameUuid).ConfigureAwait(false);
 
-            return File(fileBytes, "application/octet-stream", logFile.Name);
+            return File(fileStream, "application/octet-stream", logFile.Name);
         }
         catch (Exception ex)
         {
