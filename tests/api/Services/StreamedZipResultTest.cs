@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
 using System.IO.Compression;
 using System.Text;
@@ -110,6 +111,31 @@ public class StreamedZipResultTest
         Assert.AreEqual(0, currentlyOpen, "A content stream was not disposed after its entry was written.");
     }
 
+    [TestMethod]
+    public async Task ExecuteResultAsyncEnablesSynchronousIoForTheResponseBody()
+    {
+        // ZipArchive has no internal async write path: it writes to its destination stream
+        // synchronously even when the caller only ever uses CopyToAsync on the entry streams.
+        // Kestrel rejects synchronous writes on the response body unless AllowSynchronousIO is
+        // enabled, so without opting in every real export fails with InvalidOperationException.
+        // A plain MemoryStream cannot observe that, which is why this guard stream exists.
+        var bodyControl = new TestBodyControlFeature { AllowSynchronousIO = false };
+        var httpContext = new DefaultHttpContext();
+        httpContext.Features.Set<IHttpBodyControlFeature>(bodyControl);
+
+        using var body = new SynchronousIoGuardStream(bodyControl);
+        httpContext.Response.Body = body;
+
+        await new StreamedZipResult("test.zip", new[] { CreateEntrySource("first.txt", "content one") })
+            .ExecuteResultAsync(CreateActionContext(httpContext));
+
+        Assert.IsTrue(bodyControl.AllowSynchronousIO, "StreamedZipResult must enable synchronous IO before writing the archive.");
+
+        using var writtenBytes = new MemoryStream(body.ToArray());
+        using var archive = new ZipArchive(writtenBytes, ZipArchiveMode.Read);
+        Assert.AreEqual("content one", ReadEntry(archive, "first.txt"));
+    }
+
     private static ZipEntrySource CreateEntrySource(string entryName, string content) =>
         new(entryName, () => Task.FromResult<Stream>(new MemoryStream(Encoding.UTF8.GetBytes(content))));
 
@@ -143,6 +169,92 @@ public class StreamedZipResultTest
         {
             onDispose();
             base.Dispose(disposing);
+        }
+    }
+
+    /// <summary>
+    /// Stands in for Kestrel's <see cref="IHttpBodyControlFeature"/>, which
+    /// <see cref="DefaultHttpContext"/> does not provide on its own.
+    /// </summary>
+    private sealed class TestBodyControlFeature : IHttpBodyControlFeature
+    {
+        public bool AllowSynchronousIO { get; set; }
+    }
+
+    /// <summary>
+    /// Mimics Kestrel's response body: synchronous writes throw unless synchronous IO has been
+    /// enabled through <see cref="IHttpBodyControlFeature"/>. Buffers everything written so a
+    /// test can read the result back.
+    /// </summary>
+    private sealed class SynchronousIoGuardStream : Stream
+    {
+        private readonly MemoryStream inner = new();
+        private readonly IHttpBodyControlFeature bodyControl;
+
+        internal SynchronousIoGuardStream(IHttpBodyControlFeature bodyControl) => this.bodyControl = bodyControl;
+
+        public override bool CanRead => false;
+
+        public override bool CanSeek => false;
+
+        public override bool CanWrite => true;
+
+        public override long Length => throw new NotSupportedException();
+
+        public override long Position
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        internal byte[] ToArray() => inner.ToArray();
+
+        public override void Flush()
+        {
+            ThrowIfSynchronousIoDisallowed();
+            inner.Flush();
+        }
+
+        public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+
+        public override void SetLength(long value) => throw new NotSupportedException();
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            ThrowIfSynchronousIoDisallowed();
+            inner.Write(buffer, offset, count);
+        }
+
+        public override void WriteByte(byte value)
+        {
+            ThrowIfSynchronousIoDisallowed();
+            inner.WriteByte(value);
+        }
+
+        public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
+            inner.WriteAsync(buffer, offset, count, cancellationToken);
+
+        public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default) =>
+            inner.WriteAsync(buffer, cancellationToken);
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                inner.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
+        private void ThrowIfSynchronousIoDisallowed()
+        {
+            if (!bodyControl.AllowSynchronousIO)
+            {
+                throw new InvalidOperationException("Synchronous operations are disallowed. Call WriteAsync or set AllowSynchronousIO to true instead.");
+            }
         }
     }
 

@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Http.Features;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.Net.Http.Headers;
 using System.IO.Compression;
 
@@ -41,6 +42,15 @@ internal sealed class StreamedZipResult : IActionResult
         ArgumentNullException.ThrowIfNull(context);
 
         var response = context.HttpContext.Response;
+
+        // ZipArchive has no internal async write path. Kestrel rejects synchronous writes on the response body by default,
+        // so it has to be enabled for this response or every export fails.
+        var bodyControl = context.HttpContext.Features.Get<IHttpBodyControlFeature>();
+        if (bodyControl != null)
+        {
+            bodyControl.AllowSynchronousIO = true;
+        }
+
         response.ContentType = "application/zip";
 
         var contentDisposition = new ContentDispositionHeaderValue("attachment");
