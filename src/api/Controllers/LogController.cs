@@ -723,7 +723,7 @@ public class LogController : BoreholeControllerBase<LogRun>
                 }
             }
 
-            return new StreamedZipResult($"{LogExportFileName}_{timestamp}.zip", entries);
+            return new StreamedZipResult($"{LogExportFileName}_{timestamp}.zip", entries, Logger);
         }
         catch (AmazonS3Exception ex)
         {

@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Http.Features;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging.Abstractions;
 using System.IO.Compression;
 using System.Text;
 
@@ -22,7 +23,7 @@ public class StreamedZipResultTest
         using var body = new MemoryStream();
         httpContext.Response.Body = body;
 
-        await new StreamedZipResult("test.zip", entries).ExecuteResultAsync(CreateActionContext(httpContext));
+        await new StreamedZipResult("test.zip", entries, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext));
 
         body.Position = 0;
         using var archive = new ZipArchive(body, ZipArchiveMode.Read);
@@ -49,7 +50,7 @@ public class StreamedZipResultTest
         using var body = new NonSeekableWriteStream();
         httpContext.Response.Body = body;
 
-        await new StreamedZipResult("test.zip", entries).ExecuteResultAsync(CreateActionContext(httpContext));
+        await new StreamedZipResult("test.zip", entries, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext));
 
         using var writtenBytes = new MemoryStream(body.ToArray());
         using var archive = new ZipArchive(writtenBytes, ZipArchiveMode.Read);
@@ -66,7 +67,7 @@ public class StreamedZipResultTest
         using var body = new MemoryStream();
         httpContext.Response.Body = body;
 
-        var result = new StreamedZipResult("log_export_20260902.zip", new[] { CreateEntrySource("a.txt", "a") });
+        var result = new StreamedZipResult("log_export_20260902.zip", new[] { CreateEntrySource("a.txt", "a") }, NullLogger.Instance);
         await result.ExecuteResultAsync(CreateActionContext(httpContext));
 
         var contentDisposition = httpContext.Response.Headers.ContentDisposition.ToString();
@@ -101,7 +102,7 @@ public class StreamedZipResultTest
         using var body = new MemoryStream();
         httpContext.Response.Body = body;
 
-        await new StreamedZipResult("test.zip", entries).ExecuteResultAsync(CreateActionContext(httpContext));
+        await new StreamedZipResult("test.zip", entries, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext));
 
         body.Position = 0;
         using var archive = new ZipArchive(body, ZipArchiveMode.Read);
@@ -126,7 +127,7 @@ public class StreamedZipResultTest
         using var body = new SynchronousIoGuardStream(bodyControl);
         httpContext.Response.Body = body;
 
-        await new StreamedZipResult("test.zip", new[] { CreateEntrySource("first.txt", "content one") })
+        await new StreamedZipResult("test.zip", new[] { CreateEntrySource("first.txt", "content one") }, NullLogger.Instance)
             .ExecuteResultAsync(CreateActionContext(httpContext));
 
         Assert.IsTrue(bodyControl.AllowSynchronousIO, "StreamedZipResult must enable synchronous IO before writing the archive.");
@@ -134,6 +135,33 @@ public class StreamedZipResultTest
         using var writtenBytes = new MemoryStream(body.ToArray());
         using var archive = new ZipArchive(writtenBytes, ZipArchiveMode.Read);
         Assert.AreEqual("content one", ReadEntry(archive, "first.txt"));
+    }
+
+    [TestMethod]
+    public async Task ExecuteResultAsyncSurfacesTheEntryFailureRatherThanTheDisposalFailure()
+    {
+        // When an entry fails after the response has started, disposing the entry stream and the
+        // archive flushes headers to a stream that is usually broken as well. Those secondary
+        // failures must not replace the one that explains what actually went wrong, because the
+        // log is the only record the operator gets.
+        var httpContext = new DefaultHttpContext();
+        using var body = new BreakableStream();
+        httpContext.Response.Body = body;
+
+        var entries = new[]
+        {
+            CreateEntrySource("first.txt", "content one"),
+            new ZipEntrySource("broken.txt", () =>
+            {
+                body.Break();
+                throw new InvalidOperationException("attachment gone from cloud storage");
+            }),
+        };
+
+        var exception = await Assert.ThrowsExactlyAsync<InvalidOperationException>(
+            () => new StreamedZipResult("test.zip", entries, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext)));
+
+        Assert.AreEqual("attachment gone from cloud storage", exception.Message);
     }
 
     private static ZipEntrySource CreateEntrySource(string entryName, string content) =>
@@ -169,6 +197,74 @@ public class StreamedZipResultTest
         {
             onDispose();
             base.Dispose(disposing);
+        }
+    }
+
+    /// <summary>
+    /// Buffers writes until <see cref="Break"/> is called, after which every write fails the way
+    /// a dead client connection would.
+    /// </summary>
+    private sealed class BreakableStream : Stream
+    {
+        private readonly MemoryStream inner = new();
+        private bool broken;
+
+        public override bool CanRead => false;
+
+        public override bool CanSeek => false;
+
+        public override bool CanWrite => true;
+
+        public override long Length => throw new NotSupportedException();
+
+        public override long Position
+        {
+            get => throw new NotSupportedException();
+            set => throw new NotSupportedException();
+        }
+
+        internal void Break() => broken = true;
+
+        public override void Flush()
+        {
+            ThrowIfBroken();
+            inner.Flush();
+        }
+
+        public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+
+        public override void SetLength(long value) => throw new NotSupportedException();
+
+        public override void Write(byte[] buffer, int offset, int count)
+        {
+            ThrowIfBroken();
+            inner.Write(buffer, offset, count);
+        }
+
+        public override void WriteByte(byte value)
+        {
+            ThrowIfBroken();
+            inner.WriteByte(value);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            if (disposing)
+            {
+                inner.Dispose();
+            }
+
+            base.Dispose(disposing);
+        }
+
+        private void ThrowIfBroken()
+        {
+            if (broken)
+            {
+                throw new IOException("The response stream is no longer writable.");
+            }
         }
     }
 
