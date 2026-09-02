@@ -129,6 +129,36 @@ public class LogFileCloudServiceTest
     }
 
     [TestMethod]
+    public async Task GetObjectStreamShouldReturnFileContent()
+    {
+        var content = Guid.NewGuid().ToString();
+        var formFile = GetFormFileByContent(content, "file_1.las");
+
+        await logFileCloudService.UploadObject(formFile.OpenReadStream(), formFile.FileName, formFile.ContentType);
+
+        using var stream = await logFileCloudService.GetObjectStream(formFile.FileName);
+        using var reader = new StreamReader(stream);
+        Assert.AreEqual(content, await reader.ReadToEndAsync());
+    }
+
+    [TestMethod]
+    public async Task GetObjectStreamWithNotExistingObjectNameShouldThrowException()
+    {
+        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => logFileCloudService.GetObjectStream("doesNotExist"));
+    }
+
+    [TestMethod]
+    public async Task ObjectExistsShouldDistinguishPresentFromMissingObject()
+    {
+        var formFile = GetFormFileByContent(Guid.NewGuid().ToString(), "file_1.las");
+
+        await logFileCloudService.UploadObject(formFile.OpenReadStream(), formFile.FileName, formFile.ContentType);
+
+        Assert.IsTrue(await logFileCloudService.ObjectExists(formFile.FileName));
+        Assert.IsFalse(await logFileCloudService.ObjectExists("doesNotExist"));
+    }
+
+    [TestMethod]
     public async Task DeleteObjectShouldDeleteObjectFromStorage()
     {
         var content = Guid.NewGuid().ToString();
