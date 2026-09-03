@@ -685,14 +685,14 @@ public class LogController : BoreholeControllerBase<LogRun>
             var logRunCsvBytes = await WriteLogRunCsvBytesAsync(logRuns, request.Locale).ConfigureAwait(false);
             entries.Add(new ZipEntrySource(
                 $"{LogRunExportFileName}_{timestamp}.csv",
-                () => Task.FromResult<Stream>(new MemoryStream(logRunCsvBytes))));
+                _ => Task.FromResult<Stream>(new MemoryStream(logRunCsvBytes))));
 
             if (logFiles.Count > 0)
             {
                 var logFileCsvBytes = await WriteLogFileCsvBytesAsync(logFiles, request.Locale).ConfigureAwait(false);
                 entries.Add(new ZipEntrySource(
                     $"{LogFileExportFileName}_{timestamp}.csv",
-                    () => Task.FromResult<Stream>(new MemoryStream(logFileCsvBytes))));
+                    _ => Task.FromResult<Stream>(new MemoryStream(logFileCsvBytes))));
             }
 
             if (request.WithAttachments == true)
