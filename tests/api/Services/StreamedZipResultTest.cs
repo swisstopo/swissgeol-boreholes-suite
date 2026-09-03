@@ -193,6 +193,60 @@ public class StreamedZipResultTest
         Assert.AreEqual("attachment gone from cloud storage", exception.Message);
     }
 
+    [TestMethod]
+    [TestCategory("LongRunning")]
+    public async Task ExecuteResultAsyncWritesAnEntryLargerThanFourGigabytes()
+    {
+        // Guards the point of streaming the archive: an entry may be far larger than the 2 GB a
+        // managed array can hold and than the 4 GB an uncompressed size field can express, so the
+        // writer must neither buffer the entry nor truncate its size to 32 bits. The content is
+        // highly compressible on purpose, which keeps the archive itself small enough to read
+        // back while the entry's uncompressed size still crosses both boundaries.
+        const long entryLength = (4L * 1024 * 1024 * 1024) + (64 * 1024);
+
+        var httpContext = new DefaultHttpContext();
+        httpContext.Features.Set<IHttpBodyControlFeature>(new TestBodyControlFeature());
+
+        using var body = new WriteCountingStream();
+        httpContext.Response.Body = body;
+
+        var entries = new[] { new ZipEntrySource("huge.bin", () => Task.FromResult<Stream>(new PatternStream(entryLength))) };
+
+        await new StreamedZipResult(ZipFileName, entries, NullLogger.Instance)
+            .ExecuteResultAsync(CreateActionContext(httpContext));
+
+        using var writtenBytes = new MemoryStream(body.ToArray());
+        using var archive = new ZipArchive(writtenBytes, ZipArchiveMode.Read);
+        var entry = archive.Entries.Single();
+
+        // A size this large can only be expressed through a ZIP64 extra field, so reading it back
+        // correctly also proves the archive was written as ZIP64.
+        Assert.AreEqual(entryLength, entry.Length);
+
+        // Reading a ZIP entry does not verify its checksum, so the content is compared against a
+        // second generator rather than trusted because the sizes agree.
+        using var actualContent = entry.Open();
+        using var expectedContent = new PatternStream(entryLength);
+        var actualBuffer = new byte[1024 * 1024];
+        var expectedBuffer = new byte[actualBuffer.Length];
+        long verifiedLength = 0;
+
+        while (true)
+        {
+            var readLength = await actualContent.ReadAsync(actualBuffer);
+            if (readLength == 0) break;
+
+            await expectedContent.ReadExactlyAsync(expectedBuffer.AsMemory(0, readLength));
+            Assert.IsTrue(
+                actualBuffer.AsSpan(0, readLength).SequenceEqual(expectedBuffer.AsSpan(0, readLength)),
+                $"The archived content differs from the source content at offset {verifiedLength}.");
+
+            verifiedLength += readLength;
+        }
+
+        Assert.AreEqual(entryLength, verifiedLength);
+    }
+
     private static ZipEntrySource CreateEntrySource(string entryName, string content) =>
         new(entryName, () => Task.FromResult<Stream>(new MemoryStream(Encoding.UTF8.GetBytes(content))));
 
@@ -312,6 +366,85 @@ public class StreamedZipResultTest
             {
                 throw new IOException("The response stream is no longer writable.");
             }
+        }
+    }
+
+    /// <summary>
+    /// Produces a deterministic byte pattern of an arbitrary length without materializing it, so
+    /// a test can stream more content than fits in memory. The pattern repeats over a short cycle
+    /// and therefore compresses to a fraction of its length.
+    /// </summary>
+    private sealed class PatternStream : Stream
+    {
+        // A prime cycle length keeps the pattern from aligning with the buffer sizes used around
+        // it, so an off-by-one in the writer cannot go unnoticed.
+        private static readonly byte[] Pattern = CreatePattern(251);
+
+        private readonly long length;
+        private long position;
+
+        internal PatternStream(long length) => this.length = length;
+
+        public override bool CanRead => true;
+
+        public override bool CanSeek => false;
+
+        public override bool CanWrite => false;
+
+        public override long Length => length;
+
+        public override long Position
+        {
+            get => position;
+            set => throw new NotSupportedException();
+        }
+
+        public override void Flush()
+        {
+        }
+
+        public override int Read(byte[] buffer, int offset, int count) => Read(buffer.AsSpan(offset, count));
+
+        public override int Read(Span<byte> buffer)
+        {
+            var remainingLength = length - position;
+            if (remainingLength <= 0) return 0;
+
+            var readLength = (int)Math.Min(buffer.Length, remainingLength);
+            var writtenLength = 0;
+            while (writtenLength < readLength)
+            {
+                var patternOffset = (int)((position + writtenLength) % Pattern.Length);
+                var chunkLength = Math.Min(Pattern.Length - patternOffset, readLength - writtenLength);
+                Pattern.AsSpan(patternOffset, chunkLength).CopyTo(buffer.Slice(writtenLength, chunkLength));
+                writtenLength += chunkLength;
+            }
+
+            position += writtenLength;
+            return writtenLength;
+        }
+
+        public override Task<int> ReadAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
+            Task.FromResult(Read(buffer.AsSpan(offset, count)));
+
+        public override ValueTask<int> ReadAsync(Memory<byte> buffer, CancellationToken cancellationToken = default) =>
+            ValueTask.FromResult(Read(buffer.Span));
+
+        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
+
+        public override void SetLength(long value) => throw new NotSupportedException();
+
+        public override void Write(byte[] buffer, int offset, int count) => throw new NotSupportedException();
+
+        private static byte[] CreatePattern(int cycleLength)
+        {
+            var pattern = new byte[cycleLength];
+            for (var i = 0; i < pattern.Length; i++)
+            {
+                pattern[i] = (byte)i;
+            }
+
+            return pattern;
         }
     }
 
