@@ -43,18 +43,7 @@ internal sealed class StreamedZipResult : IActionResult
         ArgumentNullException.ThrowIfNull(context);
 
         var response = context.HttpContext.Response;
-
-        // ZipArchive has no internal async write path. Kestrel rejects synchronous writes on the response body by default,
-        // so it has to be enabled for this response or every export fails. A large export therefore
-        // blocks a thread pool thread while it drains to the socket. Memory stays bounded either way.
-        // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2995
-        // Remove this opt-in once the project targets .NET 10, which added ZipArchive.CreateAsync
-        // and ZipArchiveEntry.OpenAsync.
-        var bodyControl = context.HttpContext.Features.Get<IHttpBodyControlFeature>();
-        if (bodyControl is not null)
-        {
-            bodyControl.AllowSynchronousIO = true;
-        }
+        var cancellationToken = context.HttpContext.RequestAborted;
 
         response.ContentType = "application/zip";
 
@@ -62,23 +51,37 @@ internal sealed class StreamedZipResult : IActionResult
         contentDisposition.SetHttpFileName(FileName);
         response.Headers.ContentDisposition = contentDisposition.ToString();
 
+        // The archive is built through the asynchronous API, so an entry's payload reaches the
+        // response body through WriteAsync. Closing an entry is still synchronous: the stream
+        // ZipArchiveEntry.OpenAsync returns does not override DisposeAsync, so disposal falls back
+        // to the synchronous chain and flushes the deflate buffer with blocking writes.
+        // Kestrel rejects those unless they are allowed for this response.
+        // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2995
+        // Drop this opt-in once the deployed runtime carries the fix for
+        // https://github.com/dotnet/runtime/issues/121624 (still reproducible on 10.0.11).
+        var bodyControl = context.HttpContext.Features.Get<IHttpBodyControlFeature>();
+        if (bodyControl is not null)
+        {
+            bodyControl.AllowSynchronousIO = true;
+        }
+
         // leaveOpen keeps the response body usable by the server after the archive's central
         // directory has been written.
-        var archive = new ZipArchive(response.Body, ZipArchiveMode.Create, leaveOpen: true);
+        var archive = await ZipArchive.CreateAsync(response.Body, ZipArchiveMode.Create, leaveOpen: true, entryNameEncoding: null, cancellationToken).ConfigureAwait(false);
         try
         {
             foreach (var entry in entries)
             {
-                await WriteEntryAsync(archive, entry).ConfigureAwait(false);
+                await WriteEntryAsync(archive, entry, cancellationToken).ConfigureAwait(false);
             }
         }
         catch
         {
-            DisposeWithoutMaskingFailure(archive);
+            await DisposeWithoutMaskingFailureAsync(archive).ConfigureAwait(false);
             throw;
         }
 
-        archive.Dispose();
+        await archive.DisposeAsync().ConfigureAwait(false);
     }
 
     /// <summary>
@@ -88,18 +91,23 @@ internal sealed class StreamedZipResult : IActionResult
     /// </summary>
     /// <param name="archive">The archive being written.</param>
     /// <param name="entry">The entry to write.</param>
-    private async Task WriteEntryAsync(ZipArchive archive, ZipEntrySource entry)
+    /// <param name="cancellationToken">Aborts the write once the client is gone.</param>
+    private async Task WriteEntryAsync(ZipArchive archive, ZipEntrySource entry, CancellationToken cancellationToken)
     {
-        var zipEntryStream = archive.CreateEntry(entry.EntryName, CompressionLevel.Fastest).Open();
+        var zipEntry = archive.CreateEntry(entry.EntryName, CompressionLevel.Fastest);
+        var zipEntryStream = await zipEntry.OpenAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            using var content = await entry.OpenContent().ConfigureAwait(false);
-            await content.CopyToAsync(zipEntryStream).ConfigureAwait(false);
+            var content = await entry.OpenContent().ConfigureAwait(false);
+            await using (content.ConfigureAwait(false))
+            {
+                await content.CopyToAsync(zipEntryStream, cancellationToken).ConfigureAwait(false);
+            }
         }
         catch (Exception ex)
         {
             logger.LogError(ex, "Failed to write entry {EntryName} into the streamed ZIP archive. The client receives a truncated archive.", entry.EntryName);
-            DisposeWithoutMaskingFailure(zipEntryStream);
+            await DisposeWithoutMaskingFailureAsync(zipEntryStream).ConfigureAwait(false);
             throw;
         }
 
@@ -112,11 +120,11 @@ internal sealed class StreamedZipResult : IActionResult
     /// them escape would replace the exception that actually explains the failure.
     /// </summary>
     /// <param name="disposable">The archive or entry stream to dispose.</param>
-    private void DisposeWithoutMaskingFailure(IDisposable disposable)
+    private async Task DisposeWithoutMaskingFailureAsync(IAsyncDisposable disposable)
     {
         try
         {
-            disposable.Dispose();
+            await disposable.DisposeAsync().ConfigureAwait(false);
         }
         catch (Exception ex)
         {

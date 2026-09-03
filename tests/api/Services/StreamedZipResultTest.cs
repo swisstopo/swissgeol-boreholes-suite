@@ -92,13 +92,40 @@ public class StreamedZipResultTest
     }
 
     [TestMethod]
+    public async Task ExecuteResultAsyncWritesTheEntryPayloadAsynchronously()
+    {
+        // Guards the reason the archive is built through ZipArchive.CreateAsync and OpenAsync:
+        // an entry's payload, which is the bulk of a large export, must reach the response body
+        // through WriteAsync rather than blocking a thread pool thread per buffer. Closing an
+        // entry remains synchronous because the stream OpenAsync returns does not override
+        // DisposeAsync, so this asserts a ratio rather than the absence of synchronous writes.
+        var httpContext = new DefaultHttpContext();
+        httpContext.Features.Set<IHttpBodyControlFeature>(new TestBodyControlFeature());
+
+        using var body = new WriteCountingStream();
+        httpContext.Response.Body = body;
+
+        // Incompressible content, so the archive cannot shrink the payload away.
+        var payload = new byte[512 * 1024];
+        Random.Shared.NextBytes(payload);
+
+        var entries = new[] { new ZipEntrySource("large.bin", () => Task.FromResult<Stream>(new MemoryStream(payload))) };
+
+        await new StreamedZipResult(ZipFileName, entries, NullLogger.Instance)
+            .ExecuteResultAsync(CreateActionContext(httpContext));
+
+        Assert.IsTrue(
+            body.AsynchronousByteCount > body.SynchronousByteCount * 2,
+            $"Expected the payload to be written asynchronously but only {body.AsynchronousByteCount} of {body.AsynchronousByteCount + body.SynchronousByteCount} bytes were.");
+    }
+
+    [TestMethod]
     public async Task ExecuteResultAsyncEnablesSynchronousIoForTheResponseBody()
     {
-        // ZipArchive has no internal async write path: it writes to its destination stream
-        // synchronously even when the caller only ever uses CopyToAsync on the entry streams.
-        // Kestrel rejects synchronous writes on the response body unless AllowSynchronousIO is
-        // enabled, so without opting in every real export fails with InvalidOperationException.
-        // A plain MemoryStream cannot observe that, which is why this guard stream exists.
+        // Closing a ZIP entry writes synchronously, and Kestrel rejects synchronous writes on the
+        // response body unless AllowSynchronousIO is enabled, so without opting in every real
+        // export fails with an InvalidOperationException. A plain MemoryStream cannot observe
+        // that, which is why the guard stream exists.
         var bodyControl = new TestBodyControlFeature { AllowSynchronousIO = false };
         var httpContext = new DefaultHttpContext();
         httpContext.Features.Set<IHttpBodyControlFeature>(bodyControl);
@@ -114,6 +141,29 @@ public class StreamedZipResultTest
         using var writtenBytes = new MemoryStream(body.ToArray());
         using var archive = new ZipArchive(writtenBytes, ZipArchiveMode.Read);
         Assert.AreEqual(FirstEntryContent, ReadEntry(archive, FirstEntryName));
+    }
+
+    [TestMethod]
+    public async Task ExecuteResultAsyncStopsWritingWhenTheClientDisconnects()
+    {
+        using var clientGone = new CancellationTokenSource();
+        var httpContext = new DefaultHttpContext { RequestAborted = clientGone.Token };
+        using var body = new MemoryStream();
+        httpContext.Response.Body = body;
+
+        var entries = new[]
+        {
+            new ZipEntrySource(FirstEntryName, () =>
+            {
+                clientGone.Cancel();
+                return Task.FromResult<Stream>(new MemoryStream(Encoding.UTF8.GetBytes(FirstEntryContent)));
+            }),
+        };
+
+        // The concrete type depends on which layer observes the cancellation first, so the
+        // assertion deliberately accepts any cancellation exception.
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => new StreamedZipResult(ZipFileName, entries, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext)));
     }
 
     [TestMethod]
@@ -228,6 +278,24 @@ public class StreamedZipResultTest
             inner.WriteByte(value);
         }
 
+        public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
+        {
+            ThrowIfBroken();
+            return inner.WriteAsync(buffer, offset, count, cancellationToken);
+        }
+
+        public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            ThrowIfBroken();
+            return inner.WriteAsync(buffer, cancellationToken);
+        }
+
+        public override Task FlushAsync(CancellationToken cancellationToken)
+        {
+            ThrowIfBroken();
+            return inner.FlushAsync(cancellationToken);
+        }
+
         protected override void Dispose(bool disposing)
         {
             if (disposing)
@@ -261,12 +329,44 @@ public class StreamedZipResultTest
     /// enabled through <see cref="IHttpBodyControlFeature"/>. Buffers everything written so a
     /// test can read the result back.
     /// </summary>
-    private sealed class SynchronousIoGuardStream : Stream
+    private sealed class SynchronousIoGuardStream : WriteOnlyStream
     {
-        private readonly MemoryStream inner = new();
         private readonly IHttpBodyControlFeature bodyControl;
 
         internal SynchronousIoGuardStream(IHttpBodyControlFeature bodyControl) => this.bodyControl = bodyControl;
+
+        protected override void OnSynchronousWrite(int byteCount)
+        {
+            if (!bodyControl.AllowSynchronousIO)
+            {
+                throw new InvalidOperationException("Synchronous operations are disallowed. Call WriteAsync or set AllowSynchronousIO to true instead.");
+            }
+        }
+    }
+
+    /// <summary>
+    /// Records how many bytes reached the response body synchronously and how many reached it
+    /// through the asynchronous write path.
+    /// </summary>
+    private sealed class WriteCountingStream : WriteOnlyStream
+    {
+        internal long SynchronousByteCount { get; private set; }
+
+        internal long AsynchronousByteCount { get; private set; }
+
+        protected override void OnSynchronousWrite(int byteCount) => SynchronousByteCount += byteCount;
+
+        protected override void OnAsynchronousWrite(int byteCount) => AsynchronousByteCount += byteCount;
+    }
+
+    /// <summary>
+    /// A write-only, non-seekable stream that stands in for Kestrel's response body. Buffers
+    /// everything written so a test can read the result back, and reports every write so a
+    /// derived class can observe whether it arrived synchronously.
+    /// </summary>
+    private abstract class WriteOnlyStream : Stream
+    {
+        private readonly MemoryStream inner = new();
 
         public override bool CanRead => false;
 
@@ -286,7 +386,7 @@ public class StreamedZipResultTest
 
         public override void Flush()
         {
-            ThrowIfSynchronousIoDisallowed();
+            OnSynchronousWrite(0);
             inner.Flush();
         }
 
@@ -298,74 +398,55 @@ public class StreamedZipResultTest
 
         public override void Write(byte[] buffer, int offset, int count)
         {
-            ThrowIfSynchronousIoDisallowed();
+            OnSynchronousWrite(count);
             inner.Write(buffer, offset, count);
+        }
+
+        public override void Write(ReadOnlySpan<byte> buffer)
+        {
+            OnSynchronousWrite(buffer.Length);
+            inner.Write(buffer);
         }
 
         public override void WriteByte(byte value)
         {
-            ThrowIfSynchronousIoDisallowed();
+            OnSynchronousWrite(1);
             inner.WriteByte(value);
         }
 
-        public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken) =>
-            inner.WriteAsync(buffer, offset, count, cancellationToken);
-
-        public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default) =>
-            inner.WriteAsync(buffer, cancellationToken);
-
-        protected override void Dispose(bool disposing)
+        public override Task FlushAsync(CancellationToken cancellationToken)
         {
-            if (disposing)
-            {
-                inner.Dispose();
-            }
-
-            base.Dispose(disposing);
+            OnAsynchronousWrite(0);
+            return inner.FlushAsync(cancellationToken);
         }
 
-        private void ThrowIfSynchronousIoDisallowed()
+        public override Task WriteAsync(byte[] buffer, int offset, int count, CancellationToken cancellationToken)
         {
-            if (!bodyControl.AllowSynchronousIO)
-            {
-                throw new InvalidOperationException("Synchronous operations are disallowed. Call WriteAsync or set AllowSynchronousIO to true instead.");
-            }
-        }
-    }
-
-    /// <summary>
-    /// A write-only, forward-only stream that stands in for Kestrel's response body, which
-    /// cannot seek. Buffers everything written so a test can read the result back.
-    /// </summary>
-    private sealed class NonSeekableWriteStream : Stream
-    {
-        private readonly MemoryStream inner = new();
-
-        public override bool CanRead => false;
-
-        public override bool CanSeek => false;
-
-        public override bool CanWrite => true;
-
-        public override long Length => throw new NotSupportedException();
-
-        public override long Position
-        {
-            get => throw new NotSupportedException();
-            set => throw new NotSupportedException();
+            OnAsynchronousWrite(count);
+            return inner.WriteAsync(buffer, offset, count, cancellationToken);
         }
 
-        internal byte[] ToArray() => inner.ToArray();
+        public override ValueTask WriteAsync(ReadOnlyMemory<byte> buffer, CancellationToken cancellationToken = default)
+        {
+            OnAsynchronousWrite(buffer.Length);
+            return inner.WriteAsync(buffer, cancellationToken);
+        }
 
-        public override void Flush() => inner.Flush();
+        /// <summary>
+        /// Called before every synchronous write reaches the buffer.
+        /// </summary>
+        /// <param name="byteCount">The number of bytes being written, zero for a flush.</param>
+        protected virtual void OnSynchronousWrite(int byteCount)
+        {
+        }
 
-        public override int Read(byte[] buffer, int offset, int count) => throw new NotSupportedException();
-
-        public override long Seek(long offset, SeekOrigin origin) => throw new NotSupportedException();
-
-        public override void SetLength(long value) => throw new NotSupportedException();
-
-        public override void Write(byte[] buffer, int offset, int count) => inner.Write(buffer, offset, count);
+        /// <summary>
+        /// Called before every asynchronous write reaches the buffer.
+        /// </summary>
+        /// <param name="byteCount">The number of bytes being written, zero for a flush.</param>
+        protected virtual void OnAsynchronousWrite(int byteCount)
+        {
+        }
 
         protected override void Dispose(bool disposing)
         {
