@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
-using System.IO.Compression;
 
 namespace BDMS.Controllers;
 
@@ -15,7 +14,12 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class PhotoController : ControllerBase
 {
-    private const int MaxFileSize = 210_000_000; // 1024 x 1024 x 200 = 209715200 bytes
+    /// <summary>
+    /// The largest photo the upload endpoint accepts, and therefore also the largest one that may
+    /// be read into memory for the TIFF conversion.
+    /// </summary>
+    internal const int MaxFileSize = 210_000_000; // 1024 x 1024 x 200 = 209715200 bytes
+
     private readonly BdmsContext context;
     private readonly ILogger logger;
     private readonly IBoreholePermissionService boreholePermissionService;
@@ -95,27 +99,41 @@ public class PhotoController : ControllerBase
     /// Returns the image data for the specified <see cref="Photo"/>.
     /// </summary>
     /// <param name="photoId">The id of the photo.</param>
+    /// <param name="cancellationToken">Aborts the download once the client is gone.</param>
     /// <returns>The image data of the photo.</returns>
     [HttpGet("image")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> GetImageAsync([Range(1, int.MaxValue)] int photoId)
+    public async Task<IActionResult> GetImageAsync([Range(1, int.MaxValue)] int photoId, CancellationToken cancellationToken)
     {
         var photo = await context.Photos
-            .FirstOrDefaultAsync(p => p.Id == photoId)
+            .FirstOrDefaultAsync(p => p.Id == photoId, cancellationToken)
             .ConfigureAwait(false);
 
         if (photo == null) return NotFound();
 
         if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), photo.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        var imageData = await photoCloudService.GetObject(photo.NameUuid).ConfigureAwait(false);
-
         if (photo.FileType != "image/tiff")
         {
-            return File(imageData, photo.FileType);
+            var imageStream = await photoCloudService.GetObjectStream(photo.NameUuid, cancellationToken).ConfigureAwait(false);
+            return File(imageStream, photo.FileType);
         }
 
-        // Tiff files are not supported by any modern browser.
+        // Tiff files are not supported by any modern browser, so they are converted to JPEG. The
+        // converter works on a buffer rather than a stream, which makes this the one place where a
+        // stored object is held in memory. The limit bounds that buffer to what the upload endpoint
+        // accepts, so an object that grew past it elsewhere cannot exhaust the process.
+        byte[] imageData;
+        try
+        {
+            imageData = await photoCloudService.GetObjectBytes(photo.NameUuid, MaxFileSize, cancellationToken).ConfigureAwait(false);
+        }
+        catch (InvalidOperationException ex)
+        {
+            logger.LogError(ex, "The photo is too large to be converted for display.");
+            return Problem("The photo is too large to be converted for display.", statusCode: StatusCodes.Status413PayloadTooLarge);
+        }
+
         using var image = new MagickImage(imageData);
         image.Format = MagickFormat.Jpeg;
 
@@ -126,17 +144,18 @@ public class PhotoController : ControllerBase
     /// Exports the photos matching the <paramref name="photoIds"/>.
     /// </summary>
     /// <param name="photoIds">Ids of the photos to export.</param>
+    /// <param name="cancellationToken">Aborts the export once the client is gone.</param>
     /// <returns>The file content for a single photo or a zip file containing multiple photos.</returns>
     [HttpGet("export")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult> ExportAsync([FromQuery][MaxLength(100)] IReadOnlyList<int> photoIds)
+    public async Task<IActionResult> ExportAsync([FromQuery][MaxLength(100)] IReadOnlyList<int> photoIds, CancellationToken cancellationToken)
     {
         if (photoIds == null || photoIds.Count == 0) return BadRequest("The list of photoIds must not be empty.");
 
         var photos = await context.Photos
             .Where(p => photoIds.Contains(p.Id))
             .AsNoTracking()
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         if (photos.Count == 0) return NotFound();
@@ -150,26 +169,38 @@ public class PhotoController : ControllerBase
         if (photos.Count == 1)
         {
             var photo = photos.Single();
-            var fileBytes = await photoCloudService.GetObject(photo.NameUuid).ConfigureAwait(false);
-            return File(fileBytes, photo.FileType, photo.Name);
+            var fileStream = await photoCloudService.GetObjectStream(photo.NameUuid, cancellationToken).ConfigureAwait(false);
+            return File(fileStream, photo.FileType, photo.Name);
         }
 
-        using var memoryStream = new MemoryStream();
-        using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+        // The archive is streamed, so the status code is committed as soon as the first byte reaches
+        // the response body. Probe every object up front, while returning a problem response is
+        // still possible.
+        var probes = await Task.WhenAll(photos.Select(async photo => new
         {
-            foreach (var photo in photos)
-            {
-                var fileBytes = await photoCloudService.GetObject(photo.NameUuid).ConfigureAwait(false);
+            Photo = photo,
+            Exists = await photoCloudService.ObjectExists(photo.NameUuid, cancellationToken).ConfigureAwait(false),
+        })).ConfigureAwait(false);
 
-                // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name.
-                // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the original file name.
-                var zipEntry = archive.CreateEntry($"{photo.NameUuid}_{FileHelper.SanitizeZipEntryFileName(photo.Name, "export")}", CompressionLevel.Fastest);
-                using var zipEntryStream = await zipEntry.OpenAsync().ConfigureAwait(false);
-                await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
-            }
+        var missingFileNames = probes.Where(probe => !probe.Exists).Select(probe => probe.Photo.Name).ToList();
+        if (missingFileNames.Count > 0)
+        {
+            logger.LogError("Photos are missing in cloud storage: {MissingFiles}", string.Join(", ", missingFileNames));
+            return Problem("An error occurred while fetching a file from the cloud storage.");
         }
 
-        return File(memoryStream.ToArray(), "application/zip", "photos.zip");
+        var entries = photos.Select(photo =>
+        {
+            var nameUuid = photo.NameUuid;
+
+            // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name.
+            // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the original file name.
+            return new ZipEntrySource(
+                $"{nameUuid}_{FileHelper.SanitizeZipEntryFileName(photo.Name, "export")}",
+                entryCancellationToken => photoCloudService.GetObjectStream(nameUuid, entryCancellationToken));
+        }).ToList();
+
+        return new StreamedZipResult("photos.zip", entries, logger);
     }
 
     [HttpDelete]

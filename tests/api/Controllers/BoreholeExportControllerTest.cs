@@ -13,7 +13,6 @@ using Microsoft.Extensions.Logging;
 using Moq;
 using NetTopologySuite.IO.Converters;
 using System.Diagnostics.CodeAnalysis;
-using System.IO.Compression;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text;
@@ -339,17 +338,13 @@ public class BoreholeExportControllerTest
         context.Photos.Add(photo);
         Assert.IsNotNull(newBorehole.Photos);
 
-        var result = await controller.ExportJsonWithAttachmentsAsync([newBorehole.Id]).ConfigureAwait(false);
+        var result = await controller.ExportJsonWithAttachmentsAsync([newBorehole.Id], CancellationToken.None).ConfigureAwait(false);
 
-        var fileResult = result as FileContentResult;
-        Assert.IsNotNull(fileResult);
-        Assert.AreEqual("application/zip", fileResult.ContentType);
-        Assert.AreEqual("Borehole 257", fileResult.FileDownloadName[0..12]);
-        Assert.IsNotNull(fileResult);
+        var streamedZipResult = result as StreamedZipResult;
+        Assert.IsNotNull(streamedZipResult);
+        Assert.AreEqual("Borehole 257", streamedZipResult.FileName[0..12]);
 
-        // Extract the files from the returned ZIP stream
-        using var zipStream = new MemoryStream(fileResult.FileContents);
-        using var zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read);
+        using var zipArchive = await ExecuteZipResultAsync(result).ConfigureAwait(false);
 
         var jsonFile = zipArchive.Entries.FirstOrDefault(entry => entry.FullName.EndsWith(".json"));
         var pdfFile = zipArchive.Entries.FirstOrDefault(entry => entry.FullName.EndsWith(".pdf"));
@@ -392,7 +387,7 @@ public class BoreholeExportControllerTest
         context.Add(profileWithoutAttachment);
         await context.SaveChangesAsync().ConfigureAwait(false);
 
-        var result = await controller.ExportJsonWithAttachmentsAsync([newBorehole.Id]).ConfigureAwait(false);
+        var result = await controller.ExportJsonWithAttachmentsAsync([newBorehole.Id], CancellationToken.None).ConfigureAwait(false);
 
         Assert.IsInstanceOfType(result, typeof(ObjectResult));
         ObjectResult objectResult = (ObjectResult)result;
@@ -443,14 +438,14 @@ public class BoreholeExportControllerTest
         context.Boreholes.AddRange(b1, b2);
         await context.SaveChangesAsync();
 
-        var result = await controller.ExportJsonWithAttachmentsAsync(new[] { b1.Id, b2.Id }).ConfigureAwait(false);
-        Assert.IsInstanceOfType(result, typeof(FileContentResult));
+        var result = await controller.ExportJsonWithAttachmentsAsync(new[] { b1.Id, b2.Id }, CancellationToken.None).ConfigureAwait(false);
+        Assert.IsInstanceOfType(result, typeof(StreamedZipResult));
     }
 
     [TestMethod]
     public async Task ExportJsonWithAttachmentsIdsValidationNotFound()
     {
-        var result = await controller.ExportJsonWithAttachmentsAsync(new[] { 1, 2 }).ConfigureAwait(false);
+        var result = await controller.ExportJsonWithAttachmentsAsync(new[] { 1, 2 }, CancellationToken.None).ConfigureAwait(false);
         Assert.IsInstanceOfType(result, typeof(NotFoundObjectResult));
     }
 
@@ -682,10 +677,17 @@ public class BoreholeExportControllerTest
 
         Assert.AreEqual(4, exportMethods.Count);
 
-        // Invoke each export method and check if the user permissions are validated
+        // Invoke each export method and check if the user permissions are validated.
+        // The export methods take the borehole ids, and the streamed ones a cancellation token as well.
         foreach (var method in exportMethods)
         {
-            var resultTask = method.Invoke(controller, [new List<int>() { 1_000_057 }]) as Task;
+            var arguments = method.GetParameters()
+                .Select(parameter => parameter.ParameterType == typeof(CancellationToken)
+                    ? (object)CancellationToken.None
+                    : new List<int>() { 1_000_057 })
+                .ToArray();
+
+            var resultTask = method.Invoke(controller, arguments) as Task;
             await resultTask.ConfigureAwait(false);
 
             var result = (resultTask as dynamic).Result;

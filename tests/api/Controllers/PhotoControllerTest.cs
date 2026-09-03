@@ -9,6 +9,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Collections.ObjectModel;
+using System.Net;
 using System.Security.Claims;
 using static BDMS.Helpers;
 
@@ -47,6 +48,12 @@ public class PhotoControllerTest
         s3ClientMock
             .Setup(x => x.GetObjectAsync(It.IsAny<GetObjectRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(() => new GetObjectResponse { ResponseStream = Stream.Null });
+        s3ClientMock
+            .Setup(x => x.GetObjectStreamAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(() => Stream.Null);
+        s3ClientMock
+            .Setup(x => x.GetObjectMetadataAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(() => new GetObjectMetadataResponse());
         s3ClientMock
             .Setup(x => x.DeleteObjectsAsync(It.IsAny<DeleteObjectsRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(() => new DeleteObjectsResponse());
@@ -160,8 +167,8 @@ public class PhotoControllerTest
         photo.FileType = "image/png";
         await context.SaveChangesAsync();
 
-        var response = await controller.GetImageAsync(photo.Id);
-        Assert.IsInstanceOfType<FileResult>(response);
+        var response = await controller.GetImageAsync(photo.Id, CancellationToken.None);
+        Assert.IsInstanceOfType<FileStreamResult>(response);
 
         var fileResult = (FileResult)response;
         Assert.AreEqual("image/png", fileResult.ContentType);
@@ -182,11 +189,33 @@ public class PhotoControllerTest
         var photo = await CreatePhotoAsync();
         Assert.AreEqual("image/tiff", photo.FileType);
 
-        var response = await controller.GetImageAsync(photo.Id);
+        var response = await controller.GetImageAsync(photo.Id, CancellationToken.None);
         Assert.IsInstanceOfType<FileResult>(response);
 
         var fileResult = (FileResult)response;
         Assert.AreEqual("image/jpeg", fileResult.ContentType);
+    }
+
+    [TestMethod]
+    [DeploymentItem("TestData/image.tif")]
+    public async Task GetImageRejectsTiffTooLargeToConvert()
+    {
+        var tiffContent = System.IO.File.ReadAllBytes("image.tif");
+        s3ClientMock
+            .Setup(x => x.GetObjectAsync(It.IsAny<GetObjectRequest>(), It.IsAny<CancellationToken>()))
+            .ReturnsAsync(new GetObjectResponse
+            {
+                ResponseStream = new MemoryStream(tiffContent),
+                ContentLength = PhotoController.MaxFileSize + 1L,
+            });
+
+        var photo = await CreatePhotoAsync();
+        Assert.AreEqual("image/tiff", photo.FileType);
+
+        var response = await controller.GetImageAsync(photo.Id, CancellationToken.None);
+
+        var objectResult = (ObjectResult)response;
+        Assert.AreEqual(StatusCodes.Status413PayloadTooLarge, objectResult.StatusCode);
     }
 
     [TestMethod]
@@ -198,7 +227,7 @@ public class PhotoControllerTest
 
         var photo = await CreatePhotoAsync();
 
-        var response = await controller.GetImageAsync(photo.Id);
+        var response = await controller.GetImageAsync(photo.Id, CancellationToken.None);
         ActionResultAssert.IsUnauthorized(response);
     }
 
@@ -207,8 +236,8 @@ public class PhotoControllerTest
     {
         var photo = await CreatePhotoAsync();
 
-        var response = await controller.ExportAsync([photo.Id]);
-        Assert.IsInstanceOfType<FileResult>(response);
+        var response = await controller.ExportAsync([photo.Id], CancellationToken.None);
+        Assert.IsInstanceOfType<FileStreamResult>(response);
 
         var fileResult = (FileResult)response;
         Assert.AreEqual("image/tiff", fileResult.ContentType);
@@ -221,12 +250,32 @@ public class PhotoControllerTest
         var photo1 = await CreatePhotoAsync();
         var photo2 = await CreatePhotoAsync();
 
-        var response = await controller.ExportAsync([photo1.Id, photo2.Id]);
-        Assert.IsInstanceOfType<FileResult>(response);
+        var response = await controller.ExportAsync([photo1.Id, photo2.Id], CancellationToken.None);
 
-        var fileResult = (FileResult)response;
-        Assert.AreEqual("application/zip", fileResult.ContentType);
-        Assert.AreEqual("photos.zip", fileResult.FileDownloadName);
+        var streamedZipResult = (StreamedZipResult)response;
+        Assert.AreEqual("photos.zip", streamedZipResult.FileName);
+
+        using var archive = await ExecuteZipResultAsync(response);
+        Assert.AreEqual(2, archive.Entries.Count);
+        Assert.IsNotNull(archive.Entries.SingleOrDefault(e => e.FullName == $"{photo1.NameUuid}_{photo1.Name}"));
+        Assert.IsNotNull(archive.Entries.SingleOrDefault(e => e.FullName == $"{photo2.NameUuid}_{photo2.Name}"));
+    }
+
+    [TestMethod]
+    public async Task ExportFailsWhenPhotoMissingInCloudStorage()
+    {
+        var photo1 = await CreatePhotoAsync();
+        var photo2 = await CreatePhotoAsync();
+
+        s3ClientMock
+            .Setup(x => x.GetObjectMetadataAsync(It.IsAny<string>(), photo2.NameUuid, It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new AmazonS3Exception("Not found") { StatusCode = HttpStatusCode.NotFound });
+
+        var response = await controller.ExportAsync([photo1.Id, photo2.Id], CancellationToken.None);
+
+        var objectResult = (ObjectResult)response;
+        var problem = (ProblemDetails)objectResult.Value!;
+        StringAssert.StartsWith(problem.Detail, "An error occurred while fetching a file from the cloud storage.");
     }
 
     [TestMethod]
@@ -239,7 +288,7 @@ public class PhotoControllerTest
         photo2.BoreholeId = context.Boreholes.Max(b => b.Id);
         await context.SaveChangesAsync();
 
-        var response = await controller.ExportAsync([photo1.Id, photo2.Id]);
+        var response = await controller.ExportAsync([photo1.Id, photo2.Id], CancellationToken.None);
         ActionResultAssert.IsBadRequest(response);
     }
 
@@ -252,7 +301,7 @@ public class PhotoControllerTest
 
         var photo = await CreatePhotoAsync();
 
-        var response = await controller.ExportAsync([photo.Id]);
+        var response = await controller.ExportAsync([photo.Id], CancellationToken.None);
         ActionResultAssert.IsUnauthorized(response);
     }
 

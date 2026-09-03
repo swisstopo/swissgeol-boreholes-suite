@@ -7,6 +7,7 @@
 
 ### Fixed
 - Exporting log runs with large attachments no longer fails. Log file exports and downloads are streamed instead of being assembled in memory, so files larger than 2 GB can now be exported and downloaded up to the 5 GB limit.
+- Exporting boreholes with attachments, exporting photos, and downloading photos and profiles no longer fail for large files. These responses are streamed instead of being assembled in memory, and the download starts as soon as the first bytes are ready.
 
 ## v2.1.1748 - 2026-07-28
 
