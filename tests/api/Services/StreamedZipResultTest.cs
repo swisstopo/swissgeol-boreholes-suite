@@ -62,7 +62,7 @@ public class StreamedZipResultTest
         var currentlyOpen = 0;
         var maxConcurrentlyOpen = 0;
 
-        Func<CancellationToken, Task<Stream>> openContent = () =>
+        Func<CancellationToken, Task<Stream>> openContent = _ =>
         {
             currentlyOpen++;
             maxConcurrentlyOpen = Math.Max(maxConcurrentlyOpen, currentlyOpen);
@@ -109,7 +109,7 @@ public class StreamedZipResultTest
         var payload = new byte[512 * 1024];
         Random.Shared.NextBytes(payload);
 
-        var entries = new[] { new ZipEntrySource("large.bin", () => Task.FromResult<Stream>(new MemoryStream(payload))) };
+        var entries = new[] { new ZipEntrySource("large.bin", _ => Task.FromResult<Stream>(new MemoryStream(payload))) };
 
         await new StreamedZipResult(ZipFileName, entries, NullLogger.Instance)
             .ExecuteResultAsync(CreateActionContext(httpContext));
@@ -153,7 +153,7 @@ public class StreamedZipResultTest
 
         var entries = new[]
         {
-            new ZipEntrySource(FirstEntryName, () =>
+            new ZipEntrySource(FirstEntryName, _ =>
             {
                 clientGone.Cancel();
                 return Task.FromResult<Stream>(new MemoryStream(Encoding.UTF8.GetBytes(FirstEntryContent)));
@@ -180,7 +180,7 @@ public class StreamedZipResultTest
         var entries = new[]
         {
             CreateEntrySource(FirstEntryName, FirstEntryContent),
-            new ZipEntrySource("broken.txt", () =>
+            new ZipEntrySource("broken.txt", _ =>
             {
                 body.Break();
                 throw new InvalidOperationException("attachment gone from cloud storage");
@@ -242,7 +242,7 @@ public class StreamedZipResultTest
         using var body = new WriteCountingStream();
         httpContext.Response.Body = body;
 
-        var entries = new[] { new ZipEntrySource("huge.bin", () => Task.FromResult<Stream>(new PatternStream(entryLength))) };
+        var entries = new[] { new ZipEntrySource("huge.bin", _ => Task.FromResult<Stream>(new PatternStream(entryLength))) };
 
         await new StreamedZipResult(ZipFileName, entries, NullLogger.Instance)
             .ExecuteResultAsync(CreateActionContext(httpContext));
@@ -280,7 +280,7 @@ public class StreamedZipResultTest
     }
 
     private static ZipEntrySource CreateEntrySource(string entryName, string content) =>
-        new(entryName, () => Task.FromResult<Stream>(new MemoryStream(Encoding.UTF8.GetBytes(content))));
+        new(entryName, _ => Task.FromResult<Stream>(new MemoryStream(Encoding.UTF8.GetBytes(content))));
 
     // ExecuteResultAsync only reads HttpContext.Response, so RouteData and ActionDescriptor
     // are deliberately left unset.

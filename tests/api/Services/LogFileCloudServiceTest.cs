@@ -15,6 +15,12 @@ namespace BDMS.Services;
 public class LogFileCloudServiceTest
 {
     private const string TestLasFileName = "file_1.las";
+
+    /// <summary>
+    /// A limit no test object can reach, for the tests that are not about the size guard.
+    /// </summary>
+    private const long NoSizeLimit = long.MaxValue;
+
     private BdmsContext context;
     private AmazonS3Client s3Client;
     private string bucketName;
@@ -113,20 +119,32 @@ public class LogFileCloudServiceTest
     }
 
     [TestMethod]
-    public async Task GetObjectWithNotExistingObjectNameShouldThrowException()
+    public async Task GetObjectBytesWithNotExistingObjectNameShouldThrowException()
     {
-        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => logFileCloudService.GetObject("doesNotExist"));
+        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => logFileCloudService.GetObjectBytes("doesNotExist", NoSizeLimit));
     }
 
     [TestMethod]
-    public async Task GetObjectShouldReturnFileBytes()
+    public async Task GetObjectBytesShouldReturnFileBytes()
     {
         var content = Guid.NewGuid().ToString();
         var formFile = GetFormFileByContent(content, TestLasFileName);
 
         await logFileCloudService.UploadObject(formFile.OpenReadStream(), formFile.FileName, formFile.ContentType);
-        var result = await logFileCloudService.GetObject(formFile.FileName);
+        var result = await logFileCloudService.GetObjectBytes(formFile.FileName, NoSizeLimit);
         Assert.AreEqual(content, Encoding.UTF8.GetString(result));
+    }
+
+    [TestMethod]
+    public async Task GetObjectBytesShouldRejectObjectLargerThanTheLimit()
+    {
+        var content = Guid.NewGuid().ToString();
+        var formFile = GetFormFileByContent(content, TestLasFileName);
+
+        await logFileCloudService.UploadObject(formFile.OpenReadStream(), formFile.FileName, formFile.ContentType);
+
+        var exception = await Assert.ThrowsExactlyAsync<InvalidOperationException>(() => logFileCloudService.GetObjectBytes(formFile.FileName, content.Length - 1));
+        StringAssert.Contains(exception.Message, "exceeds the maximum");
     }
 
     [TestMethod]
@@ -166,8 +184,8 @@ public class LogFileCloudServiceTest
         var formFile = GetFormFileByContent(content, TestLasFileName);
 
         await logFileCloudService.UploadObject(formFile.OpenReadStream(), formFile.FileName, formFile.ContentType);
-        await logFileCloudService.GetObject(formFile.FileName);
+        await logFileCloudService.GetObjectBytes(formFile.FileName, NoSizeLimit);
         await logFileCloudService.DeleteObject(formFile.FileName);
-        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => logFileCloudService.GetObject(formFile.FileName));
+        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => logFileCloudService.GetObjectBytes(formFile.FileName, NoSizeLimit));
     }
 }

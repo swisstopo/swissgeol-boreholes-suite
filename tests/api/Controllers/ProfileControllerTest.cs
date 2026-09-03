@@ -96,11 +96,11 @@ public class ProfileControllerTest
         var profile = context.Profiles.Single(p => p.Name == fileName);
 
         // Download uploaded file
-        response = await controller.Download(profile.Id);
+        response = await controller.Download(profile.Id, CancellationToken.None);
 
-        var fileContentResult = (FileContentResult)response;
-        string contentResult = Encoding.ASCII.GetString(fileContentResult.FileContents);
-        Assert.AreEqual(content, contentResult);
+        var fileStreamResult = (FileStreamResult)response;
+        using var downloadReader = new StreamReader(fileStreamResult.FileStream);
+        Assert.AreEqual(content, await downloadReader.ReadToEndAsync());
 
         // Verify audit columns
         Assert.AreEqual(DateTime.UtcNow.Date, profile.Created?.Date);
@@ -128,16 +128,16 @@ public class ProfileControllerTest
         var uploadedProfile = profilesOfBorehole.Value.First(p => p.Name == fileName);
 
         // Download uploaded file
-        var response = await controller.Download(uploadedProfile.Id);
-        var fileContentResult = (FileContentResult)response;
-        string contentResult = Encoding.ASCII.GetString(fileContentResult.FileContents);
-        Assert.AreEqual(content, contentResult);
+        var response = await controller.Download(uploadedProfile.Id, CancellationToken.None);
+        var fileStreamResult = (FileStreamResult)response;
+        using var downloadReader = new StreamReader(fileStreamResult.FileStream);
+        Assert.AreEqual(content, await downloadReader.ReadToEndAsync());
 
         boreholePermissionServiceMock
             .Setup(x => x.CanViewBoreholeAsync(SubAdmin, It.IsAny<int?>()))
             .ReturnsAsync(false);
 
-        var unauthorizedResponse = await controller.Download(uploadedProfile.Id);
+        var unauthorizedResponse = await controller.Download(uploadedProfile.Id, CancellationToken.None);
         ActionResultAssert.IsUnauthorized(unauthorizedResponse);
     }
 
@@ -250,7 +250,7 @@ public class ProfileControllerTest
         var latestProfileInDb = context.Profiles.OrderBy(p => p.Id).Last();
 
         // Ensure file exists in cloud storage
-        await profileCloudService.GetObject(latestProfileInDb.NameUuid);
+        Assert.IsTrue(await profileCloudService.ObjectExists(latestProfileInDb.NameUuid));
 
         // Check counts after upload
         Assert.AreEqual(profilesCountBeforeUpload + 1, context.Profiles.Count());
@@ -264,7 +264,7 @@ public class ProfileControllerTest
         Assert.AreEqual(profilesForBoreholeBeforeUpload, context.Profiles.Where(p => p.BoreholeId == firstBoreholeId).Count());
 
         // Ensure file does not exist in cloud storage
-        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => profileCloudService.GetObject(latestProfileInDb.NameUuid));
+        Assert.IsFalse(await profileCloudService.ObjectExists(latestProfileInDb.NameUuid));
     }
 
     [TestMethod]
@@ -325,7 +325,7 @@ public class ProfileControllerTest
         var latestProfileInDb = context.Profiles.OrderBy(p => p.Id).Last();
 
         // Ensure file exists in cloud storage
-        await profileCloudService.GetObject(latestProfileInDb.NameUuid);
+        Assert.IsTrue(await profileCloudService.ObjectExists(latestProfileInDb.NameUuid));
 
         boreholePermissionServiceMock
             .Setup(x => x.CanEditBoreholeAsync(SubAdmin, It.IsAny<int?>()))
@@ -458,10 +458,10 @@ public class ProfileControllerTest
         await profileCloudService.UploadObject(image1.OpenReadStream(), $"dataextraction/{fileUuid}-1.png", image1.ContentType);
 
         // Test
-        var response = await controller.GetDataExtractionImage($"{fileUuid}-1.png");
+        var response = await controller.GetDataExtractionImage($"{fileUuid}-1.png", CancellationToken.None);
         Assert.IsNotNull(response);
-        var fileContentResult = (FileContentResult)response;
-        Assert.AreEqual("image/png", fileContentResult.ContentType);
+        var fileStreamResult = (FileStreamResult)response;
+        Assert.AreEqual("image/png", fileStreamResult.ContentType);
 
         byte[] originalBytes = new byte[image1.Length];
         using (var ms = new MemoryStream())
@@ -470,7 +470,9 @@ public class ProfileControllerTest
             originalBytes = ms.ToArray();
         }
 
-        CollectionAssert.AreEqual(originalBytes, fileContentResult.FileContents);
+        using var downloadedImage = new MemoryStream();
+        await fileStreamResult.FileStream.CopyToAsync(downloadedImage);
+        CollectionAssert.AreEqual(originalBytes, downloadedImage.ToArray());
 
         // Reset data
         await profileCloudService.DeleteObject($"dataextraction/{fileUuid}-1.png");

@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Moq;
 using Moq.Protected;
+using System.IO.Compression;
 using System.Net;
 using System.Net.Http.Json;
 using System.Security.Claims;
@@ -19,6 +20,29 @@ internal static class Helpers
 {
     internal static ControllerContext GetControllerContextAdmin()
         => new() { HttpContext = new DefaultHttpContext().SetAdminClaimsPrincipal() };
+
+    /// <summary>
+    /// Executes a streamed ZIP result against an in-memory response body and returns the archive,
+    /// so assertions keep working now that the exports no longer return a buffered byte array.
+    /// </summary>
+    internal static async Task<ZipArchive> ExecuteZipResultAsync(IActionResult response)
+    {
+        var streamedZipResult = response as StreamedZipResult;
+        Assert.IsNotNull(streamedZipResult, $"Expected a StreamedZipResult but got {response?.GetType().Name ?? "null"}.");
+
+        var httpContext = new DefaultHttpContext();
+        var body = new MemoryStream();
+        httpContext.Response.Body = body;
+
+        // ExecuteResultAsync only reads HttpContext.Response, so the other ActionContext
+        // members are deliberately left unset.
+        await streamedZipResult.ExecuteResultAsync(new ActionContext { HttpContext = httpContext });
+
+        Assert.AreEqual("application/zip", httpContext.Response.ContentType);
+
+        body.Position = 0;
+        return new ZipArchive(body, ZipArchiveMode.Read);
+    }
 
     internal static ControllerContext GetControllerContext(string subjectId, string role)
         => new() { HttpContext = new DefaultHttpContext().SetClaimsPrincipal(subjectId, role) };

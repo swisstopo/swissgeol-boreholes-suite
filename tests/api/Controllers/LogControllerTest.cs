@@ -1285,27 +1285,4 @@ public class LogControllerTest : TestControllerBase
         using var reader = new StreamReader(stream, Encoding.UTF8);
         return reader.ReadToEnd();
     }
-
-    /// <summary>
-    /// Executes a streamed ZIP result against an in-memory response body and returns the archive,
-    /// so assertions keep working now that the export no longer returns a buffered byte array.
-    /// </summary>
-    private static async Task<ZipArchive> ExecuteZipResultAsync(IActionResult response)
-    {
-        var streamedZipResult = response as StreamedZipResult;
-        Assert.IsNotNull(streamedZipResult, $"Expected a StreamedZipResult but got {response?.GetType().Name ?? "null"}.");
-
-        var httpContext = new DefaultHttpContext();
-        var body = new MemoryStream();
-        httpContext.Response.Body = body;
-
-        // ExecuteResultAsync only reads HttpContext.Response, so the other ActionContext
-        // members are deliberately left unset.
-        await streamedZipResult.ExecuteResultAsync(new ActionContext { HttpContext = httpContext });
-
-        Assert.AreEqual("application/zip", httpContext.Response.ContentType);
-
-        body.Position = 0;
-        return new ZipArchive(body, ZipArchiveMode.Read);
-    }
 }
