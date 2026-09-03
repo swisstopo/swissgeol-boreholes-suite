@@ -7473,6 +7473,9 @@ export type PostApiVbyVersionLogImportResponses = {
 };
 
 export type PostApiVbyVersionLogExportData = {
+  /**
+   * The log runs or log files to export.
+   */
   body?: LogExportRequest;
   path: {
     version: string;
