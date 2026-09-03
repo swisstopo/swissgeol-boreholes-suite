@@ -18,6 +18,8 @@ namespace BDMS.Controllers;
 [TestClass]
 public class PhotoControllerTest
 {
+    private const string TiffContentType = "image/tiff";
+
     private BdmsContext context;
     private User adminUser;
     private Mock<IAmazonS3> s3ClientMock;
@@ -178,7 +180,7 @@ public class PhotoControllerTest
     [DeploymentItem("TestData/image.tif")]
     public async Task GetImageConvertsTiffToJpeg()
     {
-        var tiffContent = System.IO.File.ReadAllBytes("image.tif");
+        var tiffContent = await System.IO.File.ReadAllBytesAsync("image.tif");
         s3ClientMock
             .Setup(x => x.GetObjectAsync(It.IsAny<GetObjectRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new GetObjectResponse
@@ -187,7 +189,7 @@ public class PhotoControllerTest
             });
 
         var photo = await CreatePhotoAsync();
-        Assert.AreEqual("image/tiff", photo.FileType);
+        Assert.AreEqual(TiffContentType, photo.FileType);
 
         var response = await controller.GetImageAsync(photo.Id, CancellationToken.None);
         Assert.IsInstanceOfType<FileResult>(response);
@@ -200,7 +202,7 @@ public class PhotoControllerTest
     [DeploymentItem("TestData/image.tif")]
     public async Task GetImageRejectsTiffTooLargeToConvert()
     {
-        var tiffContent = System.IO.File.ReadAllBytes("image.tif");
+        var tiffContent = await System.IO.File.ReadAllBytesAsync("image.tif");
         s3ClientMock
             .Setup(x => x.GetObjectAsync(It.IsAny<GetObjectRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(new GetObjectResponse
@@ -210,7 +212,7 @@ public class PhotoControllerTest
             });
 
         var photo = await CreatePhotoAsync();
-        Assert.AreEqual("image/tiff", photo.FileType);
+        Assert.AreEqual(TiffContentType, photo.FileType);
 
         var response = await controller.GetImageAsync(photo.Id, CancellationToken.None);
 
@@ -240,7 +242,7 @@ public class PhotoControllerTest
         Assert.IsInstanceOfType<FileStreamResult>(response);
 
         var fileResult = (FileResult)response;
-        Assert.AreEqual("image/tiff", fileResult.ContentType);
+        Assert.AreEqual(TiffContentType, fileResult.ContentType);
         Assert.AreEqual(photo.Name, fileResult.FileDownloadName);
     }
 
@@ -274,7 +276,7 @@ public class PhotoControllerTest
         var response = await controller.ExportAsync([photo1.Id, photo2.Id], CancellationToken.None);
 
         var objectResult = (ObjectResult)response;
-        var problem = (ProblemDetails)objectResult.Value!;
+        Assert.IsInstanceOfType<ProblemDetails>(objectResult.Value, out var problem);
         StringAssert.StartsWith(problem.Detail, "An error occurred while fetching a file from the cloud storage.");
     }
 
@@ -292,7 +294,7 @@ public class PhotoControllerTest
         var response = await controller.ExportAsync([photo1.Id, photo2.Id], CancellationToken.None);
 
         var objectResult = (ObjectResult)response;
-        var problem = (ProblemDetails)objectResult.Value!;
+        Assert.IsInstanceOfType<ProblemDetails>(objectResult.Value, out var problem);
         StringAssert.StartsWith(problem.Detail, "An error occurred while fetching a file from the cloud storage.");
     }
 
@@ -310,7 +312,7 @@ public class PhotoControllerTest
         var response = await controller.GetImageAsync(photo.Id, CancellationToken.None);
 
         var objectResult = (ObjectResult)response;
-        var problem = (ProblemDetails)objectResult.Value!;
+        Assert.IsInstanceOfType<ProblemDetails>(objectResult.Value, out var problem);
         StringAssert.StartsWith(problem.Detail, "An error occurred while fetching a file from the cloud storage.");
     }
 
@@ -467,7 +469,7 @@ public class PhotoControllerTest
             BoreholeId = minBoreholeId,
             Name = fileName,
             NameUuid = Guid.NewGuid().ToString() + ".tif",
-            FileType = "image/tiff",
+            FileType = TiffContentType,
         };
 
         context.Add(photo);
