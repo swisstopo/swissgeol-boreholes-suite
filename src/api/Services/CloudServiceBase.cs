@@ -79,19 +79,17 @@ public abstract class CloudServiceBase
     /// and must dispose it. Prefer this over <see cref="GetObject"/> unless the whole payload is
     /// genuinely required in memory, because this does not buffer the object.
     /// </summary>
+    /// <remarks>
+    /// Failures are not logged here, unlike in the buffering methods of this class. Only the
+    /// initial request happens inside this method; the content is transferred while the caller
+    /// reads the stream, so the caller is the only place that sees the whole failure surface and
+    /// knows which file it was reading.
+    /// </remarks>
     /// <param name="objectName">The name of the file in the bucket.</param>
     /// <returns>A stream over the file content.</returns>
     public async Task<Stream> GetObjectStream(string objectName)
     {
-        try
-        {
-            return await S3Client.GetObjectStreamAsync(BucketName, objectName, null).ConfigureAwait(false);
-        }
-        catch (AmazonS3Exception ex)
-        {
-            Logger.LogError(ex, "Error opening file stream from cloud storage.");
-            throw;
-        }
+        return await S3Client.GetObjectStreamAsync(BucketName, objectName, null).ConfigureAwait(false);
     }
 
     /// <summary>

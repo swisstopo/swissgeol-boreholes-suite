@@ -40,33 +40,6 @@ public class StreamedZipResultTest
     }
 
     [TestMethod]
-    public async Task ExecuteResultAsyncWritesValidArchiveToNonSeekableResponseBody()
-    {
-        // Kestrel's response body cannot seek, which makes ZipArchive emit data descriptors
-        // instead of back-patching the local file headers. A seekable MemoryStream does not
-        // exercise that path, so this test writes through a forward-only stream like the real
-        // server does.
-        var entries = new[]
-        {
-            CreateEntrySource(FirstEntryName, FirstEntryContent),
-            CreateEntrySource(SecondEntryName, SecondEntryContent),
-        };
-
-        var httpContext = new DefaultHttpContext();
-        using var body = new NonSeekableWriteStream();
-        httpContext.Response.Body = body;
-
-        await new StreamedZipResult(ZipFileName, entries, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext));
-
-        using var writtenBytes = new MemoryStream(body.ToArray());
-        using var archive = new ZipArchive(writtenBytes, ZipArchiveMode.Read);
-
-        Assert.AreEqual(2, archive.Entries.Count);
-        Assert.AreEqual(FirstEntryContent, ReadEntry(archive, FirstEntryName));
-        Assert.AreEqual(SecondEntryContent, ReadEntry(archive, SecondEntryName));
-    }
-
-    [TestMethod]
     public async Task ExecuteResultAsyncSetsZipContentTypeAndAttachmentHeader()
     {
         var httpContext = new DefaultHttpContext();

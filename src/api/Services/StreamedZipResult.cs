@@ -7,8 +7,7 @@ namespace BDMS.Services;
 
 /// <summary>
 /// Writes a ZIP archive directly to the response body, streaming each entry's content instead of
-/// buffering the archive or any single entry in memory. This removes the ~2 GB managed array
-/// ceiling and the peak memory multiplication of building an archive in a <see cref="MemoryStream"/>.
+/// buffering the archive or any single entry in memory.
 /// </summary>
 /// <remarks>
 /// Once the first byte reaches the response body the status code is committed, so a failure while
@@ -34,8 +33,7 @@ internal sealed class StreamedZipResult : IActionResult
     }
 
     /// <summary>
-    /// Gets the file name offered to the client, including the .zip extension. Exposed so a
-    /// caller's tests can assert on the name without executing the result.
+    /// Gets the file name offered to the client, including the .zip extension.
     /// </summary>
     internal string FileName { get; }
 
