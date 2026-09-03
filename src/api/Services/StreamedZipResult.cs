@@ -54,11 +54,10 @@ internal sealed class StreamedZipResult : IActionResult
         // The archive is built through the asynchronous API, so an entry's payload reaches the
         // response body through WriteAsync. Closing an entry is still synchronous: the stream
         // ZipArchiveEntry.OpenAsync returns does not override DisposeAsync, so disposal falls back
-        // to the synchronous chain and flushes the deflate buffer with blocking writes.
-        // Kestrel rejects those unless they are allowed for this response.
-        // TODO: https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2995
-        // Drop this opt-in once the deployed runtime carries the fix for
-        // https://github.com/dotnet/runtime/issues/121624 (still reproducible on 10.0.11).
+        // to the synchronous chain and flushes the deflate buffer with blocking writes. Kestrel
+        // rejects those unless they are allowed for this response.
+        // TODO: Drop this opt-in once the deployed runtime carries the fix for
+        // https://github.com/dotnet/runtime/issues/121624, still reproducible on 10.0.11.
         var bodyControl = context.HttpContext.Features.Get<IHttpBodyControlFeature>();
         if (bodyControl is not null)
         {
