@@ -1,4 +1,5 @@
-﻿using BDMS.Authentication;
+﻿using Amazon.S3;
+using BDMS.Authentication;
 using BDMS.Models;
 using BDMS.Services;
 using ImageMagick;
@@ -113,16 +114,33 @@ public class PhotoController : ControllerBase
 
         if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), photo.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        if (photo.FileType != "image/tiff")
+        try
         {
-            var imageStream = await photoCloudService.GetObjectStream(photo.NameUuid, cancellationToken).ConfigureAwait(false);
-            return File(imageStream, photo.FileType);
-        }
+            if (photo.FileType != "image/tiff")
+            {
+                var imageStream = await photoCloudService.GetObjectStream(photo.NameUuid, cancellationToken).ConfigureAwait(false);
+                return File(imageStream, photo.FileType);
+            }
 
-        // Tiff files are not supported by any modern browser, so they are converted to JPEG. The
-        // converter works on a buffer rather than a stream, which makes this the one place where a
-        // stored object is held in memory. The limit bounds that buffer to what the upload endpoint
-        // accepts, so an object that grew past it elsewhere cannot exhaust the process.
+            return await ConvertTiffToJpegAsync(photo, cancellationToken).ConfigureAwait(false);
+        }
+        catch (AmazonS3Exception ex)
+        {
+            logger.LogError(ex, "Amazon S3 Store threw an exception.");
+            return Problem("An error occurred while fetching a file from the cloud storage.");
+        }
+    }
+
+    /// <summary>
+    /// Converts a photo to JPEG, because TIFF is not supported by any modern browser. The converter
+    /// works on a buffer rather than a stream, which makes this the one place where a stored object
+    /// is held in memory. The limit bounds that buffer to what the upload endpoint accepts, so an
+    /// object that grew past it elsewhere cannot exhaust the process.
+    /// </summary>
+    /// <param name="photo">The photo to convert.</param>
+    /// <param name="cancellationToken">Aborts the download once the client is gone.</param>
+    private async Task<IActionResult> ConvertTiffToJpegAsync(Photo photo, CancellationToken cancellationToken)
+    {
         byte[] imageData;
         try
         {
@@ -166,41 +184,49 @@ public class PhotoController : ControllerBase
         var boreholeId = boreholeIds.Single();
         if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        if (photos.Count == 1)
+        try
         {
-            var photo = photos.Single();
-            var fileStream = await photoCloudService.GetObjectStream(photo.NameUuid, cancellationToken).ConfigureAwait(false);
-            return File(fileStream, photo.FileType, photo.Name);
+            if (photos.Count == 1)
+            {
+                var photo = photos.Single();
+                var fileStream = await photoCloudService.GetObjectStream(photo.NameUuid, cancellationToken).ConfigureAwait(false);
+                return File(fileStream, photo.FileType, photo.Name);
+            }
+
+            // The archive is streamed, so the status code is committed as soon as the first byte
+            // reaches the response body. Probe every object up front, while returning a problem
+            // response is still possible.
+            var probes = await Task.WhenAll(photos.Select(async photo => new
+            {
+                Photo = photo,
+                Exists = await photoCloudService.ObjectExists(photo.NameUuid, cancellationToken).ConfigureAwait(false),
+            })).ConfigureAwait(false);
+
+            var missingFileNames = probes.Where(probe => !probe.Exists).Select(probe => probe.Photo.Name).ToList();
+            if (missingFileNames.Count > 0)
+            {
+                logger.LogError("Photos are missing in cloud storage: {MissingFiles}", string.Join(", ", missingFileNames));
+                return Problem("An error occurred while fetching a file from the cloud storage.");
+            }
+
+            var entries = photos.Select(photo =>
+            {
+                var nameUuid = photo.NameUuid;
+
+                // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name.
+                // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the original file name.
+                return new ZipEntrySource(
+                    $"{nameUuid}_{FileHelper.SanitizeZipEntryFileName(photo.Name, "export")}",
+                    entryCancellationToken => photoCloudService.GetObjectStream(nameUuid, entryCancellationToken));
+            }).ToList();
+
+            return new StreamedZipResult("photos.zip", entries, logger);
         }
-
-        // The archive is streamed, so the status code is committed as soon as the first byte reaches
-        // the response body. Probe every object up front, while returning a problem response is
-        // still possible.
-        var probes = await Task.WhenAll(photos.Select(async photo => new
+        catch (AmazonS3Exception ex)
         {
-            Photo = photo,
-            Exists = await photoCloudService.ObjectExists(photo.NameUuid, cancellationToken).ConfigureAwait(false),
-        })).ConfigureAwait(false);
-
-        var missingFileNames = probes.Where(probe => !probe.Exists).Select(probe => probe.Photo.Name).ToList();
-        if (missingFileNames.Count > 0)
-        {
-            logger.LogError("Photos are missing in cloud storage: {MissingFiles}", string.Join(", ", missingFileNames));
+            logger.LogError(ex, "Amazon S3 Store threw an exception.");
             return Problem("An error occurred while fetching a file from the cloud storage.");
         }
-
-        var entries = photos.Select(photo =>
-        {
-            var nameUuid = photo.NameUuid;
-
-            // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name.
-            // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the original file name.
-            return new ZipEntrySource(
-                $"{nameUuid}_{FileHelper.SanitizeZipEntryFileName(photo.Name, "export")}",
-                entryCancellationToken => photoCloudService.GetObjectStream(nameUuid, entryCancellationToken));
-        }).ToList();
-
-        return new StreamedZipResult("photos.zip", entries, logger);
     }
 
     [HttpDelete]

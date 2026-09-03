@@ -279,6 +279,42 @@ public class PhotoControllerTest
     }
 
     [TestMethod]
+    public async Task ExportFailsWhenCloudStorageIsUnavailable()
+    {
+        var photo1 = await CreatePhotoAsync();
+        var photo2 = await CreatePhotoAsync();
+
+        // A probe that fails for a reason other than a missing object must not be mistaken for one.
+        s3ClientMock
+            .Setup(x => x.GetObjectMetadataAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new AmazonS3Exception("Service unavailable") { StatusCode = HttpStatusCode.ServiceUnavailable });
+
+        var response = await controller.ExportAsync([photo1.Id, photo2.Id], CancellationToken.None);
+
+        var objectResult = (ObjectResult)response;
+        var problem = (ProblemDetails)objectResult.Value!;
+        StringAssert.StartsWith(problem.Detail, "An error occurred while fetching a file from the cloud storage.");
+    }
+
+    [TestMethod]
+    public async Task GetImageFailsWhenCloudStorageIsUnavailable()
+    {
+        var photo = await CreatePhotoAsync();
+        photo.FileType = "image/png";
+        await context.SaveChangesAsync();
+
+        s3ClientMock
+            .Setup(x => x.GetObjectStreamAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<IDictionary<string, object>>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new AmazonS3Exception("Service unavailable") { StatusCode = HttpStatusCode.ServiceUnavailable });
+
+        var response = await controller.GetImageAsync(photo.Id, CancellationToken.None);
+
+        var objectResult = (ObjectResult)response;
+        var problem = (ProblemDetails)objectResult.Value!;
+        StringAssert.StartsWith(problem.Detail, "An error occurred while fetching a file from the cloud storage.");
+    }
+
+    [TestMethod]
     public async Task ExportFromMultipleBoreholesNotAllowed()
     {
         var photo1 = await CreatePhotoAsync();
