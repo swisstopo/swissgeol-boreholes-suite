@@ -62,7 +62,7 @@ public class StreamedZipResultTest
         var currentlyOpen = 0;
         var maxConcurrentlyOpen = 0;
 
-        Func<Task<Stream>> openContent = () =>
+        Func<CancellationToken, Task<Stream>> openContent = () =>
         {
             currentlyOpen++;
             maxConcurrentlyOpen = Math.Max(maxConcurrentlyOpen, currentlyOpen);
@@ -172,7 +172,7 @@ public class StreamedZipResultTest
         // When an entry fails after the response has started, disposing the entry stream and the
         // archive flushes headers to a stream that is usually broken as well. Those secondary
         // failures must not replace the one that explains what actually went wrong, because the
-        // log is the only record the operator gets.
+        // exception the pipeline logs is the only record the operator gets.
         var httpContext = new DefaultHttpContext();
         using var body = new BreakableStream();
         httpContext.Response.Body = body;
@@ -190,7 +190,39 @@ public class StreamedZipResultTest
         var exception = await Assert.ThrowsExactlyAsync<InvalidOperationException>(
             () => new StreamedZipResult(ZipFileName, entries, NullLogger.Instance).ExecuteResultAsync(CreateActionContext(httpContext)));
 
-        Assert.AreEqual("attachment gone from cloud storage", exception.Message);
+        // The entry name only exists at the point of failure, so it travels on the exception
+        // rather than in a log statement here.
+        StringAssert.Contains(exception.Message, "broken.txt");
+        Assert.AreEqual("attachment gone from cloud storage", exception.InnerException?.Message);
+    }
+
+    [TestMethod]
+    public async Task ExecuteResultAsyncPassesTheClientDisconnectTokenToTheContentSource()
+    {
+        // An attachment is fetched from cloud storage while the archive is being written, so the
+        // token has to reach the content source. Without it a client that gives up mid-download
+        // leaves the fetch for a multi-gigabyte object running to completion.
+        using var clientGone = new CancellationTokenSource();
+        var httpContext = new DefaultHttpContext { RequestAborted = clientGone.Token };
+        httpContext.Features.Set<IHttpBodyControlFeature>(new TestBodyControlFeature());
+
+        using var body = new MemoryStream();
+        httpContext.Response.Body = body;
+
+        CancellationToken observedToken = default;
+        var entries = new[]
+        {
+            new ZipEntrySource(FirstEntryName, token =>
+            {
+                observedToken = token;
+                return Task.FromResult<Stream>(new MemoryStream(Encoding.UTF8.GetBytes(FirstEntryContent)));
+            }),
+        };
+
+        await new StreamedZipResult(ZipFileName, entries, NullLogger.Instance)
+            .ExecuteResultAsync(CreateActionContext(httpContext));
+
+        Assert.AreEqual(clientGone.Token, observedToken, "The content source must receive the token that is aborted when the client disconnects.");
     }
 
     [TestMethod]
@@ -225,7 +257,7 @@ public class StreamedZipResultTest
 
         // Reading a ZIP entry does not verify its checksum, so the content is compared against a
         // second generator rather than trusted because the sizes agree.
-        using var actualContent = entry.Open();
+        using var actualContent = await entry.OpenAsync();
         using var expectedContent = new PatternStream(entryLength);
         var actualBuffer = new byte[1024 * 1024];
         var expectedBuffer = new byte[actualBuffer.Length];

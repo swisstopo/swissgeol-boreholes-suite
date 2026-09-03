@@ -91,7 +91,7 @@ public class LogControllerTest : TestControllerBase
     [TestMethod]
     public async Task DownloadUnknownFileReturnsNotFound()
     {
-        var response = await controller.DownloadAsync(999999);
+        var response = await controller.DownloadAsync(999999, CancellationToken.None);
         ActionResultAssert.IsNotFound(response);
     }
 
@@ -107,7 +107,7 @@ public class LogControllerTest : TestControllerBase
             .ReturnsAsync(false);
 
         var uploadedFile = Context.LogFiles.Single(f => f.LogRunId == logRun.Id);
-        var response = await controller.DownloadAsync(uploadedFile.Id);
+        var response = await controller.DownloadAsync(uploadedFile.Id, CancellationToken.None);
         ActionResultAssert.IsUnauthorized(response);
     }
 
@@ -126,7 +126,7 @@ public class LogControllerTest : TestControllerBase
 
         var uploadedFile = Context.LogFiles.Single(f => f.Name == fileName);
 
-        response = await controller.DownloadAsync(uploadedFile.Id);
+        response = await controller.DownloadAsync(uploadedFile.Id, CancellationToken.None);
 
         var fileStreamResult = (FileStreamResult)response;
         using var downloadReader = new StreamReader(fileStreamResult.FileStream);
@@ -498,7 +498,7 @@ public class LogControllerTest : TestControllerBase
     public async Task ExportWithBothLogRunIdsAndLogFileIdsReturnsBadRequest()
     {
         var request = new LogExportRequest { LogRunIds = [1], LogFileIds = [1], WithAttachments = false };
-        var response = await controller.ExportAsync(request).ConfigureAwait(false);
+        var response = await controller.ExportAsync(request, CancellationToken.None).ConfigureAwait(false);
         var badRequest = response as BadRequestObjectResult;
         Assert.IsNotNull(badRequest);
         Assert.AreEqual("LogRunIds and LogFileIds should not be provided together.", badRequest.Value);
@@ -508,7 +508,7 @@ public class LogControllerTest : TestControllerBase
     public async Task ExportWithNeitherLogRunIdsNorLogFileIdsReturnsBadRequest()
     {
         var request = new LogExportRequest { WithAttachments = false };
-        var response = await controller.ExportAsync(request).ConfigureAwait(false);
+        var response = await controller.ExportAsync(request, CancellationToken.None).ConfigureAwait(false);
         var badRequest = response as BadRequestObjectResult;
         Assert.IsNotNull(badRequest);
         Assert.AreEqual("No ids were provided.", badRequest.Value);
@@ -518,7 +518,7 @@ public class LogControllerTest : TestControllerBase
     public async Task ExportWithEmptyLogRunIdsReturnsBadRequest()
     {
         var request = new LogExportRequest { LogRunIds = [], WithAttachments = false };
-        var response = await controller.ExportAsync(request).ConfigureAwait(false);
+        var response = await controller.ExportAsync(request, CancellationToken.None).ConfigureAwait(false);
         var badRequest = response as BadRequestObjectResult;
         Assert.IsNotNull(badRequest);
         Assert.AreEqual("No ids were provided.", badRequest.Value);
@@ -531,7 +531,7 @@ public class LogControllerTest : TestControllerBase
         var logRun = await AddCompleteTestLogRunForExportAsync(borehole.Id, "RUN-A");
         await UploadTestLogFile(logRun.Id);
 
-        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = false, Locale = "en" }).ConfigureAwait(false);
+        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = false, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
 
         var fileResult = response as StreamedZipResult;
         Assert.IsNotNull(fileResult);
@@ -554,7 +554,7 @@ public class LogControllerTest : TestControllerBase
         var logRun = await AddCompleteTestLogRunForExportAsync(borehole.Id, "RUN-ATT");
         var uploadedFile = await UploadTestLogFile(logRun.Id);
 
-        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = true, Locale = "en" }).ConfigureAwait(false);
+        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = true, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
 
         using var archive = await ExecuteZipResultAsync(response);
 
@@ -575,7 +575,7 @@ public class LogControllerTest : TestControllerBase
         // Add two tool type codes out of alphabetic order so we can verify sorting
         await SetLogFileToolTypeCodesAsync(uploadedFile.Id, [100003033, 100003032]);
 
-        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = false, Locale = "en" }).ConfigureAwait(false);
+        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = false, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
         using var archive = await ExecuteZipResultAsync(response);
 
         var logRunCsvEntry = archive.Entries.Single(e => e.FullName.StartsWith(LogRunCsvPrefix));
@@ -605,7 +605,7 @@ public class LogControllerTest : TestControllerBase
         var logRun1 = await AddTestLogRunAsync(borehole.Id, "R1");
         var logRun2 = await AddTestLogRunAsync(borehole.Id, "R2");
 
-        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun1.Id, logRun2.Id], WithAttachments = false, Locale = "en" }).ConfigureAwait(false);
+        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun1.Id, logRun2.Id], WithAttachments = false, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
 
         using var archive = await ExecuteZipResultAsync(response);
         var logRunCsvEntry = archive.Entries.Single(e => e.FullName.StartsWith(LogRunCsvPrefix));
@@ -621,7 +621,7 @@ public class LogControllerTest : TestControllerBase
         var borehole = await AddTestBoreholeAsync();
         var logRun = await AddTestLogRunAsync(borehole.Id, "NO-FILES");
 
-        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = false, Locale = "en" }).ConfigureAwait(false);
+        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = false, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
 
         using var archive = await ExecuteZipResultAsync(response);
 
@@ -638,7 +638,7 @@ public class LogControllerTest : TestControllerBase
         var logRun1 = await AddTestLogRunAsync(borehole1.Id, "A1");
         var logRun2 = await AddTestLogRunAsync(borehole2.Id, "B1");
 
-        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun1.Id, logRun2.Id], WithAttachments = false, Locale = "en" }).ConfigureAwait(false);
+        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun1.Id, logRun2.Id], WithAttachments = false, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
 
         var badRequest = response as BadRequestObjectResult;
         Assert.IsNotNull(badRequest);
@@ -648,7 +648,7 @@ public class LogControllerTest : TestControllerBase
     [TestMethod]
     public async Task ExportLogRunsWithInexistentIdsReturnsNotFound()
     {
-        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [999_999_001, 999_999_002], WithAttachments = false, Locale = "en" }).ConfigureAwait(false);
+        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [999_999_001, 999_999_002], WithAttachments = false, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
         Assert.IsInstanceOfType(response, typeof(NotFoundResult));
     }
 
@@ -662,7 +662,7 @@ public class LogControllerTest : TestControllerBase
             .Setup(x => x.CanViewBoreholeAsync("sub_admin", borehole.Id))
             .ReturnsAsync(false);
 
-        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = false, Locale = "en" }).ConfigureAwait(false);
+        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = false, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
         Assert.IsInstanceOfType(response, typeof(UnauthorizedResult));
     }
 
@@ -688,7 +688,7 @@ public class LogControllerTest : TestControllerBase
         await Context.LogRuns.AddAsync(logRun);
         await Context.SaveChangesAsync();
 
-        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = false, Locale = locale }).ConfigureAwait(false);
+        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = false, Locale = locale }, CancellationToken.None).ConfigureAwait(false);
         using var archive = await ExecuteZipResultAsync(response);
         var logRunCsvEntry = archive.Entries.Single(e => e.FullName.StartsWith(LogRunCsvPrefix));
         var csv = ReadEntryAsText(logRunCsvEntry);
@@ -716,7 +716,7 @@ public class LogControllerTest : TestControllerBase
         Context.LogFiles.Add(orphanFile);
         await Context.SaveChangesAsync();
 
-        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = true, Locale = "en" }).ConfigureAwait(false);
+        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = true, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
         var objectResult = response as ObjectResult;
         Assert.IsNotNull(objectResult);
         var problem = (ProblemDetails)objectResult.Value!;
@@ -730,7 +730,7 @@ public class LogControllerTest : TestControllerBase
         var logRun = await AddCompleteTestLogRunForExportAsync(borehole.Id, "LF-01");
         var logFile = await UploadTestLogFile(logRun.Id);
 
-        var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [logFile.Id], WithAttachments = false, Locale = "en" }).ConfigureAwait(false);
+        var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [logFile.Id], WithAttachments = false, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
 
         using var archive = await ExecuteZipResultAsync(response);
 
@@ -746,7 +746,7 @@ public class LogControllerTest : TestControllerBase
         var logRun = await AddCompleteTestLogRunForExportAsync(borehole.Id, "LF-ATT");
         var logFile = await UploadTestLogFile(logRun.Id);
 
-        var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [logFile.Id], WithAttachments = true, Locale = "en" }).ConfigureAwait(false);
+        var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [logFile.Id], WithAttachments = true, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
 
         using var archive = await ExecuteZipResultAsync(response);
         Assert.AreEqual(3, archive.Entries.Count);
@@ -772,7 +772,7 @@ public class LogControllerTest : TestControllerBase
 
         await SetLogFileToolTypeCodesAsync(logFile.Id, [100003033, 100003032]);
 
-        var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [logFile.Id], WithAttachments = false, Locale = "en" }).ConfigureAwait(false);
+        var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [logFile.Id], WithAttachments = false, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
 
         using var archive = await ExecuteZipResultAsync(response);
         var logFileCsv = ReadEntryAsText(archive.Entries.Single(e => e.FullName.StartsWith(LogFileCsvPrefix)));
@@ -813,7 +813,7 @@ public class LogControllerTest : TestControllerBase
         Context.LogFiles.Update(logFile);
         await Context.SaveChangesAsync();
 
-        var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [logFile.Id], WithAttachments = false, Locale = locale }).ConfigureAwait(false);
+        var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [logFile.Id], WithAttachments = false, Locale = locale }, CancellationToken.None).ConfigureAwait(false);
 
         using var archive = await ExecuteZipResultAsync(response);
         var csv = ReadEntryAsText(archive.Entries.Single(e => e.FullName.StartsWith(LogFileCsvPrefix)));
@@ -830,7 +830,7 @@ public class LogControllerTest : TestControllerBase
         var logFile1 = await UploadTestLogFile(logRun1.Id);
         var logFile2 = await UploadTestLogFile(logRun2.Id);
 
-        var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [logFile1.Id, logFile2.Id], WithAttachments = false, Locale = "en" }).ConfigureAwait(false);
+        var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [logFile1.Id, logFile2.Id], WithAttachments = false, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
 
         var badRequest = response as BadRequestObjectResult;
         Assert.IsNotNull(badRequest);
@@ -840,7 +840,7 @@ public class LogControllerTest : TestControllerBase
     [TestMethod]
     public async Task ExportLogFilesWithInexistentIdsReturnsNotFound()
     {
-        var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [999_999_101, 999_999_102], WithAttachments = false, Locale = "en" }).ConfigureAwait(false);
+        var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [999_999_101, 999_999_102], WithAttachments = false, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
         Assert.IsInstanceOfType(response, typeof(NotFoundResult));
     }
 
@@ -855,7 +855,7 @@ public class LogControllerTest : TestControllerBase
             .Setup(x => x.CanViewBoreholeAsync("sub_admin", borehole.Id))
             .ReturnsAsync(false);
 
-        var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [logFile.Id], WithAttachments = false, Locale = "en" }).ConfigureAwait(false);
+        var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [logFile.Id], WithAttachments = false, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
         Assert.IsInstanceOfType(response, typeof(UnauthorizedResult));
     }
 
@@ -874,7 +874,7 @@ public class LogControllerTest : TestControllerBase
         Context.LogFiles.Add(orphanFile);
         await Context.SaveChangesAsync();
 
-        var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [orphanFile.Id], WithAttachments = true, Locale = "en" }).ConfigureAwait(false);
+        var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [orphanFile.Id], WithAttachments = true, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
         var objectResult = response as ObjectResult;
         Assert.IsNotNull(objectResult);
         var problem = (ProblemDetails)objectResult.Value!;
@@ -1192,7 +1192,7 @@ public class LogControllerTest : TestControllerBase
         Assert.AreEqual(nameUuid, updatedLogFile.NameUuid, "NameUuid should not change because the upload links to the existing LogFile.");
 
         // Verify the upload actually linked the bytes to the existing LogFile by downloading them back.
-        var downloadResponse = await controller.DownloadAsync(updatedLogFile.Id);
+        var downloadResponse = await controller.DownloadAsync(updatedLogFile.Id, CancellationToken.None);
         var downloadedFile = (FileStreamResult)downloadResponse;
         Assert.AreEqual(importedFileName, downloadedFile.FileDownloadName);
         using var downloadedReader = new StreamReader(downloadedFile.FileStream);

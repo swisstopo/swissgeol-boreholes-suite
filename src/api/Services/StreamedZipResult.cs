@@ -24,7 +24,7 @@ internal sealed class StreamedZipResult : IActionResult
     /// </summary>
     /// <param name="fileName">The file name offered to the client, including the .zip extension.</param>
     /// <param name="entries">The entries to write, in order.</param>
-    /// <param name="logger">Used to record which entry failed, since a mid-stream failure cannot be reported to the client.</param>
+    /// <param name="logger">Used to record the secondary failures that are suppressed while abandoning a truncated archive.</param>
     internal StreamedZipResult(string fileName, IReadOnlyList<ZipEntrySource> entries, ILogger logger)
     {
         FileName = fileName;
@@ -85,8 +85,9 @@ internal sealed class StreamedZipResult : IActionResult
 
     /// <summary>
     /// Writes one entry, ensuring the failure that explains the problem is the one that escapes.
-    /// The response has already started by this point, so a failure cannot become an error status
-    /// and the log is the only record of what went wrong.
+    /// The response has already started by this point, so a failure cannot become an error status.
+    /// It therefore carries the entry name, because the exception is the only thing that reaches
+    /// the pipeline's log and nothing further up knows which entry was being written.
     /// </summary>
     /// <param name="archive">The archive being written.</param>
     /// <param name="entry">The entry to write.</param>
@@ -97,7 +98,7 @@ internal sealed class StreamedZipResult : IActionResult
         var zipEntryStream = await zipEntry.OpenAsync(cancellationToken).ConfigureAwait(false);
         try
         {
-            var content = await entry.OpenContent().ConfigureAwait(false);
+            var content = await entry.OpenContent(cancellationToken).ConfigureAwait(false);
             await using (content.ConfigureAwait(false))
             {
                 await content.CopyToAsync(zipEntryStream, cancellationToken).ConfigureAwait(false);
@@ -105,9 +106,13 @@ internal sealed class StreamedZipResult : IActionResult
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to write entry {EntryName} into the streamed ZIP archive. The client receives a truncated archive.", entry.EntryName);
             await DisposeWithoutMaskingFailureAsync(zipEntryStream).ConfigureAwait(false);
-            throw;
+
+            // A client that gave up is not a broken export, so cancellation keeps its own type
+            // instead of being reported as a failure of this entry.
+            if (ex is OperationCanceledException) throw;
+
+            throw new InvalidOperationException($"Failed to write entry '{entry.EntryName}' into the streamed ZIP archive. The client receives a truncated archive.", ex);
         }
 
         await zipEntryStream.DisposeAsync().ConfigureAwait(false);

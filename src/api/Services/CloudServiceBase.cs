@@ -86,10 +86,11 @@ public abstract class CloudServiceBase
     /// knows which file it was reading.
     /// </remarks>
     /// <param name="objectName">The name of the file in the bucket.</param>
+    /// <param name="cancellationToken">Aborts the request for the object.</param>
     /// <returns>A stream over the file content.</returns>
-    public async Task<Stream> GetObjectStream(string objectName)
+    public async Task<Stream> GetObjectStream(string objectName, CancellationToken cancellationToken = default)
     {
-        return await S3Client.GetObjectStreamAsync(BucketName, objectName, null).ConfigureAwait(false);
+        return await S3Client.GetObjectStreamAsync(BucketName, objectName, null, cancellationToken).ConfigureAwait(false);
     }
 
     /// <summary>
@@ -98,12 +99,13 @@ public abstract class CloudServiceBase
     /// meaningful error response is still possible.
     /// </summary>
     /// <param name="objectName">The name of the file in the bucket.</param>
+    /// <param name="cancellationToken">Aborts the probe.</param>
     /// <returns><c>true</c> if the file exists, <c>false</c> if it does not.</returns>
-    public async Task<bool> ObjectExists(string objectName)
+    public async Task<bool> ObjectExists(string objectName, CancellationToken cancellationToken = default)
     {
         try
         {
-            await S3Client.GetObjectMetadataAsync(BucketName, objectName).ConfigureAwait(false);
+            await S3Client.GetObjectMetadataAsync(BucketName, objectName, cancellationToken).ConfigureAwait(false);
             return true;
         }
         catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound)

@@ -141,15 +141,16 @@ public class LogController : BoreholeControllerBase<LogRun>
     /// Downloads a log file from the cloud storage.
     /// </summary>
     /// <param name="id">The <see cref="LogFile.Id"/> of the file to download.</param>
+    /// <param name="cancellationToken">Aborts the download once the client is gone.</param>
     /// <returns>The stream of the downloaded file.</returns>
     [HttpGet("download")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> DownloadAsync([Range(1, int.MaxValue)] int id)
+    public async Task<IActionResult> DownloadAsync([Range(1, int.MaxValue)] int id, CancellationToken cancellationToken)
     {
         try
         {
             var logFile = await Context.LogFiles
-                .FirstOrDefaultAsync(f => f.Id == id)
+                .FirstOrDefaultAsync(f => f.Id == id, cancellationToken)
                 .ConfigureAwait(false);
 
             if (logFile == null || logFile.NameUuid == null)
@@ -159,7 +160,7 @@ public class LogController : BoreholeControllerBase<LogRun>
 
             if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), logFile.LogRun.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-            var fileStream = await logFileCloudService.GetObjectStream(logFile.NameUuid).ConfigureAwait(false);
+            var fileStream = await logFileCloudService.GetObjectStream(logFile.NameUuid, cancellationToken).ConfigureAwait(false);
 
             return File(fileStream, "application/octet-stream", logFile.Name);
         }
@@ -663,11 +664,13 @@ public class LogController : BoreholeControllerBase<LogRun>
     /// <summary>
     /// Exports log runs or log files as a ZIP archive containing CSV files and optionally the file attachments.
     /// </summary>
+    /// <param name="request">The log runs or log files to export.</param>
+    /// <param name="cancellationToken">Aborts the export once the client is gone. An export can transfer several gigabytes, so the work it triggers must not outlive the request.</param>
     [HttpPost("export")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> ExportAsync([FromBody] LogExportRequest request)
+    public async Task<IActionResult> ExportAsync([FromBody] LogExportRequest request, CancellationToken cancellationToken)
     {
-        var (logRuns, logFiles, error) = await LoadLogExportDataAsync(request).ConfigureAwait(false);
+        var (logRuns, logFiles, error) = await LoadLogExportDataAsync(request, cancellationToken).ConfigureAwait(false);
         if (error != null) return error;
 
         if (!await BoreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), logRuns[0].BoreholeId).ConfigureAwait(false)) return Unauthorized();
@@ -702,7 +705,7 @@ public class LogController : BoreholeControllerBase<LogRun>
                 var probes = await Task.WhenAll(attachments.Select(async logFile => new
                 {
                     LogFile = logFile,
-                    Exists = await logFileCloudService.ObjectExists(logFile.NameUuid!).ConfigureAwait(false),
+                    Exists = await logFileCloudService.ObjectExists(logFile.NameUuid!, cancellationToken).ConfigureAwait(false),
                 })).ConfigureAwait(false);
 
                 var missingFileNames = probes.Where(probe => !probe.Exists).Select(probe => probe.LogFile.Name).ToList();
@@ -719,7 +722,7 @@ public class LogController : BoreholeControllerBase<LogRun>
                     var nameUuid = logFile.NameUuid!;
                     entries.Add(new ZipEntrySource(
                         $"{folderName}/{fileName}",
-                        () => logFileCloudService.GetObjectStream(nameUuid)));
+                        entryCancellationToken => logFileCloudService.GetObjectStream(nameUuid, entryCancellationToken)));
                 }
             }
 
@@ -737,7 +740,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         }
     }
 
-    private async Task<(List<LogRun> LogRuns, List<LogFile> LogFiles, IActionResult? Error)> LoadLogExportDataAsync(LogExportRequest request)
+    private async Task<(List<LogRun> LogRuns, List<LogFile> LogFiles, IActionResult? Error)> LoadLogExportDataAsync(LogExportRequest request, CancellationToken cancellationToken)
     {
         if (request.LogRunIds.Count == 0 && request.LogFileIds.Count == 0)
             return ([], [], BadRequest("No ids were provided."));
@@ -749,7 +752,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         {
             var logRuns = await LogRunsForExport
                 .Where(lr => request.LogRunIds.Contains(lr.Id))
-                .ToListAsync()
+                .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
             if (logRuns.Count == 0) return ([], [], NotFound());
@@ -759,7 +762,7 @@ public class LogController : BoreholeControllerBase<LogRun>
 
             var logFiles = await LogFilesForExport
                 .Where(lf => request.LogRunIds.Contains(lf.LogRunId))
-                .ToListAsync()
+                .ToListAsync(cancellationToken)
                 .ConfigureAwait(false);
 
             return (logRuns, logFiles, null);
@@ -767,7 +770,7 @@ public class LogController : BoreholeControllerBase<LogRun>
 
         var logFilesResult = await LogFilesForExport
             .Where(lf => request.LogFileIds.Contains(lf.Id))
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         if (logFilesResult.Count == 0) return ([], [], NotFound());
@@ -777,7 +780,7 @@ public class LogController : BoreholeControllerBase<LogRun>
 
         var logRunsResult = await LogRunsForExport
             .Where(lr => lr.Id == logRunIds[0])
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         if (logRunsResult.Count == 0) return ([], [], NotFound());
