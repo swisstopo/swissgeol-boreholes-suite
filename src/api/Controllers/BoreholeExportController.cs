@@ -320,10 +320,11 @@ public class BoreholeExportController : ControllerBase
             var profiles = await context.Profiles.AsNoTracking().Where(p => ids.Contains(p.BoreholeId)).ToListAsync().ConfigureAwait(false);
             var fileName = $"{ExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}";
 
-            // If only one borehole is exported, use its name as the file name
+            // If only one borehole is exported, use its name as the file name.
+            // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the borehole name.
             if (ids.Count() == 1)
             {
-                fileName = boreholes.Single().Name;
+                fileName = FileHelper.SanitizeZipEntryFileName(boreholes.Single().Name, fileName);
             }
 
             var json = JsonSerializer.Serialize(boreholes, jsonExportOptions);
