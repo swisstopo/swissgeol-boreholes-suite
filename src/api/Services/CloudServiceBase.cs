@@ -51,20 +51,33 @@ public abstract class CloudServiceBase
     }
 
     /// <summary>
-    /// Gets a file from the cloud storage.
+    /// Reads a file from the cloud storage into memory. Use this only when the whole payload is
+    /// genuinely required at once, such as for a library that cannot work on a stream; otherwise
+    /// use <see cref="GetObjectStream"/>, which does not buffer.
     /// </summary>
     /// <param name="objectName">The name of the file in the bucket.</param>
-    public async Task<byte[]> GetObject(string objectName)
+    /// <param name="maxBytes">
+    /// The largest object the caller is willing to hold in memory. The size is taken from the
+    /// response header, so an object above the limit is rejected before its content is read.
+    /// </param>
+    /// <param name="cancellationToken">Aborts the download.</param>
+    /// <exception cref="InvalidOperationException">The object is larger than <paramref name="maxBytes"/>.</exception>
+    public async Task<byte[]> GetObjectBytes(string objectName, long maxBytes, CancellationToken cancellationToken = default)
     {
         try
         {
             // Get object from storage
             var getObjectRequest = new GetObjectRequest { BucketName = BucketName, Key = objectName };
-            using GetObjectResponse getObjectResponse = await S3Client.GetObjectAsync(getObjectRequest).ConfigureAwait(false);
+            using GetObjectResponse getObjectResponse = await S3Client.GetObjectAsync(getObjectRequest, cancellationToken).ConfigureAwait(false);
+
+            if (getObjectResponse.ContentLength > maxBytes)
+            {
+                throw new InvalidOperationException($"Object <{objectName}> is {getObjectResponse.ContentLength} bytes and exceeds the maximum of {maxBytes} bytes that may be read into memory.");
+            }
 
             // Read response to byte array
             using var memoryStream = new MemoryStream();
-            await getObjectResponse.ResponseStream.CopyToAsync(memoryStream).ConfigureAwait(false);
+            await getObjectResponse.ResponseStream.CopyToAsync(memoryStream, cancellationToken).ConfigureAwait(false);
             return memoryStream.ToArray();
         }
         catch (AmazonS3Exception ex)
@@ -76,8 +89,8 @@ public abstract class CloudServiceBase
 
     /// <summary>
     /// Opens a read stream for a file in the cloud storage. The caller owns the returned stream
-    /// and must dispose it. Prefer this over <see cref="GetObject"/> unless the whole payload is
-    /// genuinely required in memory, because this does not buffer the object.
+    /// and must dispose it. Prefer this over <see cref="GetObjectBytes"/> unless the whole payload
+    /// is genuinely required in memory, because this does not buffer the object.
     /// </summary>
     /// <remarks>
     /// Failures are not logged here, unlike in the buffering methods of this class. Only the

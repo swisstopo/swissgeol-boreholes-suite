@@ -60,24 +60,25 @@ public class ProfileController : ControllerBase
     /// Downloads the file pointed to by the <see cref="Profile"/> with id <paramref name="profileId"/>.
     /// </summary>
     /// <param name="profileId">The <see cref="Profile.Id"/> of the profile to download.</param>
+    /// <param name="cancellationToken">Aborts the download once the client is gone.</param>
     /// <returns>The stream of the downloaded file.</returns>
     [HttpGet("download")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> Download([Range(1, int.MaxValue)] int profileId)
+    public async Task<IActionResult> Download([Range(1, int.MaxValue)] int profileId, CancellationToken cancellationToken)
     {
         try
         {
             var profile = await context.Profiles
-                .FirstOrDefaultAsync(p => p.Id == profileId)
+                .FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken)
                 .ConfigureAwait(false);
 
             if (profile?.NameUuid == null) return NotFound($"Profile with id {profileId} not found.");
 
             if (!await boreholePermissionService.CanViewBoreholeAsync(HttpContext.GetUserSubjectId(), profile.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-            var fileBytes = await profileCloudService.GetObject(profile.NameUuid).ConfigureAwait(false);
+            var fileStream = await profileCloudService.GetObjectStream(profile.NameUuid, cancellationToken).ConfigureAwait(false);
 
-            return File(fileBytes, "application/octet-stream", profile.Name);
+            return File(fileStream, "application/octet-stream", profile.Name);
         }
         catch (Exception ex)
         {
@@ -142,16 +143,17 @@ public class ProfileController : ControllerBase
     /// Downloads a data-extraction image from S3.
     /// </summary>
     /// <param name="imageName">The image name.</param>
+    /// <param name="cancellationToken">Aborts the download once the client is gone.</param>
     /// <returns>The stream of the image.</returns>
     [HttpGet("dataextraction/{*imageName}")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> GetDataExtractionImage(string imageName)
+    public async Task<IActionResult> GetDataExtractionImage(string imageName, CancellationToken cancellationToken)
     {
         try
         {
             var decodedImageName = Uri.UnescapeDataString($"dataextraction/{imageName}");
-            var fileBytes = await profileCloudService.GetObject(decodedImageName).ConfigureAwait(false);
-            return File(fileBytes, "image/png", decodedImageName);
+            var imageStream = await profileCloudService.GetObjectStream(decodedImageName, cancellationToken).ConfigureAwait(false);
+            return File(imageStream, "image/png", decodedImageName);
         }
         catch (Exception ex)
         {
