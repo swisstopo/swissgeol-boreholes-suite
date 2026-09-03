@@ -213,7 +213,8 @@ public class ImportController : ControllerBase
         if (jsonFile == null)
             return BadRequest(new { detail = "ZIP file does not contain a JSON file.", messageKey = "zipMissingJsonFile" });
 
-        var boreholes = await DeserializeBoreholeDataAsync(jsonFile.Open()).ConfigureAwait(false);
+        using var jsonStream = await jsonFile.OpenAsync().ConfigureAwait(false);
+        var boreholes = await DeserializeBoreholeDataAsync(jsonStream).ConfigureAwait(false);
         if (boreholes == null)
             return BadRequest(new { detail = "The provided file is not an array of boreholes or is not a valid JSON format.", messageKey = "invalidJsonBoreholeArray" });
 
@@ -312,7 +313,8 @@ public class ImportController : ControllerBase
                     }
 
                     using var memoryStream = new MemoryStream();
-                    await attachment.Open().CopyToAsync(memoryStream).ConfigureAwait(false);
+                    using var attachmentStream = await attachment.OpenAsync().ConfigureAwait(false);
+                    await attachmentStream.CopyToAsync(memoryStream).ConfigureAwait(false);
                     memoryStream.Position = 0;
 
                     await UploadFormFileAsync(memoryStream, profileToProcess, GetContentType(attachment.Name), borehole, i).ConfigureAwait(false);

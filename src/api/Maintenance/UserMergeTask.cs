@@ -124,8 +124,9 @@ public sealed class UserMergeTask : IMaintenanceTask
             .ToList();
     }
 
-    // S2077: Table/column names in the SQL below are sourced from EF Core model metadata
+    // S2077, EF1003: Table/column names in the SQL below are sourced from EF Core model metadata
     // (compile-time entity mappings), not from user input. All dynamic values use NpgsqlParameter.
+#pragma warning disable EF1003
     private static async Task ReassignForeignKeysAsync(
         BdmsContext context,
         List<(string TableName, string ColumnName, Type EntityType)> foreignKeys,
@@ -173,6 +174,7 @@ public sealed class UserMergeTask : IMaintenanceTask
                 cancellationToken).ConfigureAwait(false);
         }
     }
+#pragma warning restore EF1003
 
     /// <summary>
     /// Gets the non-User primary key column names for a composite-key entity.

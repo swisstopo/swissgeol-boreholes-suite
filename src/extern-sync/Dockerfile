@@ -1,6 +1,6 @@
 # syntax=docker/dockerfile:1.7-labs
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG VERSION
 ARG REVISION
 WORKDIR /src
@@ -18,7 +18,7 @@ RUN dotnet publish "./extern-sync/BDMS.ExternSync.csproj" \
   -p:SourceRevisionId=${REVISION} \
   -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS deploy
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS deploy
 ENV ASPNETCORE_ENVIRONMENT=Production
 WORKDIR /app
 

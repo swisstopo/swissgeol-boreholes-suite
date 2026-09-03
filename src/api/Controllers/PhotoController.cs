@@ -163,7 +163,7 @@ public class PhotoController : ControllerBase
 
                 // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name
                 var zipEntry = archive.CreateEntry($"{photo.NameUuid}_{photo.Name}", CompressionLevel.Fastest);
-                using var zipEntryStream = zipEntry.Open();
+                using var zipEntryStream = await zipEntry.OpenAsync().ConfigureAwait(false);
                 await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
             }
         }

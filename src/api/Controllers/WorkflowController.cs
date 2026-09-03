@@ -170,7 +170,7 @@ public class WorkflowController : ControllerBase
             foreach (var change in request.Changes)
             {
                 if (!Enum.TryParse<WorkflowStatusField>(change.Key, true, out var fieldEnum) ||
-                    !Enum.IsDefined(typeof(WorkflowStatusField), fieldEnum))
+                    !Enum.IsDefined(fieldEnum))
                 {
                     return BadRequest($"Invalid field name {change.Key} for tab status change.");
                 }
