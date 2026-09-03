@@ -217,7 +217,7 @@ export const WorkflowView = () => {
     }
   };
 
-  const isAnythingApproved = Object.values(workflow.publishedTabs).some(value => value === true);
+  const isAnythingApproved = Object.values(workflow.publishedTabs).includes(true);
 
   return (
     <Box sx={{ minHeight: "100dvh" }}>
