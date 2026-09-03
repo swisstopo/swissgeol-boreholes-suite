@@ -4258,6 +4258,7 @@
           }
         ],
         "requestBody": {
+          "description": "The log runs or log files to export.",
           "content": {
             "application/json": {
               "schema": {
