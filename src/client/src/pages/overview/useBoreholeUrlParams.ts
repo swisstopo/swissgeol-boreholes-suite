@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { createContext, useCallback, useContext, useRef } from "react";
 import {
   parseAsArrayOf,
   parseAsBoolean,
@@ -64,7 +64,7 @@ export type FilterKey = keyof typeof filterParsers;
 
 const allParsers = { ...filterParsers, ...tableParsers, ...mapParsers };
 
-export const useBoreholeUrlParams = () => {
+export const useBoreholeUrlParamsState = () => {
   const [queryState, setQueryState] = useQueryStates(allParsers);
   const filterState = Object.fromEntries((Object.keys(filterParsers) as FilterKey[]).map(k => [k, queryState[k]])) as {
     [K in FilterKey]: (typeof queryState)[K];
@@ -232,4 +232,16 @@ export const useBoreholeUrlParams = () => {
     bottomDrawerOpen: tableState.bottomDrawerOpen,
     setBottomDrawerOpen: (v: boolean) => setQueryState({ bottomDrawerOpen: v }),
   };
+};
+
+export type BoreholeUrlParams = ReturnType<typeof useBoreholeUrlParamsState>;
+
+export const BoreholeUrlParamsContext = createContext<BoreholeUrlParams | null>(null);
+
+export const useBoreholeUrlParams = (): BoreholeUrlParams => {
+  const context = useContext(BoreholeUrlParamsContext);
+  if (context === null) {
+    throw new Error("useBoreholeUrlParams must be used within a BoreholeUrlParamsProvider");
+  }
+  return context;
 };

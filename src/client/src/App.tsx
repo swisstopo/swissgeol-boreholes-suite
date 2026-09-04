@@ -32,6 +32,7 @@ import { DetailPage } from "./pages/detail/detailPage";
 import { EditStateProvider } from "./pages/detail/editStateContext.tsx";
 import { LabelingProvider } from "./pages/detail/labeling/labelingContext";
 import { SaveProvider } from "./pages/detail/saveContext.tsx";
+import { BoreholeUrlParamsProvider } from "./pages/overview/boreholeUrlParamsProvider.tsx";
 import { OverviewPage } from "./pages/overview/overviewPage";
 import { PolygonFilterProvider } from "./pages/overview/sidePanelContent/filter/polygonFilterContext.tsx";
 import { UserWorkgroupsProvider } from "./pages/overview/UserWorkgroupsContext.tsx";
@@ -67,7 +68,9 @@ const router = createBrowserRouter([
     element: (
       <RouteErrorBoundary fallback={OverviewError}>
         <NuqsAdapter>
-          <OverviewPage />
+          <BoreholeUrlParamsProvider>
+            <OverviewPage />
+          </BoreholeUrlParamsProvider>
         </NuqsAdapter>
       </RouteErrorBoundary>
     ),
