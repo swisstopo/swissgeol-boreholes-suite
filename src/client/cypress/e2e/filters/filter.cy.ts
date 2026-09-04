@@ -86,6 +86,14 @@ function testLargeSelectFilter(
   });
 }
 
+// Every filter change fires its own POST /borehole/filter. Register a fresh alias per toggle
+// so each assertion runs against the state that toggle produced.
+function toggleYesNoAndWaitForFilter(fieldName: string, option: string, alias: string) {
+  cy.intercept("POST", "/api/v2/borehole/filter").as(alias);
+  clickYesNoButton(fieldName, option);
+  cy.wait(`@${alias}`);
+}
+
 describe("Search filter tests", () => {
   it("has search filters", () => {
     goToRouteAndAcceptTerms("/");
@@ -141,23 +149,26 @@ describe("Search filter tests", () => {
 
     openFilter("Borehole");
 
-    clickYesNoButton("nationalInterest", "yes");
+    toggleYesNoAndWaitForFilter("nationalInterest", "yes", "filter_national_interest_yes");
     showTableAndWaitForData();
     // Exactly every tenth seeded borehole has nationalInterest = true (10 out of 100).
     hasPagination(false);
     cy.dataCy("boreholes-number-preview").should("have.text", "10");
     cy.dataCy("filter-chip-nationalInterest").should("exist");
 
-    clickYesNoButton("nationalInterest", "not specified");
+    toggleYesNoAndWaitForFilter("nationalInterest", "not specified", "filter_national_interest_np");
     hasPagination(false);
     cy.dataCy("boreholes-number-preview").should("exist");
     cy.dataCy("filter-chip-nationalInterest").should("exist");
 
-    clickYesNoButton("nationalInterest", "no");
+    toggleYesNoAndWaitForFilter("nationalInterest", "no", "filter_national_interest_no");
     // 90 seeded boreholes (false) + 3 newly created with nationalInterest = false.
     hasPagination(false);
     cy.dataCy("boreholes-number-preview").should("have.text", "93");
+
+    cy.intercept("POST", "/api/v2/borehole/filter").as("filter_national_interest_cleared");
     checkFilterChipExistsAndRemove("nationalInterest");
+    cy.wait("@filter_national_interest_cleared");
     // 100 seeded + 4 created in this test.
     verifyPaginationText("1–100 of 104");
     cy.dataCy("boreholes-number-preview").should("have.text", "104");

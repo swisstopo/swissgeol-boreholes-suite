@@ -1,5 +1,4 @@
 import fs from "node:fs";
-// @ts-expect-error - @cypress/grep uses exports map incompatible with moduleResolution:node
 import { plugin as cypressGrepPlugin } from "@cypress/grep/plugin";
 import { defineConfig } from "cypress";
 import cypressSplit from "cypress-split";
