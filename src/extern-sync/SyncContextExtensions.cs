@@ -214,7 +214,6 @@ public static class SyncContextExtensions
         where TUser : new()
     {
         ArgumentNullException.ThrowIfNull(user);
-        ArgumentNullException.ThrowIfNull(userId);
 
         void UpdateUserAttachedItem(IUserAttached<TUser, TUserId> userAttachedItem)
         {

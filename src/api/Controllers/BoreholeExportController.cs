@@ -320,10 +320,11 @@ public class BoreholeExportController : ControllerBase
             var profiles = await context.Profiles.AsNoTracking().Where(p => ids.Contains(p.BoreholeId)).ToListAsync().ConfigureAwait(false);
             var fileName = $"{ExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}";
 
-            // If only one borehole is exported, use its name as the file name
+            // If only one borehole is exported, use its name as the file name.
+            // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the borehole name.
             if (ids.Count() == 1)
             {
-                fileName = boreholes.Single().Name;
+                fileName = FileHelper.SanitizeZipEntryFileName(boreholes.Single().Name, fileName);
             }
 
             var json = JsonSerializer.Serialize(boreholes, jsonExportOptions);
@@ -333,7 +334,7 @@ public class BoreholeExportController : ControllerBase
             {
                 // Add JSON file with borehole data
                 var jsonEntry = archive.CreateEntry($"{fileName}.json", CompressionLevel.Fastest);
-                using var entryStream = jsonEntry.Open();
+                using var entryStream = await jsonEntry.OpenAsync().ConfigureAwait(false);
                 using (var textWriter = new StreamWriter(entryStream))
                 {
                     await textWriter.WriteAsync(json).ConfigureAwait(false);
@@ -346,7 +347,7 @@ public class BoreholeExportController : ControllerBase
                     // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name.
                     // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the original file name.
                     var zipEntry = archive.CreateEntry($"{profile.NameUuid}_{FileHelper.SanitizeZipEntryFileName(profile.Name, "export")}", CompressionLevel.Fastest);
-                    using var zipEntryStream = zipEntry.Open();
+                    using var zipEntryStream = await zipEntry.OpenAsync().ConfigureAwait(false);
                     await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
                 }
             }

@@ -161,9 +161,10 @@ public class PhotoController : ControllerBase
             {
                 var fileBytes = await photoCloudService.GetObject(photo.NameUuid).ConfigureAwait(false);
 
-                // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name
-                var zipEntry = archive.CreateEntry($"{photo.NameUuid}_{photo.Name}", CompressionLevel.Fastest);
-                using var zipEntryStream = zipEntry.Open();
+                // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name.
+                // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the original file name.
+                var zipEntry = archive.CreateEntry($"{photo.NameUuid}_{FileHelper.SanitizeZipEntryFileName(photo.Name, "export")}", CompressionLevel.Fastest);
+                using var zipEntryStream = await zipEntry.OpenAsync().ConfigureAwait(false);
                 await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
             }
         }

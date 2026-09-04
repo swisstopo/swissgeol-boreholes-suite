@@ -681,7 +681,7 @@ public class LogController : BoreholeControllerBase<LogRun>
             {
                 var logRunCsvBytes = await WriteLogRunCsvBytesAsync(logRuns, request.Locale).ConfigureAwait(false);
                 var logRunCsvEntry = archive.CreateEntry($"{LogRunExportFileName}_{timestamp}.csv", CompressionLevel.Fastest);
-                using (var logRunCsvStream = logRunCsvEntry.Open())
+                using (var logRunCsvStream = await logRunCsvEntry.OpenAsync().ConfigureAwait(false))
                 {
                     await logRunCsvStream.WriteAsync(logRunCsvBytes.AsMemory(0, logRunCsvBytes.Length)).ConfigureAwait(false);
                 }
@@ -690,7 +690,7 @@ public class LogController : BoreholeControllerBase<LogRun>
                 {
                     var logFileCsvBytes = await WriteLogFileCsvBytesAsync(logFiles, request.Locale).ConfigureAwait(false);
                     var logFileCsvEntry = archive.CreateEntry($"{LogFileExportFileName}_{timestamp}.csv", CompressionLevel.Fastest);
-                    using (var logFileCsvStream = logFileCsvEntry.Open())
+                    using (var logFileCsvStream = await logFileCsvEntry.OpenAsync().ConfigureAwait(false))
                     {
                         await logFileCsvStream.WriteAsync(logFileCsvBytes.AsMemory(0, logFileCsvBytes.Length)).ConfigureAwait(false);
                     }
@@ -706,7 +706,7 @@ public class LogController : BoreholeControllerBase<LogRun>
                         var fileName = FileHelper.SanitizeZipEntryFileName(logFile.Name!, "export");
                         var entryName = $"{folderName}/{fileName}";
                         var zipEntry = archive.CreateEntry(entryName, CompressionLevel.Fastest);
-                        using var zipEntryStream = zipEntry.Open();
+                        using var zipEntryStream = await zipEntry.OpenAsync().ConfigureAwait(false);
                         await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
                     }
                 }
