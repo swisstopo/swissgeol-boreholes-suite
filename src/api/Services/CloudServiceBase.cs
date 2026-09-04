@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
+using System.Net;
 
 namespace BDMS.Services;
 
@@ -70,6 +71,46 @@ public abstract class CloudServiceBase
         {
             Logger.LogError(ex, "Error downloading file from cloud storage.");
             throw;
+        }
+    }
+
+    /// <summary>
+    /// Opens a read stream for a file in the cloud storage. The caller owns the returned stream
+    /// and must dispose it. Prefer this over <see cref="GetObject"/> unless the whole payload is
+    /// genuinely required in memory, because this does not buffer the object.
+    /// </summary>
+    /// <remarks>
+    /// Failures are not logged here, unlike in the buffering methods of this class. Only the
+    /// initial request happens inside this method; the content is transferred while the caller
+    /// reads the stream, so the caller is the only place that sees the whole failure surface and
+    /// knows which file it was reading.
+    /// </remarks>
+    /// <param name="objectName">The name of the file in the bucket.</param>
+    /// <param name="cancellationToken">Aborts the request for the object.</param>
+    /// <returns>A stream over the file content.</returns>
+    public async Task<Stream> GetObjectStream(string objectName, CancellationToken cancellationToken = default)
+    {
+        return await S3Client.GetObjectStreamAsync(BucketName, objectName, null, cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Checks whether a file exists in the cloud storage without transferring its content.
+    /// Used to validate a set of objects before a response body has been started, while a
+    /// meaningful error response is still possible.
+    /// </summary>
+    /// <param name="objectName">The name of the file in the bucket.</param>
+    /// <param name="cancellationToken">Aborts the probe.</param>
+    /// <returns><c>true</c> if the file exists, <c>false</c> if it does not.</returns>
+    public async Task<bool> ObjectExists(string objectName, CancellationToken cancellationToken = default)
+    {
+        try
+        {
+            await S3Client.GetObjectMetadataAsync(BucketName, objectName, cancellationToken).ConfigureAwait(false);
+            return true;
+        }
+        catch (AmazonS3Exception ex) when (ex.StatusCode == HttpStatusCode.NotFound)
+        {
+            return false;
         }
     }
 
