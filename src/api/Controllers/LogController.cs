@@ -137,7 +137,10 @@ public class LogController : BoreholeControllerBase<LogRun>
         catch (InvalidOperationException ex)
         {
             Logger.LogError(ex, "An error occurred while uploading the file.");
-            return BadRequest(ex.Message);
+
+            // A bare string body carries no problem type, which leaves the client with nothing to
+            // show but its generic failure message. This one names what the user has to change.
+            return Problem(detail: ex.Message, type: ProblemType.UserError);
         }
         catch (Exception ex)
         {
