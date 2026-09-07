@@ -234,7 +234,7 @@ export const useBoreholeUrlParamsState = () => {
   };
 };
 
-export type BoreholeUrlParams = ReturnType<typeof useBoreholeUrlParamsState>;
+type BoreholeUrlParams = ReturnType<typeof useBoreholeUrlParamsState>;
 
 export const BoreholeUrlParamsContext = createContext<BoreholeUrlParams | null>(null);
 
