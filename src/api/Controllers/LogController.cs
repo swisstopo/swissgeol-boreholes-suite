@@ -66,15 +66,16 @@ public class LogController : BoreholeControllerBase<LogRun>
     /// <param name="file">The file to upload.</param>
     /// <param name="logRunId">The log run ID to associate with the file.</param>
     /// <param name="logFileId">Optional existing log file ID to link the uploaded file to.</param>
+    /// <param name="cancellationToken">Aborts the upload once the client is gone.</param>
     [HttpPost("upload")]
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(MaxFileSize)]
     [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
-    public async Task<IActionResult> UploadAsync(IFormFile file, [Range(1, int.MaxValue)] int logRunId, int? logFileId = null)
+    public async Task<IActionResult> UploadAsync(IFormFile file, [Range(1, int.MaxValue)] int logRunId, int? logFileId = null, CancellationToken cancellationToken = default)
     {
         var logRun = await Context.LogRuns
             .Include(lr => lr.Borehole)
-            .FirstOrDefaultAsync(lr => lr.Id == logRunId)
+            .FirstOrDefaultAsync(lr => lr.Id == logRunId, cancellationToken)
             .ConfigureAwait(false);
 
         if (logRun == null) return NotFound($"LogRun with ID {logRunId} not found.");
@@ -99,7 +100,7 @@ public class LogController : BoreholeControllerBase<LogRun>
             if (logFileId.HasValue)
             {
                 var existingLogFile = await Context.LogFiles
-                    .FirstOrDefaultAsync(lf => lf.Id == logFileId.Value && lf.LogRunId == logRunId)
+                    .FirstOrDefaultAsync(lf => lf.Id == logFileId.Value && lf.LogRunId == logRunId, cancellationToken)
                     .ConfigureAwait(false);
 
                 if (existingLogFile == null)
@@ -110,7 +111,8 @@ public class LogController : BoreholeControllerBase<LogRun>
                 await logFileCloudService.UploadFileForExistingLogFileAsync(
                     file.OpenReadStream(),
                     file.ContentType,
-                    existingLogFile.NameUuid!)
+                    existingLogFile.NameUuid!,
+                    cancellationToken)
                     .ConfigureAwait(false);
 
                 return Ok(existingLogFile);
@@ -120,10 +122,17 @@ public class LogController : BoreholeControllerBase<LogRun>
                 file.OpenReadStream(),
                 file.FileName,
                 file.ContentType,
-                logRunId)
+                logRunId,
+                cancellationToken)
                 .ConfigureAwait(false);
 
             return Ok(logFile);
+        }
+        catch (OperationCanceledException)
+        {
+            // The client gave up while the file was still being stored. There is nobody left to
+            // answer, so this is not reported as a failed upload.
+            throw;
         }
         catch (InvalidOperationException ex)
         {

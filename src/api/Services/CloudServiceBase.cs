@@ -30,7 +30,8 @@ public abstract class CloudServiceBase
     /// <param name="fileStream">The file stream to upload.</param>
     /// <param name="objectName">The name of the file in the storage.</param>
     /// <param name="contentType">The content type of the file.</param>
-    internal async Task UploadObject(Stream fileStream, string objectName, string contentType)
+    /// <param name="cancellationToken">Aborts the upload once the client is gone.</param>
+    internal async Task UploadObject(Stream fileStream, string objectName, string contentType, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -41,7 +42,7 @@ public abstract class CloudServiceBase
                 InputStream = fileStream,
                 ContentType = contentType,
             };
-            await S3Client.PutObjectAsync(putObjectRequest).ConfigureAwait(false);
+            await S3Client.PutObjectAsync(putObjectRequest, cancellationToken).ConfigureAwait(false);
         }
         catch (AmazonS3Exception ex)
         {

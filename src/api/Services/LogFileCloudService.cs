@@ -26,9 +26,9 @@ public class LogFileCloudService : CloudServiceBase
     /// <summary>
     /// Uploads a file to the cloud storage using the provided objectName as the S3 key.
     /// </summary>
-    public Task UploadFileForExistingLogFileAsync(Stream fileStream, string contentType, string objectName)
+    public Task UploadFileForExistingLogFileAsync(Stream fileStream, string contentType, string objectName, CancellationToken cancellationToken = default)
     {
-        return UploadObject(fileStream, objectName, contentType);
+        return UploadObject(fileStream, objectName, contentType, cancellationToken);
     }
 
     /// <summary>
@@ -38,13 +38,14 @@ public class LogFileCloudService : CloudServiceBase
     /// <param name="fileName">The name of the file to upload.</param>
     /// <param name="contentType">The content type of the file.</param>
     /// <param name="logRunId">The <see cref="LogRun.Id"/> to link the uploaded file to.</param>
+    /// <param name="cancellationToken">Aborts the upload once the client is gone.</param>
     /// <returns>The created <see cref="LogFile"/> entity.</returns>
-    public async Task<LogFile> UploadLogFileAndLinkToLogRunAsync(Stream fileStream, string fileName, string contentType, int logRunId)
+    public async Task<LogFile> UploadLogFileAndLinkToLogRunAsync(Stream fileStream, string fileName, string contentType, int logRunId, CancellationToken cancellationToken = default)
     {
         try
         {
             var logRun = await context.LogRuns
-                .FirstOrDefaultAsync(lr => lr.Id == logRunId)
+                .FirstOrDefaultAsync(lr => lr.Id == logRunId, cancellationToken)
                 .ConfigureAwait(false);
 
             if (logRun == null)
@@ -59,14 +60,14 @@ public class LogFileCloudService : CloudServiceBase
             fileName = fileName.Replace(" ", "_", StringComparison.OrdinalIgnoreCase);
 
             var nameExists = await context.LogFiles
-                .AnyAsync(lf => lf.LogRunId == logRunId && lf.Name == fileName)
+                .AnyAsync(lf => lf.LogRunId == logRunId && lf.Name == fileName, cancellationToken)
                 .ConfigureAwait(false);
             if (nameExists)
             {
                 throw new InvalidOperationException($"A file named '{fileName}' already exists in this log run.");
             }
 
-            await UploadObject(fileStream, fileNameGuid, contentType).ConfigureAwait(false);
+            await UploadObject(fileStream, fileNameGuid, contentType, cancellationToken).ConfigureAwait(false);
 
             var logFile = new LogFile
             {
@@ -76,10 +77,16 @@ public class LogFileCloudService : CloudServiceBase
                 Public = false,
             };
 
-            var entityEntry = await context.LogFiles.AddAsync(logFile).ConfigureAwait(false);
-            await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!).ConfigureAwait(false);
+            var entityEntry = await context.LogFiles.AddAsync(logFile, cancellationToken).ConfigureAwait(false);
+            await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!, cancellationToken).ConfigureAwait(false);
 
             return entityEntry.Entity;
+        }
+        catch (OperationCanceledException)
+        {
+            // The client gave up while the file was still being stored. There is nobody left to
+            // answer, so this is not reported as a failed upload.
+            throw;
         }
         catch (Exception ex)
         {

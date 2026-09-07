@@ -188,4 +188,22 @@ public class LogFileCloudServiceTest
         await logFileCloudService.DeleteObject(formFile.FileName);
         await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => logFileCloudService.GetObjectBytes(formFile.FileName, NoSizeLimit));
     }
+
+    [TestMethod]
+    public async Task UploadLogFileAndLinkToLogRunAsyncLinksNothingWhenCancelled()
+    {
+        var fileName = $"{Guid.NewGuid()}.las";
+        var minLogRunId = context.LogRuns.Min(b => b.Id);
+        var formFile = GetFormFileByContent(Guid.NewGuid().ToString(), fileName);
+
+        using var cancellation = new CancellationTokenSource();
+        await cancellation.CancelAsync();
+
+        await Assert.ThrowsAsync<OperationCanceledException>(
+            () => logFileCloudService.UploadLogFileAndLinkToLogRunAsync(
+                formFile.OpenReadStream(), formFile.FileName, formFile.ContentType, minLogRunId, cancellation.Token));
+
+        var logRun = context.LogRunsWithIncludes.Single(b => b.Id == minLogRunId);
+        Assert.IsNull(logRun.LogFiles.SingleOrDefault(f => f.Name == fileName));
+    }
 }
