@@ -1,9 +1,10 @@
-import { FC, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { FC, useCallback, useContext, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { Trash2, X } from "lucide-react";
 import UploadIcon from "../../../../assets/icons/upload.svg?react";
 import { v4 as uuidv4 } from "uuid";
+import { formatBytes, isAbortError, progressRefreshIntervalMs } from "../../../../api/transferProgress.ts";
 import { AddButton, BoreholesBaseButton } from "../../../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
@@ -13,7 +14,7 @@ import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { SaveContext } from "../../saveContext.tsx";
 import { ImportLogRunsModal } from "./importLogRunsModal.tsx";
-import { useLogRunMutations, useLogsByBoreholeId } from "./log.ts";
+import { countPendingUploads, LogFileUploadProgressCallback, useLogRunMutations, useLogsByBoreholeId } from "./log.ts";
 import { LogRun, LogRunChangeTracker } from "./logInterfaces.ts";
 import { LogRunModal } from "./logRunModal.tsx";
 import { LogTable } from "./logTable.tsx";
@@ -25,12 +26,21 @@ export const LogPanel: FC = () => {
   const boreholeId = useRequiredId();
   const [selectedLogRunId, setSelectedLogRunId] = useState<string | undefined>();
   const [isImporting, setIsImporting] = useState<boolean>(false);
-  const { registerSaveHandler, registerResetHandler, unMount, setHasChanges, hasChanges, triggerReset } =
-    useContext(SaveContext);
+  const {
+    registerSaveHandler,
+    registerResetHandler,
+    unMount,
+    setHasChanges,
+    hasChanges,
+    triggerReset,
+    setSaveProgress,
+  } = useContext(SaveContext);
   const { showPrompt } = useContext(PromptContext);
   const showApiErrorAlert = useApiErrorAlert();
   const { data: logRuns = [], isLoading } = useLogsByBoreholeId(boreholeId);
   const [tmpLogRuns, setTmpLogRuns] = useState<LogRunChangeTracker[]>([]);
+  const lastReportedAt = useRef(0);
+  const lastReportedFile = useRef(0);
   const tmpLogRunsFlat: LogRun[] = useMemo(() => tmpLogRuns.map(l => l.item as LogRun), [tmpLogRuns]);
 
   const {
@@ -116,29 +126,75 @@ export const LogPanel: FC = () => {
     await deleteLogRuns(logRunsToDelete);
   }, [deleteLogRuns, logRuns, tmpLogRunsFlat]);
 
-  const addAndUpdateLogRuns = useCallback(async () => {
-    for (const logRun of tmpLogRuns.filter(l => l.hasChanges).map(l => l.item)) {
-      prepareLogRunForSubmit(logRun);
-      if (logRun.id === 0) {
-        const createdLogRun = await addLogRun({ ...logRun, boreholeId: boreholeId, logFiles: [] });
-        if (logRun.logFiles && logRun.logFiles.length > 0) {
-          await updateLogRun({ ...createdLogRun, logFiles: logRun.logFiles });
+  const addAndUpdateLogRuns = useCallback(
+    async (signal: AbortSignal, onCancel: () => void) => {
+      const changedLogRuns = tmpLogRuns.filter(l => l.hasChanges).map(l => l.item);
+      const totalUploads = changedLogRuns.reduce((sum, logRun) => sum + countPendingUploads(logRun), 0);
+
+      // Files are uploaded one at a time, so a running offset over the log runs yields the
+      // position of the file currently in flight within the whole save.
+      let uploadsBeforeCurrentRun = 0;
+      const reportProgress = (offset: number): LogFileUploadProgressCallback => {
+        return ({ fileName, indexInRun, loaded, total }) => {
+          const position = offset + indexInRun + 1;
+
+          // The byte count changes faster than it can be read, so it is refreshed on an interval.
+          // A file that has just started is always shown, otherwise its name would appear late.
+          const now = Date.now();
+          const startsNewFile = lastReportedFile.current !== position;
+          if (!startsNewFile && now - lastReportedAt.current < progressRefreshIntervalMs) return;
+          lastReportedFile.current = position;
+          lastReportedAt.current = now;
+
+          // The file name stays on the line read first, the numbers that keep moving go below it.
+          const placeInSave = { current: position, total: totalUploads };
+          setSaveProgress({
+            message: t("uploadingFile", { name: fileName }),
+            hint:
+              total === undefined
+                ? t("uploadProgressHint", placeInSave)
+                : t("uploadProgressHintWithSize", {
+                    ...placeInSave,
+                    transferred: formatBytes(loaded),
+                    size: formatBytes(total),
+                  }),
+            onCancel,
+          });
+        };
+      };
+
+      for (const logRun of changedLogRuns) {
+        prepareLogRunForSubmit(logRun);
+        const pendingUploads = countPendingUploads(logRun);
+        const onFileProgress = totalUploads > 0 ? reportProgress(uploadsBeforeCurrentRun) : undefined;
+
+        if (logRun.id === 0) {
+          const createdLogRun = await addLogRun({ ...logRun, boreholeId: boreholeId, logFiles: [] });
+          if (logRun.logFiles && logRun.logFiles.length > 0) {
+            await updateLogRun({ logRun: { ...createdLogRun, logFiles: logRun.logFiles }, onFileProgress, signal });
+          }
+        } else {
+          await updateLogRun({ logRun, onFileProgress, signal });
         }
-      } else {
-        await updateLogRun(logRun);
+        uploadsBeforeCurrentRun += pendingUploads;
       }
-    }
-  }, [addLogRun, boreholeId, tmpLogRuns, updateLogRun]);
+    },
+    [addLogRun, boreholeId, setSaveProgress, t, tmpLogRuns, updateLogRun],
+  );
 
   const onReset = useCallback(async () => {
     initTmpLogRuns();
   }, [initTmpLogRuns]);
 
   const onSave = useCallback(async () => {
+    const abortController = new AbortController();
     try {
-      await Promise.all([deleteRuns(), addAndUpdateLogRuns()]);
+      await Promise.all([deleteRuns(), addAndUpdateLogRuns(abortController.signal, () => abortController.abort())]);
       return true;
     } catch (error) {
+      // Giving up on the upload is not a failure. The log runs whose files already reached the
+      // server keep them, and the unsaved changes stay so the save can be repeated.
+      if (isAbortError(error)) return false;
       showApiErrorAlert(error);
       return false;
     }

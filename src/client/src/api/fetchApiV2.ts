@@ -4,6 +4,8 @@ import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
 import { getAuthorizationHeader } from "./authentication.ts";
 import { ApiError } from "./errorClasses.ts";
 import { Backfill, Casing, Completion, Document, DocumentUpdate, Instrumentation, Section } from "./generated";
+import { TransferOptions } from "./transferProgress.ts";
+import { uploadWithProgress } from "./uploadWithProgress.ts";
 
 /**
  * Base function to make API calls to the v2 API.
@@ -11,6 +13,7 @@ import { Backfill, Casing, Completion, Document, DocumentUpdate, Instrumentation
  * @param {string} method - The HTTP method (e.g., GET, POST, PUT, DELETE).
  * @param {FormData|string|null} [body=null] - The request payload, if applicable.
  * @param {string|null} [contentType=null] - The content type of the request, if applicable.
+ * @param {AbortSignal} [signal] - Aborts the request, and with it the work it triggers on the server.
  * @returns {Promise<Response>} - The raw HTTP response.
  */
 export async function fetchApiV2Base(
@@ -18,6 +21,7 @@ export async function fetchApiV2Base(
   method: string,
   body: FormData | string | null = null,
   contentType: string | null = null,
+  signal?: AbortSignal,
 ): Promise<Response> {
   const baseUrl = "/api/v2/";
   const authentication = getAuthToken();
@@ -33,6 +37,7 @@ export async function fetchApiV2Base(
     credentials: "same-origin",
     headers: headers,
     body: body,
+    signal: signal,
   });
 }
 
@@ -144,10 +149,16 @@ export async function fetchApiV2WithApiError<T>(
  * @param {string} url - The endpoint URL relative to the base API path.
  * @param {string} method - The HTTP method (e.g., POST, PUT).
  * @param {FormData} payload - The file data to upload.
+ * @param {TransferOptions} [options] - Progress reporting and cancellation.
  * @returns {Promise<any>} - The parsed response content.
  * @throws {ApiError|Error} - Throws an `ApiError` or a generic `Error` based on the response content. */
-export async function uploadWithApiError<T>(url: string, method: string, payload: FormData): Promise<T> {
-  const response = await fetchApiV2Base(url, method, payload);
+export async function uploadWithApiError<T>(
+  url: string,
+  method: string,
+  payload: FormData,
+  options?: TransferOptions,
+): Promise<T> {
+  const response = await uploadWithProgress(url, method, payload, options);
   if (response.ok) {
     return await readApiResponse(response);
   } else {
@@ -156,8 +167,13 @@ export async function uploadWithApiError<T>(url: string, method: string, payload
   }
 }
 
-export async function upload(url: string, method: string, payload: FormData): Promise<Response> {
-  return await fetchApiV2Base(url, method, payload);
+export async function upload(
+  url: string,
+  method: string,
+  payload: FormData,
+  options?: TransferOptions,
+): Promise<Response> {
+  return await uploadWithProgress(url, method, payload, options);
 }
 
 // Enable using react-query outputs across the application.

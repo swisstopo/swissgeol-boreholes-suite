@@ -7,6 +7,7 @@ import { SessionKeys } from "../pages/overview/SessionKey.ts";
 import { download, downloadData } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
 import { Borehole, BoreholeBulkUpdate, BoreholeBulkUpdateRequest, BoreholeCodelist, Codelist } from "./generated";
+import { TransferOptions } from "./transferProgress.ts";
 import { NullableDateString } from "./unionTypes.ts";
 import { useCurrentUser } from "./user.ts";
 
@@ -56,8 +57,11 @@ export const exportCSVBorehole = async (boreholeIds: GridRowSelectionModel, file
   downloadData(csvData, `${fileName}.csv`, "text/csv");
 };
 
-export const exportJsonWithAttachmentsBorehole = async (boreholeIds: number[] | GridRowSelectionModel) => {
-  return await download(`boreholeexport/zip?${getIdQuery(boreholeIds)}`);
+export const exportJsonWithAttachmentsBorehole = async (
+  boreholeIds: number[] | GridRowSelectionModel,
+  options?: TransferOptions,
+) => {
+  return await download(`boreholeexport/zip?${getIdQuery(boreholeIds)}`, options);
 };
 
 const fetchBoreholeById = async (id: number): Promise<Borehole> => {

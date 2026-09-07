@@ -7,6 +7,7 @@ import { boreholeQueryKey } from "../../../../api/borehole.ts";
 import { downloadPost } from "../../../../api/download.ts";
 import { ApiError } from "../../../../api/errorClasses.ts";
 import { fetchApiV2WithApiError, isJsonContentType, upload, uploadWithApiError } from "../../../../api/fetchApiV2.ts";
+import { TransferOptions, TransferProgress } from "../../../../api/transferProgress.ts";
 import { ExportItem } from "../../../../components/export/exportDialog.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
@@ -18,12 +19,37 @@ const deleteLogRunsByIds = async (logRunIds: number[]) => {
   return await fetchApiV2WithApiError(`${logController}?${queryParams}`, "DELETE");
 };
 
-const uploadLogFileBlob = async (file: File, logRunId: number, logFileId?: number): Promise<LogFile> => {
+const uploadLogFileBlob = async (
+  file: File,
+  logRunId: number,
+  logFileId?: number,
+  options?: TransferOptions,
+): Promise<LogFile> => {
   const formData = new FormData();
   formData.append("file", file);
   const query = logFileId ? `?logRunId=${logRunId}&logFileId=${logFileId}` : `?logRunId=${logRunId}`;
-  return await uploadWithApiError<LogFile>(`${logController}/upload${query}`, "POST", formData);
+  return await uploadWithApiError<LogFile>(`${logController}/upload${query}`, "POST", formData, options);
 };
+
+/**
+ * Reports the upload of one log file belonging to a single log run.
+ * `indexInRun` counts the files of that run that carry a blob, in upload order.
+ */
+export interface LogFileUploadProgress extends TransferProgress {
+  fileName: string;
+  indexInRun: number;
+}
+
+export type LogFileUploadProgressCallback = (progress: LogFileUploadProgress) => void;
+
+/** Counts the files of a log run that still have to be uploaded. */
+export const countPendingUploads = (logRun: LogRun): number => logRun.logFiles?.filter(f => f.file).length ?? 0;
+
+export interface UpdateLogRunVariables {
+  logRun: LogRun;
+  onFileProgress?: LogFileUploadProgressCallback;
+  signal?: AbortSignal;
+}
 
 const logController = "log";
 const logsQueryKey = "logs";
@@ -52,22 +78,27 @@ export const useLogRunMutations = () => {
   });
 
   const useUpdateLogRun = useMutation({
-    mutationFn: async (logRun: LogRun) => {
+    mutationFn: async ({ logRun, onFileProgress, signal }: UpdateLogRunVariables) => {
       if (logRun.logFiles?.some(file => file.file)) {
-        const uploadPromises = logRun.logFiles.map(async file => {
+        let indexInRun = 0;
+        for (const file of logRun.logFiles) {
           file.logRunId = logRun.id;
-          if (file.file) {
-            const savedFile = await uploadLogFileBlob(file.file, logRun.id);
-            file.id = savedFile.id;
-            delete file.file;
-          }
-          return file;
-        });
-        logRun.logFiles = await Promise.all(uploadPromises);
+          if (!file.file) continue;
+
+          const fileName = file.file.name;
+          const currentIndex = indexInRun;
+          const savedFile = await uploadLogFileBlob(file.file, logRun.id, undefined, {
+            signal,
+            onProgress: progress => onFileProgress?.({ ...progress, fileName, indexInRun: currentIndex }),
+          });
+          file.id = savedFile.id;
+          delete file.file;
+          indexInRun++;
+        }
       }
       return await fetchApiV2WithApiError<LogRun>(logController, "PUT", logRun);
     },
-    onSuccess: (_data, logRun) => {
+    onSuccess: (_data, { logRun }) => {
       resetTabStatus();
       queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRun.boreholeId] });
     },
@@ -166,12 +197,22 @@ export const useImportLogs = () => {
   });
 };
 
-export const exportLogRuns = async (ids: number[], withAttachments: boolean, locale: string): Promise<Response> => {
-  return await downloadPost("log/export", { logRunIds: ids, withAttachments, locale });
+export const exportLogRuns = async (
+  ids: number[],
+  withAttachments: boolean,
+  locale: string,
+  options?: TransferOptions,
+): Promise<Response> => {
+  return await downloadPost("log/export", { logRunIds: ids, withAttachments, locale }, options);
 };
 
-export const exportLogFiles = async (ids: number[], withAttachments: boolean, locale: string): Promise<Response> => {
-  return await downloadPost("log/export", { logFileIds: ids, withAttachments, locale });
+export const exportLogFiles = async (
+  ids: number[],
+  withAttachments: boolean,
+  locale: string,
+  options?: TransferOptions,
+): Promise<Response> => {
+  return await downloadPost("log/export", { logFileIds: ids, withAttachments, locale }, options);
 };
 
 /**
@@ -179,7 +220,7 @@ export const exportLogFiles = async (ids: number[], withAttachments: boolean, lo
  * locale resolution, withAttachments differentiation, and selection-to-ID mapping.
  */
 export const useLogExport = (
-  exportFn: (ids: number[], withAttachments: boolean, locale: string) => Promise<Response>,
+  exportFn: (ids: number[], withAttachments: boolean, locale: string, options?: TransferOptions) => Promise<Response>,
   selectionModel: GridRowSelectionModel,
   rows: { id: number; tmpId?: string }[],
 ) => {
@@ -222,11 +263,11 @@ export const useLogExport = (
     () => [
       {
         label: "withoutAttachments",
-        exportFunction: () => exportFn(getSelectedIds(), false, i18n.language),
+        exportFunction: options => exportFn(getSelectedIds(), false, i18n.language, options),
       },
       {
         label: "withAttachments",
-        exportFunction: () => exportFn(getSelectedIds(), true, i18n.language),
+        exportFunction: options => exportFn(getSelectedIds(), true, i18n.language, options),
       },
     ],
     [exportFn, getSelectedIds, i18n.language],

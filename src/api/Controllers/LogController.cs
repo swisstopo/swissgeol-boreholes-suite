@@ -737,6 +737,12 @@ public class LogController : BoreholeControllerBase<LogRun>
 
             return new StreamedZipResult($"{LogExportFileName}_{timestamp}.zip", entries, Logger);
         }
+        catch (OperationCanceledException)
+        {
+            // The client gave up while the export was still being prepared. There is nobody left
+            // to answer, so this is not reported as a failed export.
+            throw;
+        }
         catch (AmazonS3Exception ex)
         {
             Logger.LogError(ex, "Amazon S3 Store threw an exception.");

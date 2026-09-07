@@ -2,8 +2,15 @@
 
 ## [Unreleased]
 
+### Added
+- The overlay shown while saving log runs now names the file being uploaded, its position in the save, and how much of it has been transferred.
+- The export overlay now shows how much of the export has been downloaded.
+- Uploads and exports can be cancelled by clicking the overlay. A canceled export stops the download and the work it triggers on the server; a canceled upload keeps the files that already reached the server, and the remaining changes stay unsaved so the save can be repeated.
+
 ### Changed
 - Upgraded to .NET 10.
+- Log files attached to a log run are uploaded one after another instead of all at once.
+- The export dialog closes as soon as a format is chosen, and the transfer is reported by an overlay over the page instead of over the dialog.
 
 ### Fixed
 - Exporting log runs with large attachments no longer fails. Log file exports and downloads are streamed instead of being assembled in memory, so files larger than 2 GB can now be exported and downloaded up to the 5 GB limit.

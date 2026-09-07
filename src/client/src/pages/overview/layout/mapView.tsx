@@ -140,7 +140,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
           },
           {
             label: "exportJsonProfile",
-            exportFunction: () => exportJsonWithAttachmentsBorehole(selectionModel.slice(0, 100)),
+            exportFunction: options => exportJsonWithAttachmentsBorehole(selectionModel.slice(0, 100), options),
           },
         ]}
       />
