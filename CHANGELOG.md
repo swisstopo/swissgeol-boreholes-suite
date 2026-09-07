@@ -5,6 +5,9 @@
 ### Changed
 - Upgraded to .NET 10.
 
+### Fixed
+- Exporting log runs with large attachments no longer fails. Log file exports and downloads are streamed instead of being assembled in memory, so files larger than 2 GB can now be exported and downloaded up to the 5 GB limit.
+
 ## v2.1.1748 - 2026-07-28
 
 ### Changed
