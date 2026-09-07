@@ -794,6 +794,10 @@ export type DocumentUpdate = {
   public: boolean;
 };
 
+export type ElevationModel = {
+  extent?: Envelope;
+};
+
 export type Envelope = {
   readonly isNull?: boolean;
   readonly width?: number;
@@ -1210,10 +1214,15 @@ export type GeometryFactory = {
   precisionModel?: PrecisionModel;
   coordinateSequenceFactory?: CoordinateSequenceFactory;
   readonly srid?: number;
+  elevationModel?: ElevationModel;
   geometryServices?: NtsGeometryServices;
 };
 
 export type GeometryOverlay = {
+  [key: string]: never;
+};
+
+export type GeometryRelate = {
   [key: string]: never;
 };
 
@@ -2278,10 +2287,12 @@ export type MapLayer = {
 
 export type NtsGeometryServices = {
   geometryOverlay?: GeometryOverlay;
+  geometryRelate?: GeometryRelate;
   coordinateEqualityComparer?: CoordinateEqualityComparer;
   readonly defaultSRID?: number;
   defaultCoordinateSequenceFactory?: CoordinateSequenceFactory;
   defaultPrecisionModel?: PrecisionModel;
+  defaultElevationModel?: ElevationModel;
 };
 
 /**
@@ -3808,6 +3819,10 @@ export type DocumentWritable = {
   updated?: string | null;
 };
 
+export type ElevationModelWritable = {
+  extent?: EnvelopeWritable;
+};
+
 export type EnvelopeWritable = {
   centre?: CoordinateWritable;
 };
@@ -4124,6 +4139,7 @@ export type GeometryWritable = {
 export type GeometryFactoryWritable = {
   precisionModel?: PrecisionModelWritable;
   coordinateSequenceFactory?: CoordinateSequenceFactory;
+  elevationModel?: ElevationModelWritable;
   geometryServices?: NtsGeometryServicesWritable;
 };
 
@@ -5014,9 +5030,11 @@ export type LogRunWritable = {
 
 export type NtsGeometryServicesWritable = {
   geometryOverlay?: GeometryOverlay;
+  geometryRelate?: GeometryRelate;
   coordinateEqualityComparer?: CoordinateEqualityComparer;
   defaultCoordinateSequenceFactory?: CoordinateSequenceFactory;
   defaultPrecisionModel?: PrecisionModelWritable;
+  defaultElevationModel?: ElevationModelWritable;
 };
 
 /**

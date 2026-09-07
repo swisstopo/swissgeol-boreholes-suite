@@ -1,4 +1,4 @@
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS development
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS development
 ENV ASPNETCORE_ENVIRONMENT=Development
 WORKDIR /src
 
@@ -7,7 +7,7 @@ RUN \
   apt-get -y update && \
   apt-get -y install curl git htop vim && \
   rm -rf /var/lib/apt/lists/* && \
-  dotnet tool install --global dotnet-ef --version 8.0.0
+  dotnet tool install --global dotnet-ef --version 10.0.11
 
 ENV PATH=$PATH:/root/.dotnet/tools
 
@@ -17,7 +17,7 @@ RUN dotnet restore
 
 ENTRYPOINT ["dotnet", "watch", "run", "--no-launch-profile"]
 
-FROM mcr.microsoft.com/dotnet/sdk:8.0 AS build
+FROM mcr.microsoft.com/dotnet/sdk:10.0 AS build
 ARG VERSION
 ARG REVISION
 WORKDIR /src
@@ -35,7 +35,7 @@ RUN dotnet publish \
   -p:SourceRevisionId=${REVISION} \
   -o /app/publish
 
-FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS deploy
+FROM mcr.microsoft.com/dotnet/aspnet:10.0 AS deploy
 ENV ASPNETCORE_ENVIRONMENT=Production
 WORKDIR /app
 

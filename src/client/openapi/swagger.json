@@ -8645,6 +8645,15 @@
         "additionalProperties": false,
         "description": "Represents a BDMS.Models.Document's updatable properties."
       },
+      "ElevationModel": {
+        "type": "object",
+        "properties": {
+          "extent": {
+            "$ref": "#/components/schemas/Envelope"
+          }
+        },
+        "additionalProperties": false
+      },
       "Envelope": {
         "type": "object",
         "properties": {
@@ -9507,6 +9516,9 @@
             "format": "int32",
             "readOnly": true
           },
+          "elevationModel": {
+            "$ref": "#/components/schemas/ElevationModel"
+          },
           "geometryServices": {
             "$ref": "#/components/schemas/NtsGeometryServices"
           }
@@ -9514,6 +9526,10 @@
         "additionalProperties": false
       },
       "GeometryOverlay": {
+        "type": "object",
+        "additionalProperties": false
+      },
+      "GeometryRelate": {
         "type": "object",
         "additionalProperties": false
       },
@@ -11613,6 +11629,9 @@
           "geometryOverlay": {
             "$ref": "#/components/schemas/GeometryOverlay"
           },
+          "geometryRelate": {
+            "$ref": "#/components/schemas/GeometryRelate"
+          },
           "coordinateEqualityComparer": {
             "$ref": "#/components/schemas/CoordinateEqualityComparer"
           },
@@ -11626,6 +11645,9 @@
           },
           "defaultPrecisionModel": {
             "$ref": "#/components/schemas/PrecisionModel"
+          },
+          "defaultElevationModel": {
+            "$ref": "#/components/schemas/ElevationModel"
           }
         },
         "additionalProperties": false

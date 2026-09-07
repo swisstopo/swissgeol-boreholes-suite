@@ -2,6 +2,9 @@
 
 ## [Unreleased]
 
+### Changed
+- Upgraded to .NET 10.
+
 ## v2.1.1748 - 2026-07-28
 
 ### Changed
