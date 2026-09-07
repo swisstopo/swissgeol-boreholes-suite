@@ -5,10 +5,10 @@ import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 import { GlobalStyles } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { Language, SwissgeolCoreI18n } from "@swissgeol/ui-core";
-import { MutationCache, QueryCache, QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
 import { NuqsAdapter } from "nuqs/adapters/react-router/v7";
-import { ApiError } from "./api/errorClasses.ts";
+import { createQueryClient } from "./api/queryClient.ts";
 import { theme } from "./AppTheme";
 import { BoreholesAuthProvider } from "./auth/BoreholesAuthProvider.tsx";
 import { AlertBanner } from "./components/alert/alertBanner";
@@ -93,40 +93,10 @@ const QueryClientInitializer: FC<PropsWithChildren> = ({ children }) => {
 
   const queryClient = useMemo(
     () =>
-      new QueryClient({
-        defaultOptions: {
-          queries: {
-            retry: isCypress ? false : 3,
-            throwOnError: (error, query) => {
-              if (error instanceof ApiError && error.status === 404) {
-                return true;
-              }
-              if (error instanceof ApiError) {
-                return false;
-              }
-              // If there is no cached data for a query, we want to throw an error that will be caught by the error boundary.
-              // The closest error boundary's FallbackComponent will be displayed.
-              return typeof query.state.data === "undefined";
-            },
-          },
-        },
-        queryCache: new QueryCache({
-          onError: (error, query) => {
-            if (typeof query.state.data !== "undefined" && !(error instanceof ApiError)) {
-              // If there is cached data available for a query, we want to show the cached data to the user.
-              // An alert will be shown to inform the user that the data is not up-to-date.
-              showAlertRef.current(tRef.current("dataNotUpToDateError"), "error");
-            }
-          },
-        }),
-        mutationCache: new MutationCache({
-          onError: error => {
-            if (!(error instanceof ApiError)) {
-              // An alert will be shown to inform the user that the action was not successful.
-              showAlertRef.current(tRef.current("errorMutationNotSuccessfull"), "error");
-            }
-          },
-        }),
+      createQueryClient({
+        showAlert: (message, severity) => showAlertRef.current(message, severity),
+        translate: key => tRef.current(key),
+        retryQueries: !isCypress,
       }),
     [isCypress],
   );
