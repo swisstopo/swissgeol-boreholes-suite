@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
+using Amazon.S3.Transfer;
 using System.Net;
 
 namespace BDMS.Services;
@@ -35,14 +36,18 @@ public abstract class CloudServiceBase
     {
         try
         {
-            var putObjectRequest = new PutObjectRequest
+            // A single PutObject caps an object at the 5 GiB S3 accepts in one request, and any
+            // failure restarts the whole transfer. TransferUtility splits a large payload into
+            // parts, which lifts the cap and retries a part rather than the object.
+            using var transferUtility = new TransferUtility(S3Client);
+            var uploadRequest = new TransferUtilityUploadRequest
             {
                 BucketName = BucketName,
                 Key = objectName,
                 InputStream = fileStream,
                 ContentType = contentType,
             };
-            await S3Client.PutObjectAsync(putObjectRequest, cancellationToken).ConfigureAwait(false);
+            await transferUtility.UploadAsync(uploadRequest, cancellationToken).ConfigureAwait(false);
         }
         catch (AmazonS3Exception ex)
         {

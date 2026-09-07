@@ -190,6 +190,30 @@ public class LogFileCloudServiceTest
     }
 
     [TestMethod]
+    public async Task UploadLogFileAndLinkToLogRunAsyncStoresAFileLargerThanOnePart()
+    {
+        var fileName = $"{Guid.NewGuid()}.las";
+        var minLogRunId = context.LogRuns.Min(b => b.Id);
+        var content = new byte[12 * 1024 * 1024];
+        Random.Shared.NextBytes(content);
+
+        using var stream = new MemoryStream(content);
+        await logFileCloudService.UploadLogFileAndLinkToLogRunAsync(stream, fileName, "application/octet-stream", minLogRunId);
+
+        var logRun = context.LogRunsWithIncludes.Single(b => b.Id == minLogRunId);
+        var stored = logRun.LogFiles.Single(f => f.Name == fileName);
+        Assert.IsNotNull(stored.NameUuid);
+
+        using var readBack = await logFileCloudService.GetObjectStream(stored.NameUuid);
+        using var buffer = new MemoryStream();
+        await readBack.CopyToAsync(buffer);
+
+        var readBytes = buffer.ToArray();
+        Assert.AreEqual(content.Length, readBytes.Length);
+        Assert.IsTrue(content.AsSpan().SequenceEqual(readBytes), "the stored bytes should match what was uploaded");
+    }
+
+    [TestMethod]
     public async Task UploadLogFileAndLinkToLogRunAsyncLinksNothingWhenCancelled()
     {
         var fileName = $"{Guid.NewGuid()}.las";
