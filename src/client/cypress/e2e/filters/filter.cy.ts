@@ -91,7 +91,10 @@ function testLargeSelectFilter(
 function toggleYesNoAndWaitForFilter(fieldName: string, option: string, alias: string) {
   cy.intercept("POST", "/api/v2/borehole/filter").as(alias);
   clickYesNoButton(fieldName, option);
-  cy.wait(`@${alias}`);
+  cy.wait(`@${alias}`).then(interception => {
+    expect(interception.request.body, `filter request body after toggling ${fieldName}`).to.have.property(fieldName);
+  });
+  cy.dataCy(`filter-chip-${fieldName}`).should("exist");
 }
 
 describe("Search filter tests", () => {
@@ -150,11 +153,13 @@ describe("Search filter tests", () => {
     openFilter("Borehole");
 
     toggleYesNoAndWaitForFilter("nationalInterest", "yes", "filter_national_interest_yes");
+    cy.get('[data-cy="boreholes-number-preview"]').should("have.text", "10");
     showTableAndWaitForData();
+    cy.location("search").should("contain", "nationalInterest=true");
+    cy.dataCy("filter-chip-nationalInterest").should("exist");
     // Exactly every tenth seeded borehole has nationalInterest = true (10 out of 100).
     hasPagination(false);
     cy.dataCy("boreholes-number-preview").should("have.text", "10");
-    cy.dataCy("filter-chip-nationalInterest").should("exist");
 
     toggleYesNoAndWaitForFilter("nationalInterest", "not specified", "filter_national_interest_np");
     hasPagination(false);
