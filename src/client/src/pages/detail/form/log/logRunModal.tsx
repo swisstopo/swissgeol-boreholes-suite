@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useEffect } from "react";
+import { FC, useCallback, useContext, useEffect, useRef } from "react";
 import { FormProvider, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Chip, Stack, Typography } from "@mui/material";
@@ -24,7 +24,13 @@ import { EditStateContext } from "../../editStateContext";
 import { FileDropzone } from "./fileDropzone.tsx";
 import { LogFileTable } from "./logFilesTable";
 import { LogFile, LogRun } from "./logInterfaces";
-import { getFileExtension, getServiceOrToolArray, validateFiles, validateRunNumber } from "./logUtils";
+import {
+  getFileExtension,
+  getServiceOrToolArray,
+  toStoredFileName,
+  validateFiles,
+  validateRunNumber,
+} from "./logUtils";
 
 type LogFileField = LogFile & { fileKey: string };
 
@@ -69,7 +75,11 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
 
   const watchedFiles = useWatch({ control: formMethods.control, name: "logFiles" }) as LogFile[] | undefined;
 
+  /** What the run held under a name that was taken out while this dialog has been open. */
+  const replacedFileIds = useRef(new Map<string, number>());
+
   useEffect(() => {
+    replacedFileIds.current.clear();
     if (logRun) {
       const withTmpFileIds = {
         ...logRun,
@@ -108,14 +118,22 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
 
   const removeFile = useCallback(
     (idx: number) => () => {
+      // Putting the same name back has to replace what the run holds rather than add a second
+      // file under it, so the identity of what was taken out is kept for as long as the dialog
+      // is open. Matching on the name alone could not tell a replacement from a file the server
+      // happens to hold already.
+      const removed = formMethods.getValues(`logFiles.${idx}`);
+      if (removed !== undefined && removed.id > 0 && removed.name !== undefined) {
+        replacedFileIds.current.set(removed.name, removed.id);
+      }
       remove(idx);
     },
-    [remove],
+    [formMethods, remove],
   );
 
   const onFileChanged = useCallback(
     (selected: File | undefined, index: number): string | void => {
-      const updatedName = selected ? selected.name : "";
+      const updatedName = selected ? toStoredFileName(selected.name) : "";
       const existingFiles = formMethods.getValues("logFiles") ?? [];
       if (
         updatedName &&
@@ -135,6 +153,14 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
         });
         formMethods.trigger(`logFiles.${index}`);
         formMethods.setValue(`logFiles.${index}.file`, selected, { shouldDirty: true, shouldTouch: true });
+
+        // Taking a file out and putting the same name back replaces what the run holds. Keeping
+        // the identity it had makes the upload overwrite that file instead of adding a second
+        // one, which the run would refuse because the name is already taken.
+        const replacedId = replacedFileIds.current.get(updatedName);
+        if (replacedId !== undefined) {
+          formMethods.setValue(`logFiles.${index}.id`, replacedId, { shouldDirty: true });
+        }
       }
     },
     [formMethods, t],

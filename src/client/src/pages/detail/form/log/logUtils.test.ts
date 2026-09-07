@@ -9,6 +9,7 @@ import {
   getFileExtension,
   parseLogFilesCsv,
   prepareLogRunForSubmit,
+  toStoredFileName,
   validateFiles,
 } from "./logUtils.ts";
 
@@ -245,6 +246,17 @@ describe("applyUploadedFiles", () => {
   });
 });
 
+describe("toStoredFileName", () => {
+  it("replaces the white space the server would replace", () => {
+    expect(toStoredFileName("my log file.las")).toBe("my_log_file.las");
+  });
+
+  it("leaves a name the server would store unchanged", () => {
+    // Applying it twice has to give the same name, otherwise the stored name drifts.
+    expect(toStoredFileName(toStoredFileName("my log.las"))).toBe("my_log.las");
+  });
+});
+
 describe("applyStoredFiles", () => {
   const runs = (fileName: string): LogRunChangeTracker[] => [
     { item: { ...createLogRun(), logFiles: [createPendingFile(0, fileName)] }, hasChanges: true },
@@ -262,12 +274,16 @@ describe("applyStoredFiles", () => {
     expect(updated.item.logFiles?.[0].file).toBeUndefined();
   });
 
-  it("matches the name the way the server stored it", () => {
-    // White space is replaced when the file is stored, so the local name never matches verbatim.
-    const [updated] = applyStoredFiles(runs("my log.las"), [storedRun([{ id: 43, name: "my_log.las" }])]);
+  it("still sends a file the user put back under a name the run holds", () => {
+    // The id says the user replaced this file, so what the server holds is the old content.
+    const original: LogRunChangeTracker[] = [
+      { item: { ...createLogRun(), logFiles: [createPendingFile(42, "smallerzip.zip")] }, hasChanges: true },
+    ];
 
-    expect(updated.item.logFiles?.[0].id).toBe(43);
-    expect(updated.item.logFiles?.[0].file).toBeUndefined();
+    const [updated] = applyStoredFiles(original, [storedRun([{ id: 42, name: "smallerzip.zip" }])]);
+
+    expect(updated).toBe(original[0]);
+    expect(updated.item.logFiles?.[0].file).toBeDefined();
   });
 
   it("keeps a file the server never received pending", () => {

@@ -91,10 +91,16 @@ export const applyUploadedFiles = (
 };
 
 /**
- * The server replaces white space in a stored file name, so names are compared the way it
- * would have stored them.
+ * Renames a picked file to the name it will be stored under.
+ *
+ * The server replaces white space before storing, so a name taken straight from the file
+ * system never matches the one the run ends up holding. Applying it here makes the local name
+ * a fixed point of that rule: it carries no white space, so storing cannot change it again,
+ * and the two names stay comparable however the server's rule is written.
+ * @param name The name as the file system reports it.
+ * @returns The name the log run will hold.
  */
-const storedFileName = (name: string): string => name.replaceAll(" ", "_");
+export const toStoredFileName = (name: string): string => name.replaceAll(" ", "_");
 
 /**
  * Reconciles the panel's runs with what the server actually holds.
@@ -113,10 +119,12 @@ export const applyStoredFiles = (runs: LogRunChangeTracker[], storedRuns: LogRun
 
     let anyStored = false;
     const logFiles = entry.item.logFiles.map(file => {
+      // A file that already carries an id is one the user deliberately replaced, and has to be
+      // sent however much of it the server holds. Only a file with no identity is claimed here.
       const name = file.name;
-      if (!file.file || name === undefined) return file;
+      if (!file.file || file.id !== 0 || name === undefined) return file;
 
-      const match = stored.logFiles?.find(storedFile => storedFile.name === storedFileName(name));
+      const match = stored.logFiles?.find(storedFile => storedFile.name === name);
       if (match === undefined) return file;
 
       anyStored = true;

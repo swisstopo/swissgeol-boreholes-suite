@@ -88,7 +88,11 @@ export const useLogRunMutations = () => {
 
           const fileName = file.file.name;
           const currentIndex = indexInRun;
-          const savedFile = await uploadLogFileBlob(file.file, logRun.id, undefined, {
+
+          // A file that already has an id is one the user put back under a name the run still
+          // holds, so its content is replaced rather than stored a second time.
+          const replacedId = file.id > 0 ? file.id : undefined;
+          const savedFile = await uploadLogFileBlob(file.file, logRun.id, replacedId, {
             signal,
             onProgress: progress => onFileProgress?.({ ...progress, fileName, indexInRun: currentIndex }),
           });
