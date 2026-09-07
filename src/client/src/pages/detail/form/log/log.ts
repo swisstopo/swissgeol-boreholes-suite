@@ -45,11 +45,20 @@ export const countPendingUploads = (logRun: LogRun): number => logRun.logFiles?.
 
 const logController = "log";
 const logsQueryKey = "logs";
+/**
+ * Reads the log runs of a borehole straight from the API, bypassing the cache.
+ * @param boreholeId The borehole to read.
+ * @returns The log runs as the server holds them.
+ */
+export const fetchLogRunsByBoreholeId = async (boreholeId: number): Promise<LogRun[]> =>
+  await fetchApiV2WithApiError<LogRun[]>(`${logController}?boreholeId=${boreholeId}`, "GET");
+
 export const useLogsByBoreholeId = (boreholeId?: number): UseQueryResult<LogRun[]> =>
   useQuery<LogRun[]>({
     queryKey: [logsQueryKey, boreholeId],
     queryFn: async (): Promise<LogRun[]> => {
-      return await fetchApiV2WithApiError<LogRun[]>(`${logController}?boreholeId=${boreholeId}`, "GET");
+      if (boreholeId === undefined) return [];
+      return await fetchLogRunsByBoreholeId(boreholeId);
     },
     enabled: !!boreholeId,
   });

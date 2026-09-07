@@ -3,6 +3,7 @@ import { describe, expect, it } from "vitest";
 import { FormErrors } from "../../../../components/form/form.ts";
 import { LogFile, LogRun, LogRunChangeTracker } from "./logInterfaces.ts";
 import {
+  applyStoredFiles,
   applyUploadedFiles,
   buildFileName,
   getFileExtension,
@@ -241,5 +242,48 @@ describe("applyUploadedFiles", () => {
     const original = runs();
 
     expect(applyUploadedFiles(original, "other", [])[0]).toBe(original[0]);
+  });
+});
+
+describe("applyStoredFiles", () => {
+  const runs = (fileName: string): LogRunChangeTracker[] => [
+    { item: { ...createLogRun(), logFiles: [createPendingFile(0, fileName)] }, hasChanges: true },
+  ];
+
+  const storedRun = (files: { id: number; name: string }[]): LogRun => ({
+    ...createLogRun(),
+    logFiles: files.map(f => ({ ...createPendingFile(f.id, f.name), file: undefined })),
+  });
+
+  it("stops offering a file the server already stored", () => {
+    const [updated] = applyStoredFiles(runs("smallerzip.zip"), [storedRun([{ id: 42, name: "smallerzip.zip" }])]);
+
+    expect(updated.item.logFiles?.[0].id).toBe(42);
+    expect(updated.item.logFiles?.[0].file).toBeUndefined();
+  });
+
+  it("matches the name the way the server stored it", () => {
+    // White space is replaced when the file is stored, so the local name never matches verbatim.
+    const [updated] = applyStoredFiles(runs("my log.las"), [storedRun([{ id: 43, name: "my_log.las" }])]);
+
+    expect(updated.item.logFiles?.[0].id).toBe(43);
+    expect(updated.item.logFiles?.[0].file).toBeUndefined();
+  });
+
+  it("keeps a file the server never received pending", () => {
+    const original = runs("smallerzip.zip");
+
+    const [updated] = applyStoredFiles(original, [storedRun([])]);
+
+    expect(updated).toBe(original[0]);
+    expect(updated.item.logFiles?.[0].file).toBeDefined();
+  });
+
+  it("leaves a run the server does not know yet alone", () => {
+    const original: LogRunChangeTracker[] = [
+      { item: { ...createLogRun(), id: 0, logFiles: [createPendingFile(0, "new.las")] }, hasChanges: true },
+    ];
+
+    expect(applyStoredFiles(original, [storedRun([{ id: 44, name: "new.las" }])])[0]).toBe(original[0]);
   });
 });

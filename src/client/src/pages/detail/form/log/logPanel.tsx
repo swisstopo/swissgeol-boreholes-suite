@@ -14,11 +14,17 @@ import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { SaveContext } from "../../saveContext.tsx";
 import { ImportLogRunsModal } from "./importLogRunsModal.tsx";
-import { countPendingUploads, LogFileUploadProgressCallback, useLogRunMutations, useLogsByBoreholeId } from "./log.ts";
+import {
+  countPendingUploads,
+  fetchLogRunsByBoreholeId,
+  LogFileUploadProgressCallback,
+  useLogRunMutations,
+  useLogsByBoreholeId,
+} from "./log.ts";
 import { LogRun, LogRunChangeTracker } from "./logInterfaces.ts";
 import { LogRunModal } from "./logRunModal.tsx";
 import { LogTable } from "./logTable.tsx";
-import { applyUploadedFiles, prepareLogRunForSubmit } from "./logUtils.ts";
+import { applyStoredFiles, applyUploadedFiles, prepareLogRunForSubmit } from "./logUtils.ts";
 
 export const LogPanel: FC = () => {
   const { t } = useTranslation();
@@ -192,6 +198,20 @@ export const LogPanel: FC = () => {
     initTmpLogRuns();
   }, [initTmpLogRuns]);
 
+  /**
+   * A file whose upload was given up on may still have reached the server, which stores it and
+   * answers nobody. The client cannot tell that apart from an upload that never arrived, so it
+   * reads back what the run holds and stops offering those files for a repeat save.
+   */
+  const reconcileStoredFiles = useCallback(async () => {
+    try {
+      const storedRuns = await fetchLogRunsByBoreholeId(boreholeId);
+      setTmpLogRuns(prev => applyStoredFiles(prev, storedRuns));
+    } catch (error) {
+      showApiErrorAlert(error);
+    }
+  }, [boreholeId, setTmpLogRuns, showApiErrorAlert]);
+
   const onSave = useCallback(async () => {
     const abortController = new AbortController();
     try {
@@ -200,11 +220,14 @@ export const LogPanel: FC = () => {
     } catch (error) {
       // Giving up on the upload is not a failure. The log runs whose files already reached the
       // server keep them, and the unsaved changes stay so the save can be repeated.
-      if (isAbortError(error)) return false;
+      if (isAbortError(error)) {
+        await reconcileStoredFiles();
+        return false;
+      }
       showApiErrorAlert(error);
       return false;
     }
-  }, [addAndUpdateLogRuns, deleteRuns, showApiErrorAlert]);
+  }, [addAndUpdateLogRuns, deleteRuns, reconcileStoredFiles, showApiErrorAlert]);
 
   useEffect(() => {
     registerSaveHandler(onSave);

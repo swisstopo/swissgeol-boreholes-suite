@@ -90,6 +90,42 @@ export const applyUploadedFiles = (
   });
 };
 
+/**
+ * The server replaces white space in a stored file name, so names are compared the way it
+ * would have stored them.
+ */
+const storedFileName = (name: string): string => name.replaceAll(" ", "_");
+
+/**
+ * Reconciles the panel's runs with what the server actually holds.
+ *
+ * A cancelled upload can still have reached the server, which stores the file and answers
+ * nobody. The client cannot tell that from an upload that never arrived, so it asks: a pending
+ * file the run already holds by name is one that got through, and it stops being pending.
+ * @param runs The panel's runs.
+ * @param storedRuns The log runs as the server holds them.
+ * @returns The runs, with files the server already has marked as stored.
+ */
+export const applyStoredFiles = (runs: LogRunChangeTracker[], storedRuns: LogRun[]): LogRunChangeTracker[] =>
+  runs.map(entry => {
+    const stored = storedRuns.find(run => run.id === entry.item.id);
+    if (entry.item.id === 0 || stored === undefined || !entry.item.logFiles) return entry;
+
+    let anyStored = false;
+    const logFiles = entry.item.logFiles.map(file => {
+      const name = file.name;
+      if (!file.file || name === undefined) return file;
+
+      const match = stored.logFiles?.find(storedFile => storedFile.name === storedFileName(name));
+      if (match === undefined) return file;
+
+      anyStored = true;
+      return { ...file, id: match.id, file: undefined };
+    });
+
+    return anyStored ? { ...entry, item: { ...entry.item, logFiles } } : entry;
+  });
+
 export const getServiceOrToolArray = (
   logFiles: LogFile[] | undefined,
   codelists: Codelist[],
