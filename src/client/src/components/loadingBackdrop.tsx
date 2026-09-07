@@ -10,6 +10,11 @@ interface LoadingBackdropProps extends BackdropProps {
   onCancel?: () => void; /** Stops the running operation. Reachable by clicking the scrim or the cancel button. */
 }
 
+/**
+ * Width of the status surface. Fixed rather than fitted to its content to keep UI calm.
+ */
+const statusWidth = "440px";
+
 const riseIn = {
   "@keyframes riseIn": {
     from: { opacity: 0, transform: "translateY(4px)" },
@@ -41,7 +46,9 @@ export const LoadingBackdrop: FC<LoadingBackdropProps> = ({ message, hint, onCan
           sx={{
             px: 2.5,
             py: 2,
+            width: statusWidth,
             maxWidth: `calc(100% - ${theme.spacing(4)})`,
+            boxSizing: "border-box",
             borderRadius: theme.spacing(0.5),
             border: `1px solid ${theme.palette.border.light}`,
             backgroundColor: theme.palette.background.default,
@@ -49,7 +56,7 @@ export const LoadingBackdrop: FC<LoadingBackdropProps> = ({ message, hint, onCan
             ...riseIn,
           }}>
           <CircularProgress color="inherit" size={20} thickness={4.5} sx={{ flexShrink: 0 }} />
-          <Stack spacing={0.25} sx={{ minWidth: 0 }}>
+          <Stack spacing={0.25} sx={{ minWidth: 0, flexGrow: 1 }}>
             <Typography
               variant="body2"
               data-cy="loading-backdrop-message"
