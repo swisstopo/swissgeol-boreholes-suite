@@ -8,7 +8,7 @@ import { isAbortError } from "./transferProgress.ts";
  * accessors rather than values so the client survives a language change without being
  * rebuilt, and so a test can observe what the user would have been told.
  */
-export interface QueryClientDependencies {
+interface QueryClientDependencies {
   showAlert: (message: string, severity: AlertColor) => void;
   translate: (key: string) => string;
   retryQueries: boolean;

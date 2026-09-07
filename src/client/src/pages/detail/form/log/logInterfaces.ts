@@ -1,5 +1,7 @@
 import { Codelist, User } from "../../../../api/generated";
+import { TransferProgress } from "../../../../api/transferProgress.ts";
 import { NullableDateString } from "../../../../api/unionTypes.ts";
+import { LogFileUploadProgressCallback } from "./log.ts";
 
 export interface LogRunChangeTracker {
   item: LogRun;
@@ -50,4 +52,32 @@ export interface LogFile {
   createdBy?: User | null;
   updated?: NullableDateString;
   updatedBy?: User | null;
+}
+
+/**
+ * Reports the upload of one log file belonging to a single log run.
+ * `indexInRun` counts the files of that run that carry a blob, in upload order.
+ */
+export interface LogFileUploadProgress extends TransferProgress {
+  fileName: string;
+  indexInRun: number;
+}
+
+export interface LogImportError {
+  errorKey: string;
+  messageKey: string;
+  detail: string;
+  values?: Record<string, string>;
+}
+
+export interface UpdateLogRunVariables {
+  logRun: LogRun;
+  onFileProgress?: LogFileUploadProgressCallback;
+  signal?: AbortSignal;
+}
+
+export interface ImportLogsVariables {
+  boreholeId: number;
+  formData: FormData;
+  attachmentsPerRun: Record<string, File[]>;
 }

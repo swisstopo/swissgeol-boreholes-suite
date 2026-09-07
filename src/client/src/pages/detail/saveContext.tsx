@@ -16,7 +16,7 @@ import { useLocation } from "react-router";
  * What a long running save is currently doing. `message` stays put while `hint` carries the
  * detail that keeps changing, so the line the user reads first does not move.
  */
-export interface SaveProgress {
+interface SaveProgress {
   message: string;
   hint?: string;
   onCancel?: () => void; /** Gives up on the running save. Only set by a save that can actually be stopped. */

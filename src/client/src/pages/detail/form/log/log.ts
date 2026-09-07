@@ -7,12 +7,19 @@ import { boreholeQueryKey } from "../../../../api/borehole.ts";
 import { downloadPost } from "../../../../api/download.ts";
 import { ApiError } from "../../../../api/errorClasses.ts";
 import { fetchApiV2WithApiError, isJsonContentType, upload, uploadWithApiError } from "../../../../api/fetchApiV2.ts";
-import { TransferOptions, TransferProgress } from "../../../../api/transferProgress.ts";
+import { TransferOptions } from "../../../../api/transferProgress.ts";
 import { ExportItem } from "../../../../components/export/exportDialog.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { SaveContext } from "../../saveContext.tsx";
-import { LogFile, LogRun } from "./logInterfaces.ts";
+import {
+  ImportLogsVariables,
+  LogFile,
+  LogFileUploadProgress,
+  LogImportError,
+  LogRun,
+  UpdateLogRunVariables,
+} from "./logInterfaces.ts";
 
 const deleteLogRunsByIds = async (logRunIds: number[]) => {
   const queryParams = logRunIds.map(id => `logRunIds=${id}`).join("&");
@@ -31,25 +38,10 @@ const uploadLogFileBlob = async (
   return await uploadWithApiError<LogFile>(`${logController}/upload${query}`, "POST", formData, options);
 };
 
-/**
- * Reports the upload of one log file belonging to a single log run.
- * `indexInRun` counts the files of that run that carry a blob, in upload order.
- */
-export interface LogFileUploadProgress extends TransferProgress {
-  fileName: string;
-  indexInRun: number;
-}
-
 export type LogFileUploadProgressCallback = (progress: LogFileUploadProgress) => void;
 
 /** Counts the files of a log run that still have to be uploaded. */
 export const countPendingUploads = (logRun: LogRun): number => logRun.logFiles?.filter(f => f.file).length ?? 0;
-
-export interface UpdateLogRunVariables {
-  logRun: LogRun;
-  onFileProgress?: LogFileUploadProgressCallback;
-  signal?: AbortSignal;
-}
 
 const logController = "log";
 const logsQueryKey = "logs";
@@ -122,25 +114,12 @@ export const useLogRunMutations = () => {
   };
 };
 
-export interface LogImportError {
-  errorKey: string;
-  messageKey: string;
-  detail: string;
-  values?: Record<string, string>;
-}
-
 export class LogImportValidationError extends ApiError {
   constructor(public readonly errors: LogImportError[]) {
     super("Log import validation failed", 400);
     this.name = "LogImportValidationError";
     Object.setPrototypeOf(this, LogImportValidationError.prototype);
   }
-}
-
-interface ImportLogsVariables {
-  boreholeId: number;
-  formData: FormData;
-  attachmentsPerRun: Record<string, File[]>;
 }
 
 const buildLogFileUpload = (
