@@ -18,7 +18,7 @@ import { countPendingUploads, LogFileUploadProgressCallback, useLogRunMutations,
 import { LogRun, LogRunChangeTracker } from "./logInterfaces.ts";
 import { LogRunModal } from "./logRunModal.tsx";
 import { LogTable } from "./logTable.tsx";
-import { prepareLogRunForSubmit } from "./logUtils.ts";
+import { applyUploadedFiles, prepareLogRunForSubmit } from "./logUtils.ts";
 
 export const LogPanel: FC = () => {
   const { t } = useTranslation();
@@ -164,22 +164,28 @@ export const LogPanel: FC = () => {
       };
 
       for (const logRun of changedLogRuns) {
-        prepareLogRunForSubmit(logRun);
+        const payload = prepareLogRunForSubmit(logRun);
         const pendingUploads = countPendingUploads(logRun);
         const onFileProgress = totalUploads > 0 ? reportProgress(uploadsBeforeCurrentRun) : undefined;
 
-        if (logRun.id === 0) {
-          const createdLogRun = await addLogRun({ ...logRun, boreholeId: boreholeId, logFiles: [] });
-          if (logRun.logFiles && logRun.logFiles.length > 0) {
-            await updateLogRun({ logRun: { ...createdLogRun, logFiles: logRun.logFiles }, onFileProgress, signal });
+        try {
+          if (payload.id === 0) {
+            const createdLogRun = await addLogRun({ ...payload, boreholeId: boreholeId, logFiles: [] });
+            if (payload.logFiles && payload.logFiles.length > 0) {
+              await updateLogRun({ logRun: { ...createdLogRun, logFiles: payload.logFiles }, onFileProgress, signal });
+            }
+          } else {
+            await updateLogRun({ logRun: payload, onFileProgress, signal });
           }
-        } else {
-          await updateLogRun({ logRun, onFileProgress, signal });
+        } finally {
+          // A save that was given up on still stored the files it got through, so they are
+          // marked before the rejection travels on and leaves the rest unsaved.
+          setTmpLogRuns(prev => applyUploadedFiles(prev, logRun.tmpId, payload.logFiles));
         }
         uploadsBeforeCurrentRun += pendingUploads;
       }
     },
-    [addLogRun, boreholeId, setSaveProgress, t, tmpLogRuns, updateLogRun],
+    [addLogRun, boreholeId, setSaveProgress, setTmpLogRuns, t, tmpLogRuns, updateLogRun],
   );
 
   const onReset = useCallback(async () => {

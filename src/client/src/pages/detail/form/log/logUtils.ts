@@ -5,35 +5,89 @@ import {
   ensureDateOnly,
   parseFloatWithThousandsSeparator,
 } from "../../../../components/form/formUtils.ts";
-import { LogFile, LogRun } from "./logInterfaces.ts";
+import { LogFile, LogRun, LogRunChangeTracker } from "./logInterfaces.ts";
 
-export const prepareLogRunForSubmit = (data: LogRun) => {
-  data.fromDepth = parseFloatWithThousandsSeparator(data.fromDepth)!;
-  data.toDepth = parseFloatWithThousandsSeparator(data.toDepth)!;
-  data.bitSize = parseFloatWithThousandsSeparator(data.bitSize)!;
+/**
+ * Projects a log run onto what the API accepts, dropping the fields the client keeps for
+ * itself and the ones the server owns.
+ *
+ * The result is a copy. The run it is built from stays in the panel's state, where `tmpId`
+ * identifies the run the table and the modal act on, so stripping those fields off the
+ * original would leave a run nothing can select any more.
+ * @param data The log run as the form holds it.
+ * @returns The payload to send.
+ */
+export const prepareLogRunForSubmit = (data: LogRun): LogRun => {
+  const payload: LogRun = {
+    ...data,
+    fromDepth: parseFloatWithThousandsSeparator(data.fromDepth)!,
+    toDepth: parseFloatWithThousandsSeparator(data.toDepth)!,
+    bitSize: parseFloatWithThousandsSeparator(data.bitSize)!,
+    runDate: data?.runDate ? ensureDateOnly(data.runDate.toString()) : null,
+    logFiles: data.logFiles?.map(prepareLogFileForSubmit),
+  };
 
-  delete data.tmpId;
-  delete data.conveyanceMethod;
-  delete data.boreholeStatus;
-  delete data.created;
-  delete data.createdBy;
-  delete data.updated;
-  delete data.updatedBy;
-  data.runDate = data?.runDate ? ensureDateOnly(data.runDate.toString()) : null;
+  delete payload.tmpId;
+  delete payload.conveyanceMethod;
+  delete payload.boreholeStatus;
+  delete payload.created;
+  delete payload.createdBy;
+  delete payload.updated;
+  delete payload.updatedBy;
 
-  if (data.logFiles) {
-    for (const file of data.logFiles) {
-      delete file.tmpId;
-      delete file.name;
-      delete file.created;
-      delete file.createdBy;
-      delete file.updated;
-      delete file.updatedBy;
-    }
-  }
+  if (String(payload.conveyanceMethodId) === "") payload.conveyanceMethodId = null;
+  if (String(payload.boreholeStatusId) === "") payload.boreholeStatusId = null;
 
-  if (String(data.conveyanceMethodId) === "") data.conveyanceMethodId = null;
-  if (String(data.boreholeStatusId) === "") data.boreholeStatusId = null;
+  return payload;
+};
+
+const prepareLogFileForSubmit = (data: LogFile): LogFile => {
+  const payload: LogFile = { ...data };
+
+  delete payload.tmpId;
+  delete payload.name;
+  delete payload.created;
+  delete payload.createdBy;
+  delete payload.updated;
+  delete payload.updatedBy;
+
+  return payload;
+};
+
+/**
+ * Records which of a run's files reached the server, so a save that was given up on part way
+ * through does not send them a second time.
+ *
+ * The submitted files are the payload built by {@link prepareLogRunForSubmit}, in the same
+ * order as the run's own. A file that no longer carries its blob has been stored, and takes
+ * the id the server gave it.
+ * @param runs The panel's runs.
+ * @param tmpId The run that was submitted.
+ * @param submittedFiles The payload's files after the attempt.
+ * @returns The runs, with the stored files marked.
+ */
+export const applyUploadedFiles = (
+  runs: LogRunChangeTracker[],
+  tmpId: string | undefined,
+  submittedFiles: LogFile[] | undefined,
+): LogRunChangeTracker[] => {
+  if (tmpId === undefined || submittedFiles === undefined) return runs;
+
+  return runs.map(entry => {
+    if (entry.item.tmpId !== tmpId || !entry.item.logFiles) return entry;
+
+    return {
+      ...entry,
+      item: {
+        ...entry.item,
+        logFiles: entry.item.logFiles.map((file, index) => {
+          const submitted = submittedFiles[index];
+          if (!submitted || submitted.file) return file;
+          return { ...file, id: submitted.id, file: undefined };
+        }),
+      },
+    };
+  });
 };
 
 export const getServiceOrToolArray = (

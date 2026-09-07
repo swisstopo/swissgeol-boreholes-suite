@@ -1,8 +1,15 @@
 // @vitest-environment jsdom
 import { describe, expect, it } from "vitest";
 import { FormErrors } from "../../../../components/form/form.ts";
-import { LogRun } from "./logInterfaces.ts";
-import { buildFileName, getFileExtension, parseLogFilesCsv, validateFiles } from "./logUtils.ts";
+import { LogFile, LogRun, LogRunChangeTracker } from "./logInterfaces.ts";
+import {
+  applyUploadedFiles,
+  buildFileName,
+  getFileExtension,
+  parseLogFilesCsv,
+  prepareLogRunForSubmit,
+  validateFiles,
+} from "./logUtils.ts";
 
 function createCsvFile(content: string): File {
   return new File([content], "test.csv", { type: "text/csv" });
@@ -156,5 +163,83 @@ describe("validateFiles", () => {
     const errors: FormErrors = {};
     validateFiles(makeLogRun([{ name: "File.las" }, { name: "file.las" }]), errors);
     expect(errors.logFiles).toBeDefined();
+  });
+});
+
+const createPendingFile = (id: number, name: string): LogFile => ({
+  id,
+  tmpId: name,
+  logRunId: 7,
+  name,
+  file: new File([], name),
+  toolTypeCodelistIds: [],
+  public: true,
+});
+
+const createLogRun = (): LogRun => ({
+  id: 7,
+  tmpId: "7",
+  boreholeId: 1,
+  runNumber: "R-1",
+  fromDepth: 0,
+  toDepth: 100,
+  logFiles: [createPendingFile(3, "gamma.las")],
+});
+
+describe("prepareLogRunForSubmit", () => {
+  it("keeps the identity the table and the modal select a run by", () => {
+    const logRun = createLogRun();
+
+    prepareLogRunForSubmit(logRun);
+
+    expect(logRun.tmpId).toBe("7");
+    expect(logRun.logFiles?.[0].tmpId).toBe("gamma.las");
+    expect(logRun.logFiles?.[0].name).toBe("gamma.las");
+  });
+
+  it("leaves the fields the client keeps for itself out of the payload", () => {
+    const payload = prepareLogRunForSubmit(createLogRun());
+
+    expect(payload.tmpId).toBeUndefined();
+    expect(payload.logFiles?.[0].tmpId).toBeUndefined();
+    expect(payload.logFiles?.[0].name).toBeUndefined();
+  });
+});
+
+describe("applyUploadedFiles", () => {
+  const runs = (): LogRunChangeTracker[] => [
+    {
+      item: { ...createLogRun(), logFiles: [createPendingFile(0, "first.las"), createPendingFile(0, "second.las")] },
+      hasChanges: true,
+    },
+  ];
+
+  it("marks the files a cancelled save got through and leaves the rest pending", () => {
+    // The upload of the second file was given up on, so it still carries its blob.
+    const submitted: LogFile[] = [
+      { ...createPendingFile(11, "first.las"), file: undefined },
+      createPendingFile(0, "second.las"),
+    ];
+
+    const [updated] = applyUploadedFiles(runs(), "7", submitted);
+
+    expect(updated.item.logFiles?.[0].id).toBe(11);
+    expect(updated.item.logFiles?.[0].file).toBeUndefined();
+    expect(updated.item.logFiles?.[1].file).toBeDefined();
+  });
+
+  it("keeps the name the file is shown by", () => {
+    const submitted: LogFile[] = [{ ...createPendingFile(11, "first.las"), name: undefined, file: undefined }];
+
+    const [updated] = applyUploadedFiles(runs(), "7", submitted);
+
+    expect(updated.item.tmpId).toBe("7");
+    expect(updated.item.logFiles?.[0].name).toBe("first.las");
+  });
+
+  it("leaves other runs untouched", () => {
+    const original = runs();
+
+    expect(applyUploadedFiles(original, "other", [])[0]).toBe(original[0]);
   });
 });
