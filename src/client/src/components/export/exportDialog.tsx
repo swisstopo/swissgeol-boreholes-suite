@@ -1,4 +1,4 @@
-import { Dispatch, SetStateAction, useCallback, useContext, useRef, useState } from "react";
+import { Dispatch, SetStateAction, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Dialog, DialogActions, DialogContent, DialogTitle, Stack } from "@mui/material";
 import { ApiError } from "../../api/errorClasses.ts";
@@ -44,6 +44,13 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
     runningExport.current?.abort();
     hideProgress();
   }, [hideProgress]);
+
+  // Leaving the page while an export runs stops it, the same as clicking the overlay. Without
+  // this the transfer keeps running unwatched and its progress updates land on an unmounted tree.
+  useEffect(() => {
+    const exportOnMount = runningExport;
+    return () => exportOnMount.current?.abort();
+  }, []);
 
   const handleExport = useCallback(
     async (exportFunction: (options?: TransferOptions) => Promise<Response | void>) => {
