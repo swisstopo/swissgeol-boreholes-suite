@@ -117,7 +117,7 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
       {inProgress && (
         <LoadingBackdrop
           open={inProgress}
-          onClick={cancelExport}
+          onCancel={cancelExport}
           sx={{ zIndex: theme.zIndex.modal }}
           message={bytesReceived === null ? t("preparingExport") : t("downloadingExport")}
           hint={

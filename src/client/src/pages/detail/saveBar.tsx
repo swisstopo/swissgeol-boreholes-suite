@@ -55,7 +55,7 @@ export const SaveBar = () => {
           open={isSaving}
           message={saveProgress?.message}
           hint={saveProgress?.hint}
-          onClick={saveProgress?.onCancel}
+          onCancel={saveProgress?.onCancel}
           sx={{ zIndex: theme.zIndex.modal }}
         />
       )}
