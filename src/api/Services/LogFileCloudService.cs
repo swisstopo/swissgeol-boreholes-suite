@@ -69,18 +69,29 @@ public class LogFileCloudService : CloudServiceBase
 
             await UploadObject(fileStream, fileNameGuid, contentType, cancellationToken).ConfigureAwait(false);
 
-            var logFile = new LogFile
+            try
             {
-                LogRunId = logRunId,
-                Name = fileName,
-                NameUuid = fileNameGuid,
-                Public = false,
-            };
+                var logFile = new LogFile
+                {
+                    LogRunId = logRunId,
+                    Name = fileName,
+                    NameUuid = fileNameGuid,
+                    Public = false,
+                };
 
-            var entityEntry = await context.LogFiles.AddAsync(logFile, cancellationToken).ConfigureAwait(false);
-            await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!, cancellationToken).ConfigureAwait(false);
+                var entityEntry = await context.LogFiles.AddAsync(logFile, cancellationToken).ConfigureAwait(false);
+                await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!, cancellationToken).ConfigureAwait(false);
 
-            return entityEntry.Entity;
+                return entityEntry.Entity;
+            }
+            catch
+            {
+                // Nothing refers to the stored object once its row is not written, and the name it
+                // was given is never handed out again, so it would stay in the bucket for good.
+                // The cleanup runs without the token because the caller may already have cancelled.
+                await DeleteObject(fileNameGuid).ConfigureAwait(false);
+                throw;
+            }
         }
         catch (OperationCanceledException)
         {

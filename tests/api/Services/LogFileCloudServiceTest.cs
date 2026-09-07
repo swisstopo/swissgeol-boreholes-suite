@@ -190,11 +190,53 @@ public class LogFileCloudServiceTest
     }
 
     [TestMethod]
+    public async Task UploadLogFileAndLinkToLogRunAsyncRemovesTheObjectWhenTheLinkFails()
+    {
+        var fileName = $"{Guid.NewGuid()}.las";
+        var minLogRunId = context.LogRuns.Min(b => b.Id);
+        var formFile = GetFormFileByContent(Guid.NewGuid().ToString(), fileName);
+
+        // The accessor is reached only after the object has been stored, so throwing here leaves
+        // exactly the gap the cleanup has to cover.
+        var failingAccessor = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
+        failingAccessor.Setup(x => x.HttpContext).Throws(new InvalidOperationException("no context"));
+        var service = new LogFileCloudService(
+            new Mock<ILogger<LogFileCloudService>>().Object,
+            s3Client,
+            new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build(),
+            failingAccessor.Object,
+            context);
+
+        var objectsBefore = await CountStoredObjectsAsync();
+
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(
+            () => service.UploadLogFileAndLinkToLogRunAsync(
+                formFile.OpenReadStream(), formFile.FileName, formFile.ContentType, minLogRunId));
+
+        Assert.AreEqual(objectsBefore, await CountStoredObjectsAsync());
+    }
+
+    /// <summary>
+    /// Counts what the bucket holds. The test bucket stays well under one page of results.
+    /// </summary>
+    private async Task<int> CountStoredObjectsAsync()
+    {
+        var stored = await s3Client.ListObjectsV2Async(new ListObjectsV2Request { BucketName = bucketName });
+        return stored.S3Objects.Count;
+    }
+
+    /// <summary>
+    /// Covers the multipart path, which starts above TransferUtility's 16 MB threshold. It is
+    /// long running because moving that much through the storage holds the shared test database
+    /// open long enough to disturb the tests that count rows.
+    /// </summary>
+    [TestMethod]
+    [TestCategory("LongRunning")]
     public async Task UploadLogFileAndLinkToLogRunAsyncStoresAFileLargerThanOnePart()
     {
         var fileName = $"{Guid.NewGuid()}.las";
         var minLogRunId = context.LogRuns.Min(b => b.Id);
-        var content = new byte[12 * 1024 * 1024];
+        var content = new byte[20 * 1024 * 1024];
         Random.Shared.NextBytes(content);
 
         using var stream = new MemoryStream(content);
