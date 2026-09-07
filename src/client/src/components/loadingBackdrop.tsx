@@ -15,14 +15,6 @@ interface LoadingBackdropProps extends BackdropProps {
  */
 const statusWidth = "440px";
 
-const riseIn = {
-  "@keyframes riseIn": {
-    from: { opacity: 0, transform: "translateY(4px)" },
-    to: { opacity: 1, transform: "translateY(0)" },
-  },
-  animation: "riseIn 160ms ease-out",
-};
-
 export const LoadingBackdrop: FC<LoadingBackdropProps> = ({ message, hint, onCancel, sx, ...rest }) => {
   const { t } = useTranslation();
 
@@ -36,8 +28,6 @@ export const LoadingBackdrop: FC<LoadingBackdropProps> = ({ message, hint, onCan
         ...sx,
       }}>
       {message ? (
-        // The scrim is translucent, so the status needs a surface of its own to stay readable
-        // over whatever it covers.
         <Stack
           direction="row"
           alignItems="center"
@@ -53,7 +43,6 @@ export const LoadingBackdrop: FC<LoadingBackdropProps> = ({ message, hint, onCan
             border: `1px solid ${theme.palette.border.light}`,
             backgroundColor: theme.palette.background.default,
             boxShadow: theme.shadows[3],
-            ...riseIn,
           }}>
           <CircularProgress color="inherit" size={20} thickness={4.5} sx={{ flexShrink: 0 }} />
           <Stack spacing={0.25} sx={{ minWidth: 0, flexGrow: 1 }}>
@@ -63,7 +52,6 @@ export const LoadingBackdrop: FC<LoadingBackdropProps> = ({ message, hint, onCan
               sx={{
                 fontWeight: 500,
                 color: theme.palette.primary.main,
-                // A file name is worth wrapping rather than truncating: it says what is transferring.
                 overflowWrap: "anywhere",
               }}>
               {message}
@@ -79,14 +67,11 @@ export const LoadingBackdrop: FC<LoadingBackdropProps> = ({ message, hint, onCan
             )}
           </Stack>
           {onCancel && (
-            // The scrim swallows the click that cancels, which leaves no target for keyboard and
-            // screen reader users. This button gives that same action a focusable control.
             <IconButton
               size="small"
               aria-label={t("cancel")}
               data-cy="loading-backdrop-cancel"
               onClick={event => {
-                // The scrim below would otherwise cancel a second time.
                 event.stopPropagation();
                 onCancel();
               }}
