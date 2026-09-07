@@ -44,6 +44,10 @@ public class PhotoControllerTest
         var loggerMock = new Mock<ILogger<PhotoCloudService>>();
 
         s3ClientMock = new Mock<IAmazonS3>(MockBehavior.Strict);
+
+        // Uploads run through TransferUtility, which reads the client's configuration to decide
+        // how to split a payload before it sends anything.
+        s3ClientMock.Setup(x => x.Config).Returns(new AmazonS3Config());
         s3ClientMock
             .Setup(x => x.PutObjectAsync(It.IsAny<PutObjectRequest>(), It.IsAny<CancellationToken>()))
             .ReturnsAsync(() => new PutObjectResponse());
