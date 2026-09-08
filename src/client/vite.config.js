@@ -1,7 +1,6 @@
 import react from "@vitejs/plugin-react";
 import { viteStaticCopy } from "vite-plugin-static-copy";
 import svgr from "vite-plugin-svgr";
-import viteTsconfigPaths from "vite-tsconfig-paths";
 import { defineConfig } from "vitest/config";
 import { devBranchPlugin } from "./vite-plugin-dev-branch.js";
 
@@ -26,7 +25,6 @@ export default defineConfig({
   base: "/",
   plugins: [
     react(),
-    viteTsconfigPaths(),
     svgr({
       include: "**/*.svg?react",
     }),
@@ -40,6 +38,9 @@ export default defineConfig({
     }),
     devBranchPlugin(),
   ],
+  resolve: {
+    tsconfigPaths: true,
+  },
   server: {
     proxy,
     port: 3000,
