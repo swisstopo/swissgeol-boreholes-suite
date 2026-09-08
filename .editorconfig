@@ -230,6 +230,15 @@ dotnet_diagnostic.CA1822.severity = none
 dotnet_diagnostic.CA2227.severity = none
 dotnet_diagnostic.CA1303.severity = none
 dotnet_diagnostic.CS8602.severity = none
+
+# The BDMS application assembly is referenced by BDMS.ExternSync and by the test projects,
+# so its public types are intentionally not internal.
+dotnet_diagnostic.CA1515.severity = none
+
+# Same rationale as CA1848/CA2254: structured logging is used directly instead of
+# LoggerMessage delegates and IsEnabled guards.
+dotnet_diagnostic.CA1873.severity = none
+
 dotnet_diagnostic.SA0000.severity = warning
 dotnet_diagnostic.SA1101.severity = none
 dotnet_diagnostic.SA1116.severity = warning

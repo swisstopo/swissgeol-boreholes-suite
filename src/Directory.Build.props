@@ -1,10 +1,10 @@
 <Project>
 
   <PropertyGroup>
-    <TargetFramework>net8.0</TargetFramework>
+    <TargetFramework>net10.0</TargetFramework>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
-    <AnalysisLevel>8.0-all</AnalysisLevel>
+    <AnalysisLevel>10.0-all</AnalysisLevel>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <Authors>GeoWerkstatt GmbH</Authors>
     <Company>GeoWerkstatt GmbH</Company>
