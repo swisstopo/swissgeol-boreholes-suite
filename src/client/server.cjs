@@ -34,11 +34,11 @@ app.get("/healthz", (req, res) => {
   res.status(200).send("ok");
 });
 
-app.get("/help/*", (req, res) => {
+app.get("/help/*splat", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "help", "index.html"));
 });
 
-app.get("*", (req, res) => {
+app.get("/{*splat}", (req, res) => {
   res.sendFile(path.join(__dirname, "dist", "index.html"));
 });
 
