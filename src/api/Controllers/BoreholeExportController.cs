@@ -11,7 +11,6 @@ using Microsoft.EntityFrameworkCore;
 using NetTopologySuite.IO.Converters;
 using OSGeo.OGR;
 using System.ComponentModel.DataAnnotations;
-using System.IO.Compression;
 using System.Text;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -303,12 +302,13 @@ public class BoreholeExportController : ControllerBase
     /// Asynchronously gets all <see cref="Borehole"/> with attachments filtered by ids.
     /// </summary>
     /// <param name="ids">The required list of borehole ids to filter by.</param>
+    /// <param name="cancellationToken">Aborts the export once the client is gone. An export can transfer several gigabytes, so the work it triggers must not outlive the request.</param>
     /// <returns>A ZIP file including the borehole data as JSON and all corresponding attachments.</returns>
     [HttpGet("zip")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<ActionResult> ExportJsonWithAttachmentsAsync([FromQuery][MinLength(1)][MaxLength(MaxPageSize)] IEnumerable<int> ids)
+    public async Task<IActionResult> ExportJsonWithAttachmentsAsync([FromQuery][MinLength(1)][MaxLength(MaxPageSize)] IEnumerable<int> ids, CancellationToken cancellationToken)
     {
-        var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync().ConfigureAwait(false);
+        var boreholes = await context.BoreholesWithIncludes.AsNoTracking().Where(borehole => ids.Contains(borehole.Id)).ToListAsync(cancellationToken).ConfigureAwait(false);
         if (boreholes.Count == 0) return NotFound(NoBoreholesFoundMessage);
 
         if (!await HasViewPermissionsForAllBoreholes(boreholes).ConfigureAwait(false)) return BadRequest(UserLacksPermissionsMessage);
@@ -317,7 +317,7 @@ public class BoreholeExportController : ControllerBase
 
         try
         {
-            var profiles = await context.Profiles.AsNoTracking().Where(p => ids.Contains(p.BoreholeId)).ToListAsync().ConfigureAwait(false);
+            var profiles = await context.Profiles.AsNoTracking().Where(p => ids.Contains(p.BoreholeId)).ToListAsync(cancellationToken).ConfigureAwait(false);
             var fileName = $"{ExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}";
 
             // If only one borehole is exported, use its name as the file name.
@@ -329,30 +329,42 @@ public class BoreholeExportController : ControllerBase
 
             var json = JsonSerializer.Serialize(boreholes, jsonExportOptions);
 
-            using var memoryStream = new MemoryStream();
-            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
+            // The borehole data is serialized in one go anyway, so it stays buffered. Only the
+            // attachments, which can be several gigabytes each, are streamed.
+            var jsonBytes = Encoding.UTF8.GetBytes(json);
+            var entries = new List<ZipEntrySource>
             {
-                // Add JSON file with borehole data
-                var jsonEntry = archive.CreateEntry($"{fileName}.json", CompressionLevel.Fastest);
-                using var entryStream = await jsonEntry.OpenAsync().ConfigureAwait(false);
-                using (var textWriter = new StreamWriter(entryStream))
-                {
-                    await textWriter.WriteAsync(json).ConfigureAwait(false);
-                }
+                new ZipEntrySource($"{fileName}.json", _ => Task.FromResult<Stream>(new MemoryStream(jsonBytes))),
+            };
 
-                foreach (var profile in profiles)
-                {
-                    var fileBytes = await profileCloudService.GetObject(profile.NameUuid).ConfigureAwait(false);
+            // The archive is streamed, so the status code is committed as soon as the first byte
+            // reaches the response body. Probe every object up front, while returning a problem
+            // response is still possible.
+            var probes = await Task.WhenAll(profiles.Select(async profile => new
+            {
+                Profile = profile,
+                Exists = await profileCloudService.ObjectExists(profile.NameUuid, cancellationToken).ConfigureAwait(false),
+            })).ConfigureAwait(false);
 
-                    // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name.
-                    // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the original file name.
-                    var zipEntry = archive.CreateEntry($"{profile.NameUuid}_{FileHelper.SanitizeZipEntryFileName(profile.Name, "export")}", CompressionLevel.Fastest);
-                    using var zipEntryStream = await zipEntry.OpenAsync().ConfigureAwait(false);
-                    await zipEntryStream.WriteAsync(fileBytes.AsMemory(0, fileBytes.Length)).ConfigureAwait(false);
-                }
+            var missingFileNames = probes.Where(probe => !probe.Exists).Select(probe => probe.Profile.Name).ToList();
+            if (missingFileNames.Count > 0)
+            {
+                logger.LogError("Profile attachments are missing in cloud storage: {MissingFiles}", string.Join(", ", missingFileNames));
+                return Problem("An error occurred while fetching a file from the cloud storage.");
             }
 
-            return File(memoryStream.ToArray(), "application/zip", $"{fileName}.zip");
+            foreach (var profile in profiles)
+            {
+                var nameUuid = profile.NameUuid;
+
+                // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name.
+                // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the original file name.
+                entries.Add(new ZipEntrySource(
+                    $"{nameUuid}_{FileHelper.SanitizeZipEntryFileName(profile.Name, "export")}",
+                    entryCancellationToken => profileCloudService.GetObjectStream(nameUuid, entryCancellationToken)));
+            }
+
+            return new StreamedZipResult($"{fileName}.zip", entries, logger);
         }
         catch (AmazonS3Exception ex)
         {
