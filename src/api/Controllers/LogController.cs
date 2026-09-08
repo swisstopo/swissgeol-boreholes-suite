@@ -140,7 +140,7 @@ public class LogController : BoreholeControllerBase<LogRun>
 
             // A bare string body carries no problem type, which leaves the client with nothing to
             // show but its generic failure message. This one names what the user has to change.
-            return Problem(detail: ex.Message, type: ProblemType.UserError);
+            return Problem(detail: ex.Message, statusCode: StatusCodes.Status400BadRequest, type: ProblemType.UserError);
         }
         catch (Exception ex)
         {
