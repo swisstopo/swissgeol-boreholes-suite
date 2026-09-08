@@ -1,4 +1,4 @@
-name: Pre-release
+name: Publish
 
 on:
   push:
@@ -11,15 +11,15 @@ env:
   GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
 jobs:
-  create-pre-release:
+  publish:
     runs-on: ubuntu-latest
-    name: Build and push Docker image and create a new GitHub pre-release
+    name: Build and push Docker images and create a new GitHub release
     outputs:
       version: ${{ steps.set-version.outputs.version }}
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@9c091bb21b7c1c1d1991bb908d89e4e9dddfe3e0 # v7.0.0
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set environment variables
         id: set-version
@@ -152,7 +152,9 @@ jobs:
           cache-from: type=registry,ref=${{ env.BASE_IMAGE_NAME }}-extern-sync:edge
           cache-to: type=inline
 
-      - name: Create GitHub pre-release
+      # Unpromoted: promoting to pre-release bumps int, promoting to latest releases to prod.
+      # Keep GITHUB_TOKEN here, its events cannot start workflows, so creation trips neither.
+      - name: Create GitHub release
         run: |
           gh api \
             --method POST \
@@ -161,13 +163,14 @@ jobs:
             -f tag_name='v${{ env.VERSION }}' \
             -f target_commitish='main' \
             -f name='${{ env.VERSION }}' \
-            -F prerelease=true \
+            -F prerelease=false \
+            -f make_latest=false
 
   deploy-dev:
-    needs: create-pre-release
+    needs: publish
     uses: ./.github/workflows/deploy-dev.yml
     with:
-      version: ${{ needs.create-pre-release.outputs.version }}
+      version: ${{ needs.publish.outputs.version }}
     secrets:
       AWS_ROLE_DEV: ${{ secrets.AWS_ROLE_DEV }}
       AWS_REGION: ${{ secrets.AWS_REGION }}

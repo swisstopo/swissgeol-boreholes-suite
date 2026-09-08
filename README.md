@@ -75,14 +75,16 @@ Die Applikation kann auch im anonymen Modus betrieben werden, um die Bohrdaten �
 
 ## Release-Prozess
 
-### Pre-release
+### Publish
 
 Jede Änderung, die in den `main`-Branch gemerged wird, löst automatisch den
-[Pre-release-Workflow](./.github/workflows/pre-release.yml) aus. Dieser erstellt einen neuen GitHub **Pre-release** mit einer neuen Versionsnummer, baut ein Docker-Image mit derselben Version und taggt das Image zusätzlich mit `:edge`.
+[Publish-Workflow](./.github/workflows/publish.yml) aus. Dieser vergibt eine neue Versionsnummer, baut die Docker-Images mit derselben Version, taggt sie zusätzlich mit `:edge`, erstellt ein neues GitHub-Release und deployt die Version auf DEV.
+
+Das Release wird bewusst weder als **Pre-release** noch als **Latest** markiert. Diese beiden Promotions sind die Auslöser für die weiteren Umgebungen (siehe unten).
 
 ### PROD-Release
 
-Ein PROD-Release entsteht, indem ein beliebiger Pre-release im GitHub Release-Bereich
+Ein PROD-Release entsteht, indem ein beliebiges Release im GitHub Release-Bereich
 als **„Set as the latest release"** markiert wird. Das entsprechende Docker-Image bekommt dabei zusätzlich den `latest`-Tag.
 
 ### Release Candidate (RC)
@@ -100,13 +102,13 @@ Der Workflow erstellt dann für alle Docker-Images (Client, API, etc.) einen neu
 
 ### Hotfix-Release erstellen
 
-Ein Hotfix-Release wird erstellt, indem vom letzten Release-Git-Tag ein neuer Branch angelegt wird. Dort werden die nötigen Korrekturen gemacht und anschliessend manuell ein neuer GitHub [Pre-release](https://github.com/swisstopo/swissgeol-boreholes-suite/releases) erstellt, der dann wiederum als **„Set as the latest release"** markiert werden kann.
+Ein Hotfix-Release wird erstellt, indem vom letzten Release-Git-Tag ein neuer Branch angelegt wird. Dort werden die nötigen Korrekturen gemacht und anschliessend manuell ein neues GitHub [Release](https://github.com/swisstopo/swissgeol-boreholes-suite/releases) erstellt, das dann wiederum als **„Set as the latest release"** markiert werden kann.
 
 ### Docker-Image-Tags
 
 | Tag | Beschreibung |
 | --- | ----------- |
-| `:edge` | Neuester Stand aus `main` (letzter Pre-release) |
+| `:edge` | Neuester Stand aus `main` (letzter Publish-Lauf) |
 | `:v<version>` | Bestimmte Version, z.B. `:v2.1.1427` |
 | `:v<version>-rc` | Release Candidate einer bestimmten Version, z.B. `:v2.1.1427-rc` |
 | `:v<major>` | Stabile Major-Version, z.B. `:v2` (wird beim PROD-Release aktualisiert) |

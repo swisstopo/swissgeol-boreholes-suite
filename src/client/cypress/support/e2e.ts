@@ -2,7 +2,6 @@ import "./commands";
 import { stopEditing } from "../e2e/helpers/buttonHelpers";
 import { interceptApiCalls, login, loginAndResetState } from "../e2e/helpers/testHelpers";
 import "cypress-file-upload";
-// @ts-expect-error - @cypress/grep uses exports map incompatible with moduleResolution:node
 import { register as registerCypressGrep } from "@cypress/grep";
 
 registerCypressGrep();

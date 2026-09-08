@@ -1,0 +1,5 @@
+# App version deployed to INT, shared by every release in the environment.
+# Layered under all other INT values files so the main app and the sync jobs
+# always run the same version.
+app:
+  version: v2.1.1748

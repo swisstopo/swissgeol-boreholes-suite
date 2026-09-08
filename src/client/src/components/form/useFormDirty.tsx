@@ -1,6 +1,5 @@
 import { useContext, useEffect, useMemo } from "react";
-import { FieldValues } from "react-hook-form";
-import { FormState } from "react-hook-form/dist/types/form";
+import { FieldValues, FormState } from "react-hook-form";
 import { SaveContext } from "../../pages/detail/saveContext.tsx";
 
 interface UseFormDirtyProps<T extends FieldValues> {
