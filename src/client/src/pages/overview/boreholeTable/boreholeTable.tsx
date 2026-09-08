@@ -1,15 +1,4 @@
-import {
-  ChangeEvent,
-  Dispatch,
-  FC,
-  SetStateAction,
-  Suspense,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
+import { ChangeEvent, Dispatch, FC, SetStateAction, Suspense, useCallback, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CircularProgress } from "@mui/material";
 import { Box } from "@mui/system";
@@ -74,7 +63,6 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   const apiRef = useGridApiRef();
   const auth = useAuth();
   const firstRender = useRef(true);
-  const rowCountRef = useRef(totalCount || 0);
   const scrollPositionRef = useRef<Partial<GridScrollParams>>({ top: 0, left: 0 });
   const [filteredIds, setFilteredIds] = useState<number[]>([]);
 
@@ -91,13 +79,6 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
       }
     }
   }, [selectableBoreholeIds, filteredIds, setSelectionModel]);
-
-  const rowCount = useMemo(() => {
-    if (totalCount > 0) {
-      rowCountRef.current = totalCount;
-    }
-    return rowCountRef.current;
-  }, [totalCount]);
 
   const renderHeaderCheckbox = useCallback(
     (params: GridColumnHeaderParams) => {
@@ -320,7 +301,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
         isLoading={isLoading}
         paginationModel={paginationModel}
         onPaginationModelChange={setPaginationModel}
-        rowCount={rowCount}
+        rowCount={totalCount}
         paginationMode="server"
         sortingMode="server"
         checkboxSelection={true}
