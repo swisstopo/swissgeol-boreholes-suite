@@ -116,19 +116,32 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
     prepend(newFile);
   }, [prepend, logRun]);
 
+  /**
+   * Remembers the id of a file a row just dropped, keyed by its name, until the dialog closes.
+   *
+   * Deletes are only sent when the run is saved, and uploads go out before that. So if the user
+   * picks the same file name again, the old file is still on the server under that name, and a
+   * second upload with that name would be refused. The upload has to overwrite the old file
+   * instead, and that needs its id, which the row no longer has once it dropped it. The name on
+   * its own is not enough: it cannot tell "this replaces a file we just dropped" apart from
+   * "the server already has a file with this name".
+   */
+  const rememberReplacedFile = useCallback(
+    (idx: number) => {
+      const replaced = formMethods.getValues(`logFiles.${idx}`);
+      if (replaced !== undefined && replaced.id > 0 && replaced.name) {
+        replacedFileIds.current.set(replaced.name, replaced.id);
+      }
+    },
+    [formMethods],
+  );
+
   const removeFile = useCallback(
     (idx: number) => () => {
-      // Putting the same name back has to replace what the run holds rather than add a second
-      // file under it, so the identity of what was taken out is kept for as long as the dialog
-      // is open. Matching on the name alone could not tell a replacement from a file the server
-      // happens to hold already.
-      const removed = formMethods.getValues(`logFiles.${idx}`);
-      if (removed !== undefined && removed.id > 0 && removed.name !== undefined) {
-        replacedFileIds.current.set(removed.name, removed.id);
-      }
+      rememberReplacedFile(idx);
       remove(idx);
     },
-    [formMethods, remove],
+    [rememberReplacedFile, remove],
   );
 
   const onFileChanged = useCallback(
@@ -146,6 +159,8 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
       formMethods.clearErrors(`logFiles.${index}.name`);
       const currentName = formMethods.getValues(`logFiles.${index}.name`);
       if (currentName !== updatedName) {
+        rememberReplacedFile(index);
+
         formMethods.setValue(`logFiles.${index}.name`, updatedName, { shouldDirty: true, shouldTouch: true });
         formMethods.setValue(`logFiles.${index}.extension`, getFileExtension(updatedName), {
           shouldDirty: true,
@@ -154,16 +169,16 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
         formMethods.trigger(`logFiles.${index}`);
         formMethods.setValue(`logFiles.${index}.file`, selected, { shouldDirty: true, shouldTouch: true });
 
-        // Taking a file out and putting the same name back replaces what the run holds. Keeping
-        // the identity it had makes the upload overwrite that file instead of adding a second
-        // one, which the run would refuse because the name is already taken.
-        const replacedId = replacedFileIds.current.get(updatedName);
-        if (replacedId !== undefined) {
-          formMethods.setValue(`logFiles.${index}.id`, replacedId, { shouldDirty: true });
+        // If the new name matches a file the row dropped earlier, reuse that file's id so the
+        // upload overwrites it instead of being refused because of a non-unique name.
+        if (selected) {
+          formMethods.setValue(`logFiles.${index}.id`, replacedFileIds.current.get(updatedName) ?? 0, {
+            shouldDirty: true,
+          });
         }
       }
     },
-    [formMethods, t],
+    [formMethods, rememberReplacedFile, t],
   );
 
   const cancelDialog = () => {
