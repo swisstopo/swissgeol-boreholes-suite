@@ -94,30 +94,6 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
     }
 
     [TestMethod]
-    public async Task MergesTermsAcceptedWithOverlappingEntries()
-    {
-        var oldUser = CreateUser("FROSTPEAK", "SHADOW", DateTime.UtcNow.AddDays(-10));
-        var newUser = CreateUser("FROSTPEAK", "BLAZE", DateTime.UtcNow);
-
-        var term = new Term { TextEn = "FROSTPEAK test term", Creation = DateTime.UtcNow };
-        Context.Terms.Add(term);
-        await Context.SaveChangesAsync().ConfigureAwait(false);
-
-        Context.Set<TermsAccepted>().Add(new TermsAccepted { UserId = oldUser.Id, TermId = term.Id, AcceptedAt = DateTime.UtcNow });
-        Context.Set<TermsAccepted>().Add(new TermsAccepted { UserId = newUser.Id, TermId = term.Id, AcceptedAt = DateTime.UtcNow });
-        await Context.SaveChangesAsync().ConfigureAwait(false);
-
-        Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.UserMerge, new MaintenanceTaskParameters(OnlyMissing: false, DryRun: false), AdminUserId));
-        await Service.WaitForCompletionAsync(MaintenanceTaskType.UserMerge);
-
-        var terms = await Context.Set<TermsAccepted>().AsNoTracking().Where(t => t.UserId == newUser.Id && t.TermId == term.Id).ToListAsync();
-        Assert.HasCount(1, terms);
-
-        var oldTerms = await Context.Set<TermsAccepted>().AsNoTracking().Where(t => t.UserId == oldUser.Id).ToListAsync();
-        Assert.HasCount(0, oldTerms);
-    }
-
-    [TestMethod]
     public async Task HandlesMultipleDuplicateGroups()
     {
         var oldUserA = CreateUser("SILENTDRIFT", "EMBER", DateTime.UtcNow.AddDays(-10));
@@ -349,13 +325,6 @@ public class UserMergeTaskTest : MaintenanceTaskTestBase
         // Composite-key FK: UserWorkgroupRole
         var workgroup = await Context.Workgroups.FirstAsync().ConfigureAwait(false);
         Context.UserWorkgroupRoles.Add(new UserWorkgroupRole { UserId = newUser.Id, WorkgroupId = workgroup.Id, Role = Role.Editor });
-        await Context.SaveChangesAsync().ConfigureAwait(false);
-
-        // Composite-key FK: TermsAccepted
-        var term = new Term { TextEn = "DAWNFORGE test term", Creation = DateTime.UtcNow };
-        Context.Terms.Add(term);
-        await Context.SaveChangesAsync().ConfigureAwait(false);
-        Context.Set<TermsAccepted>().Add(new TermsAccepted { UserId = oldUser.Id, TermId = term.Id, AcceptedAt = DateTime.UtcNow });
         await Context.SaveChangesAsync().ConfigureAwait(false);
 
         Assert.IsTrue(Service.TryStartTask(MaintenanceTaskType.UserMerge, new MaintenanceTaskParameters(OnlyMissing: false, DryRun: false), AdminUserId));

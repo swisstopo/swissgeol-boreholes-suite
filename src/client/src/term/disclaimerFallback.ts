@@ -1,3 +1,7 @@
+// Bump whenever the disclaimer texts below change in substance. Users who already accepted an
+// older version are prompted again, so their stored consent always refers to the text they saw.
+export const TERMS_VERSION = 1;
+
 export const de = ` # Haftungsausschluss
 Obwohl das Bundesamt für Landestopografie swisstopo mit aller Sorgfalt auf die Richtigkeit der veröffentlichten Informationen achtet, kann hinsichtlich der inhaltlichen Richtigkeit, Genauigkeit, Aktualität, Zuverlässigkeit und Vollständigkeit dieser Informationen keine Gewährleistung übernommen werden.
 

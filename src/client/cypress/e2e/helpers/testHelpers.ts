@@ -1,9 +1,16 @@
 import { restrictionFreeCode } from "../../../src/components/codelist.ts";
 import { ObservationType } from "../../../src/pages/detail/form/hydrogeology/Observation.ts";
+import { buildConsentCookieValue, CONSENT_COOKIE_NAME } from "../../../src/term/consentCookie.ts";
 import adminUser from "../../fixtures/adminUser.json";
 import { startEditing, stopEditing } from "./buttonHelpers";
 
 export const bearerAuth = (token: string) => ({ bearer: token });
+
+/** Mirrors the SubjectId the OIDC mock in config/oidc-mock-users.json issues for a login name. */
+export const toMockSubjectId = (user: string) => `sub_${user}`;
+
+// The consent cookie is scoped to the user who accepted, so seeding it needs the current login.
+let loggedInSubject: string | undefined = undefined;
 
 export const interceptApiCalls = () => {
   // Api V2
@@ -200,6 +207,7 @@ export const mockLocationIntercept = (
  * Login into the application with the user for the development environment.
  */
 export const login = (user: string) => {
+  loggedInSubject = toMockSubjectId(user);
   cy.session(
     ["login", user],
     () => {
@@ -232,12 +240,11 @@ export const login = (user: string) => {
   );
 };
 
-const CONSENT_COOKIE_VALUE = encodeURIComponent(JSON.stringify({ v: 1, analytics: true }));
-
 const visitWithConsent = (route: string) => {
+  const value = buildConsentCookieValue(loggedInSubject, true);
   cy.visit(route, {
     onBeforeLoad(win) {
-      win.document.cookie = `boreholes_consent=${CONSENT_COOKIE_VALUE}; path=/; SameSite=Lax`;
+      win.document.cookie = `${CONSENT_COOKIE_NAME}=${value}; path=/; SameSite=Lax`;
     },
   });
 };

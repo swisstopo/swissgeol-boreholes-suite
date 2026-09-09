@@ -2,7 +2,11 @@
 
 ## [Unreleased]
 
+### Removed
+- The terms of service editor in the settings. The disclaimer shown on first visit now always uses the texts shipped with the application, and the stored terms and acceptance records are deleted from the database.
+
 ### Changed
+- The disclaimer is now shown per user instead of per browser, so everyone sharing a workstation is asked to accept it, and it reappears whenever the texts change.
 - Upgraded to .NET 10.
 
 ### Fixed

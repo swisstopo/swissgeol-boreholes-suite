@@ -1,4 +1,5 @@
-import { loginAsAdmin, selectLanguage } from "./helpers/testHelpers";
+import { buildConsentCookieValue, CONSENT_COOKIE_NAME } from "../../src/term/consentCookie.ts";
+import { loginAsAdmin, selectLanguage, toMockSubjectId } from "./helpers/testHelpers";
 
 describe("General app tests", () => {
   it("Displays the login page in the correct language", () => {
@@ -27,17 +28,16 @@ describe("General app tests", () => {
   it("Persists the consent choice so the disclaimer does not reappear on reload", () => {
     loginAsAdmin();
     // Start from a clean state so the dialog renders on the first visit.
-    cy.clearCookie("boreholes_consent");
+    cy.clearCookie(CONSENT_COOKIE_NAME);
 
     cy.visit("/");
     cy.dataCy("accept-button").click();
     cy.dataCy("accept-button").should("not.exist");
 
-    cy.getCookie("boreholes_consent")
+    cy.getCookie(CONSENT_COOKIE_NAME)
       .should("exist")
       .then(cookie => {
-        const parsed = JSON.parse(decodeURIComponent(cookie!.value));
-        expect(parsed).to.deep.include({ v: 1, analytics: true });
+        expect(cookie!.value).to.equal(buildConsentCookieValue(toMockSubjectId("admin"), true));
       });
 
     cy.reload();
