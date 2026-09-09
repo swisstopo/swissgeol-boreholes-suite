@@ -89,7 +89,7 @@ public class LogFileCloudService : CloudServiceBase
                 // Nothing refers to the stored object once its row is not written, and the name it
                 // was given is never handed out again, so it would stay in the bucket for good.
                 // The cleanup runs without the token because the caller may already have cancelled.
-                await DeleteObject(fileNameGuid).ConfigureAwait(false);
+                await DeleteOrphanedObject(fileNameGuid).ConfigureAwait(false);
                 throw;
             }
         }
@@ -103,6 +103,25 @@ public class LogFileCloudService : CloudServiceBase
         {
             Logger.LogError(ex, "Error attaching logFile <{FileName}> to logRun with Id <{LogRunId}>.", fileName, logRunId);
             throw;
+        }
+    }
+
+    /// <summary>
+    /// Removes an object whose log file row was never written, letting the failure that caused it
+    /// travel on. A cleanup that fails must not replace that failure: only while it is intact can
+    /// the caller tell a client that gave up from an upload that broke. The object is left in the
+    /// bucket instead, which is what the log records.
+    /// </summary>
+    /// <param name="objectName">The name of the stored object to remove.</param>
+    private async Task DeleteOrphanedObject(string objectName)
+    {
+        try
+        {
+            await DeleteObject(objectName).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to remove the object <{ObjectName}> stored for a log file row that was never written. It stays in the bucket.", objectName);
         }
     }
 }
