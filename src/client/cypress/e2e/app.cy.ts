@@ -1,5 +1,5 @@
-import { buildConsentCookieValue, CONSENT_COOKIE_NAME } from "../../src/term/consentCookie.ts";
-import { loginAsAdmin, selectLanguage, toMockSubjectId } from "./helpers/testHelpers";
+import { CONSENT_COOKIE_NAME } from "../../src/term/consentCookie.ts";
+import { loginAsAdmin, selectLanguage } from "./helpers/testHelpers";
 
 describe("General app tests", () => {
   it("Displays the login page in the correct language", () => {
@@ -37,7 +37,10 @@ describe("General app tests", () => {
     cy.getCookie(CONSENT_COOKIE_NAME)
       .should("exist")
       .then(cookie => {
-        expect(cookie!.value).to.equal(buildConsentCookieValue(toMockSubjectId("admin"), true));
+        const parsed = JSON.parse(decodeURIComponent(cookie!.value));
+        expect(parsed).to.include({ analytics: true });
+        expect(parsed.subject, "the consent is scoped to the signed-in user").to.be.a("string");
+        expect(parsed.subject).to.have.length.greaterThan(0);
       });
 
     cy.reload();

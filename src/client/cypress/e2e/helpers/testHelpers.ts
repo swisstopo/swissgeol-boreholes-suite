@@ -6,12 +6,6 @@ import { startEditing, stopEditing } from "./buttonHelpers";
 
 export const bearerAuth = (token: string) => ({ bearer: token });
 
-/** Mirrors the SubjectId the OIDC mock in config/oidc-mock-users.json issues for a login name. */
-export const toMockSubjectId = (user: string) => `sub_${user}`;
-
-// The consent cookie is scoped to the user who accepted, so seeding it needs the current login.
-let loggedInSubject: string | undefined = undefined;
-
 export const interceptApiCalls = () => {
   // Api V2
   cy.intercept("/api/v2/borehole/filter").as("borehole_filter");
@@ -207,7 +201,6 @@ export const mockLocationIntercept = (
  * Login into the application with the user for the development environment.
  */
 export const login = (user: string) => {
-  loggedInSubject = toMockSubjectId(user);
   cy.session(
     ["login", user],
     () => {
@@ -240,10 +233,26 @@ export const login = (user: string) => {
   );
 };
 
+/**
+ * Reads the subject of the OIDC session that cypress restored into the application's local storage.
+ * The seeded consent has to be scoped to the user the application will actually see, and the
+ * support file and the specs get separate module instances, so the current login cannot be tracked
+ * in a variable here.
+ */
+const readRestoredSubject = (win: Window): string | undefined => {
+  const key = Object.keys(win.localStorage).find(k => k.startsWith("oidc.user:"));
+  if (!key) return undefined;
+  try {
+    return JSON.parse(win.localStorage.getItem(key) ?? "{}").profile?.sub;
+  } catch {
+    return undefined;
+  }
+};
+
 const visitWithConsent = (route: string) => {
-  const value = buildConsentCookieValue(loggedInSubject, true);
   cy.visit(route, {
     onBeforeLoad(win) {
+      const value = buildConsentCookieValue(readRestoredSubject(win), true);
       win.document.cookie = `${CONSENT_COOKIE_NAME}=${value}; path=/; SameSite=Lax`;
     },
   });
