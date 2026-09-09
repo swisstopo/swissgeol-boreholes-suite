@@ -13,8 +13,9 @@
 - The export dialog closes as soon as a format is chosen, and the transfer is reported by an overlay over the page instead of over the dialog.
 
 ### Fixed
-- Exporting log runs with large attachments no longer fails. Log file exports and downloads are streamed instead of being assembled in memory, so files larger than 2 GB can now be exported and downloaded up to the 5 GB limit.
-- Exporting boreholes with attachments, exporting photos, and downloading photos and profiles no longer fail for large files. These responses are streamed instead of being assembled in memory, and the download starts as soon as the first bytes are ready.
+- Exporting LOG runs with large attachments no longer fails. LOG file exports and downloads are streamed instead of being assembled in memory, so files larger than 2 GB can now be exported and downloaded up to the 5 GB limit.
+- LOG runs are now always displayed on VIEW, even without any files or without public files.
+- Exporting boreholes with attachments, exporting photos, and downloading photos and profiles are now streamed instead of being assembled in memory. The download starts as soon as the first bytes are ready.
 - Uploading a log file under a name the log run already holds now says so, instead of reporting an unexpected error.
 
 ## v2.1.1748 - 2026-07-28
