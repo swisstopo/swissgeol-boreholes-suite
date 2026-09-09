@@ -446,6 +446,7 @@
   "plasticity": "Plasticity",
   "polygonSelection": "Polygon selection",
   "preparingExport": "Preparing export...",
+  "preparingUpload": "Preparing upload...",
   "preview": "Preview",
   "profile": "Profile",
   "profileSouthNorth": "South - North Profile",
@@ -484,6 +485,7 @@
   "runNumber": "Run number",
   "save": "Save",
   "savedChanges": "Changes saved",
+  "savingChanges": "Saving changes...",
   "search": "Search",
   "searchFilterLocation": "Location filters",
   "searchFilterRegistration": "Registration filters",
@@ -514,6 +516,7 @@
     "Reviewed": "Reviewed",
     "Published": "Published"
   },
+  "storingFile": "Storing {{name}}",
   "stratigraphy": "Stratigraphy",
   "stratigraphyName": "Stratigraphy name",
   "stratigraphySaved_one": "Stratigraphy successfully saved.",

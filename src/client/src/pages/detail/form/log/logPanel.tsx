@@ -138,6 +138,15 @@ export const LogPanel: FC = () => {
       const changedLogRuns = tmpLogRuns.filter(l => l.hasChanges).map(l => l.item);
       const totalUploads = changedLogRuns.reduce((sum, logRun) => sum + countPendingUploads(logRun), 0);
 
+      /** Announces a part of the save that carries no progress of its own. */
+      const reportPhase = (message: string) => setSaveProgress({ message, onCancel });
+
+      // The first progress event only arrives once a file is on the wire. Until then the save
+      // is already announced, so the overlay does not switch its appearance mid-upload.
+      if (totalUploads > 0) {
+        reportPhase(t("preparingUpload"));
+      }
+
       // Files are uploaded one at a time, so a running offset over the log runs yields the
       // position of the file currently in flight within the whole save.
       let uploadsBeforeCurrentRun = 0;
@@ -145,26 +154,33 @@ export const LogPanel: FC = () => {
         return ({ fileName, indexInRun, loaded, total }) => {
           const position = offset + indexInRun + 1;
 
+          // Sending the bytes is only the first half of the request: the server then stores the
+          // file and answers.
+          const isSent = total !== undefined && loaded >= total;
+
           // The byte count changes faster than it can be read, so it is refreshed on an interval.
-          // A file that has just started is always shown, otherwise its name would appear late.
+          // The first and the last event of a file are always shown, otherwise its name would
+          // appear late and its numbers would stop short of its size.
           const now = Date.now();
           const startsNewFile = lastReportedFile.current !== position;
-          if (!startsNewFile && now - lastReportedAt.current < progressRefreshIntervalMs) return;
+          if (!startsNewFile && !isSent && now - lastReportedAt.current < progressRefreshIntervalMs) return;
           lastReportedFile.current = position;
           lastReportedAt.current = now;
 
-          // The file name stays on the line read first, the numbers that keep moving go below it.
           const placeInSave = { current: position, total: totalUploads };
+          const placeHint = t("uploadProgressHint", placeInSave);
+          const transferHint =
+            total === undefined
+              ? placeHint
+              : t("uploadProgressHintWithSize", {
+                  ...placeInSave,
+                  transferred: formatBytes(loaded),
+                  size: formatBytes(total),
+                });
+
           setSaveProgress({
-            message: t("uploadingFile", { name: fileName }),
-            hint:
-              total === undefined
-                ? t("uploadProgressHint", placeInSave)
-                : t("uploadProgressHintWithSize", {
-                    ...placeInSave,
-                    transferred: formatBytes(loaded),
-                    size: formatBytes(total),
-                  }),
+            message: isSent ? t("storingFile", { name: fileName }) : t("uploadingFile", { name: fileName }),
+            hint: isSent ? placeHint : transferHint,
             onCancel,
           });
         };
@@ -195,6 +211,10 @@ export const LogPanel: FC = () => {
           setTmpLogRuns(prev => applyUploadedFiles(prev, logRun.tmpId, payload.logFiles));
         }
         uploadsBeforeCurrentRun += pendingUploads;
+
+        if (totalUploads > 0) {
+          reportPhase(t("savingChanges"));
+        }
       }
     },
     [addLogRun, boreholeId, setSaveProgress, setTmpLogRuns, t, tmpLogRuns, updateLogRun],
