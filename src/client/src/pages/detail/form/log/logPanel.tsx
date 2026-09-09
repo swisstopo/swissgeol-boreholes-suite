@@ -171,9 +171,6 @@ export const LogPanel: FC = () => {
       };
 
       for (const logRun of changedLogRuns) {
-        // The signal reaches the request in flight, which leaves the runs not started yet. A save
-        // given up on has to stop here as well, otherwise it would go on creating and updating
-        // runs the user asked it to leave alone.
         signal.throwIfAborted();
 
         const payload = prepareLogRunForSubmit(logRun);
@@ -241,9 +238,7 @@ export const LogPanel: FC = () => {
     }
   }, [addAndUpdateLogRuns, deleteRuns, reconcileStoredFiles, showApiErrorAlert]);
 
-  // Leaving the page while a save runs stops it, the same as clicking the overlay. Navigation is
-  // only blocked while there are unsaved changes, so discarding them mid-save would otherwise
-  // leave the transfer running unwatched.
+  // Leaving the page while a save runs stops it.
   useEffect(() => {
     const saveOnMount = runningSave;
     return () => saveOnMount.current?.abort();

@@ -234,9 +234,6 @@ public class ProfileCloudServiceTest
                 pdfFormFile.ContentType,
                 minBoreholeId).ConfigureAwait(false));
 
-        // Naming the cause keeps this test on the outage it describes. A mock that stops matching
-        // how the upload reaches S3 fails inside the mock instead, and the wrapper above turns that
-        // into the same IOException, so the test would otherwise still pass while testing nothing.
         Assert.IsInstanceOfType(exception.InnerException, typeof(AmazonS3Exception), "The upload should have failed on the simulated S3 outage.");
 
         var profileCountAfter = context.Profiles.Count(p => p.BoreholeId == minBoreholeId);
