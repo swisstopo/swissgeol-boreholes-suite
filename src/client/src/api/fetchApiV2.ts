@@ -127,6 +127,7 @@ export async function fetchApiV2Legacy(url: string, method: string, payload: obj
  * @param url The resource url.
  * @param method The HTTP request method to apply (e.g. GET, PUT, POST...).
  * @param payload The payload of the HTTP request (optional).
+ * @param signal Aborts the request, and with it the work it triggers on the server.
  * @returns The HTTP response as JSON.
  * @throws {ApiError|Error} - Throws an `ApiError` or a generic `Error` based on the response content.
  */
@@ -134,8 +135,15 @@ export async function fetchApiV2WithApiError<T>(
   url: string,
   method: string,
   payload: FormData | object | null = null,
+  signal?: AbortSignal,
 ): Promise<T> {
-  const response = await fetchApiV2Base(url, method, payload ? JSON.stringify(payload) : null, "application/json");
+  const response = await fetchApiV2Base(
+    url,
+    method,
+    payload ? JSON.stringify(payload) : null,
+    "application/json",
+    signal,
+  );
   if (response.ok) {
     return await readApiResponse(response);
   } else {

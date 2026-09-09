@@ -70,6 +70,11 @@ export interface LogImportError {
   values?: Record<string, string>;
 }
 
+export interface AddLogRunVariables {
+  logRun: LogRun;
+  signal?: AbortSignal;
+}
+
 export interface UpdateLogRunVariables {
   logRun: LogRun;
   onFileProgress?: LogFileUploadProgressCallback;

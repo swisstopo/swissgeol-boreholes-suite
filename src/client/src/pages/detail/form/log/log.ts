@@ -13,6 +13,7 @@ import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { SaveContext } from "../../saveContext.tsx";
 import {
+  AddLogRunVariables,
   ImportLogsVariables,
   LogFile,
   LogFileUploadProgress,
@@ -68,10 +69,10 @@ export const useLogRunMutations = () => {
   const resetTabStatus = useResetTabStatus(["log"]);
 
   const useAddLogRun = useMutation({
-    mutationFn: async (logRun: LogRun) => {
-      return await fetchApiV2WithApiError<LogRun>(logController, "POST", logRun);
+    mutationFn: async ({ logRun, signal }: AddLogRunVariables) => {
+      return await fetchApiV2WithApiError<LogRun>(logController, "POST", logRun, signal);
     },
-    onSuccess: (_data, logRun) => {
+    onSuccess: (_data, { logRun }) => {
       resetTabStatus();
       queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRun.boreholeId] });
       queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, logRun.boreholeId] });
@@ -101,7 +102,7 @@ export const useLogRunMutations = () => {
           indexInRun++;
         }
       }
-      return await fetchApiV2WithApiError<LogRun>(logController, "PUT", logRun);
+      return await fetchApiV2WithApiError<LogRun>(logController, "PUT", logRun, signal);
     },
     onSuccess: (_data, { logRun }) => {
       resetTabStatus();

@@ -170,13 +170,21 @@ export const LogPanel: FC = () => {
       };
 
       for (const logRun of changedLogRuns) {
+        // The signal reaches the request in flight, which leaves the runs not started yet. A save
+        // given up on has to stop here as well, otherwise it would go on creating and updating
+        // runs the user asked it to leave alone.
+        signal.throwIfAborted();
+
         const payload = prepareLogRunForSubmit(logRun);
         const pendingUploads = countPendingUploads(logRun);
         const onFileProgress = totalUploads > 0 ? reportProgress(uploadsBeforeCurrentRun) : undefined;
 
         try {
           if (payload.id === 0) {
-            const createdLogRun = await addLogRun({ ...payload, boreholeId: boreholeId, logFiles: [] });
+            const createdLogRun = await addLogRun({
+              logRun: { ...payload, boreholeId: boreholeId, logFiles: [] },
+              signal,
+            });
             if (payload.logFiles && payload.logFiles.length > 0) {
               await updateLogRun({ logRun: { ...createdLogRun, logFiles: payload.logFiles }, onFileProgress, signal });
             }
