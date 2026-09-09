@@ -47,6 +47,7 @@ export const LogPanel: FC = () => {
   const [tmpLogRuns, setTmpLogRuns] = useState<LogRunChangeTracker[]>([]);
   const lastReportedAt = useRef(0);
   const lastReportedFile = useRef(0);
+  const runningSave = useRef<AbortController | null>(null);
   const tmpLogRunsFlat: LogRun[] = useMemo(() => tmpLogRuns.map(l => l.item as LogRun), [tmpLogRuns]);
 
   const {
@@ -222,6 +223,7 @@ export const LogPanel: FC = () => {
 
   const onSave = useCallback(async () => {
     const abortController = new AbortController();
+    runningSave.current = abortController;
     try {
       await Promise.all([deleteRuns(), addAndUpdateLogRuns(abortController.signal, () => abortController.abort())]);
       return true;
@@ -234,8 +236,18 @@ export const LogPanel: FC = () => {
       }
       showApiErrorAlert(error);
       return false;
+    } finally {
+      runningSave.current = null;
     }
   }, [addAndUpdateLogRuns, deleteRuns, reconcileStoredFiles, showApiErrorAlert]);
+
+  // Leaving the page while a save runs stops it, the same as clicking the overlay. Navigation is
+  // only blocked while there are unsaved changes, so discarding them mid-save would otherwise
+  // leave the transfer running unwatched.
+  useEffect(() => {
+    const saveOnMount = runningSave;
+    return () => saveOnMount.current?.abort();
+  }, []);
 
   useEffect(() => {
     registerSaveHandler(onSave);
