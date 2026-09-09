@@ -8,7 +8,7 @@
     <InternalsVisibleTo>BDMS.Test</InternalsVisibleTo>
   </PropertyGroup>
   <ItemGroup>
-    <PackageReference Include="AWSSDK.S3" Version="3.7.509.11" />
+    <PackageReference Include="AWSSDK.S3" Version="4.0.103" />
     <PackageReference Include="Bogus" Version="34.0.2" />
     <PackageReference Include="CsvHelper" Version="30.1.0" />
     <PackageReference Include="EFCore.BulkExtensions.PostgreSql" Version="10.0.1" />

@@ -162,7 +162,7 @@ public class ProfileCloudServiceTest
     [TestMethod]
     public async Task GetObjectBytesWithNotExistingObjectNameShouldThrowException()
     {
-        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => profileCloudService.GetObjectBytes("doesNotExist", NoSizeLimit));
+        await Assert.ThrowsExactlyAsync<NoSuchKeyException>(() => profileCloudService.GetObjectBytes("doesNotExist", NoSizeLimit));
     }
 
     [TestMethod]
@@ -197,7 +197,7 @@ public class ProfileCloudServiceTest
         await profileCloudService.DeleteObject(pdfFormFile.FileName);
 
         // Ensure file does not exist
-        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => profileCloudService.GetObjectBytes(pdfFormFile.FileName, NoSizeLimit));
+        await Assert.ThrowsExactlyAsync<NoSuchKeyException>(() => profileCloudService.GetObjectBytes(pdfFormFile.FileName, NoSizeLimit));
     }
 
     [TestMethod]

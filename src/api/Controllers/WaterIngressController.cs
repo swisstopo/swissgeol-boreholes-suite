@@ -4,7 +4,6 @@ using BDMS.Services;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using static Amazon.S3.Util.S3EventNotification;
 
 namespace BDMS.Controllers;
 
