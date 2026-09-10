@@ -3,13 +3,12 @@
 ## [Unreleased]
 
 ### Added
-- The overlay shown while saving LOG runs now names the file being uploaded, its position in the save, and how much of it has been transferred. It also reports the steps around the transfer, such as preparing the upload, storing an uploaded file, and saving the remaining changes.
+- The overlay shown while saving LOG runs now names the file being uploaded, its position in the save, and how much of it has been transferred.
 - The export overlay now shows how much of the export has been downloaded.
-- Uploads and exports can be cancelled by clicking the overlay or its cancel button. A cancelled export stops the download and the work it triggers on the server; a cancelled upload keeps the files that already reached the server, and the remaining changes stay unsaved so the save can be repeated.
+- Uploads and exports can be cancelled by clicking the overlay or its cancel button.
 
 ### Changed
 - Upgraded to .NET 10.
-- LOG files attached to a LOG run are uploaded one after another instead of all at once.
 - The export dialog closes as soon as a format is chosen, and the transfer is reported by an overlay over the page instead of over the dialog.
 
 ### Fixed
