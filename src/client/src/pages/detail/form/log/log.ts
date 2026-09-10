@@ -7,6 +7,7 @@ import { boreholeQueryKey } from "../../../../api/borehole.ts";
 import { downloadPost } from "../../../../api/download.ts";
 import { ApiError } from "../../../../api/errorClasses.ts";
 import { fetchApiV2WithApiError, isJsonContentType, upload, uploadWithApiError } from "../../../../api/fetchApiV2.ts";
+import { TransferOptions } from "../../../../api/transferProgress.ts";
 import { ExportItem } from "../../../../components/export/exportDialog.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
@@ -166,12 +167,22 @@ export const useImportLogs = () => {
   });
 };
 
-export const exportLogRuns = async (ids: number[], withAttachments: boolean, locale: string): Promise<Response> => {
-  return await downloadPost("log/export", { logRunIds: ids, withAttachments, locale });
+export const exportLogRuns = async (
+  ids: number[],
+  withAttachments: boolean,
+  locale: string,
+  options?: TransferOptions,
+): Promise<Response> => {
+  return await downloadPost("log/export", { logRunIds: ids, withAttachments, locale }, options);
 };
 
-export const exportLogFiles = async (ids: number[], withAttachments: boolean, locale: string): Promise<Response> => {
-  return await downloadPost("log/export", { logFileIds: ids, withAttachments, locale });
+export const exportLogFiles = async (
+  ids: number[],
+  withAttachments: boolean,
+  locale: string,
+  options?: TransferOptions,
+): Promise<Response> => {
+  return await downloadPost("log/export", { logFileIds: ids, withAttachments, locale }, options);
 };
 
 /**
@@ -179,7 +190,7 @@ export const exportLogFiles = async (ids: number[], withAttachments: boolean, lo
  * locale resolution, withAttachments differentiation, and selection-to-ID mapping.
  */
 export const useLogExport = (
-  exportFn: (ids: number[], withAttachments: boolean, locale: string) => Promise<Response>,
+  exportFn: (ids: number[], withAttachments: boolean, locale: string, options?: TransferOptions) => Promise<Response>,
   selectionModel: GridRowSelectionModel,
   rows: { id: number; tmpId?: string }[],
 ) => {
@@ -222,11 +233,11 @@ export const useLogExport = (
     () => [
       {
         label: "withoutAttachments",
-        exportFunction: () => exportFn(getSelectedIds(), false, i18n.language),
+        exportFunction: options => exportFn(getSelectedIds(), false, i18n.language, options),
       },
       {
         label: "withAttachments",
-        exportFunction: () => exportFn(getSelectedIds(), true, i18n.language),
+        exportFunction: options => exportFn(getSelectedIds(), true, i18n.language, options),
       },
     ],
     [exportFn, getSelectedIds, i18n.language],
