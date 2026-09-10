@@ -17,8 +17,8 @@ interface Consent {
 const toSubjectKey = (subject: string | undefined): string => {
   let hash = 2166136261;
   const value = subject ?? ANONYMOUS_SUBJECT;
-  for (let i = 0; i < value.length; i++) {
-    hash ^= value.charCodeAt(i);
+  for (const character of value) {
+    hash ^= character.codePointAt(0) ?? 0;
     hash = Math.imul(hash, 16777619);
   }
   return (hash >>> 0).toString(36);
