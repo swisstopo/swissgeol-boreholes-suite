@@ -95,8 +95,19 @@ export const buildFileName = (cols: string[], nameIndex: number, extensionIndex:
   return ext ? `${name}.${ext}` : name;
 };
 
+// Excel writes Windows-1252 for "Save As -> CSV" and UTF-8 only for "Save As -> CSV UTF-8".
+// UTF-8 is self validating, so a strict decode that throws identifies the other case reliably.
+// TextDecoder consumes a leading byte order mark in both branches.
+const decodeCsv = (buffer: ArrayBuffer): string => {
+  try {
+    return new TextDecoder("utf-8", { fatal: true }).decode(buffer);
+  } catch {
+    return new TextDecoder("windows-1252").decode(buffer);
+  }
+};
+
 export const parseLogFilesCsv = async (csvFile: File): Promise<LogFileCsvInfo> => {
-  const text = await csvFile.text();
+  const text = decodeCsv(await csvFile.arrayBuffer());
   const lines = text.split(/\r?\n/).filter(l => l.trim());
   if (lines.length === 0) return { requiredFilesPerRun: {} };
 

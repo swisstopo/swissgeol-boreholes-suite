@@ -8,6 +8,16 @@ function createCsvFile(content: string): File {
   return new File([content], "test.csv", { type: "text/csv" });
 }
 
+function createCsvFileWithBytes(bytes: number[]): File {
+  return new File([new Uint8Array(bytes)], "test.csv", { type: "text/csv" });
+}
+
+// Every character used in these tests is below U+0100, where Windows-1252 and Unicode agree,
+// so the code point is the byte.
+function windows1252Bytes(text: string): number[] {
+  return [...text].map(character => character.charCodeAt(0));
+}
+
 describe("buildFileName", () => {
   it("combines name and extension", () => {
     expect(buildFileName(["run1", "file", "las"], 1, 2)).toBe("file.las");
@@ -50,6 +60,20 @@ describe("parseLogFilesCsv", () => {
       "RUN-1": ["welllog.las"],
       "RUN-2": ["data.txt"],
     });
+  });
+
+  it("decodes a windows-1252 encoded file", async () => {
+    const csv = "RunNumber;Name;Extension\r\nRUN-1;café;las\r\n";
+    const result = await parseLogFilesCsv(createCsvFileWithBytes(windows1252Bytes(csv)));
+    expect(result.requiredFilesPerRun).toEqual({ "RUN-1": ["café.las"] });
+  });
+
+  it("strips the byte order mark from a utf-8 file", async () => {
+    // Guards the decoder swap. A leaked mark would turn the first header into something other than
+    // "runnumber", and the parser would then silently return no required files at all.
+    const csv = "\uFEFFRunNumber;Name;Extension\r\nRUN-1;café;las\r\n";
+    const result = await parseLogFilesCsv(createCsvFile(csv));
+    expect(result.requiredFilesPerRun).toEqual({ "RUN-1": ["café.las"] });
   });
 
   it("groups multiple files under the same run", async () => {
