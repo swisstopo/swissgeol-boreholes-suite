@@ -1,4 +1,5 @@
-﻿using BDMS.Authentication;
+﻿using Amazon.S3.Model;
+using BDMS.Authentication;
 using BDMS.Models;
 using BDMS.Services;
 using Microsoft.AspNetCore.Authorization;
@@ -120,17 +121,10 @@ public class ProfileController : ControllerBase
                 var dataExtractionImageInfo = await profileCloudService.GetDataExtractionImageInfo(fileUuid, index, cancellationToken).ConfigureAwait(false);
                 return Ok(new DataExtractionInfo(dataExtractionImageInfo.FileName, dataExtractionImageInfo.Width, dataExtractionImageInfo.Height, fileCount));
             }
-            catch (Exception ex)
+            catch (Exception ex) when (ex is NoSuchKeyException || ex.InnerException is NoSuchKeyException)
             {
                 // No image found for the requested index, return an empty response with the file info.
-                if (ex.Message.Contains("The specified key does not exist.", StringComparison.OrdinalIgnoreCase)
-                    || ex.InnerException?.Message.Contains("The specified key does not exist.", StringComparison.OrdinalIgnoreCase) == true)
-                {
-                    return Ok(new DataExtractionInfo(fileUuid, 0, 0, 0));
-                }
-
-                // Re-throw the exception so it gets handled by the outer exception handler.
-                throw;
+                return Ok(new DataExtractionInfo(fileUuid, 0, 0, 0));
             }
         }
         catch (Exception ex)

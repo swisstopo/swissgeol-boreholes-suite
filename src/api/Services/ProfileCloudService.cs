@@ -127,7 +127,8 @@ public class ProfileCloudService : CloudServiceBase
             do
             {
                 var listObjectsResponse = await S3Client.ListObjectsV2Async(listObjectsRequest, cancellationToken).ConfigureAwait(false);
-                totalObjects += listObjectsResponse.S3Objects.Count;
+
+                totalObjects += listObjectsResponse.S3Objects?.Count ?? 0;
                 listObjectsRequest.ContinuationToken = listObjectsResponse.NextContinuationToken;
             }
             while (listObjectsRequest.ContinuationToken != null);
