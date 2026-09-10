@@ -121,7 +121,7 @@ public class LogFileCloudServiceTest
     [TestMethod]
     public async Task GetObjectBytesWithNotExistingObjectNameShouldThrowException()
     {
-        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => logFileCloudService.GetObjectBytes("doesNotExist", NoSizeLimit));
+        await Assert.ThrowsExactlyAsync<NoSuchKeyException>(() => logFileCloudService.GetObjectBytes("doesNotExist", NoSizeLimit));
     }
 
     [TestMethod]
@@ -163,7 +163,7 @@ public class LogFileCloudServiceTest
     [TestMethod]
     public async Task GetObjectStreamWithNotExistingObjectNameShouldThrowException()
     {
-        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => logFileCloudService.GetObjectStream("doesNotExist"));
+        await Assert.ThrowsExactlyAsync<NoSuchKeyException>(() => logFileCloudService.GetObjectStream("doesNotExist"));
     }
 
     [TestMethod]
@@ -186,6 +186,6 @@ public class LogFileCloudServiceTest
         await logFileCloudService.UploadObject(formFile.OpenReadStream(), formFile.FileName, formFile.ContentType);
         await logFileCloudService.GetObjectBytes(formFile.FileName, NoSizeLimit);
         await logFileCloudService.DeleteObject(formFile.FileName);
-        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => logFileCloudService.GetObjectBytes(formFile.FileName, NoSizeLimit));
+        await Assert.ThrowsExactlyAsync<NoSuchKeyException>(() => logFileCloudService.GetObjectBytes(formFile.FileName, NoSizeLimit));
     }
 }
