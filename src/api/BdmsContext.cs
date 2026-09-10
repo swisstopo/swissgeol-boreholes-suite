@@ -375,14 +375,14 @@ public class BdmsContext : DbContext
     /// <summary>
     /// Update the change information of <see cref="IChangeTracking"/> entities and call <see cref="DbContext.SaveChangesAsync(CancellationToken)" />.
     /// </summary>
-    public async Task<int> UpdateChangeInformationAndSaveChangesAsync(HttpContext httpContext)
+    public async Task<int> UpdateChangeInformationAndSaveChangesAsync(HttpContext httpContext, CancellationToken cancellationToken = default)
     {
         var subjectId = httpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         var entities = ChangeTracker.Entries<IChangeTracking>();
         var user = await Users
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
+            .SingleOrDefaultAsync(u => u.SubjectId == subjectId, cancellationToken)
             .ConfigureAwait(false);
 
         foreach (var entity in entities)
@@ -401,7 +401,7 @@ public class BdmsContext : DbContext
             }
         }
 
-        return await SaveChangesAsync().ConfigureAwait(false);
+        return await SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />

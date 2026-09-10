@@ -366,6 +366,12 @@ public class BoreholeExportController : ControllerBase
 
             return new StreamedZipResult($"{fileName}.zip", entries, logger);
         }
+        catch (OperationCanceledException)
+        {
+            // The client gave up while the export was still being prepared. There is nobody left
+            // to answer, so this is not reported as a failed export.
+            throw;
+        }
         catch (AmazonS3Exception ex)
         {
             logger.LogError(ex, "Amazon S3 Store threw an exception.");
