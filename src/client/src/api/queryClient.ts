@@ -34,13 +34,13 @@ export const createQueryClient = ({ showAlert, translate, retryQueries }: QueryC
           }
           // If there is no cached data for a query, we want to throw an error that will be caught by the error boundary.
           // The closest error boundary's FallbackComponent will be displayed.
-          return typeof query.state.data === "undefined";
+          return query.state.data === undefined;
         },
       },
     },
     queryCache: new QueryCache({
       onError: (error, query) => {
-        if (typeof query.state.data !== "undefined" && !(error instanceof ApiError)) {
+        if (query.state.data !== undefined && !(error instanceof ApiError)) {
           // If there is cached data available for a query, we want to show the cached data to the user.
           // An alert will be shown to inform the user that the data is not up-to-date.
           showAlert(translate("dataNotUpToDateError"), "error");
