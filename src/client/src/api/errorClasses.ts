@@ -19,7 +19,7 @@ export class ApiError extends Error {
  * developer can. The `userError` type is what marks it: the global handler leaves those alone so
  * that the code which made the call can report the reason itself.
  */
-export interface UserErrorProblem extends Record<string, unknown> {
+interface UserErrorProblem extends Record<string, unknown> {
   type?: string;
   detail?: string;
   message?: string;
