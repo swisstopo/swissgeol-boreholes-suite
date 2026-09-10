@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useEffect } from "react";
+import { FC, useCallback, useContext, useEffect, useRef } from "react";
 import { FormProvider, useFieldArray, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Chip, Stack, Typography } from "@mui/material";
@@ -24,7 +24,13 @@ import { EditStateContext } from "../../editStateContext";
 import { FileDropzone } from "./fileDropzone.tsx";
 import { LogFileTable } from "./logFilesTable";
 import { LogFile, LogRun } from "./logInterfaces";
-import { getFileExtension, getServiceOrToolArray, validateFiles, validateRunNumber } from "./logUtils";
+import {
+  getFileExtension,
+  getServiceOrToolArray,
+  toStoredFileName,
+  validateFiles,
+  validateRunNumber,
+} from "./logUtils";
 
 type LogFileField = LogFile & { fileKey: string };
 
@@ -69,7 +75,11 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
 
   const watchedFiles = useWatch({ control: formMethods.control, name: "logFiles" }) as LogFile[] | undefined;
 
+  /** What the run held under a name that was taken out while this dialog has been open. */
+  const replacedFileIds = useRef(new Map<string, number>());
+
   useEffect(() => {
+    replacedFileIds.current.clear();
     if (logRun) {
       const withTmpFileIds = {
         ...logRun,
@@ -106,16 +116,37 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
     prepend(newFile);
   }, [prepend, logRun]);
 
+  /**
+   * Remembers the id of a file a row just dropped, keyed by its name, until the dialog closes.
+   *
+   * Deletes are only sent when the run is saved, and uploads go out before that. So if the user
+   * picks the same file name again, the old file is still on the server under that name, and a
+   * second upload with that name would be refused. The upload has to overwrite the old file
+   * instead, and that needs its id, which the row no longer has once it dropped it. The name on
+   * its own is not enough: it cannot tell "this replaces a file we just dropped" apart from
+   * "the server already has a file with this name".
+   */
+  const rememberReplacedFile = useCallback(
+    (idx: number) => {
+      const replaced = formMethods.getValues(`logFiles.${idx}`);
+      if (replaced !== undefined && replaced.id > 0 && replaced.name) {
+        replacedFileIds.current.set(replaced.name, replaced.id);
+      }
+    },
+    [formMethods],
+  );
+
   const removeFile = useCallback(
     (idx: number) => () => {
+      rememberReplacedFile(idx);
       remove(idx);
     },
-    [remove],
+    [rememberReplacedFile, remove],
   );
 
   const onFileChanged = useCallback(
     (selected: File | undefined, index: number): string | void => {
-      const updatedName = selected ? selected.name : "";
+      const updatedName = selected ? toStoredFileName(selected.name) : "";
       const existingFiles = formMethods.getValues("logFiles") ?? [];
       if (
         updatedName &&
@@ -128,6 +159,8 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
       formMethods.clearErrors(`logFiles.${index}.name`);
       const currentName = formMethods.getValues(`logFiles.${index}.name`);
       if (currentName !== updatedName) {
+        rememberReplacedFile(index);
+
         formMethods.setValue(`logFiles.${index}.name`, updatedName, { shouldDirty: true, shouldTouch: true });
         formMethods.setValue(`logFiles.${index}.extension`, getFileExtension(updatedName), {
           shouldDirty: true,
@@ -135,9 +168,17 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
         });
         formMethods.trigger(`logFiles.${index}`);
         formMethods.setValue(`logFiles.${index}.file`, selected, { shouldDirty: true, shouldTouch: true });
+
+        // If the new name matches a file the row dropped earlier, reuse that file's id so the
+        // upload overwrites it instead of being refused because of a non-unique name.
+        if (selected) {
+          formMethods.setValue(`logFiles.${index}.id`, replacedFileIds.current.get(updatedName) ?? 0, {
+            shouldDirty: true,
+          });
+        }
       }
     },
-    [formMethods, t],
+    [formMethods, rememberReplacedFile, t],
   );
 
   const cancelDialog = () => {

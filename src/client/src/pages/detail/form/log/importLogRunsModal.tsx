@@ -6,7 +6,8 @@ import { FormContainer, FormDialog } from "../../../../components/form/form.ts";
 import { LoadingBackdrop } from "../../../../components/loadingBackdrop.tsx";
 import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { FileDropzone } from "./fileDropzone.tsx";
-import { LogImportError, LogImportValidationError, useImportLogs } from "./log.ts";
+import { LogImportValidationError, useImportLogs } from "./log.ts";
+import { LogImportError } from "./logInterfaces.ts";
 import { parseLogFilesCsv } from "./logUtils.ts";
 
 interface ImportLogModalProps {

@@ -3,18 +3,22 @@
 ## [Unreleased]
 
 ### Added
+- The overlay shown while saving LOG runs now names the file being uploaded, its position in the save, and how much of it has been transferred.
 - The export overlay now shows how much of the export has been downloaded.
-- An export can be cancelled by clicking the overlay or its cancel button, which stops the download and the work it triggers on the server.
+- Uploads and exports can be cancelled by clicking the overlay or its cancel button. A cancelled export stops the download and the work it triggers on the server; a cancelled upload keeps the files that already reached the server, and the remaining changes stay unsaved so the save can be repeated.
 
 ### Changed
 - Upgraded to .NET 10.
 - Upgraded the AWS SDK used for the S3 file storage to version 4.
+- LOG files are uploaded in chunks, so an upload is no longer cut off after a minute and is retried rather than restarted when a chunk fails.
 - The export dialog closes as soon as a format is chosen, and the transfer is reported by an overlay over the page instead of over the dialog.
 
 ### Fixed
 - Exporting LOG runs with large attachments no longer fails. LOG file exports and downloads are streamed instead of being assembled in memory, so files larger than 2 GB can now be exported and downloaded up to the 5 GB limit.
 - LOG runs are now always displayed on VIEW, even without any files or without public files.
 - Exporting boreholes with attachments, exporting photos, and downloading photos and profiles are now streamed instead of being assembled in memory. The download starts as soon as the first bytes are ready.
+- Uploading a LOG file under a name the LOG run already holds now says so, instead of reporting an unexpected error.
+- Uploading a large LOG file no longer fails after 60 seconds.
 
 ## v2.1.1748 - 2026-07-28
 

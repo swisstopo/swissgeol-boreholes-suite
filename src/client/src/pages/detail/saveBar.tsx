@@ -9,7 +9,7 @@ import { SaveContext, SaveContextProps } from "./saveContext.tsx";
 
 export const SaveBar = () => {
   const { t } = useTranslation();
-  const { showSaveFeedback, hasChanges, hasErrors, isSaving, triggerSave, triggerReset } =
+  const { showSaveFeedback, hasChanges, hasErrors, isSaving, saveProgress, triggerSave, triggerReset } =
     useContext<SaveContextProps>(SaveContext);
 
   const changesMessage = (
@@ -50,7 +50,15 @@ export const SaveBar = () => {
         <DeleteButton disabled={!hasChanges || isSaving} label="discardChanges" onClick={triggerReset} />
         <SaveButton disabled={!hasChanges || isSaving || hasErrors} variant="contained" onClick={triggerSave} />
       </Stack>
-      {isSaving && <LoadingBackdrop open={isSaving} sx={{ zIndex: theme.zIndex.modal }} />}
+      {isSaving && (
+        <LoadingBackdrop
+          open={isSaving}
+          message={saveProgress?.message}
+          hint={saveProgress?.hint}
+          onCancel={saveProgress?.onCancel}
+          sx={{ zIndex: theme.zIndex.modal }}
+        />
+      )}
     </Stack>
   );
 };
