@@ -31,6 +31,7 @@
     <PackageReference Include="Npgsql.NetTopologySuite" Version="10.0.3" />
     <PackageReference Include="Swashbuckle.AspNetCore" Version="6.9.0" />
     <PackageReference Include="Swashbuckle.AspNetCore.Annotations" Version="6.9.0" />
+    <PackageReference Include="System.Text.Encoding.CodePages" Version="10.0.11" />
     <PackageReference Include="Yarp.ReverseProxy" Version="2.3.0" />
   </ItemGroup>
 </Project>
