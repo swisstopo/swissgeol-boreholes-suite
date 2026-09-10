@@ -95,6 +95,31 @@ public class CsvEncodingTest
         Assert.AreEqual(content, reader.ReadToEnd());
     }
 
+    [TestMethod]
+    public void OpenTextDoesNotMistakeWindows1252TextForAWideByteOrderMark()
+    {
+        // "ÿþ" is 0xFF 0xFE in Windows-1252, the same two bytes as a UTF-16 little endian mark.
+        // Letting StreamReader re-sniff the encoding would decode the whole file as UTF-16.
+        var content = "ÿþName;Comment\r\nForêt;café à côté\r\n";
+        var file = GetFormFileByContent(content, "ansi_marklike.csv", Windows1252());
+
+        using var reader = CsvEncoding.OpenText(file);
+
+        Assert.AreEqual(content, reader.ReadToEnd());
+    }
+
+    [TestMethod]
+    public void OpenTextStillReadsUtf16WithByteOrderMark()
+    {
+        // The default StreamReader handled this before the probe was introduced, so it has to keep
+        // working. The NUL bytes after the mark are what tell it apart from Windows-1252 text.
+        var file = GetFormFileByContent(CsvWithAccents, "utf16.csv", Encoding.Unicode);
+
+        using var reader = CsvEncoding.OpenText(file);
+
+        Assert.AreEqual(CsvWithAccents, reader.ReadToEnd());
+    }
+
     private static Encoding Windows1252()
     {
         Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);

@@ -97,7 +97,8 @@ export const buildFileName = (cols: string[], nameIndex: number, extensionIndex:
 
 // Excel writes Windows-1252 for "Save As -> CSV" and UTF-8 only for "Save As -> CSV UTF-8".
 // UTF-8 is self validating, so a strict decode that throws identifies the other case reliably.
-// TextDecoder consumes a leading byte order mark in both branches.
+// The UTF-8 decoder consumes a leading byte order mark. The Windows-1252 one does not, but it
+// only runs on bytes that are not valid UTF-8, and a file Excel wrote as ANSI carries no mark.
 const decodeCsv = (buffer: ArrayBuffer): string => {
   try {
     return new TextDecoder("utf-8", { fatal: true }).decode(buffer);
