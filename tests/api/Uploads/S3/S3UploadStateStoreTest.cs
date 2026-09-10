@@ -6,6 +6,8 @@ namespace BDMS.Uploads.S3;
 [TestClass]
 public class S3UploadStateStoreTest
 {
+    private const string UploadId = "some-upload-id";
+
     private AmazonS3Client s3Client;
     private S3UploadStateStore store;
     private string fileId;
@@ -25,7 +27,7 @@ public class S3UploadStateStoreTest
                 UseHttp = configuration["S3:SECURE"] == "0",
             });
 
-        store = new S3UploadStateStore(s3Client, configuration["S3:LOGFILES_BUCKET_NAME"]!.ToLowerInvariant());
+        store = new S3UploadStateStore(s3Client, configuration["S3:LOGFILES_BUCKET_NAME"].ToLowerInvariant());
         fileId = Guid.NewGuid().ToString();
     }
 
@@ -41,7 +43,7 @@ public class S3UploadStateStoreTest
     {
         var written = new S3UploadState(
             "de305d54-75b4-431b-adb2-eb6b9e546014.las",
-            "some-upload-id",
+            UploadId,
             5_000,
             new Dictionary<string, string>(StringComparer.Ordinal) { ["logRunId"] = "42", ["filename"] = "gamma.las" },
             DateTimeOffset.UtcNow.AddDays(1));
@@ -66,7 +68,7 @@ public class S3UploadStateStoreTest
     [TestMethod]
     public async Task DeleteAsyncRemovesTheState()
     {
-        var state = new S3UploadState("key.las", "some-upload-id", null, [], null);
+        var state = new S3UploadState("key.las", UploadId, null, [], null);
         await store.WriteAsync(fileId, state, CancellationToken.None);
 
         await store.DeleteAsync(fileId, CancellationToken.None);
@@ -117,7 +119,7 @@ public class S3UploadStateStoreTest
     [TestMethod]
     public async Task DeleteAsyncRemovesTheBytesHeldBackAsWell()
     {
-        await store.WriteAsync(fileId, new S3UploadState("key.las", "some-upload-id", null, [], null), CancellationToken.None);
+        await store.WriteAsync(fileId, new S3UploadState("key.las", UploadId, null, [], null), CancellationToken.None);
         await store.WriteRemainderAsync(fileId, new byte[10], CancellationToken.None);
 
         await store.DeleteAsync(fileId, CancellationToken.None);
@@ -128,7 +130,7 @@ public class S3UploadStateStoreTest
     [TestMethod]
     public async Task ListAsyncFindsAnUploadThatWasWritten()
     {
-        await store.WriteAsync(fileId, new S3UploadState("key.las", "some-upload-id", null, [], null), CancellationToken.None);
+        await store.WriteAsync(fileId, new S3UploadState("key.las", UploadId, null, [], null), CancellationToken.None);
 
         var fileIds = await store.ListAsync(CancellationToken.None);
 

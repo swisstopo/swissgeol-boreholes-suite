@@ -18,7 +18,7 @@ public static class UploadServiceCollectionExtensions
     public static IServiceCollection AddLogFileUploads(this IServiceCollection services, IConfiguration configuration)
     {
 #pragma warning disable CA1308 // Normalize strings to uppercase
-        var bucketName = configuration["S3:LOGFILES_BUCKET_NAME"]!.ToLowerInvariant();
+        var bucketName = configuration["S3:LOGFILES_BUCKET_NAME"].ToLowerInvariant();
 #pragma warning restore CA1308 // Normalize strings to uppercase
 
         // The store holds nothing that belongs to one request, so one instance serves them all.

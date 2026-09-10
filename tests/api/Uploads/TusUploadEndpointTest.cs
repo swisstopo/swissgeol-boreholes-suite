@@ -22,6 +22,10 @@ namespace BDMS.Uploads;
 [TestClass]
 public class TusUploadEndpointTest
 {
+    private const string SubAdmin = "sub_admin";
+    private const string TusResumableHeader = "Tus-Resumable";
+    private const string TusVersion = "1.0.0";
+
     private static BdmsWebApplicationFactory factory;
 
     private readonly List<string> startedUploadPaths = [];
@@ -43,7 +47,7 @@ public class TusUploadEndpointTest
         var appConfiguration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
 
         context = ContextFactory.GetTestContext();
-        bucketName = appConfiguration["S3:LOGFILES_BUCKET_NAME"]!.ToLowerInvariant();
+        bucketName = appConfiguration["S3:LOGFILES_BUCKET_NAME"].ToLowerInvariant();
 
         s3Client = new AmazonS3Client(
             appConfiguration["S3:ACCESS_KEY"],
@@ -66,8 +70,8 @@ public class TusUploadEndpointTest
             foreach (var path in startedUploadPaths)
             {
                 using var request = new HttpRequestMessage(HttpMethod.Delete, path);
-                request.Headers.Add("Tus-Resumable", "1.0.0");
-                request.Headers.Add(TestAuthHandler.SubjectIdHeader, "sub_admin");
+                request.Headers.Add(TusResumableHeader, TusVersion);
+                request.Headers.Add(TestAuthHandler.SubjectIdHeader, SubAdmin);
                 using var response = await client.SendAsync(request);
             }
         }
@@ -103,7 +107,7 @@ public class TusUploadEndpointTest
     private static HttpRequestMessage CreateUpload(string? subjectId, int logRunId, string fileName, long uploadLength = 1_000, int? logFileId = null)
     {
         var request = new HttpRequestMessage(HttpMethod.Post, TusUploadConfiguration.EndpointPath);
-        request.Headers.Add("Tus-Resumable", "1.0.0");
+        request.Headers.Add(TusResumableHeader, TusVersion);
         request.Headers.Add("Upload-Length", uploadLength.ToString(CultureInfo.InvariantCulture));
         request.Headers.Add("Upload-Metadata", Metadata(logRunId, fileName, logFileId));
 
@@ -120,16 +124,16 @@ public class TusUploadEndpointTest
     /// </summary>
     private async Task<int> UploadAsync(HttpClient client, int logRunId, string fileName, byte[] content, int? logFileId = null)
     {
-        using var created = await client.SendAsync(CreateUpload("sub_admin", logRunId, fileName, content.Length, logFileId));
+        using var created = await client.SendAsync(CreateUpload(SubAdmin, logRunId, fileName, content.Length, logFileId));
         Assert.AreEqual(HttpStatusCode.Created, created.StatusCode);
 
-        var uploadPath = created.Headers.Location!.ToString();
+        var uploadPath = created.Headers.Location.ToString();
         startedUploadPaths.Add(uploadPath);
 
         using var patch = new HttpRequestMessage(HttpMethod.Patch, uploadPath);
-        patch.Headers.Add("Tus-Resumable", "1.0.0");
+        patch.Headers.Add(TusResumableHeader, TusVersion);
         patch.Headers.Add("Upload-Offset", "0");
-        patch.Headers.Add(TestAuthHandler.SubjectIdHeader, "sub_admin");
+        patch.Headers.Add(TestAuthHandler.SubjectIdHeader, SubAdmin);
         patch.Content = new ByteArrayContent(content);
         patch.Content.Headers.ContentType = new MediaTypeHeaderValue("application/offset+octet-stream");
 
@@ -143,7 +147,7 @@ public class TusUploadEndpointTest
     [TestMethod]
     public async Task CreatingAnUploadWithoutAUserIsRefused()
     {
-        var logRun = context.LogRuns.First();
+        var logRun = await context.LogRuns.FirstAsync();
         using var client = factory.CreateClient();
 
         using var response = await client.SendAsync(CreateUpload(null, logRun.Id, $"{Guid.NewGuid()}.las"));
@@ -192,7 +196,7 @@ public class TusUploadEndpointTest
         using var scope = factory.Services.CreateScope();
         var permissions = scope.ServiceProvider.GetRequiredService<IBoreholePermissionService>();
 
-        foreach (var subjectId in context.Users.Select(user => user.SubjectId).ToList())
+        foreach (var subjectId in await context.Users.Select(user => user.SubjectId).ToListAsync())
         {
             if (!await permissions.CanEditBoreholeAsync(subjectId, boreholeId))
             {
@@ -215,20 +219,20 @@ public class TusUploadEndpointTest
     [TestMethod]
     public async Task TouchingAnExistingUploadWithoutEditPermissionIsRefused()
     {
-        var logRun = context.LogRuns.First();
+        var logRun = await context.LogRuns.FirstAsync();
         var refusedUser = await RefusedUserAsync(logRun.BoreholeId);
         using var client = factory.CreateClient();
 
-        using var created = await client.SendAsync(CreateUpload("sub_admin", logRun.Id, $"{Guid.NewGuid()}.las"));
+        using var created = await client.SendAsync(CreateUpload(SubAdmin, logRun.Id, $"{Guid.NewGuid()}.las"));
         Assert.AreEqual(HttpStatusCode.Created, created.StatusCode);
 
-        var uploadPath = created.Headers.Location!.ToString();
+        var uploadPath = created.Headers.Location.ToString();
         startedUploadPaths.Add(uploadPath);
 
         foreach (var method in new[] { HttpMethod.Head, HttpMethod.Patch, HttpMethod.Delete })
         {
             using var request = new HttpRequestMessage(method, uploadPath);
-            request.Headers.Add("Tus-Resumable", "1.0.0");
+            request.Headers.Add(TusResumableHeader, TusVersion);
             request.Headers.Add(TestAuthHandler.SubjectIdHeader, refusedUser);
 
             if (method == HttpMethod.Patch)
@@ -248,8 +252,8 @@ public class TusUploadEndpointTest
 
         // The refused DELETE has to have left the upload alone rather than quietly removing it.
         using var stillThere = new HttpRequestMessage(HttpMethod.Head, uploadPath);
-        stillThere.Headers.Add("Tus-Resumable", "1.0.0");
-        stillThere.Headers.Add(TestAuthHandler.SubjectIdHeader, "sub_admin");
+        stillThere.Headers.Add(TusResumableHeader, TusVersion);
+        stillThere.Headers.Add(TestAuthHandler.SubjectIdHeader, SubAdmin);
 
         using var headResponse = await client.SendAsync(stillThere);
 
@@ -259,16 +263,16 @@ public class TusUploadEndpointTest
         Assert.IsTrue(
             headResponse.Headers.TryGetValues("Upload-Offset", out var offsets),
             "The upload no longer reports an offset.");
-        Assert.AreEqual("0", offsets!.Single());
+        Assert.AreEqual("0", offsets.Single());
     }
 
     [TestMethod]
     public async Task CreatingAnUploadAnswersWithSomewhereToSendTheChunks()
     {
-        var logRun = context.LogRuns.First();
+        var logRun = await context.LogRuns.FirstAsync();
         using var client = factory.CreateClient();
 
-        using var response = await client.SendAsync(CreateUpload("sub_admin", logRun.Id, $"{Guid.NewGuid()}.las"));
+        using var response = await client.SendAsync(CreateUpload(SubAdmin, logRun.Id, $"{Guid.NewGuid()}.las"));
 
         Assert.AreEqual(HttpStatusCode.Created, response.StatusCode);
         Assert.IsNotNull(response.Headers.Location);
@@ -279,10 +283,10 @@ public class TusUploadEndpointTest
     [TestMethod]
     public async Task CreatingAnUploadForANameTheLogRunHoldsIsRefusedBeforeAnyBytesAreSent()
     {
-        var existing = context.LogFiles.First(f => f.Name != null);
+        var existing = await context.LogFiles.FirstAsync(f => f.Name != null);
         using var client = factory.CreateClient();
 
-        using var response = await client.SendAsync(CreateUpload("sub_admin", existing.LogRunId, existing.Name!));
+        using var response = await client.SendAsync(CreateUpload(SubAdmin, existing.LogRunId, existing.Name));
 
         Assert.IsFalse(response.IsSuccessStatusCode, "The upload is refused before the client sends anything.");
 
@@ -294,13 +298,13 @@ public class TusUploadEndpointTest
         Assert.IsNotNull(problem, $"The refusal carries a problem body the client can read. It carried: {body}");
         Assert.IsTrue(problem.TryGetValue("type", out var type), $"The refusal names a problem type. It carried: {body}");
         Assert.AreEqual("userError", type.GetString());
-        StringAssert.Contains(problem["detail"].GetString(), existing.Name!);
+        StringAssert.Contains(problem["detail"].GetString(), existing.Name);
     }
 
     [TestMethod]
     public async Task FinishingAnUploadRecordsTheFileAndSaysWhatItStored()
     {
-        var logRun = context.LogRuns.First();
+        var logRun = await context.LogRuns.FirstAsync();
         var fileName = $"{Guid.NewGuid()}.las";
         var content = Encoding.UTF8.GetBytes("log data");
         using var client = factory.CreateClient();
@@ -323,12 +327,12 @@ public class TusUploadEndpointTest
     [TestMethod]
     public async Task FinishingAnUploadThatReplacesAFileKeepsOneEntryUnderThatName()
     {
-        var logRun = context.LogRuns.First();
+        var logRun = await context.LogRuns.FirstAsync();
         var fileName = $"{Guid.NewGuid()}.las";
         using var client = factory.CreateClient();
 
         var logFileId = await UploadAsync(client, logRun.Id, fileName, Encoding.UTF8.GetBytes("first"));
-        var replacedKey = (await context.LogFiles.AsNoTracking().SingleAsync(f => f.Id == logFileId)).NameUuid!;
+        var replacedKey = (await context.LogFiles.AsNoTracking().SingleAsync(f => f.Id == logFileId)).NameUuid;
 
         var replacement = Encoding.UTF8.GetBytes("second content");
         var replacedId = await UploadAsync(client, logRun.Id, fileName, replacement, logFileId);
@@ -337,9 +341,9 @@ public class TusUploadEndpointTest
 
         var logFile = await context.LogFiles.AsNoTracking().SingleAsync(f => f.Id == logFileId);
         Assert.AreNotEqual(replacedKey, logFile.NameUuid, "The row points at the object that was just uploaded.");
-        storedObjectKeys.Add(logFile.NameUuid!);
+        storedObjectKeys.Add(logFile.NameUuid);
 
-        var stored = await s3Client.GetObjectMetadataAsync(bucketName, logFile.NameUuid!, CancellationToken.None);
+        var stored = await s3Client.GetObjectMetadataAsync(bucketName, logFile.NameUuid, CancellationToken.None);
         Assert.AreEqual(replacement.Length, stored.ContentLength);
 
         // Nothing points at the object the row moved off, and its name is never handed out again,

@@ -2,6 +2,7 @@
 using BDMS.Services;
 using BDMS.Uploads.S3;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Net;
 using System.Security.Claims;
@@ -281,9 +282,9 @@ public record TusUploadMetadata(int LogRunId, int? LogFileId, string FileName, s
     /// <param name="headerValue">The raw Upload-Metadata header.</param>
     /// <param name="metadata">The parsed metadata, when the required keys are present.</param>
     /// <returns><see langword="true"/> if the metadata could be read; otherwise, <see langword="false"/>.</returns>
-    public static bool TryReadHeader(string headerValue, out TusUploadMetadata metadata)
+    public static bool TryReadHeader(string headerValue, [NotNullWhen(true)] out TusUploadMetadata? metadata)
     {
-        metadata = null!;
+        metadata = null;
         if (string.IsNullOrWhiteSpace(headerValue)) return false;
 
         var values = new Dictionary<string, string>(StringComparer.Ordinal);
@@ -312,9 +313,9 @@ public record TusUploadMetadata(int LogRunId, int? LogFileId, string FileName, s
     /// <param name="storedMetadata">The metadata as the store holds it.</param>
     /// <param name="metadata">The parsed metadata, when the required keys are present.</param>
     /// <returns><see langword="true"/> if the metadata could be read; otherwise, <see langword="false"/>.</returns>
-    public static bool TryReadStored(IDictionary<string, Metadata> storedMetadata, out TusUploadMetadata metadata)
+    public static bool TryReadStored(IDictionary<string, Metadata> storedMetadata, [NotNullWhen(true)] out TusUploadMetadata? metadata)
     {
-        metadata = null!;
+        metadata = null;
         if (storedMetadata is null) return false;
 
         var values = storedMetadata.ToDictionary(
@@ -332,9 +333,9 @@ public record TusUploadMetadata(int LogRunId, int? LogFileId, string FileName, s
     /// <param name="values">The decoded metadata values.</param>
     /// <param name="metadata">The parsed metadata, when the required keys are present.</param>
     /// <returns><see langword="true"/> if the metadata could be read; otherwise, <see langword="false"/>.</returns>
-    private static bool TryRead(Dictionary<string, string> values, out TusUploadMetadata metadata)
+    private static bool TryRead(Dictionary<string, string> values, [NotNullWhen(true)] out TusUploadMetadata? metadata)
     {
-        metadata = null!;
+        metadata = null;
 
         if (!values.TryGetValue("logRunId", out var logRunIdValue) ||
             !int.TryParse(logRunIdValue, CultureInfo.InvariantCulture, out var logRunId)) return false;

@@ -14,9 +14,12 @@ namespace BDMS.Uploads;
 [TestClass]
 public class TusUploadConfigurationTest
 {
+    private const string SubAdmin = "sub_admin";
+    private const string TestFileName = "gamma.las";
+    private const string TextPlainContentType = "text/plain";
+
     private BdmsContext context;
     private Mock<IBoreholePermissionService> permissionServiceMock;
-    private LogFileCloudService logFileCloudService;
     private TusUploadConfiguration configuration;
 
     [TestInitialize]
@@ -27,7 +30,7 @@ public class TusUploadConfigurationTest
         context = ContextFactory.GetTestContext();
         permissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
 
-        var adminUser = context.Users.FirstOrDefault(u => u.SubjectId == "sub_admin") ?? throw new InvalidOperationException("No User found in database.");
+        var adminUser = context.Users.FirstOrDefault(u => u.SubjectId == SubAdmin) ?? throw new InvalidOperationException("No User found in database.");
         var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
         contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, adminUser.SubjectId) }));
@@ -42,14 +45,14 @@ public class TusUploadConfigurationTest
                 UseHttp = appConfiguration["S3:SECURE"] == "0",
             });
 
-        logFileCloudService = new LogFileCloudService(
+        var logFileCloudService = new LogFileCloudService(
             new Mock<ILogger<LogFileCloudService>>().Object,
             s3Client,
             appConfiguration,
             contextAccessorMock.Object,
             context);
 
-        var bucketName = appConfiguration["S3:LOGFILES_BUCKET_NAME"]!.ToLowerInvariant();
+        var bucketName = appConfiguration["S3:LOGFILES_BUCKET_NAME"].ToLowerInvariant();
         var tusStore = new S3TusStore(s3Client, new S3UploadStateStore(s3Client, bucketName), bucketName);
 
         configuration = new TusUploadConfiguration(context, permissionServiceMock.Object, logFileCloudService, tusStore);
@@ -69,7 +72,7 @@ public class TusUploadConfigurationTest
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string>(), It.IsAny<int?>()))
             .ReturnsAsync(false);
 
-        Assert.IsFalse(await configuration.CanUploadAsync(CreateUser("sub_admin"), logRun.Id));
+        Assert.IsFalse(await configuration.CanUploadAsync(CreateUser(SubAdmin), logRun.Id));
     }
 
     [TestMethod]
@@ -77,16 +80,16 @@ public class TusUploadConfigurationTest
     {
         var logRun = context.LogRuns.First();
         permissionServiceMock
-            .Setup(x => x.CanEditBoreholeAsync("sub_admin", logRun.BoreholeId))
+            .Setup(x => x.CanEditBoreholeAsync(SubAdmin, logRun.BoreholeId))
             .ReturnsAsync(true);
 
-        Assert.IsTrue(await configuration.CanUploadAsync(CreateUser("sub_admin"), logRun.Id));
+        Assert.IsTrue(await configuration.CanUploadAsync(CreateUser(SubAdmin), logRun.Id));
     }
 
     [TestMethod]
     public async Task CanUploadAsyncRefusesALogRunThatDoesNotExist()
     {
-        Assert.IsFalse(await configuration.CanUploadAsync(CreateUser("sub_admin"), 0));
+        Assert.IsFalse(await configuration.CanUploadAsync(CreateUser(SubAdmin), 0));
     }
 
     [TestMethod]
@@ -98,19 +101,19 @@ public class TusUploadConfigurationTest
     [TestMethod]
     public void TryReadAcceptsTheMetadataTheClientSends()
     {
-        var header = $"logRunId {Encode("42")},filename {Encode("gamma.las")},contentType {Encode("text/plain")}";
+        var header = $"logRunId {Encode("42")},filename {Encode(TestFileName)},contentType {Encode(TextPlainContentType)}";
 
         Assert.IsTrue(TusUploadMetadata.TryReadHeader(header, out var metadata));
         Assert.AreEqual(42, metadata.LogRunId);
         Assert.IsNull(metadata.LogFileId);
-        Assert.AreEqual("gamma.las", metadata.FileName);
-        Assert.AreEqual("text/plain", metadata.ContentType);
+        Assert.AreEqual(TestFileName, metadata.FileName);
+        Assert.AreEqual(TextPlainContentType, metadata.ContentType);
     }
 
     [TestMethod]
     public void TryReadReadsTheFileBeingReplaced()
     {
-        var header = $"logRunId {Encode("42")},logFileId {Encode("7")},filename {Encode("gamma.las")},contentType {Encode("text/plain")}";
+        var header = $"logRunId {Encode("42")},logFileId {Encode("7")},filename {Encode(TestFileName)},contentType {Encode(TextPlainContentType)}";
 
         Assert.IsTrue(TusUploadMetadata.TryReadHeader(header, out var metadata));
         Assert.AreEqual(7, metadata.LogFileId);
@@ -119,7 +122,7 @@ public class TusUploadConfigurationTest
     [TestMethod]
     public void TryReadRejectsMetadataWithoutALogRun()
     {
-        var header = $"filename {Encode("gamma.las")},contentType {Encode("text/plain")}";
+        var header = $"filename {Encode(TestFileName)},contentType {Encode(TextPlainContentType)}";
 
         Assert.IsFalse(TusUploadMetadata.TryReadHeader(header, out _));
     }
@@ -133,7 +136,7 @@ public class TusUploadConfigurationTest
     [TestMethod]
     public void TryReadStoredAgreesWithTheHeaderTheUploadWasCreatedFrom()
     {
-        var header = $"logRunId {Encode("42")},logFileId {Encode("7")},filename {Encode("gamma.las")},contentType {Encode("text/plain")}";
+        var header = $"logRunId {Encode("42")},logFileId {Encode("7")},filename {Encode(TestFileName)},contentType {Encode(TextPlainContentType)}";
 
         Assert.IsTrue(TusUploadMetadata.TryReadHeader(header, out var fromHeader));
         Assert.IsTrue(TusUploadMetadata.TryReadStored(Metadata.Parse(header), out var fromStore));
@@ -143,7 +146,7 @@ public class TusUploadConfigurationTest
     [TestMethod]
     public void TryReadStoredTreatsALogFileIdThatIsNotAnIdAsReplacingNothing()
     {
-        var header = $"logRunId {Encode("42")},logFileId {Encode("not-an-id")},filename {Encode("gamma.las")},contentType {Encode("text/plain")}";
+        var header = $"logRunId {Encode("42")},logFileId {Encode("not-an-id")},filename {Encode(TestFileName)},contentType {Encode(TextPlainContentType)}";
 
         // Creating the upload accepts this, so completing it has to accept it too rather than
         // failing once the whole file has already been sent.
@@ -154,7 +157,7 @@ public class TusUploadConfigurationTest
     [TestMethod]
     public void TryReadStoredRejectsMetadataWithoutALogRun()
     {
-        var header = $"filename {Encode("gamma.las")},contentType {Encode("text/plain")}";
+        var header = $"filename {Encode(TestFileName)},contentType {Encode(TextPlainContentType)}";
 
         Assert.IsFalse(TusUploadMetadata.TryReadStored(Metadata.Parse(header), out _));
     }

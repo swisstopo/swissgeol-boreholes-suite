@@ -15,6 +15,7 @@ namespace BDMS.Services;
 public class LogFileCloudServiceTest
 {
     private const string TestLasFileName = "file_1.las";
+    private const string TextPlainContentType = "text/plain";
 
     /// <summary>
     /// A limit no test object can reach, for the tests that are not about the size guard.
@@ -323,7 +324,7 @@ public class LogFileCloudServiceTest
 
         var logFile = await logFileCloudService.LinkUploadedLogFileAsync(
             fileName,
-            "text/plain",
+            TextPlainContentType,
             objectName,
             logRun.Id,
             CancellationToken.None);
@@ -341,7 +342,7 @@ public class LogFileCloudServiceTest
 
         var logFile = await logFileCloudService.LinkUploadedLogFileAsync(
             $"gamma {Guid.NewGuid()}.las",
-            "text/plain",
+            TextPlainContentType,
             $"{Guid.NewGuid()}.las",
             logRun.Id,
             CancellationToken.None);
@@ -356,8 +357,8 @@ public class LogFileCloudServiceTest
 
         await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
             await logFileCloudService.LinkUploadedLogFileAsync(
-                existing.Name!,
-                "text/plain",
+                existing.Name,
+                TextPlainContentType,
                 $"{Guid.NewGuid()}.las",
                 existing.LogRunId,
                 CancellationToken.None));
@@ -369,7 +370,7 @@ public class LogFileCloudServiceTest
         await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
             await logFileCloudService.LinkUploadedLogFileAsync(
                 $"{Guid.NewGuid()}.las",
-                "text/plain",
+                TextPlainContentType,
                 $"{Guid.NewGuid()}.las",
                 0,
                 CancellationToken.None));
@@ -380,7 +381,7 @@ public class LogFileCloudServiceTest
     {
         var existing = context.LogFiles.First();
 
-        Assert.IsTrue(await logFileCloudService.IsNameTakenAsync(existing.LogRunId, existing.Name!, CancellationToken.None));
+        Assert.IsTrue(await logFileCloudService.IsNameTakenAsync(existing.LogRunId, existing.Name, CancellationToken.None));
     }
 
     [TestMethod]

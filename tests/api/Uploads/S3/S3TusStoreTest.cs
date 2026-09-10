@@ -31,7 +31,7 @@ public class S3TusStoreTest
                 UseHttp = configuration["S3:SECURE"] == "0",
             });
 
-        bucketName = configuration["S3:LOGFILES_BUCKET_NAME"]!.ToLowerInvariant();
+        bucketName = configuration["S3:LOGFILES_BUCKET_NAME"].ToLowerInvariant();
         stateStore = new S3UploadStateStore(s3Client, bucketName);
         store = new S3TusStore(s3Client, stateStore, bucketName);
     }

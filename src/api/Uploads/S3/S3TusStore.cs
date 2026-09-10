@@ -202,14 +202,7 @@ public class S3TusStore : ITusStore, ITusCreationStore, ITusReadableStore, ITusT
         // rather than written under a token that can only refuse them.
         cancellationToken.ThrowIfCancellationRequested();
 
-        if (filled > 0)
-        {
-            await stateStore.WriteRemainderAsync(fileId, buffer[..filled], cancellationToken).ConfigureAwait(false);
-        }
-        else if (isHeldStillStored)
-        {
-            await stateStore.DeleteRemainderAsync(fileId, cancellationToken).ConfigureAwait(false);
-        }
+        await StoreRemainderAsync(fileId, buffer, filled, isHeldStillStored, cancellationToken).ConfigureAwait(false);
 
         // Every byte read is a byte kept, whether it went into a part or is waiting for the next
         // request, so the client is never asked to send the same bytes twice.
@@ -348,7 +341,6 @@ public class S3TusStore : ITusStore, ITusCreationStore, ITusReadableStore, ITusT
             {
                 // tusdotnet has already validated the header, so a value that will not decode is
                 // not something this store can report to anyone. It is left out.
-                continue;
             }
         }
 
@@ -468,6 +460,28 @@ public class S3TusStore : ITusStore, ITusCreationStore, ITusReadableStore, ITusT
                 InputStream = content,
             },
             cancellationToken).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Makes what the store holds back match what the request ended with. Bytes that did not fill
+    /// a part are kept so the next request continues from them, and a remainder that has since
+    /// gone into a part is let go of so that it is not counted twice.
+    /// </summary>
+    /// <param name="fileId">The id of the upload.</param>
+    /// <param name="buffer">The buffer holding the bytes that did not fill a part.</param>
+    /// <param name="filled">How much of the buffer is still in hand.</param>
+    /// <param name="isHeldStillStored">Whether the store still holds the remainder this request started from.</param>
+    /// <param name="cancellationToken">Aborts the write.</param>
+    private async Task StoreRemainderAsync(string fileId, byte[] buffer, int filled, bool isHeldStillStored, CancellationToken cancellationToken)
+    {
+        if (filled > 0)
+        {
+            await stateStore.WriteRemainderAsync(fileId, buffer[..filled], cancellationToken).ConfigureAwait(false);
+        }
+        else if (isHeldStillStored)
+        {
+            await stateStore.DeleteRemainderAsync(fileId, cancellationToken).ConfigureAwait(false);
+        }
     }
 
     /// <summary>

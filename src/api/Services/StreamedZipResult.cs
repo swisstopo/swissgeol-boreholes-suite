@@ -74,13 +74,14 @@ internal sealed class StreamedZipResult : IActionResult
                 await WriteEntryAsync(archive, entry, cancellationToken).ConfigureAwait(false);
             }
         }
-        catch (OperationCanceledException ex) when (cancellationToken.IsCancellationRequested)
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
             // The client gave up, for example by cancelling the export dialog. There is nobody
-            // left to receive the archive, so the abort is logged as such instead of as a failed
+            // left to receive the archive, so the abort is noted as such instead of as a failed
             // export. The cancellation still travels on, so the request ends aborted rather than
-            // completing with a truncated archive.
-            logger.LogInformation(ex, "The client aborted the download of '{FileName}'. The streamed archive was abandoned.", FileName);
+            // completing with a truncated archive, and the pipeline is left to record the
+            // exception itself rather than it being written to the log twice.
+            logger.LogInformation("The client aborted the download of '{FileName}'. The streamed archive was abandoned.", FileName);
             await DisposeWithoutMaskingFailureAsync(archive).ConfigureAwait(false);
             throw;
         }
