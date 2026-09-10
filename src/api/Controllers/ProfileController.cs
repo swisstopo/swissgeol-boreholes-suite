@@ -92,15 +92,16 @@ public class ProfileController : ControllerBase
     /// </summary>
     /// <param name="profileId">The id of the profile.</param>
     /// <param name="index">The index of the page in the profile, with 1 as index for the first page.</param>
+    /// <param name="cancellationToken">Aborts the lookup once the client is gone.</param>
     /// <returns>The name and size of the selected image as well as the total image count for the profile.</returns>
     [HttpGet("getDataExtractionFileInfo")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> GetDataExtractionFileInfo([Required, Range(1, int.MaxValue)] int profileId, int index)
+    public async Task<IActionResult> GetDataExtractionFileInfo([Required, Range(1, int.MaxValue)] int profileId, int index, CancellationToken cancellationToken)
     {
         try
         {
             var profile = await context.Profiles
-                .FirstOrDefaultAsync(p => p.Id == profileId)
+                .FirstOrDefaultAsync(p => p.Id == profileId, cancellationToken)
                 .ConfigureAwait(false);
 
             if (profile?.NameUuid == null) return NotFound($"Profile with id {profileId} not found.");
@@ -112,11 +113,11 @@ public class ProfileController : ControllerBase
             }
 
             var fileUuid = profile.NameUuid.Replace(".pdf", "", StringComparison.OrdinalIgnoreCase);
-            var fileCount = await profileCloudService.CountDataExtractionObjects(fileUuid).ConfigureAwait(false);
+            var fileCount = await profileCloudService.CountDataExtractionObjects(fileUuid, cancellationToken).ConfigureAwait(false);
 
             try
             {
-                var dataExtractionImageInfo = await profileCloudService.GetDataExtractionImageInfo(fileUuid, index).ConfigureAwait(false);
+                var dataExtractionImageInfo = await profileCloudService.GetDataExtractionImageInfo(fileUuid, index, cancellationToken).ConfigureAwait(false);
                 return Ok(new DataExtractionInfo(dataExtractionImageInfo.FileName, dataExtractionImageInfo.Width, dataExtractionImageInfo.Height, fileCount));
             }
             catch (Exception ex)

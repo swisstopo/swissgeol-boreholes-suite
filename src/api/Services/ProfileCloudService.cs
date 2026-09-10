@@ -39,7 +39,9 @@ public class ProfileCloudService : CloudServiceBase
     public async Task<Profile> UploadProfileAsync(Stream fileStream, string fileName, string? description, bool isPublic, string contentType, int boreholeId)
     {
         // Use transaction to ensure data is only stored to db if the file upload was successful. Only create a transaction if there is not already one from the calling method.
-        using var transaction = context.Database.CurrentTransaction == null ? await context.Database.BeginTransactionAsync().ConfigureAwait(false) : null;
+        // The write path deliberately opts out of cancellation: the file is already in S3 by the time we
+        // commit, so aborting would orphan the object, and a cancelled commit leaves the outcome unknown.
+        using var transaction = context.Database.CurrentTransaction == null ? await context.Database.BeginTransactionAsync(CancellationToken.None).ConfigureAwait(false) : null;
         try
         {
             var fileExtension = Path.GetExtension(fileName);
@@ -63,10 +65,10 @@ public class ProfileCloudService : CloudServiceBase
                 OcrStatus = isOcrEligible ? OcrStatus.Created : OcrStatus.WillNotBeProcessed,
             };
 
-            await context.Profiles.AddAsync(profile).ConfigureAwait(false);
+            await context.Profiles.AddAsync(profile, CancellationToken.None).ConfigureAwait(false);
             await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!).ConfigureAwait(false);
 
-            if (transaction != null) await transaction.CommitAsync().ConfigureAwait(false);
+            if (transaction != null) await transaction.CommitAsync(CancellationToken.None).ConfigureAwait(false);
 
             // Fire-and-forget OCR for eligible files. A separate scope keeps the long-running OCR
             // work decoupled from this request's DI scope (which is disposed when the response returns).
@@ -107,8 +109,9 @@ public class ProfileCloudService : CloudServiceBase
     /// Gets the number of data extraction images for a pdf.
     /// </summary>
     /// <param name="objectName">The uuid of the pdf.</param>
+    /// <param name="cancellationToken">Aborts the lookup once the client is gone.</param>
     /// <returns>The number of images.</returns>
-    public async Task<int> CountDataExtractionObjects(string objectName)
+    public async Task<int> CountDataExtractionObjects(string objectName, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -123,7 +126,7 @@ public class ProfileCloudService : CloudServiceBase
 
             do
             {
-                var listObjectsResponse = await S3Client.ListObjectsV2Async(listObjectsRequest).ConfigureAwait(false);
+                var listObjectsResponse = await S3Client.ListObjectsV2Async(listObjectsRequest, cancellationToken).ConfigureAwait(false);
                 totalObjects += listObjectsResponse.S3Objects.Count;
                 listObjectsRequest.ContinuationToken = listObjectsResponse.NextContinuationToken;
             }
@@ -142,8 +145,9 @@ public class ProfileCloudService : CloudServiceBase
     /// </summary>
     /// <param name="objectName">The uuid of the parent pdf.</param>
     /// <param name="index">The page number in the pdf.</param>
+    /// <param name="cancellationToken">Aborts the download once the client is gone.</param>
     /// <returns>The name, width (px) and height (px) of the file.</returns>
-    public async Task<(string FileName, int Width, int Height)> GetDataExtractionImageInfo(string objectName, int index)
+    public async Task<(string FileName, int Width, int Height)> GetDataExtractionImageInfo(string objectName, int index, CancellationToken cancellationToken = default)
     {
         try
         {
@@ -153,10 +157,10 @@ public class ProfileCloudService : CloudServiceBase
             var tempFile = Path.Combine(Path.GetTempPath(), Path.GetRandomFileName());
             try
             {
-                using (var s3Stream = await S3Client.GetObjectStreamAsync(BucketName, key, null).ConfigureAwait(false))
+                using (var s3Stream = await S3Client.GetObjectStreamAsync(BucketName, key, null, cancellationToken).ConfigureAwait(false))
                 using (var fileStream = new FileStream(tempFile, FileMode.Create))
                 {
-                    await s3Stream.CopyToAsync(fileStream).ConfigureAwait(false);
+                    await s3Stream.CopyToAsync(fileStream, cancellationToken).ConfigureAwait(false);
                 }
 
                 int width = 0;
