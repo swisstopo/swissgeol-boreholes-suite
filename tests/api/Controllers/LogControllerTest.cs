@@ -599,6 +599,31 @@ public class LogControllerTest : TestControllerBase
     }
 
     [TestMethod]
+    public async Task ExportLogRunsCsvStartsWithUtf8Bom()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddCompleteTestLogRunForExportAsync(borehole.Id, "RUN-BOM");
+
+        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = false, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
+        using var archive = await ExecuteZipResultAsync(response);
+
+        CollectionAssert.AreEqual(new byte[] { 0xEF, 0xBB, 0xBF }, ReadEntryPrefix(archive.Entries.Single(e => e.FullName.StartsWith(LogRunCsvPrefix)), 3));
+    }
+
+    [TestMethod]
+    public async Task ExportLogFilesCsvStartsWithUtf8Bom()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddCompleteTestLogRunForExportAsync(borehole.Id, "LF-BOM");
+        var logFile = await UploadTestLogFile(logRun.Id);
+
+        var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [logFile.Id], WithAttachments = false, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
+        using var archive = await ExecuteZipResultAsync(response);
+
+        CollectionAssert.AreEqual(new byte[] { 0xEF, 0xBB, 0xBF }, ReadEntryPrefix(archive.Entries.Single(e => e.FullName.StartsWith(LogFileCsvPrefix)), 3));
+    }
+
+    [TestMethod]
     public async Task ExportLogRunsMultipleLogRunsSameBorehole()
     {
         var borehole = await AddTestBoreholeAsync();
@@ -1284,5 +1309,17 @@ public class LogControllerTest : TestControllerBase
         using var stream = entry.Open();
         using var reader = new StreamReader(stream, Encoding.UTF8);
         return reader.ReadToEnd();
+    }
+
+    /// <summary>
+    /// Reads the first <paramref name="count"/> bytes of a ZIP entry. A StreamReader silently
+    /// consumes a byte order mark, so asserting on one needs a byte level read.
+    /// </summary>
+    private static byte[] ReadEntryPrefix(ZipArchiveEntry entry, int count)
+    {
+        using var stream = entry.Open();
+        var buffer = new byte[count];
+        stream.ReadExactly(buffer, 0, count);
+        return buffer;
     }
 }

@@ -822,7 +822,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         }
 
         await csvWriter.FlushAsync().ConfigureAwait(false);
-        return Encoding.UTF8.GetBytes(stringWriter.ToString());
+        return CsvEncoding.ToUtf8BomBytes(stringWriter.ToString());
     }
 
     private static async Task<byte[]> WriteLogFileCsvBytesAsync(List<LogFile> logFiles, string locale)
@@ -860,7 +860,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         }
 
         await csvWriter.FlushAsync().ConfigureAwait(false);
-        return Encoding.UTF8.GetBytes(stringWriter.ToString());
+        return CsvEncoding.ToUtf8BomBytes(stringWriter.ToString());
     }
 
     private static string? GetCodelistText(Codelist? codelist, string locale) => locale switch
