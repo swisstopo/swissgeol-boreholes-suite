@@ -15,6 +15,11 @@ namespace BDMS.Services;
 [TestClass]
 public class ProfileCloudServiceTest
 {
+    /// <summary>
+    /// A limit no test object can reach, for the tests that are not about the size guard.
+    /// </summary>
+    private const long NoSizeLimit = long.MaxValue;
+
     private AmazonS3Client s3Client;
     private BdmsContext context;
     private ProfileCloudService profileCloudService;
@@ -155,13 +160,13 @@ public class ProfileCloudServiceTest
     }
 
     [TestMethod]
-    public async Task GetObjectWithNotExistingObjectNameShouldThrowException()
+    public async Task GetObjectBytesWithNotExistingObjectNameShouldThrowException()
     {
-        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => profileCloudService.GetObject("doesNotExist"));
+        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => profileCloudService.GetObjectBytes("doesNotExist", NoSizeLimit));
     }
 
     [TestMethod]
-    public async Task GetObjectShouldReturnFileBytes()
+    public async Task GetObjectBytesShouldReturnFileBytes()
     {
         // Create file to upload
         var content = Guid.NewGuid().ToString();
@@ -171,7 +176,7 @@ public class ProfileCloudServiceTest
         await profileCloudService.UploadObject(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType);
 
         // Download file
-        var result = await profileCloudService.GetObject(pdfFormFile.FileName);
+        var result = await profileCloudService.GetObjectBytes(pdfFormFile.FileName, NoSizeLimit);
         Assert.AreEqual(content, Encoding.UTF8.GetString(result));
     }
 
@@ -186,13 +191,13 @@ public class ProfileCloudServiceTest
         await profileCloudService.UploadObject(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, pdfFormFile.ContentType);
 
         // Ensure file exists
-        await profileCloudService.GetObject(pdfFormFile.FileName);
+        await profileCloudService.GetObjectBytes(pdfFormFile.FileName, NoSizeLimit);
 
         // Delete file
         await profileCloudService.DeleteObject(pdfFormFile.FileName);
 
         // Ensure file does not exist
-        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => profileCloudService.GetObject(pdfFormFile.FileName));
+        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(() => profileCloudService.GetObjectBytes(pdfFormFile.FileName, NoSizeLimit));
     }
 
     [TestMethod]

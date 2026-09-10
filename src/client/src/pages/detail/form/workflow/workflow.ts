@@ -13,8 +13,8 @@ import { NullableDateString } from "../../../../api/unionTypes.ts";
 export interface Workflow extends GenericWorkflow {
   id: number;
   boreholeId: number;
-  reviewedTabs: TabStatus;
-  publishedTabs: TabStatus;
+  reviewedTabs: Omit<TabStatus, "id">;
+  publishedTabs: Omit<TabStatus, "id">;
 }
 
 export interface WorkflowChange extends Omit<SwissgeolWorkflowChange, "createdAt"> {

@@ -1,5 +1,4 @@
-import { Merge } from "react-hook-form";
-import { FieldError, FieldErrorsImpl } from "react-hook-form/dist/types/errors";
+import { FieldError, FieldErrorsImpl, Merge } from "react-hook-form";
 
 export const getFormFieldError = (
   fieldName: string | undefined,
@@ -11,10 +10,10 @@ export const getFormFieldError = (
 
   const fieldNameElements = fieldName ? fieldName.split(".") : [];
   let currentElement = errors;
-  for (let i = 0; i < fieldNameElements.length; i++) {
+  for (const element of fieldNameElements) {
     // @ts-expect-error - we know that currentElement either has a key of fieldNameElements[i] or it doesn't,
     // which is what we're checking for
-    currentElement = currentElement[fieldNameElements[i]];
+    currentElement = currentElement[element];
     if (!currentElement) {
       break;
     }
