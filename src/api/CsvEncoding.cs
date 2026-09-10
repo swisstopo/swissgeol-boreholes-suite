@@ -1,4 +1,4 @@
-using System.Text;
+﻿using System.Text;
 
 namespace BDMS;
 
@@ -12,16 +12,7 @@ internal static class CsvEncoding
 {
     private const int ProbeBufferSize = 8192;
 
-    private static readonly Encoding ansiFallback;
-
-    static CsvEncoding()
-    {
-        // Codepage encodings are not built into .NET and have to be registered before
-        // Encoding.GetEncoding resolves them. This runs here rather than in Program.cs because the
-        // API tests construct controllers directly and never execute Program.cs.
-        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
-        ansiFallback = Encoding.GetEncoding(1252);
-    }
+    private static readonly Encoding ansiFallback = CreateAnsiFallback();
 
     /// <summary>
     /// Encodes <paramref name="csv"/> as UTF-8 with a leading byte order mark.
@@ -53,6 +44,17 @@ internal static class CsvEncoding
         }
 
         return new StreamReader(file.OpenReadStream(), encoding, detectEncodingFromByteOrderMarks: true);
+    }
+
+    /// <summary>
+    /// Codepage encodings have to be registered before <see cref="Encoding.GetEncoding(int)"/>
+    /// resolves them. Registering here rather than at startup keeps the class usable in unit tests,
+    /// which construct controllers directly and never execute Program.cs.
+    /// </summary>
+    private static Encoding CreateAnsiFallback()
+    {
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        return Encoding.GetEncoding(1252);
     }
 
     private static bool IsValidUtf8(Stream stream)
