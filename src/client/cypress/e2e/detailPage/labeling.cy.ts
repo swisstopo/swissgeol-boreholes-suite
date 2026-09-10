@@ -74,9 +74,13 @@ const drawBox = (x1: number, y1: number, x2: number, y2: number) => {
   });
 };
 
+// For a freshly uploaded profile the page image is only requested once the data extraction service
+// has rendered the PDF into PNGs, which takes several seconds.
+const pngRenderingTimeout = 30000;
+
 const waitForLabelingImageLoaded = () => {
-  cy.wait("@extraction-file-info");
-  cy.wait("@load-extraction-file");
+  cy.wait("@extraction-file-info", { timeout: pngRenderingTimeout });
+  cy.wait("@load-extraction-file", { timeout: pngRenderingTimeout });
   // Wait for the map element to exist in the DOM
   cy.window().should(win => {
     const labelingWindow = win as WindowWithMaps;
