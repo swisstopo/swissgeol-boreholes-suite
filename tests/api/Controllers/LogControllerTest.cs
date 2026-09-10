@@ -941,6 +941,24 @@ public class LogControllerTest : TestControllerBase
     }
 
     [TestMethod]
+    public async Task ImportLogRunsFromAnsiEncodedCsv()
+    {
+        var borehole = await AddTestBoreholeAsync();
+
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        var csv = LogRunsCsvHeader + "IMP-ANSI;10;20;;CH;01.06.2023;80.97;LWD;Société Générale;Forage à côté\r\n";
+        var csvFile = GetFormFileByContent(csv, LogRunsCsvFileName, Encoding.GetEncoding(1252));
+
+        var response = await controller.ImportAsync(borehole.Id, csvFile, null);
+        ActionResultAssert.IsOk(response);
+
+        var result = (List<LogRun>)((OkObjectResult)response).Value!;
+        Assert.AreEqual(1, result.Count);
+        Assert.AreEqual("Société Générale", result[0].ServiceCo);
+        Assert.AreEqual("Forage à côté", result[0].Comment);
+    }
+
+    [TestMethod]
     public async Task ImportLogRunsAndLogFiles()
     {
         var borehole = await AddTestBoreholeAsync();
