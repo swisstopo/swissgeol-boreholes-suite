@@ -8,6 +8,7 @@
 ### Changed
 - The disclaimer is now shown per user instead of per browser, so everyone sharing a workstation is asked to accept it, and it reappears whenever the texts change.
 - Upgraded to .NET 10.
+- Upgraded the AWS SDK used for the S3 file storage to version 4.
 
 ### Fixed
 - Exporting LOG runs with large attachments no longer fails. LOG file exports and downloads are streamed instead of being assembled in memory, so files larger than 2 GB can now be exported and downloaded up to the 5 GB limit.
