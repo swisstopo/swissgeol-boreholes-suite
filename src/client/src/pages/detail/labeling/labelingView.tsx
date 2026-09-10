@@ -133,13 +133,9 @@ export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName,
     // Set window reference only after everything is initialized
     // @ts-expect-error - Attach map to window after complete initialization
     window[mapDomId] = initMap;
-  }, [fileName, image, imageSize, map, mapDomId]);
 
-  useEffect(() => {
-    if (map) {
-      onMapInitialized?.(map);
-    }
-  }, [map, onMapInitialized]);
+    onMapInitialized?.(initMap);
+  }, [fileName, image, imageSize, map, mapDomId, onMapInitialized]);
 
   return (
     <>
