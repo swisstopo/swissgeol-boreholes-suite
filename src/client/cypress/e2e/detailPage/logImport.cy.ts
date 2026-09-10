@@ -11,6 +11,10 @@ const importDialogSelector = ".MuiDialog-container";
 const logRunsCsvInputSelector = '[data-cy="import-logRuns"] input[data-cy="file-dropzone"]';
 const logFilesCsvInputSelector = '[data-cy="import-logFiles"] input[data-cy="file-dropzone"]:not([multiple])';
 
+// A refused chunk is retried before the upload gives up, so what follows a failed upload arrives
+// a good deal later than the refusal the test saw.
+const uploadRetryTimeout = 30000;
+
 function openImportDialog() {
   cy.dataCy("import-button").should("be.visible").click();
   cy.contains("h4", "Import LOG runs from CSV file");
@@ -164,8 +168,8 @@ describe("Test for the borehole log import.", () => {
       attachmentsPerRun: { "IMP-RUN-1": ["welllog1.las"], "IMP-RUN-2": ["welllog2.txt"] },
     });
     cy.wait("@log_import").its("response.statusCode").should("eq", 200);
-    cy.wait("@log_upload").its("response.statusCode").should("eq", 200);
-    cy.wait("@log_upload").its("response.statusCode").should("eq", 200);
+    cy.wait("@log_upload").its("response.statusCode").should("eq", 204);
+    cy.wait("@log_upload").its("response.statusCode").should("eq", 204);
     cy.get(importDialogSelector).should("not.exist");
     verifyTableLength(2);
     cy.contains("IMP-RUN-1");
@@ -301,7 +305,7 @@ describe("Test for the borehole log import.", () => {
 
   it("rolls back imported log runs when an attachment upload fails", () => {
     setupBoreholeAndOpenLogTab("LOG IMPORT UPLOAD FAILURE ROLLBACK");
-    cy.intercept("POST", "/api/v2/log/upload**", { statusCode: 500, body: "boom" }).as("log_upload_fail");
+    cy.intercept("POST", "/api/v2/log/upload/tus", { statusCode: 500, body: "boom" }).as("log_upload_fail");
     cy.intercept("DELETE", "/api/v2/log?logRunIds**").as("log_delete");
     performImport({
       logRunsCsv: "log-runs-valid.csv",
@@ -310,7 +314,7 @@ describe("Test for the borehole log import.", () => {
     });
     cy.wait("@log_import").its("response.statusCode").should("eq", 200);
     cy.wait("@log_upload_fail").its("response.statusCode").should("eq", 500);
-    cy.wait("@log_delete").its("response.statusCode").should("eq", 200);
+    cy.wait("@log_delete", { timeout: uploadRetryTimeout }).its("response.statusCode").should("eq", 200);
 
     // Generic global error toast (handled by App.tsx MutationCache.onError).
     cy.get(".MuiAlert-message").should("contain", "Unexpected error. The action you triggered was not successful.");
