@@ -14,13 +14,6 @@ namespace BDMS.Uploads.S3;
 /// receives the last chunk finishes a multipart upload whose parts are already stored, which takes
 /// about as long for a large file as for a small one, so the duration the infrastructure allows a
 /// single request stops depending on the size of the upload.
-///
-/// Every request reads how far an upload has got from the cloud storage rather than from a counter,
-/// so a request that failed halfway leaves nothing to disagree with. That reading and the write
-/// that follows it are not one operation, which is safe only while requests for one upload reach
-/// one process: tusdotnet locks an upload for the length of a request, and its lock lives in
-/// memory. The deployment runs a single replica, and running more than one would need a lock the
-/// replicas share.
 /// </summary>
 public class S3TusStore : ITusStore, ITusCreationStore, ITusReadableStore, ITusTerminationStore, ITusExpirationStore
 {
@@ -50,16 +43,10 @@ public class S3TusStore : ITusStore, ITusCreationStore, ITusReadableStore, ITusT
     {
         var values = ReadMetadata(metadata);
 
-        // A multipart upload names its destination when it starts, so the key is settled here
-        // rather than when the upload finishes.
         var extension = values.TryGetValue("filename", out var fileName) ? Path.GetExtension(fileName) : string.Empty;
         var objectKey = $"{Guid.NewGuid()}{extension}";
         var contentType = values.TryGetValue("contentType", out var declared) ? declared : "application/octet-stream";
 
-        // An upload declared as empty is complete the moment it is created, so no chunk ever arrives
-        // to carry it and a multipart upload cannot be finished without a part. Writing the object
-        // straight away keeps an empty file the same thing it has always been rather than a row
-        // pointing at nothing.
         string? uploadId = null;
         if (uploadLength == 0)
         {
@@ -391,9 +378,6 @@ public class S3TusStore : ITusStore, ITusCreationStore, ITusReadableStore, ITusT
     /// <summary>
     /// How much of an upload the storage holds as parts, which is always a whole number of parts
     /// because bytes that do not fill one are held outside it.
-    ///
-    /// An upload with no multipart upload behind it is one whose object is already whole, so it
-    /// holds everything that was declared for it.
     /// </summary>
     /// <param name="state">The upload to measure.</param>
     /// <param name="cancellationToken">Aborts the read.</param>

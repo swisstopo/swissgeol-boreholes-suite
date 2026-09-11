@@ -151,10 +151,6 @@ public class TusUploadConfiguration
 
         // Refusing a taken name here rather than at the end means the user is told before sending
         // the file instead of after. Storing it checks again, because this check holds no lock.
-        //
-        // Refused by raising rather than by failing the request, because a tus error carries its
-        // reason as plain text and the client shows a reason only from the problem response the
-        // error middleware builds.
         if (eventContext.Intent == IntentType.CreateFile &&
             metadata.LogFileId is null &&
             await logFileCloudService.IsNameTakenAsync(metadata.LogRunId, metadata.FileName, eventContext.CancellationToken).ConfigureAwait(false))
@@ -259,9 +255,7 @@ public class TusUploadConfiguration
         if (replaced is not null)
         {
             // Nothing points at the old object once the row moved, and the name it had is never
-            // handed out again, so it would stay in the bucket for good. Removing it must not fail
-            // the upload: the row already points at the new object, and a caller that took this for
-            // a failed write would remove that one instead.
+            // handed out again, so it would stay in the bucket for good.
             await logFileCloudService.DeleteOrphanedObject(replaced).ConfigureAwait(false);
         }
 

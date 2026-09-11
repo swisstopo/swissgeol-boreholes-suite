@@ -6,9 +6,7 @@ import { TransferOptions } from "./transferProgress.ts";
 
 /**
  * How much of the file goes in one request, which is also how much goes into one part of the
- * upload the server assembles in the cloud storage. The storage refuses a part below 5 MiB
- * unless it is the last one, so this cannot go lower. It also has to clear the minute the
- * infrastructure allows a request: 5 MiB is about 25 seconds at 200 KB/s.
+ * upload the server assembles in the cloud storage.
  */
 const chunkSize = 5 * 1024 * 1024;
 
