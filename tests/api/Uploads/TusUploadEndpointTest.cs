@@ -360,6 +360,49 @@ public class TusUploadEndpointTest
     }
 
     /// <summary>
+    /// A chunk arriving after the upload is finished, which a client that lost the answer to the
+    /// last one would send. The store cannot refuse it in terms the client understands, so what
+    /// matters is that the request never reaches it: a server error is the one answer the upload
+    /// client keeps retrying.
+    /// </summary>
+    [TestMethod]
+    public async Task RepeatingTheLastChunkOfAFinishedUploadIsNotAServerError()
+    {
+        var logRun = await context.LogRuns.FirstAsync();
+        var content = Encoding.UTF8.GetBytes("log data");
+        using var client = factory.CreateClient();
+
+        using var created = await client.SendAsync(CreateUpload(SubAdmin, logRun.Id, $"{Guid.NewGuid()}.las", content.Length));
+        var uploadPath = created.Headers.Location.ToString();
+        startedUploadPaths.Add(uploadPath);
+
+        using var first = new HttpRequestMessage(HttpMethod.Patch, uploadPath);
+        first.Headers.Add(TusResumableHeader, TusVersion);
+        first.Headers.Add("Upload-Offset", "0");
+        first.Headers.Add(TestAuthHandler.SubjectIdHeader, SubAdmin);
+        first.Content = new ByteArrayContent(content);
+        first.Content.Headers.ContentType = new MediaTypeHeaderValue("application/offset+octet-stream");
+
+        using var finished = await client.SendAsync(first);
+        Assert.AreEqual(HttpStatusCode.NoContent, finished.StatusCode);
+        storedObjectKeys.Add((await context.LogFiles.AsNoTracking().SingleAsync(f =>
+            f.Id == int.Parse(finished.Headers.GetValues(TusUploadConfiguration.LogFileIdHeader).Single(), CultureInfo.InvariantCulture))).NameUuid);
+
+        using var again = new HttpRequestMessage(HttpMethod.Patch, uploadPath);
+        again.Headers.Add(TusResumableHeader, TusVersion);
+        again.Headers.Add("Upload-Offset", "0");
+        again.Headers.Add(TestAuthHandler.SubjectIdHeader, SubAdmin);
+        again.Content = new ByteArrayContent(content);
+        again.Content.Headers.ContentType = new MediaTypeHeaderValue("application/offset+octet-stream");
+
+        using var repeated = await client.SendAsync(again);
+
+        Assert.IsTrue(
+            (int)repeated.StatusCode < 500,
+            $"The repeated chunk was answered with <{(int)repeated.StatusCode}>, which the client retries.");
+    }
+
+    /// <summary>
     /// An empty file is a file. It carries no chunk, so the upload is finished by the request that
     /// creates it and nothing ever writes bytes into the cloud storage for it.
     /// </summary>

@@ -7,6 +7,7 @@ using System.IO.Pipelines;
 using System.Net;
 using System.Text;
 using tusdotnet.Interfaces;
+using tusdotnet.Models;
 using tusdotnet.Stores.S3;
 
 namespace BDMS.Uploads.S3;
@@ -369,5 +370,97 @@ public class LogFileTusStoreTest
     public async Task FileExistAsyncDeniesAnUploadThatWasNeverCreated()
     {
         Assert.IsFalse(await store.FileExistAsync(Guid.NewGuid().ToString(), CancellationToken.None));
+    }
+
+    [TestMethod]
+    public async Task CreateFileAsyncStartsAnUploadThatExists()
+    {
+        var fileId = await CreateAsync(1_000);
+
+        Assert.IsTrue(await store.FileExistAsync(fileId, CancellationToken.None));
+        Assert.AreEqual(0, await store.GetUploadOffsetAsync(fileId, CancellationToken.None));
+    }
+
+    [TestMethod]
+    public async Task GetUploadLengthAsyncReturnsWhatTheClientDeclared()
+    {
+        var fileId = await CreateAsync(1_234);
+
+        Assert.AreEqual(1_234, await store.GetUploadLengthAsync(fileId, CancellationToken.None));
+    }
+
+    [TestMethod]
+    public async Task GetFileAsyncReturnsNothingForAnUploadThatDoesNotExist()
+    {
+        Assert.IsNull(await store.GetFileAsync(Guid.NewGuid().ToString(), CancellationToken.None));
+    }
+
+    [TestMethod]
+    public async Task GetExpirationAsyncReturnsWhatWasSet()
+    {
+        var fileId = await CreateAsync(1_000);
+        var expires = DateTimeOffset.UtcNow.AddHours(1);
+
+        await store.SetExpirationAsync(fileId, expires, CancellationToken.None);
+
+        var read = await store.GetExpirationAsync(fileId, CancellationToken.None);
+        Assert.IsNotNull(read);
+        Assert.AreEqual(expires.ToUnixTimeSeconds(), read.Value.ToUnixTimeSeconds());
+    }
+
+    [TestMethod]
+    public async Task GetUploadOffsetAsyncReportsAFinishedUploadAtItsFullLength()
+    {
+        var uploadLength = LogFileTusStore.ChunkSize + 500;
+        var fileId = await CreateAsync(uploadLength);
+        await AppendAsync(store, fileId, LogFileTusStore.ChunkSize);
+        await AppendAsync(store, fileId, 500);
+
+        // The multipart upload is spent once the object exists, so an offset that no longer said
+        // so would send the client back to the start.
+        Assert.AreEqual(uploadLength, await store.GetUploadOffsetAsync(fileId, CancellationToken.None));
+    }
+
+    [TestMethod]
+    public async Task AppendDataAsyncRefusesMoreDataThanTheClientDeclared()
+    {
+        var fileId = await CreateAsync(1_000);
+
+        await Assert.ThrowsExactlyAsync<TusStoreException>(async () =>
+            await AppendAsync(store, fileId, 2_000));
+    }
+
+    /// <summary>
+    /// A chunk for an upload that has already been turned into an object reaches the cloud storage
+    /// naming a multipart upload it has consumed, and fails there. The store we wrote before caught
+    /// that and refused the chunk itself, which is the failure tusdotnet turns into an answer the
+    /// client can act on rather than one it keeps retrying.
+    ///
+    /// This never reaches a client, because the upload is let go of as soon as it is recorded and
+    /// a request naming one the store no longer knows is answered before the store is asked. That
+    /// is what <c>RepeatingTheLastChunkOfAFinishedUploadIsNotAServerError</c> shows.
+    /// </summary>
+    [TestMethod]
+    public async Task AppendDataAsyncFailsForAnUploadThatIsAlreadyFinished()
+    {
+        var fileId = await CreateAsync(LogFileTusStore.ChunkSize + 500);
+        await AppendAsync(store, fileId, LogFileTusStore.ChunkSize);
+        await AppendAsync(store, fileId, 500);
+
+        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(async () =>
+            await AppendAsync(store, fileId, 500));
+    }
+
+    /// <summary>
+    /// The same as above for an upload that was complete when it was created, whose multipart
+    /// upload this store releases because no chunk is ever going to fill it.
+    /// </summary>
+    [TestMethod]
+    public async Task AppendDataAsyncFailsForAnUploadThatCarriesNoBytes()
+    {
+        var fileId = await CreateAsync(0);
+
+        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(async () =>
+            await AppendAsync(store, fileId, 10));
     }
 }
