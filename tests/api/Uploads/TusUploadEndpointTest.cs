@@ -1,6 +1,7 @@
 ﻿using Amazon.S3;
 using BDMS.Authentication;
 using BDMS.Services;
+using BDMS.Uploads.S3;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Routing;
 using Microsoft.EntityFrameworkCore;
@@ -120,7 +121,8 @@ public class TusUploadEndpointTest
     }
 
     /// <summary>
-    /// Sends a whole file the way the client does, and answers with the id the server stored it as.
+    /// Sends a whole file the way the client does, in chunks of the size it sends, and answers
+    /// with the id the server stored it as.
     /// </summary>
     private async Task<int> UploadAsync(HttpClient client, int logRunId, string fileName, byte[] content, int? logFileId = null)
     {
@@ -130,17 +132,26 @@ public class TusUploadEndpointTest
         var uploadPath = created.Headers.Location.ToString();
         startedUploadPaths.Add(uploadPath);
 
-        using var patch = new HttpRequestMessage(HttpMethod.Patch, uploadPath);
-        patch.Headers.Add(TusResumableHeader, TusVersion);
-        patch.Headers.Add("Upload-Offset", "0");
-        patch.Headers.Add(TestAuthHandler.SubjectIdHeader, SubAdmin);
-        patch.Content = new ByteArrayContent(content);
-        patch.Content.Headers.ContentType = new MediaTypeHeaderValue("application/offset+octet-stream");
+        string? reported = null;
+        for (var offset = 0; offset < content.Length; offset += LogFileTusStore.ChunkSize)
+        {
+            var length = Math.Min(LogFileTusStore.ChunkSize, content.Length - offset);
 
-        using var response = await client.SendAsync(patch);
-        Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode, await response.Content.ReadAsStringAsync());
+            using var patch = new HttpRequestMessage(HttpMethod.Patch, uploadPath);
+            patch.Headers.Add(TusResumableHeader, TusVersion);
+            patch.Headers.Add("Upload-Offset", offset.ToString(CultureInfo.InvariantCulture));
+            patch.Headers.Add(TestAuthHandler.SubjectIdHeader, SubAdmin);
+            patch.Content = new ByteArrayContent(content, offset, length);
+            patch.Content.Headers.ContentType = new MediaTypeHeaderValue("application/offset+octet-stream");
 
-        var reported = response.Headers.GetValues(TusUploadConfiguration.LogFileIdHeader).Single();
+            using var response = await client.SendAsync(patch);
+            Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+            response.Headers.TryGetValues(TusUploadConfiguration.LogFileIdHeader, out var values);
+            reported ??= values?.SingleOrDefault();
+        }
+
+        Assert.IsNotNull(reported, "The client is never told which log file the server stored.");
         return int.Parse(reported, CultureInfo.InvariantCulture);
     }
 
@@ -322,6 +333,56 @@ public class TusUploadEndpointTest
 
         var stored = await s3Client.GetObjectMetadataAsync(bucketName, logFile.NameUuid, CancellationToken.None);
         Assert.AreEqual(content.Length, stored.ContentLength, "The object holds every byte that was sent.");
+    }
+
+    /// <summary>
+    /// A file long enough to arrive over several requests, which is what the endpoint exists for.
+    /// The cloud storage refuses to assemble an object out of parts that are not all of a legal
+    /// size, and how the chunks are cut into parts is only visible once there is more than one.
+    /// </summary>
+    [TestMethod]
+    public async Task FinishingAnUploadSentOverSeveralRequestsStoresEveryByte()
+    {
+        var logRun = await context.LogRuns.FirstAsync();
+        var fileName = $"{Guid.NewGuid()}.las";
+        var content = new byte[(2 * LogFileTusStore.ChunkSize) + 1_000];
+        Random.Shared.NextBytes(content);
+        using var client = factory.CreateClient();
+
+        var logFileId = await UploadAsync(client, logRun.Id, fileName, content);
+
+        var logFile = await context.LogFiles.AsNoTracking().SingleAsync(f => f.Id == logFileId);
+        Assert.IsNotNull(logFile.NameUuid);
+        storedObjectKeys.Add(logFile.NameUuid);
+
+        var stored = await s3Client.GetObjectMetadataAsync(bucketName, logFile.NameUuid, CancellationToken.None);
+        Assert.AreEqual(content.Length, stored.ContentLength, "The object holds every byte that was sent.");
+    }
+
+    /// <summary>
+    /// An empty file is a file. It carries no chunk, so the upload is finished by the request that
+    /// creates it and nothing ever writes bytes into the cloud storage for it.
+    /// </summary>
+    [TestMethod]
+    public async Task FinishingAnUploadThatCarriesNoBytesRecordsTheFile()
+    {
+        var logRun = await context.LogRuns.FirstAsync();
+        var fileName = $"{Guid.NewGuid()}.las";
+        using var client = factory.CreateClient();
+
+        using var created = await client.SendAsync(CreateUpload(SubAdmin, logRun.Id, fileName, uploadLength: 0));
+        Assert.AreEqual(HttpStatusCode.Created, created.StatusCode);
+        startedUploadPaths.Add(created.Headers.Location.ToString());
+
+        var reported = created.Headers.GetValues(TusUploadConfiguration.LogFileIdHeader).Single();
+        var logFile = await context.LogFiles.AsNoTracking().SingleAsync(f => f.Id == int.Parse(reported, CultureInfo.InvariantCulture));
+
+        Assert.AreEqual(fileName, logFile.Name);
+        Assert.IsNotNull(logFile.NameUuid);
+        storedObjectKeys.Add(logFile.NameUuid);
+
+        var stored = await s3Client.GetObjectMetadataAsync(bucketName, logFile.NameUuid, CancellationToken.None);
+        Assert.AreEqual(0, stored.ContentLength, "The row points at an object that is there and holds nothing.");
     }
 
     [TestMethod]

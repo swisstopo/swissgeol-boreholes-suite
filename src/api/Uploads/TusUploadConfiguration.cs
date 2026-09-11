@@ -43,7 +43,7 @@ public class TusUploadConfiguration
     private readonly BdmsContext context;
     private readonly IBoreholePermissionService boreholePermissionService;
     private readonly LogFileCloudService logFileCloudService;
-    private readonly S3TusStore store;
+    private readonly LogFileTusStore store;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TusUploadConfiguration"/> class.
@@ -52,7 +52,7 @@ public class TusUploadConfiguration
         BdmsContext context,
         IBoreholePermissionService boreholePermissionService,
         LogFileCloudService logFileCloudService,
-        S3TusStore store)
+        LogFileTusStore store)
     {
         this.context = context;
         this.boreholePermissionService = boreholePermissionService;
@@ -93,6 +93,11 @@ public class TusUploadConfiguration
         return Task.FromResult(new DefaultTusConfiguration
         {
             Store = store,
+
+            // Named rather than left to the default, because the store can only read a chunk this
+            // way: the other way asks the body of the request how long it is, which a body still
+            // being received cannot answer.
+            UsePipelinesIfAvailable = true,
 
             // The int sized property cannot express the ceiling the product allows.
             MaxAllowedUploadSizeInBytesLong = MaxFileSize,
@@ -193,8 +198,7 @@ public class TusUploadConfiguration
             throw new LogFileUploadException("The upload metadata is missing or malformed.");
         }
 
-        var objectKey = await store.GetObjectKeyAsync(file.Id, eventContext.CancellationToken).ConfigureAwait(false)
-            ?? throw new LogFileUploadException("The upload is no longer known to the store.");
+        var objectKey = store.GetObjectKey(file.Id);
 
         LogFile logFile;
         try

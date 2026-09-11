@@ -12,12 +12,12 @@ public class ExpiredUploadCleanupService : BackgroundService
     private static readonly TimeSpan interval = TimeSpan.FromHours(1);
 
     private readonly ILogger<ExpiredUploadCleanupService> logger;
-    private readonly S3TusStore store;
+    private readonly LogFileTusStore store;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="ExpiredUploadCleanupService"/> class.
     /// </summary>
-    public ExpiredUploadCleanupService(ILogger<ExpiredUploadCleanupService> logger, S3TusStore store)
+    public ExpiredUploadCleanupService(ILogger<ExpiredUploadCleanupService> logger, LogFileTusStore store)
     {
         this.logger = logger;
         this.store = store;

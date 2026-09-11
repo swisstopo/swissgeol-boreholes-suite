@@ -8,7 +8,7 @@ import { TransferOptions } from "./transferProgress.ts";
  * How much of the file goes in one request, which is also how much goes into one part of the
  * upload the server assembles in the cloud storage.
  */
-const chunkSize = 5 * 1024 * 1024;
+const chunkSize = 6 * 1024 * 1024;
 
 const uploadEndpoint = "/api/v2/log/upload/tus";
 

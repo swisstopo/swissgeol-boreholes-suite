@@ -8,6 +8,7 @@ using Moq;
 using System.Security.Claims;
 using System.Text;
 using tusdotnet.Models;
+using tusdotnet.Stores.S3;
 
 namespace BDMS.Uploads;
 
@@ -53,7 +54,10 @@ public class TusUploadConfigurationTest
             context);
 
         var bucketName = appConfiguration["S3:LOGFILES_BUCKET_NAME"].ToLowerInvariant();
-        var tusStore = new S3TusStore(s3Client, new S3UploadStateStore(s3Client, bucketName), bucketName);
+        var tusStore = new LogFileTusStore(
+            new Mock<ILogger<TusS3Store>>().Object,
+            s3Client,
+            LogFileTusStore.CreateConfiguration(bucketName));
 
         configuration = new TusUploadConfiguration(context, permissionServiceMock.Object, logFileCloudService, tusStore);
     }
