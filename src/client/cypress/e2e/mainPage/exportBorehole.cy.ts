@@ -39,7 +39,9 @@ const jsonFileName = `bulkexport_${new Date().toISOString().split("T")[0]}.json`
 const csvFileName = `bulkexport_${new Date().toISOString().split("T")[0]}.csv`;
 
 const splitFileContent = (fileContent: string) => {
-  const lines = fileContent.split("\n");
+  // Exported CSVs start with a UTF-8 byte order mark so Excel decodes them correctly. It would
+  // otherwise end up glued to the first header name.
+  const lines = fileContent.replace(/^\uFEFF/, "").split("\n");
   const rows = lines.map(row => row.split(";"));
   return { lines, rows };
 };
@@ -187,6 +189,7 @@ describe("Test for exporting boreholes.", () => {
     exportItem();
     exportCSVItem();
     cy.readFile(prepareDownloadPath(csvFileName)).then(fileContent => {
+      expect(fileContent.startsWith("\uFEFF"), "exported CSV must keep the UTF-8 byte order mark").to.equal(true);
       const { lines, rows } = splitFileContent(fileContent);
       expect(lines.length).to.equal(4);
 
