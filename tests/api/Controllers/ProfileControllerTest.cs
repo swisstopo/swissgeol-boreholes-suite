@@ -385,7 +385,7 @@ public class ProfileControllerTest
         await profileCloudService.UploadObject(image3.OpenReadStream(), $"dataextraction/{fileUuid}-3.png", image3.ContentType);
 
         // Test
-        var result = await controller.GetDataExtractionFileInfo(profile.Id, 1);
+        var result = await controller.GetDataExtractionFileInfo(profile.Id, 1, CancellationToken.None);
         ActionResultAssert.IsOk(result);
         var dataExtractionInfo = (DataExtractionInfo)((OkObjectResult)result).Value!;
         Assert.AreEqual($"{fileUuid}-1.png", dataExtractionInfo.FileName);
@@ -411,7 +411,7 @@ public class ProfileControllerTest
         var fileUuid = profile.NameUuid.Replace(".pdf", "");
 
         // Test
-        var result = await controller.GetDataExtractionFileInfo(profile.Id, 1);
+        var result = await controller.GetDataExtractionFileInfo(profile.Id, 1, CancellationToken.None);
         ActionResultAssert.IsOk(result);
         var dataExtractionInfo = (DataExtractionInfo)((OkObjectResult)result).Value!;
         Assert.AreEqual(fileUuid, dataExtractionInfo.FileName);
@@ -432,14 +432,14 @@ public class ProfileControllerTest
 
         // Test
         controller.HttpContext.SetClaimsPrincipal("sub_viewer", PolicyNames.Viewer);
-        var result = await controller.GetDataExtractionFileInfo(profile.Id, 1);
+        var result = await controller.GetDataExtractionFileInfo(profile.Id, 1, CancellationToken.None);
         ActionResultAssert.IsUnauthorized(result);
     }
 
     [TestMethod]
     public async Task GetDataExtractionInfoFileNotFound()
     {
-        var result = await controller.GetDataExtractionFileInfo(int.MaxValue, 1);
+        var result = await controller.GetDataExtractionFileInfo(int.MaxValue, 1, CancellationToken.None);
         ActionResultAssert.IsNotFound(result);
     }
 

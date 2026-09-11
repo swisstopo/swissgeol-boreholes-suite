@@ -16,7 +16,6 @@ import { WorkgroupAdministrationProvider } from "./admin/workgroupAdministration
 import { WorkgroupDetail } from "./admin/workgroupDetail.tsx";
 import GeneralSettings from "./generalSettings.tsx";
 import { SettingsHeader } from "./settingsHeader.tsx";
-import TermSettings from "./termSettings";
 
 export const SettingsPage = () => {
   const auth = useAuth();
@@ -30,7 +29,6 @@ export const SettingsPage = () => {
 
     if (!isAnonymousUser) {
       tabsArray.unshift({ label: t("map"), hash: "#map", component: <GeneralSettings /> });
-      tabsArray.push({ label: t("terms"), hash: "#terms", component: <TermSettings /> });
     }
     if (isAdminUser) {
       tabsArray.unshift({
