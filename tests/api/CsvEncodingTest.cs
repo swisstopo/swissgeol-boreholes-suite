@@ -7,22 +7,23 @@ namespace BDMS;
 public class CsvEncodingTest
 {
     private const string CsvWithAccents = "Name;Comment\r\nForêt;café à côté\r\n";
+    private const string AsciiCsv = "Id;Name\r\n";
 
     [TestMethod]
     public void ToUtf8BomBytesPrependsBom()
     {
-        var bytes = CsvEncoding.ToUtf8BomBytes("Id;Name\r\n");
+        var bytes = CsvEncoding.ToUtf8BomBytes(AsciiCsv);
 
         CollectionAssert.AreEqual(new byte[] { 0xEF, 0xBB, 0xBF }, bytes.Take(3).ToArray());
-        Assert.AreEqual("Id;Name\r\n", Encoding.UTF8.GetString(bytes, 3, bytes.Length - 3));
+        Assert.AreEqual(AsciiCsv, Encoding.UTF8.GetString(bytes, 3, bytes.Length - 3));
     }
 
     [TestMethod]
     public void WithUtf8BomEncodesToTheSameBytes()
     {
         CollectionAssert.AreEqual(
-            CsvEncoding.ToUtf8BomBytes("Id;Name\r\n"),
-            Encoding.UTF8.GetBytes(CsvEncoding.WithUtf8Bom("Id;Name\r\n")));
+            CsvEncoding.ToUtf8BomBytes(AsciiCsv),
+            Encoding.UTF8.GetBytes(CsvEncoding.WithUtf8Bom(AsciiCsv)));
     }
 
     [TestMethod]

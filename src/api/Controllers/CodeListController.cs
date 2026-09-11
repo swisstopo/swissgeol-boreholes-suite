@@ -80,8 +80,6 @@ public class CodeListController : ControllerBase
 
         Response.Headers.ContentDisposition = "attachment; filename=codelist_export.csv";
 
-        // A ContentResult never emits a preamble, so the mark travels as U+FEFF inside the string.
-        // Returning a FileResult instead would change the declared response in swagger.json.
         var csv = await reader.ReadToEndAsync(cancellationToken).ConfigureAwait(false);
         return Content(CsvEncoding.WithUtf8Bom(csv), "text/csv", Encoding.UTF8);
     }
