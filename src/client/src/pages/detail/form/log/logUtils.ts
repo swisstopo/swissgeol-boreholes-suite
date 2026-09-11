@@ -5,35 +5,196 @@ import {
   ensureDateOnly,
   parseFloatWithThousandsSeparator,
 } from "../../../../components/form/formUtils.ts";
-import { LogFile, LogRun } from "./logInterfaces.ts";
+import { LogFile, LogRun, LogRunChangeTracker } from "./logInterfaces.ts";
 
-export const prepareLogRunForSubmit = (data: LogRun) => {
-  data.fromDepth = parseFloatWithThousandsSeparator(data.fromDepth)!;
-  data.toDepth = parseFloatWithThousandsSeparator(data.toDepth)!;
-  data.bitSize = parseFloatWithThousandsSeparator(data.bitSize)!;
+/**
+ * Projects a log run onto what the API accepts, dropping the fields the client keeps for
+ * itself and the ones the server owns.
+ *
+ * The result is a copy. The run it is built from stays in the panel's state, where `tmpId`
+ * identifies the run the table and the modal act on, so stripping those fields off the
+ * original would leave a run nothing can select any more.
+ * @param data The log run as the form holds it.
+ * @returns The payload to send.
+ */
+export const prepareLogRunForSubmit = (data: LogRun): LogRun => {
+  const payload: LogRun = {
+    ...data,
+    fromDepth: parseFloatWithThousandsSeparator(data.fromDepth)!,
+    toDepth: parseFloatWithThousandsSeparator(data.toDepth)!,
+    bitSize: parseFloatWithThousandsSeparator(data.bitSize)!,
+    runDate: data?.runDate ? ensureDateOnly(data.runDate.toString()) : null,
+    logFiles: data.logFiles?.map(prepareLogFileForSubmit),
+  };
 
-  delete data.tmpId;
-  delete data.conveyanceMethod;
-  delete data.boreholeStatus;
-  delete data.created;
-  delete data.createdBy;
-  delete data.updated;
-  delete data.updatedBy;
-  data.runDate = data?.runDate ? ensureDateOnly(data.runDate.toString()) : null;
+  delete payload.tmpId;
+  delete payload.conveyanceMethod;
+  delete payload.boreholeStatus;
+  delete payload.created;
+  delete payload.createdBy;
+  delete payload.updated;
+  delete payload.updatedBy;
 
-  if (data.logFiles) {
-    for (const file of data.logFiles) {
-      delete file.tmpId;
-      delete file.name;
-      delete file.created;
-      delete file.createdBy;
-      delete file.updated;
-      delete file.updatedBy;
-    }
-  }
+  if (String(payload.conveyanceMethodId) === "") payload.conveyanceMethodId = null;
+  if (String(payload.boreholeStatusId) === "") payload.boreholeStatusId = null;
 
-  if (String(data.conveyanceMethodId) === "") data.conveyanceMethodId = null;
-  if (String(data.boreholeStatusId) === "") data.boreholeStatusId = null;
+  return payload;
+};
+
+const prepareLogFileForSubmit = (data: LogFile): LogFile => {
+  const payload: LogFile = { ...data };
+
+  delete payload.tmpId;
+  delete payload.name;
+  delete payload.created;
+  delete payload.createdBy;
+  delete payload.updated;
+  delete payload.updatedBy;
+
+  return payload;
+};
+
+/**
+ * Records which of a run's files reached the server, so a save that was given up on part way
+ * through does not send them a second time.
+ *
+ * The submitted files are the payload built by {@link prepareLogRunForSubmit}, which carries no
+ * identity of its own, so the identities the run held when the save started are passed beside it.
+ * A file that no longer carries its blob has been stored, and takes the id the server gave it.
+ * @param runs The panel's runs.
+ * @param tmpId The run that was submitted.
+ * @param submittedFiles The payload's files after the attempt.
+ * @param submittedTmpIds The identity each submitted file was taken from, in the same order.
+ * @returns The runs, with the stored files marked.
+ */
+export const applyUploadedFiles = (
+  runs: LogRunChangeTracker[],
+  tmpId: string | undefined,
+  submittedFiles: LogFile[] | undefined,
+  submittedTmpIds: (string | undefined)[] | undefined,
+): LogRunChangeTracker[] => {
+  if (tmpId === undefined || submittedFiles === undefined) return runs;
+
+  // A file is claimed by the identity it was submitted under rather than by the place it held.
+  // An upload takes long enough for the run to be edited while it runs, and adding a file puts it
+  // at the top, so a place no longer names the same file it named when the save started.
+  const storedByTmpId = new Map<string, LogFile>();
+  submittedFiles.forEach((file, index) => {
+    const submittedTmpId = submittedTmpIds?.[index];
+    if (submittedTmpId !== undefined && !file.file) storedByTmpId.set(submittedTmpId, file);
+  });
+
+  return runs.map(entry => {
+    if (entry.item.tmpId !== tmpId || !entry.item.logFiles) return entry;
+
+    return {
+      ...entry,
+      item: {
+        ...entry.item,
+        logFiles: entry.item.logFiles.map(file => {
+          const submitted = file.tmpId === undefined ? undefined : storedByTmpId.get(file.tmpId);
+          if (!submitted) return file;
+          return { ...file, id: submitted.id, file: undefined };
+        }),
+      },
+    };
+  });
+};
+
+/**
+ * Renames a picked file to the name it will be stored under.
+ *
+ * The server replaces white space before storing, so a name taken straight from the file
+ * system never matches the one the run ends up holding. Applying it here makes the local name
+ * a fixed point of that rule: it carries no white space, so storing cannot change it again,
+ * and the two names stay comparable however the server's rule is written.
+ * @param name The name as the file system reports it.
+ * @returns The name the log run will hold.
+ */
+export const toStoredFileName = (name: string): string => name.replaceAll(" ", "_");
+
+/**
+ * Reconciles the panel's runs with what the server actually holds.
+ *
+ * A cancelled upload can still have reached the server, which stores the file and answers
+ * nobody. The client cannot tell that from an upload that never arrived, so it asks: a pending
+ * file the run already holds by name is one that got through, and it stops being pending.
+ * @param runs The panel's runs.
+ * @param storedRuns The log runs as the server holds them.
+ * @returns The runs, with files the server already has marked as stored.
+ */
+export const applyStoredFiles = (runs: LogRunChangeTracker[], storedRuns: LogRun[]): LogRunChangeTracker[] =>
+  runs.map(entry => {
+    const stored = storedRuns.find(run => run.id === entry.item.id);
+    if (entry.item.id === 0 || stored === undefined || !entry.item.logFiles) return entry;
+
+    let anyStored = false;
+    const logFiles = entry.item.logFiles.map(file => {
+      // A file that already carries an id is one the user deliberately replaced, and has to be
+      // sent however much of it the server holds. Only a file with no identity is claimed here.
+      const name = file.name;
+      if (!file.file || file.id !== 0 || name === undefined) return file;
+
+      const match = stored.logFiles?.find(storedFile => storedFile.name === name);
+      if (match === undefined) return file;
+
+      anyStored = true;
+      return { ...file, id: match.id, file: undefined };
+    });
+
+    return anyStored ? { ...entry, item: { ...entry.item, logFiles } } : entry;
+  });
+
+/**
+ * Takes the runs as the server holds them, as the panel's own starting point.
+ * @param runs The log runs the server holds.
+ * @returns The runs, with nothing left to save.
+ */
+export const toTrackedRuns = (runs: LogRun[]): LogRunChangeTracker[] =>
+  runs.map(run => ({ item: { tmpId: run.id.toString(), ...run }, hasChanges: false }));
+
+/**
+ * Whether the panel holds work the server does not have.
+ *
+ * While it does, what the server holds is not the whole truth, and taking it would drop the files
+ * still waiting to be sent along with the changes that would have sent them.
+ * @param runs The panel's runs.
+ * @returns True if any run carries unsaved changes.
+ */
+export const hasUnsavedWork = (runs: LogRunChangeTracker[]): boolean => runs.some(entry => entry.hasChanges);
+
+/**
+ * Gives a run the identity the server created it under.
+ *
+ * The run is created before its files are sent, so a save given up on in between leaves a run that
+ * exists on the server and a panel that still believes it is new. Recording the id here means the
+ * repeat of that save updates the run rather than creating a second one under the same number.
+ * @param runs The panel's runs.
+ * @param tmpId The run that was created.
+ * @param id The id the server created it under.
+ * @returns The runs, with the created run carrying its id.
+ */
+export const applyCreatedRun = (
+  runs: LogRunChangeTracker[],
+  tmpId: string | undefined,
+  id: number,
+): LogRunChangeTracker[] => {
+  if (tmpId === undefined) return runs;
+
+  return runs.map(entry => (entry.item.tmpId === tmpId ? { ...entry, item: { ...entry.item, id } } : entry));
+};
+
+/**
+ * Records that a run reached the server whole, so that it stops counting as a change and the
+ * server's own copy of it may take the panel's place.
+ * @param runs The panel's runs.
+ * @param tmpId The run that was saved.
+ * @returns The runs, with the saved run no longer pending.
+ */
+export const markRunSaved = (runs: LogRunChangeTracker[], tmpId: string | undefined): LogRunChangeTracker[] => {
+  if (tmpId === undefined) return runs;
+
+  return runs.map(entry => (entry.item.tmpId === tmpId ? { ...entry, hasChanges: false } : entry));
 };
 
 export const getServiceOrToolArray = (

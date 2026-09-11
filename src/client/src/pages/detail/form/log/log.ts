@@ -6,33 +6,61 @@ import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack
 import { boreholeQueryKey } from "../../../../api/borehole.ts";
 import { downloadPost } from "../../../../api/download.ts";
 import { ApiError } from "../../../../api/errorClasses.ts";
-import { fetchApiV2WithApiError, isJsonContentType, upload, uploadWithApiError } from "../../../../api/fetchApiV2.ts";
+import { fetchApiV2WithApiError, isJsonContentType, upload } from "../../../../api/fetchApiV2.ts";
+import { uploadResumable } from "../../../../api/resumableUpload.ts";
 import { TransferOptions } from "../../../../api/transferProgress.ts";
 import { ExportItem } from "../../../../components/export/exportDialog.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { useResetTabStatus } from "../../../../hooks/useResetTabStatus.ts";
 import { SaveContext } from "../../saveContext.tsx";
-import { LogFile, LogRun } from "./logInterfaces.ts";
+import {
+  AddLogRunVariables,
+  ImportLogsVariables,
+  LogFile,
+  LogFileUploadProgress,
+  LogImportError,
+  LogRun,
+  UpdateLogRunVariables,
+} from "./logInterfaces.ts";
 
 const deleteLogRunsByIds = async (logRunIds: number[]) => {
   const queryParams = logRunIds.map(id => `logRunIds=${id}`).join("&");
   return await fetchApiV2WithApiError(`${logController}?${queryParams}`, "DELETE");
 };
 
-const uploadLogFileBlob = async (file: File, logRunId: number, logFileId?: number): Promise<LogFile> => {
-  const formData = new FormData();
-  formData.append("file", file);
-  const query = logFileId ? `?logRunId=${logRunId}&logFileId=${logFileId}` : `?logRunId=${logRunId}`;
-  return await uploadWithApiError<LogFile>(`${logController}/upload${query}`, "POST", formData);
+const uploadLogFileBlob = (
+  file: File,
+  logRunId: number,
+  logFileId?: number,
+  options?: TransferOptions,
+): Promise<number> => {
+  const metadata: Record<string, string> = { logRunId: String(logRunId) };
+  if (logFileId) metadata.logFileId = String(logFileId);
+
+  return uploadResumable(file, metadata, options);
 };
+
+export type LogFileUploadProgressCallback = (progress: LogFileUploadProgress) => void;
+
+/** Counts the files of a log run that still have to be uploaded. */
+export const countPendingUploads = (logRun: LogRun): number => logRun.logFiles?.filter(f => f.file).length ?? 0;
 
 const logController = "log";
 const logsQueryKey = "logs";
+/**
+ * Reads the log runs of a borehole straight from the API, bypassing the cache.
+ * @param boreholeId The borehole to read.
+ * @returns The log runs as the server holds them.
+ */
+export const fetchLogRunsByBoreholeId = async (boreholeId: number): Promise<LogRun[]> =>
+  await fetchApiV2WithApiError<LogRun[]>(`${logController}?boreholeId=${boreholeId}`, "GET");
+
 export const useLogsByBoreholeId = (boreholeId?: number): UseQueryResult<LogRun[]> =>
   useQuery<LogRun[]>({
     queryKey: [logsQueryKey, boreholeId],
     queryFn: async (): Promise<LogRun[]> => {
-      return await fetchApiV2WithApiError<LogRun[]>(`${logController}?boreholeId=${boreholeId}`, "GET");
+      if (boreholeId === undefined) return [];
+      return await fetchLogRunsByBoreholeId(boreholeId);
     },
     enabled: !!boreholeId,
   });
@@ -42,10 +70,10 @@ export const useLogRunMutations = () => {
   const resetTabStatus = useResetTabStatus(["log"]);
 
   const useAddLogRun = useMutation({
-    mutationFn: async (logRun: LogRun) => {
-      return await fetchApiV2WithApiError<LogRun>(logController, "POST", logRun);
+    mutationFn: async ({ logRun, signal }: AddLogRunVariables) => {
+      return await fetchApiV2WithApiError<LogRun>(logController, "POST", logRun, signal);
     },
-    onSuccess: (_data, logRun) => {
+    onSuccess: (_data, { logRun }) => {
       resetTabStatus();
       queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRun.boreholeId] });
       queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, logRun.boreholeId] });
@@ -53,22 +81,31 @@ export const useLogRunMutations = () => {
   });
 
   const useUpdateLogRun = useMutation({
-    mutationFn: async (logRun: LogRun) => {
+    mutationFn: async ({ logRun, onFileProgress, signal }: UpdateLogRunVariables) => {
       if (logRun.logFiles?.some(file => file.file)) {
-        const uploadPromises = logRun.logFiles.map(async file => {
+        let indexInRun = 0;
+        for (const file of logRun.logFiles) {
           file.logRunId = logRun.id;
-          if (file.file) {
-            const savedFile = await uploadLogFileBlob(file.file, logRun.id);
-            file.id = savedFile.id;
-            delete file.file;
-          }
-          return file;
-        });
-        logRun.logFiles = await Promise.all(uploadPromises);
+          if (!file.file) continue;
+
+          const fileName = file.file.name;
+          const currentIndex = indexInRun;
+
+          // A file that already has an id is one the user put back under a name the run still
+          // holds, so its content is replaced rather than stored a second time.
+          const replacedId = file.id > 0 ? file.id : undefined;
+          const savedFileId = await uploadLogFileBlob(file.file, logRun.id, replacedId, {
+            signal,
+            onProgress: progress => onFileProgress?.({ ...progress, fileName, indexInRun: currentIndex }),
+          });
+          file.id = savedFileId;
+          delete file.file;
+          indexInRun++;
+        }
       }
-      return await fetchApiV2WithApiError<LogRun>(logController, "PUT", logRun);
+      return await fetchApiV2WithApiError<LogRun>(logController, "PUT", logRun, signal);
     },
-    onSuccess: (_data, logRun) => {
+    onSuccess: (_data, { logRun }) => {
       resetTabStatus();
       queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRun.boreholeId] });
     },
@@ -92,13 +129,6 @@ export const useLogRunMutations = () => {
   };
 };
 
-export interface LogImportError {
-  errorKey: string;
-  messageKey: string;
-  detail: string;
-  values?: Record<string, string>;
-}
-
 export class LogImportValidationError extends ApiError {
   constructor(public readonly errors: LogImportError[]) {
     super("Log import validation failed", 400);
@@ -107,17 +137,11 @@ export class LogImportValidationError extends ApiError {
   }
 }
 
-interface ImportLogsVariables {
-  boreholeId: number;
-  formData: FormData;
-  attachmentsPerRun: Record<string, File[]>;
-}
-
 const buildLogFileUpload = (
   logRun: LogRun,
   logFile: LogFile,
   attachmentsPerRun: Record<string, File[]>,
-): Promise<LogFile> | null => {
+): Promise<number> | null => {
   const runAttachments = attachmentsPerRun[logRun.runNumber] ?? [];
   const matchingAttachment = runAttachments.find(f => f.name.replaceAll(" ", "_") === logFile.name);
   if (!matchingAttachment) return null;
@@ -147,7 +171,7 @@ export const useImportLogs = () => {
           .flatMap(logRun =>
             (logRun.logFiles ?? []).map(logFile => buildLogFileUpload(logRun, logFile, attachmentsPerRun)),
           )
-          .filter((p): p is Promise<LogFile> => p !== null);
+          .filter((p): p is Promise<number> => p !== null);
         await Promise.all(uploadPromises);
       } catch (uploadError) {
         // Roll back the imported log runs (and their already-saved log file metadata) so a retry isn't

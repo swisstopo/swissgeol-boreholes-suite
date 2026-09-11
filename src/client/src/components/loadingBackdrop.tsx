@@ -6,8 +6,12 @@ import { theme } from "../AppTheme.ts";
 
 interface LoadingBackdropProps extends BackdropProps {
   message?: ReactNode;
-  hint?: ReactNode; /** Explains how to get out of the running operation. Only shown together with a message. */
-  onCancel?: () => void; /** Stops the running operation. Reachable by clicking the scrim or the cancel button. */
+
+  /** Explains how to get out of the running operation. Only shown together with a message. */
+  hint?: ReactNode;
+
+  /** Stops the running operation. Reachable by clicking the scrim or the cancel button. */
+  onCancel?: () => void;
 }
 
 /**
