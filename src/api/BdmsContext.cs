@@ -234,14 +234,11 @@ public class BdmsContext : DbContext
         .Include(s => s.ChronostratigraphyLayers)
         .Include(s => s.LithostratigraphyLayers);
 
-    public DbSet<Term> Terms { get; set; }
-
     public DbSet<User> Users { get; set; }
 
     public IQueryable<User> UsersWithIncludes
         => Users
-        .Include(u => u.WorkgroupRoles).ThenInclude(wr => wr.Workgroup)
-        .Include(u => u.TermsAccepted).ThenInclude(ta => ta.Term);
+        .Include(u => u.WorkgroupRoles).ThenInclude(wr => wr.Workgroup);
 
     public DbSet<UserWorkgroupRole> UserWorkgroupRoles { get; set; }
 
@@ -409,7 +406,6 @@ public class BdmsContext : DbContext
     {
         modelBuilder.HasDefaultSchema(BoreholesDatabaseSchemaName);
         modelBuilder.Entity<UserWorkgroupRole>().HasKey(k => new { k.UserId, k.WorkgroupId, k.Role });
-        modelBuilder.Entity<TermsAccepted>().HasKey(k => new { k.UserId, k.TermId });
 
         modelBuilder.Entity<Borehole>()
             .HasMany(b => b.Codelists)

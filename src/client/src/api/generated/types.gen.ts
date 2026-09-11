@@ -2874,65 +2874,6 @@ export type TabStatus = {
 };
 
 /**
- * Represents a term entity in the database.
- */
-export type Term = {
-  id: number;
-  /**
-   * Gets or sets whetther the BDMS.Models.Term is a draft.
-   */
-  isDraft?: boolean;
-  /**
-   * Gets or sets the BDMS.Models.Term's english text.
-   */
-  textEn?: string;
-  /**
-   * Gets or sets the BDMS.Models.Term's german text.
-   */
-  textDe?: string | null;
-  /**
-   * Gets or sets the BDMS.Models.Term's french text.
-   */
-  textFr?: string | null;
-  /**
-   * Gets or sets the BDMS.Models.Term's italian text.
-   */
-  textIt?: string | null;
-  /**
-   * Gets or sets the BDMS.Models.Term's romansch text.
-   */
-  textRo?: string | null;
-  /**
-   * Gets or sets the BDMS.Models.Term's creation date.
-   */
-  creation?: string;
-  /**
-   * Gets or sets the BDMS.Models.Term's expiration date.
-   */
-  expiration?: string | null;
-};
-
-/**
- * Represents a terms_accepted entity in the database.
- */
-export type TermsAccepted = {
-  /**
-   * Gets or sets the foreign key to the BDMS.Models.TermsAccepted.User entity.
-   */
-  userId: number;
-  user?: User;
-  /**
-   * Gets or sets the foreign key to the BDMS.Models.TermsAccepted.Term entity.
-   */
-  termId: number;
-  term?: Term;
-  /**
-   * Gets or sets the timestamp from the moment the terms got accepted.
-   */
-  acceptedAt?: string;
-};
-
-/**
  * Represents a user entity in the database.
  */
 export type User = {
@@ -2981,10 +2922,6 @@ export type User = {
    * Gets the WorkgroupRoles.
    */
   readonly workgroupRoles?: Array<UserWorkgroupRole>;
-  /**
-   * Gets the TermsAccepted.
-   */
-  readonly termsAccepted?: Array<TermsAccepted>;
   /**
    * Gets or sets whether this user can be deleted.
    */
@@ -5359,26 +5296,6 @@ export type StratigraphyWritable = {
 export type StratigraphyTabEditWritable = {
   stratigraphy?: StratigraphyWritable;
   lithologyTab?: LithologyTabContentsWritable;
-};
-
-/**
- * Represents a terms_accepted entity in the database.
- */
-export type TermsAcceptedWritable = {
-  /**
-   * Gets or sets the foreign key to the BDMS.Models.TermsAccepted.User entity.
-   */
-  userId: number;
-  user?: UserWritable;
-  /**
-   * Gets or sets the foreign key to the BDMS.Models.TermsAccepted.Term entity.
-   */
-  termId: number;
-  term?: Term;
-  /**
-   * Gets or sets the timestamp from the moment the terms got accepted.
-   */
-  acceptedAt?: string;
 };
 
 /**
@@ -8181,96 +8098,6 @@ export type PostApiVbyVersionStratigraphyCopyResponses = {
 
 export type PostApiVbyVersionStratigraphyCopyResponse =
   PostApiVbyVersionStratigraphyCopyResponses[keyof PostApiVbyVersionStratigraphyCopyResponses];
-
-export type GetApiVbyVersionTermsData = {
-  body?: never;
-  path: {
-    version: string;
-  };
-  query?: never;
-  url: "/api/v{version}/terms";
-};
-
-export type GetApiVbyVersionTermsResponses = {
-  /**
-   * Returns the currently published terms, or null if none exist.
-   */
-  200: Term;
-};
-
-export type GetApiVbyVersionTermsResponse = GetApiVbyVersionTermsResponses[keyof GetApiVbyVersionTermsResponses];
-
-export type GetApiVbyVersionTermsDraftData = {
-  body?: never;
-  path: {
-    version: string;
-  };
-  query?: never;
-  url: "/api/v{version}/terms/draft";
-};
-
-export type GetApiVbyVersionTermsDraftResponses = {
-  /**
-   * Returns the draft terms, the published terms as fallback, or null.
-   */
-  200: Term;
-};
-
-export type GetApiVbyVersionTermsDraftResponse =
-  GetApiVbyVersionTermsDraftResponses[keyof GetApiVbyVersionTermsDraftResponses];
-
-export type PutApiVbyVersionTermsDraftData = {
-  /**
-   * The term carrying the localized texts to store as draft.
-   */
-  body?: Term;
-  path: {
-    version: string;
-  };
-  query?: never;
-  url: "/api/v{version}/terms/draft";
-};
-
-export type PutApiVbyVersionTermsDraftErrors = {
-  /**
-   * The server encountered an unexpected condition that prevented it from fulfilling the request.
-   */
-  500: unknown;
-};
-
-export type PutApiVbyVersionTermsDraftResponses = {
-  /**
-   * The draft was saved successfully.
-   */
-  200: unknown;
-};
-
-export type PostApiVbyVersionTermsPublishData = {
-  body?: never;
-  path: {
-    version: string;
-  };
-  query?: never;
-  url: "/api/v{version}/terms/publish";
-};
-
-export type PostApiVbyVersionTermsPublishErrors = {
-  /**
-   * There is no draft to publish.
-   */
-  400: unknown;
-  /**
-   * The server encountered an unexpected condition that prevented it from fulfilling the request.
-   */
-  500: unknown;
-};
-
-export type PostApiVbyVersionTermsPublishResponses = {
-  /**
-   * The draft was published successfully.
-   */
-  200: unknown;
-};
 
 export type GetApiVbyVersionUserSelfData = {
   body?: never;
