@@ -1,5 +1,5 @@
 import { Dispatch, FC, SetStateAction, useContext, useEffect, useMemo, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
 import { Stack } from "@mui/system";
@@ -55,9 +55,9 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
   const { isExporting, setIsExporting, startExport, exportItems } = useLogExport(exportLogRuns, selectionModel, runs);
 
   const formMethods = useForm<LogRunFilter>({ mode: "onChange" });
-  const runFilter = formMethods.watch("runNumbers");
-  const sectionFilter = formMethods.watch("sections");
-  const toolTypeFilter = formMethods.watch("toolTypes");
+  const runFilter = useWatch({ control: formMethods.control, name: "runNumbers" });
+  const sectionFilter = useWatch({ control: formMethods.control, name: "sections" });
+  const toolTypeFilter = useWatch({ control: formMethods.control, name: "toolTypes" });
 
   const hasActiveFilter = useMemo(
     () => runFilter?.length > 0 || sectionFilter?.length > 0 || toolTypeFilter?.length > 0,

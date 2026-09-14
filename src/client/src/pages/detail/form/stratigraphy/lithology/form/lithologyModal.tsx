@@ -1,5 +1,5 @@
 import { FC, useContext, useEffect } from "react";
-import { Controller, FormProvider, useForm } from "react-hook-form";
+import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
@@ -83,7 +83,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
     }
   }, [lithology, lithologicalDescription, formMethods]);
 
-  const isUnconsolidated = formMethods.watch("isUnconsolidated");
+  const isUnconsolidated = useWatch({ control: formMethods.control, name: "isUnconsolidated" });
 
   const cancelDialog = () => {
     updateLithology(lithology as Lithology, false);

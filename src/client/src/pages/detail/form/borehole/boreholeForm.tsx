@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useState } from "react";
-import { useForm, UseFormReturn } from "react-hook-form";
+import { useForm, UseFormReturn, useWatch } from "react-hook-form";
 import { Card, Stack } from "@mui/material";
 import { getBoreholeGeometryDepthTVD } from "../../../../api/fetchApiV2.ts";
 import {
@@ -51,9 +51,9 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
     },
   });
 
-  const totalDepth = formMethods.watch("totalDepth");
-  const topBedrockFreshMd = formMethods.watch("topBedrockFreshMd");
-  const topBedrockWeatheredMd = formMethods.watch("topBedrockWeatheredMd");
+  const totalDepth = useWatch({ control: formMethods.control, name: "totalDepth" });
+  const topBedrockFreshMd = useWatch({ control: formMethods.control, name: "topBedrockFreshMd" });
+  const topBedrockWeatheredMd = useWatch({ control: formMethods.control, name: "topBedrockWeatheredMd" });
 
   const prepareBoreholeDataForSubmit = useCallback((formInputs: BoreholeFormInputs) => {
     const data = { ...formInputs };
