@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using BDMS.Authentication;
+using BDMS.Models;
 using BDMS.Services;
 using BDMS.Uploads.S3;
 using Microsoft.AspNetCore.Authorization;
@@ -31,6 +32,7 @@ public class TusUploadEndpointTest
 
     private readonly List<string> startedUploadPaths = [];
     private readonly List<string> storedObjectKeys = [];
+    private readonly List<int> insertedLogFileIds = [];
 
     private BdmsContext context;
     private AmazonS3Client s3Client;
@@ -80,6 +82,17 @@ public class TusUploadEndpointTest
         foreach (var key in storedObjectKeys)
         {
             await s3Client.DeleteObjectAsync(bucketName, key, CancellationToken.None);
+        }
+
+        // Rows a test inserted to stand in for an import are written through a context of their
+        // own, committed outside the class context's transaction so the server can see them; that
+        // means the class context's rollback on dispose never removes them, so they are removed
+        // here instead.
+        if (insertedLogFileIds.Count > 0)
+        {
+            await using var cleanupContext = ContextFactory.CreateContext();
+            cleanupContext.LogFiles.RemoveRange(cleanupContext.LogFiles.Where(f => insertedLogFileIds.Contains(f.Id)));
+            await cleanupContext.SaveChangesAsync();
         }
 
         s3Client.Dispose();
@@ -460,5 +473,47 @@ public class TusUploadEndpointTest
             1,
             await context.LogFiles.CountAsync(f => f.LogRunId == logRun.Id && f.Name == fileName),
             "The run holds one entry under that name.");
+    }
+
+    /// <summary>
+    /// An import can write a row before any object exists for it, so the row it points at first is
+    /// null. Completing the upload against that row has to store the object and adopt it, not treat
+    /// the missing predecessor as something to delete.
+    /// </summary>
+    [TestMethod]
+    public async Task FinishingAnUploadAgainstARecordWithoutAnObjectStoresTheObject()
+    {
+        var logRun = await context.LogRuns.FirstAsync();
+        var fileName = $"{Guid.NewGuid()}.las";
+        var content = Encoding.UTF8.GetBytes("log data");
+        using var client = factory.CreateClient();
+
+        var logFile = new LogFile { LogRunId = logRun.Id, Name = fileName, NameUuid = null, Public = false };
+
+        // Inserted through a context of its own, and committed immediately, so the row is visible
+        // to the server the request goes to rather than sitting in the class context's transaction.
+        await using (var setupContext = ContextFactory.CreateContext())
+        {
+            setupContext.LogFiles.Add(logFile);
+            await setupContext.SaveChangesAsync();
+        }
+
+        insertedLogFileIds.Add(logFile.Id);
+
+        var uploadedId = await UploadAsync(client, logRun.Id, fileName, content, logFile.Id);
+
+        Assert.AreEqual(logFile.Id, uploadedId, "Completing an import-created record keeps the entry it completes.");
+
+        var stored = await context.LogFiles.AsNoTracking().SingleAsync(f => f.Id == logFile.Id);
+        Assert.IsNotNull(stored.NameUuid);
+        storedObjectKeys.Add(stored.NameUuid);
+
+        var storedObject = await s3Client.GetObjectMetadataAsync(bucketName, stored.NameUuid, CancellationToken.None);
+        Assert.AreEqual(content.Length, storedObject.ContentLength, "The object holds every byte that was sent.");
+
+        Assert.AreEqual(
+            1,
+            await context.LogFiles.CountAsync(f => f.LogRunId == logRun.Id && f.Name == fileName),
+            "No second row was created for the file.");
     }
 }
