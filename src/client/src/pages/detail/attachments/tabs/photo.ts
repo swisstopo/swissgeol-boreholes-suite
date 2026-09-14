@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
+import { skipToken, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { download } from "../../../../api/download.ts";
 import { ApiError } from "../../../../api/errorClasses.ts";
 import { fetchApiV2Base, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../../../../api/fetchApiV2.ts";
@@ -67,11 +67,11 @@ export const useReloadPhotos = (boreholeId: number) => {
 export function usePhotoImage(photoId?: number) {
   return useQuery({
     queryKey: ["photoImage", photoId],
-    enabled: !!photoId,
-    queryFn: async () => {
-      if (!photoId) return;
-      const blob = await getPhotoImageData(photoId);
-      return getImageFromBlob(blob);
-    },
+    queryFn: photoId
+      ? async () => {
+          const blob = await getPhotoImageData(photoId);
+          return getImageFromBlob(blob);
+        }
+      : skipToken,
   });
 }

@@ -143,7 +143,7 @@ export const WorkgroupDetail: FC = () => {
         backgroundColor: theme.palette.background.lightgrey,
       }}>
       <Card data-cy="workgroup-general" sx={{ mb: 3 }}>
-        <CardHeader title={t("general")} sx={{ p: 4, pb: 3 }} titleTypographyProps={{ variant: "h5" }} />
+        <CardHeader title={t("general")} sx={{ p: 4, pb: 3 }} slotProps={{ title: { variant: "h5" } }} />
         <CardContent sx={{ pt: 4, px: 3 }}>
           <Stack direction={"row"} alignItems={"center"}>
             <FormProvider {...formMethods}>
@@ -167,7 +167,7 @@ export const WorkgroupDetail: FC = () => {
         <CardHeader
           title={t("users")}
           sx={{ p: 4, pb: 3 }}
-          titleTypographyProps={{ variant: "h5" }}
+          slotProps={{ title: { variant: "h5" } }}
           action={<AddButton label="addUser" variant="contained" onClick={addUser} disabled={isDisabled} />}
         />
         <CardContent sx={{ pt: 4, px: 3 }}>

@@ -65,6 +65,20 @@ export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.
     },
   },
   {
+    // Type-aware linting.
+    files: ["**/*.{ts,tsx}"],
+    languageOptions: {
+      parser: tsParser,
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: __dirname,
+      },
+    },
+    rules: {
+      "@typescript-eslint/no-deprecated": "error",
+    },
+  },
+  {
     files: ["**/*.{js,jsx,ts,tsx}"],
     ignores: ["src/AppTheme.ts", "src/mui.theme.d.ts", "cypress/**", "**/*.test.ts", "**/*.test.tsx"],
     plugins: {

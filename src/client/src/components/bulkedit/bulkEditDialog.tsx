@@ -237,10 +237,12 @@ export const BulkEditDialog = ({ isOpen, selected, onClose }: BulkEditFormProps)
       fullWidth
       maxWidth="sm"
       open={isOpen}
-      PaperProps={{
-        sx: {
-          overflow: "hidden",
-          height: "90vh",
+      slotProps={{
+        paper: {
+          sx: {
+            overflow: "hidden",
+            height: "90vh",
+          },
         },
       }}>
       <Stack sx={{ height: "100%" }}>

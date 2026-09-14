@@ -1,9 +1,9 @@
 import { FC, ReactNode, Ref } from "react";
-import { Box, Card, CardProps, Grid, Stack } from "@mui/material";
-import { BoxProps, GridProps, styled } from "@mui/system";
+import { Box, Card, CardProps, Grid2, Grid2Props, Stack } from "@mui/material";
+import { BoxProps, styled } from "@mui/system";
 import { theme } from "../../AppTheme";
 
-interface DataCardGridProps extends GridProps {
+interface DataCardGridProps extends Grid2Props {
   children: ReactNode;
   ref?: Ref<HTMLDivElement>;
 }
@@ -19,7 +19,7 @@ interface DataCardBoxProps extends BoxProps {
 }
 
 export const DataCardContainer: FC<DataCardGridProps> = ({ children, ...props }) => {
-  const StyledTextField = styled(Grid)(() => ({
+  const StyledTextField = styled(Grid2)(() => ({
     alignContent: "flex-start",
     width: "100% !important",
     borderWidth: "1px",
@@ -39,12 +39,12 @@ export const DataCardContainer: FC<DataCardGridProps> = ({ children, ...props })
 };
 
 export const DataCardItem: FC<DataCardGridProps> = ({ children, ...props }) => {
-  const StyledCard = styled(Grid)(() => ({
+  const StyledCard = styled(Grid2)(() => ({
     padding: `0 ${theme.spacing(1)} ${theme.spacing(1)} ${theme.spacing(1)} !important`,
   }));
 
   return (
-    <StyledCard item md={12} lg={12} xl={6} ref={props.ref} {...props}>
+    <StyledCard size={{ md: 12, lg: 12, xl: 6 }} ref={props.ref} {...props}>
       {children}
     </StyledCard>
   );
