@@ -73,11 +73,7 @@ public class LogFileTusStore : ITusPipelineStore, ITusCreationStore, ITusReadabl
         PreferredPartSizeInBytes = PartSize,
         MinPartSizeInBytes = MinimumPartSize,
         MaxMultipartParts = MaxParts,
-
-        // The bucket also receives log files through the upload that sends the whole file at once,
-        // which uses a multipart upload of its own for a large one. The package cannot tell that
-        // upload apart from one nobody is going to finish, and would abort it mid-transfer.
-        DisableUnattachedMultipartUploadsRemoval = true,
+        DisableUnattachedMultipartUploadsRemoval = false,
     };
 
     /// <inheritdoc/>

@@ -59,37 +59,6 @@ public class LogFileCloudServiceTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    public async Task UploadFileWithWhiteSpaceShouldReplaceWithUnderscoreBeforeSaving()
-    {
-        var fileName = $"  {Guid.NewGuid()}   file  .las";
-        var minLogRunId = context.LogRuns.Min(b => b.Id);
-        var formFile = GetFormFileByContent(Guid.NewGuid().ToString(), fileName);
-        await logFileCloudService.UploadLogFileAndLinkToLogRunAsync(formFile.OpenReadStream(), formFile.FileName, formFile.ContentType, minLogRunId);
-        fileName = fileName.Replace(" ", "_");
-        var logRun = context.LogRunsWithIncludes.Single(b => b.Id == minLogRunId);
-        Assert.IsNotNull(logRun.LogFiles.SingleOrDefault(f => f.Name == fileName));
-    }
-
-    [TestMethod]
-    public async Task UploadFileAndLinkToLogRunShouldStoreFileInCloudStorageAndLinkFile()
-    {
-        var fileName = $"{Guid.NewGuid()}.las";
-        var minLogRunId = context.LogRuns.Min(b => b.Id);
-        var content = Guid.NewGuid().ToString();
-        var fistLogFile = GetFormFileByContent(content, fileName);
-        await logFileCloudService.UploadLogFileAndLinkToLogRunAsync(fistLogFile.OpenReadStream(), fistLogFile.FileName, fistLogFile.ContentType, minLogRunId).ConfigureAwait(false);
-        var logRun = context.LogRunsWithIncludes.Single(b => b.Id == minLogRunId);
-
-        // Check if file is linked to logRun
-        var uploadedFile = logRun.LogFiles.SingleOrDefault(f => f.Name == fileName);
-        Assert.IsNotNull(uploadedFile);
-
-        // Ensure file exists in cloud storage
-        var request = new GetObjectMetadataRequest { BucketName = bucketName, Key = uploadedFile.NameUuid };
-        await s3Client.GetObjectMetadataAsync(request);
-    }
-
-    [TestMethod]
     public async Task UploadObjectSameFileTwiceShouldReplaceFileInCloudStorage()
     {
         var content = Guid.NewGuid().ToString();
@@ -190,42 +159,6 @@ public class LogFileCloudServiceTest
         await Assert.ThrowsExactlyAsync<NoSuchKeyException>(() => logFileCloudService.GetObjectBytes(formFile.FileName, NoSizeLimit));
     }
 
-    [TestMethod]
-    public async Task UploadLogFileAndLinkToLogRunAsyncRemovesTheObjectWhenTheLinkFails()
-    {
-        var fileName = $"{Guid.NewGuid()}.las";
-        var minLogRunId = context.LogRuns.Min(b => b.Id);
-        var formFile = GetFormFileByContent(Guid.NewGuid().ToString(), fileName);
-
-        // The accessor is reached only after the object has been stored, so throwing here leaves
-        // exactly the gap the cleanup has to cover.
-        var failingAccessor = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
-        failingAccessor.Setup(x => x.HttpContext).Throws(new InvalidOperationException("no context"));
-        var service = new LogFileCloudService(
-            new Mock<ILogger<LogFileCloudService>>().Object,
-            s3Client,
-            new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build(),
-            failingAccessor.Object,
-            context);
-
-        var objectsBefore = await CountStoredObjectsAsync();
-
-        await Assert.ThrowsExactlyAsync<InvalidOperationException>(
-            () => service.UploadLogFileAndLinkToLogRunAsync(
-                formFile.OpenReadStream(), formFile.FileName, formFile.ContentType, minLogRunId));
-
-        Assert.AreEqual(objectsBefore, await CountStoredObjectsAsync());
-    }
-
-    /// <summary>
-    /// Counts what the bucket holds. The test bucket stays well under one page of results.
-    /// </summary>
-    private async Task<int> CountStoredObjectsAsync()
-    {
-        var stored = await s3Client.ListObjectsV2Async(new ListObjectsV2Request { BucketName = bucketName });
-        return stored.S3Objects.Count;
-    }
-
     /// <summary>
     /// Covers the multipart path, which starts above TransferUtility's 16 MB threshold. It is
     /// long running because moving that much through the storage holds the shared test database
@@ -233,21 +166,16 @@ public class LogFileCloudServiceTest
     /// </summary>
     [TestMethod]
     [TestCategory("LongRunning")]
-    public async Task UploadLogFileAndLinkToLogRunAsyncStoresAFileLargerThanOnePart()
+    public async Task UploadObjectStoresAFileLargerThanOnePart()
     {
-        var fileName = $"{Guid.NewGuid()}.las";
-        var minLogRunId = context.LogRuns.Min(b => b.Id);
+        var objectName = $"{Guid.NewGuid()}.las";
         var content = new byte[20 * 1024 * 1024];
         Random.Shared.NextBytes(content);
 
         using var stream = new MemoryStream(content);
-        await logFileCloudService.UploadLogFileAndLinkToLogRunAsync(stream, fileName, "application/octet-stream", minLogRunId);
+        await logFileCloudService.UploadObject(stream, objectName, "application/octet-stream");
 
-        var logRun = context.LogRunsWithIncludes.Single(b => b.Id == minLogRunId);
-        var stored = logRun.LogFiles.Single(f => f.Name == fileName);
-        Assert.IsNotNull(stored.NameUuid);
-
-        using var readBack = await logFileCloudService.GetObjectStream(stored.NameUuid);
+        using var readBack = await logFileCloudService.GetObjectStream(objectName);
         using var buffer = new MemoryStream();
         await readBack.CopyToAsync(buffer);
 
@@ -257,38 +185,13 @@ public class LogFileCloudServiceTest
     }
 
     [TestMethod]
-    public async Task UploadLogFileAndLinkToLogRunAsyncLinksNothingWhenCancelled()
+    public async Task DeleteOrphanedObjectKeepsTheOriginalFailureWhenTheCleanupFails()
     {
-        var fileName = $"{Guid.NewGuid()}.las";
-        var minLogRunId = context.LogRuns.Min(b => b.Id);
-        var formFile = GetFormFileByContent(Guid.NewGuid().ToString(), fileName);
-
-        using var cancellation = new CancellationTokenSource();
-        await cancellation.CancelAsync();
-
-        await Assert.ThrowsAsync<OperationCanceledException>(
-            () => logFileCloudService.UploadLogFileAndLinkToLogRunAsync(
-                formFile.OpenReadStream(), formFile.FileName, formFile.ContentType, minLogRunId, cancellation.Token));
-
-        var logRun = context.LogRunsWithIncludes.Single(b => b.Id == minLogRunId);
-        Assert.IsNull(logRun.LogFiles.SingleOrDefault(f => f.Name == fileName));
-    }
-
-    [TestMethod]
-    public async Task UploadLogFileAndLinkToLogRunAsyncKeepsTheCancellationWhenTheCleanupFails()
-    {
-        // The object reaches the bucket before its row is written, so a client that gives up in
-        // between leaves an object nothing refers to and the cleanup runs. When that cleanup fails
-        // as well, the cancellation still has to be what escapes, because the caller reads its type
-        // to decide whether anybody is left to answer.
-        using var cancellation = new CancellationTokenSource();
-
+        // The cleanup runs while another failure is travelling on, so a cleanup that fails as well
+        // must not replace it: only while that failure is intact can the caller tell a client that
+        // gave up from an upload that broke.
         var s3ClientMock = new Mock<IAmazonS3>(MockBehavior.Strict);
         s3ClientMock.Setup(x => x.Config).Returns(new AmazonS3Config());
-        s3ClientMock
-            .Setup(x => x.PutObjectAsync(It.IsAny<PutObjectRequest>(), It.IsAny<CancellationToken>()))
-            .Callback(() => cancellation.Cancel())
-            .ReturnsAsync(new PutObjectResponse());
         s3ClientMock
             .Setup(x => x.DeleteObjectAsync(It.IsAny<DeleteObjectRequest>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new AmazonS3Exception("the cleanup fails as well"));
@@ -305,12 +208,7 @@ public class LogFileCloudServiceTest
             contextAccessorMock.Object,
             context);
 
-        var formFile = GetFormFileByContent(Guid.NewGuid().ToString(), $"{Guid.NewGuid()}.las");
-        var minLogRunId = context.LogRuns.Min(b => b.Id);
-
-        await Assert.ThrowsAsync<OperationCanceledException>(
-            () => serviceWithFailingCleanup.UploadLogFileAndLinkToLogRunAsync(
-                formFile.OpenReadStream(), formFile.FileName, formFile.ContentType, minLogRunId, cancellation.Token));
+        await serviceWithFailingCleanup.DeleteOrphanedObject($"{Guid.NewGuid()}.las");
 
         s3ClientMock.Verify(x => x.DeleteObjectAsync(It.IsAny<DeleteObjectRequest>(), It.IsAny<CancellationToken>()), Times.Once);
     }

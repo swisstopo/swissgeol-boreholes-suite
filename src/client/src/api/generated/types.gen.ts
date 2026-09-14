@@ -7300,36 +7300,6 @@ export type PutApiVbyVersionLogResponses = {
 
 export type PutApiVbyVersionLogResponse = PutApiVbyVersionLogResponses[keyof PutApiVbyVersionLogResponses];
 
-export type PostApiVbyVersionLogUploadData = {
-  body?: {
-    /**
-     * The file to upload.
-     */
-    file?: Blob | File;
-  };
-  path: {
-    version: string;
-  };
-  query?: {
-    /**
-     * The log run ID to associate with the file.
-     */
-    logRunId?: number;
-    /**
-     * Optional existing log file ID to link the uploaded file to.
-     */
-    logFileId?: number;
-  };
-  url: "/api/v{version}/log/upload";
-};
-
-export type PostApiVbyVersionLogUploadResponses = {
-  /**
-   * OK
-   */
-  200: unknown;
-};
-
 export type GetApiVbyVersionLogDownloadData = {
   body?: never;
   path: {
