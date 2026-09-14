@@ -1,6 +1,7 @@
 import { defineConfig, globalIgnores } from "eslint/config";
 import { fixupConfigRules, fixupPluginRules } from "@eslint/compat";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
+import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
 import prettier from "eslint-plugin-prettier";
 import cypress from "eslint-plugin-cypress";
@@ -26,7 +27,6 @@ export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.
         "eslint:recommended",
         "plugin:react/recommended",
         "plugin:react/jsx-runtime",
-        "plugin:react-hooks/recommended",
         "plugin:prettier/recommended",
         "plugin:@typescript-eslint/eslint-recommended",
         "plugin:@typescript-eslint/recommended",
@@ -62,6 +62,20 @@ export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.
         "react/react-in-jsx-scope": "off",
         "react/prop-types": "off",
         "react/display-name": "off",
+    },
+  },
+  {
+    // React Compiler diagnostics.
+    files: ["**/*.{js,jsx,ts,tsx}"],
+    extends: [reactHooks.configs.flat.recommended],
+    rules: {
+      // Off pending a dedicated cleanup. Each of these has a backlog in this codebase that needs
+      // behavioural fixes rather than mechanical ones: set-state-in-effect 52, refs 34,
+      // immutability 5, incompatible-library 4.
+      "react-hooks/set-state-in-effect": "off",
+      "react-hooks/refs": "off",
+      "react-hooks/immutability": "off",
+      "react-hooks/incompatible-library": "off",
     },
   },
   {
