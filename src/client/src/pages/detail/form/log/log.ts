@@ -16,9 +16,8 @@ import { SaveContext } from "../../saveContext.tsx";
 import {
   AddLogRunVariables,
   ImportLogsVariables,
-  LogFile,
   LogFileUploadProgress,
-  LogImportError,
+  LogImportResultItem,
   LogRun,
   UpdateLogRunVariables,
 } from "./logInterfaces.ts";
@@ -150,66 +149,60 @@ export const useLogRunMutations = () => {
 };
 
 export class LogImportValidationError extends ApiError {
-  constructor(public readonly errors: LogImportError[]) {
+  constructor(
+    public readonly messageKey: string,
+    public readonly values?: Record<string, string>,
+  ) {
     super("Log import validation failed", 400);
     this.name = "LogImportValidationError";
     Object.setPrototypeOf(this, LogImportValidationError.prototype);
   }
 }
 
-const buildLogFileUpload = (
-  logRun: LogRun,
-  logFile: LogFile,
-  attachmentsPerRun: Record<string, File[]>,
-): Promise<number> | null => {
-  const runAttachments = attachmentsPerRun[logRun.runNumber] ?? [];
-  const matchingAttachment = runAttachments.find(f => f.name.replaceAll(" ", "_") === logFile.name);
-  if (!matchingAttachment) return null;
-  return uploadLogFileBlob(matchingAttachment, logRun.id, logFile.id);
+/**
+ * Names an attachment the way the server expects it, so a row and the file the user dropped for
+ * it are recognized as the same thing on both sides.
+ * @param runNumber The run the file belongs to.
+ * @param fileName The file name as the browser reports it.
+ * @returns The identifier to send.
+ */
+export const toAttachmentName = (runNumber: string, fileName: string): string =>
+  `${runNumber}/${fileName.replaceAll(" ", "_")}`;
+
+/**
+ * Removes a log file record that never received its attachment.
+ * @param logFileId The record to remove.
+ */
+export const deleteLogFile = async (logFileId: number): Promise<void> => {
+  await fetchApiV2WithApiError(`${logController}/file/${logFileId}`, "DELETE");
 };
 
-export const useImportLogs = () => {
-  const queryClient = useQueryClient();
-  const resetTabStatus = useResetTabStatus(["log"]);
+export const useImportLogs = () =>
+  useMutation<LogImportResultItem[], Error, ImportLogsVariables>({
+    mutationFn: async ({ boreholeId, logRunsCsvFile, logFilesCsvFile, attachmentsPerRun }) => {
+      const formData = new FormData();
+      if (logRunsCsvFile) formData.append("logRunsCsvFile", logRunsCsvFile);
+      if (logFilesCsvFile) formData.append("logFilesCsvFile", logFilesCsvFile);
+      for (const [runNumber, files] of Object.entries(attachmentsPerRun)) {
+        for (const file of files) {
+          formData.append("providedAttachmentNames", toAttachmentName(runNumber, file.name));
+        }
+      }
 
-  return useMutation<LogRun[], Error, ImportLogsVariables>({
-    mutationFn: async ({ boreholeId, formData, attachmentsPerRun }) => {
       const response = await upload(`${logController}/import?boreholeId=${boreholeId}`, "POST", formData);
       if (!response.ok) {
         if (isJsonContentType(response.headers.get("content-type"))) {
           const responseBody = await response.json();
-          if (Array.isArray(responseBody)) {
-            throw new LogImportValidationError(responseBody);
+          if (typeof responseBody?.messageKey === "string") {
+            throw new LogImportValidationError(responseBody.messageKey, responseBody.values);
           }
         }
         throw new Error("Log import failed");
       }
 
-      const importedLogRuns: LogRun[] = await response.json();
-      try {
-        const uploadPromises = importedLogRuns
-          .flatMap(logRun =>
-            (logRun.logFiles ?? []).map(logFile => buildLogFileUpload(logRun, logFile, attachmentsPerRun)),
-          )
-          .filter((p): p is Promise<number> => p !== null);
-        await Promise.all(uploadPromises);
-      } catch (uploadError) {
-        // Roll back the imported log runs (and their already-saved log file metadata) so a retry isn't
-        // blocked by duplicate run numbers. Swallow rollback failures so the original upload error is surfaced.
-        if (importedLogRuns.length > 0) {
-          await deleteLogRunsByIds(importedLogRuns.map(lr => lr.id)).catch(() => undefined);
-        }
-        throw uploadError;
-      }
-      return importedLogRuns;
-    },
-    onSuccess: (_data, { boreholeId }) => {
-      resetTabStatus();
-      queryClient.invalidateQueries({ queryKey: [logsQueryKey, boreholeId] });
-      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, boreholeId] });
+      return (await response.json()) as LogImportResultItem[];
     },
   });
-};
 
 export const exportLogRuns = async (
   ids: number[],
