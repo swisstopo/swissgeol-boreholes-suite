@@ -11,6 +11,7 @@
 - Upgraded the AWS SDK used for the S3 file storage to version 4.
 
 ### Fixed
+- Fixed out of memory failures when the data extraction service processes large documents.
 - Exporting LOG runs with large attachments no longer fails. LOG file exports and downloads are streamed instead of being assembled in memory, so files larger than 2 GB can now be exported and downloaded up to the 5 GB limit.
 - LOG runs are now always displayed on VIEW, even without any files or without public files.
 - Exporting boreholes with attachments, exporting photos, and downloading photos and profiles are now streamed instead of being assembled in memory. The download starts as soon as the first bytes are ready.
