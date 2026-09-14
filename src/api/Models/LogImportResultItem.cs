@@ -1,8 +1,11 @@
-﻿namespace BDMS.Models;
+﻿using System.Text.Json.Serialization;
+
+namespace BDMS.Models;
 
 /// <summary>
 /// Whether a <see cref="LogImportResultItem"/> describes a log run or a log file.
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum LogImportItemType
 {
     /// <summary>A row of the log runs CSV.</summary>
@@ -15,6 +18,7 @@ public enum LogImportItemType
 /// <summary>
 /// What the import did with one row.
 /// </summary>
+[JsonConverter(typeof(JsonStringEnumConverter))]
 public enum LogImportOutcome
 {
     /// <summary>The row was written by this import.</summary>
