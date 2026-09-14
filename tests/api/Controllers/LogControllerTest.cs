@@ -1020,6 +1020,50 @@ public class LogControllerTest : TestControllerBase
         ActionResultAssert.IsUnauthorized(response);
     }
 
+    [TestMethod]
+    public async Task DeleteIncompleteLogFileRemovesTheRecord()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = new LogRun { BoreholeId = borehole.Id, RunNumber = "RUN-DEL", FromDepth = 0, ToDepth = 1 };
+        Context.LogRuns.Add(logRun);
+        await Context.SaveChangesAsync();
+
+        var logFile = new LogFile { LogRunId = logRun.Id, Name = "waiting.las", NameUuid = null, Public = false };
+        Context.LogFiles.Add(logFile);
+        await Context.SaveChangesAsync();
+
+        var response = await controller.DeleteLogFileAsync(logFile.Id);
+
+        Assert.IsInstanceOfType(response, typeof(OkResult));
+        Assert.IsFalse(Context.LogFiles.Any(lf => lf.Id == logFile.Id));
+    }
+
+    [TestMethod]
+    public async Task DeleteLogFileRefusesARecordThatHasItsAttachment()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = new LogRun { BoreholeId = borehole.Id, RunNumber = "RUN-KEEP", FromDepth = 0, ToDepth = 1 };
+        Context.LogRuns.Add(logRun);
+        await Context.SaveChangesAsync();
+
+        var logFile = new LogFile { LogRunId = logRun.Id, Name = "stored.las", NameUuid = "object-key.las", Public = false };
+        Context.LogFiles.Add(logFile);
+        await Context.SaveChangesAsync();
+
+        var response = await controller.DeleteLogFileAsync(logFile.Id);
+
+        Assert.IsInstanceOfType(response, typeof(ObjectResult));
+        Assert.IsTrue(Context.LogFiles.Any(lf => lf.Id == logFile.Id));
+    }
+
+    [TestMethod]
+    public async Task DeleteLogFileForUnknownIdReturnsNotFound()
+    {
+        var response = await controller.DeleteLogFileAsync(99999999);
+
+        Assert.IsInstanceOfType(response, typeof(NotFoundObjectResult));
+    }
+
     // Helpers
     private async Task<int> CreateCompleteLogRunAsync()
     {

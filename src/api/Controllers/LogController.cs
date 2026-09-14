@@ -135,6 +135,45 @@ public class LogController : BoreholeControllerBase<LogRun>
         return await DeleteMultipleAsync(new List<int> { id }).ConfigureAwait(false);
     }
 
+    /// <summary>
+    /// Deletes a log file record that never received its attachment.
+    ///
+    /// The import writes the record before the attachment is uploaded, so an upload that fails or
+    /// is given up on would leave a record behind that every later import skips as already
+    /// existing. Removing it here lets the next import add it properly.
+    ///
+    /// A record that has its attachment is refused: this endpoint exists to undo an unfinished
+    /// import, not to delete stored files.
+    /// </summary>
+    /// <param name="id">The <see cref="LogFile.Id"/> to delete.</param>
+    /// <returns>An OK result if the record was removed.</returns>
+    [HttpDelete("file/{id}")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    public async Task<IActionResult> DeleteLogFileAsync([Range(1, int.MaxValue)] int id)
+    {
+        var logFile = await Context.LogFiles
+            .Include(lf => lf.LogRun)
+            .FirstOrDefaultAsync(lf => lf.Id == id)
+            .ConfigureAwait(false);
+
+        if (logFile == null) return NotFound($"LogFile with id {id} not found.");
+
+        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), logFile.LogRun.BoreholeId).ConfigureAwait(false))
+        {
+            return Unauthorized();
+        }
+
+        if (logFile.NameUuid != null)
+        {
+            return Problem(detail: $"LogFile with id {id} has an attachment and is not deleted here.", type: ProblemType.UserError);
+        }
+
+        Context.LogFiles.Remove(logFile);
+        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+
+        return Ok();
+    }
+
     /// <inheritdoc />
     [Authorize(Policy = PolicyNames.Viewer)]
     public override async Task<ActionResult<LogRun>> CreateAsync(LogRun entity)
