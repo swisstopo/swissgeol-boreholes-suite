@@ -43,34 +43,34 @@ const StyledDataCard = styled(Card)(() => ({
   marginBottom: theme.spacing(1),
 }));
 
-export const DataCardContainer: FC<DataCardGridProps> = ({ children, ...props }) => {
+export const DataCardContainer: FC<DataCardGridProps> = ({ children, ref, ...props }) => {
   return (
-    <StyledDataCardContainer container columnSpacing={{ xs: 2 }} rowSpacing={{ xs: 2 }} ref={props.ref} {...props}>
+    <StyledDataCardContainer container columnSpacing={{ xs: 2 }} rowSpacing={{ xs: 2 }} ref={ref} {...props}>
       {children}
     </StyledDataCardContainer>
   );
 };
 
-export const DataCardItem: FC<DataCardGridProps> = ({ children, ...props }) => {
+export const DataCardItem: FC<DataCardGridProps> = ({ children, ref, ...props }) => {
   return (
-    <StyledDataCardItem size={{ md: 12, lg: 12, xl: 6 }} ref={props.ref} {...props}>
+    <StyledDataCardItem size={{ md: 12, lg: 12, xl: 6 }} ref={ref} {...props}>
       {children}
     </StyledDataCardItem>
   );
 };
 
-export const DataCard: FC<DataCardProps> = ({ children, ...props }) => {
+export const DataCard: FC<DataCardProps> = ({ children, ref, ...props }) => {
   return (
-    <StyledDataCard ref={props.ref} {...props}>
+    <StyledDataCard ref={ref} {...props}>
       {children}
     </StyledDataCard>
   );
 };
 
-export const DataCardButtonContainer: FC<DataCardBoxProps> = ({ children, ...props }) => {
+export const DataCardButtonContainer: FC<DataCardBoxProps> = ({ children, ref, ...props }) => {
   return (
     <Box
-      ref={props.ref}
+      ref={ref}
       {...props}
       sx={{
         flex: "0 1 auto",
