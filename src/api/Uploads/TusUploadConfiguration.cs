@@ -93,10 +93,6 @@ public class TusUploadConfiguration
         return Task.FromResult(new DefaultTusConfiguration
         {
             Store = store,
-
-            // Named rather than left to the default, because the store can only read a chunk this
-            // way: the other way asks the body of the request how long it is, which a body still
-            // being received cannot answer.
             UsePipelinesIfAvailable = true,
 
             // The int sized property cannot express the ceiling the product allows.

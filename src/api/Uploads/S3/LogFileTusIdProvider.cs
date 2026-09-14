@@ -14,8 +14,7 @@ namespace BDMS.Uploads.S3;
 public class LogFileTusIdProvider : ITusFileIdProvider
 {
     /// <summary>
-    /// The longest extension that is kept. An extension is a convenience for whoever looks in the
-    /// bucket, so one longer than any real one is a sign the name was not what it claimed to be.
+    /// The longest extension that is considered safe to keep.
     /// </summary>
     private const int MaxExtensionLength = 10;
 

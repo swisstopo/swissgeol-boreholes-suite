@@ -19,10 +19,7 @@ public class LogFileTusStore : ITusStore, ITusPipelineStore, ITusCreationStore, 
 {
     /// <summary>
     /// How much of the file the client sends in one request, which has to agree with the chunk
-    /// size in <c>resumableUpload.ts</c>. The cloud storage refuses a part below 5 MiB unless it is
-    /// the last one, and the package cuts a part at the end of every request, so a request carrying
-    /// less than that would leave an undersized part in the middle of the upload and the finished
-    /// object would be refused.
+    /// size in <c>resumableUpload.ts</c>.
     /// </summary>
     public const int ChunkSize = 6 * 1024 * 1024;
 
@@ -30,9 +27,7 @@ public class LogFileTusStore : ITusStore, ITusPipelineStore, ITusCreationStore, 
     /// How much of the upload the package puts into one part at most.
     ///
     /// This is deliberately larger than <see cref="ChunkSize"/>, so that a request never reaches
-    /// it and every request contributes exactly the one part it is cut into at its end. A request
-    /// that does reach it is cut there and then again at its end, and the second cut lands on a
-    /// part of no bytes at all, which the cloud storage refuses to make an object out of.
+    /// it and every request contributes exactly the one part it is cut into at its end.
     /// </summary>
     public const int PartSize = 2 * ChunkSize;
 
@@ -74,11 +69,7 @@ public class LogFileTusStore : ITusStore, ITusPipelineStore, ITusCreationStore, 
     public static TusS3StoreConfiguration CreateConfiguration(string bucketName) => new()
     {
         BucketName = bucketName,
-
-        // The finished object is what a log file row points at, and every other log file object in
-        // the bucket is stored under a bare name, so the upload adds no prefix of its own to it.
         FileObjectPrefix = string.Empty,
-
         PreferredPartSizeInBytes = PartSize,
         MinPartSizeInBytes = MinimumPartSize,
         MaxMultipartParts = MaxParts,
@@ -151,9 +142,6 @@ public class LogFileTusStore : ITusStore, ITusPipelineStore, ITusCreationStore, 
     {
         var fileId = await store.CreateFileAsync(uploadLength, metadata, cancellationToken).ConfigureAwait(false);
 
-        // The package writes the object out of the parts the chunks produced, and an upload that
-        // carries no bytes sends no chunk, so it would be recorded against an object that never
-        // appears. The multipart upload it opened for it has nothing left to hold.
         if (uploadLength == 0)
         {
             await AbortMultipartUploadAsync(fileId, cancellationToken).ConfigureAwait(false);
@@ -166,9 +154,6 @@ public class LogFileTusStore : ITusStore, ITusPipelineStore, ITusCreationStore, 
     /// <inheritdoc/>
     public async Task DeleteFileAsync(string fileId, CancellationToken cancellationToken)
     {
-        // The package aborts the multipart upload only when the first part it recorded carries an
-        // etag with a dash in it, which the etag of a part never does, so the parts it wrote would
-        // stay in the storage belonging to no object.
         await AbortMultipartUploadAsync(fileId, cancellationToken).ConfigureAwait(false);
         await store.DeleteFileAsync(fileId, cancellationToken).ConfigureAwait(false);
     }
@@ -183,9 +168,6 @@ public class LogFileTusStore : ITusStore, ITusPipelineStore, ITusCreationStore, 
     /// <summary>
     /// Drops what the store keeps about an upload without touching the object it produced. Used
     /// once the object belongs to a log file and the upload it came from no longer matters.
-    ///
-    /// The sweep for expired uploads passes over a finished one, so without this the record of it
-    /// would stay in the bucket for good.
     /// </summary>
     /// <param name="fileId">The id of the upload.</param>
     /// <param name="cancellationToken">Aborts the removal.</param>
