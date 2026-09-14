@@ -22,7 +22,6 @@ public sealed class UserMergeTask : IMaintenanceTask
     private static readonly HashSet<Type> CompositeKeyEntityTypes =
     [
         typeof(UserWorkgroupRole),
-        typeof(TermsAccepted),
     ];
 
     /// <inheritdoc/>

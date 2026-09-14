@@ -7,7 +7,11 @@
 - The export overlay now shows how much of the export has been downloaded.
 - Uploads and exports can be cancelled by clicking the overlay or its cancel button. A cancelled export stops the download and the work it triggers on the server; a cancelled upload keeps the files that already reached the server, and the remaining changes stay unsaved so the save can be repeated.
 
+### Removed
+- The terms of service editor in the settings. The disclaimer shown on first visit now always uses the texts shipped with the application, and the stored terms and acceptance records are deleted from the database.
+
 ### Changed
+- The disclaimer is now shown per user instead of per browser, so everyone sharing a workstation is asked to accept it, and it reappears whenever the texts change.
 - Upgraded to .NET 10.
 - Upgraded the AWS SDK used for the S3 file storage to version 4.
 - LOG files are uploaded in chunks, so an upload is no longer cut off after a minute and is retried rather than restarted when a chunk fails.
