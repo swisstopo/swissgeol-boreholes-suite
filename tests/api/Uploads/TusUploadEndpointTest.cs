@@ -26,6 +26,8 @@ public class TusUploadEndpointTest
     private const string SubAdmin = "sub_admin";
     private const string TusResumableHeader = "Tus-Resumable";
     private const string TusVersion = "1.0.0";
+    private const string UploadOffsetHeader = "Upload-Offset";
+    private const string OffsetContentType = "application/offset+octet-stream";
 
     private static BdmsWebApplicationFactory factory;
 
@@ -139,10 +141,10 @@ public class TusUploadEndpointTest
 
             using var patch = new HttpRequestMessage(HttpMethod.Patch, uploadPath);
             patch.Headers.Add(TusResumableHeader, TusVersion);
-            patch.Headers.Add("Upload-Offset", offset.ToString(CultureInfo.InvariantCulture));
+            patch.Headers.Add(UploadOffsetHeader, offset.ToString(CultureInfo.InvariantCulture));
             patch.Headers.Add(TestAuthHandler.SubjectIdHeader, SubAdmin);
             patch.Content = new ByteArrayContent(content, offset, length);
-            patch.Content.Headers.ContentType = new MediaTypeHeaderValue("application/offset+octet-stream");
+            patch.Content.Headers.ContentType = new MediaTypeHeaderValue(OffsetContentType);
 
             using var response = await client.SendAsync(patch);
             Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode, await response.Content.ReadAsStringAsync());
@@ -248,9 +250,9 @@ public class TusUploadEndpointTest
 
             if (method == HttpMethod.Patch)
             {
-                request.Headers.Add("Upload-Offset", "0");
+                request.Headers.Add(UploadOffsetHeader, "0");
                 request.Content = new ByteArrayContent(new byte[10]);
-                request.Content.Headers.ContentType = new MediaTypeHeaderValue("application/offset+octet-stream");
+                request.Content.Headers.ContentType = new MediaTypeHeaderValue(OffsetContentType);
             }
 
             using var response = await client.SendAsync(request);
@@ -272,7 +274,7 @@ public class TusUploadEndpointTest
         // still known and still holds nothing, not which success the protocol reports it with.
         Assert.IsTrue(headResponse.IsSuccessStatusCode, $"The upload is gone: {headResponse.StatusCode}.");
         Assert.IsTrue(
-            headResponse.Headers.TryGetValues("Upload-Offset", out var offsets),
+            headResponse.Headers.TryGetValues(UploadOffsetHeader, out var offsets),
             "The upload no longer reports an offset.");
         Assert.AreEqual("0", offsets.Single());
     }
@@ -378,10 +380,10 @@ public class TusUploadEndpointTest
 
         using var first = new HttpRequestMessage(HttpMethod.Patch, uploadPath);
         first.Headers.Add(TusResumableHeader, TusVersion);
-        first.Headers.Add("Upload-Offset", "0");
+        first.Headers.Add(UploadOffsetHeader, "0");
         first.Headers.Add(TestAuthHandler.SubjectIdHeader, SubAdmin);
         first.Content = new ByteArrayContent(content);
-        first.Content.Headers.ContentType = new MediaTypeHeaderValue("application/offset+octet-stream");
+        first.Content.Headers.ContentType = new MediaTypeHeaderValue(OffsetContentType);
 
         using var finished = await client.SendAsync(first);
         Assert.AreEqual(HttpStatusCode.NoContent, finished.StatusCode);
@@ -390,10 +392,10 @@ public class TusUploadEndpointTest
 
         using var again = new HttpRequestMessage(HttpMethod.Patch, uploadPath);
         again.Headers.Add(TusResumableHeader, TusVersion);
-        again.Headers.Add("Upload-Offset", "0");
+        again.Headers.Add(UploadOffsetHeader, "0");
         again.Headers.Add(TestAuthHandler.SubjectIdHeader, SubAdmin);
         again.Content = new ByteArrayContent(content);
-        again.Content.Headers.ContentType = new MediaTypeHeaderValue("application/offset+octet-stream");
+        again.Content.Headers.ContentType = new MediaTypeHeaderValue(OffsetContentType);
 
         using var repeated = await client.SendAsync(again);
 

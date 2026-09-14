@@ -4,11 +4,11 @@ using BDMS.Uploads.S3;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System.Security.Claims;
 using System.Text;
 using tusdotnet.Models;
-using tusdotnet.Stores.S3;
 
 namespace BDMS.Uploads;
 
@@ -55,7 +55,7 @@ public class TusUploadConfigurationTest
 
         var bucketName = appConfiguration["S3:LOGFILES_BUCKET_NAME"].ToLowerInvariant();
         var tusStore = new LogFileTusStore(
-            new Mock<ILogger<TusS3Store>>().Object,
+            NullLoggerFactory.Instance,
             s3Client,
             LogFileTusStore.CreateConfiguration(bucketName));
 

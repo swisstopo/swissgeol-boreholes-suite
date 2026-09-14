@@ -1,6 +1,5 @@
 ﻿using Amazon.S3;
 using BDMS.Uploads.S3;
-using tusdotnet.Stores.S3;
 
 namespace BDMS.Uploads;
 
@@ -24,7 +23,7 @@ public static class UploadServiceCollectionExtensions
 
         // The store holds nothing that belongs to one request, so one instance serves them all.
         services.AddSingleton<LogFileTusStore>(sp => new LogFileTusStore(
-            sp.GetRequiredService<ILogger<TusS3Store>>(),
+            sp.GetRequiredService<ILoggerFactory>(),
             sp.GetRequiredService<IAmazonS3>(),
             LogFileTusStore.CreateConfiguration(bucketName)));
 

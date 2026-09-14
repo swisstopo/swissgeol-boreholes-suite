@@ -2,6 +2,7 @@
 using Amazon.S3.Model;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
 using System.IO.Pipelines;
 using System.Net;
@@ -46,7 +47,7 @@ public class LogFileTusStoreTest
 
         bucketName = appConfiguration["S3:LOGFILES_BUCKET_NAME"].ToLowerInvariant();
         configuration = LogFileTusStore.CreateConfiguration(bucketName);
-        store = new LogFileTusStore(new Mock<ILogger<TusS3Store>>().Object, s3Client, configuration);
+        store = new LogFileTusStore(NullLoggerFactory.Instance, s3Client, configuration);
     }
 
     [TestCleanup]

@@ -15,7 +15,7 @@ namespace BDMS.Uploads.S3;
 /// does not offer: the key the finished object took, a way to let go of an upload without touching
 /// that object, and an object for an upload that carries no bytes.
 /// </summary>
-public class LogFileTusStore : ITusStore, ITusPipelineStore, ITusCreationStore, ITusReadableStore, ITusTerminationStore, ITusExpirationStore
+public class LogFileTusStore : ITusPipelineStore, ITusCreationStore, ITusReadableStore, ITusTerminationStore, ITusExpirationStore
 {
     /// <summary>
     /// How much of the file the client sends in one request, which has to agree with the chunk
@@ -52,12 +52,12 @@ public class LogFileTusStore : ITusStore, ITusPipelineStore, ITusCreationStore, 
     /// <summary>
     /// Initializes a new instance of the <see cref="LogFileTusStore"/> class.
     /// </summary>
-    public LogFileTusStore(ILogger<TusS3Store> logger, IAmazonS3 s3Client, TusS3StoreConfiguration configuration)
+    public LogFileTusStore(ILoggerFactory loggerFactory, IAmazonS3 s3Client, TusS3StoreConfiguration configuration)
     {
         this.s3Client = s3Client;
         this.configuration = configuration;
 
-        store = new TusS3Store(logger, configuration, s3Client, new LogFileTusIdProvider());
+        store = new TusS3Store(loggerFactory.CreateLogger<TusS3Store>(), configuration, s3Client, new LogFileTusIdProvider());
     }
 
     /// <summary>
