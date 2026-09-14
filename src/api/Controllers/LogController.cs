@@ -3,11 +3,9 @@ using BDMS.Authentication;
 using BDMS.Models;
 using BDMS.Services;
 using CsvHelper;
-using CsvHelper.Configuration;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
 using System.Text;
@@ -21,12 +19,7 @@ public class LogController : BoreholeControllerBase<LogRun>
     private const string LogRunExportFileName = "log_runs";
     private const string LogFileExportFileName = "log_files";
     private const string LogExportFileName = "log_export";
-    private const string LogRunErrorPrefix = "LogRun";
-    private const string LogFileErrorPrefix = "LogFile";
-    private const string RunNumberValueKey = "runNumber";
-    private const string FileNameValueKey = "fileName";
     private readonly LogFileCloudService logFileCloudService;
-    private readonly List<ImportError> importErrors = [];
 
     public LogController(BdmsContext context, ILogger<LogController> logger, IBoreholePermissionService boreholePermissionService, LogFileCloudService logFileCloudService)
         : base(context, logger, boreholePermissionService)
@@ -232,13 +225,30 @@ public class LogController : BoreholeControllerBase<LogRun>
     }
 
     /// <summary>
-    /// Imports log runs and optionally log files from CSV files.
+    /// Imports log runs and log files from CSV files.
+    ///
+    /// Every row is classified and reported, and the rows that are complete and valid are written.
+    /// A row that is skipped is not a failure: repeating the import adds what has since become
+    /// complete without writing anything twice. Only a request that cannot be read at all is
+    /// answered with a failure status.
     /// </summary>
+    /// <param name="boreholeId">The borehole the import belongs to.</param>
+    /// <param name="logRunsCsvFile">The log runs CSV, if the import carries one.</param>
+    /// <param name="logFilesCsvFile">The log files CSV, if the import carries one.</param>
+    /// <param name="providedAttachmentNames">The attachments the client holds, each as "runNumber/fileName".</param>
+    /// <returns>One <see cref="LogImportResultItem"/> per row.</returns>
     [HttpPost("import")]
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(FileSizeLimits.Large)]
-    [RequestFormLimits(MultipartBodyLengthLimit = FileSizeLimits.Large)]
-    public async Task<IActionResult> ImportAsync([FromQuery] int boreholeId, IFormFile logRunsCsvFile, IFormFile? logFilesCsvFile)
+
+    // One form value is sent per provided attachment, so the default FormOptions.ValueCountLimit
+    // of 1024 would fail model binding on a large import; 10000 is well beyond any real import.
+    [RequestFormLimits(MultipartBodyLengthLimit = FileSizeLimits.Large, ValueCountLimit = 10000)]
+    public async Task<IActionResult> ImportAsync(
+        [FromQuery] int boreholeId,
+        IFormFile? logRunsCsvFile,
+        IFormFile? logFilesCsvFile,
+        [FromForm] IReadOnlyList<string> providedAttachmentNames)
     {
         var borehole = await Context.Boreholes
             .AsNoTracking()
@@ -252,11 +262,76 @@ public class LogController : BoreholeControllerBase<LogRun>
             return Unauthorized();
         }
 
-        if (logRunsCsvFile == null)
+        if (logRunsCsvFile == null && logFilesCsvFile == null)
         {
-            return BadRequest(new { detail = "Log runs CSV file is required.", messageKey = "importErrorLogRunsCsvRequired" });
+            return BadRequest(new { detail = "At least one CSV file is required.", messageKey = "importErrorCsvRequired" });
         }
 
+        var structuralError = ValidateCsvStructure(logRunsCsvFile, logFilesCsvFile);
+        if (structuralError != null) return structuralError;
+
+        var codelists = await LoadLogCodelistsAsync().ConfigureAwait(false);
+
+        var runRows = logRunsCsvFile == null
+            ? []
+            : LogCsvParser.ParseRuns(logRunsCsvFile.OpenReadStream(), codelists, boreholeId);
+
+        var fileRows = logFilesCsvFile == null
+            ? []
+            : LogCsvParser.ParseFiles(logFilesCsvFile.OpenReadStream(), codelists);
+
+        var existingRuns = await Context.LogRuns
+            .AsNoTracking()
+            .Where(lr => lr.BoreholeId == boreholeId)
+            .Select(lr => new ExistingLogRun(lr.Id, lr.RunNumber))
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var existingFiles = await Context.LogFiles
+            .AsNoTracking()
+            .Where(lf => lf.LogRun.BoreholeId == boreholeId)
+            .Select(lf => new ExistingLogFile(lf.Id, lf.LogRunId, lf.Name!, lf.NameUuid != null))
+            .ToListAsync()
+            .ConfigureAwait(false);
+
+        var classification = LogImportClassifier.Classify(runRows, fileRows, existingRuns, existingFiles, providedAttachmentNames ?? []);
+
+        return Ok(await CommitImportAsync(classification).ConfigureAwait(false));
+    }
+
+    private BadRequestObjectResult? ValidateCsvStructure(IFormFile? logRunsCsvFile, IFormFile? logFilesCsvFile)
+    {
+        try
+        {
+            if (logRunsCsvFile != null)
+            {
+                var missing = LogCsvParser.MissingRunColumns(logRunsCsvFile.OpenReadStream());
+                if (missing.Count > 0)
+                {
+                    return BadRequest(new { detail = $"Missing columns in the log runs CSV: {string.Join(", ", missing)}.", messageKey = "importErrorMissingColumns", values = new { columns = string.Join(", ", missing) } });
+                }
+            }
+
+            if (logFilesCsvFile != null)
+            {
+                var missing = LogCsvParser.MissingFileColumns(logFilesCsvFile.OpenReadStream());
+                if (missing.Count > 0)
+                {
+                    return BadRequest(new { detail = $"Missing columns in the log files CSV: {string.Join(", ", missing)}.", messageKey = "importErrorMissingColumns", values = new { columns = string.Join(", ", missing) } });
+                }
+            }
+
+            return null;
+        }
+        catch (CsvHelperException ex)
+        {
+            Logger.LogError(ex, "A log import CSV could not be read.");
+            return BadRequest(new { detail = "The CSV file could not be read.", messageKey = "importErrorUnreadableCsv" });
+        }
+    }
+
+    private async Task<List<Codelist>> LoadLogCodelistsAsync()
+    {
         var logSchemas = new[]
         {
             LogSchemas.LogBoreholeStatusSchema,
@@ -267,305 +342,81 @@ public class LogController : BoreholeControllerBase<LogRun>
             LogSchemas.LogToolTypeSchema,
         };
 
-        var codelists = await Context.Codelists
+        return await Context.Codelists
             .Where(c => logSchemas.Contains(c.Schema))
             .AsNoTracking()
             .ToListAsync()
             .ConfigureAwait(false);
+    }
 
-        var parsedLogRuns = ParseLogRunsCsv(logRunsCsvFile, CsvConfigHelper.CsvReadConfig, codelists, boreholeId);
-        await ValidateLogRuns(parsedLogRuns, boreholeId).ConfigureAwait(false);
-
-        List<(string RunNumber, LogFile LogFile)> parsedLogFiles = [];
-        if (logFilesCsvFile != null)
+    /// <summary>
+    /// Writes everything the classification marked as added, and fills the stored ids into the
+    /// report so the client knows what to upload the attachments against.
+    ///
+    /// Runs are saved before the files, because a file may belong to a run this same import
+    /// creates and can only carry its id once that run has one.
+    /// </summary>
+    private async Task<IReadOnlyList<LogImportResultItem>> CommitImportAsync(LogImportClassification classification)
+    {
+        if (classification.RunsToAdd.Count == 0 && classification.FilesToAdd.Count == 0)
         {
-            parsedLogFiles = ParseLogFilesCsv(logFilesCsvFile, CsvConfigHelper.CsvReadConfig, codelists, parsedLogRuns);
+            return classification.Items;
         }
 
-        if (importErrors.Count > 0) return BadRequest(importErrors);
+        // Only start a transaction when the caller has not already opened one: nesting a new
+        // transaction on a connection that is already inside one fails.
+        using var transaction = Context.Database.CurrentTransaction == null
+            ? await Context.Database.BeginTransactionAsync().ConfigureAwait(false)
+            : null;
 
-        foreach (var logRun in parsedLogRuns)
+        Context.LogRuns.AddRange(classification.RunsToAdd);
+        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+
+        var runIdByNumber = classification.RunsToAdd.ToDictionary(r => r.RunNumber, r => r.Id, StringComparer.OrdinalIgnoreCase);
+
+        // LogImportClassifier only ever puts a file here when its run is already stored (and the
+        // file's LogRunId is set already) or is created in this same import (and found below), so
+        // runIdByNumber always has an entry when it is needed.
+        foreach (var pending in classification.FilesToAdd)
         {
-            logRun.LogFiles = parsedLogFiles
-                .Where(pf => pf.RunNumber == logRun.RunNumber)
-                .Select(pf => pf.LogFile)
-                .ToList();
-            Context.LogRuns.Add(logRun);
+            if (pending.LogFile.LogRunId == 0 && runIdByNumber.TryGetValue(pending.RunNumber, out var runId))
+            {
+                pending.LogFile.LogRunId = runId;
+            }
+
+            Context.LogFiles.Add(pending.LogFile);
         }
 
         await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+        if (transaction != null) await transaction.CommitAsync().ConfigureAwait(false);
 
-        var runNumbers = parsedLogRuns.Select(lr => lr.RunNumber).ToList();
-        var result = await Context.LogRunsWithIncludes
-            .AsNoTracking()
-            .Where(lr => lr.BoreholeId == boreholeId && runNumbers.Contains(lr.RunNumber))
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        return Ok(result);
+        return FillStoredIds(classification, runIdByNumber);
     }
 
-    private List<LogRun> ParseLogRunsCsv(IFormFile csvFile, CsvConfiguration config, List<Codelist> codelists, int boreholeId)
+    private static List<LogImportResultItem> FillStoredIds(LogImportClassification classification, Dictionary<string, int> runIdByNumber)
     {
-        var result = new List<LogRun>();
-        using var reader = new StreamReader(csvFile.OpenReadStream(), Encoding.UTF8);
-        using var csv = new CsvReader(reader, config);
+        var addedFiles = new Queue<PendingLogFile>(classification.FilesToAdd);
 
-        csv.Read();
-        csv.ReadHeader();
-
-        var rowIndex = 0;
-        while (csv.Read())
-        {
-            rowIndex++;
-            var rowErrorStartIndex = importErrors.Count;
-            var runNumber = csv.GetField<string>("RunNumber") ?? string.Empty;
-            if (string.IsNullOrWhiteSpace(runNumber))
+        return classification.Items
+            .Select(item =>
             {
-                AddImportError(rowIndex, "RunNumber is required.", "importErrorRunNumberRequired", LogRunErrorPrefix);
-            }
+                if (item.Outcome != LogImportOutcome.Added) return item;
 
-            var fromDepth = TryParseImportDouble(csv.GetField<string>("FromDepth"), rowIndex, "FromDepth", LogRunErrorPrefix, "importErrorFromDepthRequired", required: true);
-            var toDepth = TryParseImportDouble(csv.GetField<string>("ToDepth"), rowIndex, "ToDepth", LogRunErrorPrefix, "importErrorToDepthRequired", required: true);
+                if (item.Type == LogImportItemType.Run)
+                {
+                    return runIdByNumber.TryGetValue(item.Identifier, out var runId)
+                        ? item with { LogRunId = runId }
+                        : item;
+                }
 
-            var boreholeStatusId = ResolveCodelistId(LogSchemas.LogBoreholeStatusSchema, csv.GetField<string>("BoreholeStatus"), codelists, rowIndex, "BoreholeStatus", LogRunErrorPrefix);
-            var conveyanceMethodId = ResolveCodelistId(LogSchemas.LogConveyanceMethodSchema, csv.GetField<string>("ConveyanceMethod"), codelists, rowIndex, "ConveyanceMethod", LogRunErrorPrefix);
+                // A file item that already names its stored file is one an earlier import left
+                // waiting for its attachment, so nothing was written for it here.
+                if (item.LogFileId != null) return item;
 
-            var runDate = TryParseImportDate(csv.GetField<string>("RunDate"), rowIndex, "RunDate", LogRunErrorPrefix);
-            var bitSize = TryParseImportDouble(csv.GetField<string>("BitSize"), rowIndex, "BitSize", LogRunErrorPrefix, "importErrorInvalidNumberFormat");
-
-            result.Add(new LogRun
-            {
-                BoreholeId = boreholeId,
-                RunNumber = runNumber,
-                FromDepth = fromDepth ?? 0,
-                ToDepth = toDepth ?? 0,
-                BoreholeStatusId = boreholeStatusId,
-                RunDate = runDate,
-                BitSize = bitSize,
-                ConveyanceMethodId = conveyanceMethodId,
-                ServiceCo = csv.GetField<string>("ServiceCo"),
-                Comment = csv.GetField<string>("Comment"),
-            });
-
-            // Tag every error from this row with the run number so it can be shown as the group header.
-            TagRowErrors(rowErrorStartIndex, RunNumberValueKey, runNumber);
-        }
-
-        return result;
-    }
-
-    private List<(string RunNumber, LogFile LogFile)> ParseLogFilesCsv(IFormFile csvFile, CsvConfiguration config, List<Codelist> codelists, List<LogRun> logRuns)
-    {
-        var result = new List<(string RunNumber, LogFile LogFile)>();
-        var validRunNumbers = logRuns.Select(lr => lr.RunNumber).ToHashSet();
-        var seenNamesPerRun = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
-        using var reader = new StreamReader(csvFile.OpenReadStream(), Encoding.UTF8);
-        using var csv = new CsvReader(reader, config);
-
-        csv.Read();
-        csv.ReadHeader();
-
-        var rowIndex = 0;
-        while (csv.Read())
-        {
-            rowIndex++;
-            var rowErrorStartIndex = importErrors.Count;
-
-            var runNumber = csv.GetField<string>("RunNumber") ?? string.Empty;
-            if (!validRunNumbers.Contains(runNumber))
-            {
-                AddImportError(rowIndex, $"RunNumber '{runNumber}' does not match any imported log run.", "importErrorRunNumberNotFound", LogFileErrorPrefix, new() { [RunNumberValueKey] = runNumber });
-            }
-
-            var name = csv.GetField<string>("Name") ?? string.Empty;
-            var extension = csv.GetField<string>("Extension") ?? string.Empty;
-            var expectedFileName = string.IsNullOrWhiteSpace(extension) ? name : $"{name}.{extension}";
-
-            var sanitizedName = expectedFileName.Replace(" ", "_", StringComparison.OrdinalIgnoreCase);
-            var fileExtension = Path.GetExtension(sanitizedName);
-
-            if (!seenNamesPerRun.TryGetValue(runNumber, out var seenNames))
-            {
-                seenNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                seenNamesPerRun[runNumber] = seenNames;
-            }
-
-            if (!seenNames.Add(sanitizedName))
-            {
-                AddImportError(rowIndex, $"Duplicate file name '{sanitizedName}' in run '{runNumber}'.", "importErrorDuplicateFileName", LogFileErrorPrefix);
-            }
-
-            var toolTypeCodes = ResolveToolTypeCodelistIds(csv.GetField<string>("LogFileToolTypeCodes"), codelists, rowIndex);
-
-            var passStr = csv.GetField<string>("Pass");
-            int? pass = null;
-            if (!string.IsNullOrWhiteSpace(passStr) && int.TryParse(passStr, out var parsedPass))
-            {
-                pass = parsedPass;
-            }
-
-            var passTypeId = ResolveCodelistId(LogSchemas.LogPassTypeSchema, csv.GetField<string>("PassType"), codelists, rowIndex, "PassType", LogFileErrorPrefix);
-            var dataPackageId = ResolveCodelistId(LogSchemas.LogDataPackageSchema, csv.GetField<string>("DataPackage"), codelists, rowIndex, "DataPackage", LogFileErrorPrefix);
-            var depthTypeId = ResolveCodelistId(LogSchemas.LogDepthTypeSchema, csv.GetField<string>("DepthType"), codelists, rowIndex, "DepthType", LogFileErrorPrefix);
-
-            var deliveryDate = TryParseImportDate(csv.GetField<string>("DeliveryDate"), rowIndex, "DeliveryDate", LogFileErrorPrefix);
-
-            var publicValue = ParseLocalizedYesNo(csv.GetField<string>("Public"), rowIndex);
-
-            var logFile = new LogFile
-            {
-                Name = sanitizedName,
-                NameUuid = $"{Guid.NewGuid()}{fileExtension}",
-                PassTypeId = passTypeId,
-                Pass = pass,
-                DataPackageId = dataPackageId,
-                DepthTypeId = depthTypeId,
-                DeliveryDate = deliveryDate,
-                Public = publicValue,
-                LogFileToolTypeCodes = toolTypeCodes
-                    .Select(id => new LogFileToolTypeCodes { CodelistId = id })
-                    .ToList(),
-            };
-
-            result.Add((runNumber, logFile));
-
-            // Tag every error from this row with the expected file name so it can be shown as the group header.
-            TagRowErrors(rowErrorStartIndex, FileNameValueKey, expectedFileName);
-        }
-
-        return result;
-    }
-
-    private void TagRowErrors(int rowErrorStartIndex, string valueKey, string value)
-    {
-        if (string.IsNullOrWhiteSpace(value)) return;
-        for (var i = rowErrorStartIndex; i < importErrors.Count; i++)
-        {
-            importErrors[i].Values![valueKey] = value;
-        }
-    }
-
-    private async Task ValidateLogRuns(List<LogRun> parsedLogRuns, int boreholeId)
-    {
-        var existingRunNumbers = await Context.LogRuns
-            .Where(lr => lr.BoreholeId == boreholeId)
-            .Select(lr => lr.RunNumber)
-            .ToListAsync()
-            .ConfigureAwait(false);
-
-        var seenRunNumbers = new HashSet<string>();
-        for (var i = 0; i < parsedLogRuns.Count; i++)
-        {
-            var runNumber = parsedLogRuns[i].RunNumber;
-            if (string.IsNullOrWhiteSpace(runNumber)) continue;
-
-            if (!seenRunNumbers.Add(runNumber))
-            {
-                AddImportError(i + 1, $"Duplicate RunNumber '{runNumber}' in import file.", "importErrorDuplicateRunNumber", LogRunErrorPrefix, new() { [RunNumberValueKey] = runNumber });
-            }
-
-            if (existingRunNumbers.Contains(runNumber))
-            {
-                AddImportError(i + 1, $"RunNumber '{runNumber}' already exists for this borehole.", "importErrorRunNumberExists", LogRunErrorPrefix, new() { [RunNumberValueKey] = runNumber });
-            }
-        }
-    }
-
-    private int? ResolveCodelistId(string schema, string? textValue, List<Codelist> codelists, int rowIndex, string fieldName, string errorPrefix)
-    {
-        if (string.IsNullOrWhiteSpace(textValue)) return null;
-
-        var match = codelists.FirstOrDefault(c =>
-            c.Schema == schema &&
-            (string.Equals(c.En, textValue, StringComparison.OrdinalIgnoreCase) ||
-             string.Equals(c.De, textValue, StringComparison.OrdinalIgnoreCase) ||
-             string.Equals(c.Fr, textValue, StringComparison.OrdinalIgnoreCase) ||
-             string.Equals(c.It, textValue, StringComparison.OrdinalIgnoreCase)));
-
-        if (match == null)
-        {
-            AddImportError(rowIndex, $"Unknown {fieldName} value: '{textValue}'.", "importErrorUnknownCodelistValue", errorPrefix, new() { ["fieldName"] = fieldName, ["value"] = textValue! });
-            return null;
-        }
-
-        return match.Id;
-    }
-
-    private List<int> ResolveToolTypeCodelistIds(string? codesString, List<Codelist> codelists, int rowIndex)
-    {
-        if (string.IsNullOrWhiteSpace(codesString)) return [];
-
-        var codes = codesString.Split(',', StringSplitOptions.TrimEntries | StringSplitOptions.RemoveEmptyEntries);
-        var result = new List<int>();
-        foreach (var code in codes)
-        {
-            var match = codelists.FirstOrDefault(c =>
-                c.Schema == LogSchemas.LogToolTypeSchema &&
-                string.Equals(c.Code, code, StringComparison.OrdinalIgnoreCase));
-
-            if (match == null)
-            {
-                AddImportError(rowIndex, $"Unknown tool type code: '{code}'.", "importErrorUnknownToolTypeCode", LogFileErrorPrefix, new() { ["code"] = code });
-            }
-            else
-            {
-                result.Add(match.Id);
-            }
-        }
-
-        return result;
-    }
-
-    private bool ParseLocalizedYesNo(string? value, int rowIndex)
-    {
-        if (string.IsNullOrWhiteSpace(value)) return false;
-
-        switch (value.Trim().ToUpperInvariant())
-        {
-            case "YES" or "JA" or "OUI" or "SÌ" or "SI":
-                return true;
-            case "NO" or "NEIN" or "NON":
-                return false;
-            default:
-                AddImportError(rowIndex, $"Unknown Public value: '{value}'. Expected Yes/No/Ja/Nein/Oui/Non/Sì/Si/No.", "importErrorUnknownPublicValue", LogFileErrorPrefix, new() { ["value"] = value });
-                return false;
-    }
-    }
-
-    private void AddImportError(int rowIndex, string errorMessage, string messageKey, string prefix, Dictionary<string, string>? values = null)
-    {
-        values ??= new Dictionary<string, string>();
-        values["rowNumber"] = rowIndex.ToString(CultureInfo.InvariantCulture);
-        importErrors.Add(new ImportError($"{prefix}{rowIndex}", messageKey, errorMessage, values));
-    }
-
-    private sealed record ImportError(string ErrorKey, string MessageKey, string Detail, Dictionary<string, string>? Values = null);
-
-    private DateOnly? TryParseImportDate(string? value, int rowIndex, string fieldName, string errorPrefix)
-    {
-        if (string.IsNullOrWhiteSpace(value)) return null;
-        if (DateOnly.TryParse(value, CsvConfigHelper.CsvReadConfig.CultureInfo, DateTimeStyles.None, out var parsed))
-        {
-            return parsed;
-        }
-
-        AddImportError(rowIndex, $"Invalid {fieldName} value: '{value}'.", "importErrorInvalidDateFormat", errorPrefix, new() { ["value"] = value });
-        return null;
-    }
-
-    private double? TryParseImportDouble(string? value, int rowIndex, string fieldName, string errorPrefix, string messageKey, bool required = false)
-    {
-        if (string.IsNullOrWhiteSpace(value))
-        {
-            if (required) AddImportError(rowIndex, $"{fieldName} is required and must be a number.", messageKey, errorPrefix);
-            return null;
-        }
-
-        if (double.TryParse(value, CsvConfigHelper.CsvReadConfig.CultureInfo, out var parsed)) return parsed;
-
-        AddImportError(rowIndex, $"Invalid {fieldName} value: '{value}'. Expected a number.", messageKey, errorPrefix, new() { ["value"] = value });
-        return null;
+                var pending = addedFiles.Dequeue();
+                return item with { LogRunId = pending.LogFile.LogRunId, LogFileId = pending.LogFile.Id };
+            })
+            .ToList();
     }
 
     private IQueryable<LogRun> LogRunsForExport => Context.LogRuns
