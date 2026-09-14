@@ -21,5 +21,5 @@ public class LogFileRow
     public LogFile LogFile { get; init; } = new();
 
     /// <summary>Everything about the row that makes it unimportable.</summary>
-    public List<LogRowError> Errors { get; } = [];
+    public IList<LogRowError> Errors { get; } = [];
 }

@@ -1,13 +1,6 @@
 ﻿namespace BDMS.Models;
 
 /// <summary>
-/// Why a parsed row cannot be imported as written.
-/// </summary>
-/// <param name="MessageKey">The translation key explaining the problem.</param>
-/// <param name="Values">The placeholder values the translation needs.</param>
-public record LogRowError(string MessageKey, Dictionary<string, string>? Values = null);
-
-/// <summary>
 /// One row of the log runs CSV, as read from the file.
 ///
 /// The values are kept even when the row carries errors, because the run number is what names
@@ -25,5 +18,5 @@ public class LogRunRow
     public LogRun LogRun { get; init; } = new();
 
     /// <summary>Everything about the row that makes it unimportable.</summary>
-    public List<LogRowError> Errors { get; } = [];
+    public IList<LogRowError> Errors { get; } = [];
 }
