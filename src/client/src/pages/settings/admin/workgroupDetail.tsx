@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, Chip, Stack } from "@mui/material";
@@ -50,13 +50,15 @@ export const WorkgroupDetail: FC = () => {
     [selectedWorkgroup, updateWorkgroup],
   );
 
-  const debouncedChangeName = useMemo(() => {
-    let timer: ReturnType<typeof setTimeout>;
-    return (name: string) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => changeName(name), 2000);
-    };
-  }, [changeName]);
+  const changeNameTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
+  const debouncedChangeName = useCallback(
+    (name: string) => {
+      clearTimeout(changeNameTimer.current);
+      changeNameTimer.current = setTimeout(() => changeName(name), 2000);
+    },
+    [changeName],
+  );
 
   useEffect(() => {
     if (users) {

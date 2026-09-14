@@ -69,12 +69,10 @@ export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.
     files: ["**/*.{js,jsx,ts,tsx}"],
     extends: [reactHooks.configs.flat.recommended],
     rules: {
-      // Off pending a dedicated cleanup. Each of these has a backlog in this codebase that needs
-      // behavioural fixes rather than mechanical ones: set-state-in-effect 52, refs 34,
-      // immutability 5.
-      "react-hooks/set-state-in-effect": "off",
-      "react-hooks/refs": "off",
-      "react-hooks/immutability": "off",
+      // Off pending a dedicated cleanup. This has a backlog in this codebase that needs
+      // behavioural fixes rather than mechanical ones: set-state-in-effect 52.
+        "react-hooks/set-state-in-effect": "off",
+        "react-hooks/refs": "off",
     },
   },
   {
