@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
 import { theme } from "../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../components/boreholesCard.tsx";
-import { LogImportOutcome, LogImportResultItem, LogImportUploadState } from "../logInterfaces.ts";
+import { LogImportItemType, LogImportOutcome, LogImportResultItem, LogImportUploadState } from "../logInterfaces.ts";
 import { groupByOutcome } from "./importReport.ts";
 
 interface ImportReportStepProps {
@@ -18,6 +18,11 @@ const outcomeTitleKey: Record<LogImportOutcome, string> = {
   Error: "importOutcomeError",
 };
 
+const itemTypeKey: Record<LogImportItemType, string> = {
+  Run: "logRun",
+  File: "logFile",
+};
+
 const uploadStateKey: Record<LogImportUploadState, string> = {
   pending: "importUploadPending",
   uploading: "importUploadRunning",
@@ -27,6 +32,9 @@ const uploadStateKey: Record<LogImportUploadState, string> = {
 
 /**
  * Shows what the import did with every row.
+ *
+ * Each row names whether it is a LOG run or a LOG file, because the identifiers alone do not say
+ * so: a run reads as its run number and a file as "runNumber / fileName".
  *
  * The status of an added attachment is rendered from the first paint onwards, in a slot of its
  * own, so a finishing upload changes the text in place instead of adding anything to the layout.
@@ -51,17 +59,27 @@ export const ImportReportStep: FC<ImportReportStepProps> = ({ items, uploadState
                   direction="row"
                   gap={1}
                   alignItems="baseline">
-                  <Typography variant="body2" sx={{ fontWeight: 500, minWidth: 0, flexGrow: 1 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{
+                      width: theme.spacing(12),
+                      flexShrink: 0,
+                      whiteSpace: "nowrap",
+                      color: theme.palette.buttonStates.outlined.disabled.color,
+                    }}>
+                    {t(itemTypeKey[item.type])}
+                  </Typography>
+                  <Typography variant="body2" sx={{ fontWeight: 500, minWidth: 0, flexGrow: 1, flexBasis: 0 }}>
                     {item.identifier}
                   </Typography>
-                  <Typography variant="body2" sx={{ flexGrow: 2, minWidth: 0 }}>
+                  <Typography variant="body2" sx={{ flexGrow: 2, minWidth: 0, flexBasis: 0 }}>
                     {t(item.messageKey, item.values ?? {})}
                   </Typography>
                   <Typography
                     variant="body2"
                     data-cy={`import-upload-state-${item.logFileId ?? "none"}`}
                     sx={{
-                      width: theme.spacing(18),
+                      width: theme.spacing(21),
                       flexShrink: 0,
                       whiteSpace: "nowrap",
                       textAlign: "right",
