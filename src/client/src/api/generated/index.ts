@@ -60,6 +60,8 @@ export type {
   DeleteApiVbyVersionLogByIdData,
   DeleteApiVbyVersionLogByIdResponses,
   DeleteApiVbyVersionLogData,
+  DeleteApiVbyVersionLogFileByIdData,
+  DeleteApiVbyVersionLogFileByIdResponses,
   DeleteApiVbyVersionLogResponses,
   DeleteApiVbyVersionPhotoData,
   DeleteApiVbyVersionPhotoResponses,
