@@ -488,7 +488,7 @@ public class ImportController : ControllerBase
 
     private static List<BoreholeImport> ReadBoreholesFromCsv(IFormFile file, List<Codelist> identifierCodelists)
     {
-        using var reader = new StreamReader(file.OpenReadStream());
+        using var reader = CsvEncoding.OpenText(file);
         using var csv = new CsvReader(reader, CsvConfigHelper.CsvReadConfig);
 
         csv.Context.RegisterClassMap(new CsvImportBoreholeMap(identifierCodelists));

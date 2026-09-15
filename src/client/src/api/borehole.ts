@@ -51,10 +51,10 @@ const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: numb
   return await fetchApiV2Legacy(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
 };
 
-export const exportCSVBorehole = async (boreholeIds: GridRowSelectionModel, fileName: string) => {
-  const csvData = await fetchApiV2Legacy(`boreholeexport/csv?${getIdQuery(boreholeIds)}`, "GET");
-  downloadData(csvData, `${fileName}.csv`, "text/csv");
-};
+// Saves the response body verbatim. Reading it as text first would strip the UTF-8 byte order mark
+// that tells Excel how to decode the accented characters.
+export const exportCSVBorehole = async (boreholeIds: GridRowSelectionModel, fileName: string) =>
+  await download(`boreholeexport/csv?${getIdQuery(boreholeIds)}`, `${fileName}.csv`);
 
 export const exportJsonWithAttachmentsBorehole = async (boreholeIds: number[] | GridRowSelectionModel) => {
   return await download(`boreholeexport/zip?${getIdQuery(boreholeIds)}`);

@@ -10,13 +10,13 @@ const getFallbackFileName = (url: string): string => {
 const getFileName = (response: Response, fallback: string): string =>
   response.headers.get("content-disposition")?.split("; ")[1]?.replace("filename=", "") ?? fallback;
 
-export async function download(url: string): Promise<Response> {
+export async function download(url: string, fileName?: string): Promise<Response> {
   const response = await fetchApiV2Base(url, "GET", null);
   if (!response.ok) {
     throw new ApiError("errorOccurredWhileFetchingFileFromCloudStorage", response.status);
   }
   const blob = await response.blob();
-  downloadDataFromBlob(blob, getFileName(response, getFallbackFileName(url)));
+  downloadDataFromBlob(blob, fileName ?? getFileName(response, getFallbackFileName(url)));
   return response;
 }
 

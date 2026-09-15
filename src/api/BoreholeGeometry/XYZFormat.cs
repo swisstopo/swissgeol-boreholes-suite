@@ -17,7 +17,7 @@ internal sealed class XYZFormat : IBoreholeGeometryFormat
 
     public IList<BoreholeGeometryElement> ReadCsv(IFormFile file, int boreholeId)
     {
-        using var reader = new StreamReader(file.OpenReadStream());
+        using var reader = CsvEncoding.OpenText(file);
         using var csv = new CsvReader(reader, CsvConfigHelper.CsvReadConfig);
 
         var data = csv.GetRecords<Geometry>();

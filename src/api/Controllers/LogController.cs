@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using System.Text;
 
 namespace BDMS.Controllers;
 
@@ -387,7 +386,7 @@ public class LogController : BoreholeControllerBase<LogRun>
     private List<LogRun> ParseLogRunsCsv(IFormFile csvFile, CsvConfiguration config, List<Codelist> codelists, int boreholeId)
     {
         var result = new List<LogRun>();
-        using var reader = new StreamReader(csvFile.OpenReadStream(), Encoding.UTF8);
+        using var reader = CsvEncoding.OpenText(csvFile);
         using var csv = new CsvReader(reader, config);
 
         csv.Read();
@@ -439,7 +438,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         var result = new List<(string RunNumber, LogFile LogFile)>();
         var validRunNumbers = logRuns.Select(lr => lr.RunNumber).ToHashSet();
         var seenNamesPerRun = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
-        using var reader = new StreamReader(csvFile.OpenReadStream(), Encoding.UTF8);
+        using var reader = CsvEncoding.OpenText(csvFile);
         using var csv = new CsvReader(reader, config);
 
         csv.Read();
@@ -822,7 +821,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         }
 
         await csvWriter.FlushAsync().ConfigureAwait(false);
-        return Encoding.UTF8.GetBytes(stringWriter.ToString());
+        return CsvEncoding.ToUtf8BomBytes(stringWriter.ToString());
     }
 
     private static async Task<byte[]> WriteLogFileCsvBytesAsync(List<LogFile> logFiles, string locale)
@@ -860,7 +859,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         }
 
         await csvWriter.FlushAsync().ConfigureAwait(false);
-        return Encoding.UTF8.GetBytes(stringWriter.ToString());
+        return CsvEncoding.ToUtf8BomBytes(stringWriter.ToString());
     }
 
     private static string? GetCodelistText(Codelist? codelist, string locale) => locale switch
