@@ -6,16 +6,16 @@ import { devBranchPlugin } from "./vite-plugin-dev-branch.js";
 
 const proxy = {
   "/api": {
-    target: "http://127.0.0.1:5000/",
+    target: process.env.VITE_APP_PROXY_HOST_API || "http://127.0.0.1:5000/",
     changeOrigin: true,
   },
   "/dataextraction": {
-    target: "http://127.0.0.1:8000/",
+    target: process.env.VITE_APP_PROXY_HOST_DATAEXTRACTION || "http://127.0.0.1:8000/",
     changeOrigin: true,
     rewrite: path => path.replace(/^\/dataextraction/, ""),
   },
   "/ocr": {
-    target: "http://127.0.0.1:5052/",
+    target: process.env.VITE_APP_PROXY_HOST_OCR || "http://127.0.0.1:5052/",
     changeOrigin: true,
     rewrite: path => path.replace(/^\/ocr/, ""),
   },
