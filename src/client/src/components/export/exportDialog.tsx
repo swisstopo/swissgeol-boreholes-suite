@@ -25,6 +25,7 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
   const [bytesReceived, setBytesReceived] = useState<number | null>(null);
   const lastShownAt = useRef(0);
   const runningExport = useRef<AbortController | null>(null);
+  const minimumDisplayTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const { showAlert } = useContext(AlertContext);
 
   const closeExportDialog = useCallback(() => {
@@ -49,7 +50,11 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
   // this the transfer keeps running unwatched and its progress updates land on an unmounted tree.
   useEffect(() => {
     const exportOnMount = runningExport;
-    return () => exportOnMount.current?.abort();
+    const timerOnMount = minimumDisplayTimer;
+    return () => {
+      exportOnMount.current?.abort();
+      if (timerOnMount.current) clearTimeout(timerOnMount.current);
+    };
   }, []);
 
   const handleExport = useCallback(
@@ -86,7 +91,8 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
           const endTime = Date.now();
           const elapsedTime = endTime - startTime;
           if (elapsedTime < 1000) {
-            setTimeout(() => {
+            minimumDisplayTimer.current = setTimeout(() => {
+              minimumDisplayTimer.current = null;
               hideProgress();
             }, 1000 - elapsedTime);
           } else {
