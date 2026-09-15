@@ -28,7 +28,7 @@ const byteUnits = ["B", "KB", "MB", "GB", "TB"];
 
 /**
  * Formats a byte count for display, using decimal units so the numbers match what
- * operating systems and cloud storage report.
+ * operating systems and cloud storage report. Rounded to a whole number for bytes, and to one decimal for larger units.
  * @param bytes The number of bytes.
  * @returns The formatted size, e.g. `1.4 GB`.
  */
