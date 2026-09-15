@@ -1,9 +1,9 @@
 import { FC, ReactNode, Ref } from "react";
-import { Box, Card, CardProps, Grid, Stack } from "@mui/material";
-import { BoxProps, GridProps, styled } from "@mui/system";
+import { Box, Card, CardProps, Grid2, Grid2Props, Stack } from "@mui/material";
+import { BoxProps, styled } from "@mui/system";
 import { theme } from "../../AppTheme";
 
-interface DataCardGridProps extends GridProps {
+interface DataCardGridProps extends Grid2Props {
   children: ReactNode;
   ref?: Ref<HTMLDivElement>;
 }
@@ -18,59 +18,59 @@ interface DataCardBoxProps extends BoxProps {
   ref?: Ref<HTMLDivElement>;
 }
 
-export const DataCardContainer: FC<DataCardGridProps> = ({ children, ...props }) => {
-  const StyledTextField = styled(Grid)(() => ({
-    alignContent: "flex-start",
-    width: "100% !important",
-    borderWidth: "1px",
-    borderColor: "black",
-    padding: "0",
-    marginBottom: "10px",
-    marginTop: "10px !important",
-    marginLeft: "0 !important",
-    overflow: "auto",
-  }));
+const StyledDataCardContainer = styled(Grid2)(() => ({
+  alignContent: "flex-start",
+  width: "100% !important",
+  borderWidth: "1px",
+  borderColor: "black",
+  padding: "0",
+  marginBottom: "10px",
+  marginTop: "10px !important",
+  marginLeft: "0 !important",
+  overflow: "auto",
+}));
 
+const StyledDataCardItem = styled(Grid2)(() => ({
+  padding: `0 ${theme.spacing(1)} ${theme.spacing(1)} ${theme.spacing(1)} !important`,
+}));
+
+const StyledDataCard = styled(Card)(() => ({
+  width: "100%",
+  border: "1px solid lightgrey",
+  borderRadius: "3px",
+  padding: theme.spacing(2),
+  paddingTop: theme.spacing(3),
+  marginBottom: theme.spacing(1),
+}));
+
+export const DataCardContainer: FC<DataCardGridProps> = ({ children, ref, ...props }) => {
   return (
-    <StyledTextField container columnSpacing={{ xs: 2 }} rowSpacing={{ xs: 2 }} ref={props.ref} {...props}>
+    <StyledDataCardContainer container columnSpacing={{ xs: 2 }} rowSpacing={{ xs: 2 }} ref={ref} {...props}>
       {children}
-    </StyledTextField>
+    </StyledDataCardContainer>
   );
 };
 
-export const DataCardItem: FC<DataCardGridProps> = ({ children, ...props }) => {
-  const StyledCard = styled(Grid)(() => ({
-    padding: `0 ${theme.spacing(1)} ${theme.spacing(1)} ${theme.spacing(1)} !important`,
-  }));
-
+export const DataCardItem: FC<DataCardGridProps> = ({ children, ref, ...props }) => {
   return (
-    <StyledCard item md={12} lg={12} xl={6} ref={props.ref} {...props}>
+    <StyledDataCardItem size={{ md: 12, lg: 12, xl: 6 }} ref={ref} {...props}>
       {children}
-    </StyledCard>
+    </StyledDataCardItem>
   );
 };
 
-export const DataCard: FC<DataCardProps> = ({ children, ...props }) => {
-  const StyledCard = styled(Card)(() => ({
-    width: "100%",
-    border: "1px solid lightgrey",
-    borderRadius: "3px",
-    padding: theme.spacing(2),
-    paddingTop: theme.spacing(3),
-    marginBottom: theme.spacing(1),
-  }));
-
+export const DataCard: FC<DataCardProps> = ({ children, ref, ...props }) => {
   return (
-    <StyledCard ref={props.ref} {...props}>
+    <StyledDataCard ref={ref} {...props}>
       {children}
-    </StyledCard>
+    </StyledDataCard>
   );
 };
 
-export const DataCardButtonContainer: FC<DataCardBoxProps> = ({ children, ...props }) => {
+export const DataCardButtonContainer: FC<DataCardBoxProps> = ({ children, ref, ...props }) => {
   return (
     <Box
-      ref={props.ref}
+      ref={ref}
       {...props}
       sx={{
         flex: "0 1 auto",

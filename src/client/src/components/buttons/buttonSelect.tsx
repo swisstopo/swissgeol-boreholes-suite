@@ -101,12 +101,14 @@ export const ButtonSelect: FC<ButtonSelectProps> = ({
             <TextField
               sx={{ m: 0 }}
               placeholder={t("filter") + "…"}
-              InputProps={{
-                startAdornment: (
-                  <InputAdornment position="start">
-                    <Search />
-                  </InputAdornment>
-                ),
+              slotProps={{
+                input: {
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search />
+                    </InputAdornment>
+                  ),
+                },
               }}
               value={search}
               onChange={e => onSearch(e.target.value)}
