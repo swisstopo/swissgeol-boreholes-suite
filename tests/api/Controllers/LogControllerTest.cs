@@ -817,6 +817,17 @@ public class LogControllerTest : TestControllerBase
         Assert.IsInstanceOfType(response, typeof(BadRequestObjectResult));
     }
 
+    /// <summary>
+    /// Reads the message key out of the anonymous body a refused import returns.
+    /// </summary>
+    private static string AssertBadRequestMessageKey(IActionResult response)
+    {
+        Assert.IsInstanceOfType(response, typeof(BadRequestObjectResult));
+        var value = ((BadRequestObjectResult)response).Value!;
+        var messageKey = value.GetType().GetProperty("messageKey")!.GetValue(value);
+        return (string)messageKey!;
+    }
+
     [TestMethod]
     public async Task ImportWithMissingRunColumnReturnsBadRequest()
     {
@@ -825,7 +836,19 @@ public class LogControllerTest : TestControllerBase
 
         var response = await controller.ImportAsync(borehole.Id, csvFile, null, []);
 
-        Assert.IsInstanceOfType(response, typeof(BadRequestObjectResult));
+        Assert.AreEqual("importErrorMissingRunColumns", AssertBadRequestMessageKey(response));
+    }
+
+    [TestMethod]
+    public async Task ImportWithMissingFileColumnNamesTheLogFilesCsv()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var runsCsvFile = GetFormFileByContent("RunNumber;FromDepth;ToDepth\nRUN-A;10;20\n", "log_runs.csv");
+        var filesCsvFile = GetFormFileByContent("RunNumber\nRUN-A\n", "log_files.csv");
+
+        var response = await controller.ImportAsync(borehole.Id, runsCsvFile, filesCsvFile, []);
+
+        Assert.AreEqual("importErrorMissingFileColumns", AssertBadRequestMessageKey(response));
     }
 
     [TestMethod]

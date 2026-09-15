@@ -342,31 +342,33 @@ public class LogController : BoreholeControllerBase<LogRun>
     {
         try
         {
-            if (logRunsCsvFile != null)
-            {
-                var missing = LogCsvParser.MissingRunColumns(logRunsCsvFile.OpenReadStream());
-                if (missing.Count > 0)
-                {
-                    return BadRequest(new { detail = $"Missing columns in the log runs CSV: {string.Join(", ", missing)}.", messageKey = "importErrorMissingColumns", values = new { columns = string.Join(", ", missing) } });
-                }
-            }
-
-            if (logFilesCsvFile != null)
-            {
-                var missing = LogCsvParser.MissingFileColumns(logFilesCsvFile.OpenReadStream());
-                if (missing.Count > 0)
-                {
-                    return BadRequest(new { detail = $"Missing columns in the log files CSV: {string.Join(", ", missing)}.", messageKey = "importErrorMissingColumns", values = new { columns = string.Join(", ", missing) } });
-                }
-            }
-
-            return null;
+            return MissingColumnsError(logRunsCsvFile, LogCsvParser.MissingRunColumns, "log runs", "importErrorMissingRunColumns")
+                ?? MissingColumnsError(logFilesCsvFile, LogCsvParser.MissingFileColumns, "log files", "importErrorMissingFileColumns");
         }
         catch (CsvHelperException ex)
         {
             Logger.LogError(ex, "A log import CSV could not be read.");
             return BadRequest(new { detail = "The CSV file could not be read.", messageKey = "importErrorUnreadableCsv" });
         }
+    }
+
+    /// <summary>
+    /// Reports the required columns a CSV does not have, naming the CSV it is about.
+    /// </summary>
+    /// <param name="csvFile">The uploaded CSV, or <c>null</c> when it was not provided.</param>
+    /// <param name="findMissingColumns">Reads the header row and returns the required columns it lacks.</param>
+    /// <param name="csvName">How the CSV is named in the untranslated detail.</param>
+    /// <param name="messageKey">The translation key naming that same CSV for the client.</param>
+    /// <returns>The error to return, or <c>null</c> when the CSV has every required column.</returns>
+    private BadRequestObjectResult? MissingColumnsError(IFormFile? csvFile, Func<Stream, IReadOnlyList<string>> findMissingColumns, string csvName, string messageKey)
+    {
+        if (csvFile == null) return null;
+
+        var missing = findMissingColumns(csvFile.OpenReadStream());
+        if (missing.Count == 0) return null;
+
+        var columns = string.Join(", ", missing);
+        return BadRequest(new { detail = $"Missing columns in the {csvName} CSV: {columns}.", messageKey, values = new { columns } });
     }
 
     private async Task<List<Codelist>> LoadLogCodelistsAsync()
