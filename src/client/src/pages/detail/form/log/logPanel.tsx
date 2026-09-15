@@ -13,7 +13,7 @@ import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { SaveContext } from "../../saveContext.tsx";
-import { ImportLogRunsModal } from "./importLogRunsModal.tsx";
+import { ImportLogWizard } from "./importWizard/importLogWizard.tsx";
 import {
   countPendingUploads,
   fetchLogRunsByBoreholeId,
@@ -354,7 +354,7 @@ export const LogPanel: FC = () => {
           </Stack>
         )}
       </Box>
-      <ImportLogRunsModal isImporting={isImporting} setIsImporting={setIsImporting} />
+      <ImportLogWizard isImporting={isImporting} setIsImporting={setIsImporting} />
       <LogRunModal logRun={selectedLogRun} updateLogRun={updateTmpLogRun} runs={tmpLogRunsFlat} />
     </>
   );
