@@ -413,8 +413,6 @@ export type {
   PostApiVbyVersionLogImportResponses,
   PostApiVbyVersionLogResponse,
   PostApiVbyVersionLogResponses,
-  PostApiVbyVersionLogUploadData,
-  PostApiVbyVersionLogUploadResponses,
   PostApiVbyVersionMaintenanceByTaskTypeData,
   PostApiVbyVersionMaintenanceByTaskTypeErrors,
   PostApiVbyVersionMaintenanceByTaskTypeResponses,

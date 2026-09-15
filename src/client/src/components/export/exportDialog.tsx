@@ -54,6 +54,9 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
 
   const handleExport = useCallback(
     async (exportFunction: (options?: TransferOptions) => Promise<Response | void>) => {
+      // Only one export is watched at a time.
+      if (runningExport.current) return;
+
       setIsExporting(false);
       setInProgress(true);
       setBytesReceived(null);
@@ -80,7 +83,10 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
           showAlert(t("errorDuringExport"), "error");
         }
       } finally {
-        runningExport.current = null;
+        // Only the export that still holds the slot may release it, so a later one is not left
+        // running with nothing able to abort it.
+        if (runningExport.current === abortController) runningExport.current = null;
+
         if (!abortController.signal.aborted) {
           // Display spinner for at least 1 second to improve UX
           const endTime = Date.now();

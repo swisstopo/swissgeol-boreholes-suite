@@ -204,6 +204,10 @@ public class ProfileCloudServiceTest
     public async Task UploadProfileFailsWhenS3UploadThrowsAndDoesNotCreateProfileRow()
     {
         var failingS3Mock = new Mock<IAmazonS3>(MockBehavior.Strict);
+
+        // Uploads run through TransferUtility, which reads the client's configuration to decide
+        // how to split a payload before it sends anything.
+        failingS3Mock.Setup(x => x.Config).Returns(new AmazonS3Config());
         failingS3Mock
             .Setup(s => s.PutObjectAsync(It.IsAny<PutObjectRequest>(), It.IsAny<CancellationToken>()))
             .ThrowsAsync(new AmazonS3Exception("simulated S3 outage"));
@@ -221,7 +225,7 @@ public class ProfileCloudServiceTest
         var profileCountBefore = context.Profiles.Count(p => p.BoreholeId == minBoreholeId);
         var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), fileName);
 
-        await Assert.ThrowsExactlyAsync<IOException>(async () =>
+        var exception = await Assert.ThrowsExactlyAsync<IOException>(async () =>
             await failingService.UploadProfileAsync(
                 pdfFormFile.OpenReadStream(),
                 pdfFormFile.FileName,
@@ -229,6 +233,8 @@ public class ProfileCloudServiceTest
                 false,
                 pdfFormFile.ContentType,
                 minBoreholeId).ConfigureAwait(false));
+
+        Assert.IsInstanceOfType(exception.InnerException, typeof(AmazonS3Exception), "The upload should have failed on the simulated S3 outage.");
 
         var profileCountAfter = context.Profiles.Count(p => p.BoreholeId == minBoreholeId);
         Assert.AreEqual(profileCountBefore, profileCountAfter, "S3-first ordering: a failed S3 upload must not leave a DB row.");
