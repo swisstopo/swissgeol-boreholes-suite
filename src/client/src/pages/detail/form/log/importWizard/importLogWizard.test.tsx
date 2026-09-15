@@ -34,15 +34,29 @@ vi.mock("../../../../../hooks/useResetTabStatus.ts", () => ({ useResetTabStatus:
 
 // The two input steps are replaced by a single control each, so the wizard can be driven from
 // the outside without dropping files into a dropzone.
+// Each step also reports the selection it was handed back, so the tests can tell whether the
+// wizard still holds it after navigating away and returning.
 vi.mock("./importRunsStep.tsx", () => ({
-  ImportRunsStep: ({ onFileChange }: { onFileChange: (file?: File) => void }) => (
-    <button onClick={() => onFileChange(new File(["runNumber"], "runs.csv"))}>pick-runs-csv</button>
+  ImportRunsStep: ({ onFileChange, file }: { onFileChange: (file?: File) => void; file?: File }) => (
+    <>
+      <button onClick={() => onFileChange(new File(["runNumber"], "runs.csv"))}>pick-runs-csv</button>
+      <div data-testid="staged-runs-csv">{file?.name ?? ""}</div>
+    </>
   ),
 }));
 
 vi.mock("./importFilesStep.tsx", () => ({
-  ImportFilesStep: ({ onAttachmentsChange }: { onAttachmentsChange: (runNumber: string, files: File[]) => void }) => (
-    <button onClick={() => onAttachmentsChange("RUN-1", stagedAttachments())}>pick-attachment</button>
+  ImportFilesStep: ({
+    onAttachmentsChange,
+    attachmentsPerRun,
+  }: {
+    onAttachmentsChange: (runNumber: string, files: File[]) => void;
+    attachmentsPerRun: Record<string, File[]>;
+  }) => (
+    <>
+      <button onClick={() => onAttachmentsChange("RUN-1", stagedAttachments())}>pick-attachment</button>
+      <div data-testid="staged-attachments">{(attachmentsPerRun["RUN-1"] ?? []).map(f => f.name).join(",")}</div>
+    </>
   ),
 }));
 
@@ -99,6 +113,42 @@ describe("ImportLogWizard", () => {
 
     expect(await screen.findByText("importUploadDone")).toBeDefined();
     expect(deleteLogFile).not.toHaveBeenCalled();
+  });
+
+  it("keeps the staged runs csv when going back to the first step", () => {
+    render(withProviders(<ImportLogWizard isImporting={true} setIsImporting={vi.fn()} />));
+
+    fireEvent.click(screen.getByText("pick-runs-csv"));
+    fireEvent.click(screen.getByText("Next"));
+    fireEvent.click(screen.getByText("Back"));
+
+    expect(screen.getByTestId("staged-runs-csv").textContent).toBe("runs.csv");
+  });
+
+  it("returns from the report to the files step only once the uploads have stopped", async () => {
+    importLogs.mockResolvedValue([addedFileItem("a.las", 11), addedFileItem("b.las", 12)]);
+    uploadResumable.mockImplementation(
+      (_file: File, _metadata: Record<string, string>, options: TransferOptions) =>
+        new Promise<number>((_resolve, reject) => {
+          options.signal?.addEventListener("abort", () =>
+            reject(new DOMException("The user aborted a request.", "AbortError")),
+          );
+        }),
+    );
+
+    await runImportToReport();
+    await waitFor(() => expect(uploadResumable).toHaveBeenCalled());
+    expect((screen.getByRole("button", { name: "Back" }) as HTMLButtonElement).disabled).toBe(true);
+
+    await act(async () => {
+      fireEvent.click(screen.getByLabelText("cancel"));
+    });
+    await waitFor(() => expect(deleteLogFile).toHaveBeenCalledWith(12));
+
+    fireEvent.click(screen.getByRole("button", { name: "Back" }));
+
+    expect(screen.getByTestId("staged-attachments").textContent).toBe("a.las,b.las,c.las");
+    expect(screen.queryByText("importUploadFailed")).toBeNull();
   });
 
   it("cancellingStopsTheRunningUploadAndSkipsTheRest", async () => {

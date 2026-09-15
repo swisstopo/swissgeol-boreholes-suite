@@ -9,13 +9,17 @@ interface ImportRunsStepProps {
   file?: File;
 }
 
-export const ImportRunsStep: FC<ImportRunsStepProps> = ({ onFileChange }) => {
+export const ImportRunsStep: FC<ImportRunsStepProps> = ({ onFileChange, file }) => {
   const { t } = useTranslation();
 
   return (
     <FormContainer data-cy="import-step-runs">
       <Typography>{t("importLogRunsDescription")}</Typography>
-      <FileDropzone onChange={files => onFileChange(files[0])} accept={{ "text/csv": [".csv"] }} />
+      <FileDropzone
+        existingFiles={file ? [file] : undefined}
+        onChange={files => onFileChange(files[0])}
+        accept={{ "text/csv": [".csv"] }}
+      />
     </FormContainer>
   );
 };

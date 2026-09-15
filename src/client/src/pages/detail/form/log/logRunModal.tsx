@@ -220,7 +220,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
               }>
               <FormContainer>
                 <FileDropzone
-                  existingFile={file.name ? new File([], file.name) : undefined}
+                  existingFiles={file.name ? [new File([], file.name)] : undefined}
                   onChange={files => onFileChanged(files[0], index)}
                   errorMessageKey={nameError?.message}
                 />
