@@ -72,7 +72,7 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
           },
         });
       } catch (error) {
-        // Aborted by user to it is not reported as a failure.
+        // Aborted by user so it is not reported as a failure.
         if (isAbortError(error)) return;
         if (error instanceof ApiError) {
           showAlert(t(error.message), "error");
