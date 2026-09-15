@@ -370,6 +370,7 @@ public class BoreholeExportController : ControllerBase
         {
             // The client gave up while the export was still being prepared. There is nobody left
             // to answer, so this is not reported as a failed export.
+            logger.LogInformation("The client aborted the export before the archive was streamed. The preparation was abandoned.");
             throw;
         }
         catch (AmazonS3Exception ex)
