@@ -4119,16 +4119,52 @@
         }
       }
     },
+    "/api/v{version}/log/file/{id}": {
+      "delete": {
+        "tags": [
+          "Log"
+        ],
+        "summary": "Deletes a log file record that never received its attachment.\r\n            \r\nThe import writes the record before the attachment is uploaded, so an upload that fails or\r\nis given up on would leave a record behind that every later import skips as already\r\nexisting. Removing it here lets the next import add it properly.\r\n            \r\nA record that has its attachment is refused: this endpoint exists to undo an unfinished\r\nimport, not to delete stored files.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The BDMS.Models.LogFile.Id to delete.",
+            "required": true,
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/v{version}/log/import": {
       "post": {
         "tags": [
           "Log"
         ],
-        "summary": "Imports log runs and optionally log files from CSV files.",
+        "summary": "Imports log runs and log files from CSV files.\r\n            \r\nEvery row is classified and reported, and the rows that are complete and valid are written.\r\nA row that is skipped is not a failure: repeating the import adds what has since become\r\ncomplete without writing anything twice. Only a request that cannot be read at all is\r\nanswered with a failure status.",
         "parameters": [
           {
             "name": "boreholeId",
             "in": "query",
+            "description": "The borehole the import belongs to.",
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -4151,11 +4187,20 @@
                 "properties": {
                   "logRunsCsvFile": {
                     "type": "string",
+                    "description": "The log runs CSV, if the import carries one.",
                     "format": "binary"
                   },
                   "logFilesCsvFile": {
                     "type": "string",
+                    "description": "The log files CSV, if the import carries one.",
                     "format": "binary"
+                  },
+                  "providedAttachmentNames": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "The attachments the client holds, each as \"runNumber/fileName\"."
                   }
                 }
               },
@@ -4164,6 +4209,9 @@
                   "style": "form"
                 },
                 "logFilesCsvFile": {
+                  "style": "form"
+                },
+                "providedAttachmentNames": {
                   "style": "form"
                 }
               }
