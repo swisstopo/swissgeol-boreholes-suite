@@ -8,8 +8,8 @@ import { theme } from "../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
 
 interface FileDropzoneProps {
-  existingFile?: File;
   onChange: (files: File[]) => string | void | Promise<void>;
+  existingFiles?: File[];
   errorMessageKey?: string;
   accept?: Accept;
   maxFileSize?: number;
@@ -40,7 +40,7 @@ const filterExpectedFiles = (
 };
 
 export const FileDropzone: FC<FileDropzoneProps> = ({
-  existingFile,
+  existingFiles,
   onChange,
   errorMessageKey,
   accept,
@@ -49,7 +49,7 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
   expectedFileNames,
 }) => {
   const { t } = useTranslation();
-  const [files, setFiles] = useState<File[]>(existingFile ? [existingFile] : []);
+  const [files, setFiles] = useState<File[]>(existingFiles ?? []);
   const [error, setError] = useState<string | undefined>();
 
   useEffect(() => {

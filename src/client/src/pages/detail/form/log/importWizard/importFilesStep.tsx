@@ -14,8 +14,10 @@ interface ImportFilesStepProps {
 
 export const ImportFilesStep: FC<ImportFilesStepProps> = ({
   requiredFilesPerRun,
+  attachmentsPerRun,
   onFileChange,
   onAttachmentsChange,
+  file,
 }) => {
   const { t } = useTranslation();
   const runNumbers = Object.keys(requiredFilesPerRun);
@@ -25,12 +27,17 @@ export const ImportFilesStep: FC<ImportFilesStepProps> = ({
       <Typography>{t("importLogFilesDescription")}</Typography>
       <Stack gap={0.5}>
         <Typography variant="h6">{t("csvFile")}</Typography>
-        <FileDropzone onChange={files => onFileChange(files[0])} accept={{ "text/csv": [".csv"] }} />
+        <FileDropzone
+          existingFiles={file ? [file] : undefined}
+          onChange={files => onFileChange(files[0])}
+          accept={{ "text/csv": [".csv"] }}
+        />
       </Stack>
       {runNumbers.map(runNumber => (
         <Stack key={runNumber} gap={0.5} data-cy={`log-attachments-${runNumber}`}>
           <Typography variant="h6">{t("attachmentsForRun", { runNumber })}</Typography>
           <FileDropzone
+            existingFiles={attachmentsPerRun[runNumber]}
             onChange={files => onAttachmentsChange(runNumber, files)}
             multiple={true}
             expectedFileNames={requiredFilesPerRun[runNumber]}

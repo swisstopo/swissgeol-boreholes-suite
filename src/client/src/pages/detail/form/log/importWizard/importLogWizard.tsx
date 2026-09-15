@@ -61,6 +61,7 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
   const [report, setReport] = useState<LogImportResultItem[]>();
   const [uploadStates, setUploadStates] = useState<Record<number, LogImportUploadState>>({});
   const [progress, setProgress] = useState<UploadProgressState>();
+  const [isUploading, setIsUploading] = useState(false);
   const runningUploads = useRef<AbortController | null>(null);
 
   const importMutation = useImportLogs();
@@ -90,6 +91,7 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
 
       const controller = new AbortController();
       runningUploads.current = controller;
+      setIsUploading(true);
       setUploadStates(Object.fromEntries(pending.map(upload => [upload.logFileId, "pending" as LogImportUploadState])));
 
       let position = 0;
@@ -134,6 +136,7 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
 
       runningUploads.current = null;
       setProgress(undefined);
+      setIsUploading(false);
     },
     [attachmentsPerRun, setUploadState],
   );
@@ -191,47 +194,87 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
     queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, boreholeId] });
   }, [boreholeId, importMutation, queryClient, resetTabStatus, setIsImporting]);
 
+  /**
+   * Returns to the files step with the staged CSVs and attachments still selected.
+   *
+   * The report of the import that just ran is dropped, because a second import writes only what
+   * is still missing and would otherwise be read next to outcomes it no longer describes.
+   */
+  const backToFilesStep = useCallback(() => {
+    setReport(undefined);
+    setUploadStates({});
+    setProgress(undefined);
+    importMutation.reset();
+    setStep(filesStep);
+  }, [importMutation]);
+
   const hasAnyCsv = logRunsCsvFile !== undefined || logFilesCsvFile !== undefined;
 
   // FormDialog closes itself whenever an action resolves truthy, so every action here says
   // explicitly whether it is done with the dialog rather than leaving it to what it happens to
   // return. The actions that close have already done their own cleanup in close().
-  const actions =
-    step === reportStep
-      ? [
-          {
-            label: "close",
-            variant: "contained" as const,
-            color: "primary" as const,
-            onClick: () => {
-              close();
-              return false;
-            },
-          },
-        ]
-      : [
-          { label: "cancel", variant: "outlined" as const, color: "primary" as const },
-          step === runsStep
-            ? {
-                label: "next",
-                variant: "contained" as const,
-                color: "primary" as const,
-                onClick: () => {
-                  setStep(filesStep);
-                  return false;
-                },
-              }
-            : {
-                label: "import",
-                variant: "contained" as const,
-                color: "primary" as const,
-                disabled: !hasAnyCsv || importMutation.isPending,
-                onClick: async () => {
-                  await startImport();
-                  return false;
-                },
-              },
-        ];
+  const cancelAction = { label: "cancel", variant: "outlined" as const, color: "primary" as const };
+
+  const backToRunsAction = {
+    label: "back",
+    variant: "outlined" as const,
+    color: "primary" as const,
+    onClick: () => {
+      setStep(runsStep);
+      return false;
+    },
+  };
+
+  // Going back while attachments are on the wire would change the selection the running loop
+  // reads, so the uploads have to be cancelled first.
+  const backToFilesAction = {
+    label: "back",
+    variant: "outlined" as const,
+    color: "primary" as const,
+    disabled: isUploading,
+    onClick: () => {
+      backToFilesStep();
+      return false;
+    },
+  };
+
+  const nextAction = {
+    label: "next",
+    variant: "contained" as const,
+    color: "primary" as const,
+    onClick: () => {
+      setStep(filesStep);
+      return false;
+    },
+  };
+
+  const importAction = {
+    label: "import",
+    variant: "contained" as const,
+    color: "primary" as const,
+    disabled: !hasAnyCsv || importMutation.isPending,
+    onClick: async () => {
+      await startImport();
+      return false;
+    },
+  };
+
+  const closeAction = {
+    label: "close",
+    variant: "contained" as const,
+    color: "primary" as const,
+    onClick: () => {
+      close();
+      return false;
+    },
+  };
+
+  const actionsPerStep = [
+    [cancelAction, nextAction],
+    [cancelAction, backToRunsAction, importAction],
+    [backToFilesAction, closeAction],
+  ];
+  const actions = actionsPerStep[step];
 
   return (
     <FormDialog open={isImporting} title={t("importLogRuns")} onClose={close} actions={actions}>

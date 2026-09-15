@@ -17,6 +17,7 @@
 - Upgraded the AWS SDK used for the S3 file storage to version 4.
 - LOG files are uploaded in chunks, so an upload is no longer cut off after a minute and is retried rather than restarted when a chunk fails.
 - The export dialog closes as soon as a format is chosen, and the transfer is reported by an overlay over the page instead of over the dialog.
+- The LOG import can be stepped through in both directions. Going back keeps the files already selected, and the report can be left to adjust the selection and import again once the attachment uploads have finished or been cancelled.
 - Importing LOG runs and LOG files no longer fails as a whole when some rows have a problem. Every row that is complete and valid is imported, and a report shows what was added, what already existed, what was skipped because information is still missing, and what needs to be corrected. Running the same import again adds only what is newly complete, without creating duplicates.
 
 ### Fixed
