@@ -7,6 +7,7 @@ import { SessionKeys } from "../pages/overview/SessionKey.ts";
 import { download, downloadData } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
 import { Borehole, BoreholeBulkUpdate, BoreholeBulkUpdateRequest, BoreholeCodelist, Codelist } from "./generated";
+import { TransferOptions } from "./transferProgress.ts";
 import { NullableDateString } from "./unionTypes.ts";
 import { useCurrentUser } from "./user.ts";
 
@@ -54,10 +55,13 @@ const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: numb
 // Saves the response body verbatim. Reading it as text first would strip the UTF-8 byte order mark
 // that tells Excel how to decode the accented characters.
 export const exportCSVBorehole = async (boreholeIds: GridRowSelectionModel, fileName: string) =>
-  await download(`boreholeexport/csv?${getIdQuery(boreholeIds)}`, `${fileName}.csv`);
+  await download(`boreholeexport/csv?${getIdQuery(boreholeIds)}`, { fileName: `${fileName}.csv` });
 
-export const exportJsonWithAttachmentsBorehole = async (boreholeIds: number[] | GridRowSelectionModel) => {
-  return await download(`boreholeexport/zip?${getIdQuery(boreholeIds)}`);
+export const exportJsonWithAttachmentsBorehole = async (
+  boreholeIds: number[] | GridRowSelectionModel,
+  options?: TransferOptions,
+) => {
+  return await download(`boreholeexport/zip?${getIdQuery(boreholeIds)}`, options);
 };
 
 const fetchBoreholeById = async (id: number): Promise<Borehole> => {
