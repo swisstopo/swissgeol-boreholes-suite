@@ -1,18 +1,18 @@
 import { fetchApiV2Legacy } from "../../../../../api/fetchApiV2.ts";
 import { WaterIngress } from "../../../../../api/generated";
 
-export const getWaterIngress = async (boreholeId: number) => {
+export const getWaterIngress = async (boreholeId: number): Promise<WaterIngress[]> => {
   return await fetchApiV2Legacy(`wateringress?boreholeId=${boreholeId}`, "GET");
 };
 
-export const addWaterIngress = async (wateringress: WaterIngress) => {
+export const addWaterIngress = async (wateringress: WaterIngress): Promise<WaterIngress> => {
   return await fetchApiV2Legacy("wateringress", "POST", wateringress);
 };
 
-export const updateWaterIngress = async (wateringress: WaterIngress) => {
+export const updateWaterIngress = async (wateringress: WaterIngress): Promise<WaterIngress> => {
   return await fetchApiV2Legacy("wateringress", "PUT", wateringress);
 };
 
-export const deleteWaterIngress = async (id: number) => {
+export const deleteWaterIngress = async (id: number): Promise<void> => {
   return await fetchApiV2Legacy(`wateringress?id=${id}`, "DELETE");
 };

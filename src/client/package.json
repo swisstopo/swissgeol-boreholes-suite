@@ -123,7 +123,7 @@
     "test:unit:watch": "vitest",
     "ts": "tsc --noEmit --incremental --tsBuildInfoFile .tsbuildinfo",
     "lint": "npm run lint:oxlint && npm run lint:eslint && npm run format:check",
-    "lint:oxlint": "oxlint --max-warnings 359",
+    "lint:oxlint": "oxlint --max-warnings 266",
     "lint:eslint": "eslint . --ext .js,.jsx,.ts,.tsx,.json --report-unused-disable-directives --max-warnings 0",
     "format": "prettier --write \"**/*.{js,jsx,ts,tsx,json}\"",
     "format:check": "prettier --check \"**/*.{js,jsx,ts,tsx,json}\"",

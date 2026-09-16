@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAuthToken } from "../auth/authTokenStore.ts";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
 import { getAuthorizationHeader } from "./authentication.ts";
-import { ApiError, isUserErrorProblem, toUserError } from "./errorClasses.ts";
+import { ApiError, isUserErrorProblem, toErrorMessage, toUserError } from "./errorClasses.ts";
 import { Backfill, Casing, Completion, Document, DocumentUpdate, Instrumentation, Section } from "./generated";
 
 /**
@@ -61,11 +61,14 @@ const isBlobContentType = (contentType: string | null): boolean => {
 
 /**
  * Reads the response from an API call and parses it based on the content type.
+ *
+ * The result is `unknown` on purpose: the content type decides whether a JSON value, a Blob or a
+ * string comes back, so only the caller knows what it asked for. Callers that know the shape say so
+ * through the type argument of {@link fetchApiV2WithApiError} or {@link uploadWithApiError}.
  * @param {Response} response - The HTTP response object.
- * @returns {Promise<any>} - The parsed response content.
+ * @returns {Promise<unknown>} - The parsed response content.
  */
-/* oxlint-disable-next-line  @typescript-eslint/no-explicit-any */
-async function readApiResponse(response: Response): Promise<any> {
+async function readApiResponse(response: Response): Promise<unknown> {
   const contentType = response.headers.get("content-type");
   if (isJsonContentType(contentType)) {
     return await response.json();
@@ -88,28 +91,36 @@ async function handleFetchError(response: Response) {
     throw toUserError(responseContent, response.status);
   }
   if (response.status === 404) {
-    throw new ApiError(responseContent?.title ?? "Not Found", 404);
+    throw new ApiError(toErrorMessage(responseContent) ?? "Not Found", 404);
   }
-  throw new Error(responseContent);
+  throw new Error(toErrorMessage(responseContent) ?? `Request failed with status ${response.status}`);
 }
 
 /**
  * Fetches data from the API and displays errors in a browser alert.
  * The error is not accessible and cannot be handled individually.
  * Do not use this method in any new code.
+ *
+ * On failure this alerts the text and resolves with `undefined`, which the declared return type
+ * does not admit. Every caller assumes the call succeeded, so the lie is kept here rather than
+ * spread over each of them. Use {@link fetchApiV2WithApiError} instead, which throws.
  * @param {string} url - The endpoint URL relative to the base API path.
  * @param {string} method - The HTTP method (e.g., GET, POST, PUT, DELETE).
  * @param {object|null} [payload=null] - The request payload, if applicable.
- * @returns {Promise<any>} - The parsed response content.
+ * @returns {Promise<T>} - The parsed response content. `T` is the caller's claim about the response
+ * shape and is not validated.
  */
-/* oxlint-disable-next-line  @typescript-eslint/no-explicit-any */
-export async function fetchApiV2Legacy(url: string, method: string, payload: object | null = null): Promise<any> {
+export async function fetchApiV2Legacy<T = unknown>(
+  url: string,
+  method: string,
+  payload: object | null = null,
+): Promise<T> {
   const response = await fetchApiV2Base(url, method, payload ? JSON.stringify(payload) : null, "application/json");
   if (response.ok) {
-    return await readApiResponse(response);
-  } else {
-    return response.text().then(text => alert(text));
+    return (await readApiResponse(response)) as T;
   }
+  alert(await response.text());
+  return undefined as T;
 }
 
 /**
@@ -119,7 +130,8 @@ export async function fetchApiV2Legacy(url: string, method: string, payload: obj
  * @param method The HTTP request method to apply (e.g. GET, PUT, POST...).
  * @param payload The payload of the HTTP request (optional).
  * @param signal Aborts the request, and with it the work it triggers on the server.
- * @returns The HTTP response as JSON.
+ * @returns The HTTP response as JSON. The body is not validated, so `T` is the caller's claim about
+ * the shape the endpoint answers with, not something this function can check.
  * @throws {ApiError|Error} - Throws an `ApiError` or a generic `Error` based on the response content.
  */
 export async function fetchApiV2WithApiError<T>(
@@ -136,7 +148,7 @@ export async function fetchApiV2WithApiError<T>(
     signal,
   );
   if (response.ok) {
-    return await readApiResponse(response);
+    return (await readApiResponse(response)) as T;
   } else {
     await handleFetchError(response);
     return new Promise<T>(() => {});
@@ -148,12 +160,13 @@ export async function fetchApiV2WithApiError<T>(
  * @param {string} url - The endpoint URL relative to the base API path.
  * @param {string} method - The HTTP method (e.g., POST, PUT).
  * @param {FormData} payload - The file data to upload.
- * @returns {Promise<any>} - The parsed response content.
+ * @returns {Promise<T>} - The parsed response content. As with {@link fetchApiV2WithApiError}, `T`
+ * is the caller's claim about the response shape and is not validated.
  * @throws {ApiError|Error} - Throws an `ApiError` or a generic `Error` based on the response content. */
 async function uploadWithApiError<T>(url: string, method: string, payload: FormData): Promise<T> {
   const response = await fetchApiV2Base(url, method, payload);
   if (response.ok) {
-    return await readApiResponse(response);
+    return (await readApiResponse(response)) as T;
   } else {
     await handleFetchError(response);
     return new Promise<T>(() => {});

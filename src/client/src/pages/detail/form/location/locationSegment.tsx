@@ -83,7 +83,7 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
       setCurrentLV95X(XLV95);
       setCurrentLV95Y(YLV95);
 
-      const location = await fetchApiV2Legacy(`location/identify?east=${XLV95}&north=${YLV95}`, "GET");
+      const location = await fetchApiV2Legacy<Location>(`location/identify?east=${XLV95}&north=${YLV95}`, "GET");
       setValuesForCountryCantonMunicipality(location);
       setValuesForReferenceSystem(targetSystem, transformedX.toFixed(maxPrecision), transformedY.toFixed(maxPrecision));
     },

@@ -43,6 +43,24 @@ export const isUserErrorProblem = (body: unknown): body is UserErrorProblem =>
 export const toUserError = (problem: UserErrorProblem, status?: number): ApiError =>
   new ApiError(problem.detail || problem.message || "", status, problem.messageKey, problem);
 
+/**
+ * Reads the reason out of an error response body, whichever shape it arrived in. The API answers
+ * with a problem document for most failures and with plain text for the rest.
+ * @param body The parsed response body.
+ * @returns The reason, or undefined when the body carries none.
+ */
+export const toErrorMessage = (body: unknown): string | undefined => {
+  if (typeof body === "string") {
+    return body || undefined;
+  }
+  if (typeof body === "object" && body !== null) {
+    const { detail, title } = body as { detail?: unknown; title?: unknown };
+    if (typeof detail === "string") return detail;
+    if (typeof title === "string") return title;
+  }
+  return undefined;
+};
+
 export class InvalidRouteParamError extends Error {
   readonly userMessage: string;
 
