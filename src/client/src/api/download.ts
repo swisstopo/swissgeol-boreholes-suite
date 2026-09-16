@@ -15,7 +15,7 @@ const getFileName = (response: Response, fallback: string): string =>
  * Transfer options plus the name to save under, for the callers that already know it and do not
  * want the one the response suggests.
  */
-export interface DownloadOptions extends TransferOptions {
+interface DownloadOptions extends TransferOptions {
   fileName?: string;
 }
 
