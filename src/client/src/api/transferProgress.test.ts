@@ -21,6 +21,11 @@ describe("formatBytes", () => {
     expect(formatBytes(247_800_000)).toBe("247.8 MB");
   });
 
+  it("bumps to the next unit when rounding would otherwise reach 1000", () => {
+    expect(formatBytes(999_949)).toBe("999.9 KB");
+    expect(formatBytes(999_950)).toBe("1.0 MB");
+  });
+
   it("stays on the largest known unit beyond terabytes", () => {
     expect(formatBytes(5_000_000_000_000_000)).toBe("5000.0 TB");
   });

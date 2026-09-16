@@ -26,19 +26,29 @@ export const isAbortError = (error: unknown): boolean => error instanceof DOMExc
 
 const byteUnits = ["B", "KB", "MB", "GB", "TB"];
 
+/** Bytes are always whole, larger units keep one decimal so the number still moves while transferring. */
+const decimalsForUnit = (unitIndex: number): number => (unitIndex === 0 ? 0 : 1);
+
+const roundToUnit = (bytes: number, unitIndex: number): number =>
+  Number((bytes / 1000 ** unitIndex).toFixed(decimalsForUnit(unitIndex)));
+
 /**
  * Formats a byte count for display, using decimal units so the numbers match what
- * operating systems and cloud storage report.
+ * operating systems and cloud storage report. Rounded to a whole number for bytes,
+ * and to one decimal for larger units.
  * @param bytes The number of bytes.
  * @returns The formatted size, e.g. `1.4 GB`.
  */
 export const formatBytes = (bytes: number): string => {
   if (!Number.isFinite(bytes) || bytes <= 0) return "0 B";
 
-  const unitIndex = Math.min(Math.floor(Math.log10(bytes) / 3), byteUnits.length - 1);
-  const value = bytes / 1000 ** unitIndex;
+  const magnitudeUnitIndex = Math.min(Math.floor(Math.log10(bytes) / 3), byteUnits.length - 1);
 
-  // Bytes are always whole, larger units keep one decimal so the number still moves while transferring.
-  const decimals = unitIndex === 0 ? 0 : 1;
-  return `${value.toFixed(decimals)} ${byteUnits[unitIndex]}`;
+  // Rounding can lift the value onto the next unit's threshold, e.g. 999.95 KB would read as
+  // "1000.0 KB", so the unit is only settled once the rounded value is known.
+  const roundsOntoNextUnit =
+    roundToUnit(bytes, magnitudeUnitIndex) >= 1000 && magnitudeUnitIndex < byteUnits.length - 1;
+  const unitIndex = roundsOntoNextUnit ? magnitudeUnitIndex + 1 : magnitudeUnitIndex;
+
+  return `${roundToUnit(bytes, unitIndex).toFixed(decimalsForUnit(unitIndex))} ${byteUnits[unitIndex]}`;
 };

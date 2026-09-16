@@ -18,7 +18,7 @@ Folgende Komponenten müssen auf dem Entwicklungsrechner installiert sein:
 
 Es wird eine lokale Installation von Node.js benötigt. Diese kann mit Visual Studio 2022 oder mit [nvm](https://github.com/coreybutler/nvm-windows/releases) installiert werden, um mehrere Node Version zu verwalten. Anschliessend kann mit `nvm use` die im Projekt verwendete Node Version aktiviert werden.
 
-Das Projekt kann mit dem Launch Profile _Boreholes_ gestartet werden.
+Das Projekt kann mit dem Launch Profile _Boreholes_ gestartet werden. Dieses startet API und Client lokal (nicht als Container) und im Hintergrund via `docker-compose` die übrigen Dienste (`db`, `minio`, `oidc-server`, `pgadmin`, `dataextraction`, `ocr`). Mit dem Profil _BoreholesWithoutClient_ wird nur die API lokal gestartet, ohne den Client.
 
 ### Entwicklung mit Docker
 
