@@ -4230,7 +4230,7 @@
         "tags": [
           "Log"
         ],
-        "summary": "Names the attachments a log files CSV expects, so that the import can ask for them before it\r\nis started.\r\n            \r\nThe names are built here rather than in the browser because the import matches what the\r\nclient provides against these same names. Building them twice let the two drift apart, and a\r\nname the client spelled differently made the import skip an attachment the user had supplied.",
+        "summary": "Names the attachments a log files CSV expects, so that the import can ask for them before it\r\nis started.",
         "parameters": [
           {
             "name": "boreholeId",
