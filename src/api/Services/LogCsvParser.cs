@@ -78,7 +78,7 @@ public static class LogCsvParser
         namesPerRun.ToDictionary(entry => entry.Key, entry => (IReadOnlyList<string>)entry.Value, StringComparer.OrdinalIgnoreCase);
 
     private static bool HasColumn(string[] header, string column) =>
-        header.Any(h => string.Equals(h?.Trim(), column, StringComparison.OrdinalIgnoreCase));
+        header.Any(h => CsvConfigHelper.IsSameColumn(h, column));
 
     private static IReadOnlyList<string> MissingColumns(TextReader csv, string[] required)
     {
