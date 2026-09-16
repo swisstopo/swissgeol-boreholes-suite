@@ -3,6 +3,7 @@ import { useTranslation } from "react-i18next";
 import { GridRowId } from "@mui/x-data-grid";
 import { GridApiCommunity } from "@mui/x-data-grid/internals";
 import { useReloadBoreholes } from "../../../api/borehole.ts";
+import { ApiError } from "../../../api/errorClasses.ts";
 import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { usePublicColumn } from "../../../components/table/usePublicColumn.tsx";
 import { useResetTabStatus } from "../../../hooks/useResetTabStatus.ts";
@@ -69,7 +70,8 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
         reloadBoreholes();
         resetTabStatus();
       } catch (error) {
-        showAlert(t((error as Error).message), "error");
+        const interpolationValues = error instanceof ApiError ? error.details : undefined;
+        showAlert(t((error as Error).message, interpolationValues), "error");
         setIsLoading(false);
       }
     },
