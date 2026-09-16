@@ -2725,6 +2725,7 @@ export type Settings = {
    */
   googleAnalyticsTrackingId?: string | null;
   authSettings?: AuthSettings;
+  uploadSettings?: UploadSettings;
 };
 
 /**
@@ -2871,6 +2872,25 @@ export type TabStatus = {
    * Gets or sets the status of the identifiers tab of the borehole.
    */
   identifiers?: boolean;
+};
+
+/**
+ * What the client needs to know to upload a file the API will accept, so that it validates and
+ * chunks against the same numbers the API enforces instead of a copy of its own.
+ */
+export type UploadSettings = {
+  /**
+   * The largest file accepted by the endpoints that take one in a single request, in bytes.
+   */
+  maxFileSize?: number;
+  /**
+   * The largest log file accepted by the chunked upload, in bytes.
+   */
+  largeMaxFileSize?: number;
+  /**
+   * How much of a file the chunked upload is expected to send per request, in bytes.
+   */
+  chunkSize?: number;
 };
 
 /**

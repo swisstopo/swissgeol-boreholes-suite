@@ -12262,6 +12262,9 @@
           },
           "authSettings": {
             "$ref": "#/components/schemas/AuthSettings"
+          },
+          "uploadSettings": {
+            "$ref": "#/components/schemas/UploadSettings"
           }
         },
         "additionalProperties": false,
@@ -12475,6 +12478,28 @@
         },
         "additionalProperties": false,
         "description": "Represents the reviewed or published tab status of a BDMS.Models.Workflow."
+      },
+      "UploadSettings": {
+        "type": "object",
+        "properties": {
+          "maxFileSize": {
+            "type": "integer",
+            "description": "The largest file accepted by the endpoints that take one in a single request, in bytes.",
+            "format": "int32"
+          },
+          "largeMaxFileSize": {
+            "type": "integer",
+            "description": "The largest log file accepted by the chunked upload, in bytes.",
+            "format": "int64"
+          },
+          "chunkSize": {
+            "type": "integer",
+            "description": "How much of a file the chunked upload is expected to send per request, in bytes.",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "What the client needs to know to upload a file the API will accept, so that it validates and\r\nchunks against the same numbers the API enforces instead of a copy of its own."
       },
       "User": {
         "required": [

@@ -520,6 +520,7 @@ export type {
   StratigraphyTabEditWritable,
   StratigraphyWritable,
   TabStatus,
+  UploadSettings,
   User,
   UserWorkgroupRole,
   UserWorkgroupRoleWritable,
