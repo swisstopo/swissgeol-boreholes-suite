@@ -146,7 +146,12 @@ describe("uploadResumable", () => {
         originalResponse: {
           getStatus: () => 400,
           getBody: () =>
-            JSON.stringify({ type: "userError", detail: "A file named 'gamma.las' already exists in this log run." }),
+            JSON.stringify({
+              type: "userError",
+              detail: "A file named 'gamma.las' already exists in this log run.",
+              messageKey: "logFileNameAlreadyExists",
+              fileName: "gamma.las",
+            }),
         },
       }),
     );
@@ -155,6 +160,8 @@ describe("uploadResumable", () => {
     await expect(pending).rejects.toMatchObject({
       message: "A file named 'gamma.las' already exists in this log run.",
       status: 400,
+      messageKey: "logFileNameAlreadyExists",
+      details: { fileName: "gamma.las" },
     });
   });
 

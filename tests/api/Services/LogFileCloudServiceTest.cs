@@ -1,6 +1,7 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
 using BDMS.Models;
+using BDMS.Uploads;
 using Microsoft.AspNetCore.Http;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
@@ -253,13 +254,16 @@ public class LogFileCloudServiceTest
     {
         var existing = context.LogFiles.First();
 
-        await Assert.ThrowsExactlyAsync<InvalidOperationException>(async () =>
+        // A distinct type, because this is the one upload failure the user is told about in words.
+        var exception = await Assert.ThrowsExactlyAsync<LogFileNameTakenException>(async () =>
             await logFileCloudService.LinkUploadedLogFileAsync(
                 existing.Name,
                 TextPlainContentType,
                 $"{Guid.NewGuid()}.las",
                 existing.LogRunId,
                 CancellationToken.None));
+
+        Assert.AreEqual(existing.Name, exception.FileName);
     }
 
     [TestMethod]

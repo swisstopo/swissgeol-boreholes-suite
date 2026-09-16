@@ -353,6 +353,7 @@
   "locationX": "Coordinate East",
   "locationY": "Coordinate North",
   "log": "LOG",
+  "logFileNameAlreadyExists": "A file named {{fileName}} already exists in this LOG Run.",
   "logFiles": "LOG files",
   "logRuns": "LOG runs",
   "loggedInterval": "Logged interval",

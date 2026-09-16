@@ -153,7 +153,7 @@ public class TusUploadConfiguration
             metadata.LogFileId is null &&
             await logFileCloudService.IsNameTakenAsync(metadata.LogRunId, metadata.FileName, eventContext.CancellationToken).ConfigureAwait(false))
         {
-            throw new LogFileUploadException($"A file named '{metadata.FileName}' already exists in this log run.");
+            throw LogFileNameTakenException.For(metadata.FileName);
         }
     }
 
@@ -178,7 +178,7 @@ public class TusUploadConfiguration
     /// one row and nothing here grows with the size of the file.
     /// </summary>
     /// <param name="eventContext">The request that completed the upload.</param>
-    /// <exception cref="LogFileUploadException">The upload cannot be recorded as its metadata describes it.</exception>
+    /// <exception cref="LogFileNameTakenException">The log run already holds the name the upload carries.</exception>
     private async Task StoreCompletedUploadAsync(FileCompleteContext eventContext)
     {
         var file = await eventContext.GetFileAsync().ConfigureAwait(false);
@@ -188,7 +188,7 @@ public class TusUploadConfiguration
         // the stored copy no longer says what it did then.
         if (!TusUploadMetadata.TryReadStored(stored, out var metadata))
         {
-            throw new LogFileUploadException("The upload metadata is missing or malformed.");
+            throw new InvalidOperationException("The upload metadata is missing or malformed.");
         }
 
         var objectKey = store.GetObjectKey(file.Id);
@@ -202,7 +202,7 @@ public class TusUploadConfiguration
                     .LinkUploadedLogFileAsync(metadata.FileName, metadata.ContentType, objectKey, metadata.LogRunId, eventContext.CancellationToken)
                     .ConfigureAwait(false);
         }
-        catch (Exception ex)
+        catch
         {
             // The object is whole in the cloud storage by now, and no row is going to point at it,
             // so nothing would ever refer to it or remove it again. Neither call takes the request
@@ -210,15 +210,9 @@ public class TusUploadConfiguration
             await logFileCloudService.DeleteOrphanedObject(objectKey).ConfigureAwait(false);
             await store.ForgetAsync(file.Id, CancellationToken.None).ConfigureAwait(false);
 
-            // The last chunk has already been accepted, so a reason the user can act on has to
-            // travel back in the response to that chunk for the client to be able to show it.
-            if (ex is InvalidOperationException)
-            {
-                throw new LogFileUploadException(ex.Message, ex);
-            }
-
-            // Anything else is not something the user can change, and its message is not theirs
-            // to read, so it stays the failure it was and is answered as one.
+            // A taken name is the one failure the user can put right, and the last chunk has
+            // already been answered, so the reason has to travel back in the response to that
+            // chunk for the client to be able to show it. Anything else is not theirs to read.
             throw;
         }
 

@@ -33,14 +33,22 @@ public class TusUploadErrorMiddleware
         {
             await next(context).ConfigureAwait(false);
         }
-        catch (LogFileUploadException ex)
+        catch (LogFileNameTakenException ex)
         {
             logger.LogError(ex, "A log file upload was refused.");
 
             // A client error rather than a server one, because the upload client retries a
             // request that failed with a server error and this one fails the same way every time.
             await Results
-                .Problem(detail: ex.Message, statusCode: (int)HttpStatusCode.BadRequest, type: ProblemType.UserError)
+                .Problem(
+                    detail: ex.Message,
+                    statusCode: (int)HttpStatusCode.BadRequest,
+                    type: ProblemType.UserError,
+                    extensions: new Dictionary<string, object?>
+                    {
+                        ["messageKey"] = LogFileNameTakenException.MessageKey,
+                        ["fileName"] = ex.FileName,
+                    })
                 .ExecuteAsync(context)
                 .ConfigureAwait(false);
         }

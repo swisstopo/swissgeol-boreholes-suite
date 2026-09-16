@@ -312,6 +312,8 @@ public class TusUploadEndpointTest
         Assert.IsTrue(problem.TryGetValue("type", out var type), $"The refusal names a problem type. It carried: {body}");
         Assert.AreEqual("userError", type.GetString());
         StringAssert.Contains(problem["detail"].GetString(), existing.Name);
+        Assert.AreEqual(LogFileNameTakenException.MessageKey, problem["messageKey"].GetString());
+        Assert.AreEqual(existing.Name, problem["fileName"].GetString());
     }
 
     [TestMethod]

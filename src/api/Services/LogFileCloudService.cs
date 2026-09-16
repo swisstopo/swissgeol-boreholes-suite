@@ -1,5 +1,6 @@
 ﻿using Amazon.S3;
 using BDMS.Models;
+using BDMS.Uploads;
 using Microsoft.AspNetCore.Http;
 using Microsoft.EntityFrameworkCore;
 
@@ -68,7 +69,8 @@ public class LogFileCloudService : CloudServiceBase
     /// <param name="logRunId">The <see cref="LogRun.Id"/> to link the file to.</param>
     /// <param name="cancellationToken">Aborts the write.</param>
     /// <returns>The created <see cref="LogFile"/> entity.</returns>
-    /// <exception cref="InvalidOperationException">The log run does not exist, or already holds that name.</exception>
+    /// <exception cref="InvalidOperationException">The log run does not exist.</exception>
+    /// <exception cref="LogFileNameTakenException">The log run already holds that name.</exception>
     public async Task<LogFile> LinkUploadedLogFileAsync(string fileName, string contentType, string objectName, int logRunId, CancellationToken cancellationToken = default)
     {
         var logRunExists = await context.LogRuns
@@ -85,7 +87,7 @@ public class LogFileCloudService : CloudServiceBase
 
         if (await IsNameTakenAsync(logRunId, storedName, cancellationToken).ConfigureAwait(false))
         {
-            throw new InvalidOperationException($"A file named '{storedName}' already exists in this log run.");
+            throw LogFileNameTakenException.For(storedName);
         }
 
         var logFile = new LogFile
