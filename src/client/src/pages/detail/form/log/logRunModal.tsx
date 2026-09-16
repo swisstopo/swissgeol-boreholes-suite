@@ -41,7 +41,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
 
   const formMethods = useForm<LogRun>({
     mode: "all",
-    resolver: async values => {
+    resolver: values => {
       const errors: FormErrors = {};
       validateDepths(values, errors);
       validateRunNumber(values, errors, runs);
@@ -62,12 +62,12 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
     name: "logFiles",
     keyName: "fileKey",
   });
-  const files: LogFileField[] = fileFields as unknown as LogFileField[];
+  const files: LogFileField[] = fileFields;
 
   const { formState, getValues } = formMethods;
   const isDirty = useFormDirty({ formState });
 
-  const watchedFiles = useWatch({ control: formMethods.control, name: "logFiles" }) as LogFile[] | undefined;
+  const watchedFiles = useWatch({ control: formMethods.control, name: "logFiles" });
 
   useEffect(() => {
     if (logRun) {
@@ -77,7 +77,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
           ...f,
           extension: getFileExtension(f.name),
           tmpId: f.tmpId ?? (f.id > 0 ? String(f.id) : uuidv4()),
-        })) as LogFile[],
+        })),
       } as LogRun;
       formMethods.reset(withTmpFileIds);
     }
@@ -148,7 +148,7 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
     const isValid = await formMethods.trigger();
     if (!isDirty || isValid) {
       const values = getValues();
-      updateLogRun({ ...logRun, ...values } as LogRun, isDirty);
+      updateLogRun({ ...logRun, ...values }, isDirty);
     }
   };
 

@@ -116,7 +116,7 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
     setIsLoading(false);
   }, [apiRef, exportAttachments]);
 
-  const resetWithoutSave = useCallback(async () => {
+  const resetWithoutSave = useCallback(() => {
     if (apiRef.current && rows) {
       apiRef.current.setRows(rows);
       setUpdatedRows(new Map());

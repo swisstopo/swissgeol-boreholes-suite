@@ -87,7 +87,7 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
     setHasResetHandler(true);
   }, []);
 
-  const triggerReset = useCallback(async () => {
+  const triggerReset = useCallback(() => {
     if (resetHandlerRef.current) {
       resetHandlerRef.current();
       setHasChanges(false);

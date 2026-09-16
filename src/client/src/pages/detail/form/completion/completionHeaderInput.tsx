@@ -56,7 +56,7 @@ const CompletionHeaderInput = ({
     if (data?.isPrimary === undefined) {
       data.isPrimary = completion.isPrimary;
     }
-    saveCompletion({ ...completion, ...data } as Completion);
+    saveCompletion({ ...completion, ...data });
   };
 
   useEffect(() => {
@@ -147,9 +147,9 @@ const CompletionHeaderInput = ({
               formMethods.reset(selectedCompletion);
               cancelChanges();
             }}
-            onSave={async () => {
+            onSave={() => {
               resetTabStatus();
-              formMethods.handleSubmit(submitForm)();
+              return formMethods.handleSubmit(submitForm)();
             }}
             saveDisabled={!formMethods.formState.isValid}
           />

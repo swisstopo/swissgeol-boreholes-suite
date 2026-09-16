@@ -27,11 +27,12 @@ export const UserAdministration: FC = () => {
   } = useUserMutations();
 
   const renderCellCheckbox = (params: GridRenderCellParams) => {
-    const handleCheckBoxClick = async (event: ChangeEvent<HTMLInputElement>, id: number) => {
+    const handleCheckBoxClick = (event: ChangeEvent<HTMLInputElement>, id: number) => {
       event.stopPropagation();
       const user = users?.find(user => user.id === id);
       if (user) {
-        queryClient.invalidateQueries({
+        // Deliberately not awaited: the optimistic update below must apply without waiting for the refetch.
+        void queryClient.invalidateQueries({
           queryKey: [usersQueryKey],
         });
         const updatedUser = { ...user, isAdmin: event.target.checked };

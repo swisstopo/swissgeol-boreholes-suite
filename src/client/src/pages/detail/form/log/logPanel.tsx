@@ -31,7 +31,7 @@ export const LogPanel: FC = () => {
   const showApiErrorAlert = useApiErrorAlert();
   const { data: logRuns = [], isLoading } = useLogsByBoreholeId(boreholeId);
   const [tmpLogRuns, setTmpLogRuns] = useState<LogRunChangeTracker[]>([]);
-  const tmpLogRunsFlat: LogRun[] = useMemo(() => tmpLogRuns.map(l => l.item as LogRun), [tmpLogRuns]);
+  const tmpLogRunsFlat: LogRun[] = useMemo(() => tmpLogRuns.map(l => l.item), [tmpLogRuns]);
 
   const {
     delete: { mutateAsync: deleteLogRuns },
@@ -130,7 +130,7 @@ export const LogPanel: FC = () => {
     }
   }, [addLogRun, boreholeId, tmpLogRuns, updateLogRun]);
 
-  const onReset = useCallback(async () => {
+  const onReset = useCallback(() => {
     initTmpLogRuns();
   }, [initTmpLogRuns]);
 

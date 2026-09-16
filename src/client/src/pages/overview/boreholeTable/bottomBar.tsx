@@ -79,7 +79,7 @@ const BottomBar = ({
     ]);
   };
 
-  const onExportMultiple = async () => {
+  const onExportMultiple = () => {
     if (selectionModel.length > 100) {
       showPromptExportMoreThan100(() => {
         setIsExporting(true);

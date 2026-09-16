@@ -63,7 +63,7 @@ export const UserDetail: FC = () => {
   if (!selectedUser) return;
   const isDisabled = selectedUser.isDisabled ?? true;
 
-  const handleCheckboxChange = async (event: ChangeEvent<HTMLInputElement>) => {
+  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation();
     if (selectedUser) {
       // Optimistically update the user in the state
