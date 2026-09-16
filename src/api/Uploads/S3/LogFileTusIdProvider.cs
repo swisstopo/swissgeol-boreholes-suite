@@ -13,11 +13,6 @@ namespace BDMS.Uploads.S3;
 /// </summary>
 public class LogFileTusIdProvider : ITusFileIdProvider
 {
-    /// <summary>
-    /// The longest extension that is considered safe to keep.
-    /// </summary>
-    private const int MaxExtensionLength = 10;
-
     /// <inheritdoc/>
     public Task<string> CreateId(string metadata) =>
         Task.FromResult($"{Guid.NewGuid().ToString("D", CultureInfo.InvariantCulture)}{ReadExtension(metadata)}");
@@ -45,7 +40,7 @@ public class LogFileTusIdProvider : ITusFileIdProvider
     /// <param name="extension">The extension, without its leading dot.</param>
     /// <returns><see langword="true"/> if the extension is safe to keep; otherwise, <see langword="false"/>.</returns>
     private static bool IsExtensionSafe(string extension) =>
-        extension.Length is > 0 and <= MaxExtensionLength && extension.All(char.IsAsciiLetterOrDigit);
+        extension.Length > 0 && extension.All(char.IsAsciiLetterOrDigit);
 
     /// <summary>
     /// Whether a name is one this provider could have handed out.
