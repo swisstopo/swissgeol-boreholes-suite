@@ -485,6 +485,31 @@ public class LogControllerTest : TestControllerBase
     }
 
     [TestMethod]
+    public async Task ExportLogRunsCsvStartsWithUtf8Bom()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddCompleteTestLogRunForExportAsync(borehole.Id, "RUN-BOM");
+
+        var response = await controller.ExportAsync(new LogExportRequest { LogRunIds = [logRun.Id], WithAttachments = false, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
+        using var archive = await ExecuteZipResultAsync(response);
+
+        CollectionAssert.AreEqual(new byte[] { 0xEF, 0xBB, 0xBF }, ReadEntryPrefix(archive.Entries.Single(e => e.FullName.StartsWith(LogRunCsvPrefix)), 3));
+    }
+
+    [TestMethod]
+    public async Task ExportLogFilesCsvStartsWithUtf8Bom()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddCompleteTestLogRunForExportAsync(borehole.Id, "LF-BOM");
+        var logFile = await UploadTestLogFile(logRun.Id);
+
+        var response = await controller.ExportAsync(new LogExportRequest { LogFileIds = [logFile.Id], WithAttachments = false, Locale = "en" }, CancellationToken.None).ConfigureAwait(false);
+        using var archive = await ExecuteZipResultAsync(response);
+
+        CollectionAssert.AreEqual(new byte[] { 0xEF, 0xBB, 0xBF }, ReadEntryPrefix(archive.Entries.Single(e => e.FullName.StartsWith(LogFileCsvPrefix)), 3));
+    }
+
+    [TestMethod]
     public async Task ExportLogRunsCsvHeadersAndContent()
     {
         var borehole = await AddTestBoreholeAsync();
@@ -866,6 +891,23 @@ public class LogControllerTest : TestControllerBase
     }
 
     [TestMethod]
+    public async Task ImportReadsAnAnsiEncodedCsv()
+    {
+        var borehole = await AddTestBoreholeAsync();
+
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        var csv = "RunNumber;FromDepth;ToDepth;ServiceCo;Comment\nIMP-ANSI;10;20;Société Générale;Forage à côté\n";
+        var csvFile = GetFormFileByContent(csv, "log_runs.csv", Encoding.GetEncoding(1252));
+
+        var items = AssertImportOk(await controller.ImportAsync(borehole.Id, csvFile, null, []));
+
+        Assert.AreEqual(LogImportOutcome.Added, items.Single().Outcome);
+        var stored = Context.LogRuns.Single(lr => lr.BoreholeId == borehole.Id && lr.RunNumber == "IMP-ANSI");
+        Assert.AreEqual("Société Générale", stored.ServiceCo);
+        Assert.AreEqual("Forage à côté", stored.Comment);
+    }
+
+    [TestMethod]
     public async Task ImportReportsAnInvalidRowAndStillWritesTheValidOne()
     {
         var borehole = await AddTestBoreholeAsync();
@@ -1177,6 +1219,18 @@ public class LogControllerTest : TestControllerBase
         }
 
         await Context.SaveChangesAsync();
+    }
+
+    /// <summary>
+    /// Reads the first <paramref name="count"/> bytes of a ZIP entry. A StreamReader silently
+    /// consumes a byte order mark, so asserting on one needs a byte level read.
+    /// </summary>
+    private static byte[] ReadEntryPrefix(ZipArchiveEntry entry, int count)
+    {
+        using var stream = entry.Open();
+        var buffer = new byte[count];
+        stream.ReadExactly(buffer, 0, count);
+        return buffer;
     }
 
     private static string ReadEntryAsText(ZipArchiveEntry entry)

@@ -12,6 +12,14 @@ const getFileName = (response: Response, fallback: string): string =>
   response.headers.get("content-disposition")?.split("; ")[1]?.replace("filename=", "") ?? fallback;
 
 /**
+ * Transfer options plus the name to save under, for the callers that already know it and do not
+ * want the one the response suggests.
+ */
+interface DownloadOptions extends TransferOptions {
+  fileName?: string;
+}
+
+/**
  * Reads a response body while reporting how much of it has arrived.
  *
  * The large exports are streamed as chunked ZIP archives and carry no `Content-Length`,
@@ -41,13 +49,13 @@ const readBlobWithProgress = async (response: Response, onProgress?: TransferPro
   return new Blob(chunks as BlobPart[], { type: response.headers.get("content-type") ?? undefined });
 };
 
-export async function download(url: string, { onProgress, signal }: TransferOptions = {}): Promise<Response> {
+export async function download(url: string, { onProgress, signal, fileName }: DownloadOptions = {}): Promise<Response> {
   const response = await fetchApiV2Base(url, "GET", null, null, signal);
   if (!response.ok) {
     throw new ApiError("errorOccurredWhileFetchingFileFromCloudStorage", response.status);
   }
   const blob = await readBlobWithProgress(response, onProgress);
-  downloadDataFromBlob(blob, getFileName(response, getFallbackFileName(url)));
+  downloadDataFromBlob(blob, fileName ?? getFileName(response, getFallbackFileName(url)));
   return response;
 }
 

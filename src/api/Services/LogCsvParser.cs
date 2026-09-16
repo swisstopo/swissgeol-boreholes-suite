@@ -1,7 +1,6 @@
 ﻿using BDMS.Models;
 using CsvHelper;
 using System.Globalization;
-using System.Text;
 
 namespace BDMS.Services;
 
@@ -11,6 +10,9 @@ namespace BDMS.Services;
 /// Reading and judging are kept apart: the parser decides only what a row says and whether its
 /// own values can be read, never whether it may be written. What a row means against the stored
 /// data is the classifier's question.
+///
+/// The parser reads text, never bytes: which encoding an upload carries is decided once, by
+/// <see cref="CsvEncoding"/>, before a reader reaches here.
 /// </summary>
 public static class LogCsvParser
 {
@@ -22,19 +24,18 @@ public static class LogCsvParser
     /// </summary>
     /// <param name="csv">The CSV to read the header of.</param>
     /// <returns>The missing column names, empty when the header is complete.</returns>
-    public static IReadOnlyList<string> MissingRunColumns(Stream csv) => MissingColumns(csv, requiredRunColumns);
+    public static IReadOnlyList<string> MissingRunColumns(TextReader csv) => MissingColumns(csv, requiredRunColumns);
 
     /// <summary>
     /// Names the columns the log files CSV has to carry and does not.
     /// </summary>
     /// <param name="csv">The CSV to read the header of.</param>
     /// <returns>The missing column names, empty when the header is complete.</returns>
-    public static IReadOnlyList<string> MissingFileColumns(Stream csv) => MissingColumns(csv, requiredFileColumns);
+    public static IReadOnlyList<string> MissingFileColumns(TextReader csv) => MissingColumns(csv, requiredFileColumns);
 
-    private static IReadOnlyList<string> MissingColumns(Stream csv, string[] required)
+    private static IReadOnlyList<string> MissingColumns(TextReader csv, string[] required)
     {
-        using var reader = new StreamReader(csv, Encoding.UTF8, leaveOpen: true);
-        using var parser = new CsvReader(reader, CsvConfigHelper.CsvReadConfig);
+        using var parser = new CsvReader(csv, CsvConfigHelper.CsvReadConfig);
 
         if (!parser.Read() || !parser.ReadHeader()) return required;
 
@@ -51,11 +52,10 @@ public static class LogCsvParser
     /// <param name="codelists">The codelists the text values are resolved against.</param>
     /// <param name="boreholeId">The borehole the runs belong to.</param>
     /// <returns>One row per line, in file order.</returns>
-    public static IReadOnlyList<LogRunRow> ParseRuns(Stream csv, IReadOnlyList<Codelist> codelists, int boreholeId)
+    public static IReadOnlyList<LogRunRow> ParseRuns(TextReader csv, IReadOnlyList<Codelist> codelists, int boreholeId)
     {
         var rows = new List<LogRunRow>();
-        using var reader = new StreamReader(csv, Encoding.UTF8);
-        using var parser = new CsvReader(reader, CsvConfigHelper.CsvReadConfig);
+        using var parser = new CsvReader(csv, CsvConfigHelper.CsvReadConfig);
 
         parser.Read();
         parser.ReadHeader();
@@ -107,11 +107,10 @@ public static class LogCsvParser
     /// <param name="csv">The CSV to read.</param>
     /// <param name="codelists">The codelists the text values are resolved against.</param>
     /// <returns>One row per line, in file order.</returns>
-    public static IReadOnlyList<LogFileRow> ParseFiles(Stream csv, IReadOnlyList<Codelist> codelists)
+    public static IReadOnlyList<LogFileRow> ParseFiles(TextReader csv, IReadOnlyList<Codelist> codelists)
     {
         var rows = new List<LogFileRow>();
-        using var reader = new StreamReader(csv, Encoding.UTF8);
-        using var parser = new CsvReader(reader, CsvConfigHelper.CsvReadConfig);
+        using var parser = new CsvReader(csv, CsvConfigHelper.CsvReadConfig);
 
         parser.Read();
         parser.ReadHeader();

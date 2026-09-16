@@ -295,7 +295,7 @@ public class BoreholeExportController : ControllerBase
         }
 
         await csvWriter.FlushAsync().ConfigureAwait(false);
-        return File(Encoding.UTF8.GetBytes(stringWriter.ToString()), "text/csv", $"{ExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}.csv");
+        return File(CsvEncoding.ToUtf8BomBytes(stringWriter.ToString()), "text/csv", $"{ExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}.csv");
     }
 
     /// <summary>

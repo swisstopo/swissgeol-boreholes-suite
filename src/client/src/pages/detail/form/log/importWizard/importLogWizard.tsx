@@ -12,7 +12,7 @@ import { useResetTabStatus } from "../../../../../hooks/useResetTabStatus.ts";
 import { useApiErrorAlert } from "../../../../../hooks/useShowAlertOnError.tsx";
 import { deleteLogFile, LogImportValidationError, useImportLogs } from "../log.ts";
 import { LogImportResultItem, LogImportUploadState } from "../logInterfaces.ts";
-import { parseLogFilesCsv } from "../logUtils.ts";
+import { parseLogFilesCsv, UnsupportedCsvEncodingError } from "../logUtils.ts";
 import { ImportFilesStep } from "./importFilesStep.tsx";
 import { attachmentsToUpload } from "./importReport.ts";
 import { ImportReportStep } from "./importReportStep.tsx";
@@ -62,6 +62,7 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
   const [uploadStates, setUploadStates] = useState<Record<number, LogImportUploadState>>({});
   const [progress, setProgress] = useState<UploadProgressState>();
   const [isUploading, setIsUploading] = useState(false);
+  const [hasUnreadableLogFilesCsv, setHasUnreadableLogFilesCsv] = useState(false);
   const runningUploads = useRef<AbortController | null>(null);
 
   const importMutation = useImportLogs();
@@ -73,7 +74,23 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
   const onLogFilesCsvChanged = useCallback(async (file?: File) => {
     setLogFilesCsvFile(file);
     setAttachmentsPerRun({});
-    setRequiredFilesPerRun(file ? (await parseLogFilesCsv(file)).requiredFilesPerRun : {});
+    setHasUnreadableLogFilesCsv(false);
+
+    if (!file) {
+      setRequiredFilesPerRun({});
+      return;
+    }
+
+    try {
+      setRequiredFilesPerRun((await parseLogFilesCsv(file)).requiredFilesPerRun);
+    } catch (error) {
+      if (!(error instanceof UnsupportedCsvEncodingError)) throw error;
+
+      // Without the required file names the wizard cannot ask for the attachments, and an import
+      // started anyway would write log file records no upload ever fills.
+      setRequiredFilesPerRun({});
+      setHasUnreadableLogFilesCsv(true);
+    }
   }, []);
 
   /**
@@ -197,6 +214,7 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
     setLogFilesCsvFile(undefined);
     setRequiredFilesPerRun({});
     setAttachmentsPerRun({});
+    setHasUnreadableLogFilesCsv(false);
     setReport(undefined);
     setUploadStates({});
     setProgress(undefined);
@@ -264,7 +282,7 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
     label: "import",
     variant: "contained" as const,
     color: "primary" as const,
-    disabled: !hasAnyCsv || importMutation.isPending,
+    disabled: !hasAnyCsv || importMutation.isPending || hasUnreadableLogFilesCsv,
     onClick: async () => {
       await startImport();
       return false;
@@ -303,6 +321,7 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
           file={logFilesCsvFile}
           requiredFilesPerRun={requiredFilesPerRun}
           attachmentsPerRun={attachmentsPerRun}
+          hasUnreadableCsv={hasUnreadableLogFilesCsv}
           onFileChange={onLogFilesCsvChanged}
           onAttachmentsChange={(runNumber, files) =>
             setAttachmentsPerRun(previous => ({ ...previous, [runNumber]: files }))

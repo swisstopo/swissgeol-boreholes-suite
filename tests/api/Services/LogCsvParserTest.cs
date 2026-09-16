@@ -1,13 +1,12 @@
 ﻿using BDMS.Models;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
-using System.Text;
 
 namespace BDMS.Services;
 
 [TestClass]
 public class LogCsvParserTest
 {
-    private static Stream ToStream(string content) => new MemoryStream(Encoding.UTF8.GetBytes(content));
+    private static TextReader ToReader(string content) => new StringReader(content);
 
     private static List<Codelist> Codelists =>
     [
@@ -19,7 +18,7 @@ public class LogCsvParserTest
     [TestMethod]
     public void MissingRunColumnsNamesEveryAbsentColumn()
     {
-        var missing = LogCsvParser.MissingRunColumns(ToStream("RunNumber;Comment\n"));
+        var missing = LogCsvParser.MissingRunColumns(ToReader("RunNumber;Comment\n"));
 
         CollectionAssert.AreEquivalent(new[] { "FromDepth", "ToDepth" }, missing.ToList());
     }
@@ -27,7 +26,7 @@ public class LogCsvParserTest
     [TestMethod]
     public void MissingRunColumnsToleratesExtraAndReorderedColumns()
     {
-        var missing = LogCsvParser.MissingRunColumns(ToStream("ToDepth;Unknown;FromDepth;RunNumber\n"));
+        var missing = LogCsvParser.MissingRunColumns(ToReader("ToDepth;Unknown;FromDepth;RunNumber\n"));
 
         Assert.AreEqual(0, missing.Count);
     }
@@ -37,7 +36,7 @@ public class LogCsvParserTest
     {
         var csv = "RunNumber;FromDepth;ToDepth;BoreholeStatus\nRUN-1;10.5;20.5;open hole\n";
 
-        var rows = LogCsvParser.ParseRuns(ToStream(csv), Codelists, boreholeId: 7);
+        var rows = LogCsvParser.ParseRuns(ToReader(csv), Codelists, boreholeId: 7);
 
         var row = rows.Single();
         Assert.AreEqual("RUN-1", row.RunNumber);
@@ -54,7 +53,7 @@ public class LogCsvParserTest
     {
         var csv = "RunNumber;FromDepth;ToDepth\n;10;20\n";
 
-        var row = LogCsvParser.ParseRuns(ToStream(csv), Codelists, boreholeId: 7).Single();
+        var row = LogCsvParser.ParseRuns(ToReader(csv), Codelists, boreholeId: 7).Single();
 
         Assert.AreEqual("importErrorRunNumberRequired", row.Errors.Single().MessageKey);
     }
@@ -64,7 +63,7 @@ public class LogCsvParserTest
     {
         var csv = "RunNumber;FromDepth;ToDepth;ConveyanceMethod\nRUN-1;10;20;rocket\n";
 
-        var row = LogCsvParser.ParseRuns(ToStream(csv), Codelists, boreholeId: 7).Single();
+        var row = LogCsvParser.ParseRuns(ToReader(csv), Codelists, boreholeId: 7).Single();
 
         var error = row.Errors.Single();
         Assert.AreEqual("importErrorUnknownCodelistValue", error.MessageKey);
@@ -77,7 +76,7 @@ public class LogCsvParserTest
     {
         var csv = "RunNumber;FromDepth;ToDepth;BitSize\nRUN-1;10;20;big\n";
 
-        var row = LogCsvParser.ParseRuns(ToStream(csv), Codelists, boreholeId: 7).Single();
+        var row = LogCsvParser.ParseRuns(ToReader(csv), Codelists, boreholeId: 7).Single();
 
         Assert.AreEqual("importErrorInvalidNumberFormat", row.Errors.Single().MessageKey);
     }
@@ -87,7 +86,7 @@ public class LogCsvParserTest
     {
         var csv = "RunNumber;Name;Extension\nRUN-1;My Log;las\n";
 
-        var row = LogCsvParser.ParseFiles(ToStream(csv), Codelists).Single();
+        var row = LogCsvParser.ParseFiles(ToReader(csv), Codelists).Single();
 
         Assert.AreEqual("My_Log.las", row.FileName);
         Assert.AreEqual("My_Log.las", row.LogFile.Name);
@@ -99,7 +98,7 @@ public class LogCsvParserTest
     {
         var csv = "RunNumber;Name;Extension\nRUN-1;already.las;\n";
 
-        var row = LogCsvParser.ParseFiles(ToStream(csv), Codelists).Single();
+        var row = LogCsvParser.ParseFiles(ToReader(csv), Codelists).Single();
 
         Assert.AreEqual("already.las", row.FileName);
     }
@@ -109,7 +108,7 @@ public class LogCsvParserTest
     {
         var csv = "RunNumber;Name;LogFileToolTypeCodes\nRUN-1;a.las;GR,NOPE\n";
 
-        var row = LogCsvParser.ParseFiles(ToStream(csv), Codelists).Single();
+        var row = LogCsvParser.ParseFiles(ToReader(csv), Codelists).Single();
 
         Assert.AreEqual("importErrorUnknownToolTypeCode", row.Errors.Single().MessageKey);
     }
@@ -119,7 +118,7 @@ public class LogCsvParserTest
     {
         var csv = "RunNumber;Name;Public\nRUN-1;a.las;Ja\n";
 
-        var row = LogCsvParser.ParseFiles(ToStream(csv), Codelists).Single();
+        var row = LogCsvParser.ParseFiles(ToReader(csv), Codelists).Single();
 
         Assert.IsTrue(row.LogFile.Public);
         Assert.AreEqual(0, row.Errors.Count);
@@ -130,7 +129,7 @@ public class LogCsvParserTest
     {
         var csv = "RunNumber;Name;Public\nRUN-1;a.las;perhaps\n";
 
-        var row = LogCsvParser.ParseFiles(ToStream(csv), Codelists).Single();
+        var row = LogCsvParser.ParseFiles(ToReader(csv), Codelists).Single();
 
         Assert.AreEqual("importErrorUnknownPublicValue", row.Errors.Single().MessageKey);
     }

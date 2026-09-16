@@ -655,6 +655,30 @@ public class BoreholeExportControllerTest
     }
 
     [TestMethod]
+    public async Task DownloadCsvStartsWithUtf8Bom()
+    {
+        var result = await controller.ExportCsvAsync(new List<int> { TestBoreholeId }) as FileContentResult;
+
+        Assert.IsNotNull(result);
+
+        // Without the byte order mark Excel opens the file as Windows-1252 and renders "é" as "Ã©".
+        CollectionAssert.AreEqual(new byte[] { 0xEF, 0xBB, 0xBF }, result.FileContents.Take(3).ToArray());
+    }
+
+    [TestMethod]
+    public async Task DownloadCsvKeepsAccentedCharacters()
+    {
+        var borehole = await context.Boreholes.SingleAsync(b => b.Id == TestBoreholeId);
+        borehole.OriginalName = "Forêt de Bière";
+        await context.SaveChangesAsync();
+
+        var result = await controller.ExportCsvAsync(new List<int> { TestBoreholeId }) as FileContentResult;
+
+        Assert.IsNotNull(result);
+        StringAssert.Contains(Encoding.UTF8.GetString(result.FileContents), "Forêt de Bière");
+    }
+
+    [TestMethod]
     public async Task ExportControllerMethodsShouldValidateUserHasPermissions()
     {
         // Override return value of HasUserWorkgroupPermissions in this specific test

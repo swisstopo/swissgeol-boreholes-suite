@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using System.Text;
 
 namespace BDMS.Controllers;
 
@@ -313,11 +312,11 @@ public class LogController : BoreholeControllerBase<LogRun>
 
         var runRows = logRunsCsvFile == null
             ? []
-            : LogCsvParser.ParseRuns(logRunsCsvFile.OpenReadStream(), codelists, boreholeId);
+            : LogCsvParser.ParseRuns(CsvEncoding.OpenText(logRunsCsvFile), codelists, boreholeId);
 
         var fileRows = logFilesCsvFile == null
             ? []
-            : LogCsvParser.ParseFiles(logFilesCsvFile.OpenReadStream(), codelists);
+            : LogCsvParser.ParseFiles(CsvEncoding.OpenText(logFilesCsvFile), codelists);
 
         var existingRuns = await Context.LogRuns
             .AsNoTracking()
@@ -360,11 +359,12 @@ public class LogController : BoreholeControllerBase<LogRun>
     /// <param name="csvName">How the CSV is named in the untranslated detail.</param>
     /// <param name="messageKey">The translation key naming that same CSV for the client.</param>
     /// <returns>The error to return, or <c>null</c> when the CSV has every required column.</returns>
-    private BadRequestObjectResult? MissingColumnsError(IFormFile? csvFile, Func<Stream, IReadOnlyList<string>> findMissingColumns, string csvName, string messageKey)
+    private BadRequestObjectResult? MissingColumnsError(IFormFile? csvFile, Func<TextReader, IReadOnlyList<string>> findMissingColumns, string csvName, string messageKey)
     {
         if (csvFile == null) return null;
 
-        var missing = findMissingColumns(csvFile.OpenReadStream());
+        using var reader = CsvEncoding.OpenText(csvFile);
+        var missing = findMissingColumns(reader);
         if (missing.Count == 0) return null;
 
         var columns = string.Join(", ", missing);
@@ -641,7 +641,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         }
 
         await csvWriter.FlushAsync().ConfigureAwait(false);
-        return Encoding.UTF8.GetBytes(stringWriter.ToString());
+        return CsvEncoding.ToUtf8BomBytes(stringWriter.ToString());
     }
 
     private static async Task<byte[]> WriteLogFileCsvBytesAsync(List<LogFile> logFiles, string locale)
@@ -679,7 +679,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         }
 
         await csvWriter.FlushAsync().ConfigureAwait(false);
-        return Encoding.UTF8.GetBytes(stringWriter.ToString());
+        return CsvEncoding.ToUtf8BomBytes(stringWriter.ToString());
     }
 
     private static string? GetCodelistText(Codelist? codelist, string locale) => locale switch
