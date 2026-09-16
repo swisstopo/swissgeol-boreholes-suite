@@ -94,18 +94,22 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
       setIsUploading(true);
       setUploadStates(Object.fromEntries(pending.map(upload => [upload.logFileId, "pending" as LogImportUploadState])));
 
+      const ownsWizard = () => runningUploads.current === controller;
+
       let position = 0;
       for (const upload of pending) {
         position++;
 
         if (controller.signal.aborted) {
-          setUploadState(upload.logFileId, "failed");
+          if (ownsWizard()) setUploadState(upload.logFileId, "failed");
           await deleteLogFile(upload.logFileId).catch(() => undefined);
           continue;
         }
 
-        setUploadState(upload.logFileId, "uploading");
-        setProgress({ fileName: upload.file.name, current: position, count: pending.length, transferred: 0 });
+        if (ownsWizard()) {
+          setUploadState(upload.logFileId, "uploading");
+          setProgress({ fileName: upload.file.name, current: position, count: pending.length, transferred: 0 });
+        }
 
         try {
           await uploadResumable(
@@ -113,19 +117,21 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
             { logRunId: String(upload.logRunId), logFileId: String(upload.logFileId) },
             {
               signal: controller.signal,
-              onProgress: ({ loaded, total }) =>
+              onProgress: ({ loaded, total }) => {
+                if (!ownsWizard()) return;
                 setProgress({
                   fileName: upload.file.name,
                   current: position,
                   count: pending.length,
                   transferred: loaded,
                   total,
-                }),
+                });
+              },
             },
           );
-          setUploadState(upload.logFileId, "uploaded");
+          if (ownsWizard()) setUploadState(upload.logFileId, "uploaded");
         } catch (error) {
-          setUploadState(upload.logFileId, "failed");
+          if (ownsWizard()) setUploadState(upload.logFileId, "failed");
           await deleteLogFile(upload.logFileId).catch(() => undefined);
 
           // The files behind a transport that just failed are not tried; they are skipped and
@@ -134,9 +140,13 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
         }
       }
 
-      runningUploads.current = null;
-      setProgress(undefined);
-      setIsUploading(false);
+      // Only the run that still holds the slot may release it, so a later one is not left with its
+      // uploads reported as finished while they are still on the wire.
+      if (ownsWizard()) {
+        runningUploads.current = null;
+        setProgress(undefined);
+        setIsUploading(false);
+      }
     },
     [attachmentsPerRun, setUploadState],
   );
@@ -179,6 +189,8 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
 
   const close = useCallback(() => {
     runningUploads.current?.abort();
+    runningUploads.current = null;
+    setIsUploading(false);
     setIsImporting(false);
     setStep(runsStep);
     setLogRunsCsvFile(undefined);

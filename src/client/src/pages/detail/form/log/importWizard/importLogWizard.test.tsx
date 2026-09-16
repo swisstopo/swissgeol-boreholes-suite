@@ -77,16 +77,20 @@ const withProviders = (element: ReactElement): ReactElement => (
   <QueryClientProvider client={new QueryClient()}>{element}</QueryClientProvider>
 );
 
-/** Walks the wizard from the first step to the report, staging the attachments on the way. */
-const runImportToReport = async () => {
-  render(withProviders(<ImportLogWizard isImporting={true} setIsImporting={vi.fn()} />));
-
+/** Walks the already rendered wizard from the first step to the report, staging the attachments. */
+const driveImportToReport = async () => {
   fireEvent.click(screen.getByText("pick-runs-csv"));
   fireEvent.click(screen.getByText("Next"));
   fireEvent.click(screen.getByText("pick-attachment"));
   await act(async () => {
     fireEvent.click(screen.getByText("Import"));
   });
+};
+
+/** Walks the wizard from the first step to the report, staging the attachments on the way. */
+const runImportToReport = async () => {
+  render(withProviders(<ImportLogWizard isImporting={true} setIsImporting={vi.fn()} />));
+  await driveImportToReport();
 };
 
 describe("ImportLogWizard", () => {
@@ -149,6 +153,54 @@ describe("ImportLogWizard", () => {
 
     expect(screen.getByTestId("staged-attachments").textContent).toBe("a.las,b.las,c.las");
     expect(screen.queryByText("importUploadFailed")).toBeNull();
+  });
+
+  it("leaves a later import alone when the run closed out of stops", async () => {
+    importLogs.mockResolvedValue([addedFileItem("a.las", 11), addedFileItem("b.las", 12), addedFileItem("c.las", 13)]);
+
+    // The first upload hangs until cancelled, so the closing run still has two records to remove
+    // when the dialog goes away and the second import starts.
+    uploadResumable.mockImplementationOnce(
+      (_file: File, _metadata: Record<string, string>, options: TransferOptions) =>
+        new Promise<number>((_resolve, reject) => {
+          options.signal?.addEventListener("abort", () =>
+            reject(new DOMException("The user aborted a request.", "AbortError")),
+          );
+        }),
+    );
+
+    let releaseTail: () => void = () => {};
+    const tailReached = new Promise<void>(resolve => {
+      releaseTail = resolve;
+    });
+    deleteLogFile.mockImplementation(async () => await tailReached);
+
+    await runImportToReport();
+    await waitFor(() => expect(uploadResumable).toHaveBeenCalledTimes(1));
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    });
+
+    // The second import takes over while the first run's tail is still deleting records.
+    uploadResumable.mockImplementation(
+      (_file: File, _metadata: Record<string, string>, options: TransferOptions) =>
+        new Promise<number>((_resolve, reject) => {
+          options.signal?.addEventListener("abort", () =>
+            reject(new DOMException("The user aborted a request.", "AbortError")),
+          );
+        }),
+    );
+    importLogs.mockResolvedValue([addedFileItem("a.las", 21)]);
+    await driveImportToReport();
+    await waitFor(() => expect(screen.getByRole("button", { name: "Back" })).toBeDefined());
+
+    await act(async () => {
+      releaseTail();
+    });
+
+    // The first run finishing must not report the second run's upload as done.
+    expect((screen.getByRole("button", { name: "Back" }) as HTMLButtonElement).disabled).toBe(true);
   });
 
   it("cancellingStopsTheRunningUploadAndSkipsTheRest", async () => {
