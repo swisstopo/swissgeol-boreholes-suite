@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 import { getAuthToken } from "../auth/authTokenStore.ts";
 import { useResetTabStatus } from "../hooks/useResetTabStatus.ts";
 import { getAuthorizationHeader } from "./authentication.ts";
-import { ApiError } from "./errorClasses.ts";
+import { ApiError, isUserErrorProblem, toUserError } from "./errorClasses.ts";
 import { Backfill, Casing, Completion, Document, DocumentUpdate, Instrumentation, Section } from "./generated";
 
 /**
@@ -11,6 +11,7 @@ import { Backfill, Casing, Completion, Document, DocumentUpdate, Instrumentation
  * @param {string} method - The HTTP method (e.g., GET, POST, PUT, DELETE).
  * @param {FormData|string|null} [body=null] - The request payload, if applicable.
  * @param {string|null} [contentType=null] - The content type of the request, if applicable.
+ * @param {AbortSignal} [signal] - Aborts the request, and with it the work it triggers on the server.
  * @returns {Promise<Response>} - The raw HTTP response.
  */
 export async function fetchApiV2Base(
@@ -18,6 +19,7 @@ export async function fetchApiV2Base(
   method: string,
   body: FormData | string | null = null,
   contentType: string | null = null,
+  signal?: AbortSignal,
 ): Promise<Response> {
   const baseUrl = "/api/v2/";
   const authentication = getAuthToken();
@@ -33,6 +35,7 @@ export async function fetchApiV2Base(
     credentials: "same-origin",
     headers: headers,
     body: body,
+    signal: signal,
   });
 }
 
@@ -80,16 +83,9 @@ async function readApiResponse(response: Response): Promise<any> {
  */
 async function handleFetchError(response: Response) {
   const responseContent = await readApiResponse(response);
-  if (typeof responseContent === "object" && responseContent !== null) {
-    if (responseContent.type === "userError") {
-      // This error type is ignored by the default mutation and query error handler in QueryClientInitializer in App.tsx and allows to handle the error individually
-      throw new ApiError(
-        responseContent.detail || responseContent.message,
-        response.status,
-        responseContent.messageKey,
-        responseContent,
-      );
-    }
+  if (isUserErrorProblem(responseContent)) {
+    // This error type is ignored by the default mutation and query error handler in QueryClientInitializer in App.tsx and allows to handle the error individually
+    throw toUserError(responseContent, response.status);
   }
   if (response.status === 404) {
     throw new ApiError(responseContent?.title ?? "Not Found", 404);
@@ -122,6 +118,7 @@ export async function fetchApiV2Legacy(url: string, method: string, payload: obj
  * @param url The resource url.
  * @param method The HTTP request method to apply (e.g. GET, PUT, POST...).
  * @param payload The payload of the HTTP request (optional).
+ * @param signal Aborts the request, and with it the work it triggers on the server.
  * @returns The HTTP response as JSON.
  * @throws {ApiError|Error} - Throws an `ApiError` or a generic `Error` based on the response content.
  */
@@ -129,8 +126,15 @@ export async function fetchApiV2WithApiError<T>(
   url: string,
   method: string,
   payload: FormData | object | null = null,
+  signal?: AbortSignal,
 ): Promise<T> {
-  const response = await fetchApiV2Base(url, method, payload ? JSON.stringify(payload) : null, "application/json");
+  const response = await fetchApiV2Base(
+    url,
+    method,
+    payload ? JSON.stringify(payload) : null,
+    "application/json",
+    signal,
+  );
   if (response.ok) {
     return await readApiResponse(response);
   } else {
