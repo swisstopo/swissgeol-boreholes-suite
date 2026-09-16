@@ -5,8 +5,15 @@ import Map from "ol/Map";
 import { afterEach, beforeAll, describe, expect, it, vi } from "vitest";
 import { LabelingView } from "./labelingView.tsx";
 
+// Records the handler of every render, so that a control click can be replayed for the render it
+// was rendered in.
+const rotateHandlers: (() => void)[] = [];
+
 vi.mock("../../../components/buttons/mapControls.jsx", () => ({
-  default: () => null,
+  default: ({ onRotate }: { onRotate: () => void }) => {
+    rotateHandlers.push(onRotate);
+    return null;
+  },
 }));
 
 beforeAll(() => {
@@ -19,6 +26,7 @@ beforeAll(() => {
 });
 
 afterEach(() => {
+  rotateHandlers.length = 0;
   cleanup();
 });
 
@@ -73,5 +81,21 @@ describe("LabelingView", () => {
     // A disposed map has no target element, so configuring it throws on every target access.
     expect(configuredMap?.getTargetElement()).not.toBeNull();
     expect(configuredMap).toBe(window["labeling-map" as keyof Window]);
+  });
+
+  it("rotates the map when a control of the render before the map creation is clicked", () => {
+    render(
+      <LabelingView
+        mapDomId="labeling-map"
+        fileName="profile-1.png"
+        image={createImage()}
+        imageSize={{ width: 100, height: 200 }}
+      />,
+    );
+
+    rotateHandlers[0]();
+
+    const map = window["labeling-map" as keyof Window] as unknown as Map;
+    expect(map.getView().getRotation()).toBe(Math.PI / 2);
   });
 });

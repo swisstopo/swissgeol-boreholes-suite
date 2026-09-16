@@ -1,4 +1,4 @@
-import { FC, useEffect, useState } from "react";
+import { FC, useEffect, useRef, useState } from "react";
 import { Box } from "@mui/material";
 import { View } from "ol";
 import { defaults as defaultControls } from "ol/control/defaults";
@@ -38,42 +38,39 @@ interface LabelingViewProps {
 
 export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName, imageSize, onMapInitialized }) => {
   const [map, setMap] = useState<Map>();
+  const mapRef = useRef<Map>(null);
 
   const zoomIn = () => {
-    if (map) {
-      const view = map.getView();
-      const zoom = view.getZoom();
-      if (zoom) {
-        view.setZoom(zoom + 1);
-      }
+    const view = mapRef.current?.getView();
+    const zoom = view?.getZoom();
+    if (view && zoom) {
+      view.setZoom(zoom + 1);
     }
   };
 
   const zoomOut = () => {
-    if (map) {
-      const view = map.getView();
-      const zoom = view.getZoom();
-      if (zoom) {
-        view.setZoom(zoom - 1);
-      }
+    const view = mapRef.current?.getView();
+    const zoom = view?.getZoom();
+    if (view && zoom) {
+      view.setZoom(zoom - 1);
     }
   };
 
   const fitToExtent = () => {
-    if (map) {
-      const view = map.getView();
+    const currentMap = mapRef.current;
+    if (currentMap) {
+      const view = currentMap.getView();
       const extent = view.getProjection().getExtent();
       if (extent) {
-        view.fit(extent, { size: map.getSize() });
+        view.fit(extent, { size: currentMap.getSize() });
       }
     }
   };
 
   const rotateImage = () => {
-    if (map) {
-      const view = map.getView();
-      const rotation = view.getRotation();
-      view.setRotation(rotation + Math.PI / 2);
+    const view = mapRef.current?.getView();
+    if (view) {
+      view.setRotation(view.getRotation() + Math.PI / 2);
     }
   };
 
@@ -92,6 +89,7 @@ export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName,
       map.dispose();
       // @ts-expect-error - Clear window reference when disposing
       window[mapDomId] = undefined;
+      mapRef.current = null;
       setMap(undefined);
     }
 
@@ -130,7 +128,8 @@ export const LabelingView: FC<LabelingViewProps> = ({ mapDomId, image, fileName,
     });
     imageLayer.setSource(source);
 
-    // Set window reference only after everything is initialized
+    // Set the references only after everything is initialized
+    mapRef.current = initMap;
     // @ts-expect-error - Attach map to window after complete initialization
     window[mapDomId] = initMap;
 
