@@ -123,7 +123,8 @@ describe("ImportLogWizard", () => {
 
     await runImportToReport();
 
-    expect(await screen.findByText("importUploadDone")).toBeDefined();
+    // A finished upload is marked with a check, which carries the same wording as its label.
+    expect(await screen.findByLabelText("importUploadDone")).toBeDefined();
     expect(deleteLogFile).not.toHaveBeenCalled();
   });
 

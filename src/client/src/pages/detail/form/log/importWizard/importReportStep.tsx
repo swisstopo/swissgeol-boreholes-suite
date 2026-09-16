@@ -1,6 +1,7 @@
 import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { Stack, Typography } from "@mui/material";
+import { Check } from "lucide-react";
 import { theme } from "../../../../../AppTheme.ts";
 import { BoreholesCard } from "../../../../../components/boreholesCard.tsx";
 import { LogImportItemType, LogImportOutcome, LogImportResultItem, LogImportUploadState } from "../logInterfaces.ts";
@@ -40,6 +41,9 @@ const uploadStateKey: Record<LogImportUploadState, string> = {
  * own, so a finishing upload changes the text in place instead of adding anything to the layout.
  * That slot is fixed in width and never wraps, so a row keeps its height when its status text
  * changes.
+ *
+ * An upload that arrived is marked with a check rather than named: it is the outcome every row is
+ * expected to reach, and the rows that need reading are the ones that say something else.
  */
 export const ImportReportStep: FC<ImportReportStepProps> = ({ items, uploadStates }) => {
   const { t } = useTranslation();
@@ -75,18 +79,31 @@ export const ImportReportStep: FC<ImportReportStepProps> = ({ items, uploadState
                   <Typography variant="body2" sx={{ flexGrow: 2, minWidth: 0, flexBasis: 0 }}>
                     {t(item.messageKey, item.values ?? {})}
                   </Typography>
-                  <Typography
-                    variant="body2"
+                  <Stack
+                    direction="row"
+                    justifyContent="flex-end"
+                    alignItems="center"
                     data-cy={`import-upload-state-${item.logFileId ?? "none"}`}
-                    sx={{
-                      width: theme.spacing(21),
-                      flexShrink: 0,
-                      whiteSpace: "nowrap",
-                      textAlign: "right",
-                      color: uploadState === "failed" ? theme.palette.error.main : undefined,
-                    }}>
-                    {uploadState ? t(uploadStateKey[uploadState]) : ""}
-                  </Typography>
+                    sx={{ width: theme.spacing(21), flexShrink: 0, alignSelf: "center" }}>
+                    {uploadState === "uploaded" ? (
+                      <Check
+                        size={18}
+                        color={theme.palette.success.main}
+                        aria-label={t(uploadStateKey[uploadState])}
+                        data-cy="import-upload-done"
+                      />
+                    ) : (
+                      <Typography
+                        variant="body2"
+                        sx={{
+                          whiteSpace: "nowrap",
+                          textAlign: "right",
+                          color: uploadState === "failed" ? theme.palette.error.main : undefined,
+                        }}>
+                        {uploadState ? t(uploadStateKey[uploadState]) : ""}
+                      </Typography>
+                    )}
+                  </Stack>
                 </Stack>
               );
             })}
