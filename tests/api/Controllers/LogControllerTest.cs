@@ -1044,6 +1044,24 @@ public class LogControllerTest : TestControllerBase
     }
 
     [TestMethod]
+    public async Task DeleteLogRunHoldingAWaitingLogFileRemovesTheRun()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = await AddTestLogRunAsync(borehole.Id);
+
+        var logFile = new LogFile { LogRunId = logRun.Id, Name = "waiting.las", NameUuid = null, Public = false };
+        Context.LogFiles.Add(logFile);
+        await Context.SaveChangesAsync();
+
+        // The record has nothing in the bucket, so the delete must not try to remove an object for it.
+        var response = await controller.DeleteAsync(logRun.Id);
+
+        ActionResultAssert.IsOk(response);
+        Assert.IsFalse(Context.LogRuns.Any(lr => lr.Id == logRun.Id));
+        Assert.IsFalse(Context.LogFiles.Any(lf => lf.Id == logFile.Id));
+    }
+
+    [TestMethod]
     public async Task DeleteIncompleteLogFileRemovesTheRecord()
     {
         var borehole = await AddTestBoreholeAsync();
