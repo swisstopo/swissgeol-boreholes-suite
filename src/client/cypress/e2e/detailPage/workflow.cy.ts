@@ -97,7 +97,7 @@ function manuallyResetStatusToDraft() {
   cy.wait(["@workflow_by_id", "@borehole_by_id"]);
 }
 
-function navigateToWorkflowAndStartEditing(id: unknown) {
+function navigateToWorkflowAndStartEditing(id: number) {
   goToDetailRouteAndAcceptTerms(`/${id}/status`);
   cy.wait("@borehole_by_id");
   startBoreholeEditing();

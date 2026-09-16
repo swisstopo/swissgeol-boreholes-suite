@@ -97,18 +97,21 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
     ]);
   };
 
+  // The generated reference system is a numeric union with the same members as the local enum, but
+  // the two are distinct types, so comparing them requires narrowing to the enum first.
+  const originalDepthUnit: ObservationDepthUnitType | undefined = observation.originalVerticalReferenceSystem;
+  const selectedDepthUnit =
+    originalDepthUnit == null || originalDepthUnit === ObservationDepthUnitType.unknown
+      ? ObservationDepthUnitType.measuredDepth
+      : originalDepthUnit;
+
   return (
     <>
       <FormSelect
         canReset={false}
         fieldName={depthUnitFieldName}
         label={t("verticalReferenceSystem")}
-        selected={
-          observation.originalVerticalReferenceSystem == null ||
-          observation.originalVerticalReferenceSystem === ObservationDepthUnitType.unknown
-            ? ObservationDepthUnitType.measuredDepth
-            : observation.originalVerticalReferenceSystem
-        }
+        selected={selectedDepthUnit}
         onUpdate={onDepthUnitChange}
         values={[
           { key: ObservationDepthUnitType.measuredDepth, name: t("measuredDepth") },

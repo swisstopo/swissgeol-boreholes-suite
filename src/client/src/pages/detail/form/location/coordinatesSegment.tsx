@@ -62,10 +62,10 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   function getCoordinatesFromForm(referenceSystem: string, direction: Direction, value: number): Coordinates {
     const currentFieldName = referenceSystems[referenceSystem].fieldName[direction];
 
-    const LV95XFormValue: string = formMethods.getValues(referenceSystems.LV95.fieldName.X) as string;
-    const LV95YFormValue: string = formMethods.getValues(referenceSystems.LV95.fieldName.Y) as string;
-    const LV03XFormValue: string = formMethods.getValues(referenceSystems.LV03.fieldName.X) as string;
-    const LV03YFormValue: string = formMethods.getValues(referenceSystems.LV03.fieldName.Y) as string;
+    const LV95XFormValue: string = formMethods.getValues(referenceSystems.LV95.fieldName.X);
+    const LV95YFormValue: string = formMethods.getValues(referenceSystems.LV95.fieldName.Y);
+    const LV03XFormValue: string = formMethods.getValues(referenceSystems.LV03.fieldName.X);
+    const LV03YFormValue: string = formMethods.getValues(referenceSystems.LV03.fieldName.Y);
 
     const LV95X =
       currentFieldName === referenceSystems.LV95.fieldName.X
@@ -211,17 +211,20 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     setValuesForCountryCantonMunicipality({ country: "", canton: "", municipality: "" });
   };
 
-  const onCancelCoordinateChange = (e: number) => {
+  const onCancelCoordinateChange = (referenceSystemCode: ReferenceSystemCode) => {
     formMethods.resetField("originalReferenceSystemId");
     formMethods.setValue(
       "originalReferenceSystemId",
-      Object.values(ReferenceSystemCode).find(code => typeof code === "number" && code !== e) as ReferenceSystemCode,
+      Object.values(ReferenceSystemCode).find(
+        (code): code is ReferenceSystemCode => typeof code === "number" && code !== referenceSystemCode,
+      ) as ReferenceSystemCode,
     );
   };
 
   // Resets the form and updates the reference system.
   const resetCoordinatesOnReferenceSystemChange = (e: number | string | boolean | null) => {
     if (typeof e !== "number") return;
+    const referenceSystemCode: ReferenceSystemCode = e;
     const areCoordinatesSet = Object.keys(FieldNameDirectionKeys).some(field =>
       formMethods.getValues(field as keyof LocationFormInputs),
     );
@@ -235,7 +238,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
         label: "cancel",
         icon: <X />,
         variant: "outlined",
-        action: () => onCancelCoordinateChange(e),
+        action: () => onCancelCoordinateChange(referenceSystemCode),
       },
       {
         label: "confirm",

@@ -49,7 +49,7 @@ const createBorehole = async (workgroupId: number): Promise<Borehole> => {
 };
 
 const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: number | null) => {
-  return await fetchApiV2Legacy(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
+  return await fetchApiV2Legacy(`borehole/copy?id=${boreholeId.join(",")}&workgroupId=${workgroupId}`, "POST");
 };
 
 export const exportCSVBorehole = async (boreholeIds: GridRowSelectionModel, fileName: string) => {
