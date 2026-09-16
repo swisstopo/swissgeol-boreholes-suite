@@ -1,5 +1,6 @@
 import { restrictionFreeCode } from "../../../src/components/codelist.ts";
 import { ObservationType } from "../../../src/pages/detail/form/hydrogeology/Observation.ts";
+import { buildConsentCookieValue, CONSENT_COOKIE_NAME } from "../../../src/term/consentCookie.ts";
 import adminUser from "../../fixtures/adminUser.json";
 import { startEditing, stopEditing } from "./buttonHelpers";
 
@@ -232,12 +233,27 @@ export const login = (user: string) => {
   );
 };
 
-const CONSENT_COOKIE_VALUE = encodeURIComponent(JSON.stringify({ v: 1, analytics: true }));
+/**
+ * Reads the subject of the OIDC session that cypress restored into the application's local storage.
+ * The seeded consent has to be scoped to the user the application will actually see, and the
+ * support file and the specs get separate module instances, so the current login cannot be tracked
+ * in a variable here.
+ */
+const readRestoredSubject = (win: Window): string | undefined => {
+  const key = Object.keys(win.localStorage).find(k => k.startsWith("oidc.user:"));
+  if (!key) return undefined;
+  try {
+    return JSON.parse(win.localStorage.getItem(key) ?? "{}").profile?.sub;
+  } catch {
+    return undefined;
+  }
+};
 
 const visitWithConsent = (route: string) => {
   cy.visit(route, {
     onBeforeLoad(win) {
-      win.document.cookie = `boreholes_consent=${CONSENT_COOKIE_VALUE}; path=/; SameSite=Lax`;
+      const value = buildConsentCookieValue(readRestoredSubject(win), true);
+      win.document.cookie = `${CONSENT_COOKIE_NAME}=${value}; path=/; SameSite=Lax`;
     },
   });
 };

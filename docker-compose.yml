@@ -1,6 +1,6 @@
 services:
   minio:
-    image: minio/minio
+    image: quay.io/minio/minio
     restart: unless-stopped
     environment:
       MINIO_ROOT_USER: REDSQUIRREL
@@ -68,9 +68,9 @@ services:
       db:
         condition: service_healthy
     environment:
-      VITE_APP_PROXY_HOST_API: http://localhost:5000/
-    extra_hosts:
-      - "localhost:host-gateway"
+      VITE_APP_PROXY_HOST_API: http://api:5000/
+      VITE_APP_PROXY_HOST_DATAEXTRACTION: http://dataextraction:8000/
+      VITE_APP_PROXY_HOST_OCR: http://ocr:8000/
   api:
     build:
       context: ./src
