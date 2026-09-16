@@ -97,3 +97,8 @@ export interface ImportLogsVariables {
   logRunsCsvFile?: File;
   logFilesCsvFile?: File;
 }
+
+export interface RequiredAttachmentsVariables {
+  boreholeId: number;
+  logFilesCsvFile: File;
+}

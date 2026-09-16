@@ -133,4 +133,95 @@ public class LogCsvParserTest
 
         Assert.AreEqual("importErrorUnknownPublicValue", row.Errors.Single().MessageKey);
     }
+
+    [TestMethod]
+    public void RequiredFileNamesReadsNamesPerRun()
+    {
+        var csv = "RunNumber;Name;Extension\nRUN-1;welllog;las\nRUN-2;data;txt\n";
+
+        var namesPerRun = LogCsvParser.RequiredFileNames(ToReader(csv));
+
+        CollectionAssert.AreEqual(new[] { "welllog.las" }, namesPerRun["RUN-1"].ToList());
+        CollectionAssert.AreEqual(new[] { "data.txt" }, namesPerRun["RUN-2"].ToList());
+    }
+
+    [TestMethod]
+    public void RequiredFileNamesGroupsEveryFileOfARun()
+    {
+        var csv = "RunNumber;Name;Extension\nRUN-1;file1;las\nRUN-1;file2;txt\n";
+
+        var namesPerRun = LogCsvParser.RequiredFileNames(ToReader(csv));
+
+        CollectionAssert.AreEqual(new[] { "file1.las", "file2.txt" }, namesPerRun.Single().Value.ToList());
+    }
+
+    [TestMethod]
+    public void RequiredFileNamesSpellsNamesTheWayTheImportMatchesThem()
+    {
+        // The name the import looks for carries no space, so neither may the name the user is
+        // asked for: the two are compared against each other.
+        var csv = "RunNumber;Name;Extension\nRUN-1;My Log;las\n";
+
+        var namesPerRun = LogCsvParser.RequiredFileNames(ToReader(csv));
+
+        CollectionAssert.AreEqual(new[] { "My_Log.las" }, namesPerRun["RUN-1"].ToList());
+    }
+
+    [TestMethod]
+    public void RequiredFileNamesReadsNameWithoutExtensionColumn()
+    {
+        var csv = "RunNumber;Name\nRUN-1;welllog.las\n";
+
+        var namesPerRun = LogCsvParser.RequiredFileNames(ToReader(csv));
+
+        CollectionAssert.AreEqual(new[] { "welllog.las" }, namesPerRun["RUN-1"].ToList());
+    }
+
+    [TestMethod]
+    public void RequiredFileNamesListsARunThatNamesNoFile()
+    {
+        // The run is still reported, so the step can say it expects nothing rather than stay silent.
+        var csv = "RunNumber;Extension\nRUN-1;las\n";
+
+        var namesPerRun = LogCsvParser.RequiredFileNames(ToReader(csv));
+
+        Assert.AreEqual(0, namesPerRun["RUN-1"].Count);
+    }
+
+    [TestMethod]
+    public void RequiredFileNamesSkipsRowsWithoutRunNumber()
+    {
+        var csv = "RunNumber;Name;Extension\nRUN-1;file1;las\n;empty;txt\n";
+
+        var namesPerRun = LogCsvParser.RequiredFileNames(ToReader(csv));
+
+        Assert.AreEqual(1, namesPerRun.Count);
+        CollectionAssert.AreEqual(new[] { "file1.las" }, namesPerRun["RUN-1"].ToList());
+    }
+
+    [TestMethod]
+    public void RequiredFileNamesReadsHeaderInAnyCasing()
+    {
+        var csv = "RUNNUMBER;NAME;EXTENSION\nRUN-1;file;las\n";
+
+        var namesPerRun = LogCsvParser.RequiredFileNames(ToReader(csv));
+
+        CollectionAssert.AreEqual(new[] { "file.las" }, namesPerRun["RUN-1"].ToList());
+    }
+
+    [TestMethod]
+    public void RequiredFileNamesIsEmptyWithoutRunNumberColumn()
+    {
+        var namesPerRun = LogCsvParser.RequiredFileNames(ToReader("Name;Extension\nfile;las\n"));
+
+        Assert.AreEqual(0, namesPerRun.Count);
+    }
+
+    [TestMethod]
+    public void RequiredFileNamesIsEmptyForAnEmptyFile()
+    {
+        var namesPerRun = LogCsvParser.RequiredFileNames(ToReader(string.Empty));
+
+        Assert.AreEqual(0, namesPerRun.Count);
+    }
 }

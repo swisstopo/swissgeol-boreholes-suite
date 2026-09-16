@@ -7,8 +7,9 @@ import { TransferOptions } from "../../../../../api/transferProgress.ts";
 import { LogImportResultItem } from "../logInterfaces.ts";
 import { ImportLogWizard } from "./importLogWizard.tsx";
 
-const { importLogs, deleteLogFile, uploadResumable } = vi.hoisted(() => ({
+const { importLogs, requiredAttachments, deleteLogFile, uploadResumable } = vi.hoisted(() => ({
   importLogs: vi.fn(),
+  requiredAttachments: vi.fn(),
   deleteLogFile: vi.fn(),
   uploadResumable: vi.fn(),
 }));
@@ -19,6 +20,13 @@ vi.mock("react-i18next", () => ({
 
 vi.mock("../log.ts", () => ({
   useImportLogs: () => ({ mutateAsync: importLogs, isPending: false, reset: vi.fn() }),
+  useRequiredAttachments: () => ({
+    mutateAsync: requiredAttachments,
+    isPending: false,
+    isError: false,
+    error: null,
+    reset: vi.fn(),
+  }),
   deleteLogFile: async (logFileId: number) => deleteLogFile(logFileId),
   LogImportValidationError: class LogImportValidationError extends Error {},
 }));

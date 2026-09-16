@@ -33,6 +33,56 @@ public static class LogCsvParser
     /// <returns>The missing column names, empty when the header is complete.</returns>
     public static IReadOnlyList<string> MissingFileColumns(TextReader csv) => MissingColumns(csv, requiredFileColumns);
 
+    /// <summary>
+    /// Names the attachments the log files CSV expects, grouped by the run they belong to.
+    /// Reads only the columns the file name is built from, so it needs no codelists and says
+    /// nothing about whether a row is importable.
+    /// </summary>
+    /// <param name="csv">The log files CSV to read.</param>
+    /// <returns>
+    /// One entry per run named in the file, in file order. A run whose rows name no file is still
+    /// listed, with no names: the import has something to say about it even though it expects no
+    /// attachment. A name repeated across rows is repeated here, because each row stands for its
+    /// own log file.
+    /// </returns>
+    public static IReadOnlyDictionary<string, IReadOnlyList<string>> RequiredFileNames(TextReader csv)
+    {
+        var namesPerRun = new Dictionary<string, List<string>>(StringComparer.OrdinalIgnoreCase);
+        using var parser = new CsvReader(csv, CsvConfigHelper.CsvReadConfig);
+
+        if (!parser.Read() || !parser.ReadHeader()) return ToReadOnly(namesPerRun);
+
+        var header = parser.HeaderRecord ?? [];
+        if (!HasColumn(header, "RunNumber")) return ToReadOnly(namesPerRun);
+
+        var hasNameColumn = HasColumn(header, "Name");
+
+        while (parser.Read())
+        {
+            var runNumber = parser.GetField<string>("RunNumber")?.Trim();
+            if (string.IsNullOrEmpty(runNumber)) continue;
+
+            if (!namesPerRun.TryGetValue(runNumber, out var names))
+            {
+                names = [];
+                namesPerRun[runNumber] = names;
+            }
+
+            if (!hasNameColumn) continue;
+
+            var fileName = BuildFileName(parser, []);
+            if (!string.IsNullOrEmpty(fileName)) names.Add(fileName);
+        }
+
+        return ToReadOnly(namesPerRun);
+    }
+
+    private static Dictionary<string, IReadOnlyList<string>> ToReadOnly(Dictionary<string, List<string>> namesPerRun) =>
+        namesPerRun.ToDictionary(entry => entry.Key, entry => (IReadOnlyList<string>)entry.Value, StringComparer.OrdinalIgnoreCase);
+
+    private static bool HasColumn(string[] header, string column) =>
+        header.Any(h => string.Equals(h?.Trim(), column, StringComparison.OrdinalIgnoreCase));
+
     private static IReadOnlyList<string> MissingColumns(TextReader csv, string[] required)
     {
         using var parser = new CsvReader(csv, CsvConfigHelper.CsvReadConfig);
@@ -40,9 +90,7 @@ public static class LogCsvParser
         if (!parser.Read() || !parser.ReadHeader()) return required;
 
         var header = parser.HeaderRecord ?? [];
-        return required
-            .Where(column => !header.Any(h => string.Equals(h?.Trim(), column, StringComparison.OrdinalIgnoreCase)))
-            .ToList();
+        return required.Where(column => !HasColumn(header, column)).ToList();
     }
 
     /// <summary>

@@ -10,9 +10,8 @@ import { FormDialog } from "../../../../../components/form/form.ts";
 import { useRequiredId } from "../../../../../hooks/useRequiredId.ts";
 import { useResetTabStatus } from "../../../../../hooks/useResetTabStatus.ts";
 import { useApiErrorAlert } from "../../../../../hooks/useShowAlertOnError.tsx";
-import { deleteLogFile, LogImportValidationError, useImportLogs } from "../log.ts";
+import { deleteLogFile, LogImportValidationError, useImportLogs, useRequiredAttachments } from "../log.ts";
 import { LogImportResultItem, LogImportUploadState } from "../logInterfaces.ts";
-import { parseLogFilesCsv, UnsupportedCsvEncodingError } from "../logUtils.ts";
 import { ImportFilesStep } from "./importFilesStep.tsx";
 import { attachmentsToUpload } from "./importReport.ts";
 import { ImportReportStep } from "./importReportStep.tsx";
@@ -62,36 +61,36 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
   const [uploadStates, setUploadStates] = useState<Record<number, LogImportUploadState>>({});
   const [progress, setProgress] = useState<UploadProgressState>();
   const [isUploading, setIsUploading] = useState(false);
-  const [hasUnreadableLogFilesCsv, setHasUnreadableLogFilesCsv] = useState(false);
   const runningUploads = useRef<AbortController | null>(null);
 
   const importMutation = useImportLogs();
+  const requiredAttachmentsMutation = useRequiredAttachments();
 
   const setUploadState = useCallback((logFileId: number, state: LogImportUploadState) => {
     setUploadStates(previous => ({ ...previous, [logFileId]: state }));
   }, []);
 
-  const onLogFilesCsvChanged = useCallback(async (file?: File) => {
-    setLogFilesCsvFile(file);
-    setAttachmentsPerRun({});
-    setHasUnreadableLogFilesCsv(false);
+  const onLogFilesCsvChanged = useCallback(
+    async (file?: File) => {
+      setLogFilesCsvFile(file);
+      setAttachmentsPerRun({});
+      requiredAttachmentsMutation.reset();
 
-    if (!file) {
-      setRequiredFilesPerRun({});
-      return;
-    }
+      if (!file) {
+        setRequiredFilesPerRun({});
+        return;
+      }
 
-    try {
-      setRequiredFilesPerRun((await parseLogFilesCsv(file)).requiredFilesPerRun);
-    } catch (error) {
-      if (!(error instanceof UnsupportedCsvEncodingError)) throw error;
-
-      // Without the required file names the wizard cannot ask for the attachments, and an import
-      // started anyway would write log file records no upload ever fills.
-      setRequiredFilesPerRun({});
-      setHasUnreadableLogFilesCsv(true);
-    }
-  }, []);
+      try {
+        setRequiredFilesPerRun(await requiredAttachmentsMutation.mutateAsync({ boreholeId, logFilesCsvFile: file }));
+      } catch {
+        // Without the expected names the wizard cannot ask for the attachments, so the step stays
+        // empty and the error the mutation holds is shown instead.
+        setRequiredFilesPerRun({});
+      }
+    },
+    [boreholeId, requiredAttachmentsMutation],
+  );
 
   /**
    * Sends the attachments one after another and keeps the record only for those that arrive.
@@ -214,15 +213,15 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
     setLogFilesCsvFile(undefined);
     setRequiredFilesPerRun({});
     setAttachmentsPerRun({});
-    setHasUnreadableLogFilesCsv(false);
     setReport(undefined);
     setUploadStates({});
     setProgress(undefined);
     importMutation.reset();
+    requiredAttachmentsMutation.reset();
     resetTabStatus();
     queryClient.invalidateQueries({ queryKey: ["logs", boreholeId] });
     queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, boreholeId] });
-  }, [boreholeId, importMutation, queryClient, resetTabStatus, setIsImporting]);
+  }, [boreholeId, importMutation, queryClient, requiredAttachmentsMutation, resetTabStatus, setIsImporting]);
 
   /**
    * Returns to the files step with the staged CSVs and attachments still selected.
@@ -278,11 +277,22 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
     },
   };
 
+  // A log files CSV whose expected names could not be read leaves the wizard unable to ask for the
+  // attachments, and an import started anyway would write log file records no upload ever fills.
+  const isLogFilesCsvUnread = requiredAttachmentsMutation.isPending || requiredAttachmentsMutation.isError;
+
+  // A refusal the server explained is shown in its words; anything else only says the CSV could
+  // not be read, which is all the step can honestly claim about a request that never arrived.
+  const readError = requiredAttachmentsMutation.error;
+  const explainedReadError =
+    readError instanceof LogImportValidationError ? readError.messageKey : "importErrorUnreadableCsv";
+  const readErrorMessageKey = readError ? explainedReadError : undefined;
+
   const importAction = {
     label: "import",
     variant: "contained" as const,
     color: "primary" as const,
-    disabled: !hasAnyCsv || importMutation.isPending || hasUnreadableLogFilesCsv,
+    disabled: !hasAnyCsv || importMutation.isPending || isLogFilesCsvUnread,
     onClick: async () => {
       await startImport();
       return false;
@@ -321,7 +331,8 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
           file={logFilesCsvFile}
           requiredFilesPerRun={requiredFilesPerRun}
           attachmentsPerRun={attachmentsPerRun}
-          hasUnreadableCsv={hasUnreadableLogFilesCsv}
+          isReadingCsv={requiredAttachmentsMutation.isPending}
+          readErrorMessageKey={readErrorMessageKey}
           onFileChange={onLogFilesCsvChanged}
           onAttachmentsChange={(runNumber, files) =>
             setAttachmentsPerRun(previous => ({ ...previous, [runNumber]: files }))

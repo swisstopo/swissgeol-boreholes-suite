@@ -337,6 +337,40 @@ public class LogController : BoreholeControllerBase<LogRun>
         return Ok(await CommitImportAsync(classification).ConfigureAwait(false));
     }
 
+    /// <summary>
+    /// Names the attachments a log files CSV expects, so that the import can ask for them before it
+    /// is started.
+    ///
+    /// The names are built here rather than in the browser because the import matches what the
+    /// client provides against these same names. Building them twice let the two drift apart, and a
+    /// name the client spelled differently made the import skip an attachment the user had supplied.
+    /// </summary>
+    /// <param name="boreholeId">The borehole the import is being prepared for.</param>
+    /// <param name="logFilesCsvFile">The log files CSV the import is to be started with.</param>
+    /// <returns>The expected file names per run number.</returns>
+    [HttpPost("import/requiredfiles")]
+    [Authorize(Policy = PolicyNames.Viewer)]
+    [RequestSizeLimit(FileSizeLimits.Standard)]
+    [RequestFormLimits(MultipartBodyLengthLimit = FileSizeLimits.Standard)]
+    public async Task<IActionResult> RequiredAttachmentsAsync([FromQuery] int boreholeId, IFormFile logFilesCsvFile)
+    {
+        // The same permission the import itself requires: the answer is only ever used to prepare one.
+        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
+        {
+            return Unauthorized();
+        }
+
+        try
+        {
+            return Ok(LogCsvParser.RequiredFileNames(CsvEncoding.OpenText(logFilesCsvFile)));
+        }
+        catch (CsvHelperException ex)
+        {
+            Logger.LogError(ex, "A log files CSV could not be read.");
+            return BadRequest(new { detail = "The CSV file could not be read.", messageKey = "importErrorUnreadableCsv" });
+        }
+    }
+
     private BadRequestObjectResult? ValidateCsvStructure(IFormFile? logRunsCsvFile, IFormFile? logFilesCsvFile)
     {
         try

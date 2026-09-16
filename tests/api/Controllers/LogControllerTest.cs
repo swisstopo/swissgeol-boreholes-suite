@@ -908,6 +908,34 @@ public class LogControllerTest : TestControllerBase
     }
 
     [TestMethod]
+    public async Task RequiredAttachmentsNamesTheFilesTheImportWillLookFor()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var csvFile = GetFormFileByContent("RunNumber;Name;Extension\nRUN-A;My Log;las\n", "log_files.csv");
+
+        var response = await controller.RequiredAttachmentsAsync(borehole.Id, csvFile);
+        ActionResultAssert.IsOk(response);
+
+        var namesPerRun = (IReadOnlyDictionary<string, IReadOnlyList<string>>)((OkObjectResult)response).Value!;
+        CollectionAssert.AreEqual(new[] { "My_Log.las" }, namesPerRun["RUN-A"].ToList());
+    }
+
+    [TestMethod]
+    public async Task RequiredAttachmentsReadsAnAnsiEncodedCsv()
+    {
+        var borehole = await AddTestBoreholeAsync();
+
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        var csvFile = GetFormFileByContent("RunNumber;Name;Extension\nRUN-A;Forage à côté;las\n", "log_files.csv", Encoding.GetEncoding(1252));
+
+        var response = await controller.RequiredAttachmentsAsync(borehole.Id, csvFile);
+        ActionResultAssert.IsOk(response);
+
+        var namesPerRun = (IReadOnlyDictionary<string, IReadOnlyList<string>>)((OkObjectResult)response).Value!;
+        CollectionAssert.AreEqual(new[] { "Forage_à_côté.las" }, namesPerRun["RUN-A"].ToList());
+    }
+
+    [TestMethod]
     public async Task ImportReportsAnInvalidRowAndStillWritesTheValidOne()
     {
         var borehole = await AddTestBoreholeAsync();
@@ -1221,6 +1249,13 @@ public class LogControllerTest : TestControllerBase
         await Context.SaveChangesAsync();
     }
 
+    private static string ReadEntryAsText(ZipArchiveEntry entry)
+    {
+        using var stream = entry.Open();
+        using var reader = new StreamReader(stream, Encoding.UTF8);
+        return reader.ReadToEnd();
+    }
+
     /// <summary>
     /// Reads the first <paramref name="count"/> bytes of a ZIP entry. A StreamReader silently
     /// consumes a byte order mark, so asserting on one needs a byte level read.
@@ -1231,12 +1266,5 @@ public class LogControllerTest : TestControllerBase
         var buffer = new byte[count];
         stream.ReadExactly(buffer, 0, count);
         return buffer;
-    }
-
-    private static string ReadEntryAsText(ZipArchiveEntry entry)
-    {
-        using var stream = entry.Open();
-        using var reader = new StreamReader(stream, Encoding.UTF8);
-        return reader.ReadToEnd();
     }
 }

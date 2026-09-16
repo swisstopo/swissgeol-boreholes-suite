@@ -308,7 +308,7 @@
   "importErrorUnknownToolTypeCode": "Unknown code \"{{code}}\" in column ToolType.",
   "importErrorUnreadableCsv": "The CSV file could not be read.",
   "importLogFilesDescription": "Upload a CSV file describing the LOG files and add the matching attachments per LOG run. Files without an attachment are skipped and can be added by importing again.",
-  "importLogFilesUnsupportedEncoding": "This CSV file cannot be read because of its character encoding. Save it as UTF-8 or Windows-1252 and upload it again.",
+  "importLogFilesReadingCsv": "Reading the CSV file...",
   "importLogRuns": "Import LOG runs from CSV file",
   "importLogRunsDescription": "Upload a CSV file containing the LOG run definitions. You can also continue without one to import LOG files for existing LOG runs.",
   "importOutcomeAdded": "Added",

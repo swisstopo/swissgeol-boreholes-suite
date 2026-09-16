@@ -19,6 +19,7 @@ import {
   LogFileUploadProgress,
   LogImportResultItem,
   LogRun,
+  RequiredAttachmentsVariables,
   UpdateLogRunVariables,
 } from "./logInterfaces.ts";
 
@@ -176,6 +177,33 @@ const toAttachmentName = (runNumber: string, fileName: string): string =>
 export const deleteLogFile = async (logFileId: number): Promise<void> => {
   await fetchApiV2WithApiError(`${logController}/file/${logFileId}`, "DELETE");
 };
+
+/**
+ * Asks the server which attachments a log files CSV expects.
+ *
+ * The names are read server side so that what the import looks for and what the wizard asks the
+ * user for are built by the same code, from the same decoding of the same bytes.
+ */
+export const useRequiredAttachments = () =>
+  useMutation<Record<string, string[]>, Error, RequiredAttachmentsVariables>({
+    mutationFn: async ({ boreholeId, logFilesCsvFile }) => {
+      const formData = new FormData();
+      formData.append("logFilesCsvFile", logFilesCsvFile);
+
+      const response = await upload(`${logController}/import/requiredfiles?boreholeId=${boreholeId}`, "POST", formData);
+      if (!response.ok) {
+        if (isJsonContentType(response.headers.get("content-type"))) {
+          const responseBody = await response.json();
+          if (typeof responseBody?.messageKey === "string") {
+            throw new LogImportValidationError(responseBody.messageKey, responseBody.values);
+          }
+        }
+        throw new Error("Reading the log files CSV failed");
+      }
+
+      return (await response.json()) as Record<string, string[]>;
+    },
+  });
 
 export const useImportLogs = () =>
   useMutation<LogImportResultItem[], Error, ImportLogsVariables>({

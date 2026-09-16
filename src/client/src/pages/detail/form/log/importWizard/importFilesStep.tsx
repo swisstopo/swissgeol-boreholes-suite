@@ -10,7 +10,8 @@ interface ImportFilesStepProps {
   onFileChange: (file?: File) => void;
   onAttachmentsChange: (runNumber: string, files: File[]) => void;
   file?: File;
-  hasUnreadableCsv?: boolean;
+  isReadingCsv?: boolean;
+  readErrorMessageKey?: string;
 }
 
 export const ImportFilesStep: FC<ImportFilesStepProps> = ({
@@ -19,7 +20,8 @@ export const ImportFilesStep: FC<ImportFilesStepProps> = ({
   onFileChange,
   onAttachmentsChange,
   file,
-  hasUnreadableCsv,
+  isReadingCsv,
+  readErrorMessageKey,
 }) => {
   const { t } = useTranslation();
   const runNumbers = Object.keys(requiredFilesPerRun);
@@ -34,9 +36,14 @@ export const ImportFilesStep: FC<ImportFilesStepProps> = ({
           onChange={files => onFileChange(files[0])}
           accept={{ "text/csv": [".csv"] }}
         />
-        {hasUnreadableCsv && (
-          <Typography variant="body2" color="error" data-cy="logFiles-csv-encoding-error">
-            {t("importLogFilesUnsupportedEncoding")}
+        {isReadingCsv && (
+          <Typography variant="body2" data-cy="logFiles-csv-reading">
+            {t("importLogFilesReadingCsv")}
+          </Typography>
+        )}
+        {readErrorMessageKey && (
+          <Typography variant="body2" color="error" data-cy="logFiles-csv-read-error">
+            {t(readErrorMessageKey)}
           </Typography>
         )}
       </Stack>
