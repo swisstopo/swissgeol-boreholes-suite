@@ -60,14 +60,16 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
     resetTabStatus();
     const prepared = prepareFormDataForSubmit(data);
     if (item.id === 0) {
-      addFieldMeasurement({
+      // Neither call is awaited: the legacy fetch helper reports API errors itself, and the submit
+      // handler returns void.
+      void addFieldMeasurement({
         ...prepared,
       }).then(() => {
         triggerReload();
         reloadBoreholes();
       });
     } else {
-      updateFieldMeasurement({
+      void updateFieldMeasurement({
         ...item,
         ...prepared,
       }).then(() => {
@@ -86,7 +88,8 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
   useFormDirtyMarkAsChanged({ formState });
 
   useEffect(() => {
-    trigger("fieldMeasurementResults");
+    // Not awaited: effects cannot be async, and the validation result is read from form state.
+    void trigger("fieldMeasurementResults");
     let currentUnits = {};
     getValues()["fieldMeasurementResults"]?.forEach((element, index) => {
       currentUnits = {

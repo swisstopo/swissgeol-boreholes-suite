@@ -15,7 +15,8 @@ vi.mock("../faciesDescriptionLabels.tsx", () => ({
   FaciesDescriptionLabels: ({ description }: { description: { id: number } }) => <div>facies-{description.id}</div>,
 }));
 
-i18n.use(initReactI18next).init({
+// Not awaited: the test harness only needs the resources registered synchronously.
+void i18n.use(initReactI18next).init({
   lng: "en",
   resources: {
     en: {

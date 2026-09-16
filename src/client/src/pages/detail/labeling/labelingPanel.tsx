@@ -149,7 +149,8 @@ const LabelingPanel: FC = () => {
             } else if (!matchesFileFormat(expectedFileFormat, file.type)) {
               showAlert(t("fileInvalidType"), "error");
             } else {
-              addFile(file);
+              // Not awaited: the drop handler returns void and addFile alerts on failure.
+              void addFile(file);
             }
           }
         }}

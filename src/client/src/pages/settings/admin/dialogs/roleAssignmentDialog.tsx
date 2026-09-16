@@ -40,7 +40,8 @@ export const RoleAssignmentDialog = <T,>({
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    queryClient.invalidateQueries({
+    // Not awaited: effects cannot be async, and the dialog renders from the query cache.
+    void queryClient.invalidateQueries({
       queryKey: [entityQueryKey],
     });
   }, [entityQueryKey, queryClient]);

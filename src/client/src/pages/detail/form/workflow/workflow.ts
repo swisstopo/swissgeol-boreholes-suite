@@ -93,11 +93,13 @@ export const useWorkflow = (boreholeId: number): UseQueryResult<Workflow> => {
 export const useWorkflowMutation = () => {
   const queryClient = useQueryClient();
 
+  // Not awaited: the caller should proceed as soon as the write succeeded, not when the refetches
+  // these invalidations trigger have settled.
   function invalidateBoreholeAndWorkflowQueries(boreholeId: number) {
-    queryClient.invalidateQueries({ queryKey: [workflowQueryKey, Number(boreholeId)] });
-    queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, Number(boreholeId)] });
-    queryClient.invalidateQueries({ queryKey: [canEditQueryKey] });
-    queryClient.invalidateQueries({ queryKey: [canManageQueryKey] });
+    void queryClient.invalidateQueries({ queryKey: [workflowQueryKey, Number(boreholeId)] });
+    void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, Number(boreholeId)] });
+    void queryClient.invalidateQueries({ queryKey: [canEditQueryKey] });
+    void queryClient.invalidateQueries({ queryKey: [canManageQueryKey] });
   }
 
   const updateWorkflow = useMutation({

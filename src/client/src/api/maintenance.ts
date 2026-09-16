@@ -57,7 +57,8 @@ export const useMaintenanceStatus = () => {
     const anyTaskCompleted = [...previouslyRunning.current].some(type => !currentlyRunning.has(type));
     previouslyRunning.current = currentlyRunning;
     if (anyTaskCompleted) {
-      queryClient.invalidateQueries({ queryKey: [maintenanceLogsQueryKey] });
+      // Not awaited: this is a background refresh triggered by polling, nothing waits on it.
+      void queryClient.invalidateQueries({ queryKey: [maintenanceLogsQueryKey] });
     }
   }, [query.data, queryClient]);
 

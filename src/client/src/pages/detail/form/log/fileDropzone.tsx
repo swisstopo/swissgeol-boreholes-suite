@@ -69,7 +69,8 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
     (index: number) => {
       setFiles(prev => {
         const next = prev.filter((_, i) => i !== index);
-        onChange(next);
+        // Not awaited: onChange is a form callback that returns void.
+        void onChange(next);
         return next;
       });
     },

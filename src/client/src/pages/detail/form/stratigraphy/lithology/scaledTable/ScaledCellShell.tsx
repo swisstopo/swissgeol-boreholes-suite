@@ -119,7 +119,8 @@ export const ScaledCellShell: FC<ScaledCellShellProps> = ({ children, dataCy, sx
             onClick={e => {
               e.stopPropagation();
               const el = contentRef.current;
-              copyToClipboard(el ? extractCellText(el) : "");
+              // Not awaited: the click handler returns void and copyToClipboard alerts on failure.
+              void copyToClipboard(el ? extractCellText(el) : "");
             }}
             color="primaryInverse"
             sx={{ backgroundColor: theme.palette.background.grey }}

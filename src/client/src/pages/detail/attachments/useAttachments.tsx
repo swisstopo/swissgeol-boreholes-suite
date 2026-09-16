@@ -124,7 +124,8 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
   }, [apiRef, rows]);
 
   useEffect(() => {
-    onLoad();
+    // Not awaited: effects cannot be async, and onLoad drives the grid through state.
+    void onLoad();
   }, [onLoad]);
 
   useEffect(() => {

@@ -31,7 +31,8 @@ export function LanguagePopup() {
   }, []);
 
   const onLanguageChanged = (language: string) => {
-    i18n.changeLanguage(language);
+    // Not awaited: the handler returns void and the UI re-renders once the language resources load.
+    void i18n.changeLanguage(language);
   };
 
   return (

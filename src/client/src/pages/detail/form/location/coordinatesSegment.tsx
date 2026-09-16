@@ -105,7 +105,8 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   // initially validate the form to display errors.
   useEffect(() => {
-    formMethods.trigger();
+    // Not awaited: effects cannot be async, and the validation result is read from form state.
+    void formMethods.trigger();
   }, [formMethods.trigger, currentReferenceSystem, formMethods]);
 
   // reset form values when the borehole changes.
@@ -199,7 +200,8 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
         const Y_precision = direction === Direction.Y ? changedCoordinatePrecision : otherCoordinatePrecision;
 
         if (X !== null && Y !== null) {
-          handleCoordinateTransformation(sourceSystem, targetSystem, X, Y, X_precision, Y_precision);
+          // Not awaited: the transformation writes its result into the form.
+          void handleCoordinateTransformation(sourceSystem, targetSystem, X, Y, X_precision, Y_precision);
         }
       }
     }

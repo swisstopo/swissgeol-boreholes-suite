@@ -106,7 +106,8 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.ctrlKey && event.key === "s") {
         event.preventDefault();
-        triggerSave();
+        // Not awaited: the keyboard handler returns void and the save bar reflects the outcome.
+        void triggerSave();
       }
     };
     if (showSaveBar && hasChanges) {

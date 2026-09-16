@@ -71,12 +71,14 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
     }
   };
 
+  // Neither is awaited: both are click handlers, and toggleEditing already swallows a failed lock
+  // and leaves the edit mode unchanged.
   const startEditing = () => {
-    toggleEditing(true);
+    void toggleEditing(true);
   };
 
   const stopEditing = () => {
-    toggleEditing(false);
+    void toggleEditing(false);
   };
 
   const resetFormAndStopEditing = () => {

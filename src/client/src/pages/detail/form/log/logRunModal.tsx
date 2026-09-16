@@ -133,7 +133,8 @@ export const LogRunModal: FC<LogRunModalProps> = ({ logRun, updateLogRun, runs }
           shouldDirty: true,
           shouldTouch: true,
         });
-        formMethods.trigger(`logFiles.${index}`);
+        // Not awaited: the validation result is read from form state.
+        void formMethods.trigger(`logFiles.${index}`);
         formMethods.setValue(`logFiles.${index}.file`, selected, { shouldDirty: true, shouldTouch: true });
       }
     },

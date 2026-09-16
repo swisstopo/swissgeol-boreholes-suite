@@ -621,7 +621,8 @@ describe("Tests the publication workflow.", () => {
     }).as("borehole_id");
     cy.get("@borehole_id").then(id => {
       // For some reason, the editor session cannot be reused here, so we clear all sessions ¯\_(ツ)_/¯
-      Cypress.session.clearAllSavedSessions();
+      // Not awaited: cypress queues the command, the returned promise is not part of the chain.
+      void Cypress.session.clearAllSavedSessions();
       loginAsEditor();
       navigateToWorkflowAndStartEditing(id);
       clickSgcButtonWithContent("Request review");

@@ -92,12 +92,14 @@ const CasingInput = ({ item, parentId }: DataCardItemInputProps<Casing>) => {
     data = prepareFormDataForSubmit(data);
     const payload = { ...item, ...data } as unknown as Casing;
     if (item.id === 0) {
-      addCasing(payload).then(() => {
+      // Not awaited: the legacy fetch helper reports API errors itself and the submit handler
+      // returns void.
+      void addCasing(payload).then(() => {
         triggerReload();
         reloadBoreholes();
       });
     } else {
-      updateCasing(payload).then(() => {
+      void updateCasing(payload).then(() => {
         triggerReload();
       });
     }
@@ -137,7 +139,8 @@ const CasingInput = ({ item, parentId }: DataCardItemInputProps<Casing>) => {
   useFormDirtyMarkAsChanged({ formState });
 
   useEffect(() => {
-    trigger("casingElements");
+    // Not awaited: effects cannot be async, and the validation result is read from form state.
+    void trigger("casingElements");
     updateDepth();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [getValues().casingElements]);

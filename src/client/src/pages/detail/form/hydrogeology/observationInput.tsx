@@ -17,7 +17,8 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
 
   useEffect(() => {
     if (boreholeId) {
-      getCasingsByBoreholeId(boreholeId).then(casings => {
+      // Not awaited: effects cannot be async, and the legacy fetch helper reports API errors itself.
+      void getCasingsByBoreholeId(boreholeId).then(casings => {
         setCasings(casings);
       });
     }

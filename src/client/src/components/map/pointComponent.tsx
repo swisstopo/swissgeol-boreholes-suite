@@ -381,7 +381,8 @@ export const PointComponent: FC<PointComponentProps> = ({
             data-cy="height-button"
             onClick={() => {
               if (point && applyChange) {
-                getHeight(point[0], point[1]).then(newHeight => {
+                // Not awaited: the click handler returns void and the height is applied via state.
+                void getHeight(point[0], point[1]).then(newHeight => {
                   setHeight(newHeight);
                 });
               }

@@ -98,14 +98,19 @@ interface ExtractedStratigraphyInput {
 
 const stratigraphiesQueryKey = "stratigraphies";
 
+/**
+ * Invalidations in this module are deliberately not awaited unless a caller needs the refreshed
+ * data: returning their promise from a mutation callback keeps the mutation pending until every
+ * refetch settles, rather than until the write succeeds.
+ */
 const invalidateStratigraphyQueries = (
   queryClient: ReturnType<typeof useQueryClient>,
   boreholeId: number,
   invalidateBorehole: boolean,
 ) => {
-  queryClient.invalidateQueries({ queryKey: [stratigraphiesQueryKey, boreholeId] });
+  void queryClient.invalidateQueries({ queryKey: [stratigraphiesQueryKey, boreholeId] });
   if (invalidateBorehole) {
-    queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, boreholeId] });
+    void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, boreholeId] });
   }
 };
 
@@ -199,7 +204,7 @@ export const useUpdateStratigraphyWithContents = () => {
     onSuccess: response => {
       resetTabStatus();
       invalidateStratigraphyQueries(queryClient, Number(response.stratigraphy.boreholeId), true);
-      queryClient.invalidateQueries({ queryKey: [lithologyTabQueryKey, response.stratigraphy.id] });
+      void queryClient.invalidateQueries({ queryKey: [lithologyTabQueryKey, response.stratigraphy.id] });
     },
   });
 };
@@ -257,10 +262,10 @@ export const useChronostratigraphyMutations = () => {
     },
     onSuccess: () => {
       resetTabStatus();
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: [chronostratigraphiesQueryKey],
       });
-      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
+      void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
     },
   });
   const useUpdateChronostratigraphy = useMutation({
@@ -269,10 +274,10 @@ export const useChronostratigraphyMutations = () => {
     },
     onSuccess: () => {
       resetTabStatus();
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: [chronostratigraphiesQueryKey],
       });
-      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
+      void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
     },
   });
   const useDeleteChronostratigraphy = useMutation({
@@ -281,10 +286,10 @@ export const useChronostratigraphyMutations = () => {
     },
     onSuccess: () => {
       resetTabStatus();
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: [chronostratigraphiesQueryKey],
       });
-      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
+      void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
     },
   });
 
@@ -318,10 +323,10 @@ export const useLithostratigraphyMutations = () => {
     },
     onSuccess: () => {
       resetTabStatus();
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: [lithostratigraphiesQueryKey],
       });
-      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
+      void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
     },
   });
   const useUpdateLithostratigraphy = useMutation({
@@ -330,10 +335,10 @@ export const useLithostratigraphyMutations = () => {
     },
     onSuccess: () => {
       resetTabStatus();
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: [lithostratigraphiesQueryKey],
       });
-      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
+      void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
     },
   });
   const useDeleteLithostratigraphy = useMutation({
@@ -342,10 +347,10 @@ export const useLithostratigraphyMutations = () => {
     },
     onSuccess: () => {
       resetTabStatus();
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: [lithostratigraphiesQueryKey],
       });
-      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
+      void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
     },
   });
 

@@ -34,7 +34,8 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
   const [isLoading, setIsLoading] = useState(false);
 
   const refresh = () => {
-    queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
+    // Not awaited: the refresh happens in the background and nothing waits on the refetch.
+    void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
   };
 
   const getFileExtension = (file: File | null) => {

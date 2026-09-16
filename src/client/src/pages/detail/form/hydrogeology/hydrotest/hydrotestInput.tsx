@@ -71,14 +71,16 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
     const hydrotest: Hydrotest = prepareFormDataForSubmit(data);
 
     if (item.id === 0) {
-      addHydrotest({
+      // Neither call is awaited: the legacy fetch helper reports API errors itself, and the submit
+      // handler returns void.
+      void addHydrotest({
         ...hydrotest,
       }).then(() => {
         triggerReload();
         reloadBoreholes();
       });
     } else {
-      updateHydrotest({
+      void updateHydrotest({
         ...item,
         ...hydrotest,
       }).then(() => {
@@ -150,7 +152,8 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
   }, [hydrotestKindIds]);
 
   useEffect(() => {
-    trigger("hydrotestResults");
+    // Not awaited: effects cannot be async, and the validation result is read from form state.
+    void trigger("hydrotestResults");
     const currentUnits: Record<number, string> = {};
 
     getValues().hydrotestResults?.forEach((element, index) => {

@@ -38,15 +38,17 @@ export const DataInputCard = <T extends FieldValues>({
   const submitForm: SubmitHandler<T> = data => {
     resetTabStatus();
     data = prepareFormDataForSubmit(data);
+    // Neither call is awaited: the legacy fetch helper reports API errors itself, and
+    // SubmitHandler returns void.
     if (item.id === 0) {
-      addData({
+      void addData({
         ...data,
       }).then(() => {
         triggerReload();
         reloadBoreholes();
       });
     } else {
-      updateData({
+      void updateData({
         ...item,
         ...data,
       }).then(() => {

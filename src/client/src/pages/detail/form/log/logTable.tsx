@@ -115,7 +115,8 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
 
   useEffect(() => {
     if (!sectionFilters) {
-      getSectionsByBoreholeId(boreholeId).then(sections => {
+      // Not awaited: effects cannot be async, and the sections reach the UI through state.
+      void getSectionsByBoreholeId(boreholeId).then(sections => {
         const filters: SectionFilter[] = [];
         for (const section of sections) {
           for (const element of section.sectionElements ?? []) {

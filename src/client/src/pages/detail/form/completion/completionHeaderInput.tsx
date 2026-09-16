@@ -80,7 +80,9 @@ const CompletionHeaderInput = ({
             label: t("save"),
             disabled: !formMethods.formState.isValid,
             action: () => {
-              formMethods.handleSubmit(submitForm)();
+              // Not awaited: the prompt action returns void and handleSubmit reports errors
+              // through form state.
+              void formMethods.handleSubmit(submitForm)();
             },
           },
         ]);
