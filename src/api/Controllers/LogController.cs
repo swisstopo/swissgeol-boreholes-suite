@@ -340,10 +340,6 @@ public class LogController : BoreholeControllerBase<LogRun>
     /// <summary>
     /// Names the attachments a log files CSV expects, so that the import can ask for them before it
     /// is started.
-    ///
-    /// The names are built here rather than in the browser because the import matches what the
-    /// client provides against these same names. Building them twice let the two drift apart, and a
-    /// name the client spelled differently made the import skip an attachment the user had supplied.
     /// </summary>
     /// <param name="boreholeId">The borehole the import is being prepared for.</param>
     /// <param name="logFilesCsvFile">The log files CSV the import is to be started with.</param>

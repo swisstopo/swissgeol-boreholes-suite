@@ -281,8 +281,6 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
   // attachments, and an import started anyway would write log file records no upload ever fills.
   const isLogFilesCsvUnread = requiredAttachmentsMutation.isPending || requiredAttachmentsMutation.isError;
 
-  // A refusal the server explained is shown in its words; anything else only says the CSV could
-  // not be read, which is all the step can honestly claim about a request that never arrived.
   const readError = requiredAttachmentsMutation.error;
   const explainedReadError =
     readError instanceof LogImportValidationError ? readError.messageKey : "importErrorUnreadableCsv";

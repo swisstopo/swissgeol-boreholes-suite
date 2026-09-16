@@ -35,14 +35,11 @@ public static class LogCsvParser
 
     /// <summary>
     /// Names the attachments the log files CSV expects, grouped by the run they belong to.
-    /// Reads only the columns the file name is built from, so it needs no codelists and says
-    /// nothing about whether a row is importable.
     /// </summary>
     /// <param name="csv">The log files CSV to read.</param>
     /// <returns>
     /// One entry per run named in the file, in file order. A run whose rows name no file is still
-    /// listed, with no names: the import has something to say about it even though it expects no
-    /// attachment. A name repeated across rows is repeated here, because each row stands for its
+    /// listed, with no names. A name repeated across rows is repeated here, because each row stands for its
     /// own log file.
     /// </returns>
     public static IReadOnlyDictionary<string, IReadOnlyList<string>> RequiredFileNames(TextReader csv)
