@@ -41,7 +41,7 @@ export const useUnsavedChangesPrompt = <T extends FieldValues>({
           {
             label: "save",
             disabled: !formMethods.formState.isValid,
-            action: () => formMethods.handleSubmit(submitForm)(),
+            action: () => void formMethods.handleSubmit(submitForm)(),
           },
         ]);
       } else {

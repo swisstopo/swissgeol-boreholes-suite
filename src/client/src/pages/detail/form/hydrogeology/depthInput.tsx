@@ -125,7 +125,7 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
             label={fields.labelMD}
             value={fields.getValueMD()}
             type={FormValueType.Number}
-            onUpdate={() => convertDepth(fields.fieldNameMD, fields.fieldNameMasl, ObservationDepthUnitType.masl)}
+            onUpdate={() => void convertDepth(fields.fieldNameMD, fields.fieldNameMasl, ObservationDepthUnitType.masl)}
             disabled={watchDepthUnit !== ObservationDepthUnitType.measuredDepth}
           />
           <FormInput
@@ -134,7 +134,7 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
             value={fields.getValueMasl()}
             type={FormValueType.Number}
             onUpdate={() =>
-              convertDepth(fields.fieldNameMasl, fields.fieldNameMD, ObservationDepthUnitType.measuredDepth)
+              void convertDepth(fields.fieldNameMasl, fields.fieldNameMD, ObservationDepthUnitType.measuredDepth)
             }
             disabled={watchDepthUnit !== ObservationDepthUnitType.masl}
           />

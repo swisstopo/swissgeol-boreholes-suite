@@ -64,13 +64,13 @@ export const DataInputCard = <T extends FieldValues>({
   });
 
   useValidateFormOnMount({ formMethods });
-  useSaveOnCtrlS(handleSubmit(submitForm));
+  useSaveOnCtrlS(() => void handleSubmit(submitForm)());
   useFormDirtyMarkAsChanged({ formState });
 
   return (
     <FormProvider {...formMethods}>
       <DevTool control={control} placement="top-left" />
-      <form onSubmit={handleSubmit(submitForm)}>
+      <form onSubmit={event => void handleSubmit(submitForm)(event)}>
         <FormContainer pt={1}>{children}</FormContainer>
         <DataCardSaveAndCancelButtons formMethods={formMethods} submitForm={submitForm} />
       </form>

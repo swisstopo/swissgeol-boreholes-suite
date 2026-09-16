@@ -222,7 +222,7 @@ const LabelingPanel: FC = () => {
           isLoadingFiles={isLoadingFiles || isLoadingFileInfo || isLoadingImage}
           files={files}
           setSelectedFile={setSelectedAttachment}
-          addFile={addFile}
+          addFile={file => void addFile(file)}
           showAlert={showAlert}
         />
       )}

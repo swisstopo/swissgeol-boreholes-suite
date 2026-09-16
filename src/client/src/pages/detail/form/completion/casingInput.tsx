@@ -147,7 +147,7 @@ const CasingInput = ({ item, parentId }: DataCardItemInputProps<Casing>) => {
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={handleSubmit(submitForm)}>
+      <form onSubmit={event => void handleSubmit(submitForm)(event)}>
         <FormContainer>
           <FormInput fieldName="name" label="name" value={item.name} required={true} />
           <FormContainer direction="row">

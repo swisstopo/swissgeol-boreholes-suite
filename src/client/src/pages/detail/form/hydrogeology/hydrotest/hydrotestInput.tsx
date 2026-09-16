@@ -212,7 +212,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={handleSubmit(submitForm)}>
+      <form onSubmit={event => void handleSubmit(submitForm)(event)}>
         <FormContainer>
           <ObservationInput observation={item} />
           <FormContainer direction="row">

@@ -118,7 +118,7 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
               acceptedFileTypes={["text/csv", "application/json", "application/zip", "application/x-zip-compressed"]}
             />
             <Box>
-              <Link sx={{ cursor: "pointer" }} variant="subtitle1" onClick={downloadCodelistCsv}>
+              <Link sx={{ cursor: "pointer" }} variant="subtitle1" onClick={() => void downloadCodelistCsv()}>
                 {t("csvCodeListReferenceExplanation")}
               </Link>
             </Box>
@@ -128,7 +128,7 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
           variant="contained"
           data-cy={"import-button"}
           disabled={!file || editableWorkgroups?.length === 0 || !currentWorkgroupId}
-          onClick={handleBoreholeImport}>
+          onClick={() => void handleBoreholeImport()}>
           {t("import")}
         </Button>
       </Stack>

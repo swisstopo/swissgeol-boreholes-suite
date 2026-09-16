@@ -53,15 +53,18 @@ export const FormDialog: FC<FormDialogProps> = ({
             color={action.color ?? "primary"}
             label={action.label}
             disabled={action.disabled}
-            onClick={async () => {
-              if (action.onClick) {
-                const success = await action.onClick();
+            onClick={() => {
+              if (!action.onClick) {
+                onClose();
+                return;
+              }
+              // Not awaited: onClick returns void, the dialog closes from the callback below.
+              // onClick may answer synchronously, but the original code awaited it either way.
+              void Promise.resolve(action.onClick()).then(success => {
                 if (success) {
                   onClose();
                 }
-              } else {
-                onClose();
-              }
+              });
             }}
           />
         ))

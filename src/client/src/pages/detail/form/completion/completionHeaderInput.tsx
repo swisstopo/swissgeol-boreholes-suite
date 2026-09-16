@@ -102,7 +102,7 @@ const CompletionHeaderInput = ({
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={formMethods.handleSubmit(submitForm)}>
+      <form onSubmit={event => void formMethods.handleSubmit(submitForm)(event)}>
         <FormContainer>
           <FormContainer
             direction="row"

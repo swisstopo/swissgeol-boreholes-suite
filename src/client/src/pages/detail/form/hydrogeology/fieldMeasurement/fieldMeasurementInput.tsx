@@ -120,7 +120,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={handleSubmit(submitForm)}>
+      <form onSubmit={event => void handleSubmit(submitForm)(event)}>
         <FormContainer>
           <ObservationInput observation={item} />
           <Box
