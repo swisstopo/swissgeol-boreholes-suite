@@ -74,8 +74,17 @@ export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.
         tsconfigRootDir: __dirname,
       },
     },
+    extends: [...tseslint.configs.recommendedTypeChecked],
     rules: {
       "@typescript-eslint/no-deprecated": "error",
+      // Downgraded, not disabled: these all cascade from the untyped legacy api-lib/Redux
+      // boundary. Typing that boundary is tracked separately; until then the findings stay
+      // visible in the editor without blocking the build.
+      "@typescript-eslint/no-unsafe-member-access": "warn",
+      "@typescript-eslint/no-unsafe-assignment": "warn",
+      "@typescript-eslint/no-unsafe-return": "warn",
+      "@typescript-eslint/no-unsafe-argument": "warn",
+      "@typescript-eslint/no-unsafe-call": "warn",
     },
   },
   {
