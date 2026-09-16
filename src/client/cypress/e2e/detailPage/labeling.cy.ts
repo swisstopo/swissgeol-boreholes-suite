@@ -312,8 +312,7 @@ describe("Test labeling tool", () => {
     cy.dataCy("edit-button").should("be.visible");
     cy.dataCy("labeling-toggle-button").should("exist");
     cy.dataCy("labeling-panel").should("exist");
-
-    cy.dataCy("text-extraction-button").should("not.exist");
+    cy.dataCy("text-extraction-button").should("exist");
 
     //can zoom and rotate
     cy.get('[data-cy="labeling-panel"] [data-cy="zoom-in-button"]').click();

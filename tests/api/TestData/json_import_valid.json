@@ -18,7 +18,6 @@
       "CreatedAt": "2024-12-12T14:00:27.13319Z",
       "Settings": null,
       "WorkgroupRoles": null,
-      "TermsAccepted": null,
       "Deletable": null
     },
     "locked": null,
@@ -35,7 +34,6 @@
       "CreatedAt": "2024-12-12T14:00:27.13319Z",
       "Settings": null,
       "WorkgroupRoles": null,
-      "TermsAccepted": null,
       "Deletable": null
     },
     "workgroupId": 1,

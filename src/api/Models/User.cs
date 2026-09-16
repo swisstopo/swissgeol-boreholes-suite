@@ -80,11 +80,6 @@ public class User : IIdentifyable
     public ICollection<UserWorkgroupRole> WorkgroupRoles { get; } = new List<UserWorkgroupRole>();
 
     /// <summary>
-    /// Gets the TermsAccepted.
-    /// </summary>
-    public ICollection<TermsAccepted> TermsAccepted { get; } = new List<TermsAccepted>();
-
-    /// <summary>
     /// Gets or sets whether this user can be deleted.
     /// </summary>
     [NotMapped]
