@@ -166,7 +166,7 @@ export class LogImportValidationError extends ApiError {
  * @param fileName The file name as the browser reports it.
  * @returns The identifier to send.
  */
-export const toAttachmentName = (runNumber: string, fileName: string): string =>
+const toAttachmentName = (runNumber: string, fileName: string): string =>
   `${runNumber}/${fileName.replaceAll(" ", "_")}`;
 
 /**

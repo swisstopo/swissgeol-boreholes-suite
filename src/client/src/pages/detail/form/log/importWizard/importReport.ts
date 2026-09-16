@@ -1,7 +1,7 @@
 import { LogImportItemType, LogImportOutcome, LogImportResultItem } from "../logInterfaces.ts";
 
 /** The attachment of one added log file, ready to be uploaded. */
-export interface AttachmentUpload {
+interface AttachmentUpload {
   logFileId: number;
   logRunId: number;
   file: File;
@@ -11,7 +11,7 @@ export interface AttachmentUpload {
 /**
  * The order the report groups are shown in: what was written first, what needs attention last.
  */
-export const reportOutcomeOrder: LogImportOutcome[] = ["Added", "AlreadyExists", "SkippedIncomplete", "Error"];
+const reportOutcomeOrder: LogImportOutcome[] = ["Added", "AlreadyExists", "SkippedIncomplete", "Error"];
 
 const typeOrder: Record<LogImportItemType, number> = { Run: 0, File: 1 };
 
