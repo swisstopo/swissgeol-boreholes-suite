@@ -40,8 +40,12 @@ export const WorkgroupDetail: FC = () => {
     defaultValues: selectedWorkgroup,
   });
 
+  const changeNameTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
   const changeName = useCallback(
     (name: string) => {
+      // A direct commit supersedes a pending debounced one, which would otherwise repeat the same update.
+      clearTimeout(changeNameTimer.current);
       if (!selectedWorkgroup || !name || name === selectedWorkgroup.name) return;
 
       const updatedWorkgroup = { ...selectedWorkgroup, name };
@@ -49,8 +53,6 @@ export const WorkgroupDetail: FC = () => {
     },
     [selectedWorkgroup, updateWorkgroup],
   );
-
-  const changeNameTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
 
   const debouncedChangeName = useCallback(
     (name: string) => {
