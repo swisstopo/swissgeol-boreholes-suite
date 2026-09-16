@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useEffect, useState } from "react";
+import { FC, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { AlertColor, Box } from "@mui/material";
 import {
@@ -12,7 +12,6 @@ import { BoreholeAttachment } from "../../../api/unionTypes.ts";
 import { theme } from "../../../AppTheme.ts";
 import { TextExtractionButton } from "../../../components/buttons/labelingButtons.tsx";
 import { useShowAlertOnError } from "../../../hooks/useShowAlertOnError.tsx";
-import { EditStateContext } from "../editStateContext.tsx";
 import { useLabelingContext } from "./labelingContext.tsx";
 import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
 
@@ -21,7 +20,6 @@ interface LabelingExtractionProps {
   activePage: number;
   showAlert: (text: string, severity?: AlertColor, allowAutoHide?: boolean) => void;
   closeAlert: () => void;
-  isReadonly?: boolean;
 }
 
 export const LabelingExtraction: FC<LabelingExtractionProps> = ({
@@ -29,14 +27,12 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
   activePage,
   showAlert,
   closeAlert,
-  isReadonly = false,
 }) => {
   const { t } = useTranslation();
   const { extractionObject, setExtractionObject, setExtractionState, extractionState, setAbortController } =
     useLabelingContext();
   const [extractionExtent, setExtractionExtent] = useState<number[]>([]);
   const [drawTooltipLabel, setDrawTooltipLabel] = useState<string>();
-  const { editingEnabled } = useContext(EditStateContext);
   const { data: fileInfo } = useFileInfo(selectedFile?.id, activePage);
   const {
     data: pageBoundingBoxes,
@@ -142,16 +138,14 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
           left: theme.spacing(2),
           zIndex: "500",
         }}>
-        {editingEnabled && !isReadonly && (
-          <TextExtractionButton
-            disabled={extractionObject?.type == "text" && extractionState === ExtractionState.drawing}
-            onClick={() => {
-              setExtractionObject({ type: "text" });
-              setExtractionState(ExtractionState.start);
-              setDrawTooltipLabel("drawTextBox");
-            }}
-          />
-        )}
+        <TextExtractionButton
+          disabled={extractionObject?.type == "text" && extractionState === ExtractionState.drawing}
+          onClick={() => {
+            setExtractionObject({ type: "text" });
+            setExtractionState(ExtractionState.start);
+            setDrawTooltipLabel("drawTextBox");
+          }}
+        />
       </Box>
       <LabelingDrawContainer
         fileInfo={fileInfo}

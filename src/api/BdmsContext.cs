@@ -234,14 +234,11 @@ public class BdmsContext : DbContext
         .Include(s => s.ChronostratigraphyLayers)
         .Include(s => s.LithostratigraphyLayers);
 
-    public DbSet<Term> Terms { get; set; }
-
     public DbSet<User> Users { get; set; }
 
     public IQueryable<User> UsersWithIncludes
         => Users
-        .Include(u => u.WorkgroupRoles).ThenInclude(wr => wr.Workgroup)
-        .Include(u => u.TermsAccepted).ThenInclude(ta => ta.Term);
+        .Include(u => u.WorkgroupRoles).ThenInclude(wr => wr.Workgroup);
 
     public DbSet<UserWorkgroupRole> UserWorkgroupRoles { get; set; }
 
@@ -375,14 +372,14 @@ public class BdmsContext : DbContext
     /// <summary>
     /// Update the change information of <see cref="IChangeTracking"/> entities and call <see cref="DbContext.SaveChangesAsync(CancellationToken)" />.
     /// </summary>
-    public async Task<int> UpdateChangeInformationAndSaveChangesAsync(HttpContext httpContext)
+    public async Task<int> UpdateChangeInformationAndSaveChangesAsync(HttpContext httpContext, CancellationToken cancellationToken = default)
     {
         var subjectId = httpContext?.User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
 
         var entities = ChangeTracker.Entries<IChangeTracking>();
         var user = await Users
             .AsNoTracking()
-            .SingleOrDefaultAsync(u => u.SubjectId == subjectId)
+            .SingleOrDefaultAsync(u => u.SubjectId == subjectId, cancellationToken)
             .ConfigureAwait(false);
 
         foreach (var entity in entities)
@@ -401,7 +398,7 @@ public class BdmsContext : DbContext
             }
         }
 
-        return await SaveChangesAsync().ConfigureAwait(false);
+        return await SaveChangesAsync(cancellationToken).ConfigureAwait(false);
     }
 
     /// <inheritdoc />
@@ -409,7 +406,6 @@ public class BdmsContext : DbContext
     {
         modelBuilder.HasDefaultSchema(BoreholesDatabaseSchemaName);
         modelBuilder.Entity<UserWorkgroupRole>().HasKey(k => new { k.UserId, k.WorkgroupId, k.Role });
-        modelBuilder.Entity<TermsAccepted>().HasKey(k => new { k.UserId, k.TermId });
 
         modelBuilder.Entity<Borehole>()
             .HasMany(b => b.Codelists)
