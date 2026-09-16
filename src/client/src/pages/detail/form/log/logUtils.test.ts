@@ -2,7 +2,13 @@
 import { describe, expect, it } from "vitest";
 import { FormErrors } from "../../../../components/form/form.ts";
 import { LogRun } from "./logInterfaces.ts";
-import { buildFileName, getFileExtension, parseLogFilesCsv, validateFiles } from "./logUtils.ts";
+import {
+  buildFileName,
+  getFileExtension,
+  parseLogFilesCsv,
+  UnsupportedCsvEncodingError,
+  validateFiles,
+} from "./logUtils.ts";
 
 function createCsvFile(content: string): File {
   return new File([content], "test.csv", { type: "text/csv" });
@@ -16,6 +22,21 @@ function createCsvFileWithBytes(bytes: number[]): File {
 // so the code point is the byte.
 function windows1252Bytes(text: string): number[] {
   return [...text].map(character => character.charCodeAt(0));
+}
+
+// These helpers prepend the matching byte order mark. They only handle characters inside the basic
+// multilingual plane, which is all these tests use, so one character is always one code unit.
+function utf16LittleEndianBytes(text: string): number[] {
+  return [0xff, 0xfe, ...[...text].flatMap(c => [c.charCodeAt(0) & 0xff, c.charCodeAt(0) >> 8])];
+}
+
+function utf16BigEndianBytes(text: string): number[] {
+  return [0xfe, 0xff, ...[...text].flatMap(c => [c.charCodeAt(0) >> 8, c.charCodeAt(0) & 0xff])];
+}
+
+function utf32LittleEndianBytes(text: string): number[] {
+  const mark = [0xff, 0xfe, 0x00, 0x00];
+  return [...mark, ...[...text].flatMap(c => [c.charCodeAt(0) & 0xff, c.charCodeAt(0) >> 8, 0x00, 0x00])];
 }
 
 describe("buildFileName", () => {
@@ -114,6 +135,45 @@ describe("parseLogFilesCsv", () => {
     expect(result.requiredFilesPerRun).toEqual({
       "RUN-1": ["file.las"],
     });
+  });
+
+  it("decodes a utf-16 little endian file", async () => {
+    const csv = "RunNumber;Name;Extension\r\nRUN-1;café;las\r\n";
+    const result = await parseLogFilesCsv(createCsvFileWithBytes(utf16LittleEndianBytes(csv)));
+    expect(result.requiredFilesPerRun).toEqual({ "RUN-1": ["café.las"] });
+  });
+
+  it("decodes a utf-16 big endian file", async () => {
+    const csv = "RunNumber;Name;Extension\r\nRUN-1;café;las\r\n";
+    const result = await parseLogFilesCsv(createCsvFileWithBytes(utf16BigEndianBytes(csv)));
+    expect(result.requiredFilesPerRun).toEqual({ "RUN-1": ["café.las"] });
+  });
+
+  it("rejects a utf-32 file instead of misreading it", async () => {
+    // TextDecoder has no UTF-32. Reporting the failure keeps a file whose names cannot be read
+    // apart from a file that legitimately requires no attachments.
+    const csv = "RunNumber;Name;Extension\r\nRUN-1;welllog;las\r\n";
+    const file = createCsvFileWithBytes(utf32LittleEndianBytes(csv));
+    await expect(parseLogFilesCsv(file)).rejects.toThrow(UnsupportedCsvEncodingError);
+  });
+
+  it("does not mistake windows-1252 text for a wide byte order mark", async () => {
+    // "ÿþ" is 0xFF 0xFE, the same two bytes as a UTF-16 little endian mark, and it sits in a leading
+    // throwaway column so that the decoder meets it first. The NUL bytes a wide encoding would
+    // produce are what tell the two apart.
+    const csv = "ÿþ;RunNumber;Name;Extension\r\n;RUN-1;café;las\r\n";
+    const result = await parseLogFilesCsv(createCsvFileWithBytes(windows1252Bytes(csv)));
+    expect(result.requiredFilesPerRun).toEqual({ "RUN-1": ["café.las"] });
+  });
+
+  it("decodes an even length windows-1252 file", async () => {
+    // A strict UTF-16 decode only rejects an odd number of bytes, so an even length file is the
+    // case where identifying the encoding by trial decoding would silently produce mojibake.
+    const csv = "RunNumber;Name;Extension\r\nRUN-1;welllogs;las\r\n";
+    const bytes = windows1252Bytes(csv);
+    expect(bytes.length % 2).toBe(0);
+    const result = await parseLogFilesCsv(createCsvFileWithBytes(bytes));
+    expect(result.requiredFilesPerRun).toEqual({ "RUN-1": ["welllogs.las"] });
   });
 });
 

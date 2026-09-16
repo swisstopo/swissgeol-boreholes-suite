@@ -307,6 +307,7 @@
   "importErrorUnknownPublicValue": "Valore sconosciuto \"{{value}}\" nella colonna Public. Previsto: Sì/No.",
   "importErrorUnknownToolTypeCode": "Codice sconosciuto \"{{code}}\" nella colonna ToolType.",
   "importLogFilesDescription": "Caricare un file CSV che descrive i file LOG. Una volta fornito il CSV, è possibile aggiungere i relativi allegati per run.",
+  "importLogFilesUnsupportedEncoding": "Questo file CSV non può essere letto a causa della sua codifica dei caratteri. Salvarlo come UTF-8 o Windows-1252 e caricarlo di nuovo.",
   "importLogRuns": "Importare run LOG da file CSV",
   "importLogRunsDescription": "Caricare un file CSV con le definizioni dei run LOG (obbligatorio).",
   "inactive": "Inattivo",
