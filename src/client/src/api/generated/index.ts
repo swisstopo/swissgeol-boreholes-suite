@@ -412,6 +412,8 @@ export type {
   PostApiVbyVersionLogExportData,
   PostApiVbyVersionLogExportResponses,
   PostApiVbyVersionLogImportData,
+  PostApiVbyVersionLogImportRequiredfilesData,
+  PostApiVbyVersionLogImportRequiredfilesResponses,
   PostApiVbyVersionLogImportResponses,
   PostApiVbyVersionLogResponse,
   PostApiVbyVersionLogResponses,

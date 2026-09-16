@@ -7412,6 +7412,32 @@ export type PostApiVbyVersionLogImportResponses = {
   200: unknown;
 };
 
+export type PostApiVbyVersionLogImportRequiredfilesData = {
+  body?: {
+    /**
+     * The log files CSV the import is to be started with.
+     */
+    logFilesCsvFile?: Blob | File;
+  };
+  path: {
+    version: string;
+  };
+  query?: {
+    /**
+     * The borehole the import is being prepared for.
+     */
+    boreholeId?: number;
+  };
+  url: "/api/v{version}/log/import/requiredfiles";
+};
+
+export type PostApiVbyVersionLogImportRequiredfilesResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
 export type PostApiVbyVersionLogExportData = {
   /**
    * The log runs or log files to export.

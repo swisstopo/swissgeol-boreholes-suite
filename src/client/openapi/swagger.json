@@ -4225,6 +4225,59 @@
         }
       }
     },
+    "/api/v{version}/log/import/requiredfiles": {
+      "post": {
+        "tags": [
+          "Log"
+        ],
+        "summary": "Names the attachments a log files CSV expects, so that the import can ask for them before it\r\nis started.\r\n            \r\nThe names are built here rather than in the browser because the import matches what the\r\nclient provides against these same names. Building them twice let the two drift apart, and a\r\nname the client spelled differently made the import skip an attachment the user had supplied.",
+        "parameters": [
+          {
+            "name": "boreholeId",
+            "in": "query",
+            "description": "The borehole the import is being prepared for.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "logFilesCsvFile": {
+                    "type": "string",
+                    "description": "The log files CSV the import is to be started with.",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
+                "logFilesCsvFile": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/v{version}/log/export": {
       "post": {
         "tags": [
