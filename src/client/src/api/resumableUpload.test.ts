@@ -1,5 +1,6 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "./errorClasses.ts";
+import { setFileSizeLimits } from "./fileSize.ts";
 import { uploadResumable } from "./resumableUpload.ts";
 
 interface StubbedUpload {
@@ -35,10 +36,21 @@ vi.mock("../auth/authTokenStore.ts", () => ({ getAuthToken: () => authState.toke
 /** The options the code under test handed to the upload client. */
 const optionsOf = <T>(): T => uploadInstances[0].options as T;
 
+/** The limits as the API reports them, which the application settings normally supply. */
+const serverLimits = { maxFileSize: 210_000_000, largeMaxFileSize: 5_000_000_000, chunkSize: 6 * 1024 * 1024 };
+
 describe("uploadResumable", () => {
   beforeEach(() => {
     uploadInstances.length = 0;
     authState.token = null;
+    setFileSizeLimits(serverLimits);
+  });
+
+  it("cuts the file into the chunks the server asked for", () => {
+    setFileSizeLimits({ ...serverLimits, chunkSize: 1024 });
+    void uploadResumable(new File(["x"], "gamma.las"), { logRunId: "1" });
+
+    expect(optionsOf<{ chunkSize: number }>().chunkSize).toBe(1024);
   });
 
   it("reports how much has been sent", async () => {

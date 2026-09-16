@@ -2,13 +2,8 @@ import { DetailedError, Upload } from "tus-js-client";
 import { getAuthToken } from "../auth/authTokenStore.ts";
 import { getAuthorizationHeader } from "./authentication.ts";
 import { isUserErrorProblem, toUserError } from "./errorClasses.ts";
+import { getChunkSize } from "./fileSize.ts";
 import { TransferOptions } from "./transferProgress.ts";
-
-/**
- * How much of the file goes in one request, which is also how much goes into one part of the
- * upload the server assembles in the cloud storage.
- */
-const chunkSize = 6 * 1024 * 1024;
 
 const uploadEndpoint = "/api/v2/log/upload/tus";
 
@@ -66,7 +61,7 @@ export function uploadResumable(
 
     const upload = new Upload(file, {
       endpoint: uploadEndpoint,
-      chunkSize,
+      chunkSize: getChunkSize(),
 
       // A chunk that fails is retried within the upload it belongs to. Nothing picks an upload
       // back up in a later session, so the fingerprints kept for that would only accumulate.

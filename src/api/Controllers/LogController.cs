@@ -18,7 +18,6 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class LogController : BoreholeControllerBase<LogRun>
 {
-    private const long MaxFileSize = 5_000_000_000; // ~5 GB max file size
     private const string LogRunExportFileName = "log_runs";
     private const string LogFileExportFileName = "log_files";
     private const string LogExportFileName = "log_export";
@@ -237,8 +236,8 @@ public class LogController : BoreholeControllerBase<LogRun>
     /// </summary>
     [HttpPost("import")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    [RequestSizeLimit(MaxFileSize)]
-    [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
+    [RequestSizeLimit(FileSizeLimits.Large)]
+    [RequestFormLimits(MultipartBodyLengthLimit = FileSizeLimits.Large)]
     public async Task<IActionResult> ImportAsync([FromQuery] int boreholeId, IFormFile logRunsCsvFile, IFormFile? logFilesCsvFile)
     {
         var borehole = await Context.Boreholes

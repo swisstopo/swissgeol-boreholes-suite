@@ -31,9 +31,6 @@ public class TusUploadConfiguration
     /// </summary>
     public const string LogFileIdHeader = "Log-File-Id";
 
-    /// <summary>The largest file the endpoint accepts, matching the upload controller.</summary>
-    private const long MaxFileSize = 5_000_000_000;
-
     /// <summary>
     /// How long an upload stays resumable. An upload that is never finished still holds the parts
     /// it was written to, so it expires and the sweeper is free to remove it.
@@ -96,7 +93,7 @@ public class TusUploadConfiguration
             UsePipelinesIfAvailable = true,
 
             // The int sized property cannot express the ceiling the product allows.
-            MaxAllowedUploadSizeInBytesLong = MaxFileSize,
+            MaxAllowedUploadSizeInBytesLong = FileSizeLimits.Large,
             Expiration = new AbsoluteExpiration(uploadLifetime),
             Events = new Events
             {

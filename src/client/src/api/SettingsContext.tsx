@@ -1,6 +1,8 @@
 import React, { createContext, useEffect, useState } from "react";
+import { FileSizeLimits, setFileSizeLimits } from "./fileSize.ts";
 
 interface Settings {
+  uploadSettings: FileSizeLimits;
   authSettings?: {
     authority: string;
     audience: string;
@@ -22,7 +24,10 @@ export function SettingsProvider({ children }: { children: Readonly<React.ReactN
   useEffect(() => {
     fetch("/api/v2/settings")
       .then(res => (res.ok ? res.json() : Promise.reject(Error("Failed to get settings from API"))))
-      .then(setSettings)
+      .then((fetched: Settings) => {
+        setFileSizeLimits(fetched.uploadSettings);
+        setSettings(fetched);
+      })
       .catch(() => setSettings(null));
   }, []);
 

@@ -18,8 +18,9 @@ namespace BDMS.Uploads.S3;
 public class LogFileTusStore : ITusPipelineStore, ITusCreationStore, ITusReadableStore, ITusTerminationStore, ITusExpirationStore
 {
     /// <summary>
-    /// How much of the file the client sends in one request, which has to agree with the chunk
-    /// size in <c>resumableUpload.ts</c>.
+    /// How much of the file the client sends in one request. The client is told this value by
+    /// <see cref="Controllers.SettingsController"/> rather than carrying a copy of it, because the
+    /// part sizes below are chosen around it and only hold while the two agree.
     /// </summary>
     public const int ChunkSize = 6 * 1024 * 1024;
 
