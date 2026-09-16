@@ -397,7 +397,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({
                   `lithologicalDescription`,
                   tmpLithologicalDescriptions,
                   layer => (
-                    <LithologicalDescriptionLabels description={layer as LithologicalDescription} />
+                    <LithologicalDescriptionLabels description={layer} />
                   ),
                   index => setSelectedLithologicalDescription(tmpLithologicalDescriptions[index]),
                   index => handleDeleteDescription("lithological", index),
@@ -411,7 +411,7 @@ export const LithologyTable: FC<LithologyTableProps> = ({
                   `faciesDescription`,
                   tmpFaciesDescriptions,
                   layer => (
-                    <FaciesDescriptionLabels description={layer as FaciesDescription} />
+                    <FaciesDescriptionLabels description={layer} />
                   ),
                   index => setSelectedFaciesDescription(tmpFaciesDescriptions[index]),
                   index => handleDeleteDescription("facies", index),

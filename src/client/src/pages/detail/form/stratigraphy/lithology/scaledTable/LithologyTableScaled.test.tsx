@@ -40,36 +40,33 @@ afterEach(() => {
   cleanup();
 });
 
-const lithology = (overrides: Partial<Lithology> = {}): Lithology =>
-  ({
-    id: 1,
-    stratigraphyId: 1,
-    fromDepth: 0,
-    toDepth: 10,
-    isUnconsolidated: false,
-    hasBedding: false,
-    ...overrides,
-  }) as Lithology;
+const lithology = (overrides: Partial<Lithology> = {}): Lithology => ({
+  id: 1,
+  stratigraphyId: 1,
+  fromDepth: 0,
+  toDepth: 10,
+  isUnconsolidated: false,
+  hasBedding: false,
+  ...overrides,
+});
 
-const lithologicalDescription = (overrides: Partial<LithologicalDescription> = {}): LithologicalDescription =>
-  ({
-    id: 1,
-    stratigraphyId: 1,
-    fromDepth: 0,
-    toDepth: 10,
-    description: "desc",
-    ...overrides,
-  }) as LithologicalDescription;
+const lithologicalDescription = (overrides: Partial<LithologicalDescription> = {}): LithologicalDescription => ({
+  id: 1,
+  stratigraphyId: 1,
+  fromDepth: 0,
+  toDepth: 10,
+  description: "desc",
+  ...overrides,
+});
 
-const faciesDescription = (overrides: Partial<FaciesDescription> = {}): FaciesDescription =>
-  ({
-    id: 1,
-    stratigraphyId: 1,
-    fromDepth: 0,
-    toDepth: 10,
-    faciesId: null,
-    ...overrides,
-  }) as FaciesDescription;
+const faciesDescription = (overrides: Partial<FaciesDescription> = {}): FaciesDescription => ({
+  id: 1,
+  stratigraphyId: 1,
+  fromDepth: 0,
+  toDepth: 10,
+  faciesId: null,
+  ...overrides,
+});
 
 const renderTable = (props: {
   lithologies: ReadonlyArray<Lithology>;

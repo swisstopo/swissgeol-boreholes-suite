@@ -84,7 +84,7 @@ export const useStartMaintenanceTask = (taskType: MaintenanceTaskType) => {
       // Optimistically mark the task as running so the UI updates immediately
       // without waiting for the next status poll.
       queryClient.setQueryData<MaintenanceTaskState[]>([maintenanceStatusQueryKey], old =>
-        old?.map(s => (s.type === taskType ? { ...s, status: "Running" as MaintenanceTaskStatus } : s)),
+        old?.map(s => (s.type === taskType ? { ...s, status: "Running" } : s)),
       );
     },
   });

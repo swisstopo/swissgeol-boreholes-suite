@@ -62,7 +62,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
           <FormDomainSelect
             fieldName="reliabilityId"
             label="reliability"
-            selected={observation.reliabilityId as number}
+            selected={observation.reliabilityId}
             schemaName={hydrogeologySchemaConstants.observationReliability}
           />
         </FormContainer>

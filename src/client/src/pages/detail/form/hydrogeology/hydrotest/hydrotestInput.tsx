@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 import { useReloadBoreholes } from "../../../../../api/borehole.ts";
-import { Codelist, Hydrotest, HydrotestResult } from "../../../../../api/generated";
+import { Codelist, Hydrotest } from "../../../../../api/generated";
 import { AddButton } from "../../../../../components/buttons/buttons";
 import { useCodelists } from "../../../../../components/codelist.ts";
 import { DataCardContext } from "../../../../../components/dataCard/dataCardContext";
@@ -186,7 +186,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
         value: parseFloatWithThousandsSeparator(r.value?.toString()),
         minValue: parseFloatWithThousandsSeparator(r.minValue?.toString()),
         maxValue: parseFloatWithThousandsSeparator(r.maxValue?.toString()),
-      })) as HydrotestResult[];
+      }));
     }
 
     return prepared;

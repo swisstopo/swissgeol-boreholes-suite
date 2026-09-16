@@ -106,7 +106,7 @@ export const useBoreholeUrlParamsState = () => {
   // races and one update overwrites the other.
   const setFilterField = useCallback(
     (key: FilterKey, value: string | string[] | number[] | boolean | null | undefined) => {
-      setQueryState({ [key]: encodeFilterValue(key, value), page: 0 } as Parameters<typeof setQueryState>[0]);
+      setQueryState({ [key]: encodeFilterValue(key, value), page: 0 });
     },
     [encodeFilterValue, setQueryState],
   );
@@ -117,7 +117,7 @@ export const useBoreholeUrlParamsState = () => {
   // for the same reason as `setFilterField`.
   const clearFilterField = useCallback(
     (key: FilterKey) => {
-      setQueryState({ [key]: null, page: 0 } as Parameters<typeof setQueryState>[0]);
+      setQueryState({ [key]: null, page: 0 });
       sessionStorage.removeItem(SessionKeys[key as keyof typeof SessionKeys]);
     },
     [setQueryState],
@@ -135,7 +135,7 @@ export const useBoreholeUrlParamsState = () => {
     // Set all filter keys to null to remove them from the URL, and reset to page 0 in the
     // same setQueryState call, see setFilterField for why this must be atomic.
     const nulled = Object.fromEntries(Object.keys(filterParsers).map(k => [k, null]));
-    setQueryState({ ...nulled, page: 0 } as Parameters<typeof setQueryState>[0]);
+    setQueryState({ ...nulled, page: 0 });
     (Object.keys(filterParsers) as Array<FilterKey>).forEach(key => {
       sessionStorage.removeItem(SessionKeys[key as keyof typeof SessionKeys]);
     });
@@ -177,7 +177,7 @@ export const useBoreholeUrlParamsState = () => {
       }
     });
     if (Object.keys(updates).length > 0) {
-      setQueryState(updates as Parameters<typeof setQueryState>[0]);
+      setQueryState(updates);
     }
   }, [setQueryState]);
 
@@ -197,7 +197,7 @@ export const useBoreholeUrlParamsState = () => {
       }
     });
     if (Object.keys(updates).length > 0) {
-      setQueryState(updates as Parameters<typeof setQueryState>[0]);
+      setQueryState(updates);
     }
   }, [setQueryState]);
 
@@ -211,7 +211,7 @@ export const useBoreholeUrlParamsState = () => {
       }
     });
     if (Object.keys(updates).length > 0) {
-      setQueryState(updates as Parameters<typeof setQueryState>[0]);
+      setQueryState(updates);
     }
   }, [setQueryState]);
 

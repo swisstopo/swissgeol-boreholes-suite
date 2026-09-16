@@ -17,7 +17,7 @@ export function LanguagePopup() {
         SwissgeolCoreI18n.setLanguage(languages[languageIndex] as Language);
       } else {
         setSelectedLanguage(defaultLanguage);
-        SwissgeolCoreI18n.setLanguage(defaultLanguage as Language);
+        SwissgeolCoreI18n.setLanguage(defaultLanguage);
       }
     };
     handleLanguageChange();

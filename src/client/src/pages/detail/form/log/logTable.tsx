@@ -11,7 +11,6 @@ import { CodelistLabelStyle, useCodelistLocalizedLabel, useCodelists } from "../
 import { ExportDialog } from "../../../../components/export/exportDialog.tsx";
 import { FormContainer, FormDomainMultiSelect, FormMultiSelect } from "../../../../components/form/form.ts";
 import { FormMultiSelectValue } from "../../../../components/form/formMultiSelect.tsx";
-import { FormSelectValue } from "../../../../components/form/formSelect.tsx";
 import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
 import { Table } from "../../../../components/table/table.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
@@ -65,10 +64,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
   );
 
   const runNumbers = useMemo<FormMultiSelectValue[]>(
-    () =>
-      runs
-        .filter(run => run.runNumber !== undefined)
-        .map(run => ({ key: run.id, name: run.runNumber! }) as FormMultiSelectValue),
+    () => runs.filter(run => run.runNumber !== undefined).map(run => ({ key: run.id, name: run.runNumber })),
     [runs],
   );
   const filteredRuns = useMemo<LogRun[]>(() => {
@@ -229,7 +225,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
             <FormMultiSelect
               fieldName={"sections"}
               label={"sectionName"}
-              values={sectionFilters?.map(filter => ({ key: filter.id, name: filter.label }) as FormSelectValue) ?? []}
+              values={sectionFilters?.map(filter => ({ key: filter.id, name: filter.label })) ?? []}
               readonly={false}
             />
             <FormDomainMultiSelect

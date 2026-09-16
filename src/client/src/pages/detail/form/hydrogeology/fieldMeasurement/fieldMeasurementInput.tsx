@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 import { useReloadBoreholes } from "../../../../../api/borehole.ts";
-import { FieldMeasurement, FieldMeasurementResult } from "../../../../../api/generated";
+import { FieldMeasurement } from "../../../../../api/generated";
 import { AddButton } from "../../../../../components/buttons/buttons.tsx";
 import { useCodelists } from "../../../../../components/codelist.ts";
 import { DataCardContext } from "../../../../../components/dataCard/dataCardContext.tsx";
@@ -110,7 +110,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
         parameterId: r.parameterId ?? 0,
         fieldMeasurementId: 0,
         value: parseFloatWithThousandsSeparator(r.value) ?? undefined,
-      })) as FieldMeasurementResult[];
+      }));
     }
     return prepared;
   };
