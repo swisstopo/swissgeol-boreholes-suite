@@ -55,6 +55,26 @@ const logsQueryKey = "logs";
 export const fetchLogRunsByBoreholeId = async (boreholeId: number): Promise<LogRun[]> =>
   await fetchApiV2WithApiError<LogRun[]>(`${logController}?boreholeId=${boreholeId}`, "GET");
 
+/**
+ * Writes the cached log runs of a borehole.
+ *
+ * For a caller that has already asked the server and would otherwise leave the cache holding an
+ * older answer. Invalidating would send it to the server again for the runs it is holding, so the
+ * answer it has is written to the cache instead.
+ * @param boreholeId The borehole the runs belong to.
+ * @returns A callback taking the runs as the server reported them.
+ */
+export const useSetCachedLogRuns = (boreholeId: number): ((logRuns: LogRun[]) => void) => {
+  const queryClient = useQueryClient();
+
+  return useCallback(
+    (logRuns: LogRun[]) => {
+      queryClient.setQueryData([logsQueryKey, boreholeId], logRuns);
+    },
+    [boreholeId, queryClient],
+  );
+};
+
 export const useLogsByBoreholeId = (boreholeId?: number): UseQueryResult<LogRun[]> =>
   useQuery<LogRun[]>({
     queryKey: [logsQueryKey, boreholeId],

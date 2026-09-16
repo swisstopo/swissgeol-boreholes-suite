@@ -20,6 +20,7 @@ import {
   LogFileUploadProgressCallback,
   useLogRunMutations,
   useLogsByBoreholeId,
+  useSetCachedLogRuns,
 } from "./log.ts";
 import { LogRun, LogRunChangeTracker } from "./logInterfaces.ts";
 import { LogRunModal } from "./logRunModal.tsx";
@@ -52,6 +53,7 @@ export const LogPanel: FC = () => {
   const { showPrompt } = useContext(PromptContext);
   const showApiErrorAlert = useApiErrorAlert();
   const { data: logRuns = [], isLoading } = useLogsByBoreholeId(boreholeId);
+  const setCachedLogRuns = useSetCachedLogRuns(boreholeId);
   const [tmpLogRuns, setTmpLogRuns] = useState<LogRunChangeTracker[]>([]);
   const lastReportedAt = useRef(0);
   const lastReportedFile = useRef(0);
@@ -257,11 +259,16 @@ export const LogPanel: FC = () => {
   const reconcileStoredFiles = useCallback(async () => {
     try {
       const storedRuns = await fetchLogRunsByBoreholeId(boreholeId);
+
+      // The save was given up on, so the mutation that would have invalidated the cache never
+      // succeeded, and what it holds predates the files that did get through. Discarding the
+      // changes reads the cache, and would offer to restore a run without them.
+      setCachedLogRuns(storedRuns);
       setTmpLogRuns(prev => applyStoredFiles(prev, storedRuns));
     } catch (error) {
       showApiErrorAlert(error);
     }
-  }, [boreholeId, setTmpLogRuns, showApiErrorAlert]);
+  }, [boreholeId, setCachedLogRuns, setTmpLogRuns, showApiErrorAlert]);
 
   const onSave = useCallback(async () => {
     const abortController = new AbortController();
