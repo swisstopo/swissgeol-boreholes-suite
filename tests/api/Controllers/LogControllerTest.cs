@@ -853,8 +853,8 @@ public class LogControllerTest : TestControllerBase
     private static string AssertBadRequestMessageKey(IActionResult response)
     {
         Assert.IsInstanceOfType(response, typeof(BadRequestObjectResult));
-        var value = ((BadRequestObjectResult)response).Value!;
-        var messageKey = value.GetType().GetProperty("messageKey")!.GetValue(value);
+        var value = ((BadRequestObjectResult)response).Value;
+        var messageKey = value.GetType().GetProperty("messageKey").GetValue(value);
         return (string)messageKey!;
     }
 

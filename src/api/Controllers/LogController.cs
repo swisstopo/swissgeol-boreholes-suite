@@ -231,7 +231,7 @@ public class LogController : BoreholeControllerBase<LogRun>
             var filesToRemove = existingLogRun.LogFiles?.Where(f => !logFileIds.Contains(f.Id)).ToList();
             if (filesToRemove != null && filesToRemove.Count > 0)
             {
-                await logFileCloudService.DeleteObjects(filesToRemove!.Where(lf => lf.NameUuid != null).Select(lf => lf.NameUuid)).ConfigureAwait(false);
+                await logFileCloudService.DeleteObjects(filesToRemove.Where(lf => lf.NameUuid != null).Select(lf => lf.NameUuid)).ConfigureAwait(false);
                 Context.RemoveRange(filesToRemove);
             }
 

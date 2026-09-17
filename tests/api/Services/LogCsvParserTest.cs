@@ -69,7 +69,7 @@ public class LogCsvParserTest
 
         var error = row.Errors.Single();
         Assert.AreEqual("importErrorUnknownCodelistValue", error.MessageKey);
-        Assert.AreEqual("ConveyanceMethod", error.Values!["fieldName"]);
+        Assert.AreEqual("ConveyanceMethod", error.Values["fieldName"]);
         Assert.AreEqual("rocket", error.Values!["value"]);
     }
 
