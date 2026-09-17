@@ -4,7 +4,7 @@ import { Step, StepLabel, Stepper } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import { boreholeQueryKey } from "../../../../../api/borehole.ts";
 import { uploadResumable } from "../../../../../api/resumableUpload.ts";
-import { isAbortError } from "../../../../../api/transferProgress.ts";
+import { isAbortError, progressRefreshIntervalMs } from "../../../../../api/transferProgress.ts";
 import { AlertContext } from "../../../../../components/alert/alertContext.tsx";
 import { FormDialog } from "../../../../../components/form/form.ts";
 import { useRequiredId } from "../../../../../hooks/useRequiredId.ts";
@@ -49,6 +49,10 @@ const sendAttachment = async (upload: AttachmentUpload, position: number, contex
     setProgress({ fileName: upload.file.name, current: position, count, transferred: 0 });
   }
 
+  // The byte count changes faster than it can be read, so it is refreshed on an interval. The
+  // last event of a file is always shown, otherwise its numbers would stop short of its size.
+  let lastReportedAt = 0;
+
   try {
     await uploadResumable(
       upload.file,
@@ -57,6 +61,12 @@ const sendAttachment = async (upload: AttachmentUpload, position: number, contex
         signal: controller.signal,
         onProgress: ({ loaded, total }) => {
           if (!ownsWizard()) return;
+
+          const isSent = total !== undefined && loaded >= total;
+          const now = Date.now();
+          if (!isSent && now - lastReportedAt < progressRefreshIntervalMs) return;
+          lastReportedAt = now;
+
           setProgress({ fileName: upload.file.name, current: position, count, transferred: loaded, total });
         },
       },
