@@ -1,4 +1,4 @@
-import { FC, MouseEvent, useCallback, useContext, useEffect, useMemo, useState } from "react";
+import { FC, MouseEvent, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { FormProvider, useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Card, CardContent, CardHeader, Chip, Stack } from "@mui/material";
@@ -40,8 +40,12 @@ export const WorkgroupDetail: FC = () => {
     defaultValues: selectedWorkgroup,
   });
 
+  const changeNameTimer = useRef<ReturnType<typeof setTimeout> | undefined>(undefined);
+
   const changeName = useCallback(
     (name: string) => {
+      // A direct commit supersedes a pending debounced one, which would otherwise repeat the same update.
+      clearTimeout(changeNameTimer.current);
       if (!selectedWorkgroup || !name || name === selectedWorkgroup.name) return;
 
       const updatedWorkgroup = { ...selectedWorkgroup, name };
@@ -50,13 +54,13 @@ export const WorkgroupDetail: FC = () => {
     [selectedWorkgroup, updateWorkgroup],
   );
 
-  const debouncedChangeName = useMemo(() => {
-    let timer: ReturnType<typeof setTimeout>;
-    return (name: string) => {
-      clearTimeout(timer);
-      timer = setTimeout(() => changeName(name), 2000);
-    };
-  }, [changeName]);
+  const debouncedChangeName = useCallback(
+    (name: string) => {
+      clearTimeout(changeNameTimer.current);
+      changeNameTimer.current = setTimeout(() => changeName(name), 2000);
+    },
+    [changeName],
+  );
 
   useEffect(() => {
     if (users) {
@@ -143,7 +147,7 @@ export const WorkgroupDetail: FC = () => {
         backgroundColor: theme.palette.background.lightgrey,
       }}>
       <Card data-cy="workgroup-general" sx={{ mb: 3 }}>
-        <CardHeader title={t("general")} sx={{ p: 4, pb: 3 }} titleTypographyProps={{ variant: "h5" }} />
+        <CardHeader title={t("general")} sx={{ p: 4, pb: 3 }} slotProps={{ title: { variant: "h5" } }} />
         <CardContent sx={{ pt: 4, px: 3 }}>
           <Stack direction={"row"} alignItems={"center"}>
             <FormProvider {...formMethods}>
@@ -167,7 +171,7 @@ export const WorkgroupDetail: FC = () => {
         <CardHeader
           title={t("users")}
           sx={{ p: 4, pb: 3 }}
-          titleTypographyProps={{ variant: "h5" }}
+          slotProps={{ title: { variant: "h5" } }}
           action={<AddButton label="addUser" variant="contained" onClick={addUser} disabled={isDisabled} />}
         />
         <CardContent sx={{ pt: 4, px: 3 }}>

@@ -1,12 +1,12 @@
-import { FC, PropsWithChildren, useContext, useEffect, useMemo, useRef } from "react";
+import { FC, PropsWithChildren, useContext, useEffect, useMemo } from "react";
 import { ErrorBoundary } from "react-error-boundary";
-import { useTranslation } from "react-i18next";
 import { createBrowserRouter, Navigate, RouterProvider } from "react-router";
 import { GlobalStyles } from "@mui/material";
 import { ThemeProvider } from "@mui/material/styles";
 import { Language, SwissgeolCoreI18n } from "@swissgeol/ui-core";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { ReactQueryDevtools } from "@tanstack/react-query-devtools";
+import i18next from "i18next";
 import { NuqsAdapter } from "nuqs/adapters/react-router/v7";
 import { createQueryClient } from "./api/queryClient.ts";
 import { theme } from "./AppTheme";
@@ -83,25 +83,19 @@ const router = createBrowserRouter([
 
 const QueryClientInitializer: FC<PropsWithChildren> = ({ children }) => {
   const { showAlert } = useContext(AlertContext);
-  const { t } = useTranslation();
   const isCypress = !!globalThis.Cypress;
 
-  // Use refs so the QueryClient callbacks always access the latest values
-  // without recreating the QueryClient on every language change.
-  const showAlertRef = useRef(showAlert);
-  showAlertRef.current = showAlert;
-
-  const tRef = useRef(t);
-  tRef.current = t;
-
+  // Translate through the i18next instance rather than the hook's `t`, so the QueryClient is not
+  // recreated on every language change. `showAlert` keeps a stable identity, so it can be a
+  // dependency directly.
   const queryClient = useMemo(
     () =>
       createQueryClient({
-        showAlert: (message, severity) => showAlertRef.current(message, severity),
-        translate: key => tRef.current(key),
+        showAlert: (message, severity) => showAlert(message, severity),
+        translate: key => i18next.t(key),
         retryQueries: !isCypress,
       }),
-    [isCypress],
+    [isCypress, showAlert],
   );
 
   return <QueryClientProvider client={queryClient}>{children}</QueryClientProvider>;

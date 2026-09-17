@@ -63,7 +63,10 @@ export const useDragPan = ({ navState, setNavState, containerRef }: UseDragPanOp
 
   // Keep the latest navState available to pointermove without re-binding the listener every render.
   const navStateRef = useRef(navState);
-  navStateRef.current = navState;
+
+  useEffect(() => {
+    navStateRef.current = navState;
+  }, [navState]);
 
   const isPannable = isPannableNavState(navState);
 

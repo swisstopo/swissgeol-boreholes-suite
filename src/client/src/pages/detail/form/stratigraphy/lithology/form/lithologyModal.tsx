@@ -1,5 +1,5 @@
-import { FC, useContext, useEffect } from "react";
-import { Controller, FormProvider, useForm } from "react-hook-form";
+import { FC, useContext, useEffect, useMemo } from "react";
+import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
@@ -60,33 +60,39 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
   const { showPrompt } = useContext(PromptContext);
   const sharedLithologyCount = lithologicalDescription?.depthIds?.length ?? 0;
 
-  useEffect(() => {
-    if (lithology) {
-      if (lithology.hasBedding === undefined) lithology.hasBedding = false;
-      if (lithology.isUnconsolidated === undefined) lithology.isUnconsolidated = true;
+  // The form needs the optional flags resolved and at least one description row. Deriving a copy
+  // keeps the prop untouched while the change detection below still compares against this shape.
+  const normalizedLithology = useMemo(() => {
+    if (!lithology) return lithology;
 
+    return {
+      ...lithology,
+      hasBedding: lithology.hasBedding === undefined ? false : lithology.hasBedding,
+      isUnconsolidated: lithology.isUnconsolidated === undefined ? true : lithology.isUnconsolidated,
       // Add first lithology description if not present
-      if (!lithology?.lithologyDescriptions) {
-        lithology.lithologyDescriptions = [
-          {
-            id: 0,
-            lithologyId: lithology.id,
-            isFirst: true,
-          },
-        ];
-      }
+      lithologyDescriptions: lithology.lithologyDescriptions ?? [
+        {
+          id: 0,
+          lithologyId: lithology.id,
+          isFirst: true,
+        },
+      ],
+    };
+  }, [lithology]);
 
+  useEffect(() => {
+    if (normalizedLithology) {
       formMethods.reset({
-        ...lithology,
+        ...normalizedLithology,
         lithologicalDescription: { description: lithologicalDescription?.description ?? "" },
       });
     }
-  }, [lithology, lithologicalDescription, formMethods]);
+  }, [normalizedLithology, lithologicalDescription, formMethods]);
 
-  const isUnconsolidated = formMethods.watch("isUnconsolidated");
+  const isUnconsolidated = useWatch({ control: formMethods.control, name: "isUnconsolidated" });
 
   const cancelDialog = () => {
-    updateLithology(lithology as Lithology, false);
+    updateLithology(normalizedLithology as Lithology, false);
   };
 
   const applyDialog = async () => {
@@ -100,19 +106,22 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
     const lithologyValues = { ...values };
     prepareLithologyForSubmit(lithologyValues);
 
-    const lithologyHasChanges = JSON.stringify(lithology) !== JSON.stringify(lithologyValues);
+    const lithologyHasChanges = JSON.stringify(normalizedLithology) !== JSON.stringify(lithologyValues);
     if (!lithologyHasChanges && !lithologicalDescriptionChanged) {
-      updateLithology(lithology as Lithology, false);
+      updateLithology(normalizedLithology as Lithology, false);
       return;
     }
     if (!isValid) return;
 
     const updateLithologyWithLithologicalDesciption = () => {
-      const merged = { ...lithology, ...lithologyValues } as Lithology;
-      updateLithology(merged, lithologyHasChanges || (Boolean(lithology?.isGap) && isValid));
-      if (lithologicalDescriptionChanged && (lithologicalDescription || (lithology?.depthIds?.length ?? 0) > 0)) {
+      const merged = { ...normalizedLithology, ...lithologyValues } as Lithology;
+      updateLithology(merged, lithologyHasChanges || (Boolean(normalizedLithology?.isGap) && isValid));
+      if (
+        lithologicalDescriptionChanged &&
+        (lithologicalDescription || (normalizedLithology?.depthIds?.length ?? 0) > 0)
+      ) {
         updateLithologicalDescription(
-          buildLithologicalDescription(lithologicalDescription, lithology as Lithology, descriptionValue),
+          buildLithologicalDescription(lithologicalDescription, normalizedLithology as Lithology, descriptionValue),
           true,
         );
       }
