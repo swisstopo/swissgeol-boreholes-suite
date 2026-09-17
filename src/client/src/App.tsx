@@ -53,13 +53,15 @@ const router = createBrowserRouter([
     path: "/:id/*",
     element: (
       <RouteErrorBoundary fallback={DetailError}>
-        <LabelingProvider>
-          <EditStateProvider>
-            <SaveProvider>
-              <DetailPage />
-            </SaveProvider>
-          </EditStateProvider>
-        </LabelingProvider>
+        <NuqsAdapter>
+          <LabelingProvider>
+            <EditStateProvider>
+              <SaveProvider>
+                <DetailPage />
+              </SaveProvider>
+            </EditStateProvider>
+          </LabelingProvider>
+        </NuqsAdapter>
       </RouteErrorBoundary>
     ),
   },
