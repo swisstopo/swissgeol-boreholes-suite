@@ -33,17 +33,6 @@ const uploadStateKey: Record<LogImportUploadState, string> = {
 
 /**
  * Shows what the import did with every row.
- *
- * Each row names whether it is a LOG run or a LOG file, because the identifiers alone do not say
- * so: a run reads as its run number and a file as "runNumber / fileName".
- *
- * The status of an added attachment is rendered from the first paint onwards, in a slot of its
- * own, so a finishing upload changes the text in place instead of adding anything to the layout.
- * That slot is fixed in width and never wraps, so a row keeps its height when its status text
- * changes.
- *
- * An upload that arrived is marked with a check rather than named: it is the outcome every row is
- * expected to reach, and the rows that need reading are the ones that say something else.
  */
 export const ImportReportStep: FC<ImportReportStepProps> = ({ items, uploadStates }) => {
   const { t } = useTranslation();

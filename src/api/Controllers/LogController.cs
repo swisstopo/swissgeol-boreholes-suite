@@ -115,7 +115,7 @@ public class LogController : BoreholeControllerBase<LogRun>
             var filesToRemove = existingLogRun?.LogFiles?.Where(f => logFileIds.Contains(f.Id)).ToList();
             if (filesToRemove != null && filesToRemove.Count > 0)
             {
-                await logFileCloudService.DeleteObjects(filesToRemove.Where(lf => lf.NameUuid != null).Select(lf => lf.NameUuid!)).ConfigureAwait(false);
+                await logFileCloudService.DeleteObjects(filesToRemove.Where(lf => lf.NameUuid != null).Select(lf => lf.NameUuid)).ConfigureAwait(false);
                 Context.RemoveRange(filesToRemove);
             }
         }
@@ -140,9 +140,6 @@ public class LogController : BoreholeControllerBase<LogRun>
     /// The import writes the record before the attachment is uploaded, so an upload that fails or
     /// is given up on would leave a record behind that every later import skips as already
     /// existing. Removing it here lets the next import add it properly.
-    ///
-    /// A record that has its attachment is refused: this endpoint exists to undo an unfinished
-    /// import, not to delete stored files.
     /// </summary>
     /// <param name="id">The <see cref="LogFile.Id"/> to delete.</param>
     /// <returns>An OK result if the record was removed.</returns>
@@ -234,8 +231,8 @@ public class LogController : BoreholeControllerBase<LogRun>
             var filesToRemove = existingLogRun.LogFiles?.Where(f => !logFileIds.Contains(f.Id)).ToList();
             if (filesToRemove != null && filesToRemove.Count > 0)
             {
-                await logFileCloudService.DeleteObjects(filesToRemove!.Where(lf => lf.NameUuid != null).Select(lf => lf.NameUuid!)).ConfigureAwait(false);
-                Context.RemoveRange(filesToRemove!);
+                await logFileCloudService.DeleteObjects(filesToRemove!.Where(lf => lf.NameUuid != null).Select(lf => lf.NameUuid)).ConfigureAwait(false);
+                Context.RemoveRange(filesToRemove);
             }
 
             foreach (var logFile in entity.LogFiles)
@@ -278,9 +275,6 @@ public class LogController : BoreholeControllerBase<LogRun>
     [HttpPost("import")]
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(FileSizeLimits.Large)]
-
-    // One form value is sent per provided attachment, so the default FormOptions.ValueCountLimit
-    // of 1024 would fail model binding on a large import; 10000 is well beyond any real import.
     [RequestFormLimits(MultipartBodyLengthLimit = FileSizeLimits.Large, ValueCountLimit = 10000)]
     public async Task<IActionResult> ImportAsync(
         [FromQuery] int boreholeId,
@@ -350,7 +344,6 @@ public class LogController : BoreholeControllerBase<LogRun>
     [RequestFormLimits(MultipartBodyLengthLimit = FileSizeLimits.Standard)]
     public async Task<IActionResult> RequiredAttachmentsAsync([FromQuery] int boreholeId, IFormFile logFilesCsvFile)
     {
-        // The same permission the import itself requires: the answer is only ever used to prepare one.
         if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false))
         {
             return Unauthorized();
