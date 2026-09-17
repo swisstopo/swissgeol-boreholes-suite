@@ -1,4 +1,4 @@
-import { FC, useContext, useEffect } from "react";
+import { ChangeEvent, FC, useContext, useEffect } from "react";
 import { useFormContext, useFormState, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { InputProps, SxProps, TextField } from "@mui/material";
@@ -60,7 +60,13 @@ export const FormInput: FC<FormInputProps> = ({
 
   // Read the form value so the input can be controlled by it.
   // Without controlled mode, the formatter rewrites the number on mount and marks the field dirty.
-  const watchedValue = useWatch({ control, name: fieldName, disabled: !isNumberInput });
+  // useWatch is untyped because the form itself is, so the annotation states the shape this
+  // component is written for.
+  const watchedValue: string | number | Date | null | undefined = useWatch({
+    control,
+    name: fieldName,
+    disabled: !isNumberInput,
+  });
 
   // On mount, push the initial value into the form if nothing is there yet.
   // Required validation reads the form value, so without this it always fails.
@@ -94,7 +100,7 @@ export const FormInput: FC<FormInputProps> = ({
 
   const registerProps = register(fieldName, {
     required: required ? "required" : false,
-    validate: value => {
+    validate: (value: string | number | Date) => {
       if (value === "") {
         return true;
       }
@@ -104,7 +110,7 @@ export const FormInput: FC<FormInputProps> = ({
       }
       return true;
     },
-    onChange: e => {
+    onChange: (e: ChangeEvent<HTMLInputElement>) => {
       setValue(fieldName, e.target.value, { shouldValidate: true });
       if (onUpdate) {
         onUpdate(e.target.value);
