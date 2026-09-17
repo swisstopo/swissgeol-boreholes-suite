@@ -31,4 +31,10 @@ describe("mapExtractionResponse", () => {
 
     expect(result[0].descriptions).toHaveLength(0);
   });
+
+  it("preserves line breaks in the description", () => {
+    const result = mapExtractionResponse(responseWith("Zeile 1.\nZeile 2.", "Zeile 3.\r\nZeile 4."));
+
+    expect(result[0].descriptions.map(d => d.description)).toEqual(["Zeile 1.\nZeile 2.", "Zeile 3.\r\nZeile 4."]);
+  });
 });
