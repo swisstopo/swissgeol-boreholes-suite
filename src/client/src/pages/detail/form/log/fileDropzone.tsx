@@ -3,7 +3,7 @@ import { Accept, FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { Box, Stack, Typography } from "@mui/material";
 import { CloudUpload, X } from "lucide-react";
-import { FileSizeLimit, largeMaxFileSizeBytes } from "../../../../api/file.ts";
+import { formatFileSize, getLargeMaxFileSize } from "../../../../api/fileSize.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
 
@@ -44,7 +44,7 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
   onChange,
   errorMessageKey,
   accept,
-  maxFileSize = largeMaxFileSizeBytes,
+  maxFileSize = getLargeMaxFileSize(),
   multiple = false,
   expectedFileNames,
 }) => {
@@ -57,13 +57,7 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
     setError(t(errorMessageKey));
   }, [errorMessageKey, t]);
 
-  const fileSizeLabel = useMemo(() => {
-    if (maxFileSize === largeMaxFileSizeBytes) return FileSizeLimit.Large;
-    const gb = maxFileSize / 1_000_000_000;
-    if (gb >= 1) return `${gb} GB`;
-    const mb = maxFileSize / 1_000_000;
-    return mb >= 1 ? `${mb} MB` : `${maxFileSize / 1_000} KB`;
-  }, [maxFileSize]);
+  const fileSizeLabel = useMemo(() => formatFileSize(maxFileSize), [maxFileSize]);
 
   const removeFileAt = useCallback(
     (index: number) => {

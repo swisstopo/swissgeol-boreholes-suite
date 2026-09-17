@@ -65,6 +65,8 @@ const saveContext: SaveContextProps = {
   isSaving: false,
   setHasChanges: vi.fn(),
   setHasErrors: vi.fn(),
+  saveProgress: null,
+  setSaveProgress: vi.fn(),
   registerSaveHandler: vi.fn(),
   triggerSave: vi.fn(),
   registerResetHandler: vi.fn(),

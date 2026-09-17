@@ -5,11 +5,11 @@ import { labelingFileFormat, matchesFileFormat, PanelTab } from "./dataextractio
 import { download } from "./download.ts";
 import { ApiError } from "./errorClasses.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
-import { FileSizeLimit, maxFileSizeBytes } from "./file.ts";
+import { formatFileSize, getMaxFileSize } from "./fileSize.ts";
 import { OcrStatus, Profile, ProfileOcrStatus } from "./generated";
 
 export async function uploadProfile(boreholeId: number, file: File): Promise<Profile> {
-  if (file && file.size <= maxFileSizeBytes) {
+  if (file && file.size <= getMaxFileSize()) {
     const formData = new FormData();
     formData.append("file", file);
     const response = await upload(`profile/upload?boreholeId=${boreholeId}`, "POST", formData);
@@ -18,7 +18,7 @@ export async function uploadProfile(boreholeId: number, file: File): Promise<Pro
     }
     return (await response.json()) as Profile;
   } else {
-    throw new ApiError("fileMaxSizeExceeded", 500, undefined, { size: FileSizeLimit.Standard });
+    throw new ApiError("fileMaxSizeExceeded", 500, undefined, { size: formatFileSize(getMaxFileSize()) });
   }
 }
 

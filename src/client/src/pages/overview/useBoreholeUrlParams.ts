@@ -1,4 +1,4 @@
-import { createContext, useCallback, useContext, useRef } from "react";
+import { createContext, useCallback, useContext, useEffect, useRef } from "react";
 import {
   parseAsArrayOf,
   parseAsBoolean,
@@ -77,9 +77,14 @@ export const useBoreholeUrlParamsState = () => {
   // Keep refs always pointing to the latest values so cleanup functions
   // (called on unmount) never close over stale state.
   const filterStateRef = useRef(filterState);
-  filterStateRef.current = filterState;
   const tableStateRef = useRef(tableState);
-  tableStateRef.current = tableState;
+
+  // No dependency array: both objects are rebuilt every render, so a dependency list would
+  // never skip an update anyway.
+  useEffect(() => {
+    filterStateRef.current = filterState;
+    tableStateRef.current = tableState;
+  });
 
   // Encodes a filter value into the form `setQueryState` expects, with the special-cases for
   // booleans and nullable-boolean keys.

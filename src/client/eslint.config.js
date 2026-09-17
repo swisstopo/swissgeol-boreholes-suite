@@ -1,50 +1,41 @@
 import { defineConfig, globalIgnores } from "eslint/config";
-import { fixupConfigRules, fixupPluginRules } from "@eslint/compat";
-import typescriptEslint from "@typescript-eslint/eslint-plugin";
+import tseslint from "typescript-eslint";
+import react from "eslint-plugin-react";
+import reactHooks from "eslint-plugin-react-hooks";
 import reactRefresh from "eslint-plugin-react-refresh";
-import prettier from "eslint-plugin-prettier";
-import cypress from "eslint-plugin-cypress";
+import prettierRecommended from "eslint-plugin-prettier/recommended";
+import cypress from "eslint-plugin-cypress/flat";
+import jsxA11y from "eslint-plugin-jsx-a11y";
+import tanstackQuery from "@tanstack/eslint-plugin-query";
 import globals from "globals";
-import tsParser from "@typescript-eslint/parser";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
-import { FlatCompat } from "@eslint/eslintrc";
 import noHardcodedColors from "./eslint-rules/no-hardcoded-colors.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
-const compat = new FlatCompat({
-    baseDirectory: __dirname,
-    recommendedConfig: js.configs.recommended,
-    allConfig: js.configs.all
-});
 
-export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.config.mjs", "**/cypress/downloads",  "**/dev","**/.vscode", "server.cjs"]),
+export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.config.js", "**/cypress/downloads",  "**/dev","**/.vscode", "server.cjs"]),
   {
-    extends: fixupConfigRules(compat.extends(
-        "eslint:recommended",
-        "plugin:react/recommended",
-        "plugin:react/jsx-runtime",
-        "plugin:react-hooks/recommended",
-        "plugin:prettier/recommended",
-        "plugin:@typescript-eslint/eslint-recommended",
-        "plugin:@typescript-eslint/recommended",
-        "plugin:cypress/recommended",
-        "plugin:jsx-a11y/recommended",
-        "plugin:@tanstack/query/recommended",
-    )),
+    extends: [
+        js.configs.recommended,
+        react.configs.flat.recommended,
+        react.configs.flat["jsx-runtime"],
+        prettierRecommended,
+        ...tseslint.configs.recommended,
+        cypress.configs.recommended,
+        jsxA11y.flatConfigs.recommended,
+        ...tanstackQuery.configs["flat/recommended"],
+    ],
     plugins: {
-        "@typescript-eslint": fixupPluginRules(typescriptEslint),
         "react-refresh": reactRefresh,
-        prettier: fixupPluginRules(prettier),
-        cypress: fixupPluginRules(cypress),
     },
     languageOptions: {
         globals: {
             ...globals.browser,
         },
-        parser: tsParser,
+        parser: tseslint.parser,
         ecmaVersion: "latest",
         sourceType: "module",
     },
@@ -62,6 +53,29 @@ export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.
         "react/react-in-jsx-scope": "off",
         "react/prop-types": "off",
         "react/display-name": "off",
+    },
+  },
+  {
+    // React Compiler diagnostics.
+    files: ["**/*.{js,jsx,ts,tsx}"],
+    extends: [reactHooks.configs.flat.recommended],
+    rules: {
+      // Off pending a dedicated cleanup: 53 violations across 39 files.
+      "react-hooks/set-state-in-effect": "off",
+    },
+  },
+  {
+    // Type-aware linting.
+    files: ["**/*.{ts,tsx}"],
+    languageOptions: {
+      parser: tseslint.parser,
+      parserOptions: {
+        projectService: true,
+        tsconfigRootDir: __dirname,
+      },
+    },
+    rules: {
+      "@typescript-eslint/no-deprecated": "error",
     },
   },
   {
