@@ -2,8 +2,8 @@ import { FC } from "react";
 import { useTranslation } from "react-i18next";
 import { IconButton, LinearProgress, Stack, Typography } from "@mui/material";
 import { X } from "lucide-react";
-import { formatBytes } from "../../../../../api/transferProgress.ts";
 import { theme } from "../../../../../AppTheme.ts";
+import { uploadProgressHint } from "../uploadProgressText.ts";
 
 interface ImportUploadProgressProps {
   fileName: string;
@@ -39,15 +39,7 @@ export const ImportUploadProgress: FC<ImportUploadProgressProps> = ({
 }) => {
   const { t } = useTranslation();
   const percent = progressPercent(transferred, total);
-  const hint =
-    total === undefined
-      ? t("uploadProgressHint", { current, total: count })
-      : t("uploadProgressHintWithSize", {
-          current,
-          total: count,
-          transferred: formatBytes(transferred),
-          size: formatBytes(total),
-        });
+  const hint = uploadProgressHint(t, { current, count, transferred, total });
 
   return (
     <Stack

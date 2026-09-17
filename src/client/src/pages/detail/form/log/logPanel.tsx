@@ -4,7 +4,7 @@ import { Box, CircularProgress, Stack } from "@mui/material";
 import { Trash2, X } from "lucide-react";
 import UploadIcon from "../../../../assets/icons/upload.svg?react";
 import { v4 as uuidv4 } from "uuid";
-import { formatBytes, isAbortError, progressRefreshIntervalMs } from "../../../../api/transferProgress.ts";
+import { isAbortError, progressRefreshIntervalMs } from "../../../../api/transferProgress.ts";
 import { AddButton, BoreholesBaseButton } from "../../../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
@@ -34,6 +34,7 @@ import {
   prepareLogRunForSubmit,
   toTrackedRuns,
 } from "./logUtils.ts";
+import { uploadProgressHint } from "./uploadProgressText.ts";
 
 export const LogPanel: FC = () => {
   const { t } = useTranslation();
@@ -182,20 +183,14 @@ export const LogPanel: FC = () => {
           lastReportedFile.current = position;
           lastReportedAt.current = now;
 
-          const placeInSave = { current: position, total: totalUploads };
-          const placeHint = t("uploadProgressHint", placeInSave);
-          const transferHint =
-            total === undefined
-              ? placeHint
-              : t("uploadProgressHintWithSize", {
-                  ...placeInSave,
-                  transferred: formatBytes(loaded),
-                  size: formatBytes(total),
-                });
+          const placeInSave = { current: position, count: totalUploads, transferred: loaded };
 
           setSaveProgress({
             message: isSent ? t("storingFile", { name: fileName }) : t("uploadingFile", { name: fileName }),
-            hint: isSent ? placeHint : transferHint,
+
+            // A file that is being stored has sent all of its bytes, so naming its size again
+            // would only repeat what the count just said.
+            hint: uploadProgressHint(t, isSent ? placeInSave : { ...placeInSave, total }),
             onCancel,
           });
         };
