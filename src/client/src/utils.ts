@@ -22,3 +22,20 @@ export const formatDate = (date: string | Date | null | undefined, withTime = fa
   };
   return new Intl.DateTimeFormat("de-CH", options).format(new Date(date));
 };
+
+/**
+ * Schedules `callback` for the next idle period, falling back to a timer on browsers without
+ * `requestIdleCallback`. Safari ships the API behind a feature flag, so it is absent there by
+ * default and referencing it unguarded throws. Returns a function that cancels the pending callback.
+ */
+export const runWhenIdle = (callback: () => void, timeout: number) => {
+  // Both globals sit behind the same browser flag but are separate bindings, so scheduling
+  // through one and cancelling through the other requires proving that both exist.
+  if (typeof requestIdleCallback === "function" && typeof cancelIdleCallback === "function") {
+    const handle = requestIdleCallback(callback, { timeout });
+    return () => cancelIdleCallback(handle);
+  }
+
+  const handle = setTimeout(callback, timeout);
+  return () => clearTimeout(handle);
+};
