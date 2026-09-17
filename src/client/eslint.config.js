@@ -1,58 +1,71 @@
-import { defineConfig, globalIgnores } from "eslint/config";
-import tseslint from "typescript-eslint";
-import react from "eslint-plugin-react";
-import reactHooks from "eslint-plugin-react-hooks";
-import reactRefresh from "eslint-plugin-react-refresh";
-import prettierRecommended from "eslint-plugin-prettier/recommended";
-import cypress from "eslint-plugin-cypress/flat";
-import jsxA11y from "eslint-plugin-jsx-a11y";
-import tanstackQuery from "@tanstack/eslint-plugin-query";
-import globals from "globals";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
+import tanstackQuery from "@tanstack/eslint-plugin-query";
+import compatPlugin from "eslint-plugin-compat";
+import cypress from "eslint-plugin-cypress/flat";
+import jsxA11y from "eslint-plugin-jsx-a11y";
+import prettierRecommended from "eslint-plugin-prettier/recommended";
+import react from "eslint-plugin-react";
+import reactHooks from "eslint-plugin-react-hooks";
+import reactRefresh from "eslint-plugin-react-refresh";
+import { defineConfig, globalIgnores } from "eslint/config";
+import globals from "globals";
+import tseslint from "typescript-eslint";
 import noHardcodedColors from "./eslint-rules/no-hardcoded-colors.js";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
-export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.config.js", "**/cypress/downloads",  "**/dev","**/.vscode", "server.cjs"]),
+export default defineConfig([
+  globalIgnores([
+    "**/dist",
+    "tsconfig.json",
+    "eslint.config.js",
+    "**/cypress/downloads",
+    "**/dev",
+    "**/.vscode",
+    "server.cjs",
+  ]),
   {
     extends: [
-        js.configs.recommended,
-        react.configs.flat.recommended,
-        react.configs.flat["jsx-runtime"],
-        prettierRecommended,
-        ...tseslint.configs.recommended,
-        cypress.configs.recommended,
-        jsxA11y.flatConfigs.recommended,
-        ...tanstackQuery.configs["flat/recommended"],
+      js.configs.recommended,
+      react.configs.flat.recommended,
+      react.configs.flat["jsx-runtime"],
+      prettierRecommended,
+      ...tseslint.configs.recommended,
+      cypress.configs.recommended,
+      jsxA11y.flatConfigs.recommended,
+      ...tanstackQuery.configs["flat/recommended"],
     ],
     plugins: {
-        "react-refresh": reactRefresh,
+      "react-refresh": reactRefresh,
     },
     languageOptions: {
-        globals: {
-            ...globals.browser,
-        },
-        parser: tseslint.parser,
-        ecmaVersion: "latest",
-        sourceType: "module",
+      globals: {
+        ...globals.browser,
+      },
+      parser: tseslint.parser,
+      ecmaVersion: "latest",
+      sourceType: "module",
     },
 
     settings: {
-        react: {
-            version: "detect",
-        },
+      react: {
+        version: "detect",
+      },
     },
     rules: {
-        "prettier/prettier": "error",
-        "react-refresh/only-export-components": ["warn", {
-            allowConstantExport: true,
-        }],
-        "react/react-in-jsx-scope": "off",
-        "react/prop-types": "off",
-        "react/display-name": "off",
+      "prettier/prettier": "error",
+      "react-refresh/only-export-components": [
+        "warn",
+        {
+          allowConstantExport: true,
+        },
+      ],
+      "react/react-in-jsx-scope": "off",
+      "react/prop-types": "off",
+      "react/display-name": "off",
     },
   },
   {
@@ -89,15 +102,27 @@ export default defineConfig([globalIgnores(["**/dist", "tsconfig.json", "eslint.
     },
   },
   {
-    files: ['**/*[cC]ontext.ts', '**/*[cC]ontext.tsx'],
+    // Flags browser APIs outside the support baseline declared by "browserslist" in package.json.
+    // Scoped to shipped source: tests and Cypress specs do not run in the target browsers.
+    files: ["src/**/*.{js,jsx,ts,tsx}"],
+    ignores: ["**/*.test.ts", "**/*.test.tsx"],
+    plugins: {
+      compat: compatPlugin,
+    },
     rules: {
-      'react-refresh/only-export-components': 'off',
+      "compat/compat": "error",
     },
   },
   {
-    files: ['**/*.json'],
+    files: ["**/*[cC]ontext.ts", "**/*[cC]ontext.tsx"],
     rules: {
-      '@typescript-eslint/no-unused-expressions': 'off',
+      "react-refresh/only-export-components": "off",
+    },
+  },
+  {
+    files: ["**/*.json"],
+    rules: {
+      "@typescript-eslint/no-unused-expressions": "off",
     },
   },
 ]);
