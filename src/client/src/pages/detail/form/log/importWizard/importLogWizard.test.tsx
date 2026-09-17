@@ -18,18 +18,17 @@ vi.mock("react-i18next", () => ({
   useTranslation: () => ({ t: (key: string) => key }),
 }));
 
-vi.mock("../log.ts", () => ({
-  useImportLogs: () => ({ mutateAsync: importLogs, isPending: false, reset: vi.fn() }),
-  useRequiredAttachments: () => ({
-    mutateAsync: requiredAttachments,
-    isPending: false,
-    isError: false,
-    error: null,
-    reset: vi.fn(),
-  }),
-  deleteLogFile: async (logFileId: number) => deleteLogFile(logFileId),
-  LogImportValidationError: class LogImportValidationError extends Error {},
-}));
+// The wizard reads the report and the expected attachment names off these mutations rather than
+// copying them into state, so the mocks wrap real mutations and only the request is faked.
+vi.mock("../log.ts", async () => {
+  const { useMutation } = await import("@tanstack/react-query");
+  return {
+    useImportLogs: () => useMutation({ mutationFn: importLogs }),
+    useRequiredAttachments: () => useMutation({ mutationFn: requiredAttachments }),
+    deleteLogFile: async (logFileId: number) => deleteLogFile(logFileId),
+    LogImportValidationError: class LogImportValidationError extends Error {},
+  };
+});
 
 vi.mock("../../../../../api/resumableUpload.ts", () => ({
   uploadResumable: (file: File, metadata: Record<string, string>, options?: TransferOptions) =>

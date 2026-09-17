@@ -89,29 +89,20 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
   const [step, setStep] = useState(ImportStep.Runs);
   const [logRunsCsvFile, setLogRunsCsvFile] = useState<File>();
   const [logFilesCsvFile, setLogFilesCsvFile] = useState<File>();
-  const [requiredFilesPerRun, setRequiredFilesPerRun] = useState<Record<string, string[]>>({});
   const [attachmentsPerRun, setAttachmentsPerRun] = useState<Record<string, File[]>>({});
-  const [report, setReport] = useState<LogImportResultItem[]>();
   const [uploadStates, setUploadStates] = useState<Record<number, LogImportUploadState>>({});
   const [progress, setProgress] = useState<UploadProgressState>();
-  const [isUploading, setIsUploading] = useState(false);
   const runningUploads = useRef<AbortController | null>(null);
-
-  /** Identifies the log files CSV the wizard currently waits on, so an earlier answer is ignored. */
-  const currentCsvRead = useRef<object | null>(null);
 
   // Closing the wizard aborts what it has on the wire, but the dialog is also torn down when the
   // page it belongs to is left, which no action of the wizard passes through.
-  useEffect(
-    () => () => {
-      runningUploads.current?.abort();
-      currentCsvRead.current = null;
-    },
-    [],
-  );
+  useEffect(() => () => runningUploads.current?.abort(), []);
 
   const importMutation = useImportLogs();
   const requiredAttachmentsMutation = useRequiredAttachments();
+  const requiredFilesPerRun = requiredAttachmentsMutation.data ?? {};
+  const report = importMutation.data;
+  const isUploading = Object.values(uploadStates).some(state => state === "pending" || state === "uploading");
 
   const setUploadState = useCallback((logFileId: number, state: LogImportUploadState) => {
     setUploadStates(previous => ({ ...previous, [logFileId]: state }));
@@ -119,27 +110,17 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
 
   const onLogFilesCsvChanged = useCallback(
     async (file?: File) => {
-      const read = {};
-      currentCsvRead.current = read;
-      const ownsWizard = () => currentCsvRead.current === read;
-
       setLogFilesCsvFile(file);
       setAttachmentsPerRun({});
       requiredAttachmentsMutation.reset();
 
-      if (!file) {
-        setRequiredFilesPerRun({});
-        return;
-      }
+      if (!file) return;
 
       try {
-        const requiredFiles = await requiredAttachmentsMutation.mutateAsync({ boreholeId, logFilesCsvFile: file });
-
-        if (ownsWizard()) setRequiredFilesPerRun(requiredFiles);
+        await requiredAttachmentsMutation.mutateAsync({ boreholeId, logFilesCsvFile: file });
       } catch {
         // Without the expected names the wizard cannot ask for the attachments, so the step stays
         // empty and the error the mutation holds is shown instead.
-        if (ownsWizard()) setRequiredFilesPerRun({});
       }
     },
     [boreholeId, requiredAttachmentsMutation],
@@ -160,7 +141,7 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
 
       const controller = new AbortController();
       runningUploads.current = controller;
-      setIsUploading(true);
+
       setUploadStates(Object.fromEntries(pending.map(upload => [upload.logFileId, "pending" as LogImportUploadState])));
 
       const context: AttachmentUploadContext = {
@@ -182,7 +163,6 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
       if (context.ownsWizard()) {
         runningUploads.current = null;
         setProgress(undefined);
-        setIsUploading(false);
       }
     },
     [attachmentsPerRun, setUploadState],
@@ -208,7 +188,6 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
         logFilesCsvFile,
         attachmentsPerRun,
       });
-      setReport(items);
       setStep(ImportStep.Report);
       await uploadAttachments(items);
     } catch (error) {
@@ -227,15 +206,11 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
   const close = useCallback(() => {
     runningUploads.current?.abort();
     runningUploads.current = null;
-    currentCsvRead.current = null;
-    setIsUploading(false);
     setIsImporting(false);
     setStep(ImportStep.Runs);
     setLogRunsCsvFile(undefined);
     setLogFilesCsvFile(undefined);
-    setRequiredFilesPerRun({});
     setAttachmentsPerRun({});
-    setReport(undefined);
     setUploadStates({});
     setProgress(undefined);
     importMutation.reset();
@@ -252,7 +227,6 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
    * is still missing and would otherwise be read next to outcomes it no longer describes.
    */
   const backToFilesStep = useCallback(() => {
-    setReport(undefined);
     setUploadStates({});
     setProgress(undefined);
     importMutation.reset();
