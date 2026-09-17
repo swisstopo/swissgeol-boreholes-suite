@@ -2,7 +2,7 @@ import type { TFunction } from "i18next";
 import { formatBytes } from "../../../../api/transferProgress.ts";
 
 /** Where a running upload has got to: its place in the batch, and the bytes it has sent. */
-export interface UploadProgressPlace {
+interface UploadProgressPlace {
   current: number;
   count: number;
   transferred: number;
