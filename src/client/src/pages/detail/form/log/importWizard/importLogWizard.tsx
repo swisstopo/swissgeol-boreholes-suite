@@ -13,40 +13,18 @@ import { useApiErrorAlert } from "../../../../../hooks/useShowAlertOnError.tsx";
 import { deleteLogFile, LogImportValidationError, useImportLogs, useRequiredAttachments } from "../log.ts";
 import { LogImportResultItem, LogImportUploadState } from "../logInterfaces.ts";
 import { ImportFilesStep } from "./importFilesStep.tsx";
+import {
+  AttachmentUploadContext,
+  ImportLogWizardProps,
+  ImportStep,
+  UploadProgressState,
+} from "./importLogWizardInterfaces.ts";
 import { attachmentsToUpload, AttachmentUpload } from "./importReport.ts";
 import { ImportReportStep } from "./importReportStep.tsx";
 import { ImportRunsStep } from "./importRunsStep.tsx";
 import { ImportUploadProgress } from "./importUploadProgress.tsx";
 
-interface ImportLogWizardProps {
-  isImporting: boolean;
-  setIsImporting: (isImporting: boolean) => void;
-}
-
-/** What the progress bar shows about the attachment currently on the wire. */
-interface UploadProgressState {
-  fileName: string;
-  current: number;
-  count: number;
-  transferred: number;
-  total?: number;
-}
-
-const runsStep = 0;
-const filesStep = 1;
-const reportStep = 2;
-
 const stepLabelKeys = ["logRuns", "logFiles", "importReport"];
-
-/** What one attachment needs from the wizard run it belongs to. */
-interface AttachmentUploadContext {
-  controller: AbortController;
-  count: number;
-  /** Whether the run this upload belongs to still owns the wizard. */
-  ownsWizard: () => boolean;
-  setUploadState: (logFileId: number, state: LogImportUploadState) => void;
-  setProgress: (progress: UploadProgressState) => void;
-}
 
 /** Removes the record the import wrote for an attachment that never arrived. */
 const discardRecord = async (logFileId: number) => await deleteLogFile(logFileId).catch(() => undefined);
@@ -108,7 +86,7 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
   const { showAlert } = useContext(AlertContext);
   const showApiErrorAlert = useApiErrorAlert();
 
-  const [step, setStep] = useState(runsStep);
+  const [step, setStep] = useState(ImportStep.Runs);
   const [logRunsCsvFile, setLogRunsCsvFile] = useState<File>();
   const [logFilesCsvFile, setLogFilesCsvFile] = useState<File>();
   const [requiredFilesPerRun, setRequiredFilesPerRun] = useState<Record<string, string[]>>({});
@@ -231,7 +209,7 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
         attachmentsPerRun,
       });
       setReport(items);
-      setStep(reportStep);
+      setStep(ImportStep.Report);
       await uploadAttachments(items);
     } catch (error) {
       showImportError(error);
@@ -252,7 +230,7 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
     currentCsvRead.current = null;
     setIsUploading(false);
     setIsImporting(false);
-    setStep(runsStep);
+    setStep(ImportStep.Runs);
     setLogRunsCsvFile(undefined);
     setLogFilesCsvFile(undefined);
     setRequiredFilesPerRun({});
@@ -278,7 +256,7 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
     setUploadStates({});
     setProgress(undefined);
     importMutation.reset();
-    setStep(filesStep);
+    setStep(ImportStep.Files);
   }, [importMutation]);
 
   const hasAnyCsv = logRunsCsvFile !== undefined || logFilesCsvFile !== undefined;
@@ -293,7 +271,7 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
     variant: "outlined" as const,
     color: "primary" as const,
     onClick: () => {
-      setStep(runsStep);
+      setStep(ImportStep.Runs);
       return false;
     },
   };
@@ -316,7 +294,7 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
     variant: "contained" as const,
     color: "primary" as const,
     onClick: () => {
-      setStep(filesStep);
+      setStep(ImportStep.Files);
       return false;
     },
   };
@@ -367,8 +345,8 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
           </Step>
         ))}
       </Stepper>
-      {step === runsStep && <ImportRunsStep file={logRunsCsvFile} onFileChange={setLogRunsCsvFile} />}
-      {step === filesStep && (
+      {step === ImportStep.Runs && <ImportRunsStep file={logRunsCsvFile} onFileChange={setLogRunsCsvFile} />}
+      {step === ImportStep.Files && (
         <ImportFilesStep
           file={logFilesCsvFile}
           requiredFilesPerRun={requiredFilesPerRun}
@@ -381,7 +359,7 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
           }
         />
       )}
-      {step === reportStep && report && (
+      {step === ImportStep.Report && report && (
         <>
           {progress && <ImportUploadProgress {...progress} onCancel={() => runningUploads.current?.abort()} />}
           <ImportReportStep items={report} uploadStates={uploadStates} />

@@ -4,15 +4,7 @@ import { IconButton, LinearProgress, Stack, Typography } from "@mui/material";
 import { X } from "lucide-react";
 import { theme } from "../../../../../AppTheme.ts";
 import { uploadProgressHint } from "../uploadProgressText.ts";
-
-interface ImportUploadProgressProps {
-  fileName: string;
-  current: number;
-  count: number;
-  transferred: number;
-  onCancel: () => void;
-  total?: number;
-}
+import { ImportUploadProgressProps } from "./importLogWizardInterfaces.ts";
 
 /**
  * The percentage to show on the bar, or `undefined` to fall back to an indeterminate bar.
@@ -25,9 +17,6 @@ const progressPercent = (transferred: number, total?: number): number | undefine
 
 /**
  * Tells the user which attachment is on the wire while the report stays readable underneath.
- *
- * A dimming backdrop is deliberately not used here: the report is shown before the uploads
- * finish so it can be read while they run.
  */
 export const ImportUploadProgress: FC<ImportUploadProgressProps> = ({
   fileName,
