@@ -321,7 +321,7 @@
   "importResultRunAdded": "Importiert.",
   "importResultRunAlreadyExists": "Für diese Bohrung gibt es bereits einen LOG-Run mit dieser Run-Nummer.",
   "importSkippedAttachmentMissing": "Kein Anhang mitgegeben. Importieren Sie erneut mit der Datei, um sie zu ergänzen.",
-  "importSkippedRunNotFound": "Der LOG-Run existiert noch nicht. Importieren Sie ihn zuerst und danach diese Datei erneut.",
+  "importSkippedRunNotFound": "Der LOG-Run \"{{runNumber}}\" existiert noch nicht. Importieren Sie ihn zuerst und danach diese Datei erneut.",
   "importUploadDone": "Datei hochgeladen",
   "importUploadFailed": "Upload fehlgeschlagen",
   "importUploadPending": "Wartet",

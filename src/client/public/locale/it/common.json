@@ -321,7 +321,7 @@
   "importResultRunAdded": "Importato.",
   "importResultRunAlreadyExists": "Per questa perforazione esiste già un run LOG con questo numero.",
   "importSkippedAttachmentMissing": "Nessun allegato fornito. Importare di nuovo con il file per aggiungerlo.",
-  "importSkippedRunNotFound": "Il run LOG non esiste ancora. Importarlo prima e poi importare di nuovo questo file.",
+  "importSkippedRunNotFound": "Il run LOG \"{{runNumber}}\" non esiste ancora. Importarlo prima e poi importare di nuovo questo file.",
   "importUploadDone": "File caricato",
   "importUploadFailed": "Caricamento fallito",
   "importUploadPending": "In attesa",

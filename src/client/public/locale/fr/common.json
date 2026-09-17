@@ -321,7 +321,7 @@
   "importResultRunAdded": "Importé.",
   "importResultRunAlreadyExists": "Un run LOG avec ce numéro existe déjà pour ce forage.",
   "importSkippedAttachmentMissing": "Aucune pièce jointe fournie. Importez à nouveau avec le fichier pour l'ajouter.",
-  "importSkippedRunNotFound": "Le run LOG n'existe pas encore. Importez-le d'abord, puis importez ce fichier à nouveau.",
+  "importSkippedRunNotFound": "Le run LOG \"{{runNumber}}\" n'existe pas encore. Importez-le d'abord, puis importez ce fichier à nouveau.",
   "importUploadDone": "Fichier téléversé",
   "importUploadFailed": "Échec du téléversement",
   "importUploadPending": "En attente",

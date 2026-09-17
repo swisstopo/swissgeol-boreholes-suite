@@ -321,7 +321,7 @@
   "importResultRunAdded": "Imported.",
   "importResultRunAlreadyExists": "A LOG run with this run number already exists for this borehole.",
   "importSkippedAttachmentMissing": "No attachment provided. Import again with the file to add it.",
-  "importSkippedRunNotFound": "The LOG run does not exist yet. Import it first, then import this file again.",
+  "importSkippedRunNotFound": "The LOG run \"{{runNumber}}\" does not exist yet. Import it first, then import this file again.",
   "importUploadDone": "File uploaded",
   "importUploadFailed": "Upload failed",
   "importUploadPending": "Waiting",
