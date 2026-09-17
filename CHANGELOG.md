@@ -21,6 +21,8 @@
 - Importing LOG runs and LOG files no longer fails as a whole when some rows have a problem. Every row that is complete and valid is imported, and a report shows what was added, what already existed, what was skipped because information is still missing, and what needs to be corrected. Running the same import again adds only what is newly complete, without creating duplicates.
 
 ### Fixed
+- The borehole overview no longer fails to load in Safari. The page previously showed an error message instead of the borehole table.
+- The error message shown when the overview page cannot be loaded is now translated instead of displaying an internal placeholder text.
 - Fixed out of memory failures when the data extraction service processes large documents.
 - Exporting LOG runs with large attachments no longer fails. LOG file exports and downloads are streamed instead of being assembled in memory, so files larger than 2 GB can now be exported and downloaded up to the 5 GB limit.
 - LOG runs are now always displayed on VIEW, even without any files or without public files.
