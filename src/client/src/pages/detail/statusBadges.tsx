@@ -91,8 +91,11 @@ export const StatusBadges = ({ borehole }: StatusBadgesProps) => {
     <Chip data-cy="workflow-additional-reviewed-chip" label={t("statuses.Reviewed")} color="success" />
   );
 
-  const isDraft = workflow.status === WorkflowStatus.Draft;
-  const isPublished = workflow.status === WorkflowStatus.Published;
+  // The generated status is a string union with the same members as the ui-core enum, but the two
+  // are distinct types, so comparing them requires narrowing to the enum first.
+  const status = workflow.status as WorkflowStatus;
+  const isDraft = status === WorkflowStatus.Draft;
+  const isPublished = status === WorkflowStatus.Published;
   const hasAssignee = !!workflow.assignee?.id;
   const isCurrentUserAssignee = workflow.assignee?.id === currentUser?.id;
   const showReviewButton = isDraft && isCurrentUserAssignee;

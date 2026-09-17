@@ -190,7 +190,7 @@ export function mapExtractionResponse(response: StratigraphyExtractionResponse):
       }))
       .filter(l => l.description);
 
-    return { descriptions, pageNumbers: borehole.page_numbers } as ExtractedStratigraphy;
+    return { descriptions, pageNumbers: borehole.page_numbers };
   });
 }
 

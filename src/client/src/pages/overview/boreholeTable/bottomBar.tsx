@@ -79,7 +79,7 @@ const BottomBar = ({
     ]);
   };
 
-  const onExportMultiple = async () => {
+  const onExportMultiple = () => {
     if (selectionModel.length > 100) {
       showPromptExportMoreThan100(() => {
         setIsExporting(true);
@@ -136,7 +136,7 @@ const BottomBar = ({
       <Button
         variant="text"
         color="secondary"
-        onClick={() => setBottomDrawerOpen(!bottomDrawerOpen)}
+        onClick={() => void setBottomDrawerOpen(!bottomDrawerOpen)}
         data-cy="showTableButton"
         sx={{ fontWeight: "normal", fontSize: "14px" }}
         endIcon={bottomDrawerOpen ? <ChevronDown /> : <ChevronUp />}>

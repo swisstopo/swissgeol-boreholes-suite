@@ -325,7 +325,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
               variant="contained"
               color="primary"
               label={t("addStratigraphy", { count: Math.max(checkedIndices.size, 1) })}
-              onClick={addStratigraphies}
+              onClick={() => void addStratigraphies()}
             />
           </Stack>
         </Stack>

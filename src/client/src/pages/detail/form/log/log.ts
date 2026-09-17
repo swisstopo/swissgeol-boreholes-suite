@@ -89,14 +89,16 @@ export const useLogRunMutations = () => {
   const queryClient = useQueryClient();
   const resetTabStatus = useResetTabStatus(["log"]);
 
+  // The invalidations in this hook are deliberately not awaited: returning their promise would keep
+  // the mutation pending until every refetch settled, rather than until the write succeeded.
   const useAddLogRun = useMutation({
     mutationFn: async ({ logRun, signal }: AddLogRunVariables) => {
       return await fetchApiV2WithApiError<LogRun>(logController, "POST", logRun, signal);
     },
     onSuccess: (_data, { logRun }) => {
       resetTabStatus();
-      queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRun.boreholeId] });
-      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, logRun.boreholeId] });
+      void queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRun.boreholeId] });
+      void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, logRun.boreholeId] });
     },
   });
 
@@ -127,7 +129,7 @@ export const useLogRunMutations = () => {
     },
     onSuccess: (_data, { logRun }) => {
       resetTabStatus();
-      queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRun.boreholeId] });
+      void queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRun.boreholeId] });
     },
   });
 
@@ -137,8 +139,8 @@ export const useLogRunMutations = () => {
     },
     onSuccess: (_data, logRuns) => {
       resetTabStatus();
-      queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRuns[0]?.boreholeId] });
-      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, logRuns[0]?.boreholeId] });
+      void queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRuns[0]?.boreholeId] });
+      void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, logRuns[0]?.boreholeId] });
     },
   });
 
@@ -205,8 +207,8 @@ export const useImportLogs = () => {
     },
     onSuccess: (_data, { boreholeId }) => {
       resetTabStatus();
-      queryClient.invalidateQueries({ queryKey: [logsQueryKey, boreholeId] });
-      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, boreholeId] });
+      void queryClient.invalidateQueries({ queryKey: [logsQueryKey, boreholeId] });
+      void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, boreholeId] });
     },
   });
 };

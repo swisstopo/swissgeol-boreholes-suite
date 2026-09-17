@@ -71,12 +71,14 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
     }
   };
 
+  // Neither is awaited: both are click handlers, and toggleEditing already swallows a failed lock
+  // and leaves the edit mode unchanged.
   const startEditing = () => {
-    toggleEditing(true);
+    void toggleEditing(true);
   };
 
   const stopEditing = () => {
-    toggleEditing(false);
+    void toggleEditing(false);
   };
 
   const resetFormAndStopEditing = () => {
@@ -141,7 +143,7 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
   return (
     <DetailHeaderStack direction="row" alignItems="center">
       <Stack direction="row" sx={{ flex: "1 1 100%" }} alignItems={"center"} gap={3}>
-        <ReturnButton onClick={handleReturnClick} />
+        <ReturnButton onClick={() => void handleReturnClick()} />
         <Stack>
           <Typography variant="h2"> {borehole?.name}</Typography>
           {!auth.anonymousModeEnabled && (

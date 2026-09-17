@@ -88,7 +88,7 @@ export const PointComponent: FC<PointComponentProps> = ({
       clearTimeout(lhRef.current);
       lhRef.current = null;
     }
-    lhRef.current = setTimeout(async () => {
+    const lookUpAddress = async () => {
       const location = (await fetchApiV2Legacy(
         `location/identify?east=${coordinates[0]}&north=${coordinates[1]}`,
         "GET",
@@ -97,7 +97,9 @@ export const PointComponent: FC<PointComponentProps> = ({
       setCountry(location.country ?? null);
       setCanton(location.canton ?? null);
       setMunicipality(location.municipality ?? null);
-    }, 500);
+    };
+    // Not awaited: setTimeout expects a void callback and the result reaches the UI through state.
+    lhRef.current = setTimeout(() => void lookUpAddress(), 500);
   };
 
   const drawOrUpdatePoint = (newPoint: number[]) => {
@@ -381,7 +383,8 @@ export const PointComponent: FC<PointComponentProps> = ({
             data-cy="height-button"
             onClick={() => {
               if (point && applyChange) {
-                getHeight(point[0], point[1]).then(newHeight => {
+                // Not awaited: the click handler returns void and the height is applied via state.
+                void getHeight(point[0], point[1]).then(newHeight => {
                   setHeight(newHeight);
                 });
               }

@@ -124,14 +124,14 @@ export const isContentTabSelected = (tabName: string) => {
   checkElementColorByDataCy(selector, activeColor);
 };
 
-const assertLocationAndHash = (boreholeId: unknown, completionId: unknown, hash: string) => {
+const assertLocationAndHash = (boreholeId: number, completionId: number | string, hash: string) => {
   cy.location().should(location => {
     expect(location.pathname).to.eq(`/${boreholeId}/completion/${completionId}`);
     expect(location.hash).to.eq(hash);
   });
 };
 
-const assertNewCompletionCreated = (boreholeId: unknown) => {
+const assertNewCompletionCreated = (boreholeId: number) => {
   assertLocationAndHash(boreholeId, "new", "");
   cy.contains("not specified").should("be.visible");
 };
@@ -141,7 +141,7 @@ describe("completion crud tests", () => {
   // Todo reactivate and resolve flakyness issue https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2390
   it.skip("adds, edits, copies and deletes completions", () => {
     createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
-    cy.get("@borehole_id").then(id => {
+    cy.get<number>("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/completion`);
 
       cy.wait("@completion_GET");
@@ -220,8 +220,8 @@ describe("completion crud tests", () => {
 
   it("starts and cancels new completion", () => {
     createBoreholeWithTwoCompletions();
-    cy.get("@boreholeId").then(boreholeId => {
-      cy.get("@completion2Id").then(completion2Id => {
+    cy.get<number>("@boreholeId").then(boreholeId => {
+      cy.get<number>("@completion2Id").then(completion2Id => {
         goToDetailRouteAndAcceptTerms(`/${boreholeId}/completion/${completion2Id}`);
         cy.wait("@completion_GET");
         startBoreholeEditing();
@@ -240,9 +240,9 @@ describe("completion crud tests", () => {
 
   it("verifies hash for completions", () => {
     createBoreholeWithTwoCompletions();
-    cy.get("@boreholeId").then(boreholeId => {
-      cy.get("@completion1Id").then(completion1Id => {
-        cy.get("@completion2Id").then(completion2Id => {
+    cy.get<number>("@boreholeId").then(boreholeId => {
+      cy.get<number>("@completion1Id").then(completion1Id => {
+        cy.get<number>("@completion2Id").then(completion2Id => {
           goToDetailRouteAndAcceptTerms(`/${boreholeId}/completion/${completion1Id}`);
           assertLocationAndHash(boreholeId, completion1Id, "#casing");
           goToDetailRouteAndAcceptTerms(`/${boreholeId}/completion/${completion2Id}`);
@@ -260,9 +260,9 @@ describe("completion crud tests", () => {
 
   it("switches tabs between existing completions", () => {
     createBoreholeWithTwoCompletions();
-    cy.get("@boreholeId").then(boreholeId => {
-      cy.get("@completion1Id").then(completion1Id => {
-        cy.get("@completion2Id").then(completion2Id => {
+    cy.get<number>("@boreholeId").then(boreholeId => {
+      cy.get<number>("@completion1Id").then(completion1Id => {
+        cy.get<number>("@completion2Id").then(completion2Id => {
           goToDetailRouteAndAcceptTerms(`/${boreholeId}/completion/${completion2Id}`);
           assertLocationAndHash(boreholeId, completion2Id, "#casing");
           startBoreholeEditing();
@@ -300,9 +300,9 @@ describe("completion crud tests", () => {
 
   it("switches tabs between new and existing completions", () => {
     createBoreholeWithTwoCompletions();
-    cy.get("@boreholeId").then(boreholeId => {
-      cy.get("@completion1Id").then(completion1Id => {
-        cy.get("@completion2Id").then(completion2Id => {
+    cy.get<number>("@boreholeId").then(boreholeId => {
+      cy.get<number>("@completion1Id").then(completion1Id => {
+        cy.get<number>("@completion2Id").then(completion2Id => {
           goToDetailRouteAndAcceptTerms(`/${boreholeId}/completion/${completion2Id}`);
           startBoreholeEditing();
 
@@ -409,7 +409,7 @@ describe("completion crud tests", () => {
       });
 
     // open completion editor
-    cy.get("@borehole_id").then(id => {
+    cy.get<number>("@borehole_id").then(id => {
       goToDetailRouteAndAcceptTerms(`/${id}/completion`);
     });
     cy.wait("@completion_GET");
@@ -622,7 +622,7 @@ describe("completion crud tests", () => {
 
   it("checks if hash is preserved when reloading", () => {
     createBorehole({ originalName: "INTEADAL" }).as("borehole_id");
-    cy.get("@borehole_id").then(id => {
+    cy.get<number>("@borehole_id").then(id => {
       createCompletion({
         name: "test hash 1",
         boreholeId: id,
@@ -639,8 +639,8 @@ describe("completion crud tests", () => {
 
     const forceReload = true;
 
-    cy.get("@borehole_id").then(id => {
-      cy.get("@completion1_id").then(completion1Id => {
+    cy.get<number>("@borehole_id").then(id => {
+      cy.get<number>("@completion1_id").then(completion1Id => {
         // Preserves hash when reloading
         goToDetailRouteAndAcceptTerms(`/${id}/completion/${completion1Id}`);
 
@@ -660,7 +660,7 @@ describe("completion crud tests", () => {
         cy.wait(1000);
         cy.contains("test hash 2").click({ force: true });
         cy.wait("@casing_by_completion_GET");
-        cy.get("@completion2_id").then(completion2Id => {
+        cy.get<number>("@completion2_id").then(completion2Id => {
           assertLocationAndHash(id, completion2Id, "#casing");
         });
       });

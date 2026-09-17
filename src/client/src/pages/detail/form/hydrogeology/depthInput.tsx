@@ -97,18 +97,21 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
     ]);
   };
 
+  // The generated reference system is a numeric union with the same members as the local enum, but
+  // the two are distinct types, so comparing them requires narrowing to the enum first.
+  const originalDepthUnit: ObservationDepthUnitType | undefined = observation.originalVerticalReferenceSystem;
+  const selectedDepthUnit =
+    originalDepthUnit == null || originalDepthUnit === ObservationDepthUnitType.unknown
+      ? ObservationDepthUnitType.measuredDepth
+      : originalDepthUnit;
+
   return (
     <>
       <FormSelect
         canReset={false}
         fieldName={depthUnitFieldName}
         label={t("verticalReferenceSystem")}
-        selected={
-          observation.originalVerticalReferenceSystem == null ||
-          observation.originalVerticalReferenceSystem === ObservationDepthUnitType.unknown
-            ? ObservationDepthUnitType.measuredDepth
-            : observation.originalVerticalReferenceSystem
-        }
+        selected={selectedDepthUnit}
         onUpdate={onDepthUnitChange}
         values={[
           { key: ObservationDepthUnitType.measuredDepth, name: t("measuredDepth") },
@@ -122,7 +125,7 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
             label={fields.labelMD}
             value={fields.getValueMD()}
             type={FormValueType.Number}
-            onUpdate={() => convertDepth(fields.fieldNameMD, fields.fieldNameMasl, ObservationDepthUnitType.masl)}
+            onUpdate={() => void convertDepth(fields.fieldNameMD, fields.fieldNameMasl, ObservationDepthUnitType.masl)}
             disabled={watchDepthUnit !== ObservationDepthUnitType.measuredDepth}
           />
           <FormInput
@@ -131,7 +134,7 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
             value={fields.getValueMasl()}
             type={FormValueType.Number}
             onUpdate={() =>
-              convertDepth(fields.fieldNameMasl, fields.fieldNameMD, ObservationDepthUnitType.measuredDepth)
+              void convertDepth(fields.fieldNameMasl, fields.fieldNameMD, ObservationDepthUnitType.measuredDepth)
             }
             disabled={watchDepthUnit !== ObservationDepthUnitType.masl}
           />

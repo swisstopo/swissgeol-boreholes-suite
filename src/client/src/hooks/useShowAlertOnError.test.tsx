@@ -9,7 +9,7 @@ import { useApiErrorAlert } from "./useShowAlertOnError";
 
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
-    t: (key: string, values?: Record<string, unknown>) => (values?.fileName ? `${key}:${values.fileName}` : key),
+    t: (key: string, values?: Record<string, string>) => (values?.fileName ? `${key}:${values.fileName}` : key),
   }),
 }));
 

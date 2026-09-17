@@ -54,5 +54,5 @@ export function prepareObservationDataForSubmit<
     fromDepthMasl: parseFloatWithThousandsSeparator(data?.fromDepthMasl),
     toDepthMasl: parseFloatWithThousandsSeparator(data?.toDepthMasl),
     boreholeId: parentId,
-  } as T;
+  };
 }
