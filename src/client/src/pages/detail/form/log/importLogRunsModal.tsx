@@ -8,7 +8,7 @@ import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { FileDropzone } from "./fileDropzone.tsx";
 import { LogImportValidationError, useImportLogs } from "./log.ts";
 import { LogImportError } from "./logInterfaces.ts";
-import { parseLogFilesCsv } from "./logUtils.ts";
+import { parseLogFilesCsv, UnsupportedCsvEncodingError } from "./logUtils.ts";
 
 interface ImportLogModalProps {
   isImporting: boolean;
@@ -52,6 +52,7 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
   const [logFileFile, setLogFileFile] = useState<File>();
   const [requiredFilesPerRun, setRequiredFilesPerRun] = useState<Record<string, string[]>>({});
   const [attachmentsPerRun, setAttachmentsPerRun] = useState<Record<string, File[]>>({});
+  const [hasUnreadableLogFileCsv, setHasUnreadableLogFileCsv] = useState(false);
 
   const importMutation = useImportLogs();
   const importErrors = importMutation.error instanceof LogImportValidationError ? importMutation.error.errors : [];
@@ -70,12 +71,21 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
       const file = files[0] as File | undefined;
       setLogFileFile(file);
       setAttachmentsPerRun({});
+      setHasUnreadableLogFileCsv(false);
       importMutation.reset();
-      if (file) {
+      if (!file) {
+        setRequiredFilesPerRun({});
+        return;
+      }
+      try {
         const info = await parseLogFilesCsv(file);
         setRequiredFilesPerRun(info.requiredFilesPerRun);
-      } else {
+      } catch (error) {
+        if (!(error instanceof UnsupportedCsvEncodingError)) throw error;
+        // Without the required file names the modal cannot ask for the attachments, and an import
+        // started anyway would create log file metadata that no upload ever fills.
         setRequiredFilesPerRun({});
+        setHasUnreadableLogFileCsv(true);
       }
     },
     [importMutation],
@@ -104,7 +114,8 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
 
   const isImportRunning = importMutation.isPending;
   const hasRequiredFiles = runNumbers.length === 0 || allRequiredFilesProvided;
-  const isImportDisabled = isImportRunning || !logRunFile || !hasRequiredFiles || importErrors.length > 0;
+  const isImportDisabled =
+    isImportRunning || !logRunFile || !hasRequiredFiles || hasUnreadableLogFileCsv || importErrors.length > 0;
 
   return (
     <FormDialog
@@ -116,6 +127,7 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
         setLogFileFile(undefined);
         setRequiredFilesPerRun({});
         setAttachmentsPerRun({});
+        setHasUnreadableLogFileCsv(false);
         importMutation.reset();
       }}
       actions={[
@@ -154,6 +166,11 @@ export const ImportLogRunsModal: FC<ImportLogModalProps> = ({ isImporting, setIs
             <Stack gap={0.5}>
               <Typography variant="h6">{t("csvFile")}</Typography>
               <FileDropzone onChange={onLogFileCsvChanged} accept={{ "text/csv": [".csv"] }} />
+              {hasUnreadableLogFileCsv && (
+                <Typography variant="body2" color="error" data-cy="logFiles-csv-encoding-error">
+                  {t("importLogFilesUnsupportedEncoding")}
+                </Typography>
+              )}
             </Stack>
             {runNumbers.map(runNumber => (
               <Stack key={runNumber} gap={0.5} data-cy={`log-attachments-${runNumber}`}>

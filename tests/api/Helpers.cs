@@ -110,6 +110,17 @@ internal static class Helpers
     }
 
     /// <summary>
+    /// Creates a FormFile from a string, encoded with <paramref name="encoding"/> and prefixed with that
+    /// encoding's preamble. Lets a test simulate the Windows-1252 uploads that Excel writes for
+    /// "Save As -> CSV", or a UTF-8 upload that carries a byte order mark.
+    /// </summary>
+    internal static FormFile GetFormFileByContent(string fileContent, string fileName, Encoding encoding)
+    {
+        var fileBytes = encoding.GetPreamble().Concat(encoding.GetBytes(fileContent)).ToArray();
+        return new FormFile(new MemoryStream(fileBytes), 0, fileBytes.Length, null, fileName) { Headers = new HeaderDictionary(), ContentType = GetContentType(fileName) };
+    }
+
+    /// <summary>
     /// Creates a FormFile from a string starting with the magic number of a pdf file.
     /// </summary>
     internal static FormFile GetRandomPDFFile(string fileName)
