@@ -4,6 +4,23 @@ import { buildConsentCookieValue, CONSENT_COOKIE_NAME } from "../../../src/term/
 import adminUser from "../../fixtures/adminUser.json";
 import { startEditing, stopEditing } from "./buttonHelpers";
 
+/**
+ * The response bodies these helpers read. Cypress types an intercepted body as any, so each one is
+ * described here rather than being reached into blindly.
+ */
+interface TokenResponse {
+  access_token: string;
+}
+
+interface StoredOidcUser {
+  profile?: { sub?: string };
+}
+
+interface CreatedBorehole {
+  id: number;
+  hrsId: number;
+}
+
 export const bearerAuth = (token: string) => ({ bearer: token });
 
 export const interceptApiCalls = () => {
@@ -215,7 +232,7 @@ export const login = (user: string) => {
         cy.contains("button", "Login").click({ force: true });
       });
       cy.wait("@token")
-        .then(interception => interception.response!.body.access_token)
+        .then(interception => (interception.response!.body as TokenResponse).access_token)
         .then(token => globalThis.localStorage.setItem("access_token", token));
     },
     {
@@ -246,7 +263,8 @@ const readRestoredSubject = (win: Window): string | undefined => {
   const key = Object.keys(win.localStorage).find(k => k.startsWith("oidc.user:"));
   if (!key) return undefined;
   try {
-    return JSON.parse(win.localStorage.getItem(key) ?? "{}").profile?.sub;
+    const storedUser = JSON.parse(win.localStorage.getItem(key) ?? "{}") as StoredOidcUser;
+    return storedUser.profile?.sub;
   } catch {
     return undefined;
   }
@@ -349,9 +367,10 @@ const defaultHrsId = 20106001;
 
 const waitForCreation = () => {
   return cy.wait("@post-borehole").then(interception => {
-    cy.task("log", "Created new borehole with id:" + interception.response!.body.id);
-    cy.wrap(interception.response!.body.hrsId).should("eq", defaultHrsId);
-    return cy.wrap(interception.response!.body.id);
+    const borehole = interception.response!.body as CreatedBorehole;
+    cy.task("log", "Created new borehole with id:" + borehole.id);
+    cy.wrap(borehole.hrsId).should("eq", defaultHrsId);
+    return cy.wrap(borehole.id);
   });
 };
 
