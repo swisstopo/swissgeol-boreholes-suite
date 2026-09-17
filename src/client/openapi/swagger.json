@@ -4124,7 +4124,7 @@
         "tags": [
           "Log"
         ],
-        "summary": "Deletes a log file record that never received its attachment.\r\n            \r\nThe import writes the record before the attachment is uploaded, so an upload that fails or\r\nis given up on would leave a record behind that every later import skips as already\r\nexisting. Removing it here lets the next import add it properly.\r\n            \r\nA record that has its attachment is refused: this endpoint exists to undo an unfinished\r\nimport, not to delete stored files.",
+        "summary": "Deletes a log file record that never received its attachment.\r\n            \r\nThe import writes the record before the attachment is uploaded, so an upload that fails or\r\nis given up on would leave a record behind that every later import skips as already\r\nexisting. Removing it here lets the next import add it properly.",
         "parameters": [
           {
             "name": "id",
