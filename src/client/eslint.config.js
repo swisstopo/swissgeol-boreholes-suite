@@ -2,6 +2,7 @@ import path from "node:path";
 import { fileURLToPath } from "node:url";
 import js from "@eslint/js";
 import tanstackQuery from "@tanstack/eslint-plugin-query";
+import compatPlugin from "eslint-plugin-compat";
 import cypress from "eslint-plugin-cypress/flat";
 import jsxA11y from "eslint-plugin-jsx-a11y";
 import prettierRecommended from "eslint-plugin-prettier/recommended";
@@ -108,6 +109,18 @@ export default defineConfig([
     },
     rules: {
       "local/no-hardcoded-colors": "warn",
+    },
+  },
+  {
+    // Flags browser APIs outside the support baseline declared by "browserslist" in package.json.
+    // Scoped to shipped source: tests and Cypress specs do not run in the target browsers.
+    files: ["src/**/*.{js,jsx,ts,tsx}"],
+    ignores: ["**/*.test.ts", "**/*.test.tsx"],
+    plugins: {
+      compat: compatPlugin,
+    },
+    rules: {
+      "compat/compat": "error",
     },
   },
   {
