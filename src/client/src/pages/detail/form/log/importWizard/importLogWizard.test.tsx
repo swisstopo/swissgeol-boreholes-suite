@@ -90,6 +90,8 @@ const driveImportToReport = async () => {
   fireEvent.click(screen.getByText("pick-runs-csv"));
   fireEvent.click(screen.getByText("Next"));
   fireEvent.click(screen.getByText("pick-attachment"));
+  // The click starts the uploads, whose state updates only settle once the pending promises are
+  // flushed, so act() is doing more here than wrapping the event.
   await act(async () => {
     fireEvent.click(screen.getByText("Import"));
   });
@@ -153,9 +155,7 @@ describe("ImportLogWizard", () => {
     await waitFor(() => expect(uploadResumable).toHaveBeenCalled());
     expect((screen.getByRole("button", { name: "Back" }) as HTMLButtonElement).disabled).toBe(true);
 
-    await act(async () => {
-      fireEvent.click(screen.getByLabelText("cancel"));
-    });
+    fireEvent.click(screen.getByLabelText("cancel"));
     await waitFor(() => expect(deleteLogFile).toHaveBeenCalledWith(12));
 
     fireEvent.click(screen.getByRole("button", { name: "Back" }));
@@ -187,9 +187,7 @@ describe("ImportLogWizard", () => {
     await runImportToReport();
     await waitFor(() => expect(uploadResumable).toHaveBeenCalledTimes(1));
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: "Close" }));
-    });
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
 
     // The second import takes over while the first run's tail is still deleting records.
     uploadResumable.mockImplementation(
@@ -227,9 +225,7 @@ describe("ImportLogWizard", () => {
     await runImportToReport();
     await waitFor(() => expect(uploadResumable).toHaveBeenCalledTimes(2));
 
-    await act(async () => {
-      fireEvent.click(screen.getByLabelText("cancel"));
-    });
+    fireEvent.click(screen.getByLabelText("cancel"));
 
     await waitFor(() => expect(deleteLogFile).toHaveBeenCalledWith(13));
     expect(deleteLogFile).toHaveBeenCalledWith(12);

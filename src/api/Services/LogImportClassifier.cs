@@ -41,10 +41,18 @@ public static class LogImportClassifier
             items.Add(ClassifyRun(row, storedRunIdByNumber, addedRunNumbers, seenRunNumbers, runsToAdd));
         }
 
-        var namesSeenPerRun = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
+        var fileContext = new FileClassificationContext(
+            storedRunIdByNumber,
+            addedRunNumbers,
+            existingFiles,
+            provided,
+            new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase),
+            filesToAdd,
+            filesToComplete);
+
         foreach (var row in fileRows)
         {
-            items.Add(ClassifyFile(row, storedRunIdByNumber, addedRunNumbers, existingFiles, provided, namesSeenPerRun, filesToAdd, filesToComplete));
+            items.Add(ClassifyFile(row, fileContext));
         }
 
         return new LogImportClassification(items, runsToAdd, filesToAdd, filesToComplete);
@@ -91,15 +99,26 @@ public static class LogImportClassifier
             Merge(values, error.Values));
     }
 
-    private static LogImportResultItem ClassifyFile(
-        LogFileRow row,
-        Dictionary<string, int> storedRunIdByNumber,
-        HashSet<string> addedRunNumbers,
-        IReadOnlyList<ExistingLogFile> existingFiles,
-        HashSet<string> provided,
-        Dictionary<string, HashSet<string>> namesSeenPerRun,
-        List<PendingLogFile> filesToAdd,
-        List<int> filesToComplete)
+    /// <summary>
+    /// What classifying one log file row is judged against, and where its work is collected.
+    /// </summary>
+    /// <param name="StoredRunIdByNumber">The ids of the runs already stored, by run number.</param>
+    /// <param name="AddedRunNumbers">The run numbers this same import is about to create.</param>
+    /// <param name="ExistingFiles">The log files already stored for the target borehole.</param>
+    /// <param name="Provided">What the client holds, each as "runNumber/fileName".</param>
+    /// <param name="NamesSeenPerRun">The file names already met in this import, by run number.</param>
+    /// <param name="FilesToAdd">The files to write, appended to as rows are accepted.</param>
+    /// <param name="FilesToComplete">Stored files now expected to receive their attachment.</param>
+    private sealed record FileClassificationContext(
+        Dictionary<string, int> StoredRunIdByNumber,
+        HashSet<string> AddedRunNumbers,
+        IReadOnlyList<ExistingLogFile> ExistingFiles,
+        HashSet<string> Provided,
+        Dictionary<string, HashSet<string>> NamesSeenPerRun,
+        List<PendingLogFile> FilesToAdd,
+        List<int> FilesToComplete);
+
+    private static LogImportResultItem ClassifyFile(LogFileRow row, FileClassificationContext context)
     {
         var identifier = $"{row.RunNumber} / {row.FileName}";
         var values = new Dictionary<string, string>
@@ -121,10 +140,10 @@ public static class LogImportClassifier
             return FileError(identifier, new LogRowError("importErrorRunNumberRequired"), values);
         }
 
-        if (!namesSeenPerRun.TryGetValue(row.RunNumber, out var namesSeen))
+        if (!context.NamesSeenPerRun.TryGetValue(row.RunNumber, out var namesSeen))
         {
             namesSeen = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            namesSeenPerRun[row.RunNumber] = namesSeen;
+            context.NamesSeenPerRun[row.RunNumber] = namesSeen;
         }
 
         if (!namesSeen.Add(row.FileName))
@@ -132,8 +151,8 @@ public static class LogImportClassifier
             return FileError(identifier, new LogRowError("importErrorDuplicateFileName"), values);
         }
 
-        var storedRunId = storedRunIdByNumber.TryGetValue(row.RunNumber, out var id) ? id : (int?)null;
-        var runIsInThisBatch = addedRunNumbers.Contains(row.RunNumber);
+        var storedRunId = context.StoredRunIdByNumber.TryGetValue(row.RunNumber, out var id) ? id : (int?)null;
+        var runIsInThisBatch = context.AddedRunNumbers.Contains(row.RunNumber);
 
         if (storedRunId is null && !runIsInThisBatch)
         {
@@ -141,7 +160,7 @@ public static class LogImportClassifier
         }
 
         var stored = storedRunId is int runId
-            ? existingFiles.FirstOrDefault(f => f.LogRunId == runId && string.Equals(f.Name, row.FileName, StringComparison.OrdinalIgnoreCase))
+            ? context.ExistingFiles.FirstOrDefault(f => f.LogRunId == runId && string.Equals(f.Name, row.FileName, StringComparison.OrdinalIgnoreCase))
             : null;
 
         if (stored is { HasAttachment: true })
@@ -149,7 +168,7 @@ public static class LogImportClassifier
             return new LogImportResultItem(LogImportItemType.File, identifier, LogImportOutcome.AlreadyExists, "importResultFileAlreadyExists", values);
         }
 
-        if (!provided.Contains($"{row.RunNumber}/{row.FileName}"))
+        if (!context.Provided.Contains($"{row.RunNumber}/{row.FileName}"))
         {
             return new LogImportResultItem(LogImportItemType.File, identifier, LogImportOutcome.SkippedIncomplete, "importSkippedAttachmentMissing", values);
         }
@@ -158,12 +177,12 @@ public static class LogImportClassifier
         // attachment is accepted now, and its metadata stays as it was stored.
         if (stored is { HasAttachment: false })
         {
-            filesToComplete.Add(stored.Id);
+            context.FilesToComplete.Add(stored.Id);
             return new LogImportResultItem(LogImportItemType.File, identifier, LogImportOutcome.Added, "importResultFileAdded", values, stored.LogRunId, stored.Id);
         }
 
         if (storedRunId is int parentId) row.LogFile.LogRunId = parentId;
-        filesToAdd.Add(new PendingLogFile(row.RunNumber, row.LogFile));
+        context.FilesToAdd.Add(new PendingLogFile(row.RunNumber, row.LogFile));
         return new LogImportResultItem(LogImportItemType.File, identifier, LogImportOutcome.Added, "importResultFileAdded", values, storedRunId);
     }
 

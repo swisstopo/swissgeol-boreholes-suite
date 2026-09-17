@@ -13,7 +13,7 @@ import { useApiErrorAlert } from "../../../../../hooks/useShowAlertOnError.tsx";
 import { deleteLogFile, LogImportValidationError, useImportLogs, useRequiredAttachments } from "../log.ts";
 import { LogImportResultItem, LogImportUploadState } from "../logInterfaces.ts";
 import { ImportFilesStep } from "./importFilesStep.tsx";
-import { attachmentsToUpload } from "./importReport.ts";
+import { attachmentsToUpload, AttachmentUpload } from "./importReport.ts";
 import { ImportReportStep } from "./importReportStep.tsx";
 import { ImportRunsStep } from "./importRunsStep.tsx";
 import { ImportUploadProgress } from "./importUploadProgress.tsx";
@@ -37,6 +37,62 @@ const filesStep = 1;
 const reportStep = 2;
 
 const stepLabelKeys = ["logRuns", "logFiles", "importReport"];
+
+/** What one attachment needs from the wizard run it belongs to. */
+interface AttachmentUploadContext {
+  controller: AbortController;
+  count: number;
+  /** Whether the run this upload belongs to still owns the wizard. */
+  ownsWizard: () => boolean;
+  setUploadState: (logFileId: number, state: LogImportUploadState) => void;
+  setProgress: (progress: UploadProgressState) => void;
+}
+
+/** Removes the record the import wrote for an attachment that never arrived. */
+const discardRecord = async (logFileId: number) => await deleteLogFile(logFileId).catch(() => undefined);
+
+/**
+ * Sends one attachment and keeps its record only if it arrives.
+ * @param upload The attachment and the record it belongs to.
+ * @param position The attachment's place in the run, counted from one.
+ * @param context What the attachment's run supplies.
+ */
+const sendAttachment = async (upload: AttachmentUpload, position: number, context: AttachmentUploadContext) => {
+  const { controller, count, ownsWizard, setUploadState, setProgress } = context;
+
+  if (controller.signal.aborted) {
+    if (ownsWizard()) setUploadState(upload.logFileId, "failed");
+    await discardRecord(upload.logFileId);
+    return;
+  }
+
+  if (ownsWizard()) {
+    setUploadState(upload.logFileId, "uploading");
+    setProgress({ fileName: upload.file.name, current: position, count, transferred: 0 });
+  }
+
+  try {
+    await uploadResumable(
+      upload.file,
+      { logRunId: String(upload.logRunId), logFileId: String(upload.logFileId) },
+      {
+        signal: controller.signal,
+        onProgress: ({ loaded, total }) => {
+          if (!ownsWizard()) return;
+          setProgress({ fileName: upload.file.name, current: position, count, transferred: loaded, total });
+        },
+      },
+    );
+    if (ownsWizard()) setUploadState(upload.logFileId, "uploaded");
+  } catch (error) {
+    if (ownsWizard()) setUploadState(upload.logFileId, "failed");
+    await discardRecord(upload.logFileId);
+
+    // The files behind a transport that just failed are not tried; they are skipped and
+    // their records removed by the same branch that a cancellation takes.
+    if (!isAbortError(error)) controller.abort();
+  }
+};
 
 /**
  * Collects the two CSV files and the attachments, imports them, and shows what the import did.
@@ -110,55 +166,23 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
       setIsUploading(true);
       setUploadStates(Object.fromEntries(pending.map(upload => [upload.logFileId, "pending" as LogImportUploadState])));
 
-      const ownsWizard = () => runningUploads.current === controller;
+      const context: AttachmentUploadContext = {
+        controller,
+        count: pending.length,
+        ownsWizard: () => runningUploads.current === controller,
+        setUploadState,
+        setProgress,
+      };
 
       let position = 0;
       for (const upload of pending) {
         position++;
-
-        if (controller.signal.aborted) {
-          if (ownsWizard()) setUploadState(upload.logFileId, "failed");
-          await deleteLogFile(upload.logFileId).catch(() => undefined);
-          continue;
-        }
-
-        if (ownsWizard()) {
-          setUploadState(upload.logFileId, "uploading");
-          setProgress({ fileName: upload.file.name, current: position, count: pending.length, transferred: 0 });
-        }
-
-        try {
-          await uploadResumable(
-            upload.file,
-            { logRunId: String(upload.logRunId), logFileId: String(upload.logFileId) },
-            {
-              signal: controller.signal,
-              onProgress: ({ loaded, total }) => {
-                if (!ownsWizard()) return;
-                setProgress({
-                  fileName: upload.file.name,
-                  current: position,
-                  count: pending.length,
-                  transferred: loaded,
-                  total,
-                });
-              },
-            },
-          );
-          if (ownsWizard()) setUploadState(upload.logFileId, "uploaded");
-        } catch (error) {
-          if (ownsWizard()) setUploadState(upload.logFileId, "failed");
-          await deleteLogFile(upload.logFileId).catch(() => undefined);
-
-          // The files behind a transport that just failed are not tried; they are skipped and
-          // their records removed by the same branch that a cancellation takes.
-          if (!isAbortError(error)) controller.abort();
-        }
+        await sendAttachment(upload, position, context);
       }
 
       // Only the run that still holds the slot may release it, so a later one is not left with its
       // uploads reported as finished while they are still on the wire.
-      if (ownsWizard()) {
+      if (context.ownsWizard()) {
         runningUploads.current = null;
         setProgress(undefined);
         setIsUploading(false);

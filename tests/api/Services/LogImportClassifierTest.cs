@@ -6,6 +6,10 @@ namespace BDMS.Services;
 [TestClass]
 public class LogImportClassifierTest
 {
+    private const string TestRunNumber = "RUN-1";
+    private const string TestFileName = "a.las";
+    private const string TestAttachmentName = $"{TestRunNumber}/{TestFileName}";
+
     private static LogRunRow RunRow(string runNumber, params LogRowError[] errors)
     {
         var row = new LogRunRow
@@ -47,16 +51,16 @@ public class LogImportClassifierTest
     [TestMethod]
     public void NewRunIsAdded()
     {
-        var result = Classify(runs: [RunRow("RUN-1")]);
+        var result = Classify(runs: [RunRow(TestRunNumber)]);
 
         Assert.AreEqual(LogImportOutcome.Added, result.Items.Single().Outcome);
-        Assert.AreEqual("RUN-1", result.RunsToAdd.Single().RunNumber);
+        Assert.AreEqual(TestRunNumber, result.RunsToAdd.Single().RunNumber);
     }
 
     [TestMethod]
     public void StoredRunIsAlreadyExists()
     {
-        var result = Classify(runs: [RunRow("RUN-1")], existingRuns: [new ExistingLogRun(5, "RUN-1")]);
+        var result = Classify(runs: [RunRow(TestRunNumber)], existingRuns: [new ExistingLogRun(5, TestRunNumber)]);
 
         Assert.AreEqual(LogImportOutcome.AlreadyExists, result.Items.Single().Outcome);
         Assert.AreEqual(0, result.RunsToAdd.Count);
@@ -65,7 +69,7 @@ public class LogImportClassifierTest
     [TestMethod]
     public void RunRepeatedInTheCsvIsAnErrorOnTheSecondRow()
     {
-        var result = Classify(runs: [RunRow("RUN-1"), RunRow("RUN-1")]);
+        var result = Classify(runs: [RunRow(TestRunNumber), RunRow(TestRunNumber)]);
 
         Assert.AreEqual(LogImportOutcome.Added, result.Items[0].Outcome);
         Assert.AreEqual(LogImportOutcome.Error, result.Items[1].Outcome);
@@ -76,7 +80,7 @@ public class LogImportClassifierTest
     [TestMethod]
     public void RunRepeatedInTheCsvIsAnErrorEvenWhenItIsAlreadyStored()
     {
-        var result = Classify(runs: [RunRow("RUN-1"), RunRow("RUN-1")], existingRuns: [new ExistingLogRun(5, "RUN-1")]);
+        var result = Classify(runs: [RunRow(TestRunNumber), RunRow(TestRunNumber)], existingRuns: [new ExistingLogRun(5, TestRunNumber)]);
 
         Assert.AreEqual(LogImportOutcome.AlreadyExists, result.Items[0].Outcome);
         Assert.AreEqual(LogImportOutcome.Error, result.Items[1].Outcome);
@@ -87,7 +91,7 @@ public class LogImportClassifierTest
     [TestMethod]
     public void RunWithParseErrorIsAnError()
     {
-        var result = Classify(runs: [RunRow("RUN-1", new LogRowError("importErrorInvalidNumberFormat"))]);
+        var result = Classify(runs: [RunRow(TestRunNumber, new LogRowError("importErrorInvalidNumberFormat"))]);
 
         Assert.AreEqual(LogImportOutcome.Error, result.Items.Single().Outcome);
         Assert.AreEqual("importErrorInvalidNumberFormat", result.Items.Single().MessageKey);
@@ -98,22 +102,22 @@ public class LogImportClassifierTest
     public void FileAttachesToARunAddedInTheSameBatch()
     {
         var result = Classify(
-            runs: [RunRow("RUN-1")],
-            files: [FileRow("RUN-1", "a.las")],
-            provided: ["RUN-1/a.las"]);
+            runs: [RunRow(TestRunNumber)],
+            files: [FileRow(TestRunNumber, TestFileName)],
+            provided: [TestAttachmentName]);
 
         var fileItem = result.Items.Single(i => i.Type == LogImportItemType.File);
         Assert.AreEqual(LogImportOutcome.Added, fileItem.Outcome);
-        Assert.AreEqual("RUN-1", result.FilesToAdd.Single().RunNumber);
+        Assert.AreEqual(TestRunNumber, result.FilesToAdd.Single().RunNumber);
     }
 
     [TestMethod]
     public void FileAttachesToAStoredRun()
     {
         var result = Classify(
-            files: [FileRow("RUN-1", "a.las")],
-            existingRuns: [new ExistingLogRun(5, "RUN-1")],
-            provided: ["RUN-1/a.las"]);
+            files: [FileRow(TestRunNumber, TestFileName)],
+            existingRuns: [new ExistingLogRun(5, TestRunNumber)],
+            provided: [TestAttachmentName]);
 
         Assert.AreEqual(LogImportOutcome.Added, result.Items.Single().Outcome);
         Assert.AreEqual(5, result.FilesToAdd.Single().LogFile.LogRunId);
@@ -122,7 +126,7 @@ public class LogImportClassifierTest
     [TestMethod]
     public void FileWithoutItsRunIsSkippedAsIncomplete()
     {
-        var result = Classify(files: [FileRow("RUN-9", "a.las")], provided: ["RUN-9/a.las"]);
+        var result = Classify(files: [FileRow("RUN-9", TestFileName)], provided: ["RUN-9/a.las"]);
 
         var item = result.Items.Single();
         Assert.AreEqual(LogImportOutcome.SkippedIncomplete, item.Outcome);
@@ -132,7 +136,7 @@ public class LogImportClassifierTest
     [TestMethod]
     public void FileWithABlankRunNumberIsAnError()
     {
-        var result = Classify(files: [FileRow(string.Empty, "a.las")], provided: ["/a.las"]);
+        var result = Classify(files: [FileRow(string.Empty, TestFileName)], provided: ["/a.las"]);
 
         var item = result.Items.Single();
         Assert.AreEqual(LogImportOutcome.Error, item.Outcome);
@@ -142,7 +146,7 @@ public class LogImportClassifierTest
     [TestMethod]
     public void FileWithoutItsAttachmentIsSkippedAsIncomplete()
     {
-        var result = Classify(runs: [RunRow("RUN-1")], files: [FileRow("RUN-1", "a.las")]);
+        var result = Classify(runs: [RunRow(TestRunNumber)], files: [FileRow(TestRunNumber, TestFileName)]);
 
         var item = result.Items.Single(i => i.Type == LogImportItemType.File);
         Assert.AreEqual(LogImportOutcome.SkippedIncomplete, item.Outcome);
@@ -154,10 +158,10 @@ public class LogImportClassifierTest
     public void StoredFileWithItsAttachmentIsAlreadyExists()
     {
         var result = Classify(
-            files: [FileRow("RUN-1", "a.las")],
-            existingRuns: [new ExistingLogRun(5, "RUN-1")],
-            existingFiles: [new ExistingLogFile(9, 5, "a.las", HasAttachment: true)],
-            provided: ["RUN-1/a.las"]);
+            files: [FileRow(TestRunNumber, TestFileName)],
+            existingRuns: [new ExistingLogRun(5, TestRunNumber)],
+            existingFiles: [new ExistingLogFile(9, 5, TestFileName, HasAttachment: true)],
+            provided: [TestAttachmentName]);
 
         Assert.AreEqual(LogImportOutcome.AlreadyExists, result.Items.Single().Outcome);
         Assert.AreEqual(0, result.FilesToComplete.Count);
@@ -167,10 +171,10 @@ public class LogImportClassifierTest
     public void StoredFileWithoutItsAttachmentIsCompleted()
     {
         var result = Classify(
-            files: [FileRow("RUN-1", "a.las")],
-            existingRuns: [new ExistingLogRun(5, "RUN-1")],
-            existingFiles: [new ExistingLogFile(9, 5, "a.las", HasAttachment: false)],
-            provided: ["RUN-1/a.las"]);
+            files: [FileRow(TestRunNumber, TestFileName)],
+            existingRuns: [new ExistingLogRun(5, TestRunNumber)],
+            existingFiles: [new ExistingLogFile(9, 5, TestFileName, HasAttachment: false)],
+            provided: [TestAttachmentName]);
 
         var item = result.Items.Single();
         Assert.AreEqual(LogImportOutcome.Added, item.Outcome);
@@ -184,9 +188,9 @@ public class LogImportClassifierTest
     public void FileNameRepeatedInTheSameRunIsAnErrorOnTheSecondRow()
     {
         var result = Classify(
-            runs: [RunRow("RUN-1")],
-            files: [FileRow("RUN-1", "a.las"), FileRow("RUN-1", "a.las")],
-            provided: ["RUN-1/a.las"]);
+            runs: [RunRow(TestRunNumber)],
+            files: [FileRow(TestRunNumber, TestFileName), FileRow(TestRunNumber, TestFileName)],
+            provided: [TestAttachmentName]);
 
         var fileItems = result.Items.Where(i => i.Type == LogImportItemType.File).ToList();
         Assert.AreEqual(LogImportOutcome.Added, fileItems[0].Outcome);
@@ -198,9 +202,9 @@ public class LogImportClassifierTest
     public void FileNameComparisonIgnoresCase()
     {
         var result = Classify(
-            files: [FileRow("RUN-1", "A.LAS")],
-            existingRuns: [new ExistingLogRun(5, "RUN-1")],
-            existingFiles: [new ExistingLogFile(9, 5, "a.las", HasAttachment: true)],
+            files: [FileRow(TestRunNumber, "A.LAS")],
+            existingRuns: [new ExistingLogRun(5, TestRunNumber)],
+            existingFiles: [new ExistingLogFile(9, 5, TestFileName, HasAttachment: true)],
             provided: ["run-1/a.las"]);
 
         Assert.AreEqual(LogImportOutcome.AlreadyExists, result.Items.Single().Outcome);
@@ -210,9 +214,9 @@ public class LogImportClassifierTest
     public void RunsAreReportedBeforeFiles()
     {
         var result = Classify(
-            runs: [RunRow("RUN-1")],
-            files: [FileRow("RUN-1", "a.las")],
-            provided: ["RUN-1/a.las"]);
+            runs: [RunRow(TestRunNumber)],
+            files: [FileRow(TestRunNumber, TestFileName)],
+            provided: [TestAttachmentName]);
 
         Assert.AreEqual(LogImportItemType.Run, result.Items[0].Type);
         Assert.AreEqual(LogImportItemType.File, result.Items[1].Type);

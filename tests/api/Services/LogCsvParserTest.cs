@@ -6,6 +6,8 @@ namespace BDMS.Services;
 [TestClass]
 public class LogCsvParserTest
 {
+    private const string TestRunNumber = "RUN-1";
+
     private static TextReader ToReader(string content) => new StringReader(content);
 
     private static List<Codelist> Codelists =>
@@ -39,7 +41,7 @@ public class LogCsvParserTest
         var rows = LogCsvParser.ParseRuns(ToReader(csv), Codelists, boreholeId: 7);
 
         var row = rows.Single();
-        Assert.AreEqual("RUN-1", row.RunNumber);
+        Assert.AreEqual(TestRunNumber, row.RunNumber);
         Assert.AreEqual(1, row.RowIndex);
         Assert.AreEqual(0, row.Errors.Count);
         Assert.AreEqual(10.5, row.LogRun.FromDepth);
@@ -141,7 +143,7 @@ public class LogCsvParserTest
 
         var namesPerRun = LogCsvParser.RequiredFileNames(ToReader(csv));
 
-        CollectionAssert.AreEqual(new[] { "welllog.las" }, namesPerRun["RUN-1"].ToList());
+        CollectionAssert.AreEqual(new[] { "welllog.las" }, namesPerRun[TestRunNumber].ToList());
         CollectionAssert.AreEqual(new[] { "data.txt" }, namesPerRun["RUN-2"].ToList());
     }
 
@@ -164,7 +166,7 @@ public class LogCsvParserTest
 
         var namesPerRun = LogCsvParser.RequiredFileNames(ToReader(csv));
 
-        CollectionAssert.AreEqual(new[] { "My_Log.las" }, namesPerRun["RUN-1"].ToList());
+        CollectionAssert.AreEqual(new[] { "My_Log.las" }, namesPerRun[TestRunNumber].ToList());
     }
 
     [TestMethod]
@@ -174,7 +176,7 @@ public class LogCsvParserTest
 
         var namesPerRun = LogCsvParser.RequiredFileNames(ToReader(csv));
 
-        CollectionAssert.AreEqual(new[] { "welllog.las" }, namesPerRun["RUN-1"].ToList());
+        CollectionAssert.AreEqual(new[] { "welllog.las" }, namesPerRun[TestRunNumber].ToList());
     }
 
     [TestMethod]
@@ -185,7 +187,7 @@ public class LogCsvParserTest
 
         var namesPerRun = LogCsvParser.RequiredFileNames(ToReader(csv));
 
-        Assert.AreEqual(0, namesPerRun["RUN-1"].Count);
+        Assert.AreEqual(0, namesPerRun[TestRunNumber].Count);
     }
 
     [TestMethod]
@@ -196,7 +198,7 @@ public class LogCsvParserTest
         var namesPerRun = LogCsvParser.RequiredFileNames(ToReader(csv));
 
         Assert.AreEqual(1, namesPerRun.Count);
-        CollectionAssert.AreEqual(new[] { "file1.las" }, namesPerRun["RUN-1"].ToList());
+        CollectionAssert.AreEqual(new[] { "file1.las" }, namesPerRun[TestRunNumber].ToList());
     }
 
     [TestMethod]
@@ -206,7 +208,7 @@ public class LogCsvParserTest
 
         var namesPerRun = LogCsvParser.RequiredFileNames(ToReader(csv));
 
-        CollectionAssert.AreEqual(new[] { "file.las" }, namesPerRun["RUN-1"].ToList());
+        CollectionAssert.AreEqual(new[] { "file.las" }, namesPerRun[TestRunNumber].ToList());
     }
 
     [TestMethod]

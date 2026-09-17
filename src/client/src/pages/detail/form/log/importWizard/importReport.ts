@@ -1,7 +1,7 @@
 import { LogImportItemType, LogImportOutcome, LogImportResultItem } from "../logInterfaces.ts";
 
 /** The attachment of one added log file, ready to be uploaded. */
-interface AttachmentUpload {
+export interface AttachmentUpload {
   logFileId: number;
   logRunId: number;
   file: File;

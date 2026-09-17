@@ -16,8 +16,11 @@ namespace BDMS.Services;
 /// </summary>
 public static class LogCsvParser
 {
-    private static readonly string[] requiredRunColumns = ["RunNumber", "FromDepth", "ToDepth"];
-    private static readonly string[] requiredFileColumns = ["RunNumber", "Name"];
+    private const string RunNumberColumn = "RunNumber";
+    private const string ValuePlaceholder = "value";
+
+    private static readonly string[] requiredRunColumns = [RunNumberColumn, "FromDepth", "ToDepth"];
+    private static readonly string[] requiredFileColumns = [RunNumberColumn, "Name"];
 
     /// <summary>
     /// Names the columns the log runs CSV has to carry and does not.
@@ -50,13 +53,13 @@ public static class LogCsvParser
         if (!parser.Read() || !parser.ReadHeader()) return ToReadOnly(namesPerRun);
 
         var header = parser.HeaderRecord ?? [];
-        if (!HasColumn(header, "RunNumber")) return ToReadOnly(namesPerRun);
+        if (!HasColumn(header, RunNumberColumn)) return ToReadOnly(namesPerRun);
 
         var hasNameColumn = HasColumn(header, "Name");
 
         while (parser.Read())
         {
-            var runNumber = parser.GetField<string>("RunNumber")?.Trim();
+            var runNumber = parser.GetField<string>(RunNumberColumn)?.Trim();
             if (string.IsNullOrEmpty(runNumber)) continue;
 
             if (!namesPerRun.TryGetValue(runNumber, out var names))
@@ -110,7 +113,7 @@ public static class LogCsvParser
         {
             rowIndex++;
             var errors = new List<LogRowError>();
-            var runNumber = parser.GetField<string>("RunNumber")?.Trim() ?? string.Empty;
+            var runNumber = parser.GetField<string>(RunNumberColumn)?.Trim() ?? string.Empty;
             if (string.IsNullOrWhiteSpace(runNumber))
             {
                 errors.Add(new LogRowError("importErrorRunNumberRequired"));
@@ -166,7 +169,7 @@ public static class LogCsvParser
             rowIndex++;
             var errors = new List<LogRowError>();
 
-            var runNumber = parser.GetField<string>("RunNumber")?.Trim() ?? string.Empty;
+            var runNumber = parser.GetField<string>(RunNumberColumn)?.Trim() ?? string.Empty;
             var fileName = BuildFileName(parser, errors);
 
             var row = new LogFileRow
@@ -222,7 +225,7 @@ public static class LogCsvParser
 
         if (double.TryParse(value, CsvConfigHelper.CsvReadConfig.CultureInfo, out var parsed)) return parsed;
 
-        errors.Add(new LogRowError(messageKey, new() { ["value"] = value }));
+        errors.Add(new LogRowError(messageKey, new() { [ValuePlaceholder] = value }));
         return null;
     }
 
@@ -233,7 +236,7 @@ public static class LogCsvParser
 
         if (int.TryParse(value, CsvConfigHelper.CsvReadConfig.CultureInfo, out var parsed)) return parsed;
 
-        errors.Add(new LogRowError("importErrorInvalidNumberFormat", new() { ["value"] = value }));
+        errors.Add(new LogRowError("importErrorInvalidNumberFormat", new() { [ValuePlaceholder] = value }));
         return null;
     }
 
@@ -244,7 +247,7 @@ public static class LogCsvParser
 
         if (DateOnly.TryParse(value, CsvConfigHelper.CsvReadConfig.CultureInfo, DateTimeStyles.None, out var parsed)) return parsed;
 
-        errors.Add(new LogRowError("importErrorInvalidDateFormat", new() { ["value"] = value }));
+        errors.Add(new LogRowError("importErrorInvalidDateFormat", new() { [ValuePlaceholder] = value }));
         return null;
     }
 
@@ -262,7 +265,7 @@ public static class LogCsvParser
 
         if (match != null) return match.Id;
 
-        errors.Add(new LogRowError("importErrorUnknownCodelistValue", new() { ["fieldName"] = column, ["value"] = value }));
+        errors.Add(new LogRowError("importErrorUnknownCodelistValue", new() { ["fieldName"] = column, [ValuePlaceholder] = value }));
         return null;
     }
 
@@ -303,7 +306,7 @@ public static class LogCsvParser
             case "NO" or "NEIN" or "NON":
                 return false;
             default:
-                errors.Add(new LogRowError("importErrorUnknownPublicValue", new() { ["value"] = value }));
+                errors.Add(new LogRowError("importErrorUnknownPublicValue", new() { [ValuePlaceholder] = value }));
                 return false;
         }
     }
