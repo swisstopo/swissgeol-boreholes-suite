@@ -1,4 +1,4 @@
-import { FC, useCallback, useContext, useRef, useState } from "react";
+import { FC, useCallback, useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Step, StepLabel, Stepper } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
@@ -119,6 +119,19 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
   const [isUploading, setIsUploading] = useState(false);
   const runningUploads = useRef<AbortController | null>(null);
 
+  /** Identifies the log files CSV the wizard currently waits on, so an earlier answer is ignored. */
+  const currentCsvRead = useRef<object | null>(null);
+
+  // Closing the wizard aborts what it has on the wire, but the dialog is also torn down when the
+  // page it belongs to is left, which no action of the wizard passes through.
+  useEffect(
+    () => () => {
+      runningUploads.current?.abort();
+      currentCsvRead.current = null;
+    },
+    [],
+  );
+
   const importMutation = useImportLogs();
   const requiredAttachmentsMutation = useRequiredAttachments();
 
@@ -128,6 +141,10 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
 
   const onLogFilesCsvChanged = useCallback(
     async (file?: File) => {
+      const read = {};
+      currentCsvRead.current = read;
+      const ownsWizard = () => currentCsvRead.current === read;
+
       setLogFilesCsvFile(file);
       setAttachmentsPerRun({});
       requiredAttachmentsMutation.reset();
@@ -138,11 +155,13 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
       }
 
       try {
-        setRequiredFilesPerRun(await requiredAttachmentsMutation.mutateAsync({ boreholeId, logFilesCsvFile: file }));
+        const requiredFiles = await requiredAttachmentsMutation.mutateAsync({ boreholeId, logFilesCsvFile: file });
+
+        if (ownsWizard()) setRequiredFilesPerRun(requiredFiles);
       } catch {
         // Without the expected names the wizard cannot ask for the attachments, so the step stays
         // empty and the error the mutation holds is shown instead.
-        setRequiredFilesPerRun({});
+        if (ownsWizard()) setRequiredFilesPerRun({});
       }
     },
     [boreholeId, requiredAttachmentsMutation],
@@ -230,6 +249,7 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
   const close = useCallback(() => {
     runningUploads.current?.abort();
     runningUploads.current = null;
+    currentCsvRead.current = null;
     setIsUploading(false);
     setIsImporting(false);
     setStep(runsStep);

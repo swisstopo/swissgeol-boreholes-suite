@@ -55,15 +55,21 @@ vi.mock("./importRunsStep.tsx", () => ({
 
 vi.mock("./importFilesStep.tsx", () => ({
   ImportFilesStep: ({
+    onFileChange,
     onAttachmentsChange,
     attachmentsPerRun,
+    requiredFilesPerRun,
   }: {
+    onFileChange: (file?: File) => void;
     onAttachmentsChange: (runNumber: string, files: File[]) => void;
     attachmentsPerRun: Record<string, File[]>;
+    requiredFilesPerRun: Record<string, string[]>;
   }) => (
     <>
+      <button onClick={() => onFileChange(new File(["runNumber"], "files.csv"))}>pick-files-csv</button>
       <button onClick={() => onAttachmentsChange("RUN-1", stagedAttachments())}>pick-attachment</button>
       <div data-testid="staged-attachments">{(attachmentsPerRun["RUN-1"] ?? []).map(f => f.name).join(",")}</div>
+      <div data-testid="required-files">{Object.keys(requiredFilesPerRun).join(",")}</div>
     </>
   ),
 }));
@@ -138,6 +144,27 @@ describe("ImportLogWizard", () => {
     fireEvent.click(screen.getByText("Back"));
 
     expect(screen.getByTestId("staged-runs-csv").textContent).toBe("runs.csv");
+  });
+
+  it("drops the expected attachment names of a csv read that answers after the wizard was closed", async () => {
+    let answerRead: (requiredFilesPerRun: Record<string, string[]>) => void = () => {};
+    requiredAttachments.mockImplementation(() => new Promise(resolve => (answerRead = resolve)));
+
+    render(withProviders(<ImportLogWizard isImporting={true} setIsImporting={vi.fn()} />));
+
+    fireEvent.click(screen.getByText("pick-runs-csv"));
+    fireEvent.click(screen.getByText("Next"));
+    fireEvent.click(screen.getByText("pick-files-csv"));
+    fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
+
+    await act(async () => {
+      answerRead({ "RUN-1": ["a.las"] });
+    });
+
+    fireEvent.click(screen.getByText("pick-runs-csv"));
+    fireEvent.click(screen.getByText("Next"));
+
+    expect(screen.getByTestId("required-files").textContent).toBe("");
   });
 
   it("returns from the report to the files step only once the uploads have stopped", async () => {
