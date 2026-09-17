@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Globalization;
-using System.Text;
 
 namespace BDMS.Controllers;
 
@@ -18,7 +17,6 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class LogController : BoreholeControllerBase<LogRun>
 {
-    private const long MaxFileSize = 5_000_000_000; // ~5 GB max file size
     private const string LogRunExportFileName = "log_runs";
     private const string LogFileExportFileName = "log_files";
     private const string LogExportFileName = "log_export";
@@ -57,84 +55,6 @@ public class LogController : BoreholeControllerBase<LogRun>
             .Where(x => x.BoreholeId == boreholeId)
             .ToListAsync()
             .ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Uploads a log file to the cloud storage and links it to the log run.
-    /// If <paramref name="logFileId"/> is provided, the file is linked to the existing <see cref="LogFile"/> instead of creating a new one.
-    /// </summary>
-    /// <param name="file">The file to upload.</param>
-    /// <param name="logRunId">The log run ID to associate with the file.</param>
-    /// <param name="logFileId">Optional existing log file ID to link the uploaded file to.</param>
-    [HttpPost("upload")]
-    [Authorize(Policy = PolicyNames.Viewer)]
-    [RequestSizeLimit(MaxFileSize)]
-    [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
-    public async Task<IActionResult> UploadAsync(IFormFile file, [Range(1, int.MaxValue)] int logRunId, int? logFileId = null)
-    {
-        var logRun = await Context.LogRuns
-            .Include(lr => lr.Borehole)
-            .FirstOrDefaultAsync(lr => lr.Id == logRunId)
-            .ConfigureAwait(false);
-
-        if (logRun == null) return NotFound($"LogRun with ID {logRunId} not found.");
-
-        if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), logRun.BoreholeId).ConfigureAwait(false))
-        {
-            return Unauthorized();
-        }
-
-        if (file == null || file.Length == 0)
-        {
-            return BadRequest("No file provided.");
-        }
-
-        if (file.Length > MaxFileSize)
-        {
-            return Problem(detail: $"{logRun.RunNumber} - {file.FileName}: File size exceeds maximum file size of {MaxFileSize} bytes.", type: ProblemType.UserError);
-        }
-
-        try
-        {
-            if (logFileId.HasValue)
-            {
-                var existingLogFile = await Context.LogFiles
-                    .FirstOrDefaultAsync(lf => lf.Id == logFileId.Value && lf.LogRunId == logRunId)
-                    .ConfigureAwait(false);
-
-                if (existingLogFile == null)
-                {
-                    return NotFound($"LogFile with ID {logFileId.Value} not found for LogRun {logRunId}.");
-                }
-
-                await logFileCloudService.UploadFileForExistingLogFileAsync(
-                    file.OpenReadStream(),
-                    file.ContentType,
-                    existingLogFile.NameUuid!)
-                    .ConfigureAwait(false);
-
-                return Ok(existingLogFile);
-            }
-
-            var logFile = await logFileCloudService.UploadLogFileAndLinkToLogRunAsync(
-                file.OpenReadStream(),
-                file.FileName,
-                file.ContentType,
-                logRunId)
-                .ConfigureAwait(false);
-
-            return Ok(logFile);
-        }
-        catch (InvalidOperationException ex)
-        {
-            Logger.LogError(ex, "An error occurred while uploading the file.");
-            return BadRequest(ex.Message);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "An error occurred while uploading the file.");
-            return Problem(detail: $"{logRun.RunNumber} - {file.FileName}: {ex.Message}", type: ProblemType.UserError);
-        }
     }
 
     /// <summary>
@@ -315,8 +235,8 @@ public class LogController : BoreholeControllerBase<LogRun>
     /// </summary>
     [HttpPost("import")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    [RequestSizeLimit(MaxFileSize)]
-    [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
+    [RequestSizeLimit(FileSizeLimits.Large)]
+    [RequestFormLimits(MultipartBodyLengthLimit = FileSizeLimits.Large)]
     public async Task<IActionResult> ImportAsync([FromQuery] int boreholeId, IFormFile logRunsCsvFile, IFormFile? logFilesCsvFile)
     {
         var borehole = await Context.Boreholes
@@ -387,7 +307,7 @@ public class LogController : BoreholeControllerBase<LogRun>
     private List<LogRun> ParseLogRunsCsv(IFormFile csvFile, CsvConfiguration config, List<Codelist> codelists, int boreholeId)
     {
         var result = new List<LogRun>();
-        using var reader = new StreamReader(csvFile.OpenReadStream(), Encoding.UTF8);
+        using var reader = CsvEncoding.OpenText(csvFile);
         using var csv = new CsvReader(reader, config);
 
         csv.Read();
@@ -439,7 +359,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         var result = new List<(string RunNumber, LogFile LogFile)>();
         var validRunNumbers = logRuns.Select(lr => lr.RunNumber).ToHashSet();
         var seenNamesPerRun = new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase);
-        using var reader = new StreamReader(csvFile.OpenReadStream(), Encoding.UTF8);
+        using var reader = CsvEncoding.OpenText(csvFile);
         using var csv = new CsvReader(reader, config);
 
         csv.Read();
@@ -728,6 +648,12 @@ public class LogController : BoreholeControllerBase<LogRun>
 
             return new StreamedZipResult($"{LogExportFileName}_{timestamp}.zip", entries, Logger);
         }
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
+        {
+            // The client gave up while the export was still being prepared. There is nobody left
+            // to answer, so this is not reported as a failed export.
+            throw;
+        }
         catch (AmazonS3Exception ex)
         {
             Logger.LogError(ex, "Amazon S3 Store threw an exception.");
@@ -822,7 +748,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         }
 
         await csvWriter.FlushAsync().ConfigureAwait(false);
-        return Encoding.UTF8.GetBytes(stringWriter.ToString());
+        return CsvEncoding.ToUtf8BomBytes(stringWriter.ToString());
     }
 
     private static async Task<byte[]> WriteLogFileCsvBytesAsync(List<LogFile> logFiles, string locale)
@@ -860,7 +786,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         }
 
         await csvWriter.FlushAsync().ConfigureAwait(false);
-        return Encoding.UTF8.GetBytes(stringWriter.ToString());
+        return CsvEncoding.ToUtf8BomBytes(stringWriter.ToString());
     }
 
     private static string? GetCodelistText(Codelist? codelist, string locale) => locale switch

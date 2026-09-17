@@ -295,7 +295,7 @@ public class BoreholeExportController : ControllerBase
         }
 
         await csvWriter.FlushAsync().ConfigureAwait(false);
-        return File(Encoding.UTF8.GetBytes(stringWriter.ToString()), "text/csv", $"{ExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}.csv");
+        return File(CsvEncoding.ToUtf8BomBytes(stringWriter.ToString()), "text/csv", $"{ExportFileName}_{DateTime.UtcNow:yyyyMMddHHmmss}.csv");
     }
 
     /// <summary>
@@ -366,7 +366,7 @@ public class BoreholeExportController : ControllerBase
 
             return new StreamedZipResult($"{fileName}.zip", entries, logger);
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
             // The client gave up while the export was still being prepared. There is nobody left
             // to answer, so this is not reported as a failed export.

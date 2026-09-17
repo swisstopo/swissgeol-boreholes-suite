@@ -22,7 +22,6 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class ImportController : ControllerBase
 {
-    private const int MaxFileSize = 210_000_000; // 1024 x 1024 x 200 = 209715200 bytes
     private readonly BdmsContext context;
     private readonly ILogger logger;
     private readonly LocationService locationService;
@@ -61,7 +60,7 @@ public class ImportController : ControllerBase
     [HttpPost("csv")]
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(int.MaxValue)]
-    [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
+    [RequestFormLimits(MultipartBodyLengthLimit = FileSizeLimits.Standard)]
     public async Task<ActionResult<int>> UploadCsvFileAsync(int workgroupId, IFormFile boreholesFile)
     {
         if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
@@ -168,7 +167,7 @@ public class ImportController : ControllerBase
     [HttpPost("json")]
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(int.MaxValue)]
-    [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
+    [RequestFormLimits(MultipartBodyLengthLimit = FileSizeLimits.Standard)]
     public async Task<ActionResult<int>> UploadJsonFileAsync(int workgroupId, IFormFile boreholesFile)
     {
         if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
@@ -195,7 +194,7 @@ public class ImportController : ControllerBase
     [HttpPost("zip")]
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(int.MaxValue)]
-    [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
+    [RequestFormLimits(MultipartBodyLengthLimit = FileSizeLimits.Standard)]
     public async Task<ActionResult<int>> UploadZipFileAsync(int workgroupId, IFormFile boreholesFile)
     {
         if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
@@ -488,7 +487,7 @@ public class ImportController : ControllerBase
 
     private static List<BoreholeImport> ReadBoreholesFromCsv(IFormFile file, List<Codelist> identifierCodelists)
     {
-        using var reader = new StreamReader(file.OpenReadStream());
+        using var reader = CsvEncoding.OpenText(file);
         using var csv = new CsvReader(reader, CsvConfigHelper.CsvReadConfig);
 
         csv.Context.RegisterClassMap(new CsvImportBoreholeMap(identifierCodelists));

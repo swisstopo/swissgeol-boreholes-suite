@@ -1,12 +1,10 @@
 import { RefObject, useCallback, useContext, useEffect, useState } from "react";
-import { useTranslation } from "react-i18next";
 import { GridRowId } from "@mui/x-data-grid";
 import { GridApiCommunity } from "@mui/x-data-grid/internals";
 import { useReloadBoreholes } from "../../../api/borehole.ts";
-import { ApiError } from "../../../api/errorClasses.ts";
-import { AlertContext } from "../../../components/alert/alertContext.tsx";
 import { usePublicColumn } from "../../../components/table/usePublicColumn.tsx";
 import { useResetTabStatus } from "../../../hooks/useResetTabStatus.ts";
+import { useApiErrorAlert } from "../../../hooks/useShowAlertOnError.tsx";
 import { TabName } from "../form/workflow/workflow.ts";
 import { SaveContext, SaveContextProps } from "../saveContext.tsx";
 
@@ -35,10 +33,9 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
   tabStatusToReset,
   invalidateQueries,
 }: UseAttachmentsProps<T>) => {
-  const { t } = useTranslation();
   const { registerSaveHandler, registerResetHandler, unMount, setHasChanges } =
     useContext<SaveContextProps>(SaveContext);
-  const { showAlert } = useContext(AlertContext);
+  const showApiErrorAlert = useApiErrorAlert();
   const reloadBoreholes = useReloadBoreholes();
   const resetTabStatus = useResetTabStatus([tabStatusToReset]);
 
@@ -70,12 +67,11 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
         reloadBoreholes();
         resetTabStatus();
       } catch (error) {
-        const interpolationValues = error instanceof ApiError ? error.details : undefined;
-        showAlert(t((error as Error).message, interpolationValues), "error");
+        showApiErrorAlert(error);
         setIsLoading(false);
       }
     },
-    [addAttachment, onLoad, reloadBoreholes, resetTabStatus, showAlert, t],
+    [addAttachment, onLoad, reloadBoreholes, resetTabStatus, showApiErrorAlert],
   );
 
   const removeCellFocus = useCallback(() => {
