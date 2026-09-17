@@ -130,6 +130,27 @@ export const CompletionPanel = () => {
     });
   };
 
+  const saveCompletion = (completion: Completion, preventReload?: boolean) => {
+    if (completion.id === 0) {
+      addCompletion(completion).then(() => {
+        setState({
+          ...state,
+          switchTabTo: state.switchTabTo === null ? state.displayed.length - 1 : state.switchTabTo,
+        });
+        if (!preventReload) {
+          loadData();
+        }
+        reloadBoreholes();
+      });
+    } else {
+      updateCompletion(completion).then(() => {
+        if (!preventReload) {
+          loadData();
+        }
+      });
+    }
+  };
+
   const handlePendingSave = () => {
     if (canSwitch !== 0 && completionToBeSaved !== null) {
       saveCompletion(completionToBeSaved, canSwitch === -1);
@@ -182,27 +203,6 @@ export const CompletionPanel = () => {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canSwitch]);
-
-  const saveCompletion = (completion: Completion, preventReload?: boolean) => {
-    if (completion.id === 0) {
-      addCompletion(completion).then(() => {
-        setState({
-          ...state,
-          switchTabTo: state.switchTabTo === null ? state.displayed.length - 1 : state.switchTabTo,
-        });
-        if (!preventReload) {
-          loadData();
-        }
-        reloadBoreholes();
-      });
-    } else {
-      updateCompletion(completion).then(() => {
-        if (!preventReload) {
-          loadData();
-        }
-      });
-    }
-  };
 
   const checkSwitchBeforeSave = (completion: Completion) => {
     if (state.trySwitchTab) {

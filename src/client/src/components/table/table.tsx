@@ -1,4 +1,4 @@
-import { MutableRefObject, useCallback, useEffect, useState } from "react";
+import { RefObject, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { SxProps, Typography } from "@mui/material";
 import {
@@ -34,7 +34,7 @@ interface TableProps<T extends GridValidRowModel> {
   onRowClick?: GridEventListener<"rowClick">;
   getRowClassName?: (params: GridRowParams<T>) => string;
   dataCy?: string;
-  apiRef?: MutableRefObject<GridApiCommunity>;
+  apiRef?: RefObject<GridApiCommunity>;
   isLoading?: boolean;
   rowCount?: number;
   maxRowsPerPage?: number;

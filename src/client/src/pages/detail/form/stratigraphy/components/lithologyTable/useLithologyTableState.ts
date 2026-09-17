@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState } from "react";
+import { useMemo, useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import {
   BaseLayer,
@@ -68,7 +68,7 @@ export const useLithologyTableState = (
   const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
   const [seededInputHash, setSeededInputHash] = useState<string | null>(null);
 
-  const baselineRef = useRef({
+  const [baseline, setBaseline] = useState({
     lithologies: "[]",
     lithologicalDescriptions: "[]",
     faciesDescriptions: "[]",
@@ -88,11 +88,11 @@ export const useLithologyTableState = (
         initialFaciesDescriptions,
         stratigraphyId,
       );
-    baselineRef.current = {
+    setBaseline({
       lithologies: JSON.stringify(cleanLithologies),
       lithologicalDescriptions: JSON.stringify(cleanLithologicalDescriptions),
       faciesDescriptions: JSON.stringify(cleanFaciesDescriptions),
-    };
+    });
     setDepths(cleanDepths);
     setTmpLithologies(cleanLithologies);
     setTmpLithologicalDescriptions(cleanLithologicalDescriptions);
@@ -131,9 +131,9 @@ export const useLithologyTableState = (
     if (faciesDescriptionsChanged) setTmpFaciesDescriptions(newFaciesDescriptions);
 
     const matchesBaseline =
-      newLithologiesJson === baselineRef.current.lithologies &&
-      newLithologicalDescriptionsJson === baselineRef.current.lithologicalDescriptions &&
-      newFaciesDescriptionsJson === baselineRef.current.faciesDescriptions;
+      newLithologiesJson === baseline.lithologies &&
+      newLithologicalDescriptionsJson === baseline.lithologicalDescriptions &&
+      newFaciesDescriptionsJson === baseline.faciesDescriptions;
     setHasUnsavedChanges(!matchesBaseline);
   };
 

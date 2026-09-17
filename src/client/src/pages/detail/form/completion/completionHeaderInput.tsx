@@ -49,6 +49,16 @@ const CompletionHeaderInput = ({
     });
   }, [formMethods, selectedCompletion]);
 
+  const submitForm = (data: FieldValues) => {
+    if (data?.abandonDate === "") {
+      data.abandonDate = null;
+    }
+    if (data?.isPrimary === undefined) {
+      data.isPrimary = completion.isPrimary;
+    }
+    saveCompletion({ ...completion, ...data } as Completion);
+  };
+
   useEffect(() => {
     if (trySwitchTab) {
       if (Object.keys(formMethods.formState.dirtyFields).length > 0) {
@@ -80,16 +90,6 @@ const CompletionHeaderInput = ({
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [trySwitchTab]);
-
-  const submitForm = (data: FieldValues) => {
-    if (data?.abandonDate === "") {
-      data.abandonDate = null;
-    }
-    if (data?.isPrimary === undefined) {
-      data.isPrimary = completion.isPrimary;
-    }
-    saveCompletion({ ...completion, ...data } as Completion);
-  };
 
   if (isLoading)
     return (
