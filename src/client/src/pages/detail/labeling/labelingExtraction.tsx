@@ -1,6 +1,6 @@
 import { FC, useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { AlertColor, Box } from "@mui/material";
+import { AlertColor, Box, CircularProgress } from "@mui/material";
 import {
   extractCoordinates,
   extractText,
@@ -8,6 +8,7 @@ import {
   useFileInfo,
 } from "../../../api/dataextraction.ts";
 import { ExtractionRequest, ExtractionState } from "../../../api/dataextractionInterfaces.ts";
+import { useProfileImage } from "../../../api/profile.ts";
 import { BoreholeAttachment } from "../../../api/unionTypes.ts";
 import { theme } from "../../../AppTheme.ts";
 import { TextExtractionButton } from "../../../components/buttons/labelingButtons.tsx";
@@ -34,12 +35,16 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
   const [extractionExtent, setExtractionExtent] = useState<number[]>([]);
   const [drawTooltipLabel, setDrawTooltipLabel] = useState<string>();
   const { data: fileInfo } = useFileInfo(selectedFile?.id, activePage);
+  const { data: image } = useProfileImage(fileInfo?.fileName);
   const {
     data: pageBoundingBoxes,
+    isPending: areBoundingBoxesPending,
     isError,
     error,
   } = useExtractionBoundingBoxes(selectedFile?.nameUuid, fileInfo, activePage);
   useShowAlertOnError(isError, error, "warning");
+
+  const isPageSelectable = !!fileInfo && !!image && !areBoundingBoxesPending;
 
   const setTextToClipboard = useCallback(
     async (text: string) => {
@@ -131,6 +136,20 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
 
   return (
     <>
+      {!isPageSelectable && (
+        <Box
+          data-cy="labeling-page-loading"
+          sx={{
+            position: "absolute",
+            inset: 0,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+            zIndex: "400",
+          }}>
+          <CircularProgress />
+        </Box>
+      )}
       <Box
         sx={{
           position: "absolute",
@@ -139,7 +158,9 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
           zIndex: "500",
         }}>
         <TextExtractionButton
-          disabled={extractionObject?.type == "text" && extractionState === ExtractionState.drawing}
+          disabled={
+            !isPageSelectable || (extractionObject?.type == "text" && extractionState === ExtractionState.drawing)
+          }
           onClick={() => {
             setExtractionObject({ type: "text" });
             setExtractionState(ExtractionState.start);
