@@ -12,12 +12,26 @@ import {
 } from "react";
 import { useLocation } from "react-router";
 
+/**
+ * What a long running save is currently doing. `message` stays put while `hint` carries the
+ * detail that keeps changing, so the line the user reads first does not move.
+ */
+interface SaveProgress {
+  message: string;
+  hint?: string;
+
+  /** Gives up on the running save. Only set by a save that can actually be stopped. */
+  onCancel?: () => void;
+}
+
 export interface SaveContextProps {
   showSaveBar: boolean;
   showSaveFeedback: boolean;
   hasChanges: boolean;
   hasErrors: boolean;
   isSaving: boolean;
+  saveProgress: SaveProgress | null;
+  setSaveProgress: Dispatch<SetStateAction<SaveProgress | null>>;
   setHasChanges: Dispatch<SetStateAction<boolean>>;
   setHasErrors: Dispatch<SetStateAction<boolean>>;
   registerSaveHandler: (handler: SaveHandler) => void;
@@ -36,6 +50,8 @@ export const SaveContext = createContext<SaveContextProps>({
   hasChanges: false,
   hasErrors: false,
   isSaving: false,
+  saveProgress: null,
+  setSaveProgress: () => {},
   setHasChanges: () => {},
   setHasErrors: () => {},
   registerSaveHandler: () => {},
@@ -51,6 +67,7 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
   const [hasErrors, setHasErrors] = useState(false);
   const [showSaveFeedback, setShowSaveFeedback] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
+  const [saveProgress, setSaveProgress] = useState<SaveProgress | null>(null);
   const saveHandlerRef = useRef<SaveHandler | null>(null);
   const resetHandlerRef = useRef<ResetHandler | null>(null);
   const [hasSaveHandler, setHasSaveHandler] = useState(false);
@@ -67,6 +84,13 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
 
   const triggerSave = useCallback(async () => {
     if (hasErrors) return;
+
+    // A save can also be asked for by the keyboard shortcut, which the overlay shown while one
+    // runs does not cover: it takes pointer events, and the shortcut listens on the window. A
+    // second save would send the changes of the first a second time and leave it running with
+    // nothing able to stop it, because it takes over what the cancel button reaches.
+    if (isSaving) return;
+
     if (saveHandlerRef.current) {
       setIsSaving(true);
       try {
@@ -78,9 +102,10 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
         }
       } finally {
         setIsSaving(false);
+        setSaveProgress(null);
       }
     }
-  }, [hasErrors]);
+  }, [hasErrors, isSaving]);
 
   const registerResetHandler = useCallback((handler: ResetHandler) => {
     resetHandlerRef.current = handler;
@@ -131,6 +156,8 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
       hasChanges,
       hasErrors,
       isSaving,
+      saveProgress,
+      setSaveProgress,
       setHasChanges,
       setHasErrors,
       registerSaveHandler,
@@ -143,6 +170,7 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
     hasChanges,
     hasErrors,
     isSaving,
+    saveProgress,
     registerResetHandler,
     registerSaveHandler,
     showSaveBar,

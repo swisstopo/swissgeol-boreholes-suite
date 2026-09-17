@@ -19,7 +19,7 @@ public class PhotoController : ControllerBase
     /// The largest photo the upload endpoint accepts, and therefore also the largest one that may
     /// be read into memory for the TIFF conversion.
     /// </summary>
-    internal const int MaxFileSize = 210_000_000; // 1024 x 1024 x 200 = 209715200 bytes
+    internal const int MaxFileSize = FileSizeLimits.Standard;
 
     private readonly BdmsContext context;
     private readonly ILogger logger;
