@@ -19,6 +19,8 @@
 
 ### Fixed
 - The stratigraphy extraction now distinguishes between an extraction that completed without finding a stratigraphy and one that failed. A failed extraction reports the error and offers to try again. While an extraction takes unusually long, a note asks you to keep waiting.
+- The borehole overview no longer fails to load in Safari. The page previously showed an error message instead of the borehole table.
+- The error message shown when the overview page cannot be loaded is now translated instead of displaying an internal placeholder text.
 - Fixed out of memory failures when the data extraction service processes large documents.
 - Exporting LOG runs with large attachments no longer fails. LOG file exports and downloads are streamed instead of being assembled in memory, so files larger than 2 GB can now be exported and downloaded up to the 5 GB limit.
 - LOG runs are now always displayed on VIEW, even without any files or without public files.

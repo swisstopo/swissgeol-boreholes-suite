@@ -117,6 +117,20 @@ describe("Borehole editor table tests", () => {
     verifyPaginationText("91–100 of 100");
   });
 
+  it("Displays the overview table on browsers without requestIdleCallback", () => {
+    // Safari does not expose requestIdleCallback or cancelIdleCallback by default. CI runs
+    // Chromium only, so both globals are removed before the app boots to cover that path.
+    goToRouteAndAcceptTerms("/", win => {
+      Reflect.deleteProperty(win, "requestIdleCallback");
+      Reflect.deleteProperty(win, "cancelIdleCallback");
+    });
+    showTableAndWaitForData();
+
+    // Guards the simulation itself: the globals must still be absent once the app has booted.
+    cy.window().its("requestIdleCallback").should("be.undefined");
+    cy.dataCy("retry-button").should("not.exist");
+  });
+
   it("Verifies all rows are selected on header checkbox click", () => {
     // Override the default page size (100) so multi-page selection behavior can be exercised.
     goToRouteAndAcceptTerms("/?pageSize=10");

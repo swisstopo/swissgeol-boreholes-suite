@@ -252,11 +252,12 @@ const readRestoredSubject = (win: Window): string | undefined => {
   }
 };
 
-const visitWithConsent = (route: string) => {
+const visitWithConsent = (route: string, onBeforeLoad?: (win: Cypress.AUTWindow) => void) => {
   cy.visit(route, {
     onBeforeLoad(win) {
       const value = buildConsentCookieValue(readRestoredSubject(win), true);
       win.document.cookie = `${CONSENT_COOKIE_NAME}=${value}; path=/; SameSite=Lax`;
+      onBeforeLoad?.(win);
     },
   });
 };
@@ -275,8 +276,8 @@ export const goToDetailRouteAndAcceptTerms = (route: string) => {
   cy.wait(["@borehole_by_id", "@get-current-user"]);
 };
 
-export const goToRouteAndAcceptTerms = (route: string) => {
-  visitWithConsent(route);
+export const goToRouteAndAcceptTerms = (route: string, onBeforeLoad?: (win: Cypress.AUTWindow) => void) => {
+  visitWithConsent(route, onBeforeLoad);
   clickAcceptIfPresent();
 };
 
