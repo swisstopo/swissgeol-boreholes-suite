@@ -215,6 +215,7 @@ export function useExtractStratigraphies(file: BoreholeAttachment, activePage: n
   return useQuery({
     queryKey: ["extractStratigraphies", file.nameUuid],
     enabled: !!file && !!fileInfo,
+    retry: false, // no retries to reduce load on dataextraction service after failure.
     staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes => Extraction for the same file doesn't need to be refetched.
     queryFn: async ({ signal }) => {
       const response = await extractStratigraphies(file.nameUuid!, signal);
