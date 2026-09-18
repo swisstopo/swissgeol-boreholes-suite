@@ -91,8 +91,21 @@ const addedFileItem = (fileName: string, logFileId: number): LogImportResultItem
 
 const addedFile = addedFileItem("a.las", 7);
 
+/** Records the order of the record deletions and of the refreshes asking for the runs again. */
+const cleanupOrder: string[] = [];
+
+const makeQueryClient = (): QueryClient => {
+  const client = new QueryClient();
+  const invalidateQueries = client.invalidateQueries.bind(client);
+  client.invalidateQueries = filters => {
+    if (filters?.queryKey?.[0] === "logs") cleanupOrder.push("refresh");
+    return invalidateQueries(filters);
+  };
+  return client;
+};
+
 const withProviders = (element: ReactElement): ReactElement => (
-  <QueryClientProvider client={new QueryClient()}>{element}</QueryClientProvider>
+  <QueryClientProvider client={makeQueryClient()}>{element}</QueryClientProvider>
 );
 
 /** Walks the already rendered wizard from the first step to the report, staging the attachments. */
@@ -117,6 +130,35 @@ describe("ImportLogWizard", () => {
   afterEach(() => {
     cleanup();
     vi.clearAllMocks();
+    cleanupOrder.length = 0;
+  });
+
+  // Closing asks for the runs again straight away, while the records of the attachments that never
+  // arrived are only removed once the abort has worked its way through the running upload. The
+  // list would hold those files until something asked for the runs after the removals.
+  it("asks for the runs again after the records of the cancelled uploads are removed", async () => {
+    importLogs.mockResolvedValue([addedFileItem("a.las", 11), addedFileItem("b.las", 12)]);
+    uploadResumable.mockImplementation(
+      (_file: File, _metadata: Record<string, string>, options: TransferOptions) =>
+        new Promise<number>((_resolve, reject) => {
+          options.signal?.addEventListener("abort", () =>
+            reject(new DOMException("The user aborted a request.", "AbortError")),
+          );
+        }),
+    );
+    deleteLogFile.mockImplementation(async (logFileId: number) => {
+      cleanupOrder.push(`delete ${logFileId}`);
+    });
+
+    await runImportToReport();
+    await waitFor(() => expect(uploadResumable).toHaveBeenCalledTimes(1));
+
+    await act(async () => {
+      fireEvent.click(screen.getByRole("button", { name: "Close" }));
+    });
+
+    await waitFor(() => expect(deleteLogFile).toHaveBeenCalledTimes(2));
+    expect(cleanupOrder.at(-1)).toBe("refresh");
   });
 
   it("deletes the record when its upload fails", async () => {

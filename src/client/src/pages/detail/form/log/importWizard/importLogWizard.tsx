@@ -174,8 +174,10 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
         runningUploads.current = null;
         setProgress(undefined);
       }
+
+      queryClient.invalidateQueries({ queryKey: ["logs", boreholeId] });
     },
-    [attachmentsPerRun, setUploadState],
+    [attachmentsPerRun, boreholeId, queryClient, setUploadState],
   );
 
   /** Reports a refused import in the words the server chose where it supplied any. */
@@ -191,6 +193,10 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
   );
 
   const startImport = useCallback(async () => {
+    const controller = new AbortController();
+    runningUploads.current?.abort();
+    runningUploads.current = controller;
+
     try {
       const items = await importMutation.mutateAsync({
         boreholeId,
@@ -198,6 +204,8 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
         logFilesCsvFile,
         attachmentsPerRun,
       });
+      if (runningUploads.current !== controller || controller.signal.aborted) return;
+
       setStep(ImportStep.Report);
       await uploadAttachments(items);
     } catch (error) {
@@ -248,12 +256,20 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
   // FormDialog closes itself whenever an action resolves truthy, so every action here says
   // explicitly whether it is done with the dialog rather than leaving it to what it happens to
   // return. The actions that close have already done their own cleanup in close().
-  const cancelAction = { label: "cancel", variant: "outlined" as const, color: "primary" as const };
+  const isImportOnTheWire = importMutation.isPending;
+
+  const cancelAction = {
+    label: "cancel",
+    variant: "outlined" as const,
+    color: "primary" as const,
+    disabled: isImportOnTheWire,
+  };
 
   const backToRunsAction = {
     label: "back",
     variant: "outlined" as const,
     color: "primary" as const,
+    disabled: isImportOnTheWire,
     onClick: () => {
       setStep(ImportStep.Runs);
       return false;
