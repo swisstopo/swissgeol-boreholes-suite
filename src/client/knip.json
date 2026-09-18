@@ -17,10 +17,6 @@
   ],
   "ignoreDependencies": [
     "@babel/plugin-transform-private-property-in-object",
-    "@tanstack/eslint-plugin-query",
-    "eslint-plugin-jsx-a11y",
-    "eslint-plugin-react",
-    "eslint-plugin-react-hooks",
     "license-checker"
   ]
 }

@@ -63,11 +63,21 @@ export interface LogFileUploadProgress extends TransferProgress {
   indexInRun: number;
 }
 
-export interface LogImportError {
-  errorKey: string;
+export type LogImportItemType = "Run" | "File";
+
+export type LogImportOutcome = "Added" | "AlreadyExists" | "SkippedIncomplete" | "Error";
+
+/** How far the attachment of an added log file has got. */
+export type LogImportUploadState = "pending" | "uploading" | "uploaded" | "failed";
+
+export interface LogImportResultItem {
+  type: LogImportItemType;
+  identifier: string;
+  outcome: LogImportOutcome;
   messageKey: string;
-  detail: string;
   values?: Record<string, string>;
+  logRunId?: number;
+  logFileId?: number;
 }
 
 export interface AddLogRunVariables {
@@ -83,6 +93,12 @@ export interface UpdateLogRunVariables {
 
 export interface ImportLogsVariables {
   boreholeId: number;
-  formData: FormData;
   attachmentsPerRun: Record<string, File[]>;
+  logRunsCsvFile?: File;
+  logFilesCsvFile?: File;
+}
+
+export interface RequiredAttachmentsVariables {
+  boreholeId: number;
+  logFilesCsvFile: File;
 }
