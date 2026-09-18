@@ -16,8 +16,11 @@ const filesStepCsvInputSelector = '[data-cy="import-step-files"] input[data-cy="
 const uploadRetryTimeout = 30000;
 
 function openImportDialog() {
+  // The dialog carries an import button of its own, so it has to be gone before the panel's
+  // button can be addressed by that name.
+  cy.get(importDialogSelector).should("not.exist");
   cy.dataCy("import-button").should("be.visible").click();
-  cy.contains("h4", "Import LOG runs from CSV file");
+  cy.get(importDialogSelector).contains("h4", "Import LOG runs from CSV file");
 }
 
 function removeSelectedFileIfPresent(containerSelector: string) {
@@ -254,7 +257,7 @@ describe("Test for the borehole log import.", () => {
     // WRONG-RUN is not part of this import and does not exist on the borehole, so its file is
     // skipped rather than failed: importing the missing run first and running the import again
     // would pick it up.
-    expectReportContains("The LOG run does not exist yet. Import it first, then import this file again.");
+    expectReportContains('The LOG run "WRONG-RUN" does not exist yet. Import it first, then import this file again.');
 
     // IMP-RUN-1's row carries an invalid PassType.
     expectReportContains('Unknown value "NotAPassType" in column PassType.');
