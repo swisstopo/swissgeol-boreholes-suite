@@ -3,8 +3,9 @@ import { createElement, ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { renderHook, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { mapExtractionResponse, useExtractStratigraphies } from "./dataextraction.ts";
+import { mapExtractionResponse, useExtractStratigraphies, useFileInfo } from "./dataextraction.ts";
 import { ExtractionBoundingBox, StratigraphyExtractionResponse } from "./dataextractionInterfaces.ts";
+import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 import { BoreholeAttachment } from "./unionTypes.ts";
 
 vi.mock("./authentication.ts", () => ({
@@ -85,5 +86,30 @@ describe("useExtractStratigraphies", () => {
 
     const extractionCalls = vi.mocked(fetch).mock.calls.filter(([url]) => String(url).includes("extract_stratigraphy"));
     expect(extractionCalls).toHaveLength(1);
+  });
+});
+
+describe("useFileInfo", () => {
+  beforeEach(() => {
+    // A profile whose pngs have not been created yet, so the query triggers png creation.
+    vi.mocked(fetchApiV2WithApiError).mockResolvedValue({ fileName: "pngs-missing.pdf", count: 0 });
+    vi.stubGlobal(
+      "fetch",
+      vi.fn(async () => new Response("png creation failed", { status: 500 })),
+    );
+  });
+
+  afterEach(() => {
+    vi.unstubAllGlobals();
+    vi.clearAllMocks();
+  });
+
+  it("requests png creation again after a failed attempt", async () => {
+    const { result } = renderHook(() => useFileInfo(1, 1), { wrapper: createWrapper() });
+
+    await waitFor(() => expect(result.current.isError).toBe(true));
+
+    const createPngsCalls = vi.mocked(fetch).mock.calls.filter(([url]) => String(url).includes("create_pngs"));
+    expect(createPngsCalls.length).toBeGreaterThan(1);
   });
 });

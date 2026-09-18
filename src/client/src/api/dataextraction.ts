@@ -90,7 +90,14 @@ export function useFileInfo(profileId: number | undefined, activePage: number) {
         if (!pngCreationStartedForFiles.has(fileNameWithExtension)) {
           pngCreationStartedForFiles.add(fileNameWithExtension);
           if (fileNameWithExtension.includes(".pdf")) {
-            await createExtractionPngs(fileNameWithExtension);
+            try {
+              await createExtractionPngs(fileNameWithExtension);
+            } catch (error) {
+              // A failed attempt must not count as started: otherwise every later attempt skips
+              // creation and fails on the missing pngs instead of requesting them again.
+              pngCreationStartedForFiles.delete(fileNameWithExtension);
+              throw error;
+            }
           }
         }
 
