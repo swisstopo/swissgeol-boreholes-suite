@@ -18,6 +18,7 @@
 - The export dialog closes as soon as a format is chosen, and the transfer is reported by an overlay over the page instead of over the dialog.
 
 ### Fixed
+- The stratigraphy extraction now distinguishes between an extraction that completed without finding a stratigraphy and one that failed. A failed extraction reports the error and offers to try again. While an extraction takes unusually long, a note asks you to keep waiting.
 - The borehole overview no longer fails to load in Safari. The page previously showed an error message instead of the borehole table.
 - The error message shown when the overview page cannot be loaded is now translated instead of displaying an internal placeholder text.
 - Fixed out of memory failures when the data extraction service processes large documents.
