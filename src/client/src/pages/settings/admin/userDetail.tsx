@@ -40,8 +40,7 @@ export const UserDetail: FC = () => {
     const workgroupsMap = new Map<number, WorkgroupWithRoles>();
     workgroupRoles.forEach((r: UserWorkgroupRole) => {
       // An entry without a role renders a chip with no label, and one without a workgroup carries
-      // no id for the row to be found by, so neither can be shown. The workgroup detail table
-      // drops role-less entries the same way.
+      // no id for the row to be found by, so neither can be shown.
       if (!r.role || !r.workgroup) return;
       const workgroup = workgroupsMap.get(r.workgroupId);
       if (workgroup) {

@@ -24,7 +24,11 @@ export const TabModal: FC<TabModalProps> = ({ open, onClose, title, tabs, active
         {tabs.length > 1 && (
           <ToggleButtonGroup
             value={activeIndex}
-            onChange={(_, value: number) => setActiveIndex(value)}
+            // An exclusive group reports null when the selected button is clicked again. There is
+            // no tab-less state here, so that deselection is ignored rather than passed on.
+            onChange={(_, value: number | null) => {
+              if (value !== null) setActiveIndex(value);
+            }}
             exclusive
             sx={{
               boxShadow: "none",

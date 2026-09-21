@@ -104,7 +104,8 @@ export const WorkgroupDetail: FC = () => {
   };
 
   const renderRoleChips = (params: GridRenderCellParams<User, User["workgroupRoles"]>) => {
-    const workgroupRoles = params.value?.filter(role => role.workgroupId === id) ?? [];
+    // An entry without a role renders a chip with no label, so it is left out.
+    const workgroupRoles = params.value?.filter(role => role.workgroupId === id && role.role) ?? [];
     return (
       <Stack direction="row" gap={1} p={1.2} sx={{ flexWrap: "wrap" }}>
         {workgroupRoles.map(workgroupRole => (
