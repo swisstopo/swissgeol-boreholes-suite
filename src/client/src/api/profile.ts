@@ -6,7 +6,7 @@ import { download } from "./download.ts";
 import { ApiError } from "./errorClasses.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
 import { formatFileSize, getMaxFileSize } from "./fileSize.ts";
-import { OcrStatus, Profile, ProfileOcrStatus } from "./generated";
+import { OcrStatus, Profile, ProfileOcrStatus, ProfileUpdate } from "./generated";
 
 export async function uploadProfile(boreholeId: number, file: File): Promise<Profile> {
   if (file && file.size <= getMaxFileSize()) {
@@ -39,7 +39,13 @@ export const downloadProfile = async (profileId: number) => {
   return await download(`profile/download?profileId=${profileId}`);
 };
 
-export const updateProfile = async (profileId: number, description: string, isPublic: boolean) => {
+// The parameters follow the write model rather than the entity: the endpoint accepts a cleared
+// description and an unset visibility, which a plain string and boolean could not express.
+export const updateProfile = async (
+  profileId: number,
+  description: ProfileUpdate["description"],
+  isPublic: ProfileUpdate["public"],
+) => {
   return await fetchApiV2WithApiError(`profile/${profileId}`, "PUT", {
     description: description,
     public: isPublic,

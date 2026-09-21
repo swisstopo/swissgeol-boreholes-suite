@@ -3,7 +3,7 @@ import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
 import { Stack } from "@mui/system";
-import { GridColDef, GridEventListener, GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
+import { GridColDef, GridRowParams, GridRowSelectionModel, useGridApiRef } from "@mui/x-data-grid";
 import Filter2Icon from "../../../../assets/icons/filter2.svg?react";
 import { getSectionsByBoreholeId } from "../../../../api/fetchApiV2.ts";
 import { DeleteButton, ExportButton, ToggleButton } from "../../../../components/buttons/buttons.tsx";
@@ -145,7 +145,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
     }
   }, [filterVisible, formMethods]);
 
-  const handleRowClick: GridEventListener<"rowClick"> = params => {
+  const handleRowClick = (params: GridRowParams<LogRun>) => {
     setSelectedLogRunId(params.row.tmpId);
   };
 

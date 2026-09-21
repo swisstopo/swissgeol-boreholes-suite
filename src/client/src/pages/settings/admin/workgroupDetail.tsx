@@ -103,11 +103,11 @@ export const WorkgroupDetail: FC = () => {
     setUserDialogOpen(true);
   };
 
-  const renderRoleChips = (params: GridRenderCellParams<object[]>) => {
-    const workgroupRoles = params.value.filter((role: UserWorkgroupRole) => role.workgroupId === id);
+  const renderRoleChips = (params: GridRenderCellParams<User, User["workgroupRoles"]>) => {
+    const workgroupRoles = params.value?.filter(role => role.workgroupId === id) ?? [];
     return (
       <Stack direction="row" gap={1} p={1.2} sx={{ flexWrap: "wrap" }}>
-        {workgroupRoles.map((workgroupRole: UserWorkgroupRole) => (
+        {workgroupRoles.map(workgroupRole => (
           <Chip
             key={workgroupRole.role}
             label={workgroupRole.role!.toUpperCase()}

@@ -34,13 +34,18 @@ export const UserDetail: FC = () => {
     removeAllRoles: { mutate: removeAllWorkgroupRolesForUser },
   } = useWorkgroupMutations();
 
-  const getUniqueWorkgroups = (user: User) => {
+  const getUniqueWorkgroups = (user: User): WorkgroupWithRoles[] => {
     const { workgroupRoles } = user;
     if (!workgroupRoles || workgroupRoles.length < 1) return [];
-    const workgroupsMap = new Map();
+    const workgroupsMap = new Map<number, WorkgroupWithRoles>();
     workgroupRoles.forEach((r: UserWorkgroupRole) => {
-      if (workgroupsMap.has(r.workgroupId)) {
-        workgroupsMap.get(r.workgroupId).roles.push(r.role);
+      // An entry without a role renders a chip with no label, and one without a workgroup carries
+      // no id for the row to be found by, so neither can be shown. The workgroup detail table
+      // drops role-less entries the same way.
+      if (!r.role || !r.workgroup) return;
+      const workgroup = workgroupsMap.get(r.workgroupId);
+      if (workgroup) {
+        workgroup.roles.push(r.role);
       } else {
         workgroupsMap.set(r.workgroupId, {
           ...r.workgroup,
@@ -76,10 +81,10 @@ export const UserDetail: FC = () => {
     setWorkgroupDialogOpen(true);
   };
 
-  const renderRoleChips = (params: GridRenderCellParams<object[]>) => {
+  const renderRoleChips = (params: GridRenderCellParams<WorkgroupWithRoles, Role[]>) => {
     return (
       <Stack direction="row" gap={1} p={1.2} sx={{ flexWrap: "wrap" }}>
-        {params.value.map((roleName: string) => (
+        {params.value?.map(roleName => (
           <Chip
             key={roleName}
             label={roleName.toUpperCase()}

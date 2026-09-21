@@ -5,10 +5,18 @@ import { GridColDef, GridRenderCellParams } from "@mui/x-data-grid";
 import { CheckIcon, ScrollText } from "lucide-react";
 import { formatDistanceToNow, formatDuration, intervalToDuration } from "date-fns";
 import { de, enUS, fr, it } from "date-fns/locale";
-import { MaintenanceTaskStatus, MaintenanceTaskType, useMaintenanceLogs } from "../../../api/maintenance.ts";
+import {
+  MaintenanceTaskLogEntry,
+  MaintenanceTaskStatus,
+  MaintenanceTaskType,
+  useMaintenanceLogs,
+} from "../../../api/maintenance.ts";
 import { Table } from "../../../components/table/table.tsx";
 
 type LogStatus = Extract<MaintenanceTaskStatus, "Completed" | "Failed">;
+
+// The grid needs a row id; the API pages the entries without one.
+type LogRow = MaintenanceTaskLogEntry & { id: number };
 
 const dateFnsLocales: Record<string, Locale> = { de, en: enUS, fr, it };
 
@@ -39,7 +47,7 @@ export const ExecutionLogTable: FC = () => {
 
   const rows = useMemo(() => data?.logEntries.map((entry, index) => ({ ...entry, id: index })) ?? [], [data]);
 
-  const columns: GridColDef[] = useMemo(
+  const columns: GridColDef<LogRow>[] = useMemo(
     () => [
       {
         field: "taskType",
@@ -65,8 +73,8 @@ export const ExecutionLogTable: FC = () => {
         field: "affectedCount",
         headerName: t("affected"),
         flex: 1,
-        renderCell: (params: GridRenderCellParams) =>
-          params.row.status === "Failed" ? (params.row.message ?? "-") : (params.value ?? 0),
+        renderCell: (params: GridRenderCellParams<LogRow>) =>
+          params.row.status === "Failed" ? (params.row.message ?? "-") : (params.row.affectedCount ?? 0),
       },
       {
         field: "isDryRun",
@@ -78,13 +86,13 @@ export const ExecutionLogTable: FC = () => {
         field: "startedByName",
         headerName: t("startedBy"),
         flex: 2,
-        renderCell: (params: GridRenderCellParams) => params.value ?? "-",
+        renderCell: (params: GridRenderCellParams<LogRow>) => params.row.startedByName ?? "-",
       },
       {
         field: "duration",
         headerName: t("duration"),
         flex: 1.5,
-        renderCell: (params: GridRenderCellParams) => {
+        renderCell: (params: GridRenderCellParams<LogRow>) => {
           const { startedAt, completedAt } = params.row;
           if (!startedAt || !completedAt) return "-";
           const duration = intervalToDuration({ start: new Date(startedAt), end: new Date(completedAt) });
@@ -100,8 +108,8 @@ export const ExecutionLogTable: FC = () => {
         field: "completedAt",
         headerName: t("completed"),
         flex: 2,
-        renderCell: (params: GridRenderCellParams) => {
-          const text = formatDistanceToNow(new Date(params.value), {
+        renderCell: (params: GridRenderCellParams<LogRow>) => {
+          const text = formatDistanceToNow(new Date(params.row.completedAt), {
             addSuffix: true,
             locale: dateFnsLocales[i18n.language],
           });

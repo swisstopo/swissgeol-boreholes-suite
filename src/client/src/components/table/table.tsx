@@ -5,7 +5,6 @@ import {
   DataGrid,
   GridColDef,
   GridColumnResizeParams,
-  GridEventListener,
   GridFilterModel,
   GridPaginationModel,
   GridRowIdGetter,
@@ -31,7 +30,7 @@ interface TableProps<T extends GridValidRowModel> {
   onSortModelChange?: (model: GridSortModel) => void;
   paginationModel?: GridPaginationModel;
   onPaginationModelChange?: (model: GridPaginationModel) => void;
-  onRowClick?: GridEventListener<"rowClick">;
+  onRowClick?: (params: GridRowParams<T>) => void;
   getRowClassName?: (params: GridRowParams<T>) => string;
   dataCy?: string;
   apiRef?: RefObject<GridApiCommunity>;

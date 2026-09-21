@@ -1,9 +1,9 @@
 import { ChangeEvent, FC, MouseEvent, useCallback, useContext, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Checkbox, Chip, Stack, Tooltip } from "@mui/material";
-import { GridColDef, GridEventListener, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
+import { GridColDef, GridFilterModel, GridRenderCellParams, GridRowParams } from "@mui/x-data-grid";
 import { useQueryClient } from "@tanstack/react-query";
-import { User, UserWorkgroupRole } from "../../../api/generated";
+import { User } from "../../../api/generated";
 import { usersQueryKey, useUserMutations, useUsers } from "../../../api/user.ts";
 import { Table } from "../../../components/table/table.tsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
@@ -26,7 +26,7 @@ export const UserAdministration: FC = () => {
     update: { mutate: update },
   } = useUserMutations();
 
-  const renderCellCheckbox = (params: GridRenderCellParams) => {
+  const renderCellCheckbox = (params: GridRenderCellParams<User, User["isAdmin"]>) => {
     const handleCheckBoxClick = (event: ChangeEvent<HTMLInputElement>, id: number) => {
       event.stopPropagation();
       const user = users?.find(user => user.id === id);
@@ -50,7 +50,7 @@ export const UserAdministration: FC = () => {
     );
   };
 
-  const renderWorkgroupChips = (params: GridRenderCellParams<UserWorkgroupRole[]>) => {
+  const renderWorkgroupChips = (params: GridRenderCellParams<User, User["workgroupRoles"]>) => {
     const averageCharacterWidth = 7.5;
     const chipPadding = 16;
     const chipsGap = 8;
@@ -64,8 +64,8 @@ export const UserAdministration: FC = () => {
     const uniqueWorkgroups: string[] = [
       ...new Set<string>(
         params.value
-          ?.map((role: UserWorkgroupRole) => role.workgroup?.name)
-          .filter((name: string) => name !== undefined),
+          ?.map(role => role.workgroup?.name)
+          .filter((name): name is NonNullable<typeof name> => name !== undefined),
       ),
     ];
 
@@ -101,7 +101,7 @@ export const UserAdministration: FC = () => {
     );
   };
 
-  const handleRowClick: GridEventListener<"rowClick"> = params => {
+  const handleRowClick = (params: GridRowParams<User>) => {
     navigateTo({ path: `/setting/user/${params.row.id}` });
   };
 
