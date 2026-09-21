@@ -4,6 +4,8 @@ import { useTranslation } from "react-i18next";
 import { Autocomplete, SxProps, TextField } from "@mui/material";
 import { theme } from "../../AppTheme.ts";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
+import { FieldAnalysisLabel, FieldAnalysisResetButton } from "./fieldAnalysis/fieldAnalysisAdornments.tsx";
+import { useFieldAnalysis } from "./fieldAnalysis/fieldAnalysisContext.tsx";
 import { getFieldBorderColor } from "./formUtils.ts";
 import { useLabelOverflow } from "./useLabelOverflow.tsx";
 
@@ -55,6 +57,7 @@ export const FormSelect: FC<FormSelectProps> = ({
   const { editingEnabled } = useContext(EditStateContext);
   const isReadOnly = readonly ?? !editingEnabled;
   const { labelWithTooltip } = useLabelOverflow(label);
+  const analysis = useFieldAnalysis(fieldName);
 
   // Synchronize Autocomplete with react hook form state
   const fieldValue = useWatch({
@@ -134,19 +137,31 @@ export const FormSelect: FC<FormSelectProps> = ({
                 if (onUpdate) onUpdate(newValue?.key ?? null);
               }
             }}
-            renderInput={params => {
+            renderInput={({ InputProps, ...params }) => {
+              const baseLabel = ignoreOverlow ? translatedLabel : labelWithTooltip;
               return (
                 <TextField
                   {...params}
-                  label={ignoreOverlow ? translatedLabel : labelWithTooltip}
+                  label={analysis ? <FieldAnalysisLabel label={baseLabel} change={analysis.change} /> : baseLabel}
                   required={required}
                   error={!!fieldState.error}
                   helperText={fieldState.error?.message ? t(fieldState.error.message) : ""}
                   sx={{ ...sx, ...getFieldBorderColor(isReadOnly), backgroundColor: theme.palette.background.default }}
-                  className={className}
+                  className={`${className ?? ""}${analysis ? " analysis-highlight" : ""}`}
                   data-cy={fieldName + "-formSelect"}
                   disabled={disabled}
                   inputRef={field.ref}
+                  slotProps={{
+                    input: {
+                      ...InputProps,
+                      endAdornment: (
+                        <>
+                          {analysis && <FieldAnalysisResetButton fieldName={fieldName} onReset={analysis.reset} />}
+                          {InputProps.endAdornment}
+                        </>
+                      ),
+                    },
+                  }}
                 />
               );
             }}
