@@ -388,7 +388,17 @@
         "typescript/restrict-plus-operands": "error",
         "typescript/restrict-template-expressions": "error",
         "typescript/unbound-method": "error",
-        "typescript/no-deprecated": "error"
+        "typescript/no-deprecated": "error",
+        // A switch that ends in a default handles the rest, so only one that enumerates its cases
+        // has to enumerate all of them.
+        "typescript/switch-exhaustiveness-check": [
+          "error",
+          {
+            "considerDefaultExhaustiveForUnions": true
+          }
+        ],
+        "typescript/prefer-readonly": "error",
+        "typescript/require-array-sort-compare": "error"
       }
     },
     {
