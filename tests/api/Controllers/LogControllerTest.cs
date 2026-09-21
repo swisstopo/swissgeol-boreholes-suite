@@ -882,6 +882,20 @@ public class LogControllerTest : TestControllerBase
     }
 
     [TestMethod]
+    public async Task ImportWithMalformedRowsReturnsBadRequest()
+    {
+        var borehole = await AddTestBoreholeAsync();
+
+        // The header names every required column, so the file only turns out to be unreadable once
+        // its rows are read: the quote opened here is never closed.
+        var csvFile = GetFormFileByContent("RunNumber;FromDepth;ToDepth\n\"RUN-1;10;20\n", RunsCsvFileName);
+
+        var response = await controller.ImportAsync(borehole.Id, csvFile, null, [], CancellationToken.None);
+
+        Assert.AreEqual("importErrorUnreadableCsv", AssertBadRequestMessageKey(response));
+    }
+
+    [TestMethod]
     public async Task ImportAddsRuns()
     {
         var borehole = await AddTestBoreholeAsync();

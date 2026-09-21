@@ -301,18 +301,33 @@ public class LogController : BoreholeControllerBase<LogRun>
             return BadRequest(new { detail = "At least one CSV file is required.", messageKey = "importErrorCsvRequired" });
         }
 
-        var structuralError = ValidateCsvStructure(logRunsCsvFile, logFilesCsvFile);
-        if (structuralError != null) return structuralError;
-
         var codelists = await LoadLogCodelistsAsync(cancellationToken).ConfigureAwait(false);
 
-        var runRows = logRunsCsvFile == null
-            ? []
-            : LogCsvParser.ParseRuns(CsvEncoding.OpenText(logRunsCsvFile), codelists, boreholeId);
+        // The columns and the rows are judged together, because a file is only known to be readable
+        // once it has been read to the end: a header naming every required column says nothing
+        // about the rows behind it, and CsvHelper reports a malformed one while reading them.
+        IReadOnlyList<LogRunRow> runRows;
+        IReadOnlyList<LogFileRow> fileRows;
+        try
+        {
+            var missingColumnsError =
+                MissingColumnsError(logRunsCsvFile, LogCsvParser.MissingRunColumns, "log runs", "importErrorMissingRunColumns")
+                ?? MissingColumnsError(logFilesCsvFile, LogCsvParser.MissingFileColumns, "log files", "importErrorMissingFileColumns");
 
-        var fileRows = logFilesCsvFile == null
-            ? []
-            : LogCsvParser.ParseFiles(CsvEncoding.OpenText(logFilesCsvFile), codelists);
+            if (missingColumnsError != null) return missingColumnsError;
+
+            runRows = logRunsCsvFile == null
+                ? []
+                : LogCsvParser.ParseRuns(CsvEncoding.OpenText(logRunsCsvFile), codelists, boreholeId);
+
+            fileRows = logFilesCsvFile == null
+                ? []
+                : LogCsvParser.ParseFiles(CsvEncoding.OpenText(logFilesCsvFile), codelists);
+        }
+        catch (CsvHelperException ex)
+        {
+            return UnreadableCsvError(ex);
+        }
 
         var existingRuns = await Context.LogRuns
             .AsNoTracking()
@@ -357,23 +372,14 @@ public class LogController : BoreholeControllerBase<LogRun>
         }
         catch (CsvHelperException ex)
         {
-            Logger.LogError(ex, "A log files CSV could not be read.");
-            return BadRequest(new { detail = "The CSV file could not be read.", messageKey = "importErrorUnreadableCsv" });
+            return UnreadableCsvError(ex);
         }
     }
 
-    private BadRequestObjectResult? ValidateCsvStructure(IFormFile? logRunsCsvFile, IFormFile? logFilesCsvFile)
+    private BadRequestObjectResult UnreadableCsvError(CsvHelperException exception)
     {
-        try
-        {
-            return MissingColumnsError(logRunsCsvFile, LogCsvParser.MissingRunColumns, "log runs", "importErrorMissingRunColumns")
-                ?? MissingColumnsError(logFilesCsvFile, LogCsvParser.MissingFileColumns, "log files", "importErrorMissingFileColumns");
-        }
-        catch (CsvHelperException ex)
-        {
-            Logger.LogError(ex, "A log import CSV could not be read.");
-            return BadRequest(new { detail = "The CSV file could not be read.", messageKey = "importErrorUnreadableCsv" });
-        }
+        Logger.LogError(exception, "A log import CSV could not be read.");
+        return BadRequest(new { detail = "The CSV file could not be read.", messageKey = "importErrorUnreadableCsv" });
     }
 
     /// <summary>
