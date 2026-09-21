@@ -1,7 +1,7 @@
-import { ChangeEvent, FC, useContext, useEffect } from "react";
+import { ChangeEvent, ElementType, FC, useContext, useEffect } from "react";
 import { useFormContext, useFormState, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { InputProps, SxProps, TextField } from "@mui/material";
+import { InputBaseComponentProps, InputProps, SxProps, TextField } from "@mui/material";
 import { isValid } from "date-fns";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { FormValueType, getFormFieldError } from "./form";
@@ -60,13 +60,13 @@ export const FormInput: FC<FormInputProps> = ({
 
   // Read the form value so the input can be controlled by it.
   // Without controlled mode, the formatter rewrites the number on mount and marks the field dirty.
-  // useWatch is untyped because the form itself is, so the annotation states the shape this
+  // useWatch is untyped because the form itself is, so the assertion states the shape this
   // component is written for.
-  const watchedValue: string | number | Date | null | undefined = useWatch({
+  const watchedValue = useWatch({
     control,
     name: fieldName,
     disabled: !isNumberInput,
-  });
+  }) as string | number | Date | null | undefined;
 
   // On mount, push the initial value into the form if nothing is there yet.
   // Required validation reads the form value, so without this it always fails.
@@ -149,8 +149,10 @@ export const FormInput: FC<FormInputProps> = ({
       data-cy={fieldName + "-formInput"}
       slotProps={{
         input: {
-          ...inputProps /* oxlint-disable  @typescript-eslint/no-explicit-any */,
-          ...(isNumberInput && { inputComponent: NumericFormatWithThousandSeparator as any }),
+          ...inputProps,
+          ...(isNumberInput && {
+            inputComponent: NumericFormatWithThousandSeparator as ElementType<InputBaseComponentProps>,
+          }),
           ...(isDateTimeInput && { max: "9999-01-01T00:00" }),
           ...(isDateInput && { max: "9999-01-01" }),
           readOnly: isReadOnly,

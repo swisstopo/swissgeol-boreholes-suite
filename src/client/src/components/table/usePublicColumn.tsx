@@ -64,7 +64,7 @@ export const usePublicColumn = <T extends ItemWithPublicState>({
   );
 
   const getPublicColumnCell = useCallback(
-    (params: GridRenderCellParams<T>) => {
+    (params: GridRenderCellParams<T, boolean | null>) => {
       const readonlyContent = (
         <Stack direction="row" alignItems="center" justifyContent="center">
           {params.value ? <CheckIcon /> : null}

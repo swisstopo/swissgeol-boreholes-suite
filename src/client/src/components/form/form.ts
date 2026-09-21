@@ -9,11 +9,11 @@ export const getFormFieldError = (
   }
 
   const fieldNameElements = fieldName ? fieldName.split(".") : [];
-  let currentElement = errors;
+  // The error tree is keyed by the field path, and a segment of that path may not be present at
+  // all, so each step is read as an unknown value rather than as a declared property.
+  let currentElement: unknown = errors;
   for (const element of fieldNameElements) {
-    // @ts-expect-error - we know that currentElement either has a key of fieldNameElements[i] or it doesn't,
-    // which is what we're checking for
-    currentElement = currentElement[element];
+    currentElement = (currentElement as Record<string, unknown>)[element];
     if (!currentElement) {
       break;
     }

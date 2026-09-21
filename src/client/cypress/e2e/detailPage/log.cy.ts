@@ -35,6 +35,15 @@ import {
   stubCloudStorageError,
 } from "../helpers/testHelpers";
 
+/**
+ * The export request body these tests assert on. Cypress types an intercepted body as any, so the
+ * shape is described here rather than being reached into blindly.
+ */
+interface LogExportRequest {
+  logRunIds?: number[];
+  logFileIds?: number[];
+}
+
 function assertExportButtonsDisabled(isDisabled = true) {
   cy.dataCy("log-runs")
     .dataCy("export-button")
@@ -501,7 +510,9 @@ describe("Test for the borehole log.", () => {
     cy.wait("@log_export").then(interception => {
       expect(interception.response?.statusCode).to.equal(200);
       expect(interception.request.body).to.have.property("withAttachments", false);
-      expect(interception.request.body.logRunIds).to.be.an("array").and.have.length.greaterThan(0);
+      expect((interception.request.body as LogExportRequest).logRunIds)
+        .to.be.an("array")
+        .and.have.length.greaterThan(0);
       expect(interception.response?.headers["content-type"]).to.include("application/zip");
     });
   });
@@ -567,7 +578,9 @@ describe("Test for the borehole log.", () => {
 
     cy.wait("@log_export").then(interception => {
       expect(interception.response?.statusCode).to.equal(200);
-      expect(interception.request.body.logRunIds).to.be.an("array").and.have.lengthOf(106);
+      expect((interception.request.body as LogExportRequest).logRunIds)
+        .to.be.an("array")
+        .and.have.lengthOf(106);
     });
   });
 
@@ -596,7 +609,9 @@ describe("Test for the borehole log.", () => {
     cy.wait("@log_export").then(interception => {
       expect(interception.response?.statusCode).to.equal(200);
       expect(interception.request.body).to.have.property("withAttachments", false);
-      expect(interception.request.body.logFileIds).to.be.an("array").and.have.length.greaterThan(0);
+      expect((interception.request.body as LogExportRequest).logFileIds)
+        .to.be.an("array")
+        .and.have.length.greaterThan(0);
     });
   });
 

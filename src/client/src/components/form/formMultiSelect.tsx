@@ -1,4 +1,4 @@
-import { FC, useContext } from "react";
+import { FC, HTMLAttributes, useContext } from "react";
 import { Controller, useFormContext, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, Chip, SxProps } from "@mui/material";
@@ -49,11 +49,11 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
   const isReadOnly = readonly ?? !editingEnabled;
 
   // Synchronize Autocomplete with react hook form state. useWatch is untyped because the form
-  // itself is, so the annotation states the shape this component is written for.
-  const fieldValue: number[] | undefined = useWatch({
+  // itself is, so the assertion states the shape this component is written for.
+  const fieldValue = useWatch({
     control,
     name: fieldName,
-  });
+  }) as number[] | undefined;
 
   const formFieldError = getFormFieldError(fieldName, formState.errors);
 
@@ -85,7 +85,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
       defaultValue={selected || []}
       render={({ field }) => {
         // Same reason as fieldValue above: the field carries the untyped form value.
-        const currentValues: number[] = field.value ?? [];
+        const currentValues = (field.value ?? []) as number[];
         return (
           <>
             {Array.isArray(values) && values.length > 0 ? (
@@ -142,7 +142,9 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
                     disabled={disabled}
                   />
                 )}
-                renderOption={(props, option) => {
+                renderOption={(props: HTMLAttributes<HTMLLIElement> & { key: string }, option) => {
+                  // The Autocomplete declares the option props with an untyped key, narrowed above.
+                  // React 19 rejects a key that arrives through a spread, so it is passed on its own.
                   const { key, ...rest } = props;
                   return (
                     <li key={key} {...rest}>

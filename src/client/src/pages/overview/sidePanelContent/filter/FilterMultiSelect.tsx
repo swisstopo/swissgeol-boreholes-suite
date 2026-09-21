@@ -1,4 +1,4 @@
-import { KeyboardEvent, SyntheticEvent, useMemo } from "react";
+import { HTMLAttributes, KeyboardEvent, SyntheticEvent, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, Box, Chip, TextField, Typography } from "@mui/material";
 import { CircleX } from "lucide-react";
@@ -65,7 +65,9 @@ export const FilterMultiSelect = <T extends number | string>({
           const count = counts?.[option.key] ?? 0;
           return count < 1;
         }}
-        renderOption={(props, option) => {
+        renderOption={(props: HTMLAttributes<HTMLLIElement> & { key: string }, option) => {
+          // The Autocomplete declares the option props with an untyped key, narrowed above.
+          // React 19 rejects a key that arrives through a spread, so it is passed on its own.
           const { key, ...rest } = props;
           const count = counts?.[option.key] ?? 0;
           return (

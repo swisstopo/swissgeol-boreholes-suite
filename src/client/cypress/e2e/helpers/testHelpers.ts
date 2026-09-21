@@ -25,6 +25,14 @@ interface FilteredBoreholes {
   filteredBoreholeIds: number[];
 }
 
+interface CreatedEntity {
+  id: number;
+}
+
+export interface CombinedStratigraphyResult {
+  stratigraphy: CreatedEntity;
+}
+
 export const bearerAuth = (token: string) => ({ bearer: token });
 
 export const interceptApiCalls = () => {
@@ -397,7 +405,7 @@ export const createBorehole = (borehole: Record<string, unknown>) => {
         auth: bearerAuth(token),
       })
       .then(res => {
-        return cy.wrap(res.body.id as number);
+        return cy.wrap((res.body as CreatedEntity).id);
       });
   });
 };
@@ -662,7 +670,7 @@ export const createStratigraphy = ({ boreholeId, name, isPrimary = true, date = 
         auth: bearerAuth(token),
       })
       .then(res => {
-        return cy.wrap(res.body[0].stratigraphy.id);
+        return cy.wrap((res.body as CombinedStratigraphyResult[])[0].stratigraphy.id);
       });
   });
 };
@@ -691,7 +699,7 @@ export const createCompletion = ({ name, boreholeId, kindId, isPrimary }: Comple
         auth: bearerAuth(token),
       })
       .then(res => {
-        return cy.wrap(res.body.id);
+        return cy.wrap((res.body as CreatedEntity).id);
       });
   });
 };
@@ -731,7 +739,7 @@ export const createCasing = ({
         auth: bearerAuth(token),
       })
       .then(res => {
-        return cy.wrap(res.body.id);
+        return cy.wrap((res.body as CreatedEntity).id);
       });
   });
 };
