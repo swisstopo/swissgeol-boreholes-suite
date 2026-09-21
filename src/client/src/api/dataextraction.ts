@@ -1,8 +1,13 @@
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
+import {
+  mockClassify,
+  useClassificationMock,
+} from "../pages/detail/form/stratigraphy/lithology/analysis/classificationMock.ts";
 import { ExtractedLithologicalDescription } from "../pages/detail/form/stratigraphy/stratigraphy.ts";
 import { getAuthorizationHeaders } from "./authentication.ts";
 import {
   BoundingBoxResponse,
+  ClassifyResponse,
   DataExtractionResponse,
   ExtractionRequest,
   ExtractionResponse,
@@ -56,6 +61,19 @@ async function fetchExtractStratigraphy(fileName: string, abortSignal: AbortSign
       ...getAuthorizationHeaders(),
     },
     body: JSON.stringify({ filename: fileName }),
+    signal: abortSignal,
+  });
+}
+
+async function fetchClassify(description: string, abortSignal: AbortSignal): Promise<Response> {
+  return await fetch("/dataextraction/api/V1/classify", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Accept: "application/json",
+      ...getAuthorizationHeaders(),
+    },
+    body: JSON.stringify({ description }),
     signal: abortSignal,
   });
 }
@@ -236,6 +254,34 @@ export function useExtractStratigraphies(file: BoreholeAttachment, activePage: n
     queryFn: async ({ signal }) => {
       const response = await extractStratigraphies(file.nameUuid!, signal);
       return mapExtractionResponse(response);
+    },
+  });
+}
+
+/**
+ * Classifies a lithological layer description into consolidated or unconsolidated material and the
+ * attributes the text defines.
+ * @param description The description to classify.
+ * @param abortSignal Aborts the request when the caller goes away.
+ */
+export async function classifyLithologicalDescription(
+  description: string,
+  abortSignal: AbortSignal,
+): Promise<ClassifyResponse> {
+  if (useClassificationMock) return await mockClassify(description);
+
+  const response = await fetchClassify(description, abortSignal);
+  if (!response.ok) {
+    throw new ApiError("errorLithologyClassification", response.status);
+  }
+  return (await response.json()) as ClassifyResponse;
+}
+
+export function useClassifyLithologicalDescription() {
+  return useMutation({
+    mutationFn: async (description: string) => {
+      const controller = new AbortController();
+      return await classifyLithologicalDescription(description, controller.signal);
     },
   });
 }
