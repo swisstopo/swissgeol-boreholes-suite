@@ -17,6 +17,7 @@ import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
 import { LithologyUnconsolidatedForm } from "./lithologyUnconsolidatedForm.tsx";
 import {
   buildLithologicalDescription,
+  buildLithologyValuesForMode,
   prepareLithologyForSubmit,
   validateLithologyUnconValues,
 } from "./lithologyUtils.ts";
@@ -159,29 +160,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
                   label: "continue",
                   variant: "contained",
                   action: () => {
-                    const currentValues = formMethods.getValues();
-                    formMethods.reset({
-                      id: currentValues.id,
-                      stratigraphyId: currentValues.stratigraphyId,
-                      fromDepth: currentValues.fromDepth,
-                      toDepth: currentValues.toDepth,
-                      isUnconsolidated: newValue,
-                      hasBedding: false,
-                      lithologyDescriptions:
-                        newValue === null
-                          ? []
-                          : [
-                              {
-                                id: 0,
-                                lithologyId: currentValues.id,
-                                isFirst: true,
-                              },
-                            ],
-                      notes: currentValues.notes,
-                      lithologicalDescription: {
-                        description: currentValues.lithologicalDescription?.description ?? "",
-                      },
-                    });
+                    formMethods.reset(buildLithologyValuesForMode(formMethods.getValues(), newValue));
                   },
                 },
               ],
