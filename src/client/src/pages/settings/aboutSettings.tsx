@@ -22,7 +22,7 @@ export const AboutSettings: React.FC = () => {
   useEffect(() => {
     const fetchLicense = async () => {
       const response = await fetch("/license.json");
-      const data = await response.json();
+      const data = (await response.json()) as LicenseData;
       setLicense(data);
     };
     // Not awaited: effects cannot be async, and the licence reaches the UI through state.

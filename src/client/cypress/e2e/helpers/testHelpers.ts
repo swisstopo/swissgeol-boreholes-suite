@@ -21,6 +21,10 @@ interface CreatedBorehole {
   hrsId: number;
 }
 
+interface FilteredBoreholes {
+  filteredBoreholeIds: number[];
+}
+
 export const bearerAuth = (token: string) => ({ bearer: token });
 
 export const interceptApiCalls = () => {
@@ -549,9 +553,9 @@ export const loginAndResetState = () => {
       body: {},
       auth: bearerAuth(token),
     }).then(response => {
-      response.body.filteredBoreholeIds
-        .filter((id: number) => id > 1000099) // max id in seed data.
-        .forEach((id: number) => {
+      (response.body as FilteredBoreholes).filteredBoreholeIds
+        .filter(id => id > 1000099) // max id in seed data.
+        .forEach(id => {
           deleteBorehole(id);
         });
     });
@@ -622,7 +626,8 @@ export const getImportFileFromFixtures = (fileName: string, encoding: string | n
     }
   }
 
-  return encoding ? cy.fixture(filePath, encoding as Cypress.Encodings) : cy.fixture(filePath);
+  // Every caller reads a CSV fixture, which Cypress hands back as text either way.
+  return encoding ? cy.fixture<string>(filePath, encoding as Cypress.Encodings) : cy.fixture<string>(filePath);
 };
 
 interface StratigraphyInput {

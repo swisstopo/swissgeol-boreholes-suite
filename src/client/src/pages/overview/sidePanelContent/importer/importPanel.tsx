@@ -57,7 +57,7 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
       const contentType = response.headers.get("content-type");
       const isJson = isJsonContentType(contentType);
       if (response.status === 400 && isJson) {
-        const responseBody = await response.json();
+        const responseBody = (await response.json()) as ErrorResponse;
         if (responseBody.errors) {
           setErrorsResponse(responseBody);
           setErrorDialogOpen(true);
@@ -72,7 +72,7 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
       } else if (response.status === 504) {
         showAlert(t("boreholesImportLongRunning"), "error");
       } else if (isJson) {
-        const responseBody = await response.json();
+        const responseBody = (await response.json()) as ErrorResponse;
         showAlert(responseBody.detail || t("boreholesImportError"), "error");
       } else {
         const errorText = await response.text();

@@ -39,8 +39,8 @@ export const FilterMultiSelect = <T extends number | string>({
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter") {
-      // @ts-expect-error - blur is unknown on the event target but closes the autocomplete popover as desired
-      event.target.blur();
+      // Blurring the target closes the autocomplete popover, which is what Enter should do here.
+      if (event.target instanceof HTMLElement) event.target.blur();
     }
   };
 

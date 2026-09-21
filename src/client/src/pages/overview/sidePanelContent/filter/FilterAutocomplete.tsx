@@ -59,8 +59,8 @@ export const FilterAutocomplete: FC<FilterAutocompleteProps> = ({ item, filterVa
     if (event.key === "Enter") {
       event.preventDefault();
       onUpdate(inputValue || null);
-      // @ts-expect-error - blur is unknown on the event target but closes the autocomplete popover as desired
-      event.target.blur();
+      // Blurring the target closes the autocomplete popover, which is what Enter should do here.
+      if (event.target instanceof HTMLElement) event.target.blur();
     }
   };
 

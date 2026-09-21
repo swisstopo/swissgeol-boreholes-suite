@@ -24,7 +24,7 @@ export const TabModal: FC<TabModalProps> = ({ open, onClose, title, tabs, active
         {tabs.length > 1 && (
           <ToggleButtonGroup
             value={activeIndex}
-            onChange={(_, value) => setActiveIndex(value)}
+            onChange={(_, value: number) => setActiveIndex(value)}
             exclusive
             sx={{
               boxShadow: "none",

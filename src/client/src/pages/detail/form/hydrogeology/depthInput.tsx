@@ -18,12 +18,16 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
   const boreholeId = useRequiredId();
 
   const depthUnitFieldName = "originalVerticalReferenceSystem";
-  const watchDepthUnit = formMethods.watch(depthUnitFieldName, verticalReferenceSystems.measuredDepth);
+  // The form has no value type here, so react-hook-form reports every field as `any`.
+  const watchDepthUnit = formMethods.watch(
+    depthUnitFieldName,
+    verticalReferenceSystems.measuredDepth,
+  ) as ObservationDepthUnitType;
 
   const convertDepth = async (inputFieldName: string, outputFieldName: string, outputUnit: VerticalReferenceSystem) => {
     if (outputUnit === watchDepthUnit) return;
 
-    const inputValue = formMethods.getValues(inputFieldName);
+    const inputValue = formMethods.getValues(inputFieldName) as string;
     const inputParsed = parseFloatWithThousandsSeparator(inputValue);
     if (inputParsed === null) {
       formMethods.setValue(outputFieldName, "");

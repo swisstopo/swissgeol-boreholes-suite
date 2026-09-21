@@ -47,7 +47,7 @@ export const drawStyle = new Style({
 });
 
 export function styleFunction(feature: Feature, highlighted: number[]): Style[] {
-  const selected = highlighted?.length > 0 && highlighted.includes(feature.get("id"));
+  const selected = highlighted?.length > 0 && highlighted.includes(feature.get("id") as number);
   const res = feature.get("restriction") as number;
   let fill: Fill;
   if (res === 20111001) {

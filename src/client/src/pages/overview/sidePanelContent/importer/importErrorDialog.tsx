@@ -47,7 +47,7 @@ export const ImportErrorDialog = ({ open, setOpen, errorResponse }: ImportErrorD
                   .map(([key, value], index) => (
                     <Box key={key + index + 1}>
                       <Typography variant={"h6"}>{key}</Typography>
-                      {value.map((item: string, i: string) => (
+                      {value.map((item, i) => (
                         <li key={item + i}>{item}</li>
                       ))}
                     </Box>
