@@ -1,5 +1,5 @@
-﻿import { Codelist } from "../../../../../../api/generated";
-import { ClassificationConsolidation, ClassifyResponse } from "../../../../../../api/dataextractionInterfaces.ts";
+﻿import { ClassificationConsolidation, ClassifyResponse } from "../../../../../../api/dataextractionInterfaces.ts";
+import { Codelist } from "../../../../../../api/generated";
 import {
   areFieldValuesEqual,
   FieldChange,
@@ -26,11 +26,7 @@ export const normaliseText = (value: string): string =>
  * codes with an underscore where the codelist uses a hyphen (`GP_GC` for `GP-GC`).
  */
 export const normaliseCode = (value: string): string =>
-  value
-    .trim()
-    .toLowerCase()
-    .replace(/_+$/, "")
-    .replace(/_/g, "-");
+  value.trim().toLowerCase().replace(/_+$/, "").replace(/_/g, "-");
 
 /**
  * Resolves a value the classification returned to a codelist id within one schema.

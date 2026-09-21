@@ -1,6 +1,7 @@
 ﻿import { describe, expect, it } from "vitest";
 import { Codelist } from "../../../../../../api/generated";
-import { findCodelistId, normaliseCode, normaliseText } from "./classificationMapping.ts";
+import { LithologyFormValues } from "../../stratigraphy.ts";
+import { findCodelistId, mapClassificationToChanges, normaliseCode, normaliseText } from "./classificationMapping.ts";
 
 const codelist = (schema: string, code: string, en: string, id: number): Codelist => ({ id, schema, code, en });
 
@@ -67,9 +68,6 @@ describe("findCodelistId", () => {
     expect(findCodelistId(codelists, "color", "code", "")).toBeUndefined();
   });
 });
-
-import { LithologyFormValues } from "../../stratigraphy.ts";
-import { mapClassificationToChanges } from "./classificationMapping.ts";
 
 const mappingCodelists: Codelist[] = [
   ...codelists,

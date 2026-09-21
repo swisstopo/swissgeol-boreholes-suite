@@ -125,3 +125,25 @@ export const buildLithologicalDescription = (
     description: text,
   };
 };
+
+/**
+ * The form values for a change of the consolidation mode. Only identity, depths, remarks and the
+ * lithological description text survive: every attribute is scoped to one mode, so nothing is
+ * carried across even where the label is the same.
+ * @param values The current form values.
+ * @param isUnconsolidated The mode to switch to, null for "keine Angabe".
+ */
+export const buildLithologyValuesForMode = (
+  values: LithologyFormValues,
+  isUnconsolidated: boolean | null,
+): LithologyFormValues => ({
+  id: values.id,
+  stratigraphyId: values.stratigraphyId,
+  fromDepth: values.fromDepth,
+  toDepth: values.toDepth,
+  isUnconsolidated,
+  hasBedding: false,
+  lithologyDescriptions: isUnconsolidated === null ? [] : [{ id: 0, lithologyId: values.id, isFirst: true }],
+  notes: values.notes,
+  lithologicalDescription: { description: values.lithologicalDescription?.description ?? "" },
+});
