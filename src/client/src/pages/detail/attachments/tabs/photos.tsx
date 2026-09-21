@@ -93,7 +93,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
       {
         field: "createdBy",
         headerName: t("user"),
-        valueGetter: (value, row) => row.createdBy?.name ?? "-",
+        valueGetter: (_value, row) => row.createdBy?.name ?? "-",
         flex: 0.25,
       },
       {
@@ -101,7 +101,7 @@ export const Photos: FC<PhotosProps> = ({ boreholeId }) => {
         headerName: t("depthMD"),
         resizable: false,
         width: 150,
-        valueGetter: (value, row) => `${row.fromDepth} - ${row.toDepth}`,
+        valueGetter: (_value, row) => `${row.fromDepth} - ${row.toDepth}`,
       },
       {
         field: "public",

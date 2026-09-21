@@ -61,7 +61,7 @@ export const TabPanel: FC<TabPanelProps> = ({ tabs, variant = "card", supportFul
   }, [navigateTo, indexForHash, firstTabHash]);
 
   // Change handler for tab selection
-  const handleIndexChange = (event: SyntheticEvent | null, index: number) => {
+  const handleIndexChange = (_event: SyntheticEvent | null, index: number) => {
     if (hash !== tabs[index].hash) {
       navigateTo({
         hash: tabs[index].hash,

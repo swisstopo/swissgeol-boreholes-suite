@@ -21,7 +21,7 @@ export const DisclaimerDialog = ({ markdownContent, onClose = () => {} }: Discla
     onClose(analyticsEnabled);
   };
 
-  const handleClose: DialogProps["onClose"] = (event: MouseEvent, reason: string) => {
+  const handleClose: DialogProps["onClose"] = (_event: MouseEvent, reason: string) => {
     if (reason === "backdropClick") return; // prevents dialog close on backdropClick
     closeDialog();
   };

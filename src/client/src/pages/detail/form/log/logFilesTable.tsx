@@ -142,7 +142,7 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
         field: "name",
         headerName: t("name"),
         flex: 1,
-        valueGetter: (value, row) => row?.name ?? "-",
+        valueGetter: (_value, row) => row?.name ?? "-",
       },
       {
         field: "toolTypeCodelistIds",
@@ -160,7 +160,7 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
         field: "extension",
         headerName: t("extension"),
         flex: 1,
-        valueGetter: (value, row) => getFileExtension(row?.name, "-"),
+        valueGetter: (_value, row) => getFileExtension(row?.name, "-"),
       },
       {
         field: "passTypeId",
