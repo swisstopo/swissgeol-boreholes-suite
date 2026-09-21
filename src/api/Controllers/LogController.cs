@@ -271,6 +271,7 @@ public class LogController : BoreholeControllerBase<LogRun>
     /// <param name="logRunsCsvFile">The log runs CSV, if the import carries one.</param>
     /// <param name="logFilesCsvFile">The log files CSV, if the import carries one.</param>
     /// <param name="providedAttachmentNames">The attachments the client holds, each as "runNumber/fileName".</param>
+    /// <param name="cancellationToken">Stops the import when the client gives up waiting for it.</param>
     /// <returns>One <see cref="LogImportResultItem"/> per row.</returns>
     [HttpPost("import")]
     [Authorize(Policy = PolicyNames.Viewer)]
@@ -280,11 +281,12 @@ public class LogController : BoreholeControllerBase<LogRun>
         [FromQuery] int boreholeId,
         IFormFile? logRunsCsvFile,
         IFormFile? logFilesCsvFile,
-        [FromForm] IReadOnlyList<string> providedAttachmentNames)
+        [FromForm] IReadOnlyList<string> providedAttachmentNames,
+        CancellationToken cancellationToken)
     {
         var borehole = await Context.Boreholes
             .AsNoTracking()
-            .SingleOrDefaultAsync(b => b.Id == boreholeId)
+            .SingleOrDefaultAsync(b => b.Id == boreholeId, cancellationToken)
             .ConfigureAwait(false);
 
         if (borehole == null) return NotFound();
@@ -302,7 +304,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         var structuralError = ValidateCsvStructure(logRunsCsvFile, logFilesCsvFile);
         if (structuralError != null) return structuralError;
 
-        var codelists = await LoadLogCodelistsAsync().ConfigureAwait(false);
+        var codelists = await LoadLogCodelistsAsync(cancellationToken).ConfigureAwait(false);
 
         var runRows = logRunsCsvFile == null
             ? []
@@ -316,19 +318,19 @@ public class LogController : BoreholeControllerBase<LogRun>
             .AsNoTracking()
             .Where(lr => lr.BoreholeId == boreholeId)
             .Select(lr => new ExistingLogRun(lr.Id, lr.RunNumber))
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         var existingFiles = await Context.LogFiles
             .AsNoTracking()
             .Where(lf => lf.LogRun.BoreholeId == boreholeId)
             .Select(lf => new ExistingLogFile(lf.Id, lf.LogRunId, lf.Name!, lf.NameUuid != null))
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
 
         var classification = LogImportClassifier.Classify(runRows, fileRows, existingRuns, existingFiles, providedAttachmentNames ?? []);
 
-        return Ok(await CommitImportAsync(classification).ConfigureAwait(false));
+        return Ok(await CommitImportAsync(classification, cancellationToken).ConfigureAwait(false));
     }
 
     /// <summary>
@@ -394,7 +396,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         return BadRequest(new { detail = $"Missing columns in the {csvName} CSV: {columns}.", messageKey, values = new { columns } });
     }
 
-    private async Task<List<Codelist>> LoadLogCodelistsAsync()
+    private async Task<List<Codelist>> LoadLogCodelistsAsync(CancellationToken cancellationToken)
     {
         var logSchemas = new[]
         {
@@ -409,7 +411,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         return await Context.Codelists
             .Where(c => logSchemas.Contains(c.Schema))
             .AsNoTracking()
-            .ToListAsync()
+            .ToListAsync(cancellationToken)
             .ConfigureAwait(false);
     }
 
@@ -420,7 +422,7 @@ public class LogController : BoreholeControllerBase<LogRun>
     /// Runs are saved before the files, because a file may belong to a run this same import
     /// creates and can only carry its id once that run has one.
     /// </summary>
-    private async Task<IReadOnlyList<LogImportResultItem>> CommitImportAsync(LogImportClassification classification)
+    private async Task<IReadOnlyList<LogImportResultItem>> CommitImportAsync(LogImportClassification classification, CancellationToken cancellationToken)
     {
         if (classification.RunsToAdd.Count == 0 && classification.FilesToAdd.Count == 0)
         {
@@ -430,11 +432,11 @@ public class LogController : BoreholeControllerBase<LogRun>
         // Only start a transaction when the caller has not already opened one: nesting a new
         // transaction on a connection that is already inside one fails.
         using var transaction = Context.Database.CurrentTransaction == null
-            ? await Context.Database.BeginTransactionAsync().ConfigureAwait(false)
+            ? await Context.Database.BeginTransactionAsync(cancellationToken).ConfigureAwait(false)
             : null;
 
         Context.LogRuns.AddRange(classification.RunsToAdd);
-        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext, cancellationToken).ConfigureAwait(false);
 
         var runIdByNumber = classification.RunsToAdd.ToDictionary(r => r.RunNumber, r => r.Id, StringComparer.OrdinalIgnoreCase);
 
@@ -451,8 +453,8 @@ public class LogController : BoreholeControllerBase<LogRun>
             Context.LogFiles.Add(pending.LogFile);
         }
 
-        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
-        if (transaction != null) await transaction.CommitAsync().ConfigureAwait(false);
+        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext, cancellationToken).ConfigureAwait(false);
+        if (transaction != null) await transaction.CommitAsync(cancellationToken).ConfigureAwait(false);
 
         return FillStoredIds(classification, runIdByNumber);
     }

@@ -842,7 +842,7 @@ public class LogControllerTest : TestControllerBase
     {
         var borehole = await AddTestBoreholeAsync();
 
-        var response = await controller.ImportAsync(borehole.Id, null, null, []);
+        var response = await controller.ImportAsync(borehole.Id, null, null, [], CancellationToken.None);
 
         Assert.IsInstanceOfType(response, typeof(BadRequestObjectResult));
     }
@@ -864,7 +864,7 @@ public class LogControllerTest : TestControllerBase
         var borehole = await AddTestBoreholeAsync();
         var csvFile = GetFormFileByContent("RunNumber;FromDepth\nRUN-1;10\n", RunsCsvFileName);
 
-        var response = await controller.ImportAsync(borehole.Id, csvFile, null, []);
+        var response = await controller.ImportAsync(borehole.Id, csvFile, null, [], CancellationToken.None);
 
         Assert.AreEqual("importErrorMissingRunColumns", AssertBadRequestMessageKey(response));
     }
@@ -876,7 +876,7 @@ public class LogControllerTest : TestControllerBase
         var runsCsvFile = GetFormFileByContent(RunsCsvContent, RunsCsvFileName);
         var filesCsvFile = GetFormFileByContent("RunNumber\nRUN-A\n", FilesCsvFileName);
 
-        var response = await controller.ImportAsync(borehole.Id, runsCsvFile, filesCsvFile, []);
+        var response = await controller.ImportAsync(borehole.Id, runsCsvFile, filesCsvFile, [], CancellationToken.None);
 
         Assert.AreEqual("importErrorMissingFileColumns", AssertBadRequestMessageKey(response));
     }
@@ -887,7 +887,7 @@ public class LogControllerTest : TestControllerBase
         var borehole = await AddTestBoreholeAsync();
         var csvFile = GetFormFileByContent(RunsCsvContent, RunsCsvFileName);
 
-        var items = AssertImportOk(await controller.ImportAsync(borehole.Id, csvFile, null, []));
+        var items = AssertImportOk(await controller.ImportAsync(borehole.Id, csvFile, null, [], CancellationToken.None));
 
         var item = items.Single();
         Assert.AreEqual(LogImportOutcome.Added, item.Outcome);
@@ -904,7 +904,7 @@ public class LogControllerTest : TestControllerBase
         var csv = "RunNumber;FromDepth;ToDepth;ServiceCo;Comment\nIMP-ANSI;10;20;Société Générale;Forage à côté\n";
         var csvFile = GetFormFileByContent(csv, RunsCsvFileName, Encoding.GetEncoding(1252));
 
-        var items = AssertImportOk(await controller.ImportAsync(borehole.Id, csvFile, null, []));
+        var items = AssertImportOk(await controller.ImportAsync(borehole.Id, csvFile, null, [], CancellationToken.None));
 
         Assert.AreEqual(LogImportOutcome.Added, items.Single().Outcome);
         var stored = Context.LogRuns.Single(lr => lr.BoreholeId == borehole.Id && lr.RunNumber == "IMP-ANSI");
@@ -947,7 +947,7 @@ public class LogControllerTest : TestControllerBase
         var csv = "RunNumber;FromDepth;ToDepth\nRUN-A;10;20\nRUN-B;10;nonsense\n";
         var csvFile = GetFormFileByContent(csv, RunsCsvFileName);
 
-        var items = AssertImportOk(await controller.ImportAsync(borehole.Id, csvFile, null, []));
+        var items = AssertImportOk(await controller.ImportAsync(borehole.Id, csvFile, null, [], CancellationToken.None));
 
         Assert.AreEqual(LogImportOutcome.Added, items[0].Outcome);
         Assert.AreEqual(LogImportOutcome.Error, items[1].Outcome);
@@ -960,8 +960,8 @@ public class LogControllerTest : TestControllerBase
     {
         var borehole = await AddTestBoreholeAsync();
 
-        AssertImportOk(await controller.ImportAsync(borehole.Id, GetFormFileByContent(RunsCsvContent, RunsCsvFileName), null, []));
-        var items = AssertImportOk(await controller.ImportAsync(borehole.Id, GetFormFileByContent(RunsCsvContent, RunsCsvFileName), null, []));
+        AssertImportOk(await controller.ImportAsync(borehole.Id, GetFormFileByContent(RunsCsvContent, RunsCsvFileName), null, [], CancellationToken.None));
+        var items = AssertImportOk(await controller.ImportAsync(borehole.Id, GetFormFileByContent(RunsCsvContent, RunsCsvFileName), null, [], CancellationToken.None));
 
         Assert.AreEqual(LogImportOutcome.AlreadyExists, items.Single().Outcome);
         Assert.AreEqual(1, Context.LogRuns.Count(lr => lr.BoreholeId == borehole.Id && lr.RunNumber == TestRunNumber));
@@ -972,10 +972,10 @@ public class LogControllerTest : TestControllerBase
     {
         var borehole = await AddTestBoreholeAsync();
         var runsCsv = GetFormFileByContent(RunsCsvContent, RunsCsvFileName);
-        AssertImportOk(await controller.ImportAsync(borehole.Id, runsCsv, null, []));
+        AssertImportOk(await controller.ImportAsync(borehole.Id, runsCsv, null, [], CancellationToken.None));
 
         var filesCsv = GetFormFileByContent(FilesCsvContent, FilesCsvFileName);
-        var items = AssertImportOk(await controller.ImportAsync(borehole.Id, null, filesCsv, ["RUN-A/alpha.las"]));
+        var items = AssertImportOk(await controller.ImportAsync(borehole.Id, null, filesCsv, ["RUN-A/alpha.las"], CancellationToken.None));
 
         var item = items.Single();
         Assert.AreEqual(LogImportOutcome.Added, item.Outcome);
@@ -993,7 +993,7 @@ public class LogControllerTest : TestControllerBase
         var runsCsv = GetFormFileByContent(RunsCsvContent, RunsCsvFileName);
         var filesCsv = GetFormFileByContent(FilesCsvContent, FilesCsvFileName);
 
-        var items = AssertImportOk(await controller.ImportAsync(borehole.Id, runsCsv, filesCsv, []));
+        var items = AssertImportOk(await controller.ImportAsync(borehole.Id, runsCsv, filesCsv, [], CancellationToken.None));
 
         var fileItem = items.Single(i => i.Type == LogImportItemType.File);
         Assert.AreEqual(LogImportOutcome.SkippedIncomplete, fileItem.Outcome);
@@ -1006,11 +1006,11 @@ public class LogControllerTest : TestControllerBase
         var borehole = await AddTestBoreholeAsync();
         var runsCsv = GetFormFileByContent(RunsCsvContent, RunsCsvFileName);
         var filesCsv = GetFormFileByContent(FilesCsvContent, FilesCsvFileName);
-        var first = AssertImportOk(await controller.ImportAsync(borehole.Id, runsCsv, filesCsv, ["RUN-A/alpha.las"]));
+        var first = AssertImportOk(await controller.ImportAsync(borehole.Id, runsCsv, filesCsv, ["RUN-A/alpha.las"], CancellationToken.None));
         var logFileId = first.Single(i => i.Type == LogImportItemType.File).LogFileId;
 
         var again = GetFormFileByContent(FilesCsvContent, FilesCsvFileName);
-        var items = AssertImportOk(await controller.ImportAsync(borehole.Id, null, again, ["RUN-A/alpha.las"]));
+        var items = AssertImportOk(await controller.ImportAsync(borehole.Id, null, again, ["RUN-A/alpha.las"], CancellationToken.None));
 
         var item = items.Single();
         Assert.AreEqual(LogImportOutcome.Added, item.Outcome);
@@ -1052,7 +1052,7 @@ public class LogControllerTest : TestControllerBase
             // "RUN-STORED/missing.las" is deliberately not provided.
         };
 
-        var items = AssertImportOk(await controller.ImportAsync(borehole.Id, runsCsv, filesCsv, providedAttachmentNames));
+        var items = AssertImportOk(await controller.ImportAsync(borehole.Id, runsCsv, filesCsv, providedAttachmentNames, CancellationToken.None));
 
         var fileItems = items.Where(i => i.Type == LogImportItemType.File).ToList();
         Assert.AreEqual(5, fileItems.Count);
@@ -1099,7 +1099,7 @@ public class LogControllerTest : TestControllerBase
     {
         var csvFile = GetFormFileByContent(RunsCsvContent, RunsCsvFileName);
 
-        var response = await controller.ImportAsync(99999999, csvFile, null, []);
+        var response = await controller.ImportAsync(99999999, csvFile, null, [], CancellationToken.None);
 
         Assert.IsInstanceOfType(response, typeof(NotFoundResult));
     }
@@ -1113,7 +1113,7 @@ public class LogControllerTest : TestControllerBase
             .ReturnsAsync(false);
 
         var csvFile = GetFormFileByContent("RunNumber;FromDepth;ToDepth\nUNAUTH-01;10;20\n", RunsCsvFileName);
-        var response = await controller.ImportAsync(borehole.Id, csvFile, null, []);
+        var response = await controller.ImportAsync(borehole.Id, csvFile, null, [], CancellationToken.None);
         ActionResultAssert.IsUnauthorized(response);
     }
 
