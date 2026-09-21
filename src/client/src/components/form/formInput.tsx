@@ -4,15 +4,15 @@ import { useTranslation } from "react-i18next";
 import { InputBaseComponentProps, InputProps, SxProps, TextField } from "@mui/material";
 import { isValid } from "date-fns";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
-import { FormValueType, getFormFieldError } from "./form";
+import { FormInputValue, FormValueType, getFormFieldError } from "./form";
 import { getFieldBorderColor } from "./formUtils.ts";
 import { NumericFormatWithThousandSeparator } from "./numericFormatWithThousandSeparator.tsx";
 import { useLabelOverflow } from "./useLabelOverflow.tsx";
 
-const toFormatterValue = (v: string | number | Date | null | undefined): string => {
+const toFormatterValue = (v: FormInputValue | undefined): string => {
   if (v == null) return "";
   if (typeof v === "number") return String(v);
-  return v as string;
+  return v;
 };
 
 interface FormInputProps {
@@ -24,7 +24,7 @@ interface FormInputProps {
   type?: FormValueType;
   multiline?: boolean;
   rows?: number;
-  value?: string | number | Date | null;
+  value?: FormInputValue;
   sx?: SxProps;
   className?: string;
   inputProps?: InputProps;
@@ -66,7 +66,7 @@ export const FormInput: FC<FormInputProps> = ({
     control,
     name: fieldName,
     disabled: !isNumberInput,
-  }) as string | number | Date | null | undefined;
+  }) as FormInputValue | undefined;
 
   // On mount, push the initial value into the form if nothing is there yet.
   // Required validation reads the form value, so without this it always fails.
@@ -85,12 +85,12 @@ export const FormInput: FC<FormInputProps> = ({
 
   const isReadOnlyNumberInput = isNumberInput && isReadOnly;
 
-  const getDefaultValue = (value: string | number | Date | undefined | null) => {
+  const getDefaultValue = (value: FormInputValue | undefined) => {
     if (value == undefined) {
       return "";
-    } else if (isDateTimeInput) {
+    } else if (isDateTimeInput && typeof value === "string") {
       // re-format from 'YYYY-MM-DDTHH:mm:ss.sssZ' to 'YYYY-MM-DDTHH:mm'.
-      return (value as string).slice(0, 16);
+      return value.slice(0, 16);
     } else {
       return value;
     }
@@ -100,7 +100,7 @@ export const FormInput: FC<FormInputProps> = ({
 
   const registerProps = register(fieldName, {
     required: required ? "required" : false,
-    validate: (value: string | number | Date) => {
+    validate: (value: string | number) => {
       if (value === "") {
         return true;
       }

@@ -32,6 +32,8 @@ export enum FormValueType {
   Workgroup = "workgroup",
 }
 
+export type FormInputValue = string | number | null;
+
 export type FormError = { type: string; message: string };
 export type FormErrors = { [key: string]: FormError | FormErrors };
 
