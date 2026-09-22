@@ -12,7 +12,7 @@ interface FieldAnalysisContextValue {
  */
 const FieldAnalysisContext = createContext<FieldAnalysisContextValue | undefined>(undefined);
 
-export interface FieldAnalysis {
+interface FieldAnalysis {
   change: FieldChange;
   reset: () => void;
 }
