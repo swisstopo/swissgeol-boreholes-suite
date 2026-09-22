@@ -2,6 +2,7 @@ import React, { useContext, useRef } from "react";
 import { useTranslation } from "react-i18next";
 import { Badge, Stack } from "@mui/material";
 import { Filter, Layers, Plus, Settings } from "lucide-react";
+import { ErrorResponse } from "../../../api/errorClasses.ts";
 import HelpIcon from "../../../assets/icons/help.svg?react";
 import UploadIcon from "../../../assets/icons/upload.svg?react";
 import { ErrorResponse } from "../../../api/errorClasses.ts";
