@@ -1,10 +1,40 @@
 import { LogExportRequest } from "../../../src/api/generated";
 import { discardChanges, exportItem, saveWithSaveBar } from "../helpers/buttonHelpers";
-import { checkAllVisibleRows, checkRowWithIndex, checkTwoFirstRows, clickOnRowWithText, sortBy, uncheckAllVisibleRows, unCheckRowWithText, verifyPaginationText, verifyRowContains, verifyRowWithTextCheckState, verifyTableLength } from "../helpers/dataGridHelpers";
-import { evaluateCheckbox, evaluateInput, evaluateMultiSelect, evaluateSelect, evaluateTextarea, hasError, setInput, setSelect, toggleCheckbox, toggleMultiSelect } from "../helpers/formHelpers";
+import {
+  checkAllVisibleRows,
+  checkRowWithIndex,
+  checkTwoFirstRows,
+  clickOnRowWithText,
+  sortBy,
+  uncheckAllVisibleRows,
+  unCheckRowWithText,
+  verifyPaginationText,
+  verifyRowContains,
+  verifyRowWithTextCheckState,
+  verifyTableLength,
+} from "../helpers/dataGridHelpers";
+import {
+  evaluateCheckbox,
+  evaluateInput,
+  evaluateMultiSelect,
+  evaluateSelect,
+  evaluateTextarea,
+  hasError,
+  setInput,
+  setSelect,
+  toggleCheckbox,
+  toggleMultiSelect,
+} from "../helpers/formHelpers";
 import { isActiveMenuItem, navigateInSidebar, SidebarMenuItem } from "../helpers/navigationHelpers";
-import { createBaseSelector, createBorehole, goToDetailRouteAndAcceptTerms, handlePrompt, startBoreholeEditing, stopBoreholeEditing, stubCloudStorageError } from "../helpers/testHelpers";
-
+import {
+  createBaseSelector,
+  createBorehole,
+  goToDetailRouteAndAcceptTerms,
+  handlePrompt,
+  startBoreholeEditing,
+  stopBoreholeEditing,
+  stubCloudStorageError,
+} from "../helpers/testHelpers";
 
 function assertExportButtonsDisabled(isDisabled = true) {
   cy.dataCy("log-runs")
