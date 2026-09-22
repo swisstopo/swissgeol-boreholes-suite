@@ -247,7 +247,7 @@ export function useExtractStratigraphies(file: BoreholeAttachment, activePage: n
  * @param description The description to classify.
  * @param abortSignal Aborts the request when the caller goes away.
  */
-export async function classifyLithologicalDescription(
+async function classifyLithologicalDescription(
   description: string,
   abortSignal: AbortSignal,
 ): Promise<ClassifyResponse> {

@@ -7,7 +7,7 @@ import {
 } from "../../../../../../components/form/fieldAnalysis/fieldAnalysis.ts";
 import { LithologyFormValues } from "../../stratigraphy.ts";
 
-export type MatchStrategy = "code" | "text";
+type MatchStrategy = "code" | "text";
 
 /**
  * Normalises an english codelist text for comparison. Reduces every run of non alphanumeric
@@ -71,7 +71,7 @@ export interface ModeChange {
   next: boolean | null;
 }
 
-export interface ClassificationChanges {
+interface ClassificationChanges {
   changes: FieldChange[];
   modeChange?: ModeChange;
 }
