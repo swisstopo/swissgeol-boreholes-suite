@@ -15,6 +15,7 @@ import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
 import { FormInput } from "../../../../../../components/form/formInput.tsx";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
 import { useCapitalizedTranslation } from "../../../../../../hooks/useCapitalizedTranslation.ts";
+import { useDevMode } from "../../../../../../hooks/useDevMode.tsx";
 import { LithologicalDescription, Lithology, LithologyFormValues } from "../../stratigraphy.ts";
 import { AnalysisResultCard } from "../analysis/analysisResultCard.tsx";
 import { useLithologyAnalysis } from "../analysis/useLithologyAnalysis.ts";
@@ -66,6 +67,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
   const { formState, getValues, subscribe } = formMethods;
   const { showPrompt } = useContext(PromptContext);
   const { showAlert } = useContext(AlertContext);
+  const { runsDevMode } = useDevMode();
   const analysis = useLithologyAnalysis(formMethods);
   const sharedLithologyCount = lithologicalDescription?.depthIds?.length ?? 0;
 
@@ -287,15 +289,19 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
             data-cy="lithology-lithological-description"
             title={t("lithologyLayerDescription")}
             action={
-              <BoreholesButton
-                variant="contained"
-                color="primary"
-                label="analyze"
-                data-cy="analyze-description-button"
-                icon={analysis.isPending ? <CircularProgress size={16} color="inherit" /> : <Sparkles />}
-                disabled={analysis.isPending || (description ?? "").trim().length === 0}
-                onClick={runAnalysis}
-              />
+              // Gated on dev mode while the classification is served from the client side mock.
+              // Drop the gate together with useClassificationMock once the endpoint ships.
+              runsDevMode && (
+                <BoreholesButton
+                  variant="contained"
+                  color="primary"
+                  label="analyze"
+                  data-cy="analyze-description-button"
+                  icon={analysis.isPending ? <CircularProgress size={16} color="inherit" /> : <Sparkles />}
+                  disabled={analysis.isPending || (description ?? "").trim().length === 0}
+                  onClick={runAnalysis}
+                />
+              )
             }>
             <FormContainer>
               <Stack gap={1}>
