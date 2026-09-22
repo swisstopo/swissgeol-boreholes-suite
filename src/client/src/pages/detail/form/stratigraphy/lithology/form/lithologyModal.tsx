@@ -1,11 +1,14 @@
 import { FC, useContext, useEffect, useMemo } from "react";
 import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { Box, CircularProgress, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
-import { Info } from "lucide-react";
+import { Info, Sparkles } from "lucide-react";
 import { theme } from "../../../../../../AppTheme.ts";
+import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
+import { BoreholesButton } from "../../../../../../components/buttons/buttons.tsx";
+import { FieldAnalysisProvider } from "../../../../../../components/form/fieldAnalysis/fieldAnalysisContext.tsx";
 import { FormErrors, FormValueType } from "../../../../../../components/form/form.ts";
 import { FormContainer } from "../../../../../../components/form/formContainer.tsx";
 import { FormDialog } from "../../../../../../components/form/formDialog.tsx";
@@ -13,9 +16,12 @@ import { FormInput } from "../../../../../../components/form/formInput.tsx";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
 import { useCapitalizedTranslation } from "../../../../../../hooks/useCapitalizedTranslation.ts";
 import { LithologicalDescription, Lithology, LithologyFormValues } from "../../stratigraphy.ts";
+import { AnalysisResultCard } from "../analysis/analysisResultCard.tsx";
+import { useLithologyAnalysis } from "../analysis/useLithologyAnalysis.ts";
 import { LithologyConsolidatedForm } from "./lithologyConsolidatedForm.tsx";
 import { LithologyUnconsolidatedForm } from "./lithologyUnconsolidatedForm.tsx";
 import {
+  buildApplyHandler,
   buildLithologicalDescription,
   buildLithologyValuesForMode,
   prepareLithologyForSubmit,
@@ -57,9 +63,23 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
       return { values, errors: {} };
     },
   });
-  const { formState, getValues } = formMethods;
+  const { formState, getValues, subscribe } = formMethods;
   const { showPrompt } = useContext(PromptContext);
+  const { showAlert } = useContext(AlertContext);
+  const analysis = useLithologyAnalysis(formMethods);
   const sharedLithologyCount = lithologicalDescription?.depthIds?.length ?? 0;
+
+  // A field the user edits by hand is their value, not the analysis's, so its row is resolved.
+  useEffect(() => {
+    return subscribe({
+      formState: { values: true },
+      callback: ({ name, type }) => {
+        if (type === "change" && name && analysis.changeByPath.has(name)) {
+          analysis.acceptField(name);
+        }
+      },
+    });
+  }, [analysis, subscribe]);
 
   // The form needs the optional flags resolved and at least one description row. Deriving a copy
   // keeps the prop untouched while the change detection below still compares against this shape.
@@ -96,7 +116,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
     updateLithology(normalizedLithology as Lithology, false);
   };
 
-  const applyDialog = async () => {
+  const applyLithology = async () => {
     const values = getValues();
     const isValid = await formMethods.trigger();
 
@@ -138,6 +158,59 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
     }
   };
 
+  const applyDialog = buildApplyHandler(analysis, applyLithology, showPrompt);
+
+  const description = useWatch({ control: formMethods.control, name: "lithologicalDescription.description" });
+
+  const runAnalysis = async () => {
+    try {
+      const pending = await analysis.run((description ?? "").trim());
+      if (pending === 0) showAlert(t("lithologyClassificationNoResult"), "info");
+    } catch {
+      showAlert(t("errorLithologyClassification"), "error");
+    }
+  };
+
+  // The tab the analysis switched to carries the same highlight as the fields it wrote, so the
+  // mode change is visible where the user chose the mode, not only in the result card.
+  const renderModeToggleButton = (
+    value: RockTypeToggleValue,
+    label: "unconsolidated" | "consolidated" | "unspecified",
+  ) => {
+    const isAnalysisTarget = analysis.modeChange?.next === (value === "unspecified" ? null : value);
+
+    return (
+      <ToggleButton
+        value={value}
+        sx={
+          isAnalysisTarget
+            ? {
+                border: `2px solid ${theme.palette.ai.highlightBorder} !important`,
+                backgroundColor: theme.palette.ai.highlightBackground,
+              }
+            : undefined
+        }>
+        <Stack direction="row" gap={0.5} alignItems="center">
+          {isAnalysisTarget && (
+            <Box
+              component="span"
+              data-cy="analysis-mode-badge"
+              sx={{
+                display: "inline-flex",
+                borderRadius: "50%",
+                backgroundColor: theme.palette.ai.highlightBorder,
+                color: theme.palette.warning.main,
+                p: "2px",
+              }}>
+              <Info size={12} />
+            </Box>
+          )}
+          <Typography>{ct(label)}</Typography>
+        </Stack>
+      </ToggleButton>
+    );
+  };
+
   const rockTypeToggle = (
     <Controller
       name="isUnconsolidated"
@@ -161,6 +234,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
                   variant: "contained",
                   action: () => {
                     formMethods.reset(buildLithologyValuesForMode(formMethods.getValues(), newValue));
+                    analysis.discard();
                   },
                 },
               ],
@@ -171,15 +245,9 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
             boxShadow: "none",
             border: `1px solid ${theme.palette.border.light}`,
           }}>
-          <ToggleButton value={true}>
-            <Typography>{ct("unconsolidated")}</Typography>
-          </ToggleButton>
-          <ToggleButton value={false}>
-            <Typography>{ct("consolidated")}</Typography>
-          </ToggleButton>
-          <ToggleButton value="unspecified">
-            <Typography>{ct("unspecified")}</Typography>
-          </ToggleButton>
+          {renderModeToggleButton(true, "unconsolidated")}
+          {renderModeToggleButton(false, "consolidated")}
+          {renderModeToggleButton("unspecified", "unspecified")}
         </ToggleButtonGroup>
       )}
     />
@@ -194,55 +262,71 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
       isApplyDisabled={!formState.isValid && Object.keys(formState.errors).length > 0}
       headerAction={rockTypeToggle}>
       <FormProvider {...formMethods}>
-        <BoreholesCard data-cy="lithology-basic-data" title={t("basicData")}>
-          <FormContainer>
-            <FormContainer direction={"row"}>
-              <FormInput
-                fieldName={"fromDepth"}
-                label={"fromDepth"}
-                readonly={true}
-                value={lithology?.fromDepth}
-                type={FormValueType.Number}
-              />
-              <FormInput
-                fieldName={"toDepth"}
-                label={"toDepth"}
-                readonly={true}
-                value={lithology?.toDepth}
-                type={FormValueType.Number}
-              />
+        <FieldAnalysisProvider changeByPath={analysis.changeByPath} onResetField={analysis.resetField}>
+          <BoreholesCard data-cy="lithology-basic-data" title={t("basicData")}>
+            <FormContainer>
+              <FormContainer direction={"row"}>
+                <FormInput
+                  fieldName={"fromDepth"}
+                  label={"fromDepth"}
+                  readonly={true}
+                  value={lithology?.fromDepth}
+                  type={FormValueType.Number}
+                />
+                <FormInput
+                  fieldName={"toDepth"}
+                  label={"toDepth"}
+                  readonly={true}
+                  value={lithology?.toDepth}
+                  type={FormValueType.Number}
+                />
+              </FormContainer>
             </FormContainer>
-          </FormContainer>
-        </BoreholesCard>
-        <BoreholesCard data-cy="lithology-lithological-description" title={t("lithologyLayerDescription")}>
-          <FormContainer>
-            <Stack gap={1}>
-              <FormInput
-                fieldName="lithologicalDescription.description"
-                label="description"
-                multiline={true}
-                rows={3}
+          </BoreholesCard>
+          <BoreholesCard
+            data-cy="lithology-lithological-description"
+            title={t("lithologyLayerDescription")}
+            action={
+              <BoreholesButton
+                variant="contained"
+                color="primary"
+                label="analyze"
+                data-cy="analyze-description-button"
+                icon={analysis.isPending ? <CircularProgress size={16} color="inherit" /> : <Sparkles />}
+                disabled={analysis.isPending || (description ?? "").trim().length === 0}
+                onClick={runAnalysis}
               />
-              {sharedLithologyCount > 1 && (
-                <Stack direction="row" sx={{ color: theme.palette.primary.main }} gap={1}>
-                  <Info />
-                  <Typography variant="h6" data-cy="shared-lithological-description-notice">
-                    {t("sharedLithologicalDescriptionNotice", { count: sharedLithologyCount })}
-                  </Typography>
-                </Stack>
-              )}
-            </Stack>
-          </FormContainer>
-        </BoreholesCard>
-        {lithology && isUnconsolidated === true && (
-          <LithologyUnconsolidatedForm lithologyId={lithology.id} formMethods={formMethods} />
-        )}
-        {lithology && isUnconsolidated === false && (
-          <LithologyConsolidatedForm lithologyId={lithology.id} formMethods={formMethods} />
-        )}
-        <BoreholesCard data-cy="lithology-notes" title={t("remarks")}>
-          <RemarksFormSection fieldName="notes" label="remarks" />
-        </BoreholesCard>
+            }>
+            <FormContainer>
+              <Stack gap={1}>
+                <FormInput
+                  fieldName="lithologicalDescription.description"
+                  label="description"
+                  multiline={true}
+                  rows={3}
+                />
+                {sharedLithologyCount > 1 && (
+                  <Stack direction="row" sx={{ color: theme.palette.primary.main }} gap={1}>
+                    <Info />
+                    <Typography variant="h6" data-cy="shared-lithological-description-notice">
+                      {t("sharedLithologicalDescriptionNotice", { count: sharedLithologyCount })}
+                    </Typography>
+                  </Stack>
+                )}
+                <AnalysisResultCard analysis={analysis} />
+              </Stack>
+            </FormContainer>
+          </BoreholesCard>
+          {lithology && isUnconsolidated === true && (
+            <LithologyUnconsolidatedForm lithologyId={lithology.id} formMethods={formMethods} />
+          )}
+          {lithology && isUnconsolidated === false && (
+            <LithologyConsolidatedForm lithologyId={lithology.id} formMethods={formMethods} />
+          )}
+          <BoreholesCard data-cy="lithology-notes" title={t("remarks")}>
+            <RemarksFormSection fieldName="notes" label="remarks" />
+          </BoreholesCard>
+        </FieldAnalysisProvider>
       </FormProvider>
     </FormDialog>
   );

@@ -2,6 +2,7 @@ import { LithologyDescription } from "../../../../../../api/generated";
 import { FormErrors } from "../../../../../../components/form/form.ts";
 import { buildErrorStructure, parseFloatWithThousandsSeparator } from "../../../../../../components/form/formUtils.ts";
 import { LithologicalDescription, Lithology, LithologyFormValues } from "../../stratigraphy.ts";
+import { LithologyAnalysis } from "../analysis/useLithologyAnalysis.ts";
 
 export const prepareLithologyForSubmit = (values: LithologyFormValues) => {
   values.fromDepth = parseFloatWithThousandsSeparator(values.fromDepth)!;
@@ -147,3 +148,32 @@ export const buildLithologyValuesForMode = (
   notes: values.notes,
   lithologicalDescription: { description: values.lithologicalDescription?.description ?? "" },
 });
+
+type ShowPrompt = (message: string, actions: { label: string; variant?: "contained"; action: () => void }[]) => void;
+
+/**
+ * The modal's apply, gated on the analysis. Closing the modal with automatically extracted values
+ * still unaccepted asks first, because applying them cannot be undone afterwards.
+ * @param analysis The running analysis.
+ * @param apply What the modal does when there is nothing to ask about.
+ * @param showPrompt The prompt to ask with.
+ */
+export const buildApplyHandler =
+  (analysis: LithologyAnalysis, apply: () => Promise<void> | void, showPrompt: ShowPrompt) => async () => {
+    if (!analysis.hasPendingChanges) {
+      await apply();
+      return;
+    }
+
+    showPrompt("analysisAcceptAllOnCloseConfirm", [
+      { label: "cancel", action: () => {} },
+      {
+        label: "acceptValues",
+        variant: "contained",
+        action: () => {
+          analysis.acceptAll();
+          void apply();
+        },
+      },
+    ]);
+  };
