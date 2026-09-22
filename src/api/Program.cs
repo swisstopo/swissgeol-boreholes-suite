@@ -225,7 +225,7 @@ builder.Services
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 builder.Services.AddScoped<IBoreholePermissionService, BoreholePermissionService>();
-builder.Services.AddScoped<TusUploadConfiguration>();
+builder.Services.AddScoped<LogFileTusEndpoint>();
 builder.Services.AddScoped<IFilterService, FilterService>();
 builder.Services.AddScoped<ILithologyTabContentService, LithologyTabContentService>();
 builder.Services.AddSingleton(TimeProvider.System);
@@ -287,15 +287,17 @@ else
 
 app.UseAuthorization();
 
-// Only the chunked upload raises the failure this converts, and wrapping it here keeps the
+// Only the chunked uploads raise the failure this converts, and wrapping them here keeps the
 // conversion out of every other request.
 app.UseWhen(
-    context => context.Request.Path.StartsWithSegments(TusUploadConfiguration.EndpointPath, StringComparison.OrdinalIgnoreCase),
+    context => TusUploadErrorMiddleware.HandlesRequestPath(context.Request.Path),
     branch => branch.UseMiddleware<TusUploadErrorMiddleware>());
 
+const string logFileTusPath = "/api/v2/log/upload/tus";
+
 app.MapControllers();
-app.MapTus(TusUploadConfiguration.EndpointPath, httpContext =>
-    httpContext.RequestServices.GetRequiredService<TusUploadConfiguration>().CreateAsync(httpContext))
+app.MapTus(logFileTusPath, httpContext =>
+    httpContext.RequestServices.GetRequiredService<LogFileTusEndpoint>().CreateAsync(httpContext))
     .RequireAuthorization(PolicyNames.Viewer);
 app.MapReverseProxy();
 app.MapHealthChecks("/health").AllowAnonymous();

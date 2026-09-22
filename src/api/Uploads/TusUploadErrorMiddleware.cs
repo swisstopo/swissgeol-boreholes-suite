@@ -24,6 +24,16 @@ public class TusUploadErrorMiddleware
     }
 
     /// <summary>
+    /// Whether a request is one a chunked upload arrives on, which are the only ones that raise
+    /// the failure this converts.
+    /// </summary>
+    /// <param name="path">The path of the request.</param>
+    /// <returns><see langword="true"/> if the request belongs to an upload; otherwise, <see langword="false"/>.</returns>
+    public static bool HandlesRequestPath(PathString path) =>
+        path.Value?.EndsWith("/upload/tus", StringComparison.OrdinalIgnoreCase) == true ||
+        path.Value?.Contains("/upload/tus/", StringComparison.OrdinalIgnoreCase) == true;
+
+    /// <summary>
     /// Passes the request on and turns a refused upload into a problem response.
     /// </summary>
     /// <param name="context">The request the upload arrives on.</param>
@@ -33,9 +43,11 @@ public class TusUploadErrorMiddleware
         {
             await next(context).ConfigureAwait(false);
         }
-        catch (LogFileNameTakenException ex)
+        catch (UploadRefusedException ex)
         {
-            logger.LogError(ex, "A log file upload was refused.");
+            logger.LogError(ex, "An upload was refused.");
+
+            var extensions = new Dictionary<string, object?>(ex.Extensions) { ["messageKey"] = ex.MessageKey };
 
             // A client error rather than a server one, because the upload client retries a
             // request that failed with a server error and this one fails the same way every time.
@@ -44,11 +56,7 @@ public class TusUploadErrorMiddleware
                     detail: ex.Message,
                     statusCode: (int)HttpStatusCode.BadRequest,
                     type: ProblemType.UserError,
-                    extensions: new Dictionary<string, object?>
-                    {
-                        ["messageKey"] = LogFileNameTakenException.MessageKey,
-                        ["fileName"] = ex.FileName,
-                    })
+                    extensions: extensions)
                 .ExecuteAsync(context)
                 .ConfigureAwait(false);
         }

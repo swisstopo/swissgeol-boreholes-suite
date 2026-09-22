@@ -51,6 +51,7 @@ public class S3TusStore : ITusPipelineStore, ITusCreationStore, ITusReadableStor
     private readonly TusS3Store store;
     private readonly IAmazonS3 s3Client;
     private readonly TusS3StoreConfiguration configuration;
+    private readonly ILogger<S3TusStore> logger;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="S3TusStore"/> class.
@@ -59,15 +60,16 @@ public class S3TusStore : ITusPipelineStore, ITusCreationStore, ITusReadableStor
     {
         this.s3Client = s3Client;
         this.configuration = configuration;
+        logger = loggerFactory.CreateLogger<S3TusStore>();
 
         store = new TusS3Store(loggerFactory.CreateLogger<TusS3Store>(), configuration, s3Client, new TusObjectIdProvider());
     }
 
     /// <summary>
-    /// The settings the log file upload runs the package with, kept here so that the reasons for
-    /// them stay next to the behaviour they protect.
+    /// The settings an upload runs the package with, kept here so that the reasons for them stay
+    /// next to the behaviour they protect.
     /// </summary>
-    /// <param name="bucketName">The bucket the log files live in.</param>
+    /// <param name="bucketName">The bucket the objects live in.</param>
     /// <returns>The configuration.</returns>
     public static TusS3StoreConfiguration CreateConfiguration(string bucketName) => new()
     {
@@ -175,6 +177,26 @@ public class S3TusStore : ITusPipelineStore, ITusCreationStore, ITusReadableStor
         await s3Client
             .DeleteObjectAsync(configuration.BucketName, configuration.UploadInfoObjectPrefix + fileId, cancellationToken)
             .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Removes an object no row points at, either because the row was never written or because it
+    /// was moved to another object, letting the failure that caused it travel on. A cleanup that
+    /// fails must not replace that failure: only while it is intact can the caller tell a client
+    /// that gave up from an upload that broke. The object is left in the bucket instead, which is
+    /// what the log records.
+    /// </summary>
+    /// <param name="objectKey">The key of the stored object to remove.</param>
+    public async Task DeleteOrphanedObjectAsync(string objectKey)
+    {
+        try
+        {
+            await s3Client.DeleteObjectAsync(configuration.BucketName, objectKey, CancellationToken.None).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to remove the orphaned object <{ObjectKey}>. It stays in the bucket.", objectKey);
+        }
     }
 
     /// <summary>

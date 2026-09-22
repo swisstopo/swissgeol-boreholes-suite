@@ -216,7 +216,7 @@ public class S3TusStoreTest
     }
 
     /// <summary>
-    /// Why <see cref="TusUploadConfiguration"/> names the reader rather than taking the default:
+    /// Why <see cref="TusUploadEndpoint"/> names the reader rather than taking the default:
     /// the way the package reads a chunk as a stream asks the body of the request how long it is,
     /// which a body being received cannot answer.
     /// </summary>
@@ -463,5 +463,26 @@ public class S3TusStoreTest
 
         await Assert.ThrowsExactlyAsync<AmazonS3Exception>(async () =>
             await AppendAsync(store, fileId, 10));
+    }
+
+    [TestMethod]
+    public async Task DeleteOrphanedObjectKeepsTheOriginalFailureWhenTheCleanupFails()
+    {
+        // The cleanup runs while another failure is travelling on, so a cleanup that fails as well
+        // must not replace it: only while that failure is intact can the caller tell a client that
+        // gave up from an upload that broke.
+        var s3ClientMock = new Mock<IAmazonS3>(MockBehavior.Strict);
+        s3ClientMock.Setup(x => x.Config).Returns(new AmazonS3Config());
+        s3ClientMock
+            .Setup(x => x.DeleteObjectAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new AmazonS3Exception("the cleanup fails as well"));
+
+        var storeWithFailingCleanup = new S3TusStore(NullLoggerFactory.Instance, s3ClientMock.Object, configuration);
+
+        await storeWithFailingCleanup.DeleteOrphanedObjectAsync($"{Guid.NewGuid()}.las");
+
+        s3ClientMock.Verify(
+            x => x.DeleteObjectAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()),
+            Times.Once);
     }
 }

@@ -5,13 +5,20 @@
 /// told about in words, because it is the only one they can put right. It carries a key rather
 /// than a sentence, because the API does not know the language the message is read in.
 /// </summary>
-public class LogFileNameTakenException : Exception
+public class LogFileNameTakenException : UploadRefusedException
 {
     /// <summary>The key the client translates.</summary>
-    public const string MessageKey = "logFileNameAlreadyExists";
+    public const string MessageKeyValue = "logFileNameAlreadyExists";
 
     /// <summary>The name the log run already holds, named in the translated message.</summary>
     public string FileName { get; init; } = string.Empty;
+
+    /// <inheritdoc/>
+    public override string MessageKey => MessageKeyValue;
+
+    /// <inheritdoc/>
+    public override IDictionary<string, object?> Extensions =>
+        new Dictionary<string, object?> { ["fileName"] = FileName };
 
     /// <summary>
     /// The exception for a name the log run already holds.

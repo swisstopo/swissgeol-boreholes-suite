@@ -22,7 +22,7 @@ public static class UploadServiceCollectionExtensions
 #pragma warning restore CA1308 // Normalize strings to uppercase
 
         // The store holds nothing that belongs to one request, so one instance serves them all.
-        services.AddSingleton<S3TusStore>(sp => new S3TusStore(
+        services.AddKeyedSingleton<S3TusStore>(UploadBuckets.LogFiles, (sp, _) => new S3TusStore(
             sp.GetRequiredService<ILoggerFactory>(),
             sp.GetRequiredService<IAmazonS3>(),
             S3TusStore.CreateConfiguration(bucketName)));

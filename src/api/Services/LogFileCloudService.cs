@@ -103,24 +103,4 @@ public class LogFileCloudService : CloudServiceBase
 
         return entityEntry.Entity;
     }
-
-    /// <summary>
-    /// Removes an object no log file row points at, either because the row was never written or
-    /// because it was moved to another object, letting the failure that caused it travel on. A
-    /// cleanup that fails must not replace that failure: only while it is intact can the caller
-    /// tell a client that gave up from an upload that broke. The object is left in the bucket
-    /// instead, which is what the log records.
-    /// </summary>
-    /// <param name="objectName">The name of the stored object to remove.</param>
-    internal async Task DeleteOrphanedObject(string objectName)
-    {
-        try
-        {
-            await DeleteObject(objectName).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to remove the object <{ObjectName}> stored for a log file row that was never written. It stays in the bucket.", objectName);
-        }
-    }
 }

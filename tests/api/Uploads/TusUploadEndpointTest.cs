@@ -24,6 +24,11 @@ namespace BDMS.Uploads;
 [TestClass]
 public class TusUploadEndpointTest
 {
+    // The route and the header the client depends on are pinned here rather than read back from
+    // the endpoint, which would let the test move along with whatever it is meant to hold still.
+    private const string EndpointPath = "/api/v2/log/upload/tus";
+    private const string LogFileIdHeader = "Log-File-Id";
+
     private const string SubAdmin = "sub_admin";
     private const string TusResumableHeader = "Tus-Resumable";
     private const string TusVersion = "1.0.0";
@@ -122,7 +127,7 @@ public class TusUploadEndpointTest
 
     private static HttpRequestMessage CreateUpload(string? subjectId, int logRunId, string fileName, long uploadLength = 1_000, int? logFileId = null)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, TusUploadConfiguration.EndpointPath);
+        var request = new HttpRequestMessage(HttpMethod.Post, EndpointPath);
         request.Headers.Add(TusResumableHeader, TusVersion);
         request.Headers.Add("Upload-Length", uploadLength.ToString(CultureInfo.InvariantCulture));
         request.Headers.Add("Upload-Metadata", Metadata(logRunId, fileName, logFileId));
@@ -162,7 +167,7 @@ public class TusUploadEndpointTest
             using var response = await client.SendAsync(patch);
             Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode, await response.Content.ReadAsStringAsync());
 
-            response.Headers.TryGetValues(TusUploadConfiguration.LogFileIdHeader, out var values);
+            response.Headers.TryGetValues(LogFileIdHeader, out var values);
             reported ??= values?.SingleOrDefault();
         }
 
@@ -182,6 +187,22 @@ public class TusUploadEndpointTest
     }
 
     /// <summary>
+    /// The endpoint answers with the header its own subclass names, rather than one the base
+    /// picked. A feature that reported another feature's header would leave its client reading an
+    /// id that is not its own.
+    /// </summary>
+    [TestMethod]
+    public void TheLogEndpointNamesItsOwnPathAndResultHeader()
+    {
+        using var scope = factory.Services.CreateScope();
+        var endpoint = scope.ServiceProvider.GetRequiredService<LogFileTusEndpoint>();
+
+        Assert.AreEqual(EndpointPath, endpoint.EndpointPath);
+        Assert.AreEqual(LogFileIdHeader, endpoint.ResultHeaderName);
+        Assert.IsInstanceOfType<TusUploadEndpoint>(endpoint);
+    }
+
+    /// <summary>
     /// The endpoint names the role it admits, rather than leaving that to the fallback policy.
     /// The fallback admits administrators alone, which would refuse every user the per-borehole
     /// check is there to admit, and would do so with the status that check answers with itself.
@@ -195,7 +216,7 @@ public class TusUploadEndpointTest
             .SelectMany(source => source.Endpoints)
             .OfType<RouteEndpoint>()
             .Where(route => $"/{route.RoutePattern.RawText?.TrimStart('/')}"
-                .StartsWith(TusUploadConfiguration.EndpointPath, StringComparison.OrdinalIgnoreCase))
+                .StartsWith(EndpointPath, StringComparison.OrdinalIgnoreCase))
             .ToList();
 
         Assert.IsTrue(tusRoutes.Count > 0, "The tus endpoint is not in the route table.");
@@ -325,7 +346,7 @@ public class TusUploadEndpointTest
         Assert.IsTrue(problem.TryGetValue("type", out var type), $"The refusal names a problem type. It carried: {body}");
         Assert.AreEqual("userError", type.GetString());
         StringAssert.Contains(problem["detail"].GetString(), existing.Name);
-        Assert.AreEqual(LogFileNameTakenException.MessageKey, problem["messageKey"].GetString());
+        Assert.AreEqual(LogFileNameTakenException.MessageKeyValue, problem["messageKey"].GetString());
         Assert.AreEqual(existing.Name, problem["fileName"].GetString());
     }
 
@@ -403,7 +424,7 @@ public class TusUploadEndpointTest
         using var finished = await client.SendAsync(first);
         Assert.AreEqual(HttpStatusCode.NoContent, finished.StatusCode);
         storedObjectKeys.Add((await context.LogFiles.AsNoTracking().SingleAsync(f =>
-            f.Id == int.Parse(finished.Headers.GetValues(TusUploadConfiguration.LogFileIdHeader).Single(), CultureInfo.InvariantCulture))).NameUuid);
+            f.Id == int.Parse(finished.Headers.GetValues(LogFileIdHeader).Single(), CultureInfo.InvariantCulture))).NameUuid);
 
         using var again = new HttpRequestMessage(HttpMethod.Patch, uploadPath);
         again.Headers.Add(TusResumableHeader, TusVersion);
@@ -434,7 +455,7 @@ public class TusUploadEndpointTest
         Assert.AreEqual(HttpStatusCode.Created, created.StatusCode);
         startedUploadPaths.Add(created.Headers.Location.ToString());
 
-        var reported = created.Headers.GetValues(TusUploadConfiguration.LogFileIdHeader).Single();
+        var reported = created.Headers.GetValues(LogFileIdHeader).Single();
         var logFile = await context.LogFiles.AsNoTracking().SingleAsync(f => f.Id == int.Parse(reported, CultureInfo.InvariantCulture));
 
         Assert.AreEqual(fileName, logFile.Name);

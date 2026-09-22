@@ -17,7 +17,9 @@ public class ExpiredUploadCleanupService : BackgroundService
     /// <summary>
     /// Initializes a new instance of the <see cref="ExpiredUploadCleanupService"/> class.
     /// </summary>
-    public ExpiredUploadCleanupService(ILogger<ExpiredUploadCleanupService> logger, S3TusStore store)
+    public ExpiredUploadCleanupService(
+        ILogger<ExpiredUploadCleanupService> logger,
+        [FromKeyedServices(UploadBuckets.LogFiles)] S3TusStore store)
     {
         this.logger = logger;
         this.store = store;

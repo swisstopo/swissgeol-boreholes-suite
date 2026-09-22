@@ -13,7 +13,7 @@ using tusdotnet.Models;
 namespace BDMS.Uploads;
 
 [TestClass]
-public class TusUploadConfigurationTest
+public class LogFileTusEndpointTest
 {
     private const string SubAdmin = "sub_admin";
     private const string TestFileName = "gamma.las";
@@ -21,7 +21,7 @@ public class TusUploadConfigurationTest
 
     private BdmsContext context;
     private Mock<IBoreholePermissionService> permissionServiceMock;
-    private TusUploadConfiguration configuration;
+    private LogFileTusEndpoint endpoint;
 
     [TestInitialize]
     public void TestInitialize()
@@ -59,7 +59,7 @@ public class TusUploadConfigurationTest
             s3Client,
             S3TusStore.CreateConfiguration(bucketName));
 
-        configuration = new TusUploadConfiguration(context, permissionServiceMock.Object, logFileCloudService, tusStore);
+        endpoint = new LogFileTusEndpoint(context, permissionServiceMock.Object, logFileCloudService, tusStore);
     }
 
     [TestCleanup]
@@ -76,7 +76,7 @@ public class TusUploadConfigurationTest
             .Setup(x => x.CanEditBoreholeAsync(It.IsAny<string>(), It.IsAny<int?>()))
             .ReturnsAsync(false);
 
-        Assert.IsFalse(await configuration.CanUploadAsync(CreateUser(SubAdmin), logRun.Id));
+        Assert.IsFalse(await endpoint.CanUploadAsync(CreateUser(SubAdmin), logRun.Id));
     }
 
     [TestMethod]
@@ -87,19 +87,19 @@ public class TusUploadConfigurationTest
             .Setup(x => x.CanEditBoreholeAsync(SubAdmin, logRun.BoreholeId))
             .ReturnsAsync(true);
 
-        Assert.IsTrue(await configuration.CanUploadAsync(CreateUser(SubAdmin), logRun.Id));
+        Assert.IsTrue(await endpoint.CanUploadAsync(CreateUser(SubAdmin), logRun.Id));
     }
 
     [TestMethod]
     public async Task CanUploadAsyncRefusesALogRunThatDoesNotExist()
     {
-        Assert.IsFalse(await configuration.CanUploadAsync(CreateUser(SubAdmin), 0));
+        Assert.IsFalse(await endpoint.CanUploadAsync(CreateUser(SubAdmin), 0));
     }
 
     [TestMethod]
     public async Task CanUploadAsyncRefusesAUserWithoutASubject()
     {
-        Assert.IsFalse(await configuration.CanUploadAsync(new ClaimsPrincipal(new ClaimsIdentity()), context.LogRuns.First().Id));
+        Assert.IsFalse(await endpoint.CanUploadAsync(new ClaimsPrincipal(new ClaimsIdentity()), context.LogRuns.First().Id));
     }
 
     [TestMethod]
