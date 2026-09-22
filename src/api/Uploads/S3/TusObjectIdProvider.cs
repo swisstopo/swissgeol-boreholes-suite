@@ -11,7 +11,7 @@ namespace BDMS.Uploads.S3;
 /// The name also travels in the URL of every request after the first one and reaches the cloud
 /// storage as a key, so <see cref="ValidateId"/> admits nothing but that shape.
 /// </summary>
-public class LogFileTusIdProvider : ITusFileIdProvider
+public class TusObjectIdProvider : ITusFileIdProvider
 {
     /// <inheritdoc/>
     public Task<string> CreateId(string metadata) =>

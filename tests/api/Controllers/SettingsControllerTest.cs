@@ -68,9 +68,9 @@ public class SettingsControllerTest
 
         Assert.IsNotNull(result);
         Assert.AreEqual(PhotoController.MaxFileSize, result.UploadSettings.MaxFileSize);
-        Assert.AreEqual(LogFileTusStore.ChunkSize, result.UploadSettings.ChunkSize);
+        Assert.AreEqual(S3TusStore.ChunkSize, result.UploadSettings.ChunkSize);
         Assert.IsTrue(
-            result.UploadSettings.ChunkSize < LogFileTusStore.PartSize,
+            result.UploadSettings.ChunkSize < S3TusStore.PartSize,
             "A chunk has to stay below the part size, otherwise a request contributes more than the one part it is cut into.");
     }
 }

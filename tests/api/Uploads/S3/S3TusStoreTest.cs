@@ -19,7 +19,7 @@ namespace BDMS.Uploads.S3;
 /// package is paired with the package on its own, so a difference is shown rather than asserted.
 /// </summary>
 [TestClass]
-public class LogFileTusStoreTest
+public class S3TusStoreTest
 {
     private const string TestFileName = "gamma.las";
 
@@ -27,7 +27,7 @@ public class LogFileTusStoreTest
 
     private AmazonS3Client s3Client;
     private TusS3StoreConfiguration configuration;
-    private LogFileTusStore store;
+    private S3TusStore store;
     private string bucketName;
 
     [TestInitialize]
@@ -46,8 +46,8 @@ public class LogFileTusStoreTest
             });
 
         bucketName = appConfiguration["S3:LOGFILES_BUCKET_NAME"].ToLowerInvariant();
-        configuration = LogFileTusStore.CreateConfiguration(bucketName);
-        store = new LogFileTusStore(NullLoggerFactory.Instance, s3Client, configuration);
+        configuration = S3TusStore.CreateConfiguration(bucketName);
+        store = new S3TusStore(NullLoggerFactory.Instance, s3Client, configuration);
     }
 
     [TestCleanup]
@@ -176,7 +176,7 @@ public class LogFileTusStoreTest
     [TestMethod]
     public void ValidateIdRefusesANameTheProviderNeverHandedOut()
     {
-        var provider = new LogFileTusIdProvider();
+        var provider = new TusObjectIdProvider();
 
         Assert.IsFalse(provider.ValidateId("../../secret").Result);
         Assert.IsFalse(provider.ValidateId("not-a-guid.las").Result);
@@ -207,7 +207,7 @@ public class LogFileTusStoreTest
             new Mock<ILogger<TusS3Store>>().Object,
             configuration,
             s3Client,
-            new LogFileTusIdProvider());
+            new TusObjectIdProvider());
 
         var fileId = await packageStore.CreateFileAsync(0, Metadata(TestFileName), CancellationToken.None);
         createdFileIds.Add(fileId);
@@ -223,27 +223,27 @@ public class LogFileTusStoreTest
     [TestMethod]
     public async Task ThePackageCannotReadAChunkAsAStream()
     {
-        var fileId = await CreateAsync(LogFileTusStore.ChunkSize);
+        var fileId = await CreateAsync(S3TusStore.ChunkSize);
 
         await Assert.ThrowsExactlyAsync<NotSupportedException>(async () =>
-            await store.AppendDataAsync(fileId, Body(new byte[LogFileTusStore.ChunkSize]), CancellationToken.None));
+            await store.AppendDataAsync(fileId, Body(new byte[S3TusStore.ChunkSize]), CancellationToken.None));
     }
 
     [TestMethod]
     public async Task AppendDataAsyncCarriesTheOffsetFromOneRequestToTheNext()
     {
-        var uploadLength = (2 * LogFileTusStore.ChunkSize) + 100;
+        var uploadLength = (2 * S3TusStore.ChunkSize) + 100;
         var fileId = await CreateAsync(uploadLength);
 
         Assert.AreEqual(0, await store.GetUploadOffsetAsync(fileId, CancellationToken.None));
 
-        await AppendAsync(store, fileId, LogFileTusStore.ChunkSize);
+        await AppendAsync(store, fileId, S3TusStore.ChunkSize);
         Assert.AreEqual(
-            LogFileTusStore.ChunkSize,
+            S3TusStore.ChunkSize,
             await store.GetUploadOffsetAsync(fileId, CancellationToken.None),
             "The chunk the client was told arrived is the chunk it does not send again.");
 
-        await AppendAsync(store, fileId, LogFileTusStore.ChunkSize);
+        await AppendAsync(store, fileId, S3TusStore.ChunkSize);
         await AppendAsync(store, fileId, 100);
 
         var stored = await ReadObjectMetadataAsync(fileId);
@@ -267,7 +267,7 @@ public class LogFileTusStoreTest
     }
 
     /// <summary>
-    /// What <see cref="LogFileTusStore.ForgetAsync"/> exists to avoid: the way the package lets go
+    /// What <see cref="S3TusStore.ForgetAsync"/> exists to avoid: the way the package lets go
     /// of an upload takes the finished object with it, and by then a log file row points at it.
     /// </summary>
     [TestMethod]
@@ -286,8 +286,8 @@ public class LogFileTusStoreTest
     [TestMethod]
     public async Task DeleteFileAsyncReleasesThePartsOfAnUnfinishedUpload()
     {
-        var fileId = await CreateAsync(3 * LogFileTusStore.ChunkSize);
-        await AppendAsync(store, fileId, LogFileTusStore.ChunkSize);
+        var fileId = await CreateAsync(3 * S3TusStore.ChunkSize);
+        await AppendAsync(store, fileId, S3TusStore.ChunkSize);
         Assert.AreEqual(1, await CountMultipartUploadsAsync(fileId), "The upload is under way.");
 
         await store.DeleteFileAsync(fileId, CancellationToken.None);
@@ -305,11 +305,11 @@ public class LogFileTusStoreTest
             new Mock<ILogger<TusS3Store>>().Object,
             configuration,
             s3Client,
-            new LogFileTusIdProvider());
+            new TusObjectIdProvider());
 
-        var fileId = await packageStore.CreateFileAsync(3 * LogFileTusStore.ChunkSize, Metadata(TestFileName), CancellationToken.None);
+        var fileId = await packageStore.CreateFileAsync(3 * S3TusStore.ChunkSize, Metadata(TestFileName), CancellationToken.None);
         createdFileIds.Add(fileId);
-        await AppendAsync(packageStore, fileId, LogFileTusStore.ChunkSize);
+        await AppendAsync(packageStore, fileId, S3TusStore.ChunkSize);
 
         await packageStore.DeleteFileAsync(fileId, CancellationToken.None);
 
@@ -319,8 +319,8 @@ public class LogFileTusStoreTest
     [TestMethod]
     public async Task RemoveExpiredFilesAsyncRemovesAnUploadWhoseTimeHasPassed()
     {
-        var fileId = await CreateAsync(3 * LogFileTusStore.ChunkSize);
-        await AppendAsync(store, fileId, LogFileTusStore.ChunkSize);
+        var fileId = await CreateAsync(3 * S3TusStore.ChunkSize);
+        await AppendAsync(store, fileId, S3TusStore.ChunkSize);
         await store.SetExpirationAsync(fileId, DateTimeOffset.UtcNow.AddMinutes(-1), CancellationToken.None);
 
         CollectionAssert.Contains(
@@ -337,7 +337,7 @@ public class LogFileTusStoreTest
     [TestMethod]
     public async Task RemoveExpiredFilesAsyncLeavesAnUploadWithTimeLeft()
     {
-        var fileId = await CreateAsync(3 * LogFileTusStore.ChunkSize);
+        var fileId = await CreateAsync(3 * S3TusStore.ChunkSize);
         await store.SetExpirationAsync(fileId, DateTimeOffset.UtcNow.AddHours(1), CancellationToken.None);
 
         await store.RemoveExpiredFilesAsync(CancellationToken.None);
@@ -412,9 +412,9 @@ public class LogFileTusStoreTest
     [TestMethod]
     public async Task GetUploadOffsetAsyncReportsAFinishedUploadAtItsFullLength()
     {
-        var uploadLength = LogFileTusStore.ChunkSize + 500;
+        var uploadLength = S3TusStore.ChunkSize + 500;
         var fileId = await CreateAsync(uploadLength);
-        await AppendAsync(store, fileId, LogFileTusStore.ChunkSize);
+        await AppendAsync(store, fileId, S3TusStore.ChunkSize);
         await AppendAsync(store, fileId, 500);
 
         // The multipart upload is spent once the object exists, so an offset that no longer said
@@ -444,8 +444,8 @@ public class LogFileTusStoreTest
     [TestMethod]
     public async Task AppendDataAsyncFailsForAnUploadThatIsAlreadyFinished()
     {
-        var fileId = await CreateAsync(LogFileTusStore.ChunkSize + 500);
-        await AppendAsync(store, fileId, LogFileTusStore.ChunkSize);
+        var fileId = await CreateAsync(S3TusStore.ChunkSize + 500);
+        await AppendAsync(store, fileId, S3TusStore.ChunkSize);
         await AppendAsync(store, fileId, 500);
 
         await Assert.ThrowsExactlyAsync<AmazonS3Exception>(async () =>

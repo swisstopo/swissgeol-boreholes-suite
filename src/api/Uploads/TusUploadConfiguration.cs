@@ -40,7 +40,7 @@ public class TusUploadConfiguration
     private readonly BdmsContext context;
     private readonly IBoreholePermissionService boreholePermissionService;
     private readonly LogFileCloudService logFileCloudService;
-    private readonly LogFileTusStore store;
+    private readonly S3TusStore store;
 
     /// <summary>
     /// Initializes a new instance of the <see cref="TusUploadConfiguration"/> class.
@@ -49,7 +49,7 @@ public class TusUploadConfiguration
         BdmsContext context,
         IBoreholePermissionService boreholePermissionService,
         LogFileCloudService logFileCloudService,
-        LogFileTusStore store)
+        S3TusStore store)
     {
         this.context = context;
         this.boreholePermissionService = boreholePermissionService;

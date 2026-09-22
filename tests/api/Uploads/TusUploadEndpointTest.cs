@@ -148,9 +148,9 @@ public class TusUploadEndpointTest
         startedUploadPaths.Add(uploadPath);
 
         string? reported = null;
-        for (var offset = 0; offset < content.Length; offset += LogFileTusStore.ChunkSize)
+        for (var offset = 0; offset < content.Length; offset += S3TusStore.ChunkSize)
         {
-            var length = Math.Min(LogFileTusStore.ChunkSize, content.Length - offset);
+            var length = Math.Min(S3TusStore.ChunkSize, content.Length - offset);
 
             using var patch = new HttpRequestMessage(HttpMethod.Patch, uploadPath);
             patch.Headers.Add(TusResumableHeader, TusVersion);
@@ -362,7 +362,7 @@ public class TusUploadEndpointTest
     {
         var logRun = await context.LogRuns.FirstAsync();
         var fileName = $"{Guid.NewGuid()}.las";
-        var content = new byte[(2 * LogFileTusStore.ChunkSize) + 1_000];
+        var content = new byte[(2 * S3TusStore.ChunkSize) + 1_000];
         Random.Shared.NextBytes(content);
         using var client = factory.CreateClient();
 

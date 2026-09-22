@@ -22,10 +22,10 @@ public static class UploadServiceCollectionExtensions
 #pragma warning restore CA1308 // Normalize strings to uppercase
 
         // The store holds nothing that belongs to one request, so one instance serves them all.
-        services.AddSingleton<LogFileTusStore>(sp => new LogFileTusStore(
+        services.AddSingleton<S3TusStore>(sp => new S3TusStore(
             sp.GetRequiredService<ILoggerFactory>(),
             sp.GetRequiredService<IAmazonS3>(),
-            LogFileTusStore.CreateConfiguration(bucketName)));
+            S3TusStore.CreateConfiguration(bucketName)));
 
         // Without cloud storage there is no client to reach and no upload that could have been
         // started, so the sweep would do nothing but fail once an hour for as long as the

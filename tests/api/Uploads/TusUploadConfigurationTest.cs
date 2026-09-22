@@ -54,10 +54,10 @@ public class TusUploadConfigurationTest
             context);
 
         var bucketName = appConfiguration["S3:LOGFILES_BUCKET_NAME"].ToLowerInvariant();
-        var tusStore = new LogFileTusStore(
+        var tusStore = new S3TusStore(
             NullLoggerFactory.Instance,
             s3Client,
-            LogFileTusStore.CreateConfiguration(bucketName));
+            S3TusStore.CreateConfiguration(bucketName));
 
         configuration = new TusUploadConfiguration(context, permissionServiceMock.Object, logFileCloudService, tusStore);
     }

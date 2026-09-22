@@ -7,15 +7,17 @@ using tusdotnet.Stores.S3;
 namespace BDMS.Uploads.S3;
 
 /// <summary>
-/// The tus store the log file upload writes through.
+/// The tus store an upload writes through.
 ///
 /// The work is done by <see cref="TusS3Store"/>, which writes each arriving chunk into a multipart
 /// upload rather than assembling the file, so the request that receives the last chunk finishes an
-/// upload whose parts are already stored. What this adds is what the endpoint needs and the package
+/// upload whose parts are already stored. What this adds is what the endpoints need and the package
 /// does not offer: the key the finished object took, a way to let go of an upload without touching
 /// that object, and an object for an upload that carries no bytes.
+///
+/// One instance serves one bucket, so a feature that stores elsewhere gets its own.
 /// </summary>
-public class LogFileTusStore : ITusPipelineStore, ITusCreationStore, ITusReadableStore, ITusTerminationStore, ITusExpirationStore
+public class S3TusStore : ITusPipelineStore, ITusCreationStore, ITusReadableStore, ITusTerminationStore, ITusExpirationStore
 {
     /// <summary>
     /// How much of the file the client sends in one request. The client is told this value by
@@ -51,14 +53,14 @@ public class LogFileTusStore : ITusPipelineStore, ITusCreationStore, ITusReadabl
     private readonly TusS3StoreConfiguration configuration;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LogFileTusStore"/> class.
+    /// Initializes a new instance of the <see cref="S3TusStore"/> class.
     /// </summary>
-    public LogFileTusStore(ILoggerFactory loggerFactory, IAmazonS3 s3Client, TusS3StoreConfiguration configuration)
+    public S3TusStore(ILoggerFactory loggerFactory, IAmazonS3 s3Client, TusS3StoreConfiguration configuration)
     {
         this.s3Client = s3Client;
         this.configuration = configuration;
 
-        store = new TusS3Store(loggerFactory.CreateLogger<TusS3Store>(), configuration, s3Client, new LogFileTusIdProvider());
+        store = new TusS3Store(loggerFactory.CreateLogger<TusS3Store>(), configuration, s3Client, new TusObjectIdProvider());
     }
 
     /// <summary>

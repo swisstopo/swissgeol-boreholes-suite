@@ -15,7 +15,7 @@ public class SettingsController(IConfiguration configuration) : ControllerBase
     /// The upload limits the client is held to, reported from the same constants the endpoints
     /// enforce so that neither side keeps a copy that can drift from the other.
     /// </summary>
-    private static readonly UploadSettings uploadSettings = new(FileSizeLimits.Standard, FileSizeLimits.Large, LogFileTusStore.ChunkSize);
+    private static readonly UploadSettings uploadSettings = new(FileSizeLimits.Standard, FileSizeLimits.Large, S3TusStore.ChunkSize);
 
     [HttpGet]
     [SwaggerResponse(StatusCodes.Status200OK, "The current settings of the application.")]
