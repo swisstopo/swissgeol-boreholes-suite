@@ -1,12 +1,12 @@
 import React from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Button, Dialog, Stack, Typography } from "@mui/material";
+import { ErrorResponse } from "../../../../api/errorClasses.ts";
 import {
   DialogFooterContainer,
   DialogHeaderContainer,
   DialogMainContent,
 } from "../../../../components/styledComponents.ts";
-import { ErrorResponse } from "../commons/actionsInterfaces.ts";
 
 interface ImportErrorDialogProps {
   open: boolean;

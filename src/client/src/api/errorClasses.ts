@@ -15,16 +15,60 @@ export class ApiError extends Error {
 }
 
 /**
- * A problem response the API sends for a failure the user can act on, as opposed to one only a
- * developer can. The `userError` type is what marks it: the global handler leaves those alone so
- * that the code which made the call can report the reason itself.
+ * The reason fields every problem document from the API may carry. Each response carries only a
+ * subset of them, so every reader has to check.
  */
-interface UserErrorProblem extends Record<string, unknown> {
-  type?: string;
+interface ProblemDetail {
   detail?: string;
   message?: string;
   messageKey?: string;
 }
+
+/**
+ * A problem response the API sends for a failure the user can act on, as opposed to one only a
+ * developer can. The `userError` type is what marks it: the global handler leaves those alone so
+ * that the code which made the call can report the reason itself.
+ */
+interface UserErrorProblem extends ProblemDetail, Record<string, unknown> {
+  type?: string;
+}
+
+/**
+ * An error body from the import endpoints. They answer with a validation problem carrying per-field
+ * errors, with a translated user error, or with a plain problem document.
+ */
+export interface ErrorResponse extends ProblemDetail {
+  // Keyed by the field that failed, as ValidationProblemDetails reports it.
+  errors?: Record<string, string[]>;
+}
+
+const isOptionalString = (value: unknown): value is string | undefined =>
+  value === undefined || typeof value === "string";
+
+const isOptionalFieldErrors = (value: unknown): value is Record<string, string[]> | undefined => {
+  if (value === undefined) return true;
+  if (typeof value !== "object" || value === null) return false;
+  return Object.values(value).every(
+    messages => Array.isArray(messages) && messages.every(message => typeof message === "string"),
+  );
+};
+
+/**
+ * Whether a parsed response body carries the reason fields an import error is read through. Every
+ * field is optional, so this only rules out a body whose fields are present in another shape.
+ * @param body The parsed response body.
+ * @returns True if the body can be read as an import error.
+ */
+export const isErrorResponse = (body: unknown): body is ErrorResponse => {
+  if (typeof body !== "object" || body === null) return false;
+  const { detail, errors, message, messageKey } = body as Record<string, unknown>;
+  return (
+    isOptionalString(detail) &&
+    isOptionalString(message) &&
+    isOptionalString(messageKey) &&
+    isOptionalFieldErrors(errors)
+  );
+};
 
 /**
  * Whether a response body is a problem naming something the user can act on.
