@@ -182,7 +182,6 @@ export const MapComponent: FC<MapComponentProps> = ({
     // Use z-index to ensure points/clusters are always on top of WMS/WMTS overlay layers
     const featureLayerZIndex = 1000;
 
-    // A cluster feature carries its members under "features", which OpenLayers hands back untyped.
     const clusterStyle: StyleFunction = (feature: FeatureLike) =>
       clusterStyleFunction((feature.get("features") as Feature[]).length);
 

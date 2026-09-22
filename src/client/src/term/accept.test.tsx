@@ -19,7 +19,6 @@ vi.mock("./disclaimerDialog", () => ({
   DisclaimerDialog: () => <div data-testid="disclaimer-dialog" />,
 }));
 
-// The cookie as buildConsentCookieValue writes it, so a test can vary one field and write it back.
 interface WrittenConsent {
   v: number;
   terms: number;

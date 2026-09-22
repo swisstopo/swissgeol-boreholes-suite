@@ -104,8 +104,6 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
             }
           })
           .catch((error: unknown) => {
-            // Matched against the stringified error because an aborted request arrives as a
-            // DOMException whose name carries "AbortError"; its message alone does not.
             if (!String(error).includes("AbortError")) {
               setExtractionState(ExtractionState.error);
               showAlert(t(error instanceof Error ? error.message : String(error)), "error");

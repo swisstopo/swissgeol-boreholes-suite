@@ -39,7 +39,6 @@ export const FilterMultiSelect = <T extends number | string>({
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter") {
-      // Blurring the target closes the autocomplete popover, which is what Enter should do here.
       if (event.target instanceof HTMLElement) event.target.blur();
     }
   };
@@ -66,8 +65,6 @@ export const FilterMultiSelect = <T extends number | string>({
           return count < 1;
         }}
         renderOption={(props: HTMLAttributes<HTMLLIElement> & { key: string }, option) => {
-          // The Autocomplete declares the option props with an untyped key, narrowed above.
-          // React 19 rejects a key that arrives through a spread, so it is passed on its own.
           const { key, ...rest } = props;
           const count = counts?.[option.key] ?? 0;
           return (

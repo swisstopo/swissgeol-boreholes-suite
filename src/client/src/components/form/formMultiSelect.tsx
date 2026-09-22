@@ -84,7 +84,6 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
       control={control}
       defaultValue={selected || []}
       render={({ field }) => {
-        // Same reason as fieldValue above: the field carries the untyped form value.
         const currentValues = (field.value ?? []) as number[];
         return (
           <>
@@ -143,8 +142,6 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
                   />
                 )}
                 renderOption={(props: HTMLAttributes<HTMLLIElement> & { key: string }, option) => {
-                  // The Autocomplete declares the option props with an untyped key, narrowed above.
-                  // React 19 rejects a key that arrives through a spread, so it is passed on its own.
                   const { key, ...rest } = props;
                   return (
                     <li key={key} {...rest}>

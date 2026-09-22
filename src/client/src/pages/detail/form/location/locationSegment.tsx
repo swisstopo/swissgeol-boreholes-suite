@@ -37,7 +37,6 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
       if (x && y) {
         const response = await fetch(apiUrl + `?easting=${x}&northing=${y}&altitude=0.0&format=json`);
         if (response.ok) {
-          // The service is untyped JSON, so the shape is this caller's claim about it.
           return (await response.json()) as ReframeTransformation;
         }
       }

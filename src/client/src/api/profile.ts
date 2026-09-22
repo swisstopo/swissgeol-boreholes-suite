@@ -39,8 +39,6 @@ export const downloadProfile = async (profileId: number) => {
   return await download(`profile/download?profileId=${profileId}`);
 };
 
-// The parameters follow the write model rather than the entity: the endpoint accepts a cleared
-// description and an unset visibility, which a plain string and boolean could not express.
 export const updateProfile = async (
   profileId: number,
   description: ProfileUpdate["description"],

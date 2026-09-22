@@ -5,8 +5,7 @@ import adminUser from "../../fixtures/adminUser.json";
 import { startEditing, stopEditing } from "./buttonHelpers";
 
 /**
- * The response bodies these helpers read. Cypress types an intercepted body as any, so each one is
- * described here rather than being reached into blindly.
+ * The response bodies these helpers read.
  */
 interface TokenResponse {
   access_token: string;
@@ -634,7 +633,6 @@ export const getImportFileFromFixtures = (fileName: string, encoding: string | n
     }
   }
 
-  // Every caller reads a CSV fixture, which Cypress hands back as text either way.
   return encoding ? cy.fixture<string>(filePath, encoding as Cypress.Encodings) : cy.fixture<string>(filePath);
 };
 

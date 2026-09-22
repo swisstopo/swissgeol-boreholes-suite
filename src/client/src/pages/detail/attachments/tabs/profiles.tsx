@@ -23,7 +23,6 @@ interface ProfilesProps {
   boreholeId: number;
 }
 
-// Names the cell's value type, which the grid would otherwise widen to `any`.
 type DescriptionCellParams = GridRenderCellParams<Profile, Profile["description"]>;
 
 export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
@@ -74,7 +73,6 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
       });
       const results = await Promise.allSettled(updatePromises);
       reloadProfiles();
-      // A rejection reason is `any`; everything updateProfile rejects with is an Error.
       const errors = results.filter(r => r.status === "rejected").map(r => r.reason as Error);
       if (errors.length > 0) {
         showApiErrorAlert(errors.map(e => e.message).join(", "));

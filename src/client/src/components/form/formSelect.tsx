@@ -153,8 +153,6 @@ export const FormSelect: FC<FormSelectProps> = ({
               );
             }}
             renderOption={(props: HTMLAttributes<HTMLLIElement> & { key: string }, option) => {
-              // The Autocomplete declares the option props with an untyped key, narrowed above.
-              // React 19 rejects a key that arrives through a spread, so it is passed on its own.
               const { key, ...rest } = props;
               return (
                 <li key={key} {...rest}>

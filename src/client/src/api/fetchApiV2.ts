@@ -100,10 +100,6 @@ async function handleFetchError(response: Response) {
  * Fetches data from the API and displays errors in a browser alert.
  * The error is not accessible and cannot be handled individually.
  * Do not use this method in any new code.
- *
- * On failure this alerts the text and resolves with `undefined`, which the declared return type
- * does not admit. Every caller assumes the call succeeded, so the lie is kept here rather than
- * spread over each of them. Use {@link fetchApiV2WithApiError} instead, which throws.
  * @param {string} url - The endpoint URL relative to the base API path.
  * @param {string} method - The HTTP method (e.g., GET, POST, PUT, DELETE).
  * @param {object|null} [payload=null] - The request payload, if applicable.
