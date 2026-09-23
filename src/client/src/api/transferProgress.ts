@@ -1,3 +1,5 @@
+import { formatWithThousandsSeparator } from "../components/form/formUtils.ts";
+
 /**
  * Progress of a single file transfer.
  * `total` is absent when the size is not known in advance, which is the case for
@@ -26,12 +28,6 @@ export const isAbortError = (error: unknown): boolean => error instanceof DOMExc
 
 const bytesPerMegabyte = 1_000_000;
 
-const megabyteFormat = new Intl.NumberFormat("de-CH", {
-  useGrouping: true,
-  minimumFractionDigits: 1,
-  maximumFractionDigits: 1,
-});
-
 /**
  * Formats a byte count for display, using decimal megabytes so the numbers match what
  * operating systems and cloud storage report. The unit stays at megabytes with a single
@@ -41,7 +37,5 @@ const megabyteFormat = new Intl.NumberFormat("de-CH", {
  */
 export const formatBytes = (bytes: number): string => {
   const megabytes = Number.isFinite(bytes) && bytes > 0 ? bytes / bytesPerMegabyte : 0;
-
-  // de-CH groups with a typographic apostrophe, the application writes thousands with a plain one.
-  return `${megabyteFormat.format(megabytes).replaceAll("’", "'")} MB`;
+  return `${formatWithThousandsSeparator(1, 1, megabytes)} MB`;
 };
