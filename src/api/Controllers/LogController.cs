@@ -138,14 +138,15 @@ public class LogController : BoreholeControllerBase<LogRun>
     /// existing. Removing it here lets the next import add it properly.
     /// </summary>
     /// <param name="id">The <see cref="LogFile.Id"/> to delete.</param>
+    /// <param name="cancellationToken">Aborts the delete once the client is gone.</param>
     /// <returns>An OK result if the record was removed.</returns>
     [HttpDelete("file/{id}")]
     [Authorize(Policy = PolicyNames.Viewer)]
-    public async Task<IActionResult> DeleteLogFileAsync([Range(1, int.MaxValue)] int id)
+    public async Task<IActionResult> DeleteLogFileAsync([Range(1, int.MaxValue)] int id, CancellationToken cancellationToken)
     {
         var logFile = await Context.LogFiles
             .Include(lf => lf.LogRun)
-            .FirstOrDefaultAsync(lf => lf.Id == id)
+            .FirstOrDefaultAsync(lf => lf.Id == id, cancellationToken)
             .ConfigureAwait(false);
 
         if (logFile == null) return NotFound($"LogFile with id {id} not found.");
@@ -161,7 +162,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         }
 
         Context.LogFiles.Remove(logFile);
-        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext).ConfigureAwait(false);
+        await Context.UpdateChangeInformationAndSaveChangesAsync(HttpContext, cancellationToken).ConfigureAwait(false);
 
         return Ok();
     }

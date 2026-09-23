@@ -1189,7 +1189,7 @@ public class LogControllerTest : TestControllerBase
         Context.LogFiles.Add(logFile);
         await Context.SaveChangesAsync();
 
-        var response = await controller.DeleteLogFileAsync(logFile.Id);
+        var response = await controller.DeleteLogFileAsync(logFile.Id, CancellationToken.None);
 
         Assert.IsInstanceOfType(response, typeof(OkResult));
         Assert.IsFalse(Context.LogFiles.Any(lf => lf.Id == logFile.Id));
@@ -1207,7 +1207,7 @@ public class LogControllerTest : TestControllerBase
         Context.LogFiles.Add(logFile);
         await Context.SaveChangesAsync();
 
-        var response = await controller.DeleteLogFileAsync(logFile.Id);
+        var response = await controller.DeleteLogFileAsync(logFile.Id, CancellationToken.None);
 
         Assert.IsInstanceOfType(response, typeof(ObjectResult));
         Assert.IsTrue(Context.LogFiles.Any(lf => lf.Id == logFile.Id));
@@ -1216,7 +1216,7 @@ public class LogControllerTest : TestControllerBase
     [TestMethod]
     public async Task DeleteLogFileForUnknownIdReturnsNotFound()
     {
-        var response = await controller.DeleteLogFileAsync(99999999);
+        var response = await controller.DeleteLogFileAsync(99999999, CancellationToken.None);
 
         Assert.IsInstanceOfType(response, typeof(NotFoundObjectResult));
     }
