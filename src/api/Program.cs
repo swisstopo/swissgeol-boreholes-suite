@@ -19,7 +19,6 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text.Json.Serialization;
-using tusdotnet;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -225,7 +224,6 @@ builder.Services
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 builder.Services.AddScoped<IBoreholePermissionService, BoreholePermissionService>();
-builder.Services.AddScoped<LogFileTusEndpoint>();
 builder.Services.AddScoped<IFilterService, FilterService>();
 builder.Services.AddScoped<ILithologyTabContentService, LithologyTabContentService>();
 builder.Services.AddSingleton(TimeProvider.System);
@@ -294,9 +292,7 @@ app.UseWhen(
     branch => branch.UseMiddleware<TusUploadErrorMiddleware>());
 
 app.MapControllers();
-app.MapTus(UploadRoutes.LogFiles, httpContext =>
-    httpContext.RequestServices.GetRequiredService<LogFileTusEndpoint>().CreateAsync(httpContext))
-    .RequireAuthorization(PolicyNames.Viewer);
+app.MapResumableUploads();
 app.MapReverseProxy();
 app.MapHealthChecks("/health").AllowAnonymous();
 

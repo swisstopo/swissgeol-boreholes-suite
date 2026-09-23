@@ -13,8 +13,11 @@ public static class UploadRoutes
     /// <summary>The route log file chunks are sent to.</summary>
     public const string LogFiles = "/api/v2/log/upload/tus";
 
+    /// <summary>The route profile chunks are sent to.</summary>
+    public const string Profiles = "/api/v2/profile/upload/tus";
+
     // Every route named above belongs here, or the middleware is never wrapped around it.
-    private static readonly string[] all = [LogFiles];
+    private static readonly string[] all = [LogFiles, Profiles];
 
     /// <summary>
     /// Whether a request addresses one of the uploads. Every request after the one that creates an

@@ -9,8 +9,9 @@ namespace BDMS.Uploads;
 public static class UploadServiceCollectionExtensions
 {
     /// <summary>
-    /// Adds the tus stores the resumable uploads write through, one per bucket, and the sweep that
-    /// removes the uploads they were never told to finish.
+    /// Adds the tus endpoints the resumable uploads are reached through, the stores they write
+    /// through, one per bucket, and the sweep that removes the uploads they were never told to
+    /// finish.
     /// </summary>
     /// <param name="services">The service collection to add to.</param>
     /// <param name="configuration">The application configuration.</param>
@@ -19,6 +20,11 @@ public static class UploadServiceCollectionExtensions
     {
         AddStore(services, UploadBuckets.LogFiles, configuration["S3:LOGFILES_BUCKET_NAME"]);
         AddStore(services, UploadBuckets.Profiles, configuration["S3:BUCKET_NAME"]);
+
+        // An endpoint reads the database to decide what a request may do, so it lives as long as
+        // the request it decides for.
+        services.AddScoped<LogFileTusEndpoint>();
+        services.AddScoped<ProfileTusEndpoint>();
 
         // Without cloud storage there is no client to reach and no upload that could have been
         // started, so the sweep would do nothing but fail once an hour for as long as the
