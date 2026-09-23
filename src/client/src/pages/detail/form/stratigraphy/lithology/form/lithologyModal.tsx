@@ -296,7 +296,6 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
                   variant="contained"
                   color="primary"
                   label="analyze"
-                  data-cy="analyze-description-button"
                   icon={analysis.isPending ? <CircularProgress size={16} color="inherit" /> : <Sparkles />}
                   disabled={analysis.isPending || (description ?? "").trim().length === 0}
                   onClick={runAnalysis}

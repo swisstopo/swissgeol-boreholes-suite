@@ -24,7 +24,7 @@ const enableDevMode = () => {
 const analyze = (description: string) => {
   descriptionField().clear();
   descriptionField().type(description);
-  cy.dataCy("analyze-description-button").click();
+  cy.dataCy("analyze-button").click();
   cy.dataCy("analysis-result-card").should("be.visible");
 };
 
@@ -94,7 +94,7 @@ describe("Lithology automatic classification", () => {
   it("reports a description it cannot classify", () => {
     descriptionField().clear();
     descriptionField().type("keine Angabe");
-    cy.dataCy("analyze-description-button").click();
+    cy.dataCy("analyze-button").click();
 
     isUnconsolidatedForm(null);
     cy.dataCy("analysis-mode-change").should("be.visible");
@@ -102,7 +102,7 @@ describe("Lithology automatic classification", () => {
 
   it("keeps the button disabled without a description", () => {
     descriptionField().clear();
-    cy.dataCy("analyze-description-button").should("be.disabled");
+    cy.dataCy("analyze-button").should("be.disabled");
   });
 });
 
@@ -112,6 +112,6 @@ describe("Lithology automatic classification outside dev mode", () => {
     openLayer({ layerType: LayerType.lithology, fromDepth: 0, toDepth: 355 });
 
     cy.dataCy("lithology-lithological-description").should("be.visible");
-    cy.dataCy("analyze-description-button").should("not.exist");
+    cy.dataCy("analyze-button").should("not.exist");
   });
 });
