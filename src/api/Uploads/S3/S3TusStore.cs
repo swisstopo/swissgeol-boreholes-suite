@@ -66,6 +66,12 @@ public class S3TusStore : ITusPipelineStore, ITusCreationStore, ITusReadableStor
     }
 
     /// <summary>
+    /// Gets the bucket this store writes to, so that what a sweep of several of them reports says
+    /// which one it is about.
+    /// </summary>
+    public string BucketName => configuration.BucketName;
+
+    /// <summary>
     /// The settings an upload runs the package with, kept here so that the reasons for them stay
     /// next to the behaviour they protect.
     /// </summary>

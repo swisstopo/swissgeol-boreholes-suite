@@ -177,7 +177,7 @@ builder.Services.AddScoped<LogFileCloudService>();
 builder.Services.AddScoped<FileOcrService>();
 builder.Services.AddHostedService<FileOcrBackgroundService>();
 
-builder.Services.AddLogFileUploads(builder.Configuration);
+builder.Services.AddResumableUploads(builder.Configuration);
 builder.Services.AddHttpClient("OcrApi", (sp, client) =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
