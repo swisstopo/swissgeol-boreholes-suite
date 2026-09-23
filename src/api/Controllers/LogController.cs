@@ -96,6 +96,7 @@ public class LogController : BoreholeControllerBase<LogRun>
         if (logRunIds == null || logRunIds.Count == 0) return BadRequest("The list of logRunIds must not be empty.");
 
         var logRuns = await Context.LogRuns
+            .Include(l => l.LogFiles)
             .Where(l => logRunIds.Contains(l.Id))
             .ToListAsync()
             .ConfigureAwait(false);
@@ -108,16 +109,11 @@ public class LogController : BoreholeControllerBase<LogRun>
         var boreholeId = boreholeIds.Single();
         if (!await BoreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
 
-        foreach (var logRun in logRuns)
+        var filesToRemove = logRuns.SelectMany(l => l.LogFiles ?? []).ToList();
+        if (filesToRemove.Count > 0)
         {
-            var logFileIds = logRun.LogFiles?.Select(f => f.Id).ToList();
-            var existingLogRun = logRuns.SingleOrDefault(run => run.Id == logRun.Id);
-            var filesToRemove = existingLogRun?.LogFiles?.Where(f => logFileIds.Contains(f.Id)).ToList();
-            if (filesToRemove != null && filesToRemove.Count > 0)
-            {
-                await logFileCloudService.DeleteObjects(filesToRemove.Where(lf => lf.NameUuid != null).Select(lf => lf.NameUuid)).ConfigureAwait(false);
-                Context.RemoveRange(filesToRemove);
-            }
+            await logFileCloudService.DeleteObjects(filesToRemove.Where(lf => lf.NameUuid != null).Select(lf => lf.NameUuid)).ConfigureAwait(false);
+            Context.RemoveRange(filesToRemove);
         }
 
         Context.RemoveRange(logRuns);

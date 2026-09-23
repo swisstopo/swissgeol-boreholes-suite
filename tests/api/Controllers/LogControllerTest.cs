@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.IO.Compression;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using static BDMS.Helpers;
@@ -28,6 +29,8 @@ public class LogControllerTest : TestControllerBase
     private User adminUser;
     private LogController controller;
     private LogFileCloudService logFileCloudService;
+    private AmazonS3Client s3Client;
+    private string bucketName;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     private static int testBoreholeId = 1000085;
@@ -44,7 +47,7 @@ public class LogControllerTest : TestControllerBase
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
         contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, adminUser.SubjectId) }));
 
-        var s3ClientMock = new AmazonS3Client(
+        s3Client = new AmazonS3Client(
             configuration["S3:ACCESS_KEY"],
             configuration["S3:SECRET_KEY"],
             new AmazonS3Config
@@ -53,10 +56,11 @@ public class LogControllerTest : TestControllerBase
                 ForcePathStyle = true,
                 UseHttp = configuration["S3:SECURE"] == "0",
             });
+        bucketName = configuration["S3:LOGFILES_BUCKET_NAME"].ToLowerInvariant();
 
         var logFileCloudServiceLoggerMock = new Mock<ILogger<LogFileCloudService>>(MockBehavior.Strict);
         logFileCloudServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
-        logFileCloudService = new LogFileCloudService(logFileCloudServiceLoggerMock.Object, s3ClientMock, configuration, contextAccessorMock.Object, Context);
+        logFileCloudService = new LogFileCloudService(logFileCloudServiceLoggerMock.Object, s3Client, configuration, contextAccessorMock.Object, Context);
 
         boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
 
@@ -252,6 +256,30 @@ public class LogControllerTest : TestControllerBase
         Assert.AreEqual(null, Context.LogRuns.SingleOrDefault(x => x.Id == logRunId));
         Assert.IsFalse(Context.LogFiles.Any(lf => lf.Id == logFile1.Id));
         Assert.IsFalse(Context.LogFiles.Any(lf => lf.Id == logFile2.Id));
+    }
+
+    [TestMethod]
+    public async Task DeleteLogRunRemovesTheObjectsItsFilesPointAt()
+    {
+        var logRunId = await CreateCompleteLogRunAsync();
+        var logFile = await UploadTestLogFile(logRunId);
+
+        Assert.IsNotNull(logFile.NameUuid);
+        await s3Client.GetObjectMetadataAsync(bucketName, logFile.NameUuid, CancellationToken.None);
+
+        // A request gets a context that has met nothing yet. Without this the file is already
+        // tracked here, and the delete would read it off the change tracker rather than the query,
+        // which is exactly what hides a missing Include.
+        Context.ChangeTracker.Clear();
+
+        var response = await controller.DeleteAsync(logRunId);
+        ActionResultAssert.IsOk(response);
+
+        // The row cascades with its run whether or not the delete touches the bucket, so only the
+        // bucket itself says whether the object went with it.
+        var exception = await Assert.ThrowsExactlyAsync<AmazonS3Exception>(async () =>
+            await s3Client.GetObjectMetadataAsync(bucketName, logFile.NameUuid, CancellationToken.None));
+        Assert.AreEqual(HttpStatusCode.NotFound, exception.StatusCode, "The object the deleted run named is gone.");
     }
 
     [TestMethod]
