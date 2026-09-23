@@ -24,10 +24,18 @@ export const profileUploadTarget: ResumableUploadTarget = {
 /**
  * A file that is not held in memory, such as one entry of an archive the user picked.
  *
- * `open` hands back both ends of the transfer: the stream the upload reads, and a promise that
- * settles once whatever fills that stream is done. The caller of `uploadResumable` never sees the
- * second one, because letting the writer finish before the reader is closed is what keeps an
- * archive from being asked to write into a stream that has gone.
+ * `open` hands back both ends of the transfer: the stream the upload reads, and `written`, which
+ * follows whatever fills it. The caller of `uploadResumable` never sees the second one, because
+ * the upload waits for it before settling, so that an entry which never made it is not reported as
+ * one that did. Whether it fulfils or rejects makes no difference; a failed writer belongs to an
+ * upload that has already failed.
+ *
+ * An implementation has to hold to one thing: **`written` settles once the stream is cancelled**,
+ * and not only once the bytes have all been written. An upload that fails or that the user gives
+ * up on cancels the stream and then waits, so a writer parked on anything the cancellation does
+ * not release leaves that upload waiting for good. A finished upload is the one case where the
+ * stream is not cancelled first: every byte has been read by then, so there is nothing left for
+ * the writer to be parked on.
  */
 export interface UploadSource {
   open: () => { stream: ReadableStream<Uint8Array>; written: Promise<unknown> };
@@ -46,7 +54,7 @@ const isUploadSource = (source: File | UploadSource): source is UploadSource => 
  */
 interface OpenedSource {
   /** What the upload client reads the bytes from. */
-  body: File | ReadableStreamDefaultReader<Uint8Array>;
+  body: File | Pick<ReadableStreamDefaultReader<Uint8Array>, "read">;
 
   /** Settles once whatever fills the source is done, whether it finished or failed. */
   written: Promise<unknown>;
@@ -76,7 +84,11 @@ const openSource = (source: File | UploadSource): OpenedSource => {
   const reader = stream.getReader();
 
   return {
-    body: reader,
+    // The upload client is handed something it can only read from, not the reader itself. It
+    // closes its source the moment an upload succeeds, and it closes it by cancelling whatever it
+    // was given, which would cut the writer off before it has been waited for. Cancelling is the
+    // helper's alone, on every path.
+    body: { read: () => reader.read() },
     written,
     release: () => {
       reader.cancel().catch(() => undefined);

@@ -4,6 +4,7 @@ import { setFileSizeLimits } from "./fileSize.ts";
 import { logFileUploadTarget, profileUploadTarget, uploadResumable } from "./resumableUpload.ts";
 
 interface StubbedUpload {
+  body: unknown;
   options: Record<string, unknown>;
   start: () => void;
   abort: (terminate?: boolean) => Promise<void>;
@@ -14,15 +15,23 @@ interface StubbedRequest {
   setHeader: (name: string, value: string) => void;
 }
 
+/** What a streamed source is handed over as, read back to see what the client could do with it. */
+interface StubbedBody {
+  read: () => Promise<ReadableStreamReadResult<Uint8Array>>;
+  cancel?: () => Promise<void>;
+}
+
 const uploadInstances: StubbedUpload[] = [];
 
 vi.mock("tus-js-client", () => ({
   Upload: class {
+    body: unknown;
     options: Record<string, unknown>;
     start = vi.fn();
     abort = vi.fn(() => Promise.resolve());
 
-    constructor(_file: unknown, options: Record<string, unknown>) {
+    constructor(body: unknown, options: Record<string, unknown>) {
+      this.body = body;
       this.options = options;
       uploadInstances.push(this as unknown as StubbedUpload);
     }
@@ -35,6 +44,9 @@ vi.mock("../auth/authTokenStore.ts", () => ({ getAuthToken: () => authState.toke
 
 /** The options the code under test handed to the upload client. */
 const optionsOf = <T>(): T => uploadInstances[0].options as T;
+
+/** What the code under test handed the upload client to read the bytes from. */
+const bodyOf = <T>(): T => uploadInstances[0].body as T;
 
 /** The limits as the API reports them, which the application settings normally supply. */
 const serverLimits = {
@@ -211,6 +223,31 @@ describe("uploadResumable", () => {
       filename: "report.pdf",
       contentType: "application/pdf",
     });
+  });
+
+  it("hands the upload client a stream it cannot cancel", async () => {
+    const source = {
+      open: () => ({
+        stream: new ReadableStream<Uint8Array>({
+          start: controller => {
+            controller.enqueue(new Uint8Array([1, 2, 3]));
+            controller.close();
+          },
+        }),
+        written: Promise.resolve(),
+      }),
+      size: 3,
+      fileName: "report.pdf",
+      contentType: "application/pdf",
+    };
+
+    void uploadResumable(source, profileUploadTarget, { boreholeId: "1" });
+
+    // The client closes its source by cancelling what it was given, and it does so the moment an
+    // upload succeeds, which would cut the writer off before it has been waited for.
+    const body = bodyOf<StubbedBody>();
+    expect(body.cancel).toBeUndefined();
+    await expect(body.read()).resolves.toStrictEqual({ value: new Uint8Array([1, 2, 3]), done: false });
   });
 
   it("reads the id out of the header its target names", async () => {
