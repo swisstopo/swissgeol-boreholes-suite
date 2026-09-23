@@ -2,6 +2,7 @@
 using BDMS.Services;
 using BDMS.Uploads.S3;
 using Microsoft.EntityFrameworkCore;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 using tusdotnet.Models;
 
@@ -11,7 +12,7 @@ namespace BDMS.Uploads;
 /// The tus endpoint log files are uploaded to. The upload names the log run it belongs to, and
 /// optionally the log file it replaces.
 /// </summary>
-public class LogFileTusEndpoint : TusUploadEndpoint
+public class LogFileTusEndpoint : TusUploadEndpoint<TusUploadMetadata>
 {
     private readonly BdmsContext context;
     private readonly IBoreholePermissionService boreholePermissionService;
@@ -33,7 +34,7 @@ public class LogFileTusEndpoint : TusUploadEndpoint
     }
 
     /// <inheritdoc/>
-    public override string EndpointPath => "/api/v2/log/upload/tus";
+    public override string EndpointPath => UploadRoutes.LogFiles;
 
     /// <inheritdoc/>
     public override string ResultHeaderName => "Log-File-Id";
@@ -65,41 +66,33 @@ public class LogFileTusEndpoint : TusUploadEndpoint
     }
 
     /// <inheritdoc/>
-    protected override bool TryReadMetadata(IReadOnlyDictionary<string, string> values, out object? metadata)
-    {
-        var read = TusUploadMetadata.TryRead(values, out var logMetadata);
-        metadata = logMetadata;
-        return read;
-    }
+    protected override bool TryReadMetadata(IReadOnlyDictionary<string, string> values, [NotNullWhen(true)] out TusUploadMetadata? metadata) =>
+        TusUploadMetadata.TryRead(values, out metadata);
 
     /// <inheritdoc/>
-    protected override async Task<bool> AuthorizeAsync(ClaimsPrincipal user, object metadata, IntentType intent, CancellationToken cancellationToken)
+    protected override async Task<bool> AuthorizeAsync(ClaimsPrincipal user, TusUploadMetadata metadata, IntentType intent, CancellationToken cancellationToken)
     {
-        var upload = (TusUploadMetadata)metadata;
-
-        if (!await CanUploadAsync(user, upload.LogRunId, cancellationToken).ConfigureAwait(false)) return false;
+        if (!await CanUploadAsync(user, metadata.LogRunId, cancellationToken).ConfigureAwait(false)) return false;
 
         // Refusing a taken name here rather than at the end means the user is told before sending
         // the file instead of after. Storing it checks again, because this check holds no lock.
         if (intent == IntentType.CreateFile &&
-            upload.LogFileId is null &&
-            await logFileCloudService.IsNameTakenAsync(upload.LogRunId, upload.FileName, cancellationToken).ConfigureAwait(false))
+            metadata.LogFileId is null &&
+            await logFileCloudService.IsNameTakenAsync(metadata.LogRunId, metadata.FileName, cancellationToken).ConfigureAwait(false))
         {
-            throw LogFileNameTakenException.For(upload.FileName);
+            throw LogFileNameTakenException.For(metadata.FileName);
         }
 
         return true;
     }
 
     /// <inheritdoc/>
-    protected override async Task<int> CompleteAsync(HttpContext httpContext, object metadata, string objectKey, CancellationToken cancellationToken)
+    protected override async Task<int> CompleteAsync(HttpContext httpContext, TusUploadMetadata metadata, string objectKey, CancellationToken cancellationToken)
     {
-        var upload = (TusUploadMetadata)metadata;
-
-        var logFile = upload.LogFileId is int logFileId
-            ? await ReplaceAsync(httpContext, upload, logFileId, objectKey, cancellationToken).ConfigureAwait(false)
+        var logFile = metadata.LogFileId is int logFileId
+            ? await ReplaceAsync(httpContext, metadata, logFileId, objectKey, cancellationToken).ConfigureAwait(false)
             : await logFileCloudService
-                .LinkUploadedLogFileAsync(upload.FileName, upload.ContentType, objectKey, upload.LogRunId, cancellationToken)
+                .LinkUploadedLogFileAsync(metadata.FileName, metadata.ContentType, objectKey, metadata.LogRunId, cancellationToken)
                 .ConfigureAwait(false);
 
         return logFile.Id;

@@ -216,7 +216,7 @@ public class S3TusStoreTest
     }
 
     /// <summary>
-    /// Why <see cref="TusUploadEndpoint"/> names the reader rather than taking the default:
+    /// Why <see cref="TusUploadEndpoint{TMetadata}"/> names the reader rather than taking the default:
     /// the way the package reads a chunk as a stream asks the body of the request how long it is,
     /// which a body being received cannot answer.
     /// </summary>

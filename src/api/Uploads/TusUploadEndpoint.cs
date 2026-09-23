@@ -1,4 +1,5 @@
 ﻿using BDMS.Uploads.S3;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Net;
 using System.Security.Claims;
@@ -20,7 +21,9 @@ namespace BDMS.Uploads;
 /// the metadata means, who may write it, and what to record once it has arrived. What lives here is
 /// what is easy to get wrong and must not be written twice.
 /// </summary>
-public abstract class TusUploadEndpoint
+/// <typeparam name="TMetadata">What the upload metadata of this endpoint says the upload is for.</typeparam>
+public abstract class TusUploadEndpoint<TMetadata>
+    where TMetadata : class
 {
     /// <summary>
     /// How long an upload stays resumable. An upload that is never finished still holds the parts
@@ -69,7 +72,7 @@ public abstract class TusUploadEndpoint
     /// <param name="values">The decoded upload metadata.</param>
     /// <param name="metadata">What the upload is for, when the required keys are present.</param>
     /// <returns><see langword="true"/> if the metadata could be read; otherwise, <see langword="false"/>.</returns>
-    protected abstract bool TryReadMetadata(IReadOnlyDictionary<string, string> values, out object? metadata);
+    protected abstract bool TryReadMetadata(IReadOnlyDictionary<string, string> values, [NotNullWhen(true)] out TMetadata? metadata);
 
     /// <summary>
     /// Whether this user may write this upload.
@@ -80,7 +83,7 @@ public abstract class TusUploadEndpoint
     /// <param name="cancellationToken">Aborts the check.</param>
     /// <returns><see langword="true"/> if the upload may proceed; otherwise, <see langword="false"/>.</returns>
     /// <exception cref="UploadRefusedException">The upload is refused for a reason the user can act on.</exception>
-    protected abstract Task<bool> AuthorizeAsync(ClaimsPrincipal user, object metadata, IntentType intent, CancellationToken cancellationToken);
+    protected abstract Task<bool> AuthorizeAsync(ClaimsPrincipal user, TMetadata metadata, IntentType intent, CancellationToken cancellationToken);
 
     /// <summary>
     /// Records the finished upload.
@@ -90,7 +93,7 @@ public abstract class TusUploadEndpoint
     /// <param name="objectKey">The key the object is stored under.</param>
     /// <param name="cancellationToken">Aborts the write.</param>
     /// <returns>The id of the row the upload was recorded as.</returns>
-    protected abstract Task<int> CompleteAsync(HttpContext httpContext, object metadata, string objectKey, CancellationToken cancellationToken);
+    protected abstract Task<int> CompleteAsync(HttpContext httpContext, TMetadata metadata, string objectKey, CancellationToken cancellationToken);
 
     /// <summary>
     /// Refuses a request that may not touch the upload it addresses.
@@ -136,13 +139,13 @@ public abstract class TusUploadEndpoint
         }
     }
 
-    private object? ReadMetadataFromRequest(AuthorizeContext eventContext) =>
-        TusUploadMetadata.TryReadValues(eventContext.HttpContext.Request.Headers["Upload-Metadata"].ToString(), out var values) &&
+    private TMetadata? ReadMetadataFromRequest(AuthorizeContext eventContext) =>
+        UploadMetadataHeader.TryRead(eventContext.HttpContext.Request.Headers["Upload-Metadata"].ToString(), out var values) &&
         TryReadMetadata(values, out var metadata)
             ? metadata
             : null;
 
-    private async Task<object?> ReadMetadataFromStoreAsync(AuthorizeContext eventContext)
+    private async Task<TMetadata?> ReadMetadataFromStoreAsync(AuthorizeContext eventContext)
     {
         var values = await ReadStoredValuesAsync(eventContext.GetFileAsync(), eventContext.CancellationToken).ConfigureAwait(false);
         return values is not null && TryReadMetadata(values, out var metadata) ? metadata : null;
@@ -176,7 +179,7 @@ public abstract class TusUploadEndpoint
 
         // The metadata passed the same reading when the upload was created, so failing here means
         // the stored copy no longer says what it did then.
-        if (values is null || !TryReadMetadata(values, out var metadata) || metadata is null)
+        if (values is null || !TryReadMetadata(values, out var metadata))
         {
             throw new InvalidOperationException("The upload metadata is missing or malformed.");
         }

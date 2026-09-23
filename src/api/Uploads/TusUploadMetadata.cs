@@ -12,39 +12,6 @@ namespace BDMS.Uploads;
 public record TusUploadMetadata(int LogRunId, int? LogFileId, string FileName, string ContentType)
 {
     /// <summary>
-    /// Decodes the header value tus sends, a comma separated list of "key base64value" pairs.
-    /// Splitting the decoding from the interpretation lets the base decode while each endpoint
-    /// reads the keys that mean something to it.
-    /// </summary>
-    /// <param name="headerValue">The raw Upload-Metadata header.</param>
-    /// <param name="values">The decoded values, when the header is well formed.</param>
-    /// <returns><see langword="true"/> if the header could be decoded; otherwise, <see langword="false"/>.</returns>
-    public static bool TryReadValues(string headerValue, [NotNullWhen(true)] out Dictionary<string, string>? values)
-    {
-        values = null;
-        if (string.IsNullOrWhiteSpace(headerValue)) return false;
-
-        var decoded = new Dictionary<string, string>(StringComparer.Ordinal);
-        foreach (var pair in headerValue.Split(',', StringSplitOptions.RemoveEmptyEntries))
-        {
-            var parts = pair.Trim().Split(' ', 2);
-            if (parts.Length != 2) continue;
-
-            try
-            {
-                decoded[parts[0]] = Encoding.UTF8.GetString(Convert.FromBase64String(parts[1]));
-            }
-            catch (FormatException)
-            {
-                return false;
-            }
-        }
-
-        values = decoded;
-        return true;
-    }
-
-    /// <summary>
     /// Reads the metadata from the header value tus sends, a comma separated list of
     /// "key base64value" pairs. This is the only request that carries it.
     /// </summary>
@@ -54,7 +21,7 @@ public record TusUploadMetadata(int LogRunId, int? LogFileId, string FileName, s
     public static bool TryReadHeader(string headerValue, [NotNullWhen(true)] out TusUploadMetadata? metadata)
     {
         metadata = null;
-        return TryReadValues(headerValue, out var values) && TryRead(values, out metadata);
+        return UploadMetadataHeader.TryRead(headerValue, out var values) && TryRead(values, out metadata);
     }
 
     /// <summary>

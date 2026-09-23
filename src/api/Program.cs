@@ -290,13 +290,11 @@ app.UseAuthorization();
 // Only the chunked uploads raise the failure this converts, and wrapping them here keeps the
 // conversion out of every other request.
 app.UseWhen(
-    context => TusUploadErrorMiddleware.HandlesRequestPath(context.Request.Path),
+    context => UploadRoutes.Matches(context.Request.Path),
     branch => branch.UseMiddleware<TusUploadErrorMiddleware>());
 
-const string logFileTusPath = "/api/v2/log/upload/tus";
-
 app.MapControllers();
-app.MapTus(logFileTusPath, httpContext =>
+app.MapTus(UploadRoutes.LogFiles, httpContext =>
     httpContext.RequestServices.GetRequiredService<LogFileTusEndpoint>().CreateAsync(httpContext))
     .RequireAuthorization(PolicyNames.Viewer);
 app.MapReverseProxy();

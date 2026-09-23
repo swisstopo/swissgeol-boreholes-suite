@@ -24,16 +24,6 @@ public class TusUploadErrorMiddleware
     }
 
     /// <summary>
-    /// Whether a request is one a chunked upload arrives on, which are the only ones that raise
-    /// the failure this converts.
-    /// </summary>
-    /// <param name="path">The path of the request.</param>
-    /// <returns><see langword="true"/> if the request belongs to an upload; otherwise, <see langword="false"/>.</returns>
-    public static bool HandlesRequestPath(PathString path) =>
-        path.Value?.EndsWith("/upload/tus", StringComparison.OrdinalIgnoreCase) == true ||
-        path.Value?.Contains("/upload/tus/", StringComparison.OrdinalIgnoreCase) == true;
-
-    /// <summary>
     /// Passes the request on and turns a refused upload into a problem response.
     /// </summary>
     /// <param name="context">The request the upload arrives on.</param>

@@ -29,6 +29,10 @@ public class TusUploadEndpointTest
     private const string EndpointPath = "/api/v2/log/upload/tus";
     private const string LogFileIdHeader = "Log-File-Id";
 
+    // The segment every chunked upload route carries, so that a route added for another feature is
+    // found without this test being told about it.
+    private const string UploadPathSegment = "/upload/tus";
+
     private const string SubAdmin = "sub_admin";
     private const string TusResumableHeader = "Tus-Resumable";
     private const string TusVersion = "1.0.0";
@@ -199,7 +203,32 @@ public class TusUploadEndpointTest
 
         Assert.AreEqual(EndpointPath, endpoint.EndpointPath);
         Assert.AreEqual(LogFileIdHeader, endpoint.ResultHeaderName);
-        Assert.IsInstanceOfType<TusUploadEndpoint>(endpoint);
+        Assert.IsInstanceOfType<TusUploadEndpoint<TusUploadMetadata>>(endpoint);
+    }
+
+    /// <summary>
+    /// Every route an upload is mapped at is one the middleware that turns a refusal into a problem
+    /// response is wrapped around. A route mapped outside it answers a refusal with a bare failure
+    /// the client can read no reason out of, and nothing else would say so.
+    /// </summary>
+    [TestMethod]
+    public void EveryMappedUploadRouteIsOneTheProblemResponseMiddlewareWraps()
+    {
+        // Reading the services starts the application, which is what builds the route table.
+        var uploadPaths = factory.Services
+            .GetServices<EndpointDataSource>()
+            .SelectMany(source => source.Endpoints)
+            .OfType<RouteEndpoint>()
+            .Select(route => $"/{route.RoutePattern.RawText?.TrimStart('/')}")
+            .Where(path => path.Contains(UploadPathSegment, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        Assert.IsTrue(uploadPaths.Count > 0, "No upload route is in the route table.");
+
+        foreach (var path in uploadPaths)
+        {
+            Assert.IsTrue(UploadRoutes.Matches(path), $"<{path}> is mapped where the middleware does not reach it.");
+        }
     }
 
     /// <summary>
