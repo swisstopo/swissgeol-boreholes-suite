@@ -8,12 +8,13 @@ import {
   ExtractionState,
   labelingFileFormat,
   matchesFileFormat,
+  maxFileSizeForTab,
   PanelPosition,
   PanelTab,
 } from "../../../api/dataextractionInterfaces.ts";
-import { formatFileSize, getMaxFileSize } from "../../../api/fileSize.ts";
+import { formatFileSize } from "../../../api/fileSize.ts";
 import { Photo, Profile } from "../../../api/generated";
-import { uploadProfile, useProfiles, useReloadProfiles } from "../../../api/profile.ts";
+import { getProfileForBorehole, uploadProfile, useProfiles, useReloadProfiles } from "../../../api/profile.ts";
 import { BoreholeAttachment } from "../../../api/unionTypes.ts";
 import { theme } from "../../../AppTheme.ts";
 import { useAlertManager } from "../../../components/alert/alertManager.tsx";
@@ -90,8 +91,8 @@ const LabelingPanel: FC = () => {
     async (file: File) => {
       try {
         if (panelTab === PanelTab.profile) {
-          const fileResponse = await uploadProfile(boreholeId, file);
-          setSelectedAttachment(fileResponse);
+          const profileId = await uploadProfile(boreholeId, file);
+          setSelectedAttachment(await getProfileForBorehole(boreholeId, profileId));
           reloadProfiles();
         } else {
           const photoResponse = await uploadPhoto(boreholeId, file);
@@ -144,8 +145,9 @@ const LabelingPanel: FC = () => {
         onChange={event => {
           const file = event.target.files?.[0];
           if (file) {
-            if (file.size >= getMaxFileSize()) {
-              showAlert(t("fileMaxSizeExceeded", { size: formatFileSize(getMaxFileSize()) }), "error");
+            const maxFileSize = maxFileSizeForTab(panelTab);
+            if (file.size >= maxFileSize) {
+              showAlert(t("fileMaxSizeExceeded", { size: formatFileSize(maxFileSize) }), "error");
             } else if (!matchesFileFormat(expectedFileFormat, file.type)) {
               showAlert(t("fileInvalidType"), "error");
             } else {
