@@ -57,7 +57,7 @@ public record TusUploadMetadata(int LogRunId, int? LogFileId, string FileName, s
 
         if (!values.TryGetValue("logRunId", out var logRunIdValue) ||
             !int.TryParse(logRunIdValue, CultureInfo.InvariantCulture, out var logRunId)) return false;
-        if (!values.TryGetValue("filename", out var fileName) || string.IsNullOrWhiteSpace(fileName)) return false;
+        if (!values.TryGetValue(UploadMetadataHeader.FileNameKey, out var fileName) || string.IsNullOrWhiteSpace(fileName)) return false;
         if (!values.TryGetValue("contentType", out var contentType) || string.IsNullOrWhiteSpace(contentType)) return false;
 
         // A file being replaced is named by an id, so a value that is not one is a request to

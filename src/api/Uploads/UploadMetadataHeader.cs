@@ -12,6 +12,13 @@ namespace BDMS.Uploads;
 public static class UploadMetadataHeader
 {
     /// <summary>
+    /// The key the name of the file travels under. It is the one key the metadata of every feature
+    /// carries, which is what lets an upload be named after its file without reading what the rest
+    /// of the metadata means.
+    /// </summary>
+    public const string FileNameKey = "filename";
+
+    /// <summary>
     /// Decodes the header value tus sends.
     /// </summary>
     /// <param name="headerValue">The raw Upload-Metadata header.</param>

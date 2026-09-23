@@ -5,11 +5,14 @@ namespace BDMS.Uploads.S3;
 
 /// <summary>
 /// Names an upload. The name doubles as the key the finished object is stored under, so it takes
-/// the shape every other log file object in the bucket already has: a guid carrying the extension
-/// of the file the user picked.
+/// the shape every other object in the buckets already has: a guid carrying the extension of the
+/// file the user picked.
 ///
 /// The name also travels in the URL of every request after the first one and reaches the cloud
 /// storage as a key, so <see cref="ValidateId"/> admits nothing but that shape.
+///
+/// One provider names the uploads of every feature, because what a name is made of is the same
+/// wherever the object ends up and is read back the same way.
 /// </summary>
 public class TusObjectIdProvider : ITusFileIdProvider
 {
@@ -27,9 +30,13 @@ public class TusObjectIdProvider : ITusFileIdProvider
     /// <returns>The extension, or an empty string when the name carries none worth keeping.</returns>
     private static string ReadExtension(string metadata)
     {
-        if (!TusUploadMetadata.TryReadHeader(metadata, out var values)) return string.Empty;
+        // The name is taken out of the decoded header rather than out of what a feature makes of
+        // it. An upload whose metadata this could not read would be stored under a name carrying no
+        // extension, and the extension is what tells the download what it is handing back.
+        if (!UploadMetadataHeader.TryRead(metadata, out var values) ||
+            !values.TryGetValue(UploadMetadataHeader.FileNameKey, out var fileName)) return string.Empty;
 
-        var extension = Path.GetExtension(values.FileName).TrimStart('.');
+        var extension = Path.GetExtension(fileName).TrimStart('.');
 
         return IsExtensionSafe(extension) ? $".{extension}" : string.Empty;
     }
