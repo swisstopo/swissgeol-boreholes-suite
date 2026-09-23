@@ -1,4 +1,5 @@
-﻿using Amazon.S3;
+﻿using Amazon.Runtime;
+using Amazon.S3;
 using Amazon.S3.Model;
 using BDMS.Models;
 using Microsoft.AspNetCore.Http;
@@ -356,19 +357,36 @@ public class ProfileCloudServiceTest
     }
 
     /// <summary>
+    /// S3 answered the delete with an error.
+    /// </summary>
+    [TestMethod]
+    public async Task RelinkingSurvivesAFailureToRemoveTheOldObject() =>
+        await AssertRelinkingSurvivesCleanupFailure(new AmazonS3Exception("simulated S3 outage"));
+
+    /// <summary>
+    /// The SDK gave up before S3 answered at all, which is what an unreachable endpoint, a name
+    /// that does not resolve or a refused connection look like. None of them is an
+    /// <see cref="AmazonS3Exception"/>, so a cleanup that covered only that type would let the very
+    /// outages it is meant to absorb unwind a finished upload.
+    /// </summary>
+    [TestMethod]
+    public async Task RelinkingSurvivesAFailureInsideTheS3Client() =>
+        await AssertRelinkingSurvivesCleanupFailure(new AmazonClientException("simulated unreachable endpoint"));
+
+    /// <summary>
     /// The object is stored and the row points at it before the old object is removed, so a
     /// failure to remove it has nothing left to undo. Letting it travel on would unwind a finished
     /// upload: the tus endpoint answers a failed completion by deleting the object it just stored,
     /// which the committed row already names, leaving a profile eligible for OCR with no file to
     /// read and no way back out of the terminal error that follows.
     /// </summary>
-    [TestMethod]
-    public async Task RelinkingSurvivesAFailureToRemoveTheOldObject()
+    /// <param name="cleanupFailure">What removing the replaced object fails with.</param>
+    private async Task AssertRelinkingSurvivesCleanupFailure(Exception cleanupFailure)
     {
         var failingS3Mock = new Mock<IAmazonS3>();
         failingS3Mock
             .Setup(s => s.DeleteObjectAsync(It.IsAny<DeleteObjectRequest>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new AmazonS3Exception("simulated S3 outage"));
+            .ThrowsAsync(cleanupFailure);
 
         var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
         var contextAccessorMock = new Mock<IHttpContextAccessor>();
