@@ -1,7 +1,7 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "./errorClasses.ts";
 import { setFileSizeLimits } from "./fileSize.ts";
-import { uploadResumable } from "./resumableUpload.ts";
+import { logFileUploadTarget, profileUploadTarget, uploadResumable } from "./resumableUpload.ts";
 
 interface StubbedUpload {
   options: Record<string, unknown>;
@@ -22,7 +22,7 @@ vi.mock("tus-js-client", () => ({
     start = vi.fn();
     abort = vi.fn(() => Promise.resolve());
 
-    constructor(_file: File, options: Record<string, unknown>) {
+    constructor(_file: unknown, options: Record<string, unknown>) {
       this.options = options;
       uploadInstances.push(this as unknown as StubbedUpload);
     }
@@ -53,14 +53,14 @@ describe("uploadResumable", () => {
 
   it("cuts the file into the chunks the server asked for", () => {
     setFileSizeLimits({ ...serverLimits, chunkSize: 1024 });
-    void uploadResumable(new File(["x"], "gamma.las"), { logRunId: "1" });
+    void uploadResumable(new File(["x"], "gamma.las"), logFileUploadTarget, { logRunId: "1" });
 
     expect(optionsOf<{ chunkSize: number }>().chunkSize).toBe(1024);
   });
 
   it("reports how much has been sent", async () => {
     const onProgress = vi.fn();
-    void uploadResumable(new File(["x"], "gamma.las"), { logRunId: "1" }, { onProgress });
+    void uploadResumable(new File(["x"], "gamma.las"), logFileUploadTarget, { logRunId: "1" }, { onProgress });
 
     optionsOf<{ onProgress: (sent: number, total: number) => void }>().onProgress(512, 2048);
 
@@ -68,7 +68,10 @@ describe("uploadResumable", () => {
   });
 
   it("sends what the file is for", () => {
-    void uploadResumable(new File(["x"], "gamma.las", { type: "text/plain" }), { logRunId: "1", logFileId: "7" });
+    void uploadResumable(new File(["x"], "gamma.las", { type: "text/plain" }), logFileUploadTarget, {
+      logRunId: "1",
+      logFileId: "7",
+    });
 
     expect(optionsOf<{ metadata: Record<string, string> }>().metadata).toStrictEqual({
       logRunId: "1",
@@ -80,7 +83,7 @@ describe("uploadResumable", () => {
 
   it("reads the token again for every request", () => {
     authState.token = { token_type: "Bearer", access_token: "first" };
-    void uploadResumable(new File(["x"], "gamma.las"), { logRunId: "1" });
+    void uploadResumable(new File(["x"], "gamma.las"), logFileUploadTarget, { logRunId: "1" });
 
     const setHeader = vi.fn();
     const { onBeforeRequest } = optionsOf<{ onBeforeRequest: (request: StubbedRequest) => void }>();
@@ -96,7 +99,7 @@ describe("uploadResumable", () => {
   });
 
   it("sends no authorization when there is no token", () => {
-    void uploadResumable(new File(["x"], "gamma.las"), { logRunId: "1" });
+    void uploadResumable(new File(["x"], "gamma.las"), logFileUploadTarget, { logRunId: "1" });
 
     const setHeader = vi.fn();
     optionsOf<{ onBeforeRequest: (request: StubbedRequest) => void }>().onBeforeRequest({ setHeader });
@@ -105,7 +108,7 @@ describe("uploadResumable", () => {
   });
 
   it("resolves with the id the server reports", async () => {
-    const pending = uploadResumable(new File(["x"], "gamma.las"), { logRunId: "1" });
+    const pending = uploadResumable(new File(["x"], "gamma.las"), logFileUploadTarget, { logRunId: "1" });
 
     optionsOf<{
       onSuccess: (payload: { lastResponse: { getHeader: (name: string) => string | undefined } }) => void;
@@ -115,18 +118,23 @@ describe("uploadResumable", () => {
   });
 
   it("fails when the server reports no id", async () => {
-    const pending = uploadResumable(new File(["x"], "gamma.las"), { logRunId: "1" });
+    const pending = uploadResumable(new File(["x"], "gamma.las"), logFileUploadTarget, { logRunId: "1" });
 
     optionsOf<{
       onSuccess: (payload: { lastResponse: { getHeader: (name: string) => string | undefined } }) => void;
     }>().onSuccess({ lastResponse: { getHeader: () => undefined } });
 
-    await expect(pending).rejects.toThrow("The server did not report which log file it stored.");
+    await expect(pending).rejects.toThrow("The server did not report what it stored.");
   });
 
   it("rejects with an abort error when the caller gives up", async () => {
     const controller = new AbortController();
-    const pending = uploadResumable(new File(["x"], "gamma.las"), { logRunId: "1" }, { signal: controller.signal });
+    const pending = uploadResumable(
+      new File(["x"], "gamma.las"),
+      logFileUploadTarget,
+      { logRunId: "1" },
+      { signal: controller.signal },
+    );
 
     controller.abort();
 
@@ -137,14 +145,19 @@ describe("uploadResumable", () => {
   });
 
   it("rejects immediately when the signal is already aborted", async () => {
-    const pending = uploadResumable(new File(["x"], "gamma.las"), { logRunId: "1" }, { signal: AbortSignal.abort() });
+    const pending = uploadResumable(
+      new File(["x"], "gamma.las"),
+      logFileUploadTarget,
+      { logRunId: "1" },
+      { signal: AbortSignal.abort() },
+    );
 
     await expect(pending).rejects.toMatchObject({ name: "AbortError" });
     expect(uploadInstances).toHaveLength(0);
   });
 
   it("surfaces the reason the server gave for refusing the file", async () => {
-    const pending = uploadResumable(new File(["x"], "gamma.las"), { logRunId: "1" });
+    const pending = uploadResumable(new File(["x"], "gamma.las"), logFileUploadTarget, { logRunId: "1" });
 
     optionsOf<{ onError: (error: Error) => void }>().onError(
       Object.assign(new Error("tus: unexpected response"), {
@@ -171,11 +184,113 @@ describe("uploadResumable", () => {
   });
 
   it("passes a transport failure on unchanged", async () => {
-    const pending = uploadResumable(new File(["x"], "gamma.las"), { logRunId: "1" });
+    const pending = uploadResumable(new File(["x"], "gamma.las"), logFileUploadTarget, { logRunId: "1" });
     const failure = new Error("tus: failed to upload chunk");
 
     optionsOf<{ onError: (error: Error) => void }>().onError(failure);
 
     await expect(pending).rejects.toBe(failure);
+  });
+
+  it("sends a stream source with the size it was given", () => {
+    const source = {
+      open: () => ({ stream: new ReadableStream<Uint8Array>(), written: Promise.resolve() }),
+      size: 4096,
+      fileName: "report.pdf",
+      contentType: "application/pdf",
+    };
+
+    void uploadResumable(source, profileUploadTarget, { boreholeId: "1", profileId: "7" });
+
+    const options = optionsOf<{ uploadSize: number; endpoint: string; metadata: Record<string, string> }>();
+    expect(options.uploadSize).toBe(4096);
+    expect(options.endpoint).toBe("/api/v2/profile/upload/tus");
+    expect(options.metadata).toStrictEqual({
+      boreholeId: "1",
+      profileId: "7",
+      filename: "report.pdf",
+      contentType: "application/pdf",
+    });
+  });
+
+  it("reads the id out of the header its target names", async () => {
+    const upload = uploadResumable(new File(["x"], "gamma.las"), logFileUploadTarget, { logRunId: "1" });
+
+    optionsOf<{ onSuccess: (result: { lastResponse: { getHeader: (name: string) => string } }) => void }>().onSuccess({
+      lastResponse: { getHeader: name => (name === "Log-File-Id" ? "42" : "") },
+    });
+
+    await expect(upload).resolves.toBe(42);
+  });
+
+  it("waits for the writer before it resolves, so a failed entry is not reported as a success", async () => {
+    let settleWriter: (() => void) | undefined;
+    const source = {
+      open: () => ({
+        stream: new ReadableStream<Uint8Array>(),
+        written: new Promise<void>(resolve => {
+          settleWriter = resolve;
+        }),
+      }),
+      size: 10,
+      fileName: "report.pdf",
+      contentType: "application/pdf",
+    };
+
+    const upload = uploadResumable(source, profileUploadTarget, { boreholeId: "1" });
+    optionsOf<{ onSuccess: (result: { lastResponse: { getHeader: () => string } }) => void }>().onSuccess({
+      lastResponse: { getHeader: () => "7" },
+    });
+
+    let settled = false;
+    void upload.then(() => {
+      settled = true;
+    });
+    await Promise.resolve();
+    expect(settled).toBe(false);
+
+    settleWriter?.();
+    await expect(upload).resolves.toBe(7);
+  });
+
+  it("lets go of the stream when the upload fails, so its writer is not left waiting", async () => {
+    // A writer that is done only once the reader lets go, which is what a source blocked on
+    // backpressure does. Nothing settles it unless the upload cancels the reader.
+    let releaseWriter: () => void = () => {};
+    const written = new Promise<void>(resolve => {
+      releaseWriter = resolve;
+    });
+    const source = {
+      open: () => ({ stream: new ReadableStream<Uint8Array>({ cancel: () => releaseWriter() }), written }),
+      size: 10,
+      fileName: "report.pdf",
+      contentType: "application/pdf",
+    };
+
+    const upload = uploadResumable(source, profileUploadTarget, { boreholeId: "1" });
+    const failure = new Error("tus: failed to upload chunk");
+    optionsOf<{ onError: (error: Error) => void }>().onError(failure);
+
+    await expect(upload).rejects.toBe(failure);
+  });
+
+  it("lets go of the stream when the caller gives up, so its writer is not left waiting", async () => {
+    let releaseWriter: () => void = () => {};
+    const written = new Promise<void>(resolve => {
+      releaseWriter = resolve;
+    });
+    const source = {
+      open: () => ({ stream: new ReadableStream<Uint8Array>({ cancel: () => releaseWriter() }), written }),
+      size: 10,
+      fileName: "report.pdf",
+      contentType: "application/pdf",
+    };
+
+    const controller = new AbortController();
+    const upload = uploadResumable(source, profileUploadTarget, { boreholeId: "1" }, { signal: controller.signal });
+
+    controller.abort();
+
+    await expect(upload).rejects.toMatchObject({ name: "AbortError" });
   });
 });

@@ -36,8 +36,9 @@ vi.mock("../log.ts", async () => {
 });
 
 vi.mock("../../../../../api/resumableUpload.ts", () => ({
-  uploadResumable: (file: File, metadata: Record<string, string>, options?: TransferOptions) =>
-    uploadResumable(file, metadata, options),
+  logFileUploadTarget: { endpoint: "/api/v2/log/upload/tus", resultHeader: "Log-File-Id" },
+  uploadResumable: (file: File, target: unknown, metadata: Record<string, string>, options?: TransferOptions) =>
+    uploadResumable(file, target, metadata, options),
 }));
 
 vi.mock("../../../../../api/borehole.ts", () => ({ boreholeQueryKey: "boreholes" }));
@@ -139,7 +140,7 @@ describe("ImportLogWizard", () => {
   it("asks for the runs again after the records of the cancelled uploads are removed", async () => {
     importLogs.mockResolvedValue([addedFileItem("a.las", 11), addedFileItem("b.las", 12)]);
     uploadResumable.mockImplementation(
-      (_file: File, _metadata: Record<string, string>, options: TransferOptions) =>
+      (_file: File, _target: unknown, _metadata: Record<string, string>, options: TransferOptions) =>
         new Promise<number>((_resolve, reject) => {
           options.signal?.addEventListener("abort", () =>
             reject(new DOMException("The user aborted a request.", "AbortError")),
@@ -218,11 +219,13 @@ describe("ImportLogWizard", () => {
     vi.spyOn(Date, "now").mockReturnValue(1_000_000);
 
     // The upload stays on the wire, so the progress of the burst is still on screen to read.
-    uploadResumable.mockImplementation((_file: File, _metadata: Record<string, string>, options: TransferOptions) => {
-      options.onProgress?.({ loaded: 2000, total: 900_000 });
-      options.onProgress?.({ loaded: 500_000, total: 900_000 });
-      return new Promise<number>(() => {});
-    });
+    uploadResumable.mockImplementation(
+      (_file: File, _target: unknown, _metadata: Record<string, string>, options: TransferOptions) => {
+        options.onProgress?.({ loaded: 2000, total: 900_000 });
+        options.onProgress?.({ loaded: 500_000, total: 900_000 });
+        return new Promise<number>(() => {});
+      },
+    );
 
     await runImportToReport();
 
@@ -234,7 +237,7 @@ describe("ImportLogWizard", () => {
   it("returns from the report to the files step only once the uploads have stopped", async () => {
     importLogs.mockResolvedValue([addedFileItem("a.las", 11), addedFileItem("b.las", 12)]);
     uploadResumable.mockImplementation(
-      (_file: File, _metadata: Record<string, string>, options: TransferOptions) =>
+      (_file: File, _target: unknown, _metadata: Record<string, string>, options: TransferOptions) =>
         new Promise<number>((_resolve, reject) => {
           options.signal?.addEventListener("abort", () =>
             reject(new DOMException("The user aborted a request.", "AbortError")),
@@ -261,7 +264,7 @@ describe("ImportLogWizard", () => {
     // The first upload hangs until cancelled, so the closing run still has two records to remove
     // when the dialog goes away and the second import starts.
     uploadResumable.mockImplementationOnce(
-      (_file: File, _metadata: Record<string, string>, options: TransferOptions) =>
+      (_file: File, _target: unknown, _metadata: Record<string, string>, options: TransferOptions) =>
         new Promise<number>((_resolve, reject) => {
           options.signal?.addEventListener("abort", () =>
             reject(new DOMException("The user aborted a request.", "AbortError")),
@@ -282,7 +285,7 @@ describe("ImportLogWizard", () => {
 
     // The second import takes over while the first run's tail is still deleting records.
     uploadResumable.mockImplementation(
-      (_file: File, _metadata: Record<string, string>, options: TransferOptions) =>
+      (_file: File, _target: unknown, _metadata: Record<string, string>, options: TransferOptions) =>
         new Promise<number>((_resolve, reject) => {
           options.signal?.addEventListener("abort", () =>
             reject(new DOMException("The user aborted a request.", "AbortError")),
@@ -305,7 +308,7 @@ describe("ImportLogWizard", () => {
     importLogs.mockResolvedValue([addedFileItem("a.las", 11), addedFileItem("b.las", 12), addedFileItem("c.las", 13)]);
     uploadResumable.mockImplementationOnce(() => Promise.resolve(11));
     uploadResumable.mockImplementationOnce(
-      (_file: File, _metadata: Record<string, string>, options: TransferOptions) =>
+      (_file: File, _target: unknown, _metadata: Record<string, string>, options: TransferOptions) =>
         new Promise<number>((_resolve, reject) => {
           options.signal?.addEventListener("abort", () =>
             reject(new DOMException("The user aborted a request.", "AbortError")),
