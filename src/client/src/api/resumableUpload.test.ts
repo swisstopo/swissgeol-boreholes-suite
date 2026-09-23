@@ -37,7 +37,12 @@ vi.mock("../auth/authTokenStore.ts", () => ({ getAuthToken: () => authState.toke
 const optionsOf = <T>(): T => uploadInstances[0].options as T;
 
 /** The limits as the API reports them, which the application settings normally supply. */
-const serverLimits = { maxFileSize: 210_000_000, largeMaxFileSize: 5_000_000_000, chunkSize: 6 * 1024 * 1024 };
+const serverLimits = {
+  maxFileSize: 210_000_000,
+  largeMaxFileSize: 5_000_000_000,
+  maxImportArchiveSize: 20_000_000_000,
+  chunkSize: 6 * 1024 * 1024,
+};
 
 describe("uploadResumable", () => {
   beforeEach(() => {

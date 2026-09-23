@@ -54,6 +54,7 @@ public class SettingsControllerTest
         Assert.IsNotNull(result);
         Assert.AreEqual(210_000_000, result.UploadSettings.MaxFileSize);
         Assert.AreEqual(5_000_000_000L, result.UploadSettings.LargeMaxFileSize);
+        Assert.AreEqual(20_000_000_000L, result.UploadSettings.MaxImportArchiveSize);
         Assert.AreEqual(6 * 1024 * 1024, result.UploadSettings.ChunkSize);
     }
 

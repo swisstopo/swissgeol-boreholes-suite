@@ -1,5 +1,12 @@
 import { describe, expect, it, vi } from "vitest";
-import { formatFileSize, getChunkSize, getLargeMaxFileSize, getMaxFileSize, setFileSizeLimits } from "./fileSize.ts";
+import {
+  formatFileSize,
+  getChunkSize,
+  getLargeMaxFileSize,
+  getMaxFileSize,
+  getMaxImportArchiveSize,
+  setFileSizeLimits,
+} from "./fileSize.ts";
 
 describe("fileSize", () => {
   it("says so when it is read before the settings have arrived", async () => {
@@ -12,19 +19,38 @@ describe("fileSize", () => {
   });
 
   it("hands back the limits the API reported", () => {
-    setFileSizeLimits({ maxFileSize: 210_000_000, largeMaxFileSize: 5_000_000_000, chunkSize: 6 * 1024 * 1024 });
+    setFileSizeLimits({
+      maxFileSize: 210_000_000,
+      largeMaxFileSize: 5_000_000_000,
+      maxImportArchiveSize: 20_000_000_000,
+      chunkSize: 6 * 1024 * 1024,
+    });
 
     expect(getMaxFileSize()).toBe(210_000_000);
     expect(getLargeMaxFileSize()).toBe(5_000_000_000);
+    expect(getMaxImportArchiveSize()).toBe(20_000_000_000);
     expect(getChunkSize()).toBe(6 * 1024 * 1024);
   });
 
   it("follows the API when it reports different limits", () => {
-    setFileSizeLimits({ maxFileSize: 1_000, largeMaxFileSize: 2_000, chunkSize: 3_000 });
+    setFileSizeLimits({ maxFileSize: 1_000, largeMaxFileSize: 2_000, maxImportArchiveSize: 3_000, chunkSize: 4_000 });
 
     expect(getMaxFileSize()).toBe(1_000);
     expect(getLargeMaxFileSize()).toBe(2_000);
-    expect(getChunkSize()).toBe(3_000);
+    expect(getMaxImportArchiveSize()).toBe(3_000);
+    expect(getChunkSize()).toBe(4_000);
+  });
+
+  it("reports the archive limit the API serves", () => {
+    setFileSizeLimits({
+      maxFileSize: 210_000_000,
+      largeMaxFileSize: 5_000_000_000,
+      maxImportArchiveSize: 20_000_000_000,
+      chunkSize: 6 * 1024 * 1024,
+    });
+
+    expect(getMaxImportArchiveSize()).toBe(20_000_000_000);
+    expect(formatFileSize(getMaxImportArchiveSize())).toBe("20 GB");
   });
 
   it.each([

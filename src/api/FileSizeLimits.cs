@@ -20,4 +20,12 @@ public static class FileSizeLimits
     /// request may carry. Every chunked upload accepts up to this much, whatever it is uploading.
     /// </summary>
     public const long Large = 5_000_000_000;
+
+    /// <summary>
+    /// The limit that applies to an import archive. Nothing of this size reaches the API: the
+    /// archive is unpacked by the client, which sends its small description in one request and each
+    /// of its attachments as an upload of its own. The limit is served so that the client holds the
+    /// user to a number the product chose rather than one it picked for itself.
+    /// </summary>
+    public const long MaxImportArchive = 20_000_000_000;
 }
