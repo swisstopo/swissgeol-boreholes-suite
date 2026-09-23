@@ -1,0 +1,19 @@
+[
+  {
+    "originalName": "AWAITEDNESTEDREPORT",
+    "name": "AWAITEDNESTEDREPORT",
+    "locationX": 2739000,
+    "locationY": 1291100,
+    "originalReferenceSystemId": 20104002,
+    "observations": [],
+    "profiles": [
+      {
+        "name": "sub/dir/report.pdf",
+        "nameUuid": "b2c3d4e5-f6a7-4b89-9cde-f01234567890.pdf",
+        "type": "application/pdf",
+        "description": "Waiting for the upload that fills it",
+        "public": true
+      }
+    ]
+  }
+]

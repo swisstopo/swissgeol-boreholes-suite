@@ -10,7 +10,6 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using NetTopologySuite.IO.Converters;
 using System.Globalization;
-using System.IO.Compression;
 using System.Net;
 using System.Text.Json;
 using System.Text.Json.Serialization;
@@ -26,7 +25,6 @@ public class ImportController : ControllerBase
     private readonly ILogger logger;
     private readonly LocationService locationService;
     private readonly CoordinateService coordinateService;
-    private readonly ProfileCloudService profileCloudService;
     private readonly IBoreholePermissionService boreholePermissionService;
     private readonly string nullOrEmptyMsg = "Field '{0}' is required.";
 
@@ -41,13 +39,12 @@ public class ImportController : ControllerBase
         },
     };
 
-    public ImportController(BdmsContext context, ILogger<ImportController> logger, LocationService locationService, CoordinateService coordinateService, ProfileCloudService profileCloudService, IBoreholePermissionService boreholePermissionService)
+    public ImportController(BdmsContext context, ILogger<ImportController> logger, LocationService locationService, CoordinateService coordinateService, IBoreholePermissionService boreholePermissionService)
     {
         this.context = context;
         this.logger = logger;
         this.locationService = locationService;
         this.coordinateService = coordinateService;
-        this.profileCloudService = profileCloudService;
         this.boreholePermissionService = boreholePermissionService;
     }
 
@@ -142,7 +139,7 @@ public class ImportController : ControllerBase
 
             // Add boreholes to database.
             await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
-            var result = await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
+            var result = await SaveChangesAsync<int>(() => Ok(boreholes.Count)).ConfigureAwait(false);
 
             await transaction.CommitAsync().ConfigureAwait(false);
             return result;
@@ -163,12 +160,17 @@ public class ImportController : ControllerBase
     /// </summary>
     /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>(s).</param>
     /// <param name="boreholesFile">The <see cref="IFormFile"/> containing the borehole JSON records that were uploaded.</param>
-    /// <returns>The number of the newly created <see cref="Borehole"/>s.</returns>
+    /// <param name="importAttachments">
+    /// Whether the caller holds the attachments the JSON describes and will upload them. When it
+    /// does, a row is written per attachment for those uploads to fill; when it does not, the
+    /// profiles are dropped, because nothing would ever arrive for them.
+    /// </param>
+    /// <returns>What was imported, and the rows still waiting for a file.</returns>
     [HttpPost("json")]
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(int.MaxValue)]
     [RequestFormLimits(MultipartBodyLengthLimit = FileSizeLimits.Standard)]
-    public async Task<ActionResult<int>> UploadJsonFileAsync(int workgroupId, IFormFile boreholesFile)
+    public async Task<ActionResult<BoreholeImportResult>> UploadJsonFileAsync(int workgroupId, IFormFile boreholesFile, [FromQuery] bool importAttachments = false)
     {
         if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
         {
@@ -181,54 +183,7 @@ public class ImportController : ControllerBase
 
         var boreholes = await DeserializeBoreholeDataAsync(boreholesFile.OpenReadStream()).ConfigureAwait(false);
         if (boreholes == null) return BadRequest(new { detail = "The provided file is not an array of boreholes or is not in a valid JSON format.", messageKey = "invalidJsonBoreholeArray" });
-        return await ProcessAndSaveBoreholesAsync(workgroupId, boreholes).ConfigureAwait(false);
-    }
-
-    /// <summary>
-    /// Receives an uploaded ZIP file to import one or several <see cref="Borehole"/>(s).
-    /// The ZIP file can additionally contain attachments.
-    /// </summary>
-    /// <param name="workgroupId">The <see cref="Workgroup.Id"/> of the new <see cref="Borehole"/>(s).</param>
-    /// <param name="boreholesFile">The <see cref="IFormFile"/> containing the borehole records and attachments that were uploaded.</param>
-    /// <returns>The number of the newly created <see cref="Borehole"/>s.</returns>
-    [HttpPost("zip")]
-    [Authorize(Policy = PolicyNames.Viewer)]
-    [RequestSizeLimit(int.MaxValue)]
-    [RequestFormLimits(MultipartBodyLengthLimit = FileSizeLimits.Standard)]
-    public async Task<ActionResult<int>> UploadZipFileAsync(int workgroupId, IFormFile boreholesFile)
-    {
-        if (!await boreholePermissionService.HasUserRoleOnWorkgroupAsync(HttpContext.GetUserSubjectId(), workgroupId, Role.Editor).ConfigureAwait(false))
-        {
-            return Unauthorized();
-        }
-
-        InitializeImport(workgroupId, "ZIP");
-        if (!ValidateFile(boreholesFile, FileTypeChecker.IsZip))
-            return BadRequest(new { detail = "Invalid or empty ZIP file uploaded.", messageKey = "invalidOrEmptyZipFile" });
-
-        var zipStream = boreholesFile.OpenReadStream();
-        using var zipArchive = new ZipArchive(zipStream, ZipArchiveMode.Read);
-        var jsonFile = zipArchive.Entries.FirstOrDefault(e => e.FullName.EndsWith(".json", StringComparison.OrdinalIgnoreCase));
-        if (jsonFile == null)
-            return BadRequest(new { detail = "ZIP file does not contain a JSON file.", messageKey = "zipMissingJsonFile" });
-
-        using var jsonStream = await jsonFile.OpenAsync().ConfigureAwait(false);
-        var boreholes = await DeserializeBoreholeDataAsync(jsonStream).ConfigureAwait(false);
-        if (boreholes == null)
-            return BadRequest(new { detail = "The provided file is not an array of boreholes or is not a valid JSON format.", messageKey = "invalidJsonBoreholeArray" });
-
-        var attachmentNames = zipArchive.Entries.Where(e => e.FullName != jsonFile.FullName).Select(e => e.FullName);
-        ValidateAttachmentsPresent(attachmentNames, boreholes);
-        if (!ModelState.IsValid)
-            return ValidationProblem();
-
-        var profiles = boreholes.Select(b => (b, b.Profiles?.ToList())).ToList(); // Copy profiles for re-upload because they are cleared on save.
-        ActionResult<int> result = await ProcessAndSaveBoreholesAsync(workgroupId, boreholes).ConfigureAwait(false);
-        if (!ModelState.IsValid)
-            return ValidationProblem();
-
-        await UploadAttachmentsAsync(zipArchive, profiles).ConfigureAwait(false);
-        return !ModelState.IsValid ? ValidationProblem() : result;
+        return await ProcessAndSaveBoreholesAsync(workgroupId, boreholes, importAttachments).ConfigureAwait(false);
     }
 
     private void InitializeImport(int workgroupId, string fileType)
@@ -251,7 +206,7 @@ public class ImportController : ControllerBase
         }
     }
 
-    private async Task<ActionResult<int>> ProcessAndSaveBoreholesAsync(int workgroupId, List<BoreholeImport> boreholes)
+    private async Task<ActionResult<BoreholeImportResult>> ProcessAndSaveBoreholesAsync(int workgroupId, List<BoreholeImport> boreholes, bool importAttachments)
     {
         var user = await GetUserAsync().ConfigureAwait(false);
         if (user == null)
@@ -261,10 +216,13 @@ public class ImportController : ControllerBase
         if (!ModelState.IsValid)
             return ValidationProblem();
 
+        List<(Profile Profile, Borehole Borehole, string EntryName)> awaiting = importAttachments ? PrepareAwaitingAttachments(boreholes) : [];
+
         foreach (var borehole in boreholes)
         {
-            // Attachments are re-uploaded when importing from a zip file.
-            borehole.Profiles?.Clear();
+            // Nothing arrives to fill a profile when the caller holds no attachments, so the row
+            // would wait for a file forever.
+            if (!importAttachments) borehole.Profiles?.Clear();
 
             // Add new workflow with status draft.
             borehole.Workflow = new Workflow
@@ -278,7 +236,50 @@ public class ImportController : ControllerBase
 
         await MarkBoreholeContentAsNew(user, workgroupId, boreholes).ConfigureAwait(false);
         await context.Boreholes.AddRangeAsync(boreholes).ConfigureAwait(false);
-        return await SaveChangesAsync(() => Ok(boreholes.Count)).ConfigureAwait(false);
+
+        // Both ids are zero until the save assigns them, so the result is built inside the success
+        // path rather than ahead of it.
+        return await SaveChangesAsync<BoreholeImportResult>(() => Ok(new BoreholeImportResult(
+            boreholes.Count,
+            awaiting.Select(entry => new PendingAttachment(entry.Profile.Id, entry.Borehole.Id, entry.EntryName)).ToList()))).ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Turns the profiles the JSON describes into rows waiting for their uploads, and names the
+    /// archive entry each one expects.
+    ///
+    /// The row is written with no object and with OCR switched off. Both are corrected when the
+    /// upload arrives: a row that claimed an eligible status now would be handed to the OCR service
+    /// with no file to read, and the user's document would be marked failed before it was sent.
+    /// </summary>
+    /// <param name="boreholes">The deserialized boreholes, whose profiles carry the exporting system's keys.</param>
+    /// <returns>The entry name expected for each profile, by the profile it belongs to.</returns>
+    private static List<(Profile Profile, Borehole Borehole, string EntryName)> PrepareAwaitingAttachments(List<BoreholeImport> boreholes)
+    {
+        var awaiting = new List<(Profile, Borehole, string)>();
+
+        foreach (var borehole in boreholes)
+        {
+            foreach (var profile in borehole.Profiles ?? [])
+            {
+                // The entry carries the exporting system's key, which is what the JSON still holds
+                // at this point; the row's own key is assigned when its upload is stored.
+                var exportedObjectKey = profile.NameUuid;
+
+                profile.NameUuid = null;
+                profile.OcrStatus = OcrStatus.WillNotBeProcessed;
+
+                // An export leaves out the file of a profile whose upload never arrived, so such a
+                // profile carries no key and the archive holds no entry for it. Naming one would
+                // send the client after a file nobody ever stored. The row is written all the same,
+                // because the exporting system holds one too.
+                if (exportedObjectKey is null) continue;
+
+                awaiting.Add((profile, borehole, $"{exportedObjectKey}_{FileHelper.SanitizeZipEntryFileName(profile.Name, "export")}"));
+            }
+        }
+
+        return awaiting;
     }
 
     private async Task MarkBoreholeContentAsNew(User user, int workgroupId, List<BoreholeImport>? boreholes)
@@ -294,83 +295,10 @@ public class ImportController : ControllerBase
         }
     }
 
-    private async Task UploadAttachmentsAsync(ZipArchive zipArchive, List<(BoreholeImport Borehole, List<Profile>? Profiles)> profiles)
-    {
-        for (var i = 0; i < profiles.Count; i++)
-        {
-            var (borehole, profilesForBorehole) = profiles[i];
-            if (profilesForBorehole != null && profilesForBorehole.Count > 0)
-            {
-                foreach (var profileToProcess in profilesForBorehole)
-                {
-                    // An export leaves out the file of a profile whose upload never arrived, so such
-                    // a profile carries no object key and references no attachment to look for.
-                    if (profileToProcess.NameUuid is null) continue;
-
-                    var fileName = $"{profileToProcess.NameUuid}_{profileToProcess.Name}";
-                    var attachment = zipArchive.Entries.FirstOrDefault(e => e.FullName == fileName);
-                    if (attachment == null)
-                    {
-                        AddValidationErrorToModelState(i, $"Attachment with the name <{fileName}> is referenced in JSON file but was not not found in ZIP archive.", ValidationErrorType.Attachment);
-                        continue;
-                    }
-
-                    using var memoryStream = new MemoryStream();
-                    using var attachmentStream = await attachment.OpenAsync().ConfigureAwait(false);
-                    await attachmentStream.CopyToAsync(memoryStream).ConfigureAwait(false);
-                    memoryStream.Position = 0;
-
-                    await UploadFormFileAsync(memoryStream, profileToProcess, GetContentType(attachment.Name), borehole, i).ConfigureAwait(false);
-                }
-            }
-        }
-    }
-
-    private async Task UploadFormFileAsync(Stream fileStream, Profile profile, string contentType, Borehole borehole, int index)
-    {
-        var fileName = profile.Name;
-        try
-        {
-            await profileCloudService.UploadProfileAsync(fileStream, fileName, profile.Description, profile.Public == true, contentType, borehole.Id).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "An error occurred while uploading the file: {FileName}", fileName);
-            AddValidationErrorToModelState(index, string.Format(CultureInfo.InvariantCulture, $"An error occurred while uploading the file: <{fileName}>", "upload"), ValidationErrorType.Attachment);
-        }
-    }
-
-    private static string GetContentType(string fileName)
-    {
-        var mimeType = MimeTypes.GetMimeType(Path.GetExtension(fileName));
-        return string.IsNullOrEmpty(mimeType) ? "application/octet-stream" : mimeType;
-    }
-
     private static bool ValidateFile(IFormFile file, Func<IFormFile, bool> fileValidationFunc)
     {
         if (file == null || file.Length == 0) return false;
         return fileValidationFunc(file);
-    }
-
-    private void ValidateAttachmentsPresent(IEnumerable<string> attachmentsInZip, List<BoreholeImport> boreholesFromFile)
-    {
-        // Files are exported with the original name and the UUID as a prefix to make them unique while preserving the original name
-        // An export leaves out the file of a profile whose upload never arrived, so such a profile
-        // carries no object key and references no attachment.
-        var referencedAttachments = boreholesFromFile
-            .Where(b => b.Profiles != null)
-            .SelectMany(b => b.Profiles!)
-            .Where(p => p.NameUuid is not null)
-            .Select(p => p.NameUuid + "_" + p.Name);
-
-        var missingAttachments = referencedAttachments.Except(attachmentsInZip).ToList();
-        if (missingAttachments.Count > 0)
-        {
-            foreach (var missingAttachment in missingAttachments)
-            {
-                AddValidationErrorToModelState(missingAttachments.IndexOf(missingAttachment), $"Attachment with the name <{missingAttachment}> is referenced in JSON file but was not not found in ZIP archive.", ValidationErrorType.Attachment);
-            }
-        }
     }
 
     private static List<Codelist> GetCodelists(List<Codelist> codeLists, List<int> codelistIds)
@@ -633,7 +561,7 @@ public class ImportController : ControllerBase
         }
     }
 
-    private async Task<ActionResult<int>> SaveChangesAsync(Func<ActionResult<int>> successResult)
+    private async Task<ActionResult<T>> SaveChangesAsync<T>(Func<ActionResult<T>> successResult)
     {
         try
         {

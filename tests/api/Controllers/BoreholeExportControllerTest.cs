@@ -106,7 +106,7 @@ public class BoreholeExportControllerTest
         var coordinateServiceLoggerMock = new Mock<ILogger<CoordinateService>>(MockBehavior.Strict);
         var coordinateService = new CoordinateService(coordinateServiceLoggerMock.Object, httpClientFactoryMock.Object);
 
-        importController = new ImportController(context, importLoggerMock.Object, locationService, coordinateService, profileCloudService, boreholePermissionServiceMock.Object)
+        importController = new ImportController(context, importLoggerMock.Object, locationService, coordinateService, boreholePermissionServiceMock.Object)
         {
             ControllerContext = GetControllerContextAdmin(),
         };
@@ -262,7 +262,8 @@ public class BoreholeExportControllerTest
             var importResult = await importController.UploadJsonFileAsync(workgroupId: 2, jsonFile).ConfigureAwait(false);
             Assert.IsInstanceOfType(importResult.Result, typeof(OkObjectResult));
             var okResult = (OkObjectResult)importResult.Result!;
-            Assert.AreEqual(1, okResult.Value);
+            Assert.IsInstanceOfType(okResult.Value, typeof(BoreholeImportResult));
+            Assert.AreEqual(1, ((BoreholeImportResult)okResult.Value!).BoreholeCount);
 
             // Retrieve the imported borehole and compare
             var importedBorehole = await context.BoreholesWithIncludes.AsNoTracking()
