@@ -6,10 +6,10 @@ describe("formatBytes", () => {
     expect(formatBytes(0)).toBe("0.0 MB");
     expect(formatBytes(999)).toBe("0.0 MB");
     expect(formatBytes(512_000)).toBe("0.5 MB");
-    expect(formatBytes(999_950)).toBe("1.0 MB");
   });
 
   it("keeps one decimal so the number moves while transferring", () => {
+    expect(formatBytes(999_950)).toBe("1.0 MB");
     expect(formatBytes(1_000_000)).toBe("1.0 MB");
     expect(formatBytes(1_460_000)).toBe("1.5 MB");
     expect(formatBytes(247_800_000)).toBe("247.8 MB");
