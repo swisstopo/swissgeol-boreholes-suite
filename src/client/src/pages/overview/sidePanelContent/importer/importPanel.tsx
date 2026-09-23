@@ -1,28 +1,50 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Button, Link, Stack } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import {
+  BoreholeImportError,
   boreholeQueryKey,
   importBoreholesCsv,
   importBoreholesJson,
-  importBoreholesZip,
 } from "../../../../api/borehole.ts";
 import { downloadCodelistCsv } from "../../../../api/download.ts";
 import { isJsonContentType } from "../../../../api/fetchApiV2.ts";
+import { formatFileSize, getMaxImportArchiveSize } from "../../../../api/fileSize.ts";
+import { ArchiveJsonMissingError } from "../../../../api/zipArchive.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
 import { LoadingBackdrop } from "../../../../components/loadingBackdrop.tsx";
+import { uploadProgressHint } from "../../../../components/uploadProgressText.ts";
 import { SideDrawerHeader } from "../../layout/sideDrawerHeader.tsx";
 import { useUserWorkgroups } from "../../UserWorkgroupsContext.tsx";
 import { ErrorResponse, NewBoreholeProps } from "../commons/actionsInterfaces.ts";
 import WorkgroupSelect from "../commons/workgroupSelect.tsx";
+import { importBoreholeArchive } from "./boreholeImport.ts";
 import { BoreholeImportDropzone } from "./boreholeImportDropzone.tsx";
 
 interface ImportPanelProps extends NewBoreholeProps {
   setErrorsResponse: React.Dispatch<React.SetStateAction<ErrorResponse | null>>;
   setErrorDialogOpen: React.Dispatch<React.SetStateAction<boolean>>;
 }
+
+/** What the backdrop shows while an import runs. */
+interface ImportProgress {
+  message: string;
+
+  /**
+   * Where the attachments have got to, present only once one of them is on the wire. That is also
+   * the point from which giving up is worth offering, because nothing before it can be called off.
+   */
+  hint?: string;
+}
+
+const toFormData = (boreholesFile: File): FormData => {
+  const combinedFormData = new FormData();
+  combinedFormData.append("boreholesFile", boreholesFile);
+  return combinedFormData;
+};
+
 export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpen }: ImportPanelProps) => {
   const { t } = useTranslation();
   const queryClient = useQueryClient();
@@ -32,6 +54,12 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
 
   const [file, setFile] = useState<File | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [progress, setProgress] = useState<ImportProgress | undefined>();
+  const runningImport = useRef<AbortController | null>(null);
+
+  // Nothing else gives up on a running import: the panel is torn down both when the drawer is
+  // closed and when the page it belongs to is left, and neither passes through an action of its own.
+  useEffect(() => () => runningImport.current?.abort(), []);
 
   const refresh = () => {
     queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
@@ -47,59 +75,143 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
     return "";
   };
 
-  const handleImportResponse = async (response: Response) => {
-    if (response.ok) {
-      showAlert(`${await response.text()} ${t("boreholesImported")}.`, "success");
-      setFile(null);
-      refresh();
-    } else {
-      const contentType = response.headers.get("content-type");
-      const isJson = isJsonContentType(contentType);
-      if (response.status === 400 && isJson) {
-        const responseBody = await response.json();
-        if (responseBody.errors) {
-          setErrorsResponse(responseBody);
-          setErrorDialogOpen(true);
-        } else if (responseBody.messageKey) {
-          const translatedMessage = t(responseBody.messageKey, { defaultValue: responseBody.detail });
-          showAlert(translatedMessage, "error");
-        } else if (responseBody.detail) {
-          showAlert(responseBody.detail, "error");
-        } else {
-          showAlert(t("boreholesImportError"), "error");
-        }
-      } else if (response.status === 504) {
-        showAlert(t("boreholesImportLongRunning"), "error");
-      } else if (isJson) {
-        const responseBody = await response.json();
-        showAlert(responseBody.detail || t("boreholesImportError"), "error");
+  const reportImported = (boreholeCount: number) => {
+    showAlert(`${boreholeCount} ${t("boreholesImported")}.`, "success");
+    setFile(null);
+    refresh();
+  };
+
+  /** Reports what the server said about an import it refused, down to the rows it named. */
+  const showImportError = async (response: Response) => {
+    const contentType = response.headers.get("content-type");
+    const isJson = isJsonContentType(contentType);
+    if (response.status === 400 && isJson) {
+      const responseBody = await response.json();
+      if (responseBody.errors) {
+        setErrorsResponse(responseBody);
+        setErrorDialogOpen(true);
+      } else if (responseBody.messageKey) {
+        const translatedMessage = t(responseBody.messageKey, { defaultValue: responseBody.detail });
+        showAlert(translatedMessage, "error");
+      } else if (responseBody.detail) {
+        showAlert(responseBody.detail, "error");
       } else {
-        const errorText = await response.text();
-        showAlert(errorText || t("boreholesImportError"), "error");
+        showAlert(t("boreholesImportError"), "error");
       }
+    } else if (response.status === 504) {
+      showAlert(t("boreholesImportLongRunning"), "error");
+    } else if (isJson) {
+      const responseBody = await response.json();
+      showAlert(responseBody.detail || t("boreholesImportError"), "error");
+    } else {
+      const errorText = await response.text();
+      showAlert(errorText || t("boreholesImportError"), "error");
     }
   };
 
-  const handleBoreholeImport = async () => {
-    setIsLoading(true);
-    const combinedFormData = new FormData();
-    if (file !== null) {
-      combinedFormData.append("boreholesFile", file);
+  const handleImportResponse = async (response: Response) => {
+    if (!response.ok) {
+      await showImportError(response);
+      return;
     }
+
+    showAlert(`${await response.text()} ${t("boreholesImported")}.`, "success");
+    setFile(null);
+    refresh();
+  };
+
+  const importCsv = async (workgroupId: number, boreholesFile: File) =>
+    await handleImportResponse(await importBoreholesCsv(workgroupId, toFormData(boreholesFile)));
+
+  const importJson = async (workgroupId: number, boreholesFile: File) => {
+    const result = await importBoreholesJson(workgroupId, toFormData(boreholesFile));
+    reportImported(result.boreholeCount ?? 0);
+  };
+
+  /**
+   * Imports an archive, which is unpacked in the browser so the attachments can be uploaded one by
+   * one rather than the whole archive travelling as a single request.
+   */
+  const importArchive = async (workgroupId: number, archive: File) => {
+    const maxArchiveSize = getMaxImportArchiveSize();
+    if (archive.size > maxArchiveSize) {
+      showAlert(t("importArchiveTooLarge", { size: formatFileSize(maxArchiveSize) }), "error");
+      return;
+    }
+
+    const controller = new AbortController();
+    runningImport.current = controller;
+    setProgress({ message: t("preparingUpload") });
+
+    const outcome = await importBoreholeArchive(archive, workgroupId, {
+      signal: controller.signal,
+      onImported: refresh,
+      onProgress: ({ fileName, current, count, transferred, total }) => {
+        // Sending the bytes is only the first half of an upload: the server then stores the file
+        // and answers.
+        const isSent = total !== undefined && transferred >= total;
+        const place = { current, count, transferred };
+
+        setProgress({
+          message: isSent ? t("storingFile", { name: fileName }) : t("uploadingFile", { name: fileName }),
+
+          // A file that is being stored has sent all of its bytes, so naming its size again would
+          // only repeat what the count just said.
+          hint: uploadProgressHint(t, isSent ? place : { ...place, total }),
+        });
+      },
+    });
+
+    if (outcome.pendingCount > 0) {
+      showAlert(
+        t("boreholesImportedWithPendingAttachments", {
+          boreholes: outcome.boreholeCount,
+          pending: outcome.pendingCount,
+        }),
+        "warning",
+      );
+      setFile(null);
+      refresh();
+      return;
+    }
+
+    reportImported(outcome.boreholeCount);
+  };
+
+  /** Reports a failed import, whichever of the three ways of importing raised it. */
+  const reportImportFailure = async (error: unknown) => {
+    if (error instanceof BoreholeImportError) {
+      await showImportError(error.response);
+      return;
+    }
+
+    if (error instanceof ArchiveJsonMissingError) {
+      showAlert(t("importArchiveMissingJson"), "error");
+      return;
+    }
+
+    console.error("Error during import", error);
+    showAlert(t("boreholesImportError"), "error");
+  };
+
+  const handleBoreholeImport = async () => {
+    if (file === null || currentWorkgroupId === null) return;
+
+    setIsLoading(true);
     try {
-      let response;
-      if (getFileExtension(file) === "csv") {
-        response = await importBoreholesCsv(currentWorkgroupId, combinedFormData);
-      } else if (getFileExtension(file) === "json") {
-        response = await importBoreholesJson(currentWorkgroupId, combinedFormData);
+      const extension = getFileExtension(file);
+      if (extension === "csv") {
+        await importCsv(currentWorkgroupId, file);
+      } else if (extension === "json") {
+        await importJson(currentWorkgroupId, file);
       } else {
-        response = await importBoreholesZip(currentWorkgroupId, combinedFormData);
+        await importArchive(currentWorkgroupId, file);
       }
-      await handleImportResponse(response);
     } catch (error) {
-      console.error("Error during import", error);
-      showAlert(t("boreholesImportError"), "error");
+      await reportImportFailure(error);
     } finally {
+      runningImport.current = null;
+      setProgress(undefined);
       setIsLoading(false);
     }
   };
@@ -131,7 +243,15 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
           {t("import")}
         </Button>
       </Stack>
-      {isLoading && <LoadingBackdrop open={isLoading} sx={{ zIndex: theme.zIndex.modal + 1 }} />}
+      {isLoading && (
+        <LoadingBackdrop
+          open={isLoading}
+          message={progress?.message}
+          hint={progress?.hint}
+          onCancel={progress?.hint === undefined ? undefined : () => runningImport.current?.abort()}
+          sx={{ zIndex: theme.zIndex.modal + 1 }}
+        />
+      )}
     </Box>
   );
 };

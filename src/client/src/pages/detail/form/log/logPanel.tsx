@@ -10,6 +10,7 @@ import { AddButton, BoreholesBaseButton } from "../../../../components/buttons/b
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
 import { TabPanel } from "../../../../components/tabs/tabPanel.tsx";
+import { uploadProgressHint } from "../../../../components/uploadProgressText.ts";
 import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
@@ -35,7 +36,6 @@ import {
   prepareLogRunForSubmit,
   toTrackedRuns,
 } from "./logUtils.ts";
-import { uploadProgressHint } from "./uploadProgressText.ts";
 
 export const LogPanel: FC = () => {
   const { t } = useTranslation();

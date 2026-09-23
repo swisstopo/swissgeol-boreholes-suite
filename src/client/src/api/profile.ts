@@ -26,6 +26,19 @@ export const deleteProfile = async (profileId: number) => {
   return await fetchApiV2Legacy(`profile/${profileId}`, "DELETE");
 };
 
+/**
+ * Removes the row an import wrote for an attachment that never arrived.
+ *
+ * Distinct from `deleteProfile`, which shows the user what went wrong: a discard follows a failure
+ * the user has already been told about, and it tidies up row by row, so one dialog per row would
+ * bury the reason the import stopped. The caller decides what a failed discard is worth instead.
+ * @param profileId The row to remove.
+ * @throws {ApiError|Error} If the row could not be removed.
+ */
+export const discardPendingProfile = async (profileId: number): Promise<void> => {
+  await fetchApiV2WithApiError(`profile/${profileId}`, "DELETE");
+};
+
 export async function getProfiles(boreholeId: number): Promise<Profile[]> {
   const response = await fetchApiV2Legacy(`profile/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
   if (response) {
