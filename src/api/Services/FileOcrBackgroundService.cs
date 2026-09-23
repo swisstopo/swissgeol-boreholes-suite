@@ -25,19 +25,35 @@ public class FileOcrBackgroundService : BackgroundService
         this.logger = logger;
     }
 
+    /// <summary>
+    /// The profiles waiting for OCR.
+    ///
+    /// A profile is given an OCR eligible status only once an object is linked to it, so the check
+    /// on the key is redundant while that invariant holds. It is the outer of two guards on it, the
+    /// inner one being the early return in <see cref="FileOcrService.ProcessAsync"/>: a change that
+    /// breaks the invariant then leaves the profile unprocessed instead of naming a file the OCR
+    /// service cannot find, which would park the profile in the terminal <see cref="OcrStatus.Error"/>
+    /// and mark the user's document as failed before its upload had arrived.
+    /// </summary>
+    /// <param name="context">The database context to read through.</param>
+    /// <param name="cancellationToken">Aborts the read.</param>
+    /// <returns>The ids of the profiles to process.</returns>
+    public static async Task<IReadOnlyList<int>> PendingProfileIdsAsync(BdmsContext context, CancellationToken cancellationToken) =>
+        await context.Profiles
+            .Where(p => (p.OcrStatus == OcrStatus.Created || p.OcrStatus == OcrStatus.Processing) && p.NameUuid != null)
+            .Select(p => p.Id)
+            .ToListAsync(cancellationToken)
+            .ConfigureAwait(false);
+
     protected override async Task ExecuteAsync(CancellationToken stoppingToken)
     {
         try
         {
-            List<int> pendingIds;
+            IReadOnlyList<int> pendingIds;
             using (var scope = scopeFactory.CreateScope())
             {
                 var context = scope.ServiceProvider.GetRequiredService<BdmsContext>();
-                pendingIds = await context.Profiles
-                    .Where(p => p.OcrStatus == OcrStatus.Created || p.OcrStatus == OcrStatus.Processing)
-                    .Select(p => p.Id)
-                    .ToListAsync(stoppingToken)
-                    .ConfigureAwait(false);
+                pendingIds = await PendingProfileIdsAsync(context, stoppingToken).ConfigureAwait(false);
             }
 
             if (pendingIds.Count == 0)

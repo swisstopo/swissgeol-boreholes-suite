@@ -70,32 +70,7 @@ public class ProfileCloudService : CloudServiceBase
 
             if (transaction != null) await transaction.CommitAsync(CancellationToken.None).ConfigureAwait(false);
 
-            // Fire-and-forget OCR for eligible files. A separate scope keeps the long-running OCR
-            // work decoupled from this request's DI scope (which is disposed when the response returns).
-            if (isOcrEligible)
-            {
-                var capturedId = profile.Id;
-                var stoppingToken = applicationLifetime.ApplicationStopping;
-                _ = Task.Run(
-                    async () =>
-                    {
-                        try
-                        {
-                            using var scope = scopeFactory.CreateScope();
-                            var fileOcrService = scope.ServiceProvider.GetRequiredService<FileOcrService>();
-                            await fileOcrService.ProcessAsync(capturedId, cancellationToken: stoppingToken).ConfigureAwait(false);
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            // Application is shutting down; the background service will retry on next startup.
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.LogError(ex, "Background OCR for profile {ProfileId} failed to start.", capturedId);
-                        }
-                    },
-                    stoppingToken);
-            }
+            StartOcrIfEligible(profile.Id, profile.OcrStatus);
 
             return profile;
         }
@@ -103,6 +78,114 @@ public class ProfileCloudService : CloudServiceBase
         {
             throw new IOException($"Error uploading profile '{fileName}' for borehole with Id '{boreholeId}'.", ex);
         }
+    }
+
+    /// <summary>
+    /// Points a profile at an object a resumable upload has already stored, creating the row when
+    /// the upload names none.
+    ///
+    /// The object is whole in the cloud storage before this is called, so nothing here uploads and
+    /// nothing here grows with the size of the file. This is the only place a profile becomes
+    /// eligible for OCR, because that is the moment it has a file to read.
+    /// </summary>
+    /// <param name="fileName">The name the user gave the file.</param>
+    /// <param name="contentType">The content type of the file.</param>
+    /// <param name="objectKey">The key the object is stored under.</param>
+    /// <param name="boreholeId">The <see cref="Borehole.Id"/> the profile belongs to.</param>
+    /// <param name="profileId">The row to fill, or null to create one.</param>
+    /// <param name="cancellationToken">Aborts the write.</param>
+    /// <returns>The profile.</returns>
+    /// <exception cref="InvalidOperationException">The borehole holds no profile with that id.</exception>
+    public async Task<Profile> LinkUploadedProfileAsync(
+        string fileName,
+        string contentType,
+        string objectKey,
+        int boreholeId,
+        int? profileId,
+        CancellationToken cancellationToken = default)
+    {
+        // Replace white spaces in file names, as they are interpreted differently across different systems.
+        var storedName = fileName.Replace(" ", "_", StringComparison.OrdinalIgnoreCase);
+        var ocrStatus = IsOcrEligible(contentType) ? OcrStatus.Created : OcrStatus.WillNotBeProcessed;
+
+        Profile profile;
+        string? replaced = null;
+
+        if (profileId is int id)
+        {
+            // Looked up within the borehole the upload was authorized against, rather than by its
+            // id alone, so an authorized upload cannot fill a row belonging to another borehole.
+            profile = await context.Profiles
+                .FirstOrDefaultAsync(p => p.Id == id && p.BoreholeId == boreholeId, cancellationToken)
+                .ConfigureAwait(false)
+                ?? throw new InvalidOperationException($"Profile with ID {id} not found for borehole {boreholeId}.");
+
+            replaced = profile.NameUuid;
+            profile.NameUuid = objectKey;
+            profile.Type = contentType;
+            profile.OcrStatus = ocrStatus;
+        }
+        else
+        {
+            profile = new Profile
+            {
+                BoreholeId = boreholeId,
+                Name = storedName,
+                NameUuid = objectKey,
+                Type = contentType,
+                Public = false,
+                OcrStatus = ocrStatus,
+            };
+
+            await context.Profiles.AddAsync(profile, cancellationToken).ConfigureAwait(false);
+        }
+
+        await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!, cancellationToken).ConfigureAwait(false);
+
+        if (replaced is not null)
+        {
+            // Nothing points at the old object once the row moved, and the name it had is never
+            // handed out again, so it would stay in the bucket for good.
+            await DeleteObject(replaced).ConfigureAwait(false);
+        }
+
+        StartOcrIfEligible(profile.Id, ocrStatus);
+        return profile;
+    }
+
+    /// <summary>
+    /// Starts OCR for a profile whose status says it has a file worth reading, without waiting for
+    /// the run. A profile reaches <see cref="OcrStatus.Created"/> only once an object is linked to
+    /// it, so a run started from here always has a file to name.
+    /// </summary>
+    /// <param name="profileId">The <see cref="Profile.Id"/> to process.</param>
+    /// <param name="status">The status the profile was written with.</param>
+    private void StartOcrIfEligible(int profileId, OcrStatus status)
+    {
+        if (status != OcrStatus.Created) return;
+
+        // Fire-and-forget OCR for eligible files. A separate scope keeps the long-running OCR
+        // work decoupled from this request's DI scope (which is disposed when the response returns).
+        var stoppingToken = applicationLifetime.ApplicationStopping;
+        _ = Task.Run(
+            async () =>
+            {
+                try
+                {
+                    using var scope = scopeFactory.CreateScope();
+                    var fileOcrService = scope.ServiceProvider.GetRequiredService<FileOcrService>();
+                    await fileOcrService.ProcessAsync(profileId, cancellationToken: stoppingToken).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    // Application is shutting down; the background service will retry on next startup.
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Background OCR for profile {ProfileId} failed to start.", profileId);
+                }
+            },
+            stoppingToken);
     }
 
     /// <summary>

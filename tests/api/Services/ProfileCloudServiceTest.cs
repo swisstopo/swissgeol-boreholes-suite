@@ -1,6 +1,8 @@
 ﻿using Amazon.S3;
 using Amazon.S3.Model;
+using BDMS.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -238,5 +240,88 @@ public class ProfileCloudServiceTest
 
         var profileCountAfter = context.Profiles.Count(p => p.BoreholeId == minBoreholeId);
         Assert.AreEqual(profileCountBefore, profileCountAfter, "S3-first ordering: a failed S3 upload must not leave a DB row.");
+    }
+
+    /// <summary>
+    /// The row a linked upload produces is eligible for OCR, exactly as the single request upload
+    /// makes it. The transport changed; what the file is did not.
+    /// </summary>
+    [TestMethod]
+    public async Task LinkingAPdfMarksItForOcr()
+    {
+        var borehole = await context.Boreholes.FirstAsync();
+
+        var profile = await profileCloudService.LinkUploadedProfileAsync("report.pdf", "application/pdf", "key.pdf", borehole.Id, null);
+
+        Assert.AreEqual(OcrStatus.Created, profile.OcrStatus);
+        Assert.AreEqual("key.pdf", profile.NameUuid);
+    }
+
+    /// <summary>
+    /// A file the OCR service cannot read is written with the status that keeps it away from OCR
+    /// for good, so the catch-up never picks it up.
+    /// </summary>
+    [TestMethod]
+    public async Task LinkingANonPdfKeepsItAwayFromOcr()
+    {
+        var borehole = await context.Boreholes.FirstAsync();
+
+        var profile = await profileCloudService.LinkUploadedProfileAsync("photo.png", "image/png", "key.png", borehole.Id, null);
+
+        Assert.AreEqual(OcrStatus.WillNotBeProcessed, profile.OcrStatus);
+        Assert.AreEqual("key.png", profile.NameUuid);
+    }
+
+    /// <summary>
+    /// Linking against a row an import wrote fills that row rather than adding a second one beside
+    /// it, which would leave the import's row waiting for a file forever.
+    /// </summary>
+    [TestMethod]
+    public async Task LinkingAgainstAnAwaitingRowFillsIt()
+    {
+        var borehole = await context.Boreholes.FirstAsync();
+        var awaiting = new Profile
+        {
+            BoreholeId = borehole.Id,
+            Name = "report.pdf",
+            NameUuid = null,
+            Type = "application/pdf",
+            OcrStatus = OcrStatus.WillNotBeProcessed,
+        };
+        context.Profiles.Add(awaiting);
+        await context.SaveChangesAsync();
+
+        var profile = await profileCloudService.LinkUploadedProfileAsync("report.pdf", "application/pdf", "key.pdf", borehole.Id, awaiting.Id);
+
+        Assert.AreEqual(awaiting.Id, profile.Id, "The row the import wrote is the one that was filled.");
+        Assert.AreEqual("key.pdf", profile.NameUuid);
+        Assert.AreEqual(OcrStatus.Created, profile.OcrStatus, "The file has arrived, so it is now eligible.");
+        Assert.AreEqual(1, await context.Profiles.CountAsync(p => p.BoreholeId == borehole.Id && p.Name == "report.pdf"));
+    }
+
+    /// <summary>
+    /// An upload is authorized against a borehole, so a row belonging to another borehole is out of
+    /// its reach even when the upload names that row's id.
+    /// </summary>
+    [TestMethod]
+    public async Task LinkingAgainstARowOfAnotherBoreholeIsRefused()
+    {
+        var boreholeIds = await context.Boreholes.Select(b => b.Id).OrderBy(id => id).Take(2).ToListAsync();
+        var foreign = new Profile
+        {
+            BoreholeId = boreholeIds[1],
+            Name = "foreign.pdf",
+            NameUuid = null,
+            Type = "application/pdf",
+            OcrStatus = OcrStatus.WillNotBeProcessed,
+        };
+        context.Profiles.Add(foreign);
+        await context.SaveChangesAsync();
+
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(() =>
+            profileCloudService.LinkUploadedProfileAsync("foreign.pdf", "application/pdf", "key.pdf", boreholeIds[0], foreign.Id));
+
+        var reloaded = await context.Profiles.SingleAsync(p => p.Id == foreign.Id);
+        Assert.IsNull(reloaded.NameUuid, "The row of the other borehole was left untouched.");
     }
 }
