@@ -29,7 +29,6 @@ public static class LogImportClassifier
         var items = new List<LogImportResultItem>();
         var runsToAdd = new List<LogRun>();
         var filesToAdd = new List<PendingLogFile>();
-        var filesToComplete = new List<int>();
 
         var storedRunIdByNumber = existingRuns.ToDictionary(r => r.RunNumber, r => r.Id, StringComparer.OrdinalIgnoreCase);
         var addedRunNumbers = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
@@ -47,15 +46,14 @@ public static class LogImportClassifier
             existingFiles,
             provided,
             new Dictionary<string, HashSet<string>>(StringComparer.OrdinalIgnoreCase),
-            filesToAdd,
-            filesToComplete);
+            filesToAdd);
 
         foreach (var row in fileRows)
         {
             items.Add(ClassifyFile(row, fileContext));
         }
 
-        return new LogImportClassification(items, runsToAdd, filesToAdd, filesToComplete);
+        return new LogImportClassification(items, runsToAdd, filesToAdd);
     }
 
     private static LogImportResultItem ClassifyRun(
@@ -108,15 +106,13 @@ public static class LogImportClassifier
     /// <param name="Provided">What the client holds, each as "runNumber/fileName".</param>
     /// <param name="NamesSeenPerRun">The file names already met in this import, by run number.</param>
     /// <param name="FilesToAdd">The files to write, appended to as rows are accepted.</param>
-    /// <param name="FilesToComplete">Stored files now expected to receive their attachment.</param>
     private sealed record FileClassificationContext(
         Dictionary<string, int> StoredRunIdByNumber,
         HashSet<string> AddedRunNumbers,
         IReadOnlyList<ExistingLogFile> ExistingFiles,
         HashSet<string> Provided,
         Dictionary<string, HashSet<string>> NamesSeenPerRun,
-        List<PendingLogFile> FilesToAdd,
-        List<int> FilesToComplete);
+        List<PendingLogFile> FilesToAdd);
 
     private static LogImportResultItem ClassifyFile(LogFileRow row, FileClassificationContext context)
     {
@@ -177,7 +173,6 @@ public static class LogImportClassifier
         // attachment is accepted now, and its metadata stays as it was stored.
         if (stored is { HasAttachment: false })
         {
-            context.FilesToComplete.Add(stored.Id);
             return new LogImportResultItem(LogImportItemType.File, identifier, LogImportOutcome.Added, "importResultFileAdded", values, stored.LogRunId, stored.Id);
         }
 
@@ -226,9 +221,7 @@ public record PendingLogFile(string RunNumber, LogFile LogFile);
 /// <param name="Items">One entry per row, runs before files, in file order.</param>
 /// <param name="RunsToAdd">The runs to write.</param>
 /// <param name="FilesToAdd">The files to write.</param>
-/// <param name="FilesToComplete">Stored files that were waiting for their attachment and are now expected to receive it.</param>
 public record LogImportClassification(
     IReadOnlyList<LogImportResultItem> Items,
     IReadOnlyList<LogRun> RunsToAdd,
-    IReadOnlyList<PendingLogFile> FilesToAdd,
-    IReadOnlyList<int> FilesToComplete);
+    IReadOnlyList<PendingLogFile> FilesToAdd);
