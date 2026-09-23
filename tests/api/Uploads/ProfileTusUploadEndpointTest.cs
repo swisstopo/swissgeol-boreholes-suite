@@ -197,6 +197,32 @@ public class ProfileTusUploadEndpointTest
     }
 
     /// <summary>
+    /// Writes the row an import leaves behind: named, typed, and waiting for the file it describes.
+    /// It is inserted through a context of its own, and committed immediately, so the row is visible
+    /// to the server the request goes to rather than sitting in the class context's transaction.
+    /// </summary>
+    private async Task<Profile> AwaitingProfileAsync(int boreholeId, string fileName)
+    {
+        var profile = new Profile
+        {
+            BoreholeId = boreholeId,
+            Name = fileName,
+            NameUuid = null,
+            Type = PdfContentType,
+            OcrStatus = OcrStatus.WillNotBeProcessed,
+        };
+
+        await using (var setupContext = ContextFactory.CreateContext())
+        {
+            setupContext.Profiles.Add(profile);
+            await setupContext.SaveChangesAsync();
+        }
+
+        writtenProfileIds.Add(profile.Id);
+        return profile;
+    }
+
+    /// <summary>
     /// Names a borehole the seeded administrator may edit, so that the test does not have to assume
     /// that the first borehole in the database is one: a reviewed or published borehole is refused
     /// to everyone, and the upload would then fail for a reason none of these tests is about.
@@ -314,24 +340,7 @@ public class ProfileTusUploadEndpointTest
     {
         var boreholeId = await EditableBoreholeIdAsync();
         var fileName = $"{Guid.NewGuid()}.pdf";
-        var profile = new Profile
-        {
-            BoreholeId = boreholeId,
-            Name = fileName,
-            NameUuid = null,
-            Type = PdfContentType,
-            OcrStatus = OcrStatus.WillNotBeProcessed,
-        };
-
-        // Inserted through a context of its own, and committed immediately, so the row is visible
-        // to the server the request goes to rather than sitting in the class context's transaction.
-        await using (var setupContext = ContextFactory.CreateContext())
-        {
-            setupContext.Profiles.Add(profile);
-            await setupContext.SaveChangesAsync();
-        }
-
-        writtenProfileIds.Add(profile.Id);
+        var profile = await AwaitingProfileAsync(boreholeId, fileName);
         using var client = factory.CreateClient();
 
         var uploadedId = await UploadAsync(client, boreholeId, fileName, Encoding.UTF8.GetBytes("%PDF-1.4"), profile.Id);
@@ -390,6 +399,63 @@ public class ProfileTusUploadEndpointTest
 
         Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode);
         Assert.AreEqual(0, await context.Profiles.CountAsync(p => p.BoreholeId == unknownBoreholeId));
+    }
+
+    /// <summary>
+    /// An upload is authorized against the borehole it names, so a row belonging to another
+    /// borehole is out of its reach even when the upload names that row's id. Refusing it as the
+    /// upload is created is what keeps the user from sending the whole file first.
+    /// </summary>
+    [TestMethod]
+    public async Task CreatingAnUploadForAProfileOfAnotherBoreholeIsRefused()
+    {
+        var boreholeId = await EditableBoreholeIdAsync();
+        var otherBoreholeId = await context.Boreholes.Where(b => b.Id != boreholeId).Select(b => b.Id).FirstAsync();
+        var foreign = await AwaitingProfileAsync(otherBoreholeId, $"{Guid.NewGuid()}.pdf");
+        using var client = factory.CreateClient();
+
+        using var response = await client.SendAsync(CreateUpload(SubAdmin, boreholeId, foreign.Name, profileId: foreign.Id));
+
+        Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode);
+
+        var reloaded = await context.Profiles.AsNoTracking().SingleAsync(p => p.Id == foreign.Id);
+        Assert.IsNull(reloaded.NameUuid, "The row of the other borehole was left untouched.");
+    }
+
+    /// <summary>
+    /// The row the upload fills can be deleted while the file is on its way, which is ordinary
+    /// concurrency rather than a client mistake. Every request is authorized, so the upload is
+    /// refused at the next chunk instead of failing on the last byte of a file that may be gigabytes
+    /// long, with nothing the user could act on.
+    /// </summary>
+    [TestMethod]
+    public async Task SendingAChunkForAProfileThatWasDeletedIsRefused()
+    {
+        var boreholeId = await EditableBoreholeIdAsync();
+        var profile = await AwaitingProfileAsync(boreholeId, $"{Guid.NewGuid()}.pdf");
+        var content = Encoding.UTF8.GetBytes("%PDF-1.4 content");
+        using var client = factory.CreateClient();
+
+        using var created = await client.SendAsync(CreateUpload(SubAdmin, boreholeId, profile.Name, content.Length, profile.Id));
+        Assert.AreEqual(HttpStatusCode.Created, created.StatusCode);
+        startedUploadPaths.Add(created.Headers.Location.ToString());
+
+        await using (var deleteContext = ContextFactory.CreateContext())
+        {
+            deleteContext.Profiles.RemoveRange(deleteContext.Profiles.Where(p => p.Id == profile.Id));
+            await deleteContext.SaveChangesAsync();
+        }
+
+        using var patch = new HttpRequestMessage(HttpMethod.Patch, created.Headers.Location);
+        patch.Headers.Add(TusResumableHeader, TusVersion);
+        patch.Headers.Add(UploadOffsetHeader, "0");
+        patch.Headers.Add(TestAuthHandler.SubjectIdHeader, SubAdmin);
+        patch.Content = new ByteArrayContent(content);
+        patch.Content.Headers.ContentType = new MediaTypeHeaderValue(OffsetContentType);
+
+        using var response = await client.SendAsync(patch);
+
+        Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode, await response.Content.ReadAsStringAsync());
     }
 
     [TestMethod]

@@ -16,8 +16,8 @@ public static class FileSizeLimits
     public const int Standard = 210_000_000;
 
     /// <summary>
-    /// The limit that applies to a log file, which arrives in chunks and so is not bounded by what
-    /// one request may carry.
+    /// The limit that applies to a file arriving in chunks, which is not bounded by what one
+    /// request may carry. Every chunked upload accepts up to this much, whatever it is uploading.
     /// </summary>
     public const long Large = 5_000_000_000;
 }

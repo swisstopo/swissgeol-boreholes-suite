@@ -1,5 +1,6 @@
 ﻿using BDMS.Services;
 using BDMS.Uploads.S3;
+using Microsoft.EntityFrameworkCore;
 using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 using tusdotnet.Models;
@@ -12,6 +13,7 @@ namespace BDMS.Uploads;
 /// </summary>
 public class ProfileTusEndpoint : TusUploadEndpoint<ProfileUploadMetadata>
 {
+    private readonly BdmsContext context;
     private readonly IBoreholePermissionService boreholePermissionService;
     private readonly ProfileCloudService profileCloudService;
 
@@ -19,10 +21,12 @@ public class ProfileTusEndpoint : TusUploadEndpoint<ProfileUploadMetadata>
     /// Initializes a new instance of the <see cref="ProfileTusEndpoint"/> class.
     /// </summary>
     public ProfileTusEndpoint(
+        BdmsContext context,
         IBoreholePermissionService boreholePermissionService,
         ProfileCloudService profileCloudService,
         [FromKeyedServices(UploadBuckets.Profiles)] S3TusStore store)
     {
+        this.context = context;
         this.boreholePermissionService = boreholePermissionService;
         this.profileCloudService = profileCloudService;
         Store = store;
@@ -52,8 +56,17 @@ public class ProfileTusEndpoint : TusUploadEndpoint<ProfileUploadMetadata>
         var subjectId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
         if (subjectId is null) return false;
 
-        return await boreholePermissionService
-            .CanEditBoreholeAsync(subjectId, metadata.BoreholeId)
+        if (!await boreholePermissionService.CanEditBoreholeAsync(subjectId, metadata.BoreholeId).ConfigureAwait(false)) return false;
+
+        // An upload that names no row creates one, so there is nothing yet to look up.
+        if (metadata.ProfileId is not int profileId) return true;
+
+        // The row is looked up within the borehole the upload is authorized against, so an upload
+        // cannot reach a row belonging to another borehole. Every request is checked, not only the
+        // one that creates the upload, so a row deleted while the file is on its way refuses the
+        // next chunk rather than the last byte of a file that may be gigabytes long.
+        return await context.Profiles
+            .AnyAsync(p => p.Id == profileId && p.BoreholeId == metadata.BoreholeId, cancellationToken)
             .ConfigureAwait(false);
     }
 
