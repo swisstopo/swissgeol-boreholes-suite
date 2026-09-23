@@ -430,6 +430,20 @@ export type BoreholeGeometryElement = {
 };
 
 /**
+ * What an import did, and what it is still waiting for.
+ */
+export type BoreholeImportResult = {
+  /**
+   * How many boreholes were created.
+   */
+  boreholeCount?: number;
+  /**
+   * The rows written for attachments that have yet to be uploaded.
+   */
+  attachments?: Array<PendingAttachment>;
+};
+
+/**
  * Represents a lightweight borehole for displaying in boreholes table.
  */
 export type BoreholeListItem = {
@@ -2468,6 +2482,26 @@ export type PaginatedLogResponse = {
 };
 
 /**
+ * A profile row waiting for the file that fills it.
+ */
+export type PendingAttachment = {
+  /**
+   * The row the upload names.
+   */
+  profileId?: number;
+  /**
+   * The borehole the row belongs to. The upload is authorized against the borehole rather than the
+   * row, so the client has to name it, and reading it back per attachment would be a request each.
+   */
+  boreholeId?: number;
+  /**
+   * The archive entry holding the file, named the way the export wrote it. The server builds this
+   * rather than the client, so the two cannot come to disagree about how a name is sanitised.
+   */
+  fileName?: string;
+};
+
+/**
  * Represents a Photo entity in the database.
  */
 export type Photo = {
@@ -2580,9 +2614,11 @@ export type Profile = {
    */
   name?: string;
   /**
-   * Gets or sets the unique BDMS.Models.Profile file name.
+   * Gets or sets the unique BDMS.Models.Profile file name, which is the key the object is
+   * stored under. Null until an upload has arrived for it, because an import writes the row
+   * before the file it describes is sent.
    */
-  nameUuid?: string;
+  nameUuid?: string | null;
   /**
    * Gets or sets the BDMS.Models.Profile's content type.
    */
@@ -2887,6 +2923,10 @@ export type UploadSettings = {
    * The largest log file accepted by the chunked upload, in bytes.
    */
   largeMaxFileSize?: number;
+  /**
+   * The largest import archive the client accepts, in bytes. No archive is sent to the API: the client unpacks it and sends its contents as a description and one upload per attachment.
+   */
+  maxImportArchiveSize?: number;
   /**
    * How much of a file the chunked upload is expected to send per request, in bytes.
    */
@@ -5146,9 +5186,11 @@ export type ProfileWritable = {
    */
   name?: string;
   /**
-   * Gets or sets the unique BDMS.Models.Profile file name.
+   * Gets or sets the unique BDMS.Models.Profile file name, which is the key the object is
+   * stored under. Null until an upload has arrived for it, because an import writes the row
+   * before the file it describes is sent.
    */
-  nameUuid?: string;
+  nameUuid?: string | null;
   /**
    * Gets or sets the BDMS.Models.Profile's content type.
    */
@@ -6962,6 +7004,12 @@ export type PostApiVbyVersionImportJsonData = {
      * The BDMS.Models.Workgroup.Id of the new BDMS.Models.Borehole(s).
      */
     workgroupId?: number;
+    /**
+     * Whether the caller holds the attachments the JSON describes and will upload them. When it
+     * does, a row is written per attachment for those uploads to fill; when it does not, the
+     * profiles are dropped, because nothing would ever arrive for them.
+     */
+    importAttachments?: boolean;
   };
   url: "/api/v{version}/import/json";
 };
@@ -6970,40 +7018,11 @@ export type PostApiVbyVersionImportJsonResponses = {
   /**
    * OK
    */
-  200: number;
+  200: BoreholeImportResult;
 };
 
 export type PostApiVbyVersionImportJsonResponse =
   PostApiVbyVersionImportJsonResponses[keyof PostApiVbyVersionImportJsonResponses];
-
-export type PostApiVbyVersionImportZipData = {
-  body?: {
-    /**
-     * The Microsoft.AspNetCore.Http.IFormFile containing the borehole records and attachments that were uploaded.
-     */
-    boreholesFile?: Blob | File;
-  };
-  path: {
-    version: string;
-  };
-  query?: {
-    /**
-     * The BDMS.Models.Workgroup.Id of the new BDMS.Models.Borehole(s).
-     */
-    workgroupId?: number;
-  };
-  url: "/api/v{version}/import/zip";
-};
-
-export type PostApiVbyVersionImportZipResponses = {
-  /**
-   * OK
-   */
-  200: number;
-};
-
-export type PostApiVbyVersionImportZipResponse =
-  PostApiVbyVersionImportZipResponses[keyof PostApiVbyVersionImportZipResponses];
 
 export type DeleteApiVbyVersionInstrumentationData = {
   body?: never;
@@ -7709,32 +7728,6 @@ export type PutApiVbyVersionPhotoData = {
 };
 
 export type PutApiVbyVersionPhotoResponses = {
-  /**
-   * OK
-   */
-  200: unknown;
-};
-
-export type PostApiVbyVersionProfileUploadData = {
-  body?: {
-    /**
-     * The file to upload.
-     */
-    file: Blob | File;
-  };
-  path: {
-    version: string;
-  };
-  query: {
-    /**
-     * The BDMS.Models.Borehole.Id to attach the uploaded profile to.
-     */
-    boreholeId: number;
-  };
-  url: "/api/v{version}/profile/upload";
-};
-
-export type PostApiVbyVersionProfileUploadResponses = {
   /**
    * OK
    */

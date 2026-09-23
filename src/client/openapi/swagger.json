@@ -3156,6 +3156,15 @@
             }
           },
           {
+            "name": "importAttachments",
+            "in": "query",
+            "description": "Whether the caller holds the attachments the JSON describes and will upload them. When it\r\ndoes, a row is written per attachment for those uploads to fill; when it does not, the\r\nprofiles are dropped, because nothing would ever arrive for them.",
+            "schema": {
+              "type": "boolean",
+              "default": false
+            }
+          },
+          {
             "name": "version",
             "in": "path",
             "required": true,
@@ -3191,93 +3200,17 @@
             "content": {
               "text/plain": {
                 "schema": {
-                  "type": "integer",
-                  "format": "int32"
+                  "$ref": "#/components/schemas/BoreholeImportResult"
                 }
               },
               "application/json": {
                 "schema": {
-                  "type": "integer",
-                  "format": "int32"
+                  "$ref": "#/components/schemas/BoreholeImportResult"
                 }
               },
               "text/json": {
                 "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              }
-            }
-          }
-        }
-      }
-    },
-    "/api/v{version}/import/zip": {
-      "post": {
-        "tags": [
-          "Import"
-        ],
-        "summary": "Receives an uploaded ZIP file to import one or several BDMS.Models.Borehole(s).\r\nThe ZIP file can additionally contain attachments.",
-        "parameters": [
-          {
-            "name": "workgroupId",
-            "in": "query",
-            "description": "The BDMS.Models.Workgroup.Id of the new BDMS.Models.Borehole(s).",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "boreholesFile": {
-                    "type": "string",
-                    "description": "The Microsoft.AspNetCore.Http.IFormFile containing the borehole records and attachments that were uploaded.",
-                    "format": "binary"
-                  }
-                }
-              },
-              "encoding": {
-                "boreholesFile": {
-                  "style": "form"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK",
-            "content": {
-              "text/plain": {
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              },
-              "application/json": {
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
-                }
-              },
-              "text/json": {
-                "schema": {
-                  "type": "integer",
-                  "format": "int32"
+                  "$ref": "#/components/schemas/BoreholeImportResult"
                 }
               }
             }
@@ -4854,65 +4787,6 @@
                 "type": "array",
                 "items": {
                   "$ref": "#/components/schemas/PhotoUpdate"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
-    "/api/v{version}/profile/upload": {
-      "post": {
-        "tags": [
-          "Profile"
-        ],
-        "summary": "Uploads a file to cloud storage and creates a BDMS.Models.Profile attached to the borehole.",
-        "parameters": [
-          {
-            "name": "boreholeId",
-            "in": "query",
-            "description": "The BDMS.Models.Borehole.Id to attach the uploaded profile to.",
-            "required": true,
-            "schema": {
-              "maximum": 2147483647,
-              "minimum": 1,
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "required": [
-                  "file"
-                ],
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "description": "The file to upload.",
-                    "format": "binary"
-                  }
-                }
-              },
-              "encoding": {
-                "file": {
-                  "style": "form"
                 }
               }
             }
@@ -7752,6 +7626,25 @@
           }
         },
         "additionalProperties": false
+      },
+      "BoreholeImportResult": {
+        "type": "object",
+        "properties": {
+          "boreholeCount": {
+            "type": "integer",
+            "description": "How many boreholes were created.",
+            "format": "int32"
+          },
+          "attachments": {
+            "type": "array",
+            "items": {
+              "$ref": "#/components/schemas/PendingAttachment"
+            },
+            "description": "The rows written for attachments that have yet to be uploaded."
+          }
+        },
+        "additionalProperties": false,
+        "description": "What an import did, and what it is still waiting for."
       },
       "BoreholeListItem": {
         "required": [
@@ -11818,6 +11711,27 @@
         "additionalProperties": false,
         "description": "Represents a paginated response containing a subset of BDMS.Maintenance.MaintenanceTaskLogEntry along with pagination info."
       },
+      "PendingAttachment": {
+        "type": "object",
+        "properties": {
+          "profileId": {
+            "type": "integer",
+            "description": "The row the upload names.",
+            "format": "int32"
+          },
+          "boreholeId": {
+            "type": "integer",
+            "description": "The borehole the row belongs to. The upload is authorized against the borehole rather than the\r\nrow, so the client has to name it, and reading it back per attachment would be a request each.",
+            "format": "int32"
+          },
+          "fileName": {
+            "type": "string",
+            "description": "The archive entry holding the file, named the way the export wrote it. The server builds this\r\nrather than the client, so the two cannot come to disagree about how a name is sanitised."
+          }
+        },
+        "additionalProperties": false,
+        "description": "A profile row waiting for the file that fills it."
+      },
       "Photo": {
         "required": [
           "boreholeId",
@@ -12091,7 +12005,8 @@
           },
           "nameUuid": {
             "type": "string",
-            "description": "Gets or sets the unique BDMS.Models.Profile file name."
+            "description": "Gets or sets the unique BDMS.Models.Profile file name, which is the key the object is\r\nstored under. Null until an upload has arrived for it, because an import writes the row\r\nbefore the file it describes is sent.",
+            "nullable": true
           },
           "type": {
             "type": "string",
@@ -12591,6 +12506,11 @@
           "largeMaxFileSize": {
             "type": "integer",
             "description": "The largest log file accepted by the chunked upload, in bytes.",
+            "format": "int64"
+          },
+          "maxImportArchiveSize": {
+            "type": "integer",
+            "description": "The largest import archive the client accepts, in bytes. No archive is sent to the API: the client unpacks it and sends its contents as a description and one upload per attachment.",
             "format": "int64"
           },
           "chunkSize": {
