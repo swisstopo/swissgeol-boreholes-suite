@@ -154,9 +154,7 @@ describe("ImportLogWizard", () => {
     await runImportToReport();
     await waitFor(() => expect(uploadResumable).toHaveBeenCalledTimes(1));
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: "Close" }));
-    });
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
 
     await waitFor(() => expect(deleteLogFile).toHaveBeenCalledTimes(2));
     expect(cleanupOrder.at(-1)).toBe("refresh");

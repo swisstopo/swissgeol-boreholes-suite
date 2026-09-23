@@ -19,6 +19,7 @@ namespace BDMS.Controllers;
 public class LogControllerTest : TestControllerBase
 {
     private const string TestFileName = "test_logfile.las";
+    private const string WaitingLogFileName = "waiting.las";
     private const string LogRunCsvPrefix = "log_runs_";
     private const string LogFileCsvPrefix = "log_files_";
     private const string TestRunNumber = "RUN-A";
@@ -1070,7 +1071,7 @@ public class LogControllerTest : TestControllerBase
         var existingWithAttachment = new LogFile { LogRunId = storedRun.Id, Name = "existing.las", NameUuid = $"{Guid.NewGuid()}.las", Public = false };
 
         // Stored by an earlier import but still waiting for its attachment (NameUuid == null).
-        var waitingForAttachment = new LogFile { LogRunId = storedRun.Id, Name = "waiting.las", Public = false };
+        var waitingForAttachment = new LogFile { LogRunId = storedRun.Id, Name = WaitingLogFileName, Public = false };
         Context.LogFiles.AddRange(existingWithAttachment, waitingForAttachment);
         await Context.SaveChangesAsync();
 
@@ -1165,7 +1166,7 @@ public class LogControllerTest : TestControllerBase
         var borehole = await AddTestBoreholeAsync();
         var logRun = await AddTestLogRunAsync(borehole.Id);
 
-        var logFile = new LogFile { LogRunId = logRun.Id, Name = "waiting.las", NameUuid = null, Public = false };
+        var logFile = new LogFile { LogRunId = logRun.Id, Name = WaitingLogFileName, NameUuid = null, Public = false };
         Context.LogFiles.Add(logFile);
         await Context.SaveChangesAsync();
 
@@ -1185,7 +1186,7 @@ public class LogControllerTest : TestControllerBase
         Context.LogRuns.Add(logRun);
         await Context.SaveChangesAsync();
 
-        var logFile = new LogFile { LogRunId = logRun.Id, Name = "waiting.las", NameUuid = null, Public = false };
+        var logFile = new LogFile { LogRunId = logRun.Id, Name = WaitingLogFileName, NameUuid = null, Public = false };
         Context.LogFiles.Add(logFile);
         await Context.SaveChangesAsync();
 
@@ -1229,7 +1230,7 @@ public class LogControllerTest : TestControllerBase
         Context.LogRuns.Add(logRun);
         await Context.SaveChangesAsync();
 
-        var logFile = new LogFile { LogRunId = logRun.Id, Name = "waiting.las", NameUuid = null, Public = false };
+        var logFile = new LogFile { LogRunId = logRun.Id, Name = WaitingLogFileName, NameUuid = null, Public = false };
         Context.LogFiles.Add(logFile);
         await Context.SaveChangesAsync();
 
