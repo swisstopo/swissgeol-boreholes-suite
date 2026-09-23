@@ -1221,6 +1221,42 @@ public class LogControllerTest : TestControllerBase
         Assert.IsInstanceOfType(response, typeof(NotFoundObjectResult));
     }
 
+    [TestMethod]
+    public async Task DeleteLogFileWithoutEditPermissionReturnsUnauthorized()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = new LogRun { BoreholeId = borehole.Id, RunNumber = "RUN-UNAUTH", FromDepth = 0, ToDepth = 1 };
+        Context.LogRuns.Add(logRun);
+        await Context.SaveChangesAsync();
+
+        var logFile = new LogFile { LogRunId = logRun.Id, Name = "waiting.las", NameUuid = null, Public = false };
+        Context.LogFiles.Add(logFile);
+        await Context.SaveChangesAsync();
+
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", borehole.Id))
+            .ReturnsAsync(false);
+
+        var response = await controller.DeleteLogFileAsync(logFile.Id, CancellationToken.None);
+
+        ActionResultAssert.IsUnauthorized(response);
+        Assert.IsTrue(Context.LogFiles.Any(lf => lf.Id == logFile.Id));
+    }
+
+    [TestMethod]
+    public async Task RequiredAttachmentsWithoutEditPermissionReturnsUnauthorized()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", borehole.Id))
+            .ReturnsAsync(false);
+
+        var csvFile = GetFormFileByContent("RunNumber;Name;Extension\nRUN-A;My Log;las\n", FilesCsvFileName);
+        var response = await controller.RequiredAttachmentsAsync(borehole.Id, csvFile);
+
+        ActionResultAssert.IsUnauthorized(response);
+    }
+
     // Helpers
     private async Task<int> CreateCompleteLogRunAsync()
     {
