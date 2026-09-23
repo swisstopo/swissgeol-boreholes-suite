@@ -29,9 +29,8 @@ export const isAbortError = (error: unknown): boolean => error instanceof DOMExc
 const bytesPerMegabyte = 1_000_000;
 
 /**
- * Formats a byte count for display, using decimal megabytes so the numbers match what
- * operating systems and cloud storage report. The unit stays at megabytes with a single
- * decimal for every size, so the number keeps visibly moving even during a large transfer.
+ * Formats a byte count in decimal megabytes (1 MB = 1'000'000 bytes) with one decimal.
+ * The unit never switches to GB, so the number keeps visibly moving during a large transfer.
  * @param bytes The number of bytes.
  * @returns The formatted size, e.g. `1'400.0 MB`.
  */
