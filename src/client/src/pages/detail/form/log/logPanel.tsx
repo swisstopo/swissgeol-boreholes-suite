@@ -3,7 +3,6 @@ import { useTranslation } from "react-i18next";
 import { Box, CircularProgress, Stack } from "@mui/material";
 import { Trash2, X } from "lucide-react";
 import UploadIcon from "../../../../assets/icons/upload.svg?react";
-import { parseAsBoolean, useQueryState } from "nuqs";
 import { v4 as uuidv4 } from "uuid";
 import { isAbortError, progressRefreshIntervalMs } from "../../../../api/transferProgress.ts";
 import { AddButton, BoreholesBaseButton } from "../../../../components/buttons/buttons.tsx";
@@ -42,7 +41,7 @@ export const LogPanel: FC = () => {
   const { editingEnabled } = useContext(EditStateContext);
   const boreholeId = useRequiredId();
   const [selectedLogRunId, setSelectedLogRunId] = useState<string | undefined>();
-  const [isImporting, setIsImporting] = useQueryState("import", parseAsBoolean.withDefault(false));
+  const [isImporting, setIsImporting] = useState(false);
   const {
     registerSaveHandler,
     registerResetHandler,
