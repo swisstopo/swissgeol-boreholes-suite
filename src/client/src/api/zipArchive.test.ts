@@ -71,6 +71,14 @@ describe("openBoreholeArchive", () => {
     await expect(openBoreholeArchive(archive)).rejects.toBeInstanceOf(ArchiveJsonMissingError);
   });
 
+  it("refuses an empty file, which holds no archive to look for a json entry in", async () => {
+    const notAnArchive = new File([], "empty.zip", { type: "application/zip" });
+
+    // The entries cannot be listed at all, so this never reaches the question of what they hold.
+    await expect(openBoreholeArchive(notAnArchive)).rejects.toThrow();
+    await expect(openBoreholeArchive(notAnArchive)).rejects.not.toBeInstanceOf(ArchiveJsonMissingError);
+  });
+
   it("hands out an entry as a source carrying its size and name", async () => {
     const archive = await archiveWith([
       ["export.json", new Blob(["[]"])],

@@ -28,6 +28,10 @@ const close = vi.fn();
 
 const handlers = (signal: AbortSignal) => ({ onProgress: vi.fn(), onImported: vi.fn(), signal });
 
+// A discard that fails is logged rather than raised, so the log is asserted here instead of being
+// printed alongside the results.
+const consoleError = vi.spyOn(console, "error").mockImplementation(() => undefined);
+
 describe("importBoreholeArchive", () => {
   beforeEach(() => {
     vi.clearAllMocks();
@@ -117,14 +121,38 @@ describe("importBoreholeArchive", () => {
       attachments: [{ profileId: 1, boreholeId: 7, fileName: "a_report.pdf" }],
     });
     const given = handlers(new AbortController().signal);
+
+    // Recorded rather than asserted inside the upload, whose rejection the import turns into a
+    // discard: a failed expectation there would never reach the runner.
+    const order: string[] = [];
+    given.onImported.mockImplementation(() => order.push("imported"));
     uploadResumable.mockImplementation(async () => {
-      expect(given.onImported).toHaveBeenCalled();
+      order.push("uploaded");
       return 1;
     });
 
     await importBoreholeArchive(archiveFile, 3, given);
 
-    expect(given.onImported).toHaveBeenCalledTimes(1);
+    expect(order).toStrictEqual(["imported", "uploaded"]);
+  });
+
+  it("discards the rows behind a discard that failed, and says which row was left behind", async () => {
+    importBoreholesJson.mockResolvedValue({
+      boreholeCount: 1,
+      attachments: [
+        { profileId: 1, boreholeId: 7, fileName: "a_report.pdf" },
+        { profileId: 2, boreholeId: 8, fileName: "b_plan.pdf" },
+        { profileId: 3, boreholeId: 9, fileName: "c_map.pdf" },
+      ],
+    });
+    uploadResumable.mockRejectedValueOnce(new Error("transport failed"));
+    discardPendingProfile.mockRejectedValueOnce(new Error("the connection is gone"));
+
+    const outcome = await importBoreholeArchive(archiveFile, 3, handlers(new AbortController().signal));
+
+    expect(discardPendingProfile.mock.calls.map(([profileId]) => profileId)).toStrictEqual([1, 2, 3]);
+    expect(outcome).toStrictEqual({ boreholeCount: 1, uploadedCount: 0, pendingCount: 3 });
+    expect(consoleError).toHaveBeenCalledWith("Could not discard the pending profile 1", expect.any(Error));
   });
 
   it("names the file on the wire and its place in the batch", async () => {

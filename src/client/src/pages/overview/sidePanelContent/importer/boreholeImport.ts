@@ -26,8 +26,20 @@ interface ArchiveImportHandlers {
   signal: AbortSignal;
 }
 
-/** Removes the row the import wrote for an attachment that never arrived. */
-const discardRow = async (profileId: number) => await discardPendingProfile(profileId).catch(() => undefined);
+/**
+ * Removes the row the import wrote for an attachment that never arrived.
+ *
+ * A discard that fails is kept from the caller: the rows behind it still have to be discarded, and
+ * the user has already been told that the attachments did not arrive. Nothing removes the row that
+ * is left behind afterwards, so it is logged with the id that names it.
+ */
+const discardRow = async (profileId: number) => {
+  try {
+    await discardPendingProfile(profileId);
+  } catch (error) {
+    console.error(`Could not discard the pending profile ${profileId}`, error);
+  }
+};
 
 /**
  * Imports an archive the user picked.

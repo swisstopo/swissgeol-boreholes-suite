@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, Button, Link, Stack } from "@mui/material";
+import { Box, Button, Link, Portal, Stack } from "@mui/material";
 import { useQueryClient } from "@tanstack/react-query";
 import {
   BoreholeImportError,
@@ -57,8 +57,15 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
   const [progress, setProgress] = useState<ImportProgress | undefined>();
   const runningImport = useRef<AbortController | null>(null);
 
-  // Nothing else gives up on a running import: the panel is torn down both when the drawer is
-  // closed and when the page it belongs to is left, and neither passes through an action of its own.
+  /**
+   * Whether an import is under way. Kept beside `isLoading`, which only reaches the button on the
+   * next render and so cannot turn away a second call of the handler.
+   */
+  const isImporting = useRef(false);
+
+  // Nothing else gives up on a running import: closing the drawer only collapses the panel, so the
+  // teardowns that reach here are the drawer's content being swapped and the page being left, and
+  // neither passes through an action of its own.
   useEffect(() => () => runningImport.current?.abort(), []);
 
   const refresh = () => {
@@ -178,25 +185,36 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
     reportImported(outcome.boreholeCount);
   };
 
-  /** Reports a failed import, whichever of the three ways of importing raised it. */
+  /**
+   * Reports a failed import, whichever of the three ways of importing raised it.
+   *
+   * Never fails itself: telling the user is the last thing a failing import does, so a refusal
+   * whose body cannot be read falls back to the generic message rather than leaving them with none.
+   */
   const reportImportFailure = async (error: unknown) => {
-    if (error instanceof BoreholeImportError) {
-      await showImportError(error.response);
-      return;
-    }
-
     if (error instanceof ArchiveJsonMissingError) {
       showAlert(t("importArchiveMissingJson"), "error");
       return;
     }
 
-    console.error("Error during import", error);
+    if (error instanceof BoreholeImportError) {
+      try {
+        await showImportError(error.response);
+        return;
+      } catch (unreadableRefusal) {
+        console.error("Could not read what the server said about the refused import", unreadableRefusal);
+      }
+    } else {
+      console.error("Error during import", error);
+    }
+
     showAlert(t("boreholesImportError"), "error");
   };
 
   const handleBoreholeImport = async () => {
-    if (file === null || currentWorkgroupId === null) return;
+    if (file === null || currentWorkgroupId === null || isImporting.current) return;
 
+    isImporting.current = true;
     setIsLoading(true);
     try {
       const extension = getFileExtension(file);
@@ -211,6 +229,7 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
       await reportImportFailure(error);
     } finally {
       runningImport.current = null;
+      isImporting.current = false;
       setProgress(undefined);
       setIsLoading(false);
     }
@@ -238,19 +257,24 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
         <Button
           variant="contained"
           data-cy={"import-button"}
-          disabled={!file || editableWorkgroups?.length === 0 || !currentWorkgroupId}
+          disabled={!file || isLoading || editableWorkgroups?.length === 0 || !currentWorkgroupId}
           onClick={handleBoreholeImport}>
           {t("import")}
         </Button>
       </Stack>
       {isLoading && (
-        <LoadingBackdrop
-          open={isLoading}
-          message={progress?.message}
-          hint={progress?.hint}
-          onCancel={progress?.hint === undefined ? undefined : () => runningImport.current?.abort()}
-          sx={{ zIndex: theme.zIndex.modal + 1 }}
-        />
+        // Rendered outside the drawer, which hides everything inside it once it is collapsed. An
+        // import keeps running when the drawer is closed, so its progress and its way out have to
+        // stay on screen.
+        <Portal>
+          <LoadingBackdrop
+            open={isLoading}
+            message={progress?.message}
+            hint={progress?.hint}
+            onCancel={progress?.hint === undefined ? undefined : () => runningImport.current?.abort()}
+            sx={{ zIndex: theme.zIndex.modal + 1 }}
+          />
+        </Portal>
       )}
     </Box>
   );
