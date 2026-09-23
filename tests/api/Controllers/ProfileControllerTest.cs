@@ -248,9 +248,11 @@ public class ProfileControllerTest
 
         // Get latest profile in db
         var latestProfileInDb = context.Profiles.OrderBy(p => p.Id).Last();
+        var storedObjectKey = latestProfileInDb.NameUuid;
+        Assert.IsNotNull(storedObjectKey);
 
         // Ensure file exists in cloud storage
-        Assert.IsTrue(await profileCloudService.ObjectExists(latestProfileInDb.NameUuid));
+        Assert.IsTrue(await profileCloudService.ObjectExists(storedObjectKey));
 
         // Check counts after upload
         Assert.AreEqual(profilesCountBeforeUpload + 1, context.Profiles.Count());
@@ -264,7 +266,34 @@ public class ProfileControllerTest
         Assert.AreEqual(profilesForBoreholeBeforeUpload, context.Profiles.Where(p => p.BoreholeId == firstBoreholeId).Count());
 
         // Ensure file does not exist in cloud storage
-        Assert.IsFalse(await profileCloudService.ObjectExists(latestProfileInDb.NameUuid));
+        Assert.IsFalse(await profileCloudService.ObjectExists(storedObjectKey));
+    }
+
+    /// <summary>
+    /// An import writes a profile row before its upload arrives, so deleting one has no object to
+    /// remove. Reaching for the cloud storage with a null key would fail the delete and leave a row
+    /// the user asked to be rid of.
+    /// </summary>
+    [TestMethod]
+    public async Task DeleteProfileWithoutStoredObjectRemovesTheRow()
+    {
+        var boreholeId = context.Boreholes.First().Id;
+        var profile = new Profile
+        {
+            BoreholeId = boreholeId,
+            Name = "awaited.pdf",
+            NameUuid = null,
+            Type = "application/pdf",
+            OcrStatus = OcrStatus.WillNotBeProcessed,
+        };
+
+        context.Profiles.Add(profile);
+        await context.SaveChangesAsync();
+
+        var response = await controller.Delete(profile.Id);
+
+        ActionResultAssert.IsOk(response);
+        Assert.IsFalse(context.Profiles.Any(p => p.Id == profile.Id));
     }
 
     [TestMethod]
@@ -323,6 +352,7 @@ public class ProfileControllerTest
 
         // Get latest profile in db
         var latestProfileInDb = context.Profiles.OrderBy(p => p.Id).Last();
+        Assert.IsNotNull(latestProfileInDb.NameUuid);
 
         // Ensure file exists in cloud storage
         Assert.IsTrue(await profileCloudService.ObjectExists(latestProfileInDb.NameUuid));
@@ -375,6 +405,7 @@ public class ProfileControllerTest
         var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
         ActionResultAssert.IsOk(uploadResult);
         var profile = (Profile)((OkObjectResult)uploadResult).Value!;
+        Assert.IsNotNull(profile.NameUuid);
         var fileUuid = profile.NameUuid.Replace(".pdf", "");
 
         var image1 = GetFormFileByExistingFile("labeling_attachment-1.png");
@@ -408,6 +439,7 @@ public class ProfileControllerTest
         var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
         ActionResultAssert.IsOk(uploadResult);
         var profile = (Profile)((OkObjectResult)uploadResult).Value!;
+        Assert.IsNotNull(profile.NameUuid);
         var fileUuid = profile.NameUuid.Replace(".pdf", "");
 
         // Test
@@ -452,6 +484,7 @@ public class ProfileControllerTest
         var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
         ActionResultAssert.IsOk(uploadResult);
         var profile = (Profile)((OkObjectResult)uploadResult).Value!;
+        Assert.IsNotNull(profile.NameUuid);
         var fileUuid = profile.NameUuid.Replace(".pdf", "");
 
         var image1 = GetFormFileByExistingFile("labeling_attachment-1.png");

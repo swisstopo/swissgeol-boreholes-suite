@@ -36,11 +36,13 @@ public class Profile : IIdentifyable, IChangeTracking
     public string Name { get; set; }
 
     /// <summary>
-    /// Gets or sets the unique <see cref="Profile"/> file name.
+    /// Gets or sets the unique <see cref="Profile"/> file name, which is the key the object is
+    /// stored under. Null until an upload has arrived for it, because an import writes the row
+    /// before the file it describes is sent.
     /// </summary>
     [IncludeInExport]
     [Column("name_uuid")]
-    public string NameUuid { get; set; }
+    public string? NameUuid { get; set; }
 
     /// <summary>
     /// Gets or sets the <see cref="Profile"/>'s content type.

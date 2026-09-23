@@ -395,6 +395,42 @@ public class BoreholeExportControllerTest
         StringAssert.StartsWith(problemDetails.Detail, "An error occurred while fetching a file from the cloud storage.");
     }
 
+    /// <summary>
+    /// A profile whose upload never arrived has nothing to put in the archive. Writing an entry for
+    /// it would name a null key, and refusing the whole export would make one profile still waiting
+    /// for its file enough to stop a borehole being exported at all.
+    /// </summary>
+    [TestMethod]
+    public async Task ExportJsonWithAttachmentsSkipsProfileWithoutStoredObject()
+    {
+        var newBorehole = GetBoreholeToAdd();
+        context.Add(newBorehole);
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var storedFileName = $"{Guid.NewGuid()}.pdf";
+        var fileBytes = Encoding.UTF8.GetBytes(Guid.NewGuid().ToString());
+        await profileCloudService.UploadProfileAsync(new MemoryStream(fileBytes), storedFileName, null, false, "application/pdf", newBorehole.Id).ConfigureAwait(false);
+
+        context.Add(new Profile
+        {
+            BoreholeId = newBorehole.Id,
+            Name = "awaited.pdf",
+            NameUuid = null,
+            Type = "application/pdf",
+            OcrStatus = OcrStatus.WillNotBeProcessed,
+        });
+        await context.SaveChangesAsync().ConfigureAwait(false);
+
+        var result = await controller.ExportJsonWithAttachmentsAsync([newBorehole.Id], CancellationToken.None).ConfigureAwait(false);
+
+        using var zipArchive = await ExecuteZipResultAsync(result).ConfigureAwait(false);
+        var entryNames = zipArchive.Entries.Select(entry => entry.FullName).ToList();
+
+        Assert.IsTrue(entryNames.Any(name => name.EndsWith(".json", StringComparison.Ordinal)), "The archive still carries the borehole data.");
+        Assert.IsTrue(entryNames.Any(name => name.EndsWith(storedFileName, StringComparison.Ordinal)), "The archive still carries the profile whose file was uploaded.");
+        Assert.IsFalse(entryNames.Any(name => name.Contains("awaited.pdf", StringComparison.Ordinal)), "The profile still waiting for its file gets no entry.");
+    }
+
     [TestMethod]
     [DataRow(new int[] { 1_000_057, 1_000_058 }, typeof(FileContentResult), DisplayName = "Valid multiple ids.")]
     [DataRow(new int[] { 1, 2 }, typeof(NotFoundObjectResult), DisplayName = "No boreholes found for ids.")]

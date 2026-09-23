@@ -214,8 +214,14 @@ public class ProfileController : ControllerBase
             // Check if associated borehole is locked or user has permissions
             if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), profile.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-            // Attempt S3 delete first; if it succeeds, removing the DB row leaves nothing dangling.
-            await profileCloudService.DeleteObject(profile.NameUuid).ConfigureAwait(false);
+            // An import writes the row before the upload arrives, so a profile may point at no
+            // object. There is then nothing in the bucket to remove.
+            if (profile.NameUuid is not null)
+            {
+                // Attempt S3 delete first; if it succeeds, removing the DB row leaves nothing dangling.
+                await profileCloudService.DeleteObject(profile.NameUuid).ConfigureAwait(false);
+            }
+
             context.Profiles.Remove(profile);
             await context.SaveChangesAsync().ConfigureAwait(false);
 

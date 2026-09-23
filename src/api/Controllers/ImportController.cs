@@ -303,6 +303,10 @@ public class ImportController : ControllerBase
             {
                 foreach (var profileToProcess in profilesForBorehole)
                 {
+                    // An export leaves out the file of a profile whose upload never arrived, so such
+                    // a profile carries no object key and references no attachment to look for.
+                    if (profileToProcess.NameUuid is null) continue;
+
                     var fileName = $"{profileToProcess.NameUuid}_{profileToProcess.Name}";
                     var attachment = zipArchive.Entries.FirstOrDefault(e => e.FullName == fileName);
                     if (attachment == null)
@@ -351,9 +355,12 @@ public class ImportController : ControllerBase
     private void ValidateAttachmentsPresent(IEnumerable<string> attachmentsInZip, List<BoreholeImport> boreholesFromFile)
     {
         // Files are exported with the original name and the UUID as a prefix to make them unique while preserving the original name
+        // An export leaves out the file of a profile whose upload never arrived, so such a profile
+        // carries no object key and references no attachment.
         var referencedAttachments = boreholesFromFile
             .Where(b => b.Profiles != null)
             .SelectMany(b => b.Profiles!)
+            .Where(p => p.NameUuid is not null)
             .Select(p => p.NameUuid + "_" + p.Name);
 
         var missingAttachments = referencedAttachments.Except(attachmentsInZip).ToList();

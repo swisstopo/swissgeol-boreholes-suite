@@ -13,6 +13,7 @@ using System.Globalization;
 using System.IO.Compression;
 using System.Security.Claims;
 using System.Text;
+using System.Text.Json.Nodes;
 using System.Text.RegularExpressions;
 using static BDMS.Helpers;
 
@@ -555,6 +556,38 @@ public class ImportControllerTest
     {
         // Create a ZIP archive
         var boreholeZipFile = await GetZipFileFromExistingFileAsync("json_import_valid.json");
+
+        ActionResult<int> response = await controller.UploadZipFileAsync(workgroupId: 1, boreholeZipFile);
+
+        ActionResultAssert.IsOk(response.Result);
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.AreEqual(2, okResult.Value);
+    }
+
+    /// <summary>
+    /// An export leaves out the file of a profile whose upload never arrived, so the profile reaches
+    /// the JSON with no object key. Reading that key into an attachment name looks for an entry the
+    /// archive was never meant to hold, which would reject the whole import over it.
+    /// </summary>
+    [TestMethod]
+    public async Task UploadZipSkipsProfileWithoutStoredObjectAsync()
+    {
+        var parsed = JsonNode.Parse(await System.IO.File.ReadAllTextAsync("json_import_valid.json"));
+        Assert.IsNotNull(parsed);
+
+        var firstBorehole = parsed.AsArray()[0];
+        Assert.IsNotNull(firstBorehole);
+
+        firstBorehole["profiles"] = new JsonArray(new JsonObject
+        {
+            ["name"] = "awaited.pdf",
+            ["nameUuid"] = null,
+            ["type"] = "application/pdf",
+        });
+
+        var jsonFileName = "json_import_profile_awaiting_upload.json";
+        await System.IO.File.WriteAllTextAsync(jsonFileName, parsed.ToJsonString());
+        var boreholeZipFile = await GetZipFileFromExistingFileAsync(jsonFileName);
 
         ActionResult<int> response = await controller.UploadZipFileAsync(workgroupId: 1, boreholeZipFile);
 
