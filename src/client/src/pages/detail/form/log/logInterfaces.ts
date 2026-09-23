@@ -70,6 +70,13 @@ export type LogImportOutcome = "Added" | "AlreadyExists" | "SkippedIncomplete" |
 /** How far the attachment of an added log file has got. */
 export type LogImportUploadState = "pending" | "uploading" | "uploaded" | "failed";
 
+/**
+ * One row of the import report.
+ *
+ * A `File` item always carries `runNumber` and `fileName` in `values`, whatever its outcome, and
+ * `fileName` is the name as the server stores it. Read those rather than taking the identifier
+ * apart, which is a display string a file name may itself contain the separator of.
+ */
 export interface LogImportResultItem {
   type: LogImportItemType;
   identifier: string;

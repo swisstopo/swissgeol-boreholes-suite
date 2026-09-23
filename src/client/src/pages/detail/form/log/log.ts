@@ -22,6 +22,7 @@ import {
   RequiredAttachmentsVariables,
   UpdateLogRunVariables,
 } from "./logInterfaces.ts";
+import { toStoredFileName } from "./logUtils.ts";
 
 const deleteLogRunsByIds = async (logRunIds: number[]) => {
   const queryParams = logRunIds.map(id => `logRunIds=${id}`).join("&");
@@ -167,8 +168,7 @@ export class LogImportValidationError extends ApiError {
  * @param fileName The file name as the browser reports it.
  * @returns The identifier to send.
  */
-const toAttachmentName = (runNumber: string, fileName: string): string =>
-  `${runNumber}/${fileName.replaceAll(" ", "_")}`;
+const toAttachmentName = (runNumber: string, fileName: string): string => `${runNumber}/${toStoredFileName(fileName)}`;
 
 /**
  * Removes a log file record that never received its attachment.

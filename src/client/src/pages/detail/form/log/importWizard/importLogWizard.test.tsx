@@ -85,6 +85,7 @@ const addedFileItem = (fileName: string, logFileId: number): LogImportResultItem
   identifier: `RUN-1 / ${fileName}`,
   outcome: "Added",
   messageKey: "importResultFileAdded",
+  values: { runNumber: "RUN-1", fileName },
   logRunId: 3,
   logFileId,
 });
