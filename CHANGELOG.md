@@ -7,12 +7,15 @@
 - The export overlay now shows how much of the export has been downloaded.
 - Uploads and exports can be cancelled by clicking the overlay or its cancel button. A cancelled export stops the download and the work it triggers on the server; a cancelled upload keeps the files that already reached the server, and the remaining changes stay unsaved so the save can be repeated.
 - Both CSV files of the LOG import are now optional, so LOG files can be imported for LOG runs that already exist. At least one of the two files is still required.
+- The borehole import now names the attachment being uploaded and how much of it has been transferred, and can be cancelled while the attachments are going up.
 
 ### Removed
 - The terms of service editor in the settings. The disclaimer shown on first visit now always uses the texts shipped with the application, and the stored terms and acceptance records are deleted from the database.
 
 ### Changed
 - The disclaimer is now shown per user instead of per browser, so everyone sharing a workstation is asked to accept it, and it reappears whenever the texts change.
+- The borehole import accepts archives up to 20 GB. The boreholes are created first and their attachments are uploaded one after the other, so a large import is no longer cut off part way through. Cancelling keeps the boreholes that were already created and discards the attachments that were not uploaded.
+- Profiles are uploaded in chunks, so a profile of up to 5 GB can be uploaded instead of 210 MB. Photos are unchanged at 210 MB.
 - Upgraded to .NET 10.
 - Upgraded the AWS SDK used for the S3 file storage to version 4.
 - LOG files are uploaded in chunks, so an upload is no longer cut off after a minute and is retried rather than restarted when a chunk fails.
