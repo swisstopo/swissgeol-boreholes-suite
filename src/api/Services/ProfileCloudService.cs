@@ -142,11 +142,13 @@ public class ProfileCloudService : CloudServiceBase
 
         await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!, cancellationToken).ConfigureAwait(false);
 
-        if (replaced is not null)
+        if (replaced is not null && !string.Equals(replaced, objectKey, StringComparison.Ordinal))
         {
             // Nothing points at the old object once the row moved, and the name it had is never
-            // handed out again, so it would stay in the bucket for good.
-            await DeleteObject(replaced).ConfigureAwait(false);
+            // handed out again, so it would stay in the bucket for good. A completion that runs a
+            // second time names the key the row already holds, which is the one object that has to
+            // stay: removing it would leave the row naming nothing.
+            await DeleteOrphanedObject(replaced).ConfigureAwait(false);
         }
 
         StartOcrIfEligible(profile.Id, ocrStatus);
