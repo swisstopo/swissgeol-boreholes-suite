@@ -223,6 +223,17 @@ public class ProfileTusUploadEndpointTest
     }
 
     /// <summary>
+    /// Removes a row through a context of its own, and commits, so the server sees it gone the way
+    /// it would see a user deleting the profile while the file is on its way.
+    /// </summary>
+    private static async Task DeleteProfileAsync(int profileId)
+    {
+        await using var deleteContext = ContextFactory.CreateContext();
+        deleteContext.Profiles.RemoveRange(deleteContext.Profiles.Where(p => p.Id == profileId));
+        await deleteContext.SaveChangesAsync();
+    }
+
+    /// <summary>
     /// Names a borehole the seeded administrator may edit, so that the test does not have to assume
     /// that the first borehole in the database is one: a reviewed or published borehole is refused
     /// to everyone, and the upload would then fail for a reason none of these tests is about.
@@ -440,11 +451,7 @@ public class ProfileTusUploadEndpointTest
         Assert.AreEqual(HttpStatusCode.Created, created.StatusCode);
         startedUploadPaths.Add(created.Headers.Location.ToString());
 
-        await using (var deleteContext = ContextFactory.CreateContext())
-        {
-            deleteContext.Profiles.RemoveRange(deleteContext.Profiles.Where(p => p.Id == profile.Id));
-            await deleteContext.SaveChangesAsync();
-        }
+        await DeleteProfileAsync(profile.Id);
 
         using var patch = new HttpRequestMessage(HttpMethod.Patch, created.Headers.Location);
         patch.Headers.Add(TusResumableHeader, TusVersion);
@@ -456,6 +463,36 @@ public class ProfileTusUploadEndpointTest
         using var response = await client.SendAsync(patch);
 
         Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode, await response.Content.ReadAsStringAsync());
+    }
+
+    /// <summary>
+    /// Discarding an upload writes nothing to the row it was meant to fill, so it stays available
+    /// once that row is gone. The client cancels by terminating the upload, which is what discards
+    /// the partial multipart rather than leaving it to expire, and a row that disappeared is one of
+    /// the likeliest reasons to cancel.
+    /// </summary>
+    [TestMethod]
+    public async Task TerminatingAnUploadWhoseProfileWasDeletedIsAllowed()
+    {
+        var boreholeId = await EditableBoreholeIdAsync();
+        var profile = await AwaitingProfileAsync(boreholeId, $"{Guid.NewGuid()}.pdf");
+        using var client = factory.CreateClient();
+
+        using var created = await client.SendAsync(CreateUpload(SubAdmin, boreholeId, profile.Name, profileId: profile.Id));
+        Assert.AreEqual(HttpStatusCode.Created, created.StatusCode);
+
+        var uploadPath = created.Headers.Location.ToString();
+        startedUploadPaths.Add(uploadPath);
+
+        await DeleteProfileAsync(profile.Id);
+
+        using var request = new HttpRequestMessage(HttpMethod.Delete, uploadPath);
+        request.Headers.Add(TusResumableHeader, TusVersion);
+        request.Headers.Add(TestAuthHandler.SubjectIdHeader, SubAdmin);
+
+        using var response = await client.SendAsync(request);
+
+        Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode, await response.Content.ReadAsStringAsync());
     }
 
     [TestMethod]

@@ -58,6 +58,13 @@ public class ProfileTusEndpoint : TusUploadEndpoint<ProfileUploadMetadata>
 
         if (!await boreholePermissionService.CanEditBoreholeAsync(subjectId, metadata.BoreholeId).ConfigureAwait(false)) return false;
 
+        // Discarding an upload rests on the borehole permission alone, unlike everything below:
+        // it writes nothing and only frees what the upload holds, so whoever may edit the borehole
+        // may abandon an upload against it whether or not the row it was meant to fill is still
+        // there. That row being deleted is one of the likeliest reasons to cancel, and refusing the
+        // termination would leave the partial upload to expire for exactly that case.
+        if (intent == IntentType.DeleteFile) return true;
+
         // An upload that names no row creates one, so there is nothing yet to look up.
         if (metadata.ProfileId is not int profileId) return true;
 
