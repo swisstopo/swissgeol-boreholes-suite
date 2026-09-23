@@ -16,13 +16,14 @@ const bytes = (size: number): Uint8Array<ArrayBuffer> => {
 
 /**
  * Builds an archive the way an export does, storing the entries rather than compressing them.
- * @param entries The name and content of each entry, in the order they are written.
+ * @param entries The name and content of each entry, in the order they are written. An entry
+ * without content is the folder itself, which is what a zipper adds for a folder it packs.
  * @returns The archive as the file picker would hand it over.
  */
-async function archiveWith(entries: [string, Blob][]): Promise<File> {
+async function archiveWith(entries: [string, Blob?][]): Promise<File> {
   const writer = new ZipWriter(new BlobWriter("application/zip"));
   for (const [name, content] of entries) {
-    await writer.add(name, new BlobReader(content), { level: 0 });
+    await writer.add(name, content === undefined ? undefined : new BlobReader(content), { level: 0 });
   }
   return new File([await writer.close()], "export.zip", { type: "application/zip" });
 }
@@ -91,6 +92,53 @@ describe("openBoreholeArchive", () => {
     const opened = await openBoreholeArchive(archive);
 
     expect(opened.entryFor("uuid_missing.pdf")).toBeUndefined();
+    await opened.close();
+  });
+
+  it("reads an archive whose entries all sit under one folder", async () => {
+    // What a zipper makes of an unpacked export: everything nested under the folder it sat in,
+    // while the names the JSON refers to its attachments by stayed as the export wrote them.
+    const archive = await archiveWith([
+      ["MyExport/"],
+      ["MyExport/export.json", new Blob(['[{"id":1}]'])],
+      ["MyExport/uuid_report.pdf", new Blob([bytes(2048)])],
+    ]);
+
+    const opened = await openBoreholeArchive(archive);
+    const source = opened.entryFor("uuid_report.pdf");
+
+    expect(opened.json).toBe('[{"id":1}]');
+    expect(source?.size).toBe(2048);
+    expect(source?.fileName).toBe("uuid_report.pdf");
+    await opened.close();
+  });
+
+  it("leaves a flat archive's names alone, since its entries share no folder", async () => {
+    const archive = await archiveWith([
+      ["export.json", new Blob(["[]"])],
+      ["uuid_report.pdf", new Blob([bytes(2048)])],
+      ["uuid_photo.png", new Blob([bytes(512)])],
+    ]);
+
+    const opened = await openBoreholeArchive(archive);
+
+    expect(opened.entryFor("uuid_report.pdf")?.fileName).toBe("uuid_report.pdf");
+    expect(opened.entryFor("uuid_photo.png")?.size).toBe(512);
+    await opened.close();
+  });
+
+  it("does not guess which folder an entry belongs to when they sit in several", async () => {
+    const archive = await archiveWith([
+      ["one/export.json", new Blob(["[]"])],
+      ["two/uuid_report.pdf", new Blob([bytes(2048)])],
+    ]);
+
+    const opened = await openBoreholeArchive(archive);
+
+    // The entry is in the archive, under a name the JSON does not refer to it by. Only a guess at
+    // which folder was meant would turn the one into the other.
+    expect(opened.entryFor("uuid_report.pdf")).toBeUndefined();
+    expect(opened.entryFor("two/uuid_report.pdf")?.size).toBe(2048);
     await opened.close();
   });
 

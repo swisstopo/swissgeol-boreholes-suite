@@ -290,6 +290,40 @@ describe("uploadResumable", () => {
     await expect(upload).resolves.toBe(7);
   });
 
+  it("takes the failure of a source that gave up on its own, so no rejection is left unclaimed", async () => {
+    const reported: unknown[] = [];
+    const collect = (reason: unknown) => reported.push(reason);
+    process.on("unhandledRejection", collect);
+
+    // An entry that cannot be read back: the archive moved, or its bytes do not check out. The
+    // upload client knows nothing of it and reports nothing of its own until its retries are spent.
+    const sourceFailure = new Error("The archive entry could not be read.");
+    const source = {
+      open: () => ({ stream: new ReadableStream<Uint8Array>(), written: Promise.reject(sourceFailure) }),
+      size: 10,
+      fileName: "report.pdf",
+      contentType: "application/pdf",
+    };
+
+    try {
+      const upload = uploadResumable(source, profileUploadTarget, { boreholeId: "1" });
+
+      // A rejection counts as unclaimed once the microtask queue has drained with no handler on it,
+      // and node reports what it found at the end of that turn. Waiting out one turn of the event
+      // loop is therefore the whole verdict, rather than a guess at how long to give it.
+      await new Promise<void>(resolve => setTimeout(resolve, 0));
+      expect(reported).not.toContain(sourceFailure);
+
+      // The upload is still the client's to judge, and the caller is told what the client reported.
+      const transportFailure = new Error("tus: failed to upload chunk");
+      optionsOf<{ onError: (error: Error) => void }>().onError(transportFailure);
+
+      await expect(upload).rejects.toBe(transportFailure);
+    } finally {
+      process.off("unhandledRejection", collect);
+    }
+  });
+
   it("lets go of the stream when the upload fails, so its writer is not left waiting", async () => {
     // A writer that is done only once the reader lets go, which is what a source blocked on
     // backpressure does. Nothing settles it unless the upload cancels the reader.

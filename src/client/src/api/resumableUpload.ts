@@ -56,7 +56,11 @@ interface OpenedSource {
   /** What the upload client reads the bytes from. */
   body: File | Pick<ReadableStreamDefaultReader<Uint8Array>, "read">;
 
-  /** Settles once whatever fills the source is done, whether it finished or failed. */
+  /**
+   * Settles once whatever fills the source is done, whether it finished or failed.
+   *
+   * A failure is already taken, so this can be waited on as it is and never rejects.
+   */
   written: Promise<unknown>;
 
   /** Lets go of the source, so that whatever fills it is not left writing into it. */
@@ -89,7 +93,12 @@ const openSource = (source: File | UploadSource): OpenedSource => {
     // was given, which would cut the writer off before it has been waited for. Cancelling is the
     // helper's alone, on every path.
     body: { read: () => reader.read() },
-    written,
+
+    // The failure is taken the moment the source is opened rather than where it is waited for.
+    // A source can fail of its own accord, on an archive the user moved away or an entry that
+    // does not read back as it was stored, while the upload client reports nothing until its
+    // retries are spent. Between the two there would otherwise be a rejection nobody had claimed.
+    written: written.catch(() => undefined),
     release: () => {
       reader.cancel().catch(() => undefined);
     },
@@ -154,8 +163,8 @@ export function uploadResumable(
 
     // Whatever fills the source is waited for before this settles, so that an entry which never
     // made it is not reported as one that did. Its failure belongs to an upload that has already
-    // been judged, so it is taken here rather than passed on.
-    const writerDone = (): Promise<unknown> => opened.written.catch(() => undefined);
+    // been judged, and was taken when the source was opened.
+    const writerDone = (): Promise<unknown> => opened.written;
 
     // An upload that stops short leaves its source open, so that it could be resumed later.
     // Nothing here resumes one, and a stream nobody reads any more leaves its writer waiting for
