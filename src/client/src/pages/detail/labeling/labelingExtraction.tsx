@@ -86,13 +86,8 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
               });
             }
             if (extractionObject.type === "text") {
-              // ExtractionResponse types every key as string | number | Coordinate, but the text
-              // extraction only ever yields a string for the "text" key.
-              const extractedText = response[extractionObject.type];
               // Not awaited: setTextToClipboard reports its own failures via an alert.
-              void setTextToClipboard(
-                typeof extractedText === "object" ? JSON.stringify(extractedText) : String(extractedText),
-              );
+              void setTextToClipboard(response.text);
             }
           })
           .catch(error => {

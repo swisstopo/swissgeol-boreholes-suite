@@ -26,6 +26,7 @@ import { useBoreholesNavigate } from "../../hooks/useBoreholesNavigate.tsx";
 import { useRequiredId } from "../../hooks/useRequiredId.ts";
 import { formatDate } from "../../utils.ts";
 import { EditStateContext } from "./editStateContext.tsx";
+import { toWorkflowStatus } from "./form/workflow/workflow.ts";
 import { SaveContext, SaveContextProps } from "./saveContext.tsx";
 import { StatusBadges } from "./statusBadges.tsx";
 
@@ -125,12 +126,10 @@ const DetailHeader = ({ borehole }: DetailHeaderProps) => {
 
   const handleReturnClick = async () => {
     if (editingEnabled) {
+      const workflowStatus = toWorkflowStatus(borehole.workflow?.status);
       if (hasChanges) {
         stopEditingWithUnsavedChanges();
-      } else if (
-        borehole.workflow?.status !== WorkflowStatus.Published &&
-        borehole.workflow?.status !== WorkflowStatus.Reviewed
-      ) {
+      } else if (workflowStatus !== WorkflowStatus.Published && workflowStatus !== WorkflowStatus.Reviewed) {
         // Await the unlock so the request is in flight (and error is surfaced) before the
         // component unmounts; otherwise a rejected unlock leaves the borehole locked with no feedback.
         await changeBoreholeLockStatus(false);

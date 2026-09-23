@@ -3,16 +3,17 @@ import {
   GroundwaterLevelMeasurement,
   Hydrotest,
   Observation,
+  VerticalReferenceSystem,
   WaterIngress,
 } from "../../../../api/generated";
 import { parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 import { getIsoDateIfDefined } from "./hydrogeologyFormUtils.ts";
 
-export enum ObservationDepthUnitType {
-  unknown = 0,
-  measuredDepth = 1,
-  masl = 2,
-}
+export const verticalReferenceSystems = {
+  unknown: 0,
+  measuredDepth: 1,
+  masl: 2,
+} as const satisfies Record<string, VerticalReferenceSystem>;
 
 export enum ObservationType {
   waterIngress = 1,

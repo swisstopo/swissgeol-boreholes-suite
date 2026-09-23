@@ -130,8 +130,11 @@ export const useBoreholeUrlParamsState = () => {
       ? [queryState.mapCenterX, queryState.mapCenterY]
       : null;
 
-  const setMapCenter = (center: [number, number] | null) =>
-    setQueryState(center ? { mapCenterX: center[0], mapCenterY: center[1] } : { mapCenterX: null, mapCenterY: null });
+  const setMapCenter = (center: [number, number] | null) => {
+    void setQueryState(
+      center ? { mapCenterX: center[0], mapCenterY: center[1] } : { mapCenterX: null, mapCenterY: null },
+    );
+  };
 
   const resetFilter = () => {
     // Set all filter keys to null to remove them from the URL, and reset to page 0 in the
@@ -233,11 +236,15 @@ export const useBoreholeUrlParamsState = () => {
     restoreMapParamsFromSession,
     activeFilterCount,
     mapResolution: queryState.mapResolution,
-    setMapResolution: (v: number) => setQueryState({ mapResolution: v }),
+    setMapResolution: (v: number) => {
+      void setQueryState({ mapResolution: v });
+    },
     mapCenter,
     setMapCenter,
     bottomDrawerOpen: tableState.bottomDrawerOpen,
-    setBottomDrawerOpen: (v: boolean) => setQueryState({ bottomDrawerOpen: v }),
+    setBottomDrawerOpen: (v: boolean) => {
+      void setQueryState({ bottomDrawerOpen: v });
+    },
   };
 };
 

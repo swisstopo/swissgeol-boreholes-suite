@@ -23,6 +23,12 @@ interface FormDialogProps {
   children: ReactNode;
 }
 
+const runAction = async (action: FormDialogAction, onClose: () => void) => {
+  if (!action.onClick || (await action.onClick())) {
+    onClose();
+  }
+};
+
 export const FormDialog: FC<FormDialogProps> = ({
   open,
   title,
@@ -53,19 +59,7 @@ export const FormDialog: FC<FormDialogProps> = ({
             color={action.color ?? "primary"}
             label={action.label}
             disabled={action.disabled}
-            onClick={() => {
-              if (!action.onClick) {
-                onClose();
-                return;
-              }
-              // Not awaited: onClick returns void, the dialog closes from the callback below.
-              // onClick may answer synchronously, but the original code awaited it either way.
-              void Promise.resolve(action.onClick()).then(success => {
-                if (success) {
-                  onClose();
-                }
-              });
-            }}
+            onClick={() => void runAction(action, onClose)}
           />
         ))
       ) : (

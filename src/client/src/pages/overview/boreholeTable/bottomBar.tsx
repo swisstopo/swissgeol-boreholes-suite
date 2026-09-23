@@ -136,7 +136,7 @@ const BottomBar = ({
       <Button
         variant="text"
         color="secondary"
-        onClick={() => void setBottomDrawerOpen(!bottomDrawerOpen)}
+        onClick={() => setBottomDrawerOpen(!bottomDrawerOpen)}
         data-cy="showTableButton"
         sx={{ fontWeight: "normal", fontSize: "14px" }}
         endIcon={bottomDrawerOpen ? <ChevronDown /> : <ChevronUp />}>
