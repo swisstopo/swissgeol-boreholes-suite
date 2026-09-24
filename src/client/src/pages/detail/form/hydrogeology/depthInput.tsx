@@ -21,7 +21,7 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
   const watchDepthUnit = formMethods.watch(
     depthUnitFieldName,
     verticalReferenceSystems.measuredDepth,
-  ) as ObservationDepthUnitType;
+  ) as VerticalReferenceSystem;
 
   const convertDepth = async (inputFieldName: string, outputFieldName: string, outputUnit: VerticalReferenceSystem) => {
     if (outputUnit === watchDepthUnit) return;
