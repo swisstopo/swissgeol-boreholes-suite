@@ -51,7 +51,11 @@ public class ExpiredUploadCleanupService : BackgroundService
         }
     }
 
-    private async Task SweepAsync(CancellationToken cancellationToken)
+    /// <summary>
+    /// Sweeps every store once.
+    /// </summary>
+    /// <param name="cancellationToken">Stops the sweep when the host shuts down.</param>
+    internal async Task SweepAsync(CancellationToken cancellationToken)
     {
         foreach (var store in stores)
         {
@@ -69,8 +73,11 @@ public class ExpiredUploadCleanupService : BackgroundService
                 logger.LogInformation("Removed {Count} expired uploads from <{BucketName}>.", removed, store.BucketName);
             }
         }
-        catch (OperationCanceledException)
+        catch (OperationCanceledException) when (cancellationToken.IsCancellationRequested)
         {
+            // Only the host shutting down stops the sweep. A storage client that gives up on a
+            // request throws the same exception, and taken for a shutdown it would end the sweep
+            // for as long as the application runs, so it is handled as the failure below.
             throw;
         }
         catch (Exception ex)
