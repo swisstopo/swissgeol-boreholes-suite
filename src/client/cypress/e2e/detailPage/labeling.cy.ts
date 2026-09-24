@@ -78,20 +78,19 @@ const drawBox = (x1: number, y1: number, x2: number, y2: number) => {
 // has rendered the PDF into PNGs, which takes several seconds.
 const pngRenderingTimeout = 30000;
 
-const waitForLabelingImageLoaded = () => {
-  cy.wait("@extraction-file-info", { timeout: pngRenderingTimeout });
-  cy.wait("@load-extraction-file", { timeout: pngRenderingTimeout });
-  // Wait for the map element to exist in the DOM
-  cy.window().should(win => {
+// The map of the previous page stays published on the window until the image of the requested page
+// has been fetched and decoded, and the page images are named "<uuid>-<page>.png". Waiting for the
+// image layer of the requested page is therefore the only way to tell the maps apart.
+const waitForLabelingImageLoaded = (page = 1) => {
+  cy.window({ timeout: pngRenderingTimeout }).should(win => {
     const labelingWindow = win as WindowWithMaps;
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(labelingWindow["labeling-map"]).to.exist;
-  });
-  cy.window().should(win => {
-    const labelingWindow = win as WindowWithMaps;
-    const layers = labelingWindow["labeling-map"]?.getLayers().getArray();
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
-    expect(layers?.some(layer => layer.get("type") === "image")).to.be.true;
+    const imageLayer = labelingWindow["labeling-map"]
+      ?.getLayers()
+      .getArray()
+      .find(layer => layer.get("type") === "image");
+    expect(imageLayer?.get("name"))
+      .to.be.a("string")
+      .and.to.match(new RegExp(String.raw`-${page}\.png$`));
   });
 };
 
@@ -417,15 +416,15 @@ describe("Test labeling tool", () => {
 
     // can navigate with pagination
     cy.get('[data-cy="labeling-page-last"]').click();
-    waitForLabelingImageLoaded();
+    waitForLabelingImageLoaded(3);
     assertPageCount(3, 3);
 
     cy.get('[data-cy="labeling-page-first"]').click();
-    waitForLabelingImageLoaded();
+    waitForLabelingImageLoaded(1);
     assertPageCount(1, 3);
 
     cy.get('[data-cy="labeling-page-next"]').click();
-    waitForLabelingImageLoaded();
+    waitForLabelingImageLoaded(2);
     assertPageCount(2, 3);
 
     cy.window().should(win => {
@@ -467,10 +466,10 @@ describe("Test labeling tool", () => {
     selectLabelingAttachment();
     assertPageCount(1, 3);
     cy.dataCy("labeling-page-next").click();
-    waitForLabelingImageLoaded();
+    waitForLabelingImageLoaded(2);
     assertPageCount(2, 3);
     cy.dataCy("labeling-page-next").click();
-    waitForLabelingImageLoaded();
+    waitForLabelingImageLoaded(3);
     assertPageCount(3, 3);
     cy.wait("@extraction-file-info");
     waitForMapAnimations();
@@ -527,7 +526,7 @@ describe("Test labeling tool", () => {
 
     cy.get('[data-cy="labeling-page-next"]').click();
     cy.get('[data-cy="labeling-page-next"]').click();
-    waitForLabelingImageLoaded();
+    waitForLabelingImageLoaded(3);
     assertPageCount(3, 3);
     // eslint-disable-next-line cypress/no-unnecessary-waiting
     cy.wait(1000);
