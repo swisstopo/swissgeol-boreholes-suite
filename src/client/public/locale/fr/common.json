@@ -517,6 +517,7 @@
   "rockCondition": "Etat de la roche",
   "role": "Rôle",
   "roles": "Rôles",
+  "runAnalysis": "Analyser",
   "runCount_one": "{{count}} run",
   "runCount_other": "{{count}} runs",
   "runDate": "Date du run",

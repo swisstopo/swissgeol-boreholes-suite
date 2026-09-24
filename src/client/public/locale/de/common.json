@@ -517,6 +517,7 @@
   "rockCondition": "Gesteinszustand",
   "role": "Rolle",
   "roles": "Rollen",
+  "runAnalysis": "Analysieren",
   "runCount_one": "{{count}} Run",
   "runCount_other": "{{count}} Runs",
   "runDate": "Run Datum",

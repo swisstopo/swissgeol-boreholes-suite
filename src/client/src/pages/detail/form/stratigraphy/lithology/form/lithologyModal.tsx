@@ -286,7 +286,8 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
                 <BoreholesButton
                   variant="contained"
                   color="primary"
-                  label="analyze"
+                  label="runAnalysis"
+                  dataCy="analyze-button"
                   icon={analysis.isPending ? <CircularProgress size={16} color="inherit" /> : <Sparkles />}
                   disabled={analysis.isPending || (description ?? "").trim().length === 0}
                   onClick={() => void runAnalysis()}
