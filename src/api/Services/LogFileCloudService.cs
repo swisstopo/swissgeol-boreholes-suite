@@ -67,7 +67,11 @@ public class LogFileCloudService : CloudServiceBase
     /// <param name="contentType">The content type the object was stored with.</param>
     /// <param name="objectName">The key the object is stored under.</param>
     /// <param name="logRunId">The <see cref="LogRun.Id"/> to link the file to.</param>
-    /// <param name="cancellationToken">Aborts the write.</param>
+    /// <param name="cancellationToken">
+    /// Aborts the checks that precede the write. The write itself deliberately opts out of it: the
+    /// file is already in the cloud storage by the time we commit, so aborting would orphan the
+    /// object, and a cancelled commit leaves the outcome unknown.
+    /// </param>
     /// <returns>The created <see cref="LogFile"/> entity.</returns>
     /// <exception cref="InvalidOperationException">The log run does not exist.</exception>
     /// <exception cref="LogFileNameTakenException">The log run already holds that name.</exception>
@@ -98,8 +102,12 @@ public class LogFileCloudService : CloudServiceBase
             Public = false,
         };
 
-        var entityEntry = await context.LogFiles.AddAsync(logFile, cancellationToken).ConfigureAwait(false);
-        await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!, cancellationToken).ConfigureAwait(false);
+        var entityEntry = await context.LogFiles.AddAsync(logFile, CancellationToken.None).ConfigureAwait(false);
+
+        // The request token reaches the checks above and stops there. A client that gives up while
+        // the commit is in flight would otherwise cancel it with the outcome unknown, and the
+        // caller answers a failed completion by removing the object the row may now point at.
+        await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!, CancellationToken.None).ConfigureAwait(false);
 
         return entityEntry.Entity;
     }

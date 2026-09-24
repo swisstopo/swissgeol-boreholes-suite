@@ -24,11 +24,38 @@ public class ProfileCloudService : CloudServiceBase
         this.applicationLifetime = applicationLifetime;
     }
 
-    private static bool IsOcrEligible(string contentType)
-        => string.Equals(contentType, "application/pdf", StringComparison.OrdinalIgnoreCase);
+    /// <summary>
+    /// The name a profile is stored under. White space is replaced because it is interpreted
+    /// differently across systems, and both write paths share this so that a file is never stored
+    /// under one name by one of them and another name by the other.
+    /// </summary>
+    /// <param name="fileName">The name the user gave the file.</param>
+    /// <returns>The name to store.</returns>
+    private static string ToStoredName(string fileName)
+        => fileName.Replace(" ", "_", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// The status a profile is written with, which is what decides whether OCR ever reads the
+    /// file. Both write paths share this so that a file of one kind cannot become eligible on one
+    /// of them and not on the other.
+    /// </summary>
+    /// <param name="contentType">The content type the file was stored with.</param>
+    /// <returns>The status to write.</returns>
+    private static OcrStatus InitialOcrStatus(string contentType)
+        => string.Equals(contentType, "application/pdf", StringComparison.OrdinalIgnoreCase)
+            ? OcrStatus.Created
+            : OcrStatus.WillNotBeProcessed;
 
     /// <summary>
     /// Uploads a file to cloud storage and creates a <see cref="Profile"/> pointing at it.
+    ///
+    /// Profiles reach the API through the resumable upload, which stores the object before it ever
+    /// asks for a row, so nothing in the application calls this. It is kept because it is the only
+    /// place that stores the bytes and writes the row as one step, which is what the fixtures of
+    /// the profile tests need to put a real object in the bucket beside the row that names it, and
+    /// because it is what pins the S3 first ordering that keeps a failed upload from leaving a row
+    /// behind. What it shares with <see cref="LinkUploadedProfileAsync"/> it shares through
+    /// <see cref="ToStoredName"/> and <see cref="InitialOcrStatus"/>, so the two cannot drift.
     /// </summary>
     /// <param name="fileStream">The file stream for the file to upload.</param>
     /// <param name="fileName">The name of the file to upload.</param>
@@ -48,21 +75,20 @@ public class ProfileCloudService : CloudServiceBase
             var nameUuid = $"{Guid.NewGuid()}{fileExtension}";
 
             // Replace whitespaces in file names, as they are interpreted differently across different systems.
-            fileName = fileName.Replace(" ", "_", StringComparison.OrdinalIgnoreCase);
+            var storedName = ToStoredName(fileName);
 
             // S3 first: if upload fails we have no DB row pointing at a missing object.
             await UploadObject(fileStream, nameUuid, contentType).ConfigureAwait(false);
 
-            var isOcrEligible = IsOcrEligible(contentType);
             var profile = new Profile
             {
                 BoreholeId = boreholeId,
-                Name = fileName,
+                Name = storedName,
                 NameUuid = nameUuid,
                 Type = contentType,
                 Description = description,
                 Public = isPublic,
-                OcrStatus = isOcrEligible ? OcrStatus.Created : OcrStatus.WillNotBeProcessed,
+                OcrStatus = InitialOcrStatus(contentType),
             };
 
             await context.Profiles.AddAsync(profile, CancellationToken.None).ConfigureAwait(false);
@@ -93,7 +119,11 @@ public class ProfileCloudService : CloudServiceBase
     /// <param name="objectKey">The key the object is stored under.</param>
     /// <param name="boreholeId">The <see cref="Borehole.Id"/> the profile belongs to.</param>
     /// <param name="profileId">The row to fill, or null to create one.</param>
-    /// <param name="cancellationToken">Aborts the write.</param>
+    /// <param name="cancellationToken">
+    /// Aborts the lookup that precedes the write. The write itself deliberately opts out of it: the
+    /// file is already in the cloud storage by the time we commit, so aborting would orphan the
+    /// object, and a cancelled commit leaves the outcome unknown.
+    /// </param>
     /// <returns>The profile.</returns>
     /// <exception cref="InvalidOperationException">The borehole holds no profile with that id.</exception>
     public async Task<Profile> LinkUploadedProfileAsync(
@@ -104,9 +134,8 @@ public class ProfileCloudService : CloudServiceBase
         int? profileId,
         CancellationToken cancellationToken = default)
     {
-        // Replace white spaces in file names, as they are interpreted differently across different systems.
-        var storedName = fileName.Replace(" ", "_", StringComparison.OrdinalIgnoreCase);
-        var ocrStatus = IsOcrEligible(contentType) ? OcrStatus.Created : OcrStatus.WillNotBeProcessed;
+        var storedName = ToStoredName(fileName);
+        var ocrStatus = InitialOcrStatus(contentType);
 
         Profile profile;
         string? replaced = null;
@@ -137,10 +166,13 @@ public class ProfileCloudService : CloudServiceBase
                 OcrStatus = ocrStatus,
             };
 
-            await context.Profiles.AddAsync(profile, cancellationToken).ConfigureAwait(false);
+            await context.Profiles.AddAsync(profile, CancellationToken.None).ConfigureAwait(false);
         }
 
-        await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!, cancellationToken).ConfigureAwait(false);
+        // The request token reaches the lookup above and stops there. A client that gives up while
+        // the commit is in flight would otherwise cancel it with the outcome unknown, and the
+        // caller answers a failed completion by removing the object the row may now point at.
+        await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!, CancellationToken.None).ConfigureAwait(false);
 
         if (replaced is not null && !string.Equals(replaced, objectKey, StringComparison.Ordinal))
         {

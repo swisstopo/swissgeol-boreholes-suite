@@ -110,7 +110,11 @@ public class LogFileTusEndpoint : TusUploadEndpoint<TusUploadMetadata>
     /// <param name="metadata">What the client said it was uploading.</param>
     /// <param name="logFileId">The <see cref="LogFile.Id"/> being replaced.</param>
     /// <param name="objectKey">The key the new object is stored under.</param>
-    /// <param name="cancellationToken">Aborts the write.</param>
+    /// <param name="cancellationToken">
+    /// Aborts the lookup that precedes the write. The write itself deliberately opts out of it: the
+    /// file is already in the cloud storage by the time we commit, so aborting would orphan the
+    /// object, and a cancelled commit leaves the outcome unknown.
+    /// </param>
     /// <returns>The log file.</returns>
     private async Task<LogFile> ReplaceAsync(HttpContext httpContext, TusUploadMetadata metadata, int logFileId, string objectKey, CancellationToken cancellationToken)
     {
@@ -122,7 +126,12 @@ public class LogFileTusEndpoint : TusUploadEndpoint<TusUploadMetadata>
 
         var replaced = existing.NameUuid;
         existing.NameUuid = objectKey;
-        await context.UpdateChangeInformationAndSaveChangesAsync(httpContext, cancellationToken).ConfigureAwait(false);
+
+        // The request token reaches the lookup above and stops there. A client that gives up while
+        // the commit is in flight would otherwise cancel it with the outcome unknown, the base
+        // removes the new object on a failed completion, and the line below that removes the old
+        // one is never reached, which would leave the row naming nothing.
+        await context.UpdateChangeInformationAndSaveChangesAsync(httpContext, CancellationToken.None).ConfigureAwait(false);
 
         if (replaced is not null)
         {
