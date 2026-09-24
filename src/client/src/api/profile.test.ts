@@ -1,7 +1,7 @@
 // @vitest-environment jsdom
 import { createElement, ReactNode } from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { act, renderHook } from "@testing-library/react";
+import { act, renderHook, waitFor } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
 import { ApiError } from "./errorClasses.ts";
 import { setFileSizeLimits } from "./fileSize.ts";
@@ -11,6 +11,7 @@ import {
   getProfileForBorehole,
   ocrStatusIsTerminal,
   uploadProfile,
+  useProfiles,
   useReloadProfiles,
 } from "./profile";
 import { profileUploadTarget } from "./resumableUpload.ts";
@@ -100,12 +101,37 @@ describe("OCR polling decision", () => {
   });
 });
 
-describe("useReloadProfiles", () => {
-  const createWrapper = (queryClient: QueryClient) => {
-    return ({ children }: { children: ReactNode }) =>
-      createElement(QueryClientProvider, { client: queryClient }, children);
+const createWrapper = (queryClient: QueryClient) => {
+  return ({ children }: { children: ReactNode }) =>
+    createElement(QueryClientProvider, { client: queryClient }, children);
+};
+
+describe("useProfiles", () => {
+  const uploaded: Profile = { id: 1, boreholeId: 4, name: "site.pdf", nameUuid: "a.pdf", type: "application/pdf" };
+  const awaitingUpload: Profile = { id: 2, boreholeId: 4, name: "report.pdf", nameUuid: null, type: "application/pdf" };
+  const image: Profile = { id: 3, boreholeId: 4, name: "core.png", nameUuid: "c.png", type: "image/png" };
+
+  const profilesListed = async (forLabeling: boolean): Promise<Profile[] | undefined> => {
+    fetchApiV2Legacy.mockResolvedValue([uploaded, awaitingUpload, image]);
+
+    const { result } = renderHook(() => useProfiles(4, forLabeling), {
+      wrapper: createWrapper(new QueryClient()),
+    });
+
+    await waitFor(() => expect(result.current.isSuccess).toBe(true));
+    return result.current.data;
   };
 
+  it("offers labeling only the profiles whose file it can open", async () => {
+    expect(await profilesListed(true)).toEqual([uploaded]);
+  });
+
+  it("lists every profile outside labeling, one still waiting for its file too", async () => {
+    expect(await profilesListed(false)).toEqual([uploaded, awaitingUpload, image]);
+  });
+});
+
+describe("useReloadProfiles", () => {
   it("invalidates both profiles and OCR status queries", () => {
     const queryClient = new QueryClient();
     const invalidateSpy = vi.spyOn(queryClient, "invalidateQueries");

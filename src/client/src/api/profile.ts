@@ -110,7 +110,11 @@ export function useProfiles(boreholeId?: number, forLabeling: boolean = false) {
       const profiles = await getProfiles(Number(boreholeId));
 
       if (forLabeling) {
-        return profiles.filter(profile => matchesFileFormat(labelingFileFormat[PanelTab.profile], profile.type!));
+        // A profile whose file has not been uploaded yet, such as one an import is still waiting
+        // for, has nothing to label or extract from, so it is only listed where it can be deleted.
+        return profiles.filter(
+          profile => !!profile.nameUuid && matchesFileFormat(labelingFileFormat[PanelTab.profile], profile.type!),
+        );
       }
       return profiles;
     },
