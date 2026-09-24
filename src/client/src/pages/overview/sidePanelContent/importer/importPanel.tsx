@@ -70,7 +70,8 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
   useEffect(() => () => runningImport.current?.abort(), []);
 
   const refresh = () => {
-    queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
+    // Not awaited: the refresh happens in the background and nothing waits on the refetch.
+    void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
   };
 
   const reportImported = (boreholeCount: number) => {
@@ -241,7 +242,7 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
               maxArchiveSize={getMaxImportArchiveSize()}
             />
             <Box>
-              <Link sx={{ cursor: "pointer" }} variant="subtitle1" onClick={downloadCodelistCsv}>
+              <Link sx={{ cursor: "pointer" }} variant="subtitle1" onClick={() => void downloadCodelistCsv()}>
                 {t("csvCodeListReferenceExplanation")}
               </Link>
             </Box>
@@ -251,7 +252,7 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
           variant="contained"
           data-cy={"import-button"}
           disabled={!file || isLoading || editableWorkgroups?.length === 0 || !currentWorkgroupId}
-          onClick={handleBoreholeImport}>
+          onClick={() => void handleBoreholeImport()}>
           {t("import")}
         </Button>
       </Stack>

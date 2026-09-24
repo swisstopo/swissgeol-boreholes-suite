@@ -19,7 +19,7 @@ const { importLogs, requiredAttachments, deleteLogFile, uploadResumable } = vi.h
 vi.mock("react-i18next", () => ({
   useTranslation: () => ({
     t: (key: string, options?: Record<string, unknown>) =>
-      options && "transferred" in options ? `${key} ${options.transferred}` : key,
+      options && "transferred" in options ? `${key} ${String(options.transferred)}` : key,
   }),
 }));
 
@@ -30,15 +30,16 @@ vi.mock("../log.ts", async () => {
   return {
     useImportLogs: () => useMutation({ mutationFn: importLogs }),
     useRequiredAttachments: () => useMutation({ mutationFn: requiredAttachments }),
-    deleteLogFile: async (logFileId: number) => deleteLogFile(logFileId),
+    deleteLogFile: async (logFileId: number) => {
+      await deleteLogFile(logFileId);
+    },
     LogImportValidationError: class LogImportValidationError extends Error {},
   };
 });
 
 vi.mock("../../../../../api/resumableUpload.ts", () => ({
   logFileUploadTarget: { endpoint: "/api/v2/log/upload/tus", resultHeader: "Log-File-Id" },
-  uploadResumable: (file: File, target: unknown, metadata: Record<string, string>, options?: TransferOptions) =>
-    uploadResumable(file, target, metadata, options),
+  uploadResumable,
 }));
 
 vi.mock("../../../../../api/borehole.ts", () => ({ boreholeQueryKey: "boreholes" }));
@@ -86,6 +87,7 @@ const addedFileItem = (fileName: string, logFileId: number): LogImportResultItem
   identifier: `RUN-1 / ${fileName}`,
   outcome: "Added",
   messageKey: "importResultFileAdded",
+  values: { runNumber: "RUN-1", fileName },
   logRunId: 3,
   logFileId,
 });
@@ -109,6 +111,16 @@ const withProviders = (element: ReactElement): ReactElement => (
   <QueryClientProvider client={makeQueryClient()}>{element}</QueryClientProvider>
 );
 
+/**
+ * Runs a step inside act() and waits until the promises it set off have been flushed. The step is
+ * followed by a promise because act() only returns something to await when its callback does.
+ */
+const actAndFlush = (step: () => void): Promise<void> =>
+  act(() => {
+    step();
+    return Promise.resolve();
+  });
+
 /** Walks the already rendered wizard from the first step to the report, staging the attachments. */
 const driveImportToReport = async () => {
   fireEvent.click(screen.getByText("pick-runs-csv"));
@@ -116,9 +128,7 @@ const driveImportToReport = async () => {
   fireEvent.click(screen.getByText("pick-attachment"));
   // The click starts the uploads, whose state updates only settle once the pending promises are
   // flushed, so act() is doing more here than wrapping the event.
-  await act(async () => {
-    fireEvent.click(screen.getByText("Import"));
-  });
+  await actAndFlush(() => fireEvent.click(screen.getByText("Import")));
 };
 
 /** Walks the wizard from the first step to the report, staging the attachments on the way. */
@@ -147,16 +157,15 @@ describe("ImportLogWizard", () => {
           );
         }),
     );
-    deleteLogFile.mockImplementation(async (logFileId: number) => {
+    deleteLogFile.mockImplementation((logFileId: number) => {
       cleanupOrder.push(`delete ${logFileId}`);
+      return Promise.resolve();
     });
 
     await runImportToReport();
     await waitFor(() => expect(uploadResumable).toHaveBeenCalledTimes(1));
 
-    await act(async () => {
-      fireEvent.click(screen.getByRole("button", { name: "Close" }));
-    });
+    fireEvent.click(screen.getByRole("button", { name: "Close" }));
 
     await waitFor(() => expect(deleteLogFile).toHaveBeenCalledTimes(2));
     expect(cleanupOrder.at(-1)).toBe("refresh");
@@ -204,9 +213,7 @@ describe("ImportLogWizard", () => {
     fireEvent.click(screen.getByText("pick-files-csv"));
     fireEvent.click(screen.getByRole("button", { name: "Cancel" }));
 
-    await act(async () => {
-      answerRead({ "RUN-1": ["a.las"] });
-    });
+    await actAndFlush(() => answerRead({ "RUN-1": ["a.las"] }));
 
     fireEvent.click(screen.getByText("pick-runs-csv"));
     fireEvent.click(screen.getByText("Next"));
@@ -221,7 +228,7 @@ describe("ImportLogWizard", () => {
     // The upload stays on the wire, so the progress of the burst is still on screen to read.
     uploadResumable.mockImplementation(
       (_file: File, _target: unknown, _metadata: Record<string, string>, options: TransferOptions) => {
-        options.onProgress?.({ loaded: 2000, total: 900_000 });
+        options.onProgress?.({ loaded: 200_000, total: 900_000 });
         options.onProgress?.({ loaded: 500_000, total: 900_000 });
         return new Promise<number>(() => {});
       },
@@ -230,8 +237,8 @@ describe("ImportLogWizard", () => {
     await runImportToReport();
 
     // Both events fall inside one interval, so only the first of them reached the bar.
-    expect(await screen.findByText(/uploadProgressHintWithSize 2.0 KB/)).toBeDefined();
-    expect(screen.queryByText(/500.0 KB/)).toBeNull();
+    expect(await screen.findByText(/uploadProgressHintWithSize 0.2 MB/)).toBeDefined();
+    expect(screen.queryByText(/0.5 MB/)).toBeNull();
   });
 
   it("returns from the report to the files step only once the uploads have stopped", async () => {
@@ -247,7 +254,7 @@ describe("ImportLogWizard", () => {
 
     await runImportToReport();
     await waitFor(() => expect(uploadResumable).toHaveBeenCalled());
-    expect((screen.getByRole("button", { name: "Back" }) as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByRole<HTMLButtonElement>("button", { name: "Back" }).disabled).toBe(true);
 
     fireEvent.click(screen.getByLabelText("cancel"));
     await waitFor(() => expect(deleteLogFile).toHaveBeenCalledWith(12));
@@ -296,12 +303,10 @@ describe("ImportLogWizard", () => {
     await driveImportToReport();
     await waitFor(() => expect(screen.getByRole("button", { name: "Back" })).toBeDefined());
 
-    await act(async () => {
-      releaseTail();
-    });
+    await actAndFlush(() => releaseTail());
 
     // The first run finishing must not report the second run's upload as done.
-    expect((screen.getByRole("button", { name: "Back" }) as HTMLButtonElement).disabled).toBe(true);
+    expect(screen.getByRole<HTMLButtonElement>("button", { name: "Back" }).disabled).toBe(true);
   });
 
   it("cancellingStopsTheRunningUploadAndSkipsTheRest", async () => {

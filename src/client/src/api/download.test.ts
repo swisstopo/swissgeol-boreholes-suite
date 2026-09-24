@@ -27,9 +27,11 @@ const collectProgress = () => {
   return { reported, onProgress: (progress: TransferProgress) => reported.push(progress) };
 };
 
+const createObjectURL = vi.fn<typeof URL.createObjectURL>(() => "blob:stub");
+
 beforeAll(() => {
   // jsdom does not implement the object URL API the download link relies on.
-  URL.createObjectURL = vi.fn(() => "blob:stub");
+  URL.createObjectURL = createObjectURL;
   URL.revokeObjectURL = vi.fn();
 });
 
@@ -83,8 +85,8 @@ describe("download progress", () => {
 
     await downloadPost("log/export", { logRunIds: [1] }, { onProgress: vi.fn() });
 
-    expect(URL.createObjectURL).toHaveBeenCalledTimes(1);
-    const savedBlob = vi.mocked(URL.createObjectURL).mock.calls[0][0] as Blob;
+    expect(createObjectURL).toHaveBeenCalledTimes(1);
+    const savedBlob = createObjectURL.mock.calls[0][0] as Blob;
     await expect(savedBlob.text()).resolves.toBe("abcde");
   });
 
@@ -93,7 +95,7 @@ describe("download progress", () => {
 
     await downloadPost("log/export", { logRunIds: [1] });
 
-    const savedBlob = vi.mocked(URL.createObjectURL).mock.calls[0][0] as Blob;
+    const savedBlob = createObjectURL.mock.calls[0][0] as Blob;
     await expect(savedBlob.text()).resolves.toBe("abcde");
   });
 
@@ -129,6 +131,6 @@ describe("download cancellation", () => {
     await expect(downloadPost("log/export", { logRunIds: [1] }, { signal: controller.signal })).rejects.toThrow(
       DOMException,
     );
-    expect(URL.createObjectURL).not.toHaveBeenCalled();
+    expect(createObjectURL).not.toHaveBeenCalled();
   });
 });

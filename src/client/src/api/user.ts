@@ -105,9 +105,10 @@ export const useUserMutations = () => {
       }
     },
 
+    // Not awaited: returning the promise would keep the mutation pending until every refetch settled.
     onSettled: (_data, _error, updatedUser) => {
-      queryClient.invalidateQueries({ queryKey: [usersQueryKey] });
-      queryClient.invalidateQueries({ queryKey: [usersQueryKey, updatedUser.id] });
+      void queryClient.invalidateQueries({ queryKey: [usersQueryKey] });
+      void queryClient.invalidateQueries({ queryKey: [usersQueryKey, updatedUser.id] });
     },
   });
 
@@ -116,7 +117,7 @@ export const useUserMutations = () => {
       return await deleteUser(userId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: [usersQueryKey] });
+      void queryClient.invalidateQueries({ queryKey: [usersQueryKey] });
     },
   });
 

@@ -34,6 +34,18 @@ public class LogCsvParserTest
     }
 
     [TestMethod]
+    public void ParseRunsReportsNothingForACsvWithoutAHeader()
+    {
+        Assert.AreEqual(0, LogCsvParser.ParseRuns(ToReader(string.Empty), Codelists, boreholeId: 7).Count);
+    }
+
+    [TestMethod]
+    public void ParseFilesReportsNothingForACsvWithoutAHeader()
+    {
+        Assert.AreEqual(0, LogCsvParser.ParseFiles(ToReader(string.Empty), Codelists).Count);
+    }
+
+    [TestMethod]
     public void ParseRunsReadsValues()
     {
         var csv = "RunNumber;FromDepth;ToDepth;BoreholeStatus\nRUN-1;10.5;20.5;open hole\n";

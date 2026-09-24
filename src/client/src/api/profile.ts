@@ -124,9 +124,10 @@ export function useProfiles(boreholeId?: number, forLabeling: boolean = false) {
 // Necessary as long as the profile mutations are not handled via tanstack-query.
 export const useReloadProfiles = (boreholeId: number) => {
   const queryClient = useQueryClient();
+  // Not awaited: callers reload in the background and do not wait for the refetches.
   return useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: [profileQueryKey, boreholeId] });
-    queryClient.invalidateQueries({ queryKey: [profileOcrStatusQueryKey, boreholeId] });
+    void queryClient.invalidateQueries({ queryKey: [profileQueryKey, boreholeId] });
+    void queryClient.invalidateQueries({ queryKey: [profileOcrStatusQueryKey, boreholeId] });
   }, [boreholeId, queryClient]);
 };
 

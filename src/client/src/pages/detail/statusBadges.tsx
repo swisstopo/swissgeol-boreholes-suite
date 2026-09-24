@@ -10,7 +10,7 @@ import { EditButton } from "../../components/buttons/buttons.tsx";
 import { restrictionCode, restrictionFreeCode, restrictionUntilCode } from "../../components/codelist.ts";
 import { formatDate } from "../../utils.ts";
 import { colorStatusMap } from "./form/workflow/statusColorMap.ts";
-import { useWorkflowMutation, WorkflowChangeRequest } from "./form/workflow/workflow.ts";
+import { toWorkflowStatus, useWorkflowMutation, WorkflowChangeRequest } from "./form/workflow/workflow.ts";
 
 interface StatusBadgesProps {
   borehole?: Borehole | null;
@@ -91,8 +91,9 @@ export const StatusBadges = ({ borehole }: StatusBadgesProps) => {
     <Chip data-cy="workflow-additional-reviewed-chip" label={t("statuses.Reviewed")} color="success" />
   );
 
-  const isDraft = workflow.status === WorkflowStatus.Draft;
-  const isPublished = workflow.status === WorkflowStatus.Published;
+  const status = toWorkflowStatus(workflow.status);
+  const isDraft = status === WorkflowStatus.Draft;
+  const isPublished = status === WorkflowStatus.Published;
   const hasAssignee = !!workflow.assignee?.id;
   const isCurrentUserAssignee = workflow.assignee?.id === currentUser?.id;
   const showReviewButton = isDraft && isCurrentUserAssignee;

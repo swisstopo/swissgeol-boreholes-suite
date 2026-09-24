@@ -6,7 +6,7 @@ const showAlert = vi.fn();
 const createClient = () => createQueryClient({ showAlert, translate: key => key, retryQueries: false });
 
 /** Runs a mutation that fails, so the client's error reporting can be observed. */
-const runFailingMutation = async (error: unknown) => {
+const runFailingMutation = async (error: Error) => {
   const client = createClient();
   const mutation = client.getMutationCache().build(client, { mutationFn: () => Promise.reject(error), retry: false });
 

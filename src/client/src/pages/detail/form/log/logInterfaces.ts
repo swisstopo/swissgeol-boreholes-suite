@@ -70,12 +70,23 @@ export type LogImportOutcome = "Added" | "AlreadyExists" | "SkippedIncomplete" |
 /** How far the attachment of an added log file has got. */
 export type LogImportUploadState = "pending" | "uploading" | "uploaded" | "failed";
 
-export interface LogImportResultItem {
+/** A refused log import request whose reason the server named with a translation key. */
+export interface LogImportValidationProblem {
+  messageKey: string;
+  values?: Record<string, string>;
+}
+
+/**
+ * One row of the import report.
+ *
+ * A `File` item always carries `runNumber` and `fileName` in `values`, whatever its outcome, and
+ * `fileName` is the name as the server stores it. Read those rather than taking the identifier
+ * apart, which is a display string a file name may itself contain the separator of.
+ */
+export interface LogImportResultItem extends LogImportValidationProblem {
   type: LogImportItemType;
   identifier: string;
   outcome: LogImportOutcome;
-  messageKey: string;
-  values?: Record<string, string>;
   logRunId?: number;
   logFileId?: number;
 }

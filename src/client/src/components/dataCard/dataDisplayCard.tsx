@@ -49,7 +49,9 @@ export const DataDisplayCard = <T extends DataCardEntity>({
                   variant: "contained",
                   action: () => {
                     if (item?.id) {
-                      deleteData(item.id).then(() => {
+                      // Not awaited: the legacy fetch helper reports API errors itself, and the
+                      // prompt action has nothing to return.
+                      void deleteData(item.id).then(() => {
                         resetTabStatus();
                         triggerReload();
                         reloadBoreholes();

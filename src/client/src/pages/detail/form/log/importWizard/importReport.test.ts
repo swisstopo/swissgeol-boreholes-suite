@@ -2,34 +2,51 @@ import { describe, expect, it } from "vitest";
 import { LogImportResultItem } from "../logInterfaces.ts";
 import { attachmentsToUpload, groupByOutcome } from "./importReport.ts";
 
-const item = (overrides: Partial<LogImportResultItem>): LogImportResultItem => ({
+type ItemOverrides = Partial<LogImportResultItem> & { runNumber?: string; fileName?: string };
+
+/** Builds a file item the way the server does, with the identifier and the values agreeing. */
+const fileItem = ({
+  runNumber = "RUN-1",
+  fileName = "a.las",
+  ...overrides
+}: ItemOverrides = {}): LogImportResultItem => ({
   type: "File",
-  identifier: "RUN-1 / a.las",
+  identifier: `${runNumber} / ${fileName}`,
   outcome: "Added",
   messageKey: "importResultFileAdded",
+  values: { runNumber, fileName },
+  ...overrides,
+});
+
+const runItem = ({ runNumber = "RUN-1", ...overrides }: ItemOverrides = {}): LogImportResultItem => ({
+  type: "Run",
+  identifier: runNumber,
+  outcome: "Added",
+  messageKey: "importResultRunAdded",
+  values: { runNumber },
   ...overrides,
 });
 
 describe("groupByOutcome", () => {
   it("returns the four groups in a fixed order", () => {
     const groups = groupByOutcome([
-      item({ outcome: "Error" }),
-      item({ outcome: "Added" }),
-      item({ outcome: "SkippedIncomplete" }),
-      item({ outcome: "AlreadyExists" }),
+      fileItem({ outcome: "Error" }),
+      fileItem({ outcome: "Added" }),
+      fileItem({ outcome: "SkippedIncomplete" }),
+      fileItem({ outcome: "AlreadyExists" }),
     ]);
 
     expect(groups.map(g => g.outcome)).toEqual(["Added", "AlreadyExists", "SkippedIncomplete", "Error"]);
   });
 
   it("drops groups that have no items", () => {
-    const groups = groupByOutcome([item({ outcome: "Added" })]);
+    const groups = groupByOutcome([fileItem({ outcome: "Added" })]);
 
     expect(groups).toHaveLength(1);
   });
 
   it("puts runs before files within a group", () => {
-    const groups = groupByOutcome([item({ type: "File" }), item({ type: "Run", identifier: "RUN-1" })]);
+    const groups = groupByOutcome([fileItem(), runItem()]);
 
     expect(groups[0].items.map(i => i.type)).toEqual(["Run", "File"]);
   });
@@ -40,13 +57,13 @@ describe("attachmentsToUpload", () => {
   const fileWithSpace = new File(["b"], "my log.las");
 
   it("matches an added file item to the dropped attachment", () => {
-    const uploads = attachmentsToUpload([item({ logFileId: 7, logRunId: 3 })], { "RUN-1": [fileA] });
+    const uploads = attachmentsToUpload([fileItem({ logFileId: 7, logRunId: 3 })], { "RUN-1": [fileA] });
 
     expect(uploads).toEqual([{ logFileId: 7, logRunId: 3, file: fileA, identifier: "RUN-1 / a.las" }]);
   });
 
   it("matches a name whose spaces the server replaced", () => {
-    const uploads = attachmentsToUpload([item({ identifier: "RUN-1 / my_log.las", logFileId: 7, logRunId: 3 })], {
+    const uploads = attachmentsToUpload([fileItem({ fileName: "my_log.las", logFileId: 7, logRunId: 3 })], {
       "RUN-1": [fileWithSpace],
     });
 
@@ -54,17 +71,35 @@ describe("attachmentsToUpload", () => {
     expect(uploads[0].file).toBe(fileWithSpace);
   });
 
+  it("matches a file name that contains the identifier separator", () => {
+    const awkwardFile = new File(["c"], "a / b.las");
+
+    const uploads = attachmentsToUpload([fileItem({ fileName: "a_/_b.las", logFileId: 7, logRunId: 3 })], {
+      "RUN-1": [awkwardFile],
+    });
+
+    expect(uploads).toHaveLength(1);
+    expect(uploads[0].file).toBe(awkwardFile);
+  });
+
   it("ignores items that are not added files", () => {
-    const uploads = attachmentsToUpload(
-      [item({ outcome: "AlreadyExists" }), item({ type: "Run", identifier: "RUN-1", logRunId: 3 })],
-      { "RUN-1": [fileA] },
-    );
+    const uploads = attachmentsToUpload([fileItem({ outcome: "AlreadyExists" }), runItem({ logRunId: 3 })], {
+      "RUN-1": [fileA],
+    });
 
     expect(uploads).toHaveLength(0);
   });
 
   it("ignores an added item whose attachment is not held", () => {
-    const uploads = attachmentsToUpload([item({ logFileId: 7, logRunId: 3 })], {});
+    const uploads = attachmentsToUpload([fileItem({ logFileId: 7, logRunId: 3 })], {});
+
+    expect(uploads).toHaveLength(0);
+  });
+
+  it("ignores an added item that names no file", () => {
+    const uploads = attachmentsToUpload([fileItem({ logFileId: 7, logRunId: 3, values: undefined })], {
+      "RUN-1": [fileA],
+    });
 
     expect(uploads).toHaveLength(0);
   });
@@ -72,7 +107,7 @@ describe("attachmentsToUpload", () => {
   it("matchesRegardlessOfFileNameCase", () => {
     const upperCaseFile = new File(["a"], "A.LAS");
 
-    const uploads = attachmentsToUpload([item({ logFileId: 7, logRunId: 3 })], { "RUN-1": [upperCaseFile] });
+    const uploads = attachmentsToUpload([fileItem({ logFileId: 7, logRunId: 3 })], { "RUN-1": [upperCaseFile] });
 
     expect(uploads).toHaveLength(1);
     expect(uploads[0].file).toBe(upperCaseFile);
@@ -83,10 +118,7 @@ describe("attachmentsToUpload", () => {
     const run2File = new File(["run2"], "a.las");
 
     const uploads = attachmentsToUpload(
-      [
-        item({ identifier: "RUN-1 / a.las", logFileId: 7, logRunId: 3 }),
-        item({ identifier: "RUN-2 / a.las", logFileId: 8, logRunId: 4 }),
-      ],
+      [fileItem({ logFileId: 7, logRunId: 3 }), fileItem({ runNumber: "RUN-2", logFileId: 8, logRunId: 4 })],
       { "RUN-1": [run1File], "RUN-2": [run2File] },
     );
 

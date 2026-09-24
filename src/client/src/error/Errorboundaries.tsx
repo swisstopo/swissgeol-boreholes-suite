@@ -38,7 +38,7 @@ const BackToOverviewWithMessage = ({ message }: { message: string }) => {
           // The route-level boundary (RouteErrorBoundary) is keyed to the location and resets
           // itself when the path changes, so navigating away is enough to clear the error.
           // No manual reset/setTimeout is needed, which avoids racing react-router navigation.
-          onClick={() => navigate("/", { replace: true })}
+          onClick={() => void navigate("/", { replace: true })}
           startIcon={<ChevronLeft />}
         />
       </Box>

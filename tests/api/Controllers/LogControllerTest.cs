@@ -8,6 +8,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using Moq;
 using System.IO.Compression;
+using System.Net;
 using System.Security.Claims;
 using System.Text;
 using static BDMS.Helpers;
@@ -18,6 +19,7 @@ namespace BDMS.Controllers;
 public class LogControllerTest : TestControllerBase
 {
     private const string TestFileName = "test_logfile.las";
+    private const string WaitingLogFileName = "waiting.las";
     private const string LogRunCsvPrefix = "log_runs_";
     private const string LogFileCsvPrefix = "log_files_";
     private const string TestRunNumber = "RUN-A";
@@ -28,6 +30,8 @@ public class LogControllerTest : TestControllerBase
     private User adminUser;
     private LogController controller;
     private LogFileCloudService logFileCloudService;
+    private AmazonS3Client s3Client;
+    private string bucketName;
     private Mock<IBoreholePermissionService> boreholePermissionServiceMock;
 
     private static int testBoreholeId = 1000085;
@@ -44,7 +48,7 @@ public class LogControllerTest : TestControllerBase
         contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
         contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, adminUser.SubjectId) }));
 
-        var s3ClientMock = new AmazonS3Client(
+        s3Client = new AmazonS3Client(
             configuration["S3:ACCESS_KEY"],
             configuration["S3:SECRET_KEY"],
             new AmazonS3Config
@@ -53,10 +57,11 @@ public class LogControllerTest : TestControllerBase
                 ForcePathStyle = true,
                 UseHttp = configuration["S3:SECURE"] == "0",
             });
+        bucketName = configuration["S3:LOGFILES_BUCKET_NAME"].ToLowerInvariant();
 
         var logFileCloudServiceLoggerMock = new Mock<ILogger<LogFileCloudService>>(MockBehavior.Strict);
         logFileCloudServiceLoggerMock.Setup(l => l.Log(It.IsAny<LogLevel>(), It.IsAny<EventId>(), It.IsAny<It.IsAnyType>(), It.IsAny<Exception>(), (Func<It.IsAnyType, Exception, string>)It.IsAny<object>()));
-        logFileCloudService = new LogFileCloudService(logFileCloudServiceLoggerMock.Object, s3ClientMock, configuration, contextAccessorMock.Object, Context);
+        logFileCloudService = new LogFileCloudService(logFileCloudServiceLoggerMock.Object, s3Client, configuration, contextAccessorMock.Object, Context);
 
         boreholePermissionServiceMock = CreateBoreholePermissionServiceMock();
 
@@ -252,6 +257,30 @@ public class LogControllerTest : TestControllerBase
         Assert.AreEqual(null, Context.LogRuns.SingleOrDefault(x => x.Id == logRunId));
         Assert.IsFalse(Context.LogFiles.Any(lf => lf.Id == logFile1.Id));
         Assert.IsFalse(Context.LogFiles.Any(lf => lf.Id == logFile2.Id));
+    }
+
+    [TestMethod]
+    public async Task DeleteLogRunRemovesTheObjectsItsFilesPointAt()
+    {
+        var logRunId = await CreateCompleteLogRunAsync();
+        var logFile = await UploadTestLogFile(logRunId);
+
+        Assert.IsNotNull(logFile.NameUuid);
+        await s3Client.GetObjectMetadataAsync(bucketName, logFile.NameUuid, CancellationToken.None);
+
+        // A request gets a context that has met nothing yet. Without this the file is already
+        // tracked here, and the delete would read it off the change tracker rather than the query,
+        // which is exactly what hides a missing Include.
+        Context.ChangeTracker.Clear();
+
+        var response = await controller.DeleteAsync(logRunId);
+        ActionResultAssert.IsOk(response);
+
+        // The row cascades with its run whether or not the delete touches the bucket, so only the
+        // bucket itself says whether the object went with it.
+        var exception = await Assert.ThrowsExactlyAsync<AmazonS3Exception>(async () =>
+            await s3Client.GetObjectMetadataAsync(bucketName, logFile.NameUuid, CancellationToken.None));
+        Assert.AreEqual(HttpStatusCode.NotFound, exception.StatusCode, "The object the deleted run named is gone.");
     }
 
     [TestMethod]
@@ -1042,7 +1071,7 @@ public class LogControllerTest : TestControllerBase
         var existingWithAttachment = new LogFile { LogRunId = storedRun.Id, Name = "existing.las", NameUuid = $"{Guid.NewGuid()}.las", Public = false };
 
         // Stored by an earlier import but still waiting for its attachment (NameUuid == null).
-        var waitingForAttachment = new LogFile { LogRunId = storedRun.Id, Name = "waiting.las", Public = false };
+        var waitingForAttachment = new LogFile { LogRunId = storedRun.Id, Name = WaitingLogFileName, Public = false };
         Context.LogFiles.AddRange(existingWithAttachment, waitingForAttachment);
         await Context.SaveChangesAsync();
 
@@ -1137,7 +1166,7 @@ public class LogControllerTest : TestControllerBase
         var borehole = await AddTestBoreholeAsync();
         var logRun = await AddTestLogRunAsync(borehole.Id);
 
-        var logFile = new LogFile { LogRunId = logRun.Id, Name = "waiting.las", NameUuid = null, Public = false };
+        var logFile = new LogFile { LogRunId = logRun.Id, Name = WaitingLogFileName, NameUuid = null, Public = false };
         Context.LogFiles.Add(logFile);
         await Context.SaveChangesAsync();
 
@@ -1157,11 +1186,11 @@ public class LogControllerTest : TestControllerBase
         Context.LogRuns.Add(logRun);
         await Context.SaveChangesAsync();
 
-        var logFile = new LogFile { LogRunId = logRun.Id, Name = "waiting.las", NameUuid = null, Public = false };
+        var logFile = new LogFile { LogRunId = logRun.Id, Name = WaitingLogFileName, NameUuid = null, Public = false };
         Context.LogFiles.Add(logFile);
         await Context.SaveChangesAsync();
 
-        var response = await controller.DeleteLogFileAsync(logFile.Id);
+        var response = await controller.DeleteLogFileAsync(logFile.Id, CancellationToken.None);
 
         Assert.IsInstanceOfType(response, typeof(OkResult));
         Assert.IsFalse(Context.LogFiles.Any(lf => lf.Id == logFile.Id));
@@ -1179,7 +1208,7 @@ public class LogControllerTest : TestControllerBase
         Context.LogFiles.Add(logFile);
         await Context.SaveChangesAsync();
 
-        var response = await controller.DeleteLogFileAsync(logFile.Id);
+        var response = await controller.DeleteLogFileAsync(logFile.Id, CancellationToken.None);
 
         Assert.IsInstanceOfType(response, typeof(ObjectResult));
         Assert.IsTrue(Context.LogFiles.Any(lf => lf.Id == logFile.Id));
@@ -1188,9 +1217,45 @@ public class LogControllerTest : TestControllerBase
     [TestMethod]
     public async Task DeleteLogFileForUnknownIdReturnsNotFound()
     {
-        var response = await controller.DeleteLogFileAsync(99999999);
+        var response = await controller.DeleteLogFileAsync(99999999, CancellationToken.None);
 
         Assert.IsInstanceOfType(response, typeof(NotFoundObjectResult));
+    }
+
+    [TestMethod]
+    public async Task DeleteLogFileWithoutEditPermissionReturnsUnauthorized()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        var logRun = new LogRun { BoreholeId = borehole.Id, RunNumber = "RUN-UNAUTH", FromDepth = 0, ToDepth = 1 };
+        Context.LogRuns.Add(logRun);
+        await Context.SaveChangesAsync();
+
+        var logFile = new LogFile { LogRunId = logRun.Id, Name = WaitingLogFileName, NameUuid = null, Public = false };
+        Context.LogFiles.Add(logFile);
+        await Context.SaveChangesAsync();
+
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", borehole.Id))
+            .ReturnsAsync(false);
+
+        var response = await controller.DeleteLogFileAsync(logFile.Id, CancellationToken.None);
+
+        ActionResultAssert.IsUnauthorized(response);
+        Assert.IsTrue(Context.LogFiles.Any(lf => lf.Id == logFile.Id));
+    }
+
+    [TestMethod]
+    public async Task RequiredAttachmentsWithoutEditPermissionReturnsUnauthorized()
+    {
+        var borehole = await AddTestBoreholeAsync();
+        boreholePermissionServiceMock
+            .Setup(x => x.CanEditBoreholeAsync("sub_admin", borehole.Id))
+            .ReturnsAsync(false);
+
+        var csvFile = GetFormFileByContent("RunNumber;Name;Extension\nRUN-A;My Log;las\n", FilesCsvFileName);
+        var response = await controller.RequiredAttachmentsAsync(borehole.Id, csvFile);
+
+        ActionResultAssert.IsUnauthorized(response);
     }
 
     // Helpers

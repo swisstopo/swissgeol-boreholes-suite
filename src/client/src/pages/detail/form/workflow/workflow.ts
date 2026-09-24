@@ -8,6 +8,7 @@ import {
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { boreholeQueryKey, canEditQueryKey, canManageQueryKey } from "../../../../api/borehole.ts";
 import { fetchApiV2Legacy } from "../../../../api/fetchApiV2.ts";
+import { WorkflowStatus as GeneratedWorkflowStatus } from "../../../../api/generated";
 import { NullableDateString } from "../../../../api/unionTypes.ts";
 
 export interface Workflow extends GenericWorkflow {
@@ -67,6 +68,19 @@ export enum TabType {
   Published,
 }
 
+// The generated client types the status as a string union, ui-core as a string enum with the same
+// members, and `no-unsafe-enum-comparison` rejects comparing one with the other. The map is checked
+// against both types, so a status the API adds or drops fails the build here.
+const workflowStatusByGeneratedStatus = {
+  Draft: WorkflowStatus.Draft,
+  InReview: WorkflowStatus.InReview,
+  Reviewed: WorkflowStatus.Reviewed,
+  Published: WorkflowStatus.Published,
+} as const satisfies Record<GeneratedWorkflowStatus, WorkflowStatus>;
+
+export const toWorkflowStatus = (status: GeneratedWorkflowStatus | undefined): WorkflowStatus | undefined =>
+  status ? workflowStatusByGeneratedStatus[status] : undefined;
+
 const fetchWorkflowByBoreholeId = async (boreholeId: number): Promise<Workflow> =>
   await fetchApiV2Legacy(`workflow/${boreholeId}`, "GET");
 
@@ -93,11 +107,13 @@ export const useWorkflow = (boreholeId: number): UseQueryResult<Workflow> => {
 export const useWorkflowMutation = () => {
   const queryClient = useQueryClient();
 
+  // Not awaited: the caller should proceed as soon as the write succeeded, not when the refetches
+  // these invalidations trigger have settled.
   function invalidateBoreholeAndWorkflowQueries(boreholeId: number) {
-    queryClient.invalidateQueries({ queryKey: [workflowQueryKey, Number(boreholeId)] });
-    queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, Number(boreholeId)] });
-    queryClient.invalidateQueries({ queryKey: [canEditQueryKey] });
-    queryClient.invalidateQueries({ queryKey: [canManageQueryKey] });
+    void queryClient.invalidateQueries({ queryKey: [workflowQueryKey, Number(boreholeId)] });
+    void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, Number(boreholeId)] });
+    void queryClient.invalidateQueries({ queryKey: [canEditQueryKey] });
+    void queryClient.invalidateQueries({ queryKey: [canManageQueryKey] });
   }
 
   const updateWorkflow = useMutation({

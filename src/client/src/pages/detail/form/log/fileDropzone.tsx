@@ -49,6 +49,9 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
   expectedFileNames,
 }) => {
   const { t } = useTranslation();
+
+  // Seeds the selection on mount only, so later changes to the prop are ignored. A parent that
+  // has to change the selection must remount the dropzone, which the import wizard steps do.
   const [files, setFiles] = useState<File[]>(existingFiles ?? []);
   const [error, setError] = useState<string | undefined>();
 
@@ -63,7 +66,8 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
     (index: number) => {
       setFiles(prev => {
         const next = prev.filter((_, i) => i !== index);
-        onChange(next);
+        // Not awaited: onChange is a form callback that returns void.
+        void onChange(next);
         return next;
       });
     },

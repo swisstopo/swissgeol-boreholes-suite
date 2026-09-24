@@ -20,8 +20,8 @@ import {
   stopBoreholeEditing,
 } from "../helpers/testHelpers";
 
-const addMinimalAttachment = (boreholeIdentifier: string, fileName: string) => {
-  cy.get(boreholeIdentifier).then(id => {
+const addMinimalAttachment = (boreholeIdentifier: `@${string}`, fileName: string) => {
+  cy.get<number>(boreholeIdentifier).then(id => {
     goToDetailRouteAndAcceptTerms(`/${id}/attachments`);
     startBoreholeEditing();
     selectInputFile(fileName, "text/plain");
@@ -240,10 +240,10 @@ describe("Test for importing boreholes.", () => {
 
     // reimport the exported zip file
     cy.get("@exportedZipFileName").then(zipFileName => {
-      const downloadPath = prepareDownloadPath(zipFileName as unknown as string);
+      const downloadPath = prepareDownloadPath(zipFileName);
       cy.readFile(downloadPath, "binary").then(fileContent => {
         const blob = Cypress.Blob.binaryStringToBlob(fileContent, "application/zip");
-        const fileToReupload = new File([blob], zipFileName as unknown as string, { type: "application/zip" });
+        const fileToReupload = new File([blob], zipFileName, { type: "application/zip" });
         const dataTransfer = new DataTransfer();
         dataTransfer.items.add(fileToReupload);
         cy.dataCy("import-borehole-button").click();

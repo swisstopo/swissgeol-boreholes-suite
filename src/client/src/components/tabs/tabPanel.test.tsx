@@ -57,7 +57,7 @@ describe("TabPanel", () => {
   });
 
   // Repeating the redirect writes the URL again, and that write discards query parameters that
-  // are still on their way into the address bar, such as the ones nuqs has queued.
+  // are still on their way into the address bar.
   it("does not redirect again while the redirect is still pending and its parent re-renders", () => {
     render(<Host />);
     navigateTo.mockClear();

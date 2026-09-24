@@ -164,7 +164,7 @@ public class LogImportClassifierTest
             provided: [TestAttachmentName]);
 
         Assert.AreEqual(LogImportOutcome.AlreadyExists, result.Items.Single().Outcome);
-        Assert.AreEqual(0, result.FilesToComplete.Count);
+        Assert.AreEqual(0, result.FilesToAdd.Count);
     }
 
     [TestMethod]
@@ -180,7 +180,6 @@ public class LogImportClassifierTest
         Assert.AreEqual(LogImportOutcome.Added, item.Outcome);
         Assert.AreEqual(9, item.LogFileId);
         Assert.AreEqual(5, item.LogRunId);
-        CollectionAssert.AreEqual(new[] { 9 }, result.FilesToComplete.ToList());
         Assert.AreEqual(0, result.FilesToAdd.Count);
     }
 

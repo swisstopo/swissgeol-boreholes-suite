@@ -162,7 +162,9 @@ export const cancelDragSelectDescriptionGaps = ({ kind, fromDepth, deltaRows }: 
   verticalDragByRows({
     grabSelector: descriptionGapSelector(kind, fromDepth),
     deltaRows,
-    duringDrag: () => cy.get("body").trigger("keydown", { key: "Escape" }),
+    duringDrag: () => {
+      cy.get("body").trigger("keydown", { key: "Escape" });
+    },
   });
 };
 

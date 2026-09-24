@@ -37,7 +37,9 @@ describe("log export transfer options", () => {
     const rows = [{ id: 5 }];
     const { result } = renderHook(() => useLogExport(exportFn, [5], rows));
 
-    result.current.exportItems.forEach(item => item.exportFunction(transferOptions));
+    result.current.exportItems.forEach(item => {
+      void item.exportFunction(transferOptions);
+    });
 
     expect(exportFn).toHaveBeenNthCalledWith(1, [5], false, "de", transferOptions);
     expect(exportFn).toHaveBeenNthCalledWith(2, [5], true, "de", transferOptions);

@@ -99,14 +99,13 @@ public static class LogCsvParser
     /// <param name="csv">The CSV to read.</param>
     /// <param name="codelists">The codelists the text values are resolved against.</param>
     /// <param name="boreholeId">The borehole the runs belong to.</param>
-    /// <returns>One row per line, in file order.</returns>
+    /// <returns>One row per line, in file order. A CSV with no header row has no rows to report.</returns>
     public static IReadOnlyList<LogRunRow> ParseRuns(TextReader csv, IReadOnlyList<Codelist> codelists, int boreholeId)
     {
         var rows = new List<LogRunRow>();
         using var parser = new CsvReader(csv, CsvConfigHelper.CsvReadConfig);
 
-        parser.Read();
-        parser.ReadHeader();
+        if (!parser.Read() || !parser.ReadHeader()) return rows;
 
         var rowIndex = 0;
         while (parser.Read())
@@ -154,14 +153,13 @@ public static class LogCsvParser
     /// </summary>
     /// <param name="csv">The CSV to read.</param>
     /// <param name="codelists">The codelists the text values are resolved against.</param>
-    /// <returns>One row per line, in file order.</returns>
+    /// <returns>One row per line, in file order. A CSV with no header row has no rows to report.</returns>
     public static IReadOnlyList<LogFileRow> ParseFiles(TextReader csv, IReadOnlyList<Codelist> codelists)
     {
         var rows = new List<LogFileRow>();
         using var parser = new CsvReader(csv, CsvConfigHelper.CsvReadConfig);
 
-        parser.Read();
-        parser.ReadHeader();
+        if (!parser.Read() || !parser.ReadHeader()) return rows;
 
         var rowIndex = 0;
         while (parser.Read())

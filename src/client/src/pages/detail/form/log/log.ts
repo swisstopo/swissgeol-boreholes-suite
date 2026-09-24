@@ -18,10 +18,12 @@ import {
   ImportLogsVariables,
   LogFileUploadProgress,
   LogImportResultItem,
+  LogImportValidationProblem,
   LogRun,
   RequiredAttachmentsVariables,
   UpdateLogRunVariables,
 } from "./logInterfaces.ts";
+import { toStoredFileName } from "./logUtils.ts";
 
 const deleteLogRunsByIds = async (logRunIds: number[]) => {
   const queryParams = logRunIds.map(id => `logRunIds=${id}`).join("&");
@@ -89,14 +91,16 @@ export const useLogRunMutations = () => {
   const queryClient = useQueryClient();
   const resetTabStatus = useResetTabStatus(["log"]);
 
+  // The invalidations in this hook are deliberately not awaited: returning their promise would keep
+  // the mutation pending until every refetch settled, rather than until the write succeeded.
   const useAddLogRun = useMutation({
     mutationFn: async ({ logRun, signal }: AddLogRunVariables) => {
       return await fetchApiV2WithApiError<LogRun>(logController, "POST", logRun, signal);
     },
     onSuccess: (_data, { logRun }) => {
       resetTabStatus();
-      queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRun.boreholeId] });
-      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, logRun.boreholeId] });
+      void queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRun.boreholeId] });
+      void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, logRun.boreholeId] });
     },
   });
 
@@ -127,7 +131,7 @@ export const useLogRunMutations = () => {
     },
     onSuccess: (_data, { logRun }) => {
       resetTabStatus();
-      queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRun.boreholeId] });
+      void queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRun.boreholeId] });
     },
   });
 
@@ -137,8 +141,8 @@ export const useLogRunMutations = () => {
     },
     onSuccess: (_data, logRuns) => {
       resetTabStatus();
-      queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRuns[0]?.boreholeId] });
-      queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, logRuns[0]?.boreholeId] });
+      void queryClient.invalidateQueries({ queryKey: [logsQueryKey, logRuns[0]?.boreholeId] });
+      void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, logRuns[0]?.boreholeId] });
     },
   });
 
@@ -161,14 +165,21 @@ export class LogImportValidationError extends ApiError {
 }
 
 /**
+ * Whether a refused log import request names its reason with a translation key.
+ * @param body The parsed response body.
+ * @returns True if the body carries a translation key for the reason.
+ */
+const isLogImportValidationProblem = (body: unknown): body is LogImportValidationProblem =>
+  typeof body === "object" && body !== null && "messageKey" in body && typeof body.messageKey === "string";
+
+/**
  * Names an attachment the way the server expects it, so a row and the file the user dropped for
  * it are recognized as the same thing on both sides.
  * @param runNumber The run the file belongs to.
  * @param fileName The file name as the browser reports it.
  * @returns The identifier to send.
  */
-const toAttachmentName = (runNumber: string, fileName: string): string =>
-  `${runNumber}/${fileName.replaceAll(" ", "_")}`;
+const toAttachmentName = (runNumber: string, fileName: string): string => `${runNumber}/${toStoredFileName(fileName)}`;
 
 /**
  * Removes a log file record that never received its attachment.
@@ -193,8 +204,8 @@ export const useRequiredAttachments = () =>
       const response = await upload(`${logController}/import/requiredfiles?boreholeId=${boreholeId}`, "POST", formData);
       if (!response.ok) {
         if (isJsonContentType(response.headers.get("content-type"))) {
-          const responseBody = await response.json();
-          if (typeof responseBody?.messageKey === "string") {
+          const responseBody: unknown = await response.json();
+          if (isLogImportValidationProblem(responseBody)) {
             throw new LogImportValidationError(responseBody.messageKey, responseBody.values);
           }
         }
@@ -220,8 +231,8 @@ export const useImportLogs = () =>
       const response = await upload(`${logController}/import?boreholeId=${boreholeId}`, "POST", formData);
       if (!response.ok) {
         if (isJsonContentType(response.headers.get("content-type"))) {
-          const responseBody = await response.json();
-          if (typeof responseBody?.messageKey === "string") {
+          const responseBody: unknown = await response.json();
+          if (isLogImportValidationProblem(responseBody)) {
             throw new LogImportValidationError(responseBody.messageKey, responseBody.values);
           }
         }

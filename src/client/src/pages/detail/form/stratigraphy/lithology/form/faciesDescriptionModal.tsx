@@ -44,7 +44,7 @@ export const FaciesDescriptionModal: FC<FaciesDescriptionModalProps> = ({ descri
       // when the user didn't type anything — that's how an empty placeholder description is
       // attached to the clicked gap.
       const isNew = description?.id === 0;
-      updateFaciesDescription({ ...description, ...values } as FaciesDescription, isDirty || (isNew && isValid));
+      updateFaciesDescription({ ...description, ...values }, isDirty || (isNew && isValid));
     }
   };
 

@@ -89,7 +89,7 @@ const createBorehole = async (workgroupId: number): Promise<Borehole> => {
 };
 
 const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: number | null) => {
-  return await fetchApiV2Legacy(`borehole/copy?id=${boreholeId}&workgroupId=${workgroupId}`, "POST");
+  return await fetchApiV2Legacy(`borehole/copy?id=${boreholeId.join(",")}&workgroupId=${workgroupId}`, "POST");
 };
 
 // Saves the response body verbatim. Reading it as text first would strip the UTF-8 byte order mark
@@ -221,9 +221,10 @@ export const useBoreholeMutations = () => {
 
   // Force immediate background refetch of the borehole after any lock-status-changing
   // mutation so the UI has fresh data on next render and doesn't flicker edit-affordances.
+  // Neither call is awaited: the refresh happens in the background, as the name says.
   const invalidateBorehole = (id: number) => {
-    queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
-    queryClient.refetchQueries({ queryKey: [boreholeQueryKey, id], exact: true });
+    void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
+    void queryClient.refetchQueries({ queryKey: [boreholeQueryKey, id], exact: true });
   };
 
   const useUpdateBorehole = useMutation({
@@ -251,7 +252,7 @@ export const useBoreholeMutations = () => {
       return await deleteBorehole(boreholeId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: [boreholeQueryKey],
       });
     },
@@ -262,7 +263,7 @@ export const useBoreholeMutations = () => {
       return await bulkEditBoreholes(request);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: [boreholeQueryKey],
       });
     },
@@ -273,7 +274,7 @@ export const useBoreholeMutations = () => {
       return await bulkDeleteBoreholes(boreholeIds);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: [boreholeQueryKey],
       });
     },
@@ -294,7 +295,7 @@ export const useBoreholeMutations = () => {
 export const useReloadBoreholes = () => {
   const queryClient = useQueryClient();
   return () => {
-    queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
+    void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
   };
 };
 
