@@ -1,8 +1,9 @@
 ﻿// @vitest-environment jsdom
 import { ReactNode } from "react";
-import { cleanup, fireEvent, render, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
+import { ClassifyResponse } from "../../../../../../api/dataextractionInterfaces.ts";
 import { Codelist } from "../../../../../../api/generated";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 import { ShowPrompt } from "../../../../../../components/prompt/promptInterface.ts";
@@ -81,6 +82,8 @@ describe("buildApplyHandler", () => {
 
 const byDataCy = (value: string) => document.querySelector(`[data-cy="${value}"]`);
 
+const flushPromises = () => new Promise(resolve => setTimeout(resolve, 0));
+
 const lithology = (id: number): Lithology => ({
   id,
   stratigraphyId: 1,
@@ -138,5 +141,26 @@ describe("LithologyModal", () => {
     rerender(modalFor(lithology(2)));
 
     expect(byDataCy("analysis-result-card")).not.toBeInTheDocument();
+  });
+
+  it("ignores a classification still running when another lithology opens", async () => {
+    let finishClassification: (response: ClassifyResponse) => void = () => {};
+    classify.mockReturnValue(
+      new Promise<ClassifyResponse>(resolve => {
+        finishClassification = resolve;
+      }),
+    );
+    const { rerender } = render(modalFor(lithology(1)), { wrapper: withAlerts });
+
+    fireEvent.click(byDataCy("analyze-button")!);
+    rerender(modalFor(undefined));
+    rerender(modalFor(lithology(2)));
+    await act(async () => {
+      finishClassification({ consolidation: "unconsolidated", en_main: "si" });
+      await flushPromises();
+    });
+
+    expect(byDataCy("analysis-result-card")).not.toBeInTheDocument();
+    expect(showAlert).not.toHaveBeenCalled();
   });
 });
