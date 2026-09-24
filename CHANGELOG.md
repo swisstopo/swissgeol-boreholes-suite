@@ -16,6 +16,7 @@
 - Upgraded the AWS SDK used for the S3 file storage to version 4.
 - LOG files are uploaded in chunks, so an upload is no longer cut off after a minute and is retried rather than restarted when a chunk fails.
 - The export dialog closes as soon as a format is chosen, and the transfer is reported by an overlay over the page instead of over the dialog.
+- The stratigraphy extraction now distinguishes between an extraction that completed without finding a stratigraphy and one that failed. A failed extraction reports the error and offers to try again. While an extraction takes unusually long, a note asks you to keep waiting.
 
 ### Fixed
 - The borehole overview no longer fails to load in Safari. The page previously showed an error message instead of the borehole table.
