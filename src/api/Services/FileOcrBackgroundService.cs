@@ -38,7 +38,7 @@ public class FileOcrBackgroundService : BackgroundService
     /// <param name="context">The database context to read through.</param>
     /// <param name="cancellationToken">Aborts the read.</param>
     /// <returns>The ids of the profiles to process.</returns>
-    public static async Task<IReadOnlyList<int>> PendingProfileIdsAsync(BdmsContext context, CancellationToken cancellationToken) =>
+    internal static async Task<IReadOnlyList<int>> PendingProfileIdsAsync(BdmsContext context, CancellationToken cancellationToken) =>
         await context.Profiles
             .Where(p => (p.OcrStatus == OcrStatus.Created || p.OcrStatus == OcrStatus.Processing) && p.NameUuid != null)
             .Select(p => p.Id)
