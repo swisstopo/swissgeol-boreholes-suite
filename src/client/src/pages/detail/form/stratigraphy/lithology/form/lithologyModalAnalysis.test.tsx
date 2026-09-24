@@ -1,8 +1,38 @@
 ﻿// @vitest-environment jsdom
-import { describe, expect, it, vi } from "vitest";
+import { ReactNode } from "react";
+import { cleanup, fireEvent, render, waitFor } from "@testing-library/react";
+import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
+import "@testing-library/jest-dom/vitest";
+import { Codelist } from "../../../../../../api/generated";
+import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 import { ShowPrompt } from "../../../../../../components/prompt/promptInterface.ts";
+import { LithologicalDescription, Lithology } from "../../stratigraphy.ts";
 import { LithologyAnalysis } from "../analysis/useLithologyAnalysis.ts";
+import { LithologyModal } from "./lithologyModal.tsx";
 import { buildApplyHandler } from "./lithologyUtils.ts";
+
+vi.mock("react-i18next", () => ({
+  useTranslation: () => ({ t: (key: string) => key, i18n: { language: "en" } }),
+}));
+
+const classify = vi.fn();
+
+// The one codelist entry that "Silt" classifies to.
+const codelists: Codelist[] = [{ id: 102, schema: "lithology_uncon_main", code: "Si", en: "silt" }];
+
+vi.mock("../../../../../../components/codelist.ts", () => ({
+  useCodelists: () => ({ data: codelists }),
+  useCodelistDisplayValues: () => (id: number) => ({ text: `code-${id}`, code: "" }),
+}));
+
+vi.mock("../../../../../../api/dataextraction.ts", () => ({
+  useClassifyLithologicalDescription: () => ({ mutateAsync: classify, isPending: false }),
+}));
+
+// The layer forms take no part in the analysis lifecycle and make up most of the modal's render time.
+vi.mock("./lithologyUnconsolidatedForm.tsx", () => ({ LithologyUnconsolidatedForm: () => null }));
+vi.mock("./lithologyConsolidatedForm.tsx", () => ({ LithologyConsolidatedForm: () => null }));
+vi.mock("./remarksFormSection.tsx", () => ({ RemarksFormSection: () => null }));
 
 const analysis = (overrides: Partial<LithologyAnalysis> = {}): LithologyAnalysis => ({
   changeByPath: new Map(),
@@ -46,5 +76,67 @@ describe("buildApplyHandler", () => {
 
     expect(current.acceptAll).toHaveBeenCalled();
     expect(apply).toHaveBeenCalled();
+  });
+});
+
+const byDataCy = (value: string) => document.querySelector(`[data-cy="${value}"]`);
+
+const lithology = (id: number): Lithology => ({
+  id,
+  stratigraphyId: 1,
+  fromDepth: 0,
+  toDepth: 10,
+  isUnconsolidated: true,
+  hasBedding: false,
+});
+
+const describedAsSilt = (layer: Lithology): LithologicalDescription => ({
+  id: layer.id + 100,
+  stratigraphyId: layer.stratigraphyId,
+  fromDepth: 0,
+  toDepth: 10,
+  description: "Silt",
+});
+
+// The table keeps one modal mounted for every row, so opening a row only changes these props.
+const modalFor = (layer: Lithology | undefined) => (
+  <LithologyModal
+    lithology={layer}
+    lithologicalDescription={layer && describedAsSilt(layer)}
+    updateLithology={vi.fn()}
+    updateLithologicalDescription={vi.fn()}
+  />
+);
+
+const showAlert = vi.fn();
+
+const withAlerts = ({ children }: { children: ReactNode }) => (
+  <AlertContext.Provider value={{ alertIsOpen: false, text: undefined, showAlert, closeAlert: () => {} }}>
+    {children}
+  </AlertContext.Provider>
+);
+
+describe("LithologyModal", () => {
+  beforeEach(() => {
+    classify.mockReset();
+    showAlert.mockClear();
+    // The analyse action is only offered in dev mode.
+    window.history.replaceState(null, "", "/?dev=true");
+  });
+
+  afterEach(() => {
+    cleanup();
+  });
+
+  it("drops the analysis of the previous lithology when another one opens", async () => {
+    classify.mockResolvedValue({ consolidation: "unconsolidated", en_main: "si" });
+    const { rerender } = render(modalFor(lithology(1)), { wrapper: withAlerts });
+
+    fireEvent.click(byDataCy("analyze-button")!);
+    await waitFor(() => expect(byDataCy("analysis-result-card")).toBeInTheDocument());
+    rerender(modalFor(undefined));
+    rerender(modalFor(lithology(2)));
+
+    expect(byDataCy("analysis-result-card")).not.toBeInTheDocument();
   });
 });
