@@ -150,6 +150,54 @@ describe("openBoreholeArchive", () => {
     await opened.close();
   });
 
+  it("reads an archive the Finder packed, whose companion entries belong to no export", async () => {
+    // What the Finder makes of an unpacked export: the export nested in the folder it sat in, and
+    // beside it an __MACOSX folder carrying the extended attributes of every file that has them,
+    // which is every file that came through a browser. It writes them ahead of the export itself.
+    const archive = await archiveWith([
+      ["__MACOSX/"],
+      ["__MACOSX/._MyExport", new Blob([bytes(82)])],
+      ["__MACOSX/MyExport/._export.json", new Blob([bytes(82)])],
+      ["__MACOSX/MyExport/._uuid_report.pdf", new Blob([bytes(82)])],
+      ["MyExport/"],
+      ["MyExport/export.json", new Blob(['[{"id":1}]'])],
+      ["MyExport/uuid_report.pdf", new Blob([bytes(2048)])],
+    ]);
+
+    const opened = await openBoreholeArchive(archive);
+
+    expect(opened.json).toBe('[{"id":1}]');
+    expect(opened.entryFor("uuid_report.pdf")?.size).toBe(2048);
+    await opened.close();
+  });
+
+  it("reads past a shared folder although the zipper left files of its own beside it", async () => {
+    const archive = await archiveWith([
+      [".DS_Store", new Blob([bytes(6148)])],
+      ["Thumbs.db", new Blob([bytes(1024)])],
+      ["MyExport/export.json", new Blob(['[{"id":1}]'])],
+      ["MyExport/uuid_report.pdf", new Blob([bytes(2048)])],
+    ]);
+
+    const opened = await openBoreholeArchive(archive);
+
+    expect(opened.entryFor("uuid_report.pdf")?.size).toBe(2048);
+    expect(opened.entryFor(".DS_Store")).toBeUndefined();
+    await opened.close();
+  });
+
+  it("takes the description at the root over an attachment that happens to be a json", async () => {
+    const archive = await archiveWith([
+      ["attachments/uuid_readings.json", new Blob(['{"not":"the import"}'])],
+      ["export.json", new Blob(['[{"id":1}]'])],
+    ]);
+
+    const opened = await openBoreholeArchive(archive);
+
+    expect(opened.json).toBe('[{"id":1}]');
+    await opened.close();
+  });
+
   it("streams an entry's bytes intact", async () => {
     const content = bytes(4096);
     const archive = await archiveWith([

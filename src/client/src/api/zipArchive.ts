@@ -24,6 +24,28 @@ const isFile = (entry: Entry): entry is FileEntry => !entry.directory;
 
 const isJsonEntry = (fileName: string): boolean => fileName.toLowerCase().endsWith(".json");
 
+/** The names a packing tool writes for itself, whatever folder of the archive they turn up in. */
+const bookkeepingNames = new Set([".ds_store", "thumbs.db"]);
+
+/**
+ * Whether an entry is the packing tool's own bookkeeping rather than a part of the export.
+ *
+ * The Finder stores the extended attributes of a file in an `__MACOSX` folder, under a companion
+ * named `._` and then the file's own name. Anything that came through a browser carries such
+ * attributes, so an export packed up again on a Mac holds a second entry for every file it holds.
+ * Read as entries of the export, they sit at the archive root beside the folder it was packed
+ * into, which leaves the entries sharing no folder to be read past, and `._export.json` reads as a
+ * description of the import.
+ * @param fileName The name the entry is stored under.
+ * @returns Whether it is to be passed over.
+ */
+const isPackagingEntry = (fileName: string): boolean => {
+  const segments = fileName.split("/");
+  const baseName = segments[segments.length - 1];
+
+  return segments[0] === "__MACOSX" || baseName.startsWith("._") || bookkeepingNames.has(baseName.toLowerCase());
+};
+
 /**
  * The folder every entry of the archive sits under, which its names are read past.
  *
@@ -44,6 +66,21 @@ const sharedFolderPrefix = (files: FileEntry[]): string => {
   if (prefix === "") return "";
 
   return files.every(entry => entry.filename.startsWith(prefix)) ? prefix : "";
+};
+
+/**
+ * The entry holding the description of what to import.
+ *
+ * An export writes it beside the attachments, so one that sits in a folder of its own is an
+ * attachment that happens to be a JSON. Such an entry is only fallen back on when the archive
+ * holds nothing at its root, where a description would be.
+ * @param files The file entries of the archive.
+ * @param nameOf The name each entry is referred to by, its shared folder already read past.
+ * @returns The entry to read the import from, or nothing if the archive holds no JSON at all.
+ */
+const jsonEntryOf = (files: FileEntry[], nameOf: (entry: FileEntry) => string): FileEntry | undefined => {
+  const jsonEntries = files.filter(entry => isJsonEntry(nameOf(entry)));
+  return jsonEntries.find(entry => !nameOf(entry).includes("/")) ?? jsonEntries[0];
 };
 
 const knownContentTypes: Record<string, string | undefined> = {
@@ -95,12 +132,12 @@ const sourceFor = (entry: FileEntry, fileName: string): UploadSource => ({
  */
 export async function openBoreholeArchive(file: File): Promise<BoreholeArchive> {
   const reader = new ZipReader(new BlobReader(file));
-  const files = (await reader.getEntries()).filter(isFile);
+  const files = (await reader.getEntries()).filter(isFile).filter(entry => !isPackagingEntry(entry.filename));
 
   const prefix = sharedFolderPrefix(files);
   const nameOf = (entry: FileEntry): string => entry.filename.slice(prefix.length);
 
-  const jsonEntry = files.find(entry => isJsonEntry(nameOf(entry)));
+  const jsonEntry = jsonEntryOf(files, nameOf);
   if (jsonEntry === undefined) {
     await reader.close();
     throw new ArchiveJsonMissingError();
