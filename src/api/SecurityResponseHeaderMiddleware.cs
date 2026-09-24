@@ -16,7 +16,11 @@ public class SecurityResponseHeaderMiddleware(RequestDelegate next)
         context.Response.Headers.Append("X-Frame-Options", "DENY");
         context.Response.Headers.Append("X-Content-Type-Options", "nosniff");
         context.Response.Headers.Append("Referrer-Policy", "strict-origin-when-cross-origin");
-        context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; frame-src 'none';");
+
+        // worker-src allows blob:, because the archive import reads the ZIP through a worker the
+        // library starts from a blob URL. Without it the work falls back onto the main thread and
+        // a large archive freezes the page, cancel button included.
+        context.Response.Headers.Append("Content-Security-Policy", "default-src 'self'; worker-src 'self' blob:; frame-src 'none';");
 
         await next(context).ConfigureAwait(false);
     }

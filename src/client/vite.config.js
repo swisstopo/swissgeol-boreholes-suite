@@ -47,7 +47,10 @@ export default defineConfig({
     port: 3000,
     headers: {
       "Content-Security-Policy":
-        "default-src 'self'; connect-src 'self' https://*.geo.admin.ch http://localhost:4011; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' https://*.geo.admin.ch data: blob:; font-src 'self' data: fonts.gstatic.com; frame-ancestors 'none'",
+        // worker-src allows blob:, because the archive import reads the ZIP through a worker the
+        // library starts from a blob URL. Without it the work falls back onto the main thread and
+        // a large archive freezes the page, cancel button included.
+        "default-src 'self'; connect-src 'self' https://*.geo.admin.ch http://localhost:4011; script-src 'self' 'unsafe-inline'; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' https://*.geo.admin.ch data: blob:; font-src 'self' data: fonts.gstatic.com; frame-ancestors 'none'",
       "X-FRAME-OPTIONS": "DENY",
       "X-Content-Type-Options": "nosniff",
       "Referrer-Policy": "strict-origin-when-cross-origin",

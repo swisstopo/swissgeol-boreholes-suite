@@ -19,7 +19,10 @@ app.use(limiter);
 app.use((req, res, next) => {
   res.setHeader(
     "Content-Security-Policy",
-    "default-src 'self'; connect-src 'self' https://cognito-idp.eu-west-1.amazonaws.com https://*.auth.eu-west-1.amazoncognito.com https://*.geo.admin.ch https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; script-src 'self' 'unsafe-inline' https://*.googletagmanager.com; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' https://*.geo.admin.ch https://*.google-analytics.com https://*.googletagmanager.com data: blob:; font-src 'self' data: fonts.gstatic.com; frame-ancestors 'none'",
+    // worker-src allows blob:, because the archive import reads the ZIP through a worker the
+    // library starts from a blob URL. Without it the work falls back onto the main thread and a
+    // large archive freezes the page, cancel button included.
+    "default-src 'self'; connect-src 'self' https://cognito-idp.eu-west-1.amazonaws.com https://*.auth.eu-west-1.amazoncognito.com https://*.geo.admin.ch https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com; script-src 'self' 'unsafe-inline' https://*.googletagmanager.com; worker-src 'self' blob:; style-src 'self' 'unsafe-inline' fonts.googleapis.com; img-src 'self' https://*.geo.admin.ch https://*.google-analytics.com https://*.googletagmanager.com data: blob:; font-src 'self' data: fonts.gstatic.com; frame-ancestors 'none'",
   );
   res.setHeader("X-Frame-Options", "DENY");
   res.setHeader("X-Content-Type-Options", "nosniff");
