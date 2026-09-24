@@ -102,7 +102,7 @@ export function useFileInfo(profileId: number | undefined, activePage: number) {
         }
 
         // Throw error to trigger useQuery's retry mechanism
-        throw new ApiError("pngsNotYetAvailable", 202); // 202 = Processing
+        throw new ApiError("filePagesNotAvailable", 202); // 202 = Processing
       }
 
       return dataResponse;

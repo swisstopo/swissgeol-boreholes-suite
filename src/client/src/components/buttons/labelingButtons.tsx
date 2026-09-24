@@ -75,31 +75,41 @@ export const SidePanelToggleButton: FC<SidePanelToggleButtonProps> = props => {
   );
 };
 
-export const TextExtractionButton = ({ onClick, disabled }: { onClick: () => void; disabled: boolean }) => {
+interface TextExtractionButtonProps {
+  onClick: () => void;
+  disabled: boolean;
+  disabledReason?: string;
+}
+
+export const TextExtractionButton: FC<TextExtractionButtonProps> = ({ onClick, disabled, disabledReason }) => {
   const { t } = useTranslation();
   return (
-    <Tooltip title={t("extractText")}>
-      <Button
-        data-cy="text-extraction-button"
-        disabled={disabled}
-        variant="text"
-        onClick={onClick}
-        sx={{
-          p: 0.5,
-          boxShadow: 1,
-          height: "44px",
-        }}>
-        <Box
+    <Tooltip title={disabledReason ?? t("extractText")} describeChild>
+      {/* A disabled button receives no pointer events, so the tooltip listens on this wrapper instead. */}
+      <Box component="span" sx={{ display: "inline-flex" }}>
+        <Button
+          data-cy="text-extraction-button"
+          aria-label={t("extractText")}
+          disabled={disabled}
+          variant="text"
+          onClick={onClick}
           sx={{
-            p: 1,
-            lineHeight: 1,
-            borderRadius: 1,
-            backgroundColor: disabled ? theme.palette.action.disabled : theme.palette.primary.main,
-            color: theme.palette.primary.contrastText,
+            p: 0.5,
+            boxShadow: 1,
+            height: "44px",
           }}>
-          <SelectTextIcon />
-        </Box>
-      </Button>
+          <Box
+            sx={{
+              p: 1,
+              lineHeight: 1,
+              borderRadius: 1,
+              backgroundColor: disabled ? theme.palette.action.disabled : theme.palette.primary.main,
+              color: theme.palette.primary.contrastText,
+            }}>
+            <SelectTextIcon />
+          </Box>
+        </Button>
+      </Box>
     </Tooltip>
   );
 };

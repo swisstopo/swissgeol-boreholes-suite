@@ -8,9 +8,11 @@ import {
   useFileInfo,
 } from "../../../api/dataextraction.ts";
 import { ExtractionRequest, ExtractionState } from "../../../api/dataextractionInterfaces.ts";
+import { useProfileImage } from "../../../api/profile.ts";
 import { BoreholeAttachment } from "../../../api/unionTypes.ts";
 import { theme } from "../../../AppTheme.ts";
 import { TextExtractionButton } from "../../../components/buttons/labelingButtons.tsx";
+import { LoadingBackdrop } from "../../../components/loadingBackdrop.tsx";
 import { useShowAlertOnError } from "../../../hooks/useShowAlertOnError.tsx";
 import { useLabelingContext } from "./labelingContext.tsx";
 import { LabelingDrawContainer } from "./labelingDrawContainer.tsx";
@@ -33,13 +35,25 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
     useLabelingContext();
   const [extractionExtent, setExtractionExtent] = useState<number[]>([]);
   const [drawTooltipLabel, setDrawTooltipLabel] = useState<string>();
-  const { data: fileInfo } = useFileInfo(selectedFile?.id, activePage);
+  const { data: fileInfo, isError: isFileInfoError, error: fileInfoError } = useFileInfo(selectedFile?.id, activePage);
+  const { data: image, isError: isProfileInfoError, error: profileError } = useProfileImage(fileInfo?.fileName);
   const {
     data: pageBoundingBoxes,
-    isError,
-    error,
+    isPending: areBoundingBoxesPending,
+    isError: isBoundingBoxesError,
+    error: boundingBoxesError,
   } = useExtractionBoundingBoxes(selectedFile?.nameUuid, fileInfo, activePage);
-  useShowAlertOnError(isError, error, "warning");
+  useShowAlertOnError(isBoundingBoxesError, boundingBoxesError, "warning");
+  useShowAlertOnError(isFileInfoError, fileInfoError);
+  useShowAlertOnError(isProfileInfoError, profileError);
+
+  const isPageSelectable = !!fileInfo && !!image && !areBoundingBoxesPending;
+  const hasPageFailedToLoad = isFileInfoError || isProfileInfoError;
+  const isPageLoading = !isPageSelectable && !hasPageFailedToLoad;
+  const hasPageText = (pageBoundingBoxes?.bounding_boxes.length ?? 0) > 0;
+  const canExtractText = isPageSelectable && hasPageText;
+  const missingPageTextKey = isBoundingBoxesError ? "pageTextCouldNotBeLoaded" : "noTextRecognizedOnPage";
+  const textExtractionDisabledReason = isPageSelectable && !hasPageText ? t(missingPageTextKey) : undefined;
 
   const setTextToClipboard = useCallback(
     async (text: string) => {
@@ -47,8 +61,7 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
         await navigator.clipboard.writeText(text);
         const successText = `${t("copiedToClipboard")}: "${text}"`;
         showAlert(successText.length < 50 ? successText : successText.substring(0, 50) + "...", "info");
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      } catch (err) {
+      } catch {
         showAlert(t("errorCopyingToClipboard"), "error");
       }
     },
@@ -131,6 +144,7 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
 
   return (
     <>
+      {isPageLoading && <LoadingBackdrop open={isPageLoading} sx={{ position: "absolute" }} />}
       <Box
         sx={{
           position: "absolute",
@@ -139,7 +153,10 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
           zIndex: "500",
         }}>
         <TextExtractionButton
-          disabled={extractionObject?.type == "text" && extractionState === ExtractionState.drawing}
+          disabled={
+            !canExtractText || (extractionObject?.type == "text" && extractionState === ExtractionState.drawing)
+          }
+          disabledReason={textExtractionDisabledReason}
           onClick={() => {
             setExtractionObject({ type: "text" });
             setExtractionState(ExtractionState.start);
