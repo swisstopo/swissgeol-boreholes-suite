@@ -1,4 +1,4 @@
-// @vitest-environment jsdom
+﻿// @vitest-environment jsdom
 import { FileRejection } from "react-dropzone";
 import { MemoryRouter } from "react-router";
 import { cleanup, render } from "@testing-library/react";
