@@ -40,8 +40,12 @@ vi.mock("../components/lithologyTable/useLithologyTableState.ts", () => ({
 
 const ALERT_KEY = "msgDepthsExtractionFailed";
 
-const description = (fromDepth: number | null, toDepth: number | null): LithologicalDescription =>
-  ({ id: 0, stratigraphyId: 0, fromDepth, toDepth }) as LithologicalDescription;
+const description = (fromDepth: number | null, toDepth: number | null): LithologicalDescription => ({
+  id: 0,
+  stratigraphyId: 0,
+  fromDepth,
+  toDepth,
+});
 
 const renderItem = () =>
   render(

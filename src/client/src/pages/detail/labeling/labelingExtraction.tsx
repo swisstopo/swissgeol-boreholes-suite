@@ -99,7 +99,8 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
               });
             }
             if (extractionObject.type === "text") {
-              setTextToClipboard(response[extractionObject.type].toString());
+              // Not awaited: setTextToClipboard reports its own failures via an alert.
+              void setTextToClipboard(response.text);
             }
           })
           .catch(error => {

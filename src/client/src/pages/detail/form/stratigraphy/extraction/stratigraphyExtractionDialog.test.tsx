@@ -116,9 +116,9 @@ const renderDialog = (stratigraphies: ExtractedStratigraphy[], fileName = "profi
   );
 };
 
-const nameInput = (index: number) => screen.getByLabelText(`name-input-${index}`) as HTMLInputElement;
+const nameInput = (index: number) => screen.getByLabelText<HTMLInputElement>(`name-input-${index}`);
 const nameError = (index: number) => screen.getByLabelText(`name-error-${index}`);
-const addButton = () => screen.getByTestId("add-stratigraphy-button") as HTMLButtonElement;
+const addButton = () => screen.getByTestId<HTMLButtonElement>("add-stratigraphy-button");
 
 describe("StratigraphyExtractionDialog", () => {
   beforeEach(() => {

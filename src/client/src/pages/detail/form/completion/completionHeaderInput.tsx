@@ -56,7 +56,7 @@ const CompletionHeaderInput = ({
     if (data?.isPrimary === undefined) {
       data.isPrimary = completion.isPrimary;
     }
-    saveCompletion({ ...completion, ...data } as Completion);
+    saveCompletion({ ...completion, ...data });
   };
 
   useEffect(() => {
@@ -80,7 +80,9 @@ const CompletionHeaderInput = ({
             label: t("save"),
             disabled: !formMethods.formState.isValid,
             action: () => {
-              formMethods.handleSubmit(submitForm)();
+              // Not awaited: the prompt action returns void and handleSubmit reports errors
+              // through form state.
+              void formMethods.handleSubmit(submitForm)();
             },
           },
         ]);
@@ -100,7 +102,7 @@ const CompletionHeaderInput = ({
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={formMethods.handleSubmit(submitForm)}>
+      <form onSubmit={event => void formMethods.handleSubmit(submitForm)(event)}>
         <FormContainer>
           <FormContainer
             direction="row"
@@ -147,9 +149,9 @@ const CompletionHeaderInput = ({
               formMethods.reset(selectedCompletion);
               cancelChanges();
             }}
-            onSave={async () => {
+            onSave={() => {
               resetTabStatus();
-              formMethods.handleSubmit(submitForm)();
+              return formMethods.handleSubmit(submitForm)();
             }}
             saveDisabled={!formMethods.formState.isValid}
           />

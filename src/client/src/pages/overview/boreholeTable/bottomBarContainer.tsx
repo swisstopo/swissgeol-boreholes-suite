@@ -78,7 +78,7 @@ const BottomBarContainer = ({
       <BottomBar
         selectionModel={selectionModel}
         onBulkEdit={onBulkEdit}
-        onCopyBorehole={onCopyBorehole}
+        onCopyBorehole={() => void onCopyBorehole()}
         onDeleteMultiple={onDeleteMultiple}
         totalCount={totalCount}
         setIsExporting={setIsExporting}

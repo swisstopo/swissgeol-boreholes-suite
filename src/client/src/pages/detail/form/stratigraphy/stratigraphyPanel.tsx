@@ -158,7 +158,7 @@ export const StratigraphyPanel: FC = () => {
         label: "delete",
         icon: <Trash2 />,
         variant: "contained",
-        action: deleteSelectedStratigraphy,
+        action: () => void deleteSelectedStratigraphy(),
       },
     ]);
   }, [deleteSelectedStratigraphy, selectedStratigraphy, showPrompt]);
@@ -235,7 +235,7 @@ export const StratigraphyPanel: FC = () => {
                         variant="outlined"
                         color={"secondary"}
                         label={"duplicate"}
-                        onClick={onCopy}
+                        onClick={() => void onCopy()}
                         icon={<CopyIcon />}
                       />
                       <AddStratigraphyButton
@@ -297,7 +297,7 @@ export const StratigraphyPanel: FC = () => {
                     variant="outlined"
                     color={"secondary"}
                     label={"duplicate"}
-                    onClick={onCopy}
+                    onClick={() => void onCopy()}
                     icon={<CopyIcon />}
                   />
                 </Stack>

@@ -17,7 +17,8 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
 
   useEffect(() => {
     if (boreholeId) {
-      getCasingsByBoreholeId(boreholeId).then(casings => {
+      // Not awaited: effects cannot be async, and the legacy fetch helper reports API errors itself.
+      void getCasingsByBoreholeId(boreholeId).then(casings => {
         setCasings(casings);
       });
     }
@@ -62,7 +63,7 @@ const ObservationInput = ({ observation, showDepthInputs = true }: ObservationIn
           <FormDomainSelect
             fieldName="reliabilityId"
             label="reliability"
-            selected={observation.reliabilityId as number}
+            selected={observation.reliabilityId}
             schemaName={hydrogeologySchemaConstants.observationReliability}
           />
         </FormContainer>

@@ -78,7 +78,8 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     pageSize: tableState.pageSize,
   };
   const setPaginationModel = (model: GridPaginationModel) => {
-    setQueryState({ page: model.page, pageSize: model.pageSize });
+    // Neither setter is awaited: the nuqs promise settles once the router transition finishes.
+    void setQueryState({ page: model.page, pageSize: model.pageSize });
   };
 
   const sortModel: GridSortModel = [
@@ -88,7 +89,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
     },
   ];
   const setSortModel = (model: GridSortModel) => {
-    setQueryState({
+    void setQueryState({
       orderBy: model[0]?.field ?? "name",
       direction: model[0]?.sort === "desc" ? "DESC" : "ASC",
       page: 0, // reset to first page on sort change

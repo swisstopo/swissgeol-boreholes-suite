@@ -24,7 +24,7 @@ vi.mock("tus-js-client", () => ({
 
     constructor(_file: File, options: Record<string, unknown>) {
       this.options = options;
-      uploadInstances.push(this as unknown as StubbedUpload);
+      uploadInstances.push(this);
     }
   },
 }));
@@ -53,7 +53,7 @@ describe("uploadResumable", () => {
     expect(optionsOf<{ chunkSize: number }>().chunkSize).toBe(1024);
   });
 
-  it("reports how much has been sent", async () => {
+  it("reports how much has been sent", () => {
     const onProgress = vi.fn();
     void uploadResumable(new File(["x"], "gamma.las"), { logRunId: "1" }, { onProgress });
 
