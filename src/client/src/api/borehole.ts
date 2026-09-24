@@ -4,7 +4,7 @@ import { FeatureCollection, Geometry } from "geojson";
 import { useCodelistDisplayValues } from "../components/codelist.ts";
 import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/coordinateSegmentConstants.ts";
 import { SessionKeys } from "../pages/overview/SessionKey.ts";
-import { download, downloadData } from "./download.ts";
+import { download, downloadArchive, downloadData } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
 import { Borehole, BoreholeBulkUpdate, BoreholeBulkUpdateRequest, BoreholeCodelist, Codelist } from "./generated";
 import { TransferOptions } from "./transferProgress.ts";
@@ -59,9 +59,10 @@ export const exportCSVBorehole = async (boreholeIds: GridRowSelectionModel, file
 
 export const exportJsonWithAttachmentsBorehole = async (
   boreholeIds: number[] | GridRowSelectionModel,
+  fileName: string,
   options?: TransferOptions,
 ) => {
-  return await download(`boreholeexport/zip?${getIdQuery(boreholeIds)}`, options);
+  return await downloadArchive(`boreholeexport/zip?${getIdQuery(boreholeIds)}`, `${fileName}.zip`, options);
 };
 
 const fetchBoreholeById = async (id: number): Promise<Borehole> => {

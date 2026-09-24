@@ -12,6 +12,12 @@ Cypress.on("uncaught:exception", () => {
   return false;
 });
 
+// Chrome and Edge ask where to save an exported archive, and a test run cannot answer that dialog.
+// Without it, the app saves archives through the browser's download, where the tests look for them.
+Cypress.on("window:before:load", win => {
+  Reflect.deleteProperty(win, "showSaveFilePicker");
+});
+
 for (const command of ["click", "type", "select", "check", "uncheck"] as Array<keyof Cypress.Chainable>) {
   Cypress.Commands.overwrite(command, (originalFn, ...args) => {
     const result = originalFn(...args);
