@@ -516,6 +516,7 @@
   "rockCondition": "Rock condition",
   "role": "Role",
   "roles": "Roles",
+  "runAnalysis": "Analyse",
   "runCount_one": "{{count}} run",
   "runCount_other": "{{count}} runs",
   "runDate": "Run date",

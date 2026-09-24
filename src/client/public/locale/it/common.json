@@ -517,6 +517,7 @@
   "rockCondition": "Stato della roccia",
   "role": "Ruolo",
   "roles": "Ruoli",
+  "runAnalysis": "Analizzare",
   "runCount_one": "{{count}} run",
   "runCount_other": "{{count}} runs",
   "runDate": "Data di run",
