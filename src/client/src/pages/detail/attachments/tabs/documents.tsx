@@ -168,7 +168,7 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
         field: "createdBy",
         headerName: t("user"),
         flex: 0.25,
-        valueGetter: (value, row) => row.createdBy?.name ?? "-",
+        valueGetter: (_value, row) => row.createdBy?.name ?? "-",
       },
       {
         field: "public",
