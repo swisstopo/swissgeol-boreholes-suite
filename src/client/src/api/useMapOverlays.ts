@@ -38,8 +38,9 @@ export const useMapOverlays = () => {
     onError: (_error, _next, context) => {
       queryClient.setQueryData([mapOverlaysQueryKey], context?.previous ?? {});
     },
+    // Not awaited: returning the promise would keep the mutation pending until the refetch settled.
     onSettled: () => {
-      queryClient.invalidateQueries({ queryKey: [mapOverlaysQueryKey] });
+      void queryClient.invalidateQueries({ queryKey: [mapOverlaysQueryKey] });
     },
   });
 

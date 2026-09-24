@@ -105,7 +105,7 @@ export const FilterFieldMetaData = {
 const FilterKeyOrder = Object.keys(FilterFieldMetaData) as FilterKey[];
 
 function resolveCategoryLabel(meta: { labelKey: string }, inputs: ChipDescriptorInputs): string {
-  return inputs.t(meta.labelKey) as string;
+  return inputs.t(meta.labelKey);
 }
 
 // Shared delete behavior for multiSelect types: remove the value; if nothing
@@ -226,11 +226,11 @@ function buildNullableBooleanDescriptor(
 ): ChipDescriptor | null {
   let valueLabel: string;
   if (value === "true") {
-    valueLabel = inputs.t("yes") as string;
+    valueLabel = inputs.t("yes");
   } else if (value === "false") {
-    valueLabel = inputs.t("no") as string;
+    valueLabel = inputs.t("no");
   } else if (value === "null" && meta.allowNull) {
-    valueLabel = inputs.t("np") as string;
+    valueLabel = inputs.t("np");
   } else {
     // "null" on a non-nullable field is not a valid selection — hide the chip.
     return null;

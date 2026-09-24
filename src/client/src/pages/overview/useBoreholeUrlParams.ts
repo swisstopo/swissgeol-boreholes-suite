@@ -104,9 +104,11 @@ export const useBoreholeUrlParamsState = () => {
   // Every filter mutation also resets the page in the SAME setQueryState call. Splitting the
   // page reset into a separate setQueryState invocation on the merged useQueryStates instance
   // races and one update overwrites the other.
+  // The setQueryState promises below are deliberately not awaited: they resolve once the router
+  // transition has finished, and none of these setters report that back to their callers.
   const setFilterField = useCallback(
     (key: FilterKey, value: string | string[] | number[] | boolean | null | undefined) => {
-      setQueryState({ [key]: encodeFilterValue(key, value), page: 0 } as Parameters<typeof setQueryState>[0]);
+      void setQueryState({ [key]: encodeFilterValue(key, value), page: 0 });
     },
     [encodeFilterValue, setQueryState],
   );
@@ -117,7 +119,7 @@ export const useBoreholeUrlParamsState = () => {
   // for the same reason as `setFilterField`.
   const clearFilterField = useCallback(
     (key: FilterKey) => {
-      setQueryState({ [key]: null, page: 0 } as Parameters<typeof setQueryState>[0]);
+      void setQueryState({ [key]: null, page: 0 });
       sessionStorage.removeItem(SessionKeys[key as keyof typeof SessionKeys]);
     },
     [setQueryState],
@@ -128,14 +130,17 @@ export const useBoreholeUrlParamsState = () => {
       ? [queryState.mapCenterX, queryState.mapCenterY]
       : null;
 
-  const setMapCenter = (center: [number, number] | null) =>
-    setQueryState(center ? { mapCenterX: center[0], mapCenterY: center[1] } : { mapCenterX: null, mapCenterY: null });
+  const setMapCenter = (center: [number, number] | null) => {
+    void setQueryState(
+      center ? { mapCenterX: center[0], mapCenterY: center[1] } : { mapCenterX: null, mapCenterY: null },
+    );
+  };
 
   const resetFilter = () => {
     // Set all filter keys to null to remove them from the URL, and reset to page 0 in the
     // same setQueryState call, see setFilterField for why this must be atomic.
     const nulled = Object.fromEntries(Object.keys(filterParsers).map(k => [k, null]));
-    setQueryState({ ...nulled, page: 0 } as Parameters<typeof setQueryState>[0]);
+    void setQueryState({ ...nulled, page: 0 });
     (Object.keys(filterParsers) as Array<FilterKey>).forEach(key => {
       sessionStorage.removeItem(SessionKeys[key as keyof typeof SessionKeys]);
     });
@@ -177,7 +182,7 @@ export const useBoreholeUrlParamsState = () => {
       }
     });
     if (Object.keys(updates).length > 0) {
-      setQueryState(updates as Parameters<typeof setQueryState>[0]);
+      void setQueryState(updates);
     }
   }, [setQueryState]);
 
@@ -197,7 +202,7 @@ export const useBoreholeUrlParamsState = () => {
       }
     });
     if (Object.keys(updates).length > 0) {
-      setQueryState(updates as Parameters<typeof setQueryState>[0]);
+      void setQueryState(updates);
     }
   }, [setQueryState]);
 
@@ -211,7 +216,7 @@ export const useBoreholeUrlParamsState = () => {
       }
     });
     if (Object.keys(updates).length > 0) {
-      setQueryState(updates as Parameters<typeof setQueryState>[0]);
+      void setQueryState(updates);
     }
   }, [setQueryState]);
 
@@ -231,11 +236,15 @@ export const useBoreholeUrlParamsState = () => {
     restoreMapParamsFromSession,
     activeFilterCount,
     mapResolution: queryState.mapResolution,
-    setMapResolution: (v: number) => setQueryState({ mapResolution: v }),
+    setMapResolution: (v: number) => {
+      void setQueryState({ mapResolution: v });
+    },
     mapCenter,
     setMapCenter,
     bottomDrawerOpen: tableState.bottomDrawerOpen,
-    setBottomDrawerOpen: (v: boolean) => setQueryState({ bottomDrawerOpen: v }),
+    setBottomDrawerOpen: (v: boolean) => {
+      void setQueryState({ bottomDrawerOpen: v });
+    },
   };
 };
 

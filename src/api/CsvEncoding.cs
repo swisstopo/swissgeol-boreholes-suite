@@ -8,10 +8,8 @@ namespace BDMS;
 /// codepage and renders accented characters as mojibake. Imports accept both UTF-8 and the
 /// Windows-1252 files that Excel writes for "Save As -> CSV".
 ///
-/// The log import wizard applies the same rules a second time in decodeCsv in logUtils.ts, because
-/// it reads the log files CSV in the browser to learn which attachments to ask for. TODO Issue https://github.com/swisstopo/swissgeol-boreholes-suite/issues/2813
-/// moves that check to the server, after which this class is the only place that decides how a CSV
-/// is decoded.
+/// This is the only place that decides how a CSV is decoded. The log import wizard asks the server
+/// which attachments a log files CSV expects instead of decoding the file in the browser.
 /// </summary>
 internal static class CsvEncoding
 {

@@ -1672,7 +1672,6 @@ namespace BDMS.Migrations
                         .HasColumnName("name");
 
                     b.Property<string>("NameUuid")
-                        .IsRequired()
                         .HasColumnType("text")
                         .HasColumnName("name_uuid");
 

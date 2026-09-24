@@ -46,7 +46,8 @@ export function ProfilePopup({ user }: { user?: User }) {
                 variant="outlined"
                 sx={{ margin: 0 }}
                 onClick={() => {
-                  auth.signoutRedirect();
+                  // Not awaited: hands the browser over to the identity provider.
+                  void auth.signoutRedirect();
                 }}>
                 Logout
               </Button>

@@ -57,7 +57,7 @@ export const AttachmentContent = <T extends GridValidRowModel>({
             variant="contained"
             endIcon={<Plus />}
             sx={{ position: "absolute", top: "0", right: "0", mx: 2, my: 1 }}
-            onClick={() => addAttachment()}
+            onClick={() => void addAttachment()}
             data-cy={`${addAttachmentButtonLabel}-button`}>
             {t(addAttachmentButtonLabel)}
           </Button>
@@ -67,10 +67,10 @@ export const AttachmentContent = <T extends GridValidRowModel>({
           <Stack direction="row" justifyContent="space-between" alignItems="center" mb={2}>
             <Stack direction="row" alignItems="center" gap={1}>
               {editingEnabled && (
-                <DeleteButton disabled={selectionModel.length === 0} onClick={() => deleteAttachments()} />
+                <DeleteButton disabled={selectionModel.length === 0} onClick={() => void deleteAttachments()} />
               )}
               {exportAttachments && (
-                <ExportButton disabled={selectionModel.length === 0} onClick={() => exportAttachments()} />
+                <ExportButton disabled={selectionModel.length === 0} onClick={() => void exportAttachments()} />
               )}
               <Typography>
                 {selectionModel.length > 0 && t("selectedCount", { count: selectionModel.length })}

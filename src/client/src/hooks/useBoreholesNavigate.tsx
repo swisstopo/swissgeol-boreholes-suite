@@ -31,7 +31,9 @@ export const useBoreholesNavigate = () => {
         hashValue !== location.hash.split("?")[0] ||
         normalizedSearch !== normalizedLocationSearch
       ) {
-        navigate(
+        // Not awaited: navigateTo returns void, and the router promise only settles once the
+        // transition has finished, which no caller acts on.
+        void navigate(
           {
             pathname,
             search: searchParams,

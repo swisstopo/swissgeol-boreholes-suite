@@ -23,6 +23,12 @@ interface FormDialogProps {
   children: ReactNode;
 }
 
+const runAction = async (action: FormDialogAction, onClose: () => void) => {
+  if (!action.onClick || (await action.onClick())) {
+    onClose();
+  }
+};
+
 export const FormDialog: FC<FormDialogProps> = ({
   open,
   title,
@@ -53,16 +59,7 @@ export const FormDialog: FC<FormDialogProps> = ({
             color={action.color ?? "primary"}
             label={action.label}
             disabled={action.disabled}
-            onClick={async () => {
-              if (action.onClick) {
-                const success = await action.onClick();
-                if (success) {
-                  onClose();
-                }
-              } else {
-                onClose();
-              }
-            }}
+            onClick={() => void runAction(action, onClose)}
           />
         ))
       ) : (

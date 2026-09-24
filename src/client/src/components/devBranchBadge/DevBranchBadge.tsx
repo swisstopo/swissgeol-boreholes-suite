@@ -15,7 +15,7 @@ export const DevBranchBadge: FC = () => {
         left: "50%",
         fontFamily: "monospace",
         transform: "translateX(-50%)",
-        zIndex: theme.zIndex.tooltip + 1,
+        zIndex: theme.zIndex.modal - 1,
         px: 1,
         py: 0.25,
         borderRadius: "4px",

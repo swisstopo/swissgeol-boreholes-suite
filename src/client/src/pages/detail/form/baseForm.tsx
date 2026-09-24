@@ -90,7 +90,7 @@ export const BaseForm = <T extends FieldValues>({
     <Box>
       <DevTool control={formMethods.control} placement="top-right" />
       <FormProvider {...formMethods}>
-        <form onSubmit={formMethods.handleSubmit(onSubmit)}>{children}</form>
+        <form onSubmit={event => void formMethods.handleSubmit(onSubmit)(event)}>{children}</form>
       </FormProvider>
     </Box>
   );
