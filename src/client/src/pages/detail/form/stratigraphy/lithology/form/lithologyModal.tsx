@@ -70,6 +70,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
   const { showAlert } = useContext(AlertContext);
   const { runsDevMode } = useDevMode();
   const analysis = useLithologyAnalysis(formMethods);
+  const { discard: discardAnalysis } = analysis;
   const sharedLithologyCount = lithologicalDescription?.depthIds?.length ?? 0;
 
   // A field the user edits by hand is their value, not the analysis's, so its row is resolved.
@@ -106,12 +107,14 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
 
   useEffect(() => {
     if (normalizedLithology) {
+      // The table keeps this modal mounted for every row, so the analysis of the previous one ends here.
+      discardAnalysis();
       formMethods.reset({
         ...normalizedLithology,
         lithologicalDescription: { description: lithologicalDescription?.description ?? "" },
       });
     }
-  }, [normalizedLithology, lithologicalDescription, formMethods]);
+  }, [normalizedLithology, lithologicalDescription, formMethods, discardAnalysis]);
 
   const isUnconsolidated = useWatch({ control: formMethods.control, name: "isUnconsolidated" });
 
