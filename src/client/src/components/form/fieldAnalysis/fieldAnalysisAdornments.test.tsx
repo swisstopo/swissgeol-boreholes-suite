@@ -1,9 +1,9 @@
 ﻿// @vitest-environment jsdom
-import { cleanup, render, screen } from "@testing-library/react";
+import { cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import "@testing-library/jest-dom/vitest";
 import { FieldChange } from "./fieldAnalysis.ts";
-import { FieldChangeSummary } from "./fieldAnalysisAdornments.tsx";
+import { FieldAnalysisLabel, FieldChangeSummary } from "./fieldAnalysisAdornments.tsx";
 
 vi.mock("../../codelist.ts", () => ({
   useCodelistDisplayValues: () => (id: number) => ({ text: `code-${id}`, code: "" }),
@@ -44,5 +44,15 @@ describe("FieldChangeSummary", () => {
 
     expect(screen.getByText("code-1, code-2")).toBeInTheDocument();
     expect(screen.getByText("code-1, code-3")).toBeInTheDocument();
+  });
+});
+
+describe("FieldAnalysisLabel", () => {
+  it("shows the change in a tooltip when hovering the badge", async () => {
+    render(<FieldAnalysisLabel label="label" change={change()} />);
+
+    fireEvent.mouseOver(document.querySelector('[data-cy="field-analysis-info"]')!);
+
+    expect(await screen.findByRole("tooltip")).toHaveTextContent("code-100");
   });
 });

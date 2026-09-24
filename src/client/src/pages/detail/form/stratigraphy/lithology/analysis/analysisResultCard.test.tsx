@@ -11,11 +11,9 @@ vi.mock("../../../../../../components/codelist.ts", () => ({
 }));
 
 vi.mock("react-i18next", () => ({
-  useTranslation: () => ({ t: (key: string) => key }),
+  useTranslation: () => ({ t: (key: string) => key, i18n: { language: "en" } }),
 }));
 
-// The repository does not configure data-cy as the testing library's test id attribute, so the
-// buttons are queried the way the other component tests query them.
 const byDataCy = (value: string) => document.querySelector(`[data-cy="${value}"]`);
 
 const change = (path: string, previous: FieldChange["previous"], next: FieldChange["next"]): FieldChange => ({
@@ -56,6 +54,24 @@ describe("AnalysisResultCard", () => {
 
     expect(screen.getByText("emptyValueMarker")).toBeInTheDocument();
     expect(screen.getByText("code-100")).toBeInTheDocument();
+  });
+
+  it("keeps the order of the analysis and reverses it when sorted by attribute", () => {
+    const changeByPath = new Map([
+      ["b", change("b", null, 1)],
+      ["a", change("a", null, 2)],
+    ]);
+    const attributeOrder = () =>
+      screen
+        .getAllByRole("gridcell")
+        .filter(cell => cell.dataset.field === "labelKey")
+        .map(cell => cell.textContent);
+    render(<AnalysisResultCard analysis={analysis({ changeByPath })} />);
+    expect(attributeOrder()).toEqual(["b", "a"]);
+
+    fireEvent.click(screen.getByText("attribute"));
+
+    expect(attributeOrder()).toEqual(["a", "b"]);
   });
 
   it("shows the mode change card only when the mode changed", () => {

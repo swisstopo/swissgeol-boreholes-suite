@@ -1,13 +1,14 @@
 import { FC, useContext, useEffect, useMemo } from "react";
 import { Controller, FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { Box, CircularProgress, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
+import { CircularProgress, ToggleButton, ToggleButtonGroup, Typography } from "@mui/material";
 import { Stack } from "@mui/system";
 import { Info, Sparkles } from "lucide-react";
 import { theme } from "../../../../../../AppTheme.ts";
 import { AlertContext } from "../../../../../../components/alert/alertContext.tsx";
 import { BoreholesCard } from "../../../../../../components/boreholesCard.tsx";
 import { BoreholesButton } from "../../../../../../components/buttons/buttons.tsx";
+import { AnalysisBadge } from "../../../../../../components/form/fieldAnalysis/analysisBadge.tsx";
 import { FieldAnalysisProvider } from "../../../../../../components/form/fieldAnalysis/fieldAnalysisContext.tsx";
 import { FormErrors, FormValueType } from "../../../../../../components/form/form.ts";
 import { FormContainer } from "../../../../../../components/form/formContainer.tsx";
@@ -187,26 +188,13 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
         sx={
           isAnalysisTarget
             ? {
-                border: `2px solid ${theme.palette.ai.highlightBorder} !important`,
+                border: `2px solid ${theme.palette.ai.secondary} !important`,
                 backgroundColor: theme.palette.ai.highlightBackground,
               }
             : undefined
         }>
         <Stack direction="row" gap={0.5} alignItems="center">
-          {isAnalysisTarget && (
-            <Box
-              component="span"
-              data-cy="analysis-mode-badge"
-              sx={{
-                display: "inline-flex",
-                borderRadius: "50%",
-                backgroundColor: theme.palette.ai.highlightBorder,
-                color: theme.palette.warning.main,
-                p: "2px",
-              }}>
-              <Info size={12} />
-            </Box>
-          )}
+          {isAnalysisTarget && <AnalysisBadge data-cy="analysis-mode-badge" />}
           <Typography>{ct(label)}</Typography>
         </Stack>
       </ToggleButton>

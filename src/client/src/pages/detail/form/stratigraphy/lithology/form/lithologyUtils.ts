@@ -1,6 +1,7 @@
 import { LithologyDescription } from "../../../../../../api/generated";
 import { FormErrors } from "../../../../../../components/form/form.ts";
 import { buildErrorStructure, parseFloatWithThousandsSeparator } from "../../../../../../components/form/formUtils.ts";
+import { ShowPrompt } from "../../../../../../components/prompt/promptInterface.ts";
 import { LithologicalDescription, Lithology, LithologyFormValues } from "../../stratigraphy.ts";
 import { LithologyAnalysis } from "../analysis/useLithologyAnalysis.ts";
 
@@ -148,8 +149,6 @@ export const buildLithologyValuesForMode = (
   notes: values.notes,
   lithologicalDescription: { description: values.lithologicalDescription?.description ?? "" },
 });
-
-type ShowPrompt = (message: string, actions: { label: string; variant?: "contained"; action: () => void }[]) => void;
 
 /**
  * The modal's apply, gated on the analysis. Closing the modal with automatically extracted values
