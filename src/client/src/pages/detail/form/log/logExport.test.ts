@@ -3,8 +3,8 @@ import { renderHook } from "@testing-library/react";
 import { describe, expect, it, vi } from "vitest";
 import { TransferOptions } from "../../../../api/transferProgress.ts";
 
-const downloadPost = vi.hoisted(() => vi.fn());
-vi.mock("../../../../api/download.ts", () => ({ downloadPost }));
+const downloadArchivePost = vi.hoisted(() => vi.fn());
+vi.mock("../../../../api/download.ts", () => ({ downloadArchivePost }));
 vi.mock("react-i18next", () => ({ useTranslation: () => ({ i18n: { language: "de" }, t: (key: string) => key }) }));
 
 const { exportLogFiles, exportLogRuns, useLogExport } = await import("./log.ts");
@@ -12,22 +12,24 @@ const { exportLogFiles, exportLogRuns, useLogExport } = await import("./log.ts")
 const transferOptions: TransferOptions = { onProgress: vi.fn(), signal: new AbortController().signal };
 
 describe("log export transfer options", () => {
-  it("hands the options to the request when exporting log runs", async () => {
+  it("saves an export of log runs as an archive, handing on the options", async () => {
     await exportLogRuns([1, 2], true, "de", transferOptions);
 
-    expect(downloadPost).toHaveBeenCalledWith(
+    expect(downloadArchivePost).toHaveBeenCalledWith(
       "log/export",
       { logRunIds: [1, 2], withAttachments: true, locale: "de" },
+      "log_export.zip",
       transferOptions,
     );
   });
 
-  it("hands the options to the request when exporting log files", async () => {
+  it("saves an export of log files as an archive, handing on the options", async () => {
     await exportLogFiles([7], false, "en", transferOptions);
 
-    expect(downloadPost).toHaveBeenCalledWith(
+    expect(downloadArchivePost).toHaveBeenCalledWith(
       "log/export",
       { logFileIds: [7], withAttachments: false, locale: "en" },
+      "log_export.zip",
       transferOptions,
     );
   });
