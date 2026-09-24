@@ -356,6 +356,25 @@ public class TusUploadEndpointTest
         startedUploadPaths.Add(response.Headers.Location.ToString());
     }
 
+    /// <summary>
+    /// The ceiling the product allows is refused as the upload is created, before a single byte is
+    /// sent. Nothing else holds the limit: it is handed to the upload package by the shared
+    /// endpoint core, and a build that stopped handing it over would accept a file of any size
+    /// while every other test still passed.
+    /// </summary>
+    [TestMethod]
+    public async Task CreatingAnUploadLargerThanTheLimitIsRefused()
+    {
+        var logRun = await context.LogRuns.FirstAsync();
+        using var client = factory.CreateClient();
+
+        using var response = await client.SendAsync(
+            CreateUpload(SubAdmin, logRun.Id, $"{Guid.NewGuid()}.las", FileSizeLimits.Large + 1));
+
+        Assert.AreEqual(HttpStatusCode.RequestEntityTooLarge, response.StatusCode, await response.Content.ReadAsStringAsync());
+        Assert.IsNull(response.Headers.Location, "The client was told where to send a file the server will not take.");
+    }
+
     [TestMethod]
     public async Task CreatingAnUploadForANameTheLogRunHoldsIsRefusedBeforeAnyBytesAreSent()
     {

@@ -395,6 +395,66 @@ public class ProfileTusUploadEndpointTest
     }
 
     /// <summary>
+    /// The ceiling the product allows is refused as the upload is created, before a single byte is
+    /// sent. The limit reaches the upload package through the shared endpoint core, so it is the
+    /// same for every feature, and this endpoint is checked as well as the log one because nothing
+    /// obliges a subclass to keep it.
+    /// </summary>
+    [TestMethod]
+    public async Task CreatingAnUploadLargerThanTheLimitIsRefused()
+    {
+        var boreholeId = await EditableBoreholeIdAsync();
+        using var client = factory.CreateClient();
+
+        using var response = await client.SendAsync(
+            CreateUpload(SubAdmin, boreholeId, $"{Guid.NewGuid()}.pdf", FileSizeLimits.Large + 1));
+
+        Assert.AreEqual(HttpStatusCode.RequestEntityTooLarge, response.StatusCode, await response.Content.ReadAsStringAsync());
+        Assert.IsNull(response.Headers.Location, "The client was told where to send a file the server will not take.");
+    }
+
+    /// <summary>
+    /// Discarding an upload rests on the borehole permission, even though it writes nothing: an
+    /// upload id would otherwise be enough for anyone to throw away a transfer somebody else
+    /// started. The check for the row the upload fills is the one a discard is excused from, not
+    /// the check on the borehole.
+    /// </summary>
+    [TestMethod]
+    public async Task TerminatingAnUploadWithoutEditPermissionIsRefused()
+    {
+        var boreholeId = await EditableBoreholeIdAsync();
+        var refusedUser = await RefusedUserAsync(boreholeId);
+        using var client = factory.CreateClient();
+
+        using var created = await client.SendAsync(CreateUpload(SubAdmin, boreholeId, $"{Guid.NewGuid()}.pdf"));
+        Assert.AreEqual(HttpStatusCode.Created, created.StatusCode);
+
+        var uploadPath = created.Headers.Location.ToString();
+        startedUploadPaths.Add(uploadPath);
+
+        using var request = new HttpRequestMessage(HttpMethod.Delete, uploadPath);
+        request.Headers.Add(TusResumableHeader, TusVersion);
+        request.Headers.Add(TestAuthHandler.SubjectIdHeader, refusedUser);
+
+        using var response = await client.SendAsync(request);
+
+        Assert.AreEqual(HttpStatusCode.Unauthorized, response.StatusCode, await response.Content.ReadAsStringAsync());
+
+        // The refused DELETE has to have left the upload alone rather than quietly removing it.
+        using var stillThere = new HttpRequestMessage(HttpMethod.Head, uploadPath);
+        stillThere.Headers.Add(TusResumableHeader, TusVersion);
+        stillThere.Headers.Add(TestAuthHandler.SubjectIdHeader, SubAdmin);
+
+        using var headResponse = await client.SendAsync(stillThere);
+
+        Assert.IsTrue(headResponse.IsSuccessStatusCode, $"The upload is gone: {headResponse.StatusCode}.");
+        Assert.IsTrue(
+            headResponse.Headers.TryGetValues(UploadOffsetHeader, out var offsets),
+            "The upload no longer reports an offset.");
+        Assert.AreEqual("0", offsets.Single());
+    }
+
+    /// <summary>
     /// A borehole nothing holds is refused before a single byte is sent, and refused even to an
     /// administrator. Completing an upload writes a row against the id the upload names and trusts
     /// that it is one, so an id that reached completion would be answered by the database with a
