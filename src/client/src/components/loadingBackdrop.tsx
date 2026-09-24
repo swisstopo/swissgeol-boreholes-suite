@@ -10,8 +10,16 @@ interface LoadingBackdropProps extends BackdropProps {
   /** Explains how to get out of the running operation. Only shown together with a message. */
   hint?: ReactNode;
 
-  /** Stops the running operation. Reachable by clicking the scrim or the cancel button. */
+  /** Stops the running operation. Reachable by the cancel button, and by the scrim unless it is inert. */
   onCancel?: () => void;
+
+  /**
+   * Whether a click anywhere on the scrim cancels, as it does on a backdrop that says nothing of it.
+   *
+   * Set false where cancelling costs the user something they cannot get back by waiting, so that
+   * only the button they went for on purpose gives up on the operation.
+   */
+  cancelOnScrimClick?: boolean;
 }
 
 /**
@@ -19,13 +27,20 @@ interface LoadingBackdropProps extends BackdropProps {
  */
 const statusWidth = "440px";
 
-export const LoadingBackdrop: FC<LoadingBackdropProps> = ({ message, hint, onCancel, sx, ...rest }) => {
+export const LoadingBackdrop: FC<LoadingBackdropProps> = ({
+  message,
+  hint,
+  onCancel,
+  cancelOnScrimClick = true,
+  sx,
+  ...rest
+}) => {
   const { t } = useTranslation();
 
   return (
     <Backdrop
       {...rest}
-      onClick={onCancel}
+      onClick={cancelOnScrimClick ? onCancel : undefined}
       sx={{
         color: theme.palette.primary.main,
         backgroundColor: theme.palette.background.backdrop,

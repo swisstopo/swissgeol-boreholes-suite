@@ -272,6 +272,10 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
             message={progress?.message}
             hint={progress?.hint}
             onCancel={progress?.hint === undefined ? undefined : () => runningImport.current?.abort()}
+            // The boreholes are committed before the first attachment goes up, and giving up
+            // discards the row of every attachment still to come. That is not something a stray
+            // click on the scrim should do, so only the cancel button gives up on an import.
+            cancelOnScrimClick={false}
             sx={{ zIndex: theme.zIndex.modal + 1 }}
           />
         </Portal>
