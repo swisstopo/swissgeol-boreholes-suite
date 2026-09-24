@@ -142,7 +142,13 @@ export const FormSelect: FC<FormSelectProps> = ({
               return (
                 <TextField
                   {...params}
-                  label={analysis ? <FieldAnalysisLabel label={baseLabel} change={analysis.change} /> : baseLabel}
+                  label={
+                    analysis && translatedLabel ? (
+                      <FieldAnalysisLabel label={baseLabel} change={analysis.change} />
+                    ) : (
+                      baseLabel
+                    )
+                  }
                   required={required}
                   error={!!fieldState.error}
                   helperText={fieldState.error?.message ? t(fieldState.error.message) : ""}

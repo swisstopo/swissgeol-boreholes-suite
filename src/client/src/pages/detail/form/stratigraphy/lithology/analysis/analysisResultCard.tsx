@@ -1,23 +1,14 @@
 ﻿import { FC, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import {
-  Box,
-  Button,
-  IconButton,
-  Stack,
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableRow,
-  TableSortLabel,
-  Tooltip,
-  Typography,
-} from "@mui/material";
-import { Check, RotateCcw, TriangleAlert } from "lucide-react";
+import { Button, IconButton, Stack, Tooltip, Typography } from "@mui/material";
+import { GridColDef, GridRowId, GridSortModel } from "@mui/x-data-grid";
+import { Check, Info, RotateCcw } from "lucide-react";
 import { theme } from "../../../../../../AppTheme.ts";
+import { FieldChange } from "../../../../../../components/form/fieldAnalysis/fieldAnalysis.ts";
 import { FieldChangeSummary } from "../../../../../../components/form/fieldAnalysis/fieldAnalysisAdornments.tsx";
+import { ValueChange } from "../../../../../../components/form/fieldAnalysis/valueChange.tsx";
 import { PromptContext } from "../../../../../../components/prompt/promptContext.tsx";
+import { Table } from "../../../../../../components/table/table.tsx";
 import { LithologyAnalysis } from "./useLithologyAnalysis.ts";
 
 interface AnalysisResultCardProps {
@@ -38,12 +29,56 @@ const modeLabelKey = (mode: boolean | null): string => {
 export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) => {
   const { t } = useTranslation();
   const { showPrompt } = useContext(PromptContext);
-  const [isAscending, setIsAscending] = useState(true);
+  const { acceptField, resetField } = analysis;
+  const [sortModel, setSortModel] = useState<GridSortModel>([{ field: "labelKey", sort: "asc" }]);
 
-  const rows = useMemo(() => {
-    const changes = [...analysis.changeByPath.values()];
-    return isAscending ? changes : [...changes].reverse();
-  }, [analysis.changeByPath, isAscending]);
+  const rows = useMemo(() => [...analysis.changeByPath.values()], [analysis.changeByPath]);
+
+  const columns = useMemo<GridColDef<FieldChange>[]>(() => {
+    const analysisPosition = (id: GridRowId) => rows.findIndex(change => change.path === id);
+
+    return [
+      {
+        field: "labelKey",
+        headerName: t("attribute"),
+        valueGetter: (_, change) => t(change.labelKey),
+        // The rows keep the order the analysis reported them in, sorting only reverses it.
+        sortComparator: (_first, _second, firstCell, secondCell) =>
+          analysisPosition(firstCell.id) - analysisPosition(secondCell.id),
+      },
+      {
+        field: "change",
+        headerName: t("change"),
+        sortable: false,
+        renderCell: ({ row }) => <FieldChangeSummary change={row} />,
+      },
+      {
+        field: "actions",
+        headerName: "",
+        width: 88,
+        align: "right",
+        resizable: false,
+        sortable: false,
+        renderCell: ({ row }) => (
+          <Stack direction="row" gap={0.5}>
+            <Tooltip title={t("reset")}>
+              <IconButton size="small" data-cy={`${row.path}-analysis-row-reset`} onClick={() => resetField(row.path)}>
+                <RotateCcw size={16} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title={t("accept")}>
+              <IconButton
+                size="small"
+                data-cy={`${row.path}-analysis-row-accept`}
+                onClick={() => acceptField(row.path)}>
+                <Check size={16} />
+              </IconButton>
+            </Tooltip>
+          </Stack>
+        ),
+      },
+    ];
+  }, [acceptField, resetField, rows, t]);
 
   if (!analysis.hasPendingChanges) return null;
 
@@ -55,19 +90,29 @@ export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) =>
   };
 
   return (
-    <Box data-cy="analysis-result-card" sx={{ mt: 2 }}>
-      <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
-        <Typography variant="h6">{t("analysis")}</Typography>
+    <Stack
+      data-cy="analysis-result-card"
+      gap={2}
+      sx={{
+        mt: 2,
+        p: 3,
+        backgroundColor: theme.palette.background.fileDropzoneSelected,
+        border: `1px solid ${theme.palette.border.fileDropzoneSelected}`,
+        borderRadius: theme.spacing(0.5),
+      }}>
+      <Stack direction="row" gap={2} justifyContent="space-between" alignItems="center" sx={{ mb: 1 }}>
+        <Typography variant="h5">{t("analysis")}</Typography>
         <Stack direction="row" gap={1}>
           <Button
             variant="text"
+            sx={{ backgroundColor: theme.palette.background.fileDropzoneSelected }}
             data-cy="analysis-reset-all"
             startIcon={<RotateCcw size={16} />}
             onClick={analysis.resetAll}>
             {t("analysisResetAll")}
           </Button>
           <Button
-            variant="text"
+            variant="outlined"
             data-cy="analysis-accept-all"
             startIcon={<Check size={16} />}
             onClick={confirmAcceptAll}>
@@ -83,75 +128,48 @@ export const AnalysisResultCard: FC<AnalysisResultCardProps> = ({ analysis }) =>
           alignItems="center"
           data-cy="analysis-mode-change"
           sx={{
-            p: 1.5,
             mb: 1,
+            p: 2,
             borderRadius: 1,
             backgroundColor: theme.palette.ai.highlightBackground,
             border: `1px solid ${theme.palette.ai.highlightBorder}`,
           }}>
-          <Stack direction="row" gap={0.5} alignItems="center" sx={{ color: theme.palette.warning.main }}>
-            <TriangleAlert size={16} />
-            <Typography variant="body2" sx={{ fontWeight: 500 }}>
+          <Stack
+            direction="row"
+            gap={0.5}
+            alignItems="center"
+            sx={{
+              py: 0.5,
+              px: 1,
+              borderRadius: theme.spacing(10),
+              color: theme.palette.secondary.main,
+              backgroundColor: theme.palette.ai.secondary,
+            }}>
+            <Info size={12} />
+            <Typography variant="h6" sx={{ fontWeight: 700, color: theme.palette.secondary.main }}>
               {t("modeSwitched")}
             </Typography>
           </Stack>
-          <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
-            {t(modeLabelKey(analysis.modeChange.previous))}
-          </Typography>
-          <Typography variant="body2">{"→"}</Typography>
-          <Typography variant="body2">{t(modeLabelKey(analysis.modeChange.next))}</Typography>
+          <ValueChange
+            previous={t(modeLabelKey(analysis.modeChange.previous))}
+            next={t(modeLabelKey(analysis.modeChange.next))}
+          />
         </Stack>
       )}
 
       {rows.length > 0 && (
-        <Table size="small" sx={{ backgroundColor: theme.palette.background.default }}>
-          <TableHead sx={{ backgroundColor: theme.palette.background.grey }}>
-            <TableRow>
-              <TableCell>
-                <TableSortLabel
-                  active
-                  direction={isAscending ? "asc" : "desc"}
-                  data-cy="analysis-sort-attribute"
-                  onClick={() => setIsAscending(!isAscending)}>
-                  {t("attribute")}
-                </TableSortLabel>
-              </TableCell>
-              <TableCell>{t("change")}</TableCell>
-              <TableCell align="right" />
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {rows.map(change => (
-              <TableRow key={change.path} data-cy={`${change.path}-analysis-row`}>
-                <TableCell>{t(change.labelKey)}</TableCell>
-                <TableCell>
-                  <FieldChangeSummary change={change} />
-                </TableCell>
-                <TableCell align="right">
-                  <Stack direction="row" gap={0.5} justifyContent="flex-end">
-                    <Tooltip title={t("reset")}>
-                      <IconButton
-                        size="small"
-                        data-cy={`${change.path}-analysis-row-reset`}
-                        onClick={() => analysis.resetField(change.path)}>
-                        <RotateCcw size={16} />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title={t("accept")}>
-                      <IconButton
-                        size="small"
-                        data-cy={`${change.path}-analysis-row-accept`}
-                        onClick={() => analysis.acceptField(change.path)}>
-                        <Check size={16} />
-                      </IconButton>
-                    </Tooltip>
-                  </Stack>
-                </TableCell>
-              </TableRow>
-            ))}
-          </TableBody>
-        </Table>
+        <Table<FieldChange>
+          rows={rows}
+          columns={columns}
+          getRowId={change => change.path}
+          sortModel={sortModel}
+          onSortModelChange={setSortModel}
+          showQuickFilter={false}
+          rowAutoHeight
+          dataCy="analysis-table"
+          sx={{ backgroundColor: theme.palette.background.default }}
+        />
       )}
-    </Box>
+    </Stack>
   );
 };

@@ -93,14 +93,11 @@ export type ClassificationConsolidation = "consolidated" | "unconsolidated";
  */
 export interface ClassifyResponse {
   consolidation?: ClassificationConsolidation;
-  // Consolidated rock.
   lithology?: string;
   cementation?: string;
   alteration_degree_consolidated?: string;
   mineral_components?: string[];
   accessory_components?: string[];
-  // Unconsolidated sediment. `uscs` is a single value in the service model; the array is accepted
-  // in case it is widened to the list its own documentation claims.
   en_main?: string;
   en_secondary?: string[];
   uscs?: string | string[];
@@ -108,6 +105,5 @@ export interface ClassifyResponse {
   organic_components?: string[];
   grain_angularity?: string[];
   grain_shape?: string[];
-  // Both modes.
   color?: string;
 }

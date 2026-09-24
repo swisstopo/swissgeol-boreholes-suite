@@ -1,10 +1,11 @@
 ﻿import { FC, ReactNode } from "react";
 import { useTranslation } from "react-i18next";
-import { Box, IconButton, Stack, Tooltip, Typography } from "@mui/material";
-import { Info, RotateCcw } from "lucide-react";
-import { theme } from "../../../AppTheme.ts";
+import { IconButton, Stack, Tooltip } from "@mui/material";
+import { RotateCcw } from "lucide-react";
 import { useCodelistDisplayValues } from "../../codelist.ts";
+import { AnalysisBadge } from "./analysisBadge.tsx";
 import { FieldChange, FieldValue } from "./fieldAnalysis.ts";
+import { ValueChange } from "./valueChange.tsx";
 
 interface FieldChangeSummaryProps {
   change: FieldChange;
@@ -21,15 +22,7 @@ export const FieldChangeSummary: FC<FieldChangeSummaryProps> = ({ change }) => {
     return ids.map(id => displayValues(id).text).join(", ");
   };
 
-  return (
-    <Stack direction="row" gap={0.5} alignItems="center" flexWrap="wrap">
-      <Typography variant="body2" sx={{ textDecoration: "line-through" }}>
-        {label(change.previous)}
-      </Typography>
-      <Typography variant="body2">{"→"}</Typography>
-      <Typography variant="body2">{label(change.next)}</Typography>
-    </Stack>
-  );
+  return <ValueChange previous={label(change.previous)} next={label(change.next)} />;
 };
 
 const toIdList = (value: FieldValue): number[] => {
@@ -47,23 +40,11 @@ interface FieldAnalysisLabelProps {
 export const FieldAnalysisLabel: FC<FieldAnalysisLabelProps> = ({ label, change }) => (
   <Stack direction="row" gap={0.5} alignItems="center" component="span">
     {label}
-    <Tooltip title={<FieldChangeSummary change={change} />} placement="top">
-      <Box
-        component="span"
-        data-cy="field-analysis-info"
-        sx={{
-          display: "inline-flex",
-          alignItems: "center",
-          justifyContent: "center",
-          width: "16px",
-          height: "16px",
-          borderRadius: "50%",
-          backgroundColor: theme.palette.ai.highlightBorder,
-          color: theme.palette.warning.main,
-        }}>
-        <Info size={12} />
-      </Box>
-    </Tooltip>
+    {label && (
+      <Tooltip title={<FieldChangeSummary change={change} />} placement="top">
+        <AnalysisBadge data-cy="field-analysis-info" />
+      </Tooltip>
+    )}
   </Stack>
 );
 
@@ -81,7 +62,6 @@ export const FieldAnalysisResetButton: FC<FieldAnalysisResetButtonProps> = ({ fi
       <IconButton
         size="small"
         data-cy={`${fieldName}-analysis-reset`}
-        sx={{ color: theme.palette.ai.highlightBorder }}
         onClick={event => {
           // The button sits inside the Autocomplete's adornment, which would otherwise open the list.
           event.preventDefault();
