@@ -164,7 +164,6 @@ export class LogImportValidationError extends ApiError {
   }
 }
 
-
 /**
  * Whether a refused log import request names its reason with a translation key.
  * @param body The parsed response body.

@@ -70,7 +70,6 @@ export type LogImportOutcome = "Added" | "AlreadyExists" | "SkippedIncomplete" |
 /** How far the attachment of an added log file has got. */
 export type LogImportUploadState = "pending" | "uploading" | "uploaded" | "failed";
 
-
 /** A refused log import request whose reason the server named with a translation key. */
 export interface LogImportValidationProblem {
   messageKey: string;
