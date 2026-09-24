@@ -119,19 +119,16 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
   }, []);
 
   const onLogFilesCsvChanged = useCallback(
-    async (file?: File) => {
+    (file?: File) => {
       setLogFilesCsvFile(file);
       setAttachmentsPerRun({});
       requiredAttachmentsMutation.reset();
 
       if (!file) return;
 
-      try {
-        await requiredAttachmentsMutation.mutateAsync({ boreholeId, logFilesCsvFile: file });
-      } catch {
-        // Without the expected names the wizard cannot ask for the attachments, so the step stays
-        // empty and the error the mutation holds is shown instead.
-      }
+      // Without the expected names the wizard cannot ask for the attachments, so the step stays
+      // empty and the error the mutation holds is shown instead.
+      requiredAttachmentsMutation.mutate({ boreholeId, logFilesCsvFile: file });
     },
     [boreholeId, requiredAttachmentsMutation],
   );
@@ -152,7 +149,7 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
       const controller = new AbortController();
       runningUploads.current = controller;
 
-      setUploadStates(Object.fromEntries(pending.map(upload => [upload.logFileId, "pending" as LogImportUploadState])));
+      setUploadStates(Object.fromEntries(pending.map(upload => [upload.logFileId, "pending"])));
 
       const context: AttachmentUploadContext = {
         controller,
@@ -175,7 +172,7 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
         setProgress(undefined);
       }
 
-      queryClient.invalidateQueries({ queryKey: ["logs", boreholeId] });
+      void queryClient.invalidateQueries({ queryKey: ["logs", boreholeId] });
     },
     [attachmentsPerRun, boreholeId, queryClient, setUploadState],
   );
@@ -234,8 +231,8 @@ export const ImportLogWizard: FC<ImportLogWizardProps> = ({ isImporting, setIsIm
     importMutation.reset();
     requiredAttachmentsMutation.reset();
     resetTabStatus();
-    queryClient.invalidateQueries({ queryKey: ["logs", boreholeId] });
-    queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, boreholeId] });
+    void queryClient.invalidateQueries({ queryKey: ["logs", boreholeId] });
+    void queryClient.invalidateQueries({ queryKey: [boreholeQueryKey, boreholeId] });
   }, [boreholeId, importMutation, queryClient, requiredAttachmentsMutation, resetTabStatus, setIsImporting]);
 
   /**

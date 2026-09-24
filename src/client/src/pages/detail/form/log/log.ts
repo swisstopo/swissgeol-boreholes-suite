@@ -18,6 +18,7 @@ import {
   ImportLogsVariables,
   LogFileUploadProgress,
   LogImportResultItem,
+  LogImportValidationProblem,
   LogRun,
   RequiredAttachmentsVariables,
   UpdateLogRunVariables,
@@ -163,6 +164,15 @@ export class LogImportValidationError extends ApiError {
   }
 }
 
+
+/**
+ * Whether a refused log import request names its reason with a translation key.
+ * @param body The parsed response body.
+ * @returns True if the body carries a translation key for the reason.
+ */
+const isLogImportValidationProblem = (body: unknown): body is LogImportValidationProblem =>
+  typeof body === "object" && body !== null && "messageKey" in body && typeof body.messageKey === "string";
+
 /**
  * Names an attachment the way the server expects it, so a row and the file the user dropped for
  * it are recognized as the same thing on both sides.
@@ -195,8 +205,8 @@ export const useRequiredAttachments = () =>
       const response = await upload(`${logController}/import/requiredfiles?boreholeId=${boreholeId}`, "POST", formData);
       if (!response.ok) {
         if (isJsonContentType(response.headers.get("content-type"))) {
-          const responseBody = await response.json();
-          if (typeof responseBody?.messageKey === "string") {
+          const responseBody: unknown = await response.json();
+          if (isLogImportValidationProblem(responseBody)) {
             throw new LogImportValidationError(responseBody.messageKey, responseBody.values);
           }
         }
@@ -222,8 +232,8 @@ export const useImportLogs = () =>
       const response = await upload(`${logController}/import?boreholeId=${boreholeId}`, "POST", formData);
       if (!response.ok) {
         if (isJsonContentType(response.headers.get("content-type"))) {
-          const responseBody = await response.json();
-          if (typeof responseBody?.messageKey === "string") {
+          const responseBody: unknown = await response.json();
+          if (isLogImportValidationProblem(responseBody)) {
             throw new LogImportValidationError(responseBody.messageKey, responseBody.values);
           }
         }
