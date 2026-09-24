@@ -5,9 +5,12 @@ using BDMS.Services;
 using BDMS.Uploads.S3;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Moq;
 using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
@@ -486,6 +489,73 @@ public class TusUploadEndpointTest
         Assert.IsTrue(
             (int)repeated.StatusCode < 500,
             $"The repeated chunk was answered with <{(int)repeated.StatusCode}>, which the client retries.");
+    }
+
+    /// <summary>
+    /// A finished upload whose completion could not let go of it is still there to be terminated.
+    /// The file it stored belongs to the row the completion wrote, so the upload is answered as the
+    /// success it is, and a client terminating it afterwards leaves the file where it is.
+    /// </summary>
+    [TestMethod]
+    public async Task TerminatingAFinishedUploadThatWasNotLetGoOfKeepsTheFile()
+    {
+        using var storage = StorageThatKeepsUploadRecords();
+        using var keepingFactory = factory.WithWebHostBuilder(builder => builder.ConfigureTestServices(services =>
+            services.AddKeyedSingleton<S3TusStore>(UploadBuckets.LogFiles, (sp, _) => new S3TusStore(
+                sp.GetRequiredService<ILoggerFactory>(),
+                storage,
+                S3TusStore.CreateConfiguration(bucketName)))));
+
+        var logRun = await context.LogRuns.FirstAsync();
+        var content = Encoding.UTF8.GetBytes("log data");
+
+        int logFileId;
+        using (var keepingClient = keepingFactory.CreateClient())
+        {
+            logFileId = await UploadAsync(keepingClient, logRun.Id, $"{Guid.NewGuid()}.las", content);
+        }
+
+        var logFile = await context.LogFiles.AsNoTracking().SingleAsync(f => f.Id == logFileId);
+        storedObjectKeys.Add(logFile.NameUuid);
+
+        using var client = factory.CreateClient();
+        using var terminate = new HttpRequestMessage(HttpMethod.Delete, startedUploadPaths[^1]);
+        terminate.Headers.Add(TusResumableHeader, TusVersion);
+        terminate.Headers.Add(TestAuthHandler.SubjectIdHeader, SubAdmin);
+
+        using var terminated = await client.SendAsync(terminate);
+        Assert.AreEqual(HttpStatusCode.NoContent, terminated.StatusCode, "The upload was let go of after all, so nothing was left to terminate.");
+
+        var stored = await s3Client.GetObjectMetadataAsync(bucketName, logFile.NameUuid, CancellationToken.None);
+        Assert.AreEqual(content.Length, stored.ContentLength, "Terminating the upload took the file its row points at.");
+    }
+
+    /// <summary>
+    /// A cloud storage that stores everything but will not remove what the store keeps about an
+    /// upload, which is how a completion lets go of a finished one.
+    /// </summary>
+    private AmazonS3Client StorageThatKeepsUploadRecords()
+    {
+        var appConfiguration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+        var storage = new Mock<AmazonS3Client>(
+            appConfiguration["S3:ACCESS_KEY"],
+            appConfiguration["S3:SECRET_KEY"],
+            new AmazonS3Config
+            {
+                ServiceURL = appConfiguration["S3:ENDPOINT"],
+                ForcePathStyle = true,
+                UseHttp = appConfiguration["S3:SECURE"] == "0",
+            })
+        {
+            CallBase = true,
+        };
+
+        var recordPrefix = S3TusStore.CreateConfiguration(bucketName).UploadInfoObjectPrefix;
+        storage
+            .Setup(s => s.DeleteObjectAsync(It.IsAny<string>(), It.Is<string>(key => key.StartsWith(recordPrefix, StringComparison.Ordinal)), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new AmazonS3Exception("The record of the upload cannot be removed."));
+
+        return storage.Object;
     }
 
     /// <summary>

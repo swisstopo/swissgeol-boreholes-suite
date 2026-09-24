@@ -236,10 +236,12 @@ public abstract class TusUploadEndpoint<TMetadata>
 
         eventContext.HttpContext.Response.Headers.Append(ResultHeaderName, rowId.ToString(CultureInfo.InvariantCulture));
 
-        // The state the store kept for the upload is spent once the row points at the object. The
-        // request token is not passed on: the row is committed, tusdotnet catches nothing around
-        // this handler, and a cancellation raised here would answer the last chunk of a finished
-        // upload with a server error, which is the one answer the client retries.
-        await Store.ForgetAsync(file.Id, CancellationToken.None).ConfigureAwait(false);
+        // The state the store kept for the upload is spent once the row points at the object, and
+        // failing to let go of it must not fail the upload: the row is committed, tusdotnet catches
+        // nothing around this handler, and anything raised here, a cancellation included, would
+        // answer the last chunk of a finished upload with a server error, which is the one answer
+        // the client retries. An upload left behind can still be terminated, which leaves the
+        // object alone.
+        await Store.ForgetQuietlyAsync(file.Id).ConfigureAwait(false);
     }
 }

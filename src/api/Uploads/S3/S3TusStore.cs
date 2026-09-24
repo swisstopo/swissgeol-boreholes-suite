@@ -13,7 +13,8 @@ namespace BDMS.Uploads.S3;
 /// upload rather than assembling the file, so the request that receives the last chunk finishes an
 /// upload whose parts are already stored. What this adds is what the endpoints need and the package
 /// does not offer: the key the finished object took, a way to let go of an upload without touching
-/// that object, and an object for an upload that carries no bytes.
+/// that object, which terminating a finished upload goes through as well, and an object for an
+/// upload that carries no bytes.
 ///
 /// One instance serves one bucket, so a feature that stores elsewhere gets its own.
 /// </summary>
@@ -159,9 +160,27 @@ public class S3TusStore : ITusPipelineStore, ITusCreationStore, ITusReadableStor
     }
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// Only an unfinished upload is removed the way the package removes one. A finished upload is
+    /// let go of without its object: once an upload is whole, its completion either hands the object
+    /// to a row or removes it because no row took it, so the object is no longer the upload's to
+    /// remove. Such an upload is still there to be terminated when the completion could not drop the
+    /// record of it, and the removal of the package would then take the object a row points at along
+    /// with it. An upload whose record is already gone was let go of or removed while this was on
+    /// its way, so all that is released for it is parts nothing refers to.
+    /// </remarks>
     public async Task DeleteFileAsync(string fileId, CancellationToken cancellationToken)
     {
         await AbortMultipartUploadAsync(fileId, cancellationToken).ConfigureAwait(false);
+
+        if (!await store.FileExistAsync(fileId, cancellationToken).ConfigureAwait(false)) return;
+
+        if (await IsFinishedAsync(fileId, cancellationToken).ConfigureAwait(false))
+        {
+            await ForgetAsync(fileId, cancellationToken).ConfigureAwait(false);
+            return;
+        }
+
         await store.DeleteFileAsync(fileId, cancellationToken).ConfigureAwait(false);
     }
 
@@ -186,11 +205,14 @@ public class S3TusStore : ITusPipelineStore, ITusCreationStore, ITusReadableStor
     }
 
     /// <summary>
-    /// Drops what the store keeps about an upload while a failure is being cleaned up after,
-    /// letting that failure travel on. A cleanup that fails must not replace it: only while it is
-    /// intact does a refusal the user can act on reach them as one rather than as a bare server
-    /// error. What is left behind is the small record of the upload, which the sweep removes once
-    /// the upload expires, and which the log records.
+    /// Drops what the store keeps about a finished upload where nothing may fail any more: once a
+    /// row points at its object, or while a failure is being cleaned up after, letting that failure
+    /// travel on. A cleanup that fails must not replace it: only while it is intact does a refusal
+    /// the user can act on reach them as one rather than as a bare server error.
+    ///
+    /// What is left behind is the small record of the upload, which the log records. The sweep
+    /// passes a finished upload over, so the record stays, and terminating the upload it describes
+    /// leaves the object alone.
     /// </summary>
     /// <param name="fileId">The id of the upload.</param>
     public async Task ForgetQuietlyAsync(string fileId)
@@ -201,7 +223,7 @@ public class S3TusStore : ITusPipelineStore, ITusCreationStore, ITusReadableStor
         }
         catch (Exception ex)
         {
-            logger.LogError(ex, "Failed to drop what the store keeps about the upload <{FileId}>. It stays until it expires.", fileId);
+            logger.LogError(ex, "Failed to drop what the store keeps about the upload <{FileId}>. The record stays behind.", fileId);
         }
     }
 
@@ -223,6 +245,20 @@ public class S3TusStore : ITusPipelineStore, ITusCreationStore, ITusReadableStor
         {
             logger.LogError(ex, "Failed to remove the orphaned object <{ObjectKey}>. It stays in the bucket.", objectKey);
         }
+    }
+
+    /// <summary>
+    /// Whether every byte the upload announced has arrived, which is when its object exists.
+    /// </summary>
+    /// <param name="fileId">The id of the upload.</param>
+    /// <param name="cancellationToken">Aborts the lookup.</param>
+    /// <returns><see langword="true"/> if the upload is finished; otherwise, <see langword="false"/>.</returns>
+    private async Task<bool> IsFinishedAsync(string fileId, CancellationToken cancellationToken)
+    {
+        var uploadLength = await store.GetUploadLengthAsync(fileId, cancellationToken).ConfigureAwait(false);
+        if (uploadLength is not long length) return false;
+
+        return await store.GetUploadOffsetAsync(fileId, cancellationToken).ConfigureAwait(false) == length;
     }
 
     /// <summary>
