@@ -17,6 +17,7 @@
 - Upgraded the AWS SDK used for the S3 file storage to version 4.
 - LOG files are uploaded in chunks, so an upload is no longer cut off after a minute and is retried rather than restarted when a chunk fails.
 - The export dialog closes as soon as a format is chosen, and the transfer is reported by an overlay over the page instead of over the dialog.
+- The stratigraphy extraction now distinguishes between an extraction that completed without finding a stratigraphy and one that failed. A failed extraction reports the error and offers to try again. While an extraction takes unusually long, a note asks you to keep waiting.
 - The LOG import can be stepped through in both directions. Going back keeps the files already selected, and the report can be left to adjust the selection and import again once the attachment uploads have finished or been cancelled.
 - Importing LOG runs and LOG files no longer fails as a whole when some rows have a problem. Every row that is complete and valid is imported, and a report shows what was added, what already existed, what was skipped because information is still missing, and what needs to be corrected. Running the same import again adds only what is newly complete, without creating duplicates.
 
@@ -30,6 +31,7 @@
 - Uploading a LOG file under a name the LOG run already holds now says so, instead of reporting an unexpected error.
 - Uploading a large LOG file no longer fails after 60 seconds.
 - Accented characters such as é, è and à are no longer garbled when exporting boreholes, codelists or LOG data to CSV, or when importing CSV files. Exported CSV files now begin with a UTF-8 byte order mark so that Excel opens them with the correct character set, and imported CSV files are accepted both as UTF-8 and in the ANSI (Windows-1252) encoding that Excel produces with "Save As -> CSV".
+- The labeling panel now shows an error when a profile page cannot be loaded, instead of staying empty.
 
 ## v2.1.1748 - 2026-07-28
 

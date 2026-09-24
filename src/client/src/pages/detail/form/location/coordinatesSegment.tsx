@@ -62,10 +62,10 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
   function getCoordinatesFromForm(referenceSystem: string, direction: Direction, value: number): Coordinates {
     const currentFieldName = referenceSystems[referenceSystem].fieldName[direction];
 
-    const LV95XFormValue: string = formMethods.getValues(referenceSystems.LV95.fieldName.X) as string;
-    const LV95YFormValue: string = formMethods.getValues(referenceSystems.LV95.fieldName.Y) as string;
-    const LV03XFormValue: string = formMethods.getValues(referenceSystems.LV03.fieldName.X) as string;
-    const LV03YFormValue: string = formMethods.getValues(referenceSystems.LV03.fieldName.Y) as string;
+    const LV95XFormValue: string = formMethods.getValues(referenceSystems.LV95.fieldName.X);
+    const LV95YFormValue: string = formMethods.getValues(referenceSystems.LV95.fieldName.Y);
+    const LV03XFormValue: string = formMethods.getValues(referenceSystems.LV03.fieldName.X);
+    const LV03YFormValue: string = formMethods.getValues(referenceSystems.LV03.fieldName.Y);
 
     const LV95X =
       currentFieldName === referenceSystems.LV95.fieldName.X
@@ -105,7 +105,8 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
 
   // initially validate the form to display errors.
   useEffect(() => {
-    formMethods.trigger();
+    // Not awaited: effects cannot be async, and the validation result is read from form state.
+    void formMethods.trigger();
   }, [formMethods.trigger, currentReferenceSystem, formMethods]);
 
   // reset form values when the borehole changes.
@@ -199,7 +200,8 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
         const Y_precision = direction === Direction.Y ? changedCoordinatePrecision : otherCoordinatePrecision;
 
         if (X !== null && Y !== null) {
-          handleCoordinateTransformation(sourceSystem, targetSystem, X, Y, X_precision, Y_precision);
+          // Not awaited: the transformation writes its result into the form.
+          void handleCoordinateTransformation(sourceSystem, targetSystem, X, Y, X_precision, Y_precision);
         }
       }
     }
@@ -211,17 +213,20 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
     setValuesForCountryCantonMunicipality({ country: "", canton: "", municipality: "" });
   };
 
-  const onCancelCoordinateChange = (e: number) => {
+  const onCancelCoordinateChange = (referenceSystemCode: ReferenceSystemCode) => {
     formMethods.resetField("originalReferenceSystemId");
     formMethods.setValue(
       "originalReferenceSystemId",
-      Object.values(ReferenceSystemCode).find(code => typeof code === "number" && code !== e) as ReferenceSystemCode,
+      Object.values(ReferenceSystemCode).find(
+        (code): code is ReferenceSystemCode => typeof code === "number" && code !== referenceSystemCode,
+      ) as ReferenceSystemCode,
     );
   };
 
   // Resets the form and updates the reference system.
   const resetCoordinatesOnReferenceSystemChange = (e: number | string | boolean | null) => {
     if (typeof e !== "number") return;
+    const referenceSystemCode: ReferenceSystemCode = e;
     const areCoordinatesSet = Object.keys(FieldNameDirectionKeys).some(field =>
       formMethods.getValues(field as keyof LocationFormInputs),
     );
@@ -235,7 +240,7 @@ const CoordinatesSegment: React.FC<CoordinatesSegmentProps> = ({
         label: "cancel",
         icon: <X />,
         variant: "outlined",
-        action: () => onCancelCoordinateChange(e),
+        action: () => onCancelCoordinateChange(referenceSystemCode),
       },
       {
         label: "confirm",

@@ -20,7 +20,7 @@ const allRoles: Role[] = ["View", "Editor", "Controller", "Validator", "Publishe
 interface RoleAssignmentDialogProps<T> {
   open: boolean;
   setOpen: (open: boolean) => void;
-  addEntity: (id: string, role: Role) => Promise<void>;
+  addEntity: (id: string, role: Role) => void;
   entityType: EntityType;
   entities: T[];
   entityQueryKey: string;
@@ -40,7 +40,8 @@ export const RoleAssignmentDialog = <T,>({
   const queryClient = useQueryClient();
 
   useEffect(() => {
-    queryClient.invalidateQueries({
+    // Not awaited: effects cannot be async, and the dialog renders from the query cache.
+    void queryClient.invalidateQueries({
       queryKey: [entityQueryKey],
     });
   }, [entityQueryKey, queryClient]);
@@ -69,10 +70,10 @@ export const RoleAssignmentDialog = <T,>({
     }
   };
 
-  const addRole = async () => {
+  const addRole = () => {
     if (selectedId && role) {
       resetDialog();
-      await addEntity(selectedId, role);
+      addEntity(selectedId, role);
     }
   };
 

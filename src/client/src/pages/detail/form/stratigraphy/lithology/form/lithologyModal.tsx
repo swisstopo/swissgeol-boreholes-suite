@@ -47,7 +47,7 @@ export const LithologyModal: FC<LithologyEditModalProps> = ({
   const ct = useCapitalizedTranslation();
   const formMethods = useForm<LithologyFormValues>({
     mode: "all",
-    resolver: async values => {
+    resolver: values => {
       const errors: FormErrors = {};
       validateLithologyUnconValues(values.lithologyDescriptions, errors, values.isUnconsolidated);
       if (Object.keys(errors).length > 0) {

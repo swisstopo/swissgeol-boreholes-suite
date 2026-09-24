@@ -103,25 +103,27 @@ export const BoreholeForm: FC<BoreholeProps> = ({ borehole }) => {
     }
   }, [formMethods, topBedrockFreshMd, topBedrockWeatheredMd]);
 
+  // The three effects below do not await their fetch: effects cannot be async, and each stores its
+  // result in state.
   useEffect(() => {
     const fetchAndSetTotalDepthTVD = async () => {
       setTotalDepthTVD(await fetchDepthTVD(totalDepth));
     };
-    fetchAndSetTotalDepthTVD();
+    void fetchAndSetTotalDepthTVD();
   }, [fetchDepthTVD, totalDepth]);
 
   useEffect(() => {
     const fetchAndSetTotalDepthTVD = async () => {
       setTopBedrockFreshTVD(await fetchDepthTVD(topBedrockFreshMd));
     };
-    fetchAndSetTotalDepthTVD();
+    void fetchAndSetTotalDepthTVD();
   }, [fetchDepthTVD, topBedrockFreshMd]);
 
   useEffect(() => {
     const fetchAndSetTotalDepthTVD = async () => {
       setTopBedrockWeatheredTVD(await fetchDepthTVD(topBedrockWeatheredMd));
     };
-    fetchAndSetTotalDepthTVD();
+    void fetchAndSetTotalDepthTVD();
   }, [fetchDepthTVD, topBedrockWeatheredMd]);
 
   return (

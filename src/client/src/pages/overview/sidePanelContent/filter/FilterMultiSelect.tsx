@@ -62,12 +62,12 @@ export const FilterMultiSelect = <T extends number | string>({
         getOptionDisabled={option => {
           if (!hasCounts) return false;
           if (filterValue?.includes(option.key)) return false;
-          const count = counts?.[option.key as string | number] ?? 0;
+          const count = counts?.[option.key] ?? 0;
           return count < 1;
         }}
         renderOption={(props, option) => {
           const { key, ...rest } = props;
-          const count = counts?.[option.key as string | number] ?? 0;
+          const count = counts?.[option.key] ?? 0;
           return (
             <li key={key} {...rest} data-cy={`${item.key}-option-${option.key}`}>
               <span style={{ flex: 1 }}>{option.label}</span>

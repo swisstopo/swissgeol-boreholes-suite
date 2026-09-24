@@ -40,10 +40,7 @@ export const LithologicalDescriptionModal: FC<LithologicalDescriptionModalProps>
       // when the user didn't type anything — that's how an empty placeholder description is
       // attached to the clicked gap.
       const isNew = description?.id === 0;
-      updateLithologicalDescription(
-        { ...description, ...values } as LithologicalDescription,
-        isDirty || (isNew && isValid),
-      );
+      updateLithologicalDescription({ ...description, ...values }, isDirty || (isNew && isValid));
     }
   };
 

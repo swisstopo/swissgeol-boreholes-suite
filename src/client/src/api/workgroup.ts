@@ -74,8 +74,10 @@ export const useWorkgroupMutations = () => {
     mutationFn: async (workgroup: Workgroup) => {
       return await createWorkgroup(workgroup);
     },
+    // The invalidations in this hook are deliberately not awaited: returning their promise would
+    // keep the mutation pending until every refetch settled, rather than until the write succeeded.
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: [workgroupQueryKey],
       });
     },
@@ -86,8 +88,8 @@ export const useWorkgroupMutations = () => {
       return await updateWorkgroup(workgroup);
     },
     onSettled: (_data, _error, useUpdateWorkgroup) => {
-      queryClient.invalidateQueries({ queryKey: [workgroupQueryKey] });
-      queryClient.invalidateQueries({ queryKey: [workgroupQueryKey, useUpdateWorkgroup.id] });
+      void queryClient.invalidateQueries({ queryKey: [workgroupQueryKey] });
+      void queryClient.invalidateQueries({ queryKey: [workgroupQueryKey, useUpdateWorkgroup.id] });
     },
   });
 
@@ -96,10 +98,10 @@ export const useWorkgroupMutations = () => {
       return await removeAllWorkgroupRolesForUser(userId, workgroupId, roles);
     },
     onSettled: (_data, _error, variables) => {
-      queryClient.invalidateQueries({ queryKey: [workgroupQueryKey] });
-      queryClient.invalidateQueries({ queryKey: [workgroupQueryKey, variables.workgroupId] });
-      queryClient.invalidateQueries({ queryKey: [usersQueryKey] });
-      queryClient.invalidateQueries({ queryKey: [usersQueryKey, variables.userId] });
+      void queryClient.invalidateQueries({ queryKey: [workgroupQueryKey] });
+      void queryClient.invalidateQueries({ queryKey: [workgroupQueryKey, variables.workgroupId] });
+      void queryClient.invalidateQueries({ queryKey: [usersQueryKey] });
+      void queryClient.invalidateQueries({ queryKey: [usersQueryKey, variables.userId] });
     },
   });
 
@@ -118,10 +120,10 @@ export const useWorkgroupMutations = () => {
       return await setWorkgroupRole(userId, workgroupId, role, isActive);
     },
     onSettled: (_data, _error, variables) => {
-      queryClient.invalidateQueries({ queryKey: [workgroupQueryKey] });
-      queryClient.invalidateQueries({ queryKey: [workgroupQueryKey, variables.workgroupId] });
-      queryClient.invalidateQueries({ queryKey: [usersQueryKey] });
-      queryClient.invalidateQueries({ queryKey: [usersQueryKey, variables.userId] });
+      void queryClient.invalidateQueries({ queryKey: [workgroupQueryKey] });
+      void queryClient.invalidateQueries({ queryKey: [workgroupQueryKey, variables.workgroupId] });
+      void queryClient.invalidateQueries({ queryKey: [usersQueryKey] });
+      void queryClient.invalidateQueries({ queryKey: [usersQueryKey, variables.userId] });
     },
   });
 
@@ -130,7 +132,7 @@ export const useWorkgroupMutations = () => {
       return await deleteWorkgroup(workgroupId);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: [workgroupQueryKey],
       });
     },

@@ -59,7 +59,7 @@ export const LogPanel: FC = () => {
   const lastReportedAt = useRef(0);
   const lastReportedFile = useRef(0);
   const runningSave = useRef<AbortController | null>(null);
-  const tmpLogRunsFlat: LogRun[] = useMemo(() => tmpLogRuns.map(l => l.item as LogRun), [tmpLogRuns]);
+  const tmpLogRunsFlat: LogRun[] = useMemo(() => tmpLogRuns.map(l => l.item), [tmpLogRuns]);
 
   const {
     delete: { mutateAsync: deleteLogRuns },
@@ -242,7 +242,7 @@ export const LogPanel: FC = () => {
     [addLogRun, boreholeId, setSaveProgress, setTmpLogRuns, t, tmpLogRuns, updateLogRun],
   );
 
-  const onReset = useCallback(async () => {
+  const onReset = useCallback(() => {
     initTmpLogRuns();
   }, [initTmpLogRuns]);
 

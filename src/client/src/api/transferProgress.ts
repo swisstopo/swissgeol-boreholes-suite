@@ -1,3 +1,5 @@
+import { formatWithThousandsSeparator } from "../components/form/formUtils.ts";
+
 /**
  * Progress of a single file transfer.
  * `total` is absent when the size is not known in advance, which is the case for
@@ -24,31 +26,15 @@ export interface TransferOptions {
 /** Whether a rejection was caused by the caller giving up rather than by a failure. */
 export const isAbortError = (error: unknown): boolean => error instanceof DOMException && error.name === "AbortError";
 
-const byteUnits = ["B", "KB", "MB", "GB", "TB"];
-
-/** Bytes are always whole, larger units keep one decimal so the number still moves while transferring. */
-const decimalsForUnit = (unitIndex: number): number => (unitIndex === 0 ? 0 : 1);
-
-const roundToUnit = (bytes: number, unitIndex: number): number =>
-  Number((bytes / 1000 ** unitIndex).toFixed(decimalsForUnit(unitIndex)));
+const bytesPerMegabyte = 1_000_000;
 
 /**
- * Formats a byte count for display, using decimal units so the numbers match what
- * operating systems and cloud storage report. Rounded to a whole number for bytes,
- * and to one decimal for larger units.
+ * Formats a byte count in decimal megabytes (1 MB = 1'000'000 bytes) with one decimal.
+ * The unit never switches to GB, so the number keeps visibly moving during a large transfer.
  * @param bytes The number of bytes.
- * @returns The formatted size, e.g. `1.4 GB`.
+ * @returns The formatted size, e.g. `1'400.0 MB`.
  */
 export const formatBytes = (bytes: number): string => {
-  if (!Number.isFinite(bytes) || bytes <= 0) return "0 B";
-
-  const magnitudeUnitIndex = Math.min(Math.floor(Math.log10(bytes) / 3), byteUnits.length - 1);
-
-  // Rounding can lift the value onto the next unit's threshold, e.g. 999.95 KB would read as
-  // "1000.0 KB", so the unit is only settled once the rounded value is known.
-  const roundsOntoNextUnit =
-    roundToUnit(bytes, magnitudeUnitIndex) >= 1000 && magnitudeUnitIndex < byteUnits.length - 1;
-  const unitIndex = roundsOntoNextUnit ? magnitudeUnitIndex + 1 : magnitudeUnitIndex;
-
-  return `${roundToUnit(bytes, unitIndex).toFixed(decimalsForUnit(unitIndex))} ${byteUnits[unitIndex]}`;
+  const megabytes = Number.isFinite(bytes) && bytes > 0 ? bytes / bytesPerMegabyte : 0;
+  return `${formatWithThousandsSeparator(1, 1, megabytes)} MB`;
 };

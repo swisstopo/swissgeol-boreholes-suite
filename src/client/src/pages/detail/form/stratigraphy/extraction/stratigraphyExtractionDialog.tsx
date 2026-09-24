@@ -51,9 +51,13 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
 }) => {
   const { t } = useTranslation();
   const { showAlert } = useContext(AlertContext);
-  const [abortController, setAbortController] = useState<AbortController>();
-  const { data: allExtractedStratigraphies = [], isLoading: isLoadingExtraction } = useExtractStratigraphies(file, 1);
-  const { isLoading: isLoadingFileInfo } = useFileInfo(file?.id, 1);
+  const {
+    data: allExtractedStratigraphies = [],
+    isLoading: isLoadingExtraction,
+    isError: isExtractionError,
+    refetch: refetchExtraction,
+  } = useExtractStratigraphies(file, 1);
+  const { isLoading: isLoadingFileInfo, isError: isFileInfoError, refetch: refetchFileInfo } = useFileInfo(file?.id, 1);
   const { mutateAsync: bulkAdd, isPending: isLoadingBulkAdd } = useAddExtractedStratigraphies();
   const id = useRequiredId();
   const { navigateTo } = useBoreholesNavigate();
@@ -138,15 +142,21 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
   };
 
   const closeDialog = useCallback(() => {
-    if (abortController) {
-      abortController.abort();
-      setAbortController(undefined);
-    }
     setEditedNames(new Map());
     setConflictingNames(new Set());
     setSelectedFile(undefined);
     setOpen(false);
-  }, [abortController, setOpen, setSelectedFile]);
+  }, [setOpen, setSelectedFile]);
+
+  // A failing file info query keeps the extraction query disabled, so retrying starts one step
+  // earlier in that case.
+  const retryExtraction = useCallback(() => {
+    if (isFileInfoError) {
+      void refetchFileInfo();
+    } else {
+      void refetchExtraction();
+    }
+  }, [isFileInfoError, refetchExtraction, refetchFileInfo]);
 
   const handleClose: DialogProps["onClose"] = (event: MouseEvent, reason: string) => {
     if (reason === "backdropClick") return; // prevents dialog close on backdropClick
@@ -283,6 +293,8 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
           selectedIndex={selectedIndex}
           onItemStateChange={handleItemStateChange}
           isLoading={isLoadingExtraction || isLoadingFileInfo}
+          isError={isExtractionError || isFileInfoError}
+          onRetry={retryExtraction}
           names={names}
           nameErrors={nameErrors}
           onNameChange={setName}
@@ -325,7 +337,7 @@ export const StratigraphyExtractionDialog: FC<StratigraphyExtractionDialogProps>
               variant="contained"
               color="primary"
               label={t("addStratigraphy", { count: Math.max(checkedIndices.size, 1) })}
-              onClick={addStratigraphies}
+              onClick={() => void addStratigraphies()}
             />
           </Stack>
         </Stack>

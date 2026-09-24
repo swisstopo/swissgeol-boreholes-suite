@@ -24,10 +24,17 @@ vi.mock("react-router", () => ({
 }));
 
 // Drives what the dialog sees as extracted stratigraphies; mutated per test before render.
-const extractionState: { data: ExtractedStratigraphy[]; isLoading: boolean } = { data: [], isLoading: false };
+const refetchExtraction = vi.fn();
+const refetchFileInfo = vi.fn();
+const extractionState: { data: ExtractedStratigraphy[]; isLoading: boolean; isError: boolean } = {
+  data: [],
+  isLoading: false,
+  isError: false,
+};
+const fileInfoState: { isLoading: boolean; isError: boolean } = { isLoading: false, isError: false };
 vi.mock("../../../../../api/dataextraction.ts", () => ({
-  useExtractStratigraphies: () => extractionState,
-  useFileInfo: () => ({ isLoading: false }),
+  useExtractStratigraphies: () => ({ ...extractionState, refetch: refetchExtraction }),
+  useFileInfo: () => ({ ...fileInfoState, refetch: refetchFileInfo }),
 }));
 
 const bulkAdd = vi.fn();
@@ -49,8 +56,14 @@ vi.mock("./stratigraphyExtractionView.tsx", () => ({
     names,
     nameErrors,
     onNameChange,
+    isError,
+    onRetry,
   }: StratigraphyExtractionViewProps) => (
     <div>
+      <span aria-label="view-is-error">{String(isError)}</span>
+      <button aria-label="view-retry" onClick={onRetry}>
+        retry
+      </button>
       {allExtractedStratigraphies.map((_, index) => (
         <div key={index}>
           <input
@@ -103,13 +116,19 @@ const renderDialog = (stratigraphies: ExtractedStratigraphy[], fileName = "profi
   );
 };
 
-const nameInput = (index: number) => screen.getByLabelText(`name-input-${index}`) as HTMLInputElement;
+const nameInput = (index: number) => screen.getByLabelText<HTMLInputElement>(`name-input-${index}`);
 const nameError = (index: number) => screen.getByLabelText(`name-error-${index}`);
-const addButton = () => screen.getByTestId("add-stratigraphy-button") as HTMLButtonElement;
+const addButton = () => screen.getByTestId<HTMLButtonElement>("add-stratigraphy-button");
 
 describe("StratigraphyExtractionDialog", () => {
   beforeEach(() => {
     extractionState.data = [];
+    extractionState.isLoading = false;
+    extractionState.isError = false;
+    fileInfoState.isLoading = false;
+    fileInfoState.isError = false;
+    refetchExtraction.mockReset();
+    refetchFileInfo.mockReset();
     bulkAdd.mockReset();
     navigateTo.mockReset();
     showAlert.mockReset();
@@ -204,6 +223,39 @@ describe("StratigraphyExtractionDialog", () => {
     expect(addButton().disabled).toBe(true);
     expect(setOpen).not.toHaveBeenCalled();
     expect(showAlert).not.toHaveBeenCalled();
+  });
+
+  it("reports a failed extraction to the view instead of an empty result", async () => {
+    extractionState.isError = true;
+    renderDialog([]);
+
+    await waitFor(() => expect(screen.getByLabelText("view-is-error").textContent).toBe("true"));
+  });
+
+  it("reports a successful but empty extraction as not being an error", async () => {
+    renderDialog([]);
+
+    await waitFor(() => expect(screen.getByLabelText("view-is-error").textContent).toBe("false"));
+  });
+
+  it("retries the extraction when the extraction query failed", async () => {
+    extractionState.isError = true;
+    renderDialog([]);
+
+    fireEvent.click(screen.getByLabelText("view-retry"));
+
+    await waitFor(() => expect(refetchExtraction).toHaveBeenCalledTimes(1));
+    expect(refetchFileInfo).not.toHaveBeenCalled();
+  });
+
+  it("retries the file info when the file info query failed", async () => {
+    fileInfoState.isError = true;
+    renderDialog([]);
+
+    fireEvent.click(screen.getByLabelText("view-retry"));
+
+    await waitFor(() => expect(refetchFileInfo).toHaveBeenCalledTimes(1));
+    expect(refetchExtraction).not.toHaveBeenCalled();
   });
 
   it("delegates non-uniqueness save errors to the alert", async () => {
