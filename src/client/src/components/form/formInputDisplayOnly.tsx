@@ -31,7 +31,7 @@ export const FormInputDisplayOnly: FC<FormInputDisplayOnlyProps> = ({
       className="readonly"
       slotProps={{
         input: {
-          /* eslint-disable  @typescript-eslint/no-explicit-any */
+          /* oxlint-disable  @typescript-eslint/no-explicit-any */
           ...(isNumberInput && { inputComponent: NumericFormatWithThousandSeparator as any }),
           readOnly: true,
           disabled: disabled,

@@ -35,8 +35,17 @@ jobs:
           git diff --exit-code src/api/generated \
             || (echo "Generated types are out of date. Run 'npm run openapi:gen' and commit the result." && exit 1)
 
-      - working-directory: ./src/client
-        run: npm run lint
+      - name: Lint with oxlint
+        working-directory: ./src/client
+        run: npm run lint:oxlint -- --format github
+
+      - name: Lint with ESLint
+        working-directory: ./src/client
+        run: npm run lint:eslint
+
+      - name: Check formatting
+        working-directory: ./src/client
+        run: npm run format:check
 
       - working-directory: ./src/client
         run: npm run knip

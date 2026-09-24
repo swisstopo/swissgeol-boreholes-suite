@@ -107,7 +107,7 @@ const SectionInput = ({ item, parentId }) => {
 
   useEffect(() => {
     trigger("sectionElements");
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [getValues()["sectionElements"]]);
 
   return (

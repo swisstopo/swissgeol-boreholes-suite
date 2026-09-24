@@ -98,7 +98,7 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
       };
     });
     setUnits(currentUnits);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [getValues()["fieldMeasurementResults"]]);
 
   const prepareFormDataForSubmit = (data: FieldMeasurementFormData): FieldMeasurement => {

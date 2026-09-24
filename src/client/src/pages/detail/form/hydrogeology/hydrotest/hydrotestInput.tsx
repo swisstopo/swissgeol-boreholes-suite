@@ -148,7 +148,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
       setValue("evaluationMethodId", []);
       setValue("hydrotestResults", []);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [hydrotestKindIds]);
 
   useEffect(() => {
@@ -161,7 +161,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
     });
 
     setUnits(currentUnits);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [getValues().hydrotestResults, codelists.data]);
 
   useEffect(() => {
@@ -169,7 +169,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
     if (currentValues?.testKindId?.toString() !== hydrotestKindIds?.toString()) {
       setHydrotestKindIds(currentValues?.testKindId ?? []);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [item, getValues()["testKindId"]]);
 
   const prepareFormDataForSubmit = (data: HydrotestFormData): Hydrotest => {

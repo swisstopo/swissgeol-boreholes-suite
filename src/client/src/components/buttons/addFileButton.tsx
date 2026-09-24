@@ -26,6 +26,7 @@ export const AddFileButton: FC<AddFileButtonProps> = ({ label, onFileSelect, acc
     <form ref={formRef}>
       <Button
         component="label"
+        // oxlint-disable-next-line jsx-a11y/aria-role -- undefined drops MUI's default role; oxlint reports it as invalid
         role={undefined}
         variant="contained"
         endIcon={<Plus />}
