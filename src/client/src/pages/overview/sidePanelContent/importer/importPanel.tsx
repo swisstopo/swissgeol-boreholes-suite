@@ -10,7 +10,7 @@ import {
 } from "../../../../api/borehole.ts";
 import { downloadCodelistCsv } from "../../../../api/download.ts";
 import { isJsonContentType } from "../../../../api/fetchApiV2.ts";
-import { formatFileSize, getMaxImportArchiveSize } from "../../../../api/fileSize.ts";
+import { formatFileSize, getMaxFileSize, getMaxImportArchiveSize } from "../../../../api/fileSize.ts";
 import { ArchiveJsonMissingError } from "../../../../api/zipArchive.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { AlertContext } from "../../../../components/alert/alertContext.tsx";
@@ -22,6 +22,7 @@ import { ErrorResponse, NewBoreholeProps } from "../commons/actionsInterfaces.ts
 import WorkgroupSelect from "../commons/workgroupSelect.tsx";
 import { importBoreholeArchive } from "./boreholeImport.ts";
 import { BoreholeImportDropzone } from "./boreholeImportDropzone.tsx";
+import { importFormatOf } from "./importFormat.ts";
 
 interface ImportPanelProps extends NewBoreholeProps {
   setErrorsResponse: React.Dispatch<React.SetStateAction<ErrorResponse | null>>;
@@ -70,16 +71,6 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
 
   const refresh = () => {
     queryClient.invalidateQueries({ queryKey: [boreholeQueryKey] });
-  };
-
-  const getFileExtension = (file: File | null) => {
-    if (file) {
-      const lastDot = file.name.lastIndexOf(".");
-      if (lastDot > 0) {
-        return file.name.substring(lastDot + 1);
-      }
-    }
-    return "";
   };
 
   const reportImported = (boreholeCount: number) => {
@@ -217,10 +208,10 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
     isImporting.current = true;
     setIsLoading(true);
     try {
-      const extension = getFileExtension(file);
-      if (extension === "csv") {
+      const format = importFormatOf(file);
+      if (format === "csv") {
         await importCsv(currentWorkgroupId, file);
-      } else if (extension === "json") {
+      } else if (format === "json") {
         await importJson(currentWorkgroupId, file);
       } else {
         await importArchive(currentWorkgroupId, file);
@@ -246,6 +237,8 @@ export const ImportPanel = ({ toggleDrawer, setErrorsResponse, setErrorDialogOpe
               file={file}
               setFile={setFile}
               acceptedFileTypes={["text/csv", "application/json", "application/zip", "application/x-zip-compressed"]}
+              maxDataFileSize={getMaxFileSize()}
+              maxArchiveSize={getMaxImportArchiveSize()}
             />
             <Box>
               <Link sx={{ cursor: "pointer" }} variant="subtitle1" onClick={downloadCodelistCsv}>

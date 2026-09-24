@@ -1,15 +1,23 @@
 import React, { MouseEvent, useState } from "react";
-import { Accept, FileRejection, useDropzone } from "react-dropzone";
+import { Accept, ErrorCode, FileError, FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { Box, Stack, Typography } from "@mui/material";
 import { CircleX, File as FileIcon, Trash2 } from "lucide-react";
 import UploadIcon from "../../../../assets/icons/upload.svg?react";
+import { formatFileSize } from "../../../../api/fileSize.ts";
 import { theme } from "../../../../AppTheme.ts";
+import { importFormatOf } from "./importFormat.ts";
 
 interface BoreholeImportDropzoneProps {
   file: File | null;
   setFile: React.Dispatch<React.SetStateAction<File | null>>;
   acceptedFileTypes: string[];
+
+  /** The largest a CSV or a JSON may be, in bytes: each of them travels to the server as one request. */
+  maxDataFileSize: number;
+
+  /** The largest an archive may be, in bytes: it is unpacked here and sent one attachment at a time. */
+  maxArchiveSize: number;
 }
 
 const DropZoneTypography = ({ text, color }: { text: string; color?: string }) => (
@@ -18,20 +26,36 @@ const DropZoneTypography = ({ text, color }: { text: string; color?: string }) =
   </Typography>
 );
 
-export const BoreholeImportDropzone = ({ file, setFile, acceptedFileTypes }: BoreholeImportDropzoneProps) => {
+export const BoreholeImportDropzone = ({
+  file,
+  setFile,
+  acceptedFileTypes,
+  maxDataFileSize,
+  maxArchiveSize,
+}: BoreholeImportDropzoneProps) => {
   const { t } = useTranslation();
   const [dropzoneErrorText, setDropzoneErrorText] = useState("");
 
-  const showErrorMsg = (errorCode: string) => {
-    switch (errorCode) {
-      case "file-invalid-type":
+  const maxSizeOf = (candidate: File): number =>
+    importFormatOf(candidate) === "archive" ? maxArchiveSize : maxDataFileSize;
+
+  // The dropzone takes all three formats at once and they are not held to the same limit, so the
+  // size is checked per file rather than by the one `maxSize` the dropzone would apply to each.
+  const refuseOversized = (candidate: File): FileError | null =>
+    candidate.size <= maxSizeOf(candidate)
+      ? null
+      : { code: ErrorCode.FileTooLarge, message: "The file is larger than its format is allowed to be." };
+
+  const showErrorMsg = (rejection: FileRejection) => {
+    switch (rejection.errors[0].code) {
+      case ErrorCode.FileInvalidType:
         setDropzoneErrorText(t("dropZoneInvalidFileType"));
         break;
-      case "too-many-files":
+      case ErrorCode.TooManyFiles:
         setDropzoneErrorText(t("dropZoneMaximumFilesToSelectAtOnce") + " (max: 1)");
         break;
-      case "file-too-large":
-        setDropzoneErrorText(t("dropZoneFileToLarge"));
+      case ErrorCode.FileTooLarge:
+        setDropzoneErrorText(t("fileMaxSizeExceeded", { size: formatFileSize(maxSizeOf(rejection.file)) }));
         break;
       default:
         setDropzoneErrorText(t("dropZoneDefaultErrorMsg"));
@@ -54,15 +78,14 @@ export const BoreholeImportDropzone = ({ file, setFile, acceptedFileTypes }: Bor
   };
 
   const onDropRejected = (fileRejections: FileRejection[]) => {
-    const errorCode = fileRejections[0].errors[0].code;
-    showErrorMsg(errorCode);
+    showErrorMsg(fileRejections[0]);
   };
 
   const { getRootProps, getInputProps } = useDropzone({
     onDropRejected,
     onDropAccepted,
     maxFiles: 1,
-    maxSize: 209715200,
+    validator: refuseOversized,
     accept: acceptedFileTypes.reduce((acc, type) => {
       acc[type] = [];
       return acc;
@@ -106,7 +129,12 @@ export const BoreholeImportDropzone = ({ file, setFile, acceptedFileTypes }: Bor
               <Stack alignItems={"center"}>
                 <DropZoneTypography text={t("clickOrDragAndDrop")} />
                 <DropZoneTypography text={t("allowedFormats") + ": CSV, JSON, ZIP"} />
-                <DropZoneTypography text={t("fileLimit1File200Mb")} />
+                <DropZoneTypography
+                  text={t("importFileSizeLimits", {
+                    dataFileSize: formatFileSize(maxDataFileSize),
+                    archiveSize: formatFileSize(maxArchiveSize),
+                  })}
+                />
                 <DropZoneTypography text={t("needHelpSeeDocumentation")} />
               </Stack>
             )}
