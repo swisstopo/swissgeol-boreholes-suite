@@ -40,6 +40,25 @@ public class UploadRegistrationTest
     }
 
     /// <summary>
+    /// A bucket nobody configured stops the application as it starts, and says which setting is
+    /// missing. A store built around a name that is not there fails at the first upload instead,
+    /// with a message naming neither the setting nor the bucket, which leaves the operator who is
+    /// the only one who can supply it with nothing to go on.
+    /// </summary>
+    [TestMethod]
+    public void AMissingBucketNamesTheSettingThatIsMissing()
+    {
+        var configuration = new ConfigurationBuilder()
+            .AddInMemoryCollection(new Dictionary<string, string?> { ["S3:LOGFILES_BUCKET_NAME"] = "logfiles" })
+            .Build();
+
+        var exception = Assert.ThrowsExactly<InvalidOperationException>(
+            () => new ServiceCollection().AddResumableUploads(configuration));
+
+        StringAssert.Contains(exception.Message, "S3:BUCKET_NAME");
+    }
+
+    /// <summary>
     /// The sweep reaches every store. One it does not know about keeps the parts of the uploads
     /// that were abandoned in it for as long as the application runs, and is billed for them.
     /// </summary>

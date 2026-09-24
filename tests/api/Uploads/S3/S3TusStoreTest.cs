@@ -266,6 +266,41 @@ public class S3TusStoreTest
         Assert.IsFalse(await store.FileExistAsync(fileId, CancellationToken.None), "Nothing is left of the upload itself.");
     }
 
+    [TestMethod]
+    public async Task ForgetQuietlyAsyncLetsGoOfTheUploadAsForgetAsyncDoes()
+    {
+        var content = Encoding.UTF8.GetBytes("log data");
+        var fileId = await CreateAsync(content.Length);
+        await AppendAsync(store, fileId, content);
+
+        await store.ForgetQuietlyAsync(fileId);
+
+        var stored = await ReadObjectMetadataAsync(fileId);
+        Assert.IsNotNull(stored, "The object a row points at survives the upload being let go of.");
+        Assert.IsFalse(await store.FileExistAsync(fileId, CancellationToken.None), "Nothing is left of the upload itself.");
+    }
+
+    /// <summary>
+    /// The cleanup runs while a failure is on its way out, so it must not raise one of its own.
+    /// A refusal the user can act on would otherwise reach them as a bare server error, saying
+    /// nothing about the storage outage that replaced it and nothing about what they could do.
+    /// </summary>
+    [TestMethod]
+    public async Task ForgetQuietlyAsyncSwallowsAStorageFailure()
+    {
+        var failingS3Mock = new Mock<IAmazonS3>(MockBehavior.Strict);
+        failingS3Mock
+            .Setup(s => s.DeleteObjectAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new AmazonS3Exception("simulated S3 outage"));
+
+        var failingStore = new S3TusStore(NullLoggerFactory.Instance, failingS3Mock.Object, configuration);
+
+        await failingStore.ForgetQuietlyAsync("an-upload");
+
+        await Assert.ThrowsExactlyAsync<AmazonS3Exception>(async () =>
+            await failingStore.ForgetAsync("an-upload", CancellationToken.None));
+    }
+
     /// <summary>
     /// What <see cref="S3TusStore.ForgetAsync"/> exists to avoid: the way the package lets go
     /// of an upload takes the finished object with it, and by then a log file row points at it.

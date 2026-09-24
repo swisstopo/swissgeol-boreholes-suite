@@ -26,12 +26,16 @@ public record TusUploadMetadata(int LogRunId, int? LogFileId, string FileName, s
         if (!values.TryGetValue(UploadMetadataHeader.FileNameKey, out var fileName) || string.IsNullOrWhiteSpace(fileName)) return false;
         if (!values.TryGetValue("contentType", out var contentType) || string.IsNullOrWhiteSpace(contentType)) return false;
 
-        // A file being replaced is named by an id, so a value that is not one is a request to
-        // replace nothing rather than a request to replace some other file.
-        int? logFileId = values.TryGetValue("logFileId", out var logFileIdValue) &&
-            int.TryParse(logFileIdValue, CultureInfo.InvariantCulture, out var parsedLogFileId)
-            ? parsedLogFileId
-            : null;
+        // Naming no file is a request to add one, which is what an ordinary upload does. Naming one
+        // that is not an id is neither: reading it as naming no file would add a file the client
+        // meant to replace, leaving the run holding both. Both ends read this, so it is refused
+        // before any bytes are sent.
+        int? logFileId = null;
+        if (values.TryGetValue("logFileId", out var logFileIdValue))
+        {
+            if (!int.TryParse(logFileIdValue, CultureInfo.InvariantCulture, out var parsedLogFileId)) return false;
+            logFileId = parsedLogFileId;
+        }
 
         metadata = new TusUploadMetadata(logRunId, logFileId, fileName, contentType);
         return true;

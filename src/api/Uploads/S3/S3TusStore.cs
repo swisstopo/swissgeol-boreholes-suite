@@ -186,6 +186,26 @@ public class S3TusStore : ITusPipelineStore, ITusCreationStore, ITusReadableStor
     }
 
     /// <summary>
+    /// Drops what the store keeps about an upload while a failure is being cleaned up after,
+    /// letting that failure travel on. A cleanup that fails must not replace it: only while it is
+    /// intact does a refusal the user can act on reach them as one rather than as a bare server
+    /// error. What is left behind is the small record of the upload, which the sweep removes once
+    /// the upload expires, and which the log records.
+    /// </summary>
+    /// <param name="fileId">The id of the upload.</param>
+    public async Task ForgetQuietlyAsync(string fileId)
+    {
+        try
+        {
+            await ForgetAsync(fileId, CancellationToken.None).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to drop what the store keeps about the upload <{FileId}>. It stays until it expires.", fileId);
+        }
+    }
+
+    /// <summary>
     /// Removes an object no row points at, either because the row was never written or because it
     /// was moved to another object, letting the failure that caused it travel on. A cleanup that
     /// fails must not replace that failure: only while it is intact can the caller tell a client

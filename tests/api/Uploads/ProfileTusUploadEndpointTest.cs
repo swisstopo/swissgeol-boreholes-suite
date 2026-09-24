@@ -555,12 +555,16 @@ public class ProfileTusUploadEndpointTest
         Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode, await response.Content.ReadAsStringAsync());
     }
 
+    /// <summary>
+    /// An upload naming no row is the ordinary one, outside an import: it asks for a profile to be
+    /// created for the file it carries.
+    /// </summary>
     [TestMethod]
     public void TryReadAcceptsTheMetadataTheClientSends()
     {
         Assert.IsTrue(ProfileUploadMetadata.TryRead(MetadataValues("42"), out var metadata));
         Assert.AreEqual(42, metadata.BoreholeId);
-        Assert.IsNull(metadata.ProfileId);
+        Assert.IsNull(metadata.ProfileId, "Naming no row is what asks for one to be created.");
         Assert.AreEqual("report.pdf", metadata.FileName);
         Assert.AreEqual(PdfContentType, metadata.ContentType);
     }
@@ -573,14 +577,44 @@ public class ProfileTusUploadEndpointTest
     }
 
     /// <summary>
-    /// Creating the upload accepts this, so completing it has to accept it too rather than failing
-    /// once the whole file has already been sent.
+    /// Naming a row that is not an id is neither a request to fill one nor a request to create one.
+    /// Reading it as the latter would create a second profile beside the row an import is waiting to
+    /// fill, and leave that row with no file for good. Both ends read this, so refusing it here
+    /// refuses the upload as it is created rather than once the whole file has been sent.
     /// </summary>
     [TestMethod]
-    public void TryReadTreatsAProfileIdThatIsNotAnIdAsFillingNothing()
+    public void TryReadRejectsAProfileIdThatIsNotAnId()
     {
-        Assert.IsTrue(ProfileUploadMetadata.TryRead(MetadataValues("42", "not-an-id"), out var metadata));
-        Assert.IsNull(metadata.ProfileId);
+        Assert.IsFalse(ProfileUploadMetadata.TryRead(MetadataValues("42", "not-an-id"), out _));
+    }
+
+    /// <summary>
+    /// The same refusal as seen by the client, which is what says it happens before a single byte
+    /// is sent rather than once the whole file has arrived.
+    /// </summary>
+    [TestMethod]
+    public async Task CreatingAnUploadWithAProfileIdThatIsNotAnIdIsRefused()
+    {
+        var boreholeId = await EditableBoreholeIdAsync();
+        var profileCountBefore = await context.Profiles.CountAsync(p => p.BoreholeId == boreholeId);
+        using var client = factory.CreateClient();
+
+        var metadata = $"boreholeId {Encode(boreholeId.ToString(CultureInfo.InvariantCulture))}," +
+            $"filename {Encode("report.pdf")}," +
+            $"contentType {Encode(PdfContentType)}," +
+            $"profileId {Encode("not-an-id")}";
+
+        using var request = new HttpRequestMessage(HttpMethod.Post, EndpointPath);
+        request.Headers.Add(TusResumableHeader, TusVersion);
+        request.Headers.Add("Upload-Length", "1000");
+        request.Headers.Add("Upload-Metadata", metadata);
+        request.Headers.Add(TestAuthHandler.SubjectIdHeader, SubAdmin);
+
+        using var response = await client.SendAsync(request);
+
+        Assert.AreEqual(HttpStatusCode.BadRequest, response.StatusCode, await response.Content.ReadAsStringAsync());
+        Assert.IsNull(response.Headers.Location, "The client was told where to send a file the server will not record.");
+        Assert.AreEqual(profileCountBefore, await context.Profiles.CountAsync(p => p.BoreholeId == boreholeId), "A profile was created for an upload that was refused.");
     }
 
     [TestMethod]

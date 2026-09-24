@@ -152,15 +152,19 @@ public class LogFileTusEndpointTest
         Assert.AreEqual(fromHeader, fromStore);
     }
 
+    /// <summary>
+    /// Naming a file that is not an id is neither a request to replace one nor a request to add
+    /// one. Reading it as the latter would add the file the client meant to replace and leave the
+    /// run holding both. Both ends read this, so refusing it here refuses the upload as it is
+    /// created rather than once the whole file has been sent.
+    /// </summary>
     [TestMethod]
-    public void TryReadTreatsALogFileIdThatIsNotAnIdAsReplacingNothing()
+    public void TryReadRejectsALogFileIdThatIsNotAnId()
     {
         var header = $"logRunId {Encode("42")},logFileId {Encode("not-an-id")},filename {Encode(TestFileName)},contentType {Encode(TextPlainContentType)}";
 
-        // Creating the upload accepts this, so completing it has to accept it too rather than
-        // failing once the whole file has already been sent.
-        Assert.IsTrue(TusUploadMetadata.TryRead(Stored(header), out var metadata));
-        Assert.IsNull(metadata.LogFileId);
+        Assert.IsFalse(TryReadHeader(header, out _));
+        Assert.IsFalse(TusUploadMetadata.TryRead(Stored(header), out _));
     }
 
     [TestMethod]

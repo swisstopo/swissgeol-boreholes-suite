@@ -18,8 +18,8 @@ public static class UploadServiceCollectionExtensions
     /// <returns>The service collection, so calls can be chained.</returns>
     public static IServiceCollection AddResumableUploads(this IServiceCollection services, IConfiguration configuration)
     {
-        AddStore(services, UploadBuckets.LogFiles, configuration["S3:LOGFILES_BUCKET_NAME"]);
-        AddStore(services, UploadBuckets.Profiles, configuration["S3:BUCKET_NAME"]);
+        AddStore(services, UploadBuckets.LogFiles, configuration, "S3:LOGFILES_BUCKET_NAME");
+        AddStore(services, UploadBuckets.Profiles, configuration, "S3:BUCKET_NAME");
 
         // An endpoint reads the database to decide what a request may do, so it lives as long as
         // the request it decides for.
@@ -44,12 +44,25 @@ public static class UploadServiceCollectionExtensions
     /// <summary>
     /// Adds the store for one bucket. The store holds nothing that belongs to one request, so one
     /// instance serves them all.
+    ///
+    /// A missing bucket stops the application here rather than at the first upload, because a store
+    /// has nowhere to write without one and the operator reading the failure is the only one who
+    /// can supply it.
     /// </summary>
     /// <param name="services">The service collection to add to.</param>
     /// <param name="key">The key the store is resolved under.</param>
-    /// <param name="bucketName">The bucket the store writes to.</param>
-    private static void AddStore(IServiceCollection services, string key, string? bucketName)
+    /// <param name="configuration">The application configuration.</param>
+    /// <param name="bucketNameSetting">The setting naming the bucket the store writes to.</param>
+    /// <exception cref="InvalidOperationException">The setting names no bucket.</exception>
+    private static void AddStore(IServiceCollection services, string key, IConfiguration configuration, string bucketNameSetting)
     {
+        var bucketName = configuration[bucketNameSetting];
+        if (string.IsNullOrWhiteSpace(bucketName))
+        {
+            throw new InvalidOperationException(
+                $"The setting <{bucketNameSetting}> names no bucket, so <{key}> uploads have nowhere to be written.");
+        }
+
 #pragma warning disable CA1308 // Normalize strings to uppercase
         var normalizedBucketName = bucketName.ToLowerInvariant();
 #pragma warning restore CA1308 // Normalize strings to uppercase

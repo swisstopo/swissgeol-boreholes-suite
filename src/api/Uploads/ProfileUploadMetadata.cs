@@ -30,12 +30,16 @@ public record ProfileUploadMetadata(int BoreholeId, int? ProfileId, string FileN
         if (!values.TryGetValue(UploadMetadataHeader.FileNameKey, out var fileName) || string.IsNullOrWhiteSpace(fileName)) return false;
         if (!values.TryGetValue("contentType", out var contentType) || string.IsNullOrWhiteSpace(contentType)) return false;
 
-        // A row being filled is named by an id, so a value that is not one is a request to fill
-        // nothing rather than a request to fill some other row.
-        int? profileId = values.TryGetValue("profileId", out var profileIdValue) &&
-            int.TryParse(profileIdValue, CultureInfo.InvariantCulture, out var parsedProfileId)
-            ? parsedProfileId
-            : null;
+        // Naming no row is a request to create one, which is what an upload outside an import does.
+        // Naming one that is not an id is neither: reading it as naming no row would create a
+        // second profile beside the one the import is waiting to fill, and leave that one with no
+        // file for good. Both ends read this, so it is refused before any bytes are sent.
+        int? profileId = null;
+        if (values.TryGetValue("profileId", out var profileIdValue))
+        {
+            if (!int.TryParse(profileIdValue, CultureInfo.InvariantCulture, out var parsedProfileId)) return false;
+            profileId = parsedProfileId;
+        }
 
         metadata = new ProfileUploadMetadata(boreholeId, profileId, fileName, contentType);
         return true;
