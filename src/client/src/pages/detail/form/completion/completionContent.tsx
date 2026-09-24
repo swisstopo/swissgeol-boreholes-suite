@@ -121,8 +121,7 @@ const CompletionContent = ({ completion, editingEnabled }: CompletionContentProp
           ))}
         </BoreholeTabs>
       </Stack>
-      {/* oxlint-disable-next-line react/no-children-prop */}
-      <MemoizedCompletionContentTabBox children={renderTabContent} />
+      <MemoizedCompletionContentTabBox>{renderTabContent}</MemoizedCompletionContentTabBox>
     </Stack>
   );
 };
