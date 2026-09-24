@@ -1,7 +1,7 @@
 ﻿// @vitest-environment jsdom
 import { Dispatch, SetStateAction } from "react";
 import { ThemeProvider } from "@mui/material";
-import { cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen, waitFor } from "@testing-library/react";
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
 import { setFileSizeLimits } from "../../../../api/fileSize.ts";
 import { theme } from "../../../../AppTheme.ts";
@@ -84,12 +84,19 @@ describe("ImportPanel", () => {
 
     renderPanel();
     fireEvent.click(screen.getByRole("button", { name: "pick archive" }));
-    fireEvent.click(importButton());
-    await waitFor(() => expect(importBoreholeArchive).toHaveBeenCalledTimes(1));
 
-    expect(importButton().disabled).toBe(true);
-    fireEvent.click(importButton());
+    // Both clicks land before React commits what the first one started, which is the case the
+    // panel guards: the button only turns itself away on the next render, so a user who clicks
+    // twice in a row reaches the handler twice and only the handler can turn the second one away.
+    const button = importButton();
+    act(() => {
+      button.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+      expect(button.disabled).toBe(false);
+      button.dispatchEvent(new MouseEvent("click", { bubbles: true }));
+    });
+
     expect(importBoreholeArchive).toHaveBeenCalledTimes(1);
+    expect(importButton().disabled).toBe(true);
 
     finishImport();
     await waitFor(() => expect(showAlert).toHaveBeenCalledWith("1 boreholesImported.", "success"));
