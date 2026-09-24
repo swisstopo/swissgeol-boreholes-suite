@@ -249,6 +249,14 @@ describe("Test for importing boreholes.", () => {
         cy.dataCy("import-borehole-button").click();
         dropFileIntoImportDropzone(dataTransfer);
         cy.dataCy("import-button").click();
+
+        // The archive is unpacked in the browser, so the boreholes are committed by one request and
+        // their three attachments follow it one at a time. The overlay covers the page until the
+        // last one has been sent, so the rows cannot be reached before then.
+        cy.wait("@borehole-upload");
+        cy.wait(["@upload-files", "@upload-files", "@upload-files"]);
+        cy.dataCy("loading-backdrop-status").should("not.exist");
+
         cy.dataCy("boreholes-number-preview").should("have.text", "2");
         verifyRowContains("COLDWATERBATH", 0);
         verifyRowContains("COLDWATERDRINK", 1);
