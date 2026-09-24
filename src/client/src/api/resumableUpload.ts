@@ -31,11 +31,10 @@ export const profileUploadTarget: ResumableUploadTarget = {
  * upload that has already failed.
  *
  * An implementation has to hold to one thing: **`written` settles once the stream is cancelled**,
- * and not only once the bytes have all been written. An upload that fails or that the user gives
- * up on cancels the stream and then waits, so a writer parked on anything the cancellation does
- * not release leaves that upload waiting for good. A finished upload is the one case where the
- * stream is not cancelled first: every byte has been read by then, so there is nothing left for
- * the writer to be parked on.
+ * and not only once the bytes have all been written. Every upload cancels the stream and then
+ * waits, however it ended, so a writer parked on anything the cancellation does not release
+ * leaves that upload waiting for good. That holds for one that finished too, which read only as
+ * many bytes as the source announced and left a source that holds more still writing.
  */
 export interface UploadSource {
   open: () => { stream: ReadableStream<Uint8Array>; written: Promise<unknown> };
@@ -161,17 +160,18 @@ export function uploadResumable(
 
     const opened = openSource(source);
 
-    // Whatever fills the source is waited for before this settles, so that an entry which never
-    // made it is not reported as one that did. Its failure belongs to an upload that has already
-    // been judged, and was taken when the source was opened.
-    const writerDone = (): Promise<unknown> => opened.written;
-
-    // An upload that stops short leaves its source open, so that it could be resumed later.
-    // Nothing here resumes one, and a stream nobody reads any more leaves its writer waiting for
-    // good, so what is given up on is let go of first.
+    // Whatever fills the source is waited for before an upload settles, so that an entry which
+    // never made it is not reported as one that did. Its failure belongs to an upload that has
+    // already been judged, and was taken when the source was opened.
+    //
+    // The source is let go of first, on every path. An upload that stops short leaves it open so
+    // that it could be resumed later, and nothing here resumes one. An upload that finished reads
+    // only as many bytes as the source announced and never reads on to the end, so a source that
+    // holds more than that is still writing. Either way a stream nobody reads any more leaves its
+    // writer waiting for good.
     const releaseWriter = (): Promise<unknown> => {
       opened.release();
-      return writerDone();
+      return opened.written;
     };
 
     const upload = new Upload(opened.body, {
@@ -207,7 +207,7 @@ export function uploadResumable(
         // A missing header reads as NaN and an empty one as zero, neither of which is an id.
         const storedId = Number(lastResponse.getHeader(target.resultHeader));
 
-        void writerDone().then(() => {
+        void releaseWriter().then(() => {
           if (!Number.isInteger(storedId) || storedId <= 0) {
             reject(new Error("The server did not report what it stored."));
             return;

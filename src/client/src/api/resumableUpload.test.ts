@@ -324,6 +324,35 @@ describe("uploadResumable", () => {
     }
   });
 
+  it("lets go of the stream when the upload succeeds, so a source holding more is not left writing", async () => {
+    // The client stops reading at the size the source announced and never reads on to the end, so
+    // a source that holds more than that, such as an archive entry whose stored size understates
+    // what it unpacks to, is still parked on the reader once the upload is done.
+    let releaseWriter: () => void = () => {};
+    const written = new Promise<void>(resolve => {
+      releaseWriter = resolve;
+    });
+    const source = {
+      open: () => ({
+        stream: new ReadableStream<Uint8Array>({
+          pull: controller => controller.enqueue(new Uint8Array([1, 2, 3, 4])),
+          cancel: () => releaseWriter(),
+        }),
+        written,
+      }),
+      size: 2,
+      fileName: "report.pdf",
+      contentType: "application/pdf",
+    };
+
+    const upload = uploadResumable(source, profileUploadTarget, { boreholeId: "1" });
+    optionsOf<{ onSuccess: (result: { lastResponse: { getHeader: () => string } }) => void }>().onSuccess({
+      lastResponse: { getHeader: () => "7" },
+    });
+
+    await expect(upload).resolves.toBe(7);
+  });
+
   it("lets go of the stream when the upload fails, so its writer is not left waiting", async () => {
     // A writer that is done only once the reader lets go, which is what a source blocked on
     // backpressure does. Nothing settles it unless the upload cancels the reader.
