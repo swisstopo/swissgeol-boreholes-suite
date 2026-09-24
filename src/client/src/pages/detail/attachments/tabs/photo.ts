@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { skipToken, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
-import { download } from "../../../../api/download.ts";
+import { download, downloadArchive } from "../../../../api/download.ts";
 import { ApiError } from "../../../../api/errorClasses.ts";
 import { fetchApiV2Base, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../../../../api/fetchApiV2.ts";
 import { Photo } from "../../../../api/generated";
@@ -23,9 +23,11 @@ export const getPhotosByBoreholeId = async (boreholeId: number): Promise<Photo[]
   return await fetchApiV2WithApiError(`photo/getAllForBorehole?boreholeId=${boreholeId}`, "GET");
 };
 
-export const exportPhotos = async (photoIds: number[]): Promise<Response> => {
+export const exportPhotos = async (photoIds: number[]): Promise<Response | undefined> => {
   const queryParams = photoIds.map(id => `photoIds=${id}`).join("&");
-  return await download(`photo/export?${queryParams}`);
+  // The server sends a single photo as itself, and a selection as an archive that can run to many gigabytes.
+  if (photoIds.length === 1) return await download(`photo/export?${queryParams}`);
+  return await downloadArchive(`photo/export?${queryParams}`, "photos.zip");
 };
 
 export const deletePhotos = async (photoIds: number[]): Promise<Response> => {

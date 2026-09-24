@@ -4,7 +4,7 @@ import { GridRowSelectionModel } from "@mui/x-data-grid";
 import { ArrowDownToLine, X } from "lucide-react";
 import { useMutation, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { boreholeQueryKey } from "../../../../api/borehole.ts";
-import { downloadPost } from "../../../../api/download.ts";
+import { downloadArchivePost } from "../../../../api/download.ts";
 import { ApiError } from "../../../../api/errorClasses.ts";
 import { fetchApiV2WithApiError, isJsonContentType, upload } from "../../../../api/fetchApiV2.ts";
 import { uploadResumable } from "../../../../api/resumableUpload.ts";
@@ -243,13 +243,20 @@ export const useImportLogs = () =>
     },
   });
 
+const logExportFileName = "log_export.zip";
+
 export const exportLogRuns = async (
   ids: number[],
   withAttachments: boolean,
   locale: string,
   options?: TransferOptions,
-): Promise<Response> => {
-  return await downloadPost("log/export", { logRunIds: ids, withAttachments, locale }, options);
+): Promise<Response | undefined> => {
+  return await downloadArchivePost(
+    "log/export",
+    { logRunIds: ids, withAttachments, locale },
+    logExportFileName,
+    options,
+  );
 };
 
 export const exportLogFiles = async (
@@ -257,8 +264,13 @@ export const exportLogFiles = async (
   withAttachments: boolean,
   locale: string,
   options?: TransferOptions,
-): Promise<Response> => {
-  return await downloadPost("log/export", { logFileIds: ids, withAttachments, locale }, options);
+): Promise<Response | undefined> => {
+  return await downloadArchivePost(
+    "log/export",
+    { logFileIds: ids, withAttachments, locale },
+    logExportFileName,
+    options,
+  );
 };
 
 /**
@@ -266,7 +278,12 @@ export const exportLogFiles = async (
  * locale resolution, withAttachments differentiation, and selection-to-ID mapping.
  */
 export const useLogExport = (
-  exportFn: (ids: number[], withAttachments: boolean, locale: string, options?: TransferOptions) => Promise<Response>,
+  exportFn: (
+    ids: number[],
+    withAttachments: boolean,
+    locale: string,
+    options?: TransferOptions,
+  ) => Promise<Response | undefined>,
   selectionModel: GridRowSelectionModel,
   rows: { id: number; tmpId?: string }[],
 ) => {
