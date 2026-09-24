@@ -90,7 +90,7 @@ const waitForLabelingImageLoaded = (page = 1) => {
       .find(layer => layer.get("type") === "image");
     expect(imageLayer?.get("name"))
       .to.be.a("string")
-      .and.to.match(new RegExp(`-${page}\\.png$`));
+      .and.to.match(new RegExp(String.raw`-${page}\.png$`));
   });
 };
 
