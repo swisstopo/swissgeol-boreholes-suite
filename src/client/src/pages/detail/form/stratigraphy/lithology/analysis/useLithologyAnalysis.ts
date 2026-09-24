@@ -1,6 +1,7 @@
-﻿import { useCallback, useMemo, useState } from "react";
+﻿import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
 import { useClassifyLithologicalDescription } from "../../../../../../api/dataextraction.ts";
+import { ClassifyResponse, ClassifyVariables } from "../../../../../../api/dataextractionInterfaces.ts";
 import { useCodelists } from "../../../../../../components/codelist.ts";
 import { FieldChange, FieldValue } from "../../../../../../components/form/fieldAnalysis/fieldAnalysis.ts";
 import { LithologyFormValues } from "../../stratigraphy.ts";
@@ -12,12 +13,16 @@ export interface LithologyAnalysis {
   isPending: boolean;
   /** True while any field row or the mode change still waits for the user. */
   hasPendingChanges: boolean;
-  /** Runs the classification and resolves with the number of items now waiting for the user. */
-  run: (description: string) => Promise<number>;
+  /**
+   * Runs the classification and resolves with the number of items now waiting for the user, or with
+   * undefined when the analysis was discarded before the classification returned.
+   */
+  run: (description: string) => Promise<number | undefined>;
   acceptField: (path: string) => void;
   resetField: (path: string) => void;
   acceptAll: () => void;
   resetAll: () => void;
+  /** Drops the analysis and cancels a running classification, leaving the form values as they are. */
   discard: () => void;
   modeChange?: ModeChange;
 }
@@ -29,6 +34,23 @@ interface AnalysisState {
 }
 
 const emptyState: AnalysisState = { changes: [] };
+
+/**
+ * The classification of a run, or undefined once the run was discarded. The request then either
+ * rejects with the abort or, like the stand-in classification, completes regardless.
+ */
+const classifyUnlessDiscarded = async (
+  classify: (variables: ClassifyVariables) => Promise<ClassifyResponse>,
+  variables: ClassifyVariables,
+): Promise<ClassifyResponse | undefined> => {
+  try {
+    const response = await classify(variables);
+    return variables.signal.aborted ? undefined : response;
+  } catch (error) {
+    if (variables.signal.aborted) return undefined;
+    throw error;
+  }
+};
 
 /**
  * Runs the automatic classification for the open lithology modal and owns the quality control that
@@ -43,6 +65,7 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
   const { data: codelists } = useCodelists();
   const { mutateAsync: classify, isPending } = useClassifyLithologicalDescription();
   const [state, setState] = useState<AnalysisState>(emptyState);
+  const runningClassification = useRef<AbortController | null>(null);
 
   const writeValue = useCallback(
     (path: string, value: FieldValue) => {
@@ -53,8 +76,11 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
 
   const run = useCallback(
     async (description: string) => {
+      const controller = new AbortController();
+      runningClassification.current = controller;
       const snapshot = formMethods.getValues();
-      const response = await classify(description);
+      const response = await classifyUnlessDiscarded(classify, { description, signal: controller.signal });
+      if (!response) return undefined;
       const { changes, modeChange } = mapClassificationToChanges(response, codelists ?? [], snapshot);
 
       if (modeChange) {
@@ -100,7 +126,12 @@ export const useLithologyAnalysis = (formMethods: UseFormReturn<LithologyFormVal
     setState(emptyState);
   }, [formMethods, state.changes, state.modeChange, state.snapshot, writeValue]);
 
-  const discard = useCallback(() => setState(emptyState), []);
+  const discard = useCallback(() => {
+    runningClassification.current?.abort();
+    setState(emptyState);
+  }, []);
+
+  useEffect(() => () => runningClassification.current?.abort(), []);
 
   const changeByPath = useMemo(() => new Map(state.changes.map(change => [change.path, change])), [state.changes]);
 

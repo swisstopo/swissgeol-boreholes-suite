@@ -2,6 +2,7 @@
 import { useForm } from "react-hook-form";
 import { act, renderHook } from "@testing-library/react";
 import { beforeEach, describe, expect, it, vi } from "vitest";
+import { ClassifyResponse, ClassifyVariables } from "../../../../../../api/dataextractionInterfaces.ts";
 import { Codelist } from "../../../../../../api/generated";
 import { LithologyFormValues } from "../../stratigraphy.ts";
 import { useLithologyAnalysis } from "./useLithologyAnalysis.ts";
@@ -18,7 +19,7 @@ const codelists: Codelist[] = [
   codelist("lithology_con", "", "sandstone", 700),
 ];
 
-const classify = vi.fn();
+const classify = vi.fn<(variables: ClassifyVariables) => Promise<ClassifyResponse>>();
 
 vi.mock("../../../../../../components/codelist.ts", () => ({
   useCodelists: () => ({ data: codelists }),
@@ -250,7 +251,7 @@ describe("useLithologyAnalysis", () => {
     classify.mockResolvedValue({ consolidation: "consolidated", lithology: "sandstone" });
     const { result } = setup();
 
-    let pending = -1;
+    let pending: number | undefined = -1;
     await act(async () => {
       pending = await result.current.analysis.run("Sandstein");
     });
@@ -262,12 +263,43 @@ describe("useLithologyAnalysis", () => {
     classify.mockResolvedValue({});
     const { result } = setup();
 
-    let pending = -1;
+    let pending: number | undefined = -1;
     await act(async () => {
       pending = await result.current.analysis.run("keine Angabe");
     });
 
     // The layer leaves the unconsolidated mode for the unspecified one, which is the single item.
     expect(pending).toBe(1);
+  });
+
+  it("cancels a running classification on discard", async () => {
+    let finishClassification: (response: ClassifyResponse) => void = () => {};
+    classify.mockReturnValue(
+      new Promise<ClassifyResponse>(resolve => {
+        finishClassification = resolve;
+      }),
+    );
+    const { result } = setup();
+
+    const running = result.current.analysis.run("Silt");
+    act(() => {
+      result.current.analysis.discard();
+    });
+    finishClassification({ consolidation: "unconsolidated", en_main: "si" });
+
+    await expect(running).resolves.toBeUndefined();
+    expect(classify.mock.lastCall?.[0].signal.aborted).toBe(true);
+    expect(result.current.formMethods.getValues().lithologyDescriptions?.[0].lithologyUnconMainId).toBe(103);
+    expect(result.current.analysis.hasPendingChanges).toBe(false);
+  });
+
+  it("cancels a running classification when unmounted", () => {
+    classify.mockReturnValue(new Promise<ClassifyResponse>(() => {}));
+    const { result, unmount } = setup();
+
+    void result.current.analysis.run("Silt");
+    unmount();
+
+    expect(classify.mock.lastCall?.[0].signal.aborted).toBe(true);
   });
 });

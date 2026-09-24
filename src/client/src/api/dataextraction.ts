@@ -9,6 +9,7 @@ import { getAuthorizationHeader } from "./authentication.ts";
 import {
   BoundingBoxResponse,
   ClassifyResponse,
+  ClassifyVariables,
   DataExtractionResponse,
   ExtractionRequest,
   ExtractionResponse,
@@ -270,9 +271,7 @@ async function classifyLithologicalDescription(
 
 export function useClassifyLithologicalDescription() {
   return useMutation({
-    mutationFn: async (description: string) => {
-      const controller = new AbortController();
-      return await classifyLithologicalDescription(description, controller.signal);
-    },
+    mutationFn: async ({ description, signal }: ClassifyVariables) =>
+      await classifyLithologicalDescription(description, signal),
   });
 }

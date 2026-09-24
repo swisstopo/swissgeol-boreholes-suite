@@ -85,6 +85,11 @@ export const matchesFileFormat = (expectedFormat: string, format: string) => {
 
 export type ClassificationConsolidation = "consolidated" | "unconsolidated";
 
+export interface ClassifyVariables {
+  description: string;
+  signal: AbortSignal;
+}
+
 /**
  * The response of POST /dataextraction/api/V1/classify.
  *
