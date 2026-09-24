@@ -224,7 +224,7 @@ describe("ImportLogWizard", () => {
 
     // The upload stays on the wire, so the progress of the burst is still on screen to read.
     uploadResumable.mockImplementation((_file: File, _metadata: Record<string, string>, options: TransferOptions) => {
-      options.onProgress?.({ loaded: 2000, total: 900_000 });
+      options.onProgress?.({ loaded: 200_000, total: 900_000 });
       options.onProgress?.({ loaded: 500_000, total: 900_000 });
       return new Promise<number>(() => {});
     });
@@ -232,8 +232,8 @@ describe("ImportLogWizard", () => {
     await runImportToReport();
 
     // Both events fall inside one interval, so only the first of them reached the bar.
-    expect(await screen.findByText(/uploadProgressHintWithSize 2.0 KB/)).toBeDefined();
-    expect(screen.queryByText(/500.0 KB/)).toBeNull();
+    expect(await screen.findByText(/uploadProgressHintWithSize 0.2 MB/)).toBeDefined();
+    expect(screen.queryByText(/0.5 MB/)).toBeNull();
   });
 
   it("returns from the report to the files step only once the uploads have stopped", async () => {
