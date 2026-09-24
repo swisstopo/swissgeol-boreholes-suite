@@ -1,17 +1,11 @@
-﻿using Amazon.S3;
-using BDMS.Models;
+﻿using BDMS.Models;
 using BDMS.Services;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Moq;
 using System.Globalization;
-using System.IO.Compression;
-using System.Security.Claims;
 using System.Text;
 using System.Text.RegularExpressions;
 using static BDMS.Helpers;
@@ -34,8 +28,6 @@ public class ImportControllerTest
     [TestInitialize]
     public void TestInitialize()
     {
-        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
-
         context = ContextFactory.CreateContext();
         httpClientFactoryMock = new Mock<IHttpClientFactory>(MockBehavior.Strict);
         loggerMock = new Mock<ILogger<ImportController>>();
@@ -46,26 +38,12 @@ public class ImportControllerTest
         var loggerCoordinateServiceMock = new Mock<ILogger<CoordinateService>>(MockBehavior.Strict);
         var coordinateService = new CoordinateService(loggerCoordinateServiceMock.Object, httpClientFactoryMock.Object);
 
-        var s3ClientMock = new AmazonS3Client(configuration["S3:ACCESS_KEY"], configuration["S3:SECRET_KEY"], new AmazonS3Config()
-        {
-            ServiceURL = configuration["S3:ENDPOINT"],
-            ForcePathStyle = true,
-            UseHttp = configuration["S3:SECURE"] == "0",
-        });
-        var loggerProfileCloudService = new Mock<ILogger<ProfileCloudService>>(MockBehavior.Strict);
-        var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
-        contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
-        var testUser = context.Users.FirstOrDefault();
-        Assert.IsNotNull(testUser, "Test database must contain at least one user.");
-        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, testUser!.SubjectId) }));
-        var profileCloudService = new ProfileCloudService(context, configuration, loggerProfileCloudService.Object, contextAccessorMock.Object, s3ClientMock, Mock.Of<IServiceScopeFactory>(), Mock.Of<IHostApplicationLifetime>());
-
         boreholePermissionServiceMock = new Mock<IBoreholePermissionService>(MockBehavior.Strict);
         boreholePermissionServiceMock
             .Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Role>()))
             .ReturnsAsync(true);
 
-        controller = new ImportController(context, loggerMock.Object, locationService, coordinateService, profileCloudService, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
+        controller = new ImportController(context, loggerMock.Object, locationService, coordinateService, boreholePermissionServiceMock.Object) { ControllerContext = GetControllerContextAdmin() };
     }
 
     [TestCleanup]
@@ -87,7 +65,7 @@ public class ImportControllerTest
     {
         var boreholeJsonFile = GetFormFileByExistingFile("json_import_single.json");
 
-        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
+        ActionResult<BoreholeImportResult> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -101,10 +79,8 @@ public class ImportControllerTest
     {
         var boreholeJsonFile = GetFormFileByExistingFile("json_import_valid.json");
 
-        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
-        ActionResultAssert.IsOk(response.Result);
-        OkObjectResult okResult = (OkObjectResult)response.Result!;
-        Assert.AreEqual(2, okResult.Value);
+        ActionResult<BoreholeImportResult> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
+        Assert.AreEqual(2, GetImportResultFromResponse(response).BoreholeCount);
 
         var borehole = await context.BoreholesWithIncludes.SingleAsync(b => b.OriginalName == "PURPLETOLL").ConfigureAwait(false);
         Assert.IsNotNull(borehole.CreatedById, nameof(Borehole.CreatedById).ShouldNotBeNullMessage());
@@ -551,103 +527,11 @@ public class ImportControllerTest
     }
 
     [TestMethod]
-    public async Task UploadZipShouldSaveDatasetFromJsonInsideAsync()
-    {
-        // Create a ZIP archive
-        var boreholeZipFile = await GetZipFileFromExistingFileAsync("json_import_valid.json");
-
-        ActionResult<int> response = await controller.UploadZipFileAsync(workgroupId: 1, boreholeZipFile);
-
-        ActionResultAssert.IsOk(response.Result);
-        OkObjectResult okResult = (OkObjectResult)response.Result!;
-        Assert.AreEqual(2, okResult.Value);
-    }
-
-    [TestMethod]
-    public async Task UploadZipWithoutJsonReturnsBadRequestAsync()
-    {
-        // Create a ZIP archive without a JSON file
-        var boreholeZipFile = await GetZipFileFromExistingFileAsync("borehole_and_location_data.csv");
-
-        ActionResult<int> response = await controller.UploadZipFileAsync(workgroupId: 1, boreholeZipFile);
-        Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
-        ObjectResult result = (ObjectResult)response.Result!;
-        ActionResultAssert.IsBadRequest(result);
-        dynamic value = result.Value!;
-        Assert.AreEqual("ZIP file does not contain a JSON file.", value.detail);
-        Assert.AreEqual("zipMissingJsonFile", value.messageKey);
-    }
-
-    [TestMethod]
-    public async Task UploadZipWithoutAttachmensButFilesDefinedInJsonReturnsProblemDetailsAsync()
-    {
-        var zipPath = "borehole_export_with_missing_files.zip";
-        var boreholeZipFile = GetFormFileByExistingFile(zipPath);
-
-        ActionResult<int> response = await controller.UploadZipFileAsync(workgroupId: 1, boreholeZipFile);
-
-        ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
-        Assert.AreEqual(3, problemDetails.Errors.Count);
-        CollectionAssert.AreEquivalent(new[] { "Attachment with the name <7397a759-9160-48d4-8ffb-7fe1ed42e8fd.png_Screenshot 2024-12-10 145252.png> is referenced in JSON file but was not not found in ZIP archive.", }, problemDetails.Errors["Attachment1"]);
-        CollectionAssert.AreEquivalent(new[] { "Attachment with the name <76ba90dc-76f7-43aa-9ff7-053de65f6e74.png_Screenshot 2024-12-20 084417.png> is referenced in JSON file but was not not found in ZIP archive.", }, problemDetails.Errors["Attachment2"]);
-        CollectionAssert.AreEquivalent(new[] { "Attachment with the name <ab0dc122-e0fe-4fa5-bbf7-348c94cec0c2.png_logos.png> is referenced in JSON file but was not not found in ZIP archive.", }, problemDetails.Errors["Attachment3"]);
-    }
-
-    [TestMethod]
-    public async Task UploadZipShouldSaveDatasetAndAttachmentsAsync()
-    {
-        var zipPath = "boreholes_with_attachments.zip";
-        var boreholeZipFile = GetFormFileByExistingFile(zipPath);
-
-        ActionResult<int> response = await controller.UploadZipFileAsync(workgroupId: 1, boreholeZipFile);
-
-        ActionResultAssert.IsOk(response.Result);
-        OkObjectResult okResult = (OkObjectResult)response.Result!;
-        Assert.AreEqual(2, okResult.Value);
-        var uploadedBoreholesWithAttachment = await context.BoreholesWithIncludes.Where(b => b.OriginalName.StartsWith("Carmen Catnip")).ToListAsync();
-        Assert.AreEqual(uploadedBoreholesWithAttachment.SelectMany(b => b.Profiles!).Count(), 3);
-
-        var firstBorehole = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Cheese");
-        var secondBorehole = uploadedBoreholesWithAttachment.Find(b => b.OriginalName == "Carmen Catnip Fondue");
-        Assert.IsNotNull(firstBorehole);
-        Assert.IsNotNull(secondBorehole);
-        Assert.AreEqual(firstBorehole.Profiles.Count, 2);
-        Assert.AreEqual(secondBorehole.Profiles.Single().Name, "logos.png");
-
-        // Assert profile description and public attribute
-        var profile = firstBorehole.Profiles.First();
-        Assert.AreEqual(profile.Description, "Describing Incredible Granite");
-        Assert.AreEqual(profile.Public, true);
-    }
-
-    [TestMethod]
-    public async Task UploadZipForInvalidUserShouldSaveDatasetAndAttachmentsAsync()
-    {
-        var invalidUser = await context.Users.FirstOrDefaultAsync(u => u.Id == 123456);
-        Assert.IsNull(invalidUser);
-
-        var zipPath = "boreholes_with_attachments_invalid_user.zip";
-        var boreholeZipFile = GetFormFileByExistingFile(zipPath);
-
-        ActionResult<int> response = await controller.UploadZipFileAsync(workgroupId: 1, boreholeZipFile);
-
-        ActionResultAssert.IsOk(response.Result);
-        OkObjectResult okResult = (OkObjectResult)response.Result!;
-        Assert.AreEqual(1, okResult.Value);
-        var uploadedBoreholesWithAttachment = await context.BoreholesWithIncludes.Where(b => b.OriginalName == "Redhold Namfix").ToListAsync();
-        Assert.AreEqual(1, uploadedBoreholesWithAttachment.Count);
-
-        var borehole = uploadedBoreholesWithAttachment.Single();
-        Assert.AreEqual(1, borehole.Profiles.Count);
-        Assert.AreEqual("boreholes.png", borehole.Profiles.Single().Name);
-    }
-
-    [TestMethod]
     public async Task UploadJsonWithNoJsonFileShouldReturnError()
     {
         var boreholeJsonFile = GetFormFileByExistingFile("not_a_json_file.csv");
 
-        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
+        ActionResult<BoreholeImportResult> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
 
         ActionResultAssert.IsBadRequest(response.Result);
         BadRequestObjectResult badRequestResult = (BadRequestObjectResult)response.Result!;
@@ -661,7 +545,7 @@ public class ImportControllerTest
     {
         var boreholeJsonFile = GetFormFileByExistingFile("json_import_invalid_casing_ids.json");
 
-        ActionResult<int> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
+        ActionResult<BoreholeImportResult> response = await controller.UploadJsonFileAsync(workgroupId: 1, boreholeJsonFile);
 
         ValidationProblemDetails problemDetails = GetProblemDetailsFromResponse(response);
         Assert.AreEqual(3, problemDetails.Errors.Count);
@@ -1034,7 +918,7 @@ public class ImportControllerTest
             problemDetails.Errors["Row3"]);
     }
 
-    private static ValidationProblemDetails GetProblemDetailsFromResponse(ActionResult<int> response)
+    private static ValidationProblemDetails GetProblemDetailsFromResponse<T>(ActionResult<T> response)
     {
         Assert.IsInstanceOfType(response.Result, typeof(ObjectResult));
         ObjectResult result = (ObjectResult)response.Result!;
@@ -1177,14 +1061,94 @@ public class ImportControllerTest
         ActionResultAssert.IsUnauthorized(response.Result);
     }
 
+    /// <summary>
+    /// Without attachments the import behaves as it always has: the profiles described by the JSON
+    /// are cleared, because nothing is going to arrive to fill them.
+    /// </summary>
     [TestMethod]
-    public async Task UploadZipWorkgroupPermissionMissing()
+    public async Task ImportingJsonWithoutAttachmentsCreatesNoProfiles()
     {
-        boreholePermissionServiceMock.Setup(x => x.HasUserRoleOnWorkgroupAsync(It.IsAny<string>(), It.IsAny<int>(), It.IsAny<Role>())).ReturnsAsync(false);
-        var boreholeCsvFile = GetFormFileByExistingFile("minimal_testdata.csv");
+        var response = await controller.UploadJsonFileAsync(workgroupId: 1, GetFormFileByExistingFile("borehole_with_attachment.json"), importAttachments: false);
 
-        var response = await controller.UploadZipFileAsync(workgroupId: 1, boreholeCsvFile);
-        ActionResultAssert.IsUnauthorized(response.Result);
+        var result = GetImportResultFromResponse(response);
+        Assert.AreEqual(1, result.BoreholeCount);
+        Assert.AreEqual(0, result.Attachments.Count);
+
+        var borehole = await context.Boreholes.AsNoTracking().Include(b => b.Profiles).SingleAsync(b => b.OriginalName == "AWAITEDREPORT");
+        Assert.IsNotNull(borehole.Profiles);
+        Assert.AreEqual(0, borehole.Profiles.Count);
+    }
+
+    /// <summary>
+    /// With attachments the import writes a row per attachment and names each one, so the client
+    /// knows where to send the file it holds. The name is the entry name the export wrote, which is
+    /// what the client matches against the archive.
+    /// </summary>
+    [TestMethod]
+    public async Task ImportingJsonWithAttachmentsReportsARowPerAttachment()
+    {
+        var response = await controller.UploadJsonFileAsync(workgroupId: 1, GetFormFileByExistingFile("borehole_with_attachment.json"), importAttachments: true);
+
+        var result = GetImportResultFromResponse(response);
+        Assert.AreEqual(1, result.BoreholeCount);
+        Assert.AreEqual(1, result.Attachments.Count);
+
+        var attachment = result.Attachments.Single();
+        var profile = await context.Profiles.AsNoTracking().SingleAsync(p => p.Id == attachment.ProfileId);
+        Assert.AreEqual(profile.BoreholeId, attachment.BoreholeId, "The upload is authorized against the borehole, so the client has to name it.");
+        Assert.IsNull(profile.NameUuid, "The row waits for the upload that fills it.");
+        Assert.AreEqual(OcrStatus.WillNotBeProcessed, profile.OcrStatus, "An eligible status before the file arrives would send OCR a profile with no file.");
+        Assert.AreEqual("a1b2c3d4-e5f6-4789-9abc-def012345678.pdf_report.pdf", attachment.FileName);
+        StringAssert.EndsWith(attachment.FileName, profile.Name);
+    }
+
+    /// <summary>
+    /// The entry name is built the way the export builds it. The export reduces the name to its
+    /// file part to prevent Zip Slip, so a name carrying a separator is reported as the export
+    /// actually wrote it rather than as the JSON spells it.
+    /// </summary>
+    [TestMethod]
+    public async Task TheReportedAttachmentNameMatchesWhatTheExportWrote()
+    {
+        var response = await controller.UploadJsonFileAsync(workgroupId: 1, GetFormFileByExistingFile("borehole_with_nested_attachment_name.json"), importAttachments: true);
+
+        var result = GetImportResultFromResponse(response);
+        var attachment = result.Attachments.Single();
+
+        Assert.IsFalse(attachment.FileName.Contains('/', StringComparison.Ordinal));
+        Assert.IsFalse(attachment.FileName.Contains('\\', StringComparison.Ordinal));
+        Assert.AreEqual("b2c3d4e5-f6a7-4b89-9cde-f01234567890.pdf_report.pdf", attachment.FileName);
+    }
+
+    /// <summary>
+    /// A profile whose upload never arrived reaches the JSON without an object key, so the export
+    /// wrote no entry for it. The row is written all the same, because the exporting system holds
+    /// one, but it is left out of the report: naming an entry the archive does not hold would send
+    /// the client looking for a file nobody ever stored.
+    /// </summary>
+    [TestMethod]
+    public async Task AProfileWithoutAStoredObjectIsNotReportedAsAwaitingAnUpload()
+    {
+        var response = await controller.UploadJsonFileAsync(workgroupId: 1, GetFormFileByExistingFile("borehole_with_attachment_never_uploaded.json"), importAttachments: true);
+
+        var result = GetImportResultFromResponse(response);
+        Assert.AreEqual(1, result.BoreholeCount);
+        Assert.AreEqual(0, result.Attachments.Count);
+
+        var borehole = await context.Boreholes.AsNoTracking().Include(b => b.Profiles).SingleAsync(b => b.OriginalName == "NEVERUPLOADEDREPORT");
+        Assert.IsNotNull(borehole.Profiles);
+        var profile = borehole.Profiles.Single();
+        Assert.AreEqual("never_uploaded.pdf", profile.Name);
+        Assert.IsNull(profile.NameUuid);
+        Assert.AreEqual(OcrStatus.WillNotBeProcessed, profile.OcrStatus, "A row with no file must not be offered to OCR.");
+    }
+
+    private static BoreholeImportResult GetImportResultFromResponse(ActionResult<BoreholeImportResult> response)
+    {
+        ActionResultAssert.IsOk(response.Result);
+        OkObjectResult okResult = (OkObjectResult)response.Result!;
+        Assert.IsInstanceOfType(okResult.Value, typeof(BoreholeImportResult));
+        return (BoreholeImportResult)okResult.Value!;
     }
 
     private void SetupHttpClientFactoryMock(
@@ -1202,29 +1166,5 @@ public class ImportControllerTest
             .Setup(cf => cf.CreateClient(nameof(LocationService)))
             .Returns(() => CreateLocationHttpClient(country, canton, municipality))
             .Verifiable();
-    }
-
-    private static async Task<FormFile> GetZipFileFromExistingFileAsync(string fileName)
-    {
-        var zipPath = "archive.zip";
-
-        using (var memoryStream = new MemoryStream())
-        {
-            using (var archive = new ZipArchive(memoryStream, ZipArchiveMode.Create, true))
-            {
-                var csvFile = archive.CreateEntry(fileName);
-
-                using (var entryStream = csvFile.Open())
-                using (var fileStream = System.IO.File.OpenRead(fileName))
-                {
-                    await fileStream.CopyToAsync(entryStream);
-                }
-            }
-
-            await System.IO.File.WriteAllBytesAsync(zipPath, memoryStream.ToArray());
-        }
-
-        var boreholeZipFile = GetFormFileByExistingFile(zipPath);
-        return boreholeZipFile;
     }
 }

@@ -213,10 +213,8 @@ public class PhotoController : ControllerBase
             {
                 var nameUuid = photo.NameUuid;
 
-                // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name.
-                // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the original file name.
                 return new ZipEntrySource(
-                    $"{nameUuid}_{FileHelper.SanitizeZipEntryFileName(photo.Name, "export")}",
+                    FileHelper.BuildAttachmentZipEntryName(nameUuid, photo.Name),
                     entryCancellationToken => photoCloudService.GetObjectStream(nameUuid, entryCancellationToken));
             }).ToList();
 

@@ -120,7 +120,9 @@ export const interceptApiCalls = () => {
   cy.intercept("https://api3.geo.admin.ch/rest/services/height*").as("height");
   cy.intercept("/api/v2/import/*").as("borehole-upload");
   cy.intercept("/api/v2/profile/getAllForBorehole?boreholeId=**").as("getAllAttachments");
-  cy.intercept("/api/v2/profile/upload?boreholeId=**").as("upload-files");
+  // Profiles are sent in chunks: the POST only creates the upload, and each chunk travels in a
+  // PATCH, the last of which is what stores the file.
+  cy.intercept("PATCH", "/api/v2/profile/upload/tus/*").as("upload-files");
   cy.intercept("/api/v2/profile/download?profileId=**").as("download-file");
   cy.intercept("DELETE", "/api/v2/profile/*").as("delete-file");
   cy.intercept("/api/v2/photo/getAllForBorehole?boreholeId=**").as("getAllPhotos");

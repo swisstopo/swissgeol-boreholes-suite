@@ -88,14 +88,23 @@ describe("Test for importing boreholes.", () => {
   });
 
   it("displays error for invalid or empty ZIP file", () => {
-    testBadRequestError(
-      "zip",
-      400,
-      { detail: "Invalid or empty ZIP file uploaded.", messageKey: "invalidOrEmptyZipFile" },
-      "empty.zip",
-      "application/zip",
-      "Invalid or empty ZIP file uploaded.",
+    // An archive is unpacked in the browser, so an empty or invalid one fails before anything is
+    // sent: zip.js finds no central directory in it and no import request is ever made. The stub is
+    // here to go unused, and answers something the panel would report instead of the generic
+    // message if the archive did reach the server after all.
+    cy.intercept("POST", "**/api/v*/import/*", { statusCode: 500, body: "the archive reached the server" });
+
+    goToRouteAndAcceptTerms("/");
+    cy.dataCy("import-borehole-button").click();
+    const dataTransfer = new DataTransfer();
+    dataTransfer.items.add(new File([""], "empty.zip", { type: "application/zip" }));
+    dropFileIntoImportDropzone(dataTransfer);
+
+    cy.dataCy("import-button").click();
+    cy.contains(
+      "No boreholes could be imported! Please make sure that the uploaded file has the correct format and content.",
     );
+    cy.contains("the archive reached the server").should("not.exist");
   });
 
   it("displays generic error message on request failure", () => {
@@ -240,6 +249,14 @@ describe("Test for importing boreholes.", () => {
         cy.dataCy("import-borehole-button").click();
         dropFileIntoImportDropzone(dataTransfer);
         cy.dataCy("import-button").click();
+
+        // The archive is unpacked in the browser, so the boreholes are committed by one request and
+        // their three attachments follow it one at a time. The overlay covers the page until the
+        // last one has been sent, so the rows cannot be reached before then.
+        cy.wait("@borehole-upload");
+        cy.wait(["@upload-files", "@upload-files", "@upload-files"]);
+        cy.dataCy("loading-backdrop-status").should("not.exist");
+
         cy.dataCy("boreholes-number-preview").should("have.text", "2");
         verifyRowContains("COLDWATERBATH", 0);
         verifyRowContains("COLDWATERDRINK", 1);

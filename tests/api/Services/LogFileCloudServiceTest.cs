@@ -186,35 +186,6 @@ public class LogFileCloudServiceTest
     }
 
     [TestMethod]
-    public async Task DeleteOrphanedObjectKeepsTheOriginalFailureWhenTheCleanupFails()
-    {
-        // The cleanup runs while another failure is travelling on, so a cleanup that fails as well
-        // must not replace it: only while that failure is intact can the caller tell a client that
-        // gave up from an upload that broke.
-        var s3ClientMock = new Mock<IAmazonS3>(MockBehavior.Strict);
-        s3ClientMock.Setup(x => x.Config).Returns(new AmazonS3Config());
-        s3ClientMock
-            .Setup(x => x.DeleteObjectAsync(It.IsAny<DeleteObjectRequest>(), It.IsAny<CancellationToken>()))
-            .ThrowsAsync(new AmazonS3Exception("the cleanup fails as well"));
-
-        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
-        var contextAccessorMock = new Mock<IHttpContextAccessor>(MockBehavior.Strict);
-        contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
-        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, "sub_admin") }));
-
-        var serviceWithFailingCleanup = new LogFileCloudService(
-            new Mock<ILogger<LogFileCloudService>>().Object,
-            s3ClientMock.Object,
-            configuration,
-            contextAccessorMock.Object,
-            context);
-
-        await serviceWithFailingCleanup.DeleteOrphanedObject($"{Guid.NewGuid()}.las");
-
-        s3ClientMock.Verify(x => x.DeleteObjectAsync(It.IsAny<DeleteObjectRequest>(), It.IsAny<CancellationToken>()), Times.Once);
-    }
-
-    [TestMethod]
     public async Task LinkUploadedLogFileAsyncWritesTheRowForAnObjectAlreadyStored()
     {
         var logRun = context.LogRuns.First();

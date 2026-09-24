@@ -70,6 +70,26 @@ public class FileOcrServiceTest
         Assert.AreEqual(OcrStatus.Success, reloaded.OcrStatus);
     }
 
+    /// <summary>
+    /// An import writes a profile row before its upload arrives, so there is no object to read yet.
+    /// Handing the OCR service a null key would fail the run and park the profile in a terminal
+    /// error status, leaving it unprocessed once the file does turn up.
+    /// </summary>
+    [TestMethod]
+    public async Task ProcessAsyncLeavesProfileWithoutStoredObjectPending()
+    {
+        profile.NameUuid = null;
+        await context.SaveChangesAsync();
+
+        // No response is queued, so any call to the OCR service throws and shows up as an error status.
+        var (service, _) = CreateTestService();
+
+        await service.ProcessAsync(profile.Id, pollDelay: TimeSpan.Zero);
+
+        var reloaded = context.Profiles.Single(p => p.Id == profile.Id);
+        Assert.AreEqual(OcrStatus.Created, reloaded.OcrStatus);
+    }
+
     [TestMethod]
     public async Task ProcessAsyncOcrApiReturnsErrorTransitionsToError()
     {

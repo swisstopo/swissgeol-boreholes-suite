@@ -28,35 +28,6 @@ public class ProfileController : ControllerBase
     }
 
     /// <summary>
-    /// Uploads a file to cloud storage and creates a <see cref="Profile"/> attached to the borehole.
-    /// </summary>
-    /// <param name="file">The file to upload.</param>
-    /// <param name="boreholeId">The <see cref="Borehole.Id"/> to attach the uploaded profile to.</param>
-    /// <returns>The newly created profile.</returns>
-    [HttpPost("upload")]
-    [Authorize(Policy = PolicyNames.Viewer)]
-    [RequestSizeLimit(int.MaxValue)]
-    [RequestFormLimits(MultipartBodyLengthLimit = FileSizeLimits.Standard)]
-    public async Task<IActionResult> Upload([Required] IFormFile file, [Required, Range(1, int.MaxValue)] int boreholeId)
-    {
-        // Check if associated borehole is locked or user has permissions
-        if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), boreholeId).ConfigureAwait(false)) return Unauthorized();
-
-        if (file.Length > FileSizeLimits.Standard) return BadRequest($"File size exceeds maximum file size of {FileSizeLimits.Standard} bytes.");
-
-        try
-        {
-            var profile = await profileCloudService.UploadProfileAsync(file.OpenReadStream(), file.FileName, null, false, file.ContentType, boreholeId).ConfigureAwait(false);
-            return Ok(profile);
-        }
-        catch (Exception ex)
-        {
-            logger.LogError(ex, "An error occurred while uploading the profile.");
-            return Problem("An error occurred while uploading the profile.");
-        }
-    }
-
-    /// <summary>
     /// Downloads the file pointed to by the <see cref="Profile"/> with id <paramref name="profileId"/>.
     /// </summary>
     /// <param name="profileId">The <see cref="Profile.Id"/> of the profile to download.</param>
@@ -214,8 +185,14 @@ public class ProfileController : ControllerBase
             // Check if associated borehole is locked or user has permissions
             if (!await boreholePermissionService.CanEditBoreholeAsync(HttpContext.GetUserSubjectId(), profile.BoreholeId).ConfigureAwait(false)) return Unauthorized();
 
-            // Attempt S3 delete first; if it succeeds, removing the DB row leaves nothing dangling.
-            await profileCloudService.DeleteObject(profile.NameUuid).ConfigureAwait(false);
+            // An import writes the row before the upload arrives, so a profile may point at no
+            // object. There is then nothing in the bucket to remove.
+            if (profile.NameUuid is not null)
+            {
+                // Attempt S3 delete first; if it succeeds, removing the DB row leaves nothing dangling.
+                await profileCloudService.DeleteObject(profile.NameUuid).ConfigureAwait(false);
+            }
+
             context.Profiles.Remove(profile);
             await context.SaveChangesAsync().ConfigureAwait(false);
 

@@ -67,7 +67,11 @@ public class LogFileCloudService : CloudServiceBase
     /// <param name="contentType">The content type the object was stored with.</param>
     /// <param name="objectName">The key the object is stored under.</param>
     /// <param name="logRunId">The <see cref="LogRun.Id"/> to link the file to.</param>
-    /// <param name="cancellationToken">Aborts the write.</param>
+    /// <param name="cancellationToken">
+    /// Aborts the checks that precede the write. The write itself deliberately opts out of it: the
+    /// file is already in the cloud storage by the time we commit, so aborting would orphan the
+    /// object, and a cancelled commit leaves the outcome unknown.
+    /// </param>
     /// <returns>The created <see cref="LogFile"/> entity.</returns>
     /// <exception cref="InvalidOperationException">The log run does not exist.</exception>
     /// <exception cref="LogFileNameTakenException">The log run already holds that name.</exception>
@@ -98,29 +102,13 @@ public class LogFileCloudService : CloudServiceBase
             Public = false,
         };
 
-        var entityEntry = await context.LogFiles.AddAsync(logFile, cancellationToken).ConfigureAwait(false);
-        await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!, cancellationToken).ConfigureAwait(false);
+        var entityEntry = await context.LogFiles.AddAsync(logFile, CancellationToken.None).ConfigureAwait(false);
+
+        // The request token reaches the checks above and stops there. A client that gives up while
+        // the commit is in flight would otherwise cancel it with the outcome unknown, and the
+        // caller answers a failed completion by removing the object the row may now point at.
+        await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!, CancellationToken.None).ConfigureAwait(false);
 
         return entityEntry.Entity;
-    }
-
-    /// <summary>
-    /// Removes an object no log file row points at, either because the row was never written or
-    /// because it was moved to another object, letting the failure that caused it travel on. A
-    /// cleanup that fails must not replace that failure: only while it is intact can the caller
-    /// tell a client that gave up from an upload that broke. The object is left in the bucket
-    /// instead, which is what the log records.
-    /// </summary>
-    /// <param name="objectName">The name of the stored object to remove.</param>
-    internal async Task DeleteOrphanedObject(string objectName)
-    {
-        try
-        {
-            await DeleteObject(objectName).ConfigureAwait(false);
-        }
-        catch (Exception ex)
-        {
-            Logger.LogError(ex, "Failed to remove the object <{ObjectName}> stored for a log file row that was never written. It stays in the bucket.", objectName);
-        }
     }
 }

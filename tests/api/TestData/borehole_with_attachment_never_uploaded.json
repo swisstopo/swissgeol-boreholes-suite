@@ -1,0 +1,19 @@
+[
+  {
+    "originalName": "NEVERUPLOADEDREPORT",
+    "name": "NEVERUPLOADEDREPORT",
+    "locationX": 2739000,
+    "locationY": 1291100,
+    "originalReferenceSystemId": 20104002,
+    "observations": [],
+    "profiles": [
+      {
+        "name": "never_uploaded.pdf",
+        "nameUuid": null,
+        "type": "application/pdf",
+        "description": "The upload never arrived at the exporting system either",
+        "public": true
+      }
+    ]
+  }
+]

@@ -6,7 +6,14 @@ import { defaultHrsId, referenceSystems } from "../pages/detail/form/location/co
 import { SessionKeys } from "../pages/overview/SessionKey.ts";
 import { download, downloadData } from "./download.ts";
 import { fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "./fetchApiV2.ts";
-import { Borehole, BoreholeBulkUpdate, BoreholeBulkUpdateRequest, BoreholeCodelist, Codelist } from "./generated";
+import {
+  Borehole,
+  BoreholeBulkUpdate,
+  BoreholeBulkUpdateRequest,
+  BoreholeCodelist,
+  BoreholeImportResult,
+  Codelist,
+} from "./generated";
 import { TransferOptions } from "./transferProgress.ts";
 import { NullableDateString } from "./unionTypes.ts";
 import { useCurrentUser } from "./user.ts";
@@ -32,12 +39,45 @@ export const importBoreholesCsv = async (workgroupId: number | null, combinedFor
   return await upload(`import/csv?workgroupId=${workgroupId}`, "POST", combinedFormData);
 };
 
-export const importBoreholesJson = async (workgroupId: number | null, combinedFormData: FormData) => {
-  return await upload(`import/json?workgroupId=${workgroupId}`, "POST", combinedFormData);
-};
+/**
+ * An import the server refused, carrying its answer.
+ *
+ * What a refused import says is the list of rows and fields the user has to correct, which no
+ * single message holds, so the answer is passed on whole rather than flattened here.
+ */
+export class BoreholeImportError extends Error {
+  readonly response: Response;
 
-export const importBoreholesZip = async (workgroupId: number | null, combinedFormData: FormData) => {
-  return await upload(`import/zip?workgroupId=${workgroupId}`, "POST", combinedFormData);
+  constructor(response: Response) {
+    super(`The import was refused with status ${response.status}.`);
+    this.name = "BoreholeImportError";
+    this.response = response;
+    Object.setPrototypeOf(this, BoreholeImportError.prototype);
+  }
+}
+
+/**
+ * Imports the boreholes a JSON file describes.
+ * @param workgroupId The workgroup the boreholes are imported into.
+ * @param combinedFormData The JSON file, under `boreholesFile`.
+ * @param importAttachments Whether the caller holds the attachments the JSON names and will upload
+ * them itself. The server writes a row per attachment when it does, and drops the profiles when it
+ * does not, because nothing would ever arrive to fill them.
+ * @returns What was imported, and the rows still waiting for a file.
+ * @throws {BoreholeImportError} If the server refused the import.
+ */
+export const importBoreholesJson = async (
+  workgroupId: number | null,
+  combinedFormData: FormData,
+  importAttachments = false,
+): Promise<BoreholeImportResult> => {
+  const response = await upload(
+    `import/json?workgroupId=${workgroupId}&importAttachments=${importAttachments}`,
+    "POST",
+    combinedFormData,
+  );
+  if (!response.ok) throw new BoreholeImportError(response);
+  return await response.json();
 };
 
 const createBorehole = async (workgroupId: number): Promise<Borehole> => {

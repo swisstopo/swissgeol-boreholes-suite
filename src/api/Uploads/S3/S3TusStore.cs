@@ -7,15 +7,18 @@ using tusdotnet.Stores.S3;
 namespace BDMS.Uploads.S3;
 
 /// <summary>
-/// The tus store the log file upload writes through.
+/// The tus store an upload writes through.
 ///
 /// The work is done by <see cref="TusS3Store"/>, which writes each arriving chunk into a multipart
 /// upload rather than assembling the file, so the request that receives the last chunk finishes an
-/// upload whose parts are already stored. What this adds is what the endpoint needs and the package
+/// upload whose parts are already stored. What this adds is what the endpoints need and the package
 /// does not offer: the key the finished object took, a way to let go of an upload without touching
-/// that object, and an object for an upload that carries no bytes.
+/// that object, which terminating a finished upload goes through as well, and an object for an
+/// upload that carries no bytes.
+///
+/// One instance serves one bucket, so a feature that stores elsewhere gets its own.
 /// </summary>
-public class LogFileTusStore : ITusPipelineStore, ITusCreationStore, ITusReadableStore, ITusTerminationStore, ITusExpirationStore
+public class S3TusStore : ITusPipelineStore, ITusCreationStore, ITusReadableStore, ITusTerminationStore, ITusExpirationStore
 {
     /// <summary>
     /// How much of the file the client sends in one request. The client is told this value by
@@ -49,23 +52,31 @@ public class LogFileTusStore : ITusPipelineStore, ITusCreationStore, ITusReadabl
     private readonly TusS3Store store;
     private readonly IAmazonS3 s3Client;
     private readonly TusS3StoreConfiguration configuration;
+    private readonly ILogger<S3TusStore> logger;
 
     /// <summary>
-    /// Initializes a new instance of the <see cref="LogFileTusStore"/> class.
+    /// Initializes a new instance of the <see cref="S3TusStore"/> class.
     /// </summary>
-    public LogFileTusStore(ILoggerFactory loggerFactory, IAmazonS3 s3Client, TusS3StoreConfiguration configuration)
+    public S3TusStore(ILoggerFactory loggerFactory, IAmazonS3 s3Client, TusS3StoreConfiguration configuration)
     {
         this.s3Client = s3Client;
         this.configuration = configuration;
+        logger = loggerFactory.CreateLogger<S3TusStore>();
 
-        store = new TusS3Store(loggerFactory.CreateLogger<TusS3Store>(), configuration, s3Client, new LogFileTusIdProvider());
+        store = new TusS3Store(loggerFactory.CreateLogger<TusS3Store>(), configuration, s3Client, new TusObjectIdProvider());
     }
 
     /// <summary>
-    /// The settings the log file upload runs the package with, kept here so that the reasons for
-    /// them stay next to the behaviour they protect.
+    /// Gets the bucket this store writes to, so that what a sweep of several of them reports says
+    /// which one it is about.
     /// </summary>
-    /// <param name="bucketName">The bucket the log files live in.</param>
+    public string BucketName => configuration.BucketName;
+
+    /// <summary>
+    /// The settings an upload runs the package with, kept here so that the reasons for them stay
+    /// next to the behaviour they protect.
+    /// </summary>
+    /// <param name="bucketName">The bucket the objects live in.</param>
     /// <returns>The configuration.</returns>
     public static TusS3StoreConfiguration CreateConfiguration(string bucketName) => new()
     {
@@ -149,9 +160,27 @@ public class LogFileTusStore : ITusPipelineStore, ITusCreationStore, ITusReadabl
     }
 
     /// <inheritdoc/>
+    /// <remarks>
+    /// Only an unfinished upload is removed the way the package removes one. A finished upload is
+    /// let go of without its object: once an upload is whole, its completion either hands the object
+    /// to a row or removes it because no row took it, so the object is no longer the upload's to
+    /// remove. Such an upload is still there to be terminated when the completion could not drop the
+    /// record of it, and the removal of the package would then take the object a row points at along
+    /// with it. An upload whose record is already gone was let go of or removed while this was on
+    /// its way, so all that is released for it is parts nothing refers to.
+    /// </remarks>
     public async Task DeleteFileAsync(string fileId, CancellationToken cancellationToken)
     {
         await AbortMultipartUploadAsync(fileId, cancellationToken).ConfigureAwait(false);
+
+        if (!await store.FileExistAsync(fileId, cancellationToken).ConfigureAwait(false)) return;
+
+        if (await IsFinishedAsync(fileId, cancellationToken).ConfigureAwait(false))
+        {
+            await ForgetAsync(fileId, cancellationToken).ConfigureAwait(false);
+            return;
+        }
+
         await store.DeleteFileAsync(fileId, cancellationToken).ConfigureAwait(false);
     }
 
@@ -164,7 +193,7 @@ public class LogFileTusStore : ITusPipelineStore, ITusCreationStore, ITusReadabl
 
     /// <summary>
     /// Drops what the store keeps about an upload without touching the object it produced. Used
-    /// once the object belongs to a log file and the upload it came from no longer matters.
+    /// once a row points at the object and the upload it came from no longer matters.
     /// </summary>
     /// <param name="fileId">The id of the upload.</param>
     /// <param name="cancellationToken">Aborts the removal.</param>
@@ -173,6 +202,63 @@ public class LogFileTusStore : ITusPipelineStore, ITusCreationStore, ITusReadabl
         await s3Client
             .DeleteObjectAsync(configuration.BucketName, configuration.UploadInfoObjectPrefix + fileId, cancellationToken)
             .ConfigureAwait(false);
+    }
+
+    /// <summary>
+    /// Drops what the store keeps about a finished upload where nothing may fail any more: once a
+    /// row points at its object, or while a failure is being cleaned up after, letting that failure
+    /// travel on. A cleanup that fails must not replace it: only while it is intact does a refusal
+    /// the user can act on reach them as one rather than as a bare server error.
+    ///
+    /// What is left behind is the small record of the upload, which the log records. The sweep
+    /// passes a finished upload over, so the record stays, and terminating the upload it describes
+    /// leaves the object alone.
+    /// </summary>
+    /// <param name="fileId">The id of the upload.</param>
+    public async Task ForgetQuietlyAsync(string fileId)
+    {
+        try
+        {
+            await ForgetAsync(fileId, CancellationToken.None).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to drop what the store keeps about the upload <{FileId}>. The record stays behind.", fileId);
+        }
+    }
+
+    /// <summary>
+    /// Removes an object no row points at, either because the row was never written or because it
+    /// was moved to another object, letting the failure that caused it travel on. A cleanup that
+    /// fails must not replace that failure: only while it is intact can the caller tell a client
+    /// that gave up from an upload that broke. The object is left in the bucket instead, which is
+    /// what the log records.
+    /// </summary>
+    /// <param name="objectKey">The key of the stored object to remove.</param>
+    public async Task DeleteOrphanedObjectAsync(string objectKey)
+    {
+        try
+        {
+            await s3Client.DeleteObjectAsync(configuration.BucketName, objectKey, CancellationToken.None).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            logger.LogError(ex, "Failed to remove the orphaned object <{ObjectKey}>. It stays in the bucket.", objectKey);
+        }
+    }
+
+    /// <summary>
+    /// Whether every byte the upload announced has arrived, which is when its object exists.
+    /// </summary>
+    /// <param name="fileId">The id of the upload.</param>
+    /// <param name="cancellationToken">Aborts the lookup.</param>
+    /// <returns><see langword="true"/> if the upload is finished; otherwise, <see langword="false"/>.</returns>
+    private async Task<bool> IsFinishedAsync(string fileId, CancellationToken cancellationToken)
+    {
+        var uploadLength = await store.GetUploadLengthAsync(fileId, cancellationToken).ConfigureAwait(false);
+        if (uploadLength is not long length) return false;
+
+        return await store.GetUploadOffsetAsync(fileId, cancellationToken).ConfigureAwait(false) == length;
     }
 
     /// <summary>

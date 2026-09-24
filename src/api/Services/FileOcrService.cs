@@ -47,6 +47,15 @@ public class FileOcrService
             return;
         }
 
+        // An import writes the row before the upload arrives, so there is no object to OCR yet.
+        // The status is left as it stands rather than marked failed, because the upload that fills
+        // the row sets it again and starts the run from there.
+        if (profile.NameUuid is null)
+        {
+            logger.LogInformation("OCR skipped for profile {ProfileId} because it is still waiting for its file.", profile.Id);
+            return;
+        }
+
         try
         {
             await UpdateStatusAsync(profile, OcrStatus.Processing, cancellationToken).ConfigureAwait(false);

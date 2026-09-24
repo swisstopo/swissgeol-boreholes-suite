@@ -152,6 +152,31 @@ public abstract class CloudServiceBase
     }
 
     /// <summary>
+    /// Removes an object nothing points at any more, letting whatever follows carry on. A cleanup
+    /// that fails must not replace the outcome it follows: the work it tidies up after is already
+    /// done and committed, so there is nothing left to undo and a thrown failure would report a
+    /// finished piece of work as broken. The object is left in the bucket instead, which is what
+    /// the log records.
+    ///
+    /// Every failure is absorbed, not only the ones S3 answers with. An endpoint that cannot be
+    /// reached, a name that does not resolve and a refused connection all surface from inside the
+    /// SDK as something other than an <see cref="AmazonS3Exception"/>, and those are the outages
+    /// this exists for.
+    /// </summary>
+    /// <param name="objectName">The name of the file in the bucket to remove.</param>
+    protected async Task DeleteOrphanedObject(string objectName)
+    {
+        try
+        {
+            await DeleteObject(objectName).ConfigureAwait(false);
+        }
+        catch (Exception ex)
+        {
+            Logger.LogError(ex, "Failed to remove the orphaned object <{ObjectName}>. It stays in the bucket.", objectName);
+        }
+    }
+
+    /// <summary>
     /// Deletes files from the cloud storage.
     /// </summary>
     /// <param name="objectNames">The names of the files in the bucket to delete.</param>

@@ -7,7 +7,7 @@ import { boreholeQueryKey } from "../../../../api/borehole.ts";
 import { downloadPost } from "../../../../api/download.ts";
 import { ApiError } from "../../../../api/errorClasses.ts";
 import { fetchApiV2WithApiError, isJsonContentType, upload } from "../../../../api/fetchApiV2.ts";
-import { uploadResumable } from "../../../../api/resumableUpload.ts";
+import { logFileUploadTarget, uploadResumable } from "../../../../api/resumableUpload.ts";
 import { TransferOptions } from "../../../../api/transferProgress.ts";
 import { ExportItem } from "../../../../components/export/exportDialog.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
@@ -39,7 +39,7 @@ const uploadLogFileBlob = (
   const metadata: Record<string, string> = { logRunId: String(logRunId) };
   if (logFileId) metadata.logFileId = String(logFileId);
 
-  return uploadResumable(file, metadata, options);
+  return uploadResumable(file, logFileUploadTarget, metadata, options);
 };
 
 export type LogFileUploadProgressCallback = (progress: LogFileUploadProgress) => void;

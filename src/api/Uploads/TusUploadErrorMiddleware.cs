@@ -33,9 +33,11 @@ public class TusUploadErrorMiddleware
         {
             await next(context).ConfigureAwait(false);
         }
-        catch (LogFileNameTakenException ex)
+        catch (UploadRefusedException ex)
         {
-            logger.LogError(ex, "A log file upload was refused.");
+            logger.LogError(ex, "An upload was refused.");
+
+            var extensions = new Dictionary<string, object?>(ex.Extensions) { ["messageKey"] = ex.MessageKey };
 
             // A client error rather than a server one, because the upload client retries a
             // request that failed with a server error and this one fails the same way every time.
@@ -44,11 +46,7 @@ public class TusUploadErrorMiddleware
                     detail: ex.Message,
                     statusCode: (int)HttpStatusCode.BadRequest,
                     type: ProblemType.UserError,
-                    extensions: new Dictionary<string, object?>
-                    {
-                        ["messageKey"] = LogFileNameTakenException.MessageKey,
-                        ["fileName"] = ex.FileName,
-                    })
+                    extensions: extensions)
                 .ExecuteAsync(context)
                 .ConfigureAwait(false);
         }

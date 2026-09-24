@@ -337,13 +337,17 @@ public class BoreholeExportController : ControllerBase
                 new ZipEntrySource($"{fileName}.json", _ => Task.FromResult<Stream>(new MemoryStream(jsonBytes))),
             };
 
+            // A profile whose upload never arrived has nothing to contribute to the archive, and
+            // probing a null key would fail the export over a file that was never there.
+            var storedProfiles = profiles.Where(p => p.NameUuid != null).ToList();
+
             // The archive is streamed, so the status code is committed as soon as the first byte
             // reaches the response body. Probe every object up front, while returning a problem
             // response is still possible.
-            var probes = await Task.WhenAll(profiles.Select(async profile => new
+            var probes = await Task.WhenAll(storedProfiles.Select(async profile => new
             {
                 Profile = profile,
-                Exists = await profileCloudService.ObjectExists(profile.NameUuid, cancellationToken).ConfigureAwait(false),
+                Exists = await profileCloudService.ObjectExists(profile.NameUuid!, cancellationToken).ConfigureAwait(false),
             })).ConfigureAwait(false);
 
             var missingFileNames = probes.Where(probe => !probe.Exists).Select(probe => probe.Profile.Name).ToList();
@@ -353,15 +357,12 @@ public class BoreholeExportController : ControllerBase
                 return Problem("An error occurred while fetching a file from the cloud storage.");
             }
 
-            foreach (var profile in profiles)
+            foreach (var profile in storedProfiles)
             {
-                var nameUuid = profile.NameUuid;
-
-                // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name.
-                // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the original file name.
+                var objectKey = profile.NameUuid!;
                 entries.Add(new ZipEntrySource(
-                    $"{nameUuid}_{FileHelper.SanitizeZipEntryFileName(profile.Name, "export")}",
-                    entryCancellationToken => profileCloudService.GetObjectStream(nameUuid, entryCancellationToken)));
+                    FileHelper.BuildAttachmentZipEntryName(objectKey, profile.Name),
+                    entryCancellationToken => profileCloudService.GetObjectStream(objectKey, entryCancellationToken)));
             }
 
             return new StreamedZipResult($"{fileName}.zip", entries, logger);

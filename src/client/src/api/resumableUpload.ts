@@ -5,10 +5,107 @@ import { isUserErrorProblem, toUserError } from "./errorClasses.ts";
 import { getChunkSize } from "./fileSize.ts";
 import { TransferOptions } from "./transferProgress.ts";
 
-const uploadEndpoint = "/api/v2/log/upload/tus";
+/** Where a resumable upload is sent, and where its answer carries the id it stored. */
+export interface ResumableUploadTarget {
+  endpoint: string;
+  resultHeader: string;
+}
 
-/** The response header carrying the id of the log file the server stored. */
-const logFileIdHeader = "Log-File-Id";
+export const logFileUploadTarget: ResumableUploadTarget = {
+  endpoint: "/api/v2/log/upload/tus",
+  resultHeader: "Log-File-Id",
+};
+
+export const profileUploadTarget: ResumableUploadTarget = {
+  endpoint: "/api/v2/profile/upload/tus",
+  resultHeader: "Profile-Id",
+};
+
+/**
+ * A file that is not held in memory, such as one entry of an archive the user picked.
+ *
+ * `open` hands back both ends of the transfer: the stream the upload reads, and `written`, which
+ * follows whatever fills it. The caller of `uploadResumable` never sees the second one, because
+ * the upload waits for it before settling, so that an entry which never made it is not reported as
+ * one that did. Whether it fulfils or rejects makes no difference; a failed writer belongs to an
+ * upload that has already failed.
+ *
+ * An implementation has to hold to one thing: **`written` settles once the stream is cancelled**,
+ * and not only once the bytes have all been written. Every upload cancels the stream and then
+ * waits, however it ended, so a writer parked on anything the cancellation does not release
+ * leaves that upload waiting for good. That holds for one that finished too, which read only as
+ * many bytes as the source announced and left a source that holds more still writing.
+ */
+export interface UploadSource {
+  open: () => { stream: ReadableStream<Uint8Array>; written: Promise<unknown> };
+  size: number;
+  fileName: string;
+  contentType: string;
+}
+
+const isUploadSource = (source: File | UploadSource): source is UploadSource => "open" in source;
+
+/**
+ * A source as the upload client works with it, whichever shape it arrived in.
+ *
+ * Nothing fills a file, so for one there is no writer to wait for, nothing to let go of, and no
+ * size to pass on: it carries its own.
+ */
+interface OpenedSource {
+  /** What the upload client reads the bytes from. */
+  body: File | Pick<ReadableStreamDefaultReader<Uint8Array>, "read">;
+
+  /**
+   * Settles once whatever fills the source is done, whether it finished or failed.
+   *
+   * A failure is already taken, so this can be waited on as it is and never rejects.
+   */
+  written: Promise<unknown>;
+
+  /** Lets go of the source, so that whatever fills it is not left writing into it. */
+  release: () => void;
+
+  fileName: string;
+  contentType: string;
+
+  /** The size the upload client has to be told, because a stream cannot be asked for it. */
+  uploadSize?: number;
+}
+
+const openSource = (source: File | UploadSource): OpenedSource => {
+  if (!isUploadSource(source)) {
+    return {
+      body: source,
+      written: Promise.resolve(),
+      release: () => {},
+      fileName: source.name,
+      contentType: source.type || "application/octet-stream",
+    };
+  }
+
+  const { stream, written } = source.open();
+  const reader = stream.getReader();
+
+  return {
+    // The upload client is handed something it can only read from, not the reader itself. It
+    // closes its source the moment an upload succeeds, and it closes it by cancelling whatever it
+    // was given, which would cut the writer off before it has been waited for. Cancelling is the
+    // helper's alone, on every path.
+    body: { read: () => reader.read() },
+
+    // The failure is taken the moment the source is opened rather than where it is waited for.
+    // A source can fail of its own accord, on an archive the user moved away or an entry that
+    // does not read back as it was stored, while the upload client reports nothing until its
+    // retries are spent. Between the two there would otherwise be a rejection nobody had claimed.
+    written: written.catch(() => undefined),
+    release: () => {
+      reader.cancel().catch(() => undefined);
+    },
+    fileName: source.fileName,
+    contentType: source.contentType,
+    uploadSize: source.size,
+  };
+};
 
 const abortError = () => new DOMException("The user aborted a request.", "AbortError");
 
@@ -41,15 +138,17 @@ const toApiError = (error: Error): Error => {
 
 /**
  * Uploads a file in chunks, so no single request is long enough to be cut off.
- * @param file The file to upload.
+ * @param source The file to upload, either held in memory or streamed from somewhere else.
+ * @param target Where to send it, and which header carries the id of what was stored.
  * @param metadata What the file is for, read by the server from the upload metadata.
  * @param options Progress reporting and cancellation.
- * @returns The id of the log file the server stored.
+ * @returns The id of the row the server stored it as.
  * @throws {ApiError} If the server refused the upload for a reason the user can act on.
  * @throws {DOMException} Named `AbortError` if the signal is aborted.
  */
 export function uploadResumable(
-  file: File,
+  source: File | UploadSource,
+  target: ResumableUploadTarget,
   metadata: Record<string, string>,
   { onProgress, signal }: TransferOptions = {},
 ): Promise<number> {
@@ -59,14 +158,34 @@ export function uploadResumable(
       return;
     }
 
-    const upload = new Upload(file, {
-      endpoint: uploadEndpoint,
+    const opened = openSource(source);
+
+    // Whatever fills the source is waited for before an upload settles, so that an entry which
+    // never made it is not reported as one that did. Its failure belongs to an upload that has
+    // already been judged, and was taken when the source was opened.
+    //
+    // The source is let go of first, on every path. An upload that stops short leaves it open so
+    // that it could be resumed later, and nothing here resumes one. An upload that finished reads
+    // only as many bytes as the source announced and never reads on to the end, so a source that
+    // holds more than that is still writing. Either way a stream nobody reads any more leaves its
+    // writer waiting for good.
+    const releaseWriter = (): Promise<unknown> => {
+      opened.release();
+      return opened.written;
+    };
+
+    const upload = new Upload(opened.body, {
+      endpoint: target.endpoint,
       chunkSize: getChunkSize(),
+
+      // A stream cannot be asked how long it is, so its size travels beside it. A file carries
+      // its own, and the size left out for one reads the same as it not being passed at all.
+      uploadSize: opened.uploadSize,
 
       // A chunk that fails is retried within the upload it belongs to. Nothing picks an upload
       // back up in a later session, so the fingerprints kept for that would only accumulate.
       storeFingerprintForResuming: false,
-      metadata: { ...metadata, filename: file.name, contentType: file.type || "application/octet-stream" },
+      metadata: { ...metadata, filename: opened.fileName, contentType: opened.contentType },
 
       // The token is read per request rather than once, because a large file on a slow
       // connection takes longer to send than the token it started with stays valid, and a chunk
@@ -80,19 +199,22 @@ export function uploadResumable(
       onProgress: (loaded, total) => onProgress?.({ loaded, total }),
       onError: error => {
         stopListeningForAbort();
-        reject(toApiError(error));
+        void releaseWriter().then(() => reject(toApiError(error)));
       },
       onSuccess: ({ lastResponse }) => {
         stopListeningForAbort();
 
         // A missing header reads as NaN and an empty one as zero, neither of which is an id.
-        const logFileId = Number(lastResponse.getHeader(logFileIdHeader));
-        if (!Number.isInteger(logFileId) || logFileId <= 0) {
-          reject(new Error("The server did not report which log file it stored."));
-          return;
-        }
+        const storedId = Number(lastResponse.getHeader(target.resultHeader));
 
-        resolve(logFileId);
+        void releaseWriter().then(() => {
+          if (!Number.isInteger(storedId) || storedId <= 0) {
+            reject(new Error("The server did not report what it stored."));
+            return;
+          }
+
+          resolve(storedId);
+        });
       },
     });
 
@@ -101,7 +223,7 @@ export function uploadResumable(
     // already given up, and the chunks left behind are swept once they expire.
     const abort = () => {
       upload.abort(true).catch(() => {});
-      reject(abortError());
+      void releaseWriter().then(() => reject(abortError()));
     };
     const stopListeningForAbort = () => signal?.removeEventListener("abort", abort);
     signal?.addEventListener("abort", abort, { once: true });

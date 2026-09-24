@@ -1,6 +1,9 @@
-﻿using Amazon.S3;
+﻿using Amazon.Runtime;
+using Amazon.S3;
 using Amazon.S3.Model;
+using BDMS.Models;
 using Microsoft.AspNetCore.Http;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
@@ -238,5 +241,204 @@ public class ProfileCloudServiceTest
 
         var profileCountAfter = context.Profiles.Count(p => p.BoreholeId == minBoreholeId);
         Assert.AreEqual(profileCountBefore, profileCountAfter, "S3-first ordering: a failed S3 upload must not leave a DB row.");
+    }
+
+    /// <summary>
+    /// The row a linked upload produces is eligible for OCR, exactly as the single request upload
+    /// makes it. The transport changed; what the file is did not.
+    /// </summary>
+    [TestMethod]
+    public async Task LinkingAPdfMarksItForOcr()
+    {
+        var borehole = await context.Boreholes.FirstAsync();
+
+        var profile = await profileCloudService.LinkUploadedProfileAsync("report.pdf", "application/pdf", "key.pdf", borehole.Id, null);
+
+        Assert.AreEqual(OcrStatus.Created, profile.OcrStatus);
+        Assert.AreEqual("key.pdf", profile.NameUuid);
+    }
+
+    /// <summary>
+    /// A file the OCR service cannot read is written with the status that keeps it away from OCR
+    /// for good, so the catch-up never picks it up.
+    /// </summary>
+    [TestMethod]
+    public async Task LinkingANonPdfKeepsItAwayFromOcr()
+    {
+        var borehole = await context.Boreholes.FirstAsync();
+
+        var profile = await profileCloudService.LinkUploadedProfileAsync("photo.png", "image/png", "key.png", borehole.Id, null);
+
+        Assert.AreEqual(OcrStatus.WillNotBeProcessed, profile.OcrStatus);
+        Assert.AreEqual("key.png", profile.NameUuid);
+    }
+
+    /// <summary>
+    /// Linking against a row an import wrote fills that row rather than adding a second one beside
+    /// it, which would leave the import's row waiting for a file forever.
+    /// </summary>
+    [TestMethod]
+    public async Task LinkingAgainstAnAwaitingRowFillsIt()
+    {
+        var borehole = await context.Boreholes.FirstAsync();
+        var awaiting = new Profile
+        {
+            BoreholeId = borehole.Id,
+            Name = "report.pdf",
+            NameUuid = null,
+            Type = "application/pdf",
+            OcrStatus = OcrStatus.WillNotBeProcessed,
+        };
+        context.Profiles.Add(awaiting);
+        await context.SaveChangesAsync();
+
+        var profile = await profileCloudService.LinkUploadedProfileAsync("report.pdf", "application/pdf", "key.pdf", borehole.Id, awaiting.Id);
+
+        Assert.AreEqual(awaiting.Id, profile.Id, "The row the import wrote is the one that was filled.");
+        Assert.AreEqual("key.pdf", profile.NameUuid);
+        Assert.AreEqual(OcrStatus.Created, profile.OcrStatus, "The file has arrived, so it is now eligible.");
+        Assert.AreEqual(1, await context.Profiles.CountAsync(p => p.BoreholeId == borehole.Id && p.Name == "report.pdf"));
+    }
+
+    /// <summary>
+    /// An upload is authorized against a borehole, so a row belonging to another borehole is out of
+    /// its reach even when the upload names that row's id.
+    /// </summary>
+    [TestMethod]
+    public async Task LinkingAgainstARowOfAnotherBoreholeIsRefused()
+    {
+        var boreholeIds = await context.Boreholes.Select(b => b.Id).OrderBy(id => id).Take(2).ToListAsync();
+        var foreign = new Profile
+        {
+            BoreholeId = boreholeIds[1],
+            Name = "foreign.pdf",
+            NameUuid = null,
+            Type = "application/pdf",
+            OcrStatus = OcrStatus.WillNotBeProcessed,
+        };
+        context.Profiles.Add(foreign);
+        await context.SaveChangesAsync();
+
+        await Assert.ThrowsExactlyAsync<InvalidOperationException>(() =>
+            profileCloudService.LinkUploadedProfileAsync("foreign.pdf", "application/pdf", "key.pdf", boreholeIds[0], foreign.Id));
+
+        var reloaded = await context.Profiles.SingleAsync(p => p.Id == foreign.Id);
+        Assert.IsNull(reloaded.NameUuid, "The row of the other borehole was left untouched.");
+    }
+
+    /// <summary>
+    /// Once the row points at the new object, nothing refers to the old one and its name is never
+    /// handed out again, so leaving it behind would keep it in the bucket for good.
+    /// </summary>
+    [TestMethod]
+    public async Task RelinkingARowRemovesTheObjectItPointedAt()
+    {
+        var borehole = await context.Boreholes.FirstAsync();
+        var replacedKey = $"{Guid.NewGuid()}.pdf";
+        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), replacedKey);
+        await profileCloudService.UploadObject(pdfFormFile.OpenReadStream(), replacedKey, pdfFormFile.ContentType);
+
+        var existing = new Profile
+        {
+            BoreholeId = borehole.Id,
+            Name = "report.pdf",
+            NameUuid = replacedKey,
+            Type = "application/pdf",
+            OcrStatus = OcrStatus.Success,
+        };
+        context.Profiles.Add(existing);
+        await context.SaveChangesAsync();
+
+        var newKey = $"{Guid.NewGuid()}.pdf";
+        var profile = await profileCloudService.LinkUploadedProfileAsync("report.pdf", "application/pdf", newKey, borehole.Id, existing.Id);
+
+        Assert.AreEqual(newKey, profile.NameUuid);
+        Assert.IsFalse(await profileCloudService.ObjectExists(replacedKey), "The object the row no longer points at was removed.");
+    }
+
+    /// <summary>
+    /// S3 answered the delete with an error.
+    /// </summary>
+    [TestMethod]
+    public async Task RelinkingSurvivesAFailureToRemoveTheOldObject() =>
+        await AssertRelinkingSurvivesCleanupFailure(new AmazonS3Exception("simulated S3 outage"));
+
+    /// <summary>
+    /// The SDK gave up before S3 answered at all, which is what an unreachable endpoint, a name
+    /// that does not resolve or a refused connection look like. None of them is an
+    /// <see cref="AmazonS3Exception"/>, so a cleanup that covered only that type would let the very
+    /// outages it is meant to absorb unwind a finished upload.
+    /// </summary>
+    [TestMethod]
+    public async Task RelinkingSurvivesAFailureInsideTheS3Client() =>
+        await AssertRelinkingSurvivesCleanupFailure(new AmazonClientException("simulated unreachable endpoint"));
+
+    /// <summary>
+    /// The object is stored and the row points at it before the old object is removed, so a
+    /// failure to remove it has nothing left to undo. Letting it travel on would unwind a finished
+    /// upload: the tus endpoint answers a failed completion by deleting the object it just stored,
+    /// which the committed row already names, leaving a profile eligible for OCR with no file to
+    /// read and no way back out of the terminal error that follows.
+    /// </summary>
+    /// <param name="cleanupFailure">What removing the replaced object fails with.</param>
+    private async Task AssertRelinkingSurvivesCleanupFailure(Exception cleanupFailure)
+    {
+        var failingS3Mock = new Mock<IAmazonS3>();
+        failingS3Mock
+            .Setup(s => s.DeleteObjectAsync(It.IsAny<DeleteObjectRequest>(), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(cleanupFailure);
+
+        var configuration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+        var contextAccessorMock = new Mock<IHttpContextAccessor>();
+        contextAccessorMock.Setup(x => x.HttpContext).Returns(new DefaultHttpContext());
+        contextAccessorMock.Object.HttpContext.User = new ClaimsPrincipal(new ClaimsIdentity(new[] { new Claim(ClaimTypes.NameIdentifier, adminUser.SubjectId) }));
+
+        var failingService = new ProfileCloudService(context, configuration, Mock.Of<ILogger<ProfileCloudService>>(), contextAccessorMock.Object, failingS3Mock.Object, Mock.Of<IServiceScopeFactory>(), Mock.Of<IHostApplicationLifetime>());
+
+        var borehole = await context.Boreholes.FirstAsync();
+        var existing = new Profile
+        {
+            BoreholeId = borehole.Id,
+            Name = "report.pdf",
+            NameUuid = "replaced.pdf",
+            Type = "application/pdf",
+            OcrStatus = OcrStatus.Success,
+        };
+        context.Profiles.Add(existing);
+        await context.SaveChangesAsync();
+
+        var profile = await failingService.LinkUploadedProfileAsync("report.pdf", "application/pdf", "key.pdf", borehole.Id, existing.Id);
+
+        Assert.AreEqual("key.pdf", profile.NameUuid, "The row points at the object that was stored.");
+        Assert.AreEqual(OcrStatus.Created, profile.OcrStatus, "The file has arrived, so it is eligible whatever the cleanup did.");
+    }
+
+    /// <summary>
+    /// A completion that runs twice names the key the row already holds. Removing it would leave
+    /// the row naming an object that is no longer there.
+    /// </summary>
+    [TestMethod]
+    public async Task RelinkingToTheSameObjectKeepsIt()
+    {
+        var borehole = await context.Boreholes.FirstAsync();
+        var objectKey = $"{Guid.NewGuid()}.pdf";
+        var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), objectKey);
+        await profileCloudService.UploadObject(pdfFormFile.OpenReadStream(), objectKey, pdfFormFile.ContentType);
+
+        var existing = new Profile
+        {
+            BoreholeId = borehole.Id,
+            Name = "report.pdf",
+            NameUuid = objectKey,
+            Type = "application/pdf",
+            OcrStatus = OcrStatus.Created,
+        };
+        context.Profiles.Add(existing);
+        await context.SaveChangesAsync();
+
+        var profile = await profileCloudService.LinkUploadedProfileAsync("report.pdf", "application/pdf", objectKey, borehole.Id, existing.Id);
+
+        Assert.AreEqual(objectKey, profile.NameUuid);
+        Assert.IsTrue(await profileCloudService.ObjectExists(objectKey), "The object the row still points at was kept.");
     }
 }

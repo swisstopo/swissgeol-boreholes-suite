@@ -19,7 +19,6 @@ using System.Net.Http.Headers;
 using System.Reflection;
 using System.Security.Claims;
 using System.Text.Json.Serialization;
-using tusdotnet;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -177,7 +176,7 @@ builder.Services.AddScoped<LogFileCloudService>();
 builder.Services.AddScoped<FileOcrService>();
 builder.Services.AddHostedService<FileOcrBackgroundService>();
 
-builder.Services.AddLogFileUploads(builder.Configuration);
+builder.Services.AddResumableUploads(builder.Configuration);
 builder.Services.AddHttpClient("OcrApi", (sp, client) =>
 {
     var config = sp.GetRequiredService<IConfiguration>();
@@ -225,7 +224,6 @@ builder.Services
     .LoadFromConfig(builder.Configuration.GetSection("ReverseProxy"));
 
 builder.Services.AddScoped<IBoreholePermissionService, BoreholePermissionService>();
-builder.Services.AddScoped<TusUploadConfiguration>();
 builder.Services.AddScoped<IFilterService, FilterService>();
 builder.Services.AddScoped<ILithologyTabContentService, LithologyTabContentService>();
 builder.Services.AddSingleton(TimeProvider.System);
@@ -287,16 +285,14 @@ else
 
 app.UseAuthorization();
 
-// Only the chunked upload raises the failure this converts, and wrapping it here keeps the
+// Only the chunked uploads raise the failure this converts, and wrapping them here keeps the
 // conversion out of every other request.
 app.UseWhen(
-    context => context.Request.Path.StartsWithSegments(TusUploadConfiguration.EndpointPath, StringComparison.OrdinalIgnoreCase),
+    context => UploadRoutes.Matches(context.Request.Path),
     branch => branch.UseMiddleware<TusUploadErrorMiddleware>());
 
 app.MapControllers();
-app.MapTus(TusUploadConfiguration.EndpointPath, httpContext =>
-    httpContext.RequestServices.GetRequiredService<TusUploadConfiguration>().CreateAsync(httpContext))
-    .RequireAuthorization(PolicyNames.Viewer);
+app.MapResumableUploads();
 app.MapReverseProxy();
 app.MapHealthChecks("/health").AllowAnonymous();
 

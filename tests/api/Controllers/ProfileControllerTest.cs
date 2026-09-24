@@ -81,35 +81,6 @@ public class ProfileControllerTest
     public async Task TestCleanup() => await context.DisposeAsync();
 
     [TestMethod]
-    public async Task UploadAndDownload()
-    {
-        var fileName = $"{Guid.NewGuid()}.pdf";
-        var minBoreholeId = context.Boreholes.Min(b => b.Id);
-        var content = Guid.NewGuid().ToString();
-        var firstPdfFormFile = GetFormFileByContent(content, fileName);
-
-        // Upload
-        var response = await controller.Upload(firstPdfFormFile, minBoreholeId);
-        ActionResultAssert.IsOk(response);
-
-        // Get uploaded profile from db
-        var profile = context.Profiles.Single(p => p.Name == fileName);
-
-        // Download uploaded file
-        response = await controller.Download(profile.Id, CancellationToken.None);
-
-        var fileStreamResult = (FileStreamResult)response;
-        using var downloadReader = new StreamReader(fileStreamResult.FileStream);
-        Assert.AreEqual(content, await downloadReader.ReadToEndAsync());
-
-        // Verify audit columns
-        Assert.AreEqual(DateTime.UtcNow.Date, profile.Created?.Date);
-        Assert.AreEqual(adminUser.Id, profile.CreatedById);
-        Assert.AreEqual(DateTime.UtcNow.Date, profile.Updated?.Date);
-        Assert.AreEqual(adminUser.Id, profile.UpdatedById);
-    }
-
-    [TestMethod]
     public async Task DownloadFileShouldReturnDownloadedFileIfHasPermissions()
     {
         var fileName = $"{Guid.NewGuid()}.pdf";
@@ -118,7 +89,7 @@ public class ProfileControllerTest
         var firstPdfFormFile = GetFormFileByContent(content, fileName);
 
         // Upload
-        await controller.Upload(firstPdfFormFile, minBoreholeId);
+        await profileCloudService.UploadProfileAsync(firstPdfFormFile.OpenReadStream(), firstPdfFormFile.FileName, null, false, firstPdfFormFile.ContentType, minBoreholeId);
 
         // Get all profiles of borehole
         var profilesOfBorehole = await controller.GetAllOfBorehole(minBoreholeId);
@@ -154,8 +125,8 @@ public class ProfileControllerTest
         var firstPdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), firstFileName);
         var secondPdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), secondFileName);
 
-        await controller.Upload(firstPdfFormFile, minBoreholeId);
-        await controller.Upload(secondPdfFormFile, minBoreholeId);
+        await profileCloudService.UploadProfileAsync(firstPdfFormFile.OpenReadStream(), firstPdfFormFile.FileName, null, false, firstPdfFormFile.ContentType, minBoreholeId);
+        await profileCloudService.UploadProfileAsync(secondPdfFormFile.OpenReadStream(), secondPdfFormFile.FileName, null, false, secondPdfFormFile.ContentType, minBoreholeId);
 
         // Get profiles of borehole from controller
         var profilesOfBorehole = await controller.GetAllOfBorehole(minBoreholeId);
@@ -206,19 +177,6 @@ public class ProfileControllerTest
     }
 
     [TestMethod]
-    public async Task UploadNonPdfSetsWillNotBeProcessed()
-    {
-        var boreholeId = context.Boreholes.First().Id;
-        var textFile = GetFormFileByContent("hello", "notes.txt");
-
-        var uploadResult = await controller.Upload(textFile, boreholeId);
-        ActionResultAssert.IsOk(uploadResult);
-
-        var profile = (Profile)((OkObjectResult)uploadResult).Value!;
-        Assert.AreEqual(OcrStatus.WillNotBeProcessed, profile.OcrStatus);
-    }
-
-    [TestMethod]
     public async Task GetOcrStatusForBoreholeReturnsUnauthorizedWithInsufficientPermissions()
     {
         boreholePermissionServiceMock
@@ -244,13 +202,15 @@ public class ProfileControllerTest
         var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), File1);
 
         // Upload file for borehole
-        await controller.Upload(pdfFormFile, firstBoreholeId);
+        await profileCloudService.UploadProfileAsync(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, null, false, pdfFormFile.ContentType, firstBoreholeId);
 
         // Get latest profile in db
         var latestProfileInDb = context.Profiles.OrderBy(p => p.Id).Last();
+        var storedObjectKey = latestProfileInDb.NameUuid;
+        Assert.IsNotNull(storedObjectKey);
 
         // Ensure file exists in cloud storage
-        Assert.IsTrue(await profileCloudService.ObjectExists(latestProfileInDb.NameUuid));
+        Assert.IsTrue(await profileCloudService.ObjectExists(storedObjectKey));
 
         // Check counts after upload
         Assert.AreEqual(profilesCountBeforeUpload + 1, context.Profiles.Count());
@@ -264,7 +224,34 @@ public class ProfileControllerTest
         Assert.AreEqual(profilesForBoreholeBeforeUpload, context.Profiles.Where(p => p.BoreholeId == firstBoreholeId).Count());
 
         // Ensure file does not exist in cloud storage
-        Assert.IsFalse(await profileCloudService.ObjectExists(latestProfileInDb.NameUuid));
+        Assert.IsFalse(await profileCloudService.ObjectExists(storedObjectKey));
+    }
+
+    /// <summary>
+    /// An import writes a profile row before its upload arrives, so deleting one has no object to
+    /// remove. Reaching for the cloud storage with a null key would fail the delete and leave a row
+    /// the user asked to be rid of.
+    /// </summary>
+    [TestMethod]
+    public async Task DeleteProfileWithoutStoredObjectRemovesTheRow()
+    {
+        var boreholeId = context.Boreholes.First().Id;
+        var profile = new Profile
+        {
+            BoreholeId = boreholeId,
+            Name = "awaited.pdf",
+            NameUuid = null,
+            Type = "application/pdf",
+            OcrStatus = OcrStatus.WillNotBeProcessed,
+        };
+
+        context.Profiles.Add(profile);
+        await context.SaveChangesAsync();
+
+        var response = await controller.Delete(profile.Id);
+
+        ActionResultAssert.IsOk(response);
+        Assert.IsFalse(context.Profiles.Any(p => p.Id == profile.Id));
     }
 
     [TestMethod]
@@ -290,20 +277,6 @@ public class ProfileControllerTest
     }
 
     [TestMethod]
-    public async Task UploadWithFileToLargeShouldThrowError()
-    {
-        var minBoreholeId = context.Boreholes.Min(b => b.Id);
-
-        long targetSizeInBytes = 210 * 1024 * 1024; // 210MB
-        byte[] content = new byte[targetSizeInBytes];
-        var stream = new MemoryStream(content);
-
-        var formFile = new FormFile(stream, 0, stream.Length, "file", "dummy.txt");
-
-        await AssertIsBadRequestResponse(() => controller.Upload(formFile, minBoreholeId));
-    }
-
-    [TestMethod]
     public async Task GetAllOfBoreholeWithMissingBoreholeId()
     {
         var result = await controller.GetAllOfBorehole(0);
@@ -319,10 +292,11 @@ public class ProfileControllerTest
         var pdfFormFile = GetFormFileByContent(Guid.NewGuid().ToString(), File1);
 
         // Upload file for borehole
-        await controller.Upload(pdfFormFile, firstBoreholeId);
+        await profileCloudService.UploadProfileAsync(pdfFormFile.OpenReadStream(), pdfFormFile.FileName, null, false, pdfFormFile.ContentType, firstBoreholeId);
 
         // Get latest profile in db
         var latestProfileInDb = context.Profiles.OrderBy(p => p.Id).Last();
+        Assert.IsNotNull(latestProfileInDb.NameUuid);
 
         // Ensure file exists in cloud storage
         Assert.IsTrue(await profileCloudService.ObjectExists(latestProfileInDb.NameUuid));
@@ -372,9 +346,8 @@ public class ProfileControllerTest
         // Test setup
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
         var labelingFile = GetFormFileByExistingFile(LabelingAttachmentPdf);
-        var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
-        ActionResultAssert.IsOk(uploadResult);
-        var profile = (Profile)((OkObjectResult)uploadResult).Value!;
+        var profile = await profileCloudService.UploadProfileAsync(labelingFile.OpenReadStream(), labelingFile.FileName, null, false, labelingFile.ContentType, minBoreholeId);
+        Assert.IsNotNull(profile.NameUuid);
         var fileUuid = profile.NameUuid.Replace(".pdf", "");
 
         var image1 = GetFormFileByExistingFile("labeling_attachment-1.png");
@@ -405,9 +378,8 @@ public class ProfileControllerTest
         // Test setup
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
         var labelingFile = GetFormFileByExistingFile(LabelingAttachmentPdf);
-        var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
-        ActionResultAssert.IsOk(uploadResult);
-        var profile = (Profile)((OkObjectResult)uploadResult).Value!;
+        var profile = await profileCloudService.UploadProfileAsync(labelingFile.OpenReadStream(), labelingFile.FileName, null, false, labelingFile.ContentType, minBoreholeId);
+        Assert.IsNotNull(profile.NameUuid);
         var fileUuid = profile.NameUuid.Replace(".pdf", "");
 
         // Test
@@ -426,9 +398,7 @@ public class ProfileControllerTest
         // Test setup
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
         var labelingFile = GetFormFileByExistingFile(LabelingAttachmentPdf);
-        var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
-        ActionResultAssert.IsOk(uploadResult);
-        var profile = (Profile)((OkObjectResult)uploadResult).Value!;
+        var profile = await profileCloudService.UploadProfileAsync(labelingFile.OpenReadStream(), labelingFile.FileName, null, false, labelingFile.ContentType, minBoreholeId);
 
         // Test
         controller.HttpContext.SetClaimsPrincipal("sub_viewer", PolicyNames.Viewer);
@@ -449,9 +419,8 @@ public class ProfileControllerTest
         // Test setup
         var minBoreholeId = context.Boreholes.Min(b => b.Id);
         var labelingFile = GetFormFileByExistingFile(LabelingAttachmentPdf);
-        var uploadResult = await controller.Upload(labelingFile, minBoreholeId);
-        ActionResultAssert.IsOk(uploadResult);
-        var profile = (Profile)((OkObjectResult)uploadResult).Value!;
+        var profile = await profileCloudService.UploadProfileAsync(labelingFile.OpenReadStream(), labelingFile.FileName, null, false, labelingFile.ContentType, minBoreholeId);
+        Assert.IsNotNull(profile.NameUuid);
         var fileUuid = profile.NameUuid.Replace(".pdf", "");
 
         var image1 = GetFormFileByExistingFile("labeling_attachment-1.png");
@@ -477,7 +446,4 @@ public class ProfileControllerTest
         // Reset data
         await profileCloudService.DeleteObject($"dataextraction/{fileUuid}-1.png");
     }
-
-    private static async Task AssertIsBadRequestResponse(Func<Task<IActionResult>> func) =>
-        ActionResultAssert.IsBadRequest(await func());
 }

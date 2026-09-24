@@ -4,8 +4,8 @@ import { useTranslation } from "react-i18next";
 import { useLocation } from "react-router";
 import { AlertColor, Box, CircularProgress, Divider, Stack, Typography } from "@mui/material";
 import { ChevronRight, FileImageIcon, FileTextIcon } from "lucide-react";
-import { labelingFileFormat, PanelTab } from "../../../api/dataextractionInterfaces.ts";
-import { formatFileSize, getMaxFileSize } from "../../../api/fileSize.ts";
+import { labelingFileFormat, maxFileSizeForTab, PanelTab } from "../../../api/dataextractionInterfaces.ts";
+import { formatFileSize } from "../../../api/fileSize.ts";
 import { BoreholeAttachment } from "../../../api/unionTypes.ts";
 import { theme } from "../../../AppTheme.ts";
 import { AddButton, BoreholesBaseButton, FileButton } from "../../../components/buttons/buttons.tsx";
@@ -41,6 +41,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
 
   const isOnAttachmentsPage = location.pathname === `/${id}/attachments`;
   const fileUploadEnabled = editingEnabled && (activeTab === PanelTab.profile || isOnAttachmentsPage);
+  const maxFileSize = maxFileSizeForTab(activeTab);
 
   const onDrop = useCallback(
     (acceptedFiles: File[], fileRejections: FileRejection[]) => {
@@ -49,20 +50,20 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
         const errorMessages: { [key: string]: string } = {
           "file-invalid-type": t("fileInvalidType"),
           "too-many-files": t("fileTooMany"),
-          "file-too-large": t("fileMaxSizeExceeded", { size: formatFileSize(getMaxFileSize()) }),
+          "file-too-large": t("fileMaxSizeExceeded", { size: formatFileSize(maxFileSize) }),
         };
         showAlert(errorMessages[errorCode] || fileRejections[0].errors[0].message, "error");
       } else {
         addFile(acceptedFiles[0]);
       }
     },
-    [addFile, showAlert, t],
+    [addFile, maxFileSize, showAlert, t],
   );
 
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     maxFiles: 1,
-    maxSize: getMaxFileSize(),
+    maxSize: maxFileSize,
     accept: { [labelingFileFormat[activeTab]]: [] },
     noDrag: false,
     noClick: true,

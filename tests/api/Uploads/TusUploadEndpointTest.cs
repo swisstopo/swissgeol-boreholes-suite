@@ -5,9 +5,12 @@ using BDMS.Services;
 using BDMS.Uploads.S3;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Routing;
+using Microsoft.AspNetCore.TestHost;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Logging;
+using Moq;
 using System.Globalization;
 using System.Net;
 using System.Net.Http.Headers;
@@ -24,6 +27,15 @@ namespace BDMS.Uploads;
 [TestClass]
 public class TusUploadEndpointTest
 {
+    // The route and the header the client depends on are pinned here rather than read back from
+    // the endpoint, which would let the test move along with whatever it is meant to hold still.
+    private const string EndpointPath = "/api/v2/log/upload/tus";
+    private const string LogFileIdHeader = "Log-File-Id";
+
+    // The segment every chunked upload route carries, so that a route added for another feature is
+    // found without this test being told about it.
+    private const string UploadPathSegment = "/upload/tus";
+
     private const string SubAdmin = "sub_admin";
     private const string TusResumableHeader = "Tus-Resumable";
     private const string TusVersion = "1.0.0";
@@ -122,7 +134,7 @@ public class TusUploadEndpointTest
 
     private static HttpRequestMessage CreateUpload(string? subjectId, int logRunId, string fileName, long uploadLength = 1_000, int? logFileId = null)
     {
-        var request = new HttpRequestMessage(HttpMethod.Post, TusUploadConfiguration.EndpointPath);
+        var request = new HttpRequestMessage(HttpMethod.Post, EndpointPath);
         request.Headers.Add(TusResumableHeader, TusVersion);
         request.Headers.Add("Upload-Length", uploadLength.ToString(CultureInfo.InvariantCulture));
         request.Headers.Add("Upload-Metadata", Metadata(logRunId, fileName, logFileId));
@@ -148,9 +160,9 @@ public class TusUploadEndpointTest
         startedUploadPaths.Add(uploadPath);
 
         string? reported = null;
-        for (var offset = 0; offset < content.Length; offset += LogFileTusStore.ChunkSize)
+        for (var offset = 0; offset < content.Length; offset += S3TusStore.ChunkSize)
         {
-            var length = Math.Min(LogFileTusStore.ChunkSize, content.Length - offset);
+            var length = Math.Min(S3TusStore.ChunkSize, content.Length - offset);
 
             using var patch = new HttpRequestMessage(HttpMethod.Patch, uploadPath);
             patch.Headers.Add(TusResumableHeader, TusVersion);
@@ -162,7 +174,7 @@ public class TusUploadEndpointTest
             using var response = await client.SendAsync(patch);
             Assert.AreEqual(HttpStatusCode.NoContent, response.StatusCode, await response.Content.ReadAsStringAsync());
 
-            response.Headers.TryGetValues(TusUploadConfiguration.LogFileIdHeader, out var values);
+            response.Headers.TryGetValues(LogFileIdHeader, out var values);
             reported ??= values?.SingleOrDefault();
         }
 
@@ -182,6 +194,47 @@ public class TusUploadEndpointTest
     }
 
     /// <summary>
+    /// The endpoint answers with the header its own subclass names, rather than one the base
+    /// picked. A feature that reported another feature's header would leave its client reading an
+    /// id that is not its own.
+    /// </summary>
+    [TestMethod]
+    public void TheLogEndpointNamesItsOwnPathAndResultHeader()
+    {
+        using var scope = factory.Services.CreateScope();
+        var endpoint = scope.ServiceProvider.GetRequiredService<LogFileTusEndpoint>();
+
+        Assert.AreEqual(EndpointPath, endpoint.EndpointPath);
+        Assert.AreEqual(LogFileIdHeader, endpoint.ResultHeaderName);
+        Assert.IsInstanceOfType<TusUploadEndpoint<TusUploadMetadata>>(endpoint);
+    }
+
+    /// <summary>
+    /// Every route an upload is mapped at is one the middleware that turns a refusal into a problem
+    /// response is wrapped around. A route mapped outside it answers a refusal with a bare failure
+    /// the client can read no reason out of, and nothing else would say so.
+    /// </summary>
+    [TestMethod]
+    public void EveryMappedUploadRouteIsOneTheProblemResponseMiddlewareWraps()
+    {
+        // Reading the services starts the application, which is what builds the route table.
+        var uploadPaths = factory.Services
+            .GetServices<EndpointDataSource>()
+            .SelectMany(source => source.Endpoints)
+            .OfType<RouteEndpoint>()
+            .Select(route => $"/{route.RoutePattern.RawText?.TrimStart('/')}")
+            .Where(path => path.Contains(UploadPathSegment, StringComparison.OrdinalIgnoreCase))
+            .ToList();
+
+        Assert.IsTrue(uploadPaths.Count > 0, "No upload route is in the route table.");
+
+        foreach (var path in uploadPaths)
+        {
+            Assert.IsTrue(UploadRoutes.Matches(path), $"<{path}> is mapped where the middleware does not reach it.");
+        }
+    }
+
+    /// <summary>
     /// The endpoint names the role it admits, rather than leaving that to the fallback policy.
     /// The fallback admits administrators alone, which would refuse every user the per-borehole
     /// check is there to admit, and would do so with the status that check answers with itself.
@@ -195,7 +248,7 @@ public class TusUploadEndpointTest
             .SelectMany(source => source.Endpoints)
             .OfType<RouteEndpoint>()
             .Where(route => $"/{route.RoutePattern.RawText?.TrimStart('/')}"
-                .StartsWith(TusUploadConfiguration.EndpointPath, StringComparison.OrdinalIgnoreCase))
+                .StartsWith(EndpointPath, StringComparison.OrdinalIgnoreCase))
             .ToList();
 
         Assert.IsTrue(tusRoutes.Count > 0, "The tus endpoint is not in the route table.");
@@ -306,6 +359,25 @@ public class TusUploadEndpointTest
         startedUploadPaths.Add(response.Headers.Location.ToString());
     }
 
+    /// <summary>
+    /// The ceiling the product allows is refused as the upload is created, before a single byte is
+    /// sent. Nothing else holds the limit: it is handed to the upload package by the shared
+    /// endpoint core, and a build that stopped handing it over would accept a file of any size
+    /// while every other test still passed.
+    /// </summary>
+    [TestMethod]
+    public async Task CreatingAnUploadLargerThanTheLimitIsRefused()
+    {
+        var logRun = await context.LogRuns.FirstAsync();
+        using var client = factory.CreateClient();
+
+        using var response = await client.SendAsync(
+            CreateUpload(SubAdmin, logRun.Id, $"{Guid.NewGuid()}.las", FileSizeLimits.Large + 1));
+
+        Assert.AreEqual(HttpStatusCode.RequestEntityTooLarge, response.StatusCode, await response.Content.ReadAsStringAsync());
+        Assert.IsNull(response.Headers.Location, "The client was told where to send a file the server will not take.");
+    }
+
     [TestMethod]
     public async Task CreatingAnUploadForANameTheLogRunHoldsIsRefusedBeforeAnyBytesAreSent()
     {
@@ -325,7 +397,7 @@ public class TusUploadEndpointTest
         Assert.IsTrue(problem.TryGetValue("type", out var type), $"The refusal names a problem type. It carried: {body}");
         Assert.AreEqual("userError", type.GetString());
         StringAssert.Contains(problem["detail"].GetString(), existing.Name);
-        Assert.AreEqual(LogFileNameTakenException.MessageKey, problem["messageKey"].GetString());
+        Assert.AreEqual(LogFileNameTakenException.MessageKeyValue, problem["messageKey"].GetString());
         Assert.AreEqual(existing.Name, problem["fileName"].GetString());
     }
 
@@ -362,7 +434,7 @@ public class TusUploadEndpointTest
     {
         var logRun = await context.LogRuns.FirstAsync();
         var fileName = $"{Guid.NewGuid()}.las";
-        var content = new byte[(2 * LogFileTusStore.ChunkSize) + 1_000];
+        var content = new byte[(2 * S3TusStore.ChunkSize) + 1_000];
         Random.Shared.NextBytes(content);
         using var client = factory.CreateClient();
 
@@ -403,7 +475,7 @@ public class TusUploadEndpointTest
         using var finished = await client.SendAsync(first);
         Assert.AreEqual(HttpStatusCode.NoContent, finished.StatusCode);
         storedObjectKeys.Add((await context.LogFiles.AsNoTracking().SingleAsync(f =>
-            f.Id == int.Parse(finished.Headers.GetValues(TusUploadConfiguration.LogFileIdHeader).Single(), CultureInfo.InvariantCulture))).NameUuid);
+            f.Id == int.Parse(finished.Headers.GetValues(LogFileIdHeader).Single(), CultureInfo.InvariantCulture))).NameUuid);
 
         using var again = new HttpRequestMessage(HttpMethod.Patch, uploadPath);
         again.Headers.Add(TusResumableHeader, TusVersion);
@@ -417,6 +489,73 @@ public class TusUploadEndpointTest
         Assert.IsTrue(
             (int)repeated.StatusCode < 500,
             $"The repeated chunk was answered with <{(int)repeated.StatusCode}>, which the client retries.");
+    }
+
+    /// <summary>
+    /// A finished upload whose completion could not let go of it is still there to be terminated.
+    /// The file it stored belongs to the row the completion wrote, so the upload is answered as the
+    /// success it is, and a client terminating it afterwards leaves the file where it is.
+    /// </summary>
+    [TestMethod]
+    public async Task TerminatingAFinishedUploadThatWasNotLetGoOfKeepsTheFile()
+    {
+        using var storage = StorageThatKeepsUploadRecords();
+        using var keepingFactory = factory.WithWebHostBuilder(builder => builder.ConfigureTestServices(services =>
+            services.AddKeyedSingleton<S3TusStore>(UploadBuckets.LogFiles, (sp, _) => new S3TusStore(
+                sp.GetRequiredService<ILoggerFactory>(),
+                storage,
+                S3TusStore.CreateConfiguration(bucketName)))));
+
+        var logRun = await context.LogRuns.FirstAsync();
+        var content = Encoding.UTF8.GetBytes("log data");
+
+        int logFileId;
+        using (var keepingClient = keepingFactory.CreateClient())
+        {
+            logFileId = await UploadAsync(keepingClient, logRun.Id, $"{Guid.NewGuid()}.las", content);
+        }
+
+        var logFile = await context.LogFiles.AsNoTracking().SingleAsync(f => f.Id == logFileId);
+        storedObjectKeys.Add(logFile.NameUuid);
+
+        using var client = factory.CreateClient();
+        using var terminate = new HttpRequestMessage(HttpMethod.Delete, startedUploadPaths[^1]);
+        terminate.Headers.Add(TusResumableHeader, TusVersion);
+        terminate.Headers.Add(TestAuthHandler.SubjectIdHeader, SubAdmin);
+
+        using var terminated = await client.SendAsync(terminate);
+        Assert.AreEqual(HttpStatusCode.NoContent, terminated.StatusCode, "The upload was let go of after all, so nothing was left to terminate.");
+
+        var stored = await s3Client.GetObjectMetadataAsync(bucketName, logFile.NameUuid, CancellationToken.None);
+        Assert.AreEqual(content.Length, stored.ContentLength, "Terminating the upload took the file its row points at.");
+    }
+
+    /// <summary>
+    /// A cloud storage that stores everything but will not remove what the store keeps about an
+    /// upload, which is how a completion lets go of a finished one.
+    /// </summary>
+    private AmazonS3Client StorageThatKeepsUploadRecords()
+    {
+        var appConfiguration = new ConfigurationBuilder().AddJsonFile("appsettings.Development.json").Build();
+        var storage = new Mock<AmazonS3Client>(
+            appConfiguration["S3:ACCESS_KEY"],
+            appConfiguration["S3:SECRET_KEY"],
+            new AmazonS3Config
+            {
+                ServiceURL = appConfiguration["S3:ENDPOINT"],
+                ForcePathStyle = true,
+                UseHttp = appConfiguration["S3:SECURE"] == "0",
+            })
+        {
+            CallBase = true,
+        };
+
+        var recordPrefix = S3TusStore.CreateConfiguration(bucketName).UploadInfoObjectPrefix;
+        storage
+            .Setup(s => s.DeleteObjectAsync(It.IsAny<string>(), It.Is<string>(key => key.StartsWith(recordPrefix, StringComparison.Ordinal)), It.IsAny<CancellationToken>()))
+            .ThrowsAsync(new AmazonS3Exception("The record of the upload cannot be removed."));
+
+        return storage.Object;
     }
 
     /// <summary>
@@ -434,7 +573,7 @@ public class TusUploadEndpointTest
         Assert.AreEqual(HttpStatusCode.Created, created.StatusCode);
         startedUploadPaths.Add(created.Headers.Location.ToString());
 
-        var reported = created.Headers.GetValues(TusUploadConfiguration.LogFileIdHeader).Single();
+        var reported = created.Headers.GetValues(LogFileIdHeader).Single();
         var logFile = await context.LogFiles.AsNoTracking().SingleAsync(f => f.Id == int.Parse(reported, CultureInfo.InvariantCulture));
 
         Assert.AreEqual(fileName, logFile.Name);

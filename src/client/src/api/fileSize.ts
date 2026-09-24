@@ -2,6 +2,7 @@
 export interface FileSizeLimits {
   maxFileSize: number;
   largeMaxFileSize: number;
+  maxImportArchiveSize: number;
   chunkSize: number;
 }
 
@@ -31,6 +32,9 @@ export const getMaxFileSize = (): number => requireFileSizeLimits().maxFileSize;
 
 /** The largest log file the chunked upload accepts, in bytes. */
 export const getLargeMaxFileSize = (): number => requireFileSizeLimits().largeMaxFileSize;
+
+/** The largest import archive the client accepts, in bytes. */
+export const getMaxImportArchiveSize = (): number => requireFileSizeLimits().maxImportArchiveSize;
 
 /** How much of a file the chunked upload sends per request, in bytes. */
 export const getChunkSize = (): number => requireFileSizeLimits().chunkSize;

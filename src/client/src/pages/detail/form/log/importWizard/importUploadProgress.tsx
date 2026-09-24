@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import { IconButton, LinearProgress, Stack, Typography } from "@mui/material";
 import { X } from "lucide-react";
 import { theme } from "../../../../../AppTheme.ts";
-import { uploadProgressHint } from "../uploadProgressText.ts";
+import { uploadProgressHint } from "../../../../../components/uploadProgressText.ts";
 import { ImportUploadProgressProps } from "./importLogWizardInterfaces.ts";
 
 /**

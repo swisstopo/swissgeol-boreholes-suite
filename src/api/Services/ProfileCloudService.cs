@@ -24,11 +24,38 @@ public class ProfileCloudService : CloudServiceBase
         this.applicationLifetime = applicationLifetime;
     }
 
-    private static bool IsOcrEligible(string contentType)
-        => string.Equals(contentType, "application/pdf", StringComparison.OrdinalIgnoreCase);
+    /// <summary>
+    /// The name a profile is stored under. White space is replaced because it is interpreted
+    /// differently across systems, and both write paths share this so that a file is never stored
+    /// under one name by one of them and another name by the other.
+    /// </summary>
+    /// <param name="fileName">The name the user gave the file.</param>
+    /// <returns>The name to store.</returns>
+    private static string ToStoredName(string fileName)
+        => fileName.Replace(" ", "_", StringComparison.OrdinalIgnoreCase);
+
+    /// <summary>
+    /// The status a profile is written with, which is what decides whether OCR ever reads the
+    /// file. Both write paths share this so that a file of one kind cannot become eligible on one
+    /// of them and not on the other.
+    /// </summary>
+    /// <param name="contentType">The content type the file was stored with.</param>
+    /// <returns>The status to write.</returns>
+    private static OcrStatus InitialOcrStatus(string contentType)
+        => string.Equals(contentType, "application/pdf", StringComparison.OrdinalIgnoreCase)
+            ? OcrStatus.Created
+            : OcrStatus.WillNotBeProcessed;
 
     /// <summary>
     /// Uploads a file to cloud storage and creates a <see cref="Profile"/> pointing at it.
+    ///
+    /// Profiles reach the API through the resumable upload, which stores the object before it ever
+    /// asks for a row, so nothing in the application calls this. It is kept because it is the only
+    /// place that stores the bytes and writes the row as one step, which is what the fixtures of
+    /// the profile tests need to put a real object in the bucket beside the row that names it, and
+    /// because it is what pins the S3 first ordering that keeps a failed upload from leaving a row
+    /// behind. What it shares with <see cref="LinkUploadedProfileAsync"/> it shares through
+    /// <see cref="ToStoredName"/> and <see cref="InitialOcrStatus"/>, so the two cannot drift.
     /// </summary>
     /// <param name="fileStream">The file stream for the file to upload.</param>
     /// <param name="fileName">The name of the file to upload.</param>
@@ -48,21 +75,20 @@ public class ProfileCloudService : CloudServiceBase
             var nameUuid = $"{Guid.NewGuid()}{fileExtension}";
 
             // Replace whitespaces in file names, as they are interpreted differently across different systems.
-            fileName = fileName.Replace(" ", "_", StringComparison.OrdinalIgnoreCase);
+            var storedName = ToStoredName(fileName);
 
             // S3 first: if upload fails we have no DB row pointing at a missing object.
             await UploadObject(fileStream, nameUuid, contentType).ConfigureAwait(false);
 
-            var isOcrEligible = IsOcrEligible(contentType);
             var profile = new Profile
             {
                 BoreholeId = boreholeId,
-                Name = fileName,
+                Name = storedName,
                 NameUuid = nameUuid,
                 Type = contentType,
                 Description = description,
                 Public = isPublic,
-                OcrStatus = isOcrEligible ? OcrStatus.Created : OcrStatus.WillNotBeProcessed,
+                OcrStatus = InitialOcrStatus(contentType),
             };
 
             await context.Profiles.AddAsync(profile, CancellationToken.None).ConfigureAwait(false);
@@ -70,32 +96,7 @@ public class ProfileCloudService : CloudServiceBase
 
             if (transaction != null) await transaction.CommitAsync(CancellationToken.None).ConfigureAwait(false);
 
-            // Fire-and-forget OCR for eligible files. A separate scope keeps the long-running OCR
-            // work decoupled from this request's DI scope (which is disposed when the response returns).
-            if (isOcrEligible)
-            {
-                var capturedId = profile.Id;
-                var stoppingToken = applicationLifetime.ApplicationStopping;
-                _ = Task.Run(
-                    async () =>
-                    {
-                        try
-                        {
-                            using var scope = scopeFactory.CreateScope();
-                            var fileOcrService = scope.ServiceProvider.GetRequiredService<FileOcrService>();
-                            await fileOcrService.ProcessAsync(capturedId, cancellationToken: stoppingToken).ConfigureAwait(false);
-                        }
-                        catch (OperationCanceledException)
-                        {
-                            // Application is shutting down; the background service will retry on next startup.
-                        }
-                        catch (Exception ex)
-                        {
-                            Logger.LogError(ex, "Background OCR for profile {ProfileId} failed to start.", capturedId);
-                        }
-                    },
-                    stoppingToken);
-            }
+            StartOcrIfEligible(profile.Id, profile.OcrStatus);
 
             return profile;
         }
@@ -103,6 +104,122 @@ public class ProfileCloudService : CloudServiceBase
         {
             throw new IOException($"Error uploading profile '{fileName}' for borehole with Id '{boreholeId}'.", ex);
         }
+    }
+
+    /// <summary>
+    /// Points a profile at an object a resumable upload has already stored, creating the row when
+    /// the upload names none.
+    ///
+    /// The object is whole in the cloud storage before this is called, so nothing here uploads and
+    /// nothing here grows with the size of the file. This is the only place a profile becomes
+    /// eligible for OCR, because that is the moment it has a file to read.
+    /// </summary>
+    /// <param name="fileName">The name the user gave the file.</param>
+    /// <param name="contentType">The content type of the file.</param>
+    /// <param name="objectKey">The key the object is stored under.</param>
+    /// <param name="boreholeId">The <see cref="Borehole.Id"/> the profile belongs to.</param>
+    /// <param name="profileId">The row to fill, or null to create one.</param>
+    /// <param name="cancellationToken">
+    /// Aborts the lookup that precedes the write. The write itself deliberately opts out of it: the
+    /// file is already in the cloud storage by the time we commit, so aborting would orphan the
+    /// object, and a cancelled commit leaves the outcome unknown.
+    /// </param>
+    /// <returns>The profile.</returns>
+    /// <exception cref="InvalidOperationException">The borehole holds no profile with that id.</exception>
+    public async Task<Profile> LinkUploadedProfileAsync(
+        string fileName,
+        string contentType,
+        string objectKey,
+        int boreholeId,
+        int? profileId,
+        CancellationToken cancellationToken = default)
+    {
+        var storedName = ToStoredName(fileName);
+        var ocrStatus = InitialOcrStatus(contentType);
+
+        Profile profile;
+        string? replaced = null;
+
+        if (profileId is int id)
+        {
+            // Looked up within the borehole the upload was authorized against, rather than by its
+            // id alone, so an authorized upload cannot fill a row belonging to another borehole.
+            profile = await context.Profiles
+                .FirstOrDefaultAsync(p => p.Id == id && p.BoreholeId == boreholeId, cancellationToken)
+                .ConfigureAwait(false)
+                ?? throw new InvalidOperationException($"Profile with ID {id} not found for borehole {boreholeId}.");
+
+            replaced = profile.NameUuid;
+            profile.NameUuid = objectKey;
+            profile.Type = contentType;
+            profile.OcrStatus = ocrStatus;
+        }
+        else
+        {
+            profile = new Profile
+            {
+                BoreholeId = boreholeId,
+                Name = storedName,
+                NameUuid = objectKey,
+                Type = contentType,
+                Public = false,
+                OcrStatus = ocrStatus,
+            };
+
+            await context.Profiles.AddAsync(profile, CancellationToken.None).ConfigureAwait(false);
+        }
+
+        // The request token reaches the lookup above and stops there. A client that gives up while
+        // the commit is in flight would otherwise cancel it with the outcome unknown, and the
+        // caller answers a failed completion by removing the object the row may now point at.
+        await context.UpdateChangeInformationAndSaveChangesAsync(httpContextAccessor.HttpContext!, CancellationToken.None).ConfigureAwait(false);
+
+        if (replaced is not null && !string.Equals(replaced, objectKey, StringComparison.Ordinal))
+        {
+            // Nothing points at the old object once the row moved, and the name it had is never
+            // handed out again, so it would stay in the bucket for good. A completion that runs a
+            // second time names the key the row already holds, which is the one object that has to
+            // stay: removing it would leave the row naming nothing.
+            await DeleteOrphanedObject(replaced).ConfigureAwait(false);
+        }
+
+        StartOcrIfEligible(profile.Id, ocrStatus);
+        return profile;
+    }
+
+    /// <summary>
+    /// Starts OCR for a profile whose status says it has a file worth reading, without waiting for
+    /// the run. A profile reaches <see cref="OcrStatus.Created"/> only once an object is linked to
+    /// it, so a run started from here always has a file to name.
+    /// </summary>
+    /// <param name="profileId">The <see cref="Profile.Id"/> to process.</param>
+    /// <param name="status">The status the profile was written with.</param>
+    private void StartOcrIfEligible(int profileId, OcrStatus status)
+    {
+        if (status != OcrStatus.Created) return;
+
+        // Fire-and-forget OCR for eligible files. A separate scope keeps the long-running OCR
+        // work decoupled from this request's DI scope (which is disposed when the response returns).
+        var stoppingToken = applicationLifetime.ApplicationStopping;
+        _ = Task.Run(
+            async () =>
+            {
+                try
+                {
+                    using var scope = scopeFactory.CreateScope();
+                    var fileOcrService = scope.ServiceProvider.GetRequiredService<FileOcrService>();
+                    await fileOcrService.ProcessAsync(profileId, cancellationToken: stoppingToken).ConfigureAwait(false);
+                }
+                catch (OperationCanceledException)
+                {
+                    // Application is shutting down; the background service will retry on next startup.
+                }
+                catch (Exception ex)
+                {
+                    Logger.LogError(ex, "Background OCR for profile {ProfileId} failed to start.", profileId);
+                }
+            },
+            stoppingToken);
     }
 
     /// <summary>

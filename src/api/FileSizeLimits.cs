@@ -1,12 +1,16 @@
 ﻿namespace BDMS;
 
 /// <summary>
-/// The largest files the API accepts, in bytes.
+/// The largest files the product allows, in bytes.
 ///
-/// These are the single source of truth for the limits: the endpoints enforce them and
-/// <see cref="Controllers.SettingsController"/> reports them, so the client validates against the
+/// These are the single source of truth for the limits, and
+/// <see cref="Controllers.SettingsController"/> reports them so the client validates against the
 /// same numbers rather than a copy of its own. They are constants because the request size
 /// attributes that enforce them take compile time arguments.
+///
+/// The API enforces <see cref="Standard"/> and <see cref="Large"/> itself.
+/// <see cref="MaxImportArchive"/> it does not: no archive of that size ever reaches it, so the
+/// limit is held to by the client alone.
 /// </summary>
 public static class FileSizeLimits
 {
@@ -16,8 +20,16 @@ public static class FileSizeLimits
     public const int Standard = 210_000_000;
 
     /// <summary>
-    /// The limit that applies to a log file, which arrives in chunks and so is not bounded by what
-    /// one request may carry.
+    /// The limit that applies to a file arriving in chunks, which is not bounded by what one
+    /// request may carry. Every chunked upload accepts up to this much, whatever it is uploading.
     /// </summary>
     public const long Large = 5_000_000_000;
+
+    /// <summary>
+    /// The limit that applies to an import archive. Nothing of this size reaches the API: the
+    /// archive is unpacked by the client, which sends its small description in one request and each
+    /// of its attachments as an upload of its own. The limit is served so that the client holds the
+    /// user to a number the product chose rather than one it picked for itself.
+    /// </summary>
+    public const long MaxImportArchive = 20_000_000_000;
 }

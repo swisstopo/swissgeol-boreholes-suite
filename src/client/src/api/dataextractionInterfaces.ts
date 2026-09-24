@@ -1,4 +1,5 @@
 import { ReferenceSystemKey } from "../pages/detail/form/location/coordinateSegmentInterfaces.ts";
+import { getLargeMaxFileSize, getMaxFileSize } from "./fileSize.ts";
 
 export type ExtractionType = "text" | "number" | "coordinates";
 export enum ExtractionState {
@@ -75,6 +76,21 @@ export const labelingFileFormat: Record<PanelTab, string> = {
   [PanelTab.profile]: "application/pdf",
   [PanelTab.photo]: "image/*",
 };
+
+/**
+ * The largest file a tab accepts, in bytes.
+ *
+ * A profile is sent in chunks, so it is held to what the resumable upload accepts. A photo still
+ * travels in a single request and is held to what that one accepts, so that an oversized photo is
+ * refused before its bytes are sent rather than by the server once they have arrived.
+ *
+ * Read when a file is picked rather than kept in a table, because the limits only exist once the
+ * application settings have been read.
+ * @param tab The tab the file was picked on.
+ * @returns The limit that applies, in bytes.
+ */
+export const maxFileSizeForTab = (tab: PanelTab): number =>
+  tab === PanelTab.profile ? getLargeMaxFileSize() : getMaxFileSize();
 
 export const matchesFileFormat = (expectedFormat: string, format: string) => {
   if (expectedFormat.endsWith("*")) {

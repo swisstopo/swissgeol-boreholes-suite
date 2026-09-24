@@ -202,7 +202,7 @@ export function mapExtractionResponse(response: StratigraphyExtractionResponse):
 }
 
 export function useExtractionBoundingBoxes(
-  fileName: string | undefined,
+  fileName: string | null | undefined,
   fileInfo: DataExtractionResponse | null | undefined,
   pageNumber: number,
 ) {
