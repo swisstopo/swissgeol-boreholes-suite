@@ -216,6 +216,13 @@ public class ImportController : ControllerBase
         if (!ModelState.IsValid)
             return ValidationProblem();
 
+        // Holding the attachments is a promise the caller is taken at its word on. The archive is
+        // unpacked in the browser, which is also the only thing holding the import to
+        // FileSizeLimits.MaxImportArchive, so nothing here ever sees the attachments and nothing
+        // reconciles or expires the rows written for them: a client that stops half way leaves rows
+        // with no file behind, and they stay until a user deletes them. That is the price of an
+        // import no longer bounded by what one request can carry, and a row in that state is
+        // complete enough to live with, which PrepareAwaitingAttachments says more about.
         List<(Profile Profile, Borehole Borehole, string EntryName)> awaiting = importAttachments ? PrepareAwaitingAttachments(boreholes) : [];
 
         foreach (var borehole in boreholes)
@@ -251,6 +258,11 @@ public class ImportController : ControllerBase
     /// The row is written with no object and with OCR switched off. Both are corrected when the
     /// upload arrives: a row that claimed an eligible status now would be handed to the OCR service
     /// with no file to read, and the user's document would be marked failed before it was sent.
+    ///
+    /// Nothing obliges the upload to arrive, and a row whose upload never does stays until a user
+    /// deletes it. That state is a settled one rather than a broken one: the export skips such a
+    /// row, downloading it answers not found, deleting it works, and the OCR catch-up passes it
+    /// over, all of which is held by tests.
     /// </summary>
     /// <param name="boreholes">The deserialized boreholes, whose profiles carry the exporting system's keys.</param>
     /// <returns>
