@@ -172,7 +172,7 @@ export const MapComponent: FC<MapComponentProps> = ({
     updateBasemap(map, currentBasemapName);
 
     // Attach map to globalThis for Cypress E2E tests.
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    // oxlint-disable-next-line @typescript-eslint/no-explicit-any
     (globalThis as any).olMap = map;
 
     // ── Feature layers ──
@@ -402,7 +402,7 @@ export const MapComponent: FC<MapComponentProps> = ({
       setFeatureIds(ids);
       map.setTarget(undefined);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Mount only — prop access goes through refs
 
   // ────────────────────── Effect: Basemap updates ──────────────────────
@@ -497,7 +497,7 @@ export const MapComponent: FC<MapComponentProps> = ({
     }
     // Only re-run when geoJson changes. mapCenter is intentionally read only
     // on first load (via isInitialGeoJsonRef guard). Other deps accessed via refs.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [geoJson]);
 
   // ────────────────────── Effect: Highlights from table hover ──────────────────────

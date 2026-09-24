@@ -48,6 +48,6 @@ export const useUnsavedChangesPrompt = <T extends FieldValues>({
         leaveInput(true);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [checkIsDirty]);
 };

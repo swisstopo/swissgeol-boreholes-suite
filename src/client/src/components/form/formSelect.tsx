@@ -161,7 +161,7 @@ export const FormSelect: FC<FormSelectProps> = ({
             disabled={disabled}
             // Typescript quirk: By asserting "true as boolean", MUI's Autocomplete component allows null for the value type.
             // A boolean-typed constant does not work here, because TypeScript narrows it back to the literal true.
-            // eslint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- the assertion widens the literal type
+            // oxlint-disable-next-line @typescript-eslint/no-unnecessary-type-assertion -- the assertion widens the literal type
             disableClearable={true as boolean}
           />
         );

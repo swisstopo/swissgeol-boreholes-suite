@@ -103,7 +103,7 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
       data-cy={fieldName + "-formCoordinate"}
       slotProps={{
         input: {
-          /* eslint-disable  @typescript-eslint/no-explicit-any */
+          /* oxlint-disable  @typescript-eslint/no-explicit-any */
           inputComponent: NumericFormatWithThousandSeparator as any,
           readOnly: isReadOnly,
           disabled: disabled,

@@ -142,7 +142,7 @@ const CasingInput = ({ item, parentId }: DataCardItemInputProps<Casing>) => {
     // Not awaited: effects cannot be async, and the validation result is read from form state.
     void trigger("casingElements");
     updateDepth();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [getValues().casingElements]);
 
   return (

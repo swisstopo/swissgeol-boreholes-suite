@@ -88,7 +88,7 @@ const CompletionContent = ({ completion, editingEnabled }: CompletionContentProp
         setCheckContentDirty(false);
       }
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [canSwitch, checkContentDirty]);
 
   useEffect(() => {
@@ -96,7 +96,7 @@ const CompletionContent = ({ completion, editingEnabled }: CompletionContentProp
     if (newTabIndex > -1 && activeIndex !== newTabIndex) {
       handleCompletionChanged(null, newTabIndex);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [hash]);
 
   const renderTabContent = useCallback(() => {
@@ -121,8 +121,7 @@ const CompletionContent = ({ completion, editingEnabled }: CompletionContentProp
           ))}
         </BoreholeTabs>
       </Stack>
-      {/* eslint-disable-next-line react/no-children-prop */}
-      <MemoizedCompletionContentTabBox children={renderTabContent} />
+      <MemoizedCompletionContentTabBox>{renderTabContent}</MemoizedCompletionContentTabBox>
     </Stack>
   );
 };

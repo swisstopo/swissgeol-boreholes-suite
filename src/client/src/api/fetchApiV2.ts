@@ -64,7 +64,7 @@ const isBlobContentType = (contentType: string | null): boolean => {
  * @param {Response} response - The HTTP response object.
  * @returns {Promise<any>} - The parsed response content.
  */
-/* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
+/* oxlint-disable-next-line  @typescript-eslint/no-explicit-any */
 async function readApiResponse(response: Response): Promise<any> {
   const contentType = response.headers.get("content-type");
   if (isJsonContentType(contentType)) {
@@ -102,7 +102,7 @@ async function handleFetchError(response: Response) {
  * @param {object|null} [payload=null] - The request payload, if applicable.
  * @returns {Promise<any>} - The parsed response content.
  */
-/* eslint-disable-next-line  @typescript-eslint/no-explicit-any */
+/* oxlint-disable-next-line  @typescript-eslint/no-explicit-any */
 export async function fetchApiV2Legacy(url: string, method: string, payload: object | null = null): Promise<any> {
   const response = await fetchApiV2Base(url, method, payload ? JSON.stringify(payload) : null, "application/json");
   if (response.ok) {

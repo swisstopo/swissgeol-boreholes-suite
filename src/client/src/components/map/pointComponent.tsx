@@ -262,7 +262,7 @@ export const PointComponent: FC<PointComponentProps> = ({
     // @ts-expect-error expose OL map to tests/console
     globalThis.pointOlMap = map;
     // Build-once: deps intentionally empty so the map isn't rebuilt on every prop change.
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   // Swap the basemap layer when the user changes it via BasemapSelector.
@@ -296,7 +296,7 @@ export const PointComponent: FC<PointComponentProps> = ({
   useEffect(() => {
     if (!mapRef.current) return;
     manageMapInteractions();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [isEditable]);
 
   const onZoomIn = () => {
