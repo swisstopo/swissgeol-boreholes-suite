@@ -1,7 +1,7 @@
-import { FC, useContext } from "react";
+import { ChangeEvent, ElementType, FC, useContext } from "react";
 import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { SxProps } from "@mui/material";
+import { InputBaseComponentProps, SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
 import { boundingBox } from "../../pages/detail/form/location/coordinateSegmentConstants.ts";
@@ -85,14 +85,14 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
       label={labelWithTooltip}
       {...register(fieldName, {
         required: required || false,
-        validate: value => {
+        validate: (value: string) => {
           if (referenceSystem === ReferenceSystemKey.LV95) {
             return direction === Direction.X ? inLV95XBounds(value) : inLV95YBounds(value);
           } else {
             return direction === Direction.X ? inLV03XBounds(value) : inLV03YBounds(value);
           }
         },
-        onChange: e => {
+        onChange: (e: ChangeEvent<HTMLInputElement>) => {
           if (!disabled) {
             onUpdate(referenceSystem, direction, e.target.value);
           }
@@ -103,8 +103,7 @@ export const FormCoordinate: FC<FormCoordinateProps> = ({
       data-cy={fieldName + "-formCoordinate"}
       slotProps={{
         input: {
-          /* oxlint-disable  @typescript-eslint/no-explicit-any */
-          inputComponent: NumericFormatWithThousandSeparator as any,
+          inputComponent: NumericFormatWithThousandSeparator as ElementType<InputBaseComponentProps>,
           readOnly: isReadOnly,
           disabled: disabled,
         },

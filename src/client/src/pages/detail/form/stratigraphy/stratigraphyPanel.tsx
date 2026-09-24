@@ -253,7 +253,7 @@ export const StratigraphyPanel: FC = () => {
               <>
                 <BoreholeTabs
                   value={selectedTabIndex === -1 ? 0 : selectedTabIndex}
-                  onChange={(_, newValue) => switchTab(newValue)}>
+                  onChange={(_, newValue: number) => switchTab(newValue)}>
                   {sortedStratigraphies.map(stratigraphy => (
                     <BoreholeTab
                       data-cy={`stratigraphy-tab-${stratigraphy.id}`}

@@ -39,7 +39,7 @@ describe("General app tests", () => {
     cy.getCookie(CONSENT_COOKIE_NAME)
       .should("exist")
       .then(cookie => {
-        const parsed = JSON.parse(decodeURIComponent(cookie!.value));
+        const parsed = JSON.parse(decodeURIComponent(cookie!.value)) as { analytics: boolean; subject: string };
         expect(parsed).to.include({ analytics: true });
         expect(parsed.subject, "the consent is scoped to the signed-in user").to.be.a("string");
         expect(parsed.subject).to.have.length.greaterThan(0);

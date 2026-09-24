@@ -82,7 +82,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   }, [selectableBoreholeIds, filteredIds, setSelectionModel]);
 
   const renderHeaderCheckbox = useCallback(
-    (params: GridColumnHeaderParams) => {
+    (params: GridColumnHeaderParams<BoreholeListItem>) => {
       const handleHeaderCheckboxClick = (event: ChangeEvent<HTMLInputElement>) => {
         if (event.target.checked) {
           setSelectionModel(selectableBoreholeIds);
@@ -105,7 +105,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   );
 
   const renderCellCheckbox = useCallback(
-    (params: GridRenderCellParams) => {
+    (params: GridRenderCellParams<BoreholeListItem>) => {
       const handleCheckBoxClick = (event: ChangeEvent<HTMLInputElement>) => {
         const rowId = params.id as number;
         if (event.target.checked) {
@@ -127,7 +127,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     [selectionModel, setSelectionModel],
   );
 
-  const columns: GridColDef[] = [
+  const columns: GridColDef<BoreholeListItem>[] = [
     {
       field: "__check__",
       width: 10,
@@ -217,11 +217,11 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     });
   }
 
-  const handleRowClick: GridEventListener<"rowClick"> = params => {
+  const handleRowClick = (params: GridRowParams<BoreholeListItem>) => {
     navigateTo({ path: `/${params.row.id}/location` });
   };
 
-  const getRowClassName = (params: GridRowParams) => {
+  const getRowClassName = (params: GridRowParams<BoreholeListItem>) => {
     let css = "";
     if (params.row.locked) {
       css = "disabled-row ";
@@ -235,7 +235,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
   useEffect(() => {
     if (apiRef.current) {
       const handleRowMouseEnter: GridEventListener<"rowMouseEnter"> = params => {
-        setHover(params.row.id);
+        setHover((params.row as BoreholeListItem).id);
       };
 
       const handleScrollPosition: GridEventListener<"scrollPositionChange"> = (params: GridScrollParams) => {
@@ -272,7 +272,8 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
     if (firstRender.current) {
       return runWhenIdle(() => {
         const storedScrollPosition = sessionStorage.getItem(SessionKeys.tableScrollPosition);
-        const scrollPosition = storedScrollPosition === null ? { top: 0, left: 0 } : JSON.parse(storedScrollPosition);
+        const scrollPosition: GridScrollParams =
+          storedScrollPosition === null ? { top: 0, left: 0 } : (JSON.parse(storedScrollPosition) as GridScrollParams);
         apiRef.current?.scroll(scrollPosition);
         scrollPositionRef.current = scrollPosition;
         firstRender.current = false;
@@ -303,7 +304,7 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
         paginationMode="server"
         sortingMode="server"
         checkboxSelection={true}
-        isRowSelectable={(params: GridRowParams) => params.row.locked === null}
+        isRowSelectable={(params: GridRowParams<BoreholeListItem>) => params.row.locked === null}
         rowSelectionModel={selectionModel}
         showQuickFilter={false}
       />

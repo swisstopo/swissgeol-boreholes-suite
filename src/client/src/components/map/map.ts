@@ -49,7 +49,7 @@ export interface MapComponentProps {
   highlighted: number[];
   hover: (ids: number[]) => void;
   layers: Record<string, LayerConfig>;
-  selected: (id: string | null) => void;
+  selected: (id: number | null) => void;
   setFeatureIds: (ids: number[]) => void;
   featureIds: number[];
   polygonSelectionEnabled: boolean;

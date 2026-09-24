@@ -48,7 +48,7 @@ const createBorehole = async (workgroupId: number): Promise<Borehole> => {
   });
 };
 
-const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: number | null) => {
+const copyBorehole = async (boreholeId: GridRowSelectionModel, workgroupId: number | null): Promise<number> => {
   return await fetchApiV2Legacy(`borehole/copy?id=${boreholeId.join(",")}&workgroupId=${workgroupId}`, "POST");
 };
 

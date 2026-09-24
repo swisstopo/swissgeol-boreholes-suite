@@ -153,10 +153,10 @@ export const MapSettings = ({
       const data = await response.text();
       // Check if WMS or WMTS
       if (/<(WMT_MS_Capabilities|WMS_Capabilities)/.test(data)) {
-        const wms: WmsCapabilities = new WMSCapabilities().read(data);
+        const wms = new WMSCapabilities().read(data) as WmsCapabilities;
         setState({ ...state, wmsFetch: false, wms: wms, wmts: null });
       } else if (/<Capabilities/.test(data)) {
-        const wmts: WmtsCapabilities = new WMTSCapabilities().read(data);
+        const wmts = new WMTSCapabilities().read(data) as WmtsCapabilities;
         setState({ ...state, wmsFetch: false, wms: null, wmts: wmts });
       } else {
         setState({ ...state, wmsFetch: false, wms: null, wmts: null });

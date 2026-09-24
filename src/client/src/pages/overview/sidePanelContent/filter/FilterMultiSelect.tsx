@@ -1,4 +1,4 @@
-import { KeyboardEvent, SyntheticEvent, useMemo } from "react";
+import { HTMLAttributes, KeyboardEvent, SyntheticEvent, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Autocomplete, Box, Chip, TextField, Typography } from "@mui/material";
 import { CircleX } from "lucide-react";
@@ -39,8 +39,7 @@ export const FilterMultiSelect = <T extends number | string>({
 
   const handleKeyDown = (event: KeyboardEvent<HTMLDivElement>) => {
     if (event.key === "Enter") {
-      // @ts-expect-error - blur is unknown on the event target but closes the autocomplete popover as desired
-      event.target.blur();
+      if (event.target instanceof HTMLElement) event.target.blur();
     }
   };
 
@@ -65,7 +64,7 @@ export const FilterMultiSelect = <T extends number | string>({
           const count = counts?.[option.key] ?? 0;
           return count < 1;
         }}
-        renderOption={(props, option) => {
+        renderOption={(props: HTMLAttributes<HTMLLIElement> & { key: string }, option) => {
           const { key, ...rest } = props;
           const count = counts?.[option.key] ?? 0;
           return (

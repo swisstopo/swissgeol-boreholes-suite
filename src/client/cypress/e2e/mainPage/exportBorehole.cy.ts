@@ -46,13 +46,45 @@ const splitFileContent = (fileContent: string) => {
   return { lines, rows };
 };
 
+/**
+ * The parts of an exported borehole these tests reach into. The export carries far more; only what
+ * the assertions below touch is described, so the shape stays cheap to keep in step with the API.
+ */
+interface ExportedLithology {
+  LithologyDescriptions: Record<string, unknown>[];
+}
+
+interface ExportedStratigraphy {
+  Lithologies: ExportedLithology[];
+  LithologicalDescriptions: Record<string, unknown>[];
+  FaciesDescriptions: Record<string, unknown>[];
+  ChronostratigraphyLayers: unknown[];
+  LithostratigraphyLayers: unknown[];
+}
+
+interface ExportedBorehole {
+  Stratigraphies: ExportedStratigraphy[];
+  Observations: unknown[];
+}
+
+/**
+ * Reads a downloaded export and hands back the parsed boreholes. cy.readFile parses a .json file
+ * itself, so the content only needs parsing when it arrives as text.
+ */
+const readExportedBoreholes = (fileName: string) =>
+  cy
+    .readFile<string | ExportedBorehole[]>(prepareDownloadPath(fileName))
+    .then(fileContent =>
+      typeof fileContent === "string" ? (JSON.parse(fileContent) as ExportedBorehole[]) : fileContent,
+    );
+
 const verifyTVDContentInCSVFile = (
   fileName: string,
   expectedTotalDepthVD: string,
   expectedTopBedrockFreshTVD: string,
   expectedTopBedrockWeatheredTVD: string,
 ) => {
-  cy.readFile(prepareDownloadPath(fileName)).then(fileContent => {
+  cy.readFile<string>(prepareDownloadPath(fileName)).then(fileContent => {
     const { lines, rows } = splitFileContent(fileContent);
     expect(lines.length).to.equal(3);
     expect(rows[0][26]).to.equal("TotalDepthTvd");
@@ -188,7 +220,7 @@ describe("Test for exporting boreholes.", () => {
     checkRowWithText(secondBoreholeName);
     exportItem();
     exportCSVItem();
-    cy.readFile(prepareDownloadPath(csvFileName)).then(fileContent => {
+    cy.readFile<string>(prepareDownloadPath(csvFileName)).then(fileContent => {
       expect(fileContent.startsWith("\uFEFF"), "exported CSV must keep the UTF-8 byte order mark").to.equal(true);
       const { lines, rows } = splitFileContent(fileContent);
       expect(lines.length).to.equal(4);
@@ -235,7 +267,7 @@ describe("Test for exporting boreholes.", () => {
     readDownloadedFile(csvFileName);
 
     // Verify file length
-    cy.readFile(prepareDownloadPath(csvFileName)).then(fileContent => {
+    cy.readFile<string>(prepareDownloadPath(csvFileName)).then(fileContent => {
       const lines = fileContent.split("\n");
       expect(lines.length).to.equal(102);
     });
@@ -301,8 +333,7 @@ describe("Test for exporting boreholes.", () => {
     cy.wait("@borehole_export_json").its("response.statusCode").should("eq", 200);
     readDownloadedFile(fileName);
 
-    cy.readFile(prepareDownloadPath(fileName)).then(fileContent => {
-      const json = typeof fileContent === "string" ? JSON.parse(fileContent) : fileContent;
+    readExportedBoreholes(fileName).then(json => {
       expect(json).to.be.an("array");
       expect(json[0].Stratigraphies).to.be.an("array");
 
@@ -387,8 +418,7 @@ describe("Test for exporting boreholes.", () => {
         Type: 1,
       };
 
-      cy.readFile(prepareDownloadPath(fileName)).then(fileContent => {
-        const json = typeof fileContent === "string" ? JSON.parse(fileContent) : fileContent;
+      readExportedBoreholes(fileName).then(json => {
         expect(json).to.be.an("array");
         expect(json[0]).to.have.property("Observations");
         expect(json[0].Observations).to.be.an("array");
@@ -457,7 +487,7 @@ describe("Test for exporting boreholes.", () => {
       cy.dataCy("import-borehole-button").click();
       cy.contains(boreholeName).should("not.exist");
 
-      cy.readFile(downloadedFilePath, "utf-8").then(fileContent => {
+      cy.readFile<string>(downloadedFilePath, "utf-8").then(fileContent => {
         // Create a DataTransfer and a File from the downloaded content
         const boreholeFile = new DataTransfer();
         const file = new File([fileContent], `${boreholeName}.csv`, {

@@ -24,6 +24,11 @@ vi.mock("../../../../../../hooks/useResetTabStatus.ts", () => ({
   useResetTabStatus: () => () => {},
 }));
 
+// Matches one element of the combined create payload. expect.objectContaining is untyped, so the
+// nested matcher is named once here instead of at each assertion.
+const stratigraphyMatching = (fields: Record<string, unknown>): object =>
+  expect.objectContaining({ stratigraphy: expect.objectContaining(fields) as object }) as object;
+
 const showApiErrorAlert = vi.fn();
 vi.mock("../../../../../../hooks/useShowAlertOnError.tsx", () => ({
   useApiErrorAlert: () => showApiErrorAlert,
@@ -92,14 +97,12 @@ describe("AddEmptyStratigraphyDialog", () => {
     await waitFor(() => expect(fetchApiV2WithApiError).toHaveBeenCalledTimes(1));
     // The combined create posts an array of { stratigraphy, lithology } edits.
     expect(fetchApiV2WithApiError).toHaveBeenCalledWith("stratigraphy", "POST", [
-      expect.objectContaining({
-        stratigraphy: expect.objectContaining({
-          id: 0,
-          boreholeId: 7,
-          name: "My Stratigraphy",
-          isPrimary: true,
-          date: null,
-        }),
+      stratigraphyMatching({
+        id: 0,
+        boreholeId: 7,
+        name: "My Stratigraphy",
+        isPrimary: true,
+        date: null,
       }),
     ]);
 
@@ -116,7 +119,7 @@ describe("AddEmptyStratigraphyDialog", () => {
 
     await waitFor(() => expect(fetchApiV2WithApiError).toHaveBeenCalledTimes(1));
     expect(fetchApiV2WithApiError).toHaveBeenCalledWith("stratigraphy", "POST", [
-      expect.objectContaining({ stratigraphy: expect.objectContaining({ isPrimary: false }) }),
+      stratigraphyMatching({ isPrimary: false }),
     ]);
   });
 

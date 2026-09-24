@@ -1,11 +1,5 @@
 import { SxProps } from "@mui/material";
 
-export interface ErrorResponse {
-  detail: string;
-  errors: object;
-  message: string;
-}
-
 export interface WorkgroupSelectProps {
   sx?: SxProps;
 }

@@ -151,7 +151,7 @@ export const buildErrorStructure = (
  * @param errors
  */
 export const findFirstErrorRef = (errors: object): { focus: () => void } | undefined => {
-  for (const value of Object.values(errors)) {
+  for (const value of Object.values(errors) as unknown[]) {
     if (!value || typeof value !== "object") continue;
     const ref = (value as { ref?: { focus?: unknown } }).ref;
     if (ref && typeof ref.focus === "function") return ref as { focus: () => void };

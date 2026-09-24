@@ -5,7 +5,7 @@ import { fetchApiV2WithApiError } from "./fetchApiV2.ts";
 export type MaintenanceTaskType = "LocationMigration" | "CoordinateMigration" | "UserMerge";
 export type MaintenanceTaskStatus = "Idle" | "Running" | "Completed" | "Failed";
 
-interface MaintenanceTaskLogEntry {
+export interface MaintenanceTaskLogEntry {
   taskType: MaintenanceTaskType;
   status: MaintenanceTaskStatus;
   affectedCount: number | null;

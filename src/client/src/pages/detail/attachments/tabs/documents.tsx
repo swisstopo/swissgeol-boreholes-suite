@@ -19,6 +19,9 @@ interface DocumentsProps {
   boreholeId: number;
 }
 
+type UrlCellParams = GridRenderCellParams<Document, Document["url"]>;
+type DescriptionCellParams = GridRenderCellParams<Document, Document["description"]>;
+
 export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
@@ -43,11 +46,11 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
     async (updatedRows: Map<GridRowId, Document>) => {
       const updatedRowsArray = Array.from(updatedRows.entries())
         .map<DocumentUpdate | undefined>(([key, value]) => {
-          const data = apiRef.current.getRowWithUpdatedValues(key, "url");
+          const data = apiRef.current.getRowWithUpdatedValues(key, "url") as Document;
           if (data) {
             return {
               id: key as number,
-              url: value.url ?? data.url,
+              url: value.url ?? data.url ?? "",
               description: value.description ?? data.description,
               public: value.public ?? false,
             };
@@ -92,7 +95,7 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
   );
 
   const getUrlField = useCallback(
-    (params: GridRenderCellParams<Document>, focused: boolean) => {
+    (params: UrlCellParams, focused: boolean) => {
       const value = updatedRows.get(params.id)?.url ?? params.value ?? "";
       return (
         <TextField
@@ -109,7 +112,7 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
   );
 
   const getDescriptionField = useCallback(
-    (params: GridRenderCellParams<Document>, focused: boolean) => {
+    (params: DescriptionCellParams, focused: boolean) => {
       const value = updatedRows.get(params.id)?.description ?? params.value ?? "";
       return (
         <TextField
@@ -130,7 +133,7 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
         headerName: t("url"),
         editable: editingEnabled,
         flex: 1,
-        renderCell: params =>
+        renderCell: (params: UrlCellParams) =>
           editingEnabled ? (
             getUrlField(params, false)
           ) : (
@@ -145,7 +148,7 @@ export const Documents: FC<DocumentsProps> = ({ boreholeId }) => {
         headerName: t("description"),
         editable: editingEnabled,
         flex: 1,
-        renderCell: params => {
+        renderCell: (params: DescriptionCellParams) => {
           return editingEnabled ? (
             getDescriptionField(params, false)
           ) : (

@@ -375,15 +375,11 @@
         "typescript/no-misused-promises": "error",
         "typescript/no-redundant-type-constituents": "error",
         "typescript/no-unnecessary-type-assertion": "error",
-        // Downgraded, not disabled, will be fixed step by step. Findings stay
-        // visible in the editor without blocking the build.
-        // The lint:oxlint script caps warnings at the current count, so the number is a ratchet: it may
-        // only ever be lowered. A change that adds warnings fails the build like an error does.
-        "typescript/no-unsafe-argument": "warn",
-        "typescript/no-unsafe-assignment": "warn",
-        "typescript/no-unsafe-call": "warn",
-        "typescript/no-unsafe-member-access": "warn",
-        "typescript/no-unsafe-return": "warn",
+        "typescript/no-unsafe-argument": "error",
+        "typescript/no-unsafe-assignment": "error",
+        "typescript/no-unsafe-call": "error",
+        "typescript/no-unsafe-member-access": "error",
+        "typescript/no-unsafe-return": "error",
         "typescript/no-unsafe-enum-comparison": "error",
         "typescript/no-unsafe-unary-minus": "error",
         "typescript/only-throw-error": "error",

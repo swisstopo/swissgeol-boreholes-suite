@@ -69,8 +69,8 @@ export const basemaps: Basemap[] = [
 export function updateBasemap(map: Map, contextBasemapName: string) {
   const layers = map.getLayers();
   layers.forEach(function (layer) {
-    const name = layer?.get("name");
-    if (basemaps.map(b => b.name).includes(name)) {
+    const name = layer?.get("name") as string | undefined;
+    if (name !== undefined && basemaps.map(b => b.name).includes(name)) {
       layers.remove(layer);
     }
   });

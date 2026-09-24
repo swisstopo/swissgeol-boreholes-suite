@@ -1,3 +1,4 @@
+import { LogExportRequest } from "../../../src/api/generated";
 import { discardChanges, exportItem, saveWithSaveBar } from "../helpers/buttonHelpers";
 import {
   checkAllVisibleRows,
@@ -501,7 +502,9 @@ describe("Test for the borehole log.", () => {
     cy.wait("@log_export").then(interception => {
       expect(interception.response?.statusCode).to.equal(200);
       expect(interception.request.body).to.have.property("withAttachments", false);
-      expect(interception.request.body.logRunIds).to.be.an("array").and.have.length.greaterThan(0);
+      expect((interception.request.body as LogExportRequest).logRunIds)
+        .to.be.an("array")
+        .and.have.length.greaterThan(0);
       expect(interception.response?.headers["content-type"]).to.include("application/zip");
     });
   });
@@ -567,7 +570,9 @@ describe("Test for the borehole log.", () => {
 
     cy.wait("@log_export").then(interception => {
       expect(interception.response?.statusCode).to.equal(200);
-      expect(interception.request.body.logRunIds).to.be.an("array").and.have.lengthOf(106);
+      expect((interception.request.body as LogExportRequest).logRunIds)
+        .to.be.an("array")
+        .and.have.lengthOf(106);
     });
   });
 
@@ -596,7 +601,9 @@ describe("Test for the borehole log.", () => {
     cy.wait("@log_export").then(interception => {
       expect(interception.response?.statusCode).to.equal(200);
       expect(interception.request.body).to.have.property("withAttachments", false);
-      expect(interception.request.body.logFileIds).to.be.an("array").and.have.length.greaterThan(0);
+      expect((interception.request.body as LogExportRequest).logFileIds)
+        .to.be.an("array")
+        .and.have.length.greaterThan(0);
     });
   });
 

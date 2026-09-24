@@ -1,7 +1,7 @@
 import { FC, ReactNode, RefObject, useContext, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Box, Stack, ToggleButton, ToggleButtonGroup } from "@mui/material";
-import { styled } from "@mui/system";
+import { styled } from "@mui/material/styles";
 import { FileImageIcon, FileTextIcon, Plus } from "lucide-react";
 import { PanelTab } from "../../../api/dataextractionInterfaces.ts";
 import { BoreholeAttachment } from "../../../api/unionTypes.ts";

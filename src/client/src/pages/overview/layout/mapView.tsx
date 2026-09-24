@@ -151,7 +151,7 @@ export const MapView = ({ displayErrorMessage }: MapViewProps) => {
           highlighted={hover ? [hover] : []}
           hover={(ids: number[]) => setRowsToHighlight(ids)}
           layers={overlays}
-          selected={(id: string | null) => {
+          selected={(id: number | null) => {
             if (id !== null) navigateTo({ path: "/" + id });
           }}
           mapResolution={mapResolution}

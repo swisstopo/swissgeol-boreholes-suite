@@ -11,6 +11,17 @@ interface Consent {
 }
 
 /**
+ * The cookie's stored shape. It comes back from the browser rather than from the application, so
+ * each field is compared against what this version expects before any of it is trusted.
+ */
+interface StoredConsent {
+  v?: unknown;
+  terms?: unknown;
+  subject?: unknown;
+  analytics?: unknown;
+}
+
+/**
  * Derives the cookie's subject key from an OIDC subject id, or from the anonymous placeholder when
  * nobody is signed in.
  */
@@ -47,11 +58,11 @@ export const readConsent = (subject: string | undefined): Consent | null => {
   const match = document.cookie.split("; ").find(row => row.startsWith(`${CONSENT_COOKIE_NAME}=`));
   if (!match) return null;
   try {
-    const parsed = JSON.parse(decodeURIComponent(match.slice(CONSENT_COOKIE_NAME.length + 1)));
+    const parsed = JSON.parse(decodeURIComponent(match.slice(CONSENT_COOKIE_NAME.length + 1))) as StoredConsent | null;
     if (parsed?.v !== CONSENT_SCHEMA_VERSION) return null;
     if (parsed?.terms !== TERMS_VERSION) return null;
     if (parsed?.subject !== toSubjectKey(subject)) return null;
-    return { analytics: Boolean(parsed.analytics) };
+    return { analytics: Boolean(parsed?.analytics) };
   } catch {
     return null;
   }

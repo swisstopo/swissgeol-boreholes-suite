@@ -72,14 +72,13 @@ export function useFileInfo(profileId: number | undefined, activePage: number) {
     queryFn: async () => {
       if (!profileId) return null;
 
-      const response = await fetchApiV2WithApiError(
+      const dataResponse = await fetchApiV2WithApiError<DataExtractionResponse>(
         `profile/getDataExtractionFileInfo?profileId=${profileId}&index=${activePage}`,
         "GET",
       );
-      if (!response) {
+      if (!dataResponse) {
         throw new ApiError("errorDataExtractionFileLoading", 500);
       }
-      const dataResponse = response as DataExtractionResponse;
 
       // Create pngs if not yet available
       if (dataResponse.count === 0) {
@@ -122,7 +121,22 @@ async function fetchExtractionBoundingBoxes(fileName: string, pageNumber: number
   if (!response.ok) {
     throw new ApiError("errorDataExtractionFetchBoundingBoxes", response.status);
   }
-  return await response.json();
+  return (await response.json()) as BoundingBoxResponse;
+}
+
+/**
+ * Throws when the extraction service answered with a success status but a problem body. It reports
+ * some failures that way instead of through the status code.
+ * @param body The parsed response body.
+ * @throws {ApiError} - Throws when the body names a reason.
+ */
+function throwIfExtractionProblem(body: unknown): void {
+  if (typeof body === "object" && body !== null) {
+    const { detail } = body as { detail?: unknown };
+    if (typeof detail === "string" && detail) {
+      throw new ApiError(detail, 500);
+    }
+  }
 }
 
 async function fetchAndHandleExtractionResponse(
@@ -132,10 +146,8 @@ async function fetchAndHandleExtractionResponse(
 ): Promise<ExtractionResponse> {
   const response = await fetchExtractData(request, abortSignal);
   if (response.ok) {
-    const responseObject = await response.json();
-    if (responseObject.detail) {
-      throw new ApiError(responseObject.detail, 500);
-    }
+    const responseObject: unknown = await response.json();
+    throwIfExtractionProblem(responseObject);
     return responseObject as ExtractionResponse;
   } else {
     if (response.status === 404) {
@@ -162,11 +174,9 @@ async function extractStratigraphies(
 ): Promise<StratigraphyExtractionResponse> {
   const response = await fetchExtractStratigraphy(fileName, abortSignal);
   if (response.ok) {
-    const responseObject = await response.json();
-    if (responseObject.detail) {
-      throw new ApiError(responseObject.detail, 500);
-    }
-    return responseObject;
+    const responseObject: unknown = await response.json();
+    throwIfExtractionProblem(responseObject);
+    return responseObject as StratigraphyExtractionResponse;
   } else {
     throw new ApiError("errorDataExtraction", response.status);
   }

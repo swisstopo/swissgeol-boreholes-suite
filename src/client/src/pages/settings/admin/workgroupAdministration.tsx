@@ -1,7 +1,7 @@
 import { FC, MouseEvent, useCallback, useContext, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { Chip, Stack } from "@mui/material";
-import { GridColDef, GridEventListener, GridFilterModel, GridRenderCellParams } from "@mui/x-data-grid";
+import { GridColDef, GridFilterModel, GridRenderCellParams, GridRowParams } from "@mui/x-data-grid";
 import { Role, Workgroup } from "../../../api/generated";
 import { useUsers } from "../../../api/user.ts";
 import { useWorkgroups } from "../../../api/workgroup.ts";
@@ -60,7 +60,7 @@ export const WorkgroupAdministration: FC = () => {
     getDeleteColumn(handleDeleteWorkgroup),
   ];
 
-  const handleRowClick: GridEventListener<"rowClick"> = params => {
+  const handleRowClick = (params: GridRowParams<Workgroup>) => {
     navigateTo({ path: `/setting/workgroup/${params.row.id}` });
   };
 

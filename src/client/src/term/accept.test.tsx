@@ -19,6 +19,13 @@ vi.mock("./disclaimerDialog", () => ({
   DisclaimerDialog: () => <div data-testid="disclaimer-dialog" />,
 }));
 
+interface WrittenConsent {
+  v: number;
+  terms: number;
+  subject: string;
+  analytics: boolean;
+}
+
 let signedInSubject: string | undefined = undefined;
 
 const setConsentCookie = (value: string) => {
@@ -84,7 +91,7 @@ describe("AcceptTerms", () => {
 
   it("prompts again when the terms changed since the consent was stored", () => {
     signedInSubject = "user-a";
-    const outdated = JSON.parse(decodeURIComponent(buildConsentCookieValue("user-a", true)));
+    const outdated = JSON.parse(decodeURIComponent(buildConsentCookieValue("user-a", true))) as WrittenConsent;
     setConsentCookie(encodeURIComponent(JSON.stringify({ ...outdated, terms: outdated.terms - 1 })));
     renderAcceptTerms();
     expectsConsent(true);
@@ -92,7 +99,7 @@ describe("AcceptTerms", () => {
 
   it("prompts again when the cookie schema changed", () => {
     signedInSubject = "user-a";
-    const outdated = JSON.parse(decodeURIComponent(buildConsentCookieValue("user-a", true)));
+    const outdated = JSON.parse(decodeURIComponent(buildConsentCookieValue("user-a", true))) as WrittenConsent;
     setConsentCookie(encodeURIComponent(JSON.stringify({ ...outdated, v: outdated.v - 1 })));
     renderAcceptTerms();
     expectsConsent(true);
