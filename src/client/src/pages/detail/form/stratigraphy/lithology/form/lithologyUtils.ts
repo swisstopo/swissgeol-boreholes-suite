@@ -1,7 +1,9 @@
 import { LithologyDescription } from "../../../../../../api/generated";
 import { FormErrors } from "../../../../../../components/form/form.ts";
 import { buildErrorStructure, parseFloatWithThousandsSeparator } from "../../../../../../components/form/formUtils.ts";
+import { ShowPrompt } from "../../../../../../components/prompt/promptInterface.ts";
 import { LithologicalDescription, Lithology, LithologyFormValues } from "../../stratigraphy.ts";
+import { LithologyAnalysis } from "../analysis/useLithologyAnalysis.ts";
 
 export const prepareLithologyForSubmit = (values: LithologyFormValues) => {
   values.fromDepth = parseFloatWithThousandsSeparator(values.fromDepth)!;
@@ -125,3 +127,52 @@ export const buildLithologicalDescription = (
     description: text,
   };
 };
+
+/**
+ * The form values for a change of the consolidation mode. Only identity, depths, remarks and the
+ * lithological description text survive: every attribute is scoped to one mode, so nothing is
+ * carried across even where the label is the same.
+ * @param values The current form values.
+ * @param isUnconsolidated The mode to switch to, null for "keine Angabe".
+ */
+export const buildLithologyValuesForMode = (
+  values: LithologyFormValues,
+  isUnconsolidated: boolean | null,
+): LithologyFormValues => ({
+  id: values.id,
+  stratigraphyId: values.stratigraphyId,
+  fromDepth: values.fromDepth,
+  toDepth: values.toDepth,
+  isUnconsolidated,
+  hasBedding: false,
+  lithologyDescriptions: isUnconsolidated === null ? [] : [{ id: 0, lithologyId: values.id, isFirst: true }],
+  notes: values.notes,
+  lithologicalDescription: { description: values.lithologicalDescription?.description ?? "" },
+});
+
+/**
+ * The modal's apply, gated on the analysis. Closing the modal with automatically extracted values
+ * still unaccepted asks first, because applying them cannot be undone afterwards.
+ * @param analysis The running analysis.
+ * @param apply What the modal does when there is nothing to ask about.
+ * @param showPrompt The prompt to ask with.
+ */
+export const buildApplyHandler =
+  (analysis: LithologyAnalysis, apply: () => Promise<void> | void, showPrompt: ShowPrompt) => async () => {
+    if (!analysis.hasPendingChanges) {
+      await apply();
+      return;
+    }
+
+    showPrompt("analysisAcceptAllOnCloseConfirm", [
+      { label: "cancel", action: () => {} },
+      {
+        label: "acceptValues",
+        variant: "contained",
+        action: () => {
+          analysis.acceptAll();
+          void apply();
+        },
+      },
+    ]);
+  };

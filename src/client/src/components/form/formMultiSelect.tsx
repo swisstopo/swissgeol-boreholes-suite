@@ -5,6 +5,8 @@ import { Autocomplete, Chip, SxProps } from "@mui/material";
 import { TextField } from "@mui/material/";
 import { CircleX } from "lucide-react";
 import { EditStateContext } from "../../pages/detail/editStateContext.tsx";
+import { FieldAnalysisLabel, FieldAnalysisResetButton } from "./fieldAnalysis/fieldAnalysisAdornments.tsx";
+import { useFieldAnalysis } from "./fieldAnalysis/fieldAnalysisContext.tsx";
 import { getFormFieldError } from "./form";
 import { FormSelectMenuItem } from "./formSelect.tsx";
 import { getFieldBorderColor } from "./formUtils.ts";
@@ -46,6 +48,7 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
   const { formState, register, setValue, control } = useFormContext();
   const { editingEnabled } = useContext(EditStateContext);
   const { labelWithTooltip } = useLabelOverflow(label);
+  const analysis = useFieldAnalysis(fieldName);
   const isReadOnly = readonly ?? !editingEnabled;
 
   // Synchronize Autocomplete with react hook form state
@@ -128,17 +131,34 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
                   );
                 });
               }}
-              renderInput={params => (
+              renderInput={({ InputProps, ...params }) => (
                 <TextField
                   {...params}
-                  label={labelWithTooltip}
+                  label={
+                    analysis ? (
+                      <FieldAnalysisLabel label={labelWithTooltip} change={analysis.change} />
+                    ) : (
+                      labelWithTooltip
+                    )
+                  }
                   required={required}
                   error={!!formFieldError}
                   helperText={formFieldError?.message ? t(formFieldError.message) : ""}
                   sx={{ ...sx, ...getFieldBorderColor(isReadOnly) }}
-                  className={className}
+                  className={`${className ?? ""}${analysis ? " analysis-highlight" : ""}`}
                   data-cy={fieldName + "-formMultiSelect"}
                   disabled={disabled}
+                  slotProps={{
+                    input: {
+                      ...InputProps,
+                      endAdornment: (
+                        <>
+                          {analysis && <FieldAnalysisResetButton fieldName={fieldName} onReset={analysis.reset} />}
+                          {InputProps.endAdornment}
+                        </>
+                      ),
+                    },
+                  }}
                 />
               )}
               renderOption={(props, option) => {

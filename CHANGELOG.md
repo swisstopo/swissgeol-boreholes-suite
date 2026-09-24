@@ -7,6 +7,7 @@
 - The export overlay now shows how much of the export has been downloaded.
 - Uploads and exports can be cancelled by clicking the overlay or its cancel button. A cancelled export stops the download and the work it triggers on the server; a cancelled upload keeps the files that already reached the server, and the remaining changes stay unsaved so the save can be repeated.
 - Both CSV files of the LOG import are now optional, so LOG files can be imported for LOG runs that already exist. At least one of the two files is still required.
+- Lithological layer descriptions can be analysed automatically. The lithology dialog offers an "Analyse" action that fills the structured fields from the description text, highlights every field it changed, lists the changes in a table, and lets them be undone field by field or all at once, including a switch between Lockergestein and Festgestein. The action is currently only shown with `?dev=true` while the classification still runs against a stand-in response.
 
 ### Removed
 - The terms of service editor in the settings. The disclaimer shown on first visit now always uses the texts shipped with the application, and the stored terms and acceptance records are deleted from the database.
