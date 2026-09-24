@@ -157,9 +157,15 @@ public abstract class CloudServiceBase
     /// <param name="objectNames">The names of the files in the bucket to delete.</param>
     public async Task DeleteObjects(IEnumerable<string> objectNames)
     {
+        var keys = objectNames.Select(name => new KeyVersion { Key = name }).ToList();
+
+        // S3 refuses a delete that names no object, which callers reach whenever everything they
+        // wanted removed turned out to have nothing stored.
+        if (keys.Count == 0) return;
+
         try
         {
-            var request = new DeleteObjectsRequest { BucketName = BucketName, Objects = objectNames.Select(name => new KeyVersion { Key = name }).ToList() };
+            var request = new DeleteObjectsRequest { BucketName = BucketName, Objects = keys };
             var response = await S3Client.DeleteObjectsAsync(request).ConfigureAwait(false);
         }
         catch (AmazonS3Exception ex)

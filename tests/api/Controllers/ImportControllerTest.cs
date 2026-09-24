@@ -1062,6 +1062,21 @@ public class ImportControllerTest
     }
 
     [TestMethod]
+    public void GetPrecisionReadsTheColumnInAnySpelling()
+    {
+        // The column is looked up by its letters and digits alone, so the precision has to be read
+        // from the same column the value itself was read from, whichever way the header spells it.
+        using var reader = new StringReader("location_x;LOCATION_Y\n2100000.12;1000000.1234\n");
+        using var csv = new CsvHelper.CsvReader(reader, CsvConfigHelper.CsvReadConfig);
+        csv.Read();
+        csv.ReadHeader();
+        csv.Read();
+
+        Assert.AreEqual(2, ImportController.GetPrecision(csv, "LocationX"));
+        Assert.AreEqual(4, ImportController.GetPrecision(csv, "LocationY"));
+    }
+
+    [TestMethod]
     public async Task CanUploadDuplicateBoreholesInFile()
     {
         SetupHttpClientFactoryMock("600000", "100000", null, null, null);

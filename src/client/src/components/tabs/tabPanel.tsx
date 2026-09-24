@@ -44,19 +44,21 @@ export const TabPanel: FC<TabPanelProps> = ({ tabs, variant = "card", supportFul
     [variant],
   );
 
-  // Initialize and update activeIndex based on the current URL hash
+  const indexForHash = tabs.findIndex(tab => hash.includes(tab.hash));
+  const firstTabHash = tabs[0].hash;
+
+  // Initialize and update activeIndex based on the current URL hash.
   useEffect(() => {
-    const newActiveIndex = tabs.findIndex(tab => hash.includes(tab.hash));
-    if (newActiveIndex > -1) {
-      setActiveIndex(newActiveIndex);
+    if (indexForHash > -1) {
+      setActiveIndex(indexForHash);
     } else {
       // Redirect to the first tab if hash is not valid
       navigateTo({
-        hash: tabs[0].hash,
+        hash: firstTabHash,
         replace: true,
       });
     }
-  }, [navigateTo, tabs, hash]);
+  }, [navigateTo, indexForHash, firstTabHash]);
 
   // Change handler for tab selection
   const handleIndexChange = (event: SyntheticEvent | null, index: number) => {
