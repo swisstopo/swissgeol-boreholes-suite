@@ -18,7 +18,7 @@ vi.mock("../auth/authTokenStore.ts", () => ({
 
 // The extraction query only runs once the file info query resolved, so it is stubbed out here.
 vi.mock("./fetchApiV2.ts", () => ({
-  fetchApiV2WithApiError: vi.fn(async () => ({ fileName: "profile.pdf", count: 1 })),
+  fetchApiV2WithApiError: vi.fn(() => Promise.resolve({ fileName: "profile.pdf", count: 1 })),
 }));
 
 const layer = (text: string) => ({
@@ -70,7 +70,7 @@ describe("useExtractStratigraphies", () => {
   beforeEach(() => {
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => new Response("gateway timeout", { status: 504 })),
+      vi.fn(() => Promise.resolve(new Response("gateway timeout", { status: 504 }))),
     );
   });
 
@@ -84,7 +84,9 @@ describe("useExtractStratigraphies", () => {
 
     await waitFor(() => expect(result.current.isError).toBe(true));
 
-    const extractionCalls = vi.mocked(fetch).mock.calls.filter(([url]) => String(url).includes("extract_stratigraphy"));
+    const extractionCalls = vi
+      .mocked(fetch)
+      .mock.calls.filter(([url]) => typeof url === "string" && url.includes("extract_stratigraphy"));
     expect(extractionCalls).toHaveLength(1);
   });
 });
@@ -95,7 +97,7 @@ describe("useFileInfo", () => {
     vi.mocked(fetchApiV2WithApiError).mockResolvedValue({ fileName: "pngs-missing.pdf", count: 0 });
     vi.stubGlobal(
       "fetch",
-      vi.fn(async () => new Response("png creation failed", { status: 500 })),
+      vi.fn(() => Promise.resolve(new Response("png creation failed", { status: 500 }))),
     );
   });
 
@@ -109,7 +111,9 @@ describe("useFileInfo", () => {
 
     await waitFor(() => expect(result.current.isError).toBe(true));
 
-    const createPngsCalls = vi.mocked(fetch).mock.calls.filter(([url]) => String(url).includes("create_pngs"));
+    const createPngsCalls = vi
+      .mocked(fetch)
+      .mock.calls.filter(([url]) => typeof url === "string" && url.includes("create_pngs"));
     expect(createPngsCalls.length).toBeGreaterThan(1);
   });
 });
