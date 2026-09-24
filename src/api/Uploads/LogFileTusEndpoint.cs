@@ -87,6 +87,10 @@ public class LogFileTusEndpoint : TusUploadEndpoint<TusUploadMetadata>
     }
 
     /// <inheritdoc/>
+    /// <exception cref="LogFileNameTakenException">
+    /// The log run holds a file under that name. The check when the upload was created holds no
+    /// lock, so a name taken while the file was on its way is refused here instead.
+    /// </exception>
     protected override async Task<int> CompleteAsync(HttpContext httpContext, TusUploadMetadata metadata, string objectKey, CancellationToken cancellationToken)
     {
         var logFile = metadata.LogFileId is int logFileId

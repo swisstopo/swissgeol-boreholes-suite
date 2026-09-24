@@ -39,5 +39,5 @@ public abstract class UploadRefusedException : Exception
     public abstract string MessageKey { get; }
 
     /// <summary>Gets the values the translated message needs, carried in the problem response.</summary>
-    public virtual IDictionary<string, object?> Extensions => new Dictionary<string, object?>();
+    public virtual IReadOnlyDictionary<string, object?> Extensions { get; } = new Dictionary<string, object?>();
 }

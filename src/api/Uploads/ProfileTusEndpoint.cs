@@ -53,8 +53,9 @@ public class ProfileTusEndpoint : TusUploadEndpoint<ProfileUploadMetadata>
     /// </remarks>
     protected override async Task<bool> AuthorizeAsync(ClaimsPrincipal user, ProfileUploadMetadata metadata, IntentType intent, CancellationToken cancellationToken)
     {
-        var subjectId = user.FindFirst(ClaimTypes.NameIdentifier)?.Value;
-        if (subjectId is null) return false;
+        // A request reaching here carries the claim: the base refuses one that does not before it
+        // asks what the upload is for.
+        var subjectId = user.FindFirst(ClaimTypes.NameIdentifier)!.Value;
 
         if (!await boreholePermissionService.CanEditBoreholeAsync(subjectId, metadata.BoreholeId).ConfigureAwait(false)) return false;
 

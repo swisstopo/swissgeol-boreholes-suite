@@ -1,12 +1,16 @@
 ﻿namespace BDMS;
 
 /// <summary>
-/// The largest files the API accepts, in bytes.
+/// The largest files the product allows, in bytes.
 ///
-/// These are the single source of truth for the limits: the endpoints enforce them and
-/// <see cref="Controllers.SettingsController"/> reports them, so the client validates against the
+/// These are the single source of truth for the limits, and
+/// <see cref="Controllers.SettingsController"/> reports them so the client validates against the
 /// same numbers rather than a copy of its own. They are constants because the request size
 /// attributes that enforce them take compile time arguments.
+///
+/// The API enforces <see cref="Standard"/> and <see cref="Large"/> itself.
+/// <see cref="MaxImportArchive"/> it does not: no archive of that size ever reaches it, so the
+/// limit is held to by the client alone.
 /// </summary>
 public static class FileSizeLimits
 {

@@ -17,7 +17,7 @@ public class LogFileNameTakenException : UploadRefusedException
     public override string MessageKey => MessageKeyValue;
 
     /// <inheritdoc/>
-    public override IDictionary<string, object?> Extensions =>
+    public override IReadOnlyDictionary<string, object?> Extensions =>
         new Dictionary<string, object?> { ["fileName"] = FileName };
 
     /// <summary>

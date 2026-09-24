@@ -1,7 +1,5 @@
 ﻿using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
-using System.Text;
-using tusdotnet.Models;
 
 namespace BDMS.Uploads;
 
@@ -12,41 +10,9 @@ namespace BDMS.Uploads;
 public record TusUploadMetadata(int LogRunId, int? LogFileId, string FileName, string ContentType)
 {
     /// <summary>
-    /// Reads the metadata from the header value tus sends, a comma separated list of
-    /// "key base64value" pairs. This is the only request that carries it.
-    /// </summary>
-    /// <param name="headerValue">The raw Upload-Metadata header.</param>
-    /// <param name="metadata">The parsed metadata, when the required keys are present.</param>
-    /// <returns><see langword="true"/> if the metadata could be read; otherwise, <see langword="false"/>.</returns>
-    public static bool TryReadHeader(string headerValue, [NotNullWhen(true)] out TusUploadMetadata? metadata)
-    {
-        metadata = null;
-        return UploadMetadataHeader.TryRead(headerValue, out var values) && TryRead(values, out metadata);
-    }
-
-    /// <summary>
-    /// Reads the metadata the store kept from the request that created the upload, which is how
-    /// the later requests learn what the upload they address is for.
-    /// </summary>
-    /// <param name="storedMetadata">The metadata as the store holds it.</param>
-    /// <param name="metadata">The parsed metadata, when the required keys are present.</param>
-    /// <returns><see langword="true"/> if the metadata could be read; otherwise, <see langword="false"/>.</returns>
-    public static bool TryReadStored(IDictionary<string, Metadata> storedMetadata, [NotNullWhen(true)] out TusUploadMetadata? metadata)
-    {
-        metadata = null;
-        if (storedMetadata is null) return false;
-
-        var values = storedMetadata.ToDictionary(
-            entry => entry.Key,
-            entry => entry.Value.GetString(Encoding.UTF8),
-            StringComparer.Ordinal);
-
-        return TryRead(values, out metadata);
-    }
-
-    /// <summary>
-    /// Reads the decoded metadata values. Both ways of obtaining them end here, so an upload that
-    /// was accepted when it was created cannot fail a stricter reading once it is complete.
+    /// Reads the decoded metadata values. The request that creates the upload and every request
+    /// after it end here, so an upload that was accepted when it was created cannot fail a
+    /// stricter reading once it is complete.
     /// </summary>
     /// <param name="values">The decoded metadata values.</param>
     /// <param name="metadata">The parsed metadata, when the required keys are present.</param>

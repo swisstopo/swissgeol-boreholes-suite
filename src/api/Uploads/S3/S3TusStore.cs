@@ -174,7 +174,7 @@ public class S3TusStore : ITusPipelineStore, ITusCreationStore, ITusReadableStor
 
     /// <summary>
     /// Drops what the store keeps about an upload without touching the object it produced. Used
-    /// once the object belongs to a log file and the upload it came from no longer matters.
+    /// once a row points at the object and the upload it came from no longer matters.
     /// </summary>
     /// <param name="fileId">The id of the upload.</param>
     /// <param name="cancellationToken">Aborts the removal.</param>

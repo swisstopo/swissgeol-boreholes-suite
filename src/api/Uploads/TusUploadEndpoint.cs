@@ -4,6 +4,7 @@ using System.Globalization;
 using System.Net;
 using System.Security.Claims;
 using System.Text;
+using tusdotnet.Interfaces;
 using tusdotnet.Models;
 using tusdotnet.Models.Configuration;
 using tusdotnet.Models.Expiration;
@@ -147,13 +148,13 @@ public abstract class TusUploadEndpoint<TMetadata>
 
     private async Task<TMetadata?> ReadMetadataFromStoreAsync(AuthorizeContext eventContext)
     {
-        var values = await ReadStoredValuesAsync(eventContext.GetFileAsync(), eventContext.CancellationToken).ConfigureAwait(false);
+        var file = await eventContext.GetFileAsync().ConfigureAwait(false);
+        var values = await ReadStoredValuesAsync(file, eventContext.CancellationToken).ConfigureAwait(false);
         return values is not null && TryReadMetadata(values, out var metadata) ? metadata : null;
     }
 
-    private static async Task<Dictionary<string, string>?> ReadStoredValuesAsync(Task<tusdotnet.Interfaces.ITusFile> fileTask, CancellationToken cancellationToken)
+    private static async Task<Dictionary<string, string>?> ReadStoredValuesAsync(ITusFile? file, CancellationToken cancellationToken)
     {
-        var file = await fileTask.ConfigureAwait(false);
         if (file is null) return null;
 
         var stored = await file.GetMetadataAsync(cancellationToken).ConfigureAwait(false);
@@ -175,7 +176,7 @@ public abstract class TusUploadEndpoint<TMetadata>
     private async Task StoreCompletedUploadAsync(FileCompleteContext eventContext)
     {
         var file = await eventContext.GetFileAsync().ConfigureAwait(false);
-        var values = await ReadStoredValuesAsync(Task.FromResult(file), eventContext.CancellationToken).ConfigureAwait(false);
+        var values = await ReadStoredValuesAsync(file, eventContext.CancellationToken).ConfigureAwait(false);
 
         // The metadata passed the same reading when the upload was created, so failing here means
         // the stored copy no longer says what it did then.

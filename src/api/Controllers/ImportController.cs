@@ -253,7 +253,11 @@ public class ImportController : ControllerBase
     /// with no file to read, and the user's document would be marked failed before it was sent.
     /// </summary>
     /// <param name="boreholes">The deserialized boreholes, whose profiles carry the exporting system's keys.</param>
-    /// <returns>The entry name expected for each profile, by the profile it belongs to.</returns>
+    /// <returns>
+    /// One entry per profile the archive holds a file for, carrying the row, the borehole the
+    /// upload is authorized against, and the archive entry the client is to send. A profile the
+    /// export left no file for is written as a row but named here by nothing.
+    /// </returns>
     private static List<(Profile Profile, Borehole Borehole, string EntryName)> PrepareAwaitingAttachments(List<BoreholeImport> boreholes)
     {
         var awaiting = new List<(Profile, Borehole, string)>();
@@ -275,7 +279,7 @@ public class ImportController : ControllerBase
                 // because the exporting system holds one too.
                 if (exportedObjectKey is null) continue;
 
-                awaiting.Add((profile, borehole, $"{exportedObjectKey}_{FileHelper.SanitizeZipEntryFileName(profile.Name, "export")}"));
+                awaiting.Add((profile, borehole, FileHelper.BuildAttachmentZipEntryName(exportedObjectKey, profile.Name)));
             }
         }
 
@@ -455,12 +459,10 @@ public class ImportController : ControllerBase
     {
         // Use 'Borehole' as prefix and zero based index for json files. E.g. 'Borehole0'
         // Use 'Row' as prefix and one based index for csv files. E.g. 'Row1'.
-        // Use 'Attachment' as prefix and one based index for attachments. E.g. 'Attachment1'
         string prefix = errorType switch
         {
             ValidationErrorType.Json => "Borehole",
             ValidationErrorType.Csv => "Row",
-            ValidationErrorType.Attachment => "Attachment",
             _ => throw new ArgumentOutOfRangeException(nameof(errorType), errorType, null),
         };
 

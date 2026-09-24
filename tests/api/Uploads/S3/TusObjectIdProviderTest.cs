@@ -25,7 +25,7 @@ public class TusObjectIdProviderTest
 
         StringAssert.EndsWith(fileId, ".pdf", $"<{fileId}> carries no extension of the file the user picked.");
         Assert.IsTrue(
-            Guid.TryParseExact(fileId[..^".pdf".Length].TrimEnd('.'), "D", out _),
+            Guid.TryParseExact(fileId[..^".pdf".Length], "D", out _),
             $"<{fileId}> is not a name of the shape the objects in the bucket have.");
     }
 

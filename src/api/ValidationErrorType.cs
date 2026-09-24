@@ -8,5 +8,4 @@ public enum ValidationErrorType
     Unknown = 0,
     Json,
     Csv,
-    Attachment,
 }

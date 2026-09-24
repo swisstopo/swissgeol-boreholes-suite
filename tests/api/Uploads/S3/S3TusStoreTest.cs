@@ -362,7 +362,12 @@ public class S3TusStoreTest
 
         Assert.IsNotNull(file);
         Assert.AreEqual(fileId, file.Id);
-        Assert.IsTrue(TusUploadMetadata.TryReadStored(await file.GetMetadataAsync(CancellationToken.None), out var metadata));
+        var stored = (await file.GetMetadataAsync(CancellationToken.None)).ToDictionary(
+            entry => entry.Key,
+            entry => entry.Value.GetString(Encoding.UTF8),
+            StringComparer.Ordinal);
+
+        Assert.IsTrue(TusUploadMetadata.TryRead(stored, out var metadata));
         Assert.AreEqual(42, metadata.LogRunId);
         Assert.AreEqual(TestFileName, metadata.FileName);
     }

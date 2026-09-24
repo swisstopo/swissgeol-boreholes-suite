@@ -339,19 +339,15 @@ public class BoreholeExportController : ControllerBase
 
             // A profile whose upload never arrived has nothing to contribute to the archive, and
             // probing a null key would fail the export over a file that was never there.
-            var storedProfiles = new List<(Profile Profile, string ObjectKey)>();
-            foreach (var profile in profiles)
-            {
-                if (profile.NameUuid is { } objectKey) storedProfiles.Add((profile, objectKey));
-            }
+            var storedProfiles = profiles.Where(p => p.NameUuid != null).ToList();
 
             // The archive is streamed, so the status code is committed as soon as the first byte
             // reaches the response body. Probe every object up front, while returning a problem
             // response is still possible.
-            var probes = await Task.WhenAll(storedProfiles.Select(async stored => new
+            var probes = await Task.WhenAll(storedProfiles.Select(async profile => new
             {
-                stored.Profile,
-                Exists = await profileCloudService.ObjectExists(stored.ObjectKey, cancellationToken).ConfigureAwait(false),
+                Profile = profile,
+                Exists = await profileCloudService.ObjectExists(profile.NameUuid!, cancellationToken).ConfigureAwait(false),
             })).ConfigureAwait(false);
 
             var missingFileNames = probes.Where(probe => !probe.Exists).Select(probe => probe.Profile.Name).ToList();
@@ -361,12 +357,11 @@ public class BoreholeExportController : ControllerBase
                 return Problem("An error occurred while fetching a file from the cloud storage.");
             }
 
-            foreach (var (profile, objectKey) in storedProfiles)
+            foreach (var profile in storedProfiles)
             {
-                // Export the file with the original name and the UUID as a prefix to make it unique while preserving the original name.
-                // Sanitize the name to prevent Zip Slip path traversal via directory separators embedded in the original file name.
+                var objectKey = profile.NameUuid!;
                 entries.Add(new ZipEntrySource(
-                    $"{objectKey}_{FileHelper.SanitizeZipEntryFileName(profile.Name, "export")}",
+                    FileHelper.BuildAttachmentZipEntryName(objectKey, profile.Name),
                     entryCancellationToken => profileCloudService.GetObjectStream(objectKey, entryCancellationToken)));
             }
 

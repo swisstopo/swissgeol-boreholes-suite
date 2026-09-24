@@ -6,6 +6,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
 using Moq;
+using System.Diagnostics.CodeAnalysis;
 using System.Security.Claims;
 using System.Text;
 using tusdotnet.Models;
@@ -107,7 +108,7 @@ public class LogFileTusEndpointTest
     {
         var header = $"logRunId {Encode("42")},filename {Encode(TestFileName)},contentType {Encode(TextPlainContentType)}";
 
-        Assert.IsTrue(TusUploadMetadata.TryReadHeader(header, out var metadata));
+        Assert.IsTrue(TryReadHeader(header, out var metadata));
         Assert.AreEqual(42, metadata.LogRunId);
         Assert.IsNull(metadata.LogFileId);
         Assert.AreEqual(TestFileName, metadata.FileName);
@@ -119,7 +120,7 @@ public class LogFileTusEndpointTest
     {
         var header = $"logRunId {Encode("42")},logFileId {Encode("7")},filename {Encode(TestFileName)},contentType {Encode(TextPlainContentType)}";
 
-        Assert.IsTrue(TusUploadMetadata.TryReadHeader(header, out var metadata));
+        Assert.IsTrue(TryReadHeader(header, out var metadata));
         Assert.AreEqual(7, metadata.LogFileId);
     }
 
@@ -128,43 +129,67 @@ public class LogFileTusEndpointTest
     {
         var header = $"filename {Encode(TestFileName)},contentType {Encode(TextPlainContentType)}";
 
-        Assert.IsFalse(TusUploadMetadata.TryReadHeader(header, out _));
+        Assert.IsFalse(TryReadHeader(header, out _));
     }
 
     [TestMethod]
     public void TryReadRejectsAValueThatIsNotBase64()
     {
-        Assert.IsFalse(TusUploadMetadata.TryReadHeader("logRunId not-base64!", out _));
+        Assert.IsFalse(TryReadHeader("logRunId not-base64!", out _));
     }
 
+    /// <summary>
+    /// The store keeps the metadata of the request that created the upload, and every request
+    /// after it is read from there rather than from a header of its own.
+    /// </summary>
     [TestMethod]
-    public void TryReadStoredAgreesWithTheHeaderTheUploadWasCreatedFrom()
+    public void TryReadAgreesWithTheHeaderTheUploadWasCreatedFrom()
     {
         var header = $"logRunId {Encode("42")},logFileId {Encode("7")},filename {Encode(TestFileName)},contentType {Encode(TextPlainContentType)}";
 
-        Assert.IsTrue(TusUploadMetadata.TryReadHeader(header, out var fromHeader));
-        Assert.IsTrue(TusUploadMetadata.TryReadStored(Metadata.Parse(header), out var fromStore));
+        Assert.IsTrue(TryReadHeader(header, out var fromHeader));
+        Assert.IsTrue(TusUploadMetadata.TryRead(Stored(header), out var fromStore));
         Assert.AreEqual(fromHeader, fromStore);
     }
 
     [TestMethod]
-    public void TryReadStoredTreatsALogFileIdThatIsNotAnIdAsReplacingNothing()
+    public void TryReadTreatsALogFileIdThatIsNotAnIdAsReplacingNothing()
     {
         var header = $"logRunId {Encode("42")},logFileId {Encode("not-an-id")},filename {Encode(TestFileName)},contentType {Encode(TextPlainContentType)}";
 
         // Creating the upload accepts this, so completing it has to accept it too rather than
         // failing once the whole file has already been sent.
-        Assert.IsTrue(TusUploadMetadata.TryReadStored(Metadata.Parse(header), out var metadata));
+        Assert.IsTrue(TusUploadMetadata.TryRead(Stored(header), out var metadata));
         Assert.IsNull(metadata.LogFileId);
     }
 
     [TestMethod]
-    public void TryReadStoredRejectsMetadataWithoutALogRun()
+    public void TryReadRejectsStoredMetadataWithoutALogRun()
     {
         var header = $"filename {Encode(TestFileName)},contentType {Encode(TextPlainContentType)}";
 
-        Assert.IsFalse(TusUploadMetadata.TryReadStored(Metadata.Parse(header), out _));
+        Assert.IsFalse(TusUploadMetadata.TryRead(Stored(header), out _));
     }
 
     private static string Encode(string value) => Convert.ToBase64String(Encoding.UTF8.GetBytes(value));
+
+    /// <summary>
+    /// Reads a raw header the way the endpoint does when an upload is created: decode it, then
+    /// read what the decoded values say the upload is for.
+    /// </summary>
+    private static bool TryReadHeader(string headerValue, [NotNullWhen(true)] out TusUploadMetadata? metadata)
+    {
+        metadata = null;
+        return UploadMetadataHeader.TryRead(headerValue, out var values) && TusUploadMetadata.TryRead(values, out metadata);
+    }
+
+    /// <summary>
+    /// The decoded values as the endpoint reads them back off the store, which holds the metadata
+    /// parsed rather than as the header it arrived in.
+    /// </summary>
+    private static Dictionary<string, string> Stored(string headerValue) =>
+        Metadata.Parse(headerValue).ToDictionary(
+            entry => entry.Key,
+            entry => entry.Value.GetString(Encoding.UTF8),
+            StringComparer.Ordinal);
 }
