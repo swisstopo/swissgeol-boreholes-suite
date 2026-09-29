@@ -106,7 +106,8 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
       if (canton) formMethods.setValue("canton", canton);
       if (municipality) formMethods.setValue("municipality", municipality);
       formMethods.setValue("originalReferenceSystemId", ReferenceSystemCode.LV95);
-      handleCoordinateTransformation(
+      // Not awaited: the transformation writes its result into the form.
+      void handleCoordinateTransformation(
         ReferenceSystemKey.LV95,
         ReferenceSystemKey.LV03,
         parseFloat(x),

@@ -28,14 +28,22 @@ const Panel: FC<{ save: () => Promise<boolean> }> = ({ save }) => {
 /** A save that stays in flight until the test lets it finish. */
 const pendingSave = () => {
   let finish: (saved: boolean) => void = () => {};
-  const handler = vi.fn(
-    () =>
-      new Promise<boolean>(resolve => {
-        finish = resolve;
-      }),
-  );
+  let pending: Promise<boolean> = Promise.resolve(true);
+  const handler = vi.fn(() => {
+    pending = new Promise<boolean>(resolve => {
+      finish = resolve;
+    });
+    return pending;
+  });
 
-  return { handler, finish: (saved: boolean) => finish(saved) };
+  // Handing the save back lets the caller await what the panel is still waiting on.
+  return {
+    handler,
+    finish: (saved: boolean) => {
+      finish(saved);
+      return pending;
+    },
+  };
 };
 
 describe("SaveProvider", () => {
@@ -53,7 +61,7 @@ describe("SaveProvider", () => {
 
     await waitFor(() => expect(handler).toHaveBeenCalledTimes(1));
 
-    await act(async () => finish(true));
+    await act(() => finish(true));
   });
 
   it("does not start a second save while the first is still running", async () => {
@@ -73,6 +81,6 @@ describe("SaveProvider", () => {
 
     expect(handler).toHaveBeenCalledTimes(1);
 
-    await act(async () => finish(true));
+    await act(() => finish(true));
   });
 });

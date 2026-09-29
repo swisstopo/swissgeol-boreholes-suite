@@ -443,7 +443,7 @@ public class ImportController : ControllerBase
 
     internal static int GetPrecision(IReaderRow row, string fieldName)
     {
-        if (row.HeaderRecord != null && row.HeaderRecord.Any(h => h == fieldName))
+        if (row.HeaderRecord != null && row.HeaderRecord.Any(h => CsvConfigHelper.IsSameColumn(h, fieldName)))
         {
             var value = row.GetField<string?>(fieldName);
             if (!string.IsNullOrEmpty(value) && value.Contains('.', StringComparison.Ordinal))

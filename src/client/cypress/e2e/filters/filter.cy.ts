@@ -408,7 +408,9 @@ describe("Search filter tests", () => {
     cy.dataCy("filter-chip-identifierValue").should("exist");
     cy.dataCy("boreholes-number-preview").should("have.text", "13");
     //removing the identifier type chip clears only the value field
-    cy.dataCy("filter-chip-identifierTypeId-100000005").within(() => cy.get("svg").click());
+    cy.dataCy("filter-chip-identifierTypeId-100000005").within(() => {
+      cy.get("svg").click();
+    });
     cy.dataCy("boreholes-number-preview").should("have.text", "60");
     cy.url().should("include", "identifierValue=").and("not.include", "identifierTypeId=");
   });

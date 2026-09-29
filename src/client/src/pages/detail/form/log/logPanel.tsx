@@ -4,7 +4,7 @@ import { Box, CircularProgress, Stack } from "@mui/material";
 import { Trash2, X } from "lucide-react";
 import UploadIcon from "../../../../assets/icons/upload.svg?react";
 import { v4 as uuidv4 } from "uuid";
-import { formatBytes, isAbortError, progressRefreshIntervalMs } from "../../../../api/transferProgress.ts";
+import { isAbortError, progressRefreshIntervalMs } from "../../../../api/transferProgress.ts";
 import { AddButton, BoreholesBaseButton } from "../../../../components/buttons/buttons.tsx";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { FullPageCentered } from "../../../../components/styledComponents.ts";
@@ -13,7 +13,7 @@ import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
 import { useApiErrorAlert } from "../../../../hooks/useShowAlertOnError.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
 import { SaveContext } from "../../saveContext.tsx";
-import { ImportLogRunsModal } from "./importLogRunsModal.tsx";
+import { ImportLogWizard } from "./importWizard/importLogWizard.tsx";
 import {
   countPendingUploads,
   fetchLogRunsByBoreholeId,
@@ -34,13 +34,14 @@ import {
   prepareLogRunForSubmit,
   toTrackedRuns,
 } from "./logUtils.ts";
+import { uploadProgressHint } from "./uploadProgressText.ts";
 
 export const LogPanel: FC = () => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
   const boreholeId = useRequiredId();
   const [selectedLogRunId, setSelectedLogRunId] = useState<string | undefined>();
-  const [isImporting, setIsImporting] = useState<boolean>(false);
+  const [isImporting, setIsImporting] = useState(false);
   const {
     registerSaveHandler,
     registerResetHandler,
@@ -58,7 +59,7 @@ export const LogPanel: FC = () => {
   const lastReportedAt = useRef(0);
   const lastReportedFile = useRef(0);
   const runningSave = useRef<AbortController | null>(null);
-  const tmpLogRunsFlat: LogRun[] = useMemo(() => tmpLogRuns.map(l => l.item as LogRun), [tmpLogRuns]);
+  const tmpLogRunsFlat: LogRun[] = useMemo(() => tmpLogRuns.map(l => l.item), [tmpLogRuns]);
 
   const {
     delete: { mutateAsync: deleteLogRuns },
@@ -103,7 +104,7 @@ export const LogPanel: FC = () => {
         },
       },
     ]);
-  }, [hasChanges, showPrompt, triggerReset]);
+  }, [hasChanges, setIsImporting, showPrompt, triggerReset]);
 
   const updateLogRunItem = useCallback(
     (selectedId: string | undefined, item: LogRun, hasChanges: boolean) => {
@@ -182,20 +183,14 @@ export const LogPanel: FC = () => {
           lastReportedFile.current = position;
           lastReportedAt.current = now;
 
-          const placeInSave = { current: position, total: totalUploads };
-          const placeHint = t("uploadProgressHint", placeInSave);
-          const transferHint =
-            total === undefined
-              ? placeHint
-              : t("uploadProgressHintWithSize", {
-                  ...placeInSave,
-                  transferred: formatBytes(loaded),
-                  size: formatBytes(total),
-                });
+          const placeInSave = { current: position, count: totalUploads, transferred: loaded };
 
           setSaveProgress({
             message: isSent ? t("storingFile", { name: fileName }) : t("uploadingFile", { name: fileName }),
-            hint: isSent ? placeHint : transferHint,
+
+            // A file that is being stored has sent all of its bytes, so naming its size again
+            // would only repeat what the count just said.
+            hint: uploadProgressHint(t, isSent ? placeInSave : { ...placeInSave, total }),
             onCancel,
           });
         };
@@ -247,7 +242,7 @@ export const LogPanel: FC = () => {
     [addLogRun, boreholeId, setSaveProgress, setTmpLogRuns, t, tmpLogRuns, updateLogRun],
   );
 
-  const onReset = useCallback(async () => {
+  const onReset = useCallback(() => {
     initTmpLogRuns();
   }, [initTmpLogRuns]);
 
@@ -354,7 +349,7 @@ export const LogPanel: FC = () => {
           </Stack>
         )}
       </Box>
-      <ImportLogRunsModal isImporting={isImporting} setIsImporting={setIsImporting} />
+      <ImportLogWizard isImporting={isImporting} setIsImporting={setIsImporting} />
       <LogRunModal logRun={selectedLogRun} updateLogRun={updateTmpLogRun} runs={tmpLogRunsFlat} />
     </>
   );

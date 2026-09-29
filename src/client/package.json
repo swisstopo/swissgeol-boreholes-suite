@@ -127,7 +127,7 @@
     "test:unit": "vitest run",
     "test:unit:watch": "vitest",
     "ts": "tsc --noEmit --incremental --tsBuildInfoFile .tsbuildinfo",
-    "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.json --report-unused-disable-directives --max-warnings 0",
+    "lint": "eslint . --ext .js,.jsx,.ts,.tsx,.json --report-unused-disable-directives --max-warnings 350",
     "knip": "knip",
     "cy": "cypress open",
     "openapi:fetch": "curl -fsSL http://localhost:5000/swagger/v2/swagger.json -o openapi/swagger.json",

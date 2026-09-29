@@ -112,7 +112,7 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
     setIsLoading(false);
   }, [apiRef, exportAttachments]);
 
-  const resetWithoutSave = useCallback(async () => {
+  const resetWithoutSave = useCallback(() => {
     if (apiRef.current && rows) {
       apiRef.current.setRows(rows);
       setUpdatedRows(new Map());
@@ -120,7 +120,8 @@ export const useAttachments = <T extends AttachmentWithPublicState>({
   }, [apiRef, rows]);
 
   useEffect(() => {
-    onLoad();
+    // Not awaited: effects cannot be async, and onLoad drives the grid through state.
+    void onLoad();
   }, [onLoad]);
 
   useEffect(() => {

@@ -87,8 +87,18 @@ export default defineConfig([
         tsconfigRootDir: __dirname,
       },
     },
+    extends: [...tseslint.configs.recommendedTypeChecked],
     rules: {
       "@typescript-eslint/no-deprecated": "error",
+      // Downgraded, not disabled, will be fixed step by step. Findings stay
+      // visible in the editor without blocking the build.
+      // The lint script caps warnings at the current count, so the number is a ratchet: it may
+      // only ever be lowered. A change that adds warnings fails the build like an error does.
+      "@typescript-eslint/no-unsafe-member-access": "warn",
+      "@typescript-eslint/no-unsafe-assignment": "warn",
+      "@typescript-eslint/no-unsafe-return": "warn",
+      "@typescript-eslint/no-unsafe-argument": "warn",
+      "@typescript-eslint/no-unsafe-call": "warn",
     },
   },
   {

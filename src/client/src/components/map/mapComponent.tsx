@@ -29,7 +29,6 @@ import {
   addWMTSLayerToMap,
   filterFeaturesByPolygon,
   getDrawSource,
-  LayerConfig,
   MapComponentProps,
   SRS,
 } from "./map.ts";
@@ -435,7 +434,7 @@ export const MapComponent: FC<MapComponentProps> = ({
         .map(layer => layer.get("name") as string),
     );
 
-    for (const [identifier, layer] of Object.entries(layers) as [string, LayerConfig][]) {
+    for (const [identifier, layer] of Object.entries(layers)) {
       if (!existingNames.has(identifier)) {
         if (layer.type === "WMTS") {
           addWMTSLayerToMap(map, identifier, layer, overlaysRef.current);

@@ -1,5 +1,5 @@
 // @vitest-environment jsdom
-import { cleanup, fireEvent, render, screen } from "@testing-library/react";
+import { act, cleanup, fireEvent, render, screen } from "@testing-library/react";
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { FormDialog } from "./formDialog";
 
@@ -86,5 +86,51 @@ describe("FormDialog", () => {
     expect(screen.getByText("Custom2")).toBeDefined();
     expect(screen.queryByText("Cancel")).toBeNull();
     expect(screen.queryByText("Apply")).toBeNull();
+  });
+
+  it("custom action without onClick calls onClose", () => {
+    const onClose = vi.fn();
+    render(
+      <FormDialog open={true} title="Test" onClose={onClose} actions={[{ label: "close" }]}>
+        <div />
+      </FormDialog>,
+    );
+
+    fireEvent.click(screen.getByText("Close"));
+    expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it("custom action calls onClose once its onClick resolves to true", async () => {
+    const onClose = vi.fn();
+    const outcome = Promise.resolve(true);
+    const onClick = vi.fn(() => outcome);
+    render(
+      <FormDialog open={true} title="Test" onClose={onClose} actions={[{ label: "save", onClick }]}>
+        <div />
+      </FormDialog>,
+    );
+
+    fireEvent.click(screen.getByText("Save"));
+    await act(() => outcome);
+
+    expect(onClick).toHaveBeenCalledOnce();
+    expect(onClose).toHaveBeenCalledOnce();
+  });
+
+  it("custom action keeps the dialog open when its onClick resolves to false", async () => {
+    const onClose = vi.fn();
+    const outcome = Promise.resolve(false);
+    const onClick = vi.fn(() => outcome);
+    render(
+      <FormDialog open={true} title="Test" onClose={onClose} actions={[{ label: "save", onClick }]}>
+        <div />
+      </FormDialog>,
+    );
+
+    fireEvent.click(screen.getByText("Save"));
+    await act(() => outcome);
+
+    expect(onClick).toHaveBeenCalledOnce();
+    expect(onClose).not.toHaveBeenCalled();
   });
 });

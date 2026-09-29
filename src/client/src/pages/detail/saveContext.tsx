@@ -112,7 +112,7 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
     setHasResetHandler(true);
   }, []);
 
-  const triggerReset = useCallback(async () => {
+  const triggerReset = useCallback(() => {
     if (resetHandlerRef.current) {
       resetHandlerRef.current();
       setHasChanges(false);
@@ -131,7 +131,8 @@ export const SaveProvider: FC<PropsWithChildren> = ({ children }) => {
     const handleKeyDown = (event: KeyboardEvent) => {
       if (event.ctrlKey && event.key === "s") {
         event.preventDefault();
-        triggerSave();
+        // Not awaited: the keyboard handler returns void and the save bar reflects the outcome.
+        void triggerSave();
       }
     };
     if (showSaveBar && hasChanges) {

@@ -7358,21 +7358,80 @@ export type DeleteApiVbyVersionLogByIdResponses = {
   200: unknown;
 };
 
+export type DeleteApiVbyVersionLogFileByIdData = {
+  body?: never;
+  path: {
+    /**
+     * The BDMS.Models.LogFile.Id to delete.
+     */
+    id: number;
+    version: string;
+  };
+  query?: never;
+  url: "/api/v{version}/log/file/{id}";
+};
+
+export type DeleteApiVbyVersionLogFileByIdResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
 export type PostApiVbyVersionLogImportData = {
   body?: {
+    /**
+     * The log runs CSV, if the import carries one.
+     */
     logRunsCsvFile?: Blob | File;
+    /**
+     * The log files CSV, if the import carries one.
+     */
     logFilesCsvFile?: Blob | File;
+    /**
+     * The attachments the client holds, each as "runNumber/fileName".
+     */
+    providedAttachmentNames?: Array<string>;
   };
   path: {
     version: string;
   };
   query?: {
+    /**
+     * The borehole the import belongs to.
+     */
     boreholeId?: number;
   };
   url: "/api/v{version}/log/import";
 };
 
 export type PostApiVbyVersionLogImportResponses = {
+  /**
+   * OK
+   */
+  200: unknown;
+};
+
+export type PostApiVbyVersionLogImportRequiredfilesData = {
+  body?: {
+    /**
+     * The log files CSV the import is to be started with.
+     */
+    logFilesCsvFile?: Blob | File;
+  };
+  path: {
+    version: string;
+  };
+  query?: {
+    /**
+     * The borehole the import is being prepared for.
+     */
+    boreholeId?: number;
+  };
+  url: "/api/v{version}/log/import/requiredfiles";
+};
+
+export type PostApiVbyVersionLogImportRequiredfilesResponses = {
   /**
    * OK
    */

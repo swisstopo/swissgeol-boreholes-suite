@@ -121,7 +121,7 @@ export const ExportDialog = ({ isExporting, setIsExporting, exportItems }: Expor
                 <ExportButton
                   key={`export-${item.label}`}
                   label={item.label}
-                  onClick={() => handleExport(item.exportFunction)}
+                  onClick={() => void handleExport(item.exportFunction)}
                 />
               ))}
             </Stack>

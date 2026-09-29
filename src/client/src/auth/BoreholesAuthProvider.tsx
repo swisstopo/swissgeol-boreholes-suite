@@ -34,11 +34,12 @@ const PrefetchBoreholes: FC = () => {
   useEffect(() => {
     if (auth.isAuthenticated) {
       const filterRequestSubmission = toFilterRequestSubmission(getDefaultFilterRequestFromSession());
-      queryClient.prefetchQuery({
+      // Not awaited: prefetching warms the cache in the background and nothing renders from it yet.
+      void queryClient.prefetchQuery({
         queryKey: [boreholeQueryKey, filterRequestSubmission],
         queryFn: () => filterBoreholes(filterRequestSubmission),
       });
-      queryClient.prefetchQuery({
+      void queryClient.prefetchQuery({
         queryKey: [boreholeQueryKey, "filter-stats", filterRequestSubmission],
         queryFn: () => fetchFilterStats(filterRequestSubmission),
       });
@@ -70,8 +71,9 @@ export const BoreholesAuthProvider: FC<PropsWithChildren<BoreholeAuthProviderPro
 
     const onSigninCallback = (user: User | undefined) => {
       const preLoginState = JSON.parse(atob(user?.url_state ?? ""));
-      // restore location after login.
-      router.navigate(preLoginState.path, { replace: true });
+      // restore location after login. Not awaited: the OIDC callback returns void and there is no
+      // meaningful recovery if the navigation fails.
+      void router.navigate(preLoginState.path, { replace: true });
     };
 
     setOidcConfig({

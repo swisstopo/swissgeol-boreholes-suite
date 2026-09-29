@@ -15,15 +15,17 @@ export const AuthOverlay: FC<PropsWithChildren> = ({ children }) => {
   const canLoadUser = isAuthenticated && (auth.anonymousModeEnabled || (auth.user != null && !auth.user.expired));
   const { data: user, isError } = useCurrentUser(canLoadUser);
 
+  // Neither redirect is awaited: both hand the browser over to the identity provider, so there is
+  // nothing left to do in this document once they resolve.
   const signIn = () => {
     const path = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-    auth.signinRedirect({
+    void auth.signinRedirect({
       url_state: btoa(JSON.stringify({ path })),
     });
   };
 
   const signOut = () => {
-    auth.signoutRedirect();
+    void auth.signoutRedirect();
   };
 
   if (isAuthenticated && user) {

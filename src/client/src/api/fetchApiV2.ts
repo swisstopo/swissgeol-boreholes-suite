@@ -193,9 +193,10 @@ export const useBoreholeGeometryMutations = () => {
     mutationFn: async ({ boreholeId, formData }: { boreholeId: number; formData: FormData }) => {
       return await uploadWithApiError(`boreholegeometry?boreholeId=${boreholeId}`, "POST", formData);
     },
+    // Not awaited: returning the promise would keep the mutation pending until the refetch settled.
     onSuccess: () => {
       resetTabStatus();
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: [geometryQueryKey],
       });
     },
@@ -206,7 +207,7 @@ export const useBoreholeGeometryMutations = () => {
     },
     onSuccess: () => {
       resetTabStatus();
-      queryClient.invalidateQueries({
+      void queryClient.invalidateQueries({
         queryKey: [geometryQueryKey],
       });
     },
