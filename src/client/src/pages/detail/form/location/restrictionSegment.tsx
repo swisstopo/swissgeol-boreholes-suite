@@ -52,7 +52,7 @@ const RestrictionSegment = ({ borehole, formMethods }: RestrictionSegmentProps) 
             label="restrictionUntilDate"
             disabled={!restrictionUntilEnabled}
             readonly={!editingEnabled || !restrictionUntilEnabled}
-            value={borehole.restrictionUntil as unknown as Date}
+            value={borehole.restrictionUntil}
             type={FormValueType.Date}
           />
           <FormBooleanSelect

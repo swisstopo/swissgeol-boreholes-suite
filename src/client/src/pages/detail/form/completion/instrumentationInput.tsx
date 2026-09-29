@@ -21,7 +21,8 @@ const InstrumentationInput = ({ item, parentId }: DataCardItemInputProps<Instrum
 
   useEffect(() => {
     if (parentId) {
-      getCasings(parentId).then(casings => {
+      // Not awaited: effects cannot be async, and the legacy fetch helper reports API errors itself.
+      void getCasings(parentId).then(casings => {
         setCasings(casings);
       });
     }

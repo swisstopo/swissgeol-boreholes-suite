@@ -23,7 +23,7 @@ vi.mock("@react-hook/resize-observer", () => ({
     useLayoutEffect(() => {
       const el = target && typeof target === "object" && "current" in target ? target.current : target;
       if (!el) return;
-      const sub: Subscription = { target: el as Element, cb };
+      const sub: Subscription = { target: el, cb };
       subscriptions.push(sub);
       return () => {
         const i = subscriptions.indexOf(sub);

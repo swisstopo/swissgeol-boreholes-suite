@@ -20,7 +20,7 @@ export const AddWorkgroupDialog: FC<AddWorkgroupDialogProps> = ({ open, setOpen 
     add: { mutate: add },
   } = useWorkgroupMutations();
 
-  const addWorkgroup = async () => {
+  const addWorkgroup = () => {
     if (!workgroupName) return;
     const workgroup: Workgroup = {
       id: 0,

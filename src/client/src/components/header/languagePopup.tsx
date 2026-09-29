@@ -17,7 +17,7 @@ export function LanguagePopup() {
         SwissgeolCoreI18n.setLanguage(languages[languageIndex] as Language);
       } else {
         setSelectedLanguage(defaultLanguage);
-        SwissgeolCoreI18n.setLanguage(defaultLanguage as Language);
+        SwissgeolCoreI18n.setLanguage(defaultLanguage);
       }
     };
     handleLanguageChange();
@@ -31,7 +31,8 @@ export function LanguagePopup() {
   }, []);
 
   const onLanguageChanged = (language: string) => {
-    i18n.changeLanguage(language);
+    // Not awaited: the handler returns void and the UI re-renders once the language resources load.
+    void i18n.changeLanguage(language);
   };
 
   return (

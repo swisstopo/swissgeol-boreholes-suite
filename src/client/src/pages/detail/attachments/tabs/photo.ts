@@ -1,5 +1,5 @@
 import { useCallback } from "react";
-import { useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
+import { skipToken, useQuery, useQueryClient, UseQueryResult } from "@tanstack/react-query";
 import { download } from "../../../../api/download.ts";
 import { ApiError } from "../../../../api/errorClasses.ts";
 import { fetchApiV2Base, fetchApiV2Legacy, fetchApiV2WithApiError, upload } from "../../../../api/fetchApiV2.ts";
@@ -59,19 +59,20 @@ export const usePhotos = (boreholeId?: number): UseQueryResult<Photo[]> =>
 // Necessary as long as the photo mutations are not handled via tanstack-query.
 export const useReloadPhotos = (boreholeId: number) => {
   const queryClient = useQueryClient();
+  // Not awaited: callers reload in the background and do not wait for the refetch.
   return useCallback(() => {
-    queryClient.invalidateQueries({ queryKey: [photoQueryKey, boreholeId] });
+    void queryClient.invalidateQueries({ queryKey: [photoQueryKey, boreholeId] });
   }, [queryClient, boreholeId]);
 };
 
 export function usePhotoImage(photoId?: number) {
   return useQuery({
     queryKey: ["photoImage", photoId],
-    enabled: !!photoId,
-    queryFn: async () => {
-      if (!photoId) return;
-      const blob = await getPhotoImageData(photoId);
-      return getImageFromBlob(blob);
-    },
+    queryFn: photoId
+      ? async () => {
+          const blob = await getPhotoImageData(photoId);
+          return getImageFromBlob(blob);
+        }
+      : skipToken,
   });
 }

@@ -3,13 +3,13 @@ import { Accept, FileRejection, useDropzone } from "react-dropzone";
 import { useTranslation } from "react-i18next";
 import { Box, Stack, Typography } from "@mui/material";
 import { CloudUpload, X } from "lucide-react";
-import { FileSizeLimit, largeMaxFileSizeBytes } from "../../../../api/file.ts";
+import { formatFileSize, getLargeMaxFileSize } from "../../../../api/fileSize.ts";
 import { theme } from "../../../../AppTheme.ts";
 import { StandaloneIconButton } from "../../../../components/buttons/buttons.tsx";
 
 interface FileDropzoneProps {
-  existingFile?: File;
   onChange: (files: File[]) => string | void | Promise<void>;
+  existingFiles?: File[];
   errorMessageKey?: string;
   accept?: Accept;
   maxFileSize?: number;
@@ -40,16 +40,19 @@ const filterExpectedFiles = (
 };
 
 export const FileDropzone: FC<FileDropzoneProps> = ({
-  existingFile,
+  existingFiles,
   onChange,
   errorMessageKey,
   accept,
-  maxFileSize = largeMaxFileSizeBytes,
+  maxFileSize = getLargeMaxFileSize(),
   multiple = false,
   expectedFileNames,
 }) => {
   const { t } = useTranslation();
-  const [files, setFiles] = useState<File[]>(existingFile ? [existingFile] : []);
+
+  // Seeds the selection on mount only, so later changes to the prop are ignored. A parent that
+  // has to change the selection must remount the dropzone, which the import wizard steps do.
+  const [files, setFiles] = useState<File[]>(existingFiles ?? []);
   const [error, setError] = useState<string | undefined>();
 
   useEffect(() => {
@@ -57,19 +60,14 @@ export const FileDropzone: FC<FileDropzoneProps> = ({
     setError(t(errorMessageKey));
   }, [errorMessageKey, t]);
 
-  const fileSizeLabel = useMemo(() => {
-    if (maxFileSize === largeMaxFileSizeBytes) return FileSizeLimit.Large;
-    const gb = maxFileSize / 1_000_000_000;
-    if (gb >= 1) return `${gb} GB`;
-    const mb = maxFileSize / 1_000_000;
-    return mb >= 1 ? `${mb} MB` : `${maxFileSize / 1_000} KB`;
-  }, [maxFileSize]);
+  const fileSizeLabel = useMemo(() => formatFileSize(maxFileSize), [maxFileSize]);
 
   const removeFileAt = useCallback(
     (index: number) => {
       setFiles(prev => {
         const next = prev.filter((_, i) => i !== index);
-        onChange(next);
+        // Not awaited: onChange is a form callback that returns void.
+        void onChange(next);
         return next;
       });
     },

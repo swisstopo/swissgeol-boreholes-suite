@@ -25,6 +25,7 @@ import { formatNumberForDisplay } from "../../../components/form/formUtils.ts";
 import { FullPageCentered } from "../../../components/styledComponents.ts";
 import { Table } from "../../../components/table/table.tsx";
 import { useBoreholesNavigate } from "../../../hooks/useBoreholesNavigate.tsx";
+import { runWhenIdle } from "../../../utils.ts";
 import { SessionKeys } from "../SessionKey.ts";
 
 interface BoreholeTableProps {
@@ -269,16 +270,13 @@ export const BoreholeTable: FC<BoreholeTableProps> = ({
 
     // Workaround to restore scroll position see #https://github.com/mui/mui-x/issues/5071 and https://github.com/mui/mui-x/issues/4674
     if (firstRender.current) {
-      requestIdleCallback(
-        () => {
-          const storedScrollPosition = sessionStorage.getItem(SessionKeys.tableScrollPosition);
-          const scrollPosition = storedScrollPosition === null ? { top: 0, left: 0 } : JSON.parse(storedScrollPosition);
-          apiRef.current?.scroll(scrollPosition);
-          scrollPositionRef.current = scrollPosition;
-          firstRender.current = false;
-        },
-        { timeout: 1000 },
-      );
+      return runWhenIdle(() => {
+        const storedScrollPosition = sessionStorage.getItem(SessionKeys.tableScrollPosition);
+        const scrollPosition = storedScrollPosition === null ? { top: 0, left: 0 } : JSON.parse(storedScrollPosition);
+        apiRef.current?.scroll(scrollPosition);
+        scrollPositionRef.current = scrollPosition;
+        firstRender.current = false;
+      }, 1000);
     }
   }, [apiRef]);
 

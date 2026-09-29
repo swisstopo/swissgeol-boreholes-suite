@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 import { useReloadBoreholes } from "../../../../../api/borehole.ts";
-import { FieldMeasurement, FieldMeasurementResult } from "../../../../../api/generated";
+import { FieldMeasurement } from "../../../../../api/generated";
 import { AddButton } from "../../../../../components/buttons/buttons.tsx";
 import { useCodelists } from "../../../../../components/codelist.ts";
 import { DataCardContext } from "../../../../../components/dataCard/dataCardContext.tsx";
@@ -60,14 +60,16 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
     resetTabStatus();
     const prepared = prepareFormDataForSubmit(data);
     if (item.id === 0) {
-      addFieldMeasurement({
+      // Neither call is awaited: the legacy fetch helper reports API errors itself, and the submit
+      // handler returns void.
+      void addFieldMeasurement({
         ...prepared,
       }).then(() => {
         triggerReload();
         reloadBoreholes();
       });
     } else {
-      updateFieldMeasurement({
+      void updateFieldMeasurement({
         ...item,
         ...prepared,
       }).then(() => {
@@ -86,7 +88,8 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
   useFormDirtyMarkAsChanged({ formState });
 
   useEffect(() => {
-    trigger("fieldMeasurementResults");
+    // Not awaited: effects cannot be async, and the validation result is read from form state.
+    void trigger("fieldMeasurementResults");
     let currentUnits = {};
     getValues()["fieldMeasurementResults"]?.forEach((element, index) => {
       currentUnits = {
@@ -110,14 +113,14 @@ export const FieldMeasurementInput: FC<FieldMeasurementInputProps> = ({ item, pa
         parameterId: r.parameterId ?? 0,
         fieldMeasurementId: 0,
         value: parseFloatWithThousandsSeparator(r.value) ?? undefined,
-      })) as FieldMeasurementResult[];
+      }));
     }
     return prepared;
   };
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={handleSubmit(submitForm)}>
+      <form onSubmit={event => void handleSubmit(submitForm)(event)}>
         <FormContainer>
           <ObservationInput observation={item} />
           <Box
