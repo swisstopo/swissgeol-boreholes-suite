@@ -1,7 +1,6 @@
 ﻿using BDMS.Models;
 using CsvHelper;
 using CsvHelper.Configuration;
-using Humanizer;
 using NetTopologySuite.Mathematics;
 using NetTopologySuite.Utilities;
 using System.Globalization;
@@ -10,11 +9,15 @@ namespace BDMS;
 
 public static class CsvConfigHelper
 {
+    /// <summary>
+    /// Reads the import CSVs. A column is matched by its letters and digits alone, so the header is
+    /// found whatever casing, spacing or separator the writing system spelled it with.
+    /// </summary>
     internal static readonly CsvConfiguration CsvReadConfig = new(new CultureInfo("de-CH"))
     {
         Delimiter = ";",
         IgnoreReferences = true,
-        PrepareHeaderForMatch = args => args.Header.Humanize(LetterCasing.Title),
+        PrepareHeaderForMatch = args => NormalizeHeader(args.Header),
         MissingFieldFound = null,
     };
 
@@ -22,6 +25,25 @@ public static class CsvConfigHelper
     {
         Delimiter = ";",
     };
+
+    /// <summary>
+    /// Reduces a header to the characters a column name is recognised by.
+    /// </summary>
+    /// <param name="header">The header as it was written.</param>
+    /// <returns>The header's letters and digits, upper cased.</returns>
+    internal static string NormalizeHeader(string? header) =>
+        string.Concat((header ?? string.Empty).Where(char.IsLetterOrDigit)).ToUpperInvariant();
+
+    /// <summary>
+    /// Decides whether a header names the given column, the same way the reader does when it looks
+    /// the column up. Code that asks whether a column is present has to agree with the reader that
+    /// finds it, otherwise a column is read but reported missing, or the other way round.
+    /// </summary>
+    /// <param name="header">The header as it was written.</param>
+    /// <param name="column">The column name to recognise.</param>
+    /// <returns><c>true</c> if the header names the column.</returns>
+    internal static bool IsSameColumn(string? header, string column) =>
+        string.Equals(NormalizeHeader(header), NormalizeHeader(column), StringComparison.Ordinal);
 
     /// <summary>
     /// Get the CSV header <see cref="CsvHelper"/> for a class of type <typeparamref name="T"/>.

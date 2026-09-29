@@ -85,7 +85,9 @@ export const CompletionPanel = () => {
   const loadData = () => {
     setIsLoading(true);
     if (boreholeId && mounted.current) {
-      getCompletions(boreholeId).then(response => {
+      // Not awaited: the legacy fetch helper reports API errors itself, and results reach the UI
+      // through state.
+      void getCompletions(boreholeId).then(response => {
         if (response?.length > 0) {
           // Display primary completion first then order by created date
           response.sort((a, b) => {
@@ -128,6 +130,27 @@ export const CompletionPanel = () => {
       trySwitchTab: false,
       editing: state.editing,
     });
+  };
+
+  const saveCompletion = (completion: Completion, preventReload?: boolean) => {
+    if (completion.id === 0) {
+      void addCompletion(completion).then(() => {
+        setState({
+          ...state,
+          switchTabTo: state.switchTabTo === null ? state.displayed.length - 1 : state.switchTabTo,
+        });
+        if (!preventReload) {
+          loadData();
+        }
+        reloadBoreholes();
+      });
+    } else {
+      void updateCompletion(completion).then(() => {
+        if (!preventReload) {
+          loadData();
+        }
+      });
+    }
   };
 
   const handlePendingSave = () => {
@@ -183,27 +206,6 @@ export const CompletionPanel = () => {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [canSwitch]);
 
-  const saveCompletion = (completion: Completion, preventReload?: boolean) => {
-    if (completion.id === 0) {
-      addCompletion(completion).then(() => {
-        setState({
-          ...state,
-          switchTabTo: state.switchTabTo === null ? state.displayed.length - 1 : state.switchTabTo,
-        });
-        if (!preventReload) {
-          loadData();
-        }
-        reloadBoreholes();
-      });
-    } else {
-      updateCompletion(completion).then(() => {
-        if (!preventReload) {
-          loadData();
-        }
-      });
-    }
-  };
-
   const checkSwitchBeforeSave = (completion: Completion) => {
     if (state.trySwitchTab) {
       setCompletionToBeSaved(completion);
@@ -214,7 +216,7 @@ export const CompletionPanel = () => {
   };
 
   const copySelectedCompletion = () => {
-    copyCompletion(state.selected!.id).then(() => {
+    void copyCompletion(state.selected!.id).then(() => {
       setState({ ...state, switchTabTo: state.displayed.length });
       loadData();
     });
@@ -251,7 +253,7 @@ export const CompletionPanel = () => {
   const onDeleteConfirmed = () => {
     const newTabIndex = state.index > 0 ? state.index - 1 : 0;
     setState({ ...state, switchTabTo: newTabIndex, selected: null });
-    deleteCompletion(state.selected!.id).then(() => {
+    void deleteCompletion(state.selected!.id).then(() => {
       loadData();
       reloadBoreholes();
     });

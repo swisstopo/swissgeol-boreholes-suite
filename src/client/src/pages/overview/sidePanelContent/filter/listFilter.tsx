@@ -1,6 +1,6 @@
 import { FC, useCallback } from "react";
 import { Box } from "@mui/material";
-import { FilterRequest, useFilterStats } from "../../../../api/borehole.ts";
+import { useFilterStats } from "../../../../api/borehole.ts";
 import { FormContainer } from "../../../../components/form/form.ts";
 import { FilterKey, useBoreholeUrlParams } from "../../useBoreholeUrlParams.ts";
 import { FilterAdaptiveSelect } from "./FilterAdaptiveSelect.tsx";
@@ -23,7 +23,7 @@ interface ListFilterProps {
 export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
   const { activeFilters, setFilterField } = useBoreholeUrlParams();
   const searchData = inputConfig?.searchData;
-  const { data: stats } = useFilterStats(activeFilters as FilterRequest);
+  const { data: stats } = useFilterStats(activeFilters);
 
   const updateChange = useCallback(
     (attribute: string, value: string | boolean | number | null | number[] | undefined) => {
@@ -53,7 +53,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
                   item={filterItem}
                   filterValue={(value as string) ?? null}
                   onUpdate={value => updateChange(filterItem.key, value)}
-                  filterRequest={activeFilters as FilterRequest}
+                  filterRequest={activeFilters}
                 />
               )}
               {filterItem.type === "Date" && (
@@ -79,7 +79,7 @@ export const ListFilter: FC<ListFilterProps> = ({ inputConfig }) => {
                   options={textMultiSelectOptions(filterItem.key, stats)}
                   filterValue={value as string[] | undefined}
                   onUpdate={value => updateChange(filterItem.key, value as never)}
-                  counts={getDomainCountsForField(stats, filterItem.key) as Record<string | number, number> | undefined}
+                  counts={getDomainCountsForField(stats, filterItem.key)}
                 />
               )}
               {(filterItem.type === "NullableBoolean" || filterItem.type === "Boolean") && (

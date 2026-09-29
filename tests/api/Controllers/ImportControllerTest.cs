@@ -12,6 +12,7 @@ using Moq;
 using System.Globalization;
 using System.IO.Compression;
 using System.Security.Claims;
+using System.Text;
 using System.Text.RegularExpressions;
 using static BDMS.Helpers;
 
@@ -813,6 +814,50 @@ public class ImportControllerTest
     }
 
     [TestMethod]
+    public async Task UploadShouldSaveAnsiEncodedDatasetAsync()
+    {
+        SetupHttpClientFactoryMock("600000", "100000", null, null, null);
+
+        Encoding.RegisterProvider(CodePagesEncodingProvider.Instance);
+        var csv = "OriginalName;project_name;LocationX;LocationY\r\n"
+            + "Unit_Test_ansi_1;Forêt à côté de Bière;2000000;1000000\r\n";
+
+        // Excel writes this encoding for "Save As -> CSV". Only "Save As -> CSV UTF-8" produces UTF-8.
+        var boreholeCsvFile = GetFormFileByContent(csv, "ansi_testdata.csv", Encoding.GetEncoding(1252));
+
+        ActionResult<int> response = await controller.UploadCsvFileAsync(workgroupId: 1, boreholeCsvFile);
+
+        ActionResultAssert.IsOk(response.Result);
+        Assert.AreEqual(1, ((OkObjectResult)response.Result!).Value);
+
+        var borehole = await context.Boreholes.OrderByDescending(b => b.Id).FirstOrDefaultAsync();
+        Assert.AreEqual("Unit_Test_ansi_1", borehole.OriginalName);
+        Assert.AreEqual("Forêt à côté de Bière", borehole.ProjectName);
+    }
+
+    [TestMethod]
+    public async Task UploadShouldAcceptUtf8WithByteOrderMarkAsync()
+    {
+        SetupHttpClientFactoryMock("600000", "100000", null, null, null);
+
+        var csv = "OriginalName;project_name;LocationX;LocationY\r\n"
+            + "Unit_Test_bom_1;Forêt à côté de Bière;2000000;1000000\r\n";
+
+        // Our own exports now start with a byte order mark. Reimporting one must not turn the first
+        // header into a name that no longer matches OriginalName.
+        var boreholeCsvFile = GetFormFileByContent(csv, "bom_testdata.csv", new UTF8Encoding(encoderShouldEmitUTF8Identifier: true));
+
+        ActionResult<int> response = await controller.UploadCsvFileAsync(workgroupId: 1, boreholeCsvFile);
+
+        ActionResultAssert.IsOk(response.Result);
+        Assert.AreEqual(1, ((OkObjectResult)response.Result!).Value);
+
+        var borehole = await context.Boreholes.OrderByDescending(b => b.Id).FirstOrDefaultAsync();
+        Assert.AreEqual("Unit_Test_bom_1", borehole.OriginalName);
+        Assert.AreEqual("Forêt à côté de Bière", borehole.ProjectName);
+    }
+
+    [TestMethod]
     public async Task UploadWithMissingCoordinatesAsync()
     {
         var boreholeCsvFile = GetFormFileByExistingFile("no_coordinates_provided_testdata.csv");
@@ -1014,6 +1059,21 @@ public class ImportControllerTest
         StringAssert.Contains(problemDetails.Detail, "Header with name 'Location_x'[0] was not found.");
         StringAssert.Contains(problemDetails.Detail, "Header with name 'Location_y'[0] was not found.");
         StringAssert.Contains(problemDetails.Detail, "Header with name 'OriginalName'[0] was not found.");
+    }
+
+    [TestMethod]
+    public void GetPrecisionReadsTheColumnInAnySpelling()
+    {
+        // The column is looked up by its letters and digits alone, so the precision has to be read
+        // from the same column the value itself was read from, whichever way the header spells it.
+        using var reader = new StringReader("location_x;LOCATION_Y\n2100000.12;1000000.1234\n");
+        using var csv = new CsvHelper.CsvReader(reader, CsvConfigHelper.CsvReadConfig);
+        csv.Read();
+        csv.ReadHeader();
+        csv.Read();
+
+        Assert.AreEqual(2, ImportController.GetPrecision(csv, "LocationX"));
+        Assert.AreEqual(4, ImportController.GetPrecision(csv, "LocationY"));
     }
 
     [TestMethod]

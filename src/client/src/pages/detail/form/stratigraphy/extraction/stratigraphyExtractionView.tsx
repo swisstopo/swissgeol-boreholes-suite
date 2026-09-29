@@ -4,10 +4,14 @@ import { Box, CircularProgress, Stack, Typography } from "@mui/material";
 import { ExtractedStratigraphy } from "../../../../../api/dataextraction.ts";
 import { BoreholeAttachment } from "../../../../../api/unionTypes.ts";
 import { theme } from "../../../../../AppTheme.ts";
+import { BoreholesButton } from "../../../../../components/buttons/buttons.tsx";
+import { useDelayedFlag } from "../../../../../hooks/useDelayedFlag.ts";
 import { ExtractionImageContainer } from "../../../labeling/extractionImageContainer.tsx";
 import { PageSelection } from "../../../labeling/pageSelection.tsx";
 import { PagesBadge } from "./pagesBadge.tsx";
 import { StratigraphyExtractionItem, StratigraphyExtractionItemState } from "./stratigraphyExtractionItem.tsx";
+
+export const extractionTakingLongerThresholdMs = 20000;
 
 export interface StratigraphyExtractionViewProps {
   file: BoreholeAttachment;
@@ -15,6 +19,8 @@ export interface StratigraphyExtractionViewProps {
   selectedIndex: number;
   onItemStateChange: (index: number, state: StratigraphyExtractionItemState) => void;
   isLoading: boolean;
+  isError: boolean;
+  onRetry: () => void;
   activePage: number;
   setActivePage: (page: number) => void;
   names: Map<number, string>;
@@ -28,6 +34,8 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
   selectedIndex,
   onItemStateChange,
   isLoading,
+  isError,
+  onRetry,
   activePage,
   setActivePage,
   names,
@@ -36,6 +44,7 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
 }) => {
   const { t } = useTranslation();
   const [pageCount, setPageCount] = useState<number>();
+  const isTakingLonger = useDelayedFlag(isLoading, extractionTakingLongerThresholdMs);
 
   const selectedStratigraphy = allExtractedStratigraphies[selectedIndex];
   const currentPageRange = selectedStratigraphy?.pageNumbers;
@@ -44,13 +53,33 @@ export const StratigraphyExtractionView: FC<StratigraphyExtractionViewProps> = (
   const renderExtractionItems = () => {
     if (isLoading) {
       return (
-        <Stack sx={{ height: "100%", width: "100%" }} justifyContent="center" alignItems="center">
+        <Stack sx={{ height: "100%", width: "100%" }} justifyContent="center" alignItems="center" gap={2}>
           <CircularProgress />
+          {isTakingLonger && (
+            <Typography data-cy="stratigraphy-extraction-taking-longer" textAlign="center">
+              {t("msgStratigraphyExtractionTakingLonger")}
+            </Typography>
+          )}
+        </Stack>
+      );
+    }
+    if (isError) {
+      return (
+        <Stack sx={{ height: "100%", width: "100%" }} justifyContent="center" alignItems="center" gap={2}>
+          <Typography data-cy="stratigraphy-extraction-error" textAlign="center">
+            {t("msgStratigraphyExtractionFailed")}
+          </Typography>
+          <BoreholesButton
+            dataCy="retry-stratigraphy-extraction-button"
+            variant="outlined"
+            label="retry"
+            onClick={onRetry}
+          />
         </Stack>
       );
     }
     if (allExtractedStratigraphies.length === 0) {
-      return <Typography>{t("msgNoStratigraphyExtracted")}</Typography>;
+      return <Typography data-cy="stratigraphy-extraction-empty">{t("msgNoStratigraphyExtracted")}</Typography>;
     }
     return allExtractedStratigraphies.map((stratigraphy, index) => (
       <StratigraphyExtractionItem
