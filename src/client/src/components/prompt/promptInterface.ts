@@ -8,12 +8,14 @@ export interface PromptAction {
   icon?: ReactNode;
 }
 
+export type ShowPrompt = (message: string, actions: PromptAction[], dialogContent?: ReactNode) => void;
+
 export interface PromptContextInterface {
   message?: string;
   dialogContent?: ReactNode;
   actions?: PromptAction[];
   promptIsOpen: boolean;
-  showPrompt: (message: string, actions: PromptAction[], dialogContent?: ReactNode) => void;
+  showPrompt: ShowPrompt;
   closePrompt: () => void;
 }
 

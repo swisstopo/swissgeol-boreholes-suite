@@ -82,3 +82,35 @@ export const matchesFileFormat = (expectedFormat: string, format: string) => {
   }
   return format === expectedFormat;
 };
+
+export type ClassificationConsolidation = "consolidated" | "unconsolidated";
+
+export interface ClassifyVariables {
+  description: string;
+  signal: AbortSignal;
+}
+
+/**
+ * The response of POST /dataextraction/api/V1/classify.
+ *
+ * Every field is optional: the route is declared with `response_model_exclude_none=True`, so an
+ * attribute the service could not determine is absent rather than null, and a description it cannot
+ * classify at all yields an empty object. Values are the service's enum member names, either code
+ * like (`en_main`, `en_secondary`, `uscs`) or snake_case english (everything else).
+ */
+export interface ClassifyResponse {
+  consolidation?: ClassificationConsolidation;
+  lithology?: string;
+  cementation?: string;
+  alteration_degree_consolidated?: string;
+  mineral_components?: string[];
+  accessory_components?: string[];
+  en_main?: string;
+  en_secondary?: string[];
+  uscs?: string | string[];
+  debris?: string[];
+  organic_components?: string[];
+  grain_angularity?: string[];
+  grain_shape?: string[];
+  color?: string;
+}
