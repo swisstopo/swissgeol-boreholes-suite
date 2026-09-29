@@ -11,7 +11,8 @@ vi.mock("../../../../../../hooks/useCopyToClipboard.ts", () => ({
   useCopyToClipboard: () => copyMock,
 }));
 
-i18n.use(initReactI18next).init({
+// Not awaited: the test harness only needs the resources registered synchronously.
+void i18n.use(initReactI18next).init({
   lng: "en",
   resources: { en: { translation: { copyToClipboard: "Copy to clipboard" } } },
   interpolation: { escapeValue: false },

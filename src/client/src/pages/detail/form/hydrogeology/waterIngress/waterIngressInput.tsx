@@ -39,7 +39,7 @@ const WaterIngressInput: FC<{ item: WaterIngress; parentId: number }> = ({ item,
         <FormDomainSelect
           fieldName="conditionsId"
           label="conditions"
-          selected={item.conditionsId as number}
+          selected={item.conditionsId}
           schemaName={hydrogeologySchemaConstants.waterIngressConditions}
         />
       </FormContainer>

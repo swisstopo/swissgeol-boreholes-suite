@@ -760,9 +760,6 @@ public class BdmsContext : DbContext
             .Property(lf => lf.Name)
             .IsRequired();
         modelBuilder.Entity<LogFile>()
-            .Property(lf => lf.NameUuid)
-            .IsRequired();
-        modelBuilder.Entity<LogFile>()
             .HasMany(l => l.ToolTypeCodelists)
             .WithMany()
             .UsingEntity<LogFileToolTypeCodes>(

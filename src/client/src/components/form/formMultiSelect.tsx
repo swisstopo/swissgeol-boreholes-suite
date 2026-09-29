@@ -166,8 +166,10 @@ export const FormMultiSelect: FC<FormMultiSelectProps> = ({
               value={[]}
               disabled
               data-cy={fieldName + "-formMultiSelect"}
-              InputLabelProps={{ shrink: true }}
-              InputProps={{ readOnly: readonly, disabled: disabled }}
+              slotProps={{
+                inputLabel: { shrink: true },
+                input: { readOnly: readonly, disabled: disabled },
+              }}
             />
           )}
         </>

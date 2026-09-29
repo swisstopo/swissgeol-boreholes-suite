@@ -63,7 +63,7 @@ export const UserDetail: FC = () => {
   if (!selectedUser) return;
   const isDisabled = selectedUser.isDisabled ?? true;
 
-  const handleCheckboxChange = async (event: ChangeEvent<HTMLInputElement>) => {
+  const handleCheckboxChange = (event: ChangeEvent<HTMLInputElement>) => {
     event.stopPropagation();
     if (selectedUser) {
       // Optimistically update the user in the state
@@ -140,7 +140,7 @@ export const UserDetail: FC = () => {
         backgroundColor: theme.palette.background.lightgrey,
       }}>
       <Card data-cy="user-general" sx={{ mb: 3 }}>
-        <CardHeader title={t("general")} sx={{ p: 4, pb: 3 }} titleTypographyProps={{ variant: "h5" }} />
+        <CardHeader title={t("general")} sx={{ p: 4, pb: 3 }} slotProps={{ title: { variant: "h5" } }} />
         <CardContent sx={{ pt: 4, px: 3 }}>
           <Stack direction={"row"} alignItems={"center"}>
             <Checkbox
@@ -157,7 +157,7 @@ export const UserDetail: FC = () => {
         <CardHeader
           title={t("workgroups")}
           sx={{ p: 4, pb: 3 }}
-          titleTypographyProps={{ variant: "h5" }}
+          slotProps={{ title: { variant: "h5" } }}
           action={<AddButton label="addWorkgroup" variant="contained" onClick={addWorkgroup} disabled={isDisabled} />}
         />
         <CardContent sx={{ pt: 4, px: 3 }}>

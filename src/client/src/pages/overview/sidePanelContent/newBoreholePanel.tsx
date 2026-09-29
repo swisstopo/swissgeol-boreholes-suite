@@ -32,7 +32,7 @@ const NewBoreholePanel = ({ toggleDrawer }: NewBoreholeProps) => {
         variant="contained"
         data-cy={"create-button"}
         disabled={editableWorkgroups?.length === 0 || !currentWorkgroupId}
-        onClick={handleBoreholeCreate}>
+        onClick={() => void handleBoreholeCreate()}>
         {t("create")}
       </Button>
     </Stack>

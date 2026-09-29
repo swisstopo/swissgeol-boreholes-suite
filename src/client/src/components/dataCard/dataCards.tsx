@@ -75,7 +75,9 @@ export const DataCards = <T extends DataCardEntity>({
   const loadData = () => {
     setIsLoadingData(true);
     if (parentId && mounted.current) {
-      getData(parentId).then(response => {
+      // Not awaited: the legacy fetch helper reports API errors itself, and the caller is an event
+      // handler that has nothing to return.
+      void getData(parentId).then(response => {
         const cards = response?.length > 0 ? response : [];
         setLoadedCards(cards);
         setIsLoadingData(false);

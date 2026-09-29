@@ -4054,70 +4054,6 @@
         }
       }
     },
-    "/api/v{version}/log/upload": {
-      "post": {
-        "tags": [
-          "Log"
-        ],
-        "summary": "Uploads a log file to the cloud storage and links it to the log run.\r\nIf logFileId is provided, the file is linked to the existing BDMS.Models.LogFile instead of creating a new one.",
-        "parameters": [
-          {
-            "name": "logRunId",
-            "in": "query",
-            "description": "The log run ID to associate with the file.",
-            "schema": {
-              "maximum": 2147483647,
-              "minimum": 1,
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "logFileId",
-            "in": "query",
-            "description": "Optional existing log file ID to link the uploaded file to.",
-            "schema": {
-              "type": "integer",
-              "format": "int32"
-            }
-          },
-          {
-            "name": "version",
-            "in": "path",
-            "required": true,
-            "schema": {
-              "type": "string"
-            }
-          }
-        ],
-        "requestBody": {
-          "content": {
-            "multipart/form-data": {
-              "schema": {
-                "type": "object",
-                "properties": {
-                  "file": {
-                    "type": "string",
-                    "description": "The file to upload.",
-                    "format": "binary"
-                  }
-                }
-              },
-              "encoding": {
-                "file": {
-                  "style": "form"
-                }
-              }
-            }
-          }
-        },
-        "responses": {
-          "200": {
-            "description": "OK"
-          }
-        }
-      }
-    },
     "/api/v{version}/log/download": {
       "get": {
         "tags": [
@@ -4183,16 +4119,52 @@
         }
       }
     },
+    "/api/v{version}/log/file/{id}": {
+      "delete": {
+        "tags": [
+          "Log"
+        ],
+        "summary": "Deletes a log file record that never received its attachment.\r\n            \r\nThe import writes the record before the attachment is uploaded, so an upload that fails or\r\nis given up on would leave a record behind that every later import skips as already\r\nexisting. Removing it here lets the next import add it properly.",
+        "parameters": [
+          {
+            "name": "id",
+            "in": "path",
+            "description": "The BDMS.Models.LogFile.Id to delete.",
+            "required": true,
+            "schema": {
+              "maximum": 2147483647,
+              "minimum": 1,
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
     "/api/v{version}/log/import": {
       "post": {
         "tags": [
           "Log"
         ],
-        "summary": "Imports log runs and optionally log files from CSV files.",
+        "summary": "Imports log runs and log files from CSV files.\r\n            \r\nEvery row is classified and reported, and the rows that are complete and valid are written.\r\nA row that is skipped is not a failure: repeating the import adds what has since become\r\ncomplete without writing anything twice. Only a request that cannot be read at all is\r\nanswered with a failure status.",
         "parameters": [
           {
             "name": "boreholeId",
             "in": "query",
+            "description": "The borehole the import belongs to.",
             "schema": {
               "type": "integer",
               "format": "int32"
@@ -4215,11 +4187,20 @@
                 "properties": {
                   "logRunsCsvFile": {
                     "type": "string",
+                    "description": "The log runs CSV, if the import carries one.",
                     "format": "binary"
                   },
                   "logFilesCsvFile": {
                     "type": "string",
+                    "description": "The log files CSV, if the import carries one.",
                     "format": "binary"
+                  },
+                  "providedAttachmentNames": {
+                    "type": "array",
+                    "items": {
+                      "type": "string"
+                    },
+                    "description": "The attachments the client holds, each as \"runNumber/fileName\"."
                   }
                 }
               },
@@ -4227,6 +4208,62 @@
                 "logRunsCsvFile": {
                   "style": "form"
                 },
+                "logFilesCsvFile": {
+                  "style": "form"
+                },
+                "providedAttachmentNames": {
+                  "style": "form"
+                }
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "OK"
+          }
+        }
+      }
+    },
+    "/api/v{version}/log/import/requiredfiles": {
+      "post": {
+        "tags": [
+          "Log"
+        ],
+        "summary": "Names the attachments a log files CSV expects, so that the import can ask for them before it\r\nis started.",
+        "parameters": [
+          {
+            "name": "boreholeId",
+            "in": "query",
+            "description": "The borehole the import is being prepared for.",
+            "schema": {
+              "type": "integer",
+              "format": "int32"
+            }
+          },
+          {
+            "name": "version",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string"
+            }
+          }
+        ],
+        "requestBody": {
+          "content": {
+            "multipart/form-data": {
+              "schema": {
+                "type": "object",
+                "properties": {
+                  "logFilesCsvFile": {
+                    "type": "string",
+                    "description": "The log files CSV the import is to be started with.",
+                    "format": "binary"
+                  }
+                }
+              },
+              "encoding": {
                 "logFilesCsvFile": {
                   "style": "form"
                 }
@@ -12326,6 +12363,9 @@
           },
           "authSettings": {
             "$ref": "#/components/schemas/AuthSettings"
+          },
+          "uploadSettings": {
+            "$ref": "#/components/schemas/UploadSettings"
           }
         },
         "additionalProperties": false,
@@ -12539,6 +12579,28 @@
         },
         "additionalProperties": false,
         "description": "Represents the reviewed or published tab status of a BDMS.Models.Workflow."
+      },
+      "UploadSettings": {
+        "type": "object",
+        "properties": {
+          "maxFileSize": {
+            "type": "integer",
+            "description": "The largest file accepted by the endpoints that take one in a single request, in bytes.",
+            "format": "int32"
+          },
+          "largeMaxFileSize": {
+            "type": "integer",
+            "description": "The largest log file accepted by the chunked upload, in bytes.",
+            "format": "int64"
+          },
+          "chunkSize": {
+            "type": "integer",
+            "description": "How much of a file the chunked upload is expected to send per request, in bytes.",
+            "format": "int32"
+          }
+        },
+        "additionalProperties": false,
+        "description": "What the client needs to know to upload a file the API will accept, so that it validates and\r\nchunks against the same numbers the API enforces instead of a copy of its own."
       },
       "User": {
         "required": [

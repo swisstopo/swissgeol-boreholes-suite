@@ -9,28 +9,28 @@ export const AuthOverlay: FC<PropsWithChildren> = ({ children }) => {
   const auth = useAuth();
 
   // Bypass authentication in anonymous mode.
-  if (auth.anonymousModeEnabled) {
-    auth.isAuthenticated = true;
-  }
+  const isAuthenticated = auth.isAuthenticated || auth.anonymousModeEnabled;
 
   const { t } = useTranslation();
-  const canLoadUser = auth.isAuthenticated && (auth.anonymousModeEnabled || (auth.user != null && !auth.user.expired));
+  const canLoadUser = isAuthenticated && (auth.anonymousModeEnabled || (auth.user != null && !auth.user.expired));
   const { data: user, isError } = useCurrentUser(canLoadUser);
 
+  // Neither redirect is awaited: both hand the browser over to the identity provider, so there is
+  // nothing left to do in this document once they resolve.
   const signIn = () => {
     const path = `${window.location.pathname}${window.location.search}${window.location.hash}`;
-    auth.signinRedirect({
+    void auth.signinRedirect({
       url_state: btoa(JSON.stringify({ path })),
     });
   };
 
   const signOut = () => {
-    auth.signoutRedirect();
+    void auth.signoutRedirect();
   };
 
-  if (auth.isAuthenticated && user) {
+  if (isAuthenticated && user) {
     return children;
-  } else if (!auth.isLoading && !auth.isAuthenticated) {
+  } else if (!auth.isLoading && !isAuthenticated) {
     // Perform automatic login if user is not authenticated.
     signIn();
   } else if (isError) {

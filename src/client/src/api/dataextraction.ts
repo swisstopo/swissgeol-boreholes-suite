@@ -90,12 +90,19 @@ export function useFileInfo(profileId: number | undefined, activePage: number) {
         if (!pngCreationStartedForFiles.has(fileNameWithExtension)) {
           pngCreationStartedForFiles.add(fileNameWithExtension);
           if (fileNameWithExtension.includes(".pdf")) {
-            await createExtractionPngs(fileNameWithExtension);
+            try {
+              await createExtractionPngs(fileNameWithExtension);
+            } catch (error) {
+              // A failed attempt must not count as started: otherwise every later attempt skips
+              // creation and fails on the missing pngs instead of requesting them again.
+              pngCreationStartedForFiles.delete(fileNameWithExtension);
+              throw error;
+            }
           }
         }
 
         // Throw error to trigger useQuery's retry mechanism
-        throw new ApiError("pngsNotYetAvailable", 202); // 202 = Processing
+        throw new ApiError("filePagesNotAvailable", 202); // 202 = Processing
       }
 
       return dataResponse;
@@ -190,7 +197,7 @@ export function mapExtractionResponse(response: StratigraphyExtractionResponse):
       }))
       .filter(l => l.description);
 
-    return { descriptions, pageNumbers: borehole.page_numbers } as ExtractedStratigraphy;
+    return { descriptions, pageNumbers: borehole.page_numbers };
   });
 }
 
@@ -215,7 +222,8 @@ export function useExtractStratigraphies(file: BoreholeAttachment, activePage: n
   return useQuery({
     queryKey: ["extractStratigraphies", file.nameUuid],
     enabled: !!file && !!fileInfo,
-    staleTime: 5 * 60 * 1000, // Consider data fresh for 5 minutes => Extraction for the same file doesn't need to be refetched.
+    retry: false, // no retries to reduce load on dataextraction service after failure.
+    staleTime: Infinity, // Extraction results dont go stale and a failing refetch on window focus should not override valid data.
     queryFn: async ({ signal }) => {
       const response = await extractStratigraphies(file.nameUuid!, signal);
       return mapExtractionResponse(response);

@@ -6,7 +6,8 @@ import { I18nextProvider, initReactI18next } from "react-i18next";
 import i18n from "i18next";
 import { NullDepthBanner } from "./nullDepthBanner.tsx";
 
-i18n.use(initReactI18next).init({
+// Not awaited: the test harness only needs the resources registered synchronously.
+void i18n.use(initReactI18next).init({
   lng: "en",
   resources: {
     en: {

@@ -101,7 +101,8 @@ public class CodeListControllerTest
 
         var expectedHeader = "id,schema,code,text_en,text_de,text_fr,text_it,text_ro";
 
-        Assert.AreEqual(expectedHeader, response.Content.Split('\n')[0]);
+        Assert.IsTrue(response.Content.StartsWith('\uFEFF'), "Excel needs the byte order mark to open the export as UTF-8.");
+        Assert.AreEqual(expectedHeader, response.Content.TrimStart('\uFEFF').Split('\n')[0]);
         var expectedLineCount = await context.Codelists.CountAsync() + 2; // +1 header line, +1 trailing newline
         Assert.AreEqual(expectedLineCount, response.Content.Split('\n').Length);
     }
