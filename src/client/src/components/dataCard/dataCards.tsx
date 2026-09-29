@@ -161,8 +161,7 @@ export const DataCards = <T extends DataCardEntity>({
           <CircularProgress />
         </FullPageCentered>
       ) : displayedCards?.length > 0 ? (
-        // oxlint-disable-next-line react/no-children-prop
-        <MemoizedDataCardsContainer children={renderCards} />
+        <MemoizedDataCardsContainer>{renderCards}</MemoizedDataCardsContainer>
       ) : (
         <FullPageAlignLeft>
           <Typography>{`${t(emptyLabel)}...`}</Typography>
