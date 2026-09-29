@@ -27,6 +27,28 @@ type OidcConfig = AuthProviderProps & {
   customSettings: BoreholesAuthContextProps;
 };
 
+const PrefetchBoreholes: FC = () => {
+  const queryClient = useQueryClient();
+  const auth = useAuth();
+
+  useEffect(() => {
+    if (auth.isAuthenticated) {
+      const filterRequestSubmission = toFilterRequestSubmission(getDefaultFilterRequestFromSession());
+      // Not awaited: prefetching warms the cache in the background and nothing renders from it yet.
+      void queryClient.prefetchQuery({
+        queryKey: [boreholeQueryKey, filterRequestSubmission],
+        queryFn: () => filterBoreholes(filterRequestSubmission),
+      });
+      void queryClient.prefetchQuery({
+        queryKey: [boreholeQueryKey, "filter-stats", filterRequestSubmission],
+        queryFn: () => fetchFilterStats(filterRequestSubmission),
+      });
+    }
+  }, [auth.isAuthenticated, queryClient]);
+
+  return null;
+};
+
 export const BoreholesAuthProvider: FC<PropsWithChildren<BoreholeAuthProviderProps>> = ({ router, children }) => {
   const [oidcConfig, setOidcConfig] = useState<OidcConfig | undefined>(undefined);
   const settings = useSettings();
@@ -49,8 +71,9 @@ export const BoreholesAuthProvider: FC<PropsWithChildren<BoreholeAuthProviderPro
 
     const onSigninCallback = (user: User | undefined) => {
       const preLoginState = JSON.parse(atob(user?.url_state ?? ""));
-      // restore location after login.
-      router.navigate(preLoginState.path, { replace: true });
+      // restore location after login. Not awaited: the OIDC callback returns void and there is no
+      // meaningful recovery if the navigation fails.
+      void router.navigate(preLoginState.path, { replace: true });
     };
 
     setOidcConfig({
@@ -69,27 +92,6 @@ export const BoreholesAuthProvider: FC<PropsWithChildren<BoreholeAuthProviderPro
       </SplashScreen>
     );
   }
-  const PrefetchBoreholes: FC = () => {
-    const queryClient = useQueryClient();
-    const auth = useAuth();
-
-    useEffect(() => {
-      if (auth.isAuthenticated) {
-        const filterRequestSubmission = toFilterRequestSubmission(getDefaultFilterRequestFromSession());
-        queryClient.prefetchQuery({
-          queryKey: [boreholeQueryKey, filterRequestSubmission],
-          queryFn: () => filterBoreholes(filterRequestSubmission),
-        });
-        queryClient.prefetchQuery({
-          queryKey: [boreholeQueryKey, "filter-stats", filterRequestSubmission],
-          queryFn: () => fetchFilterStats(filterRequestSubmission),
-        });
-      }
-    }, [auth.isAuthenticated, queryClient]);
-
-    return null;
-  };
-
   return (
     <OidcAuthProvider {...oidcConfig}>
       <BoreholesAuthContext.Provider value={oidcConfig.customSettings}>

@@ -300,7 +300,28 @@ describe("Tests for stratigraphy extraction", () => {
   it("displays message if nothing could be extracted from file", () => {
     createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "import/borehole_attachment_3.pdf");
     cy.wait(["@extraction-file-info"]);
-    cy.contains("No valid stratigraphy could be extracted from the profile");
+    cy.dataCy("stratigraphy-extraction-empty").should(
+      "have.text",
+      "The extraction has completed, but no stratigraphy was found in the profile.",
+    );
+  });
+
+  it("displays an error with a retry option if the extraction fails", () => {
+    cy.intercept("POST", "dataextraction/api/V1/extract_stratigraphy", { statusCode: 504 }).as(
+      "extract-stratigraphy-failed",
+    );
+
+    createBoreholeAndStartExtraction("SCHOOLDIONYSUS", "import/borehole_attachment_3.pdf");
+    cy.wait("@extract-stratigraphy-failed");
+
+    cy.dataCy("stratigraphy-extraction-error").should(
+      "have.text",
+      "An error occurred during the extraction. Please try again.",
+    );
+    cy.dataCy("stratigraphy-extraction-empty").should("not.exist");
+
+    cy.dataCy("retry-stratigraphy-extraction-button").click();
+    cy.wait("@extract-stratigraphy-failed");
   });
 
   it("navigates to the newly extracted stratigraphy after save when a primary already exists", () => {

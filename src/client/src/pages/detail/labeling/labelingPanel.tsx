@@ -11,7 +11,7 @@ import {
   PanelPosition,
   PanelTab,
 } from "../../../api/dataextractionInterfaces.ts";
-import { FileSizeLimit, maxFileSizeBytes } from "../../../api/file.ts";
+import { formatFileSize, getMaxFileSize } from "../../../api/fileSize.ts";
 import { Photo, Profile } from "../../../api/generated";
 import { uploadProfile, useProfiles, useReloadProfiles } from "../../../api/profile.ts";
 import { BoreholeAttachment } from "../../../api/unionTypes.ts";
@@ -144,12 +144,13 @@ const LabelingPanel: FC = () => {
         onChange={event => {
           const file = event.target.files?.[0];
           if (file) {
-            if (file.size >= maxFileSizeBytes) {
-              showAlert(t("fileMaxSizeExceeded", { size: FileSizeLimit.Standard }), "error");
+            if (file.size >= getMaxFileSize()) {
+              showAlert(t("fileMaxSizeExceeded", { size: formatFileSize(getMaxFileSize()) }), "error");
             } else if (!matchesFileFormat(expectedFileFormat, file.type)) {
               showAlert(t("fileInvalidType"), "error");
             } else {
-              addFile(file);
+              // Not awaited: the drop handler returns void and addFile alerts on failure.
+              void addFile(file);
             }
           }
         }}
@@ -221,7 +222,7 @@ const LabelingPanel: FC = () => {
           isLoadingFiles={isLoadingFiles || isLoadingFileInfo || isLoadingImage}
           files={files}
           setSelectedFile={setSelectedAttachment}
-          addFile={addFile}
+          addFile={file => void addFile(file)}
           showAlert={showAlert}
         />
       )}

@@ -3,12 +3,13 @@ import { useFormContext } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Check, X } from "lucide-react";
 import { getBoreholeGeometryDepthMasl, getBoreholeGeometryDepthMDFromMasl } from "../../../../api/fetchApiV2.js";
+import { VerticalReferenceSystem } from "../../../../api/generated";
 import { FormInput, FormSelect, FormValueType } from "../../../../components/form/form";
 import { FormContainer } from "../../../../components/form/formContainer";
 import { formatNumberForDisplay, parseFloatWithThousandsSeparator } from "../../../../components/form/formUtils.ts";
 import { PromptContext } from "../../../../components/prompt/promptContext.tsx";
 import { useRequiredId } from "../../../../hooks/useRequiredId.ts";
-import { DepthInputProps, ObservationDepthUnitType } from "./Observation.ts";
+import { DepthInputProps, verticalReferenceSystems } from "./Observation.ts";
 
 const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
   const { t } = useTranslation();
@@ -17,13 +18,9 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
   const boreholeId = useRequiredId();
 
   const depthUnitFieldName = "originalVerticalReferenceSystem";
-  const watchDepthUnit = formMethods.watch(depthUnitFieldName, ObservationDepthUnitType.measuredDepth);
+  const watchDepthUnit = formMethods.watch(depthUnitFieldName, verticalReferenceSystems.measuredDepth);
 
-  const convertDepth = async (
-    inputFieldName: string,
-    outputFieldName: string,
-    outputUnit: ObservationDepthUnitType,
-  ) => {
+  const convertDepth = async (inputFieldName: string, outputFieldName: string, outputUnit: VerticalReferenceSystem) => {
     if (outputUnit === watchDepthUnit) return;
 
     const inputValue = formMethods.getValues(inputFieldName);
@@ -33,11 +30,11 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
     } else {
       let result = null;
       switch (outputUnit) {
-        case ObservationDepthUnitType.measuredDepth: {
+        case verticalReferenceSystems.measuredDepth: {
           result = await getBoreholeGeometryDepthMDFromMasl(boreholeId, inputParsed);
           break;
         }
-        case ObservationDepthUnitType.masl: {
+        case verticalReferenceSystems.masl: {
           result = await getBoreholeGeometryDepthMasl(boreholeId, inputParsed);
           break;
         }
@@ -61,12 +58,12 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
     });
   };
 
-  const onCancelDepthUnitChange = (newDepthUnit: ObservationDepthUnitType) => {
+  const onCancelDepthUnitChange = (newDepthUnit: number) => {
     // Reset the value to the previous one.
-    if (newDepthUnit === ObservationDepthUnitType.measuredDepth) {
-      formMethods.setValue(depthUnitFieldName, ObservationDepthUnitType.masl);
+    if (newDepthUnit === verticalReferenceSystems.measuredDepth) {
+      formMethods.setValue(depthUnitFieldName, verticalReferenceSystems.masl);
     } else {
-      formMethods.setValue(depthUnitFieldName, ObservationDepthUnitType.measuredDepth);
+      formMethods.setValue(depthUnitFieldName, verticalReferenceSystems.measuredDepth);
     }
   };
 
@@ -97,22 +94,23 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
     ]);
   };
 
+  const originalDepthUnit = observation.originalVerticalReferenceSystem;
+  const selectedDepthUnit =
+    originalDepthUnit == null || originalDepthUnit === verticalReferenceSystems.unknown
+      ? verticalReferenceSystems.measuredDepth
+      : originalDepthUnit;
+
   return (
     <>
       <FormSelect
         canReset={false}
         fieldName={depthUnitFieldName}
         label={t("verticalReferenceSystem")}
-        selected={
-          observation.originalVerticalReferenceSystem == null ||
-          observation.originalVerticalReferenceSystem === ObservationDepthUnitType.unknown
-            ? ObservationDepthUnitType.measuredDepth
-            : observation.originalVerticalReferenceSystem
-        }
+        selected={selectedDepthUnit}
         onUpdate={onDepthUnitChange}
         values={[
-          { key: ObservationDepthUnitType.measuredDepth, name: t("measuredDepth") },
-          { key: ObservationDepthUnitType.masl, name: t("metersAboveSeaLevel") },
+          { key: verticalReferenceSystems.measuredDepth, name: t("measuredDepth") },
+          { key: verticalReferenceSystems.masl, name: t("metersAboveSeaLevel") },
         ]}
       />
       {depthFields.map(fields => (
@@ -122,8 +120,8 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
             label={fields.labelMD}
             value={fields.getValueMD()}
             type={FormValueType.Number}
-            onUpdate={() => convertDepth(fields.fieldNameMD, fields.fieldNameMasl, ObservationDepthUnitType.masl)}
-            disabled={watchDepthUnit !== ObservationDepthUnitType.measuredDepth}
+            onUpdate={() => void convertDepth(fields.fieldNameMD, fields.fieldNameMasl, verticalReferenceSystems.masl)}
+            disabled={watchDepthUnit !== verticalReferenceSystems.measuredDepth}
           />
           <FormInput
             fieldName={fields.fieldNameMasl}
@@ -131,9 +129,9 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
             value={fields.getValueMasl()}
             type={FormValueType.Number}
             onUpdate={() =>
-              convertDepth(fields.fieldNameMasl, fields.fieldNameMD, ObservationDepthUnitType.measuredDepth)
+              void convertDepth(fields.fieldNameMasl, fields.fieldNameMD, verticalReferenceSystems.measuredDepth)
             }
-            disabled={watchDepthUnit !== ObservationDepthUnitType.masl}
+            disabled={watchDepthUnit !== verticalReferenceSystems.masl}
           />
         </FormContainer>
       ))}

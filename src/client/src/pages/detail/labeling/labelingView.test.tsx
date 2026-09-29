@@ -80,7 +80,7 @@ describe("LabelingView", () => {
     expect(configuredMap).not.toBeNull();
     // A disposed map has no target element, so configuring it throws on every target access.
     expect(configuredMap?.getTargetElement()).not.toBeNull();
-    expect(configuredMap).toBe(window["labeling-map" as keyof Window]);
+    expect(configuredMap).toBe((window as Window & { "labeling-map"?: Map })["labeling-map"]);
   });
 
   it("rotates the map when a control of the render before the map creation is clicked", () => {

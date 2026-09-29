@@ -586,7 +586,7 @@ describe("Test for the borehole form.", () => {
   it("blocks navigating away and stop editing with unsaved changes", () => {
     goToRouteAndAcceptTerms("/");
     newEditableBorehole().as("borehole_id");
-    let boreholeId: unknown;
+    let boreholeId: number;
     cy.get("@borehole_id").then(id => {
       boreholeId = id;
     });

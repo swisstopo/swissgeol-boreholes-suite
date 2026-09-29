@@ -1,5 +1,5 @@
 import { Dispatch, FC, SetStateAction, useContext, useEffect, useMemo, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
 import { Stack } from "@mui/system";
@@ -11,7 +11,6 @@ import { CodelistLabelStyle, useCodelistLocalizedLabel, useCodelists } from "../
 import { ExportDialog } from "../../../../components/export/exportDialog.tsx";
 import { FormContainer, FormDomainMultiSelect, FormMultiSelect } from "../../../../components/form/form.ts";
 import { FormMultiSelectValue } from "../../../../components/form/formMultiSelect.tsx";
-import { FormSelectValue } from "../../../../components/form/formSelect.tsx";
 import { formatNumberForDisplay } from "../../../../components/form/formUtils.ts";
 import { Table } from "../../../../components/table/table.tsx";
 import { EditStateContext } from "../../editStateContext.tsx";
@@ -55,9 +54,9 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
   const { isExporting, setIsExporting, startExport, exportItems } = useLogExport(exportLogRuns, selectionModel, runs);
 
   const formMethods = useForm<LogRunFilter>({ mode: "onChange" });
-  const runFilter = formMethods.watch("runNumbers");
-  const sectionFilter = formMethods.watch("sections");
-  const toolTypeFilter = formMethods.watch("toolTypes");
+  const runFilter = useWatch({ control: formMethods.control, name: "runNumbers" });
+  const sectionFilter = useWatch({ control: formMethods.control, name: "sections" });
+  const toolTypeFilter = useWatch({ control: formMethods.control, name: "toolTypes" });
 
   const hasActiveFilter = useMemo(
     () => runFilter?.length > 0 || sectionFilter?.length > 0 || toolTypeFilter?.length > 0,
@@ -65,10 +64,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
   );
 
   const runNumbers = useMemo<FormMultiSelectValue[]>(
-    () =>
-      runs
-        .filter(run => run.runNumber !== undefined)
-        .map(run => ({ key: run.id, name: run.runNumber! }) as FormMultiSelectValue),
+    () => runs.filter(run => run.runNumber !== undefined).map(run => ({ key: run.id, name: run.runNumber })),
     [runs],
   );
   const filteredRuns = useMemo<LogRun[]>(() => {
@@ -119,7 +115,8 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
 
   useEffect(() => {
     if (!sectionFilters) {
-      getSectionsByBoreholeId(boreholeId).then(sections => {
+      // Not awaited: effects cannot be async, and the sections reach the UI through state.
+      void getSectionsByBoreholeId(boreholeId).then(sections => {
         const filters: SectionFilter[] = [];
         for (const section of sections) {
           for (const element of section.sectionElements ?? []) {
@@ -229,7 +226,7 @@ export const LogTable: FC<LogTableProps> = ({ boreholeId, runs, isLoading, setSe
             <FormMultiSelect
               fieldName={"sections"}
               label={"sectionName"}
-              values={sectionFilters?.map(filter => ({ key: filter.id, name: filter.label }) as FormSelectValue) ?? []}
+              values={sectionFilters?.map(filter => ({ key: filter.id, name: filter.label })) ?? []}
               readonly={false}
             />
             <FormDomainMultiSelect

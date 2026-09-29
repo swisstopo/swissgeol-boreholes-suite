@@ -13,7 +13,7 @@ export const SaveAndCancelButtons: FC<SaveAndCancelButtonsProps> = ({ onCancel, 
   return (
     <DataCardButtonContainer>
       <CancelButton onClick={onCancel} />
-      <SaveButton disabled={saveDisabled} onClick={onSave} />
+      <SaveButton disabled={saveDisabled} onClick={() => void onSave()} />
     </DataCardButtonContainer>
   );
 };

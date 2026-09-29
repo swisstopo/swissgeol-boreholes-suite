@@ -32,7 +32,12 @@ export const AddFileButton: FC<AddFileButtonProps> = ({ label, onFileSelect, acc
         sx={{ height: "36px", ...sx }}
         data-cy={`${label}-button`}>
         {t(label)}
-        <input type="file" onChange={handleFileChange} style={{ display: "none" }} accept={acceptedFileTypes} />
+        <input
+          type="file"
+          onChange={event => void handleFileChange(event)}
+          style={{ display: "none" }}
+          accept={acceptedFileTypes}
+        />
       </Button>
     </form>
   );

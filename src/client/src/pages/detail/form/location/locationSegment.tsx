@@ -1,6 +1,6 @@
 import { useCallback, useContext, useState } from "react";
 import { UseFormReturn } from "react-hook-form";
-import { Card, Grid, Stack } from "@mui/material";
+import { Card, Grid2, Stack } from "@mui/material";
 import { fetchApiV2Legacy } from "../../../../api/fetchApiV2.ts";
 import { PointComponent } from "../../../../components/map/pointComponent.tsx";
 import { FormSegmentBox } from "../../../../components/styledComponents";
@@ -106,7 +106,8 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
       if (canton) formMethods.setValue("canton", canton);
       if (municipality) formMethods.setValue("municipality", municipality);
       formMethods.setValue("originalReferenceSystemId", ReferenceSystemCode.LV95);
-      handleCoordinateTransformation(
+      // Not awaited: the transformation writes its result into the form.
+      void handleCoordinateTransformation(
         ReferenceSystemKey.LV95,
         ReferenceSystemKey.LV03,
         parseFloat(x),
@@ -121,8 +122,8 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
   return (
     <Stack direction="column" gap={3}>
       <Card>
-        <Grid container spacing={2}>
-          <Grid item xs={12} md={12} lg={labelingPanelOpen ? 12 : 6}>
+        <Grid2 container spacing={2}>
+          <Grid2 size={{ xs: 12, md: 12, lg: labelingPanelOpen ? 12 : 6 }}>
             <CoordinatesSegment
               borehole={borehole}
               formMethods={formMethods}
@@ -130,8 +131,8 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
               handleCoordinateTransformation={handleCoordinateTransformation}
               setValuesForCountryCantonMunicipality={setValuesForCountryCantonMunicipality}
             />
-          </Grid>
-          <Grid item xs={12} md={12} lg={labelingPanelOpen ? 12 : 6}>
+          </Grid2>
+          <Grid2 size={{ xs: 12, md: 12, lg: labelingPanelOpen ? 12 : 6 }}>
             <FormSegmentBox>
               <PointComponent
                 applyChange={(
@@ -149,11 +150,11 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
                 y={currentLV95Y}
               />
             </FormSegmentBox>
-          </Grid>
-          <Grid item xs={12}>
+          </Grid2>
+          <Grid2 size={12}>
             <ElevationSegment borehole={borehole} />
-          </Grid>
-        </Grid>
+          </Grid2>
+        </Grid2>
       </Card>
       <CantonMunicipalitySegment
         country={borehole.country}

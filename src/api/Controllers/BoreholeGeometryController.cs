@@ -15,7 +15,6 @@ namespace BDMS.Controllers;
 [Route("api/v{version:apiVersion}/[controller]")]
 public class BoreholeGeometryController : ControllerBase
 {
-    private const int MaxFileSize = 210_000_000; // 1024 x 1024 x 200 = 209715200 bytes
     private readonly BdmsContext context;
     private readonly ILogger logger;
     private readonly IBoreholePermissionService boreholePermissionService;
@@ -89,7 +88,7 @@ public class BoreholeGeometryController : ControllerBase
     [HttpPost]
     [Authorize(Policy = PolicyNames.Viewer)]
     [RequestSizeLimit(int.MaxValue)]
-    [RequestFormLimits(MultipartBodyLengthLimit = MaxFileSize)]
+    [RequestFormLimits(MultipartBodyLengthLimit = FileSizeLimits.Standard)]
     public async Task<IActionResult> UploadBoreholeGeometry(int boreholeId, IFormFile geometryFile, [FromForm] string geometryFormat)
     {
         // Check if associated borehole is locked

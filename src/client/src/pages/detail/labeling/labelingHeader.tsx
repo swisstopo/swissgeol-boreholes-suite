@@ -50,9 +50,9 @@ export const LabelingHeader: FC<{
   };
 
   const fileSelectionItems = useMemo(() => {
-    const items =
+    const items: SelectionItem[] =
       files
-        ?.map(file => ({ key: file.id, value: getDisplayName(file) }) as SelectionItem)
+        ?.map(file => ({ key: file.id, value: getDisplayName(file) }))
         .filter(({ value }) => !search || value.includes(search)) ?? [];
 
     if (editingEnabled) {

@@ -29,7 +29,6 @@ import {
   addWMTSLayerToMap,
   filterFeaturesByPolygon,
   getDrawSource,
-  LayerConfig,
   MapComponentProps,
   SRS,
 } from "./map.ts";
@@ -82,17 +81,9 @@ export const MapComponent: FC<MapComponentProps> = ({
 
   // ── Refs for latest prop values (accessed by OL event handlers registered at mount) ──
   const highlightedRef = useRef(highlighted);
-  highlightedRef.current = highlighted;
-
   const polygonSelectionEnabledRef = useRef(polygonSelectionEnabled);
-  polygonSelectionEnabledRef.current = polygonSelectionEnabled;
-
   const filterPolygonRef = useRef(filterPolygon);
-  filterPolygonRef.current = filterPolygon;
-
   const featureIdsRef = useRef(featureIds);
-  featureIdsRef.current = featureIds;
-
   const callbacksRef = useRef({
     hover,
     selected,
@@ -102,15 +93,23 @@ export const MapComponent: FC<MapComponentProps> = ({
     displayErrorMessage,
     t,
   });
-  callbacksRef.current = {
-    hover,
-    selected,
-    setFilterPolygon,
-    setPolygonSelectionEnabled,
-    setFeatureIds,
-    displayErrorMessage,
-    t,
-  };
+
+  // No dependency array: every commit refreshes all of the above in one place.
+  useEffect(() => {
+    highlightedRef.current = highlighted;
+    polygonSelectionEnabledRef.current = polygonSelectionEnabled;
+    filterPolygonRef.current = filterPolygon;
+    featureIdsRef.current = featureIds;
+    callbacksRef.current = {
+      hover,
+      selected,
+      setFilterPolygon,
+      setPolygonSelectionEnabled,
+      setFeatureIds,
+      displayErrorMessage,
+      t,
+    };
+  });
 
   // ────────────────────── Zoom handlers ──────────────────────
 
@@ -435,7 +434,7 @@ export const MapComponent: FC<MapComponentProps> = ({
         .map(layer => layer.get("name") as string),
     );
 
-    for (const [identifier, layer] of Object.entries(layers) as [string, LayerConfig][]) {
+    for (const [identifier, layer] of Object.entries(layers)) {
       if (!existingNames.has(identifier)) {
         if (layer.type === "WMTS") {
           addWMTSLayerToMap(map, identifier, layer, overlaysRef.current);

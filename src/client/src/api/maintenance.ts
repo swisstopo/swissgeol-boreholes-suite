@@ -57,7 +57,8 @@ export const useMaintenanceStatus = () => {
     const anyTaskCompleted = [...previouslyRunning.current].some(type => !currentlyRunning.has(type));
     previouslyRunning.current = currentlyRunning;
     if (anyTaskCompleted) {
-      queryClient.invalidateQueries({ queryKey: [maintenanceLogsQueryKey] });
+      // Not awaited: this is a background refresh triggered by polling, nothing waits on it.
+      void queryClient.invalidateQueries({ queryKey: [maintenanceLogsQueryKey] });
     }
   }, [query.data, queryClient]);
 
@@ -84,7 +85,7 @@ export const useStartMaintenanceTask = (taskType: MaintenanceTaskType) => {
       // Optimistically mark the task as running so the UI updates immediately
       // without waiting for the next status poll.
       queryClient.setQueryData<MaintenanceTaskState[]>([maintenanceStatusQueryKey], old =>
-        old?.map(s => (s.type === taskType ? { ...s, status: "Running" as MaintenanceTaskStatus } : s)),
+        old?.map(s => (s.type === taskType ? { ...s, status: "Running" } : s)),
       );
     },
   });

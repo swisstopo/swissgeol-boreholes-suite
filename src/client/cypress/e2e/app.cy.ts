@@ -4,7 +4,9 @@ import { loginAsAdmin, selectLanguage } from "./helpers/testHelpers";
 describe("General app tests", () => {
   it("Displays the login page in the correct language", () => {
     // default is english
-    cy.session("logged out", () => cy.visit("/"));
+    cy.session("logged out", () => {
+      cy.visit("/");
+    });
 
     // Fail GET of auth setting to prevent auto login.
     cy.intercept("/api/v2/settings", req => req.destroy());

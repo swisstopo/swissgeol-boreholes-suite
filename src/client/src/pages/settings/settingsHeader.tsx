@@ -32,7 +32,7 @@ export const SettingsHeader: FC = () => {
   const { data: selectedUser } = useSelectedUser(parseInt(userId));
   const { data: selectedWorkgroup } = useSelectedWorkgroup(parseInt(workgroupId));
 
-  const updateUserActiveStateWithRollback = async (isDisabled: boolean) => {
+  const updateUserActiveStateWithRollback = (isDisabled: boolean) => {
     const updatedUser = {
       ...selectedUser!,
       isDisabled: isDisabled,
@@ -41,7 +41,7 @@ export const SettingsHeader: FC = () => {
     updateUser(updatedUser);
   };
 
-  const updateWorkgroupActiveStateWithRollback = async (isDisabled: boolean) => {
+  const updateWorkgroupActiveStateWithRollback = (isDisabled: boolean) => {
     const updatedWorkgroup = {
       ...selectedWorkgroup!,
       isDisabled: isDisabled,

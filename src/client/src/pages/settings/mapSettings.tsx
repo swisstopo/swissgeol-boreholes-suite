@@ -64,12 +64,14 @@ export const MapSettings = ({
             [stateToUpdate]: e.target.value.toLowerCase(),
           });
         }}
-        InputProps={{
-          endAdornment: (
-            <InputAdornment position="end">
-              <SearchIcon />
-            </InputAdornment>
-          ),
+        slotProps={{
+          input: {
+            endAdornment: (
+              <InputAdornment position="end">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          },
         }}
       />
     );
