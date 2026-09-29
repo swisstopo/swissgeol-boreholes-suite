@@ -55,7 +55,7 @@ const formatWithScientificNotation = (value: number) => {
  * @param {number} value The number to format.
  * @returns The formatted number.
  */
-const formatWithThousandsSeparator = (minDecimals: number, maxDecimals: number, value: number) => {
+export const formatWithThousandsSeparator = (minDecimals: number, maxDecimals: number, value: number) => {
   // Format number using de-CH
   const formatted = new Intl.NumberFormat("de-CH", {
     useGrouping: true,

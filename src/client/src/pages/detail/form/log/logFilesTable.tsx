@@ -1,5 +1,5 @@
 import { FC, useCallback, useEffect, useMemo, useState } from "react";
-import { FormProvider, useForm } from "react-hook-form";
+import { FormProvider, useForm, useWatch } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Typography } from "@mui/material";
 import { Stack } from "@mui/system";
@@ -42,11 +42,11 @@ export const LogFileTable: FC<LogFileTableProps> = ({ files }) => {
   const { isExporting, setIsExporting, startExport, exportItems } = useLogExport(exportLogFiles, selectionModel, files);
 
   const formMethods = useForm<LogFileFilter>({ mode: "onChange" });
-  const toolTypeFilter = formMethods.watch("toolTypes");
-  const extensionsFilter = formMethods.watch("extensions");
-  const passTypesFilter = formMethods.watch("passTypes");
-  const dataPackagesFilter = formMethods.watch("dataPackages");
-  const publicFilter = formMethods.watch("public");
+  const toolTypeFilter = useWatch({ control: formMethods.control, name: "toolTypes" });
+  const extensionsFilter = useWatch({ control: formMethods.control, name: "extensions" });
+  const passTypesFilter = useWatch({ control: formMethods.control, name: "passTypes" });
+  const dataPackagesFilter = useWatch({ control: formMethods.control, name: "dataPackages" });
+  const publicFilter = useWatch({ control: formMethods.control, name: "public" });
 
   const hasActiveFilter = useMemo(
     () =>

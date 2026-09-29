@@ -46,8 +46,9 @@ const useDeleteEntityPrompts = (deleteEntity: UseMutateFunction<unknown, unknown
     return deletableMessage;
   };
 
-  const deleteEntityWithRollback = async (entity: User | Workgroup) => {
-    queryClient.invalidateQueries({
+  const deleteEntityWithRollback = (entity: User | Workgroup) => {
+    // Deliberately not awaited: navigation must not wait for the refetches the invalidation triggers.
+    void queryClient.invalidateQueries({
       queryKey: [entityQueryKey],
     });
 

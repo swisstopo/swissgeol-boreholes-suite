@@ -5,7 +5,7 @@ import { useLocation } from "react-router";
 import { AlertColor, Box, CircularProgress, Divider, Stack, Typography } from "@mui/material";
 import { ChevronRight, FileImageIcon, FileTextIcon } from "lucide-react";
 import { labelingFileFormat, PanelTab } from "../../../api/dataextractionInterfaces.ts";
-import { FileSizeLimit, maxFileSizeBytes } from "../../../api/file.ts";
+import { formatFileSize, getMaxFileSize } from "../../../api/fileSize.ts";
 import { BoreholeAttachment } from "../../../api/unionTypes.ts";
 import { theme } from "../../../AppTheme.ts";
 import { AddButton, BoreholesBaseButton, FileButton } from "../../../components/buttons/buttons.tsx";
@@ -49,7 +49,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
         const errorMessages: { [key: string]: string } = {
           "file-invalid-type": t("fileInvalidType"),
           "too-many-files": t("fileTooMany"),
-          "file-too-large": t("fileMaxSizeExceeded", { size: FileSizeLimit.Standard }),
+          "file-too-large": t("fileMaxSizeExceeded", { size: formatFileSize(getMaxFileSize()) }),
         };
         showAlert(errorMessages[errorCode] || fileRejections[0].errors[0].message, "error");
       } else {
@@ -62,7 +62,7 @@ const LabelingFileSelector: FC<LabelingFileSelectorProps> = ({
   const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     maxFiles: 1,
-    maxSize: maxFileSizeBytes,
+    maxSize: getMaxFileSize(),
     accept: { [labelingFileFormat[activeTab]]: [] },
     noDrag: false,
     noClick: true,

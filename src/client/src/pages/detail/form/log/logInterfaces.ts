@@ -1,5 +1,7 @@
 import { Codelist, User } from "../../../../api/generated";
+import { TransferProgress } from "../../../../api/transferProgress.ts";
 import { NullableDateString } from "../../../../api/unionTypes.ts";
+import { LogFileUploadProgressCallback } from "./log.ts";
 
 export interface LogRunChangeTracker {
   item: LogRun;
@@ -50,4 +52,64 @@ export interface LogFile {
   createdBy?: User | null;
   updated?: NullableDateString;
   updatedBy?: User | null;
+}
+
+/**
+ * Reports the upload of one log file belonging to a single log run.
+ * `indexInRun` counts the files of that run that carry a blob, in upload order.
+ */
+export interface LogFileUploadProgress extends TransferProgress {
+  fileName: string;
+  indexInRun: number;
+}
+
+export type LogImportItemType = "Run" | "File";
+
+export type LogImportOutcome = "Added" | "AlreadyExists" | "SkippedIncomplete" | "Error";
+
+/** How far the attachment of an added log file has got. */
+export type LogImportUploadState = "pending" | "uploading" | "uploaded" | "failed";
+
+/** A refused log import request whose reason the server named with a translation key. */
+export interface LogImportValidationProblem {
+  messageKey: string;
+  values?: Record<string, string>;
+}
+
+/**
+ * One row of the import report.
+ *
+ * A `File` item always carries `runNumber` and `fileName` in `values`, whatever its outcome, and
+ * `fileName` is the name as the server stores it. Read those rather than taking the identifier
+ * apart, which is a display string a file name may itself contain the separator of.
+ */
+export interface LogImportResultItem extends LogImportValidationProblem {
+  type: LogImportItemType;
+  identifier: string;
+  outcome: LogImportOutcome;
+  logRunId?: number;
+  logFileId?: number;
+}
+
+export interface AddLogRunVariables {
+  logRun: LogRun;
+  signal?: AbortSignal;
+}
+
+export interface UpdateLogRunVariables {
+  logRun: LogRun;
+  onFileProgress?: LogFileUploadProgressCallback;
+  signal?: AbortSignal;
+}
+
+export interface ImportLogsVariables {
+  boreholeId: number;
+  attachmentsPerRun: Record<string, File[]>;
+  logRunsCsvFile?: File;
+  logFilesCsvFile?: File;
+}
+
+export interface RequiredAttachmentsVariables {
+  boreholeId: number;
+  logFilesCsvFile: File;
 }

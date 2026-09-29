@@ -16,7 +16,7 @@ export const AddWorkgroupRoleDialog: FC<AddWorkgroupRoleDialogProps> = ({ open, 
     setWorkgroupRole: { mutate: setWorkgroupRole },
   } = useWorkgroupMutations();
 
-  const addWorkgroup = async (workgroupId: string, role: Role) => {
+  const addWorkgroup = (workgroupId: string, role: Role) => {
     setWorkgroupRole({ userId: userId, workgroupId: Number(workgroupId), role: role, isActive: true });
   };
 

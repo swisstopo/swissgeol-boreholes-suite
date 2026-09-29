@@ -7,7 +7,8 @@ import i18n from "i18next";
 import type { Workgroup } from "../../../../api/generated";
 import { WorkgroupFilter } from "./workgroupFilter";
 
-i18n.use(initReactI18next).init({
+// Not awaited: the test harness only needs the resources registered synchronously.
+void i18n.use(initReactI18next).init({
   lng: "en",
   resources: { en: { translation: { workgroup: "Workgroup", disabled: "disabled" } } },
   interpolation: { escapeValue: false },
@@ -16,15 +17,11 @@ i18n.use(initReactI18next).init({
 const renderWithI18n = (ui: React.ReactElement) => render(<I18nextProvider i18n={i18n}>{ui}</I18nextProvider>);
 
 const makeWorkgroups = (n: number): Workgroup[] =>
-  Array.from(
-    { length: n },
-    (_, i) =>
-      ({
-        id: i + 1,
-        name: `Workgroup ${i + 1}`,
-        isDisabled: false,
-      }) as unknown as Workgroup,
-  );
+  Array.from({ length: n }, (_, i) => ({
+    id: i + 1,
+    name: `Workgroup ${i + 1}`,
+    isDisabled: false,
+  }));
 
 afterEach(() => {
   cleanup();

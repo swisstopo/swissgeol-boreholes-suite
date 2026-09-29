@@ -46,9 +46,11 @@ export interface BoundingBoxResponse {
   bounding_boxes: ExtractionBoundingBox[];
 }
 
-export type ExtractionResponse = {
-  [key in ExtractionType]: string | number | Coordinate;
-};
+export interface ExtractionResponse {
+  text: string;
+  number: number;
+  coordinates: Coordinate;
+}
 
 export interface StratigraphyExtractionResponse {
   boreholes: {

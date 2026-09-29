@@ -54,7 +54,7 @@ afterEach(function () {
 
 after(function () {
   if (failFlakyTests && testFailures.length > 0) {
-    console.error(`Tests failed on at least one attempt: ${testFailures}`);
+    console.error(`Tests failed on at least one attempt: ${testFailures.join(", ")}`);
     throw new Error("One or more tests failed on at least one retry attempt.");
   }
 });

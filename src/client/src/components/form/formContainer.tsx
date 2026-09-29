@@ -8,12 +8,12 @@ interface FormContainerProps extends StackProps {
   dataCy?: string;
 }
 
-export const FormContainer: FC<FormContainerProps> = props => {
+export const FormContainer: FC<FormContainerProps> = ({ ref, ...props }) => {
   const width = props.width ?? "100%";
   return (
     <Stack
       component={props.component ?? "div"}
-      ref={props.ref}
+      ref={ref}
       data-cy={props.dataCy}
       {...props}
       rowGap={props.rowGap ?? 3}

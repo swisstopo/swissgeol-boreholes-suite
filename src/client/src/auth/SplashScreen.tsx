@@ -5,39 +5,39 @@ import styled from "@mui/material/styles/styled";
 import { theme } from "../AppTheme.ts";
 import { LanguagePopup } from "../components/header/languagePopup.tsx";
 
+const OuterContainer = styled("div")({
+  alignItems: "center",
+  backgroundColor: theme.palette.background.lightgrey,
+  display: "flex",
+  flex: "1 1 0%",
+  justifyContent: "center",
+  height: "100%",
+});
+
+const InnerContainer = styled("div")({
+  backgroundColor: theme.palette.background.default,
+  borderRadius: "2px",
+  boxShadow: "none !important",
+  display: "flex",
+  flexDirection: "column",
+  minWidth: "100px",
+  maxWidth: "600px",
+});
+
+const RowContainer = styled("div")({
+  display: "flex",
+  flexDirection: "row",
+  padding: "1em",
+});
+
+const StyledImage = styled("img")({
+  height: "100px",
+  alignSelf: "flex-start",
+  paddingBottom: "1em",
+});
+
 export const SplashScreen: FC<PropsWithChildren> = ({ children }) => {
   const { t } = useTranslation();
-
-  const OuterContainer = styled("div")({
-    alignItems: "center",
-    backgroundColor: theme.palette.background.lightgrey,
-    display: "flex",
-    flex: "1 1 0%",
-    justifyContent: "center",
-    height: "100%",
-  });
-
-  const InnerContainer = styled("div")({
-    backgroundColor: theme.palette.background.default,
-    borderRadius: "2px",
-    boxShadow: "none !important",
-    display: "flex",
-    flexDirection: "column",
-    minWidth: "100px",
-    maxWidth: "600px",
-  });
-
-  const RowContainer = styled("div")({
-    display: "flex",
-    flexDirection: "row",
-    padding: "1em",
-  });
-
-  const StyledImage = styled("img")({
-    height: "100px",
-    alignSelf: "flex-start",
-    paddingBottom: "1em",
-  });
 
   return (
     <OuterContainer>

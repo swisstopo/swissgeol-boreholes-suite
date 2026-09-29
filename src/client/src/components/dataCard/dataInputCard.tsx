@@ -38,15 +38,17 @@ export const DataInputCard = <T extends FieldValues>({
   const submitForm: SubmitHandler<T> = data => {
     resetTabStatus();
     data = prepareFormDataForSubmit(data);
+    // Neither call is awaited: the legacy fetch helper reports API errors itself, and
+    // SubmitHandler returns void.
     if (item.id === 0) {
-      addData({
+      void addData({
         ...data,
       }).then(() => {
         triggerReload();
         reloadBoreholes();
       });
     } else {
-      updateData({
+      void updateData({
         ...item,
         ...data,
       }).then(() => {
@@ -62,13 +64,13 @@ export const DataInputCard = <T extends FieldValues>({
   });
 
   useValidateFormOnMount({ formMethods });
-  useSaveOnCtrlS(handleSubmit(submitForm));
+  useSaveOnCtrlS(() => void handleSubmit(submitForm)());
   useFormDirtyMarkAsChanged({ formState });
 
   return (
     <FormProvider {...formMethods}>
       <DevTool control={control} placement="top-left" />
-      <form onSubmit={handleSubmit(submitForm)}>
+      <form onSubmit={event => void handleSubmit(submitForm)(event)}>
         <FormContainer pt={1}>{children}</FormContainer>
         <DataCardSaveAndCancelButtons formMethods={formMethods} submitForm={submitForm} />
       </form>

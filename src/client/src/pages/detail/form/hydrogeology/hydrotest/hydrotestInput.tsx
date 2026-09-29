@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import Delete from "@mui/icons-material/Delete";
 import { Box, IconButton, InputAdornment, Typography } from "@mui/material";
 import { useReloadBoreholes } from "../../../../../api/borehole.ts";
-import { Codelist, Hydrotest, HydrotestResult } from "../../../../../api/generated";
+import { Codelist, Hydrotest } from "../../../../../api/generated";
 import { AddButton } from "../../../../../components/buttons/buttons";
 import { useCodelists } from "../../../../../components/codelist.ts";
 import { DataCardContext } from "../../../../../components/dataCard/dataCardContext";
@@ -71,14 +71,16 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
     const hydrotest: Hydrotest = prepareFormDataForSubmit(data);
 
     if (item.id === 0) {
-      addHydrotest({
+      // Neither call is awaited: the legacy fetch helper reports API errors itself, and the submit
+      // handler returns void.
+      void addHydrotest({
         ...hydrotest,
       }).then(() => {
         triggerReload();
         reloadBoreholes();
       });
     } else {
-      updateHydrotest({
+      void updateHydrotest({
         ...item,
         ...hydrotest,
       }).then(() => {
@@ -150,7 +152,8 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
   }, [hydrotestKindIds]);
 
   useEffect(() => {
-    trigger("hydrotestResults");
+    // Not awaited: effects cannot be async, and the validation result is read from form state.
+    void trigger("hydrotestResults");
     const currentUnits: Record<number, string> = {};
 
     getValues().hydrotestResults?.forEach((element, index) => {
@@ -186,7 +189,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
         value: parseFloatWithThousandsSeparator(r.value?.toString()),
         minValue: parseFloatWithThousandsSeparator(r.minValue?.toString()),
         maxValue: parseFloatWithThousandsSeparator(r.maxValue?.toString()),
-      })) as HydrotestResult[];
+      }));
     }
 
     return prepared;
@@ -209,7 +212,7 @@ export const HydrotestInput: FC<HydrotestInputProps> = ({ item, parentId }) => {
 
   return (
     <FormProvider {...formMethods}>
-      <form onSubmit={handleSubmit(submitForm)}>
+      <form onSubmit={event => void handleSubmit(submitForm)(event)}>
         <FormContainer>
           <ObservationInput observation={item} />
           <FormContainer direction="row">
