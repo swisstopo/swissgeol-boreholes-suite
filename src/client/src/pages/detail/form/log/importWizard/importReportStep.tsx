@@ -62,10 +62,12 @@ export const ImportReportStep: FC<ImportReportStepProps> = ({ items, uploadState
                     }}>
                     {t(itemTypeKey[item.type])}
                   </Typography>
-                  <Typography variant="body2" sx={{ fontWeight: 500, minWidth: 0, flexGrow: 1, flexBasis: 0 }}>
+                  <Typography
+                    variant="body2"
+                    sx={{ fontWeight: 500, minWidth: 0, flexGrow: 1, flexBasis: 0, overflowWrap: "anywhere" }}>
                     {item.identifier}
                   </Typography>
-                  <Typography variant="body2" sx={{ flexGrow: 2, minWidth: 0, flexBasis: 0 }}>
+                  <Typography variant="body2" sx={{ flexGrow: 2, minWidth: 0, flexBasis: 0, overflowWrap: "anywhere" }}>
                     {t(item.messageKey, item.values ?? {})}
                   </Typography>
                   <Stack
