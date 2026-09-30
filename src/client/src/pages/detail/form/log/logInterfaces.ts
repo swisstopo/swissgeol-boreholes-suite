@@ -15,7 +15,7 @@ export interface LogRun {
   runNumber: string;
   fromDepth: number;
   toDepth: number;
-  runDate?: NullableDateString;
+  runDate?: string | null;
   comment?: string;
   serviceCo?: string;
   bitSize?: number;

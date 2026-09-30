@@ -29,7 +29,7 @@ interface BoreholeTabProps {
 
 export const BoreholeTab = styled(({ ...props }: BoreholeTabProps) => <Tab disableRipple {...props} />, {
   shouldForwardProp: prop => prop !== "hasContent",
-})(({ theme, hasContent }) => ({
+})(({ hasContent }) => ({
   fontSize: "16px",
   fontWeight: 400,
   paddingTop: theme.spacing(2),
@@ -53,7 +53,7 @@ export const BoreholeTab = styled(({ ...props }: BoreholeTabProps) => <Tab disab
   },
 }));
 
-export const TabsWithDivider = styled(Tabs)(({ theme }) => ({
+export const TabsWithDivider = styled(Tabs)(() => ({
   borderBottom: `1px solid ${theme.palette.border.light}`,
   "& .MuiTabs-indicator": {
     transform: "translateY(1px)",
@@ -62,7 +62,7 @@ export const TabsWithDivider = styled(Tabs)(({ theme }) => ({
 
 export const TabWithContent = styled(({ ...props }: BoreholeTabProps) => <Tab disableRipple {...props} />, {
   shouldForwardProp: prop => prop !== "hasContent",
-})(({ theme, hasContent }) => ({
+})(({ hasContent }) => ({
   color: hasContent === false ? theme.palette.buttonStates.outlined.disabled.color : theme.palette.secondary.main,
   "&.Mui-focusVisible": {
     backgroundColor: theme.palette.background.tabFocus,

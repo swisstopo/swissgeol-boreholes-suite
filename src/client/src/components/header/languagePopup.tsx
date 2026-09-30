@@ -27,7 +27,7 @@ export function LanguagePopup() {
     return () => {
       i18n.off("languageChanged", handleLanguageChange);
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
   const onLanguageChanged = (language: string) => {

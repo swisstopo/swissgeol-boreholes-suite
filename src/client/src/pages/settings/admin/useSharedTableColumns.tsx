@@ -37,14 +37,14 @@ export function useSharedTableColumns() {
     handleDelete: (event: MouseEvent<HTMLButtonElement>, id: number) => void,
     isDisabled: boolean = false,
   ): GridColDef => {
-    const renderDeleteCell = (params: GridRenderCellParams) => {
+    const renderDeleteCell = (params: GridRenderCellParams<{ id: number }>) => {
       return (
         <Button
           variant="outlined"
           key={params.row.id}
           disabled={isDisabled}
           data-cy={`delete-id-${params.row.id}`}
-          onClick={event => handleDelete(event, params.row.id as number)}
+          onClick={event => handleDelete(event, params.row.id)}
           sx={{ p: 0.5 }}>
           <Trash2 color={theme.palette.primary.main} />
         </Button>

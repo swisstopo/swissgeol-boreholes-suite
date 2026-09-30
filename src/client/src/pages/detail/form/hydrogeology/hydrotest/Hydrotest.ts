@@ -1,6 +1,6 @@
 import { useQuery } from "@tanstack/react-query";
 import { fetchApiV2Legacy } from "../../../../../api/fetchApiV2.ts";
-import { Hydrotest } from "../../../../../api/generated";
+import { Codelist, Hydrotest } from "../../../../../api/generated";
 
 export interface HydrotestInputProps {
   item: Hydrotest;
@@ -32,7 +32,7 @@ export const useHydrotestDomains = (testKindIds: number[]) => {
   return useQuery({
     queryKey: ["codelists", queryString],
     queryFn: async () => {
-      return await fetchApiV2Legacy(`codelist?${queryString}`, "GET");
+      return await fetchApiV2Legacy<Codelist[]>(`codelist?${queryString}`, "GET");
     },
     staleTime: 10 * (60 * 1000), // 10 mins
     gcTime: 15 * (60 * 1000), // 15 mins

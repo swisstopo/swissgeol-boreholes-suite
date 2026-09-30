@@ -203,7 +203,7 @@ export const CompletionPanel = () => {
       resetCanSwitch();
       setCheckContentDirty(false);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [canSwitch]);
 
   const checkSwitchBeforeSave = (completion: Completion) => {
@@ -265,7 +265,7 @@ export const CompletionPanel = () => {
     return () => {
       mounted.current = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [boreholeId]);
 
   const firstRender = useRef(true);
@@ -325,14 +325,14 @@ export const CompletionPanel = () => {
       resetState();
       navigateTo({ path: "/" + boreholeId + "/completion" });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [completions, completionId]);
 
   useEffect(() => {
     if (!editingEnabled) {
       setState({ ...state, editing: false });
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [editingEnabled]);
 
   return (

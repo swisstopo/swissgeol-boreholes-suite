@@ -7,7 +7,12 @@ import { FormSegmentBox } from "../../../../components/styledComponents";
 import { EditStateContext } from "../../editStateContext.tsx";
 import CantonMunicipalitySegment from "./cantonMunicipalitySegment.tsx";
 import { referenceSystems, webApilv03tolv95, webApilv95tolv03 } from "./coordinateSegmentConstants.ts";
-import { Location, ReferenceSystemCode, ReferenceSystemKey } from "./coordinateSegmentInterfaces.ts";
+import {
+  Location,
+  ReferenceSystemCode,
+  ReferenceSystemKey,
+  ReframeTransformation,
+} from "./coordinateSegmentInterfaces.ts";
 import CoordinatesSegment from "./coordinatesSegment.tsx";
 import ElevationSegment from "./elevationSegment";
 import { LocationBaseProps, LocationFormInputs } from "./locationPanelInterfaces.tsx";
@@ -21,20 +26,23 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
   const [currentLV95X, setCurrentLV95X] = useState(borehole.locationX ? Number(borehole.locationX) : null);
   const [currentLV95Y, setCurrentLV95Y] = useState(borehole.locationY ? Number(borehole.locationY) : null);
   const { editingEnabled } = useContext(EditStateContext);
-  const transformCoordinates = useCallback(async (referenceSystem: string, x: number, y: number) => {
-    let apiUrl;
-    if (referenceSystem === referenceSystems.LV95.name) {
-      apiUrl = webApilv95tolv03;
-    } else {
-      apiUrl = webApilv03tolv95;
-    }
-    if (x && y) {
-      const response = await fetch(apiUrl + `?easting=${x}&northing=${y}&altitude=0.0&format=json`);
-      if (response.ok) {
-        return await response.json();
+  const transformCoordinates = useCallback(
+    async (referenceSystem: string, x: number, y: number): Promise<ReframeTransformation | undefined> => {
+      let apiUrl;
+      if (referenceSystem === referenceSystems.LV95.name) {
+        apiUrl = webApilv95tolv03;
+      } else {
+        apiUrl = webApilv03tolv95;
       }
-    }
-  }, []);
+      if (x && y) {
+        const response = await fetch(apiUrl + `?easting=${x}&northing=${y}&altitude=0.0&format=json`);
+        if (response.ok) {
+          return (await response.json()) as ReframeTransformation;
+        }
+      }
+    },
+    [],
+  );
 
   const setValuesForReferenceSystem = useCallback(
     (referenceSystem: string, X: string, Y: string) => {
@@ -83,7 +91,7 @@ const LocationSegment = ({ borehole, labelingPanelOpen, formMethods }: LocationS
       setCurrentLV95X(XLV95);
       setCurrentLV95Y(YLV95);
 
-      const location = await fetchApiV2Legacy(`location/identify?east=${XLV95}&north=${YLV95}`, "GET");
+      const location = await fetchApiV2Legacy<Location>(`location/identify?east=${XLV95}&north=${YLV95}`, "GET");
       setValuesForCountryCantonMunicipality(location);
       setValuesForReferenceSystem(targetSystem, transformedX.toFixed(maxPrecision), transformedY.toFixed(maxPrecision));
     },

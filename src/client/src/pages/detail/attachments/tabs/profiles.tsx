@@ -23,6 +23,8 @@ interface ProfilesProps {
   boreholeId: number;
 }
 
+type DescriptionCellParams = GridRenderCellParams<Profile, Profile["description"]>;
+
 export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const { t } = useTranslation();
   const { editingEnabled } = useContext(EditStateContext);
@@ -62,7 +64,8 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   const updateAttachments = useCallback(
     async (updatedRows: Map<GridRowId, Profile>) => {
       const updatePromises = Array.from(updatedRows.entries()).map(([id, row]) => {
-        const data = apiRef.current.getRowWithUpdatedValues(id, "description");
+        // The grid hands back an untyped row model; this grid only ever holds profiles.
+        const data = apiRef.current.getRowWithUpdatedValues(id, "description") as Profile;
         if (data) {
           return updateProfile(id as number, row.description ?? data.description, row.public ?? data.public);
         }
@@ -70,7 +73,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
       });
       const results = await Promise.allSettled(updatePromises);
       reloadProfiles();
-      const errors = results.filter(r => r.status === "rejected").map(r => r.reason);
+      const errors = results.filter(r => r.status === "rejected").map(r => r.reason as Error);
       if (errors.length > 0) {
         showApiErrorAlert(errors.map(e => e.message).join(", "));
         return false;
@@ -106,7 +109,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
   );
 
   const getDescriptionField = useCallback(
-    (params: GridRenderCellParams<Profile>, focused: boolean) => {
+    (params: DescriptionCellParams, focused: boolean) => {
       const value = updatedRows.get(params.id)?.description ?? params.value ?? "";
       return (
         <TextField
@@ -133,7 +136,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         headerName: t("description"),
         editable: editingEnabled,
         flex: 1,
-        renderCell: (params: GridRenderCellParams) =>
+        renderCell: (params: DescriptionCellParams) =>
           editingEnabled ? (
             getDescriptionField(params, false)
           ) : (

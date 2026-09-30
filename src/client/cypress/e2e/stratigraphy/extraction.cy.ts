@@ -8,7 +8,7 @@ function assertBoundingBoxesOnLayer(mapDomId: MapDomId, layerName: string, shoul
   cy.window().should(win => {
     const window = win as WindowWithMaps;
 
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    // oxlint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(window[mapDomId], `Map "${mapDomId}" should exist`).to.exist;
   });
 
@@ -20,7 +20,7 @@ function assertBoundingBoxesOnLayer(mapDomId: MapDomId, layerName: string, shoul
       const features = layer!.getSource()!.getFeatures();
       expect(features.length, `${layerName} should have features`).to.be.greaterThan(0);
     } else {
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      // oxlint-disable-next-line @typescript-eslint/no-unused-expressions
       expect(layer, `Layer "${layerName}" should not exist`).to.be.undefined;
     }
   });

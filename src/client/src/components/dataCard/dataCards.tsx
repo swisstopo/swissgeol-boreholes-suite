@@ -92,7 +92,7 @@ export const DataCards = <T extends DataCardEntity>({
     if (!editingEnabled) {
       selectCard(null);
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [editingEnabled]);
 
   useEffect(() => {
@@ -101,14 +101,14 @@ export const DataCards = <T extends DataCardEntity>({
     return () => {
       mounted.current = false;
     };
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [parentId]);
 
   useEffect(() => {
     if (shouldReload) {
       loadData();
     }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
+    // oxlint-disable-next-line react-hooks/exhaustive-deps
   }, [shouldReload]);
 
   const renderCards = useCallback(() => {
@@ -161,8 +161,7 @@ export const DataCards = <T extends DataCardEntity>({
           <CircularProgress />
         </FullPageCentered>
       ) : displayedCards?.length > 0 ? (
-        // eslint-disable-next-line react/no-children-prop
-        <MemoizedDataCardsContainer children={renderCards} />
+        <MemoizedDataCardsContainer>{renderCards}</MemoizedDataCardsContainer>
       ) : (
         <FullPageAlignLeft>
           <Typography>{`${t(emptyLabel)}...`}</Typography>

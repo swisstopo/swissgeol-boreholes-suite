@@ -37,6 +37,6 @@ export interface FilterInputConfig {
   translationId: string;
   isSelected: boolean;
   searchData: SearchData[];
-  /* eslint-disable  @typescript-eslint/no-explicit-any */ // legacy data structure
+  /* oxlint-disable  @typescript-eslint/no-explicit-any */ // legacy data structure
   [key: string]: any;
 }

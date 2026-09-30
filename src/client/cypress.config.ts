@@ -29,7 +29,7 @@ export default defineConfig({
 
           return null;
         },
-        fileExistsInDownloadFolder(filename) {
+        fileExistsInDownloadFolder(filename: string) {
           return fs.existsSync(filename);
         },
       });
@@ -40,7 +40,7 @@ export default defineConfig({
           launchOptions.preferences = {
             ...launchOptions.preferences,
             webPreferences: {
-              ...launchOptions.preferences?.webPreferences,
+              ...(launchOptions.preferences?.webPreferences as object | undefined),
               backgroundThrottling: false,
               nodeIntegration: true,
               contextIsolation: false,

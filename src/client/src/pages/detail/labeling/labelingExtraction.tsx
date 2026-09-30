@@ -103,10 +103,10 @@ export const LabelingExtraction: FC<LabelingExtractionProps> = ({
               void setTextToClipboard(response.text);
             }
           })
-          .catch(error => {
-            if (!error?.toString().includes("AbortError")) {
+          .catch((error: unknown) => {
+            if (!String(error).includes("AbortError")) {
               setExtractionState(ExtractionState.error);
-              showAlert(t(error.message), "error");
+              showAlert(t(error instanceof Error ? error.message : String(error)), "error");
             }
           })
           .finally(() => {

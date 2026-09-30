@@ -18,12 +18,15 @@ const DepthInput = ({ observation, depthFields }: DepthInputProps) => {
   const boreholeId = useRequiredId();
 
   const depthUnitFieldName = "originalVerticalReferenceSystem";
-  const watchDepthUnit = formMethods.watch(depthUnitFieldName, verticalReferenceSystems.measuredDepth);
+  const watchDepthUnit = formMethods.watch(
+    depthUnitFieldName,
+    verticalReferenceSystems.measuredDepth,
+  ) as VerticalReferenceSystem;
 
   const convertDepth = async (inputFieldName: string, outputFieldName: string, outputUnit: VerticalReferenceSystem) => {
     if (outputUnit === watchDepthUnit) return;
 
-    const inputValue = formMethods.getValues(inputFieldName);
+    const inputValue = formMethods.getValues(inputFieldName) as string;
     const inputParsed = parseFloatWithThousandsSeparator(inputValue);
     if (inputParsed === null) {
       formMethods.setValue(outputFieldName, "");

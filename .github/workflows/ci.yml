@@ -35,8 +35,31 @@ jobs:
           git diff --exit-code src/api/generated \
             || (echo "Generated types are out of date. Run 'npm run openapi:gen' and commit the result." && exit 1)
 
-      - working-directory: ./src/client
-        run: npm run lint
+      - name: Lint with oxlint
+        working-directory: ./src/client
+        run: npm run lint:oxlint -- --format github
+
+      - name: Verify oxlint warning cap matches warning count
+        working-directory: ./src/client
+        run: |
+          npm run --silent lint:oxlint -- --format json > "$RUNNER_TEMP/oxlint.json"
+          node -e '
+            const { diagnostics } = JSON.parse(require("fs").readFileSync(process.argv[1], "utf8"));
+            const warnings = diagnostics.filter(d => d.severity === "warning").length;
+            const cap = Number(require("./package.json").scripts["lint:oxlint"].match(/--max-warnings (\d+)/)[1]);
+            if (warnings < cap) {
+              console.log(`::error::oxlint warnings dropped to ${warnings}. Lower --max-warnings in the lint:oxlint script of src/client/package.json from ${cap} to ${warnings}.`);
+              process.exit(1);
+            }
+          ' "$RUNNER_TEMP/oxlint.json"
+
+      - name: Lint with ESLint
+        working-directory: ./src/client
+        run: npm run lint:eslint
+
+      - name: Check formatting
+        working-directory: ./src/client
+        run: npm run format:check
 
       - working-directory: ./src/client
         run: npm run knip
@@ -67,10 +90,10 @@ jobs:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@bb05f3f5519dd87d3ba754cc423b652a5edd6d2c # v4.2.0
+        uses: docker/setup-buildx-action@f87e5991a6d7451dcb8d9637bfbc97413f497069 # v4.4.1
 
       - name: Build api image
-        uses: docker/build-push-action@53b7df96c91f9c12dcc8a07bcb9ccacbed38856a # v7.3.0
+        uses: docker/build-push-action@c3c9e263c25d99ce0380d002d59b67737d91b0dc # v7.4.0
         with:
           context: ./src
           file: ./src/api/Dockerfile
@@ -176,7 +199,7 @@ jobs:
           path: src/client/dist
 
       - name: Cypress run
-        uses: cypress-io/github-action@fa4a118725a8f001170d49631ea89e5d66fee626 # v7.4.1
+        uses: cypress-io/github-action@01e3b659a495b41649cdd0aa82e1d1624e26520b # v7.4.4
         with:
           command: npx cypress run --record --key ${{ secrets.CYPRESS_RECORD_KEY }} --ci-build-id ${{ github.repository }}-${{ github.run_id }}-${{ github.run_attempt }} --group shard-${{ matrix.index }}
           start: npm run preview

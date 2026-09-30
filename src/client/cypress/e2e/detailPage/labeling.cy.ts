@@ -56,7 +56,7 @@ const drawBox = (x1: number, y1: number, x2: number, y2: number) => {
   cy.window().should(win => {
     const labelingWindow = win as WindowWithMaps;
     const interactions = labelingWindow["labeling-map"]?.getInteractions().getArray();
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    // oxlint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(interactions?.some(interaction => interaction.get("type") === "dragBox")).to.be.true;
   });
   cy.get('[data-cy="labeling-panel"]')
@@ -69,7 +69,7 @@ const drawBox = (x1: number, y1: number, x2: number, y2: number) => {
   cy.window().should(win => {
     const labelingWindow = win as WindowWithMaps;
     const interactions = labelingWindow["labeling-map"]?.getInteractions().getArray();
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    // oxlint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(interactions?.some(interaction => interaction.get("type") === "dragBox")).to.be.false;
   });
 };
@@ -195,7 +195,7 @@ function waitForMapAnimations() {
   cy.window().should(win => {
     const labelingWindow = win as WindowWithMaps;
     const view = labelingWindow["labeling-map"]?.getView();
-    // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+    // oxlint-disable-next-line @typescript-eslint/no-unused-expressions
     expect(view?.getAnimating()).to.be.false;
   });
 }
@@ -303,7 +303,7 @@ describe("Test labeling tool", () => {
     cy.window().should(win => {
       const labelingWindow = win as WindowWithMaps;
       const interactions = labelingWindow["labeling-map"]?.getInteractions().getArray() || [];
-      // eslint-disable-next-line @typescript-eslint/no-unused-expressions
+      // oxlint-disable-next-line @typescript-eslint/no-unused-expressions
       expect(interactions.some(interaction => interaction.get("type") === "dragBox")).to.be.false;
     });
     stopBoreholeEditing();
