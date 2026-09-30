@@ -129,7 +129,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         field: "name",
         headerName: t("name"),
         flex: 0.5,
-        valueGetter: (value, row) => row.name,
+        valueGetter: (_value, row) => row.name,
       },
       {
         field: "description",
@@ -155,7 +155,7 @@ export const Profiles: FC<ProfilesProps> = ({ boreholeId }) => {
         field: "createdBy",
         headerName: t("user"),
         flex: 0.25,
-        valueGetter: (value, row) => row.createdBy?.name ?? "-",
+        valueGetter: (_value, row) => row.createdBy?.name ?? "-",
       },
       {
         field: "public",

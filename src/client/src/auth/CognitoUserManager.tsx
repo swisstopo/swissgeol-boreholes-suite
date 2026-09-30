@@ -1,7 +1,7 @@
 import { SignoutRedirectArgs, UserManager } from "oidc-client-ts";
 
 export class CognitoUserManager extends UserManager {
-  public async signoutRedirect(args: SignoutRedirectArgs = {}): Promise<void> {
+  public override async signoutRedirect(args: SignoutRedirectArgs = {}): Promise<void> {
     {
       const metadata = await this.metadataService.getMetadata();
 
