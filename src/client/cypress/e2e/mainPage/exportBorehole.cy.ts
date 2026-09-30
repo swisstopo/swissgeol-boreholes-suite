@@ -487,23 +487,11 @@ describe("Test for exporting boreholes.", () => {
       cy.dataCy("import-borehole-button").click();
       cy.contains(boreholeName).should("not.exist");
 
-      cy.readFile<string>(downloadedFilePath, "utf-8").then(fileContent => {
-        // Create a DataTransfer and a File from the downloaded content
-        const boreholeFile = new DataTransfer();
-        const file = new File([fileContent], `${boreholeName}.csv`, {
-          type: "text/csv",
-        });
-        boreholeFile.items.add(file);
-
-        cy.dataCy("import-boreholeFile-input").within(() => {
-          cy.get("input[type=file]").then(input => {
-            (input[0] as HTMLInputElement).files = boreholeFile.files; // Attach the file
-            input[0].dispatchEvent(new Event("change", { bubbles: true }));
-          });
-        });
-        cy.dataCy("import-button").click();
-        cy.wait("@borehole-upload");
-      });
+      cy.dataCy("import-boreholeFile-input")
+        .find("input[type=file]")
+        .selectFile({ contents: downloadedFilePath, mimeType: "text/csv" }, { force: true });
+      cy.dataCy("import-button").click();
+      cy.wait("@borehole-upload");
 
       clickOnRowWithText(boreholeName);
       navigateInSidebar(SidebarMenuItem.borehole);
