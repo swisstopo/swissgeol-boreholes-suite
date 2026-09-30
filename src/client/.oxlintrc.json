@@ -347,8 +347,8 @@
         "react/immutability": "error",
         "react/globals": "error",
         "react/refs": "error",
-        // Off pending a dedicated cleanup: 53 violations across 39 files.
-        "react/set-state-in-effect": "off",
+        // Downgraded, will be fixed step by step. Counted in the lint:oxlint warning cap.
+        "react/set-state-in-effect": "warn",
         "react/error-boundaries": "error",
         "react/purity": "error",
         "react/set-state-in-render": "error",
