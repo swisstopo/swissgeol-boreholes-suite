@@ -32,9 +32,7 @@ COPY --from=development /app/src/client/public/help ./public/help
 RUN npm run build
 
 # Generate license and copyright notice for Node.js packages
-RUN npx license-checker --json --production \
-  --customPath licenseCustomFormat.json \
-  --out ./dist/license.json
+RUN npm run licenses
 
 # UID of user Node in `node:22-bookworm-slim`
 USER 1000
